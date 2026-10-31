@@ -136,7 +136,7 @@ def detail(game_root, name: str, index: int, *,
     return {"file": name, "index": index, "id": section["id"],
             "name": section["label"] or section["id"], "hash": file_hash(raw),
             "form": form, "inherited": inherited, "own": own, "effective": effective,
-            "baseAvailable": bool(base)}
+            "base": base, "baseAvailable": bool(base)}
 
 
 def validate_values(body, allowed: set[str], form: bool) -> tuple[dict, set]:

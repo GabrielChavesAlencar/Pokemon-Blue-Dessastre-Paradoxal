@@ -192,7 +192,7 @@
           if(cb.checked){inherited.add(kind);working[kind]=[];}
           else {
             inherited.delete(kind);
-            if(!working[kind].length)working[kind]=clone(entry.effective[kind]);
+            if(!working[kind].length)working[kind]=clone((entry.base&&entry.base[kind])||[]);
           }
           renderEntry();
         });
@@ -200,7 +200,7 @@
         section.append(inheritedCheck);
       }
       const isInherited=inherited.has(kind);
-      const values=isInherited?(entry.effective[kind]||[]):working[kind];
+      const values=isInherited?((entry.base&&entry.base[kind])||[]):working[kind];
       if(isInherited)section.append(node("p","moves-inherited","Visualizando golpes herdados. Desmarque a opção de herança para personalizar esta forma."));
       const rows=node("div","moves-kind-rows");rows.dataset.kind=kind;
       values.forEach((record,index)=>{
