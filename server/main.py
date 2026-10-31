@@ -23,6 +23,8 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 import webbrowser
+from pokemon_studio import (PokemonValidationError, create_species, make_species_raw,
+                            validate_pokemon, species_catalog, pbs_catalog)
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -284,6 +286,66 @@ def save_sprite(game_root: Path, backup_root: Path, species: str, kind: str,
     return sprite_metadata(game_root, species, kind)
 
 
+def metric_target(root: Path, species: str) -> tuple[str,str]:
+    if not re.fullmatch(r"[A-Z][A-Z0-9_]{1,63}", species or ""):
+        raise EditorError("Identificador do Pokémon inválido.")
+    match = re.fullmatch(r"([A-Z][A-Z0-9_]+)_(\d+)", species)
+    if match and int(match.group(2)) > 0:
+        return "pokemon_metrics_forms.txt", match.group(1) + "," + str(int(match.group(2)))
+    return "pokemon_metrics.txt", species
+
+
+def pokemon_metrics(root: Path, species: str) -> dict:
+    filename, key = metric_target(root, species)
+    file = pbs_path(root, filename)
+    raw, content = read_text(file)
+    found = next((s for s in sections_in(content) if s["id"] == key), None)
+    block = section_lines(content, found) if found else ""
+    values = {f["key"]: f["value"] for f in extract_fields(block)}
+    def pair(field, default="0,0"):
+        try:
+            parts = [int(x.strip()) for x in values.get(field,default).split(",")]
+            if len(parts) < 2:
+                raise ValueError()
+            return parts
+        except ValueError:
+            return [0,0]
+    return {"species":species,"header":key,"file":filename,"exists":bool(found),
+            "hash":file_hash(raw),"front":pair("FrontSprite"),"back":pair("BackSprite"),
+            "speed":pair("AnimationSpeed"),"index":found["index"] if found else -1}
+
+
+def save_pokemon_metrics(root: Path, backups: Path, obj: dict) -> dict:
+    species = obj.get("species", "")
+    data = pokemon_metrics(root, species)
+    values = {}
+    for name in ("front", "back"):
+        parts=obj.get(name)
+        if not isinstance(parts,list) or len(parts)!=3 or any(type(n)!=int for n in parts):
+            raise EditorError(name+" exige [X,Y,escala].")
+        if any(abs(n)>250 for n in parts[:2]) or not 1 <= parts[2] <= 8:
+            raise EditorError("Posição permitida: -250 a 250; escala: 1 a 8.")
+        values[name]=parts
+    speed=obj.get("speed")
+    if not isinstance(speed,list) or len(speed)!=2 or any(type(n)!=int or not 0<=n<=4 for n in speed):
+        raise EditorError("Velocidade exige dois valores de 0 a 4.")
+    if obj.get("expectedHash") != data["hash"]:
+        raise EditorError("Métricas alteradas desde a leitura; atualize a página.",409)
+    # No .rxdata or runtime manipulation here: this writes the native PBS schema.
+    lines=["["+data["header"]+"]",
+           "FrontSprite = "+",".join(map(str,values["front"])),
+           "BackSprite = "+",".join(map(str,values["back"])),
+           "AnimationSpeed = "+",".join(map(str,speed))]
+    old = section_lines(read_text(pbs_path(root, data["file"]))[1],
+                        sections_in(read_text(pbs_path(root,data["file"]))[1])[data["index"]]) if data["exists"] else ""
+    extra=[line for line in old.splitlines()[1:] if not
+           re.match(r"^\s*(?:FrontSprite|BackSprite|AnimationSpeed)\s*=",line)]
+    lines.extend(line for line in extra if line and not line.startswith("#-----------------"))
+    result=save_section(root,data["file"],data["index"],data["hash"],
+                        "\n".join(lines)+"\n",backups)
+    return {"ok":True,**pokemon_metrics(root,species),"saved":result["ok"]}
+
+
 def build_handler(game_root: Path, backup_root: Path, port: int):
     class Handler(BaseHTTPRequestHandler):
         server_version = "BlueStudio/0.1"
@@ -344,6 +406,15 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     b = backup_root / name
                     files = [{"name": f.name, "size": f.stat().st_size} for f in sorted(b.glob("*.bak"), reverse=True)[:20]] if b.is_dir() else []
                     self.send_json(200, {"backups": files})
+                elif p == "/api/pokemon/catalog":
+                    self.send_json(200, {
+                        "types": sorted(pbs_catalog(game_root, "types")),
+                        "abilities": sorted(pbs_catalog(game_root, "abilities")),
+                        "moves": sorted(pbs_catalog(game_root, "moves")),
+                        "speciesCount": len(species_catalog(game_root))
+                    })
+                elif p == "/api/pokemon/metrics":
+                    self.send_json(200, pokemon_metrics(game_root, self.param("species", "")))
                 elif p == "/api/sprite-info":
                     species = self.param("species", "")
                     kind = self.param("kind", "front")
@@ -429,6 +500,37 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                         backup_file(backup_root, name, raw)
                         atomic_write(path, data)
                     self.send_json(200, {"ok": True, "hash": file_hash(data)})
+                elif p == "/api/pokemon/new":
+                    try:
+                        response = create_species(game_root, backup_root, obj,lock=EDIT_LOCK,
+                            backup_file=backup_file,atomic_write=atomic_write,
+                            read_text=read_text,file_hash=file_hash)
+                    except PokemonValidationError as exc:
+                        raise EditorError(str(exc)) from exc
+                    self.send_json(200,response)
+                elif p == "/api/pokemon/validate":
+                    try:
+                        response = validate_pokemon(game_root,obj.get("raw",""))
+                    except PokemonValidationError as exc:
+                        raise EditorError(str(exc)) from exc
+                    self.send_json(200,response)
+                elif p == "/api/pokemon/metrics":
+                    self.send_json(200,save_pokemon_metrics(game_root,backup_root,obj))
+                elif p == "/api/pokemon/compile":
+                    if os.name != "nt":
+                        raise EditorError("Compilação do Essentials exige Windows com o jogo local.",400)
+                    shortcut=game_root/"Game.exe - Debug Mode.lnk"
+                    exe=game_root/"Game.exe"
+                    if shortcut.is_file():
+                        os.startfile(str(shortcut))
+                        self.send_json(200,{"ok":True,"launched":True,
+                            "message":"Atalho Debug Mode aberto. Em Debug > Files > Compile data, compile os PBS. Verifique a confirmação no console."})
+                    elif exe.is_file():
+                        subprocess.Popen([str(exe)],cwd=str(game_root),close_fds=True)
+                        self.send_json(200,{"ok":True,"launched":True,
+                            "message":"Game.exe aberto sem garantia de Debug. Para compilar, inicie pelo RPG Maker XP em Debug, segure Ctrl durante o início ou use Debug > Files > Compile data."})
+                    else:
+                        raise EditorError("Game.exe não encontrado.",404)
                 elif p == "/api/sprite-upload":
                     result = save_sprite(
                         game_root, backup_root, obj.get("species", ""),
