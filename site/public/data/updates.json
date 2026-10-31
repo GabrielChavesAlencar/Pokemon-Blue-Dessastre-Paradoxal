@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "78e5d1918f80299dc2c079723ffdcf98adcdeceb",
+      "date": "2026-10-31T16:31:06-03:00",
+      "title": "feat(site): integrar páginas de história, equipes de chefes e mapa regional em Localizações",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f6458a134e6e77be85e103bb4425f68f451526fe",
+      "date": "2026-10-31T16:31:03-03:00",
+      "title": "feat(site): integrar páginas de história, equipes de chefes e mapa regional em Localizações",
+      "category": "Novidades"
+    },
+    {
+      "sha": "50005581de403f4bd6c44978da38a960b08bd4fe",
+      "date": "2026-10-31T16:31:01-03:00",
+      "title": "feat(site): integrar páginas de história, equipes de chefes e mapa regional em Localizações",
+      "category": "Novidades"
+    },
+    {
+      "sha": "db8213b62537e9e06ba5c41e9e5efee154739382",
+      "date": "2026-10-31T16:30:59-03:00",
+      "title": "feat(site): integrar páginas de história, equipes de chefes e mapa regional em Localizações",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0aed90a8db3b5df266fd3ea1a55f74b59becc3fd",
+      "date": "2026-10-31T16:30:56-03:00",
+      "title": "feat(site): integrar páginas de história, equipes de chefes e mapa regional em Localizações",
+      "category": "Novidades"
+    },
+    {
       "sha": "542709f944ba55fcc0cdd03daf395c70659a4f1f",
       "date": "2026-10-31T16:30:24-03:00",
       "title": "feat(site): criar guia narrativo e fichas dos Mestres de Tipo com equipes completas",
