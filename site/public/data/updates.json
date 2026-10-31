@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5fdedfe88fa09be57118d4c371d021a4a2fd414",
+      "date": "2026-10-31T16:53:25-03:00",
+      "title": "test(maps): validar zoom com comparação de string estável",
+      "category": "Testes"
+    },
+    {
       "sha": "3da3c5e03850564cc8983bbc187ee4949eb5c60e",
       "date": "2026-10-31T16:53:09-03:00",
       "title": "test(maps): conferir miniatura real, zoom distinto por local e ausência em Rock Cave",
