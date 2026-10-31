@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ad9f517763dc193501dad3634b515e70c7c0c38b",
+      "date": "2026-10-31T16:32:51-03:00",
+      "title": "docs(site): explicar guias da campanha, mapas e sincronização dos times",
+      "category": "Documentação"
+    },
+    {
       "sha": "24a15653ce22c7886aa6c59071f4bfe006c7fcb7",
       "date": "2026-10-31T16:32:19-03:00",
       "title": "test(site): validar 18 Mestres, equipes, guias e mapas regionais",
