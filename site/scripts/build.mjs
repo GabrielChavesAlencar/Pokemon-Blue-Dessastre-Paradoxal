@@ -18,5 +18,5 @@ const readJson=async name=>JSON.parse(await readFile(path.join(root,'public/data
 const generatedGuides=generateGuides({catalog:await readJson('catalog'),locations:await readJson('locations'),details:await readJson('details'),editorial:await readJson('guides')});
 await writeFile(path.join(output,'data/guides.json'),JSON.stringify(generatedGuides));
 console.log('Guias sincronizados: '+generatedGuides.guides.length);
-for (const file of ['catalog.json','details.json','locations.json','updates.json','guides.json']) JSON.parse(await readFile(path.join(output,'data',file),'utf8'));
+for (const file of ['catalog.json','details.json','locations.json','updates.json','guides.json','story-trainers.json','region-points.json']) JSON.parse(await readFile(path.join(output,'data',file),'utf8'));
 console.log('Portal Blue pronto: dist/');
