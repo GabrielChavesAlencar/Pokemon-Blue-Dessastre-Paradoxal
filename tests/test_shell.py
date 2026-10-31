@@ -36,21 +36,21 @@ class ShellRegression(unittest.TestCase):
     def test_required_workspace_elements(self):
         essential = {"status","fileList","fileTitle","recordTitle","records",
                      "editorBody","reload","save","new","play","history",
-                     "modal","modalBody","toast","romStudio","featurePanel","pbsWorkspace"}
+                     "modal","modalBody","toast","romStudio","featurePanel","pbsWorkspace","movesWorkspace"}
         self.assertFalse(essential - self.dom.ids)
 
     def test_all_emerald_rom_tabs_preserved(self):
-        core = {"project","script","flags","pokemon","items","starters","trainers","wild",
+        core = {"project","script","flags","pokemon","pokemon-moves","items","starters","trainers","wild",
                 "map","title-logo","title-flames","music","midi-studio","test-lab"}
         extra = {"hex","table","graphics","sprite","text","patch"}
         self.assertEqual(set(self.dom.panels),core|extra)
-        self.assertEqual(len(self.dom.panels),20)
+        self.assertEqual(len(self.dom.panels),21)
         self.assertEqual(set(self.dom.shells),{"home","rom","movesets"})
 
     def test_scripts_and_css_exist(self):
-        for f in ("style.css","studio-shell.css","app.js","sprites.js","pokemon.js","navigation.js"):
+        for f in ("style.css","studio-shell.css","app.js","sprites.js","pokemon.js","moves-editor.js","navigation.js"):
             self.assertTrue((ROOT/"web"/f).is_file())
-        self.assertEqual(self.dom.scripts,["/app.js","/sprites.js","/pokemon.js","/navigation.js"])
+        self.assertEqual(self.dom.scripts,["/app.js","/sprites.js","/pokemon.js","/moves-editor.js","/navigation.js"])
         self.assertIn('href="/studio-shell.css"',HTML)
 
     def test_html_div_balanced(self):
@@ -64,7 +64,7 @@ class ShellRegression(unittest.TestCase):
             self.assertIn(path,JS)
         self.assertIn("PLANEJADO",JS)
         self.assertIn('work.hidden = !ready',JS)
-        self.assertIn('placeholder.hidden = ready',JS)
+        self.assertIn('placeholder.hidden = ready || movesMode',JS)
         self.assertIn('state.raw !== state.original',JS)
         self.assertNotIn("git reset --hard",JS)
         self.assertIn(":root",CSS)

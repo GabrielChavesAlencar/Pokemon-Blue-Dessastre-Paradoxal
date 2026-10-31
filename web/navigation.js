@@ -7,6 +7,7 @@
     "script": ["📜", "História e eventos", "Eventos e diálogos são definidos nos mapas do RPG Maker XP; não são ROMs binárias de GBA.", "Criar visualizador de eventos RGSS e depois editor compatível com arquivos do RPG Maker XP.", "planejado"],
     "flags": ["🚩", "Flags e vars", "Variáveis e switches de eventos dependem do banco de dados do RPG Maker XP.", "Ler o catálogo de switches/variables de Data e adicionar referências cruzadas.", "planejado"],
     "pokemon": ["🐉", "Pokédex", "Editor PBS de espécies, atributos, habilidades e formas.", "Adicionar fichas visuais de Fakémon e validação de espécies.", "pbs", "pokemon.txt"],
+    "pokemon-moves": ["⚔️", "Golpes dos Pokémon", "Editor de golpes por nível, tutor e ovo.", "Salve os Moves, TutorMoves e EggMoves no PBS original.", "custom"],
     "items": ["🎒", "Itens", "Editor PBS de itens e Mega Stones.", "Adicionar categorização por bolso, ícones e validações específicas de itens.", "pbs", "items.txt"],
     "starters": ["⭐", "Iniciais", "Inicialização dos Pokémon e eventos iniciais depende dos scripts e mapas.", "Indexar os eventos iniciais do projeto e criar editor guiado de starters.", "planejado"],
     "trainers": ["⚔️", "Treinadores", "Editor PBS de equipes, níveis, itens e golpes de treinadores.", "Criar formulários visuais com retratos, validação de equipes e dificuldades.", "pbs", "trainers_story_mode.txt"],
@@ -48,6 +49,8 @@
     if (!Object.prototype.hasOwnProperty.call(panels, which)) which = "pokemon";
     const data = panels[which];
     const file = data[5];
+    if (currentPanel === "pokemon-moves" && which !== "pokemon-moves" &&
+        window.BluePokemonMoves && !window.BluePokemonMoves.canLeave()) return;
     // When changing PBS files, never discard unsaved text without confirmation.
     if (file && typeof state !== "undefined" && state.raw !== state.original &&
         state.file !== file) {
@@ -63,10 +66,15 @@
     });
     selectShell("rom", false);
     const work = byId("pbsWorkspace"), placeholder = byId("featurePanel");
+    const movesWork = byId("movesWorkspace");
     const ready = data[4] === "pbs";
+    const movesMode = which === "pokemon-moves";
     work.hidden = !ready;
-    placeholder.hidden = ready;
-    if (!ready) {
+    movesWork.hidden = !movesMode;
+    placeholder.hidden = ready || movesMode;
+    if (movesMode) {
+      window.BluePokemonMoves?.open();
+    } else if (!ready) {
       byId("featureIcon").textContent = data[0];
       byId("featureTitle").textContent = data[1];
       byId("featureDescription").textContent = data[2];
@@ -90,7 +98,11 @@
     if (hash === "home" || hash === "movesets") selectShell(hash, false);
     else selectPanel(hash.startsWith("rom/") ? hash.slice(4) : "pokemon", false);
   }
-  document.querySelectorAll("[data-shell]").forEach(button => button.addEventListener("click", () => selectShell(button.dataset.shell, true)));
+  document.querySelectorAll("[data-shell]").forEach(button => button.addEventListener("click", () => {
+    if (currentShell === "rom" && currentPanel === "pokemon-moves" && button.dataset.shell !== "rom" &&
+        window.BluePokemonMoves && !window.BluePokemonMoves.canLeave()) return;
+    selectShell(button.dataset.shell, true);
+  }));
   document.querySelectorAll("[data-panel]").forEach(button => button.addEventListener("click", () => selectPanel(button.dataset.panel, true)));
   document.querySelectorAll("[data-shortcut]").forEach(button => button.addEventListener("click", () => selectPanel(button.dataset.shortcut, true)));
   window.addEventListener("hashchange", routeHash);

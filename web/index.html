@@ -16,7 +16,7 @@
       <button type="button" data-shell="rom" role="tab" aria-selected="true">🧬 Editor de ROM</button>
       <button type="button" data-shell="movesets" role="tab" aria-selected="false">📚 Ver MD de Movesets</button>
     </nav>
-    <span class="studio-version">BLUE STUDIO · V0.2</span>
+    <span class="studio-version">BLUE STUDIO · V0.4</span>
   </header>
   <section class="studio-top-content" id="studioHome" hidden aria-label="Visão geral">
     <div class="studio-hero"><div><div class="kicker">VISÃO GERAL</div><h1>Pokémon <em>Blue Dessastre Paradoxal</em></h1><p>Seu fangame sobre a base local do Pokémon Decades. Edite arquivos PBS, organize os recursos e acompanhe o desenvolvimento das novas ferramentas.</p><button type="button" class="btn btn-primary" data-shortcut="pokemon">Abrir Pokédex</button></div><div class="hero-insignia" aria-hidden="true">✦</div></div>
@@ -37,6 +37,7 @@
         <button role="tab" data-panel="script">📜 História e eventos</button>
         <button role="tab" data-panel="flags">🚩 Flags e vars</button>
         <button role="tab" data-panel="pokemon" aria-selected="true">🐉 Pokédex</button>
+        <button role="tab" data-panel="pokemon-moves" aria-selected="false">⚔️ Golpes dos Pokémon</button>
         <button role="tab" data-panel="items">🎒 Itens</button>
         <button role="tab" data-panel="starters">⭐ Iniciais</button>
         <button role="tab" data-panel="trainers">⚔️ Treinadores</button>
@@ -66,6 +67,7 @@
       <div class="next-steps"><h2>Próximos passos</h2><p id="featureNext"></p></div>
       <button type="button" class="btn btn-primary" data-shortcut="pokemon">Abrir editor PBS</button></div>
     </section>
+  <section id="movesWorkspace" class="moves-workspace" hidden aria-label="Editor exclusivo de golpes de Pokémon"></section>
   <div class="app" id="pbsWorkspace">
   <aside class="sidebar">
     <div class="brand"><div class="brandmark">⚡</div><div><b>BLUE STUDIO</b><small>DESSASTRE PARADOXAL</small></div></div>
@@ -92,5 +94,6 @@
 <script src="/app.js" defer></script>
 <script src="/sprites.js" defer></script>
 <script src="/pokemon.js" defer></script>
+<script src="/moves-editor.js" defer></script>
 <script src="/navigation.js" defer></script>
 </body></html>
