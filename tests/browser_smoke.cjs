@@ -79,6 +79,28 @@ async function ready(url, child) {
     await page.locator('#movesetPanel [data-shortcut="pokemon"]').click();
     await page.waitForFunction(() => document.getElementById("fileTitle").textContent === "pokemon.txt");
     assert.equal(await page.locator("#pbsWorkspace").isVisible(),true);
+    // Testar sprites PNG ESTÁTICOS de ponta a ponta sem acessar Pokémon Decades.
+    await page.locator(".record").first().click();
+    await page.locator(".sprite-grid .sprite-tile").first().waitFor();
+    assert.equal(await page.locator(".sprite-tile").count(),4,"Quatro variantes de batalha");
+    const staticTile=page.locator('.sprite-tile[data-kind="front"]');
+    assert.equal(await staticTile.locator("select").inputValue(),"static");
+    const dataUrl=await page.evaluate(()=>{
+      const canvas=document.createElement("canvas");canvas.width=4;canvas.height=4;
+      const ctx=canvas.getContext("2d");ctx.fillStyle="#ff0000";ctx.fillRect(0,0,4,4);
+      return canvas.toDataURL("image/png");
+    });
+    const pngBuffer=Buffer.from(dataUrl.split(",")[1],"base64");
+    await staticTile.locator('input[type="file"]').setInputFiles({
+      name:"my-fakemon.png",mimeType:"image/png",buffer:pngBuffer
+    });
+    await page.waitForFunction(async()=>{
+      const res=await fetch("/api/sprite-info?species=TESTMON&kind=front");
+      return (await res.json()).exists;
+    },null,{timeout:10000});
+    assert.ok(fs.existsSync(path.join(game,"Graphics","Pokemon","Front","TESTMON.png")));
+    await page.waitForFunction(()=>document.querySelector('.sprite-tile[data-kind="front"] img')?.naturalWidth>0);
+    assert.equal(await staticTile.locator("img").isVisible(),true);
     assert.deepEqual(errors,[],"Sem erros JS no navegador");
 
     const shotDir = path.join(root,"tests","artifacts");
