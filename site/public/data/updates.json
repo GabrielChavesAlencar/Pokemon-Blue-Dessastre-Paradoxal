@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9c600e714336a3da7004babc0e58f63cf4d4d83f",
+      "date": "2026-10-31T16:10:24-03:00",
+      "title": "feat(site): exibir guias do Decades e sincronizar conteúdo no build",
+      "category": "Novidades"
+    },
+    {
+      "sha": "6119e012d7cdb4ed780b234bd742bf71c340bb83",
+      "date": "2026-10-31T16:10:21-03:00",
+      "title": "feat(site): exibir guias do Decades e sincronizar conteúdo no build",
+      "category": "Novidades"
+    },
+    {
+      "sha": "9545400f2289416272a64d369d88b08e4b92ab4c",
+      "date": "2026-10-31T16:10:19-03:00",
+      "title": "feat(site): exibir guias do Decades e sincronizar conteúdo no build",
+      "category": "Novidades"
+    },
+    {
       "sha": "f9fed82e76a4c5cce5ed94b07dcfd56c81ee1fe7",
       "date": "2026-10-31T16:09:59-03:00",
       "title": "feat(site): gerar guias de Decades e indicadores dinâmicos do Blue",
