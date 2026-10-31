@@ -31,7 +31,12 @@
     if(mark)mark.textContent=dirty()?"● Alterações não salvas":"Todas as alterações salvas";
   }
   function canLeave(){
-    return !dirty()||confirm("Existem alterações de golpes não salvas. Deseja descartá-las?");
+    if(!dirty())return true;
+    if(!confirm("Existem alterações de golpes não salvas. Deseja descartá-las?"))return false;
+    working=clone(entry.own);
+    inherited=new Set(entry.inherited);
+    renderEntry();
+    return true;
   }
   function paint(){
     if(!root)return;
