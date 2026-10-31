@@ -107,12 +107,16 @@ function setSaveEnabled(){
 function parseFields(text){return text.split(/\r?\n/).map((s,i)=>{const m=s.match(/^(\s*)([A-Za-z][\w]*)\s*=\s*(.*)$/);return m?{line:i,indent:m[1],key:m[2],value:m[3]}:null;}).filter(Boolean);}
 function updateLine(lineno,newval){const lines=state.raw.split('\n');const line=lines[lineno];if(line===undefined)return;const m=line.match(/^(\s*[A-Za-z][\w]*\s*=\s*)(.*)$/);if(!m)return;lines[lineno]=m[1]+newval;state.raw=lines.join('\n');setSaveEnabled();}
 function renderEditor(){
-  const spriteID=state.raw.match(/^\[([A-Za-z][\w]*)(?:,[^\]]+)?\]/)?.[1];
+  const spriteHeader=state.raw.match(/^\[([A-Za-z][\w]*)(?:,(\d+))?\]/);
+  const spriteID=spriteHeader
+    ? spriteHeader[1]+(spriteHeader[2]&&Number(spriteHeader[2])>0?'_'+Number(spriteHeader[2]):'')
+    : null;
   const showSprite=state.file.startsWith('pokemon')&&!!spriteID;
-  $('editorBody').innerHTML=`<div class="meta"><span class="tag">${esc(state.file)}</span><small>As mudanças são gravadas no PBS local. Para aplicá-las, recompile os dados no modo debug do Essentials.</small></div>${showSprite?`<div class="previewbox"><img id="spriteFront" src="/api/sprite?kind=front&species=${encodeURIComponent(spriteID)}" alt="Sprite frontal"><img id="spriteBack" src="/api/sprite?kind=back&species=${encodeURIComponent(spriteID)}" alt="Sprite traseiro"><p>Prévia dos sprites locais, quando disponíveis. Para mudar imagens, edite Graphics/Pokemon no projeto do RPG Maker.</p></div>`:''}<div class="tabs"><button class="tab ${state.mode==='fields'?'active':''}" id="tabFields">Campos</button><button class="tab ${state.mode==='raw'?'active':''}" id="tabRaw">PBS avançado</button></div><div id="editArea"></div>`;
+  $('editorBody').innerHTML=`<div class="meta"><span class="tag">${esc(state.file)}</span><small>As mudanças são gravadas no PBS local. Para aplicá-las, recompile os dados no modo debug do Essentials.</small></div><div class="tabs"><button class="tab ${state.mode==='fields'?'active':''}" id="tabFields">Campos</button><button class="tab ${state.mode==='raw'?'active':''}" id="tabRaw">PBS avançado</button></div><div id="editArea"></div>`;
   $('tabFields').addEventListener('click',()=>{state.mode='fields';renderEditor();});
   $('tabRaw').addEventListener('click',()=>{state.mode='raw';renderEditor();});
-  for(const img of $('editorBody').querySelectorAll('.previewbox img'))img.onerror=()=>{img.style.display='none';};
+  if(showSprite&&typeof window.mountBlueSpritePanel==='function') window.mountBlueSpritePanel(spriteID,$('editorBody'));
+
   renderEditArea();setSaveEnabled();
 }
 function renderEditArea(){
