@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d673ee872ab494ec412cfd88a65f11d6e4c5a5b0",
+      "date": "2026-10-31T16:32:04-03:00",
+      "title": "feat(story): exportar automaticamente equipes atualizadas junto da Pokédex",
+      "category": "Novidades"
+    },
+    {
+      "sha": "29030cdc624eba31fa00636a6205b01c68ac1766",
+      "date": "2026-10-31T16:31:55-03:00",
+      "title": "feat(story): permitir sincronizar times reais do Blue Studio a partir dos arquivos PBS",
+      "category": "Novidades"
+    },
+    {
       "sha": "102f63d8aa3c1804894b30d7397555198cf858f5",
       "date": "2026-10-31T16:31:37-03:00",
       "title": "style(site): criar layouts responsivos para mapas, história e equipes de treinadores",
