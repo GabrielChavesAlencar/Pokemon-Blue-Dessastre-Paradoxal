@@ -15,6 +15,10 @@ Para reproduzir a restauracao em outra copia local do Decades, execute `python s
 
 O editor aceita golpes de evolucao no nivel **0**, alem dos niveis 1–100, e comentarios numericos dos PBS do Decades. O `RUN.bat` permanece em uma unica pasta mesmo se a atualizacao falhar.
 
+## Testar batalhas sem avançar na campanha
+
+Abra **`TESTAR_BATALHA.bat`** para o laboratório local de batalhas reais 1 x 1. Escolha espécies/formas, nível e golpes; a sessão não carrega nem salva a campanha. [Como usar e testar Pokémon novos](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
+
 ## Portal do projeto
 
 O site fica em **`site/`** no mesmo repositório: Pokédex, formas, golpes, localizações, guias e diário automático de commits. [Executar o site](site/README.md) · [Deploy na Vercel e rotina de atualizações](docs/SITE_E_VERCEL.md).
