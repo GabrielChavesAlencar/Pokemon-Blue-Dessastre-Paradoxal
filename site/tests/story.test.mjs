@@ -48,7 +48,7 @@ test('as localizações com coordenadas mostram recortes DIFERENTES em vez do ma
   const b=regionImage(model,{id:21,name:'Route 2'},false);
   assert.match(a,/region-map--focused/);
   assert.match(a,/region-map-crop/);
-  assert.match(a,/scale\\(2\\.15\\)/);
+  assert.ok(a.includes('scale(2.15)'));
   assert.notEqual(a,b);
   assert.ok(regionCaption(model,{id:5,name:'Route 1'}).includes('Recorte ampliado'));
 });
