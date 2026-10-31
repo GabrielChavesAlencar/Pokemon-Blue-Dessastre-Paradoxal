@@ -51,7 +51,8 @@ function maybeUnsaved(){return state.raw!==state.original && !confirm('Descartar
 async function openFile(file,force=false){
   if(!force&&maybeUnsaved())return;
   state.file=file;state.index=null;state.newSection=false;state.documentMode=false;state.page=0;state.raw=state.original='';
-  renderFiles();$('fileTitle').textContent=file;$('recordTitle').textContent='Selecione um registro';$('editorBody').innerHTML='<div class="empty">Carregando registros...</div>';setSaveEnabled();
+  renderFiles();$('fileTitle').textContent=file;
+  $('new').textContent=file==='pokemon.txt'?'＋ Adicionar Pokémon':'＋ Novo registro';$('recordTitle').textContent='Selecione um registro';$('editorBody').innerHTML='<div class="empty">Carregando registros...</div>';setSaveEnabled();
   try{
     const res=await api('/api/sections?file='+encodeURIComponent(file));
     if(state.file!==file)return;

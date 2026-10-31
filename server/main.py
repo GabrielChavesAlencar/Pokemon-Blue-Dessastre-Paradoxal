@@ -346,6 +346,30 @@ def save_pokemon_metrics(root: Path, backups: Path, obj: dict) -> dict:
     return {"ok":True,**pokemon_metrics(root,species),"saved":result["ok"]}
 
 
+def compile_status(root: Path) -> dict:
+    """Approximate build freshness without claiming the game compiled successfully."""
+    pbs = root / "PBS"
+    data = root / "Data"
+    sources = sorted([file for file in pbs.glob("pokemon*.txt") if file.is_file()
+                      and not file.is_symlink()]) if pbs.is_dir() else []
+    compiled = {"species": data/"species.dat", "metrics": data/"species_metrics.dat"}
+    missing = [key for key, file in compiled.items() if not file.is_file()]
+    latest = max([file.stat().st_mtime_ns for file in sources], default=0)
+    oldest = min([file.stat().st_mtime_ns for file in compiled.values() if file.is_file()],
+                 default=0)
+    return {
+      "gameReady":(root/"Game.exe").is_file(),
+      "debugShortcut":(root/"Game.exe - Debug Mode.lnk").is_file(),
+      "compiledFiles":{name:file.is_file() for name,file in compiled.items()},
+      "sourceCount":len(sources),
+      "needsCompile":bool(sources and (missing or latest>oldest)),
+      "status":"Possível compilação pendente" if sources and (missing or latest>oldest)
+                else "Arquivos compilados com data igual ou posterior ao PBS",
+      "note":"Checagem por data de modificação, não prova que o runtime validou os arquivos. "
+             "Use o modo Debug do Pokémon Essentials para compilar e testar."
+    }
+
+
 def build_handler(game_root: Path, backup_root: Path, port: int):
     class Handler(BaseHTTPRequestHandler):
         server_version = "BlueStudio/0.1"
@@ -406,6 +430,8 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     b = backup_root / name
                     files = [{"name": f.name, "size": f.stat().st_size} for f in sorted(b.glob("*.bak"), reverse=True)[:20]] if b.is_dir() else []
                     self.send_json(200, {"backups": files})
+                elif p == "/api/pokemon/compile-status":
+                    self.send_json(200,compile_status(game_root))
                 elif p == "/api/pokemon/catalog":
                     self.send_json(200, {
                         "types": sorted(pbs_catalog(game_root, "types")),
