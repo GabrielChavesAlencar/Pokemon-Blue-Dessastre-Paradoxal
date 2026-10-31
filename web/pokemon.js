@@ -162,7 +162,7 @@
     const card=node("section","pokemon-metrics-card");
     card.setAttribute("aria-label","Posição e escala de sprites em batalha");
     card.append(node("h3","","🎯 Posição, escala e animação (PBS Metrics)"));
-    const note=node("p","help","Ajustes reais de FrontSprite, BackSprite e AnimationSpeed; efeitos no jogo somente após compilação dos PBS."));
+    const note=node("p","help","Ajustes reais de FrontSprite, BackSprite e AnimationSpeed; efeitos no jogo somente após compilação dos PBS.");
     card.append(note);
     const body=node("div","pokemon-metrics-body");
     const msg=node("small","pokemon-metrics-message","Carregando métricas...");
