@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "223b76c7b9c028a81bbc97a4103d0195d6465b19",
+      "date": "2026-10-31T19:12:21-03:00",
+      "title": "feat(lab): testar times completos e duplas com mouse e HP animado",
+      "category": "Novidades"
+    },
+    {
       "sha": "9c23c2483d7b64447e46128c88a8c9c1648316f4",
       "date": "2026-10-31T16:54:08-03:00",
       "title": "docs(maps): registrar pesquisa de imagens, estratégia de fallback e personalização por área",
