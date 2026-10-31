@@ -107,3 +107,14 @@
 .story-container>.data-note{margin:28px 0}
 @media(max-width:900px){.story-master-grid,.story-pokemon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.story-hero{grid-template-columns:1fr}.story-hero-map{height:280px}.story-note-cards{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.story-hero{padding:25px 20px;margin-top:23px}.story-master-grid,.story-pokemon-grid,.story-steps,.story-note-cards{grid-template-columns:1fr}.trainer-banner{padding:18px;gap:13px}.trainer-banner>img{width:70px;height:70px}.trainer-banner h1{font-size:39px}.trainer-choice{align-items:flex-start;flex-direction:column}.trainer-choice .select-field{width:100%}.trainer-choice .select-field select{flex:1}.region-map{min-height:200px}.area-region-photo{margin-top:20px}}
+
+.story-objective{margin:22px 0;padding:22px 25px;border:1px solid #305476;background:linear-gradient(120deg,#122b44,#111b2d);border-radius:10px}
+.story-objective h2{margin:9px 0 13px;font:600 28px 'Barlow Condensed',sans-serif;color:#ddebff}
+.story-objective p{font-size:12px;color:#a4bcd9;line-height:1.85;margin-top:9px}
+.story-objective p strong{color:#dceafd}
+.area-master-link{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#11253c;border:1px solid #375477;border-radius:9px;margin:16px 0 26px}
+.area-master-link img{width:40px;height:40px;object-fit:contain;image-rendering:pixelated}
+.area-master-link span{flex:1}
+.area-master-link strong{display:block;font-size:12px;color:#d9eaff}
+.area-master-link small{display:block;margin-top:6px;font-size:10px;color:#9fb5d2;line-height:1.6}
+.area-master-link .icon{width:16px;height:16px;color:#98c5ff}
