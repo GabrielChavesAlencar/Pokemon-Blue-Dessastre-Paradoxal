@@ -9,11 +9,44 @@ const iconLink=(url,label)=>'<a href="'+esc(url)+'" target="_blank" rel="noopene
 export const allTrainers=story=>[...(story?.masters||[]),...(story?.bosses||[])];
 const locationFor=(model,name)=>model.locations.find(a=>normalize(a.name)===normalize(name));
 
+const pointFor=(map,area)=>map.points?.[area.name]??map.points?.[Object.keys(map.points??{}).find(name=>normalize(name)===normalize(area.name))];
+const imageFor=(map,area)=>map.areaImages?.[String(area.id)]??null;
+const regionSource='https://github.com/HazyCrazy/Pokemon-Decades/blob/main/Graphics/UI/Town%20Map/Regions/mapRegion0.png';
+const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
+const round=value=>Number(value.toFixed(3));
+export function regionCaption(model,area){
+  const map=model.region??{},image=imageFor(map,area);
+  if(image?.src)return 'Miniatura específica encontrada nos arquivos públicos de Pokémon Decades. Não é uma captura completa do cenário jogável.';
+  if(pointFor(map,area))return 'Recorte ampliado do mapa regional oficial de Beatha, centrado nesta localização. Não é a imagem do mapa interno de jogo.';
+  return 'Não foi encontrada uma imagem pública confiável desta área. Nenhuma imagem de outro mapa foi usada como substituta.';
+}
 export function regionImage(model,area,compact=false){
-  const map=model.region??{};
-  const point=map.points?.[area.name]||map.points?.[Object.keys(map.points||{}).find(key=>normalize(key)===normalize(area.name))];
-  const marker=point?'<span class="region-marker" style="left:'+Math.max(0,Math.min(100,point.x/(map.regionMaxX||63)*100))+'%;top:'+Math.max(0,Math.min(100,point.y/(map.regionMaxY||47)*100))+'%" aria-hidden="true"></span>':'';
-  return '<div class="region-map '+(compact?'mini':'')+'"><img src="'+esc(map.regionImage||'')+'" alt="Mapa regional oficial de Beatha, da base Pokémon Decades" loading="lazy"/>'+marker+'<span class="region-map-caption">'+(point?'Localização no mapa regional':'Mapa regional de Beatha · referência Decades')+'</span></div>';
+  const map=model.region??{},local=imageFor(map,area),className='region-map '+(compact?'mini ':'');
+  if(local?.src){
+    return '<div class="'+className+'region-map--local"><img class="region-map-individual" src="'+esc(local.src)+'" alt="Miniatura específica de '+esc(area.name)+' no material de Pokémon Decades" loading="lazy"/><span class="region-map-caption">Miniatura da área · fonte Decades</span></div>';
+  }
+  const point=pointFor(map,area);
+  if(point&&map.regionImage){
+    // Aproximar o ponto correspondente mantendo sempre o quadro ocupado pelo mapa.
+    // O zoom é sobre a imagem REGIONAL: jamais é rotulado como mapa interno.
+    const x=clamp(Number(point.x)/Number(map.regionMaxX||63),0,1);
+    const y=clamp(Number(point.y)/Number(map.regionMaxY||47),0,1);
+    const zoom=compact?3.4:2.15;
+    const left=clamp(.5-x*zoom,1-zoom,0),top=clamp(.5-y*zoom,1-zoom,0);
+    const translateX=left+(zoom-1)*x,translateY=top+(zoom-1)*y;
+    const pinX=(left+zoom*x)*100,pinY=(top+zoom*y)*100;
+    const style='transform-origin:'+round(x*100)+'% '+round(y*100)+'%;transform:translate('+round(translateX*100)+'%,'+round(translateY*100)+'%) scale('+zoom+');';
+    return '<div class="'+className+'region-map--focused">'+
+      '<div class="region-map-crop" style="'+style+'"><img src="'+esc(map.regionImage)+'" alt="Recorte do mapa regional de Beatha perto de '+esc(area.name)+'" loading="lazy"/></div>'+
+      '<span class="region-marker" style="left:'+round(pinX)+'%;top:'+round(pinY)+'%" aria-hidden="true"></span>'+
+      '<span class="region-map-caption">Recorte regional · '+esc(area.name)+'</span></div>';
+  }
+  // Para áreas sem coordenadas (ex.: Rock Cave 1F), não mostrar a imagem genérica
+  // de toda Beatha: é enganoso e repete a mesma imagem em todas as fichas.
+  return '<div class="'+className+'region-map--missing">'+
+    '<div class="region-map-missing-art"><span class="region-map-missing-glyph">◇</span><span class="region-map-missing-name">'+esc(area.name)+'</span>'+
+    '<span class="region-map-missing-description">Mapa individual não encontrado</span></div>'+
+    '<span class="region-map-caption">Imagem específica indisponível</span></div>';
 }
 function label(origin){return '<p class="story-source-note">'+esc(origin||'Equipes da versão original de Pokémon Decades, não verificadas nos arquivos locais do Blue.')+'</p>';}
 const stage=(n,title,desc,url)=>'<a class="story-step" href="'+esc(url)+'"><span class="story-step-number">'+esc(n)+'</span><div><strong>'+esc(title)+'</strong><p>'+esc(desc)+'</p></div>'+icon('arrow')+'</a>';
