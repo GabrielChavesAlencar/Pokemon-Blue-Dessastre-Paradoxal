@@ -1,0 +1,584 @@
+{
+  "source": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/PBS/town_map.txt",
+  "regionImage": "https://raw.githubusercontent.com/HazyCrazy/Pokemon-Decades/main/Graphics/UI/Town%20Map/Regions/mapRegion0.png",
+  "regionMaxX": 63,
+  "regionMaxY": 47,
+  "points": {
+    "International Airport": {
+      "x": 43,
+      "y": 8
+    },
+    "Battle Paradise 130": {
+      "x": 42,
+      "y": 10
+    },
+    "Battle Paradise 230": {
+      "x": 45,
+      "y": 10
+    },
+    "Battle Paradise 330": {
+      "x": 42,
+      "y": 13
+    },
+    "Battle Paradise 430": {
+      "x": 45,
+      "y": 13
+    },
+    "Scatter Flood Islands": {
+      "x": 33,
+      "y": 37
+    },
+    "Shimmer Coast City": {
+      "x": 42,
+      "y": 35
+    },
+    "Route 1": {
+      "x": 45,
+      "y": 35
+    },
+    "Underground 1": {
+      "x": 45,
+      "y": 34
+    },
+    "Route 2": {
+      "x": 42,
+      "y": 32
+    },
+    "Route 3": {
+      "x": 45,
+      "y": 31
+    },
+    "Route 4": {
+      "x": 42,
+      "y": 29
+    },
+    "Route 5": {
+      "x": 36,
+      "y": 29
+    },
+    "Cave 5": {
+      "x": 36,
+      "y": 27
+    },
+    "Route 6": {
+      "x": 30,
+      "y": 29
+    },
+    "Route 7": {
+      "x": 30,
+      "y": 25
+    },
+    "Route 8": {
+      "x": 35,
+      "y": 25
+    },
+    "Route 9": {
+      "x": 35,
+      "y": 22
+    },
+    "Route 10": {
+      "x": 29,
+      "y": 22
+    },
+    "Route 11": {
+      "x": 26,
+      "y": 20
+    },
+    "Route 12": {
+      "x": 22,
+      "y": 18
+    },
+    "Route 13": {
+      "x": 21,
+      "y": 14
+    },
+    "Route 14": {
+      "x": 21,
+      "y": 12
+    },
+    "Route 15": {
+      "x": 23,
+      "y": 9
+    },
+    "Route 16": {
+      "x": 19,
+      "y": 7
+    },
+    "Route 17": {
+      "x": 13,
+      "y": 5
+    },
+    "Route 18": {
+      "x": 11,
+      "y": 4
+    },
+    "Cherryhill City": {
+      "x": 44,
+      "y": 32
+    },
+    "Cherryhill East Gatehouse": {
+      "x": 46,
+      "y": 33
+    },
+    "Cherryhill West Gatehouse": {
+      "x": 43,
+      "y": 32
+    },
+    "Cloakfall Forest": {
+      "x": 47,
+      "y": 33
+    },
+    "Obsidian Peak City": {
+      "x": 44,
+      "y": 29
+    },
+    "Obsidian Volcano Exterior": {
+      "x": 46,
+      "y": 30
+    },
+    "Obsidian Volcano": {
+      "x": 46,
+      "y": 29
+    },
+    "Obsidian Peak West Gatehouse": {
+      "x": 43,
+      "y": 30
+    },
+    "Mantic City East Gatehouse": {
+      "x": 40,
+      "y": 29
+    },
+    "Mantic City West Gatehouse": {
+      "x": 37,
+      "y": 29
+    },
+    "Mantic City": {
+      "x": 39,
+      "y": 29
+    },
+    "Prehistoric Grotto": {
+      "x": 38,
+      "y": 27
+    },
+    "Futuristic Grotto": {
+      "x": 40,
+      "y": 27
+    },
+    "Boulevard City East Gatehouse": {
+      "x": 35,
+      "y": 29
+    },
+    "Boulevard City West Gatehouse": {
+      "x": 32,
+      "y": 29
+    },
+    "Boulevard City": {
+      "x": 34,
+      "y": 29
+    },
+    "Penumbra City": {
+      "x": 31,
+      "y": 27
+    },
+    "Penumbra City West Gatehouse": {
+      "x": 29,
+      "y": 27
+    },
+    "Stygian Cave": {
+      "x": 28,
+      "y": 26
+    },
+    "Stygian Woods": {
+      "x": 28,
+      "y": 27
+    },
+    "Apterygota City": {
+      "x": 32,
+      "y": 25
+    },
+    "Apterygota Nest": {
+      "x": 33,
+      "y": 26
+    },
+    "Apterygota City East Gatehouse": {
+      "x": 34,
+      "y": 25
+    },
+    "Bulwark City": {
+      "x": 35,
+      "y": 24
+    },
+    "Gemstone Cave": {
+      "x": 37,
+      "y": 24
+    },
+    "Virga City East Gatehouse": {
+      "x": 33,
+      "y": 22
+    },
+    "Virga City": {
+      "x": 32,
+      "y": 22
+    },
+    "Virga Underpass": {
+      "x": 31,
+      "y": 20
+    },
+    "Lucid City": {
+      "x": 29,
+      "y": 20
+    },
+    "Generations Zone": {
+      "x": 29,
+      "y": 18
+    },
+    "Forest Zone": {
+      "x": 29,
+      "y": 14
+    },
+    "City Zone": {
+      "x": 29,
+      "y": 11
+    },
+    "Desert Zone": {
+      "x": 30,
+      "y": 12
+    },
+    "Scrublands Zone": {
+      "x": 30,
+      "y": 13
+    },
+    "Crag Zone": {
+      "x": 31,
+      "y": 12
+    },
+    "Volcano Zone": {
+      "x": 31,
+      "y": 13
+    },
+    "Tundra Zone": {
+      "x": 32,
+      "y": 12
+    },
+    "Cave Zone": {
+      "x": 32,
+      "y": 13
+    },
+    "Beach Zone": {
+      "x": 33,
+      "y": 12
+    },
+    "Seafloor Zone": {
+      "x": 33,
+      "y": 13
+    },
+    "River Zone": {
+      "x": 34,
+      "y": 12
+    },
+    "Sky Zone": {
+      "x": 34,
+      "y": 13
+    },
+    "Industral Zone": {
+      "x": 35,
+      "y": 11
+    },
+    "Simple Field": {
+      "x": 35,
+      "y": 14
+    },
+    "Lucid City West Gatehouse": {
+      "x": 27,
+      "y": 20
+    },
+    "Circuit City East Gatehouse": {
+      "x": 25,
+      "y": 19
+    },
+    "Circuit City": {
+      "x": 24,
+      "y": 19
+    },
+    "Noxious City": {
+      "x": 22,
+      "y": 17
+    },
+    "Mt Vile": {
+      "x": 24,
+      "y": 16
+    },
+    "Sylph City": {
+      "x": 20,
+      "y": 12
+    },
+    "Revenant City": {
+      "x": 23,
+      "y": 12
+    },
+    "Revenant Tomb": {
+      "x": 24,
+      "y": 13
+    },
+    "Draco City": {
+      "x": 22,
+      "y": 8
+    },
+    "Draco Cave": {
+      "x": 22,
+      "y": 6
+    },
+    "Draco City West Gatehouse": {
+      "x": 20,
+      "y": 8
+    },
+    "Iron City": {
+      "x": 16,
+      "y": 7
+    },
+    "Iron City East Gatehouse": {
+      "x": 17,
+      "y": 6
+    },
+    "Iron City West Gatehouse": {
+      "x": 14,
+      "y": 6
+    },
+    "Crystal City": {
+      "x": 11,
+      "y": 5
+    },
+    "Crystal Lake": {
+      "x": 10,
+      "y": 7
+    },
+    "Sub Zero Islands": {
+      "x": 4,
+      "y": 8
+    },
+    "Stratos City": {
+      "x": 11,
+      "y": 3
+    },
+    "Stratos Horizon": {
+      "x": 11,
+      "y": 1
+    },
+    "Peninsula of Mastery": {
+      "x": 9,
+      "y": 3
+    },
+    "Zenith Domain": {
+      "x": 9,
+      "y": 2
+    },
+    "Mystery Zone 0": {
+      "x": 19,
+      "y": 37
+    },
+    "Mystery Zone 1": {
+      "x": 17,
+      "y": 37
+    },
+    "Mystery Zone 2": {
+      "x": 16,
+      "y": 37
+    },
+    "Mystery Zone 3": {
+      "x": 15,
+      "y": 37
+    },
+    "Mystery Zone 4": {
+      "x": 14,
+      "y": 37
+    },
+    "Mystery Zone 5": {
+      "x": 13,
+      "y": 37
+    },
+    "Mystery Zone 6": {
+      "x": 16,
+      "y": 35
+    },
+    "Mystery Zone 7": {
+      "x": 15,
+      "y": 35
+    },
+    "Mystery Zone 8": {
+      "x": 14,
+      "y": 35
+    },
+    "Mystery Zone 9": {
+      "x": 13,
+      "y": 35
+    },
+    "Mystery Zone 10": {
+      "x": 12,
+      "y": 35
+    },
+    "Mystery Zone 11": {
+      "x": 15,
+      "y": 33
+    },
+    "Mystery Zone 12": {
+      "x": 14,
+      "y": 33
+    },
+    "Mystery Zone 13": {
+      "x": 13,
+      "y": 33
+    },
+    "Mystery Zone 14": {
+      "x": 12,
+      "y": 33
+    },
+    "Mystery Zone 15": {
+      "x": 11,
+      "y": 33
+    },
+    "Mystery Zone 16": {
+      "x": 14,
+      "y": 31
+    },
+    "Mystery Zone 17": {
+      "x": 13,
+      "y": 31
+    },
+    "Mystery Zone 18": {
+      "x": 12,
+      "y": 31
+    },
+    "Mystery Zone 19": {
+      "x": 11,
+      "y": 31
+    },
+    "Mystery Zone 20": {
+      "x": 10,
+      "y": 31
+    },
+    "Mystery Zone 21": {
+      "x": 13,
+      "y": 29
+    },
+    "Mystery Zone 22": {
+      "x": 12,
+      "y": 29
+    },
+    "Mystery Zone 23": {
+      "x": 11,
+      "y": 29
+    },
+    "Mystery Zone 24": {
+      "x": 10,
+      "y": 29
+    },
+    "Mystery Zone 25": {
+      "x": 9,
+      "y": 29
+    },
+    "Mystery Zone 26": {
+      "x": 12,
+      "y": 27
+    },
+    "Mystery Zone 27": {
+      "x": 11,
+      "y": 27
+    },
+    "Mystery Zone 28": {
+      "x": 10,
+      "y": 27
+    },
+    "Mystery Zone 29": {
+      "x": 9,
+      "y": 27
+    },
+    "Mystery Zone 30": {
+      "x": 8,
+      "y": 27
+    },
+    "Mystery Zone 31": {
+      "x": 11,
+      "y": 25
+    },
+    "Mystery Zone 32": {
+      "x": 10,
+      "y": 25
+    },
+    "Mystery Zone 33": {
+      "x": 9,
+      "y": 25
+    },
+    "Mystery Zone 34": {
+      "x": 8,
+      "y": 25
+    },
+    "Mystery Zone 35": {
+      "x": 7,
+      "y": 25
+    },
+    "Mystery Zone 36": {
+      "x": 10,
+      "y": 23
+    },
+    "Mystery Zone 37": {
+      "x": 9,
+      "y": 23
+    },
+    "Mystery Zone 38": {
+      "x": 8,
+      "y": 23
+    },
+    "Mystery Zone 39": {
+      "x": 7,
+      "y": 23
+    },
+    "Mystery Zone 40": {
+      "x": 6,
+      "y": 23
+    },
+    "Mystery Zone 41": {
+      "x": 9,
+      "y": 21
+    },
+    "Mystery Zone 42": {
+      "x": 8,
+      "y": 21
+    },
+    "Mystery Zone 43": {
+      "x": 7,
+      "y": 21
+    },
+    "Mystery Zone 44": {
+      "x": 6,
+      "y": 21
+    },
+    "Mystery Zone 45": {
+      "x": 5,
+      "y": 21
+    },
+    "Mystery Zone 46": {
+      "x": 8,
+      "y": 19
+    },
+    "Mystery Zone 47": {
+      "x": 7,
+      "y": 19
+    },
+    "Mystery Zone 48": {
+      "x": 6,
+      "y": 19
+    },
+    "Mystery Zone 49": {
+      "x": 5,
+      "y": 19
+    },
+    "Mystery Zone 50": {
+      "x": 4,
+      "y": 19
+    },
+    "Mystery Zone 51": {
+      "x": 4,
+      "y": 17
+    }
+  }
+}
