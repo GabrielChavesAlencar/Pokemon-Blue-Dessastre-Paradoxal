@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "da701fc891bded36b8467fc6353b2da1a848a5c9",
+      "date": "2026-10-31T16:29:14-03:00",
+      "title": "feat(story): registrar equipes verificadas dos 18 Type Masters e chefão da base Decades",
+      "category": "Novidades"
+    },
+    {
       "sha": "609e67614f12dc3b20c6816a0440fff963b1bfe2",
       "date": "2026-10-31T16:15:44-03:00",
       "title": "test(site): validar nova área entre as primeiras localizações do guia",
