@@ -19,6 +19,16 @@ A navegação do **Blue Studio** foi reorganizada com o mesmo conjunto de **14 a
 
 A equivalência atual é **visual e de navegação**. Não utiliza offsets de ROM GBA, BPS ou sprites 4bpp; novos módulos serão construídos sobre arquivos PBS, plugins e dados RXDATA do Essentials.
 
+## Sprites estáticos e animados (Pokédex)
+
+A Pokédex do Blue Studio possui **quatro campos de imagem** por Pokémon: frente, costas, frente shiny e costas shiny. Cada imagem pode ser **PNG estático** (um quadro) ou **animação GIF/PNG spritesheet**. Isso evita exigir GIF para Fakémon estáticos.
+
+Ao escolher um registro em `pokemon.txt` ou `pokemon_forms.txt`, use **Importar imagem** em cada variante. O servidor valida tipo e tamanho, cria backup e grava diretamente na pasta local `game/Graphics/Pokemon/`. PNG em faixa é tratado como animado pelo plugin do Decades quando sua largura ultrapassa duas vezes a altura. Formas `[CHARIZARD,1]` usam `CHARIZARD_1.png`.
+
+**Limite atual:** 5 MB por imagem; backups em `.blue-backups/sprites/`. Não são publicados no GitHub, pois o jogo original está ignorado em `.gitignore`. O carregamento in-game em Windows ainda exige teste integrado. O editor **não é 100% funcional**: não compila PBS automaticamente nem oferece edição de pivot e métricas de batalha.
+
+Confira a [auditoria técnica e próximos passos](docs/AUDITORIA_EDITOR_POKEMON.md).
+
 ## O que já funciona
 
 - **Blue Studio** no navegador, com Python 3 e sem dependências externas.
