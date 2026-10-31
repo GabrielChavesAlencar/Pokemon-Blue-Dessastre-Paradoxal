@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3fed94012822cdfa39a288a42f9eb97e33fd8f0d",
+      "date": "2026-10-31T16:34:45-03:00",
+      "title": "feat(story): ligar locais aos Mestres e diferenciar equipes sincronizadas do Blue",
+      "category": "Novidades"
+    },
+    {
+      "sha": "97026785b99abd4fdbfb6f7a43d467c500bb8476",
+      "date": "2026-10-31T16:34:42-03:00",
+      "title": "feat(story): ligar locais aos Mestres e diferenciar equipes sincronizadas do Blue",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b301063057938ca26ad0b20f51f5e90f124d6207",
+      "date": "2026-10-31T16:34:39-03:00",
+      "title": "feat(story): ligar locais aos Mestres e diferenciar equipes sincronizadas do Blue",
+      "category": "Novidades"
+    },
+    {
       "sha": "f92d24512d8fdb5126eedc4feb8387dc666cf053",
       "date": "2026-10-31T16:34:21-03:00",
       "title": "feat(story): explicar objetivos e preparação para cada Mestre e chefe final",
