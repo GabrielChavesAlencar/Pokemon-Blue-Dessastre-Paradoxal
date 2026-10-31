@@ -116,6 +116,7 @@ function renderEditor(){
   $('tabFields').addEventListener('click',()=>{state.mode='fields';renderEditor();});
   $('tabRaw').addEventListener('click',()=>{state.mode='raw';renderEditor();});
   if(showSprite&&typeof window.mountBlueSpritePanel==='function') window.mountBlueSpritePanel(spriteID,$('editorBody'));
+  if(showSprite&&typeof window.mountPokemonDataPanel==='function') window.mountPokemonDataPanel($('editorBody'),spriteID);
 
   renderEditArea();setSaveEnabled();
 }
@@ -168,9 +169,13 @@ async function showHistory(){
 }
 $('fileSearch').addEventListener('input',renderFiles);
 $('entrySearch').addEventListener('input',()=>{state.page=0;renderRecords();});
-$('new').addEventListener('click',newRecord);
+$('new').addEventListener('click',()=>{
+  if(state.file==='pokemon.txt'&&typeof window.blueCreateSpecies==='function') window.blueCreateSpecies();
+  else newRecord();
+});
 $('save').addEventListener('click',save);
 $('play').addEventListener('click',launchGame);
+$('compilePokemon').addEventListener('click',()=>window.blueCompilePokemon?.());
 $('history').addEventListener('click',showHistory);
 $('closeModal').addEventListener('click',()=>$('modal').classList.add('hidden'));
 $('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.add('hidden');});

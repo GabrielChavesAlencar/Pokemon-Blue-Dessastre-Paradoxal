@@ -90,3 +90,37 @@ body { background:#0b0f1a; color:var(--text); }
 .sprite-panel .help {margin:14px 0 0;}
 @media(max-width:1240px){.sprite-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:540px){.sprite-grid {grid-template-columns:1fr;}.sprite-preview{height:160px;}}
+
+
+/* Blue Studio - cadastro independente, ficha PBS e posicionamento real. */
+.pokemon-info-card,.pokemon-metrics-card {margin:14px 0 20px;padding:18px;border:1px solid #2a3550;border-radius:12px;background:#101827;}
+.pokemon-card-head {display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;}
+.pokemon-info-card h3,.pokemon-metrics-card h3 {font-size:15px;margin:0 0 12px;}
+.pokemon-form-grid,.pokemon-dialog-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0;}
+.pokemon-input {display:block;color:#a8bad0;font-size:11px;min-width:0;font-weight:700;}
+.pokemon-input span {display:block;margin-bottom:5px;}
+.pokemon-input input,.pokemon-input textarea {display:block;width:100%;background:#0b0f1a;color:#f1f5f9;border-radius:7px;border:1px solid #394963;padding:9px;font-size:12px;}
+.pokemon-input textarea {resize:vertical;min-height:65px;}
+.pokemon-input input:focus,.pokemon-input textarea:focus {outline:2px solid #f43f5e;}
+.pokemon-stat-editor {border:1px solid #35465f;border-radius:10px;margin:14px 0;padding:13px;}
+.pokemon-stat-editor legend {padding:0 9px;font-size:12px;color:#7dd3fc;font-weight:700;}
+.pokemon-stats-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.pokemon-stat-total {display:block;margin-top:12px;color:#c0e6ff;font-size:12px;}
+.pokemon-dialog-overlay {position:fixed;z-index:100;inset:0;display:flex;align-items:center;justify-content:center;background:#040913dc;padding:12px;}
+.pokemon-dialog {width:min(850px,100%);max-height:90vh;overflow:auto;background:#111827;border:1px solid #536580;border-radius:14px;padding:25px;box-shadow:0 24px 90px #000a;}
+.pokemon-dialog-header {display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.pokemon-dialog-header h2 {font-size:21px;color:#f1f5f9;margin:0;}
+.pokemon-dialog-message {min-height:20px;color:#86efac;font-size:12px;}
+.pokemon-dialog-message.bad {color:#fda4af;}
+.pokemon-battle-preview {position:relative;min-height:205px;background:radial-gradient(ellipse at 70% 30%,#21435c,#13263a 45%,#0c1625);border:1px solid #3c5574;border-radius:12px;overflow:hidden;margin:12px 0;}
+.pokemon-battle-mon {position:absolute;display:grid;place-items:center;width:40%;height:50%;}
+.pokemon-battle-mon.foe {top:8%;right:8%;border-bottom:7px solid #567a76;border-radius:50%;}
+.pokemon-battle-mon.ally {bottom:8%;left:8%;border-bottom:7px solid #567a76;border-radius:50%;}
+.pokemon-battle-mon img {width:78px;height:78px;object-fit:contain;image-rendering:pixelated;}
+.pokemon-metrics-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px;}
+.pokemon-metric-group {padding:12px;border:1px solid #35465f;border-radius:10px;}
+.pokemon-metric-group b {display:block;color:#7dd3fc;font-size:12px;margin-bottom:12px;}
+.pokemon-metric-group .pokemon-input {margin:8px 0;}
+.pokemon-metrics-message {display:block;margin-top:9px;color:#94a3b8;}
+@media(max-width:850px){.pokemon-form-grid,.pokemon-dialog-grid {grid-template-columns:1fr;}.pokemon-metrics-grid{grid-template-columns:1fr;}}
+@media(max-width:520px){.pokemon-stats-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}

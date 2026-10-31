@@ -24,6 +24,7 @@ jobs:
         run: |
           node --check web/app.js
           node --check web/sprites.js
+          node --check web/pokemon.js
           node --check web/navigation.js
           node --check tests/browser_smoke.cjs
   smoke-browser:
