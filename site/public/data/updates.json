@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "56fb67f3a488f3a5e6c7d2e9b1df244df6f8f987",
+      "date": "2026-10-31T16:33:09-03:00",
+      "title": "fix(story): permitir exportador isolado nos testes sem módulo auxiliar",
+      "category": "Correções"
+    },
+    {
       "sha": "ad9f517763dc193501dad3634b515e70c7c0c38b",
       "date": "2026-10-31T16:32:51-03:00",
       "title": "docs(site): explicar guias da campanha, mapas e sincronização dos times",
