@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f92d24512d8fdb5126eedc4feb8387dc666cf053",
+      "date": "2026-10-31T16:34:21-03:00",
+      "title": "feat(story): explicar objetivos e preparação para cada Mestre e chefe final",
+      "category": "Novidades"
+    },
+    {
       "sha": "56fb67f3a488f3a5e6c7d2e9b1df244df6f8f987",
       "date": "2026-10-31T16:33:09-03:00",
       "title": "fix(story): permitir exportador isolado nos testes sem módulo auxiliar",
