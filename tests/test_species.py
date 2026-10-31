@@ -84,6 +84,9 @@ class NewSpeciesTests(unittest.TestCase):
             os.utime(path,(target,target))
         self.assertFalse(compile_status(self.root)["needsCompile"])
         self.create(self.payload)
+        # Simulate an edit that occurred after the previously compiled Data files.
+        source=self.pbs/"pokemon.txt"
+        os.utime(source,(target+15,target+15))
         self.assertTrue(compile_status(self.root)["needsCompile"])
 
     def test_bad_stats_and_injection(self):
