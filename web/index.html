@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071429">
+<title>Blue Studio — Pokémon Blue Dessastre Paradoxal</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brandmark">⚡</div><div><b>BLUE STUDIO</b><small>DESSASTRE PARADOXAL</small></div></div>
+    <div class="origin">Projeto <span>LOCAL • RPG MAKER XP</span></div>
+    <div class="aside-title">BIBLIOTECA PBS</div>
+    <input id="fileSearch" type="search" placeholder="Buscar arquivo..." aria-label="Buscar arquivos PBS">
+    <div class="file-list" id="fileList"></div>
+    <div class="aside-footer"><a href="https://github.com/HazyCrazy/Pokemon-Decades" target="_blank" rel="noopener">Base Pokémon Decades ↗</a><span>Blue Studio v0.1.0</span></div>
+  </aside>
+  <main class="main">
+    <header class="header"><div><div class="eyebrow">CENTRAL DE MODIFICAÇÕES</div><h1>Pokémon <strong>Blue Dessastre Paradoxal</strong></h1><p>Edite seu fangame sem sobrescrever o jogo original publicado.</p></div><div class="actions"><button id="reload" class="btn btn-ghost">↻ Atualizar</button><button id="play" class="btn btn-primary">▶ Testar jogo</button></div></header>
+    <section class="status" id="status"></section>
+    <section class="workspace">
+      <div class="browser card"><div class="cardhead"><div><div class="eyebrow">REGISTROS</div><h2 id="fileTitle">Selecione um arquivo</h2></div><button class="btn-icon" id="new" title="Criar novo registro">＋</button></div><input id="entrySearch" type="search" placeholder="Procurar Pokémon, golpe, ID..." aria-label="Buscar registros"><div class="record-count" id="recordCount">Nenhum arquivo selecionado</div><div class="records" id="records"><div class="empty">Selecione um arquivo PBS no menu lateral.</div></div></div>
+      <div class="editor card"><div class="cardhead editorhead"><div><div class="eyebrow" id="editingHint">EDITOR DE DADOS</div><h2 id="recordTitle">Nenhum registro selecionado</h2></div><div class="buttons"><button class="btn btn-ghost" id="history">⟲ Backups</button><button class="btn btn-primary" id="save" disabled>Salvar alterações</button></div></div><div id="editorBody" class="editor-body"><div class="hero-empty"><div class="illustration">◈</div><h3>Seu laboratório Pokémon</h3><p>Importe o Decades com o instalador e selecione um arquivo para começar. O editor preserva o formato original PBS.</p></div></div></div>
+    </section>
+    <footer class="footnote">Editor local independente • Backups automáticos antes de salvar • Pokémon é propriedade de seus respectivos titulares</footer>
+  </main>
+</div>
+<div class="modalwrap hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Backups</h2><button class="btn-icon" id="closeModal" aria-label="Fechar">✕</button></div><div id="modalBody"></div></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js" defer></script>
+</body></html>

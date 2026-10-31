@@ -1,0 +1,24 @@
+# EXEMPLO apenas para estudo. NAO aplicado automaticamente ao jogo.
+# Um novo Pokemon precisa de sprites e verificacao dos IDs e recursos usados.
+[BLUEABYSS]
+Name = Blue Abyss
+Types = WATER,DARK
+BaseStats = 75,90,75,85,80,95
+GenderRatio = Genderless
+GrowthRate = Medium
+BaseExp = 175
+EVs = SPEED,2
+CatchRate = 45
+Happiness = 70
+Abilities = SWIFTSWIM
+Moves = 1,TACKLE,5,WATERGUN,15,BITE,25,CRUNCH
+TutorMoves = PROTECT,SURF
+EggGroups = Undiscovered
+HatchSteps = 5120
+Height = 1.4
+Weight = 35.0
+Color = Blue
+Shape = Fish
+Category = Paradox
+Pokedex = Uma criatura misteriosa das profundezas do oceano.
+Generation = 9

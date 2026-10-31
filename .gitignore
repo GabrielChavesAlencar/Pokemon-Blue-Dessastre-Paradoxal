@@ -1,0 +1,15 @@
+# The upstream Decades project has no confirmed redistribution license.
+# Always keep original third-party assets and binaries out of this repository.
+/game/
+.blue-backups/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+*.log
+saves/
+*.rxdata
+Thumbs.db
+.DS_Store
+# Ferramentas portateis instaladas automaticamente (nao publicar executaveis)
+/tools/
