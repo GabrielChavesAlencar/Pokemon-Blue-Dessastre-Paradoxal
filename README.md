@@ -29,6 +29,14 @@ Ao escolher um registro em `pokemon.txt` ou `pokemon_forms.txt`, use **Importar 
 
 Confira a [auditoria técnica e próximos passos](docs/AUDITORIA_EDITOR_POKEMON.md).
 
+## Aba exclusiva: ⚔️ Golpes dos Pokémon (v0.4)
+
+No menu **Editor de ROM**, a aba **Golpes dos Pokémon** permite selecionar qualquer espécie ou forma cadastrada no Decades — inclusive seus novos Fakémon — e editar **`Moves` (nível), `TutorMoves` (tutor/TM) e `EggMoves` (ovo)**. Há pesquisa, sugestão de IDs e nomes, herança de movesets para formas alternativas, adição e remoção de linhas e salvamento exclusivo dos campos de golpes.
+
+A gravação valida os golpes contra o catálogo `moves*.txt`, cria backup e preserva os outros campos da espécie. A compilação dentro do Pokémon Essentials ainda precisa ser feita pelo modo Debug.
+
+**[Manual da aba de golpes](docs/EDITOR_GOLPES_POKEMON.md)**.
+
 ## Adicionar Pokémon novos sem substituir nenhum (v0.3)
 
 O Blue Studio **não utiliza slots ou IDs numéricos fixos do GBA**. As espécies novas têm identificadores simbólicos exclusivos, como `CAVEFANG` ou `ABYSSMON`, e são acrescentadas a `PBS/pokemon.txt`, com entrada própria em `PBS/pokemon_metrics.txt`. O cadastro confere duplicidade nos arquivos `pokemon*.txt` do Decades, incluindo outros pacotes de gerações, e preserva os registros anteriores.
