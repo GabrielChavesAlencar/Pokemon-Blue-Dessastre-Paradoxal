@@ -6,6 +6,19 @@
 
 *Prévia com dados demonstrativos: o jogo original não faz parte do download.*
 
+## Interface inspirada no editor de ROM do Emerald Studio (v0.2)
+
+A navegação do **Blue Studio** foi reorganizada com o mesmo conjunto de **14 abas principais + 6 ferramentas avançadas** do editor de ROM do [Emerald Studio](https://github.com/Lancelioti/emerald-studio). O tema foi adaptado para **Pokémon Essentials / RPG Maker XP**.
+
+- **Áreas superiores:** Visão geral, Editor de ROM e Ver MD de Movesets.
+- **Funcionais hoje:** Pokédex (`pokemon.txt`), Itens (`items.txt`), Treinadores (`trainers_story_mode.txt`) e Selvagens (`encounters.txt`) usam o editor PBS real.
+- **Planejadas:** Projeto, História e eventos, Flags, Iniciais, Mapas, Logo inicial, Fundo animado, Músicas, Estúdio MIDI, Test Lab e as 6 avançadas. Os painéis identificam claramente o que falta, sem salvar dados falsos.
+- **Testes contínuos:** `.github/workflows/regression.yml` roda testes Python de PBS/API e contratos UI, valida JS e testa a navegação/salvamento real no Chromium (Playwright) em cada push para main e a cada PR, quando GitHub Actions está habilitado.
+- **Testes locais:** execute `TESTAR.bat`. Os testes Python não precisam do jogo; o teste Chromium é executado no CI.
+- **Plano:** [docs/PLANO_EDITOR_EMERALD_BLUE.md](docs/PLANO_EDITOR_EMERALD_BLUE.md).
+
+A equivalência atual é **visual e de navegação**. Não utiliza offsets de ROM GBA, BPS ou sprites 4bpp; novos módulos serão construídos sobre arquivos PBS, plugins e dados RXDATA do Essentials.
+
 ## O que já funciona
 
 - **Blue Studio** no navegador, com Python 3 e sem dependências externas.
