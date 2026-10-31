@@ -1,0 +1,52 @@
+name: Blue Studio - testes e regressao
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  python-and-contract:
+    name: PBS + contratos UI + syntax JS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testes unitarios e API (sem ROM)
+        run: python -m unittest discover -s tests -v
+      - name: Validar sintaxe JavaScript
+        run: |
+          node --check web/app.js
+          node --check web/navigation.js
+          node --check tests/browser_smoke.cjs
+  smoke-browser:
+    name: Navegacao real + salvamento PBS (Chromium)
+    needs: python-and-contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar Playwright de testes (nao modifica o jogo)
+        run: npm install --no-save --no-package-lock playwright@1.56.0
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Executar regressao ponta a ponta com dados temporarios
+        run: node tests/browser_smoke.cjs
+      - name: Salvar imagem da interface (se produzida)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-studio-smoke
+          path: tests/artifacts/
+          if-no-files-found: ignore
