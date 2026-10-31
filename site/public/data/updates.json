@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f9fed82e76a4c5cce5ed94b07dcfd56c81ee1fe7",
+      "date": "2026-10-31T16:09:59-03:00",
+      "title": "feat(site): gerar guias de Decades e indicadores dinâmicos do Blue",
+      "category": "Novidades"
+    },
+    {
       "sha": "78f210407cc12402b4a6338bbfa8a3e9b40fce58",
       "date": "2026-10-31T15:55:05-03:00",
       "title": "feat: adicionar geração Dessastre Paradoxal, sprites autorais e Mega Sol",
