@@ -25,6 +25,7 @@ from urllib.parse import parse_qs, urlsplit
 import webbrowser
 from pokemon_studio import (PokemonValidationError, create_species, make_species_raw,
                             validate_pokemon, species_catalog, pbs_catalog)
+from moves_editor import MoveEditorError, catalog as moves_catalog, detail as moves_detail, save as moves_save
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -430,6 +431,16 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     b = backup_root / name
                     files = [{"name": f.name, "size": f.stat().st_size} for f in sorted(b.glob("*.bak"), reverse=True)[:20]] if b.is_dir() else []
                     self.send_json(200, {"backups": files})
+                elif p == "/api/pokemon-moves/catalog":
+                    self.send_json(200, moves_catalog(
+                        game_root, read_text=read_text, sections_in=sections_in,
+                        section_lines=section_lines))
+                elif p == "/api/pokemon-moves/entry":
+                    self.send_json(200, moves_detail(
+                        game_root, self.param("file", ""), int(self.param("index", "-1")),
+                        pbs_path=pbs_path, read_text=read_text,
+                        sections_in=sections_in, section_lines=section_lines,
+                        file_hash=file_hash))
                 elif p == "/api/pokemon/compile-status":
                     self.send_json(200,compile_status(game_root))
                 elif p == "/api/pokemon/catalog":
@@ -464,7 +475,7 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.send_header("Content-Length", str(len(raw)))
                     self.end_headers()
                     self.wfile.write(raw)
-                elif p == "/" or p in ("/index.html", "/app.js", "/sprites.js", "/pokemon.js", "/navigation.js", "/style.css", "/studio-shell.css"):
+                elif p == "/" or p in ("/index.html", "/app.js", "/sprites.js", "/pokemon.js", "/moves-editor.js", "/navigation.js", "/style.css", "/studio-shell.css"):
                     requested = "index.html" if p == "/" else p.lstrip("/")
                     data = (WEB / requested).read_bytes()
                     content_type = mimetypes.guess_type(requested)[0] or "application/octet-stream"
@@ -476,6 +487,8 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.wfile.write(data)
                 else:
                     self.send_json(404, {"error": "Rota não encontrada."})
+            except MoveEditorError as ex:
+                self.error(EditorError(str(ex), ex.status))
             except (ValueError, OSError) as ex:
                 self.error(EditorError(str(ex), 400))
             except Exception as ex:
@@ -526,6 +539,12 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                         backup_file(backup_root, name, raw)
                         atomic_write(path, data)
                     self.send_json(200, {"ok": True, "hash": file_hash(data)})
+                elif p == "/api/pokemon-moves/save":
+                    self.send_json(200, moves_save(
+                        game_root, backup_root, obj, pbs_path=pbs_path,
+                        read_text=read_text, sections_in=sections_in,
+                        section_lines=section_lines, file_hash=file_hash,
+                        save_section=save_section))
                 elif p == "/api/pokemon/new":
                     try:
                         response = create_species(game_root, backup_root, obj,lock=EDIT_LOCK,
@@ -574,6 +593,8 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.send_json(200, {"ok": True, "message": "Jogo iniciado."})
                 else:
                     raise EditorError("Rota não encontrada.", 404)
+            except MoveEditorError as ex:
+                self.error(EditorError(str(ex), ex.status))
             except (ValueError, json.JSONDecodeError) as ex:
                 self.error(EditorError("Dados inválidos: " + str(ex)))
             except Exception as ex:
