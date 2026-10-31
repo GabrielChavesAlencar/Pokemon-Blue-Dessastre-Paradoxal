@@ -45,3 +45,24 @@ jobs:
         run: node tests/browser_smoke.cjs
       # Capturas ficam locais ao runner. O upload de artefatos foi removido
       # porque a conta GitHub atingiu sua cota de storage.
+  windows-runner:
+    name: RUN.bat - migra branch antiga e atualiza (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Testar correcao da branch fora de main
+        shell: pwsh
+        run: |
+          git switch -c branch-antiga-regressao
+          if ($LASTEXITCODE -ne 0) { throw "Falha ao criar branch simulada" }
+          $env:BLUE_STUDIO_NO_SERVER = "1"
+          cmd /c "call RUN.bat"
+          if ($LASTEXITCODE -ne 0) { throw "RUN.bat falhou na migracao" }
+          if ((git branch --show-current).Trim() -ne "main") { throw "RUN.bat nao voltou para main" }
+          git fetch origin main
+          if ($LASTEXITCODE -ne 0) { throw "Falha ao buscar origin/main" }
+          if ((git rev-parse HEAD).Trim() -ne (git rev-parse origin/main).Trim()) { throw "main nao esta atualizada" }
+          cmd /c "call RUN.bat"
+          if ($LASTEXITCODE -ne 0) { throw "RUN.bat falhou na segunda execucao" }
