@@ -69,6 +69,7 @@ async function ready(url, child) {
     assert.equal(await page.locator("#pbsWorkspace").isVisible(),false);
     assert.match(await page.locator("#featureStatus").textContent(),/PLANEJADO/);
 
+    await page.locator(".rom-advanced summary").click();
     await page.locator('[data-panel="sprite"]').click();
     assert.match(await page.locator("#featureTitle").textContent(),/Importar sprites/);
     await page.locator('[data-shell="home"]').click();
