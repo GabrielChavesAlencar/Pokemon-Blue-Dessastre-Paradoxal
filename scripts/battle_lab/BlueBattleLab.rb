@@ -81,7 +81,7 @@ module BlueBattleLab
     end
   end
 
-  def self.battle(allies, foes, automated = false, format = 'single')
+  def self.battle(allies, foes, automated = false, format = 'single', ai_profile = nil)
     allies = [allies] unless allies.is_a?(Array)
     foes = [foes] unless foes.is_a?(Array)
     validate_teams(allies, foes, format)
@@ -96,6 +96,7 @@ module BlueBattleLab
     EventHandlers.trigger(:on_start_battle)
     scene = automated ? SmokeScene.new : Battle::Scene.new
     battle = Battle.new(scene, team1, team2, [$player], [trainer])
+    battle.instance_variable_set(:@blue_radical_profile,ai_profile) if ai_profile
     battle.setBattleMode(format)
     battle.internalBattle = false
     battle.canLose = true

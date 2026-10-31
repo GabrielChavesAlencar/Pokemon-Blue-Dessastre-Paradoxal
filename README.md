@@ -25,6 +25,8 @@ Na base local, 52 espécies e as 12 Megas estão compiladas. Use **`IMPORTAR_DES
 
 Abra **`TESTAR_BATALHA.bat`** para o laboratório de batalhas reais, com times de até seis e formatos individual ou dupla. Edite cada integrante e selecione opções também por clique; a sessão não carrega nem salva a campanha. A barra de HP tem descida e recuperação graduais. [Como usar e testar Pokémon novos](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
 
+A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor à engine instalada: dano, prioridade, trocas, hazards, suporte e duplas. O laboratório permite compará-la à IA original da base. Execute **`APLICAR_IA_RADICAL.bat`** para instalar em outra cópia da mesma base. [Perfis, fontes, logs e testes](docs/IA_BLUE_RADICAL.md).
+
 ## Portal do projeto
 
 O site fica em **`site/`** no mesmo repositório: Pokédex, formas, golpes, localizações, guias e diário automático de commits. [Executar o site](site/README.md) · [Deploy na Vercel e rotina de atualizações](docs/SITE_E_VERCEL.md).

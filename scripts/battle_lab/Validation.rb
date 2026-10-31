@@ -44,6 +44,9 @@ module BlueBattleLab
   end
 
   def self.run_smoke
+    if defined?(BlueRadicalAI::Validation)
+      check(BlueRadicalAI::Validation.run, 'Blue Radical AI decision matrix; Data/blue-radical-ai-validation.txt')
+    end
     if defined?(BlueDessastreParadoxal)
       check(BlueDessastreParadoxal.run_checks, 'Dessastre Paradoxal checks')
     end

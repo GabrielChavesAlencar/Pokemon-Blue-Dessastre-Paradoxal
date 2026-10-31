@@ -10,6 +10,7 @@ import time
 import sys
 import zlib
 import tempfile
+import importlib.util
 
 PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'Validation.rb', 'meta.txt']
 
@@ -40,6 +41,11 @@ def install(project: Path, game: Path) -> Path:
             backup.mkdir(parents=True,exist_ok=True);shutil.copy2(target,backup/name)
         atomic_write(target,data)
     patch_bootstrap(project,game,backup)
+    ai_installer=project/'scripts'/'radical_ai'/'install.py'
+    if ai_installer.is_file():
+        spec=importlib.util.spec_from_file_location('blue_radical_ai_install',ai_installer)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module.install(project,game,True)
     return game
 
 

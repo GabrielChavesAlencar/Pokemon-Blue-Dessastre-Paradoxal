@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "defaultProfile": "radical",
+  "trace": true,
+  "profiles": {
+    "engine": {"label": "IA da base", "skill": 0, "strength": 0, "antiLoop": false},
+    "normal": {"label": "Blue estrategica", "skill": 80, "strength": 0.65, "antiLoop": false},
+    "radical": {"label": "Blue Radical", "skill": 100, "strength": 1.0, "antiLoop": true}
+  },
+  "switchWeights": {"ko": 31, "resistAll": 17, "revenge": 8, "wall": 2, "twoHit": 2, "faster": 14, "weak": -1, "faints": -39, "faintsButFaster": -15},
+  "sources": {
+    "studySha256": "2928abb1f37c40066d7bd2cdff90fcaaefda604a3d90fd59fc9345c68bcccb61",
+    "cfruCommit": "b637a27898b14e25dd24d0f69a3e302f0069deb8",
+    "switching": "https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/b637a27898b14e25dd24d0f69a3e302f0069deb8/include/new/ai_switching.h",
+    "master": "https://github.com/Skeli789/Complete-Fire-Red-Upgrade/blob/b637a27898b14e25dd24d0f69a3e302f0069deb8/src/Battle_AI/ai_master.c",
+    "scope": "Adaptacao original para Essentials/Decades; nao e o codigo integral nem uma reproducao exata de Radical Red 4.1. Pesos de troca do CFRU publico; demais limiares sao do Blue."
+  }
+}

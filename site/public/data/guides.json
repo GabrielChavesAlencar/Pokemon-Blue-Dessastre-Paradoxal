@@ -185,6 +185,50 @@
           ]
         }
       ]
+    },
+    {
+      "id": "ia-blue-radical",
+      "title": "Enfrente a IA Blue Radical",
+      "excerpt": "Conheça a nova política de batalha e compare os adversários no laboratório.",
+      "category": "Batalhas",
+      "minutes": 4,
+      "icon": "shield",
+      "sections": [
+        {
+          "title": "Um adversário que avalia o confronto",
+          "paragraphs": [
+            "Blue Radical é uma adaptação para Pokémon Blue inspirada nos princípios públicos do CFRU e no estudo sobre Radical Red. Ela avalia dano, prioridade, trocas, hazards, preparação e suporte. Não é uma reprodução exata da IA de Radical Red 4.1.",
+            "A política é usada por padrão contra treinadores. Ela melhora as decisões sem aumentar os atributos, o nível ou o dano dos adversários."
+          ]
+        },
+        {
+          "title": "Compare no laboratório",
+          "paragraphs": [
+            "Abra TESTAR_BATALHA.bat e prepare seus times de até seis Pokémon. Em Formato, escolha batalha individual ou dupla.",
+            "No menu IA, compare IA da base, Blue estratégica e Blue Radical. É possível repetir o mesmo confronto mantendo os integrantes, itens e golpes configurados. A sessão de laboratório permanece isolada da campanha."
+          ]
+        },
+        {
+          "title": "O que muda durante a batalha",
+          "paragraphs": [
+            "A IA procura nocautes, leva prioridade e velocidade em conta, evita golpes sem efeito e avalia quando vale a pena curar ou preparar atributos. Ela considera o custo dos hazards antes de trocar e pode preservar um Pokémon para depois.",
+            "Em dupla, avalia o risco de atingir o parceiro e pode distribuir os ataques entre os inimigos. Trocas repetidas observadas em turnos anteriores ajudam a ajustar a pressão e a cobertura."
+          ]
+        },
+        {
+          "title": "Informações e limites",
+          "paragraphs": [
+            "Esta é uma IA informada: pode avaliar os golpes, itens, habilidades e atributos dos Pokémon ativos. Sua previsão usa o estado da batalha e o histórico observado; o avaliador não consulta a ação ainda escolhida pelo jogador.",
+            "As decisões continuam sendo estimativas locais. Isso não garante a jogada ideal em toda situação nem reproduz os times e restrições dos modos de Radical Red."
+          ],
+          "links": [
+            {
+              "label": "Funcionamento e testes da IA",
+              "href": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/IA_BLUE_RADICAL.md"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

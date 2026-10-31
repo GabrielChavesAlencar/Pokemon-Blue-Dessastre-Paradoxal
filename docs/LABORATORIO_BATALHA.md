@@ -13,6 +13,7 @@ Na pasta principal do projeto, abra **TESTAR_BATALHA.bat**. É uma sessão limit
 - Ajuste o nível individualmente ou use **Nivel de todos**, entre 1 e 100. Ao mudar o nível, os golpes voltam aos quatro últimos aprendidos naquele nível.
 - A edição de golpes é livre para experimentos e não valida a legalidade competitiva do moveset.
 - Em **Formato**, escolha **Individual** (um Pokémon em campo por lado) ou **Dupla** (dois em campo por lado), depois **Iniciar batalha**. Mesmo a batalha individual pode usar times completos de seis.
+- Em **IA**, compare **IA da base**, **Blue estrategica** e **Blue Radical**. A opção Blue Radical é o padrão e usa avaliação de dano, trocas, suporte e duplas inspirada nos princípios públicos do CFRU. [Funcionamento e validação](IA_BLUE_RADICAL.md).
 - Ao terminar, você volta ao laboratório. Os times configurados são preservados: a batalha usa cópias, incluindo itens, formas, golpes, PP e ordem dos integrantes.
 - Escolha **Sair do laboratorio** para fechar. Para jogar a campanha normalmente, abra **JOGAR.bat**.
 

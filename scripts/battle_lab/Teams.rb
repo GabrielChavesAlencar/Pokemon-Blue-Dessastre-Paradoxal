@@ -20,6 +20,7 @@ module BlueBattleLab
         return
       end
       @format = 'single'
+      @ai_profile = defined?(BlueRadicalAI) ? BlueRadicalAI::CONFIG['defaultProfile'] : 'engine'
       @allies, @foes = BlueBattleLab.preset(true)
       BlueBattleLab.log('MENU_READY | teams=6x6 mouse=true')
       loop do
@@ -27,7 +28,8 @@ module BlueBattleLab
         choice = BlueBattleLab.choose("BLUE LAB / Times #{@allies.length} x #{@foes.length}", [
           'Iniciar batalha', "Formato: #{format_label}", 'Editar meu time',
           'Editar time rival', 'Nivel de todos', 'Preparar times Dessastre Paradoxal',
-          'Preparar times oficiais', 'Teste rapido: Pikachu x Eevee', 'Sair do laboratorio'
+          'Preparar times oficiais', 'Teste rapido: Pikachu x Eevee',
+          "IA: #{@ai_profile == 'radical' ? 'Blue Radical' : @ai_profile == 'normal' ? 'Blue estrategica' : 'IA da base'}", 'Sair do laboratorio'
         ])
         case choice
         when 0
@@ -36,7 +38,7 @@ module BlueBattleLab
           rescue ArgumentError => error
             BlueBattleLab.choose(error.message, ['Voltar']); next
           end
-          result = BlueBattleLab.battle(@allies, @foes, false, @format)
+          result = BlueBattleLab.battle(@allies, @foes, false, @format, @ai_profile)
           BlueBattleLab.choose({1=>'Vitoria!',2=>'Derrota.',3=>'Batalha encerrada.',5=>'Empate.'}[result] || 'Teste encerrado.', ['Voltar ao laboratorio'])
         when 1
           selected = BlueBattleLab.choose('Formato de batalha', ['Individual / times de ate 6', 'Dupla / dois Pokemon em campo'], @format == 'double' ? 1 : 0)
@@ -52,6 +54,12 @@ module BlueBattleLab
           @format = 'single'
           @allies = [BlueBattleLab.build(:PIKACHU,10)]
           @foes = [BlueBattleLab.build(:EEVEE,10)]
+        when 8
+          if defined?(BlueRadicalAI)
+            profiles=BlueRadicalAI::CONFIG['profiles']
+            selected=BlueBattleLab.choose('IA do adversario / comparar comportamentos',profiles.values.map { |p| p['label'] },profiles.keys.index(@ai_profile) || 0)
+            @ai_profile=profiles.keys[selected] if selected>=0
+          end
         else break
         end
       end
