@@ -37,3 +37,73 @@
 .updates-guide-shortcut p{color:#91a9c6;font-size:11px;line-height:1.65;margin-top:4px}
 .updates-guide-shortcut>.button{white-space:nowrap;font-size:11px}
 @media(max-width:700px){.updates-guide-shortcut{flex-wrap:wrap;gap:14px}.updates-guide-shortcut>.button{width:100%;justify-content:center}.update-summary-hour{font-size:11px}}
+
+
+/* História, equipes e mapas originais de Beatha. */
+.region-map{position:relative;overflow:hidden;width:100%;min-height:330px;display:flex;align-items:center;justify-content:center;background:#0d1b2c;border:1px solid #2b4260;border-radius:10px}
+.region-map img{display:block;width:100%;height:auto;max-height:500px;object-fit:contain;image-rendering:pixelated}
+.region-map .region-marker{position:absolute;z-index:2;width:17px;height:17px;border:3px solid #f6faff;background:#4b9ce7;border-radius:50%;box-shadow:0 0 0 6px #347fc84d,0 3px 12px #071224;transform:translate(-50%,-50%);pointer-events:none}
+.region-map-caption{position:absolute;z-index:2;bottom:10px;left:10px;right:10px;width:max-content;max-width:calc(100% - 20px);padding:6px 10px;border-radius:5px;background:#08121de5;color:#d5e8fb;font-size:10px;letter-spacing:.15px}
+.region-map.mini{min-height:0;height:100%;border:0;border-radius:0;opacity:.9}
+.region-map.mini img{width:100%;height:100%;max-height:initial;object-fit:cover}
+.region-map.mini .region-marker{width:12px;height:12px;border-width:2px}
+.region-map.mini .region-map-caption{bottom:7px;left:8px;font-size:8px;padding:4px 6px}
+.location-card-map>.map-pin{display:none}
+.area-region-photo{margin:14px 0 26px;max-width:750px}
+.area-region-photo figcaption{color:#8eaccb;font-size:11px;margin-top:9px;line-height:1.65}
+.story-container{padding-bottom:60px}
+.story-hero{margin:50px 0 25px;padding:37px 42px;background:linear-gradient(115deg,#142842,#091522);border:1px solid #315176;border-radius:16px;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:25px;overflow:hidden}
+.story-hero h1,.story-page-heading h1{font:700 clamp(52px,6vw,80px) 'Barlow Condensed',sans-serif;letter-spacing:-1px;line-height:.95;margin:18px 0}
+.story-hero h1 em,.story-page-heading h1 em{font-style:normal;color:#92bcfb}
+.story-hero p,.story-page-heading p{font-size:13px;color:#b1c3df;line-height:1.85;max-width:530px}
+.story-hero-map{width:100%;min-height:250px;max-height:340px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 8px 18px #0007)}
+.story-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:25px}
+.story-honesty{margin:20px 0;padding:18px 22px;border:1px solid #39577d;background:#102039;border-left:4px solid #84afea;border-radius:7px}
+.story-honesty strong{display:block;color:#c9deff;font-size:13px;margin-bottom:7px}
+.story-honesty p,.story-honesty>a{font-size:11px;line-height:1.9;color:#99b3d3}
+.story-honesty>a{display:inline-flex;align-items:center;gap:5px;color:#9dc9ff;margin-top:12px}
+.story-honesty .icon{width:13px;height:13px}
+.story-page-heading{padding:54px 0 20px}
+.story-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.story-step{display:flex;gap:16px;align-items:flex-start;background:#101d2e;border:1px solid #2c415f;border-radius:9px;padding:21px 19px;transition:border-color .2s}
+.story-step:hover,.master-card:hover,.story-note:hover{border-color:#76ade8;background:#152942}
+.story-step-number{font:700 33px 'Barlow Condensed',sans-serif;color:#91bbff;line-height:1}
+.story-step strong{font-size:14px;color:#d7e8ff}
+.story-step p{font-size:11px;color:#94abc8;line-height:1.75;margin-top:8px}
+.story-step>.icon{margin-left:auto;flex:none;color:#85addd;width:17px;height:17px}
+.story-master-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.master-card{min-width:0;display:flex;align-items:center;gap:14px;position:relative;padding:19px 16px;background:#101c2c;border:1px solid #2b415f;border-radius:9px;transition:background .2s,border-color .2s}
+.master-card img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated;flex:none}
+.master-card h3{color:#e1edff;font-size:17px;margin-top:5px}
+.master-card p{font-size:10px;color:#95aaca;margin-top:5px;line-height:1.6}
+.master-number{position:absolute;right:15px;top:10px;color:#516c8e;font-size:9px}
+.master-card>.icon{margin-left:auto;flex:none;width:14px;height:14px;color:#709bc9}
+.story-note-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.story-note{background:#111e30;border:1px solid #2b435e;border-radius:9px;padding:23px;display:block}
+.story-note h3{color:#dae6fb;font-size:16px}
+.story-note p{font-size:11px;line-height:1.85;color:#91a7c4;margin-top:10px}
+.story-note .icon{width:16px;height:16px;margin-top:13px}
+.trainer-banner{display:flex;align-items:center;gap:25px;padding:28px;border:1px solid #315176;background:#142439;border-radius:12px;margin:25px 0}
+.trainer-banner>img{width:115px;height:115px;object-fit:contain;image-rendering:pixelated}
+.trainer-banner h1{font:700 55px 'Barlow Condensed',sans-serif;margin:7px 0;color:#f0f6ff}
+.trainer-banner p{color:#aec2df;font-size:13px}
+.trainer-banner a{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#a5ccff;margin-top:10px}
+.trainer-banner a .icon{width:14px;height:14px}
+.trainer-choice{display:flex;justify-content:space-between;gap:20px;align-items:center;margin:26px 0}
+.trainer-choice h2{font:600 29px 'Barlow Condensed',sans-serif}
+.trainer-choice p{color:#90aac9;font-size:11px;margin-top:5px}
+.trainer-choice .select-field select{min-width:185px}
+.story-pokemon-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.story-pokemon{min-width:0;border:1px solid #2b425f;background:#101e30;border-radius:10px;padding:18px}
+.story-poke-header{display:flex;gap:12px;align-items:center}
+.story-poke-header>img{width:76px;height:76px;object-fit:contain;image-rendering:pixelated;flex:none}
+.story-poke-header h3{font-size:16px;line-height:1.35;color:#e9f3ff}
+.story-poke-header h3 a{color:inherit}
+.story-poke-header h3 a:hover{color:#9bcaff}
+.story-poke-header span{display:block;color:#7d9ab9;font-size:10px;margin-top:7px}
+.story-poke-extras{font-size:10px;line-height:1.8;color:#a5b9d5;margin:11px 0}
+.story-poke-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:13px}
+.story-poke-moves span{padding:8px 6px;background:#182b43;border:1px solid #283f5b;border-radius:5px;text-align:center;color:#c2daf7;font-size:10px;overflow-wrap:anywhere}
+.story-container>.data-note{margin:28px 0}
+@media(max-width:900px){.story-master-grid,.story-pokemon-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.story-hero{grid-template-columns:1fr}.story-hero-map{height:280px}.story-note-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.story-hero{padding:25px 20px;margin-top:23px}.story-master-grid,.story-pokemon-grid,.story-steps,.story-note-cards{grid-template-columns:1fr}.trainer-banner{padding:18px;gap:13px}.trainer-banner>img{width:70px;height:70px}.trainer-banner h1{font-size:39px}.trainer-choice{align-items:flex-start;flex-direction:column}.trainer-choice .select-field{width:100%}.trainer-choice .select-field select{flex:1}.region-map{min-height:200px}.area-region-photo{margin-top:20px}}
