@@ -2,6 +2,7 @@ import {loadPortal,loadDetails,effectiveDetail} from './data.js';
 import {esc,icon} from './utils.js';
 import {home,pokedex,dexResults,locations,locationResults,locationDetail,updates,updateResults as updateTimelineResults,guides,guideDetail,empty} from './views.js';
 import {pokemonDetail,moveRows} from './detail.js';
+import {storyIndex,bossesIndex,trainerDetail,allTrainers} from './story.js';
 
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
@@ -43,6 +44,15 @@ async function render(scroll=false){
       if(parts[1]){const area=model.locations.find(x=>x.id===Number(parts[1]));if(!area)throw new Error('not-found');currentBase=area;main.innerHTML=locationDetail(model,area,state);setPage(area.name);}
       else{main.innerHTML=locations(model,state);setPage('Localizações');}
     }else if(route==='atualizacoes'){main.innerHTML=updates(model,state);setPage('Atualizações');}
+    else if(route==='historia'){main.innerHTML=storyIndex(model);setPage('Guia da História');}
+    else if(route==='chefes'){
+      if(parts[1]){
+        const trainer=allTrainers(model.story).find(x=>x.id===decodeURIComponent(parts[1]));
+        if(!trainer)throw new Error('not-found');
+        detailData=await loadDetails();if(id!==renderId)return;
+        main.innerHTML=trainerDetail(model,trainer,url.searchParams.get('modo'),detailData);setPage(trainer.name);
+      }else{main.innerHTML=bossesIndex(model);setPage('Mestres e Chefes');}
+    }
     else if(route==='guias'){
       if(parts[1]){const guide=model.guides.find(x=>x.id===parts[1]);if(!guide)throw new Error('not-found');main.innerHTML=guideDetail(model,guide);setPage(guide.title);}
       else{main.innerHTML=guides(model);setPage('Guias');}
@@ -82,6 +92,7 @@ main.addEventListener('input',event=>{
 main.addEventListener('change',event=>{
   const key=event.target.dataset.select;if(!key)return;state[key]=event.target.value;
   if(key==='version')render(false);
+  else if(key==='trainerVariant'){const url=new URL(location.href);url.searchParams.set('modo',state.trainerVariant);history.replaceState({},'',url);render(false);}
   else if(key==='form'){const url=new URL(location.href);if(state.form)url.searchParams.set('forma',state.form);else url.searchParams.delete('forma');history.replaceState({},'',url);render(false);}
   else{state.limit=24;state.locationLimit=12;updateResults();}
 });
