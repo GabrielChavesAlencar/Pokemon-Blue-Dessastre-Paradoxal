@@ -1,0 +1,280 @@
+{
+  "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
+  "commits": [
+    {
+      "sha": "77ef33309b3c1388c0c1222417c185c4a3b0ac40",
+      "date": "2026-10-31T16:33:19Z",
+      "title": "feat: restaurar regras da geração 9 e manter o Blue Studio em uma pasta"
+    },
+    {
+      "sha": "ff646d312447b591b69bf2bf511ad0a16d65571c",
+      "date": "2026-10-31T14:06:01Z",
+      "title": "test: aguardar registro POTION antes de editar para evitar corrida no carregamento"
+    },
+    {
+      "sha": "d60f5351fc9bee93456902900f149ee9bb43ecd9",
+      "date": "2026-10-31T14:04:04Z",
+      "title": "test: validar sintaxe da aba de movimentos no TESTAR.bat local"
+    },
+    {
+      "sha": "d70e9a19dce1ee0bec9e5853e9242130e737de0b",
+      "date": "2026-10-31T14:03:36Z",
+      "title": "docs: manual da aba Golpes dos Pokemon, uso e regressao"
+    },
+    {
+      "sha": "4f18e98b4160f23dc6581cdf246f05f65f34b268",
+      "date": "2026-10-31T14:02:59Z",
+      "title": "fix: descartar de verdade alteracoes de golpes ao sair da aba"
+    },
+    {
+      "sha": "16851fcdbb667f07a784472e64609e389f880309",
+      "date": "2026-10-31T14:01:43Z",
+      "title": "test: validar consolidacao de Moves apenas na especie editada; preservar outra"
+    },
+    {
+      "sha": "2a8a6871369d67bc3a4d7fb8cf1cbcf30de982e2",
+      "date": "2026-10-31T14:01:18Z",
+      "title": "fix: exibir golpes reais da espécie base ao ativar herança numa forma com override"
+    },
+    {
+      "sha": "e8c2284a7807a9da1f7325fa4a87c171b65cbed1",
+      "date": "2026-10-31T14:00:35Z",
+      "title": "test: contar somente campo Moves sem confundir TutorMoves e EggMoves"
+    },
+    {
+      "sha": "583404218f1bda17bafd2d5b2ad96ccff7aa7a86",
+      "date": "2026-10-31T14:00:08Z",
+      "title": "test: fluxo Chromium da aba de movesets por nível sem alterar outras espécies"
+    },
+    {
+      "sha": "ae320185bb2e21bcc3b6373d640485c34bfd4c7a",
+      "date": "2026-10-31T13:59:26Z",
+      "title": "test: regressao de movesets de Pokemon, heranca de formas, backups e endpoints HTTP"
+    },
+    {
+      "sha": "21ede22aa8bbf78fe38e71a42a4839b30de76a4e",
+      "date": "2026-10-31T13:58:27Z",
+      "title": "style: editor de movimentos com biblioteca de espécies e listas editáveis"
+    },
+    {
+      "sha": "fef1ad22c4c7fbb688d34e14ccfc98b56755b366",
+      "date": "2026-10-31T13:57:59Z",
+      "title": "feat: navegação da aba Golpes dos Pokémon, integração e validação contínua"
+    },
+    {
+      "sha": "bbc5ad8da6d968f0ba1eacc6a3bc7c907c907685",
+      "date": "2026-10-31T13:56:48Z",
+      "title": "feat: aba visual de movesets por especie e forma com busca, níveis, tutor e ovo"
+    },
+    {
+      "sha": "f08698bd47d3ece1245523e1fa30e28a84503272",
+      "date": "2026-10-31T13:55:24Z",
+      "title": "feat: endpoints locais /api/pokemon-moves para seleção e salvamento de golpes"
+    },
+    {
+      "sha": "eb610d287a237f9f5ac388b1bc627c0e7a8509e9",
+      "date": "2026-10-31T13:55:07Z",
+      "title": "feat: serviço PBS para moves por nivel, tutor e ovo, com herança de formas e gravação segura"
+    },
+    {
+      "sha": "03f8a737d64bc379677bb3c3d06072eade586763",
+      "date": "2026-10-31T13:49:55Z",
+      "title": "test: simular timestamps de compilacao de forma deterministica"
+    },
+    {
+      "sha": "87d0ea4c36450562574177ba31c3d210b5f85a7e",
+      "date": "2026-10-31T13:49:24Z",
+      "title": "docs: cadastro de especies ilimitadas e compilacao assistida; testar status do compiler"
+    },
+    {
+      "sha": "8c6a175b563177060f730beb56839ff11d619824",
+      "date": "2026-10-31T13:48:35Z",
+      "title": "feat: status de compilacao via Data/species.dat e orientacoes do modo Debug"
+    },
+    {
+      "sha": "0fdfc8af5f0bbe0dc98e138c89ca67002fd191a2",
+      "date": "2026-10-31T13:47:44Z",
+      "title": "feat: indicar compilacao pendente via timestamps e melhorar CTA Novo Pokemon / Debug"
+    },
+    {
+      "sha": "353f1a511913e1ffd77ec1c2e1f1d874dfb5d627",
+      "date": "2026-10-31T13:45:45Z",
+      "title": "test: E2E criar nova especie sem substituir e editar metrics no Chromium"
+    },
+    {
+      "sha": "67a39afa857ba23d63961bea44fc9882010dbe0d",
+      "date": "2026-10-31T13:45:00Z",
+      "title": "fix: corrigir sintaxe da ficha de metrics do Pokemon"
+    },
+    {
+      "sha": "aa380e6611a043c86caa2f955d51c53c59f76459",
+      "date": "2026-10-31T13:44:26Z",
+      "title": "test: novas especies sem substituir pokemon existentes, validar referencias e metrics"
+    },
+    {
+      "sha": "89821142aa5eaf48f305e9c2acad7a5bb5f49858",
+      "date": "2026-10-31T13:43:35Z",
+      "title": "feat: integrar ficha Pokemon, criador independente, posicao de batalha e acao de debug PBS"
+    },
+    {
+      "sha": "3a7f1458063bcba6be88ab77db07486fa9dcd45b",
+      "date": "2026-10-31T13:42:48Z",
+      "title": "feat: ficha visual completa, novo Pokemon sem substituicao e editor de metrics em batalha"
+    },
+    {
+      "sha": "7558cf0141ca380ee2cbce5d77a0b767eea06ee9",
+      "date": "2026-10-31T13:41:41Z",
+      "title": "feat: endpoints para criar especies sem substituicao, validar PBS, posicionar sprites e abrir debug"
+    },
+    {
+      "sha": "4ebc35dcaf316997e45e6f2ea296bdc3077af536",
+      "date": "2026-10-31T13:41:08Z",
+      "title": "fix: formato de Shape compativel com Essentials"
+    },
+    {
+      "sha": "172ab975aa50e777574e8c69621b16a35bb08365",
+      "date": "2026-10-31T13:40:43Z",
+      "title": "feat: cadastro independente de especies sem slots GBA com validacao de referencias e metrics"
+    },
+    {
+      "sha": "6ca77dc3baeac671f1f084938442d86076389c03",
+      "date": "2026-10-31T13:35:21Z",
+      "title": "test: aguardar resposta do upload antes de validar arquivo PNG no disco"
+    },
+    {
+      "sha": "56dd6349c4e26ed4fbfb6c64325a695fb2ba94c4",
+      "date": "2026-10-31T13:33:54Z",
+      "title": "test: esperar confirmacao HTTP real do save PBS para evitar race condition"
+    },
+    {
+      "sha": "4f74f7d8685e863d4fa465063d930f5e044cb9e0",
+      "date": "2026-10-31T13:32:30Z",
+      "title": "docs: instrucoes para sprites PNG estaticos e GIF na Pokedex"
+    },
+    {
+      "sha": "bbc100dff1da6ab54a4d2ea452e80ec698df6fc3",
+      "date": "2026-10-31T13:32:27Z",
+      "title": "docs: auditoria de sprites GIF/PNG e lacunas para completar editor"
+    },
+    {
+      "sha": "34ff66532c14aee34e55a19e9a99593a66c74af4",
+      "date": "2026-10-31T13:30:39Z",
+      "title": "test: regressao de sprites PNG estaticos e hooks de navegacao"
+    },
+    {
+      "sha": "f04fadc2332404124b111d6f4a34f96e1ceaf777",
+      "date": "2026-10-31T13:30:37Z",
+      "title": "test: regressao de sprites PNG estaticos e hooks de navegacao"
+    },
+    {
+      "sha": "ea05d2d28f3b065b1cb019a28b4ae51d6369a94d",
+      "date": "2026-10-31T13:30:34Z",
+      "title": "test: regressao de sprites PNG estaticos e hooks de navegacao"
+    },
+    {
+      "sha": "f0559c7da8b4f0194ecc0e75f2ba163e006f778f",
+      "date": "2026-10-31T13:30:00Z",
+      "title": "test: PNG estatico, PNG animado, GIF, backups, concorrencia e endpoints"
+    },
+    {
+      "sha": "0f0366010e9f7f16a94e707d3e8450ab6dd569b7",
+      "date": "2026-10-31T13:29:11Z",
+      "title": "style: grade de sprites com frente costas shiny e formatos GIF/PNG"
+    },
+    {
+      "sha": "9a97c2a6c0ef709b83beeeea6885a78e1afbf855",
+      "date": "2026-10-31T13:29:09Z",
+      "title": "fix: servir sprites.js no servidor local com MIME JavaScript"
+    },
+    {
+      "sha": "ca816e1b406caaa7b2721df57ddc9fca3a05d130",
+      "date": "2026-10-31T13:29:07Z",
+      "title": "feat: carregar modulo de sprites estaticos e animados no Blue Studio"
+    },
+    {
+      "sha": "0c82acbe93b5e48fe275991fea1ac916d3a91afb",
+      "date": "2026-10-31T13:28:45Z",
+      "title": "feat: painel visual de sprites PNG estaticos e GIF com previa quatro direcoes"
+    },
+    {
+      "sha": "674aab0870cb0a5575ca2f39cb92f4cbeaacdd45",
+      "date": "2026-10-31T13:28:14Z",
+      "title": "feat: hook no editor para sprites normal/shiny e formas do Decades"
+    },
+    {
+      "sha": "f0debac290788d0f5b4169be05be171ecc3c9acb",
+      "date": "2026-10-31T13:26:23Z",
+      "title": "feat: aceitar sprites PNG estaticos, faixas PNG e GIF, com validacao e backups"
+    },
+    {
+      "sha": "2ef460460cdcea5a65b997e2bb7cad4824363573",
+      "date": "2026-10-31T13:21:11Z",
+      "title": "docs: corrigir erro de branch nao-main e orientar primeiro reparo local"
+    },
+    {
+      "sha": "a52a9263bed595ef13fbb0cec601c81a1df1778a",
+      "date": "2026-10-31T13:19:09Z",
+      "title": "test: regressao do RUN.bat em Windows simulando branch antiga"
+    },
+    {
+      "sha": "5f6204da65c3ae9edc458370ec0d5c03ba293eb7",
+      "date": "2026-10-31T13:18:16Z",
+      "title": "fix: RUN.bat migra branch local para main sem perder alteracoes e atualiza editor"
+    },
+    {
+      "sha": "ac782f447c7b83b5a9e5e46ee3d6cb36c483be3f",
+      "date": "2026-10-31T13:12:40Z",
+      "title": "ci: manter testes de regressao verdes sem upload de artefatos (quota GitHub)"
+    },
+    {
+      "sha": "c9693446a7c6184da88b4abf172288c070c3e4cf",
+      "date": "2026-10-31T13:12:14Z",
+      "title": "fix: fechar shell HTML e validar estrutura balanceada nos testes"
+    },
+    {
+      "sha": "0bd46868e6956e172acdd6b388c67e98885e9761",
+      "date": "2026-10-31T13:11:37Z",
+      "title": "docs: registrar interface Emerald-like e politica de regressao continua"
+    },
+    {
+      "sha": "a5ab8b69bb6b9c1cc00c0399d2ba96b240a09dc2",
+      "date": "2026-10-31T13:11:08Z",
+      "title": "test: expandir ferramentas avancadas antes de testar aba de sprites"
+    },
+    {
+      "sha": "e76fa129bea80d4789785a58f6fea541193887a5",
+      "date": "2026-10-31T13:10:39Z",
+      "title": "fix: servidor disponibiliza novos arquivos do tema e reforca testes HTTP"
+    },
+    {
+      "sha": "ba972923b73fca83ba057dadd69216903597c296",
+      "date": "2026-10-31T13:10:07Z",
+      "title": "test: regressao automatica PBS e Chromium em cada push e PR; roadmap Emerald"
+    },
+    {
+      "sha": "7113e0ab6e0c86a7ece0ef60066bbc3001798c67",
+      "date": "2026-10-31T13:08:43Z",
+      "title": "feat: adotar navegacao e design do editor ROM Emerald Studio no Blue Studio"
+    },
+    {
+      "sha": "3ca1d588c154d9c17ba564949d673f557806c9cc",
+      "date": "2026-10-31T13:01:11Z",
+      "title": "docs: corrigir Markdown nas instrucoes do RUN.bat"
+    },
+    {
+      "sha": "db816d4b07a2992aa900a1cd04c0b6aefa53eff3",
+      "date": "2026-10-31T13:00:46Z",
+      "title": "docs: explicar RUN.bat com Git pull e instalacao a partir de ZIP"
+    },
+    {
+      "sha": "89891cbc040e7b1b304fbd6cd78a58fe4662ab43",
+      "date": "2026-10-31T12:58:59Z",
+      "title": "feat: atualizar main via Git antes de iniciar Blue Studio; suportar ZIP"
+    },
+    {
+      "sha": "b35a343a3c3b8be5ff3a395719eba1306a8e34f5",
+      "date": "2026-10-31T12:53:20Z",
+      "title": "Blue Studio: editor e publicador automatico"
+    }
+  ]
+}

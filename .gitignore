@@ -16,3 +16,8 @@ Thumbs.db
 
 # Local reference downloads and restoration staging
 /.blue-work/
+
+# Portal estático e vínculo local da Vercel
+/site/dist/
+/site/node_modules/
+/site/.vercel/

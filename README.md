@@ -15,6 +15,10 @@ Para reproduzir a restauracao em outra copia local do Decades, execute `python s
 
 O editor aceita golpes de evolucao no nivel **0**, alem dos niveis 1–100, e comentarios numericos dos PBS do Decades. O `RUN.bat` permanece em uma unica pasta mesmo se a atualizacao falhar.
 
+## Portal do projeto
+
+O site fica em **`site/`** no mesmo repositório: Pokédex, formas, golpes, localizações, guias e diário automático de commits. [Executar o site](site/README.md) · [Deploy na Vercel e rotina de atualizações](docs/SITE_E_VERCEL.md).
+
 ## Interface inspirada no editor de ROM do Emerald Studio (v0.2)
 
 A navegação do **Blue Studio** foi reorganizada com o mesmo conjunto de **14 abas principais + 6 ferramentas avançadas** do editor de ROM do [Emerald Studio](https://github.com/Lancelioti/emerald-studio). O tema foi adaptado para **Pokémon Essentials / RPG Maker XP**.

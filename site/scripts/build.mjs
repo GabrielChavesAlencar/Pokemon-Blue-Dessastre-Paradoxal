@@ -1,0 +1,15 @@
+import {execFileSync} from 'node:child_process';
+import {readdir} from 'node:fs/promises';
+import {cp, mkdir, readFile, writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {generate} from './changelog.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const output=path.join(root,'dist');
+for(const file of await readdir(path.join(root,'src/assets'))) if(file.endsWith('.js')) execFileSync(process.execPath,['--check',path.join(root,'src/assets',file)],{stdio:'inherit'});
+await mkdir(output,{recursive:true});
+await cp(path.join(root,'src'),output,{recursive:true});
+await cp(path.join(root,'public'),output,{recursive:true});
+await writeFile(path.join(output,'data/updates.json'),JSON.stringify(generate()));
+for (const file of ['catalog.json','details.json','locations.json','updates.json','guides.json']) JSON.parse(await readFile(path.join(output,'data',file),'utf8'));
+console.log('Portal Blue pronto: dist/');

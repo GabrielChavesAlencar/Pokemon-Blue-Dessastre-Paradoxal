@@ -1,0 +1,39 @@
+name: Portal Blue - sincronizar atualizações
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['site/public/data/updates.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: portal-history-main
+  cancel-in-progress: false
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - name: Atualizar histórico sem perder pushes simultâneos
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout --detach origin/main
+            node site/scripts/changelog.mjs --write-seed
+            git add -- site/public/data/updates.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'chore(site): sincronizar histórico'
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          echo 'Não foi possível atualizar main após três tentativas.' >&2
+          exit 1
