@@ -9,3 +9,18 @@
 
 /* The author's named generation and draft entries. */
 .fan-generation-banner{margin:30px 0}.fan-generation-banner h2{color:#9ac6ff}.dex-description{color:#ccd9eb;font-size:20px;letter-spacing:3px;margin:18px 0}.pending-notice{background:#392f1d;border:1px solid #816739;color:#f5d991;padding:12px 16px;border-radius:8px}.fan-sprites{margin:24px 0}.fan-sprites summary{cursor:pointer;font-weight:600;padding:4px}.fan-sprite-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:24px}.fan-sprite-gallery figure{margin:0;text-align:center}.fan-sprite-frame{height:140px;display:flex;align-items:center;justify-content:center;background:#0b1422;border-radius:12px;overflow:hidden}.fan-sprite-frame img{max-width:128px;max-height:128px;image-rendering:pixelated}.fan-sprite-frame.icon-frame img{width:128px;height:64px;max-width:none}.fan-sprite-gallery figcaption{font-size:12px;color:#a0b3cc;margin-top:8px}.pokemon-art-panel .detail-art,.pokemon-card .card-art img{image-rendering:pixelated}@media(max-width:640px){.fan-sprite-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.fan-generation-banner{align-items:flex-start}}
+
+.guide-info{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:4px 0 25px;padding:18px 22px;background:#0e1b2c;border:1px solid #294360;border-radius:9px}
+.guide-info strong{display:flex;align-items:center;gap:7px;color:#b4d8ff;font-size:12px}
+.guide-info strong .icon{width:16px;height:16px}
+.guide-info p{flex:1;min-width:260px;font-size:11px;line-height:1.7;color:#95aac4}
+.guide-sync,.guide-source-tag{display:block;margin-top:13px;font-size:9px;color:#83c6ba}
+.guide-source-tag{color:#bcaf94}
+.guide-updated-note,.guide-legacy-note{font-size:11px!important;color:#91c4c1!important;margin-top:18px!important}
+.guide-legacy-note{color:#ceb990!important}
+.guide-related-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:19px}
+.guide-related-links a{display:inline-flex;align-items:center;gap:7px;color:#bcd8ff;background:#15253b;border:1px solid #314968;border-radius:6px;padding:9px 12px;font-size:11px}
+.guide-related-links a:hover{border-color:#71a7ee}
+.guide-related-links .icon{width:14px;height:14px}
+.guide-article-sources{border-top:1px solid #2b405c;padding-top:24px}
+@media(max-width:700px){.guide-info{flex-direction:column;align-items:flex-start}.guide-info p{min-width:0}.guide-related-links{flex-direction:column;align-items:flex-start}}
