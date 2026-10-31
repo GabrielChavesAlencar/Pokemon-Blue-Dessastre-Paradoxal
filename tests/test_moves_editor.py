@@ -130,7 +130,7 @@ class MoveUnitTests(MoveFixture):
         self.save_record(original,level=[{"level":1,"move":"TACKLE"},
                                          {"level":10,"move":"BITE"}],tutor=["BITE"])
         data=source.read_text("utf-8-sig")
-        self.assertEqual(data.count("Moves ="),1)
+        self.assertEqual(sum(1 for line in data.splitlines() if line.startswith("Moves =")),1)
 
 
 class MoveAPITests(MoveFixture):
