@@ -79,6 +79,14 @@ git clone https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradox
 
 Depois execute `RUN.bat` da pasta clonada.
 
+### Se o RUN.bat disser "A branch atual nao e main"
+
+Essa mensagem vinha da versão antiga do iniciador. **Corrigido na branch main.** O novo `RUN.bat` verifica a branch atual; se a área de trabalho estiver limpa, muda para `main` sem descartar arquivos e sincroniza a versão atual. Se houver alterações locais ou conflitos, utiliza um clone seguro em pasta irmã (`Pokemon-Blue-Dessastre-Paradoxal-Git`) e preserva o conteúdo original. `game/` e backups não são sincronizados nem apagados.
+
+Para quem ainda usa o `RUN.bat` antigo, a correção inicial precisa ser aplicada **uma vez**. Substitua `RUN.bat` pelo arquivo atualizado do repositório ou execute o pacote `CORRIGIR_ATUALIZACAO_BLUE.bat` entregue na conversa de suporte, dentro da pasta do projeto. O reparador busca a versão atual no GitHub, migra para `main` quando possível e inicia o editor.
+
+CI: `.github/workflows/regression.yml` também executa um teste real do iniciador em `windows-latest`, simulando uma branch antiga, verificando `main` e repetindo o RUN em modo de teste (`BLUE_STUDIO_NO_SERVER=1`).
+
 ## Criar o repositório GitHub
 
 Execute **`PUBLICAR_GITHUB.bat`** depois de instalar `git` e `gh` e fazer login com `gh auth login` (o script pode iniciar esse login).
