@@ -53,6 +53,12 @@ class ShellRegression(unittest.TestCase):
         self.assertEqual(self.dom.scripts,["/app.js","/navigation.js"])
         self.assertIn('href="/studio-shell.css"',HTML)
 
+    def test_html_div_balanced(self):
+        import re
+        opening = len(re.findall(r"<div(?=[\s>])", HTML, re.I))
+        closing = len(re.findall(r"</div\s*>", HTML, re.I))
+        self.assertEqual(opening, closing, "A estrutura da tela deve estar balanceada")
+
     def test_feature_gating_and_safe_pbs_files(self):
         for path in ("pokemon.txt","items.txt","trainers_story_mode.txt","encounters.txt"):
             self.assertIn(path,JS)
