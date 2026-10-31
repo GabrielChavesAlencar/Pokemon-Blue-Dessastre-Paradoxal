@@ -18,6 +18,8 @@ if not errorlevel 1 (
   if errorlevel 1 goto :erro
   node --check "web\sprites.js"
   if errorlevel 1 goto :erro
+  node --check "web\moves-editor.js"
+  if errorlevel 1 goto :erro
   node --check "web\navigation.js"
   if errorlevel 1 goto :erro
   node --check "tests\browser_smoke.cjs"
