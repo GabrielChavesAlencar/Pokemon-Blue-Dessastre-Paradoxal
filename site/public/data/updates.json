@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fd7dd8b0d35bb6ca39f3fcecb472f8209f29a448",
+      "date": "2026-10-31T16:52:36-03:00",
+      "title": "fix(maps): informar origem correta e linkar mapa regional completo nos detalhes",
+      "category": "Correções"
+    },
+    {
       "sha": "7ced6f5f3f33603aaaf7858678e48d8d480f2973",
       "date": "2026-10-31T16:52:20-03:00",
       "title": "feat(maps): priorizar imagem específica, focar Beatha por área e evitar mapa repetido sem dados",
