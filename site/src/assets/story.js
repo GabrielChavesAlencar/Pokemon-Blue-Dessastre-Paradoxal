@@ -63,12 +63,25 @@ function teamPokemon(p,model,details){
     (Array.isArray(p.moves)&&p.moves.length?'<div class="story-poke-moves">'+p.moves.map(m=>'<span>'+moveName(m,details)+'</span>').join('')+'</div>':'<p class="data-note">Golpes não informados no PBS</p>')+
     '</article>';
 }
+
+const weaknesses={
+  NORMAL:['Lutador'],FIRE:['Água','Terra','Pedra'],WATER:['Elétrico','Planta'],
+  ELECTRIC:['Terra'],GRASS:['Fogo','Gelo','Voador','Venenoso','Inseto'],
+  ICE:['Fogo','Lutador','Pedra','Aço'],FIGHTING:['Voador','Psíquico','Fada'],
+  POISON:['Terra','Psíquico'],GROUND:['Água','Planta','Gelo'],
+  FLYING:['Elétrico','Gelo','Pedra'],PSYCHIC:['Inseto','Fantasma','Sombrio'],
+  BUG:['Fogo','Voador','Pedra'],ROCK:['Água','Planta','Lutador','Terra','Aço'],
+  GHOST:['Fantasma','Sombrio'],DRAGON:['Gelo','Dragão','Fada'],
+  DARK:['Lutador','Inseto','Fada'],STEEL:['Fogo','Lutador','Terra'],
+  FAIRY:['Venenoso','Aço']
+};
 export function trainerDetail(model,trainer,variantId,details){
  const all=trainer.variants||[];
  const chosen=all.find(x=>x.id===variantId)||all.find(x=>x.id==='1v1-full-power')||all[0];
  const area=locationFor(model,trainer.location);
  return '<div class="container story-container"><a class="back-link" href="/chefes">← Todos os chefes</a>'+
    '<div class="trainer-banner"><img src="'+emerald(trainer.type||'normal')+'" alt="" loading="lazy"/><div><span class="eyebrow">'+esc(trainer.role==='type-master'?'MESTRE DE TIPO':'CHEFE FINAL · ZENITH DOMAIN')+'</span><h1>'+esc(trainer.name)+'</h1><p>'+esc(trainer.location)+' · '+esc(types[trainer.type]||'Desafio final')+'</p>'+(area?'<a href="/localizacoes/'+area.id+'">Ver área cadastrada '+icon('arrow')+'</a>':'')+'</div></div>'+
+   '<section class="story-objective"><span class="eyebrow">COMO AVANÇAR NA HISTÓRIA</span><h2>'+(trainer.role==='type-master'?'Conquistar a Esmeralda de '+esc(types[trainer.type]||trainer.type):'Enfrentar a ameaça do Zenith Domain')+'</h2><p>'+(trainer.role==='type-master'?'Na campanha original, procure '+esc(trainer.name)+' em '+esc(trainer.location)+', prepare seu time para o tipo '+esc(types[trainer.type]||trainer.type)+' e vença o Mestre para avançar na coleta das 18 Type Emeralds. A disponibilidade do confronto pode variar conforme os eventos do Blue.':'O objetivo anunciado pelo criador é reunir os 18 Type Emeralds e enfrentar o poder selado no Zenith Domain. Confira no jogo os eventos necessários para desbloquear a luta.')+'</p>'+(trainer.role==='type-master'?'<p><strong>Fraquezas tradicionais do tipo:</strong> '+(weaknesses[trainer.type]||[]).map(esc).join(' · ')+'. Pokémon de dupla tipagem ou habilidades podem alterar essas vantagens.</p>':'')+'</section>'+ 
    '<div class="trainer-choice"><div><h2>Equipe do treinador</h2><p>Escolha o formato registrado no Pokémon Decades original.</p></div><label class="select-field"><span>Versão</span><select data-select="trainerVariant" aria-label="Escolher variante da equipe">'+all.map(v=>'<option value="'+esc(v.id)+'" '+(v.id===chosen?.id?'selected':'')+'>'+esc(v.label)+' · '+v.team.length+' Pokémon</option>').join('')+'</select></label></div>'+
    (chosen?'<div class="story-pokemon-grid">'+chosen.team.map(p=>teamPokemon(p,model,details)).join('')+'</div>':'<p class="data-note">Esta equipe ainda não possui dados exportados.</p>')+
    '<div class="story-honesty"><strong>Origem e atualização</strong><p>Equipe extraída de PBS/trainers_story_mode.txt da versão original do Decades. Itens, Pokémon, golpes e níveis podem ter sido modificados no Blue. Para atualizar, execute a exportação dos treinadores locais; não interpretamos a formação original como garantida no hack atual.</p>'+iconLink(srcRef,'Conferir arquivo oficial')+'</div></div>';
