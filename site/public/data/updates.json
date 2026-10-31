@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fd702990b44d2d6a77aab5e1ca5d5ce4c30c48aa",
+      "date": "2026-10-31T19:47:55-03:00",
+      "title": "feat(ia): adicionar Blue Radical inspirada nos principios do CFRU",
+      "category": "Novidades"
+    },
+    {
       "sha": "223b76c7b9c028a81bbc97a4103d0195d6465b19",
       "date": "2026-10-31T19:12:21-03:00",
       "title": "feat(lab): testar times completos e duplas com mouse e HP animado",
