@@ -35,6 +35,12 @@ async function ready(url, child) {
   fs.writeFileSync(path.join(game,"PBS","items.txt"), "[POTION]\nName = Potion\nPrice = 300\n");
   fs.writeFileSync(path.join(game,"PBS","trainers_story_mode.txt"), "[YOUNGSTER,TEST]\nPokemon = TESTMON,5\n");
   fs.writeFileSync(path.join(game,"PBS","encounters.txt"), "[005]\nLand,21\n  100,TESTMON,5\n");
+  fs.writeFileSync(path.join(game,"PBS","pokemon_metrics.txt"), "[TESTMON]\nFrontSprite = 0,0\nBackSprite = 0,0\n");
+  fs.writeFileSync(path.join(game,"PBS","pokemon_metrics_forms.txt"), "[TESTMON,1]\nFrontSprite = 0,0\n");
+  fs.writeFileSync(path.join(game,"PBS","types.txt"), "[WATER]\nName = Water\n");
+  fs.writeFileSync(path.join(game,"PBS","abilities.txt"), "[SWIFTSWIM]\nName = Swift Swim\n");
+  fs.writeFileSync(path.join(game,"PBS","moves.txt"), "[TACKLE]\nName = Tackle\n");
+
   const port = await freePort();
   const url = "http://127.0.0.1:" + port;
   const child = spawn(process.env.PYTHON || "python3",
@@ -108,6 +114,31 @@ async function ready(url, child) {
       "Sprite nao gravado no diretorio de teste esperado: "+JSON.stringify(uploadBody));
     await page.waitForFunction(()=>document.querySelector('.sprite-tile[data-kind="front"] img')?.naturalWidth>0);
     assert.equal(await staticTile.locator("img").isVisible(),true);
+
+    // Criar uma espécie adicional sem alterar o Pokémon original.
+    await page.locator("#new").click();
+    await page.locator(".pokemon-dialog").waitFor();
+    await page.locator('.pokemon-dialog input').first().fill("NEWMON");
+    await page.locator('.pokemon-dialog input').nth(1).fill("New Mon");
+    const [createResponse]=await Promise.all([
+      page.waitForResponse(res=>res.url().includes("/api/pokemon/new") && res.request().method()==="POST"),
+      page.locator('.pokemon-dialog button:has-text("Criar nova espécie")').click()
+    ]);
+    assert.equal(createResponse.status(),200,await createResponse.text());
+    await page.waitForFunction(()=>document.querySelector("#recordTitle")?.textContent==="NEWMON");
+    const speciesFile=fs.readFileSync(path.join(game,"PBS","pokemon.txt"),"utf8");
+    assert.match(speciesFile,/\[TESTMON\]/);
+    assert.match(speciesFile,/\[NEWMON\]/);
+    assert.equal(speciesFile.match(/\[TESTMON\]/g).length,1,"O registro antigo nao foi substituido");
+    assert.equal(await page.locator(".pokemon-metrics-card").count(),1);
+    const firstMetric=page.locator(".pokemon-metric-group").first().locator("input").first();
+    await firstMetric.fill("12");
+    const [metricResponse]=await Promise.all([
+      page.waitForResponse(res=>res.url().includes("/api/pokemon/metrics") && res.request().method()==="POST"),
+      page.locator(".pokemon-metrics-card button:has-text('Salvar posição')").click()
+    ]);
+    assert.equal(metricResponse.status(),200,await metricResponse.text());
+    assert.match(fs.readFileSync(path.join(game,"PBS","pokemon_metrics.txt"),"utf8"),/FrontSprite = 12,0,2/);
     assert.deepEqual(errors,[],"Sem erros JS no navegador");
 
     const shotDir = path.join(root,"tests","artifacts");
