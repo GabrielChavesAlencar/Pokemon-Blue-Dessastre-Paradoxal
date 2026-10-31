@@ -94,14 +94,18 @@ async function ready(url, child) {
       return canvas.toDataURL("image/png");
     });
     const pngBuffer=Buffer.from(dataUrl.split(",")[1],"base64");
-    await staticTile.locator('input[type="file"]').setInputFiles({
-      name:"my-fakemon.png",mimeType:"image/png",buffer:pngBuffer
-    });
-    await page.waitForFunction(async()=>{
-      const res=await fetch("/api/sprite-info?species=TESTMON&kind=front");
-      return (await res.json()).exists;
-    },null,{timeout:10000});
-    assert.ok(fs.existsSync(path.join(game,"Graphics","Pokemon","Front","TESTMON.png")));
+    const [uploadResponse]=await Promise.all([
+      page.waitForResponse(res=>res.url().includes("/api/sprite-upload") && res.request().method()==="POST"),
+      staticTile.locator('input[type="file"]').setInputFiles({
+        name:"my-fakemon.png",mimeType:"image/png",buffer:pngBuffer
+      })
+    ]);
+    const uploadBody=await uploadResponse.json();
+    assert.equal(uploadResponse.status(),200,"O upload precisa concluir: "+JSON.stringify(uploadBody));
+    const finalMeta=await (await page.request.get(url+"/api/sprite-info?species=TESTMON&kind=front")).json();
+    assert.equal(finalMeta.exists,true,JSON.stringify(finalMeta));
+    assert.ok(fs.existsSync(path.join(game,"Graphics","Pokemon","Front","TESTMON.png")),
+      "Sprite nao gravado no diretorio de teste esperado: "+JSON.stringify(uploadBody));
     await page.waitForFunction(()=>document.querySelector('.sprite-tile[data-kind="front"] img')?.naturalWidth>0);
     assert.equal(await staticTile.locator("img").isVisible(),true);
     assert.deepEqual(errors,[],"Sem erros JS no navegador");
