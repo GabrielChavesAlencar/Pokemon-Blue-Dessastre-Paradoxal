@@ -156,6 +156,8 @@ def export(game,output):
         path=output/name;path.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')),encoding='utf-8',newline='\n')
         print(name,path.stat().st_size)
     print(json.dumps(index['counts']))
+    from export_story_teams import update_story_teams
+    update_story_teams(game, output)
 
 if __name__=='__main__':
     project=Path(__file__).resolve().parents[1]
