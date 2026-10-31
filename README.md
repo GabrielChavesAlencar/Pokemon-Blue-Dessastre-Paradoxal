@@ -23,7 +23,7 @@ Na base local, 52 espécies e as 12 Megas estão compiladas. Use **`IMPORTAR_DES
 
 ## Testar batalhas sem avançar na campanha
 
-Abra **`TESTAR_BATALHA.bat`** para o laboratório local de batalhas reais 1 x 1. Escolha espécies/formas, nível e golpes; a sessão não carrega nem salva a campanha. [Como usar e testar Pokémon novos](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
+Abra **`TESTAR_BATALHA.bat`** para o laboratório de batalhas reais, com times de até seis e formatos individual ou dupla. Edite cada integrante e selecione opções também por clique; a sessão não carrega nem salva a campanha. A barra de HP tem descida e recuperação graduais. [Como usar e testar Pokémon novos](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
 
 ## Portal do projeto
 

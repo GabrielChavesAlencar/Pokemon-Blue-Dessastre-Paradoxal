@@ -14,7 +14,7 @@ Os sete pendentes são **Horsand, Spinedra, Stingdra, Gillble, Galbite, Garcholt
 
 ## Testar agora
 
-Abra **`TESTAR_BATALHA.bat`** na pasta principal. Com a geração instalada, o laboratório prepara **Cave Fang x Iron Crusher** no nível 50. Ao escolher seu Pokémon ou o adversário, selecione **Dessastre Paradoxal** para ver apenas as espécies e formas autorais compiladas. O catálogo completo continua disponível.
+Abra **`TESTAR_BATALHA.bat`** na pasta principal. Com a geração instalada, o laboratório prepara dois times de seis no nível 50, incluindo **Cave Fang** e **Iron Crusher**. Em **Editar meu time** ou **Editar time rival**, escolha um integrante e selecione **Dessastre Paradoxal** ao trocar sua espécie para ver apenas as espécies e formas autorais compiladas. O catálogo completo continua disponível. Há formatos individual e dupla, com seleção também por clique.
 
 O laboratório permite mudar nível, golpes, habilidade e item equipado. Para testar Mega Sol, escolha Archgutor e selecione essa habilidade. Para ativar uma Mega durante a batalha, escolha a espécie-base e equipe sua pedra DP — por exemplo, **Arbokita DP**. O laboratório fornece um Mega Ring temporário. Também é possível selecionar uma forma Mega diretamente no catálogo.
 

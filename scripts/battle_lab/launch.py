@@ -11,6 +11,8 @@ import sys
 import zlib
 import tempfile
 
+PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'Validation.rb', 'meta.txt']
+
 
 def atomic_write(path: Path, data: bytes):
     fd,temp=tempfile.mkstemp(prefix='.blue-lab-',dir=path.parent)
@@ -31,7 +33,7 @@ def install(project: Path, game: Path) -> Path:
     plugin=game/'Plugins'/'ZZZZ Blue Battle Lab'
     plugin.mkdir(parents=True,exist_ok=True)
     backup=project/'.blue-backups'/'battle-lab'/datetime.now().strftime('%Y%m%dT%H%M%S%f')
-    for name in ['BlueBattleLab.rb','meta.txt']:
+    for name in PLUGIN_FILES:
         data=(source/name).read_bytes();target=plugin/name
         if target.is_file() and target.read_bytes()==data:continue
         if target.is_file():

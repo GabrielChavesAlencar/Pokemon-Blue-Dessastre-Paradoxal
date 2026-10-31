@@ -15,7 +15,7 @@ lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
 class BattleLabTests(unittest.TestCase):
     def fixture(self,root,main='PluginManager.runPlugins\nCompiler.main'):
         source=root/'scripts'/'battle_lab';source.mkdir(parents=True)
-        for name in ['BlueBattleLab.rb','meta.txt']:shutil.copy2(ROOT/'scripts'/'battle_lab'/name,source/name)
+        for name in lab.PLUGIN_FILES:shutil.copy2(ROOT/'scripts'/'battle_lab'/name,source/name)
         game=root/'game';(game/'Data').mkdir(parents=True)
         (game/'Game.exe').write_bytes(b'fixture only')
         scripts=[[1,RubyString(b'Other'),RubyString(zlib.compress(b'untouched'))],[2,RubyString(b'Main'),RubyString(zlib.compress(main.encode()))]]
@@ -43,5 +43,17 @@ class BattleLabTests(unittest.TestCase):
             game=Path(tmp);(game/'Data').mkdir();lab.prepare_request(game)
             self.assertEqual((game/'Data'/'blue-battle-lab-request.txt').read_text(),'play')
             lab.prepare_request(game,True);self.assertEqual((game/'Data'/'blue-battle-lab-request.txt').read_text(),'smoke')
+
+    def test_upgrade_installs_team_and_mouse_modules_and_backs_up_old_plugin(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.fixture(root)
+            plugin=game/'Plugins'/'ZZZZ Blue Battle Lab';plugin.mkdir(parents=True)
+            (plugin/'BlueBattleLab.rb').write_bytes(b'previous plugin')
+            lab.install(root,game)
+            for name in lab.PLUGIN_FILES:
+                self.assertEqual((plugin/name).read_bytes(),(root/'scripts/battle_lab'/name).read_bytes())
+            backups=list((root/'.blue-backups').rglob('BlueBattleLab.rb'))
+            self.assertEqual(len(backups),1)
+            self.assertEqual(backups[0].read_bytes(),b'previous plugin')
 
 if __name__=='__main__':unittest.main()
