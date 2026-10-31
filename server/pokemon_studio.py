@@ -121,6 +121,19 @@ def validate_pokemon(root: Path, raw: str, *, check_references=True) -> dict:
             "valid": True}
 
 
+SPECIAL_GENERATION = "dessastre-paradoxal"
+SPECIAL_GENERATION_NAME = "Dessastre Paradoxal"
+
+
+def generation_fields(value):
+    key = str(value).strip()
+    if re.sub(r"[^a-z]", "", key.lower()) == "dessastreparadoxal":
+        return "0", "DessastreParadoxal"
+    if not key.isdigit() or not 1 <= int(key) <= 99:
+        raise PokemonValidationError("Escolha uma geração oficial ou Dessastre Paradoxal.")
+    return str(int(key)), ""
+
+
 def make_species_raw(payload: dict) -> str:
     if not isinstance(payload, dict):
         raise PokemonValidationError("Dados do Pokémon inválidos.")
@@ -136,6 +149,7 @@ def make_species_raw(payload: dict) -> str:
     typ1, typ2 = string("type1", "WATER").upper(), string("type2").upper()
     abilities = string("abilities", "SWIFTSWIM").upper()
     moves = string("moves", "1,TACKLE").upper()
+    generation, generation_flag = generation_fields(payload.get("generation", SPECIAL_GENERATION))
     raw_stats = payload.get("stats", [70,70,70,70,70,70])
     if not isinstance(raw_stats, list) or len(raw_stats)!=6:
         raise PokemonValidationError("Informe seis atributos.")
@@ -163,9 +177,11 @@ def make_species_raw(payload: dict) -> str:
       "Color = " + string("color", "Blue"),
       "Shape = " + string("shape", "Humanoid"),
       "Category = " + string("category", "Paradox"),
-      "Pokedex = " + string("description", "Uma nova espécie."),
-      "Generation = " + string("generation", "9"),
+      "Pokedex = " + string("description", "????"),
+      "Generation = " + generation,
     ]
+    if generation_flag:
+        entries.append("Flags = " + generation_flag)
     if string("hiddenAbilities"):
         entries.insert(entries.index("Moves = " + moves), "HiddenAbilities = " + string("hiddenAbilities").upper())
     if string("tutorMoves"):

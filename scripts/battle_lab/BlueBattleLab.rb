@@ -38,7 +38,21 @@ module BlueBattleLab
     $PokemonEncounters.setup($game_map.map_id)
     $game_temp.last_uptime_refreshed_play_time = System.uptime
     $PokemonGlobal.partner = nil
+    $bag.add(:MEGARING) if GameData::Item.try_get(:MEGARING)
     log('READY | fresh in-memory player; no campaign loaded')
+  end
+
+  def self.choose_species(default)
+    return pbChooseSpeciesFormList(default) unless GameData::Species.try_get(:CAVEFANG)
+    group=pbMessage('Escolha a geracao.', ['Dessastre Paradoxal','Catalogo completo'], 3)
+    return pbChooseSpeciesFormList(default) if group==1
+    return nil if group!=0
+    list=[]
+    GameData::Species.each { |sp| list << sp if sp.flags.include?('DessastreParadoxal') }
+    list.sort_by! { |sp| (sp.form>0 ? sp.form_name : sp.name).downcase }
+    labels=list.map { |sp| sp.form>0 ? sp.form_name : sp.name }
+    selected=pbMessage('Dessastre Paradoxal',labels+['Voltar'],labels.length+1)
+    return selected>=0 && selected<list.length ? list[selected].id : nil
   end
 
   def self.build(species, level)
@@ -93,26 +107,29 @@ module BlueBattleLab
     def main
       BlueBattleLab.setup
       if BlueBattleLab::SMOKE
-        [[ :PIKACHU, :MAGIKARP, 10 ], [ :MIRAIDON, :KORAIDON, 50 ], [ :GREATTUSK, :IRONVALIANT, 50 ]].each do |a,b,level|
+        if defined?(BlueDessastreParadoxal) && !BlueDessastreParadoxal.run_checks
+          BlueBattleLab.log('SMOKE=FAIL | generation checks failed; read Data/blue-generation-validation.txt');$scene=nil;return
+        end
+        [[ :PIKACHU, :MAGIKARP, 10 ], [ :MIRAIDON, :KORAIDON, 50 ], [ :GREATTUSK, :IRONVALIANT, 50 ], * (GameData::Species.try_get(:CAVEFANG) ? [[:CAVEFANG,:IRONCRUSHER,50],[:ARCHGUTOR,:PIKACHU,50]] : [])].each do |a,b,level|
           result = BlueBattleLab.battle(BlueBattleLab.build(a,level), BlueBattleLab.build(b,level), true)
           raise 'Battle did not finish' unless [1,2,3,5].include?(result)
         end
         raise 'Save protection failed' unless Game.save == false && Game.auto_save == false && SaveData.exists? == false && SaveData.save_to_file('Data/blue-lab-should-not-save.rxdata') == false
         raise 'Save unexpectedly created' if File.file?('Data/blue-lab-should-not-save.rxdata')
-        BlueBattleLab.log('SMOKE=PASS | three complete engine battles; save guards passed')
+        BlueBattleLab.log('SMOKE=PASS | complete engine battles; generation and save guards passed')
         $scene = nil
         return
       end
       @level = 50
-      @ally = BlueBattleLab.build(:MIRAIDON, @level)
-      @foe = BlueBattleLab.build(:KORAIDON, @level)
+      @ally = BlueBattleLab.build(GameData::Species.try_get(:CAVEFANG) ? :CAVEFANG : :MIRAIDON, @level)
+      @foe = BlueBattleLab.build(GameData::Species.try_get(:IRONCRUSHER) ? :IRONCRUSHER : :KORAIDON, @level)
       @background = Sprite.new
       @background.bitmap = Bitmap.new(Graphics.width, Graphics.height)
       redraw
       Graphics.transition(0)
       BlueBattleLab.log('MENU_READY')
       loop do
-        commands = ['Iniciar batalha 1 x 1', 'Escolher meu Pokemon', 'Escolher adversario', "Nivel: #{@level}", 'Editar meus golpes', 'Editar golpes do adversario', 'Teste rapido: Pikachu x Eevee', 'Sair do laboratorio']
+        commands = ['Iniciar batalha 1 x 1', 'Escolher meu Pokemon', 'Escolher adversario', "Nivel: #{@level}", 'Editar meus golpes', 'Editar golpes do adversario', 'Minha habilidade', 'Habilidade do adversario', 'Meu item equipado', 'Item do adversario', 'Teste Dessastre Paradoxal', 'Teste rapido: Pikachu x Eevee', 'Sair do laboratorio']
         choice = pbMessage('BLUE - LABORATORIO DE BATALHA', commands, commands.length)
         case choice
         when 0
@@ -121,7 +138,7 @@ module BlueBattleLab
           pbMessage({1=>'Vitoria!',2=>'Derrota.',3=>'Batalha encerrada.',5=>'Empate.'}[result] || 'Teste encerrado.')
         when 1, 2
           current = choice == 1 ? @ally : @foe
-          selected = pbChooseSpeciesFormList(current.species_data.id)
+          selected = BlueBattleLab.choose_species(current.species_data.id)
           if selected
             pkmn = BlueBattleLab.build(selected, @level)
             choice == 1 ? @ally = pkmn : @foe = pkmn
@@ -135,7 +152,22 @@ module BlueBattleLab
           [@ally,@foe].each { |p| p.level=@level; p.reset_moves; p.calc_stats; p.heal }
         when 4 then edit_moves(@ally)
         when 5 then edit_moves(@foe)
-        when 6
+        when 6, 7
+          mon=choice==6 ? @ally : @foe
+          list=mon.getAbilityList
+          selected=pbMessage('Escolha a habilidade.',list.map { |a| GameData::Ability.get(a[0]).name },list.length)
+          mon.ability_index=list[selected][1] if selected>=0 && selected<list.length
+        when 8, 9
+          mon=choice==8 ? @ally : @foe
+          item=pbChooseItemList(mon.item_id)
+          mon.item=item if item
+        when 10
+          if GameData::Species.try_get(:CAVEFANG) && GameData::Species.try_get(:IRONCRUSHER)
+            @level=50;@ally=BlueBattleLab.build(:CAVEFANG,50);@foe=BlueBattleLab.build(:IRONCRUSHER,50)
+          else
+            pbMessage('Importe e compile Dessastre Paradoxal primeiro.')
+          end
+        when 11
           @level=10
           @ally=BlueBattleLab.build(:PIKACHU,@level)
           @foe=BlueBattleLab.build(:EEVEE,@level)
@@ -146,7 +178,11 @@ module BlueBattleLab
       $scene = nil
     rescue StandardError => error
       BlueBattleLab.log("ERROR | #{error.class}: #{error.message}\n#{error.backtrace.join("\n")}")
-      raise
+      if BlueBattleLab::SMOKE
+        $scene=nil
+      else
+        raise
+      end
     ensure
       @background.bitmap.dispose if @background && @background.bitmap
       @background.dispose if @background

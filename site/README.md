@@ -19,3 +19,5 @@ Importe este mesmo repositório na Vercel. Escolha **Root Directory: `site`**, *
 Em Settings → Build and Deployment → Root Directory, mantenha **Skip deployment desativado**, se a opção aparecer, para atualizar também quando mudar apenas o jogo/editor. O `ignoreCommand` força o build a continuar. Depois da primeira implantação, pushes na main geram novas versões pelo Git Integration da Vercel.
 
 Veja [o procedimento completo e a rotina de atualizações](../docs/SITE_E_VERCEL.md).
+
+A geração autoral **Dessastre Paradoxal** acrescenta 59 espécies e 12 Megas. O build extrai os sprites de `assets/fan-pokemon.tar.gz`, verificando seu SHA-256. O pacote contém somente os sprites autorais normalizados. [Cadastro, pendências e importação no jogo](../docs/GERACAO_DESSASTRE_PARADOXAL.md).

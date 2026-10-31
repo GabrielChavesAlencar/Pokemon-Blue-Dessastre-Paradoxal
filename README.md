@@ -15,6 +15,12 @@ Para reproduzir a restauracao em outra copia local do Decades, execute `python s
 
 O editor aceita golpes de evolucao no nivel **0**, alem dos niveis 1–100, e comentarios numericos dos PBS do Decades. O `RUN.bat` permanece em uma unica pasta mesmo se a atualizacao falhar.
 
+## Geração especial: Dessastre Paradoxal
+
+**59 espécies autorais e 12 Mega Evoluções**, com sprites, tipos, habilidades e learnsets conciliados da Fan Dex e do documento mestre do autor. No portal, use o filtro **Dessastre Paradoxal**. As descrições começam em `????`; sete espécies ainda sem atributos ficam identificadas como pendentes e fora das batalhas.
+
+Na base local, 52 espécies e as 12 Megas estão compiladas. Use **`IMPORTAR_DESSASTRE_PARADOXAL.bat`** para reproduzir a importação e **`TESTAR_BATALHA.bat`** para testar. Mega Sol também foi implementada. [Manual, evoluções, fontes e critérios](docs/GERACAO_DESSASTRE_PARADOXAL.md).
+
 ## Testar batalhas sem avançar na campanha
 
 Abra **`TESTAR_BATALHA.bat`** para o laboratório local de batalhas reais 1 x 1. Escolha espécies/formas, nível e golpes; a sessão não carrega nem salva a campanha. [Como usar e testar Pokémon novos](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.

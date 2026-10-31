@@ -4,8 +4,10 @@ Na pasta principal do projeto, abra **TESTAR_BATALHA.bat**. É uma sessão limit
 
 ## Usar
 
-- O confronto inicial é Miraidon x Koraidon no nível 50.
+- Com a geração autoral instalada, o confronto inicial é Cave Fang x Iron Crusher no nível 50; sem ela, Miraidon x Koraidon.
 - Selecione **Escolher meu Pokemon** ou **Escolher adversario** para abrir o catálogo de espécies e formas compiladas. Formas são identificadas pelo número na lista. A tecla de ação alterna a ordenação da lista.
+- O catálogo permite escolher **Dessastre Paradoxal** ou o catálogo completo. As sete espécies pendentes não são liberadas para combate.
+- As opções de habilidade e item permitem testar Mega Sol e equipar as pedras DP; o Mega Ring é fornecido temporariamente.
 - Ajuste o nível de ambos entre 1 e 100. Ao mudar o nível, os golpes voltam aos quatro últimos da lista de aprendizado disponível naquele nível.
 - **Editar meus golpes** e **Editar golpes do adversario** permitem testar até quatro golpes. A lista é livre para experimentos e não valida a legalidade competitiva do moveset.
 - Use **Iniciar batalha 1 x 1**. Os menus de batalha e os controles são os próprios do jogo. Ao terminar ou fugir, você volta ao laboratório; os Pokémon são curados entre testes.

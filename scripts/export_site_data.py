@@ -34,11 +34,20 @@ def export(game,output):
             if key in lookup:raise ValueError('Duplicate species: '+key)
             lookup[key]=f
             (forms if ',' in key else species).append((key,f,path.name))
+    project=Path(__file__).resolve().parents[1]
+    national=json.loads((project/'data/national-species.json').read_text(encoding='utf8')) if (project/'data/national-species.json').is_file() else {}
+    manifest=json.loads((project/'data/dessastre-paradoxal.json').read_text(encoding='utf8')) if (project/'data/dessastre-paradoxal.json').is_file() else None
+    fan_numbers={p['id']:1025+p['number'] for p in manifest['entries'] if not p.get('base')} if manifest else {}
+    next_custom=max([1025,*fan_numbers.values()])+1
     catalogue=[]
     for number,(key,f,source) in enumerate(species,1):
         stats=[int(n) for n in values(f.get('BaseStats','1,1,1,1,1,1'))]
+        if key in national:number=national[key]
+        elif key in fan_numbers:number=fan_numbers[key]
+        elif national:number=next_custom;next_custom+=1
         catalogue.append({'id':key,'number':number,'name':f.get('Name',key),
-            'types':values(f.get('Types','NORMAL')),'stats':stats,'generation':int(f.get('Generation','1')),
+            'types':values(f.get('Types','NORMAL')),'stats':stats,'generation':'dessastre-paradoxal' if 'DessastreParadoxal' in values(f.get('Flags','')) else int(f.get('Generation','1')),
+            'generationLabel':'Dessastre Paradoxal' if 'DessastreParadoxal' in values(f.get('Flags','')) else 'Geração '+f.get('Generation','1'),
             'flags':values(f.get('Flags','')),'height':float(f.get('Height','0')),'weight':float(f.get('Weight','0')),
             'forms':sum(1 for form,_,_ in forms if form.split(',')[0]==key)})
     for key,f,source in species+forms:
@@ -95,8 +104,49 @@ def export(game,output):
             detail=details.get(base+','+form)
             if not detail:raise ValueError('Unknown encounter species: '+key)
             encounter_forms[key]={'base':base,'form':int(form),'name':detail['name']}
+    custom_forms=[]
+    if manifest:
+        by_id={p['id']:p for p in catalogue}
+        for entry in manifest['entries']:
+            key=entry['id'];mega=bool(entry.get('base'));record=details.get(key,{})
+            flags=['DessastreParadoxal']+(['Paradox'] if 'paradox' in entry['category'] else [])+(['MegaEvolution'] if mega else [])
+            url=lambda role:('/assets/fan-pokemon/'+entry['sprites'][role]['path']) if entry['sprites'].get(role) else None
+            meta={'id':key,'name':entry['name'],'types':entry['types'],'stats':entry['stats'],'generation':'dessastre-paradoxal','generationLabel':'Dessastre Paradoxal','flags':flags,'pending':entry['pending'],'description':'????','art':url('front'),'artKind':(entry['sprites'].get('front') or {}).get('kind','sprite'),'sprite':url('front'),'sprites':{role:url(role) for role in entry['sprites']},'height':None,'weight':None,'category':entry['category']}
+            current=lookup.get(key)
+            if current:
+                meta.update({'types':values(current.get('Types','')) or entry['types'],'stats':[int(n) for n in values(current.get('BaseStats',''))] or entry['stats'],'pending':False,'description':current.get('Pokedex','????')})
+            level=record.get('moves',[]) if current else [[m['level'],m['id']] for m in entry['learnset']['level']]
+            tutor=list(dict.fromkeys(m['id'] for kind in ['tm','tutor'] for m in entry['learnset'][kind]))
+            egg=list(dict.fromkeys(m['id'] for m in entry['learnset']['egg']))
+            source_tm=list(dict.fromkeys(m['id'] for m in entry['learnset']['tm']))
+            source_tutor=list(dict.fromkeys(m['id'] for m in entry['learnset']['tutor']))
+            current_tutor=record.get('tutor',[]) if current else tutor
+            tm=[id for id in source_tm if id in current_tutor]
+            tutor_list=[id for id in current_tutor if id in source_tutor or id not in source_tm]
+            record.update({**meta,'abilities':record.get('abilities',[]) if current else entry['abilities'][:2],'hidden':record.get('hidden',[]) if current else entry['abilities'][2:] if not mega else [],'moves':level,'tm':tm,'tutor':tutor_list,'egg':record.get('egg',[]) if current else egg,'catchRate':record.get('catchRate',0),'evolutions':record.get('evolutions',[]),'preEvolution':entry.get('preEvolution'),'learnsetSource':entry['learnsetSource']})
+            if mega:
+                record.update({'base':entry['base'],'form':entry['form'],'megaStone':entry['megaStone'],'exclusive':True,'own':['Abilities','HiddenAbilities','Moves','TutorMoves','EggMoves','Evolutions']})
+                if set(record['hidden']).issubset(record['abilities']):record['hidden']=[]
+                base=by_id[entry['base']]
+                custom_forms.append({**meta,'base':entry['base'],'form':entry['form'],'number':base['number'],'forms':0})
+                items[entry['megaStone']]=entry['base'].title()+'ita DP'
+            else:
+                meta.update({'number':fan_numbers[key],'forms':0})
+                if key in by_id:by_id[key].update(meta)
+                else:catalogue.append(meta);by_id[key]=meta
+            details[key]=record
+        # Include draft evolution links in the portal, without compiling draft battle species.
+        for entry in manifest['entries']:
+            pre=entry.get('preEvolution')
+            if pre and pre[0] in details:
+                link=[entry['id'],pre[1],pre[2]]
+                if link not in details[pre[0]]['evolutions']:details[pre[0]]['evolutions'].append(link)
+        items['DPSILICASCALE']='Escama de Sílica'
+        abilities['MEGASOL']='Mega Sol'
+    catalogue.sort(key=lambda p:p['number'])
     generated=datetime.now(timezone.utc).isoformat()
-    index={'updatedAt':generated,'species':catalogue,'counts':{'species':len(species),'forms':len(forms),
+    index={'updatedAt':generated,'species':catalogue,'customForms':custom_forms,'generations':[{'id':str(i),'name':'Geração '+str(i)} for i in range(1,10)]+[{'id':'dessastre-paradoxal','name':'Dessastre Paradoxal'}],
+           'counts':{'species':len(catalogue),'forms':len(forms),'fanSpecies':sum(p.get('generation')=='dessastre-paradoxal' for p in catalogue),'fanMegas':len(custom_forms),'pending':sum(p.get('pending',False) for p in catalogue),
            'locations':len(locations),'moves':len(moves),'paradox':sum('Paradox' in x['flags'] for x in catalogue)},
            'encounterForms':encounter_forms,
            'basis':'Dados atuais do projeto, com referências da geração 9'}

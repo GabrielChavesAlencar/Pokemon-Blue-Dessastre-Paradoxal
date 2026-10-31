@@ -1,7 +1,7 @@
 export async function loadPortal(){
   const files=['catalog','locations','updates','guides'];
   const values=await Promise.all(files.map(async name=>{const response=await fetch(`/data/${name}.json`);if(!response.ok)throw new Error(`Não foi possível abrir ${name}.`);return response.json();}));
-  const byId=new Map(values[0].species.map(p=>[p.id,p]));
+  const byId=new Map([...values[0].species,...(values[0].customForms??[])].map(p=>[p.id,p]));
   for(const [id,form] of Object.entries(values[0].encounterForms??{})){const base=byId.get(form.base);if(base)byId.set(id,{...base,name:base.name+' · '+form.name,encounterForm:form.form});}
   return {catalog:values[0],locations:values[1].locations,updates:values[2].commits,guides:values[3].guides,byId};
 }

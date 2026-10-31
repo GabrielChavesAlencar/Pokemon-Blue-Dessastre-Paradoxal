@@ -1,9 +1,190 @@
 {
   "guides": [
-    {"id":"primeiros-passos","title":"Seu ponto de partida no Blue","excerpt":"Conheça a proposta do projeto e encontre o caminho para sua próxima descoberta.","category":"Primeiros passos","minutes":3,"icon":"compass","sections":[{"title":"Uma jornada em construção","paragraphs":["Pokémon Blue: Dessastre Paradoxal é um fangame em desenvolvimento a partir da base Pokémon Decades. Este portal acompanha o estado atual do projeto: a campanha e os recursos da base continuam presentes enquanto a identidade do Blue toma forma.","A Pokédex, os encontros e as atualizações aqui publicados ajudam a explorar essa versão. O conteúdo pode mudar conforme o desenvolvimento avança."]},{"title":"Comece pela Pokédex","paragraphs":["Pesquise pelo nome ou pelo número de um Pokémon. Na ficha, compare seus atributos, confira habilidades e examine os golpes aprendidos por nível, por tutor e por ovo.","As formas alternativas ficam na mesma ficha. Selecione uma forma para ver os atributos e habilidades correspondentes. A ilustração apresentada representa a espécie base."]},{"title":"Planeje sua próxima captura","paragraphs":["Use Localizações para procurar uma área ou uma espécie. Cada área reúne os métodos de encontro e as variações cadastradas para a campanha.","Os níveis indicados são os níveis base dos encontros. A progressão e o sistema de escalonamento podem alterar o nível encontrado durante a partida."]}]},
-    {"id":"encontrar-pokemon","title":"Como encontrar seu próximo Pokémon","excerpt":"Entenda métodos de encontro, chances e as diferentes versões de uma mesma área.","category":"Exploração","minutes":4,"icon":"map","sections":[{"title":"Procure por espécie ou por área","paragraphs":["Na página Localizações, a busca aceita o nome da área e o nome do Pokémon. Você também pode abrir uma espécie na Pokédex e usar o atalho para seus locais de encontro.","Uma espécie pode aparecer em mais de um método ou em diferentes variações da mesma área. Compare essas opções antes de escolher o próximo destino."]},{"title":"O que a chance significa","paragraphs":["A porcentagem exibida representa a participação do Pokémon na tabela daquele método. Ela não é a chance de captura com uma Poké Ball e também não representa a probabilidade de iniciar uma batalha a cada passo.","Quando uma espécie aparece em mais de uma entrada da mesma tabela, o portal reúne os pesos e mostra a faixa total de níveis correspondente."]},{"title":"Horário e variações da campanha","paragraphs":["Grama noturna, manhã, pesca, água, árvores e outros métodos têm suas próprias tabelas. Se uma área oferecer versões diferentes, o seletor permite consultá-las separadamente.","A versão ativa depende dos eventos e da progressão do jogo. O portal apresenta as tabelas cadastradas, sem presumir que todas estejam disponíveis ao mesmo tempo."]}]},
-    {"id":"pokemon-paradoxo","title":"Pokémon de um outro tempo","excerpt":"Uma introdução às espécies Paradoxo e às habilidades que definem sua presença em batalha.","category":"Pokémon Paradoxo","minutes":3,"icon":"spark","sections":[{"title":"Passado e futuro","paragraphs":["Pokémon Paradoxo são espécies próprias, com atributos e habilidades distintos. A semelhança visual com outro Pokémon não significa que compartilhem a mesma linha evolutiva.","Use o filtro Paradoxos na Pokédex para consultar as espécies marcadas dessa forma na base atual do projeto."]},{"title":"Protosynthesis e Quark Drive","paragraphs":["Protosynthesis e Quark Drive estão associadas a condições de campo. Na referência da geração 9 usada pelo projeto, a primeira se relaciona à luz solar intensa; a segunda, ao Electric Terrain.","Consulte a habilidade da espécie e considere o restante da equipe ao planejar uma batalha. Itens e outros efeitos também podem interagir com essas habilidades."]},{"title":"Encontros e disponibilidade","paragraphs":["O filtro da Pokédex não indica, por si só, que uma espécie esteja disponível em encontros selvagens. A seção Onde encontrar mostra os registros de encontro disponíveis para a espécie.","Pokémon oferecidos por eventos, presentes e recompensas podem não aparecer nessas tabelas. O desenvolvimento de uma campanha própria do Blue será acompanhado na página de atualizações."]}]},
-    {"id":"base-geracao-9","title":"Entenda a base de batalhas restaurada","excerpt":"Atributos, habilidades, golpes e regras que voltaram às referências da geração 9.","category":"Batalhas","minutes":4,"icon":"shield","sections":[{"title":"Uma nova referência de atributos","paragraphs":["A base local do projeto teve os dados de 1.025 espécies restaurados usando as referências do Pokémon Essentials e do Generation 9 Pack 3.3.3. Isso inclui atributos, tipos, habilidades, evoluções e listas de golpes.","Por exemplo, Bulbasaur voltou aos atributos 45/49/49/45/65/65, com Overgrow e Chlorophyll. Charmeleon voltou ao tipo Fire e Blastoise ao tipo Water."]},{"title":"Golpes e condições de batalha","paragraphs":["Os golpes com referência disponível foram restaurados, incluindo Tackle com poder 40, Torch Song com poder 80 e Electro Drift com poder 100. Stealth Rock voltou ao tipo Rock.","As substituições de Sleep e Freeze por Drowsy e Frostbite foram desativadas. O clima de gelo segue a opção Snow da geração 9. Ataque e Ataque Especial voltaram a usar EVs independentes, com limites 510 no total e 252 por atributo."]},{"title":"O que continua próprio do fangame","paragraphs":["A campanha, os encontros e as equipes dos treinadores foram preservados. Formas e golpes exclusivos sem equivalente nas referências continuam disponíveis para manter esses recursos funcionando.","As pedras universais de Mega Evolução da campanha também foram preservadas. As alterações de regras podem mudar a dificuldade das batalhas, mesmo com a progressão e as equipes originais mantidas."]}]},
-    {"id":"formas-e-evolucoes","title":"Formas, evoluções e golpes ao evoluir","excerpt":"Saiba interpretar as formas alternativas e as condições mostradas em cada ficha.","category":"Pokédex","minutes":3,"icon":"layers","sections":[{"title":"Uma espécie, diferentes formas","paragraphs":["Uma forma pode definir seus próprios tipos, atributos, habilidades e golpes, ou herdar parte dos dados da espécie base. O seletor da ficha mostra os valores efetivos para a forma escolhida.","Formas exclusivas do fangame são identificadas quando essa informação está disponível. A presença de uma forma na Pokédex não garante que seu acesso já esteja disponível pela campanha."]},{"title":"Golpes no nível zero","paragraphs":["Na lista de golpes por nível, a indicação Ao evoluir corresponde ao nível zero usado pela base do jogo. Esse registro representa um golpe associado à evolução, e não um Pokémon de nível zero.","Golpes de tutor e golpes de ovo aparecem em listas separadas. Recursos específicos da campanha podem oferecer outras maneiras de ensinar movimentos."]},{"title":"Condições de evolução","paragraphs":["A ficha apresenta o próximo Pokémon e a condição cadastrada, como nível, amizade, item ou troca. Algumas condições dependem de horário, local ou outros requisitos.","Para as Mega Evoluções, a base atual preserva os vínculos com as pedras usadas pelo Decades. As formas são temporárias em batalha e não devem ser confundidas com uma evolução permanente."]}]}
+    {
+      "id": "primeiros-passos",
+      "title": "Seu ponto de partida no Blue",
+      "excerpt": "Conheça a proposta do projeto e encontre o caminho para sua próxima descoberta.",
+      "category": "Primeiros passos",
+      "minutes": 3,
+      "icon": "compass",
+      "sections": [
+        {
+          "title": "Uma jornada em construção",
+          "paragraphs": [
+            "Pokémon Blue: Dessastre Paradoxal é um fangame em desenvolvimento a partir da base Pokémon Decades. Este portal acompanha o estado atual do projeto: a campanha e os recursos da base continuam presentes enquanto a identidade do Blue toma forma.",
+            "A Pokédex, os encontros e as atualizações aqui publicados ajudam a explorar essa versão. O conteúdo pode mudar conforme o desenvolvimento avança."
+          ]
+        },
+        {
+          "title": "Comece pela Pokédex",
+          "paragraphs": [
+            "Pesquise pelo nome ou pelo número de um Pokémon. Na ficha, compare seus atributos, confira habilidades e examine os golpes aprendidos por nível, por tutor e por ovo.",
+            "As formas alternativas ficam na mesma ficha. Selecione uma forma para ver os atributos e habilidades correspondentes. Formas autorais mostram seus próprios sprites; quando a imagem é da espécie base, a ficha informa isso."
+          ]
+        },
+        {
+          "title": "Planeje sua próxima captura",
+          "paragraphs": [
+            "Use Localizações para procurar uma área ou uma espécie. Cada área reúne os métodos de encontro e as variações cadastradas para a campanha.",
+            "Os níveis indicados são os níveis base dos encontros. A progressão e o sistema de escalonamento podem alterar o nível encontrado durante a partida."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "encontrar-pokemon",
+      "title": "Como encontrar seu próximo Pokémon",
+      "excerpt": "Entenda métodos de encontro, chances e as diferentes versões de uma mesma área.",
+      "category": "Exploração",
+      "minutes": 4,
+      "icon": "map",
+      "sections": [
+        {
+          "title": "Procure por espécie ou por área",
+          "paragraphs": [
+            "Na página Localizações, a busca aceita o nome da área e o nome do Pokémon. Você também pode abrir uma espécie na Pokédex e usar o atalho para seus locais de encontro.",
+            "Uma espécie pode aparecer em mais de um método ou em diferentes variações da mesma área. Compare essas opções antes de escolher o próximo destino."
+          ]
+        },
+        {
+          "title": "O que a chance significa",
+          "paragraphs": [
+            "A porcentagem exibida representa a participação do Pokémon na tabela daquele método. Ela não é a chance de captura com uma Poké Ball e também não representa a probabilidade de iniciar uma batalha a cada passo.",
+            "Quando uma espécie aparece em mais de uma entrada da mesma tabela, o portal reúne os pesos e mostra a faixa total de níveis correspondente."
+          ]
+        },
+        {
+          "title": "Horário e variações da campanha",
+          "paragraphs": [
+            "Grama noturna, manhã, pesca, água, árvores e outros métodos têm suas próprias tabelas. Se uma área oferecer versões diferentes, o seletor permite consultá-las separadamente.",
+            "A versão ativa depende dos eventos e da progressão do jogo. O portal apresenta as tabelas cadastradas, sem presumir que todas estejam disponíveis ao mesmo tempo."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pokemon-paradoxo",
+      "title": "Pokémon de um outro tempo",
+      "excerpt": "Uma introdução às espécies Paradoxo e às habilidades que definem sua presença em batalha.",
+      "category": "Pokémon Paradoxo",
+      "minutes": 3,
+      "icon": "spark",
+      "sections": [
+        {
+          "title": "Passado e futuro",
+          "paragraphs": [
+            "Pokémon Paradoxo são espécies próprias, com atributos e habilidades distintos. A semelhança visual com outro Pokémon não significa que compartilhem a mesma linha evolutiva.",
+            "Use o filtro Paradoxos na Pokédex para consultar as espécies marcadas dessa forma na base atual do projeto."
+          ]
+        },
+        {
+          "title": "Protosynthesis e Quark Drive",
+          "paragraphs": [
+            "Protosynthesis e Quark Drive estão associadas a condições de campo. Na referência da geração 9 usada pelo projeto, a primeira se relaciona à luz solar intensa; a segunda, ao Electric Terrain.",
+            "Consulte a habilidade da espécie e considere o restante da equipe ao planejar uma batalha. Itens e outros efeitos também podem interagir com essas habilidades."
+          ]
+        },
+        {
+          "title": "Encontros e disponibilidade",
+          "paragraphs": [
+            "O filtro da Pokédex não indica, por si só, que uma espécie esteja disponível em encontros selvagens. A seção Onde encontrar mostra os registros de encontro disponíveis para a espécie.",
+            "Pokémon oferecidos por eventos, presentes e recompensas podem não aparecer nessas tabelas. O desenvolvimento de uma campanha própria do Blue será acompanhado na página de atualizações."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "base-geracao-9",
+      "title": "Entenda a base de batalhas restaurada",
+      "excerpt": "Atributos, habilidades, golpes e regras que voltaram às referências da geração 9.",
+      "category": "Batalhas",
+      "minutes": 4,
+      "icon": "shield",
+      "sections": [
+        {
+          "title": "Uma nova referência de atributos",
+          "paragraphs": [
+            "A base local do projeto teve os dados de 1.025 espécies restaurados usando as referências do Pokémon Essentials e do Generation 9 Pack 3.3.3. Isso inclui atributos, tipos, habilidades, evoluções e listas de golpes.",
+            "Por exemplo, Bulbasaur voltou aos atributos 45/49/49/45/65/65, com Overgrow e Chlorophyll. Charmeleon voltou ao tipo Fire e Blastoise ao tipo Water."
+          ]
+        },
+        {
+          "title": "Golpes e condições de batalha",
+          "paragraphs": [
+            "Os golpes com referência disponível foram restaurados, incluindo Tackle com poder 40, Torch Song com poder 80 e Electro Drift com poder 100. Stealth Rock voltou ao tipo Rock.",
+            "As substituições de Sleep e Freeze por Drowsy e Frostbite foram desativadas. O clima de gelo segue a opção Snow da geração 9. Ataque e Ataque Especial voltaram a usar EVs independentes, com limites 510 no total e 252 por atributo."
+          ]
+        },
+        {
+          "title": "O que continua próprio do fangame",
+          "paragraphs": [
+            "A campanha, os encontros e as equipes dos treinadores foram preservados. Formas e golpes exclusivos sem equivalente nas referências continuam disponíveis para manter esses recursos funcionando.",
+            "As pedras universais de Mega Evolução da campanha também foram preservadas. As alterações de regras podem mudar a dificuldade das batalhas, mesmo com a progressão e as equipes originais mantidas."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "formas-e-evolucoes",
+      "title": "Formas, evoluções e golpes ao evoluir",
+      "excerpt": "Saiba interpretar as formas alternativas e as condições mostradas em cada ficha.",
+      "category": "Pokédex",
+      "minutes": 3,
+      "icon": "layers",
+      "sections": [
+        {
+          "title": "Uma espécie, diferentes formas",
+          "paragraphs": [
+            "Uma forma pode definir seus próprios tipos, atributos, habilidades e golpes, ou herdar parte dos dados da espécie base. O seletor da ficha mostra os valores efetivos para a forma escolhida.",
+            "Formas exclusivas do fangame são identificadas quando essa informação está disponível. A presença de uma forma na Pokédex não garante que seu acesso já esteja disponível pela campanha."
+          ]
+        },
+        {
+          "title": "Golpes no nível zero",
+          "paragraphs": [
+            "Na lista de golpes por nível, a indicação Ao evoluir corresponde ao nível zero usado pela base do jogo. Esse registro representa um golpe associado à evolução, e não um Pokémon de nível zero.",
+            "Golpes de tutor e golpes de ovo aparecem em listas separadas. Recursos específicos da campanha podem oferecer outras maneiras de ensinar movimentos."
+          ]
+        },
+        {
+          "title": "Condições de evolução",
+          "paragraphs": [
+            "A ficha apresenta o próximo Pokémon e a condição cadastrada, como nível, amizade, item ou troca. Algumas condições dependem de horário, local ou outros requisitos.",
+            "Para as Mega Evoluções, a base atual preserva os vínculos com as pedras usadas pelo Decades. As formas são temporárias em batalha e não devem ser confundidas com uma evolução permanente."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dessastre-paradoxal",
+      "title": "Conheça a geração Dessastre Paradoxal",
+      "excerpt": "Espécies autorais, Megas e fichas que ainda estão em definição.",
+      "category": "Geração especial",
+      "minutes": 3,
+      "icon": "spark",
+      "sections": [
+        {
+          "title": "Uma geração com nome próprio",
+          "paragraphs": [
+            "Dessastre Paradoxal reúne 59 espécies e 12 Mega Evoluções criadas para o projeto. Use o filtro de geração na Pokédex para encontrar todos os registros autorais. As gerações oficiais continuam disponíveis.",
+            "As descrições da Pokédex ainda não foram escritas e aparecem como ????. Os nomes, tipos, atributos, habilidades e golpes refletem os cadastros do autor."
+          ]
+        },
+        {
+          "title": "O que significa pendente",
+          "paragraphs": [
+            "Horsand, Spinedra, Stingdra, Gillble, Galbite, Garcholt e primal notic ainda não têm atributos definidos. Suas fichas estão disponíveis para consulta; os valores desconhecidos aparecem como ???? e eles não estão liberados para batalha.",
+            "Ter sprites ou learnset documentado não significa que uma espécie já esteja disponível em um encontro. As localizações serão incluídas conforme a campanha for sendo preparada."
+          ]
+        },
+        {
+          "title": "Megas e Mega Sol",
+          "paragraphs": [
+            "As doze Megas são formas alternativas de suas espécies-base e usam pedras DP próprias. Cada ficha mostra a pedra correspondente e o sprite autoral.",
+            "Mega Sol permite que os golpes do portador considerem sol sem mudar o clima do campo ou beneficiar outros Pokémon. Solar Beam dispensa o carregamento; o dano de Fogo recebido não ganha um bônus por essa habilidade."
+          ]
+        }
+      ]
+    }
   ]
 }

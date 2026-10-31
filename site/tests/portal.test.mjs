@@ -38,7 +38,7 @@ test('git real acrescenta mudanças fora da pasta do site',()=>{
 });
 test('Pokédex tem espécies únicas, atributos válidos e detalhes para cada ficha',()=>{
   assert.equal(ids.size,catalog.species.length);assert.equal(catalog.species.length,catalog.counts.species);
-  for(const p of catalog.species){assert.ok(details.species[p.id],p.id);assert.equal(p.stats.length,6);assert.ok(p.stats.every(x=>Number.isInteger(x)&&x>0));assert.ok(p.number>0);}
+  for(const p of catalog.species){assert.ok(details.species[p.id],p.id);assert.equal(p.stats.length,6);assert.ok(p.pending?p.stats.every(x=>x===null):p.stats.every(x=>Number.isInteger(x)&&x>0));assert.ok(p.number>0);}
   assert.equal(catalog.species.find(p=>p.id==='MIRAIDON').number,1008);
 });
 test('golpes, evoluções e formas apontam para registros existentes',()=>{

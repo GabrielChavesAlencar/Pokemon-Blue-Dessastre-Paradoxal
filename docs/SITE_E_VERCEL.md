@@ -1,6 +1,6 @@
 # Site e publicação na Vercel
 
-O portal está em `site/`, no mesmo repositório do Blue Studio. Publicar o site não publica a pasta ignorada `game/`. Os JSON de `site/public/data` são o retrato factual da base local exportada: espécies, formas, golpes, habilidades, itens e tabelas de encontro. As imagens usam URLs públicas do projeto PokeAPI/sprites; exigem conexão. Formas alternativas exibem a ilustração da espécie base com identificação explícita.
+O portal está em `site/`, no mesmo repositório do Blue Studio. Publicar o site não publica a pasta ignorada `game/`. Os JSON de `site/public/data` são o retrato factual da base local exportada: espécies, formas, golpes, habilidades, itens e tabelas de encontro. As imagens usam URLs públicas do projeto PokeAPI/sprites; exigem conexão. As formas autorais de Dessastre Paradoxal usam os sprites do autor; outras formas exibem a ilustração da espécie base com identificação explícita.
 
 ## Primeiro deploy
 

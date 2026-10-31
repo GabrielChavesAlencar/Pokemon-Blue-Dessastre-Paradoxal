@@ -8,7 +8,7 @@
     ["Moves","Golpes por nível (nível,golpe,...)","textarea"],
     ["TutorMoves","Golpes tutor","textarea"],["EggMoves","Golpes de ovo","textarea"],
     ["Evolutions","Evoluções (espécie,método,parâmetro)","text"],
-    ["Pokedex","Descrição na Pokédex","textarea"]
+    ["Pokedex","Descrição na Pokédex","textarea"],["Generation","Geração","generation"]
   ];
   const statNames=["HP","Ataque","Defesa","Velocidade","Ataque Esp.","Defesa Esp."];
   const node=(tag,name,text)=>{
@@ -64,6 +64,14 @@
     actions.append(check);head.append(actions);card.append(head);
     const grid=node("div","pokemon-form-grid");
     for(const [key,label,kind] of labels){
+      if(kind==="generation"){
+        const wrapper=node("label","pokemon-input");wrapper.append(node("span","",label));
+        const input=node("select","");
+        for(const [id,name] of [["dessastre-paradoxal","Dessastre Paradoxal"],...Array.from({length:9},(_,i)=>[String(i+1),"Geração "+(i+1)])]){const option=node("option","",name);option.value=id;input.append(option);}
+        input.value=(values.Flags||"").split(",").map(x=>x.trim()).includes("DessastreParadoxal")?"dessastre-paradoxal":values.Generation||"9";
+        input.addEventListener("change",()=>{const special=input.value==="dessastre-paradoxal";editRaw("Generation",special?"0":input.value);const flags=(allFields().Flags||"").split(",").map(x=>x.trim()).filter(x=>x&&x!=="DessastreParadoxal");if(special)flags.push("DessastreParadoxal");editRaw("Flags",flags.join(","));});
+        wrapper.append(input);grid.append(wrapper);continue;
+      }
       const [wrapper,input]=field(label,values[key]||"",kind);
       input.dataset.pbs=key;
       input.addEventListener("change",()=>editRaw(key,input.value));
@@ -123,7 +131,7 @@
       ["moves","Golpes por nível","1,TACKLE"],
       ["evolutions","Evoluções (opcional)",""],
       ["category","Categoria","Paradox"],
-      ["description","Descrição","Uma nova espécie das profundezas."]
+      ["description","Descrição","????"],["generation","Geração (nome especial ou número oficial)","Dessastre Paradoxal"]
     ];
     const fields={};
     for(const [key,label,initial] of defs){

@@ -12,7 +12,7 @@ const categories = [
   [/^map_|^town_map/, 'MAPAS'],
 ];
 const templates = {
-  'pokemon': id => `[${id}]\nName = ${id}\nTypes = WATER\nBaseStats = 70,70,70,70,70,70\nGenderRatio = Female50Percent\nGrowthRate = Medium\nBaseExp = 150\nEVs = ATTACK,1\nCatchRate = 45\nHappiness = 70\nAbilities = SWIFTSWIM\nMoves = 1,TACKLE,5,WATERGUN,15,BITE\nTutorMoves = PROTECT,SURF\nEggGroups = Water1\nHatchSteps = 5120\nHeight = 1.0\nWeight = 25.0\nColor = Blue\nShape = Fish\nCategory = Paradox\nPokedex = Novo Pokémon. Edite esta descrição.\nGeneration = 9\n`,
+  'pokemon': id => `[${id}]\nName = ${id}\nTypes = WATER\nBaseStats = 70,70,70,70,70,70\nGenderRatio = Female50Percent\nGrowthRate = Medium\nBaseExp = 150\nEVs = ATTACK,1\nCatchRate = 45\nHappiness = 70\nAbilities = SWIFTSWIM\nMoves = 1,TACKLE,5,WATERGUN,15,BITE\nTutorMoves = PROTECT,SURF\nEggGroups = Water1\nHatchSteps = 5120\nHeight = 1.0\nWeight = 25.0\nColor = Blue\nShape = Fish\nCategory = Paradox\nPokedex = ????\nGeneration = 0\nFlags = DessastreParadoxal\n`,
   'pokemon_forms': id => `[${id}]\nFormName = Forma Alternativa\nTypes = WATER\nBaseStats = 70,70,70,70,70,70\nAbilities = SWIFTSWIM\n`,
   'moves': id => `[${id}]\nName = Novo Golpe\nType = WATER\nCategory = Special\nPower = 70\nAccuracy = 100\nTotalPP = 15\nTarget = NearOther\nFunctionCode = None\nFlags = CanProtect,CanMirrorMove\nDescription = Descrição do golpe.\n`,
   'abilities': id => `[${id}]\nName = Nova Habilidade\nDescription = Descrição da habilidade.\n`,

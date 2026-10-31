@@ -2,9 +2,9 @@ name: Portal Blue - validar site
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'scripts/export_site_data.py', '.github/workflows/site-checks.yml']
+    paths: ['site/**', 'scripts/export_site_data.py', 'data/**', '.github/workflows/site-checks.yml']
   pull_request:
-    paths: ['site/**', 'scripts/export_site_data.py', '.github/workflows/site-checks.yml']
+    paths: ['site/**', 'scripts/export_site_data.py', 'data/**', '.github/workflows/site-checks.yml']
   workflow_dispatch:
 permissions:
   contents: read

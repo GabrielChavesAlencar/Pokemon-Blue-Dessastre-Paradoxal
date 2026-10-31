@@ -25,7 +25,7 @@ function updateResults(){
 async function render(scroll=false){
   const id=++renderId;const url=new URL(location.href);const parts=url.pathname.split('/').filter(Boolean);const section=parts[0]??'home';const route=section==='pokedex'&&parts[1]?'pokemon':section;
   const identity=`${route}/${parts[1]??''}`;
-  if(main.dataset.identity!==identity){state=initial();if(url.searchParams.get('grupo')==='paradox')state.group='paradox';if(url.searchParams.get('pokemon'))state.locationQ=model?.byId.get(url.searchParams.get('pokemon'))?.name??url.searchParams.get('pokemon');state.form=url.searchParams.get('forma')??'';}
+  if(main.dataset.identity!==identity){state=initial();if(url.searchParams.get('grupo')==='paradox')state.group='paradox';if(url.searchParams.get('pokemon'))state.locationQ=model?.byId.get(url.searchParams.get('pokemon'))?.name??url.searchParams.get('pokemon');state.form=url.searchParams.get('forma')??'';state.generation=url.searchParams.get('geracao')??'';}
   main.dataset.identity=identity;currentRoute=route;currentBase=null;currentEffective=null;
   document.getElementById('nav').classList.remove('open');document.getElementById('menu-toggle').setAttribute('aria-expanded','false');
   document.querySelectorAll('[data-nav]').forEach(link=>{const active=link.dataset.nav===section;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});

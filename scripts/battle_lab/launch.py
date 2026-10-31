@@ -50,11 +50,14 @@ def patch_bootstrap(project: Path, game: Path, backup: Path):
     for script in scripts:
         if script[1]!=b'Main':continue
         code=zlib.decompress(script[2]).decode('utf8')
-        if '# BLUE_BATTLE_LAB_BOOTSTRAP' in code:return
+        if '# BLUE_LAB_EARLY_DEBUG' in code:return
+        already_installed='# BLUE_BATTLE_LAB_BOOTSTRAP' in code
         needle='PluginManager.runPlugins'
         if code.count(needle)!=1:raise RuntimeError('Bootstrap Main nao reconhecido. Nenhum script foi substituido.')
         hook = needle + "\n    # BLUE_BATTLE_LAB_BOOTSTRAP: opt-in; no campaign side effects\n    if File.file?('Data/blue-battle-lab-request.txt') && !defined?(BlueBattleLab)\n      load 'Plugins/ZZZZ Blue Battle Lab/BlueBattleLab.rb'\n    end"
-        script[2]=RubyString(zlib.compress(code.replace(needle,hook).encode('utf8')))
+        early="$DEBUG = true if File.file?('Data/blue-battle-lab-request.txt') && Time.now - File.mtime('Data/blue-battle-lab-request.txt') < 120 && ['play','smoke'].include?(File.read('Data/blue-battle-lab-request.txt').strip) # BLUE_LAB_EARLY_DEBUG\n    "
+        replacement=early+(needle if already_installed else hook)
+        script[2]=RubyString(zlib.compress(code.replace(needle,replacement).encode('utf8')))
         found=True
     if not found:raise RuntimeError('Main nao encontrado na base local.')
     backup.mkdir(parents=True,exist_ok=True);shutil.copy2(target,backup/'Scripts.rxdata')
