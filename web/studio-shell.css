@@ -1,0 +1,67 @@
+/* Adapted from the source project's Emerald Studio ROM tabs.
+   Own CSS, no shared build/runtime dependency. */
+:root { color-scheme:dark; --bg:#0b0f1a; --panel:#111827; --panel2:#151c2c;
+  --line:#2a3550; --text:#e5e7eb; --muted:#94a3b8; --accent:#f43f5e;
+  --accent2:#fb7185; --good:#49d7a5; --bad:#ffa2ae; }
+body { background:#0b0f1a; color:var(--text); }
+[hidden] { display:none !important; }
+.studio-page { min-height:100vh; background:radial-gradient(circle at 95% -5%,#25182d 0,transparent 28%),#0b0f1a; }
+.studio-topbar { min-height:74px; padding:12px 22px; display:flex; align-items:center; gap:22px;
+  background:#111827; border-bottom:1px solid #2a3550; position:sticky; top:0; z-index:12; flex-wrap:wrap; }
+.studio-brand { display:flex; align-items:center; gap:13px; min-width:245px; }
+.studio-brand strong {font-size:18px;letter-spacing:-.035em;}
+.studio-brand small {display:block;font-size:10px;margin-top:4px;color:#8fa2ba;}
+.studio-gem {width:18px;height:18px;border-radius:4px;transform:rotate(45deg);background:#38bdf8;box-shadow:0 0 17px #0ea5e988;flex:none;}
+.studio-primary {display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.studio-primary button {border:1px solid transparent;color:#c4cad5;background:transparent;padding:10px 13px;border-radius:9px;font-size:12px;font-weight:700;}
+.studio-primary button:hover {background:#253148;}
+.studio-primary button.active {border-color:#a33653;background:#472033;color:#ffe8ec;}
+.studio-version {margin-left:auto;font-size:10px;letter-spacing:.08em;color:#64748b;font-weight:700;}
+.rom-menu-wrap {padding:13px clamp(12px,2.8vw,36px) 16px;border-bottom:1px solid #2a3550;
+  background:#101826;}
+.rom-menu-caption {display:flex;justify-content:space-between;gap:10px;font-size:10px;color:#8ca2bd;font-weight:800;letter-spacing:.07em;margin-bottom:11px;}
+.rom-local {color:#51d9b7;}
+.rom-menu {display:flex;gap:7px;flex-wrap:wrap;}
+.rom-menu button {background:#2a3550;border:1px solid #394966;color:#dbe2ee;font-size:12px;font-weight:700;
+  border-radius:8px;padding:9px 12px;cursor:pointer;transition:.15s;}
+.rom-menu button:hover {background:#3b4868;}
+.rom-menu button.active {background:#f43f5e;border-color:#f43f5e;color:white;box-shadow:0 0 0 1px #f43f5e40;}
+.rom-menu button:focus-visible,.studio-primary button:focus-visible {outline:2px solid #7dd3fc;outline-offset:2px;}
+.rom-advanced {background:#151c2c;border:1px solid #2a3550;border-radius:9px;margin-top:11px;padding:10px 12px;}
+.rom-advanced summary {color:#cbd5e1;cursor:pointer;font-weight:700;font-size:11px;}
+.rom-advanced .rom-menu {padding-top:11px;}
+.rom-screen > .app {min-height:calc(100vh - 205px);grid-template-columns:248px minmax(0,1fr);}
+.rom-screen .sidebar {height:calc(100vh - 75px);top:75px; background:#111827;}
+.rom-screen .main {background:#0b0f1a;}
+.rom-screen .header h1 strong {color:#7dd3fc;}
+.rom-screen .card {background:#111827;border-color:#2a3550;}
+.rom-screen .file-btn.active {background:#282c4a;border-color:#804362;}
+.rom-screen .record.selected {background:#29213d;border-color:#a53d63;}
+.rom-screen .btn-primary {background:#f43f5e;color:#fff;border-color:#f43f5e;}
+.rom-screen .btn-primary:hover {background:#fb7185;}
+.rom-screen .btn-ghost {background:#1c2438;border-color:#3b4868;color:#e2e8f0;}
+.rom-screen .btn-ghost:hover {background:#2a3550;}
+.rom-screen input:focus,.rom-screen textarea:focus {outline-color:#f43f5e;}
+.rom-screen .tab.active {border-bottom-color:#fb7185;color:#fb7185;}
+.studio-top-content,.feature-panel {margin:30px auto;padding:0 25px;max-width:1320px;}
+.studio-hero,.overview-card,.feature-panel {border:1px solid #2a3550;border-radius:14px;background:#111827;}
+.studio-hero {display:flex;align-items:center;justify-content:space-between;gap:24px;padding:38px 40px;margin-bottom:18px;}
+.studio-hero h1,.feature-panel h1,.overview-card.large h1 {font-size:clamp(24px,3vw,37px);line-height:1.15;margin:10px 0 18px;}
+.studio-hero h1 em {color:#7dd3fc;font-style:normal;}
+.studio-hero p,.overview-card p,.feature-panel p {font-size:13px;line-height:1.8;color:#94a3b8;max-width:750px;margin-bottom:18px;}
+.hero-insignia {font-size:100px;color:#f43f5e;text-shadow:0 0 60px #f43f5e55;}
+.kicker,.overview-card > span {font-size:10px;font-weight:800;letter-spacing:.15em;color:#fb7185;}
+.overview-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.overview-card {padding:24px;}
+.overview-card h2 {font-size:18px;margin:12px 0 10px;}
+.overview-card.large {max-width:890px;padding:35px;}
+.feature-panel {max-width:1100px;display:flex;align-items:flex-start;gap:24px;padding:37px;}
+.feature-icon {width:90px;height:90px;display:grid;place-items:center;flex:none;font-size:43px;background:#281e32;border:1px solid #513452;border-radius:19px;}
+.feature-body {flex:1;min-width:0;}
+.work-state {display:inline-block;border:1px solid #85663d;color:#f8d18d;background:#3a2b1a;padding:5px 9px;
+  font-size:10px;font-weight:800;border-radius:7px;letter-spacing:.05em;}
+.next-steps {border-top:1px solid #2a3550;padding:20px 0 6px;margin-top:20px;}
+.next-steps h2 {font-size:15px;margin:0 0 7px;}
+.feature-panel .btn {margin-top:11px;}
+@media(max-width:1050px){.studio-topbar {gap:9px;}.studio-version {display:none;}.overview-grid {grid-template-columns:1fr 1fr;}}
+@media(max-width:760px){.studio-topbar {position:static;padding:14px;}.studio-brand {width:100%;}.studio-primary {width:100%;}.studio-primary button {flex:1;}.rom-menu-wrap {padding:12px;}.rom-menu {flex-wrap:nowrap;overflow:auto;padding-bottom:5px;}.rom-menu button {flex:none;}.rom-screen > .app {grid-template-columns:1fr;}.rom-screen .sidebar {position:static;height:auto;}.studio-top-content,.feature-panel {margin:18px auto;padding:12px;}.studio-hero {padding:24px;}.overview-grid {grid-template-columns:1fr;}.hero-insignia {display:none;}.feature-panel {display:block;padding:24px;}.feature-icon {margin-bottom:18px;}}

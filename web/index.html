@@ -5,9 +5,68 @@
 <meta name="theme-color" content="#071429">
 <title>Blue Studio — Pokémon Blue Dessastre Paradoxal</title>
 <link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/studio-shell.css">
 </head>
 <body>
-<div class="app">
+<div class="studio-page">
+  <header class="studio-topbar">
+    <div class="studio-brand"><span class="studio-gem" aria-hidden="true"></span><div><strong>Blue Studio</strong><small>Pokémon Blue Dessastre Paradoxal · Essentials v21.1</small></div></div>
+    <nav class="studio-primary" role="tablist" aria-label="Áreas do Blue Studio">
+      <button type="button" data-shell="home" role="tab" aria-selected="false">🏠 Visão geral</button>
+      <button type="button" data-shell="rom" role="tab" aria-selected="true">🧬 Editor de ROM</button>
+      <button type="button" data-shell="movesets" role="tab" aria-selected="false">📚 Ver MD de Movesets</button>
+    </nav>
+    <span class="studio-version">BLUE STUDIO · V0.2</span>
+  </header>
+  <section class="studio-top-content" id="studioHome" hidden aria-label="Visão geral">
+    <div class="studio-hero"><div><div class="kicker">VISÃO GERAL</div><h1>Pokémon <em>Blue Dessastre Paradoxal</em></h1><p>Seu fangame sobre a base local do Pokémon Decades. Edite arquivos PBS, organize os recursos e acompanhe o desenvolvimento das novas ferramentas.</p><button type="button" class="btn btn-primary" data-shortcut="pokemon">Abrir Pokédex</button></div><div class="hero-insignia" aria-hidden="true">✦</div></div>
+    <div class="overview-grid">
+      <article class="overview-card"><span>01 · DADOS</span><h2>Pokémon, itens e treinadores</h2><p>Editor PBS com busca, backups e controle de alterações.</p><button type="button" class="btn btn-ghost" data-shortcut="pokemon">Editar Pokémon</button></article>
+      <article class="overview-card"><span>02 · CRIAÇÃO</span><h2>Mapas, gráficos e áudio</h2><p>Estrutura de abas pronta; ferramentas visuais serão implementadas por fases.</p><button type="button" class="btn btn-ghost" data-shortcut="map">Ver mapas</button></article>
+      <article class="overview-card"><span>03 · QUALIDADE</span><h2>Test Lab e regressão</h2><p>Testes de segurança do PBS, navegação e integridade automatizados no GitHub Actions.</p><button type="button" class="btn btn-ghost" data-shortcut="test-lab">Abrir Test Lab</button></article>
+    </div>
+  </section>
+  <section class="studio-top-content" id="movesetPanel" hidden aria-label="Ver MD de Movesets">
+    <div class="overview-card large"><span>DOCUMENTAÇÃO DE GOLPES</span><h1>📚 Ver MD de Movesets</h1><p>Esta área reproduz a organização do Emerald Studio. A importação automática dos MDs do fangame, sua validação e aplicação aos arquivos PBS entrarão em uma próxima fase.</p><p class="work-state">PLANEJADO · Nenhuma edição ou importação é executada nesta aba.</p><button type="button" class="btn btn-primary" data-shortcut="pokemon">Ir para a Pokédex</button></div>
+  </section>
+  <div id="romStudio" class="rom-screen">
+    <div class="rom-menu-wrap">
+      <div class="rom-menu-caption"><span>EDITOR DE ROM · ADAPTADO PARA POKÉMON ESSENTIALS</span><span class="rom-local">● Edição local PBS</span></div>
+      <div class="rom-menu" role="tablist" aria-label="Ferramentas de edição do jogo">
+        <button role="tab" data-panel="project">📁 Projeto</button>
+        <button role="tab" data-panel="script">📜 História e eventos</button>
+        <button role="tab" data-panel="flags">🚩 Flags e vars</button>
+        <button role="tab" data-panel="pokemon" aria-selected="true">🐉 Pokédex</button>
+        <button role="tab" data-panel="items">🎒 Itens</button>
+        <button role="tab" data-panel="starters">⭐ Iniciais</button>
+        <button role="tab" data-panel="trainers">⚔️ Treinadores</button>
+        <button role="tab" data-panel="wild">🌿 Selvagens</button>
+        <button role="tab" data-panel="map">🗺️ Mapas</button>
+        <button role="tab" data-panel="title-logo">🖼️ Logo inicial</button>
+        <button role="tab" data-panel="title-flames">🔥 Fundo animado</button>
+        <button role="tab" data-panel="music">🎵 Músicas</button>
+        <button role="tab" data-panel="midi-studio">🎹 Estúdio MIDI</button>
+        <button role="tab" data-panel="test-lab">🧪 Test Lab</button>
+      </div>
+      <details class="rom-advanced"><summary>🔧 Ferramentas avançadas: hexadecimal, tabelas, sprites e patches</summary>
+        <div class="rom-menu" role="tablist" aria-label="Ferramentas técnicas">
+          <button role="tab" data-panel="hex">🔢 Hexadecimal</button>
+          <button role="tab" data-panel="table">📋 Tabelas técnicas</button>
+          <button role="tab" data-panel="graphics">🖼️ Gráficos 4bpp</button>
+          <button role="tab" data-panel="sprite">🎨 Importar sprites</button>
+          <button role="tab" data-panel="text">📝 Textos Pokémon</button>
+          <button role="tab" data-panel="patch">🩹 Patch e cabeçalho</button>
+        </div>
+      </details>
+    </div>
+    <section class="feature-panel" id="featurePanel" hidden aria-live="polite">
+      <div class="feature-icon" id="featureIcon" aria-hidden="true">✦</div>
+      <div class="feature-body"><div class="kicker">BLUE STUDIO · PRÓXIMAS FASES</div><h1 id="featureTitle">Ferramenta em desenvolvimento</h1>
+      <span class="work-state" id="featureStatus">PLANEJADO</span><p id="featureDescription"></p>
+      <div class="next-steps"><h2>Próximos passos</h2><p id="featureNext"></p></div>
+      <button type="button" class="btn btn-primary" data-shortcut="pokemon">Abrir editor PBS</button></div>
+    </section>
+  <div class="app" id="pbsWorkspace">
   <aside class="sidebar">
     <div class="brand"><div class="brandmark">⚡</div><div><b>BLUE STUDIO</b><small>DESSASTRE PARADOXAL</small></div></div>
     <div class="origin">Projeto <span>LOCAL • RPG MAKER XP</span></div>
@@ -25,8 +84,10 @@
     </section>
     <footer class="footnote">Editor local independente • Backups automáticos antes de salvar • Pokémon é propriedade de seus respectivos titulares</footer>
   </main>
+  </div>
 </div>
 <div class="modalwrap hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modalhead"><h2 id="modalTitle">Backups</h2><button class="btn-icon" id="closeModal" aria-label="Fechar">✕</button></div><div id="modalBody"></div></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="/app.js" defer></script>
+<script src="/navigation.js" defer></script>
 </body></html>
