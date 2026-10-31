@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "24a15653ce22c7886aa6c59071f4bfe006c7fcb7",
+      "date": "2026-10-31T16:32:19-03:00",
+      "title": "test(site): validar 18 Mestres, equipes, guias e mapas regionais",
+      "category": "Documentação"
+    },
+    {
       "sha": "d673ee872ab494ec412cfd88a65f11d6e4c5a5b0",
       "date": "2026-10-31T16:32:04-03:00",
       "title": "feat(story): exportar automaticamente equipes atualizadas junto da Pokédex",
