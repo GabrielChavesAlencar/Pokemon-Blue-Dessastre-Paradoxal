@@ -158,7 +158,7 @@ def make_species_raw(payload: dict) -> str:
       "Height = " + string("height", "1.0"),
       "Weight = " + string("weight", "25.0"),
       "Color = " + string("color", "Blue"),
-      "Shape = " + string("shape", "Bipedal"),
+      "Shape = " + string("shape", "Humanoid"),
       "Category = " + string("category", "Paradox"),
       "Pokedex = " + string("description", "Uma nova espécie."),
       "Generation = " + string("generation", "9"),
