@@ -65,3 +65,28 @@ body { background:#0b0f1a; color:var(--text); }
 .feature-panel .btn {margin-top:11px;}
 @media(max-width:1050px){.studio-topbar {gap:9px;}.studio-version {display:none;}.overview-grid {grid-template-columns:1fr 1fr;}}
 @media(max-width:760px){.studio-topbar {position:static;padding:14px;}.studio-brand {width:100%;}.studio-primary {width:100%;}.studio-primary button {flex:1;}.rom-menu-wrap {padding:12px;}.rom-menu {flex-wrap:nowrap;overflow:auto;padding-bottom:5px;}.rom-menu button {flex:none;}.rom-screen > .app {grid-template-columns:1fr;}.rom-screen .sidebar {position:static;height:auto;}.studio-top-content,.feature-panel {margin:18px auto;padding:12px;}.studio-hero {padding:24px;}.overview-grid {grid-template-columns:1fr;}.hero-insignia {display:none;}.feature-panel {display:block;padding:24px;}.feature-icon {margin-bottom:18px;}}
+
+
+/* Sprites Pokemon Essentials: static PNG and animated PNG/GIF previews. */
+.sprite-panel { padding:15px 16px 17px;background:#111827;border:1px solid #334155;
+  border-radius:12px;margin-bottom:18px; }
+.sprite-title {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.sprite-title strong {display:block;color:#f1f5f9;font-size:15px;}
+.sprite-title small {display:block;color:#94a3b8;font-size:11px;margin-top:4px;}
+.sprite-subtitle {font-size:10px;color:#7dd3fc;font-weight:700;}
+.sprite-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.sprite-tile {display:flex;flex-direction:column;gap:9px;min-width:0;
+  background:#151c2c;border:1px solid #2a3550;border-radius:10px;padding:12px;}
+.sprite-tile b {font-size:11px;font-weight:800;color:#e5e7eb;}
+.sprite-preview {height:140px;display:grid;place-items:center;overflow:hidden;
+  border:1px dashed #465675;background:#0b0f1a;border-radius:9px;padding:8px;}
+.sprite-preview img {width:100%;height:100%;object-fit:contain;image-rendering:pixelated;}
+.sprite-empty {font-size:11px;color:#64748b;text-align:center;}
+.sprite-info {color:#a3b6cc;font-size:10px;min-height:14px;line-height:1.5;overflow-wrap:anywhere;}
+.sprite-mode-label {display:block;font-size:10px;color:#aabacb;font-weight:700;}
+.sprite-mode {display:block;width:100%;margin-top:5px;border-radius:7px;border:1px solid #344864;
+  padding:7px 6px;background:#0b0f1a;color:#e2e8f0;font-size:11px;}
+.sprite-import {font-size:11px;justify-content:center;width:100%;white-space:normal;}
+.sprite-panel .help {margin:14px 0 0;}
+@media(max-width:1240px){.sprite-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:540px){.sprite-grid {grid-template-columns:1fr;}.sprite-preview{height:160px;}}
