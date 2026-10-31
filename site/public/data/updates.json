@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a5b3957ca4e755b2ff52e1cfa92bd4fdc24ab4f9",
+      "date": "2026-10-31T16:52:51-03:00",
+      "title": "style(maps): criar miniaturas de áreas ampliadas e placeholders honestos por localização",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fd7dd8b0d35bb6ca39f3fcecb472f8209f29a448",
       "date": "2026-10-31T16:52:36-03:00",
       "title": "fix(maps): informar origem correta e linkar mapa regional completo nos detalhes",
