@@ -75,7 +75,7 @@ async function ready(url, child) {
     assert.equal(await page.locator("#studioHome").isVisible(),true);
     await page.locator('[data-shell="movesets"]').click();
     assert.equal(await page.locator("#movesetPanel").isVisible(),true);
-    await page.locator('[data-shortcut="pokemon"]').last().click();
+    await page.locator('#movesetPanel [data-shortcut="pokemon"]').click();
     await page.waitForFunction(() => document.getElementById("fileTitle").textContent === "pokemon.txt");
     assert.equal(await page.locator("#pbsWorkspace").isVisible(),true);
     assert.deepEqual(errors,[],"Sem erros JS no navegador");

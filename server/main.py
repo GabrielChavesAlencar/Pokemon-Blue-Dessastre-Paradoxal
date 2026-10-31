@@ -244,7 +244,7 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.send_header("X-Content-Type-Options", "nosniff")
                     self.end_headers()
                     self.wfile.write(data)
-                elif p == "/" or p in ("/index.html", "/app.js", "/style.css"):
+                elif p == "/" or p in ("/index.html", "/app.js", "/navigation.js", "/style.css", "/studio-shell.css"):
                     requested = "index.html" if p == "/" else p.lstrip("/")
                     data = (WEB / requested).read_bytes()
                     content_type = mimetypes.guess_type(requested)[0] or "application/octet-stream"

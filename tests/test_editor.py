@@ -99,6 +99,15 @@ class APITest(unittest.TestCase):
         self.assertTrue(restored['ok'])
         self.assertIn('Power = 40',self.api('/api/section?file=moves.txt&index=0')['raw'])
 
+
+    def test_new_frontend_files_served(self):
+        for target, mime in (('/navigation.js','javascript'),('/studio-shell.css','css')):
+            req = Request(self.origin + target)
+            with urlopen(req) as response:
+                self.assertEqual(response.status, 200)
+                self.assertIn(mime, response.headers.get('Content-Type',''))
+                self.assertGreater(len(response.read()), 500)
+
     def test_post_requires_token(self):
         with self.assertRaises(HTTPError) as ctx:
             self.api('/api/launch','POST',{},token=False)
