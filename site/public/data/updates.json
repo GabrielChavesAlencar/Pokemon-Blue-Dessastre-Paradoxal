@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1ceae9500aeb7d990b0cdd0af59fb9b80a8a4738",
+      "date": "2026-10-31T16:29:40-03:00",
+      "title": "feat(story): registrar coordenadas dos locais no mapa regional oficial de Beatha",
+      "category": "Novidades"
+    },
+    {
       "sha": "da701fc891bded36b8467fc6353b2da1a848a5c9",
       "date": "2026-10-31T16:29:14-03:00",
       "title": "feat(story): registrar equipes verificadas dos 18 Type Masters e chefão da base Decades",
