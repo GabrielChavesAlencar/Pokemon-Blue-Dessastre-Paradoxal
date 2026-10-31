@@ -42,6 +42,30 @@ Se você já baixou Pokémon Decades, copie os arquivos para `game/` mantendo `G
 
 > Alternativa: definir a variável de ambiente `BLUE_GAME_DIR` com o caminho da sua cópia local do jogo e executar `RUN.bat`. Arquivos originais não precisam ficar dentro desta pasta.
 
+## Abrir e atualizar automaticamente (RUN.bat)
+
+O **RUN.bat** agora verifica o GitHub e tenta atualizar o editor pela branch \`main\` antes de abrir o Blue Studio no navegador. **Nao exige GitHub CLI (\`gh\`)**: basta **Git for Windows** com acesso a este repositorio privado e **Python 3.10+**.
+
+- **Pasta clonada por Git:** clique duas vezes em \`RUN.bat\`. Ele executa \`git pull --ff-only origin main\`, depois inicia o servidor Python em \`http://127.0.0.1:8765\` (o navegador abre automaticamente).
+- **Pasta antiga extraida de ZIP (sem \`.git\`):** coloque nela o novo \`RUN.bat\`. Na primeira execucao, ele cria um clone em uma pasta irma chamada \`Pokemon-Blue-Dessastre-Paradoxal-Git\` e inicia a copia atualizada. Se existir \`game/PBS\` na pasta antiga, o editor continua usando essa copia local do jogo via \`BLUE_GAME_DIR\`.
+- **Sem Git, sem acesso a rede ou com conflito:** o editor local ainda pode abrir, mas a atualizacao sera pulada e aparecerá um aviso. Para projeto privado, o Git pode solicitar autenticacao no navegador por meio do Git Credential Manager.
+- **Alteracoes locais:** a atualizacao nao usa \`git reset --hard\`, \`git clean\` ou \`--force\`. Se um arquivo modificado impedir o pull, corrija o conflito manualmente; **nao** sera apagado.
+- **Jogo e dados locais:** \`game/\` e \`.blue-backups/\` sao ignorados pelo Git e nao recebem atualizacoes do Decades automaticamente. O script atualiza **o codigo deste repositorio**, nao os arquivos da base original.
+
+Se o script antigo ainda estiver no computador, voce pode atualizar uma vez pelo terminal, dentro de uma pasta clonada:
+
+\`\`\`powershell
+git pull --ff-only origin main
+\`\`\`
+
+Se nao tiver clone e quiser criar um manualmente (requer autorizacao no repositorio privado):
+
+\`\`\`powershell
+git clone https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal.git
+\`\`\`
+
+Depois execute \`RUN.bat\` da pasta clonada.
+
 ## Criar o repositório GitHub
 
 Execute **`PUBLICAR_GITHUB.bat`** depois de instalar `git` e `gh` e fazer login com `gh auth login` (o script pode iniciar esse login).
@@ -54,7 +78,7 @@ O script cria `Pokemon-Blue-Dessastre-Paradoxal` **privado** na sua conta e publ
 
 ```text
 Pokemon-Blue-Dessastre-Paradoxal/
-├── RUN.bat                    # Abre Blue Studio no navegador
+├── RUN.bat                    # Sincroniza o GitHub e abre Blue Studio no navegador
 ├── BAIXAR_BASE_DECADES.bat    # Baixa Decades SOMENTE para uso local
 ├── JOGAR.bat                  # Inicia Game.exe, se instalado
 ├── PERSONALIZAR_JOGO.bat      # Ajusta o titulo local da janela do fangame
