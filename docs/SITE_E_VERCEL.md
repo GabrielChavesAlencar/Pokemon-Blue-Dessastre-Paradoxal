@@ -45,3 +45,7 @@ Envie os três arquivos regenerados (`catalog.json`, `details.json`, `locations.
 ## Validação
 
 `.github/workflows/site-checks.yml` testa o site e gera `dist` em push/PR. Localmente, `npm run dev --prefix site` abre um servidor estático na porta 4173. O build valida sintaxe dos módulos e os JSON obrigatórios. `dist/`, `node_modules/` e `.vercel/` são ignorados pelo Git. Nenhum backend do Blue Studio é necessário no servidor da Vercel.
+
+## Horários no diário
+
+O diário mostra a data e a hora real dos commits (`%cI` do Git, preservada em ISO 8601) em **America/Sao_Paulo**. No frontend, a hora é convertida com `Intl.DateTimeFormat`, sem usar o fuso do navegador. A página `/atualizacoes` também tem um atalho para `/guias`. Os links `*.vercel.app` com sufixos aleatórios são snapshots de uma implantação específica; para abrir a versão atual, use `https://pokemondessastreparadosal.vercel.app/guias` e `https://pokemondessastreparadosal.vercel.app/atualizacoes`.
