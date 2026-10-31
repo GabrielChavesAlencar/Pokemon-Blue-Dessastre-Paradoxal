@@ -90,6 +90,14 @@
     card.append(stats,grid);
     const tip=node("p","help","Use Salvar alterações para persistir os dados PBS. A validação detecta tipos, habilidades, golpes e evoluções inexistentes; novas espécies não substituem Pokémon oficiais.");
     card.append(tip);
+    const build= node("p","pokemon-build-status","Verificando se há PBS aguardando compilação...");
+    build.setAttribute("role","status");
+    card.append(build);
+    api("/api/pokemon/compile-status").then(status=>{
+      if(!card.isConnected)return;
+      build.textContent=(status.needsCompile?"⚠ "+status.status:"✓ "+status.status)+
+        ". Para confirmar, abra o modo Debug e compile os dados dentro do jogo.";
+    }).catch(error=>{if(card.isConnected)build.textContent="Verificação de compilação: "+error.message;});
     container.append(card);
   }
   function newForm(){
@@ -236,8 +244,10 @@
   }
   async function launchCompile(){
     try{
+      const check=await api("/api/pokemon/compile-status");
       const data=await post("/api/pokemon/compile",{});
-      toast(data.message);
+      toast((check.needsCompile?"Dados modificados; ":"")+
+            data.message+" O Blue Studio não pode garantir a compilação até o runtime confirmar.");
     }catch(e){toast(e.message,true);}
   }
   window.mountPokemonDataPanel=attach;
