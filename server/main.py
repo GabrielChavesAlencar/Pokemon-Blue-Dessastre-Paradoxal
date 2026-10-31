@@ -4,6 +4,10 @@ Standard library only. No assets of any third-party fangame are distributed here
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
+import struct
+import zlib
 import hashlib
 import json
 import mimetypes
@@ -165,6 +169,121 @@ def backup_file(backup_root: Path, name: str, data: bytes) -> None:
         old.unlink()
 
 
+# Pokémon Essentials / Animated Pokémon System stores sprites in PNG, including
+# multi-frame horizontal strips; GIFs may also contain animated frames.
+SPRITE_FOLDERS = {
+    "front": "Front", "back": "Back",
+    "front-shiny": "Front shiny", "back-shiny": "Back shiny",
+}
+SPRITE_EXTENSIONS = ("png", "gif")
+MAX_SPRITE_BYTES = 5_000_000
+
+
+def sprite_location(game_root: Path, species: str, kind: str) -> Path:
+    if (not isinstance(species, str)
+            or not re.fullmatch(r"[A-Za-z0-9_]{1,80}", species)
+            or not isinstance(kind, str) or kind not in SPRITE_FOLDERS):
+        raise EditorError("Espécie ou variante de sprite inválida.")
+    # Restrict to exactly the allowed Pokémon graphics subdirectory.
+    return game_root / "Graphics" / "Pokemon" / SPRITE_FOLDERS[kind]
+
+
+def sprite_files(game_root: Path, species: str, kind: str) -> list[Path]:
+    parent = sprite_location(game_root, species, kind)
+    if parent.is_symlink():
+        raise EditorError("Diretório de sprites não pode ser um link simbólico.")
+    found = []
+    for ext in SPRITE_EXTENSIONS:
+        file = parent / (species + "." + ext)
+        if file.is_symlink():
+            raise EditorError("Sprite não pode ser um link simbólico.")
+        if file.is_file():
+            found.append(file)
+    return found
+
+
+def sprite_dimensions(data: bytes, extension: str) -> tuple[int, int, str]:
+    if extension == "png":
+        if (len(data) < 45 or not data.startswith(b"\x89PNG\r\n\x1a\n")
+                or data[12:16] != b"IHDR"
+                or int.from_bytes(data[8:12], "big") != 13
+                or not data.endswith(b"IEND\xaeB\x60\x82")):
+            raise EditorError("PNG inválido ou incompleto.")
+        crc = zlib.crc32(data[12:29]) & 0xFFFFFFFF
+        if crc != int.from_bytes(data[29:33], "big"):
+            raise EditorError("Cabeçalho PNG corrompido (CRC).")
+        width, height = struct.unpack(">II", data[16:24])
+        kind = "PNG em faixa" if width > height * 2 else "PNG estático"
+    elif extension == "gif":
+        if (len(data) < 24 or data[:6] not in (b"GIF87a", b"GIF89a")
+                or data[-1] != 0x3B):
+            raise EditorError("GIF inválido ou incompleto.")
+        width, height = struct.unpack("<HH", data[6:10])
+        kind = "GIF"
+    else:
+        raise EditorError("Use PNG estático, PNG em faixa ou GIF.")
+    if not 1 <= width <= 4096 or not 1 <= height <= 4096:
+        raise EditorError("Dimensões do sprite fora do intervalo permitido (1–4096 px).")
+    return width, height, kind
+
+
+def sprite_metadata(game_root: Path, species: str, kind: str) -> dict:
+    found = sprite_files(game_root, species, kind)
+    file = found[0] if found else None
+    result = {"species": species, "kind": kind, "exists": bool(file),
+              "conflict": len(found) > 1, "file": None}
+    if file:
+        raw = file.read_bytes()
+        width, height, mode = sprite_dimensions(raw, file.suffix[1:].lower())
+        result["file"] = {"name": file.name, "format": file.suffix[1:].lower(),
+                          "mode": mode, "width": width, "height": height,
+                          "size": len(raw), "hash": file_hash(raw)}
+    return result
+
+
+def save_sprite(game_root: Path, backup_root: Path, species: str, kind: str,
+                name: str, content: str, mode: str, expected_hash: str) -> dict:
+    parent = sprite_location(game_root, species, kind)
+    if not isinstance(name, str) or name.rsplit(".", 1)[-1].lower() not in SPRITE_EXTENSIONS:
+        raise EditorError("Escolha um arquivo PNG ou GIF.")
+    if mode not in ("static", "animated"):
+        raise EditorError("Selecione imagem estática ou animada.")
+    extension = name.rsplit(".", 1)[-1].lower()
+    if not isinstance(content, str) or len(content) > MAX_SPRITE_BYTES * 2:
+        raise EditorError("Imagem muito grande.")
+    try:
+        data = base64.b64decode(content, validate=True)
+    except (binascii.Error, ValueError) as error:
+        raise EditorError("Base64 da imagem inválido.") from error
+    if len(data) < 24 or len(data) > MAX_SPRITE_BYTES:
+        raise EditorError("Imagem vazia ou maior que 5 MB.")
+    width, height, detected = sprite_dimensions(data, extension)
+    if mode == "static" and (extension != "png" or detected != "PNG estático"):
+        raise EditorError("Para sprite estático use PNG de quadro único (não uma faixa animada).")
+    if mode == "animated" and extension == "png" and detected != "PNG em faixa":
+        raise EditorError("Para PNG animado, use uma faixa horizontal com mais de 2 quadros.")
+    if mode == "animated" and extension == "gif" and not data.startswith((b"GIF87a", b"GIF89a")):
+        raise EditorError("GIF inválido.")
+    with EDIT_LOCK:
+        old_files = sprite_files(game_root, species, kind)
+        current = old_files[0] if old_files else None
+        old_hash = file_hash(current.read_bytes()) if current else ""
+        if not isinstance(expected_hash, str) or expected_hash != old_hash:
+            raise EditorError("Sprite alterado desde a visualização. Atualize a página.", 409)
+        parent.mkdir(parents=True, exist_ok=True)
+        destination = parent / (species + "." + extension)
+        # Save the original assets before replacing/removing either extension.
+        for existing in old_files:
+            backup_file(backup_root, f"sprites/{SPRITE_FOLDERS[kind]}/{existing.name}",
+                        existing.read_bytes())
+        atomic_write(destination, data)
+        # Avoid .gif and .png versions silently competing in pbResolveBitmap.
+        for existing in old_files:
+            if existing != destination:
+                existing.unlink()
+    return sprite_metadata(game_root, species, kind)
+
+
 def build_handler(game_root: Path, backup_root: Path, port: int):
     class Handler(BaseHTTPRequestHandler):
         server_version = "BlueStudio/0.1"
@@ -225,25 +344,29 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     b = backup_root / name
                     files = [{"name": f.name, "size": f.stat().st_size} for f in sorted(b.glob("*.bak"), reverse=True)[:20]] if b.is_dir() else []
                     self.send_json(200, {"backups": files})
-                elif p == "/api/sprite":
-                    # Whitelist a small fixed set of graphics paths; never trust arbitrary URLs/paths.
+                elif p == "/api/sprite-info":
                     species = self.param("species", "")
                     kind = self.param("kind", "front")
-                    if not re.fullmatch(r"[A-Za-z0-9_\-]+(?:_\d+)?", species or "") or kind not in ("front", "back", "front-shiny", "back-shiny", "icon"):
-                        raise EditorError("Imagem inválida.")
-                    sub = {"front": "Front", "back": "Back", "front-shiny": "Front shiny", "back-shiny": "Back shiny", "icon": "Icons"}[kind]
-                    target = (game_root / "Graphics" / "Pokemon" / sub / (species + ".png")).resolve()
-                    parent = (game_root / "Graphics" / "Pokemon" / sub).resolve()
-                    if target.parent != parent or not target.is_file() or target.stat().st_size > 2_000_000:
+                    self.send_json(200, sprite_metadata(game_root, species, kind))
+                elif p == "/api/sprite":
+                    species = self.param("species", "")
+                    kind = self.param("kind", "front")
+                    found = sprite_files(game_root, species, kind)
+                    if not found:
                         raise EditorError("Sprite não encontrado.", 404)
-                    data = target.read_bytes()
+                    target = found[0]
+                    if target.stat().st_size > MAX_SPRITE_BYTES:
+                        raise EditorError("Sprite ultrapassa 5 MB.", 413)
+                    raw = target.read_bytes()
+                    extension = target.suffix[1:].lower()
+                    sprite_dimensions(raw, extension)
                     self.send_response(200)
-                    self.send_header("Content-Type", "image/png")
-                    self.send_header("Content-Length", str(len(data)))
+                    self.send_header("Content-Type", "image/png" if extension == "png" else "image/gif")
                     self.send_header("Cache-Control", "no-store")
                     self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header("Content-Length", str(len(raw)))
                     self.end_headers()
-                    self.wfile.write(data)
+                    self.wfile.write(raw)
                 elif p == "/" or p in ("/index.html", "/app.js", "/navigation.js", "/style.css", "/studio-shell.css"):
                     requested = "index.html" if p == "/" else p.lstrip("/")
                     data = (WEB / requested).read_bytes()
@@ -306,6 +429,13 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                         backup_file(backup_root, name, raw)
                         atomic_write(path, data)
                     self.send_json(200, {"ok": True, "hash": file_hash(data)})
+                elif p == "/api/sprite-upload":
+                    result = save_sprite(
+                        game_root, backup_root, obj.get("species", ""),
+                        obj.get("kind", ""), obj.get("filename", ""),
+                        obj.get("data", ""), obj.get("mode", ""),
+                        obj.get("expectedHash", ""))
+                    self.send_json(200, result)
                 elif p == "/api/launch":
                     exe = game_root / "Game.exe"
                     if not exe.is_file():
