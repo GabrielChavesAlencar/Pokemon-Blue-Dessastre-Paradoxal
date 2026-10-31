@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "145bab298b26492d7b8fe6d24a7402163fd0816d",
+      "date": "2026-10-31T16:15:07-03:00",
+      "title": "test(site): validar horários e acesso aos guias",
+      "category": "Documentação"
+    },
+    {
+      "sha": "2423da16136e2e187f192fb56ae0606b6f6f6494",
+      "date": "2026-10-31T16:15:05-03:00",
+      "title": "feat(site): exibir horários de Brasília no histórico e destacar guias",
+      "category": "Novidades"
+    },
+    {
+      "sha": "6197e6a9d033b5fed00962e5c092e2a5f8599690",
+      "date": "2026-10-31T16:15:03-03:00",
+      "title": "feat(site): exibir horários de Brasília no histórico e destacar guias",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f6c7e42879bfbc43272b750f82f5f4ef26d9b596",
+      "date": "2026-10-31T16:15:00-03:00",
+      "title": "feat(site): exibir horários de Brasília no histórico e destacar guias",
+      "category": "Novidades"
+    },
+    {
+      "sha": "8d3198411c90b504ca69f85fdf2a1955035735ca",
+      "date": "2026-10-31T16:14:57-03:00",
+      "title": "feat(site): exibir horários de Brasília no histórico e destacar guias",
+      "category": "Novidades"
+    },
+    {
       "sha": "076d10fe9efa2267791c4dc7a503f42ae8da63dc",
       "date": "2026-10-31T16:10:41-03:00",
       "title": "docs(site): documentar e testar sincronização dos guias do Decades",
