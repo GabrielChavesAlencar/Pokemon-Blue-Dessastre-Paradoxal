@@ -10,7 +10,7 @@ from urllib.error import HTTPError
 import sys
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"server"))
-from main import build_handler, backup_file, atomic_write, read_text, file_hash, EDIT_LOCK
+from main import build_handler, backup_file, atomic_write, read_text, file_hash, EDIT_LOCK, compile_status
 from pokemon_studio import create_species,validate_pokemon,species_catalog,PokemonValidationError
 
 
@@ -70,6 +70,21 @@ class NewSpeciesTests(unittest.TestCase):
             with self.subTest(change=change),self.assertRaises(PokemonValidationError):
                 self.create({**self.payload,**change})
         self.assertEqual((self.pbs/"pokemon.txt").read_text().count("[CAVEFANG]"),0)
+
+    def test_compilation_status_detects_new_species(self):
+        self.assertTrue(compile_status(self.root)["needsCompile"])
+        compiled=self.root/"Data"
+        compiled.mkdir()
+        (compiled/"species.dat").write_bytes(b"compiled")
+        (compiled/"species_metrics.dat").write_bytes(b"compiled")
+        # Make compiled artifacts newer than source to simulate a successful debug build.
+        import os, time
+        target=time.time()+1000
+        for path in compiled.glob("*.dat"):
+            os.utime(path,(target,target))
+        self.assertFalse(compile_status(self.root)["needsCompile"])
+        self.create(self.payload)
+        self.assertTrue(compile_status(self.root)["needsCompile"])
 
     def test_bad_stats_and_injection(self):
         for change in ({"stats":[0,70,80,90,100,110]},

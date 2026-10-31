@@ -44,12 +44,29 @@ O editor de Pokémon **não é 100% funcional** como uma interface completa para
 
 Os sprites **não são copiados para o GitHub** automaticamente, pois `game/` é intencionalmente ignorada pelo Git para não republicar assets de terceiros.
 
+## Atualização v0.3 — Pokémon novos sem substituir espécies
+
+Implementados nesta fase:
+- **Cadastro próprio de espécie nova:** grava em `pokemon.txt` e adiciona uma entrada em `pokemon_metrics.txt`; não modifica as espécies existentes. Identificadores são nomes simbólicos, não slots GBA.
+- **Prevenção de duplicação:** procura o ID em todos os arquivos base `pokemon*.txt` (excluindo definições de formas e métricas), incluindo os pacotes adicionais do Decades.
+- **Ficha visual:** nome, tipos, seis atributos, habilidades, golpes por nível/tutor/ovo, evoluções e descrição; o botão **Validar dados** verifica tipos, habilidades, golpes, estatísticas e destinos de evolução nos dados PBS disponíveis.
+- **Battle Metrics reais:** X, Y, escala de frente/costas e velocidade de animação; grava em `pokemon_metrics.txt` ou `pokemon_metrics_forms.txt`, com controle de concorrência e backups. A prévia é aproximada; o resultado exato depende do runtime do jogo.
+- **Diagnóstico de compilação:** endpoint `/api/pokemon/compile-status` compara os tempos de `PBS/pokemon*.txt` com `Data/species.dat` e `Data/species_metrics.dat`. O botão Debug abre o jogo para realizar a compilação **dentro do Essentials**.
+- **Regressão de ponta a ponta:** a suíte usa Pokémon de teste para criar nova espécie, garantir preservação das anteriores e salvar coordenadas de batalha. GitHub Actions testa Python, Chromium e RUN.bat no Windows.
+
+### O que permanece pendente de verificação no jogo real
+
+1. **Compilação integral sem interação:** o Blue Studio abre o atalho de debug e oferece diagnóstico, mas não controla de forma comprovada o compilador do Essentials; requer confirmação do runtime Windows.
+2. **Execução de batalha real:** não foi possível testar `Game.exe` do Decades com uma espécie personalizada no ambiente do GitHub Actions. Verificar no Windows batalha, Pokédex, captura, evolução, save/load e shiny.
+3. **Integração completa de registros:** encontros, Pokédex regional, NPCs, evoluções condicionais, cries, métricas de gênero e plugins podem exigir ajustes específicos além da definição PBS.
+4. **Editor de sprites avançado:** preview de posição é aproximada; pivot exato em runtime, animação de quadro, arrastar-e-soltar e restauração de imagens pela UI requerem próximos ciclos.
+
 ## Lacunas para o editor 100%
 
-1. **Validação semântica PBS:** tipos existentes, stats, habilidades, evolução e golpes; editor de campo genérico ainda aceita valores incorretos.
-2. **Compilação automatizada:** atualizar os dados PBS no jogo a cada salvamento com relatório de erros (hoje é manual).
+1. **Validação semântica ampliada:** nova espécie já valida tipos, stats, habilidades, golpes e evoluções; ainda falta validação de todas as regras de plugins, itens evolutivos e mudanças antigas pelo editor genérico.
+2. **Compilação automatizada integral:** o botão de Debug já inicia a compilação assistida, mas o compilador interno do Essentials ainda exige operação/verificação no jogo.
 3. **Integração de modos de sprite:** teste real em batalha e Pokédex para GIF, PNG faixa e PNG estático, incluindo formas e shiny.
-4. **Sprite editor avançado:** posição/pivot, escala, animação, prévia no campo de batalha, conversão e arrastar/soltar.
+4. **Sprite editor avançado:** posição, escala e velocidade já são gravados em PBS; ainda faltam preview pixel-perfect no jogo, conversão e arrastar/soltar.
 5. **Referências:** ligação entre espécie, ID da forma, sprite, cry, métricas, movimentos, itens evolutivos e encontros.
 6. **Histórico e restauração visual de sprites:** o backup é automático mas sua restauração pela UI ainda não existe.
 7. **Mapas e treinadores avançados:** edição gráfica de mapas RXDATA e formulário avançado de times, separados da edição PBS básica.

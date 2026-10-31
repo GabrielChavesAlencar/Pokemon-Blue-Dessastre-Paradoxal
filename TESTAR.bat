@@ -14,6 +14,10 @@ where node >nul 2>&1
 if not errorlevel 1 (
   node --check "web\app.js"
   if errorlevel 1 goto :erro
+  node --check "web\pokemon.js"
+  if errorlevel 1 goto :erro
+  node --check "web\sprites.js"
+  if errorlevel 1 goto :erro
   node --check "web\navigation.js"
   if errorlevel 1 goto :erro
   node --check "tests\browser_smoke.cjs"

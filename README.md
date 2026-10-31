@@ -29,6 +29,18 @@ Ao escolher um registro em `pokemon.txt` ou `pokemon_forms.txt`, use **Importar 
 
 Confira a [auditoria técnica e próximos passos](docs/AUDITORIA_EDITOR_POKEMON.md).
 
+## Adicionar Pokémon novos sem substituir nenhum (v0.3)
+
+O Blue Studio **não utiliza slots ou IDs numéricos fixos do GBA**. As espécies novas têm identificadores simbólicos exclusivos, como `CAVEFANG` ou `ABYSSMON`, e são acrescentadas a `PBS/pokemon.txt`, com entrada própria em `PBS/pokemon_metrics.txt`. O cadastro confere duplicidade nos arquivos `pokemon*.txt` do Decades, incluindo outros pacotes de gerações, e preserva os registros anteriores.
+
+**Fluxo de uso:** rode `RUN.bat` → **Editor de ROM → Pokédex** → **＋ Adicionar Pokémon**. Preencha ID, nome, tipo(s), habilidades, golpes e atributos; clique **Criar nova espécie sem substituir**. A tela abrirá o novo registro, com **Ficha Pokémon** (edição de campos e validação de referências), editor de sprites normal/shiny e ajustes reais de posição/escala em batalha (PBS Metrics). Antes de salvar alterações na ficha, clique **Validar dados**; depois clique **Salvar alterações**. As métricas possuem botão **Salvar posição/escala no jogo** separado.
+
+**Compilação para o jogo:** depois de modificar os PBS, clique **Abrir Debug / Compilar PBS**. O Blue Studio tenta iniciar o atalho oficial `Game.exe - Debug Mode.lnk` do Decades. No jogo, use **Debug → Files → Compile data**, ou o procedimento de compilação do Pokémon Essentials 21.1. A interface mostra uma checagem de timestamps de `Data/species.dat` e `Data/species_metrics.dat`, **mas isso não prova que a compilação foi concluída**. A confirmação real precisa vir do runtime do Essentials. O editor não tenta executar um compilador de ROM GBA em um jogo RPG Maker XP.
+
+**Limitações atuais:** espécies recém-criadas precisam ser incluídas nos encontros/treinadores e, se desejado, nas Pokédex regionais; a compatibilidade final de GIF e animações dentro de uma batalha deve ser testada no Windows. O teste automatizado roda com dados sintéticos e não modifica os arquivos do jogo real.
+
+Detalhes e pendências: [auditoria técnica](docs/AUDITORIA_EDITOR_POKEMON.md).
+
 ## O que já funciona
 
 - **Blue Studio** no navegador, com Python 3 e sem dependências externas.
