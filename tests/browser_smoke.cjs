@@ -39,7 +39,7 @@ async function ready(url, child) {
   fs.writeFileSync(path.join(game,"PBS","pokemon_metrics_forms.txt"), "[TESTMON,1]\nFrontSprite = 0,0\n");
   fs.writeFileSync(path.join(game,"PBS","types.txt"), "[WATER]\nName = Water\n");
   fs.writeFileSync(path.join(game,"PBS","abilities.txt"), "[SWIFTSWIM]\nName = Swift Swim\n");
-  fs.writeFileSync(path.join(game,"PBS","moves.txt"), "[TACKLE]\nName = Tackle\n");
+  fs.writeFileSync(path.join(game,"PBS","moves.txt"), "[TACKLE]\nName = Tackle\n[BITE]\nName = Bite\n");
 
   const port = await freePort();
   const url = "http://127.0.0.1:" + port;
@@ -57,7 +57,7 @@ async function ready(url, child) {
     page.on("pageerror", error => errors.push(String(error)));
     await page.goto(url, {waitUntil:"domcontentloaded"});
     await page.waitForFunction(() => document.getElementById("fileTitle").textContent === "pokemon.txt");
-    assert.equal(await page.locator("[data-panel]").count(), 20, "As 20 abas devem existir");
+    assert.equal(await page.locator("[data-panel]").count(), 21, "As 21 abas devem existir");
     assert.equal(await page.locator('[data-panel="pokemon"]').getAttribute("aria-selected"),"true");
     assert.equal(await page.locator("#pbsWorkspace").isVisible(),true);
 
@@ -139,12 +139,34 @@ async function ready(url, child) {
     ]);
     assert.equal(metricResponse.status(),200,await metricResponse.text());
     assert.match(fs.readFileSync(path.join(game,"PBS","pokemon_metrics.txt"),"utf8"),/FrontSprite = 12,0,2/);
+
+    // Aba exclusiva: editar moves por nível da espécie NOVA preservando a original.
+    await page.locator('[data-panel="pokemon-moves"]').click();
+    await page.locator("#movesSearch").fill("NEWMON");
+    await page.locator('#movesRecords [data-moves-file="pokemon.txt"][data-moves-index="1"]').click();
+    await page.locator('.moves-kind-rows[data-kind="level"] .moves-row').first().waitFor();
+    await page.locator('[data-add-move="level"]').click();
+    const newLevelRow=page.locator('.moves-kind-rows[data-kind="level"] .moves-row').last();
+    await newLevelRow.locator(".moves-level").fill("15");
+    await newLevelRow.locator(".moves-move-input").fill("BITE");
+    const [moveSaveResponse]=await Promise.all([
+      page.waitForResponse(res=>res.url().includes("/api/pokemon-moves/save") &&
+        res.request().method()==="POST"),
+      page.locator("#movesSave").click()
+    ]);
+    assert.equal(moveSaveResponse.status(),200,await moveSaveResponse.text());
+    const savedPokemon=fs.readFileSync(path.join(game,"PBS","pokemon.txt"),"utf8");
+    assert.match(savedPokemon,/Moves = 1,TACKLE,15,BITE/);
+    assert.equal(savedPokemon.match(/\[TESTMON\]/g).length,1,"Primeira espécie deve ser preservada");
+    await page.locator('[data-panel="pokemon"]').click();
+    assert.equal(await page.locator("#pbsWorkspace").isVisible(),true);
+    assert.equal(await page.locator("#movesWorkspace").isVisible(),false);
     assert.deepEqual(errors,[],"Sem erros JS no navegador");
 
     const shotDir = path.join(root,"tests","artifacts");
     fs.mkdirSync(shotDir,{recursive:true});
     await page.screenshot({path:path.join(shotDir,"blue-studio-smoke.png"),fullPage:true});
-    console.log("PASS: UI Emerald-like, 20 abas, PBS, save, placeholders, navegação, sem pageerror.");
+    console.log("PASS: 21 abas, CRUD PBS, sprites, novas espécies, moves por nível e nenhuma regressão JS.");
   } catch (error) {
     console.error("REGRESSION FAILURE:", error);
     console.error(serverLog.slice(-2500));
