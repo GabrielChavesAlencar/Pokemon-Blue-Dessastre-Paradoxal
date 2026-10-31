@@ -23,6 +23,7 @@ jobs:
       - name: Validar sintaxe JavaScript
         run: |
           node --check web/app.js
+          node --check web/sprites.js
           node --check web/navigation.js
           node --check tests/browser_smoke.cjs
   smoke-browser:
