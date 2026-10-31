@@ -24,3 +24,16 @@
 .guide-related-links .icon{width:14px;height:14px}
 .guide-article-sources{border-top:1px solid #2b405c;padding-top:24px}
 @media(max-width:700px){.guide-info{flex-direction:column;align-items:flex-start}.guide-info p{min-width:0}.guide-related-links{flex-direction:column;align-items:flex-start}}
+
+/* Horários dos commits em America/Sao_Paulo e acesso aos guias no diário. */
+.update-date time{display:flex;flex-direction:column;align-items:flex-start;gap:5px;font:inherit;color:inherit}
+.update-date .update-time{display:block;color:#8fb5dd;font-size:10px;font-weight:500;white-space:nowrap}
+.update-summary-hour{display:block;margin-top:5px;color:#8fb5dd;font-size:12px;line-height:1.55;font-weight:500}
+.updates-guide-shortcut{margin:25px 0 25px;padding:19px 23px;display:flex;gap:18px;align-items:center;border:1px solid #315174;border-radius:9px;background:#101e30}
+.updates-guide-shortcut .updates-guide-icon{flex:none;width:40px;height:40px;border:1px solid #42658d;border-radius:9px;background:#193450;display:grid;place-items:center;color:#aed3ff}
+.updates-guide-shortcut .updates-guide-icon .icon{width:20px;height:20px}
+.updates-guide-shortcut>div{flex:1;min-width:0}
+.updates-guide-shortcut strong{display:block;color:#dceaff;font-size:13px}
+.updates-guide-shortcut p{color:#91a9c6;font-size:11px;line-height:1.65;margin-top:4px}
+.updates-guide-shortcut>.button{white-space:nowrap;font-size:11px}
+@media(max-width:700px){.updates-guide-shortcut{flex-wrap:wrap;gap:14px}.updates-guide-shortcut>.button{width:100%;justify-content:center}.update-summary-hour{font-size:11px}}
