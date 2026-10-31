@@ -6,6 +6,15 @@
 
 *Prévia com dados demonstrativos: o jogo original não faz parte do download.*
 
+
+## Restauracao de Pokemon e golpes da geracao 9
+
+A base local foi restaurada e recompilada com as referencias do Essentials 21.1 e do Generation 9 Pack 3.3.3, preservando campanha e recursos. [Relatorio e limites](docs/RESTAURACAO_GERACAO9.md).
+
+Para reproduzir a restauracao em outra copia local do Decades, execute `python scripts/official_rules/restore.py` para preparar e validar; use `--apply` para aplicar com backup. [Instrucoes](docs/REAPLICAR_REGRAS_OFICIAIS.md). O procedimento baixa referencias verificadas por SHA-256 e mantem os arquivos do jogo fora do Git.
+
+O editor aceita golpes de evolucao no nivel **0**, alem dos niveis 1–100, e comentarios numericos dos PBS do Decades. O `RUN.bat` permanece em uma unica pasta mesmo se a atualizacao falhar.
+
 ## Interface inspirada no editor de ROM do Emerald Studio (v0.2)
 
 A navegação do **Blue Studio** foi reorganizada com o mesmo conjunto de **14 abas principais + 6 ferramentas avançadas** do editor de ROM do [Emerald Studio](https://github.com/Lancelioti/emerald-studio). O tema foi adaptado para **Pokémon Essentials / RPG Maker XP**.
@@ -90,7 +99,7 @@ Se você já baixou Pokémon Decades, copie os arquivos para `game/` mantendo `G
 O **RUN.bat** agora verifica o GitHub e tenta atualizar o editor pela branch `main` antes de abrir o Blue Studio no navegador. **Nao exige GitHub CLI (`gh`)**: basta **Git for Windows** com acesso a este repositorio privado e **Python 3.10+**.
 
 - **Pasta clonada por Git:** clique duas vezes em `RUN.bat`. Ele executa `git pull --ff-only origin main`, depois inicia o servidor Python em `http://127.0.0.1:8765` (o navegador abre automaticamente).
-- **Pasta antiga extraida de ZIP (sem `.git`):** coloque nela o novo `RUN.bat`. Na primeira execucao, ele cria um clone em uma pasta irma chamada `Pokemon-Blue-Dessastre-Paradoxal-Git` e inicia a copia atualizada. Se existir `game/PBS` na pasta antiga, o editor continua usando essa copia local do jogo via `BLUE_GAME_DIR`.
+- **Pasta extraida de ZIP (sem `.git`):** o editor abre nesta mesma pasta. A atualizacao Git e ignorada; nenhuma pasta duplicada e criada.
 - **Sem Git, sem acesso a rede ou com conflito:** o editor local ainda pode abrir, mas a atualizacao sera pulada e aparecerá um aviso. Para projeto privado, o Git pode solicitar autenticacao no navegador por meio do Git Credential Manager.
 - **Alteracoes locais:** a atualizacao nao usa `git reset --hard`, `git clean` ou `--force`. Se um arquivo modificado impedir o pull, corrija o conflito manualmente; **nao** sera apagado.
 - **Jogo e dados locais:** `game/` e `.blue-backups/` sao ignorados pelo Git e nao recebem atualizacoes do Decades automaticamente. O script atualiza **o codigo deste repositorio**, nao os arquivos da base original.
@@ -111,9 +120,9 @@ Depois execute `RUN.bat` da pasta clonada.
 
 ### Se o RUN.bat disser "A branch atual nao e main"
 
-Essa mensagem vinha da versão antiga do iniciador. **Corrigido na branch main.** O novo `RUN.bat` verifica a branch atual; se a área de trabalho estiver limpa, muda para `main` sem descartar arquivos e sincroniza a versão atual. Se houver alterações locais ou conflitos, utiliza um clone seguro em pasta irmã (`Pokemon-Blue-Dessastre-Paradoxal-Git`) e preserva o conteúdo original. `game/` e backups não são sincronizados nem apagados.
+Essa mensagem vinha da versão antiga do iniciador. **Corrigido na branch main.** O novo `RUN.bat` verifica a branch atual; se a área de trabalho estiver limpa, muda para `main` sem descartar arquivos e sincroniza a versão atual. Se houver alterações locais ou conflitos, abre a copia local e preserva o conteudo original, sem criar outra pasta. `game/` e backups não são sincronizados nem apagados.
 
-Para quem ainda usa o `RUN.bat` antigo, a correção inicial precisa ser aplicada **uma vez**. Substitua `RUN.bat` pelo arquivo atualizado do repositório ou execute o pacote `CORRIGIR_ATUALIZACAO_BLUE.bat` entregue na conversa de suporte, dentro da pasta do projeto. O reparador busca a versão atual no GitHub, migra para `main` quando possível e inicia o editor.
+Para quem ainda usa o `RUN.bat` antigo, a correção inicial precisa ser aplicada **uma vez**. Substitua `RUN.bat` pelo arquivo atualizado do repositorio. O iniciador migra para `main` quando possivel e abre o editor nesta mesma pasta.
 
 CI: `.github/workflows/regression.yml` também executa um teste real do iniciador em `windows-latest`, simulando uma branch antiga, verificando `main` e repetindo o RUN em modo de teste (`BLUE_STUDIO_NO_SERVER=1`).
 

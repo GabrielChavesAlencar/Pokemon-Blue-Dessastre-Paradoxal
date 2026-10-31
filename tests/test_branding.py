@@ -16,8 +16,8 @@ class BrandingTest(unittest.TestCase):
         mkxp=prepare_game.GAME/'mkxp.json'
         mkxp.write_text('''{\n   // the game window\n   "windowTitle": "Pokémon Essentials v21.1",\n   "defScreenW": 512\n}\n''',encoding='utf-8')
         self.assertEqual(prepare_game.main(),0)
-        self.assertIn('Title=Pokemon Blue Dessastre Paradoxal',ini.read_text())
-        self.assertIn('"windowTitle": "Pokémon Blue: Dessastre Paradoxal"',mkxp.read_text())
+        self.assertIn('Title=Pokemon Blue Dessastre Paradoxal',ini.read_text(encoding="utf-8"))
+        self.assertIn('"windowTitle": "Pokémon Blue: Dessastre Paradoxal"',mkxp.read_text(encoding="utf-8"))
         self.assertEqual(len(list(prepare_game.BACKUP.glob('*.bak'))),2)
         self.assertEqual(prepare_game.main(),0)
         self.assertEqual(len(list(prepare_game.BACKUP.glob('*.bak'))),2)

@@ -159,8 +159,8 @@ def validate_values(body, allowed: set[str], form: bool) -> tuple[dict, set]:
                 if not isinstance(pair, dict) or type(pair.get("level")) is not int:
                     raise MoveEditorError("Informe níveis inteiros nos golpes por nível.")
                 level = pair["level"]
-                if not 1 <= level <= 100:
-                    raise MoveEditorError("Níveis dos golpes devem estar entre 1 e 100.")
+                if not 0 <= level <= 100:
+                    raise MoveEditorError("Níveis dos golpes devem estar entre 0 e 100 (0 = ao evoluir).")
                 move = pair.get("move")
                 if not isinstance(move, str) or not MOVE_ID.fullmatch(move.upper()):
                     raise MoveEditorError("ID de golpe inválido.")

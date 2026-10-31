@@ -5,7 +5,6 @@ title Pokemon Blue Dessastre Paradoxal - Atualizar e Abrir
 
 set "REPO_URL=https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal.git"
 set "REPO_CHECK=github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
-set "CLONE_DIR=%~dp0..\Pokemon-Blue-Dessastre-Paradoxal-Git"
 
 echo.
 echo ==== POKEMON BLUE DESSASTRE PARADOXAL - BLUE STUDIO ====
@@ -46,7 +45,7 @@ if errorlevel 1 (
 for %%A in ("%STATUS_FILE%") do if %%~zA GTR 0 (
   del /q "%STATUS_FILE%" >nul 2>&1
   echo [AVISO] Existem alteracoes locais nesta branch.
-  echo [INFO] Vou abrir um clone atualizado separado para nao perder nada.
+  echo [INFO] Abrindo o editor nesta mesma pasta, sem criar outro clone.
   goto :bootstrap
 )
 del /q "%STATUS_FILE%" >nul 2>&1
@@ -66,7 +65,7 @@ goto :pull_main
 
 :switch_failed
 echo [AVISO] Git nao permitiu mudar de branch. Nenhum reset sera feito.
-echo [INFO] Abrindo a versao do GitHub em uma pasta separada.
+echo [INFO] Abrindo o editor nesta mesma pasta.
 goto :bootstrap
 
 :pull_main
@@ -75,7 +74,7 @@ echo [INFO] Buscando atualizacoes em origin/main...
 if errorlevel 1 (
   echo.
   echo [AVISO] O pull nao pode ser concluido com fast-forward.
-  echo [INFO] Alteracoes locais preservadas. Tentando clone separado.
+  echo [INFO] Alteracoes locais preservadas. Mantendo esta mesma pasta.
   goto :bootstrap
 )
 echo [OK] Arquivos do editor atualizados pela main do GitHub.
@@ -87,44 +86,9 @@ echo [INFO] Abrindo editor local, sem atualizacao.
 goto :start_editor
 
 :bootstrap
-if "%BLUE_RUN_BOOTSTRAPPED%"=="1" (
-  echo [AVISO] Atualizacao ja foi tentada no clone. Abrindo copia local.
-  goto :start_editor
-)
-echo [INFO] Criando ou reutilizando um clone separado:
-echo        %CLONE_DIR%
-if exist "%CLONE_DIR%\.git" goto :check_clone
-if exist "%CLONE_DIR%" (
-  echo [AVISO] Pasta de destino existe mas nao e clone Git.
-  echo [AVISO] Seus arquivos permanecem intocados. Abrindo editor local.
-  goto :start_editor
-)
-echo [INFO] Clonando projeto privado. Git pode solicitar autenticacao.
-"%GIT%" clone --branch main --single-branch "%REPO_URL%" "%CLONE_DIR%"
-if errorlevel 1 (
-  echo [AVISO] Clone falhou. Verifique login GitHub e internet.
-  goto :start_editor
-)
-
-:check_clone
-"%GIT%" -C "%CLONE_DIR%" remote get-url origin 2>nul | findstr /I /C:"%REPO_CHECK%" >nul
-if errorlevel 1 (
-  echo [ERRO] O clone aponta para outro repositorio. Nao sera executado.
-  goto :start_editor
-)
-if not exist "%CLONE_DIR%\RUN.bat" (
-  echo [ERRO] Clone sem RUN.bat. Abrindo versao local.
-  goto :start_editor
-)
-
-rem Game/PBS e backups da pasta atual nunca sao apagados/copied pelo Git.
-if not defined BLUE_GAME_DIR if exist "%~dp0game\PBS" set "BLUE_GAME_DIR=%~dp0game"
-set "BLUE_RUN_BOOTSTRAPPED=1"
-echo [OK] Abrindo o clone sincronizado. Seu jogo permanece na pasta original.
-echo [INFO] Para as proximas execucoes, use:
-echo        %CLONE_DIR%\RUN.bat
-call "%CLONE_DIR%\RUN.bat"
-exit /b %errorlevel%
+echo [AVISO] Atualizacao indisponivel. Abrindo o editor nesta mesma pasta.
+echo [INFO] Nenhuma pasta duplicada sera criada.
+goto :start_editor
 
 :start_editor
 if "%BLUE_STUDIO_NO_SERVER%"=="1" (
@@ -141,7 +105,7 @@ if errorlevel 1 goto :try_python
 py -3 -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" >nul 2>&1
 if errorlevel 1 goto :try_python
 echo [INFO] Abrindo Blue Studio no navegador...
-py -3 "server\main.py"
+py -3 -X utf8 "server\main.py"
 goto :finish
 
 :try_python
@@ -150,7 +114,7 @@ if errorlevel 1 goto :no_python
 python -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" >nul 2>&1
 if errorlevel 1 goto :no_python
 echo [INFO] Abrindo Blue Studio no navegador...
-python "server\main.py"
+python -X utf8 "server\main.py"
 goto :finish
 
 :no_python

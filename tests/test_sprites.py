@@ -104,7 +104,12 @@ class SpriteTest(unittest.TestCase):
         outside.write_bytes(make_png())
         folder=self.root/"Graphics"/"Pokemon"/"Front"
         folder.mkdir(parents=True)
-        (folder/"TESTMON.png").symlink_to(outside)
+        try:
+            (folder/"TESTMON.png").symlink_to(outside)
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows account cannot create symbolic links")
+            raise
         with self.assertRaises(EditorError):
             sprite_metadata(self.root,"TESTMON","front")
 

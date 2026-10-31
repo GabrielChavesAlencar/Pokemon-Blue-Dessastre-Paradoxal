@@ -186,7 +186,7 @@
       const section=node("section","moves-kind");
       const heading=node("div","moves-kind-heading");
       heading.append(node("h3","",KEY_NAMES[kind]));
-      const info=node("small","",kind==="level"?"Nível 1–100 · ordem preservada":
+      const info=node("small","",kind==="level"?"0 = ao evoluir · níveis 1–100 · ordem preservada":
         kind==="tutor"?"Aprendizado por tutor, TM/TR conforme o jogo":"Golpes herdáveis por reprodução");
       heading.append(info);section.append(heading);
       const inheritedCheck=entry.form&&entry.baseAvailable?node("label","moves-inherit-label"):null;
@@ -212,7 +212,7 @@
         const row=node("div","moves-row"+(isInherited?" locked":""));
         if(kind==="level"){
           const level=node("input","moves-level");
-          level.type="number";level.min="1";level.max="100";level.step="1";
+          level.type="number";level.min="0";level.max="100";level.step="1";
           level.value=String(record.level);
           level.setAttribute("aria-label","Nível do golpe "+(index+1));
           level.disabled=isInherited;

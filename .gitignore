@@ -13,3 +13,6 @@ Thumbs.db
 .DS_Store
 # Ferramentas portateis instaladas automaticamente (nao publicar executaveis)
 /tools/
+
+# Local reference downloads and restoration staging
+/.blue-work/

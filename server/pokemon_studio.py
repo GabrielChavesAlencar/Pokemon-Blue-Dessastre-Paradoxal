@@ -85,10 +85,13 @@ def validate_pokemon(root: Path, raw: str, *, check_references=True) -> dict:
     if len(move_data) % 2:
         raise PokemonValidationError("Moves deve conter pares: nível,golpe.")
     for index in range(0, len(move_data), 2):
-        if not move_data[index].isdigit() or not 1 <= int(move_data[index]) <= 100:
+        if not move_data[index].isdigit() or not 0 <= int(move_data[index]) <= 100:
             raise PokemonValidationError("Nível de golpe inválido: " + move_data[index])
     for number in ("CatchRate", "HatchSteps", "BaseExp", "Happiness"):
         v = f.get(number)
+        if v is not None:
+            # Decades retains previous numeric values as inline PBS comments.
+            v = v.split("#", 1)[0].strip()
         if v is not None and (not v.isdigit() or int(v) < 0 or int(v) > 65535):
             raise PokemonValidationError(number + " precisa ser um inteiro positivo.")
     if check_references:
