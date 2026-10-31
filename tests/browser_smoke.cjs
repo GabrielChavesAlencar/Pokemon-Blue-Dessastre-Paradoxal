@@ -60,8 +60,11 @@ async function ready(url, child) {
     await page.locator(".record").first().click();
     await page.waitForSelector("#f0");
     await page.locator("#f0").fill("Potion Regression");
-    await page.locator("#save").click();
-    await page.waitForFunction(() => document.querySelector("#save").disabled === true);
+    const [savedResponse] = await Promise.all([
+      page.waitForResponse(res => res.url().includes("/api/save") && res.request().method() === "POST"),
+      page.locator("#save").click()
+    ]);
+    assert.equal(savedResponse.status(), 200, "O servidor deve confirmar gravacao PBS");
     assert.match(fs.readFileSync(path.join(game,"PBS","items.txt"),"utf-8"),/Potion Regression/);
 
     await page.locator('[data-panel="map"]').click();
