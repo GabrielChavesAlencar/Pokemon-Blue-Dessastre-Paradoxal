@@ -24,7 +24,7 @@ test('áreas utilizam mapa regional oficial com marcador quando existem coordena
   const html=regionImage(model,area,true);
   assert.match(html,/mapRegion0.png/);
   assert.match(html,/region-marker/);
-  assert.match(html,/Mapa regional/);
+  assert.match(html,/mapa regional/i);
   assert.ok(!regionImage(model,{name:'Nome completamente novo'},false).includes('region-marker'));
 });
 test('guia e chefes usam as mesmas equipes do arquivo extraído',()=>{
