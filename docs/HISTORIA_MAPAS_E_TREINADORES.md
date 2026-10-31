@@ -4,7 +4,7 @@
 
 - `/historia`: missão central, Beatha, objetivos confirmados, 18 Type Masters, Zenith Domain e dicas.
 - `/chefes`: os 18 Type Masters e o chefe final Danny. Cada ficha oferece 1v1/2v2/3v3 em Basic Power ou Full Power, quando presente no PBS original.
-- `/localizacoes`: imagem do mapa regional oficial de Beatha nas listagens e detalhes. Coordenadas extraídas do `town_map.txt` quando há correspondência exata. **Não são capturas dos mapas internos do RPG Maker XP**.
+- `/localizacoes`: prioriza imagem específica quando verificada; caso haja coordenada do local, mostra **recorte regional ampliado específico daquela área**, em vez de repetir Beatha inteira; se não houver imagem nem coordenada, avisa que a imagem ainda não está disponível. **Recortes regionais não são capturas dos mapas internos do RPG Maker XP**.
 
 ## Fonte e integridade
 
@@ -43,3 +43,45 @@ Para mostrar o mapa interno real de cada cidade ou caverna, exporte renderizaç�
 ## Testes
 
 `site/tests/story.test.mjs` valida os 18 Type Masters, as seis variantes de cada mestre, o boss final, as imagens regionais e a apresentação dos times. O workflow `site-checks.yml` executa os testes e o build.
+
+
+## Pesquisa de imagens reais de cada mapa — 31/10/2026
+
+Pesquisados o repositório público do Decades, seus arquivos de UI/Town Map, os dois fóruns oficiais e resultados de busca específicos por nome de localização. **Não foi localizada uma coleção de capturas reais para cada mapa interno.** A pasta de minimapas do Decades contém apenas `mapLappetTown.png` (repetida em temas diferentes), e os outros recursos públicos encontrados não são identificados como capturas das 155 localizações.
+
+A prioridade visual atual é:
+
+1. **Imagem comprovada de uma área:** `site/public/data/region-points.json > areaImages[ID]`. Neste momento, Lappet Town (área 2) usa a miniatura específica encontrada no repositório público do Decades.
+2. **Recorte do mapa regional:** nas outras áreas com correspondência entre nome e coordenadas de `PBS/town_map.txt`, a interface aproxima somente o trecho da região associado ao local. Há correspondência para 141 de 155 registros de localizações (alguns registros possuem nomes repetidos).
+3. **Ausência de imagem confiável:** as demais áreas recebem um placeholder descritivo. Por exemplo, Rock Cave 1F (área 49) **não exibe mais o mesmo mapa inteiro de Beatha**, pois não há miniatura ou coordenada individual verificada.
+
+Essas imagens não devem ser apresentadas como capturas do cenário interno de jogo, e o site faz essa distinção em sua legenda.
+
+### Substituir um recorte por uma imagem verdadeira
+
+Adicione a imagem autorizada, por exemplo, em `site/public/assets/maps/49.png` e registre no `site/public/data/region-points.json`:
+
+```json
+{
+  "areaImages": {
+    "49": {
+      "src": "/assets/maps/49.png",
+      "kind": "screenshot",
+      "source": "Descrição ou URL da fonte original",
+      "credit": "Imagem real do mapa Rock Cave 1F, exportada do Blue Studio"
+    }
+  }
+}
+```
+
+**Atenção:** o trecho é apenas ilustrativo: não substitua todos os demais campos de `region-points.json` por este objeto. Acrescente a propriedade em `areaImages` já existente. O identificador da imagem precisa corresponder a `locations.json > locations[].id`. Para uma renderização fiel do RPG Maker XP, a exportação tem que ler o mapa de `Data/MapNNN.rxdata` e os tilesets/autotiles correspondentes, ou partir de uma captura real do jogo. Não use imagens de outros jogos por similaridade do nome.
+
+Fontes da pesquisa:
+- https://github.com/HazyCrazy/Pokemon-Decades/tree/main/Graphics/UI/Town%20Map/UI/Default/LocationPreview/MiniMaps
+- https://github.com/HazyCrazy/Pokemon-Decades/blob/main/PBS/town_map.txt
+- https://www.pokecommunity.com/threads/pokemon-decades.540970/
+- https://eeveeexpo.com/threads/9341/
+
+### Validação
+
+`site/tests/story.test.mjs` verifica o recorte único por área com coordenadas, o minimapa de Lappet, a ausência de mapa inventado em Rock Cave e a cobertura dos registros. Ao final de `npm test --prefix site` e `npm run build --prefix site`, faça `git push origin main` para atualizar o deploy da Vercel.
