@@ -63,8 +63,8 @@ async function ready(url, child) {
 
     await page.locator('[data-panel="items"]').click();
     await page.waitForFunction(() => document.getElementById("fileTitle").textContent === "items.txt");
-    await page.locator(".record").first().click();
-    await page.waitForSelector("#f0");
+    await page.locator("#records .record").filter({hasText:"POTION"}).first().click();
+    await page.locator("#f0").waitFor({state:"visible"});
     await page.locator("#f0").fill("Potion Regression");
     const [savedResponse] = await Promise.all([
       page.waitForResponse(res => res.url().includes("/api/save") && res.request().method() === "POST"),
