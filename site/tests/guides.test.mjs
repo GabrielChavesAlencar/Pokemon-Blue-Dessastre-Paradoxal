@@ -18,7 +18,7 @@ test('mudanças no catálogo e encontros recalculam guias',()=>{
   const before=generateGuides(input);
   const changed=structuredClone(input);
   changed.catalog.species.push({...changed.catalog.species[0],id:'TEST_GUIDE',generation:'dessastre-paradoxal',pending:true});
-  changed.locations.locations.push({...changed.locations.locations[0],id:999999,name:'Área do teste'});
+  changed.locations.locations.unshift({...changed.locations.locations[0],id:999999,name:'Área do teste'});
   const after=generateGuides(changed);
   const content=(obj,id)=>obj.guides.find(g=>g.id===id).sections.map(s=>s.paragraphs.join(' ')).join(' ');
   assert.notEqual(content(before,'blue-pokedex-atual'),content(after,'blue-pokedex-atual'));
