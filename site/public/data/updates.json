@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "102f63d8aa3c1804894b30d7397555198cf858f5",
+      "date": "2026-10-31T16:31:37-03:00",
+      "title": "style(site): criar layouts responsivos para mapas, história e equipes de treinadores",
+      "category": "Melhorias"
+    },
+    {
       "sha": "78e5d1918f80299dc2c079723ffdcf98adcdeceb",
       "date": "2026-10-31T16:31:06-03:00",
       "title": "feat(site): integrar páginas de história, equipes de chefes e mapa regional em Localizações",
