@@ -43,10 +43,5 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Executar regressao ponta a ponta com dados temporarios
         run: node tests/browser_smoke.cjs
-      - name: Salvar imagem da interface (se produzida)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: blue-studio-smoke
-          path: tests/artifacts/
-          if-no-files-found: ignore
+      # Capturas ficam locais ao runner. O upload de artefatos foi removido
+      # porque a conta GitHub atingiu sua cota de storage.
