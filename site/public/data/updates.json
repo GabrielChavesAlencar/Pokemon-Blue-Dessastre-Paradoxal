@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3134358803c5739c890650c155bd3e5cd5306f4e",
+      "date": "2026-10-31T14:56:04-03:00",
+      "title": "feat: adicionar laboratório de batalhas reais e atalhos de teste local",
+      "category": "Novidades"
+    },
+    {
       "sha": "1eb1a180e0c0e9e1544c99c2c7ab25d58122d425",
       "date": "2026-10-31T14:23:15-03:00",
       "title": "feat(site): criar portal com Pokédex, guias, localizações e diário automático",
