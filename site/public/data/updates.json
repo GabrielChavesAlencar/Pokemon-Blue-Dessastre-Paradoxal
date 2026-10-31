@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3fdd608ee255655eec756fd9942b40dbf270a8af",
+      "date": "2026-10-31T16:51:54-03:00",
+      "title": "feat(maps): registrar miniatura original de Lappet Town e política de imagens por área",
+      "category": "Novidades"
+    },
+    {
       "sha": "3fed94012822cdfa39a288a42f9eb97e33fd8f0d",
       "date": "2026-10-31T16:34:45-03:00",
       "title": "feat(story): ligar locais aos Mestres e diferenciar equipes sincronizadas do Blue",
