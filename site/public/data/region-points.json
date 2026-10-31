@@ -580,5 +580,19 @@
       "x": 4,
       "y": 17
     }
-  }
+  },
+  "areaImages": {
+    "2": {
+      "src": "https://raw.githubusercontent.com/HazyCrazy/Pokemon-Decades/main/Graphics/UI/Town%20Map/UI/Default/LocationPreview/MiniMaps/mapLappetTown.png",
+      "source": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/Graphics/UI/Town%20Map/UI/Default/LocationPreview/MiniMaps/mapLappetTown.png",
+      "kind": "minimap",
+      "credit": "Minimapa encontrado na pasta de pré-visualizações de Pokémon Decades"
+    }
+  },
+  "imagePriority": [
+    "areaImages[id]",
+    "focused-region-if-verified-point",
+    "placeholder-if-no-evidence"
+  ],
+  "mapMetadataSource": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/PBS/map_metadata.txt"
 }
