@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e6d3420da8656a78d3ce9a228ca24e1f9e679b2f",
+      "date": "2026-11-01T00:15:26-03:00",
+      "title": "feat: opções de mecânicas, gerador autoral no Battle Mode e sprites leves",
+      "category": "Novidades"
+    },
+    {
       "sha": "376926dd8e17011401d67e5b1f785430a6d5a60f",
       "date": "2026-10-31T22:45:50-03:00",
       "title": "feat: integrar cries, pedras, descrições e encontros; adicionar editor de músicas",
