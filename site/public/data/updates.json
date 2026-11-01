@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "57698782748a533fbc7c0a6b0bcf06a851ce6610",
+      "date": "2026-11-01T17:12:28-03:00",
+      "title": "fix(battle): recognize classic Mega Stones and select battle mechanics",
+      "category": "Correções"
+    },
+    {
       "sha": "0e88d9ef53b503e052479dac1f30b1581689d248",
       "date": "2026-11-01T16:10:40-03:00",
       "title": "Inicia experimento online isolado com salas e seleção de equipes",
