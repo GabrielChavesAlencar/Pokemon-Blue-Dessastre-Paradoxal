@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1619357b6e9e32a7504bd8e45bb493c00fa05e2e",
+      "date": "2026-11-01T11:52:03-03:00",
+      "title": "feat: criar Hub de Batalha nativo com teambuilder, Pokepaste e download separado",
+      "category": "Novidades"
+    },
+    {
       "sha": "e4533d2eb11a41a747852aa01485c23281dd6617",
       "date": "2026-11-01T10:46:28-03:00",
       "title": "feat: animacoes FireRed, progressao Traditional Starters e instalacao por ZIP",
