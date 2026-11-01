@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "784fe3c1463e031e72b80d50c5fe9d66a7c5a550",
+      "date": "2026-10-31T21:40:31-03:00",
+      "title": "docs: publicar Pokédex autoral com 47 descrições aprovadas",
+      "category": "Documentação"
+    },
+    {
       "sha": "fd702990b44d2d6a77aab5e1ca5d5ce4c30c48aa",
       "date": "2026-10-31T19:47:55-03:00",
       "title": "feat(ia): adicionar Blue Radical inspirada nos principios do CFRU",
