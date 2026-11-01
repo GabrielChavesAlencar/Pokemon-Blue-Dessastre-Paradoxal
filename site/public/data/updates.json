@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cad455b0444c9443e5fd3d5fac11c1a68d00dea5",
+      "date": "2026-10-31T21:40:55-03:00",
+      "title": "feat: exibir textos aprovados nas fichas da Pokédex",
+      "category": "Novidades"
+    },
+    {
+      "sha": "208c03598cf5325bd52fe15ac8299fc71a49d701",
+      "date": "2026-10-31T21:40:53-03:00",
+      "title": "feat: carregar descrições autorais aprovadas no catálogo",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f2ce0a097658ca374e803adc1435bbd1cb9e5e75",
+      "date": "2026-10-31T21:40:43-03:00",
+      "title": "feat: adicionar 47 descrições e medidas aprovadas à Pokédex",
+      "category": "Novidades"
+    },
+    {
       "sha": "784fe3c1463e031e72b80d50c5fe9d66a7c5a550",
       "date": "2026-10-31T21:40:31-03:00",
       "title": "docs: publicar Pokédex autoral com 47 descrições aprovadas",
