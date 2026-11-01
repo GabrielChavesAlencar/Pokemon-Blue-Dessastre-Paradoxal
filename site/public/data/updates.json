@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "219f52292e8502c491c4d3a0387b3100b010506f",
+      "date": "2026-11-01T15:29:56-03:00",
+      "title": "Adiciona seleção 6-pick-4, nível 50 e importação Champions ao Hub",
+      "category": "Novidades"
+    },
+    {
       "sha": "35f556f26a3288d4d02c871f842fdce6e0c1abac",
       "date": "2026-11-01T12:38:32-03:00",
       "title": "Atualiza Megas de Z-A e corrige importação PokéPaste no Hub",
