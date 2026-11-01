@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b49d27c95ec99b459a0562dbfeccbceb798e280b",
+      "date": "2026-11-01T02:18:51-03:00",
+      "title": "feat: sortear musicas por batalha em listas de treinador, selvagem e lider",
+      "category": "Novidades"
+    },
+    {
       "sha": "cfaa1feccaf39d76b4ff5df45878ca3da4b06226",
       "date": "2026-11-01T01:06:27-03:00",
       "title": "fix: liberar a tela inicial e estabilizar a abertura do laboratório",
