@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2de47b07ca6c113cbd754f49a847717ff8ea9609",
+      "date": "2026-11-01T19:09:53-03:00",
+      "title": "feat(campanha): economia paga, lojas por abas e treinadores a 70%",
+      "category": "Novidades"
+    },
+    {
       "sha": "57698782748a533fbc7c0a6b0bcf06a851ce6610",
       "date": "2026-11-01T17:12:28-03:00",
       "title": "fix(battle): recognize classic Mega Stones and select battle mechanics",
