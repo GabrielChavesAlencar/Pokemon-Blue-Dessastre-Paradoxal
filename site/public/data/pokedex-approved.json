@@ -1,0 +1,245 @@
+{
+  "_meta": {
+    "purpose": "Descrições e medidas aprovadas para a Pokédex pública; não alterar atributos, tipos, habilidades ou movimentos",
+    "approved": 47,
+    "total": 59,
+    "source": "docs/Pokedex_Descricoes_Dessastre_Paradoxal.md"
+  },
+  "species": {
+    "CAVEFANG": {
+      "description": "An ancient relative of Zubat, it hunts in pitch-black caves using ultrasonic cries. Its oversized fangs inject a powerful venom, paralyzing prey before it can escape.",
+      "height": 1.6,
+      "weight": 36.0
+    },
+    "ABYSSLURE": {
+      "description": "An ancient relative of Lanturn, it roamed the deepest oceans using its enormous fins. Its golden lure emits an enchanting glow that draws unsuspecting prey straight into its powerful jaws.",
+      "height": 1.9,
+      "weight": 64.0
+    },
+    "ANCESTRASH": {
+      "description": "An ancient relative of Garbodor, it piles bones and decaying vegetation onto its muddy body. Toxic fumes seep from the rotting mass, turning the ground around it into a deadly bog.",
+      "height": 2.4,
+      "weight": 260.0
+    },
+    "BURIALGAZE": {
+      "description": "An ancient relative of Duskull, it wanders forgotten burial grounds with its body covered in grave dust. Those who meet its unblinking gaze are said to hear the voices of spirits buried deep underground.",
+      "height": 1.4,
+      "weight": 42.0
+    },
+    "CRAGGYSIPHON": {
+      "description": "An ancient relative of Octillery, it ruled rocky coastal waters with its immense strength. It strikes foes with stone-hard tentacles and fires powerful jets of water from its muscular siphon.",
+      "height": 1.7,
+      "weight": 108.0
+    },
+    "DIRERUFF": {
+      "description": "An ancient relative of Mightyena, it hunted in ruthless packs across barren plains. Its jagged mane bristles as it kicks up blinding clouds of dust, allowing its pack to ambush unsuspecting prey.",
+      "height": 1.6,
+      "weight": 82.0
+    },
+    "DREADCREST": {
+      "description": "An ancient relative of Noctowl, it ruled the skies above barren canyons. Its enormous crest intimidated rivals, while its powerful wings stirred up blinding dust clouds to conceal its attacks.",
+      "height": 2.1,
+      "weight": 58.0
+    },
+    "FETIDGULLET": {
+      "description": "An ancient relative of Swalot, it swallowed decaying matter from primeval marshes without pause. The foul gases in its cavernous body are said to trap the lingering spirits of anything it consumes.",
+      "height": 1.9,
+      "weight": 94.0
+    },
+    "FOSSILHUSK": {
+      "description": "An ancient relative of Pineco, it developed a shell of mineralized plates as hard as solid rock. It clung to trees along prehistoric cliffs, dropping onto predators with enough force to shatter stone.",
+      "height": 1.1,
+      "weight": 79.0
+    },
+    "FOSSLTIDE": {
+      "description": "An ancient relative of Gastrodon, it absorbed iron from the prehistoric seafloor to form a thick metallic shell. Its armored body could withstand crushing ocean currents and attacks from enormous predators.",
+      "height": 1.6,
+      "weight": 118.0
+    },
+    "JAGGEDMAW": {
+      "description": "An ancient relative of Cloyster, it lurked among submerged cliffs, disguising its jagged shell as stone. When prey approached, its enormous jaws snapped shut with enough force to crush solid rock.",
+      "height": 2.2,
+      "weight": 285.0
+    },
+    "MIASMIC": {
+      "description": "An ancient relative of Weezing, it drifted through toxic marshes while spewing a noxious yellow haze. Prey that inhaled its miasma grew weak and disoriented, making them easy targets for its vicious assault.",
+      "height": 1.8,
+      "weight": 72.0
+    },
+    "MIRECREST": {
+      "description": "An ancient relative of Skuntank, it flares its towering mane to frighten rivals. It fights with deceptive lunges and crushing claw strikes, refusing to retreat even when outnumbered.",
+      "height": 1.5,
+      "weight": 74.0
+    },
+    "PHANTOMIRE": {
+      "description": "An ancient relative of Haunter, it prowled mist-covered marshes long before humans existed. Its spectral hands spread unnatural darkness, trapping unsuspecting prey in terrifying illusions.",
+      "height": 1.9,
+      "weight": 0.4
+    },
+    "PRIAMALGONG": {
+      "description": "An ancient relative of Dewgong, it glided beneath polar ice on featherlike fins. Its icy breath froze seawater into sharp crystals, driving away even the fiercest predators.",
+      "height": 2.3,
+      "weight": 148.0
+    },
+    "PRIMALCATERPIE": {
+      "description": "An ancient relative of Caterpie, it charged larger predators with its dragonlike horns. Its armored segments and sharp spines made it a fearsome forest dweller.",
+      "height": 1.2,
+      "weight": 24.0
+    },
+    "PRIMALDRENAW": {
+      "description": "An ancient relative of Drednaw, it stalked prehistoric seas beneath a jagged, armored shell. Its crushing jaws could drag even massive prey into the depths.",
+      "height": 2.8,
+      "weight": 310.0
+    },
+    "PRIMALNOTIC": {
+      "description": "An ancient relative of Shiinotic, it lures wanderers beneath its glowing cap. The spores it sheds cause vivid hallucinations before slowly numbing the body.",
+      "height": 1.7,
+      "weight": 28.0
+    },
+    "PRIMALPUNNY": {
+      "description": "An ancient relative of Lopunny, it carved deep burrows with its powerful hind legs. Its devastating kicks could crack the ground beneath charging predators.",
+      "height": 1.6,
+      "weight": 62.0
+    },
+    "PRIMALTROPICAL": {
+      "description": "An ancient relative of Tropius, it carried enormous leaflike wings above its back. Its long neck reached fruit growing far beyond the reach of other Pokémon.",
+      "height": 3.2,
+      "weight": 240.0
+    },
+    "PRIMALDUURR": {
+      "description": "An ancient relative of Conkeldurr, it uprooted whole trees to wield as clubs. Its mighty blows left deep fractures across the earth.",
+      "height": 2.1,
+      "weight": 185.0
+    },
+    "PRIMALGEOT": {
+      "description": "An ancient relative of Pidgeot, it challenged rivals with ferocious aerial dives. Its powerful talons could knock even large Pokémon out of the sky.",
+      "height": 2.1,
+      "weight": 61.0
+    },
+    "PRIMALKORCH": {
+      "description": "An ancient relative of Centiskorch, it guarded volcanic tunnels with its armored coils. Its glowing plates radiated enough heat to drive away predators.",
+      "height": 4.2,
+      "weight": 180.0
+    },
+    "PRIMALMOTH": {
+      "description": "An ancient relative of Venomoth, it drifted through frozen forests, scattering icy scales that numbed anything they touched. Its powder lingered in the frigid air for hours.",
+      "height": 1.8,
+      "weight": 21.0
+    },
+    "PRIMALMUK": {
+      "description": "An ancient relative of Muk, it lurked in primeval tar pits, its sludge thick with bones and sediment. Prey pulled into its gaping maw rarely escaped.",
+      "height": 2.0,
+      "weight": 180.0
+    },
+    "PRIMALSEAKING": {
+      "description": "An ancient relative of Seaking, it spread its venomous fins like a crown to warn predators. A single prick from its spines could paralyze even larger foes.",
+      "height": 1.8,
+      "weight": 67.0
+    },
+    "PRIMALSECT": {
+      "description": "An ancient relative of Parasect, it grew jagged, stone-hard fungal plates across its back. It used its massive claws to defend the spore colonies beneath its shell.",
+      "height": 1.7,
+      "weight": 132.0
+    },
+    "PRIMALVIPER": {
+      "description": "An ancient relative of Seviper, it hunted through primeval jungles using its scythe-shaped tail. Venom seeping from the blade could weaken even towering predators.",
+      "height": 4.2,
+      "weight": 92.0
+    },
+    "PRIMATIZER": {
+      "description": "Its massive, stone-plated claw fires bursts of pressurized water strong enough to shatter coral. It ambushes prey among ancient reefs.",
+      "height": 2.2,
+      "weight": 135.0
+    },
+    "SCORCHMANE": {
+      "description": "An ancient relative of Rapidash, it galloped across volcanic plains with a mane crackling with electricity. Its blazing hooves left trails of fire wherever it ran.",
+      "height": 2.1,
+      "weight": 140.0
+    },
+    "SCORIASHELL": {
+      "description": "An ancient relative of Magcargo, it crawled through volcanic craters with a shell of hardened scoria. Molten rock constantly seeped from the cracks in its body, scorching everything in its path.",
+      "height": 1.4,
+      "weight": 190.0
+    },
+    "TITANBALEEN": {
+      "description": "An ancient relative of Wailord, it crossed prehistoric seas in metallic armor. Its tough baleen strained whole shoals of fish, while its dorsal spines repelled predators.",
+      "height": 17.0,
+      "weight": 1250.0
+    },
+    "WOOLYSTING": {
+      "description": "An ancient relative of Gliscor, it glided between icy cliffs with thick fur shielding it from the cold. It used its powerful pincers and hooked tail to repel rivals.",
+      "height": 2.3,
+      "weight": 76.0
+    },
+    "IRONCRAWLER": {
+      "description": "A futuristic relative of Wimpod, it scuttles across polluted shores. Its glowing sensors detect toxins, which it absorbs and releases as a defensive mist.",
+      "height": 0.8,
+      "weight": 22.0
+    },
+    "IRONCRUSHER": {
+      "description": "A futuristic relative of Kingler, it patrols the seafloor with hydraulic claws. Its oversized pincer can crush the metal hulls of sunken vessels.",
+      "height": 1.9,
+      "weight": 210.0
+    },
+    "IRONFEASTER": {
+      "description": "A futuristic relative of Snorlax, it devours scrap metal to charge the reactor in its belly. Once fully powered, it enters a deep, motionless sleep.",
+      "height": 2.4,
+      "weight": 850.0
+    },
+    "IRONINVERNOSE": {
+      "description": "A futuristic relative of Centiskorch, it slithers through industrial tunnels with a body heated like a furnace. The vents along its armor release bursts of flame to melt obstacles in its path.",
+      "height": 3.8,
+      "weight": 145.0
+    },
+    "IRONLEPORIS": {
+      "description": "A futuristic relative of Lopunny, it stores electricity in its powerful limbs to unleash explosive jumps. Its blade-like ears and charged kicks can disable foes in an instant.",
+      "height": 1.7,
+      "weight": 48.0
+    },
+    "IRONMAELTROM": {
+      "description": "A futuristic relative of Gyarados, it uses turbines along its armored body to fly over raging seas. The violent air currents it creates can capsize ships.",
+      "height": 7.5,
+      "weight": 620.0
+    },
+    "ARCHGUTOR": {
+      "description": "After decades on tropical beaches, this evolution of Exeggutor stores solar energy in its coconuts. It uses sun-powered moves even beneath storm clouds.",
+      "height": 3.2,
+      "weight": 185.0
+    },
+    "DYNAMOTRODE": {
+      "description": "An evolution of Electrode resembling a Fast Ball, it propels itself with electromagnetic bursts. It rolls so quickly that sparks trail behind it.",
+      "height": 1.4,
+      "weight": 118.0
+    },
+    "MAGNETRIX": {
+      "description": "An alternate evolution of Magneton, it spins four powerful magnets around its core to build immense electrical pressure. It can electrify the ground or propel itself through the air at incredible speed.",
+      "height": 1.3,
+      "weight": 82.0
+    },
+    "MAGISCALE": {
+      "description": "An alternate evolution of Magikarp, it reads ocean currents through its golden whiskers. With a pulse of its mind, it blankets the battlefield in psychic energy.",
+      "height": 5.4,
+      "weight": 128.0
+    },
+    "AMMNOID": {
+      "description": "After exposure to a Dusk Stone, Omanyte evolves into Ammnoid. Its gold-banded shell amplifies psychic pulses that reveal movement across the dark seafloor.",
+      "height": 0.9,
+      "weight": 31.0
+    },
+    "CEPHALONID": {
+      "description": "Its horned shell stores immense psychic energy. When the blue gem on its crown flashes, Cephalonid can bend deep-sea currents and repel predators without touching them.",
+      "height": 1.7,
+      "weight": 110.0
+    },
+    "STUNDRIFT": {
+      "description": "Buried deep beneath the seabed, it absorbs energy from rushing water and shifting earth. Its golden markings glow before it releases a powerful electric shock.",
+      "height": 1.2,
+      "weight": 36.0
+    },
+    "SWADLOADNE": {
+      "description": "After evolving with a Leaf Stone, it guards its forest beneath overlapping leaf shields. Thick inner padding protects it from heat and cold, while its armor covers vulnerable spots.",
+      "height": 1.1,
+      "weight": 42.0
+    }
+  }
+}
