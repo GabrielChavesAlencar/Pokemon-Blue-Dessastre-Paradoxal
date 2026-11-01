@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e5b306cfdcbd8af5c26b4714f479b0a432593a1b",
+      "date": "2026-11-01T20:05:58-03:00",
+      "title": "feat: balanceamento da campanha, seletores de IV e comandos online nativos",
+      "category": "Novidades"
+    },
+    {
       "sha": "2de47b07ca6c113cbd754f49a847717ff8ea9609",
       "date": "2026-11-01T19:09:53-03:00",
       "title": "feat(campanha): economia paga, lojas por abas e treinadores a 70%",
