@@ -1,6 +1,13 @@
 export async function loadPortal(){
   const files=['catalog','locations','updates','guides','story-trainers','region-points'];
   const values=await Promise.all(files.map(async name=>{const response=await fetch(`/data/${name}.json`);if(!response.ok)throw new Error(`Não foi possível abrir ${name}.`);return response.json();}));
+  const approvedResponse=await fetch('/data/pokedex-approved.json');
+  if(!approvedResponse.ok)throw new Error('Não foi possível abrir as descrições aprovadas.');
+  const approved=(await approvedResponse.json()).species;
+  for(const pokemon of values[0].species){
+    const entry=approved[pokemon.id];
+    if(entry){pokemon.description=entry.description;pokemon.height=entry.height;pokemon.weight=entry.weight;}
+  }
   const byId=new Map([...values[0].species,...(values[0].customForms??[])].map(p=>[p.id,p]));
   for(const [id,form] of Object.entries(values[0].encounterForms??{})){const base=byId.get(form.base);if(base)byId.set(id,{...base,name:base.name+' · '+form.name,encounterForm:form.form});}
   return {catalog:values[0],locations:values[1].locations,updates:values[2].commits,guides:values[3].guides,story:values[4],region:values[5],byId};
