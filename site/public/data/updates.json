@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e4533d2eb11a41a747852aa01485c23281dd6617",
+      "date": "2026-11-01T10:46:28-03:00",
+      "title": "feat: animacoes FireRed, progressao Traditional Starters e instalacao por ZIP",
+      "category": "Novidades"
+    },
+    {
       "sha": "b49d27c95ec99b459a0562dbfeccbceb798e280b",
       "date": "2026-11-01T02:18:51-03:00",
       "title": "feat: sortear musicas por batalha em listas de treinador, selvagem e lider",
