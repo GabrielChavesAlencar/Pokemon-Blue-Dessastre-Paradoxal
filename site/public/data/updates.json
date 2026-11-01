@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "376926dd8e17011401d67e5b1f785430a6d5a60f",
+      "date": "2026-10-31T22:45:50-03:00",
+      "title": "feat: integrar cries, pedras, descrições e encontros; adicionar editor de músicas",
+      "category": "Novidades"
+    },
+    {
       "sha": "cad455b0444c9443e5fd3d5fac11c1a68d00dea5",
       "date": "2026-10-31T21:40:55-03:00",
       "title": "feat: exibir textos aprovados nas fichas da Pokédex",
