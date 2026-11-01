@@ -26,7 +26,7 @@ def ensure_base(project,game):
     run([git,'-C',game,'checkout','--detach',BASE_COMMIT],project)
     if not (game/'Game.exe').is_file():raise RuntimeError('O download da base nao contem Game.exe.')
 
-def install(project,game):
+def install(project,game,hub_only=False):
     game=game.resolve();ensure_base(project,game)
     state_path=project/'.blue-work/installation.json'
     state=json.loads(state_path.read_text(encoding='utf8')) if state_path.is_file() else {}
@@ -40,14 +40,18 @@ def install(project,game):
         state_path.write_text(json.dumps(state,indent=2),encoding='utf8')
     run([sys.executable,'scripts/dessastre_paradoxal/install.py','--game-dir',game,'--apply'],project,env)
     run([sys.executable,'server/prepare_game.py'],project,env)
-    run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
-    print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou TESTAR_BATALHA.bat para o laboratorio.')
+    if hub_only:
+        run([sys.executable,'scripts/battle_lab/launch.py','--game-dir',game,'--install-only'],project,env)
+        print('[OK] Hub instalado. Abra HUB_DE_BATALHA.bat para jogar contra a IA.')
+    else:
+        run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
+        print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('Musicas MP3 particulares nao fazem parte do download. O jogo usa a trilha da base ate voce importar suas listas.')
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--apply',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--apply',action='store_true');parser.add_argument('--hub-only',action='store_true');args=parser.parse_args()
     if not args.apply:
         print('Plano: baixar base Decades '+BASE_COMMIT+', restaurar regras oficiais, importar Dessastre Paradoxal e instalar plugins Blue.');print('Use --apply para instalar. Saves e backups existentes sao preservados.');return 0
-    try:install(ROOT,args.game_dir);return 0
+    try:install(ROOT,args.game_dir,args.hub_only);return 0
     except (OSError,ValueError,RuntimeError,subprocess.CalledProcessError) as error:print('[ERRO]',error);print('A instalacao parou. Corrija a causa e execute novamente; os backups ficam em .blue-backups.');return 1
 if __name__=='__main__':raise SystemExit(main())

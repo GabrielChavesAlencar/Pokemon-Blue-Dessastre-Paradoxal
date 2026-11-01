@@ -1,4 +1,5 @@
-Name = Blue Battle Lab
-Version = 0.4
+Name = Blue Battle Hub
+Version = 0.5
 Essentials = 21.1
 Credits = Gabriel Chaves Alencar
+Scripts = BlueBattleLab.rb, Interface.rb, Teams.rb, HubData.rb, HubUI.rb, HubValidation.rb, Validation.rb

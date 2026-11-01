@@ -21,3 +21,4 @@ Thumbs.db
 /site/dist/
 /site/node_modules/
 /site/.vercel/
+/dist/

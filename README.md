@@ -4,6 +4,8 @@
 
 **[⬇ Baixar Pokémon Blue — instalador e modificações (ZIP)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/archive/refs/heads/main.zip)** · **[Passo a passo de instalação no Windows](docs/INSTALACAO.md)**
 
+**[⚔️ Baixar somente o Hub de Batalha](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/latest/download/Blue-Battle-Hub.zip)** · **[Montador nativo, PokéPaste e instalação do Hub](docs/HUB_BATALHA.md)**
+
 Extraia o ZIP, instale Python e Git e abra **`INSTALAR_JOGO.bat`**. Depois, use **`ABRIR_JOGO.bat`** para a campanha. O instalador baixa a base separadamente e aplica as modificações; o ZIP funciona sem uma pasta `.git`. Enquanto o repositório for privado, o download exige acesso autorizado no GitHub. A publicação para todos estará disponível quando o autor tornar o repositório público.
 
 ![Prévia do Blue Studio usando registros de teste](docs/blue-studio-preview.png)
@@ -27,7 +29,7 @@ Na base local, 52 espécies e as 12 Megas estão compiladas. Use **`IMPORTAR_DES
 
 ## Testar batalhas sem avançar na campanha
 
-Abra **`TESTAR_BATALHA.bat`** para o laboratório de batalhas reais, com times de até seis e formatos individual ou dupla. Edite cada integrante e selecione opções também por clique; a sessão não carrega nem salva a campanha. A barra de HP tem descida e recuperação graduais. [Como usar e testar Pokémon novos](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
+Abra **`HUB_DE_BATALHA.bat`** (ou o atalho compatível `TESTAR_BATALHA.bat`) para o **Hub de Batalha**: montador dentro da janela do jogo, importação de PokéPaste/Showdown para os dois lados, biblioteca de times, busca, EVs/IVs/Nature e lutas individuais ou duplas. A sessão não carrega nem salva a campanha. A barra de HP tem descida e recuperação graduais. [Manual do Hub](docs/HUB_BATALHA.md) · [Notas do laboratório original](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
 
 A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor à engine instalada: dano, prioridade, trocas, hazards, suporte e duplas. O laboratório permite compará-la à IA original da base. Execute **`APLICAR_IA_RADICAL.bat`** para instalar em outra cópia da mesma base. [Perfis, fontes, logs e testes](docs/IA_BLUE_RADICAL.md).
 

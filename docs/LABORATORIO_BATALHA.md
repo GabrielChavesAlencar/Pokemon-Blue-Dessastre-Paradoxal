@@ -1,5 +1,7 @@
 # Laboratório de Batalha local
 
+> O laboratório agora é o **Hub de Batalha**, com montador nativo, biblioteca de times e importação PokéPaste para os dois lados. Abra `HUB_DE_BATALHA.bat`; `TESTAR_BATALHA.bat` continua compatível. Consulte o [manual atual do Hub](HUB_BATALHA.md). As instruções abaixo descrevem a interface anterior.
+
 Na pasta principal do projeto, abra **TESTAR_BATALHA.bat**. É uma sessão limitada do jogo real, com times de **1 a 6 Pokémon por lado** e batalhas **individuais ou em dupla**, usando a engine, os sprites, as animações e os dados compilados da base instalada em `game/`.
 
 Mantenha a janela do CMD aberta enquanto joga; pode minimizá-la. O atalho usa Python apenas para preparar os plugins e abre `Game.exe` diretamente pelo Windows, como `JOGAR.bat`, aguardando o encerramento do jogo. Ele usa o caminho real do Python e não passa o argumento nativo `debug` ao executável.

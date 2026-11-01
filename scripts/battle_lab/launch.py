@@ -1,4 +1,4 @@
-"""Install and launch Blue's opt-in battle sandbox using the local game."""
+"""Install and launch Blue's native Battle Hub using the local game."""
 from __future__ import annotations
 import argparse
 from datetime import datetime
@@ -12,7 +12,7 @@ import zlib
 import tempfile
 import importlib.util
 
-PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'Validation.rb', 'meta.txt']
+PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'HubValidation.rb', 'Validation.rb', 'meta.txt']
 
 
 def atomic_write(path: Path, data: bytes):
@@ -29,7 +29,7 @@ def install(project: Path, game: Path) -> Path:
     game=game.resolve()
     for relative in ['Game.exe','Data/Scripts.rxdata']:
         if not (game/relative).is_file():
-            raise RuntimeError(f'Base local incompleta: {game/relative}. Execute BAIXAR_BASE_DECADES.bat primeiro.')
+            raise RuntimeError(f'Base local incompleta: {game/relative}. Execute INSTALAR_HUB.bat ou INSTALAR_JOGO.bat primeiro.')
     source=project/'scripts'/'battle_lab'
     plugin=game/'Plugins'/'ZZZZ Blue Battle Lab'
     plugin.mkdir(parents=True,exist_ok=True)
@@ -113,7 +113,7 @@ def launch(project: Path, game: Path, smoke: bool=False, timeout: float=240) -> 
     env=os.environ.copy();env['BLUE_BATTLE_LAB']='1'
     if smoke:env['BLUE_BATTLE_LAB_SMOKE']='1'
     else:env.pop('BLUE_BATTLE_LAB_SMOKE',None)
-    print('Abrindo a batalha real do jogo. O laboratorio nao carrega nem salva a campanha.',flush=True)
+    print('Abrindo o Hub de Batalha. O Hub nao carrega nem salva a campanha.',flush=True)
     print('Na primeira abertura, aguarde a compilacao dos plugins/PBS em modo debug.',flush=True)
     prepare_request(game,smoke)
     engine_log=game/'Data'/'blue-battle-launcher.log'
@@ -136,7 +136,7 @@ def launch(project: Path, game: Path, smoke: bool=False, timeout: float=240) -> 
             raise RuntimeError(f'O motor nao conseguiu inicializar o sistema de arquivos: {fatal}. Veja {engine_log}.')
         output=read_log_since(log,before)
         if not smoke and 'MENU_READY' in output:
-            print('Laboratorio aberto. Mantenha este CMD aberto enquanto joga; voce pode minimiza-lo.',flush=True)
+            print('Hub aberto. Mantenha este CMD aberto enquanto joga; voce pode minimiza-lo.',flush=True)
             # Explorer/terminal launchers can put the process tree in a job
             # object. Detaching the GUI does not break that lifetime relation.
             # Retain the launcher until the user actually closes the game.

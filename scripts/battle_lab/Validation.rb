@@ -90,6 +90,7 @@ module BlueBattleLab
 
   def self.run_smoke
     check_live_menu
+    check(BlueBattleHub::Validation.run,'Native Battle Hub, Showdown imports and builder; Data/blue-hub-validation.txt') if defined?(BlueBattleHub::Validation)
     check(BlueBattleOptions.run_checks,'Battle Mode, mechanic toggles and sprite quality; Data/blue-battle-options-validation.txt') if defined?(BlueBattleOptions)
     check(BlueMusic.run_checks,'Music overrides; Data/blue-music-validation.txt') if defined?(BlueMusic)
     check(BluePolishValidation.run,'Presentation, EXP, campaign pointer and Story progression; Data/blue-polish-validation.txt') if defined?(BluePolishValidation)

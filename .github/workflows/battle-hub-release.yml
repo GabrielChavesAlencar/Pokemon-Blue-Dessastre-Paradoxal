@@ -1,0 +1,55 @@
+name: Hub de Batalha - download separado
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/battle_hub/**'
+      - 'scripts/battle_lab/**'
+      - 'scripts/battle_options/**'
+      - 'scripts/battle_polish/**'
+      - 'scripts/dessastre_paradoxal/**'
+      - 'scripts/official_rules/**'
+      - 'scripts/radical_ai/**'
+      - 'scripts/music/**'
+      - 'scripts/install_game.py'
+      - 'server/prepare_game.py'
+      - 'server/music_editor.py'
+      - 'server/ruby_marshal.py'
+      - 'HUB_DE_BATALHA.bat'
+      - 'INSTALAR_HUB.bat'
+      - 'TESTAR_BATALHA.bat'
+      - 'data/**'
+      - 'site/assets/**'
+      - 'site/public/data/story-trainers.json'
+      - 'docs/HUB_BATALHA.md'
+      - '.github/workflows/battle-hub-release.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: battle-hub-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar instalacao e pacote sem arquivos do jogo
+        run: python -m unittest discover -s tests -v
+      - name: Montar ZIP independente
+        run: python scripts/battle_hub/package.py --revision "$GITHUB_SHA"
+      - name: Publicar download do Hub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="battle-hub-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}"
+          gh release create "$tag" \
+            "dist/Blue-Battle-Hub.zip#Hub de Batalha - Windows" \
+            "dist/Blue-Battle-Hub.zip.sha256#SHA-256" \
+            --target "$GITHUB_SHA" --title "Hub de Batalha - build ${GITHUB_RUN_NUMBER}" \
+            --notes-file docs/HUB_BATALHA.md --latest
