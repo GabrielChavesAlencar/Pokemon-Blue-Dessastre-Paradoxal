@@ -141,7 +141,11 @@ module BlueBattleHub
       raise ImportError,'A forma Mega requer uma pedra Mega; '+item.name+' nao e uma pedra.'
     end
     if data.mega_stone || data.mega_move
-      item=GameData::Item.get(data.mega_stone) if data.mega_stone
+      if data.mega_stone
+        match=defined?(BlueBattleOptions::CLASSIC_STONES) && item && BlueBattleOptions::CLASSIC_STONES[item.id]
+        compatible=match && match==[data.species,data.form]
+        item=GameData::Item.get(data.mega_stone) unless compatible
+      end
       data=GameData::Species.get_species_form(data.species,data.unmega_form)
     end
     mon=BlueBattleLab.build(data.id,level)

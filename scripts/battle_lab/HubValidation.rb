@@ -16,7 +16,7 @@ module BlueBattleHub
       preview=BlueBattleHub.preview(PASTE.gsub("\n","\r\r\n"))
       check(preview.length==2 && preview.all? { |p| p['pokemon'] },'Pokepaste with doubled CR line endings imports two complete Pokemon')
       team=preview.map { |r| r['pokemon'] }
-      check(team[0].species==:CHARIZARD && team[0].form==0 && team[0].item_id==:MEGAITEY,'Mega paste prepares base Pokemon and the actual stone used by this engine')
+      check(team[0].species==:CHARIZARD && team[0].form==0 && team[0].item_id==:CHARIZARDITEY,'Mega paste prepares base Pokemon with its canonical compatible stone')
       @lines << "MEGA | target=#{team[0].getMegaForm} ability=#{team[0].ability_id} ability_data=#{team[0].ability.id} item=#{team[0].item_id}"
       check(team[0].getMegaForm>0 && team[0].ability.id==:BLAZE,'Pre-Mega ability is retained and Mega evolution remains available')
       check(team[0].level==50 && team[0].iv[:ATTACK]==0 && team[0].ev[:SPEED]==32,'Levels, zero IVs and small literal EV values are retained')

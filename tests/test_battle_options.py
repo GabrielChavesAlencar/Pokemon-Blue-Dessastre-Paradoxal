@@ -16,7 +16,7 @@ class BattleOptionsInstallTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root)
             before={p:p.read_bytes() for p in game.rglob('*') if p.is_file()}
-            self.assertEqual(options.install(root,game),5)
+            self.assertEqual(options.install(root,game),len(options.FILES))
             self.assertEqual(options.install(root,game),0)
             for p,raw in before.items():self.assertEqual(p.read_bytes(),raw)
     def test_replacing_old_own_plugin_keeps_exact_backup(self):

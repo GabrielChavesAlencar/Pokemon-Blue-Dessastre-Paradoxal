@@ -27,6 +27,16 @@ Use **MEU TIME** e **ADVERSÁRIO** para alternar os lados. Cada um tem até seis
 
 **BATALHAR** abre a luta no tamanho normal da engine. Ao terminar, você volta ao montador com os times preservados. A tela do montador usa uma resolução própria; a campanha e as batalhas conservam sua resolução normal.
 
+### Escolher a mecânica durante a batalha
+
+No menu dos golpes, a prioridade padrão entre as opções elegíveis é **Mega Evolução → Z-Move → Terastal → Dynamax**. Ter mais de uma mecânica habilitada nas opções não oculta as alternativas compatíveis com aquele Pokémon.
+
+Quando houver mais de uma opção disponível, clique em **Mecânicas / F6**, no canto superior direito, ou aperte **F6**. Escolha a mecânica com **ativar** e depois selecione o golpe. Por exemplo, Charizard com **Charizardite Y** começa com Mega como opção padrão, mas pode escolher Terastal pelo seletor. O botão de ação original da engine continua ligando/desligando a opção exibida.
+
+**Não ativar neste turno** cancela apenas as seleções pendentes. **Voltar** preserva a seleção. Trocar a escolha não recupera usos já gastos nem altera as escolhas pendentes de outro Pokémon. Um Pokémon já Mega Evoluído, Terastalizado ou Dynamax não ganha uma segunda transformação por esse menu. O seletor oferece somente opções habilitadas e compatíveis com espécie, item, equipamentos e limites da batalha; Z-Move exige um cristal e golpe compatíveis.
+
+No Hub, habilitar Dynamax permite usá-lo sem depender do mapa da campanha. Fora do Hub, as condições de mapa da engine continuam valendo.
+
 ### Duplas: escolher quatro entre seis
 
 A tela mostra os seis Pokémon de cada lado. Você tem **60 segundos** para selecionar quatro, na ordem desejada; os dois primeiros começam em campo. Clique nos cartões ou use setas + Enter; Espaço ou **Confirmar quatro** finaliza. A IA escolhe quatro usando espécies e tipos públicos. Se o tempo terminar, entram exatamente os **quatro primeiros da lista original**, mesmo que você tenha feito uma seleção parcial. **Voltar ao montador** cancela antes da batalha. Os seis integrantes continuam salvos no montador.
@@ -42,7 +52,7 @@ Escolha primeiro **MEU TIME** ou **ADVERSÁRIO** e clique **Importar**:
 
 O download acontece com uma tela de progresso. A importação mostra a prévia antes de substituir o time. Se algum Pokémon, golpe, item ou habilidade não existir na instalação, a prévia explica o problema. Você pode cancelar ou confirmar explicitamente apenas os integrantes compatíveis; não há substituições silenciosas de espécies.
 
-As **45 novas Megas de Z-A/Mega Dimension** usam suas próprias pedras, incluindo **Floettite**, **Dragoninite** e as pedras X/Y/Z. Megaite e suas variantes continuam funcionando para os treinadores e itens já existentes na campanha. As Megas antigas que ainda usam Megaite na base continuam sendo adaptadas explicitamente na prévia (por exemplo, Charizardite Y). O exportador preserva o nome da pedra do paste nessas adaptações.
+As **45 novas Megas de Z-A/Mega Dimension** usam suas próprias pedras, incluindo **Floettite**, **Dragoninite** e as pedras X/Y/Z. As **47 pedras clássicas**, incluindo Charizardite X/Y e Mewtwonite X/Y, também funcionam quando equipadas diretamente, mesmo nas formas que a base cadastrou com uma Megaite genérica. Megaite e suas variantes continuam funcionando para os treinadores e itens já existentes na campanha. Um paste de Mega Charizard Y com Charizardite Y mantém a pedra específica e prepara o Charizard na forma normal; não precisa convertê-la em Megaite Y. Pedras de outra espécie não concedem uma Mega indevida.
 
 Também são aceitos links do PokéPaste traduzidos pelo Google: o Hub baixa o texto original em inglês, preservando os nomes do Showdown. O download roda em um processo auxiliar Python, enquanto o menu continua ativo. Esc cancela, há limite de tempo e de 64 KB, e as falhas ou a área de transferência vazia mostram uma mensagem antes de voltar ao montador. Nenhum time é substituído sem a confirmação na prévia.
 

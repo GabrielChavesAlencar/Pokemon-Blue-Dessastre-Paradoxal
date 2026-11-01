@@ -70,6 +70,7 @@ module BlueBattleOptions
     Game_Map.prepend(MapEvents)
     DeluxeBitmapWrapper.prepend(BlueSpriteQuality::Wrapper)
     install_menus
+    install_mechanic_selector
     @installed=true
   end
 end

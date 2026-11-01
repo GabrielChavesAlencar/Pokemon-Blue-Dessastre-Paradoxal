@@ -2,7 +2,7 @@
 from pathlib import Path
 from datetime import datetime,timezone
 import os,tempfile,shutil
-FILES=['Rules.rb','SpriteQuality.rb','Menus.rb','Validation.rb','meta.txt']
+FILES=['Rules.rb','ClassicStones.rb','Mechanics.rb','SpriteQuality.rb','Menus.rb','Validation.rb','MechanicsValidation.rb','meta.txt']
 def install(project,game):
     source=project/'scripts/battle_options';target=game/'Plugins/ZZZZ Blue Battle Options'
     plans={target/name:(source/name).read_bytes() for name in FILES}

@@ -27,6 +27,7 @@ module BlueBattleOptions
     $game_map=original_map
     $PokemonSystem.blue_battle_mechanics=defaults
     @lab_rules=defaults
+    MechanicValidation.run(lines,check)
     check.call('Only battle/test areas use mode rules',MAPS.all? { |id| battle_area?(id) } && !battle_area?(1))
     species=author_species
     check.call('Author generator exposes 52 ready species and 12 Mega choices',species.length==64 && species.count { |s| s.form>0 }==12)

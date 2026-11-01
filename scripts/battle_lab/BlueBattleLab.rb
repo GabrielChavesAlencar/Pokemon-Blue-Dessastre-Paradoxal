@@ -112,6 +112,7 @@ module BlueBattleLab
     EventHandlers.trigger(:on_start_battle)
     scene = automated ? SmokeScene.new : Battle::Scene.new
     battle = Battle.new(scene, team1, team2, [$player], [trainer])
+    battle.instance_variable_set(:@blue_lab_battle,true)
     battle.items=[gear] if battle.respond_to?(:items=)
     battle.instance_variable_set(:@blue_mechanics,mechanics) if mechanics
     battle.instance_variable_set(:@blue_radical_profile,ai_profile) if ai_profile
