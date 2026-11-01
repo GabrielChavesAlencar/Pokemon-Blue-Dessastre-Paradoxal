@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cfaa1feccaf39d76b4ff5df45878ca3da4b06226",
+      "date": "2026-11-01T01:06:27-03:00",
+      "title": "fix: liberar a tela inicial e estabilizar a abertura do laboratório",
+      "category": "Correções"
+    },
+    {
       "sha": "e6d3420da8656a78d3ce9a228ca24e1f9e679b2f",
       "date": "2026-11-01T00:15:26-03:00",
       "title": "feat: opções de mecânicas, gerador autoral no Battle Mode e sprites leves",
