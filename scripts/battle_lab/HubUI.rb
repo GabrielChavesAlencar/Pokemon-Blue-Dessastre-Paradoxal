@@ -345,13 +345,18 @@ module BlueBattleHub
     def import_menu
       selection=choose('Importar para '+@names[@side],['Colar time ou link da area de transferencia','Digitar link Pokepaste','Voltar'])
       return unless [0,1].include?(selection)
-      raw=selection==0 ? Input.clipboard.to_s : prompt('Link https://pokepast.es/...','',120)
-      return if raw.nil? || raw.strip.empty?
+      raw=selection==0 ? Input.clipboard.to_s : prompt('Link https://pokepast.es/...','',2048)
+      return if raw.nil?
+      raise ImportError,'A area de transferencia esta vazia. Copie o link ou o texto do time primeiro.' if raw.strip.empty?
       if raw.strip.start_with?('https://')
         raw=fetch_with_progress(raw)
         return unless raw
       end
       confirm_import(raw)
+    rescue StandardError=>error
+      @notice='Importacao nao aplicada: '+error.message;@dirty=true
+      BlueBattleLab.log('HUB_IMPORT_ERROR | '+error.message)
+      choose('Nao foi possivel importar. Seu time foi mantido.',error.message.scan(/.{1,62}/)+['Voltar'])
     end
     def confirm_import(raw)
       entries=BlueBattleHub.preview(raw);valid=entries.select { |e| e['pokemon'] };bad=entries.select { |e| e['error'] }
@@ -375,18 +380,32 @@ module BlueBattleHub
       changed
     end
     def fetch_with_progress(raw)
-      BlueBattleHub.url(raw)
-      thread=Thread.new { BlueBattleHub.fetch(raw) };thread.report_on_exception=false if thread.respond_to?(:report_on_exception=)
+      url=BlueBattleHub.url(raw)
+      config='Data/blue-hub-python.txt'
+      raise ImportError,'Reabra HUB_DE_BATALHA.bat para preparar a importacao.' unless File.file?(config)
+      python=File.read(config,encoding:'UTF-8').strip
+      path=File.expand_path("Data/blue-hub-import-#{Process.pid}-#{rand(1000000000)}.txt")
+      worker=File.expand_path('Plugins/ZZZZ Blue Battle Lab/pokepaste.py')
+      # HTTPLite is an engine API and is unsafe on a Ruby background thread.
+      # A bounded helper process downloads bytes while the native UI keeps running.
+      pid=Process.spawn(python,worker,url,path,out:File::NULL,err:File::NULL)
+      waiter=Process.detach(pid)
       started=System.uptime
-      while thread.alive?
+      until File.file?(path)
         @notice='Baixando Pokepaste... Esc cancela.';render;Graphics.update;Input.update
         if Input.trigger?(Input::BACK) || System.uptime-started>25
-          thread.kill;@notice='Download cancelado. Voce tambem pode colar o texto do time.';@dirty=true;return nil
+          raise ImportError,'Download cancelado ou tempo esgotado. Voce tambem pode colar o texto do time.'
         end
+        raise ImportError,'O processo de download encerrou sem resposta. Reabra o Hub pelo atalho.' unless waiter.alive? || File.file?(path)
       end
-      thread.value
+      result=File.read(path,encoding:'UTF-8');status,body=result.split("\n",2)
+      raise ImportError,body.to_s unless status=='OK'
+      raise ImportError,'Pokepaste vazio ou muito grande.' unless body && body.bytesize.between?(1,65536)
+      body
     ensure
-      thread.kill if thread && thread.alive?
+      begin;Process.kill('KILL',pid) if waiter && waiter.alive?;rescue Errno::ESRCH,Errno::EINVAL;end
+      [path,path && path+'.tmp'].compact.each { |p| File.delete(p) if File.file?(p) }
+      @dirty=true
     end
     def save_library
       path=BlueBattleHub.save_team(@teams[@side],@names[@side]);@notice='Time salvo na biblioteca: '+File.basename(path);@dirty=true

@@ -36,7 +36,19 @@ Escolha primeiro **MEU TIME** ou **ADVERSÁRIO** e clique **Importar**:
 
 O download acontece com uma tela de progresso. A importação mostra a prévia antes de substituir o time. Se algum Pokémon, golpe, item ou habilidade não existir na instalação, a prévia explica o problema. Você pode cancelar ou confirmar explicitamente apenas os integrantes compatíveis; não há substituições silenciosas de espécies.
 
-A base usa **Megaite/Megaite X/Megaite Y** para várias Mega Evoluções. Pedras específicas de um paste, como **Floettite** e **Charizardite Y**, são adaptadas à pedra definida pela forma na engine. A conversão aparece na prévia antes da confirmação. O exportador preserva o nome de pedra do paste para permitir o retorno ao formato Showdown.
+As **45 novas Megas de Z-A/Mega Dimension** usam suas próprias pedras, incluindo **Floettite**, **Dragoninite** e as pedras X/Y/Z. Megaite e suas variantes continuam funcionando para os treinadores e itens já existentes na campanha. As Megas antigas que ainda usam Megaite na base continuam sendo adaptadas explicitamente na prévia (por exemplo, Charizardite Y). O exportador preserva o nome da pedra do paste nessas adaptações.
+
+Também são aceitos links do PokéPaste traduzidos pelo Google: o Hub baixa o texto original em inglês, preservando os nomes do Showdown. O download roda em um processo auxiliar Python, enquanto o menu continua ativo. Esc cancela, há limite de tempo e de 64 KB, e as falhas ou a área de transferência vazia mostram uma mensagem antes de voltar ao montador. Nenhum time é substituído sem a confirmação na prévia.
+
+## Novas Mega Evoluções
+
+O catálogo em `data/za-megas.json` aplica os seis atributos, tipos, pedras e habilidades às **45 novas Megas**, com 48 entradas visuais e 50 registros da engine ao incluir sexos de Meowstic e origens de Zygarde. O mesmo instalador atualiza a campanha e o Hub. As demais formas e os Pokémon autorais são preservados.
+
+Os atributos seguem a tabela principal de Z-A do documento fornecido; **Mega Starmie tem Ataque 140/BST 660**, e não a variante de Champions com Ataque 100/BST 620. As habilidades confirmadas seguem o catálogo Champions. Dragonize, Piercing Drill, Eelevate, Fire Mane, Aura Guard e Spicy Spray têm efeitos próprios; Mega Sol reutiliza a implementação de sol pessoal já presente no projeto.
+
+Conforme a escolha do autor, **Zygarde, Heatran, Darkrai, Magearna, Zeraora e Tatsugiri** mantêm as habilidades existentes da base enquanto o catálogo não as confirma. Essas formas aparecem com **[habilidade provisoria]** no Hub. Isso não representa confirmação da habilidade oficial. Os sprites de Pokémon são reutilizados da base instalada. As novas pedras têm IDs individuais; quando não existe arte individual na base, usam temporariamente o ícone local da Megaite.
+
+Os efeitos foram consultados na [implementação primária do Pokémon Showdown](https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts). Os dados fornecidos pelo autor e a decisão sobre habilidades provisórias estão registrados no catálogo.
 
 O exemplo fornecido importa os seis integrantes, incluindo Mega Floette. **EVs são preservados literalmente**: um valor `32 Spe` continua sendo 32 EVs; o Hub não o transforma em 252. Nível ausente usa 100. Também são lidos IVs, Nature, habilidade, item, apelido, sexo, shiny, felicidade, Tera Type e os quatro golpes. As listas refletem os dados da engine instalada, que podem diferir do formato competitivo em que o paste foi criado.
 

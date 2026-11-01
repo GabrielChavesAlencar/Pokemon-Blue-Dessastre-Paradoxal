@@ -60,6 +60,11 @@ module BlueBattleLab
 
   def self.build(species, level)
     pkmn = Pokemon.new(species, level, $player, true, false)
+    data=GameData::Species.get(species)
+    if data.species==:MEOWSTIC
+      pkmn.gender=data.form%2
+      pkmn.form=data.form
+    end
     pkmn.nature = :HARDY
     pkmn.iv.each_key { |stat| pkmn.iv[stat] = 31 }
     pkmn.ev.each_key { |stat| pkmn.ev[stat] = 0 }

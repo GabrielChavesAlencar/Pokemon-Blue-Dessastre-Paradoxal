@@ -12,7 +12,7 @@ import zlib
 import tempfile
 import importlib.util
 
-PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'HubValidation.rb', 'Validation.rb', 'meta.txt']
+PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'meta.txt']
 
 
 def atomic_write(path: Path, data: bytes):
@@ -41,6 +41,11 @@ def install(project: Path, game: Path) -> Path:
             backup.mkdir(parents=True,exist_ok=True);shutil.copy2(target,backup/name)
         atomic_write(target,data)
     patch_bootstrap(project,game,backup)
+    interpreter=Path(sys.executable).with_name('pythonw.exe')
+    if not interpreter.is_file():interpreter=Path(sys.executable)
+    config=(str(interpreter.resolve())+'\n').encode('utf8')
+    config_path=game/'Data/blue-hub-python.txt'
+    if not config_path.is_file() or config_path.read_bytes()!=config:atomic_write(config_path,config)
     options_installer=project/'scripts'/'battle_options'/'install.py'
     if options_installer.is_file():
         spec=importlib.util.spec_from_file_location('blue_battle_options_install',options_installer)
@@ -59,6 +64,11 @@ def install(project: Path, game: Path) -> Path:
     presentation_installer=project/'scripts'/'battle_polish'/'install.py'
     if presentation_installer.is_file():
         spec=importlib.util.spec_from_file_location('blue_presentation_install',presentation_installer)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module.install(project,game)
+    za_installer=project/'scripts'/'za_megas'/'install.py'
+    if za_installer.is_file():
+        spec=importlib.util.spec_from_file_location('blue_za_install',za_installer)
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         module.install(project,game)
     return game

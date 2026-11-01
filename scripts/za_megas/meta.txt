@@ -1,0 +1,4 @@
+Name = Blue ZA Megas
+Version = 1.0
+Essentials = 21.1
+Scripts = Catalog.rb,Megas.rb,Validation.rb

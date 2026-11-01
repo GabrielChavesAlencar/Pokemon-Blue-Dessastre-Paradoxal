@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/battle_hub/**'
+      - 'scripts/za_megas/**'
       - 'scripts/battle_lab/**'
       - 'scripts/battle_options/**'
       - 'scripts/battle_polish/**'

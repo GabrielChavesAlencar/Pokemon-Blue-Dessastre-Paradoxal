@@ -37,11 +37,24 @@ module BlueBattleHub
         check(blocked,'Only the exact HTTPS Pokepaste host and ID are accepted')
       end
       check(BlueBattleHub.url('https://pokepast.es/bf2e74c7e8b615a6')=='https://pokepast.es/bf2e74c7e8b615a6/raw','User Pokepaste link resolves to its raw team')
+      check(BlueBattleHub.url('https://pokepast-es.translate.goog/0aa2fa5b1738e3c7?_x_tr_sl=en&_x_tr_tl=pt')=='https://pokepast.es/0aa2fa5b1738e3c7/raw','Google translated Pokepaste URL normalizes to the original unmodified English team')
+      check(BlueBattleHub.resolve(:species,'Tauros-Paldea-Aqua').id==:TAUROS_3,'Showdown Paldea Aqua alias maps to the existing water Tauros')
+      female=BlueBattleHub.build(BlueBattleHub.parse("Meowstic-Mega-F @ Meowsticite\nAbility: Trace\n- Psychic\n").first)
+      check(female.female? && female.form==1 && female.getMegaForm==3,'Female Mega Meowstic import keeps its correct sex and origin')
       original=[Graphics.width,Graphics.height]
       screen=Screen.new;screen.instance_variable_set(:@original_size,original);screen.mount
       3.times { Graphics.update;Input.update }
       check(Graphics.width==960 && Graphics.height==720,'Native team builder renders at its dedicated resolution')
       check([:import,:export,:battle,:side0,:side1,:stats].all? { |id| screen.buttons.any? { |b| b[:id]==id } },'Hub exposes both teams, import/export, stats and battle actions')
+      before_error=Marshal.dump(screen.teams)
+      ['','https://evil.example/8206474502b1a3be'].each do |bad|
+        messages=[]
+        screen.define_singleton_method(:choose) { |title,labels,default=0| messages << title;title.start_with?('Importar para') ? 1 : -1 }
+        screen.define_singleton_method(:prompt) { |*args| bad }
+        screen.import_menu
+        check(messages.any? { |title| title.start_with?('Nao foi possivel importar') } && Marshal.dump(screen.teams)==before_error,'Empty or invalid import shows a visible error and preserves both teams')
+        screen.singleton_class.send(:remove_method,:choose);screen.singleton_class.send(:remove_method,:prompt)
+      end
       source=Marshal.dump(screen.teams.map { |t| t.map(&fingerprint) })
       [:species,:item,:ability,:move,:nature,:type,:stats].each do |tab|
         screen.tab(tab);screen.render
@@ -65,14 +78,19 @@ module BlueBattleHub
       test_clicks(screen)
       request='Data/blue-hub-test-pokepaste.txt'
       if File.file?(request)
-        url=File.read(request).strip
-        raw=screen.fetch_with_progress(url)
-        check(raw && !raw.empty?,'Native asynchronous HTTPS import downloads the user Pokepaste')
-        rows=BlueBattleHub.preview(raw)
-        @lines << rows.map { |r| r['name']+': '+r['error'].to_s }.join('; ')
-        check(rows.length==6 && rows.all? { |r| r['pokemon'] },'Reference paste imports all six Pokemon, including Mega Floette')
-        check(rows[0]['pokemon'].item_id==:MEGAITE && rows[0]['pokemon'].getMegaForm==6,'Floettite is explicitly adapted to the native Mega Floette stone')
-        @lines << 'REFERENCE_PASTE=6 compatible; native Mega Stone conversions are shown for confirmation'
+        File.read(request).lines.map(&:strip).reject(&:empty?).each do |url|
+          raw=screen.fetch_with_progress(url)
+          check(raw && !raw.empty?,'Native process-based HTTPS import downloads '+url)
+          rows=BlueBattleHub.preview(raw)
+          @lines << rows.map { |r| r['name']+': '+r['error'].to_s }.join('; ')
+          check(rows.length==6 && rows.all? { |r| r['pokemon'] },'Actual supplied paste imports all six Pokemon')
+          screen.define_singleton_method(:choose) { |title,labels,default=0| title.start_with?('Importar para') ? 1 : default }
+          screen.define_singleton_method(:prompt) { |*args| url }
+          screen.import_menu
+          check(screen.teams[0].length==6 && screen.teams[0].map(&:species)==rows.map { |r| r['pokemon'].species },'Actual native import action downloads, previews and applies the intended roster')
+          screen.singleton_class.send(:remove_method,:choose)
+          screen.singleton_class.send(:remove_method,:prompt)
+        end
         File.delete(request)
       end
       test_storage(team)

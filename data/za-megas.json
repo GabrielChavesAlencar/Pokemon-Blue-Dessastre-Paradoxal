@@ -1,0 +1,1157 @@
+{
+  "version": 1,
+  "source": {
+    "document": "Catalogo_Unificado_Mega_Evolucoes_e_Mega_Stones_ZA_Champions_2026.md",
+    "date": "2026-11-01",
+    "stats": "ZA main tables; Champions abilities",
+    "pendingAbilities": "Keep current base ability, explicitly provisional",
+    "mechanicsReference": "https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts"
+  },
+  "entries": [
+    {
+      "name": "Mega Clefable",
+      "species": "CLEFABLE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FAIRY",
+        "FLYING"
+      ],
+      "stone": "CLEFABLITE",
+      "stoneName": "Clefablite",
+      "ability": "MAGICBOUNCE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 95,
+        "ATTACK": 80,
+        "DEFENSE": 93,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 110,
+        "SPEED": 70
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Clefablite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Victreebel",
+      "species": "VICTREEBEL",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GRASS",
+        "POISON"
+      ],
+      "stone": "VICTREEBELITE",
+      "stoneName": "Victreebelite",
+      "ability": "INNARDSOUT",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 80,
+        "ATTACK": 125,
+        "DEFENSE": 85,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 95,
+        "SPEED": 70
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Victreebelite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Starmie",
+      "species": "STARMIE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "WATER",
+        "PSYCHIC"
+      ],
+      "stone": "STARMINITE",
+      "stoneName": "Starminite",
+      "ability": "HUGEPOWER",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 60,
+        "ATTACK": 140,
+        "DEFENSE": 105,
+        "SPECIAL_ATTACK": 130,
+        "SPECIAL_DEFENSE": 105,
+        "SPEED": 120
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Starminite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Dragonite",
+      "species": "DRAGONITE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "DRAGON",
+        "FLYING"
+      ],
+      "stone": "DRAGONINITE",
+      "stoneName": "Dragoninite",
+      "ability": "MULTISCALE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 91,
+        "ATTACK": 124,
+        "DEFENSE": 115,
+        "SPECIAL_ATTACK": 145,
+        "SPECIAL_DEFENSE": 125,
+        "SPEED": 100
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Dragoninite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Meganium",
+      "species": "MEGANIUM",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GRASS",
+        "FAIRY"
+      ],
+      "stone": "MEGANIUMITE",
+      "stoneName": "Meganiumite",
+      "ability": "MEGASOL",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 80,
+        "ATTACK": 92,
+        "DEFENSE": 115,
+        "SPECIAL_ATTACK": 143,
+        "SPECIAL_DEFENSE": 115,
+        "SPEED": 80
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Meganiumite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Feraligatr",
+      "species": "FERALIGATR",
+      "forms": [
+        1
+      ],
+      "types": [
+        "WATER",
+        "DRAGON"
+      ],
+      "stone": "FERALIGITE",
+      "stoneName": "Feraligite",
+      "ability": "DRAGONIZE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 85,
+        "ATTACK": 160,
+        "DEFENSE": 125,
+        "SPECIAL_ATTACK": 89,
+        "SPECIAL_DEFENSE": 93,
+        "SPEED": 78
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Feraligite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Skarmory",
+      "species": "SKARMORY",
+      "forms": [
+        1
+      ],
+      "types": [
+        "STEEL",
+        "FLYING"
+      ],
+      "stone": "SKARMORITE",
+      "stoneName": "Skarmorite",
+      "ability": "STALWART",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 65,
+        "ATTACK": 140,
+        "DEFENSE": 110,
+        "SPECIAL_ATTACK": 40,
+        "SPECIAL_DEFENSE": 100,
+        "SPEED": 110
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Skarmorite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Froslass",
+      "species": "FROSLASS",
+      "forms": [
+        1
+      ],
+      "types": [
+        "ICE",
+        "GHOST"
+      ],
+      "stone": "FROSLASSITE",
+      "stoneName": "Froslassite",
+      "ability": "SNOWWARNING",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 70,
+        "ATTACK": 80,
+        "DEFENSE": 70,
+        "SPECIAL_ATTACK": 140,
+        "SPECIAL_DEFENSE": 100,
+        "SPEED": 120
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Froslassite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Emboar",
+      "species": "EMBOAR",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIRE",
+        "FIGHTING"
+      ],
+      "stone": "EMBOARITE",
+      "stoneName": "Emboarite",
+      "ability": "MOLDBREAKER",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 110,
+        "ATTACK": 148,
+        "DEFENSE": 75,
+        "SPECIAL_ATTACK": 110,
+        "SPECIAL_DEFENSE": 110,
+        "SPEED": 75
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Emboarite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Excadrill",
+      "species": "EXCADRILL",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GROUND",
+        "STEEL"
+      ],
+      "stone": "EXCADRITE",
+      "stoneName": "Excadrite",
+      "ability": "PIERCINGDRILL",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 110,
+        "ATTACK": 165,
+        "DEFENSE": 100,
+        "SPECIAL_ATTACK": 65,
+        "SPECIAL_DEFENSE": 65,
+        "SPEED": 103
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Excadrite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Scolipede",
+      "species": "SCOLIPEDE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "BUG",
+        "POISON"
+      ],
+      "stone": "SCOLIPITE",
+      "stoneName": "Scolipite",
+      "ability": "SHELLARMOR",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 60,
+        "ATTACK": 140,
+        "DEFENSE": 149,
+        "SPECIAL_ATTACK": 75,
+        "SPECIAL_DEFENSE": 99,
+        "SPEED": 62
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Scolipite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Scrafty",
+      "species": "SCRAFTY",
+      "forms": [
+        1
+      ],
+      "types": [
+        "DARK",
+        "FIGHTING"
+      ],
+      "stone": "SCRAFTINITE",
+      "stoneName": "Scraftinite",
+      "ability": "INTIMIDATE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 65,
+        "ATTACK": 130,
+        "DEFENSE": 135,
+        "SPECIAL_ATTACK": 55,
+        "SPECIAL_DEFENSE": 135,
+        "SPEED": 68
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Scraftinite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Eelektross",
+      "species": "EELEKTROSS",
+      "forms": [
+        1
+      ],
+      "types": [
+        "ELECTRIC"
+      ],
+      "stone": "EELEKTROSSITE",
+      "stoneName": "Eelektrossite",
+      "ability": "EELEVATE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 85,
+        "ATTACK": 145,
+        "DEFENSE": 80,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 90,
+        "SPEED": 80
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Eelektrossite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Chandelure",
+      "species": "CHANDELURE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GHOST",
+        "FIRE"
+      ],
+      "stone": "CHANDELURITE",
+      "stoneName": "Chandelurite",
+      "ability": "INFILTRATOR",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 60,
+        "ATTACK": 75,
+        "DEFENSE": 110,
+        "SPECIAL_ATTACK": 175,
+        "SPECIAL_DEFENSE": 110,
+        "SPEED": 90
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Chandelurite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Chesnaught",
+      "species": "CHESNAUGHT",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GRASS",
+        "FIGHTING"
+      ],
+      "stone": "CHESNAUGHTITE",
+      "stoneName": "Chesnaughtite",
+      "ability": "BULLETPROOF",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 88,
+        "ATTACK": 137,
+        "DEFENSE": 172,
+        "SPECIAL_ATTACK": 74,
+        "SPECIAL_DEFENSE": 115,
+        "SPEED": 44
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Chesnaughtite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Delphox",
+      "species": "DELPHOX",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIRE",
+        "PSYCHIC"
+      ],
+      "stone": "DELPHOXITE",
+      "stoneName": "Delphoxite",
+      "ability": "LEVITATE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 75,
+        "ATTACK": 69,
+        "DEFENSE": 72,
+        "SPECIAL_ATTACK": 159,
+        "SPECIAL_DEFENSE": 125,
+        "SPEED": 134
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Delphoxite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Greninja",
+      "species": "GRENINJA",
+      "forms": [
+        4
+      ],
+      "types": [
+        "WATER",
+        "DARK"
+      ],
+      "stone": "GRENINJITE",
+      "stoneName": "Greninjite",
+      "ability": "PROTEAN",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 72,
+        "ATTACK": 125,
+        "DEFENSE": 77,
+        "SPECIAL_ATTACK": 133,
+        "SPECIAL_DEFENSE": 81,
+        "SPEED": 142
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Greninjite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Pyroar",
+      "species": "PYROAR",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIRE",
+        "NORMAL"
+      ],
+      "stone": "PYROARITE",
+      "stoneName": "Pyroarite",
+      "ability": "FIREMANE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 86,
+        "ATTACK": 88,
+        "DEFENSE": 92,
+        "SPECIAL_ATTACK": 129,
+        "SPECIAL_DEFENSE": 86,
+        "SPEED": 126
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Pyroarite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Floette (Eternal Flower)",
+      "species": "FLOETTE",
+      "forms": [
+        6
+      ],
+      "types": [
+        "FAIRY"
+      ],
+      "stone": "FLOETTITE",
+      "stoneName": "Floettite",
+      "ability": "FAIRYAURA",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 74,
+        "ATTACK": 85,
+        "DEFENSE": 87,
+        "SPECIAL_ATTACK": 155,
+        "SPECIAL_DEFENSE": 148,
+        "SPEED": 102
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Floettite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Malamar",
+      "species": "MALAMAR",
+      "forms": [
+        1
+      ],
+      "types": [
+        "DARK",
+        "PSYCHIC"
+      ],
+      "stone": "MALAMARITE",
+      "stoneName": "Malamarite",
+      "ability": "CONTRARY",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 86,
+        "ATTACK": 102,
+        "DEFENSE": 88,
+        "SPECIAL_ATTACK": 98,
+        "SPECIAL_DEFENSE": 120,
+        "SPEED": 88
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Malamarite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Barbaracle",
+      "species": "BARBARACLE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "ROCK",
+        "FIGHTING"
+      ],
+      "stone": "BARBARACITE",
+      "stoneName": "Barbaracite",
+      "ability": "TOUGHCLAWS",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 72,
+        "ATTACK": 140,
+        "DEFENSE": 130,
+        "SPECIAL_ATTACK": 64,
+        "SPECIAL_DEFENSE": 106,
+        "SPEED": 88
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Barbaracite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Dragalge",
+      "species": "DRAGALGE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "POISON",
+        "DRAGON"
+      ],
+      "stone": "DRAGALGITE",
+      "stoneName": "Dragalgite",
+      "ability": "REGENERATOR",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 65,
+        "ATTACK": 85,
+        "DEFENSE": 105,
+        "SPECIAL_ATTACK": 132,
+        "SPECIAL_DEFENSE": 163,
+        "SPEED": 44
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Dragalgite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Hawlucha",
+      "species": "HAWLUCHA",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIGHTING",
+        "FLYING"
+      ],
+      "stone": "HAWLUCHANITE",
+      "stoneName": "Hawluchanite",
+      "ability": "NOGUARD",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 78,
+        "ATTACK": 137,
+        "DEFENSE": 100,
+        "SPECIAL_ATTACK": 74,
+        "SPECIAL_DEFENSE": 93,
+        "SPEED": 118
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Hawluchanite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Zygarde",
+      "species": "ZYGARDE",
+      "forms": [
+        4,
+        5
+      ],
+      "types": [
+        "DRAGON",
+        "GROUND"
+      ],
+      "stone": "ZYGARDITE",
+      "stoneName": "Zygardite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 216,
+        "ATTACK": 70,
+        "DEFENSE": 91,
+        "SPECIAL_ATTACK": 216,
+        "SPECIAL_DEFENSE": 85,
+        "SPEED": 100
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Zygardite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Drampa",
+      "species": "DRAMPA",
+      "forms": [
+        1
+      ],
+      "types": [
+        "NORMAL",
+        "DRAGON"
+      ],
+      "stone": "DRAMPANITE",
+      "stoneName": "Drampanite",
+      "ability": "BERSERK",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 78,
+        "ATTACK": 85,
+        "DEFENSE": 110,
+        "SPECIAL_ATTACK": 160,
+        "SPECIAL_DEFENSE": 116,
+        "SPEED": 36
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Drampanite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Falinks",
+      "species": "FALINKS",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIGHTING"
+      ],
+      "stone": "FALINKSITE",
+      "stoneName": "Falinksite",
+      "ability": "DEFIANT",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 65,
+        "ATTACK": 135,
+        "DEFENSE": 135,
+        "SPECIAL_ATTACK": 70,
+        "SPECIAL_DEFENSE": 65,
+        "SPEED": 100
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Falinksite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Raichu X",
+      "species": "RAICHU",
+      "forms": [
+        2
+      ],
+      "types": [
+        "ELECTRIC"
+      ],
+      "stone": "RAICHUNITEX",
+      "stoneName": "Raichunite X",
+      "ability": "ELECTRICSURGE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 60,
+        "ATTACK": 135,
+        "DEFENSE": 95,
+        "SPECIAL_ATTACK": 90,
+        "SPECIAL_DEFENSE": 95,
+        "SPEED": 110
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Raichunite_X_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Raichu Y",
+      "species": "RAICHU",
+      "forms": [
+        3
+      ],
+      "types": [
+        "ELECTRIC"
+      ],
+      "stone": "RAICHUNITEY",
+      "stoneName": "Raichunite Y",
+      "ability": "NOGUARD",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 60,
+        "ATTACK": 100,
+        "DEFENSE": 55,
+        "SPECIAL_ATTACK": 160,
+        "SPECIAL_DEFENSE": 80,
+        "SPEED": 130
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Raichunite_Y_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Chimecho",
+      "species": "CHIMECHO",
+      "forms": [
+        1
+      ],
+      "types": [
+        "PSYCHIC",
+        "STEEL"
+      ],
+      "stone": "CHIMECHITE",
+      "stoneName": "Chimechite",
+      "ability": "LEVITATE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 75,
+        "ATTACK": 50,
+        "DEFENSE": 110,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 120,
+        "SPEED": 65
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Chimechite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Absol Z",
+      "species": "ABSOL",
+      "forms": [
+        2
+      ],
+      "types": [
+        "DARK",
+        "GHOST"
+      ],
+      "stone": "ABSOLITEZ",
+      "stoneName": "Absolite Z",
+      "ability": "SHARPNESS",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 65,
+        "ATTACK": 154,
+        "DEFENSE": 60,
+        "SPECIAL_ATTACK": 75,
+        "SPECIAL_DEFENSE": 60,
+        "SPEED": 151
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Absolite_Z_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Staraptor",
+      "species": "STARAPTOR",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIGHTING",
+        "FLYING"
+      ],
+      "stone": "STARAPTITE",
+      "stoneName": "Staraptite",
+      "ability": "CONTRARY",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 85,
+        "ATTACK": 140,
+        "DEFENSE": 100,
+        "SPECIAL_ATTACK": 60,
+        "SPECIAL_DEFENSE": 90,
+        "SPEED": 110
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Staraptite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Garchomp Z",
+      "species": "GARCHOMP",
+      "forms": [
+        2
+      ],
+      "types": [
+        "DRAGON"
+      ],
+      "stone": "GARCHOMPITEZ",
+      "stoneName": "Garchompite Z",
+      "ability": "LEVITATE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 108,
+        "ATTACK": 130,
+        "DEFENSE": 85,
+        "SPECIAL_ATTACK": 141,
+        "SPECIAL_DEFENSE": 85,
+        "SPEED": 151
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Garchompite_Z_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Lucario Z",
+      "species": "LUCARIO",
+      "forms": [
+        2
+      ],
+      "types": [
+        "FIGHTING",
+        "STEEL"
+      ],
+      "stone": "LUCARIONITEZ",
+      "stoneName": "Lucarionite Z",
+      "ability": "AURAGUARD",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 70,
+        "ATTACK": 100,
+        "DEFENSE": 70,
+        "SPECIAL_ATTACK": 164,
+        "SPECIAL_DEFENSE": 70,
+        "SPEED": 151
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Lucarionite_Z_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Heatran",
+      "species": "HEATRAN",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIRE",
+        "STEEL"
+      ],
+      "stone": "HEATRANITE",
+      "stoneName": "Heatranite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 91,
+        "ATTACK": 120,
+        "DEFENSE": 106,
+        "SPECIAL_ATTACK": 175,
+        "SPECIAL_DEFENSE": 141,
+        "SPEED": 67
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Heatranite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Darkrai",
+      "species": "DARKRAI",
+      "forms": [
+        1
+      ],
+      "types": [
+        "DARK"
+      ],
+      "stone": "DARKRANITE",
+      "stoneName": "Darkranite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 70,
+        "ATTACK": 120,
+        "DEFENSE": 130,
+        "SPECIAL_ATTACK": 165,
+        "SPECIAL_DEFENSE": 130,
+        "SPEED": 85
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Darkranite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Golurk",
+      "species": "GOLURK",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GROUND",
+        "GHOST"
+      ],
+      "stone": "GOLURKITE",
+      "stoneName": "Golurkite",
+      "ability": "UNSEENFIST",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 89,
+        "ATTACK": 159,
+        "DEFENSE": 105,
+        "SPECIAL_ATTACK": 70,
+        "SPECIAL_DEFENSE": 105,
+        "SPEED": 55
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Golurkite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Meowstic (macho/fêmea)",
+      "species": "MEOWSTIC",
+      "forms": [
+        2,
+        3
+      ],
+      "types": [
+        "PSYCHIC"
+      ],
+      "stone": "MEOWSTICITE",
+      "stoneName": "Meowsticite",
+      "ability": "TRACE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 74,
+        "ATTACK": 48,
+        "DEFENSE": 76,
+        "SPECIAL_ATTACK": 143,
+        "SPECIAL_DEFENSE": 101,
+        "SPEED": 124
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Meowsticite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Crabominable",
+      "species": "CRABOMINABLE",
+      "forms": [
+        1
+      ],
+      "types": [
+        "FIGHTING",
+        "ICE"
+      ],
+      "stone": "CRABOMINITE",
+      "stoneName": "Crabominite",
+      "ability": "IRONFIST",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 97,
+        "ATTACK": 157,
+        "DEFENSE": 122,
+        "SPECIAL_ATTACK": 62,
+        "SPECIAL_DEFENSE": 107,
+        "SPEED": 33
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Crabominite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Golisopod",
+      "species": "GOLISOPOD",
+      "forms": [
+        1
+      ],
+      "types": [
+        "BUG",
+        "STEEL"
+      ],
+      "stone": "GOLISOPITE",
+      "stoneName": "Golisopite",
+      "ability": "TOUGHCLAWS",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 75,
+        "ATTACK": 150,
+        "DEFENSE": 175,
+        "SPECIAL_ATTACK": 70,
+        "SPECIAL_DEFENSE": 120,
+        "SPEED": 40
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Golisopite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Magearna",
+      "species": "MAGEARNA",
+      "forms": [
+        2
+      ],
+      "types": [
+        "STEEL",
+        "FAIRY"
+      ],
+      "stone": "MAGEARNITE",
+      "stoneName": "Magearnite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 80,
+        "ATTACK": 125,
+        "DEFENSE": 115,
+        "SPECIAL_ATTACK": 170,
+        "SPECIAL_DEFENSE": 115,
+        "SPEED": 95
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Magearnite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Magearna (Original Color)",
+      "species": "MAGEARNA",
+      "forms": [
+        3
+      ],
+      "types": [
+        "STEEL",
+        "FAIRY"
+      ],
+      "stone": "MAGEARNITE",
+      "stoneName": "Magearnite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 80,
+        "ATTACK": 125,
+        "DEFENSE": 115,
+        "SPECIAL_ATTACK": 170,
+        "SPECIAL_DEFENSE": 115,
+        "SPEED": 95
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Magearnite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Zeraora",
+      "species": "ZERAORA",
+      "forms": [
+        1
+      ],
+      "types": [
+        "ELECTRIC"
+      ],
+      "stone": "ZERAORITE",
+      "stoneName": "Zeraorite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 88,
+        "ATTACK": 157,
+        "DEFENSE": 75,
+        "SPECIAL_ATTACK": 147,
+        "SPECIAL_DEFENSE": 80,
+        "SPEED": 153
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Zeraorite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Scovillain",
+      "species": "SCOVILLAIN",
+      "forms": [
+        1
+      ],
+      "types": [
+        "GRASS",
+        "FIRE"
+      ],
+      "stone": "SCOVILLAINITE",
+      "stoneName": "Scovillainite",
+      "ability": "SPICYSPRAY",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 65,
+        "ATTACK": 138,
+        "DEFENSE": 85,
+        "SPECIAL_ATTACK": 138,
+        "SPECIAL_DEFENSE": 85,
+        "SPEED": 75
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Scovillainite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Glimmora",
+      "species": "GLIMMORA",
+      "forms": [
+        1
+      ],
+      "types": [
+        "ROCK",
+        "POISON"
+      ],
+      "stone": "GLIMMORANITE",
+      "stoneName": "Glimmoranite",
+      "ability": "ADAPTABILITY",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 83,
+        "ATTACK": 90,
+        "DEFENSE": 105,
+        "SPECIAL_ATTACK": 150,
+        "SPECIAL_DEFENSE": 96,
+        "SPEED": 101
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Glimmoranite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Tatsugiri (Curly)",
+      "species": "TATSUGIRI",
+      "forms": [
+        3
+      ],
+      "types": [
+        "DRAGON",
+        "WATER"
+      ],
+      "stone": "TATSUGIRINITE",
+      "stoneName": "Tatsugirinite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 68,
+        "ATTACK": 65,
+        "DEFENSE": 90,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 125,
+        "SPEED": 92
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Tatsugirinite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Tatsugiri (Droopy)",
+      "species": "TATSUGIRI",
+      "forms": [
+        4
+      ],
+      "types": [
+        "DRAGON",
+        "WATER"
+      ],
+      "stone": "TATSUGIRINITE",
+      "stoneName": "Tatsugirinite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 68,
+        "ATTACK": 65,
+        "DEFENSE": 90,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 125,
+        "SPEED": 92
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Tatsugirinite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Tatsugiri (Stretchy)",
+      "species": "TATSUGIRI",
+      "forms": [
+        5
+      ],
+      "types": [
+        "DRAGON",
+        "WATER"
+      ],
+      "stone": "TATSUGIRINITE",
+      "stoneName": "Tatsugirinite",
+      "ability": null,
+      "abilityStatus": "provisional-base",
+      "stats": {
+        "HP": 68,
+        "ATTACK": 65,
+        "DEFENSE": 90,
+        "SPECIAL_ATTACK": 135,
+        "SPECIAL_DEFENSE": 125,
+        "SPEED": 92
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Tatsugirinite_ZA_Sprite.png"
+    },
+    {
+      "name": "Mega Baxcalibur",
+      "species": "BAXCALIBUR",
+      "forms": [
+        1
+      ],
+      "types": [
+        "DRAGON",
+        "ICE"
+      ],
+      "stone": "BAXCALIBRITE",
+      "stoneName": "Baxcalibrite",
+      "ability": "THERMALEXCHANGE",
+      "abilityStatus": "confirmed",
+      "stats": {
+        "HP": 115,
+        "ATTACK": 175,
+        "DEFENSE": 117,
+        "SPECIAL_ATTACK": 105,
+        "SPECIAL_DEFENSE": 101,
+        "SPEED": 87
+      },
+      "spriteReference": "https://archives.bulbagarden.net/wiki/File:Bag_Baxcalibrite_ZA_Sprite.png"
+    }
+  ]
+}

@@ -16,11 +16,15 @@ module BlueBattleHub
     end
   end
   def self.display(s)
-    s.form>0 && s.form_name && !s.form_name.empty? ? "#{s.name} / #{s.form_name}" : s.name
+    label=s.form>0 && s.form_name && !s.form_name.empty? ? "#{s.name} / #{s.form_name}" : s.name
+    label+=' [habilidade provisoria]' if s.flags.include?('BlueZAProvisionalAbility')
+    label
   end
   def self.form_label(s)
     return real(s) if s.form==0
     base=real(GameData::Species.get(s.species))
+    canonical={TAUROS:{1=>'Paldea-Combat',2=>'Paldea-Blaze',3=>'Paldea-Aqua'},MEOWSTIC:{1=>'F',2=>'Mega',3=>'Mega-F'},MAGEARNA:{1=>'Original',2=>'Mega',3=>'Original-Mega'},TATSUGIRI:{1=>'Droopy',2=>'Stretchy',3=>'Mega',4=>'Droopy-Mega',5=>'Stretchy-Mega'}}
+    return base+'-'+canonical[s.species][s.form] if canonical.dig(s.species,s.form)
     form=s.respond_to?(:real_form_name) ? s.real_form_name.to_s : s.form_name.to_s
     form=form.gsub(/#{Regexp.escape(base)}/i,'').gsub(/\b(?:Forme?|Evolution)\b/i,'').strip
     {'Alolan'=>'Alola','Galarian'=>'Galar','Hisuian'=>'Hisui','Paldean'=>'Paldea','Female'=>'F','Male'=>'M'}.each { |a,b| form=form.gsub(/\b#{a}\b/i,b) }
@@ -38,6 +42,7 @@ module BlueBattleHub
         names=[s.id.to_s]
         names << real(s) if kind!=:species || s.form==0
         names << form_label(s) if kind==:species && s.form>0
+        names << real(s)+'-'+s.real_form_name.to_s if kind==:species && s.form>0 && s.respond_to?(:real_form_name)
         names.each { |n| result[token(n)]=s }
       end
       result
@@ -211,16 +216,9 @@ module BlueBattleHub
     end.join("\n\n")+"\n"
   end
   def self.url(raw)
-    m=raw.strip.match(/\Ahttps:\/\/pokepast\.es\/([a-f0-9]{16})(?:\/raw)?\/?\z/i)
+    m=raw.strip.match(/\Ahttps:\/\/(?:pokepast\.es|pokepast-es\.translate\.goog)\/([a-f0-9]{16})(?:\/raw)?\/?(?:\?[^\s#]*)?\z/i)
     raise ImportError,'Use um link https://pokepast.es/ seguido do ID de 16 caracteres.' unless m
     'https://pokepast.es/'+m[1].downcase+'/raw'
-  end
-  def self.fetch(raw)
-    response=HTTPLite.get(url(raw),{'User-Agent'=>'BlueBattleHub/1.0'})
-    raise ImportError,'Nao foi possivel baixar o Pokepaste. Copie o texto do time e use Colar.' unless response.is_a?(Hash) && response[:status]==200
-    body=response[:body]
-    raise ImportError,'Pokepaste vazio ou muito grande.' unless body.is_a?(String) && body.bytesize.between?(1,65536)
-    body.force_encoding('UTF-8')
   end
   def self.atomic(path,raw)
     Dir.mkdir(DIR) unless Dir.exist?(DIR)
