@@ -73,3 +73,8 @@ jobs:
           if ((git rev-parse HEAD).Trim() -ne (git rev-parse origin/main).Trim()) { throw "main nao esta atualizada" }
           cmd /c "call RUN.bat"
           if ($LASTEXITCODE -ne 0) { throw "RUN.bat falhou na segunda execucao" }
+      - name: Testar descoberta de Python no atalho do laboratorio
+        shell: pwsh
+        run: |
+          cmd /d /c "call TESTAR_BATALHA.bat --help"
+          if ($LASTEXITCODE -ne 0) { throw "TESTAR_BATALHA.bat nao encontrou Python ou falhou ao iniciar o launcher" }

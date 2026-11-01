@@ -44,6 +44,7 @@ module BlueBattleLab
   end
 
   def self.run_smoke
+    check(BlueBattleOptions.run_checks,'Battle Mode, mechanic toggles and sprite quality; Data/blue-battle-options-validation.txt') if defined?(BlueBattleOptions)
     check(BlueMusic.run_checks,'Music overrides; Data/blue-music-validation.txt') if defined?(BlueMusic)
     if defined?(BlueRadicalAI::Validation)
       check(BlueRadicalAI::Validation.run, 'Blue Radical AI decision matrix; Data/blue-radical-ai-validation.txt')
@@ -82,18 +83,31 @@ module BlueBattleLab
         mon
       end
       before = Marshal.dump([allies,foes])
-      result = battle(allies,foes,true,format)
+      quality=size==1 ? 'original' : format=='double' ? 'minimal' : 'light'
+      result = with_test_sprite_quality(quality) { battle(allies,foes,true,format) }
       check(result == 1, "Complete #{format} #{size}x#{size} trainer battle victory")
+      log("SPRITE_QUALITY | complete battle mode=#{quality}") if defined?(BlueSpriteQuality)
       check(Marshal.dump([allies,foes]) == before, 'Configured rosters, items, forms and moves unchanged')
     end
     if GameData::Species.try_get(:CAVEFANG)
-      result = battle([build(:CAVEFANG,70),build(:ARCHGUTOR,70)],
-                      [build(:IRONCRUSHER,10),build(:PIKACHU,10)],true,'double')
+      result = with_test_sprite_quality('light') do
+        battle([build(:CAVEFANG,70),build(:ARCHGUTOR,70)],
+               [build(:IRONCRUSHER,10),build(:GREATTUSK,10)],true,'double')
+      end
       check([1,2].include?(result), 'Complete author double battle')
     end
     check(Game.save == false && Game.auto_save == false && SaveData.exists? == false && SaveData.save_to_file('Data/blue-lab-should-not-save.rxdata') == false, 'Save read/write guards')
     check(!File.file?('Data/blue-lab-should-not-save.rxdata'), 'No campaign save created')
     log('SMOKE=PASS | complete 6x6 single/double battles; HP interpolation, rosters and save guards passed')
+  end
+
+  def self.with_test_sprite_quality(mode)
+    return yield unless defined?(BlueSpriteQuality)
+    previous=$PokemonSystem.blue_sprite_quality
+    $PokemonSystem.blue_sprite_quality=mode
+    yield
+  ensure
+    $PokemonSystem.blue_sprite_quality=previous if defined?(BlueSpriteQuality)
   end
 
   def self.check_mouse_controls

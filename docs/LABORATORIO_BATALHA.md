@@ -9,11 +9,13 @@ Na pasta principal do projeto, abra **TESTAR_BATALHA.bat**. É uma sessão limit
 - Cada integrante permite trocar espécie/forma, nível, quatro golpes, habilidade e item; retirar item; mover para a primeira posição; ou remover do time. O último integrante não pode ser removido.
 - Os primeiros integrantes entram em campo. Em dupla, os dois primeiros de cada lado são enviados; é necessário ter pelo menos dois Pokémon em cada time. Os reservas participam pelas trocas e substituições normais da engine.
 - O catálogo permite escolher **Dessastre Paradoxal** ou o catálogo completo. As sete espécies pendentes não são liberadas para combate.
-- As opções de habilidade e item permitem testar Mega Sol e equipar as pedras DP; o Mega Ring é fornecido temporariamente.
+- As opções de habilidade e item permitem testar Mega Sol e equipar as pedras DP. Mega Ring, Dynamax Band, Z-Ring e Tera Orb são fornecidos temporariamente para os testes dos dois lados; pedras e cristais ainda precisam ser equipados no Pokémon.
 - Ajuste o nível individualmente ou use **Nivel de todos**, entre 1 e 100. Ao mudar o nível, os golpes voltam aos quatro últimos aprendidos naquele nível.
 - A edição de golpes é livre para experimentos e não valida a legalidade competitiva do moveset.
 - Em **Formato**, escolha **Individual** (um Pokémon em campo por lado) ou **Dupla** (dois em campo por lado), depois **Iniciar batalha**. Mesmo a batalha individual pode usar times completos de seis.
 - Em **IA**, compare **IA da base**, **Blue estrategica** e **Blue Radical**. A opção Blue Radical é o padrão e usa avaliação de dano, trocas, suporte e duplas inspirada nos princípios públicos do CFRU. [Funcionamento e validação](IA_BLUE_RADICAL.md).
+- Em **Mecanicas: Terastal / Dynamax / Mega / Z**, desative cada mecânica separadamente, para os dois lados. As escolhas do laboratório não alteram as do Battle Mode.
+- Em **Qualidade dos sprites**, escolha Original, Leve (até 128 px/24 quadros) ou Econômico (96 px/estático). Preserva o tamanho na tela e os arquivos originais; vale para os próximos sprites carregados. [Menu do Battle Mode e detalhes de desempenho](BATTLE_MODE_E_DESEMPENHO.md).
 - Ao terminar, você volta ao laboratório. Os times configurados são preservados: a batalha usa cópias, incluindo itens, formas, golpes, PP e ordem dos integrantes.
 - Escolha **Sair do laboratorio** para fechar. Para jogar a campanha normalmente, abra **JOGAR.bat**.
 

@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 import zlib
+from unittest.mock import patch,Mock
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'/'official_rules'))
@@ -13,6 +14,29 @@ spec=importlib.util.spec_from_file_location('blue_lab_launch',ROOT/'scripts'/'ba
 lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
 
 class BattleLabTests(unittest.TestCase):
+    def test_launcher_rejects_silent_early_exit_even_with_old_success_log(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.fixture(root)
+            (game/'Data/blue-battle-lab.log').write_text('old MENU_READY\n')
+            process=Mock();process.poll.return_value=0
+            with patch.object(lab,'install',return_value=game),patch.object(lab.subprocess,'Popen',return_value=process):
+                with self.assertRaisesRegex(RuntimeError,'nao confirmou'):
+                    lab.launch(root,game)
+
+    def test_launcher_waits_for_a_new_menu_ready_marker_and_detaches_windows_gui(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.fixture(root)
+            process=Mock();process.poll.return_value=None
+            def start(*args,**kwargs):
+                self.assertEqual(kwargs['cwd'],game)
+                self.assertEqual(kwargs['stdin'],lab.subprocess.DEVNULL)
+                self.assertIsNotNone(kwargs['stdout'])
+                if lab.os.name=='nt':self.assertTrue(kwargs['creationflags'] & lab.subprocess.DETACHED_PROCESS)
+                (game/'Data/blue-battle-lab.log').write_text('new MENU_READY\n')
+                return process
+            with patch.object(lab,'install',return_value=game),patch.object(lab.subprocess,'Popen',side_effect=start):
+                self.assertEqual(lab.launch(root,game),0)
+
     def fixture(self,root,main='PluginManager.runPlugins\nCompiler.main'):
         source=root/'scripts'/'battle_lab';source.mkdir(parents=True)
         for name in lab.PLUGIN_FILES:shutil.copy2(ROOT/'scripts'/'battle_lab'/name,source/name)

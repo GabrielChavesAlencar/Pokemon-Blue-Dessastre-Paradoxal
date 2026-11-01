@@ -1,0 +1,5 @@
+Name = Blue Battle Options
+Version = 0.1
+Essentials = 21.1
+Credits = Pokemon Blue project
+Scripts = Rules.rb, SpriteQuality.rb, Menus.rb, Validation.rb

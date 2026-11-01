@@ -46,6 +46,8 @@ A equivalência atual é **visual e de navegação**. Não utiliza offsets de RO
 
 ## Sprites estáticos e animados (Pokédex)
 
+**Battle Mode e desempenho:** Poké Bola geradora da geração Dessastre Paradoxal, controles separados de Terastal/Dynamax/Mega/Z-Moves e qualidade Original/Leve/Econômica dos sprites. Disponíveis no jogo e no laboratório: [manual](docs/BATTLE_MODE_E_DESEMPENHO.md).
+
 A Pokédex do Blue Studio possui **quatro campos de imagem** por Pokémon: frente, costas, frente shiny e costas shiny. Cada imagem pode ser **PNG estático** (um quadro) ou **animação GIF/PNG spritesheet**. Isso evita exigir GIF para Fakémon estáticos.
 
 Ao escolher um registro em `pokemon.txt` ou `pokemon_forms.txt`, use **Importar imagem** em cada variante. O servidor valida tipo e tamanho, cria backup e grava diretamente na pasta local `game/Graphics/Pokemon/`. PNG em faixa é tratado como animado pelo plugin do Decades quando sua largura ultrapassa duas vezes a altura. Formas `[CHARIZARD,1]` usam `CHARIZARD_1.png`.

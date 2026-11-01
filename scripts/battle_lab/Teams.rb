@@ -29,7 +29,8 @@ module BlueBattleLab
           'Iniciar batalha', "Formato: #{format_label}", 'Editar meu time',
           'Editar time rival', 'Nivel de todos', 'Preparar times Dessastre Paradoxal',
           'Preparar times oficiais', 'Teste rapido: Pikachu x Eevee',
-          "IA: #{@ai_profile == 'radical' ? 'Blue Radical' : @ai_profile == 'normal' ? 'Blue estrategica' : 'IA da base'}", 'Sair do laboratorio'
+          "IA: #{@ai_profile == 'radical' ? 'Blue Radical' : @ai_profile == 'normal' ? 'Blue estrategica' : 'IA da base'}",
+          'Mecanicas: Terastal / Dynamax / Mega / Z', 'Qualidade dos sprites', 'Sair do laboratorio'
         ])
         case choice
         when 0
@@ -60,6 +61,8 @@ module BlueBattleLab
             selected=BlueBattleLab.choose('IA do adversario / comparar comportamentos',profiles.values.map { |p| p['label'] },profiles.keys.index(@ai_profile) || 0)
             @ai_profile=profiles.keys[selected] if selected>=0
           end
+        when 9 then BlueBattleOptions.mechanics_menu(:lab)
+        when 10 then BlueBattleOptions.quality_menu
         else break
         end
       end

@@ -41,6 +41,11 @@ def install(project: Path, game: Path) -> Path:
             backup.mkdir(parents=True,exist_ok=True);shutil.copy2(target,backup/name)
         atomic_write(target,data)
     patch_bootstrap(project,game,backup)
+    options_installer=project/'scripts'/'battle_options'/'install.py'
+    if options_installer.is_file():
+        spec=importlib.util.spec_from_file_location('blue_battle_options_install',options_installer)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module.install(project,game)
     ai_installer=project/'scripts'/'radical_ai'/'install.py'
     if ai_installer.is_file():
         spec=importlib.util.spec_from_file_location('blue_radical_ai_install',ai_installer)
@@ -81,7 +86,7 @@ def prepare_request(game: Path, smoke: bool=False):
     (game/'Data'/'blue-battle-lab-request.txt').write_text('smoke' if smoke else 'play',encoding='ascii')
 
 
-def launch(project: Path, game: Path, smoke: bool=False, timeout: float=120) -> int:
+def launch(project: Path, game: Path, smoke: bool=False, timeout: float=240) -> int:
     game=install(project,game)
     log=game/'Data'/'blue-battle-lab.log'
     before=log.stat().st_size if log.exists() else 0
@@ -91,10 +96,24 @@ def launch(project: Path, game: Path, smoke: bool=False, timeout: float=120) -> 
     print('Abrindo a batalha real do jogo. O laboratorio nao carrega nem salva a campanha.',flush=True)
     print('Na primeira abertura, aguarde a compilacao dos plugins/PBS em modo debug.',flush=True)
     prepare_request(game,smoke)
-    process=subprocess.Popen([str(game/'Game.exe'),'debug'],cwd=game,env=env)
-    if not smoke:return 0
+    engine_log=game/'Data'/'blue-battle-launcher.log'
+    # Detach the GUI from the double-clicked CMD and retain startup diagnostics.
+    flags=(subprocess.DETACHED_PROCESS|subprocess.CREATE_NEW_PROCESS_GROUP) if os.name=='nt' else 0
+    with engine_log.open('ab') as stream:
+        stream.write(f'\nBLUE LAUNCH | {datetime.now().isoformat()} | {sys.executable}\n'.encode('utf8'));stream.flush()
+        process=subprocess.Popen([str(game/'Game.exe'),'debug'],cwd=game,env=env,creationflags=flags,
+                                 stdin=subprocess.DEVNULL,stdout=stream,stderr=subprocess.STDOUT)
     deadline=time.monotonic()+timeout
-    while process.poll() is None and time.monotonic()<deadline:time.sleep(.5)
+    while process.poll() is None and time.monotonic()<deadline:
+        output=log.read_bytes()[before:].decode('utf8',errors='replace') if log.exists() else ''
+        if not smoke and 'MENU_READY' in output:
+            print('Laboratorio aberto. A janela do CMD pode ser fechada.',flush=True)
+            return 0
+        time.sleep(.5)
+    if not smoke:
+        output=log.read_bytes()[before:].decode('utf8',errors='replace') if log.exists() else ''
+        if 'MENU_READY' in output:return 0
+        raise RuntimeError(f'O jogo nao confirmou a abertura do laboratorio (saida={process.poll()}). Veja {engine_log} e {log}.')
     if process.poll() is None:
         process.terminate();process.wait(timeout=10)
         raise RuntimeError(f'Teste excedeu {timeout}s. Confira {log}.')
@@ -111,14 +130,14 @@ def main(argv=None):
     parser.add_argument('--install-only',action='store_true')
     parser.add_argument('--prepare-only',action='store_true',help='Preparar uma abertura pelo Game.exe nos proximos 120 segundos.')
     parser.add_argument('--smoke-test',action='store_true')
-    parser.add_argument('--timeout',type=float,default=120)
+    parser.add_argument('--timeout',type=float,default=240)
     args=parser.parse_args(argv)
     try:
         if args.install_only:install(project,args.game_dir);print('Plugin instalado.');return 0
         if args.prepare_only:
             game=install(project,args.game_dir);prepare_request(game,args.smoke_test);print('Pronto para abrir Game.exe.');return 0
         return launch(project,args.game_dir,args.smoke_test,args.timeout)
-    except (OSError,RuntimeError) as error:
+    except (OSError,RuntimeError,ValueError) as error:
         print(f'[ERRO] {error}');return 1
 
 if __name__=='__main__':raise SystemExit(main())

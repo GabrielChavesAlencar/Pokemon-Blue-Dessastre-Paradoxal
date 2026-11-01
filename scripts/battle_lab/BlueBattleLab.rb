@@ -39,6 +39,9 @@ module BlueBattleLab
     $game_temp.last_uptime_refreshed_play_time = System.uptime
     $PokemonGlobal.partner = nil
     $bag.add(:MEGARING) if GameData::Item.try_get(:MEGARING)
+    [:DYNAMAXBAND,:ZRING,:TERAORB].each { |item| $bag.add(item) if GameData::Item.try_get(item) }
+    $game_switches[Settings::DYNAMAX_ON_ANY_MAP]=true if defined?(Settings::DYNAMAX_ON_ANY_MAP)
+    $player.tera_charged=true if $player.respond_to?(:tera_charged=)
     log('READY | fresh in-memory player; no campaign loaded')
   end
 
@@ -88,14 +91,24 @@ module BlueBattleLab
     # Battles may consume items, transform forms and reorder a party. Keep the
     # editable roster intact and give the battle its own complete Pokemon copies.
     team1, team2 = Marshal.load(Marshal.dump([allies, foes]))
+    mechanics=defined?(BlueBattleOptions) ? BlueBattleOptions.snapshot(:lab) : nil
+    if mechanics
+      BlueBattleOptions.prepare_lab_party(team1,mechanics)
+      BlueBattleOptions.prepare_lab_party(team2,mechanics)
+    end
     [*team1, *team2].each(&:heal)
     previous_party = $player.party
+    $player.tera_charged=true if $player.respond_to?(:tera_charged=)
     $player.party = team1
     trainer = NPCTrainer.new('Rival do Lab', $player.trainer_type)
     trainer.party = team2
+    gear=[:MEGARING,:DYNAMAXBAND,:ZRING,:TERAORB].select { |id| GameData::Item.try_get(id) }
+    trainer.items=gear if trainer.respond_to?(:items=)
     EventHandlers.trigger(:on_start_battle)
     scene = automated ? SmokeScene.new : Battle::Scene.new
     battle = Battle.new(scene, team1, team2, [$player], [trainer])
+    battle.items=[gear] if battle.respond_to?(:items=)
+    battle.instance_variable_set(:@blue_mechanics,mechanics) if mechanics
     battle.instance_variable_set(:@blue_radical_profile,ai_profile) if ai_profile
     battle.setBattleMode(format)
     battle.internalBattle = false
