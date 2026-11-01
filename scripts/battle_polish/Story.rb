@@ -235,6 +235,7 @@ module Compiler
     def main
       blue_presentation_original_main
       BluePresentation.install;BlueStory.install
+      BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end
 end

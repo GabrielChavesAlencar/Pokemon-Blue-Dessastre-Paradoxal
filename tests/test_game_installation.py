@@ -10,7 +10,7 @@ setup=module('blue_setup','scripts/install_game.py');campaign=module('blue_launc
 class InstallationTests(unittest.TestCase):
     def fixture(self,root):
         source=root/'scripts/battle_lab';source.mkdir(parents=True)
-        for name in ['launch.py','BlueBattleLab.rb','Interface.rb','Teams.rb','HubData.rb','HubUI.rb','HubValidation.rb','Validation.rb','pokepaste.py','meta.txt']:shutil.copy2(ROOT/'scripts/battle_lab'/name,source/name)
+        for name in ['launch.py','BlueBattleLab.rb','Interface.rb','Teams.rb','HubData.rb','HubUI.rb','TeamPreview.rb','HubValidation.rb','Validation.rb','pokepaste.py','meta.txt']:shutil.copy2(ROOT/'scripts/battle_lab'/name,source/name)
         game=root/'game';(game/'Data').mkdir(parents=True);(game/'PBS').mkdir()
         (game/'Game.exe').write_bytes(b'synthetic exe');(game/'PBS/pokemon.txt').write_text('[PIKACHU]')
         rows=[[1,RubyString(b'Other'),RubyString(zlib.compress(b'original script'))],[2,RubyString(b'Main'),RubyString(zlib.compress(b'PluginManager.runPlugins\nCompiler.main'))]]

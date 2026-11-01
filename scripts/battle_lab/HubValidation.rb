@@ -20,7 +20,7 @@ module BlueBattleHub
       @lines << "MEGA | target=#{team[0].getMegaForm} ability=#{team[0].ability_id} ability_data=#{team[0].ability.id} item=#{team[0].item_id}"
       check(team[0].getMegaForm>0 && team[0].ability.id==:BLAZE,'Pre-Mega ability is retained and Mega evolution remains available')
       check(team[0].level==50 && team[0].iv[:ATTACK]==0 && team[0].ev[:SPEED]==32,'Levels, zero IVs and small literal EV values are retained')
-      check(team[1].male? && team[1].level==100,'Male bracket syntax and default Showdown level work')
+      check(team[1].male? && team[1].level==50,'Male bracket syntax and fixed Hub level 50 work')
       text=BlueBattleHub.export(team);again=BlueBattleHub.preview(text)
       check(again.all? { |p| p['pokemon'] },'Exported Showdown text reimports without errors')
       a=again.map { |r| r['pokemon'] }
@@ -39,6 +39,7 @@ module BlueBattleHub
       check(BlueBattleHub.url('https://pokepast.es/bf2e74c7e8b615a6')=='https://pokepast.es/bf2e74c7e8b615a6/raw','User Pokepaste link resolves to its raw team')
       check(BlueBattleHub.url('https://pokepast-es.translate.goog/0aa2fa5b1738e3c7?_x_tr_sl=en&_x_tr_tl=pt')=='https://pokepast.es/0aa2fa5b1738e3c7/raw','Google translated Pokepaste URL normalizes to the original unmodified English team')
       check(BlueBattleHub.resolve(:species,'Tauros-Paldea-Aqua').id==:TAUROS_3,'Showdown Paldea Aqua alias maps to the existing water Tauros')
+      test_champions
       female=BlueBattleHub.build(BlueBattleHub.parse("Meowstic-Mega-F @ Meowsticite\nAbility: Trace\n- Psychic\n").first)
       check(female.female? && female.form==1 && female.getMegaForm==3,'Female Mega Meowstic import keeps its correct sex and origin')
       original=[Graphics.width,Graphics.height]
@@ -46,6 +47,7 @@ module BlueBattleHub
       3.times { Graphics.update;Input.update }
       check(Graphics.width==960 && Graphics.height==720,'Native team builder renders at its dedicated resolution')
       check([:import,:export,:battle,:side0,:side1,:stats].all? { |id| screen.buttons.any? { |b| b[:id]==id } },'Hub exposes both teams, import/export, stats and battle actions')
+      check(screen.teams.flatten.all? { |m| m.level==50 } && screen.buttons.none? { |b| b[:id]==:level },'All Hub Pokemon are level 50 and there is no editable level control')
       before_error=Marshal.dump(screen.teams)
       ['','https://evil.example/8206474502b1a3be'].each do |bad|
         messages=[]
@@ -76,6 +78,7 @@ module BlueBattleHub
       screen.tab(:stats);screen.render;Graphics.update
       shot=Graphics.snap_to_bitmap;shot.to_file('Data/blue-hub-stats-smoke.png');shot.dispose
       test_clicks(screen)
+      test_preview(screen)
       request='Data/blue-hub-test-pokepaste.txt'
       if File.file?(request)
         File.read(request).lines.map(&:strip).reject(&:empty?).each do |url|
@@ -106,6 +109,13 @@ module BlueBattleHub
       screen.instance_variable_set(:@teams,[[attacker],[defender]])
       screen.instance_variable_set(:@format,'single');screen.start_battle
       check(Graphics.width==Screen::W && Graphics.height==Screen::H && screen.instance_variable_get(:@canvas),'Real Hub battle returns to the native builder with its resolution restored')
+      screen.instance_variable_set(:@teams,[Array.new(6) { attacker.clone },Array.new(6) { defender.clone }].map { |party| BlueBattleHub.prepare_roster(party) })
+      screen.instance_variable_set(:@format,'double')
+      screen.define_singleton_method(:select_four) { |parties| BlueBattleHub::Validation::AutomaticPicks.new(parties,['Player','AI']).run }
+      before=Marshal.dump(screen.teams)
+      screen.start_battle
+      check(screen.teams.map(&:length)==[6,6] && Marshal.dump(screen.teams)==before,'Real 4v4 double battle returns without removing the six saved team members')
+      screen.singleton_class.send(:remove_method,:select_four)
       @lines << 'RESULT=PASS';true
     rescue StandardError,SystemStackError=>e
       @lines << "FAIL | #{e.class}: #{e.message}";@lines.concat(e.backtrace);@lines << 'RESULT=FAIL';false
@@ -114,6 +124,46 @@ module BlueBattleHub
       BlueBattleLab.define_singleton_method(:battle,original_battle) if original_battle
       Graphics.resize_screen(*original) if original
       File.open('Data/blue-hub-validation.txt','wb') { |f| f.write(@lines.join("\n")+"\n") }
+    end
+    class AutomaticPicks < BlueBattleHub::PickFour
+      def tick
+        super
+        if selected.length<4
+          button=buttons.find { |b| b[:id]=="pick#{selected.length}".to_sym };button[:action].call
+        else
+          buttons.find { |b| b[:id]==:confirm }[:action].call
+        end
+      end
+    end
+    def self.test_champions
+      row=BlueBattleHub.parse("Raichu-Mega-Y @ Raichunite Y\nAbility: Lightning Rod\nEVs: 32 HP / 11 Def / 23 Spe\nTimid Nature\n- Fake Out\n- Zap Cannon\n- Focus Blast\n- Protect\n").first
+      converted,note=BlueBattleHub.convert_points(row)
+      check(converted['evs']==[252,0,78,0,0,180] && note.include?('ajuste'),'Champions points convert at level 50 and excess EVs are visibly adjusted to 510')
+      mon=BlueBattleHub.build(converted)
+      check(mon.species==:RAICHU && mon.form==0 && !mon.mega? && mon.item_id==:RAICHUNITEY && mon.getMegaForm==3,'Mega Raichu Y enters as normal Raichu with Raichunite Y and a legal Mega option')
+      row['evs']=[32,32,2,0,0,0];converted,note=BlueBattleHub.convert_points(row)
+      check(converted['evs']==[252,252,6,0,0,0] && note.include?('-6 EVs'),'32/32/2 preserves both maxed stats and reports the six-EV reduction')
+      rejected=false;begin;BlueBattleHub.convert_points(row.merge('evs'=>[32,32,32,0,0,0]));rescue BlueBattleHub::ImportError;rejected=true;end
+      check(rejected,'Champions totals above 66 points are rejected')
+      classical=BlueBattleHub.preview(PASTE)
+      check(classical[0]['pokemon'].ev[:SPEED]==32,'Explicit classic import still preserves small literal EVs')
+    end
+    def self.test_preview(screen)
+      teams=[Array.new(6) { BlueBattleLab.build(:PIKACHU,50) },Array.new(6) { BlueBattleLab.build(:MAGIKARP,50) }]
+      preview=BlueBattleHub::PickFour.new(teams,['Meu time','Rival'])
+      preview.instance_variable_set(:@deadline,System.uptime+60);preview.mount
+      check(preview.remaining.between?(59,60),'VGC preview starts with a real 60-second monotonic deadline')
+      [5,1,3,0,2].each { |i| preview.toggle(i) }
+      check(preview.selected==[5,1,3,0],'Only four choices are accepted and their lead order is preserved')
+      check(preview.result.map(&:length)==[4,4] && teams.map(&:length)==[6,6],'Both sides bring four while original teams keep six')
+      preview.render
+      Graphics.update;shot=Graphics.snap_to_bitmap;shot.to_file('Data/blue-hub-preview-smoke.png');shot.dispose
+      preview.instance_variable_set(:@deadline,System.uptime-1);preview.tick
+      check(preview.timed_out && preview.selected==[0,1,2,3],'Timeout replaces any partial selection with exactly the first four')
+      preview.unmount
+      screen.render
+    ensure
+      preview.unmount if preview && preview.instance_variable_get(:@canvas)
     end
     def self.test_clicks(screen)
       original=Mouse.method(:getMousePos)

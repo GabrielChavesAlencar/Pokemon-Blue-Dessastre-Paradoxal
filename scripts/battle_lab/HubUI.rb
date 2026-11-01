@@ -14,6 +14,7 @@ module BlueBattleHub
         $PokemonSystem.blue_sprite_quality=quality if BlueSpriteQuality::LABELS.key?(quality)
       end
       @dirty=true;@notice='Monte os dois times e entre em batalha contra a IA.'
+      @teams=@teams.map { |team| BlueBattleHub.prepare_roster(team) }
     end
     def color(key);Color.new(*COLORS.fetch(key));end
     def rect(x,y,w,h,key)
@@ -36,7 +37,7 @@ module BlueBattleHub
       return unless @canvas
       @buttons=[];@bitmap.clear;rect(0,0,W,H,:bg)
       text('BLUE / HUB DE BATALHA',24,14,480,30)
-      text('MONTADOR DE TIMES',690,18,246,16,:blue)
+      text('OFFLINE / CONTRA A IA',690,18,246,16,:blue)
       button(:side0,'MEU TIME',24,62,130,34,@side==0) { change_side(0) }
       button(:side1,'ADVERSARIO',162,62,150,34,@side==1) { change_side(1) }
       button(:name,@names[@side],328,62,230) { value=prompt('Nome do time',@names[@side],40);@names[@side]=value if value && !value.strip.empty?;changed }
@@ -63,7 +64,7 @@ module BlueBattleHub
         button(:nickname,m.nicknamed? ? m.name : 'Apelido...',174,266,232) { value=prompt('Apelido',m.nicknamed? ? m.name : '',24);m.name=value if value;changed }
         button(:item,m.item ? m.item.name : 'Item: nenhum',174,306,232,32,@tab==:item) { tab(:item) }
         button(:ability,m.ability.name,174,346,232,32,@tab==:ability) { tab(:ability) }
-        button(:level,'Nv. '+m.level.to_s,422,220,79) { value=number('Nivel (1 a 100)',m.level,1,100);m.level=value if value;changed }
+        text('Nv. 50 fixo',422,224,85,16,:blue)
         button(:gender,m.genderless? ? 'Sem sexo' : m.female? ? 'Femea' : 'Macho',507,220,89) { m.gender=1-m.gender unless m.genderless?;changed }
         button(:shiny,m.shiny? ? 'Shiny: sim' : 'Shiny: nao',422,262,174,32,m.shiny?) { m.shiny=!m.shiny?;changed }
         button(:tera,'Tera: '+(m.respond_to?(:tera_type) ? GameData::Type.get(m.tera_type).name : '-'),422,304,174,32,@tab==:type) { tab(:type) }
@@ -77,7 +78,7 @@ module BlueBattleHub
       end
       rect(24,404,912,244,:panel)
       @tab==:stats && mon ? render_stats : render_picker
-      button(:format,@format=='double' ? 'Dupla / 2 em campo' : 'Individual / 1 em campo',24,662,214,38) { @format=@format=='single' ? 'double' : 'single';changed }
+      button(:format,@format=='double' ? 'Dupla / 6 escolhe 4' : 'Individual / 1 em campo',24,662,214,38) { @format=@format=='single' ? 'double' : 'single';changed }
       button(:ai,'IA: '+BlueRadicalAI::CONFIG['profiles'][@ai]['label'],248,662,188,38) { keys=BlueRadicalAI::CONFIG['profiles'].keys;@ai=keys[(keys.index(@ai).to_i+1)%keys.length];changed }
       button(:mechanics,'Mecanicas',446,662,110,38) { menu_action { BlueBattleOptions.mechanics_menu(:lab) };changed }
       button(:more,'Opcoes',566,662,86,38) { options_menu }
@@ -176,6 +177,10 @@ module BlueBattleHub
       @tab=kind;@query='';@page=0;@row=0;@focus=false;Input.text_input=false;@dirty=true
     end
     def changed(persist=true)
+      @teams.flatten.each do |pokemon|
+        next if pokemon.level==BlueBattleHub::LEVEL
+        pokemon.level=BlueBattleHub::LEVEL;pokemon.calc_stats;pokemon.heal
+      end
       mon&.calc_stats;mon&.heal;@dirty=true;@portrait_dirty=true
       BlueBattleHub.save_session(@teams,@names,@format,@ai) if persist
     rescue StandardError=>e
@@ -188,7 +193,7 @@ module BlueBattleHub
     def choose_data(data)
       case @tab
       when :species
-        p=BlueBattleLab.build(data.id,mon ? mon.level : 100)
+        p=BlueBattleLab.build(data.id,BlueBattleHub::LEVEL)
         if data.mega_stone || data.mega_move
           base=GameData::Species.get_species_form(data.species,data.unmega_form)
           p=BlueBattleLab.build(base.id,p.level);p.item=data.mega_stone if data.mega_stone
@@ -359,7 +364,13 @@ module BlueBattleHub
       choose('Nao foi possivel importar. Seu time foi mantido.',error.message.scan(/.{1,62}/)+['Voltar'])
     end
     def confirm_import(raw)
-      entries=BlueBattleHub.preview(raw);valid=entries.select { |e| e['pokemon'] };bad=entries.select { |e| e['error'] }
+      format=:classic
+      if BlueBattleHub.champions_candidate?(raw)
+        mode=choose('Valores ate 32: qual e o formato dos atributos?',['Champions: converter pontos para EVs (limite 510)','EVs classicos: manter valores literais','Cancelar'])
+        return unless [0,1].include?(mode)
+        format=:champions if mode==0
+      end
+      entries=BlueBattleHub.preview(raw,format);valid=entries.select { |e| e['pokemon'] };bad=entries.select { |e| e['error'] }
       lines=entries.map do |e|
         if e['error'];'ERRO '+e['name']+': '+e['error']
         else
@@ -376,7 +387,7 @@ module BlueBattleHub
       end
       return unless command==lines.length && !valid.empty?
       @teams[@side]=valid.map { |e| e['pokemon'] };@slot=0
-      @notice=bad.empty? ? 'Time importado. EVs/IVs mantidos como no texto.' : 'Importados apenas os Pokemon compativeis que voce confirmou.'
+      @notice=bad.empty? ? 'Time importado no nivel 50. '+(format==:champions ? 'Pontos Champions convertidos; confira os atributos.' : 'EVs/IVs preservados.') : 'Importados apenas os Pokemon compativeis que voce confirmou.'
       changed
     end
     def fetch_with_progress(raw)
@@ -438,11 +449,23 @@ module BlueBattleHub
     end
     def start_battle
       BlueBattleLab.validate_teams(*@teams,@format)
+      if @format=='double' && @teams.any? { |team| team.length!=6 }
+        choose('Duplas: prepare seis Pokemon em cada time.',['Voce escolhe quatro na tela seguinte.','Voltar']);return
+      end
+      parties=@teams.map { |team| BlueBattleHub.prepare_roster(team) }
       changed;unmount;Graphics.resize_screen(*@original_size)
-      result=BlueBattleLab.battle(*@teams,false,@format,@ai)
+      if @format=='double'
+        parties=select_four(parties)
+        return unless parties
+        Graphics.resize_screen(*@original_size)
+      end
+      result=BlueBattleLab.battle(*parties,false,@format,@ai)
       @notice={1=>'Vitoria!',2=>'Derrota.',3=>'Batalha encerrada.',5=>'Empate.'}[result] || 'Batalha concluida.'
     ensure
       mount unless @canvas
+    end
+    def select_four(parties)
+      PickFour.new(parties,@names).run
     end
   end
   module HubScene

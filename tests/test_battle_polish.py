@@ -15,7 +15,7 @@ class PolishInstallTests(unittest.TestCase):
     def test_installs_only_own_plugin_and_preserves_campaign(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root);before={p:p.read_bytes() for p in game.rglob('*') if p.is_file()}
-            self.assertEqual(polish.install(root,game),4);self.assertEqual(polish.install(root,game),0)
+            self.assertEqual(polish.install(root,game),len(polish.FILES));self.assertEqual(polish.install(root,game),0)
             self.assertTrue(all(p.read_bytes()==raw for p,raw in before.items()))
     def test_failure_rolls_back_existing_plugin(self):
         with tempfile.TemporaryDirectory() as tmp:

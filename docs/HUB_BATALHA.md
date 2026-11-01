@@ -17,15 +17,21 @@ Enquanto o repositório for privado, o download exige acesso autorizado no GitHu
 
 ## Montar os times
 
-Use **MEU TIME** e **ADVERSÁRIO** para alternar os lados. Cada um tem até seis integrantes; os primeiros entram em campo. Clique em um slot vazio para adicionar, ou em um integrante para editar.
+Use **MEU TIME** e **ADVERSÁRIO** para alternar os lados. Cada um tem até seis integrantes. Clique em um slot vazio para adicionar, ou em um integrante para editar. Todos os Pokémon do Hub ficam no **nível 50**, inclusive os importados ou carregados de uma sessão antiga.
 
 - **Pokémon:** busca por nome, identificador, tipo ou habilidade; formas, atributos base e BST aparecem na tabela. O filtro **Dessastre Paradoxal** mostra a geração especial. Megas são preparadas com a forma base e a pedra exigida pela engine, para transformar durante a batalha.
 - **Item e habilidade:** clique no campo e escolha na lista. As habilidades são as disponíveis para a espécie. É possível retirar o item.
 - **Golpes:** clique em um dos quatro campos. A lista começa pelo learnset da espécie, com tipo, categoria, poder, precisão, PP e descrição. **Todos (livre)** permite combinações para testes, mesmo fora do learnset. Golpes duplicados são recusados.
-- **Atributos:** edite Nature, EVs e IVs e veja os atributos finais calculados pelo próprio jogo. Os EVs têm controle por clique/arraste ou número, máximo de 252 por atributo e 510 no total; IVs vão de 0 a 31. Nível, sexo, shiny e Tera Type têm controles próprios. Alterar o nível preserva os golpes escolhidos.
-- **Formato, IA e mecânicas:** escolha individual ou dupla, perfil da IA e controles de Terastal, Dynamax, Mega e Z-Moves. Duplas precisam de pelo menos dois integrantes por time. A qualidade dos sprites continua disponível nas opções.
+- **Atributos:** edite Nature, EVs e IVs e veja os atributos finais calculados pelo próprio jogo. Os EVs têm controle por clique/arraste ou número, máximo de 252 por atributo e 510 no total; IVs vão de 0 a 31. Sexo, shiny e Tera Type têm controles próprios. O nível 50 é fixo e não tem campo de edição.
+- **Formato, IA e mecânicas:** escolha individual ou dupla, perfil da IA e controles de Terastal, Dynamax, Mega e Z-Moves. Duplas exigem **seis integrantes em cada time** e abrem a seleção de quatro antes de lutar. A qualidade dos sprites continua disponível nas opções.
 
 **BATALHAR** abre a luta no tamanho normal da engine. Ao terminar, você volta ao montador com os times preservados. A tela do montador usa uma resolução própria; a campanha e as batalhas conservam sua resolução normal.
+
+### Duplas: escolher quatro entre seis
+
+A tela mostra os seis Pokémon de cada lado. Você tem **60 segundos** para selecionar quatro, na ordem desejada; os dois primeiros começam em campo. Clique nos cartões ou use setas + Enter; Espaço ou **Confirmar quatro** finaliza. A IA escolhe quatro usando espécies e tipos públicos. Se o tempo terminar, entram exatamente os **quatro primeiros da lista original**, mesmo que você tenha feito uma seleção parcial. **Voltar ao montador** cancela antes da batalha. Os seis integrantes continuam salvos no montador.
+
+O modo disponível é offline contra IA. O [roadmap do PvP online](ROADMAP_HUB.md) registra as etapas de servidor, salas e sincronização que ainda precisam ser feitas.
 
 ## Importar PokéPaste ou texto do Showdown
 
@@ -50,7 +56,13 @@ Conforme a escolha do autor, **Zygarde, Heatran, Darkrai, Magearna, Zeraora e Ta
 
 Os efeitos foram consultados na [implementação primária do Pokémon Showdown](https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts). Os dados fornecidos pelo autor e a decisão sobre habilidades provisórias estão registrados no catálogo.
 
-O exemplo fornecido importa os seis integrantes, incluindo Mega Floette. **EVs são preservados literalmente**: um valor `32 Spe` continua sendo 32 EVs; o Hub não o transforma em 252. Nível ausente usa 100. Também são lidos IVs, Nature, habilidade, item, apelido, sexo, shiny, felicidade, Tera Type e os quatro golpes. As listas refletem os dados da engine instalada, que podem diferir do formato competitivo em que o paste foi criado.
+O Hub aceita os times de referência, incluindo Mega Floette e o [exemplo Champions com Mega Raichu Y](https://pokepast.es/40ec8827804dd1d5). Ao detectar atributos até 32, pede que você escolha **Champions** ou **EVs clássicos**. No modo clássico, `32 Spe` continua sendo 32 EVs. No modo Champions, pontos de 0 a 32 (até 66 no total) são convertidos para EVs; `32 → 252`. Se o resultado ultrapassar 510, o menor investimento é reduzido primeiro e a diferença aparece no detalhe da prévia. `32/32/2 → 252/252/6`, com aviso de seis EVs removidos. A equivalência de atributos pressupõe IVs 31 no nível 50 e pode mudar ao ajustar a distribuição; IVs fornecidos são preservados.
+
+O nível do paste é normalizado para **50**. Também são lidos IVs, Nature, habilidade, item, apelido, sexo, shiny, felicidade, Tera Type e os quatro golpes. Mega Raichu Y é preparado como **Raichu normal com Raichunite Y**, para transformar durante a luta. Exportação e biblioteca usam os EVs clássicos resultantes; não reconvertem automaticamente a sessão salva.
+
+### Abertura
+
+A tela do logo usa Iron Maeltrom, raios azuis animados e o subtítulo **Dessastre Paradoxal** sob Pokémon Decades. A faixa `60 - Battle! (Gym Leader).mp3` toca nessa tela quando já está instalada na biblioteca local. O MP3 continua fora do Git e do pacote; sem ele, a abertura usa a música padrão da base.
 
 ## Biblioteca e exportação
 

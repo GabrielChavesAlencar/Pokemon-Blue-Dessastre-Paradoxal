@@ -3,6 +3,7 @@ module BlueBattleHub
   DIR='BlueHub'
   STATS=[:HP,:ATTACK,:DEFENSE,:SPECIAL_ATTACK,:SPECIAL_DEFENSE,:SPEED].freeze
   SHORT=['HP','Atk','Def','SpA','SpD','Spe'].freeze
+  LEVEL=50
   class ImportError < StandardError;end
   def self.token(value)
     value.to_s.tr('éÉèÈêÊáÁàÀâÂãÃíÍóÓôÔõÕúÚüÜçÇ♀♂','eEeEeEaAaAaAaAiIoOoOoOuUuUcCfm').downcase.gsub(/[^a-z0-9]/,'')
@@ -130,7 +131,8 @@ module BlueBattleHub
       errors << e.message unless alias_stone
     end
     raise ImportError,errors.join(' ') unless errors.empty?
-    level=row['level'];raise ImportError,'Nivel deve estar entre 1 e 100.' unless level.is_a?(Integer) && level.between?(1,100)
+    imported_level=row['level'];raise ImportError,'Nivel deve estar entre 1 e 100.' unless imported_level.is_a?(Integer) && imported_level.between?(1,100)
+    level=LEVEL
     if row['gender']==1 && data.form==0
       female=index(:species)[token(real(data)+'-F')];data=female if female
     end
@@ -189,9 +191,49 @@ module BlueBattleHub
     mon.gmax_factor=row['gigantamax'] if row.key?('gigantamax') && mon.respond_to?(:gmax_factor=)
     mon.calc_stats;mon.heal;mon
   end
-  def self.preview(text)
+  def self.champions_candidate?(text)
+    rows=parse(text)
+    spreads=rows.map { |r| r['evs'] }.reject { |v| v.sum==0 }
+    !spreads.empty? && spreads.all? { |v| v.all? { |n| n.between?(0,32) } }
+  end
+  def self.convert_points(row)
+    points=row['evs']
+    raise ImportError,'Champions: use de 0 a 32 pontos por atributo e no maximo 66 no total.' unless points.all? { |n| n.between?(0,32) } && points.sum<=66
+    # At level 50 with odd IVs: first point needs 4 EVs, later points 8.
+    values=points.map { |n| n==0 ? 0 : n*8-4 }
+    before=values.dup;excess=[values.sum-510,0].max
+    (0...6).select { |i| values[i]>0 }.sort_by { |i| [values[i],i] }.each do |i|
+      remove=[excess,values[i]].min;values[i]-=remove;excess-=remove
+      break if excess==0
+    end
+    row=row.merge('evs'=>values)
+    summary=SHORT.each_with_index.filter_map { |name,i| "#{points[i]} #{name}->#{values[i]} EV" if points[i]>0 }.join('; ')
+    note='Champions: '+summary
+    note+="; ajuste ao limite 510: -#{before.sum-values.sum} EVs" if before!=values
+    note+='; equivalencia de pontos assume IVs 31 no nivel 50' if row['ivs'].any? { |n| n!=31 }
+    [row,note]
+  end
+  def self.prepare_roster(team)
+    Marshal.load(Marshal.dump(team)).map do |mon|
+      if mon.mega?
+        data=mon.species_data
+        mon.instance_variable_set(:@blue_hub_mega,data.id)
+        mon.item=data.mega_stone if data.mega_stone
+        mon.makeUnmega
+      end
+      mon.level=LEVEL;mon.calc_stats;mon.heal;mon
+    end
+  end
+  def self.preview(text,format=:classic)
     parse(text).each_with_index.map do |row,i|
-      begin;{'index'=>i,'name'=>row['pokemon'],'pokemon'=>build(row),'error'=>nil}
+      begin
+        row,note=convert_points(row) if format==:champions
+        mon=build(row)
+        if note
+          prior=mon.instance_variable_get(:@blue_hub_import_note)
+          mon.instance_variable_set(:@blue_hub_import_note,[prior,note].compact.join(' / '))
+        end
+        {'index'=>i,'name'=>row['pokemon'],'pokemon'=>mon,'error'=>nil}
       rescue StandardError=>e;{'index'=>i,'name'=>row['pokemon'],'pokemon'=>nil,'error'=>e.message};end
     end
   end

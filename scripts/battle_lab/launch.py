@@ -12,7 +12,7 @@ import zlib
 import tempfile
 import importlib.util
 
-PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'meta.txt']
+PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'TeamPreview.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'meta.txt']
 
 
 def atomic_write(path: Path, data: bytes):

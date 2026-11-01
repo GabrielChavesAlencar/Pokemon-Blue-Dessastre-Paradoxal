@@ -89,6 +89,7 @@ module BlueBattleLab
   end
 
   def self.run_smoke
+    check(BlueParadoxTitle.run_checks,'Iron Maeltrom title, moving blue lightning and selected Gym Leader music; Data/blue-title-validation.txt') if defined?(BlueParadoxTitle)
     check(BlueZAMegas.run_checks,'ZA Megas catalogue and native ability mechanics; Data/blue-za-validation.txt') if defined?(BlueZAMegas)
     check_live_menu
     check(BlueBattleHub::Validation.run,'Native Battle Hub, Showdown imports and builder; Data/blue-hub-validation.txt') if defined?(BlueBattleHub::Validation)

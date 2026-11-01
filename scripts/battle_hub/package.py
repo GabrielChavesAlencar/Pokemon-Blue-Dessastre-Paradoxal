@@ -8,7 +8,7 @@ REQUIRED=['HUB_DE_BATALHA.bat','TESTAR_BATALHA.bat','INSTALAR_HUB.bat','scripts/
           'data/dessastre-paradoxal.json','data/fan-assets.json','data/national-species.json','data/radical-ai.json','data/za-megas.json',
           'site/assets/fan-pokemon.tar.gz','site/assets/fan-pokemon.sha256',
           'site/assets/fan-extras.tar.gz','site/assets/fan-extras.sha256','site/assets/fan-extras.manifest.json',
-          'site/public/data/story-trainers.json','docs/HUB_BATALHA.md']
+          'site/public/data/story-trainers.json','docs/HUB_BATALHA.md','docs/ROADMAP_HUB.md']
 def files(project):
     selected=set(REQUIRED)
     for directory in SCRIPT_DIRS:
