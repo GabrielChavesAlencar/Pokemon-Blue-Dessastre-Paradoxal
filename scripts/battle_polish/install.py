@@ -1,7 +1,7 @@
 """Install Blue's original presentation/story plugin, with a local backup."""
 from pathlib import Path
 import os,tempfile
-FILES=['Presentation.rb','Title.rb','Story.rb','Validation.rb','meta.txt']
+FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Shop.rb','CampaignValidation.rb','Validation.rb','meta.txt']
 def atomic(path,raw):
     path.parent.mkdir(parents=True,exist_ok=True)
     fd,name=tempfile.mkstemp(prefix='.blue-polish-',dir=path.parent)

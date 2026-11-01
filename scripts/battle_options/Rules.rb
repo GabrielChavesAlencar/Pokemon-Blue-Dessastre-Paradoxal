@@ -17,6 +17,8 @@ module BlueBattleOptions
   def self.rules(scope=:mode)
     if scope==:lab
       @lab_rules ||= defaults
+    elsif scope==:campaign
+      $PokemonGlobal.blue_campaign_mechanics ||= defaults
     elsif $PokemonSystem
       $PokemonSystem.blue_battle_mechanics ||= defaults
     else

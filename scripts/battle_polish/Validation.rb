@@ -9,6 +9,7 @@ module BluePolishValidation
     test_exp
     test_pointer_order
     test_story
+    BlueCampaignValidation.run(@lines)
     test_entries
     @lines << 'RESULT=PASS'
     true

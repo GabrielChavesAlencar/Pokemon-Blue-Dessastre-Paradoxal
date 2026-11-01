@@ -40,7 +40,10 @@ module BlueStory
     def command_402
       if @branch[@list[@index].indent]==@parameters[0]
         label=@parameters[1]
-        BlueStory.choose_mode(:story) if label=='Story Mode'
+        if label=='Story Mode'
+          BlueStory.choose_mode(:story)
+          BlueCampaign.begin_journey unless defined?(BlueBattleLab) && BlueBattleLab::ACTIVE
+        end
         BlueStory.choose_mode(:battle) if label=='Battle Mode'
         $PokemonGlobal.blue_traditional_starters=true if label=='Traditional Starters' && BlueStory.story?
         $PokemonGlobal.blue_traditional_starters=false if ['VGC Starters','Any Pokémon'].include?(label) && BlueStory.story?
@@ -235,6 +238,7 @@ module Compiler
     def main
       blue_presentation_original_main
       BluePresentation.install;BlueStory.install
+      BlueCampaign.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

@@ -9,7 +9,8 @@ module BlueBattleOptions
   def self.mechanics_menu(scope=:mode)
     loop do
       labels=LABELS.map { |key,label| "#{label}: #{rules(scope)[key]==false ? 'DESATIVADO' : 'ATIVADO'}" }
-      choice=choose('Mecanicas / vale para os dois lados na proxima batalha',labels+['Ativar todas','Desativar todas','Voltar'])
+      title=scope==:campaign ? 'Sua jornada / escolha as mecanicas para os dois lados' : 'Mecanicas / vale para os dois lados na proxima batalha'
+      choice=choose(title,labels+['Ativar todas','Desativar todas',scope==:campaign ? 'Comecar jornada' : 'Voltar'])
       if choice>=0 && choice<LABELS.length
         key=LABELS.keys[choice];rules(scope)[key]=rules(scope)[key]==false
       elsif choice==4 then rules(scope).merge!(defaults)
@@ -41,6 +42,7 @@ module BlueBattleOptions
     pkmn
   end
   def self.generator
+    return if defined?(BlueCampaign) && BlueCampaign.active?
     list=author_species
     if list.empty?
       pbMessage('Instale a geracao Dessastre Paradoxal antes de usar o gerador.');return
@@ -57,16 +59,21 @@ module BlueBattleOptions
   end
   def self.main_menu
     loop do
-      choice=choose('BLUE / Battle Mode',['Gerar Pokemon Dessastre Paradoxal','Mecanicas de batalha','Qualidade dos sprites','Voltar'])
-      case choice
-      when 0 then generator
-      when 1 then mechanics_menu
-      when 2 then quality_menu
+      campaign=defined?(BlueCampaign) && BlueCampaign.active?
+      labels=['Mecanicas de batalha','Qualidade dos sprites','Voltar']
+      labels.unshift('Gerar Pokemon Dessastre Paradoxal') unless campaign
+      choice=choose(campaign ? 'BLUE / Jornada' : 'BLUE / Battle Mode',labels)
+      selected=choice>=0 ? labels[choice] : nil
+      case selected
+      when 'Gerar Pokemon Dessastre Paradoxal' then generator
+      when 'Mecanicas de batalha' then mechanics_menu(campaign ? :campaign : :mode)
+      when 'Qualidade dos sprites' then quality_menu
       else break
       end
     end
   end
   def self.inject_generator(game_map)
+    return if defined?(BlueCampaign) && BlueCampaign.active?
     return unless battle_area?(game_map.map_id)
     map=game_map.instance_variable_get(:@map)
     return if map.events.values.any? { |e| e.name=='Blue Dessastre Paradoxal' }

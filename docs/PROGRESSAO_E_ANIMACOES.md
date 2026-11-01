@@ -1,5 +1,7 @@
 # Progressão Story, entradas de batalha e mouse
 
+As regras novas de níveis, inventário inicial e lojas estão em [Economia e jornada](ECONOMIA_E_JORNADA.md). Treinadores comuns agora usam 70% do maior nível do time; bosses e líderes mantêm o escalonamento anterior. As regras de BST descritas abaixo continuam valendo depois do ajuste de nível.
+
 ## Traditional Starters
 
 Escolha **Story Mode → Traditional Starters**, primeira opção na seleção de iniciais. A campanha passa a usar o número real de esmeraldas/insígnias do treinador:
