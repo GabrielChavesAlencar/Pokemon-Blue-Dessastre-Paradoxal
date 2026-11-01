@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "35f556f26a3288d4d02c871f842fdce6e0c1abac",
+      "date": "2026-11-01T12:38:32-03:00",
+      "title": "Atualiza Megas de Z-A e corrige importação PokéPaste no Hub",
+      "category": "Correções"
+    },
+    {
       "sha": "1619357b6e9e32a7504bd8e45bb493c00fa05e2e",
       "date": "2026-11-01T11:52:03-03:00",
       "title": "feat: criar Hub de Batalha nativo com teambuilder, Pokepaste e download separado",
