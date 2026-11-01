@@ -1,12 +1,24 @@
-# Original Blue UI adapters. Mouse input is enabled only in the opt-in lab.
+# Original Blue UI adapters, shared by the campaign and the opt-in lab.
 module BlueLabPointer
   class << self
     attr_accessor :keys, :claimed
-    def enabled?; BlueBattleLab::ACTIVE && !BlueBattleLab::SMOKE; end
-    def reset; self.keys = {}; self.claimed = false; end
+    def enabled?; !BlueBattleLab::SMOKE || @testing_campaign; end
+    # Some Essentials menus update their windows BEFORE Input.update; others
+    # update them afterwards. Carry an unread click across one update only.
+    def reset
+      @frame ||= 0
+      self.keys = (keys || {}).select { |key,born| born==@frame && !(@read || {})[key] }
+      @frame += 1
+      @read={};self.claimed=false
+    end
+    def key?(key)
+      return false unless (keys || {}).key?(key)
+      (@read ||= {})[key]=true
+      true
+    end
     def emit(key)
       self.keys ||= {}
-      self.keys[key] = true
+      self.keys[key] = @frame || 0
       self.claimed = true
     end
     def position; Mouse.getMousePos; end
@@ -37,7 +49,7 @@ module BlueLabInput
     super
   end
   def trigger?(key)
-    return true if BlueLabPointer.enabled? && BlueLabPointer.keys && BlueLabPointer.keys[key]
+    return true if BlueLabPointer.enabled? && BlueLabPointer.key?(key)
     return true if BlueLabPointer.enabled? && key == Input::BACK && super(Input::MOUSERIGHT)
     super
   end
@@ -82,7 +94,7 @@ module BlueLabBattleMenuMouse
       next if is_a?(Battle::Scene::TargetMenu) && nil_or_empty?(@texts[i])
       self.index = i
       BlueLabPointer.emit(Input::USE)
-      BlueBattleLab.log("MOUSE | #{self.class} index=#{i}")
+      BlueBattleLab.log("MOUSE | #{self.class} index=#{i}") if BlueBattleLab::ACTIVE
       break
     end
   end
@@ -108,9 +120,19 @@ module BlueLabPartyMouse
       @activecmd = i
       pbRefresh
       BlueLabPointer.emit(Input::USE)
-      BlueBattleLab.log("MOUSE | party index=#{i}")
+      BlueBattleLab.log("MOUSE | party index=#{i}") if BlueBattleLab::ACTIVE
       break
     end
+  end
+end
+
+module BlueTextMouse
+  def update
+    super
+    return unless BlueLabPointer.enabled? && visible && !BlueLabPointer.claimed
+    return unless Input.trigger?(Input::MOUSELEFT)
+    x0,y0=BlueLabPointer.origin(self)
+    BlueLabPointer.emit(Input::USE) if BlueLabPointer.inside?(BlueLabPointer.position,x0,y0,width,height)
   end
 end
 
@@ -125,6 +147,7 @@ module BlueBattleLab
     SpriteWindow_Selectable.prepend(BlueLabListMouse)
     Battle::Scene::MenuBase.prepend(BlueLabBattleMenuMouse)
     PokemonParty_Scene.prepend(BlueLabPartyMouse)
+    Window_AdvancedTextPokemon.prepend(BlueTextMouse)
     @interface_installed = true
   end
 

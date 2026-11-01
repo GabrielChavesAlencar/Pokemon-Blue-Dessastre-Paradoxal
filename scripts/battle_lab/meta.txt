@@ -1,4 +1,4 @@
 Name = Blue Battle Lab
-Version = 0.3
+Version = 0.4
 Essentials = 21.1
 Credits = Gabriel Chaves Alencar

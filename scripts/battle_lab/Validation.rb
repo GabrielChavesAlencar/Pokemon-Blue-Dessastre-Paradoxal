@@ -92,6 +92,7 @@ module BlueBattleLab
     check_live_menu
     check(BlueBattleOptions.run_checks,'Battle Mode, mechanic toggles and sprite quality; Data/blue-battle-options-validation.txt') if defined?(BlueBattleOptions)
     check(BlueMusic.run_checks,'Music overrides; Data/blue-music-validation.txt') if defined?(BlueMusic)
+    check(BluePolishValidation.run,'Presentation, EXP, campaign pointer and Story progression; Data/blue-polish-validation.txt') if defined?(BluePolishValidation)
     if defined?(BlueRadicalAI::Validation)
       check(BlueRadicalAI::Validation.run, 'Blue Radical AI decision matrix; Data/blue-radical-ai-validation.txt')
     end
@@ -173,6 +174,8 @@ module BlueBattleLab
     @test_point = [20+list.x+list.startX+rect.x+5, 10+list.y+list.startY+rect.y+5]
     Input.update; list.update
     check(list.index == 12 && Input.trigger?(Input::USE), 'Mouse selects scrolled list item with viewport offset')
+    Input.update;list.update;Input.update
+    check(Input.trigger?(Input::USE),'Campaign list-before-input order confirms an actual widget click')
     @test_point = [-1,-1]
     Input.update; list.update
     check(!BlueLabPointer.claimed, 'Click outside list does not confirm')

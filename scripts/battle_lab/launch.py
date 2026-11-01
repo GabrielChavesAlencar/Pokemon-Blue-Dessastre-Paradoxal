@@ -56,6 +56,11 @@ def install(project: Path, game: Path) -> Path:
         spec=importlib.util.spec_from_file_location('blue_music_install',music_installer)
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         module.install(project,game)
+    presentation_installer=project/'scripts'/'battle_polish'/'install.py'
+    if presentation_installer.is_file():
+        spec=importlib.util.spec_from_file_location('blue_presentation_install',presentation_installer)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module.install(project,game)
     return game
 
 

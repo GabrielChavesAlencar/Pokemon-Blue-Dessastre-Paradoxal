@@ -2,6 +2,10 @@
 
 > Fangame **em planejamento**, derivado para uso local de **Pokémon Decades** (HazyCrazy), feito com RPG Maker XP e Pokémon Essentials v21.1. Este repositório contém o **Blue Studio**, o editor próprio. **A ROM/arquivos do jogo original não estão neste repositório**; o desenvolvimento do fangame ainda não substituiu os mapas, a história ou os assets do Decades.
 
+**[⬇ Baixar Pokémon Blue — instalador e modificações (ZIP)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/archive/refs/heads/main.zip)** · **[Passo a passo de instalação no Windows](docs/INSTALACAO.md)**
+
+Extraia o ZIP, instale Python e Git e abra **`INSTALAR_JOGO.bat`**. Depois, use **`ABRIR_JOGO.bat`** para a campanha. O instalador baixa a base separadamente e aplica as modificações; o ZIP funciona sem uma pasta `.git`. Enquanto o repositório for privado, o download exige acesso autorizado no GitHub. A publicação para todos estará disponível quando o autor tornar o repositório público.
+
 ![Prévia do Blue Studio usando registros de teste](docs/blue-studio-preview.png)
 
 *Prévia com dados demonstrativos: o jogo original não faz parte do download.*
@@ -28,6 +32,8 @@ Abra **`TESTAR_BATALHA.bat`** para o laboratório de batalhas reais, com times d
 A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor à engine instalada: dano, prioridade, trocas, hazards, suporte e duplas. O laboratório permite compará-la à IA original da base. Execute **`APLICAR_IA_RADICAL.bat`** para instalar em outra cópia da mesma base. [Perfis, fontes, logs e testes](docs/IA_BLUE_RADICAL.md).
 
 **Músicas aleatórias por batalha:** listas separadas para treinadores, encontros selvagens e líderes/Mestres de Tipo, com uma escolha por luta e sem repetir imediatamente a última faixa. A coleção local tem 7/6/6 músicas; o Blue Studio permite editar cada lista. [Importação, controles e testes](docs/EDITOR_MUSICAS.md).
+
+**Campanha Traditional Starters:** progressão Inicial (0–1 esmeralda, BST até 350), Intermediária (2–3, até 450) e Avançada (4+, equipes originais), com revanches por estágio sem repetir drops. Entradas de batalha inspiradas no FireRed, EXP suave e mouse nos menus da campanha. [Regras, controles e validação](docs/PROGRESSAO_E_ANIMACOES.md).
 
 ## Portal do projeto
 
