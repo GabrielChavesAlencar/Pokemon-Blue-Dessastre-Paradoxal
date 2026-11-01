@@ -44,6 +44,7 @@ module BlueBattleLab
   end
 
   def self.run_smoke
+    check(BlueMusic.run_checks,'Music overrides; Data/blue-music-validation.txt') if defined?(BlueMusic)
     if defined?(BlueRadicalAI::Validation)
       check(BlueRadicalAI::Validation.run, 'Blue Radical AI decision matrix; Data/blue-radical-ai-validation.txt')
     end

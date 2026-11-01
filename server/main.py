@@ -26,6 +26,7 @@ import webbrowser
 from pokemon_studio import (PokemonValidationError, create_species, make_species_raw,
                             validate_pokemon, species_catalog, pbs_catalog)
 from moves_editor import MoveEditorError, catalog as moves_catalog, detail as moves_detail, save as moves_save
+import music_editor
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -443,6 +444,32 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                         file_hash=file_hash))
                 elif p == "/api/pokemon/compile-status":
                     self.send_json(200,compile_status(game_root))
+                elif p == "/api/music/catalog":
+                    self.send_json(200,music_editor.catalog(game_root))
+                elif p == "/api/music/assignment":
+                    self.send_json(200,music_editor.assignment(game_root,self.param('scope','global'),self.param('target','wild')))
+                elif p == "/api/music/track":
+                    self.send_json(200,music_editor.track_info(game_root,self.param('id','')))
+                elif p == "/api/music/audio":
+                    target=music_editor.track_path(game_root,self.param('id',''))
+                    size=target.stat().st_size
+                    start,end,status=music_editor.range_slice(self.headers.get('Range'),size)
+                    self.send_response(status)
+                    self.send_header('Content-Type',music_editor.EXTENSIONS[target.suffix.lower()][0])
+                    self.send_header('Accept-Ranges','bytes')
+                    self.send_header('Cache-Control','no-store')
+                    self.send_header('X-Content-Type-Options','nosniff')
+                    self.send_header('Content-Length',str(end-start+1))
+                    if status==206:self.send_header('Content-Range',f'bytes {start}-{end}/{size}')
+                    self.end_headers()
+                    try:
+                        with target.open('rb') as stream:
+                            stream.seek(start);remaining=end-start+1
+                            while remaining>0:
+                                data=stream.read(min(65536,remaining))
+                                if not data:break
+                                self.wfile.write(data);remaining-=len(data)
+                    except (BrokenPipeError,ConnectionResetError):pass
                 elif p == "/api/pokemon/catalog":
                     self.send_json(200, {
                         "types": sorted(pbs_catalog(game_root, "types")),
@@ -475,7 +502,7 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.send_header("Content-Length", str(len(raw)))
                     self.end_headers()
                     self.wfile.write(raw)
-                elif p == "/" or p in ("/index.html", "/app.js", "/sprites.js", "/pokemon.js", "/moves-editor.js", "/navigation.js", "/style.css", "/studio-shell.css"):
+                elif p == "/" or p in ("/index.html", "/app.js", "/sprites.js", "/pokemon.js", "/moves-editor.js", "/music-editor.js", "/music-editor.css", "/navigation.js", "/style.css", "/studio-shell.css"):
                     requested = "index.html" if p == "/" else p.lstrip("/")
                     data = (WEB / requested).read_bytes()
                     content_type = mimetypes.guess_type(requested)[0] or "application/octet-stream"
@@ -489,6 +516,8 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.send_json(404, {"error": "Rota não encontrada."})
             except MoveEditorError as ex:
                 self.error(EditorError(str(ex), ex.status))
+            except music_editor.MusicError as ex:
+                self.error(EditorError(str(ex),ex.status))
             except (ValueError, OSError) as ex:
                 self.error(EditorError(str(ex), 400))
             except Exception as ex:
@@ -496,13 +525,15 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
 
         def do_POST(self):
             try:
+                p = urlsplit(self.path).path
                 origin = self.headers.get("Origin", "")
                 expected = (f"http://127.0.0.1:{port}", f"http://localhost:{port}")
                 if (origin and origin not in expected) or self.headers.get("X-Blue-Studio", "") != "1":
                     raise EditorError("Requisição não autorizada (somente editor local).", 403)
                 length = int(self.headers.get("Content-Length", "0"))
-                if length <= 0 or length > MAX_POST or "application/json" not in self.headers.get("Content-Type", ""):
-                    raise EditorError("JSON inválido ou maior que 8 MB.", 413)
+                limit=32_000_000 if p=="/api/music/upload" else MAX_POST
+                if length <= 0 or length > limit or "application/json" not in self.headers.get("Content-Type", ""):
+                    raise EditorError("JSON inválido ou maior que o limite permitido.", 413)
                 obj = json.loads(self.rfile.read(length).decode("utf-8"))
                 if not isinstance(obj, dict):
                     raise EditorError("Corpo inválido.")
@@ -545,6 +576,12 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                         read_text=read_text, sections_in=sections_in,
                         section_lines=section_lines, file_hash=file_hash,
                         save_section=save_section))
+                elif p == "/api/music/assignment":
+                    self.send_json(200,music_editor.save_assignment(game_root,backup_root,obj,
+                        lock=EDIT_LOCK,atomic_write=atomic_write,backup_file=backup_file))
+                elif p == "/api/music/upload":
+                    self.send_json(200,music_editor.upload(game_root,backup_root,obj,
+                        lock=EDIT_LOCK,atomic_write=atomic_write,backup_file=backup_file))
                 elif p == "/api/pokemon/new":
                     try:
                         response = create_species(game_root, backup_root, obj,lock=EDIT_LOCK,
@@ -595,6 +632,8 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     raise EditorError("Rota não encontrada.", 404)
             except MoveEditorError as ex:
                 self.error(EditorError(str(ex), ex.status))
+            except music_editor.MusicError as ex:
+                self.error(EditorError(str(ex),ex.status))
             except (ValueError, json.JSONDecodeError) as ex:
                 self.error(EditorError("Dados inválidos: " + str(ex)))
             except Exception as ex:

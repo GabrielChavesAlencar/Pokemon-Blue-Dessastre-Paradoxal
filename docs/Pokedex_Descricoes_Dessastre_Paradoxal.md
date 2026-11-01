@@ -1,5 +1,7 @@
 # Pokémon Blue: Dessastre Paradoxal — Pokédex, descrições, altura e peso
 
+> **Integração de 31/10/2026:** a solicitação posterior em `proximospasso.txt` autorizou aplicar ao jogo e ao portal as 47 entradas aprovadas e os 14 nomes revisados. A descrição histórica do catálogo e as restrições da etapa de revisão abaixo documentam o estado anterior. As 12 entradas sem aprovação e os 7 cadastros sem atributos continuam pendentes; suas propostas não foram aplicadas.
+
 > **DOCUMENTAÇÃO DE REFERÊNCIA PUBLICADA — 47/59 ESPÉCIES APROVADAS; 12 AINDA PENDENTES DE REVISÃO.**  
 > **Progresso:** 47 de 59 entradas aprovadas. Swadloadne (#1084) aprovado junto com Stundrift (#1083), Ammnoid (#1081) e Cephalonid (#1082). Permanecem em revisão Rampage Horn (#1055), Ravenous Crest (#1056), Razor Carapace (#1057), Savege Jowl (#1058), Thorn Bastion (#1061) e Iron Matriarch (#1070). As seis espécies convergentes (#1071–#1076) foram adiadas pelo criador. A origem de Primatizer ainda não foi confirmada.
 > O jogo será escrito em **inglês**. As traduções em português são apenas para revisão com o criador.  

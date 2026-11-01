@@ -1,0 +1,552 @@
+{
+  "version": 1,
+  "archiveSha256": "59448e7bdb4ede7b38f32a392b7ddd83995850756aab970e5b6f558958669cec",
+  "files": [
+    {
+      "path": "cries/ABYSSLURE.wav",
+      "target": "Audio/SE/Cries/ABYSSLURE.wav",
+      "kind": "cry",
+      "species": "ABYSSLURE",
+      "sourceName": "cry_Abyss Lure.wav",
+      "sha256": "80f165065cc1f966d58abc8596f3fe13574ebd9a0defc064c9ed8a7652b9be72",
+      "duration": 2.18
+    },
+    {
+      "path": "cries/AMMNOID.wav",
+      "target": "Audio/SE/Cries/AMMNOID.wav",
+      "kind": "cry",
+      "species": "AMMNOID",
+      "sourceName": "cry_ammnoid.wav",
+      "sha256": "171d7176eef1e836a9edfb929a48d0e9a3626bd3f21c806e6d77e39f067d4a2e",
+      "duration": 2.48
+    },
+    {
+      "path": "cries/ANCESTRASH.wav",
+      "target": "Audio/SE/Cries/ANCESTRASH.wav",
+      "kind": "cry",
+      "species": "ANCESTRASH",
+      "sourceName": "cry_Ancestrash.wav",
+      "sha256": "6b7c46948b0d9e8f1f0153e86bae2f82222d463fbcd95eb1a4b30498939e23f2",
+      "duration": 2.57
+    },
+    {
+      "path": "cries/ARCHGUTOR.wav",
+      "target": "Audio/SE/Cries/ARCHGUTOR.wav",
+      "kind": "cry",
+      "species": "ARCHGUTOR",
+      "sourceName": "cry_Archgutor.wav",
+      "sha256": "77700cc756699e02989357a51bee4e2e82d1bdb6def8517db954ebb6c63ebf98",
+      "duration": 2.48
+    },
+    {
+      "path": "cries/BURIALGAZE.wav",
+      "target": "Audio/SE/Cries/BURIALGAZE.wav",
+      "kind": "cry",
+      "species": "BURIALGAZE",
+      "sourceName": "cry_Burial Gaze.wav",
+      "sha256": "e902b82b93369094e643cb69c8f7505c89e9bb90baf5f91f22a6add9c560a571",
+      "duration": 2.46
+    },
+    {
+      "path": "cries/CAVEFANG.wav",
+      "target": "Audio/SE/Cries/CAVEFANG.wav",
+      "kind": "cry",
+      "species": "CAVEFANG",
+      "sourceName": "cry_cavefang.wav",
+      "sha256": "c3978b5cb4d646b6a8edbe7e18f1f4039e464f37614e7a78dfe3a9ce3b094269",
+      "duration": 2.35
+    },
+    {
+      "path": "cries/CEPHALONID.wav",
+      "target": "Audio/SE/Cries/CEPHALONID.wav",
+      "kind": "cry",
+      "species": "CEPHALONID",
+      "sourceName": "cry_cephalonid.wav",
+      "sha256": "50a961deffd7f2fc50278a34855f3765d0850a842ab4ed52f407a18517f3eb7c",
+      "duration": 2.92
+    },
+    {
+      "path": "cries/CRAGGYSIPHON.wav",
+      "target": "Audio/SE/Cries/CRAGGYSIPHON.wav",
+      "kind": "cry",
+      "species": "CRAGGYSIPHON",
+      "sourceName": "cry_Craggy Siphon.wav",
+      "sha256": "de310fd27773b7f27979cdad1bc40ec5837638a3a8d5631246d517a768296e69",
+      "duration": 2.65
+    },
+    {
+      "path": "cries/DIRERUFF.wav",
+      "target": "Audio/SE/Cries/DIRERUFF.wav",
+      "kind": "cry",
+      "species": "DIRERUFF",
+      "sourceName": "cry_Dire Ruff.wav",
+      "sha256": "8fe89c563969f83618a5d0ef35f3b443797bfc28bd6961d72e9c6ea33fe45797",
+      "duration": 2.34
+    },
+    {
+      "path": "cries/DREADCREST.wav",
+      "target": "Audio/SE/Cries/DREADCREST.wav",
+      "kind": "cry",
+      "species": "DREADCREST",
+      "sourceName": "cry_Dread Crest.wav",
+      "sha256": "6eaf45f24a0e890d8e68311b66d91369e9d6d2764b124a030b7c310fc3c32554",
+      "duration": 2.66
+    },
+    {
+      "path": "cries/DYNAMOTRODE.wav",
+      "target": "Audio/SE/Cries/DYNAMOTRODE.wav",
+      "kind": "cry",
+      "species": "DYNAMOTRODE",
+      "sourceName": "cry_Dynamotrode.wav",
+      "sha256": "53ef2271c7ad3fbde4223b831c7c63410d682b739032ff36377b6de6ad08ea8b",
+      "duration": 2.43
+    },
+    {
+      "path": "cries/FETIDGULLET.wav",
+      "target": "Audio/SE/Cries/FETIDGULLET.wav",
+      "kind": "cry",
+      "species": "FETIDGULLET",
+      "sourceName": "cry_Fetid Gullet.wav",
+      "sha256": "80585fd6beabf17eb8af4fa4798d3b347fb3a1403fe94a0f6e9d46ef64e2c02f",
+      "duration": 2.3
+    },
+    {
+      "path": "cries/FOSSILHUSK.wav",
+      "target": "Audio/SE/Cries/FOSSILHUSK.wav",
+      "kind": "cry",
+      "species": "FOSSILHUSK",
+      "sourceName": "cry_Fossil Husk.wav",
+      "sha256": "e5657cc77283b6741be090d552c09163a4933da08506d560b1a0b8b16315d0c9",
+      "duration": 1.94
+    },
+    {
+      "path": "cries/FOSSLTIDE.wav",
+      "target": "Audio/SE/Cries/FOSSLTIDE.wav",
+      "kind": "cry",
+      "species": "FOSSLTIDE",
+      "sourceName": "cry_Fossl Tide.wav",
+      "sha256": "95820f724eab1f740f65a12a2320f443160b48e51daacc3b101834cc15f17253",
+      "duration": 2.6
+    },
+    {
+      "path": "cries/IRONCRAWLER.wav",
+      "target": "Audio/SE/Cries/IRONCRAWLER.wav",
+      "kind": "cry",
+      "species": "IRONCRAWLER",
+      "sourceName": "cry_iron crawler.wav",
+      "sha256": "8cbb2eea627e7c0e8f71a2cd9a1e2ffaeb40c0a7582caa29967baab3dca8518b",
+      "duration": 2.15
+    },
+    {
+      "path": "cries/IRONCRUSHER.wav",
+      "target": "Audio/SE/Cries/IRONCRUSHER.wav",
+      "kind": "cry",
+      "species": "IRONCRUSHER",
+      "sourceName": "cry_Iron Crusher.wav",
+      "sha256": "acdcb9174a11467646d91f3d3727bc0487be7a484e998775c22c8d7b39bb8dd2",
+      "duration": 2.4
+    },
+    {
+      "path": "cries/IRONFEASTER.wav",
+      "target": "Audio/SE/Cries/IRONFEASTER.wav",
+      "kind": "cry",
+      "species": "IRONFEASTER",
+      "sourceName": "cry_iron feaster.wav",
+      "sha256": "34d2c855cdc0d5377e85f0a7a341e1f5d8f6864beb30581f74538183f0284a30",
+      "duration": 2.78
+    },
+    {
+      "path": "cries/IRONLEPORIS.wav",
+      "target": "Audio/SE/Cries/IRONLEPORIS.wav",
+      "kind": "cry",
+      "species": "IRONLEPORIS",
+      "sourceName": "cry_iron leporis.wav",
+      "sha256": "32f9b4cd88e2fc84760c045d37f8c19c72740c892c436531acd08ed8b49aa955",
+      "duration": 2.46
+    },
+    {
+      "path": "cries/IRONMAELTROM.wav",
+      "target": "Audio/SE/Cries/IRONMAELTROM.wav",
+      "kind": "cry",
+      "species": "IRONMAELTROM",
+      "sourceName": "cry_Iron maeltrom.wav",
+      "sha256": "72ee25ef90784956da2a0a98006189fdc8d97603d7b92cc888c357c5bfd93910",
+      "duration": 2.58
+    },
+    {
+      "path": "cries/JAGGEDMAW.wav",
+      "target": "Audio/SE/Cries/JAGGEDMAW.wav",
+      "kind": "cry",
+      "species": "JAGGEDMAW",
+      "sourceName": "cry_Jagged Maw.wav",
+      "sha256": "c42ba67259aae5d9f2db78466457d2353519713213286da2e09a6aaad35310cc",
+      "duration": 2.48
+    },
+    {
+      "path": "cries/MAGISCALE.wav",
+      "target": "Audio/SE/Cries/MAGISCALE.wav",
+      "kind": "cry",
+      "species": "MAGISCALE",
+      "sourceName": "cry_Magiscale.wav",
+      "sha256": "69b5536adc941cc60fd03546c18bc628eedbeaaa3b0a68b6776cfda0bdc96657",
+      "duration": 2.35
+    },
+    {
+      "path": "cries/MAGNETRIX.wav",
+      "target": "Audio/SE/Cries/MAGNETRIX.wav",
+      "kind": "cry",
+      "species": "MAGNETRIX",
+      "sourceName": "cry_Magnetrix.wav",
+      "sha256": "2e3c3266f5013b755518b76cc89dbe39c2d816228a419dedf37490f5b14bc716",
+      "duration": 2.22
+    },
+    {
+      "path": "cries/MIASMIC.wav",
+      "target": "Audio/SE/Cries/MIASMIC.wav",
+      "kind": "cry",
+      "species": "MIASMIC",
+      "sourceName": "cry_Miasmic.wav",
+      "sha256": "1d30d574dce5a9ba9dd9918ca566a12e91ac5a34767e292c7bd236c77cdd5cf4",
+      "duration": 2.55
+    },
+    {
+      "path": "cries/MIRECREST.wav",
+      "target": "Audio/SE/Cries/MIRECREST.wav",
+      "kind": "cry",
+      "species": "MIRECREST",
+      "sourceName": "cry_Mire crest.wav",
+      "sha256": "b266a713c426cf845533e5d6910e908340df81e1f0b5dca9a24e68431dc2f515",
+      "duration": 2.67
+    },
+    {
+      "path": "cries/PHANTOMIRE.wav",
+      "target": "Audio/SE/Cries/PHANTOMIRE.wav",
+      "kind": "cry",
+      "species": "PHANTOMIRE",
+      "sourceName": "cry_Phantomire.wav",
+      "sha256": "da37d77d51588e4402de99e9ffdbd34a0eade816514d4acc25a75c54a982eb2e",
+      "duration": 2.45
+    },
+    {
+      "path": "cries/PRIAMALGONG.wav",
+      "target": "Audio/SE/Cries/PRIAMALGONG.wav",
+      "kind": "cry",
+      "species": "PRIAMALGONG",
+      "sourceName": "cry_priamalgong.wav",
+      "sha256": "2c49877aa802f561cde76b6506f7991233d8130ff6b006dd443b5916a84f2e20",
+      "duration": 2.68
+    },
+    {
+      "path": "cries/PRIMALCATERPIE.wav",
+      "target": "Audio/SE/Cries/PRIMALCATERPIE.wav",
+      "kind": "cry",
+      "species": "PRIMALCATERPIE",
+      "sourceName": "cry_primal caterpie.wav",
+      "sha256": "70ff4ff13ea98dffb3448351f4ec4fdba97b8a91f2b2cf27f145dcfc76b8edd1",
+      "duration": 2.6
+    },
+    {
+      "path": "cries/PRIMALDRENAW.wav",
+      "target": "Audio/SE/Cries/PRIMALDRENAW.wav",
+      "kind": "cry",
+      "species": "PRIMALDRENAW",
+      "sourceName": "cry_primal drenaw.wav",
+      "sha256": "1be90f78faba2d45d45feea5a21ea41220d4fa639a1fd20043d2ea49b9b2fafd",
+      "duration": 2.95
+    },
+    {
+      "path": "cries/PRIMALPUNNY.wav",
+      "target": "Audio/SE/Cries/PRIMALPUNNY.wav",
+      "kind": "cry",
+      "species": "PRIMALPUNNY",
+      "sourceName": "cry_primal punny.wav",
+      "sha256": "e367d6ed441125c9351b878a20c0bff83374b004d49a45ed74eff86ccf171241",
+      "duration": 2.58
+    },
+    {
+      "path": "cries/PRIMALDUURR.wav",
+      "target": "Audio/SE/Cries/PRIMALDUURR.wav",
+      "kind": "cry",
+      "species": "PRIMALDUURR",
+      "sourceName": "cry_primalduurr.wav",
+      "sha256": "1e46931e9b624d72797bbd758d0b56dfb5e827badb3fbd7557dfa9811b4240f5",
+      "duration": 2.72
+    },
+    {
+      "path": "cries/PRIMALGEOT.wav",
+      "target": "Audio/SE/Cries/PRIMALGEOT.wav",
+      "kind": "cry",
+      "species": "PRIMALGEOT",
+      "sourceName": "cry_primalgeot.wav",
+      "sha256": "98720e2c85ff3bbabc38e27ecd81f2c9d7161b47dc3d7b6c9330c6793154e021",
+      "duration": 2.74
+    },
+    {
+      "path": "cries/PRIMALMOTH.wav",
+      "target": "Audio/SE/Cries/PRIMALMOTH.wav",
+      "kind": "cry",
+      "species": "PRIMALMOTH",
+      "sourceName": "cry_primalmoth.wav",
+      "sha256": "c7d2e92828687717ec2b79475fd3cbd1fd1669a49c500fe4e31238035d23bc0b",
+      "duration": 2.18
+    },
+    {
+      "path": "cries/PRIMALMUK.wav",
+      "target": "Audio/SE/Cries/PRIMALMUK.wav",
+      "kind": "cry",
+      "species": "PRIMALMUK",
+      "sourceName": "cry_primalmuk.wav",
+      "sha256": "1f698559d72c7ec4a6c12130c9511b84224e6678c16a5d49eb6f844b5f3b5769",
+      "duration": 2.45
+    },
+    {
+      "path": "cries/PRIMALSEAKING.wav",
+      "target": "Audio/SE/Cries/PRIMALSEAKING.wav",
+      "kind": "cry",
+      "species": "PRIMALSEAKING",
+      "sourceName": "cry_primalseaking.wav",
+      "sha256": "298b486beff994b98cc4b4215d7e42a4cdb7368fa5272bb0cb2b064deaf3ebfb",
+      "duration": 2.77
+    },
+    {
+      "path": "cries/PRIMALSECT.wav",
+      "target": "Audio/SE/Cries/PRIMALSECT.wav",
+      "kind": "cry",
+      "species": "PRIMALSECT",
+      "sourceName": "cry_primalsect.wav",
+      "sha256": "b538b65f44562d362e9c7a12ba01dac114ec165177f69678104e4b4d3aa99618",
+      "duration": 2.65
+    },
+    {
+      "path": "cries/PRIMALVIPER.wav",
+      "target": "Audio/SE/Cries/PRIMALVIPER.wav",
+      "kind": "cry",
+      "species": "PRIMALVIPER",
+      "sourceName": "cry_primalviper.wav",
+      "sha256": "388967f1b4b3afa759d7174ae10524816bb61f23c0a977b10ecc8882c885226e",
+      "duration": 2.45
+    },
+    {
+      "path": "cries/PRIMATIZER.wav",
+      "target": "Audio/SE/Cries/PRIMATIZER.wav",
+      "kind": "cry",
+      "species": "PRIMATIZER",
+      "sourceName": "cry_Primatizer.wav",
+      "sha256": "479b7ccc099d86cbf9ee5f4f045716ece3267a731634b7a6b9ced67ed2595eaa",
+      "duration": 2.57
+    },
+    {
+      "path": "cries/RAMPAGEHORN.wav",
+      "target": "Audio/SE/Cries/RAMPAGEHORN.wav",
+      "kind": "cry",
+      "species": "RAMPAGEHORN",
+      "sourceName": "cry_Rampage Horn.wav",
+      "sha256": "6380146b0a0df4f8138ba36b42b60f5daa0fe5c2c727890717c79fe387372c2f",
+      "duration": 2.7
+    },
+    {
+      "path": "cries/RAVENOUSCREST.wav",
+      "target": "Audio/SE/Cries/RAVENOUSCREST.wav",
+      "kind": "cry",
+      "species": "RAVENOUSCREST",
+      "sourceName": "cry_Ravenous Crest.wav",
+      "sha256": "dd66c3a2c2fe36166fe2e865df8180ca7aeee49fdb32f32ecff7c93104021d73",
+      "duration": 2.38
+    },
+    {
+      "path": "cries/RAZORCARAPACE.wav",
+      "target": "Audio/SE/Cries/RAZORCARAPACE.wav",
+      "kind": "cry",
+      "species": "RAZORCARAPACE",
+      "sourceName": "cry_Razor Carapace.wav",
+      "sha256": "a81685af4fd64301b275cec325d4990ecb90d970aab8a5ee309348d116922465",
+      "duration": 2.72
+    },
+    {
+      "path": "cries/SAVEGEJOWL.wav",
+      "target": "Audio/SE/Cries/SAVEGEJOWL.wav",
+      "kind": "cry",
+      "species": "SAVEGEJOWL",
+      "sourceName": "cry_Savege Jowl.wav",
+      "sha256": "adb7261de9ea9c738318a4b230e5adc3788053887b8c302e2c6f64587743f75e",
+      "duration": 2.46
+    },
+    {
+      "path": "cries/SCORCHMANE.wav",
+      "target": "Audio/SE/Cries/SCORCHMANE.wav",
+      "kind": "cry",
+      "species": "SCORCHMANE",
+      "sourceName": "cry_Scorch Mane.wav",
+      "sha256": "c57659cc06e90877322e88bf90912f5b4caeb46093622492b354dc9b304f4e24",
+      "duration": 2.78
+    },
+    {
+      "path": "cries/SCORIASHELL.wav",
+      "target": "Audio/SE/Cries/SCORIASHELL.wav",
+      "kind": "cry",
+      "species": "SCORIASHELL",
+      "sourceName": "cry_Scoria Shell.wav",
+      "sha256": "d4d46cadfb07fc519dc9b95806789c739e0db95e243e3173f079c3def59a4f86",
+      "duration": 2.72
+    },
+    {
+      "path": "cries/STUNDRIFT.wav",
+      "target": "Audio/SE/Cries/STUNDRIFT.wav",
+      "kind": "cry",
+      "species": "STUNDRIFT",
+      "sourceName": "cry_Stundrift.wav",
+      "sha256": "df98e3a702c5101ec6d566af86e736a97833eaa8a36a1828ed06d1b45d2424b8",
+      "duration": 2.62
+    },
+    {
+      "path": "cries/SWADLOADNE.wav",
+      "target": "Audio/SE/Cries/SWADLOADNE.wav",
+      "kind": "cry",
+      "species": "SWADLOADNE",
+      "sourceName": "cry_Swadloadne.wav",
+      "sha256": "a2ea624d546e5cdea66941b6ad39a03ccdb672a83949e0255bd9d3b8553d972a",
+      "duration": 2.54
+    },
+    {
+      "path": "cries/THORNBASTION.wav",
+      "target": "Audio/SE/Cries/THORNBASTION.wav",
+      "kind": "cry",
+      "species": "THORNBASTION",
+      "sourceName": "cry_Thorn Bastion.wav",
+      "sha256": "7477464cc2526d77707d1546a19676f18fa169b4b879d970d1e257c009e2a3c5",
+      "duration": 2.36
+    },
+    {
+      "path": "cries/TITANBALEEN.wav",
+      "target": "Audio/SE/Cries/TITANBALEEN.wav",
+      "kind": "cry",
+      "species": "TITANBALEEN",
+      "sourceName": "cry_Titan Baleen.wav",
+      "sha256": "e0d76e74eb04a88024132ebf25f4e609c7996fb2eedc95d1908bf46674f8d453",
+      "duration": 3.05
+    },
+    {
+      "path": "cries/WOOLYSTING.wav",
+      "target": "Audio/SE/Cries/WOOLYSTING.wav",
+      "kind": "cry",
+      "species": "WOOLYSTING",
+      "sourceName": "cry_Wooly sting.wav",
+      "sha256": "b0043ad9b5c7907f6b91056b81cc5a4b5ddfb62cdf944355ce7f5496fbce1b8f",
+      "duration": 2.65
+    },
+    {
+      "path": "items/DPARBOKITE.png",
+      "target": "Graphics/Items/DPARBOKITE.png",
+      "kind": "mega-stone",
+      "item": "DPARBOKITE",
+      "species": "ARBOK,1",
+      "sourceName": "Mega_Arbok_64x64.png",
+      "sha256": "3af01c19600e452b050438cb13bbb2af7a3504f95c8361b87d47e9e317312848"
+    },
+    {
+      "path": "items/DPFEAROWITE.png",
+      "target": "Graphics/Items/DPFEAROWITE.png",
+      "kind": "mega-stone",
+      "item": "DPFEAROWITE",
+      "species": "FEAROW,1",
+      "sourceName": "Mega_Fearow_64x64.png",
+      "sha256": "8e1c698d2f573cc8e4ce200c149d7db37839d5100c7bf1175b36203749b90908"
+    },
+    {
+      "path": "items/DPHYPNOITE.png",
+      "target": "Graphics/Items/DPHYPNOITE.png",
+      "kind": "mega-stone",
+      "item": "DPHYPNOITE",
+      "species": "HYPNO,1",
+      "sourceName": "Mega_Hypno_64x64.png",
+      "sha256": "c725cf5ed8671f0402932ab86036cc7272cc3a84b27d8fbf5d30c421ae03adca"
+    },
+    {
+      "path": "items/DPKABUTOPSITE.png",
+      "target": "Graphics/Items/DPKABUTOPSITE.png",
+      "kind": "mega-stone",
+      "item": "DPKABUTOPSITE",
+      "species": "KABUTOPS,1",
+      "sourceName": "Mega_Kabutops_64x64.png",
+      "sha256": "d7312e93a51e8451878bb7f290f95bc2029aea5963a5ab0010dc125bb31912a8"
+    },
+    {
+      "path": "items/DPLEDIANITE.png",
+      "target": "Graphics/Items/DPLEDIANITE.png",
+      "kind": "mega-stone",
+      "item": "DPLEDIANITE",
+      "species": "LEDIAN,1",
+      "sourceName": "Mega_Ledian_64x64.png",
+      "sha256": "25c006e226e2a6e31aee7a3b8b6a3d0993904dc3344bcb44921baffbf0a3b856"
+    },
+    {
+      "path": "items/DPLUDICOLOITE.png",
+      "target": "Graphics/Items/DPLUDICOLOITE.png",
+      "kind": "mega-stone",
+      "item": "DPLUDICOLOITE",
+      "species": "LUDICOLO,1",
+      "sourceName": "Mega_Ludicolo_64x64.png",
+      "sha256": "f931141386ef7ebdbabd499606c39f81c6bbe1e08ee414859adde784a3d13bbc"
+    },
+    {
+      "path": "items/DPMILTANKITE.png",
+      "target": "Graphics/Items/DPMILTANKITE.png",
+      "kind": "mega-stone",
+      "item": "DPMILTANKITE",
+      "species": "MILTANK,1",
+      "sourceName": "Mega_Miltank_64x64.png",
+      "sha256": "3e558a31d2afc2e25523d4ca2e1b51ee51b01a5583ddc8903267df4aa8148a1a"
+    },
+    {
+      "path": "items/DPPURUGLYITE.png",
+      "target": "Graphics/Items/DPPURUGLYITE.png",
+      "kind": "mega-stone",
+      "item": "DPPURUGLYITE",
+      "species": "PURUGLY,1",
+      "sourceName": "Mega_Purugly_64x64.png",
+      "sha256": "00dc968b5737e88fc4855aa93111cbaa910a2d6dc2c72cad9fce8b476faf0081"
+    },
+    {
+      "path": "items/DPSUNFLORAITE.png",
+      "target": "Graphics/Items/DPSUNFLORAITE.png",
+      "kind": "mega-stone",
+      "item": "DPSUNFLORAITE",
+      "species": "SUNFLORA,1",
+      "sourceName": "Mega_Sunflora_64x64.png",
+      "sha256": "4cf4ec94a341cda20da4fe409feeb2a5a51c4baa6ad01e11a741459de8c2826f"
+    },
+    {
+      "path": "items/DPTENTACRUELITE.png",
+      "target": "Graphics/Items/DPTENTACRUELITE.png",
+      "kind": "mega-stone",
+      "item": "DPTENTACRUELITE",
+      "species": "TENTACRUEL,1",
+      "sourceName": "Mega_Tentacruel_64x64.png",
+      "sha256": "affd8784a72e5e2f64aed3b74427421a1d374c9c913981d522b2061f042dc47c"
+    },
+    {
+      "path": "items/DPVILEPLUMEITE.png",
+      "target": "Graphics/Items/DPVILEPLUMEITE.png",
+      "kind": "mega-stone",
+      "item": "DPVILEPLUMEITE",
+      "species": "VILEPLUME,1",
+      "sourceName": "Mega_Vileplume_64x64.png",
+      "sha256": "7d76011466e2f822a1c3de68db7b0989222d00f153880304435d732ccd7e5d85"
+    },
+    {
+      "path": "items/DPWALREINITE.png",
+      "target": "Graphics/Items/DPWALREINITE.png",
+      "kind": "mega-stone",
+      "item": "DPWALREINITE",
+      "species": "WALREIN,1",
+      "sourceName": "Mega_Walrein_64x64.png",
+      "sha256": "cff24f6cc3d70726002647d40720bbade3718c4eeece11c555d7d5a31a7128ea"
+    }
+  ],
+  "missingCries": [
+    "PRIMALTROPICAL",
+    "PRIMALKORCH",
+    "IRONINVERNOSE",
+    "IRONMATRIARCH"
+  ]
+}

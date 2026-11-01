@@ -7,6 +7,39 @@ installer=importlib.util.module_from_spec(spec);spec.loader.exec_module(installe
 MANIFEST=json.loads((ROOT/'data/dessastre-paradoxal.json').read_text(encoding='utf8'))
 
 class NamedGenerationTests(unittest.TestCase):
+    def test_extra_assets_are_exact_and_archive_corruption_is_rejected(self):
+        import hashlib,wave,io
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.fixture(root)
+            assets=installer.extra_assets(root,game)
+            manifest=json.loads((ROOT/'data/fan-assets.json').read_text())
+            self.assertEqual(len(assets),60)
+            for entry in manifest['files']:
+                raw=assets[(game/entry['target']).resolve()]
+                self.assertEqual(hashlib.sha256(raw).hexdigest(),entry['sha256'])
+                if entry['path'].endswith('.wav'):
+                    with wave.open(io.BytesIO(raw)) as sound:self.assertGreater(sound.getnframes(),0)
+                else:self.assertEqual(raw[:8],b'\x89PNG\r\n\x1a\n')
+            (root/'site/assets/fan-extras.tar.gz').write_bytes(b'corrupt')
+            with self.assertRaises(ValueError):installer.extra_assets(root,game)
+
+    def test_paradox_encounters_preserve_originals_levels_other_areas_and_are_idempotent(self):
+        original='[1]\nLand,5\n    100,PIKACHU,2,3\n[156]\nLand,21\n    60,GREAT_TUSK,65,70\n    40,SCREAM_TAIL,65,70\nWater,10\n    100,MAGIKARP,5\n[157]\nLand,21\n    50,IRON_TREADS,65,70\n    50,IRON_BUNDLE,65,70\n'
+        result=installer.update_encounters(original,MANIFEST['entries'])
+        self.assertEqual(installer.update_encounters(result,MANIFEST['entries']),result)
+        self.assertIn('[1]\nLand,5\n    100,PIKACHU,2,3\n',result)
+        self.assertIn('Water,10\n    100,MAGIKARP,5\n',result)
+        for key,category in [('156','past_paradox'),('157','future_paradox')]:
+            section=next(s for s in installer.parse_sections(result) if s[0]==key)
+            block=result[section[1]:section[2]].split('Land,21\n')[1].split('Water,')[0]
+            rows=[line.strip().split(',') for line in block.splitlines() if line.strip()]
+            self.assertEqual(sum(int(r[0]) for r in rows),100)
+            expected={p['id'] for p in MANIFEST['entries'] if p['category']==category and not p['pending']}
+            self.assertEqual({r[1] for r in rows if r[1] in expected},expected)
+            self.assertEqual(sum(int(r[0]) for r in rows if r[1] in expected),50)
+            self.assertTrue(all(r[2:]==['65','70'] for r in rows))
+        self.assertNotIn(',PRIMALNOTIC,',result)
+
     def test_generation_name_serializes_to_engine_flag(self):
         raw=make_species_raw({'id':'BLUEAUTHOR','name':'Blue Author','stats':[80]*6,'description':'????','generation':'Dessastre Paradoxal'})
         fields=parse_fields(raw);self.assertEqual(fields['Generation'],'0');self.assertEqual(fields['Flags'],'DessastreParadoxal');self.assertEqual(fields['Pokedex'],'????')
@@ -16,7 +49,9 @@ class NamedGenerationTests(unittest.TestCase):
     def test_manifest_preserves_all_records_and_marks_drafts(self):
         entries=MANIFEST['entries'];self.assertEqual(len(entries),71);self.assertEqual(len({p['id'] for p in entries}),71)
         drafts=[p for p in entries if p['pending']];self.assertEqual(len(drafts),7)
-        self.assertTrue(all(p['stats']==[None]*6 for p in drafts));self.assertTrue(all(p['description']=='????' for p in entries))
+        self.assertTrue(all(p['stats']==[None]*6 for p in drafts))
+        approved=json.loads((ROOT/'site/public/data/pokedex-approved.json').read_text(encoding='utf8'))['species']
+        self.assertTrue(all(p['description']==approved.get(p['id'],{}).get('description','????') for p in entries))
         self.assertEqual(sum(bool(p.get('base')) for p in entries),12)
         cave=next(p for p in entries if p['id']=='CAVEFANG');self.assertEqual(cave['stats'],[85,130,65,155,50,85]);self.assertEqual(cave['learnset']['level'][0]['id'],'ABSORB')
         self.assertTrue(all(isinstance(m['level'],int) and 0<=m['level']<=100 for p in entries for m in p['learnset']['level']))
@@ -25,6 +60,8 @@ class NamedGenerationTests(unittest.TestCase):
         game=root/'game';(game/'PBS').mkdir(parents=True);(game/'Data').mkdir();(game/'Data/Scripts.rxdata').write_bytes(b'fixture');(game/'Data/Map001.rxdata').write_bytes(b'campaign map')
         (root/'data').mkdir();(root/'site/assets').mkdir(parents=True);(root/'scripts/dessastre_paradoxal').mkdir(parents=True)
         shutil.copy2(ROOT/'site/assets/fan-pokemon.tar.gz',root/'site/assets/fan-pokemon.tar.gz')
+        shutil.copy2(ROOT/'site/assets/fan-extras.tar.gz',root/'site/assets/fan-extras.tar.gz')
+        shutil.copy2(ROOT/'data/fan-assets.json',root/'data/fan-assets.json')
         mini={**MANIFEST,'entries':[p for p in MANIFEST['entries'] if p['id'] in ['CAVEFANG','HORSAND']]}
         (root/'data/dessastre-paradoxal.json').write_text(json.dumps(mini),encoding='utf8')
         for name in ['Generation.rb','RuntimeChecks.rb','meta.txt']:shutil.copy2(ROOT/'scripts/dessastre_paradoxal'/name,root/'scripts/dessastre_paradoxal'/name)

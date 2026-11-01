@@ -46,6 +46,11 @@ def install(project: Path, game: Path) -> Path:
         spec=importlib.util.spec_from_file_location('blue_radical_ai_install',ai_installer)
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         module.install(project,game,True)
+    music_installer=project/'scripts'/'music'/'install.py'
+    if music_installer.is_file():
+        spec=importlib.util.spec_from_file_location('blue_music_install',music_installer)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module.install(project,game)
     return game
 
 

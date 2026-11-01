@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {extractSprites} from '../scripts/extract-sprites.mjs';
+import {extractExtras} from '../scripts/extract-extras.mjs';
 import {filterSpecies,generationName,art,pokemonPath} from '../src/assets/utils.js';
 import {pokemonDetail} from '../src/assets/detail.js';
 const site=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -13,6 +14,22 @@ const details=JSON.parse(await readFile(path.join(site,'public/data/details.json
 const all=[...catalog.species,...catalog.customForms];
 const model={catalog,locations:[],byId:new Map(all.map(p=>[p.id,p]))};
 const state={generation:'dessastre-paradoxal',group:'all',q:'',sort:'number',moveKind:'level',moveQ:'',moveLimit:40,form:''};
+test('descrições e medidas aprovadas, renomes e cries são publicados sem inventar dados pendentes',async()=>{
+  const approved=JSON.parse(await readFile(path.join(site,'public/data/pokedex-approved.json'),'utf8')).species;
+  for(const [id,value] of Object.entries(approved)){
+    const entry=model.byId.get(id);assert.equal(entry.description,value.description);assert.equal(entry.height,value.height);assert.equal(entry.weight,value.weight);
+  }
+  assert.equal(model.byId.get('PRIMALNOTIC').name,'Witchcap Haze');
+  assert.equal(model.byId.get('PRIMALMUK').name,'Tar Chasm');
+  assert.equal(model.byId.get('PRIMALNOTIC').pending,true);
+  const cave=model.byId.get('CAVEFANG');assert.ok(pokemonDetail(model,cave,details,state,new Set()).includes('<audio controls'));
+  const form=catalog.customForms.find(p=>p.base==='ARBOK');
+  assert.ok(pokemonDetail(model,model.byId.get('ARBOK'),details,{...state,form:String(form.form)},new Set()).includes('mega-stone-art'));
+});
+test('pacote de cries e pedras extrai 60 arquivos autorais verificados',async()=>{
+  const temp=await mkdtemp(path.join(tmpdir(),'blue-fan-extras-'));
+  try{assert.equal(await extractExtras(site,temp),60);const wav=await readFile(path.join(temp,'assets/fan-extras/cries/CAVEFANG.wav'));assert.equal(wav.toString('ascii',0,4),'RIFF');}finally{await rm(temp,{recursive:true,force:true});}
+});
 test('geração com nome contém 59 espécies e 12 formas mega, sem alterar as oficiais',()=>{
   const result=filterSpecies(all,state);assert.equal(result.length,71);assert.equal(result.filter(p=>p.base).length,12);
   assert.equal(catalog.species.find(p=>p.id==='MIRAIDON').number,1008);assert.ok(result.every(p=>generationName(p)==='Dessastre Paradoxal'));

@@ -46,14 +46,72 @@ def pbs_entry(p,entries):
     if tutors:data+=['TutorMoves = '+','.join(tutors)]
     if eggs:data+=['EggMoves = '+','.join(eggs)]
     if not mega:
-        data+=['GenderRatio = '+('Genderless' if 'paradox' in p['category'] else 'Female50Percent'),'GrowthRate = Medium','BaseExp = 150','EVs = HP,1','CatchRate = 45','Happiness = 50','EggGroups = '+('Undiscovered' if 'paradox' in p['category'] else 'Field'),'HatchSteps = 5120','Height = 1.0','Weight = 1.0','Color = Blue','Shape = HeadArms','Category = Dessastre Paradoxal']
+        data+=['GenderRatio = '+('Genderless' if 'paradox' in p['category'] else 'Female50Percent'),'GrowthRate = Medium','BaseExp = 150','EVs = HP,1','CatchRate = 45','Happiness = 50','EggGroups = '+('Undiscovered' if 'paradox' in p['category'] else 'Field'),'HatchSteps = 5120','Height = '+str(p.get('height') or 1.0),'Weight = '+str(p.get('weight') or 1.0),'Color = Blue','Shape = HeadArms','Category = Dessastre Paradoxal']
         evolutions=[]
         for target in entries:
             pre=target.get('preEvolution')
             if pre and pre[0]==p['id'] and not target['pending']:evolutions.extend([target['id'],pre[1],pre[2]])
         if evolutions:data+=['Evolutions = '+','.join(evolutions)]
-    data+=['Pokedex = ????','Generation = 0','Flags = '+','.join(flags)]
+    data+=['Pokedex = '+p.get('description','????'),'Generation = 0','Flags = '+','.join(flags)]
     return '\n'.join(data)+'\n'
+
+def extra_assets(project,game):
+    source=project/'data/fan-assets.json'
+    if not source.is_file():return {}
+    manifest=json.loads(source.read_text(encoding='utf8'))
+    compressed=(project/'site/assets/fan-extras.tar.gz').read_bytes()
+    if sha(compressed)!=manifest['archiveSha256']:raise ValueError('Pacote de cries e pedras corrompido.')
+    expected={p['path']:p for p in manifest['files']};result={};seen=set()
+    with tarfile.open(fileobj=io.BytesIO(compressed),mode='r:gz') as archive:
+        for member in archive:
+            if member.name not in expected or member.name in seen or not member.isfile() or member.size>2_000_000:raise ValueError('Asset autoral invalido.')
+            entry=expected[member.name];data=archive.extractfile(member).read()
+            if sha(data)!=entry['sha256']:raise ValueError('Hash de asset incorreto: '+member.name)
+            target=entry['target']
+            if not re.fullmatch(r'(?:Audio/SE/Cries/[A-Z0-9_]+\.wav|Graphics/Items/DP[A-Z0-9_]+\.png)',target):raise ValueError('Destino de asset invalido.')
+            destination=(game/target).resolve()
+            if not destination.is_relative_to(game.resolve()):raise ValueError('Destino de asset fora da instalacao.')
+            result[destination]=data;seen.add(member.name)
+    if seen!=set(expected):raise ValueError('Pacote autoral incompleto.')
+    return result
+
+def distribute(weights,total):
+    exact=[w*total/sum(weights) for w in weights]
+    result=[int(x) for x in exact]
+    for i in sorted(range(len(result)),key=lambda i:(exact[i]-result[i],-i),reverse=True)[:total-sum(result)]:result[i]+=1
+    if min(result)<1:raise ValueError('Quantidade de slots supera a precisao das chances.')
+    return result
+
+def update_encounters(text,entries,config=None):
+    config=config or {'authorPoolPercent':50,'areas':[{'mapId':156,'category':'past_paradox','method':'Land'},{'mapId':157,'category':'future_paradox','method':'Land'}]}
+    pool=config['authorPoolPercent']
+    if type(pool) is not int or not 1<=pool<=99:raise ValueError('Percentual de encontros invalido.')
+    all_ids={p['id'] for p in entries if not p.get('base')}
+    for area in config['areas']:
+        map_id,category,method=area['mapId'],area['category'],area['method']
+        if type(map_id) is not int or not re.fullmatch(r'[A-Za-z]+',method):raise ValueError('Area de encontro invalida.')
+        fans=sorted(p['id'] for p in entries if p['category']==category and not p['pending'])
+        if not fans:continue
+        sections=parse_sections(text)
+        section=next((s for s in sections if s[0]==str(map_id)),None)
+        if not section:raise ValueError('Area Paradoxo nao encontrada: '+str(map_id))
+        _,start,end=section;block=text[start:end]
+        match=re.search(r'(?m)^'+re.escape(method)+r',\d+[^\r\n]*\r?\n((?:[ \t]+\d+,[^\r\n]+\r?\n)+)',block)
+        if not match:raise ValueError('Tabela terrestre nao reconhecida: '+str(map_id))
+        rows=[]
+        for line in match[1].splitlines():
+            cells=[s.strip() for s in line.split(',')]
+            if cells[1] not in all_ids:rows.append(cells)
+        if not rows:raise ValueError('Encontros originais ausentes.')
+        originals=distribute([int(row[0]) for row in rows],100-pool)
+        author=distribute([1]*len(fans),pool)
+        newline='\r\n' if '\r\n' in block else '\n'
+        lines=['    '+','.join([str(weight),*row[1:]]) for row,weight in zip(rows,originals)]
+        low,high=rows[0][2],rows[0][3] if len(rows[0])>3 else None
+        lines+=['    '+','.join([str(weight),id,low]+([high] if high else [])) for id,weight in zip(fans,author)]
+        new=block[:match.start(1)]+newline.join(lines)+newline+block[match.end(1):]
+        text=text[:start]+new+text[end:]
+    return text
 
 def make_plan(project,game):
     game=game.resolve()
@@ -121,6 +179,11 @@ def make_plan(project,game):
             put('Graphics/Pokemon/'+ROLES[role]+'/'+p['fileId']+'.png',blob)
     for name in ['Generation.rb','RuntimeChecks.rb','meta.txt']:
         put('Plugins/ZZZ Dessastre Paradoxal/'+name,(project/'scripts/dessastre_paradoxal'/name).read_bytes())
+    for path,data in extra_assets(project,game).items():plans[path]=data
+    encounters=game/'PBS/encounters.txt'
+    if (project/'data/fan-encounters.json').is_file():
+        config=json.loads((project/'data/fan-encounters.json').read_text(encoding='utf8'))
+        put('PBS/encounters.txt',update_encounters(encounters.read_bytes().decode('utf8'),entries,config))
     changed={p:b for p,b in plans.items() if not p.is_file() or p.read_bytes()!=b}
     return manifest,changed
 

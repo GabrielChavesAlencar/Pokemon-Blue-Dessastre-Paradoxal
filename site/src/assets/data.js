@@ -6,7 +6,11 @@ export async function loadPortal(){
   const approved=(await approvedResponse.json()).species;
   for(const pokemon of values[0].species){
     const entry=approved[pokemon.id];
-    if(entry){pokemon.description=entry.description;pokemon.height=entry.height;pokemon.weight=entry.weight;}
+    if(entry){
+      if(!pokemon.description||pokemon.description==='????')pokemon.description=entry.description;
+      if(pokemon.height==null)pokemon.height=entry.height;
+      if(pokemon.weight==null)pokemon.weight=entry.weight;
+    }
   }
   const byId=new Map([...values[0].species,...(values[0].customForms??[])].map(p=>[p.id,p]));
   for(const [id,form] of Object.entries(values[0].encounterForms??{})){const base=byId.get(form.base);if(base)byId.set(id,{...base,name:base.name+' · '+form.name,encounterForm:form.form});}

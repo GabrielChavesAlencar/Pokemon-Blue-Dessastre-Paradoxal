@@ -29,7 +29,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Zubat, it hunts in pitch-black caves using ultrasonic cries. Its oversized fangs inject a powerful venom, paralyzing prey before it can escape.",
       "types": [
         "POISON",
         "DARK"
@@ -46,8 +46,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.6,
+      "weight": 36.0,
       "sprites": {
         "footprint": {
           "path": "CAVEFANG/footprint.png",
@@ -564,7 +564,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/CAVEFANG.wav"
     },
     {
       "id": "ABYSSLURE",
@@ -574,7 +576,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Lanturn, it roamed the deepest oceans using its enormous fins. Its golden lure emits an enchanting glow that draws unsuspecting prey straight into its powerful jaws.",
       "types": [
         "WATER",
         "FAIRY"
@@ -591,8 +593,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.9,
+      "weight": 64.0,
       "sprites": {
         "footprint": {
           "path": "ABYSSLURE/footprint.png",
@@ -1142,7 +1144,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/ABYSSLURE.wav"
     },
     {
       "id": "ANCESTRASH",
@@ -1152,7 +1156,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Garbodor, it piles bones and decaying vegetation onto its muddy body. Toxic fumes seep from the rotting mass, turning the ground around it into a deadly bog.",
       "types": [
         "POISON",
         "GROUND"
@@ -1169,8 +1173,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.4,
+      "weight": 260.0,
       "sprites": {
         "footprint": {
           "path": "ANCESTRASH/footprint.png",
@@ -1758,7 +1762,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/ANCESTRASH.wav"
     },
     {
       "id": "BURIALGAZE",
@@ -1768,7 +1774,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Duskull, it wanders forgotten burial grounds with its body covered in grave dust. Those who meet its unblinking gaze are said to hear the voices of spirits buried deep underground.",
       "types": [
         "GHOST",
         "GROUND"
@@ -1785,8 +1791,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.4,
+      "weight": 42.0,
       "sprites": {
         "footprint": {
           "path": "BURIALGAZE/footprint.png",
@@ -2412,7 +2418,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/BURIALGAZE.wav"
     },
     {
       "id": "CRAGGYSIPHON",
@@ -2422,7 +2430,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Octillery, it ruled rocky coastal waters with its immense strength. It strikes foes with stone-hard tentacles and fires powerful jets of water from its muscular siphon.",
       "types": [
         "WATER",
         "FIGHTING"
@@ -2439,8 +2447,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.7,
+      "weight": 108.0,
       "sprites": {
         "footprint": {
           "path": "CRAGGYSIPHON/footprint.png",
@@ -3072,7 +3080,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/CRAGGYSIPHON.wav"
     },
     {
       "id": "DIRERUFF",
@@ -3082,7 +3092,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Mightyena, it hunted in ruthless packs across barren plains. Its jagged mane bristles as it kicks up blinding clouds of dust, allowing its pack to ambush unsuspecting prey.",
       "types": [
         "DARK",
         "GROUND"
@@ -3099,8 +3109,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.6,
+      "weight": 82.0,
       "sprites": {
         "footprint": {
           "path": "DIRERUFF/footprint.png",
@@ -3744,7 +3754,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/DIRERUFF.wav"
     },
     {
       "id": "DREADCREST",
@@ -3754,7 +3766,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Noctowl, it ruled the skies above barren canyons. Its enormous crest intimidated rivals, while its powerful wings stirred up blinding dust clouds to conceal its attacks.",
       "types": [
         "FLYING",
         "GROUND"
@@ -3771,8 +3783,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.1,
+      "weight": 58.0,
       "sprites": {
         "footprint": {
           "path": "DREADCREST/footprint.png",
@@ -4407,7 +4419,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/DREADCREST.wav"
     },
     {
       "id": "FETIDGULLET",
@@ -4417,7 +4431,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Swalot, it swallowed decaying matter from primeval marshes without pause. The foul gases in its cavernous body are said to trap the lingering spirits of anything it consumes.",
       "types": [
         "POISON",
         "GHOST"
@@ -4434,8 +4448,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.9,
+      "weight": 94.0,
       "sprites": {
         "footprint": {
           "path": "FETIDGULLET/footprint.png",
@@ -5081,7 +5095,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/FETIDGULLET.wav"
     },
     {
       "id": "FOSSILHUSK",
@@ -5091,7 +5107,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Pineco, it developed a shell of mineralized plates as hard as solid rock. It clung to trees along prehistoric cliffs, dropping onto predators with enough force to shatter stone.",
       "types": [
         "BUG",
         "ROCK"
@@ -5108,8 +5124,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.1,
+      "weight": 79.0,
       "sprites": {
         "footprint": {
           "path": "FOSSILHUSK/footprint.png",
@@ -5758,7 +5774,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/FOSSILHUSK.wav"
     },
     {
       "id": "FOSSLTIDE",
@@ -5768,7 +5786,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Gastrodon, it absorbed iron from the prehistoric seafloor to form a thick metallic shell. Its armored body could withstand crushing ocean currents and attacks from enormous predators.",
       "types": [
         "WATER",
         "STEEL"
@@ -5785,8 +5803,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.6,
+      "weight": 118.0,
       "sprites": {
         "footprint": {
           "path": "FOSSLTIDE/footprint.png",
@@ -6470,7 +6488,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/FOSSLTIDE.wav"
     },
     {
       "id": "JAGGEDMAW",
@@ -6480,7 +6500,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Cloyster, it lurked among submerged cliffs, disguising its jagged shell as stone. When prey approached, its enormous jaws snapped shut with enough force to crush solid rock.",
       "types": [
         "WATER",
         "ROCK"
@@ -6497,8 +6517,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.2,
+      "weight": 285.0,
       "sprites": {
         "footprint": {
           "path": "JAGGEDMAW/footprint.png",
@@ -7180,7 +7200,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/JAGGEDMAW.wav"
     },
     {
       "id": "MIASMIC",
@@ -7190,7 +7212,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Weezing, it drifted through toxic marshes while spewing a noxious yellow haze. Prey that inhaled its miasma grew weak and disoriented, making them easy targets for its vicious assault.",
       "types": [
         "POISON",
         "DARK"
@@ -7207,8 +7229,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.8,
+      "weight": 72.0,
       "sprites": {
         "footprint": {
           "path": "MIASMIC/footprint.png",
@@ -7837,7 +7859,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/MIASMIC.wav"
     },
     {
       "id": "MIRECREST",
@@ -7847,7 +7871,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Skuntank, it flares its towering mane to frighten rivals. It fights with deceptive lunges and crushing claw strikes, refusing to retreat even when outnumbered.",
       "types": [
         "DARK",
         "FIGHTING"
@@ -7864,8 +7888,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.5,
+      "weight": 74.0,
       "sprites": {
         "footprint": {
           "path": "MIRECREST/footprint.png",
@@ -8642,7 +8666,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/MIRECREST.wav"
     },
     {
       "id": "PHANTOMIRE",
@@ -8652,7 +8678,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Haunter, it prowled mist-covered marshes long before humans existed. Its spectral hands spread unnatural darkness, trapping unsuspecting prey in terrifying illusions.",
       "types": [
         "GHOST",
         "DARK"
@@ -8669,8 +8695,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.9,
+      "weight": 0.4,
       "sprites": {
         "footprint": {
           "path": "PHANTOMIRE/footprint.png",
@@ -9352,17 +9378,19 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/PHANTOMIRE.wav"
     },
     {
       "id": "PRIAMALGONG",
       "fileId": "PRIAMALGONG",
-      "name": "priamalgong",
+      "name": "Frost Plume",
       "sourceId": "bd252555-b336-4fee-a644-f15509e9b922",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Dewgong, it glided beneath polar ice on featherlike fins. Its icy breath froze seawater into sharp crystals, driving away even the fiercest predators.",
       "types": [
         "ICE",
         "DRAGON"
@@ -9379,8 +9407,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.3,
+      "weight": 148.0,
       "sprites": {
         "footprint": {
           "path": "PRIAMALGONG/footprint.png",
@@ -10008,17 +10036,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "priamalgong"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIAMALGONG.wav"
     },
     {
       "id": "PRIMALCATERPIE",
       "fileId": "PRIMALCATERPIE",
-      "name": "primal caterpie",
+      "name": "Spined Wyrm",
       "sourceId": "f8ab17ef-cea9-4e9e-a74a-1fc629441de3",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Caterpie, it charged larger predators with its dragonlike horns. Its armored segments and sharp spines made it a fearsome forest dweller.",
       "types": [
         "BUG",
         "DRAGON"
@@ -10035,8 +10068,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.2,
+      "weight": 24.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALCATERPIE/footprint.png",
@@ -10735,17 +10768,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primal caterpie"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALCATERPIE.wav"
     },
     {
       "id": "PRIMALDRENAW",
       "fileId": "PRIMALDRENAW",
-      "name": "primal drenaw",
+      "name": "Tidal Tyrant",
       "sourceId": "3455a6e3-ba2d-4164-9d61-6b15a978c340",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Drednaw, it stalked prehistoric seas beneath a jagged, armored shell. Its crushing jaws could drag even massive prey into the depths.",
       "types": [
         "WATER",
         "DRAGON"
@@ -10762,8 +10800,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.8,
+      "weight": 310.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALDRENAW/footprint.png",
@@ -11446,17 +11484,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primal drenaw"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALDRENAW.wav"
     },
     {
       "id": "PRIMALNOTIC",
       "fileId": "PRIMALNOTIC",
-      "name": "primal notic",
+      "name": "Witchcap Haze",
       "sourceId": "54a9dd87-f6c4-44d2-9c18-5ee84a4d05a9",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Shiinotic, it lures wanderers beneath its glowing cap. The spores it sheds cause vivid hallucinations before slowly numbing the body.",
       "types": [
         "FAIRY",
         "POISON"
@@ -11473,8 +11516,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.7,
+      "weight": 28.0,
       "sprites": {
         "footprint": null,
         "icon": null,
@@ -12020,17 +12063,21 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primal notic"
+      ],
+      "presentationApproved": true
     },
     {
       "id": "PRIMALPUNNY",
       "fileId": "PRIMALPUNNY",
-      "name": "primal punny",
+      "name": "Burrow Brawler",
       "sourceId": "88a09b87-9dda-4150-929e-7b4c30d7e929",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Lopunny, it carved deep burrows with its powerful hind legs. Its devastating kicks could crack the ground beneath charging predators.",
       "types": [
         "GROUND",
         "FIGHTING"
@@ -12047,8 +12094,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.6,
+      "weight": 62.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALPUNNY/footprint.png",
@@ -12752,17 +12799,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primal punny"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALPUNNY.wav"
     },
     {
       "id": "PRIMALTROPICAL",
       "fileId": "PRIMALTROPICAL",
-      "name": "primal tropical",
+      "name": "Canopy Titan",
       "sourceId": "be30a02e-aeaa-4db5-86e3-ea7d3fe3a88e",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Tropius, it carried enormous leaflike wings above its back. Its long neck reached fruit growing far beyond the reach of other Pokémon.",
       "types": [
         "GRASS",
         "DRAGON"
@@ -12779,8 +12831,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 3.2,
+      "weight": 240.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALTROPICAL/footprint.png",
@@ -13453,17 +13505,21 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primal tropical"
+      ],
+      "presentationApproved": true
     },
     {
       "id": "PRIMALDUURR",
       "fileId": "PRIMALDUURR",
-      "name": "primalduurr",
+      "name": "Timber Maul",
       "sourceId": "3baf815b-ac54-4f90-a78b-4ef2d2661b2c",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Conkeldurr, it uprooted whole trees to wield as clubs. Its mighty blows left deep fractures across the earth.",
       "types": [
         "FIGHTING",
         "GROUND"
@@ -13480,8 +13536,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.1,
+      "weight": 185.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALDUURR/footprint.png",
@@ -14156,17 +14212,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalduurr"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALDUURR.wav"
     },
     {
       "id": "PRIMALGEOT",
       "fileId": "PRIMALGEOT",
-      "name": "primalgeot",
+      "name": "Tempest Talon",
       "sourceId": "9a843a69-ec48-4531-a6e8-3edf23fce6ad",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Pidgeot, it challenged rivals with ferocious aerial dives. Its powerful talons could knock even large Pokémon out of the sky.",
       "types": [
         "FLYING",
         "FIGHTING"
@@ -14183,8 +14244,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.1,
+      "weight": 61.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALGEOT/footprint.png",
@@ -14855,17 +14916,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalgeot"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALGEOT.wav"
     },
     {
       "id": "PRIMALKORCH",
       "fileId": "PRIMALKORCH",
-      "name": "primalkorch",
+      "name": "Cinder Coil",
       "sourceId": "49f65d2c-45db-4a9e-a99e-63b7a4ec3cb9",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Centiskorch, it guarded volcanic tunnels with its armored coils. Its glowing plates radiated enough heat to drive away predators.",
       "types": [
         "BUG",
         "DRAGON"
@@ -14882,8 +14948,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 4.2,
+      "weight": 180.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALKORCH/footprint.png",
@@ -15530,17 +15596,21 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalkorch"
+      ],
+      "presentationApproved": true
     },
     {
       "id": "PRIMALMOTH",
       "fileId": "PRIMALMOTH",
-      "name": "primalmoth",
+      "name": "Rime Shroud",
       "sourceId": "2562cd11-5c8e-4284-940b-baec56c19202",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Venomoth, it drifted through frozen forests, scattering icy scales that numbed anything they touched. Its powder lingered in the frigid air for hours.",
       "types": [
         "BUG",
         "ICE"
@@ -15557,8 +15627,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.8,
+      "weight": 21.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALMOTH/footprint.png",
@@ -16157,17 +16227,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalmoth"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALMOTH.wav"
     },
     {
       "id": "PRIMALMUK",
       "fileId": "PRIMALMUK",
-      "name": "primalmuk",
+      "name": "Tar Chasm",
       "sourceId": "b90d264b-5a9d-4e1a-9300-6ff77697765b",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Muk, it lurked in primeval tar pits, its sludge thick with bones and sediment. Prey pulled into its gaping maw rarely escaped.",
       "types": [
         "POISON",
         "GROUND"
@@ -16184,8 +16259,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.0,
+      "weight": 180.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALMUK/footprint.png",
@@ -16914,17 +16989,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalmuk"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALMUK.wav"
     },
     {
       "id": "PRIMALSEAKING",
       "fileId": "PRIMALSEAKING",
-      "name": "primalseaking",
+      "name": "Venom Crown",
       "sourceId": "db44648c-3125-45ab-b716-b59647607837",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Seaking, it spread its venomous fins like a crown to warn predators. A single prick from its spines could paralyze even larger foes.",
       "types": [
         "WATER",
         "POISON"
@@ -16941,8 +17021,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.8,
+      "weight": 67.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALSEAKING/footprint.png",
@@ -17622,17 +17702,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalseaking"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALSEAKING.wav"
     },
     {
       "id": "PRIMALSECT",
       "fileId": "PRIMALSECT",
-      "name": "primalsect",
+      "name": "Spore Rampart",
       "sourceId": "5b2a7d15-9ac5-4276-a9e7-e7b22f53304c",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Parasect, it grew jagged, stone-hard fungal plates across its back. It used its massive claws to defend the spore colonies beneath its shell.",
       "types": [
         "GRASS",
         "ROCK"
@@ -17649,8 +17734,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.7,
+      "weight": 132.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALSECT/footprint.png",
@@ -18355,17 +18440,22 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalsect"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALSECT.wav"
     },
     {
       "id": "PRIMALVIPER",
       "fileId": "PRIMALVIPER",
-      "name": "primalviper",
+      "name": "Venom Scythe",
       "sourceId": "8654582e-2019-457d-9f9c-3920daa822dd",
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Seviper, it hunted through primeval jungles using its scythe-shaped tail. Venom seeping from the blade could weaken even towering predators.",
       "types": [
         "POISON",
         "DRAGON"
@@ -18382,8 +18472,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 4.2,
+      "weight": 92.0,
       "sprites": {
         "footprint": {
           "path": "PRIMALVIPER/footprint.png",
@@ -19102,7 +19192,12 @@
           }
         ],
         "egg": []
-      }
+      },
+      "previousNames": [
+        "primalviper"
+      ],
+      "presentationApproved": true,
+      "cry": "cries/PRIMALVIPER.wav"
     },
     {
       "id": "PRIMATIZER",
@@ -19112,7 +19207,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "Its massive, stone-plated claw fires bursts of pressurized water strong enough to shatter coral. It ambushes prey among ancient reefs.",
       "types": [
         "WATER",
         "ROCK"
@@ -19129,8 +19224,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.2,
+      "weight": 135.0,
       "sprites": {
         "footprint": {
           "path": "PRIMATIZER/footprint.png",
@@ -19668,7 +19763,9 @@
         ],
         "tutor": [],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/PRIMATIZER.wav"
     },
     {
       "id": "RAMPAGEHORN",
@@ -20500,7 +20597,8 @@
           }
         ],
         "egg": []
-      }
+      },
+      "cry": "cries/RAMPAGEHORN.wav"
     },
     {
       "id": "RAVENOUSCREST",
@@ -21257,7 +21355,8 @@
           }
         ],
         "egg": []
-      }
+      },
+      "cry": "cries/RAVENOUSCREST.wav"
     },
     {
       "id": "RAZORCARAPACE",
@@ -22012,7 +22111,8 @@
           }
         ],
         "egg": []
-      }
+      },
+      "cry": "cries/RAZORCARAPACE.wav"
     },
     {
       "id": "SAVEGEJOWL",
@@ -22819,7 +22919,8 @@
           }
         ],
         "egg": []
-      }
+      },
+      "cry": "cries/SAVEGEJOWL.wav"
     },
     {
       "id": "SCORCHMANE",
@@ -22829,7 +22930,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Rapidash, it galloped across volcanic plains with a mane crackling with electricity. Its blazing hooves left trails of fire wherever it ran.",
       "types": [
         "FIRE",
         "ELECTRIC"
@@ -22846,8 +22947,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.1,
+      "weight": 140.0,
       "sprites": {
         "footprint": {
           "path": "SCORCHMANE/footprint.png",
@@ -23578,7 +23679,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/SCORCHMANE.wav"
     },
     {
       "id": "SCORIASHELL",
@@ -23588,7 +23691,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Magcargo, it crawled through volcanic craters with a shell of hardened scoria. Molten rock constantly seeped from the cracks in its body, scorching everything in its path.",
       "types": [
         "FIRE",
         "STEEL"
@@ -23605,8 +23708,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.4,
+      "weight": 190.0,
       "sprites": {
         "footprint": {
           "path": "SCORIASHELL/footprint.png",
@@ -24239,7 +24342,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/SCORIASHELL.wav"
     },
     {
       "id": "THORNBASTION",
@@ -24934,7 +25039,8 @@
           }
         ],
         "egg": []
-      }
+      },
+      "cry": "cries/THORNBASTION.wav"
     },
     {
       "id": "TITANBALEEN",
@@ -24944,7 +25050,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Wailord, it crossed prehistoric seas in metallic armor. Its tough baleen strained whole shoals of fish, while its dorsal spines repelled predators.",
       "types": [
         "WATER",
         "STEEL"
@@ -24961,8 +25067,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 17.0,
+      "weight": 1250.0,
       "sprites": {
         "footprint": {
           "path": "TITANBALEEN/footprint.png",
@@ -25539,7 +25645,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/TITANBALEEN.wav"
     },
     {
       "id": "WOOLYSTING",
@@ -25549,7 +25657,7 @@
       "category": "past_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An ancient relative of Gliscor, it glided between icy cliffs with thick fur shielding it from the cold. It used its powerful pincers and hooked tail to repel rivals.",
       "types": [
         "FLYING",
         "FIGHTING"
@@ -25566,8 +25674,8 @@
       "abilities": [
         "PROTOSYNTHESIS"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.3,
+      "weight": 76.0,
       "sprites": {
         "footprint": {
           "path": "WOOLYSTING/footprint.png",
@@ -26330,7 +26438,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/WOOLYSTING.wav"
     },
     {
       "id": "IRONCRAWLER",
@@ -26340,7 +26450,7 @@
       "category": "future_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "A futuristic relative of Wimpod, it scuttles across polluted shores. Its glowing sensors detect toxins, which it absorbs and releases as a defensive mist.",
       "types": [
         "BUG",
         "POISON"
@@ -26357,8 +26467,8 @@
       "abilities": [
         "QUARKDRIVE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 0.8,
+      "weight": 22.0,
       "sprites": {
         "footprint": {
           "path": "IRONCRAWLER/footprint.png",
@@ -26986,7 +27096,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/IRONCRAWLER.wav"
     },
     {
       "id": "IRONCRUSHER",
@@ -26996,7 +27108,7 @@
       "category": "future_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "A futuristic relative of Kingler, it patrols the seafloor with hydraulic claws. Its oversized pincer can crush the metal hulls of sunken vessels.",
       "types": [
         "WATER",
         "STEEL"
@@ -27013,8 +27125,8 @@
       "abilities": [
         "QUARKDRIVE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.9,
+      "weight": 210.0,
       "sprites": {
         "footprint": {
           "path": "IRONCRUSHER/footprint.png",
@@ -27695,7 +27807,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/IRONCRUSHER.wav"
     },
     {
       "id": "IRONFEASTER",
@@ -27705,7 +27819,7 @@
       "category": "future_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "A futuristic relative of Snorlax, it devours scrap metal to charge the reactor in its belly. Once fully powered, it enters a deep, motionless sleep.",
       "types": [
         "NORMAL",
         "STEEL"
@@ -27722,8 +27836,8 @@
       "abilities": [
         "QUARKDRIVE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 2.4,
+      "weight": 850.0,
       "sprites": {
         "footprint": {
           "path": "IRONFEASTER/footprint.png",
@@ -28525,7 +28639,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/IRONFEASTER.wav"
     },
     {
       "id": "IRONINVERNOSE",
@@ -28535,7 +28651,7 @@
       "category": "future_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "A futuristic relative of Centiskorch, it slithers through industrial tunnels with a body heated like a furnace. The vents along its armor release bursts of flame to melt obstacles in its path.",
       "types": [
         "FIRE",
         "STEEL"
@@ -28552,8 +28668,8 @@
       "abilities": [
         "QUARKDRIVE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 3.8,
+      "weight": 145.0,
       "sprites": {
         "footprint": {
           "path": "IRONINVERNOSE/footprint.png",
@@ -29221,7 +29337,8 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true
     },
     {
       "id": "IRONLEPORIS",
@@ -29231,7 +29348,7 @@
       "category": "future_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "A futuristic relative of Lopunny, it stores electricity in its powerful limbs to unleash explosive jumps. Its blade-like ears and charged kicks can disable foes in an instant.",
       "types": [
         "NORMAL",
         "ELECTRIC"
@@ -29248,8 +29365,8 @@
       "abilities": [
         "QUARKDRIVE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.7,
+      "weight": 48.0,
       "sprites": {
         "footprint": {
           "path": "IRONLEPORIS/footprint.png",
@@ -30019,7 +30136,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/IRONLEPORIS.wav"
     },
     {
       "id": "IRONMAELTROM",
@@ -30029,7 +30148,7 @@
       "category": "future_paradox",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "A futuristic relative of Gyarados, it uses turbines along its armored body to fly over raging seas. The violent air currents it creates can capsize ships.",
       "types": [
         "FLYING",
         "STEEL"
@@ -30046,8 +30165,8 @@
       "abilities": [
         "QUARKDRIVE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 7.5,
+      "weight": 620.0,
       "sprites": {
         "footprint": {
           "path": "IRONMAELTROM/footprint.png",
@@ -30852,7 +30971,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/IRONMAELTROM.wav"
     },
     {
       "id": "IRONMATRIARCH",
@@ -35172,7 +35293,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "After decades on tropical beaches, this evolution of Exeggutor stores solar energy in its coconuts. It uses sun-powered moves even beneath storm clouds.",
       "types": [
         "GRASS",
         "PSYCHIC"
@@ -35190,8 +35311,8 @@
         "HARVEST",
         "MEGASOL"
       ],
-      "height": null,
-      "weight": null,
+      "height": 3.2,
+      "weight": 185.0,
       "sprites": {
         "footprint": {
           "path": "ARCHGUTOR/footprint.png",
@@ -35763,7 +35884,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/ARCHGUTOR.wav"
     },
     {
       "id": "DYNAMOTRODE",
@@ -35773,7 +35896,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An evolution of Electrode resembling a Fast Ball, it propels itself with electromagnetic bursts. It rolls so quickly that sparks trail behind it.",
       "types": [
         "ELECTRIC",
         "STEEL"
@@ -35792,8 +35915,8 @@
         "INNARDSOUT",
         "TRANSISTOR"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.4,
+      "weight": 118.0,
       "sprites": {
         "footprint": {
           "path": "DYNAMOTRODE/footprint.png",
@@ -36315,7 +36438,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/DYNAMOTRODE.wav"
     },
     {
       "id": "MAGNETRIX",
@@ -36325,7 +36450,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An alternate evolution of Magneton, it spins four powerful magnets around its core to build immense electrical pressure. It can electrify the ground or propel itself through the air at incredible speed.",
       "types": [
         "STEEL",
         "ELECTRIC"
@@ -36343,8 +36468,8 @@
         "LEVITATE",
         "ELECTRICSURGE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.3,
+      "weight": 82.0,
       "sprites": {
         "footprint": {
           "path": "MAGNETRIX/footprint.png",
@@ -36869,7 +36994,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/MAGNETRIX.wav"
     },
     {
       "id": "MAGISCALE",
@@ -36879,7 +37006,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "An alternate evolution of Magikarp, it reads ocean currents through its golden whiskers. With a pulse of its mind, it blankets the battlefield in psychic energy.",
       "types": [
         "WATER",
         "PSYCHIC"
@@ -36897,8 +37024,8 @@
         "MAGICBOUNCE",
         "PSYCHICSURGE"
       ],
-      "height": null,
-      "weight": null,
+      "height": 5.4,
+      "weight": 128.0,
       "sprites": {
         "footprint": {
           "path": "MAGISCALE/footprint.png",
@@ -37421,7 +37548,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/MAGISCALE.wav"
     },
     {
       "id": "AMMNOID",
@@ -37431,7 +37560,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "After exposure to a Dusk Stone, Omanyte evolves into Ammnoid. Its gold-banded shell amplifies psychic pulses that reveal movement across the dark seafloor.",
       "types": [
         "ROCK",
         "PSYCHIC"
@@ -37449,8 +37578,8 @@
         "FILTER",
         "WEAKARMOR"
       ],
-      "height": null,
-      "weight": null,
+      "height": 0.9,
+      "weight": 31.0,
       "sprites": {
         "footprint": {
           "path": "AMMNOID/footprint.png",
@@ -38041,7 +38170,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/AMMNOID.wav"
     },
     {
       "id": "CEPHALONID",
@@ -38051,7 +38182,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "Its horned shell stores immense psychic energy. When the blue gem on its crown flashes, Cephalonid can bend deep-sea currents and repel predators without touching them.",
       "types": [
         "ROCK",
         "PSYCHIC"
@@ -38069,8 +38200,8 @@
         "FILTER",
         "WEAKARMOR"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.7,
+      "weight": 110.0,
       "sprites": {
         "footprint": {
           "path": "CEPHALONID/footprint.png",
@@ -38721,7 +38852,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/CEPHALONID.wav"
     },
     {
       "id": "STUNDRIFT",
@@ -38731,7 +38864,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "Buried deep beneath the seabed, it absorbs energy from rushing water and shifting earth. Its golden markings glow before it releases a powerful electric shock.",
       "types": [
         "GROUND",
         "ELECTRIC"
@@ -38749,8 +38882,8 @@
         "WATERABSORB",
         "EARTHEATER"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.2,
+      "weight": 36.0,
       "sprites": {
         "footprint": {
           "path": "STUNDRIFT/footprint.png",
@@ -39334,7 +39467,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/STUNDRIFT.wav"
     },
     {
       "id": "SWADLOADNE",
@@ -39344,7 +39479,7 @@
       "category": "new_evolution",
       "generation": "dessastre-paradoxal",
       "generationLabel": "Dessastre Paradoxal",
-      "description": "????",
+      "description": "After evolving with a Leaf Stone, it guards its forest beneath overlapping leaf shields. Thick inner padding protects it from heat and cold, while its armor covers vulnerable spots.",
       "types": [
         "GRASS",
         "BUG"
@@ -39362,8 +39497,8 @@
         "SHELLARMOR",
         "THICKFAT"
       ],
-      "height": null,
-      "weight": null,
+      "height": 1.1,
+      "weight": 42.0,
       "sprites": {
         "footprint": {
           "path": "SWADLOADNE/footprint.png",
@@ -39962,7 +40097,9 @@
           }
         ],
         "egg": []
-      }
+      },
+      "presentationApproved": true,
+      "cry": "cries/SWADLOADNE.wav"
     },
     {
       "id": "TENTACRUEL,1",
@@ -40370,7 +40507,8 @@
             "name": "Tickle"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPTENTACRUELITE.png"
     },
     {
       "id": "SUNFLORA,1",
@@ -40800,7 +40938,8 @@
             "name": "Grassy Terrain"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPSUNFLORAITE.png"
     },
     {
       "id": "ARBOK,1",
@@ -41256,7 +41395,8 @@
             "name": "Snatch"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPARBOKITE.png"
     },
     {
       "id": "FEAROW,1",
@@ -41629,7 +41769,8 @@
             "name": "Razor Wind"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPFEAROWITE.png"
     },
     {
       "id": "HYPNO,1",
@@ -42131,7 +42272,8 @@
             "name": "Psychic Terrain"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPHYPNOITE.png"
     },
     {
       "id": "KABUTOPS,1",
@@ -42598,7 +42740,8 @@
             "name": "Take Down"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPKABUTOPSITE.png"
     },
     {
       "id": "LEDIAN,1",
@@ -43049,7 +43192,8 @@
             "name": "Counter"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPLEDIANITE.png"
     },
     {
       "id": "LUDICOLO,1",
@@ -43448,7 +43592,8 @@
             "name": "Teeter Dance"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPLUDICOLOITE.png"
     },
     {
       "id": "MILTANK,1",
@@ -43889,7 +44034,8 @@
             "name": "Belch"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPMILTANKITE.png"
     },
     {
       "id": "PURUGLY,1",
@@ -44292,7 +44438,8 @@
             "name": "Wake-Up Slap"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPPURUGLYITE.png"
     },
     {
       "id": "VILEPLUME,1",
@@ -44632,7 +44779,8 @@
             "name": "Leech Seed"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPVILEPLUMEITE.png"
     },
     {
       "id": "WALREIN,1",
@@ -45059,7 +45207,10 @@
             "name": "Belly Drum"
           }
         ]
-      }
+      },
+      "megaStoneSprite": "items/DPWALREINITE.png"
     }
-  ]
+  ],
+  "presentationSource": "site/public/data/pokedex-approved.json",
+  "nameSource": "docs/Pokedex_Descricoes_Dessastre_Paradoxal.md"
 }

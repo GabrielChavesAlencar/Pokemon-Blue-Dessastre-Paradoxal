@@ -151,3 +151,8 @@
 .area-region-photo figcaption a{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#93c5fa;text-decoration:underline;text-underline-offset:3px}
 .area-region-photo figcaption a .icon{width:13px;height:13px}
 @media (max-width:620px){.region-map--focused:not(.mini),.region-map--missing:not(.mini),.region-map--local:not(.mini){height:265px}.region-map--missing .region-map-missing-name{font-size:23px}}
+/* Recursos autorais de áudio e Mega Stones. */
+.cry-player{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:20px 0;color:var(--muted)}
+.cry-player>span{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.cry-player audio{width:min(100%,300px);height:38px}
+.mega-stone-art{object-fit:contain;image-rendering:pixelated;vertical-align:middle;flex-shrink:0}

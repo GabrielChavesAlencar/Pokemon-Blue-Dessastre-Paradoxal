@@ -51,7 +51,7 @@ async function ready(url, child) {
   let browser;
   try {
     await ready(url, child);
-    browser = await chromium.launch({headless:true});
+    browser = await chromium.launch({headless:true,...(process.env.BROWSER_EXECUTABLE_PATH?{executablePath:process.env.BROWSER_EXECUTABLE_PATH}:{})});
     const page = await browser.newPage({viewport:{width:1440,height:900}});
     const errors = [];
     page.on("pageerror", error => errors.push(String(error)));

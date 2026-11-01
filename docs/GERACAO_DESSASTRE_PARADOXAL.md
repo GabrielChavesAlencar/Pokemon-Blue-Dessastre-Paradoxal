@@ -1,6 +1,6 @@
 # Geração Dessastre Paradoxal
 
-A geração autoral é identificada pelo nome **Dessastre Paradoxal**, sem substituir as gerações oficiais. Foram importados **59 Pokémon novos** e **12 Mega Evoluções** da [Fan Dex do autor](https://radical-red-compendium.vercel.app/#fan-dex), com os 59 learnsets por nível conferidos contra `Pokedex_Paradoxos_Learnsets_Mestre.md`. As descrições da Pokédex começam em **`????`**.
+A geração autoral é identificada pelo nome **Dessastre Paradoxal**, sem substituir as gerações oficiais. Foram importados **59 Pokémon novos** e **12 Mega Evoluções** da [Fan Dex do autor](https://radical-red-compendium.vercel.app/#fan-dex), com os 59 learnsets por nível conferidos contra `Pokedex_Paradoxos_Learnsets_Mestre.md`. As **47 descrições e medidas aprovadas** estão aplicadas ao jogo e ao portal; as outras 12 continuam com descrição **`????`**.
 
 ## O que está disponível
 
@@ -10,7 +10,11 @@ A geração autoral é identificada pelo nome **Dessastre Paradoxal**, sem subst
 | 12 Megas autorais | Cartões próprios no filtro da geração e seleção de forma na ficha-base | Formas reais, cada uma com sua pedra DP |
 | 7 espécies sem atributos definidos | Fichas e learnsets, atributos `????`, aviso de pendência | Não registradas no catálogo de batalha |
 
-Os sete pendentes são **Horsand, Spinedra, Stingdra, Gillble, Galbite, Garcholt e primal notic**. Seus zeros da origem são campos não definidos, não atributos de combate. Nenhum atributo foi inventado para liberá-los. Primal notic possui arte conceitual na origem, mas ainda não possui os sete sprites; o portal identifica essa arte.
+Os sete pendentes são **Horsand, Spinedra, Stingdra, Gillble, Galbite, Garcholt e Witchcap Haze**. Seus zeros da origem são campos não definidos, não atributos de combate. Nenhum atributo foi inventado para liberá-los. Witchcap Haze possui arte conceitual na origem, mas ainda não possui os sete sprites; o portal identifica essa arte. Sua descrição aprovada não libera o cadastro para batalha.
+
+Os 14 nomes que continham Primal foram substituídos pelos nomes aprovados no [documento de descrições](Pokedex_Descricoes_Dessastre_Paradoxal.md). Os IDs internos continuam estáveis para preservar referências, evoluções e equipes. Primatizer mantém seu nome próprio.
+
+Foram aplicados **48 cries WAV** e **12 ícones de Mega Stones**, sem alterar seus bytes. Os PNGs das pedras têm 64×64 e são aceitos pelo ícone estático da engine. O portal mostra o áudio disponível nas fichas e a pedra nas formas Mega. Ainda não foram fornecidos cries para **Canopy Titan, Cinder Coil, Iron Invernose e Iron Matriarch**. Megas mantêm o cry de sua espécie-base. A lista e os hashes estão em `data/fan-assets.json`; o pacote autoral é `site/assets/fan-extras.tar.gz`.
 
 ## Testar agora
 
@@ -18,13 +22,13 @@ Abra **`TESTAR_BATALHA.bat`** na pasta principal. Com a geração instalada, o l
 
 O laboratório permite mudar nível, golpes, habilidade e item equipado. Para testar Mega Sol, escolha Archgutor e selecione essa habilidade. Para ativar uma Mega durante a batalha, escolha a espécie-base e equipe sua pedra DP — por exemplo, **Arbokita DP**. O laboratório fornece um Mega Ring temporário. Também é possível selecionar uma forma Mega diretamente no catálogo.
 
-A sessão não carrega nem grava a campanha. Espécies novas não foram colocadas automaticamente em encontros selvagens: as rotas previstas para Radical Red não equivalem aos mapas da campanha Decades.
+A sessão não carrega nem grava a campanha. Na campanha, os **37 Paradoxos do passado disponíveis** foram colocados junto aos oficiais na **Prehistoric Grotto (mapa 156)**; os **7 do futuro**, na **Futuristic Grotto (mapa 157)**. Witchcap Haze permanece excluído. A configuração é `data/fan-encounters.json`: 50% da chance total fica com o grupo autoral e 50% com as espécies originais, preservando a proporção relativa dos encontros existentes dentro da precisão inteira dos pesos. Os níveis e a frequência da tabela terrestre foram mantidos; outros métodos e áreas não mudam. Todos os originais continuam presentes, inclusive Delibird. O portal publica esses encontros.
 
 ## Mega Sol
 
 A habilidade foi implementada conforme a [definição fornecida pelo autor](https://pokemondb.net/ability/mega-sol): os **golpes do portador** consideram sol, sem alterar o clima do campo ou beneficiar os demais Pokémon. Isso inclui Solar Beam sem turno de carregamento e os multiplicadores de sol usados pela engine. Um golpe de Fogo recebido não recebe bônus causado por Mega Sol. A habilidade respeita supressão, e o contexto é restaurado ao terminar o movimento.
 
-A verificação no runtime testa esses efeitos com as classes de batalha carregadas, além de atributos, tipos, descrições, pedras Mega, elegibilidade de Mega Arbok e conexões evolutivas. O relatório fica em `game/Data/blue-generation-validation.txt`; a última linha deve ser `RESULT=PASS`.
+A verificação no runtime testa esses efeitos com as classes de batalha carregadas, além de atributos, tipos, nomes, descrições, medidas, resolução dos 48 cries, ícones das 12 pedras, elegibilidade de Mega Arbok, conexões evolutivas e encontros compilados. Usa os métodos reais de evolução por item e nível, incluindo os limites 41/42 de Ammnoid e 46/47 de Stunfisk. O relatório fica em `game/Data/blue-generation-validation.txt`; a última linha deve ser `RESULT=PASS`.
 
 ## Evoluções
 

@@ -111,10 +111,15 @@ def export(game,output):
             key=entry['id'];mega=bool(entry.get('base'));record=details.get(key,{})
             flags=['DessastreParadoxal']+(['Paradox'] if 'paradox' in entry['category'] else [])+(['MegaEvolution'] if mega else [])
             url=lambda role:('/assets/fan-pokemon/'+entry['sprites'][role]['path']) if entry['sprites'].get(role) else None
-            meta={'id':key,'name':entry['name'],'types':entry['types'],'stats':entry['stats'],'generation':'dessastre-paradoxal','generationLabel':'Dessastre Paradoxal','flags':flags,'pending':entry['pending'],'description':'????','art':url('front'),'artKind':(entry['sprites'].get('front') or {}).get('kind','sprite'),'sprite':url('front'),'sprites':{role:url(role) for role in entry['sprites']},'height':None,'weight':None,'category':entry['category']}
+            extra_url=lambda field:('/assets/fan-extras/'+entry[field]) if entry.get(field) else None
+            meta={'id':key,'name':entry['name'],'types':entry['types'],'stats':entry['stats'],'generation':'dessastre-paradoxal','generationLabel':'Dessastre Paradoxal','flags':flags,'pending':entry['pending'],'description':entry.get('description','????'),'art':url('front'),'artKind':(entry['sprites'].get('front') or {}).get('kind','sprite'),'sprite':url('front'),'sprites':{role:url(role) for role in entry['sprites']},'height':entry.get('height'),'weight':entry.get('weight'),'category':entry['category'],'cry':extra_url('cry'),'megaStoneSprite':extra_url('megaStoneSprite'),'previousNames':entry.get('previousNames',[])}
             current=lookup.get(key)
             if current:
                 meta.update({'types':values(current.get('Types','')) or entry['types'],'stats':[int(n) for n in values(current.get('BaseStats',''))] or entry['stats'],'pending':False,'description':current.get('Pokedex','????')})
+                meta['name']=current.get('FormName' if mega else 'Name',entry['name'])
+                for field in ['height','weight']:
+                    raw=current.get(field.title())
+                    if raw and (entry.get(field) is not None or float(raw)!=1.0):meta[field]=float(raw)
             level=record.get('moves',[]) if current else [[m['level'],m['id']] for m in entry['learnset']['level']]
             tutor=list(dict.fromkeys(m['id'] for kind in ['tm','tutor'] for m in entry['learnset'][kind]))
             egg=list(dict.fromkeys(m['id'] for m in entry['learnset']['egg']))

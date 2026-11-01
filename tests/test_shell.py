@@ -50,7 +50,7 @@ class ShellRegression(unittest.TestCase):
     def test_scripts_and_css_exist(self):
         for f in ("style.css","studio-shell.css","app.js","sprites.js","pokemon.js","moves-editor.js","navigation.js"):
             self.assertTrue((ROOT/"web"/f).is_file())
-        self.assertEqual(self.dom.scripts,["/app.js","/sprites.js","/pokemon.js","/moves-editor.js","/navigation.js"])
+        self.assertEqual(self.dom.scripts,["/app.js","/sprites.js","/pokemon.js","/moves-editor.js","/music-editor.js","/navigation.js"])
         self.assertIn('href="/studio-shell.css"',HTML)
 
     def test_html_div_balanced(self):

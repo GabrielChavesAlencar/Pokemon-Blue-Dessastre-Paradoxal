@@ -27,6 +27,8 @@ jobs:
           node --check web/pokemon.js
           node --check web/moves-editor.js
           node --check web/navigation.js
+          node --check web/music-editor.js
+          node --check tests/browser_music_smoke.cjs
           node --check tests/browser_smoke.cjs
   smoke-browser:
     name: Navegacao real + salvamento PBS (Chromium)
@@ -45,7 +47,9 @@ jobs:
       - name: Instalar Chromium
         run: npx playwright install --with-deps chromium
       - name: Executar regressao ponta a ponta com dados temporarios
-        run: node tests/browser_smoke.cjs
+        run: |
+          node tests/browser_smoke.cjs
+          node tests/browser_music_smoke.cjs
       # Capturas ficam locais ao runner. O upload de artefatos foi removido
       # porque a conta GitHub atingiu sua cota de storage.
   windows-runner:

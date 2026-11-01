@@ -15,7 +15,7 @@
     "map": ["🗺️", "Mapas", "A edição de terrenos e eventos usa Game.rxproj / Data do RPG Maker XP.", "Implementar visualizador seguro de MapXXX.rxdata e editor de tiles em fase posterior.", "planejado"],
     "title-logo": ["🖼️", "Logo inicial", "Tela inicial e imagens do jogo são recursos locais do projeto Essentials.", "Encontrar recursos de título e adicionar importação com prévia e backup.", "planejado"],
     "title-flames": ["🔥", "Fundo animado", "No Decades não há a mesma animação binária de chamas do Radical Red.", "Criar um sistema de efeitos próprios (ex.: raios azuis) sem depender de offsets GBA.", "planejado"],
-    "music": ["🎵", "Músicas", "Arquivos de áudio são carregados pelos recursos locais do RPG Maker.", "Criar biblioteca de áudio com prévia, substituição e histórico de backup.", "planejado"],
+    "music": ["🎵", "Músicas", "Biblioteca de áudio com prévia e configuração de batalhas e cidades.", "Importe uma faixa ou escolha um destino para aplicar.", "music"],
     "midi-studio": ["🎹", "Estúdio MIDI", "A aba do Emerald Studio está representada na navegação.", "Implementar importação/exportação MIDI, instrumentos e testes de reprodução.", "planejado"],
     "test-lab": ["🧪", "Test Lab", "Os testes automáticos de software rodam no GitHub Actions; testes dentro do jogo ainda não estão integrados.", "Adicionar cenários de inicialização, captura, batalha e regressão do Essentials.", "planejado"],
     "hex": ["🔢", "Hexadecimal", "Offsets e patches de ROM GBA não se aplicam diretamente a RPG Maker XP.", "Criar inspetor somente leitura de arquivos e esquema de dados do Essentials.", "planejado"],
@@ -49,8 +49,11 @@
     if (!Object.prototype.hasOwnProperty.call(panels, which)) which = "pokemon";
     const data = panels[which];
     const file = data[5];
+    const musicAlreadyOpen = currentShell === "rom" && currentPanel === "music" &&
+      which === "music" && !byId("musicWorkspace").hidden;
     if (currentPanel === "pokemon-moves" && which !== "pokemon-moves" &&
         window.BluePokemonMoves && !window.BluePokemonMoves.canLeave()) return;
+    if (currentPanel === "music" && which !== "music" && window.BlueMusic && !window.BlueMusic.canLeave()) return;
     // When changing PBS files, never discard unsaved text without confirmation.
     if (file && typeof state !== "undefined" && state.raw !== state.original &&
         state.file !== file) {
@@ -69,11 +72,15 @@
     const movesWork = byId("movesWorkspace");
     const ready = data[4] === "pbs";
     const movesMode = which === "pokemon-moves";
+    const musicMode = which === "music";
     work.hidden = !ready;
     movesWork.hidden = !movesMode;
-    placeholder.hidden = ready || movesMode;
+    byId("musicWorkspace").hidden = !musicMode;
+    placeholder.hidden = ready || movesMode || musicMode;
     if (movesMode) {
       window.BluePokemonMoves?.open();
+    } else if (musicMode) {
+      if (!musicAlreadyOpen) window.BlueMusic?.open();
     } else if (!ready) {
       byId("featureIcon").textContent = data[0];
       byId("featureTitle").textContent = data[1];
@@ -101,6 +108,7 @@
   document.querySelectorAll("[data-shell]").forEach(button => button.addEventListener("click", () => {
     if (currentShell === "rom" && currentPanel === "pokemon-moves" && button.dataset.shell !== "rom" &&
         window.BluePokemonMoves && !window.BluePokemonMoves.canLeave()) return;
+    if (currentShell === "rom" && currentPanel === "music" && button.dataset.shell !== "rom" && window.BlueMusic && !window.BlueMusic.canLeave()) return;
     selectShell(button.dataset.shell, true);
   }));
   document.querySelectorAll("[data-panel]").forEach(button => button.addEventListener("click", () => selectPanel(button.dataset.panel, true)));

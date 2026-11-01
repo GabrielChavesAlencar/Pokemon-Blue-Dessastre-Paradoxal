@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "authorPoolPercent": 50,
+  "areas": [
+    {"mapId": 156, "name": "Prehistoric Grotto", "category": "past_paradox", "method": "Land"},
+    {"mapId": 157, "name": "Futuristic Grotto", "category": "future_paradox", "method": "Land"}
+  ],
+  "policy": "Preservar todas as especies originais e niveis. Dividir 50% entre originais e 50% entre Paradoxos autorais compilados. Pendentes nao entram nos encontros."
+}
