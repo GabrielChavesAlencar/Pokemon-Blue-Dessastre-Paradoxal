@@ -14,11 +14,21 @@ Não há acesso ao saldo de tokens/créditos da conta pelo ambiente do projeto. 
 | Raichu Mega Y | Offline atual | Raichu normal, Raichunite Y equipada, transformação disponível durante a batalha |
 | Todos no nível 50 | Offline atual | Editor sem campo de nível; importação, sessão carregada e equipes de batalha normalizadas |
 | Abertura e música | Atual | Iron Maeltrom, raios azuis animados, subtítulo Dessastre Paradoxal e faixa de Gym Leader já instalada |
-| PvP online | **Futuro** | Dois clientes independentes jogam uma batalha sincronizada, com seleção e tratamento de desconexão |
+| PvP online | **Preparação experimental iniciada; partidas futuras** | Dois clientes independentes jogam uma batalha sincronizada, com seleção e tratamento de desconexão |
 
 O Hub desta entrega é **offline contra a IA**. Não existe um botão que prometa PvP sem infraestrutura funcionando. As regras implementadas de duplas são as solicitadas: seis inscritos, quatro selecionados, dois em campo e nível 50. Isso não aplica automaticamente uma lista de banimentos de torneio oficial aos Pokémon autorais.
 
 ## PvP online: entregas futuras
+
+### Progresso da primeira etapa
+
+O [experimento isolado de online](ONLINE_EXPERIMENTAL.md) já implementa salas por código, identificação de versões, validação de equipes, seleção de quatro com prazo imposto pelo servidor, reconexão por token e cancelamento. A demonstração com dois clientes HTTP passou usando o catálogo real da instalação. O servidor ainda informa `battleAvailable: false`; o fluxo termina na preparação da sala, sem uma partida PvP.
+
+A prova opcional da engine conseguiu terminar batalhas automáticas individuais, uma dupla de quatro contra quatro e um caso com espécie autoral usando uma cena sem interface de batalha. Foram necessários adaptadores de apresentação para plugins que consultam sprites ou fecham diálogos mesmo sem animações. Esses adaptadores ficam somente no experimento; os plugins existentes não foram editados. O runtime Windows e a inicialização gráfica ainda são necessários. Controle dos turnos pelos dois jogadores e mecânicas especiais na execução sem interface continuam pendentes.
+
+Os arquivos principais do offline foram comparados com a main anterior, e as regressões existentes continuam sendo executadas. O plugin opcional é removido após a prova; o instalador e os atalhos normais não o instalam.
+
+### Trabalho restante
 
 1. **Provar a execução de uma batalha remota.** Definir um servidor que possa manter o estado de uma batalha da engine; avaliar um processo dedicado de Essentials sem interface de jogador. Verificar o suporte da engine antes de escolher hospedagem. O portal Vercel existente não fornece essa execução automaticamente. Se for necessário outro simulador, comparar suas mecânicas com as espécies e habilidades deste projeto antes de adotar uma alternativa.
 2. **Definir protocolo e validação.** Versionar regras, catálogo, Pokémon, golpes e habilidades. Validar times e comandos no servidor; detectar clientes com versões incompatíveis. Manter aleatoriedade e resultados sob autoridade do servidor, sem aceitar dano calculado por um cliente.
