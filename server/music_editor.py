@@ -6,8 +6,8 @@ from ruby_marshal import loads,dumps_simple,text,RubyObject
 
 ROOT=Path(__file__).resolve().parents[1]
 EXTENSIONS={'.wav':('audio/wav',True),'.ogg':('audio/ogg',True),'.mp3':('audio/mpeg',True),'.mid':('audio/midi',False),'.midi':('audio/midi',False)}
-GLOBALS={'wild':'Batalhas selvagens','trainer':'Batalhas contra treinadores','wildVictory':'Vitória selvagem','trainerVictory':'Vitória contra treinadores'}
-FIELDS={'wild':'WildBattleBGM','trainer':'TrainerBattleBGM','wildVictory':'WildVictoryBGM','trainerVictory':'TrainerVictoryBGM'}
+GLOBALS={'wild':'Batalhas selvagens','trainer':'Batalhas contra treinadores','gym':'Líderes de ginásio / Mestres de Tipo','wildVictory':'Vitória selvagem','trainerVictory':'Vitória contra treinadores'}
+FIELDS={'wild':'WildBattleBGM','trainer':'TrainerBattleBGM','gym':'GymBattleBGM','wildVictory':'WildVictoryBGM','trainerVictory':'TrainerVictoryBGM'}
 LIMIT=20_000_000
 
 class MusicError(Exception):
@@ -51,13 +51,17 @@ def metadata(game):
 
 def catalog(game):
     value,digest=config(game);base=game_file(game,'Audio/BGM');tracks=[]
+    labels={};reference=game_file(game,'Data/blue-music-playlists.json')
+    if reference.is_file():
+        for pool in json.loads(reference.read_text(encoding='utf8')).get('categories',{}).values():
+            for track in pool:labels[track['file']]=track['title']
     if base.is_dir():
         for path in base.rglob('*'):
             if not path.is_file() or path.suffix.lower() not in EXTENSIONS:continue
             name=path.relative_to(base).as_posix()
             try:track_path(game,name)
             except MusicError:continue
-            tracks.append({'id':name,'name':path.stem,'size':path.stat().st_size,'preview':EXTENSIONS[path.suffix.lower()][1]})
+            tracks.append({'id':name,'name':labels.get(name,path.stem),'size':path.stat().st_size,'preview':EXTENSIONS[path.suffix.lower()][1]})
     info={};mapinfo=game_file(game,'Data/MapInfos.rxdata')
     if mapinfo.is_file():
         parsed=loads(mapinfo.read_bytes())
@@ -108,29 +112,35 @@ def transaction(game,backups,plans,atomic_write,backup_file):
 def save_assignment(game,backups,obj,*,lock,atomic_write,backup_file):
     key=target_key(game,obj.get('scope'),obj.get('target'))
     mode=obj.get('mode','custom')
-    if mode not in ('original','custom','mute'):raise MusicError('Modo de música inválido.')
+    if mode not in ('original','custom','mute','random'):raise MusicError('Modo de música inválido.')
     volume=obj.get('volume',100);pitch=obj.get('pitch',100)
     if type(volume) is not int or not 0<=volume<=100 or type(pitch) is not int or not 50<=pitch<=150:raise MusicError('Volume ou velocidade inválidos.')
     name=obj.get('track','')
     if mode=='custom':track_path(game,name)
     selected={'mode':mode,'track':name if mode=='custom' else '', 'volume':volume,'pitch':pitch}
+    if mode=='random':
+        if obj['scope']!='global' or key not in ('wild','trainer','gym'):raise MusicError('Sorteio disponível para selvagens, treinadores e líderes.')
+        tracks=obj.get('tracks')
+        if not isinstance(tracks,list) or not 1<=len(tracks)<=256:raise MusicError('Escolha de 1 a 256 faixas para o sorteio.')
+        for track in tracks:track_path(game,track)
+        selected['tracks']=list(dict.fromkeys(tracks))
     with lock:
         value,digest=config(game)
         if obj.get('hash')!=digest:raise MusicError('As músicas foram alteradas. Atualize antes de salvar.',409)
         section=value['maps' if obj['scope']=='map' else 'global']
         if mode=='original':section.pop(key,None)
         else:section[key]=selected
-        rows=lambda source:[[k,v['mode'],v['track'],v['volume'],v['pitch']] for k,v in sorted(source.items())]
+        rows=lambda source:[[k,v['mode'],v.get('tracks',[]) if v['mode']=='random' else v['track'],v['volume'],v['pitch']] for k,v in sorted(source.items())]
         raw=(json.dumps(value,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode('utf8')
         plans={game_file(game,'Data/blue-music.json'):raw,game_file(game,'Data/blue-music.rxdata'):dumps_simple([1,rows(value['global']),rows(value['maps'])])}
-        for file in ['BlueMusic.rb','meta.txt']:
+        for file in ['BlueMusic.rb','RandomValidation.rb','meta.txt']:
             plans[game_file(game,'Plugins/ZZZZ Blue Music/'+file)]=(ROOT/'scripts/music'/file).read_bytes()
         plans={p:b for p,b in plans.items() if not p.is_file() or p.read_bytes()!=b}
         transaction(game,backups,plans,atomic_write,backup_file)
     return {'ok':True,'hash':sha(raw),'value':None if mode=='original' else selected,'message':'Música salva. Reabra o jogo para aplicar a configuração atual.'}
 
-def validate_audio(raw,extension):
-    if not raw or len(raw)>LIMIT:raise MusicError('Áudio vazio ou maior que 20 MB.',413)
+def validate_audio(raw,extension,max_size=LIMIT):
+    if not raw or len(raw)>max_size:raise MusicError('Áudio vazio ou maior que o limite permitido.',413)
     try:
         if extension=='.wav':
             with wave.open(io.BytesIO(raw),'rb') as sound:

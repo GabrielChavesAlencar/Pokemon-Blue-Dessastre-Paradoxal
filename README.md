@@ -27,6 +27,8 @@ Abra **`TESTAR_BATALHA.bat`** para o laboratório de batalhas reais, com times d
 
 A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor à engine instalada: dano, prioridade, trocas, hazards, suporte e duplas. O laboratório permite compará-la à IA original da base. Execute **`APLICAR_IA_RADICAL.bat`** para instalar em outra cópia da mesma base. [Perfis, fontes, logs e testes](docs/IA_BLUE_RADICAL.md).
 
+**Músicas aleatórias por batalha:** listas separadas para treinadores, encontros selvagens e líderes/Mestres de Tipo, com uma escolha por luta e sem repetir imediatamente a última faixa. A coleção local tem 7/6/6 músicas; o Blue Studio permite editar cada lista. [Importação, controles e testes](docs/EDITOR_MUSICAS.md).
+
 ## Portal do projeto
 
 O site fica em **`site/`** no mesmo repositório: Pokédex, formas, golpes, localizações, guias e diário automático de commits. [Executar o site](site/README.md) · [Deploy na Vercel e rotina de atualizações](docs/SITE_E_VERCEL.md).

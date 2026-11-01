@@ -18,3 +18,4 @@
 .music-form .music-check{display:flex;align-items:center;gap:10px}.music-check input{width:auto;accent-color:var(--accent)}
 .music-form .music-hint{font-size:12px;margin:0}.music-assignment .cardhead>span,#musicCount{font-size:11px;color:var(--muted)}
 @media(max-width:850px){.music-columns{grid-template-columns:1fr}.music-header{align-items:start;flex-direction:column}.music-tracks{max-height:320px}}
+.music-workspace .music-playlist,#musicPlaylist{min-height:144px}

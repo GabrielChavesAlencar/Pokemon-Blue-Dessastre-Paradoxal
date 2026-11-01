@@ -1,6 +1,60 @@
 # Own music overrides. Original RPG maps, PBS and events remain on disk unchanged.
 module BlueMusic
   PATH='Data/blue-music.rxdata'
+  CATEGORIES_PATH='Data/blue-music-categories.rxdata'
+  def self.valid_track?(name)
+    name.is_a?(String) && !name.empty? && !name.split('/').any? { |p| ['', '.', '..'].include?(p) } && !name.include?('\\') && !name.include?(':') && !name.start_with?('/') && File.file?('Audio/BGM/'+name)
+  end
+  def self.categories
+    return @testing_categories if @testing_categories
+    return [1,[],[]] unless File.file?(CATEGORIES_PATH)
+    stamp=[File.mtime(CATEGORIES_PATH).to_f,File.size(CATEGORIES_PATH)]
+    if @categories_stamp!=stamp
+      value=load_data(CATEGORIES_PATH)
+      raise 'Invalid trainer music categories' unless value.is_a?(Array) && value[0]==1 && value[1].is_a?(Array) && value[2].is_a?(Array)
+      @categories_data=value;@categories_stamp=stamp
+    end
+    @categories_data
+  rescue StandardError
+    [1,[],[]]
+  end
+  def self.gym_trainer?(trainer)
+    id=trainer.respond_to?(:trainer_type) ? trainer.trainer_type : trainer
+    data=GameData::TrainerType.try_get(id)
+    return false unless data
+    name=data.respond_to?(:real_name) ? data.real_name : data.name
+    return true if categories[1].include?(data.id.to_s) || name.to_s.match?(/\bgym\s+leader\b/i)
+    return false unless trainer.respond_to?(:name)
+    name=trainer.name.to_s.sub(/\s*\([^()]*\)\s*\z/,'').strip
+    categories[2].any? { |row| row[0]==data.id.to_s && row[1]==name }
+  end
+  def self.trainer_category(trainers)
+    Array(trainers).any? { |t| gym_trainer?(t) } ? 'gym' : 'trainer'
+  end
+  def self.begin_battle
+    @battle_context={selected:{},category:nil}
+  end
+  def self.end_battle; @battle_context=nil; end
+  def self.with_battle
+    previous=@battle_context
+    begin_battle
+    yield
+  ensure
+    @battle_context=previous
+  end
+  def self.random_track(key,tracks)
+    available=tracks.is_a?(Array) ? tracks.select { |p| valid_track?(p) }.uniq : []
+    return nil if available.empty?
+    cached=@battle_context && @battle_context[:selected][key]
+    return cached if available.include?(cached)
+    @last_track ||= {}
+    choices=available.length>1 ? available.reject { |p| p==@last_track[key] } : available
+    @music_rng ||= Random.new
+    selected=choices[@music_rng.rand(choices.length)]
+    @last_track[key]=selected
+    @battle_context[:selected][key]=selected if @battle_context
+    selected
+  end
   def self.config
     return @testing if @testing
     return [1,[],[]] unless File.file?(PATH)
@@ -15,14 +69,31 @@ module BlueMusic
     [1,[],[]]
   end
   def self.entry(scope,key)
-    config[scope=='map' ? 2 : 1].find { |row| row.is_a?(Array) && row[0].to_s==key.to_s }
+    rows=config[scope=='map' ? 2 : 1]
+    found=rows.find { |row| row.is_a?(Array) && row[0].to_s==key.to_s }
+    found
   end
   def self.audio_for(scope,key)
     row=entry(scope,key)
     return nil unless row
     return RPG::AudioFile.new('',100,100) if row[1]=='mute'
-    return nil unless row[1]=='custom' && row[2].is_a?(String) && !row[2].split('/').include?('..') && !row[2].include?('\\') && !row[2].include?(':') && !row[2].start_with?('/') && File.file?('Audio/BGM/'+row[2])
-    RPG::AudioFile.new(row[2],row[3].to_i.clamp(0,100),row[4].to_i.clamp(50,150))
+    if row[1]=='random' && scope=='global' && ['wild','trainer','gym'].include?(key)
+      name=random_track(key,row[2])
+    elsif row[1]=='custom'
+      name=row[2] if valid_track?(row[2])
+    end
+    name ? RPG::AudioFile.new(name,row[3].to_i.clamp(0,100),row[4].to_i.clamp(50,150)) : nil
+  end
+  def self.battle_audio(key)
+    key=(@battle_context[:category] ||= key) if @battle_context
+    row=entry('global',key)
+    # The author's random pools replace fixed event themes in these categories.
+    if row && row[1]=='random'
+      selected=audio_for('global',key)
+      return selected if selected
+    end
+    return nil if $PokemonGlobal.nextBattleBGM
+    audio_for('global',key) unless row && row[1]=='random'
   end
   def self.apply_map(game_map)
     map=game_map.instance_variable_get(:@map)
@@ -67,16 +138,13 @@ module BlueMusic
   module BattleAudio
     private
     def pbGetWildBattleBGM(*args)
-      return super if $PokemonGlobal.nextBattleBGM
-      BlueMusic.audio_for('global','wild') || super
+      BlueMusic.battle_audio('wild') || super
     end
     def pbGetTrainerBattleBGM(*args)
-      return super if $PokemonGlobal.nextBattleBGM
-      BlueMusic.audio_for('global','trainer') || super
+      BlueMusic.battle_audio(BlueMusic.trainer_category(args[0])) || super
     end
     def pbGetTrainerBattleBGMFromType(*args)
-      return super if $PokemonGlobal.nextBattleBGM
-      BlueMusic.audio_for('global','trainer') || super
+      BlueMusic.battle_audio(BlueMusic.trainer_category(args[0])) || super
     end
     def pbGetWildVictoryBGM(*args)
       return super if $PokemonGlobal.nextBattleVictoryBGM
@@ -93,9 +161,33 @@ module BlueMusic
       audio
     end
   end
+  module EntryScope
+    def start_core(*args)
+      BlueMusic.with_battle { super(*args) }
+    end
+  end
+  module PrepareMusic
+    def prepare_battle(battle)
+      context=BlueMusic.instance_variable_get(:@battle_context)
+      context[:category]=battle.wildBattle? ? 'wild' : BlueMusic.trainer_category(battle.opponent) if context
+      super
+    end
+  end
+  module LabScope
+    def battle(*args)
+      BlueMusic.with_battle { super(*args) }
+    end
+  end
   def self.install
     Game_Map.prepend(MapAudio) unless Game_Map.ancestors.include?(MapAudio)
     Object.prepend(BattleAudio) unless Object.ancestors.include?(BattleAudio)
+    [WildBattle,TrainerBattle].each { |k| k.singleton_class.prepend(EntryScope) unless k.singleton_class.ancestors.include?(EntryScope) }
+    BattleCreationHelperMethods.singleton_class.prepend(PrepareMusic) unless BattleCreationHelperMethods.singleton_class.ancestors.include?(PrepareMusic)
+    if defined?(BlueBattleLab) && BlueBattleLab.respond_to?(:battle)
+      BlueBattleLab.singleton_class.prepend(LabScope) unless BlueBattleLab.singleton_class.ancestors.include?(LabScope)
+    end
+    EventHandlers.add(:on_start_battle,:blue_random_music,proc { |*args| BlueMusic.begin_battle })
+    EventHandlers.add(:on_end_battle,:blue_random_music,proc { |*args| BlueMusic.end_battle })
   end
   def self.run_checks
     lines=[]
@@ -128,6 +220,7 @@ module BlueMusic
     check.call('Removing city override restores original',map.bgm.name=='original city' && map.bgm.volume==43 && !record.autoplay_bgm)
     @testing=[1,[['wild','mute','',100,100]],[]]
     check.call('Mute option is explicit',pbGetWildBattleBGM([]).name.empty?)
+    run_random_checks(lines,check) if respond_to?(:run_random_checks)
     lines << 'RESULT=PASS'
     true
   rescue StandardError => error

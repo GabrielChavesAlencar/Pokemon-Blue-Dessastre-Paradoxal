@@ -42,6 +42,24 @@ class MusicTests(unittest.TestCase):
         backups=list((self.backups/'Data/blue-music.json').glob('*.bak'))
         self.assertTrue(any(p.read_bytes()==old for p in backups))
 
+    def test_random_pools_are_independent_and_encoded_as_native_arrays(self):
+        self.save(self.payload(mode='random',tracks=['Town.wav','Battle.wav','Town.wav']))
+        self.save(self.payload(target='gym',mode='random',tracks=['Battle.wav']))
+        value=music.config(self.game)[0]['global']
+        self.assertEqual(value['wild']['tracks'],['Town.wav','Battle.wav'])
+        self.assertEqual(value['gym']['tracks'],['Battle.wav'])
+        rows=loads((self.game/'Data/blue-music.rxdata').read_bytes())[1]
+        self.assertEqual({r[0]:r[2] for r in rows},{b'gym':[b'Battle.wav'],b'wild':[b'Town.wav',b'Battle.wav']})
+        self.save(self.payload(target='gym',mode='original'))
+        self.assertNotIn('gym',music.config(self.game)[0]['global'])
+        self.assertEqual(music.config(self.game)[0]['global']['wild'],value['wild'])
+
+    def test_random_rejects_empty_unknown_and_unsupported_destinations(self):
+        for changes in [{'tracks':[]},{'tracks':'Town.wav'},{'tracks':['../Town.wav']},{'tracks':['missing.wav']},{'tracks':[None]},{'tracks':['Town.wav']*257},{'target':'wildVictory'},{'target':'trainerVictory'},{'scope':'map','target':1}]:
+            with self.subTest(changes=changes),self.assertRaises(music.MusicError):
+                self.save(self.payload(**{'mode':'random','tracks':['Town.wav'],**changes}))
+        self.assertFalse((self.game/'Data/blue-music.json').exists())
+
     def test_stale_configuration_hash_cannot_overwrite_other_assignment(self):
         request=self.payload();self.save(request);before=(self.game/'Data/blue-music.json').read_bytes()
         with self.assertRaises(music.MusicError) as error:self.save({**request,'target':'trainer'})

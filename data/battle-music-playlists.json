@@ -1,0 +1,302 @@
+{
+  "version": 1,
+  "categories": {
+    "trainer": [
+      {
+        "source": "batalha treinador/1-07. Battle! Cheren Â· Belle.mp3",
+        "file": "BlueRandom/trainer/dd81b8505fed1e05967de23b.mp3",
+        "title": "1-07. Battle! Cheren Â· Belle",
+        "bytes": 3960708,
+        "sha256": "dd81b8505fed1e05967de23b838ef967b74be712d7816487cb25fd2b85ddf2ca"
+      },
+      {
+        "source": "batalha treinador/1-11. Battle! (Trainer).mp3",
+        "file": "BlueRandom/trainer/6c3e66f82af8b34688ca0308.mp3",
+        "title": "1-11. Battle! (Trainer)",
+        "bytes": 6285752,
+        "sha256": "6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4"
+      },
+      {
+        "source": "batalha treinador/1-20. Battle! (Trainer Battle).mp3",
+        "file": "BlueRandom/trainer/b2bfb5f87774e84ffb5b673c.mp3",
+        "title": "1-20. Battle! (Trainer Battle)",
+        "bytes": 3436552,
+        "sha256": "b2bfb5f87774e84ffb5b673c3e8d39e924200ce1d1a50f26adb71f14284dd6b7"
+      },
+      {
+        "source": "batalha treinador/1-21. Battle! (Trainer Battle).mp3",
+        "file": "BlueRandom/trainer/1f63970f4446314cbff13c9d.mp3",
+        "title": "1-21. Battle! (Trainer Battle)",
+        "bytes": 5534544,
+        "sha256": "1f63970f4446314cbff13c9de708050c2e8a81ef1bdbc340266dcacb6b0b008a"
+      },
+      {
+        "source": "batalha treinador/10. Battle! (Nemona).mp3",
+        "file": "BlueRandom/trainer/dcba35576db17a9feefea67c.mp3",
+        "title": "10. Battle! (Nemona)",
+        "bytes": 5582310,
+        "sha256": "dcba35576db17a9feefea67cdfd2cd50014ff3a1706783c411a3e12bbe45a414"
+      },
+      {
+        "source": "batalha treinador/133. Battle! (Academy Ace Tournament).mp3",
+        "file": "BlueRandom/trainer/e90952efea15465e47b1fd5d.mp3",
+        "title": "133. Battle! (Academy Ace Tournament)",
+        "bytes": 20612351,
+        "sha256": "e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92"
+      },
+      {
+        "source": "batalha treinador/39. Battle! (Team Star).mp3",
+        "file": "BlueRandom/trainer/3a0078b0ebffd4f4f585cb41.mp3",
+        "title": "39. Battle! (Team Star)",
+        "bytes": 8176881,
+        "sha256": "3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f"
+      }
+    ],
+    "wild": [
+      {
+        "source": "encontros selvagens/1-09. Battle! (Wild Pokémon).mp3",
+        "file": "BlueRandom/wild/8022dbab30cb017ad525b493.mp3",
+        "title": "1-09. Battle! (Wild Pokémon)",
+        "bytes": 2491892,
+        "sha256": "8022dbab30cb017ad525b4939b86b792ba385ef383099da568e5d4af34254522"
+      },
+      {
+        "source": "encontros selvagens/1-14. Battle! Wild Pokemon.mp3",
+        "file": "BlueRandom/wild/98f5277de345c2aeb3bf1824.mp3",
+        "title": "1-14. Battle! Wild Pokemon",
+        "bytes": 4946333,
+        "sha256": "98f5277de345c2aeb3bf18248f88b7e8311ade4c07bade3d586094a890e6d0bf"
+      },
+      {
+        "source": "encontros selvagens/1-16. Battle! (Wild Pokémon).mp3",
+        "file": "BlueRandom/wild/85e9d6a8f01449df9f61fd17.mp3",
+        "title": "1-16. Battle! (Wild Pokémon)",
+        "bytes": 2956495,
+        "sha256": "85e9d6a8f01449df9f61fd178f5bced83535e83a9ef87bfa164e5d3e32cb4ccc"
+      },
+      {
+        "source": "encontros selvagens/1-18. Battle! (Wild Pokémon).mp3",
+        "file": "BlueRandom/wild/137ce6601be412b6667b3a36.mp3",
+        "title": "1-18. Battle! (Wild Pokémon)",
+        "bytes": 2825124,
+        "sha256": "137ce6601be412b6667b3a364feadb1d0fda662db2d5d9930c1e30d3ce396dc3"
+      },
+      {
+        "source": "encontros selvagens/10 - Battle! (Wild Pokémon).mp3",
+        "file": "BlueRandom/wild/30c5a5603d4423e113beb88c.mp3",
+        "title": "10 - Battle! (Wild Pokémon)",
+        "bytes": 4894996,
+        "sha256": "30c5a5603d4423e113beb88c85f94ca2a29d8e6b2ec9e043287164b75dee1d2c"
+      },
+      {
+        "source": "encontros selvagens/12. Battle! (Wild Pokémon).mp3",
+        "file": "BlueRandom/wild/b3ab883669ae493b2e2a1655.mp3",
+        "title": "12. Battle! (Wild Pokémon)",
+        "bytes": 8141269,
+        "sha256": "b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a"
+      }
+    ],
+    "gym": [
+      {
+        "source": "gym leader/1-27. Battle! (Gym Leader).mp3",
+        "file": "BlueRandom/gym/795de7ed64dfb4da7455f9a7.mp3",
+        "title": "1-27. Battle! (Gym Leader)",
+        "bytes": 4280605,
+        "sha256": "795de7ed64dfb4da7455f9a785ab50db6754be1b719db5eba1b5723dadf62f00"
+      },
+      {
+        "source": "gym leader/1-32. Battle! (Gym Leader).mp3",
+        "file": "BlueRandom/gym/d66f95ae7bc516c060adb358.mp3",
+        "title": "1-32. Battle! (Gym Leader)",
+        "bytes": 3283242,
+        "sha256": "d66f95ae7bc516c060adb3587f2ff7a430832dbe0431aa74d6bc45dd3cd2f47b"
+      },
+      {
+        "source": "gym leader/1-44. Battle! Gym Leader.mp3",
+        "file": "BlueRandom/gym/1d9632cd83e478e948ce0752.mp3",
+        "title": "1-44. Battle! Gym Leader",
+        "bytes": 6944547,
+        "sha256": "1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1"
+      },
+      {
+        "source": "gym leader/54. Battle! (Gym Leader).mp3",
+        "file": "BlueRandom/gym/70738c61a28b87301717f9fb.mp3",
+        "title": "54. Battle! (Gym Leader)",
+        "bytes": 7133746,
+        "sha256": "70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692"
+      },
+      {
+        "source": "gym leader/60 - Battle! (Gym Leader).mp3",
+        "file": "BlueRandom/gym/f5443af556688de93a1fa79f.mp3",
+        "title": "60 - Battle! (Gym Leader)",
+        "bytes": 11955380,
+        "sha256": "f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52"
+      },
+      {
+        "source": "gym leader/73. Battle! (Team Star Boss).mp3",
+        "file": "BlueRandom/gym/1d39271f7222cef6bc5109a0.mp3",
+        "title": "73. Battle! (Team Star Boss)",
+        "bytes": 12763766,
+        "sha256": "1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87"
+      }
+    ]
+  },
+  "gymTrainerTypes": [
+    "GALARIAN_SWSH_KABU",
+    "GALARIAN_SWSH_MILO",
+    "GALARIAN_SWSH_NESSA",
+    "GALARIAN_SWSH_PIERS",
+    "HOENNIAN_B2W2_BRAWLY",
+    "HOENNIAN_B2W2_FLANNERY",
+    "HOENNIAN_B2W2_JUAN",
+    "HOENNIAN_B2W2_LIZA",
+    "HOENNIAN_B2W2_LIZA_TATE",
+    "HOENNIAN_B2W2_NORMAN",
+    "HOENNIAN_B2W2_ROXANNE",
+    "HOENNIAN_B2W2_TATE",
+    "HOENNIAN_B2W2_WATTSON",
+    "HOENNIAN_B2W2_WINONA",
+    "JOHTOIAN_HGSS_BUGSY",
+    "JOHTOIAN_HGSS_CHUCK",
+    "JOHTOIAN_HGSS_CLAIR",
+    "JOHTOIAN_HGSS_FALKNER",
+    "JOHTOIAN_HGSS_JASMINE",
+    "JOHTOIAN_HGSS_MORTY",
+    "JOHTOIAN_HGSS_PRYCE",
+    "JOHTOIAN_HGSS_WHITNEY",
+    "KALOIAN_XY_CLEMONT",
+    "KALOIAN_XY_GRANT",
+    "KALOIAN_XY_KORINNA",
+    "KALOIAN_XY_OLYMPIA",
+    "KALOIAN_XY_RAMOS",
+    "KALOIAN_XY_VALERIE",
+    "KALOIAN_XY_VIOLA",
+    "KALOIAN_XY_WULFRIC",
+    "KANTOIAN_FRLG_SABRINA",
+    "KANTOIAN_HGSS_BLAINE_CASUAL",
+    "KANTOIAN_HGSS_BLUE_OAK",
+    "KANTOIAN_HGSS_BROCK_CASUAL",
+    "KANTOIAN_HGSS_ERIKA",
+    "KANTOIAN_HGSS_JANINE",
+    "KANTOIAN_HGSS_LT_SURGE",
+    "KANTOIAN_HGSS_MISTY_SWIMSUIT",
+    "KANTOIAN_HGSS_SABRINA",
+    "KANTOIAN_LGPE_BLANNE_SCIENCE",
+    "KANTOIAN_LGPE_BROCK_TRAVEL",
+    "KANTOIAN_LGPE_ERIKA",
+    "KANTOIAN_LGPE_LT_SURGE",
+    "KANTOIAN_LGPE_MISTY_CASUAL",
+    "KANTOIAN_LGPE_SABRINA",
+    "LEADER_Blaine",
+    "LEADER_Brock",
+    "LEADER_Erika",
+    "LEADER_Giovanni",
+    "LEADER_Koga",
+    "LEADER_Misty",
+    "LEADER_Sabrina",
+    "LEADER_Surge",
+    "PALDEAN_SV_RYME",
+    "SINNOHIAN_DPP_BYRON",
+    "SINNOHIAN_DPP_CANDICE",
+    "SINNOHIAN_DPP_CRASHER_WAKE",
+    "SINNOHIAN_DPP_FANTINA",
+    "SINNOHIAN_DPP_GARDENIA",
+    "SINNOHIAN_DPP_MAYLENE",
+    "SINNOHIAN_DPP_ROARK",
+    "SINNOHIAN_DPP_VOLKNER",
+    "SINNOHIAN_UNOFFICAL_BYRON",
+    "SINNOHIAN_UNOFFICAL_CANDICE",
+    "SINNOHIAN_UNOFFICAL_CRASHER_WAKE",
+    "SINNOHIAN_UNOFFICAL_FANTINA",
+    "SINNOHIAN_UNOFFICAL_GARDENIA",
+    "SINNOHIAN_UNOFFICAL_MAYLENE",
+    "SINNOHIAN_UNOFFICAL_ROARK",
+    "SINNOHIAN_UNOFFICAL_VOLKNER",
+    "UNOVAIAN_B1W1_ELESA",
+    "UNOVAIAN_B2W2_BURGH",
+    "UNOVAIAN_B2W2_CHEREN",
+    "UNOVAIAN_B2W2_CHILI",
+    "UNOVAIAN_B2W2_CILAN",
+    "UNOVAIAN_B2W2_CLAY",
+    "UNOVAIAN_B2W2_CRESS",
+    "UNOVAIAN_B2W2_DRAYDEN",
+    "UNOVAIAN_B2W2_ELESA",
+    "UNOVAIAN_B2W2_MARLON",
+    "UNOVAIAN_B2W2_ROXIE",
+    "UNOVAIAN_B2W2_SKYLA"
+  ],
+  "gymTrainers": [
+    [
+      "ALOLAN_USUM_BEAUTY",
+      "Eira"
+    ],
+    [
+      "ALOLAN_USUM_HIKER",
+      "Christopher"
+    ],
+    [
+      "HOENNIAN_ORAS_AROMALADY",
+      "Marigold"
+    ],
+    [
+      "HOENNIAN_ORAS_KINDLER",
+      "Keegan"
+    ],
+    [
+      "HOENNIAN_ORAS_NINJA_BOY",
+      "Cethin"
+    ],
+    [
+      "HOENNIAN_ORAS_POKEFAN_WOMAN",
+      "Belinda"
+    ],
+    [
+      "JOHTOIAN_HGSS_BIKER",
+      "Atlas"
+    ],
+    [
+      "JOHTOIAN_HGSS_BLACK_BELT",
+      "Luis"
+    ],
+    [
+      "JOHTOIAN_HGSS_SAGE",
+      "Roho"
+    ],
+    [
+      "JOHTOIAN_HGSS_TEACHER",
+      "Quinn"
+    ],
+    [
+      "KALOIAN_XY_BLACK_FURISODE_GIRL",
+      "Luna"
+    ],
+    [
+      "KALOIAN_XY_SKYTRAINER_MAN",
+      "Hermes"
+    ],
+    [
+      "KALOIAN_XY_SKYTRAINER_WOMAN",
+      "Azure"
+    ],
+    [
+      "KANTOIAN_FRLG_LADY",
+      "Keiko"
+    ],
+    [
+      "SINNOHIAN_DPP_PARASOL_LADY",
+      "Reva"
+    ],
+    [
+      "SINNOHIAN_DPP_WORKER",
+      "Gohar"
+    ],
+    [
+      "UNOVAIAN_B2W2_BACKPACKER_WOMAN",
+      "Sophia"
+    ],
+    [
+      "UNOVAIAN_B2W2_DOCTOR",
+      "Galen"
+    ]
+  ]
+}

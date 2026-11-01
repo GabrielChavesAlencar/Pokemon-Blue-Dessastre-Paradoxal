@@ -5,7 +5,7 @@ import os,tempfile,shutil
 
 def install(project,game):
     source=project/'scripts/music';plugin=game/'Plugins/ZZZZ Blue Music'
-    plan={plugin/name:(source/name).read_bytes() for name in ['BlueMusic.rb','meta.txt']}
+    plan={plugin/name:(source/name).read_bytes() for name in ['BlueMusic.rb','RandomValidation.rb','meta.txt']}
     changed={p:b for p,b in plan.items() if not p.is_file() or p.read_bytes()!=b}
     backup=project/'.blue-backups'/('music-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
     for path,raw in changed.items():
