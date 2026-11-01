@@ -36,6 +36,10 @@ Os PNG/GIF originais não mudam. Formas que pintam pixels específicos, como Spi
 
 Abrir `TESTAR_BATALHA.bat` instala os plugins próprios. Para instalar sem abrir o laboratório: `python scripts/battle_lab/launch.py --install-only`; depois abra `JOGAR.bat`.
 
-O atalho procura Python 3.10+ no PATH e nas instalações locais do Windows. O launcher aguarda um novo `MENU_READY` antes de declarar sucesso e desassocia a janela do jogo do CMD. Erros de inicialização ficam em `game/Data/blue-battle-launcher.log`; o laboratório registra seu estado em `game/Data/blue-battle-lab.log`.
+O atalho procura Python 3.10+ no PATH e nas instalações locais do Windows. O launcher aguarda um novo `MENU_READY` antes de declarar sucesso e permanece ativo até você fechar o jogo. **Mantenha o CMD aberto enquanto joga; pode minimizá-lo.** Isso evita que lançadores que agrupam os processos encerrem o jogo quando o processo pai termina. Erros de inicialização ficam em `game/Data/blue-battle-launcher.log`; o laboratório registra seu estado em `game/Data/blue-battle-lab.log`.
+
+O atalho usa o caminho real do interpretador, validado por uma saída de identificação; não depende apenas do código de saída de um alias. Seu diagnóstico inicial fica em `.blue-work/battle-launcher-cmd.log`, mesmo antes de iniciar Python. O executável abre sem o argumento nativo `debug`, evitando o console separado; a solicitação do laboratório ativa o compilador Ruby no bootstrap do jogo.
+
+Na abertura normal do `.bat`, Python apenas instala/prepara os plugins. O CMD usa `start /WAIT` para abrir o executável diretamente no diretório do jogo, pelo mesmo mecanismo de `JOGAR.bat`. O log do CMD registra o código de saída nativo. A execução por argumentos de diagnóstico continua disponível pelo launcher Python.
 
 O smoke test verifica menus, regras independentes, bloqueio/reativação nos dois lados, gerador, eventos nos cinco mapas, integridade dos arquivos originais, redução de memória, Spinda e retorno à qualidade original. O relatório `game/Data/blue-battle-options-validation.txt` deve terminar em `RESULT=PASS`; as batalhas completas devem terminar em `SMOKE=PASS` no log do laboratório.

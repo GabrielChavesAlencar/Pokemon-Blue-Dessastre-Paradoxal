@@ -2,6 +2,10 @@
 
 Na pasta principal do projeto, abra **TESTAR_BATALHA.bat**. É uma sessão limitada do jogo real, com times de **1 a 6 Pokémon por lado** e batalhas **individuais ou em dupla**, usando a engine, os sprites, as animações e os dados compilados da base instalada em `game/`.
 
+Mantenha a janela do CMD aberta enquanto joga; pode minimizá-la. O atalho usa Python apenas para preparar os plugins e abre `Game.exe` diretamente pelo Windows, como `JOGAR.bat`, aguardando o encerramento do jogo. Ele usa o caminho real do Python e não passa o argumento nativo `debug` ao executável.
+
+Na versão 0.3, o menu libera explicitamente a tela congelada pelo `Main` com `Graphics.transition(0)`, depois de criar as janelas e antes de ler o mouse. O teste de abertura confere os pixels reais e salva uma captura local em `game/Data/blue-lab-menu-smoke.png`, evitando aprovar uma execução que continua com tela preta. Feche os CMDs antigos antes de atualizar o atalho.
+
 ## Usar
 
 - A sessão começa com dois times de seis no nível 50. Com a geração autoral instalada, inclui Cave Fang, Archgutor, Iron Crusher e outros Pokémon do projeto. Também há um preset de times oficiais e um teste rápido Pikachu x Eevee.

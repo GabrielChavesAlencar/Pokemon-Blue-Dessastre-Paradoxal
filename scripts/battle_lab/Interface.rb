@@ -130,6 +130,7 @@ module BlueBattleLab
 
   # A scrollable menu with mouse-accessible paging and Back controls.
   def self.choose(title, commands, default = 0)
+    log("MENU_OPEN | #{title}")
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     viewport.z = 99999
     header = Window_UnformattedTextPokemon.newWithSize(title, 0, 0, Graphics.width, 64, viewport)
@@ -140,9 +141,19 @@ module BlueBattleLab
     pbSetSmallFont(footer.bitmap)
     labels = ['Pagina anterior', 'Proxima pagina', 'Voltar / Esc']
     labels.each_with_index { |label,i| footer.bitmap.draw_text(i * Graphics.width / 3, 0, Graphics.width / 3, 48, label, 1) }
+    log('MENU_DRAWN | header, list and footer created')
+    # Main freezes the frame before entering the title/lab scene. Release it
+    # after the menu exists, before native input queries the rendered viewport.
+    Graphics.transition(0)
     Input.update
+    first_frame=true
     loop do
       Graphics.update; Input.update; list.update
+      if first_frame
+        log('MENU_FRAME | graphics and input updated')
+        check_live_menu_pixels if @test_live_menu_at
+        first_frame=false
+      end
       if Input.trigger?(Input::MOUSELEFT) && !BlueLabPointer.claimed
         point = BlueLabPointer.position
         if point && point[1] >= Graphics.height - 48

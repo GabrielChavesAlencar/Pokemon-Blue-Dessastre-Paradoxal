@@ -14,6 +14,22 @@ spec=importlib.util.spec_from_file_location('blue_lab_launch',ROOT/'scripts'/'ba
 lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
 
 class BattleLabTests(unittest.TestCase):
+    def test_fatal_native_startup_message_is_reported_without_waiting_for_timeout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.fixture(root)
+            process=Mock();process.pid=123;process.poll.return_value=None
+            def start(*args,**kwargs):
+                kwargs['stdout'].write(b'Error initializing PhysFS: permission denied\n');kwargs['stdout'].flush()
+                return process
+            with patch.object(lab,'install',return_value=game),patch.object(lab.subprocess,'Popen',side_effect=start):
+                with self.assertRaisesRegex(RuntimeError,'PhysFS'):
+                    lab.launch(root,game)
+            process.terminate.assert_called_once()
+    def test_native_error_reader_ignores_prior_errors_and_rescued_plugin_warning(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'engine.log';old=b'Error initializing PhysFS: old error\n';path.write_bytes(old+b"Exception LoadError: cannot load such file -- set\nSuccessfully loaded plugins\n")
+            self.assertIsNone(lab.native_startup_error(path,len(old)))
+
     def test_launcher_rejects_silent_early_exit_even_with_old_success_log(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root)
@@ -27,7 +43,9 @@ class BattleLabTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root)
             process=Mock();process.poll.return_value=None
+            process.wait.return_value=0
             def start(*args,**kwargs):
+                self.assertEqual(args[0],[str(game/'Game.exe')])
                 self.assertEqual(kwargs['cwd'],game)
                 self.assertEqual(kwargs['stdin'],lab.subprocess.DEVNULL)
                 self.assertIsNotNone(kwargs['stdout'])
@@ -36,6 +54,17 @@ class BattleLabTests(unittest.TestCase):
                 return process
             with patch.object(lab,'install',return_value=game),patch.object(lab.subprocess,'Popen',side_effect=start):
                 self.assertEqual(lab.launch(root,game),0)
+            process.wait.assert_called_once()
+
+    def test_menu_ready_followed_by_early_process_exit_is_not_reported_as_open(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.fixture(root);process=Mock();process.poll.return_value=0
+            def start(*args,**kwargs):
+                (game/'Data/blue-battle-lab.log').write_text('MENU_READY\n')
+                return process
+            with patch.object(lab,'install',return_value=game),patch.object(lab.subprocess,'Popen',side_effect=start):
+                with self.assertRaisesRegex(RuntimeError,'encerrou durante'):
+                    lab.launch(root,game)
 
     def fixture(self,root,main='PluginManager.runPlugins\nCompiler.main'):
         source=root/'scripts'/'battle_lab';source.mkdir(parents=True)

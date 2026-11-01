@@ -86,6 +86,21 @@ def prepare_request(game: Path, smoke: bool=False):
     (game/'Data'/'blue-battle-lab-request.txt').write_text('smoke' if smoke else 'play',encoding='ascii')
 
 
+def read_log_since(path: Path, offset: int) -> str:
+    if not path.is_file():return ''
+    with path.open('rb') as stream:
+        stream.seek(offset)
+        return stream.read().decode('utf8',errors='replace')
+
+
+def native_startup_error(path: Path, offset: int):
+    # This native failure happens before Ruby starts. Do not confuse rescued
+    # plugin warnings (such as require 'set') with a fatal engine failure.
+    for line in read_log_since(path,offset).replace('\x00','').splitlines():
+        if 'Error initializing PhysFS' in line:return line.strip()
+    return None
+
+
 def launch(project: Path, game: Path, smoke: bool=False, timeout: float=240) -> int:
     game=install(project,game)
     log=game/'Data'/'blue-battle-lab.log'
@@ -101,18 +116,33 @@ def launch(project: Path, game: Path, smoke: bool=False, timeout: float=240) -> 
     flags=(subprocess.DETACHED_PROCESS|subprocess.CREATE_NEW_PROCESS_GROUP) if os.name=='nt' else 0
     with engine_log.open('ab') as stream:
         stream.write(f'\nBLUE LAUNCH | {datetime.now().isoformat()} | {sys.executable}\n'.encode('utf8'));stream.flush()
-        process=subprocess.Popen([str(game/'Game.exe'),'debug'],cwd=game,env=env,creationflags=flags,
+        engine_start=stream.tell()
+        # The request enables Ruby's compiler/debug flag inside Main. Passing the
+        # executable's separate 'debug' argument also creates a native console,
+        # whose closure terminates the game and can obscure its actual window.
+        process=subprocess.Popen([str(game/'Game.exe')],cwd=game,env=env,creationflags=flags,
                                  stdin=subprocess.DEVNULL,stdout=stream,stderr=subprocess.STDOUT)
+        stream.write(f'PROCESS_ID={process.pid}\n'.encode('ascii'));stream.flush()
     deadline=time.monotonic()+timeout
     while process.poll() is None and time.monotonic()<deadline:
-        output=log.read_bytes()[before:].decode('utf8',errors='replace') if log.exists() else ''
+        fatal=native_startup_error(engine_log,engine_start)
+        if fatal:
+            process.terminate();process.wait(timeout=10)
+            raise RuntimeError(f'O motor nao conseguiu inicializar o sistema de arquivos: {fatal}. Veja {engine_log}.')
+        output=read_log_since(log,before)
         if not smoke and 'MENU_READY' in output:
-            print('Laboratorio aberto. A janela do CMD pode ser fechada.',flush=True)
+            print('Laboratorio aberto. Mantenha este CMD aberto enquanto joga; voce pode minimiza-lo.',flush=True)
+            # Explorer/terminal launchers can put the process tree in a job
+            # object. Detaching the GUI does not break that lifetime relation.
+            # Retain the launcher until the user actually closes the game.
+            status=process.wait()
+            with engine_log.open('ab') as stream:stream.write(f'PROCESS_EXIT={status} HEX=0x{status & 0xffffffff:08X}\n'.encode('ascii'))
+            if status!=0:raise RuntimeError(f'O jogo encerrou com codigo {status}. Veja {engine_log} e {log}.')
             return 0
         time.sleep(.5)
     if not smoke:
-        output=log.read_bytes()[before:].decode('utf8',errors='replace') if log.exists() else ''
-        if 'MENU_READY' in output:return 0
+        output=read_log_since(log,before)
+        if 'MENU_READY' in output:raise RuntimeError(f'O laboratorio iniciou e encerrou durante a abertura. Veja {log}.')
         raise RuntimeError(f'O jogo nao confirmou a abertura do laboratorio (saida={process.poll()}). Veja {engine_log} e {log}.')
     if process.poll() is None:
         process.terminate();process.wait(timeout=10)

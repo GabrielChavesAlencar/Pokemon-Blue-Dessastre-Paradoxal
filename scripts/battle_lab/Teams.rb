@@ -1,5 +1,11 @@
 # Team builder for the real engine. All configuration lives in this lab session.
 module BlueBattleLab
+  def self.main_commands(format_label,ai_profile)
+    ['Iniciar batalha',"Formato: #{format_label}",'Editar meu time','Editar time rival',
+     'Nivel de todos','Preparar times Dessastre Paradoxal','Preparar times oficiais',
+     'Teste rapido: Pikachu x Eevee',"IA: #{ai_profile=='radical' ? 'Blue Radical' : ai_profile=='normal' ? 'Blue estrategica' : 'IA da base'}",
+     'Mecanicas: Terastal / Dynamax / Mega / Z','Qualidade dos sprites','Sair do laboratorio']
+  end
   def self.preset(author = false, level = 50)
     sides = if author && GameData::Species.try_get(:CAVEFANG)
       [[:CAVEFANG,:ARCHGUTOR,:MAGNETRIX,:AMMNOID,:MIRAIDON,:PIKACHU],
@@ -25,13 +31,7 @@ module BlueBattleLab
       BlueBattleLab.log('MENU_READY | teams=6x6 mouse=true')
       loop do
         format_label = @format == 'double' ? 'Dupla (2 em campo)' : 'Individual (1 em campo)'
-        choice = BlueBattleLab.choose("BLUE LAB / Times #{@allies.length} x #{@foes.length}", [
-          'Iniciar batalha', "Formato: #{format_label}", 'Editar meu time',
-          'Editar time rival', 'Nivel de todos', 'Preparar times Dessastre Paradoxal',
-          'Preparar times oficiais', 'Teste rapido: Pikachu x Eevee',
-          "IA: #{@ai_profile == 'radical' ? 'Blue Radical' : @ai_profile == 'normal' ? 'Blue estrategica' : 'IA da base'}",
-          'Mecanicas: Terastal / Dynamax / Mega / Z', 'Qualidade dos sprites', 'Sair do laboratorio'
-        ])
+        choice = BlueBattleLab.choose("BLUE LAB / Times #{@allies.length} x #{@foes.length}",BlueBattleLab.main_commands(format_label,@ai_profile))
         case choice
         when 0
           begin
@@ -63,10 +63,13 @@ module BlueBattleLab
           end
         when 9 then BlueBattleOptions.mechanics_menu(:lab)
         when 10 then BlueBattleOptions.quality_menu
-        else break
+        else
+          BlueBattleLab.log("MENU_EXIT | selection=#{choice}")
+          break
         end
       end
       $scene = nil
+      BlueBattleLab.log('CLOSED | laboratory menu ended')
     rescue StandardError => error
       BlueBattleLab.log("ERROR | #{error.class}: #{error.message}\n#{error.backtrace.join("\n")}")
       raise unless BlueBattleLab::SMOKE

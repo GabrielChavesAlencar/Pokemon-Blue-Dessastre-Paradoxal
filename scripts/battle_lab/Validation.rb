@@ -1,5 +1,50 @@
 # Runtime checks use the installed engine, not a reimplementation of battle.
 module BlueBattleLab
+  module TestLiveMenuInput
+    def trigger?(key)
+      ready=BlueBattleLab.instance_variable_get(:@test_live_menu_at)
+      return true if ready && System.uptime>=ready && key==Input::USE
+      super
+    end
+  end
+  def self.check_live_menu_pixels
+    snapshot=Graphics.snap_to_bitmap
+    colors=[]
+    (16...snapshot.width).step(24) do |x|
+      (16...snapshot.height).step(24) do |y|
+        color=snapshot.get_pixel(x,y)
+        colors << [color.red.to_i,color.green.to_i,color.blue.to_i]
+      end
+    end
+    snapshot.to_file('Data/blue-lab-menu-smoke.png') if snapshot.respond_to?(:to_file)
+    log("MENU_VISUAL | colors=#{colors.uniq.length} resolution=#{snapshot.width}x#{snapshot.height}")
+    check(colors.uniq.length>=3 && colors.any? { |c| c.max>=200 },'Lab menu pixels are visible; not the frozen black startup frame')
+  ensure
+    snapshot.dispose if snapshot && !snapshot.disposed?
+  end
+  def self.check_live_menu
+    original=BlueLabPointer.method(:enabled?)
+    BlueLabPointer.define_singleton_method(:enabled?) { true }
+    Input.singleton_class.prepend(TestLiveMenuInput) unless Input.singleton_class.ancestors.include?(TestLiveMenuInput)
+    log('LIVE_MENU_TEST | real mouse position and real input callbacks')
+    @test_live_menu_at=System.uptime+3.0
+    selected=choose('BLUE LAB / Times 6 x 6',main_commands('Individual (1 em campo)','radical'))
+    @test_live_menu_at=nil
+    check(selected==0,'Complete live lab menu renders with mouse enabled and native Back callbacks')
+    point=Mouse.getMousePos(true)
+    check(point.nil? || point.is_a?(Array), 'Native mouse position can be read')
+    Input.update
+    [Input::BACK,Input::USE,Input::MOUSELEFT,Input::MOUSERIGHT].each do |key|
+      log("LIVE_MENU_KEY | before native key=#{key}")
+      value=Input.trigger?(key)
+      log("LIVE_MENU_KEY | key=#{key} value=#{value}")
+    end
+  rescue SystemStackError => error
+    raise RuntimeError,"Live menu stack error: #{error.message}\n#{error.backtrace.first(24).join("\n") }"
+  ensure
+    @test_live_menu_at=nil
+    BlueLabPointer.define_singleton_method(:enabled?,original) if original
+  end
   module TestMouseInput
     def trigger?(key)
       return true if BlueBattleLab.instance_variable_get(:@testing_mouse) && key == Input::MOUSELEFT
@@ -44,6 +89,7 @@ module BlueBattleLab
   end
 
   def self.run_smoke
+    check_live_menu
     check(BlueBattleOptions.run_checks,'Battle Mode, mechanic toggles and sprite quality; Data/blue-battle-options-validation.txt') if defined?(BlueBattleOptions)
     check(BlueMusic.run_checks,'Music overrides; Data/blue-music-validation.txt') if defined?(BlueMusic)
     if defined?(BlueRadicalAI::Validation)
