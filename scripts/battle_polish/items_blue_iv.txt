@@ -1,0 +1,53 @@
+[BLUEIVHP]
+Name = Seletor IV HP
+NamePlural = Seletores IV HP
+Pocket = 1
+Price = 50000
+FieldUse = OnPokemon
+Consumable = true
+Description = Escolhe o IV de HP entre 0 e 31. Consumido apenas ao alterar o valor.
+#-------------------------------
+[BLUEIVATTACK]
+Name = Seletor IV Ataque
+NamePlural = Seletores IV Ataque
+Pocket = 1
+Price = 50000
+FieldUse = OnPokemon
+Consumable = true
+Description = Escolhe o IV de Ataque entre 0 e 31. Consumido apenas ao alterar o valor.
+#-------------------------------
+[BLUEIVDEFENSE]
+Name = Seletor IV Defesa
+NamePlural = Seletores IV Defesa
+Pocket = 1
+Price = 50000
+FieldUse = OnPokemon
+Consumable = true
+Description = Escolhe o IV de Defesa entre 0 e 31. Consumido apenas ao alterar o valor.
+#-------------------------------
+[BLUEIVSPATK]
+Name = Seletor IV Atq. Esp.
+NamePlural = Seletores IV Atq. Esp.
+Pocket = 1
+Price = 50000
+FieldUse = OnPokemon
+Consumable = true
+Description = Escolhe o IV de Ataque Especial entre 0 e 31. Consumido apenas ao alterar o valor.
+#-------------------------------
+[BLUEIVSPDEF]
+Name = Seletor IV Def. Esp.
+NamePlural = Seletores IV Def. Esp.
+Pocket = 1
+Price = 50000
+FieldUse = OnPokemon
+Consumable = true
+Description = Escolhe o IV de Defesa Especial entre 0 e 31. Consumido apenas ao alterar o valor.
+#-------------------------------
+[BLUEIVSPEED]
+Name = Seletor IV Velocidade
+NamePlural = Seletores IV Velocidade
+Pocket = 1
+Price = 50000
+FieldUse = OnPokemon
+Consumable = true
+Description = Escolhe o IV de Velocidade entre 0 e 31. Consumido apenas ao alterar o valor.

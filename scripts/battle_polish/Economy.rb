@@ -20,7 +20,7 @@ module BlueCampaign
     !item.is_important? || GEAR.include?(item.id) || item.is_zcrystal? || item.is_TM? || item.is_TR?
   end
   def self.restricted_item?(id)
-    BANNED.include?(id) || id.to_s.match?(/NOCLIP|GENERAT|ADJUSTER|ANY.*DISK|SETPOKEDOLLAR|DEBUG|\ALVL\d+CANDY\z/)
+    BANNED.include?(id) || id.to_s.match?(/NOCLIP|GENERAT|ADJUSTER|ANY.*DISK|SETPOKEDOLLAR|DEBUG|\ALVL\d+CANDY\z|\A(?:EXP(?:ERIENCE)?CANDY|RARECANDY|XATTACK|XDEFEN|XSP|XSPECIAL|XACCURACY|DIREHIT|GUARDSPEC|MAXMUSHROOMS)/)
   end
   def self.paid_consumable?(id)
     CONSUMABLES.include?(id) || id.to_s.end_with?('MINT')
@@ -52,6 +52,7 @@ module BlueCampaign
     end
   end
   def self.category(item)
+    return 4 if BlueIVSelectors::STATS.key?(item.id)
     return 2 if item.is_mega_stone?
     return 3 if item.is_zcrystal?
     return 1 if item.is_poke_ball?
@@ -62,15 +63,15 @@ module BlueCampaign
     7
   end
   def self.price(item)
+    return 50_000 if BlueIVSelectors::STATS.key?(item.id)
     return RETAIL[item.id] if RETAIL.key?(item.id)
     return 100_000 if item.id==:MASTERBALL
     return 30_000 if item.is_mega_stone?
     return 20_000 if item.is_zcrystal?
+    return EQUIPMENT_PRICES.fetch(item.id,10_000) if GEAR.include?(item.id)
     return 20_000 if item.id.to_s.match?(/ABILITYPATCH|GOLDBOTTLECAP/)
     return 10_000 if item.id.to_s.match?(/ABILITY|BOTTLECAP|MINT|^RARECANDY$/)
-    return 50_000 if item.id.to_s.end_with?('CHARM') && GEAR.include?(item.id)
-    return 10_000 if GEAR.include?(item.id)
-    return 5_000 if item.is_machine?
+    return machine_price(item) if item.is_machine?
     return 1_000 if item.is_poke_ball?
     return 100 if item.is_berry?
     # Convert battle-point rarity to money for competitive items with no retail.

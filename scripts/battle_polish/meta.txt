@@ -1,5 +1,5 @@
 Name = Blue Battle Presentation and Story
-Version = 0.3
+Version = 0.4
 Essentials = 21.1
 Credits = Gabriel Chaves Alencar
-Scripts = Presentation.rb,Title.rb,Story.rb,Campaign.rb,Economy.rb,Shop.rb,CampaignValidation.rb,Validation.rb
+Scripts = Presentation.rb,Title.rb,Story.rb,Campaign.rb,Economy.rb,Balance.rb,IVSelectors.rb,Shop.rb,CampaignValidation.rb,Validation.rb

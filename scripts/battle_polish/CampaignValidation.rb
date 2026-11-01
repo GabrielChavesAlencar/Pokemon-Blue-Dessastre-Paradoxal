@@ -34,7 +34,7 @@ module BlueCampaignValidation
     check(!BlueCampaign.sellable_item?(GameData::Item.get(:ROTOMPHONE)),'Sequence-breaking teleport phone is excluded from the campaign shop')
     check(ItemHandlers::UseFromBag.trigger(:SETPOKEDOLLARSDISK,nil)==0 && ItemHandlers::UseInField.trigger(:ROTOMPHONE)==false,'Sandbox tools already held by older saves cannot bypass campaign progression')
     check(BlueCampaign.stock(2).include?(:CHARIZARDITEY) && BlueCampaign.stock(3).include?(:ELECTRIUMZ),'Mega Stones and Z-Crystals have separate complete tabs')
-    check(BlueCampaign.stock(0).include?(:FULLRESTORE) && BlueCampaign.stock(4).include?(:ADAMANTMINT) && BlueCampaign.stock(4).include?(:RARECANDY),'Former key-item medicines, mints and Rare Candy are purchasable consumables')
+    check(BlueCampaign.stock(0).include?(:FULLRESTORE) && BlueCampaign.stock(4).include?(:ADAMANTMINT) && !BlueCampaign.stock(4).include?(:RARECANDY),'Medicines and mints remain available; Rare Candy is removed from the shop')
     check([:FULLRESTORE,:ADAMANTMINT,:RARECANDY,:REPEL].all? { |id| i=GameData::Item.get(id);!i.is_important? && i.consumed_after_use? },'Standard consumables cannot act as infinite-use key items in the campaign')
     $bag.add(:FULLRESTORE,2)
     patient=BlueBattleLab.build(:PIKACHU,10);patient.hp-=10
@@ -42,6 +42,27 @@ module BlueCampaignValidation
     [:pbRefresh,:pbClearAnnotations,:pbHardRefresh,:pbUpdate,:pbDisplay].each { |name| medicine_scene.define_singleton_method(name) { |*args| } }
     used=pbUseItemOnPokemon(:FULLRESTORE,patient,medicine_scene)
     check(used && patient.hp==patient.totalhp && $bag.quantity(:FULLRESTORE)==1,'Native medicine use heals and consumes exactly one purchased Full Restore')
+    check(items.none? { |i| i.id.to_s.match?(/EXPCANDY|RARECANDY|\AX(?:ATTACK|DEF|SP|ACC)|DIREHIT/) },'No experience candies or direct stat-boosting battle items are sold')
+    machine=Object.new;machine.define_singleton_method(:move) { :EMBER };machine.define_singleton_method(:is_TR?) { false }
+    ember_price=BlueCampaign.machine_price(machine);machine.define_singleton_method(:move) { :FIREBLAST }
+    check(ember_price==500 && BlueCampaign.machine_price(machine)==5_500,'Move-based TM tiers: Ember 500; Fire Blast 5500')
+    check(BlueCampaign.price(GameData::Item.get(:ADVENTUREGUIDE))<BlueCampaign.price(GameData::Item.get(:TERAORB)),'Equipment prices reflect utility rather than one universal price')
+    check(BlueIVSelectors::STATS.keys.all? { |id| BlueCampaign.stock(4).include?(id) && BlueCampaign.price(GameData::Item.get(id))==50_000 },'All six IV selectors are sold in Training for 50000 each')
+    iv_number=BlueIVSelectors.method(:choose_value)
+    [0,31,15,-1,15].each do |value|
+      $bag.add(:BLUEIVATTACK,2) if $bag.quantity(:BLUEIVATTACK)<2
+      before_quantity=$bag.quantity(:BLUEIVATTACK);before_iv=patient.iv.clone
+      BlueIVSelectors.define_singleton_method(:choose_value) { |*args| value }
+      changed=pbUseItemOnPokemon(:BLUEIVATTACK,patient,medicine_scene)
+      expected=value>=0 && before_iv[:ATTACK]!=value
+      check(changed==expected && $bag.quantity(:BLUEIVATTACK)==before_quantity-(expected ? 1 : 0),'Native IV selector consumes only a real change; value='+value.to_s)
+      check(patient.iv.reject { |k,v| k==:ATTACK }==before_iv.reject { |k,v| k==:ATTACK },'IV selection preserves the other five attributes')
+    end
+    BlueIVSelectors.define_singleton_method(:choose_value,iv_number)
+    check(UIHandlers.get_info(:summary,:page_info,:options).none? { |option| option.is_a?(String) && option.include?('IVs') },'Free IV presets are hidden in the campaign; paid selectors cannot be bypassed')
+    check(BlueIVSelectors::STATS.all? { |id,stat| BlueIVSelectors.apply(id,patient,0) && patient.iv[stat]==0 && BlueIVSelectors.apply(id,patient,31) && patient.iv[stat]==31 },'All six selectors accept zero and 31 independently')
+    patient.iv[:ATTACK]=0;patient.ivMaxed[:ATTACK]=true;patient.calc_stats
+    check(BlueIVSelectors.apply(:BLUEIVATTACK,patient,0) && !patient.ivMaxed[:ATTACK] && patient.iv[:ATTACK]==0,'Choosing zero also clears Hyper Training for that attribute, so the actual battle IV becomes zero')
     $player.money=1_000;before=Marshal.dump($bag)
     check(BlueCampaign.purchase(:POTION,4)==:funds && $player.money==1_000 && Marshal.dump($bag)==before,'Unaffordable purchase leaves money and inventory unchanged')
     check(BlueCampaign.purchase(:POTION,2)==:ok && $player.money==400 && $bag.quantity(:POTION)==4,'Successful purchase deducts the exact total and adds the selected quantity')
@@ -88,6 +109,20 @@ module BlueCampaignValidation
     boss=NPCTrainer.new('Danny (Singles)',:YOUNGSTER);boss.party=[BlueBattleLab.build(:PIKACHU,50)]
     bb=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,boss.party,[$player],[boss])
     check(bb.pbParty(1).first.level==50,'Boss level and roster retain the existing scaling path')
+    badges=$player.badges.dup
+    test_mon=BlueBattleLab.build(:CHARIZARD,50);test_mon.moves=[:FIREBLAST,:SWORDSDANCE,:DRAGONCLAW,:FLAMETHROWER].map { |id| Pokemon::Move.new(id) }
+    [0,2,4].each do |badge_count|
+      $player.badges.map!.with_index { |v,i| i<badge_count }
+      sample=Marshal.load(Marshal.dump(test_mon));original_moves=sample.moves.map(&:id)
+      cap=BlueTrainerMoves::CAPS[BlueStory.stage]
+      BlueTrainerMoves.adjust(sample,cap,battle) if cap
+      legal=sample.species_data.moves.select { |level,id| level<=sample.level }.map(&:last)+sample.species_data.tutor_moves
+      check(cap ? sample.moves.all? { |m| legal.include?(m.id) && BlueTrainerMoves.safe?(m.id,cap,battle) } : sample.moves.map(&:id)==original_moves,'Trainer moves obey legal '+(cap ? cap.to_s+' power cap' : 'unchanged advanced stage'))
+      check(!cap || !sample.moves.any? { |m| m.id==:SWORDSDANCE },'Large stat boosts are excluded before the advanced stage')
+    end
+    rewards=[0,2,4].map { |count| $player.badges.map!.with_index { |v,i| i<count };trainer.base_money }
+    check(rewards[1]==rewards[0]*2 && rewards[2]==rewards[0]*3,'Trainer prize rates grow 1x / 2x / 3x with campaign stage')
+    $player.badges.replace(badges)
     $PokemonGlobal.blue_campaign_mechanics=BlueBattleOptions.defaults.transform_values { false }
     disabled=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,trainer.party,[$player],[trainer])
     check(BlueBattleOptions::LABELS.keys.none? { |key| BlueBattleOptions.allowed?(disabled,key) },'Journey mechanic choices apply to both sides of every campaign battle')
@@ -103,6 +138,8 @@ module BlueCampaignValidation
     end
     check(true,'Native tabbed shop renders medicine and Mega Stone categories')
   ensure
+    BlueIVSelectors.define_singleton_method(:choose_value,iv_number) if iv_number
+    $player.badges.replace(badges) if badges
     $PokemonGlobal=Marshal.load(old_global) if old_global
     $bag=old_bag if old_bag;$game_map=old_map if old_map
     $player.money=old_money if old_money;$player.party=old_party if old_party

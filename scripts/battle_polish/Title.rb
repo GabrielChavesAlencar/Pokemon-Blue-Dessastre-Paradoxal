@@ -28,6 +28,9 @@ module BlueParadoxTitle
     15.times { screen.update;Graphics.update }
     after=[bg.instance_variable_get(:@bolts).x,bg.instance_variable_get(:@bolts).opacity]
     raise 'Lightning does not animate' if before==after
+    fire=bg.instance_variable_get(:@flames)
+    raise 'Blue fire layer is missing' unless fire && fire.bitmap.get_pixel(256,Graphics.height-8).blue>40
+    lines << 'PASS | Procedural blue fire animates behind the title, with lightning retained'
     lines << 'PASS | Iron Maeltrom form 0, subtitle and moving blue lightning render in native title'
     lines << (available ? 'PASS | Requested Gym Leader MP3 is the playing title BGM' : 'SKIP | Private MP3 is not installed; native title BGM fallback used')
     lines << 'RESULT=PASS';true
@@ -72,6 +75,7 @@ class MTS_Element_BGBLUEPARADOX
     @height.times do |y|
       @base.bitmap.fill_rect(0,y,@width,1,Color.new(3,8+(y*12/@height),20+(y*21/@height)))
     end
+    @flames=BitmapSprite.new(@width,@height,viewport);@flames.z=-15
     @bolts=BitmapSprite.new(@width,@height,viewport);@bolts.z=-10
     @started=System.uptime;@redraw=0;@disposed=false;update
   end
@@ -85,6 +89,7 @@ class MTS_Element_BGBLUEPARADOX
   def update
     return if @disposed
     time=System.uptime-@started
+    update_fire(time)
     @bolts.x=(Math.sin(time*1.4)*8).to_i
     @bolts.opacity=(165+65*Math.sin(time*5)).to_i
     return if time<@redraw
@@ -99,7 +104,25 @@ class MTS_Element_BGBLUEPARADOX
       end
     end
   end
+  def update_fire(time)
+    return if @next_fire && time<@next_fire
+    @next_fire=time+0.05
+    bitmap=@flames.bitmap;bitmap.clear
+    bitmap.fill_rect(0,@height-24,@width,24,Color.new(8,79,220,200))
+    18.times do |i|
+      height=60+35*Math.sin(time*2.1+i*1.7)+35*Math.sin(time*3.7+i*0.9)**2
+      center=(i+0.5)*@width/18.0
+      (0...height.to_i).step(4) do |rise|
+        fraction=rise/height
+        x=center+Math.sin(time*3+i+fraction*4)*(4+fraction*13)
+        width=[(30*(1-fraction)**0.7).to_i,2].max
+        y=@height-4-rise
+        bitmap.fill_rect(x.to_i-width/2,y,width,5,Color.new(7,65+80*(1-fraction),235,210*(1-fraction)))
+        bitmap.fill_rect(x.to_i-width/6,y,[width/3,1].max,4,Color.new(75,205,255,180*(1-fraction)))
+      end
+    end
+  end
   def dispose
-    @base.dispose;@bolts.dispose;@disposed=true
+    @base.dispose;@bolts.dispose;@flames.dispose;@disposed=true
   end
 end

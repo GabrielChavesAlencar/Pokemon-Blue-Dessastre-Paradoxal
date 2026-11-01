@@ -4,12 +4,12 @@ on:
     branches: [main]
     paths:
       - 'scripts/online/**'
-      - 'tests/test_online_rooms.py'
+      - 'tests/test_online*.py'
       - '.github/workflows/online-tests.yml'
   pull_request:
     paths:
       - 'scripts/online/**'
-      - 'tests/test_online_rooms.py'
+      - 'tests/test_online*.py'
       - '.github/workflows/online-tests.yml'
   workflow_dispatch:
 permissions:
@@ -26,4 +26,4 @@ jobs:
         with:
           python-version: '3.11'
       - name: Salas, timeout, versoes e dois clientes HTTP reais
-        run: python -m unittest discover -s tests -p test_online_rooms.py -v
+        run: python -m unittest discover -s tests -p "test_online*.py" -v

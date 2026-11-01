@@ -1,6 +1,46 @@
 # Primeira etapa do online — experimento separado
 
-Esta etapa implementa **salas e preparação de equipes por HTTP**, com dois clientes independentes. **Ainda não é possível jogar uma batalha PvP.** O servidor retorna `battleAvailable: false`; confirmar equipes encerra a etapa no estado `prepared`, sem inventar um resultado de batalha.
+## Avanço: comandos remotos autoritativos (protocolo 2)
+
+O novo experimento em `scripts/online/turns.py`, `turn_service.py` e `TurnBridge.rb` liga **dois clientes HTTP independentes às decisões da engine nativa**. Golpes, alvos, trocas voluntárias e substituições após desmaio são oferecidos/validados pelo servidor e validados novamente pelo motor. O cliente não pode enviar dano, HP ou vencedor. A preparação de salas do protocolo 1 abaixo continua independente e compatível.
+
+Foram concluídas duas provas reais: dupla 4×4 com Pikachu/Magikarp (40 comandos remotos, 10 turnos) e individual 4×4 com Cavefang/Magikarp (15 comandos, 5 turnos). Ambas tiveram decisões dos dois lados, troca voluntária, substituições, reenvios idempotentes e vitória calculada pela engine. O ambiente isolado preservou a equipe offline e não abriu o save da campanha.
+
+**Ainda não é uma interface PvP no Hub.** Este avanço é a API/prova de resolução remota. O worker é um processo Windows de `Game.exe`, com inicialização gráfica mas sem cena visual de batalha; não é um servidor Linux pronto para deploy. As quatro mecânicas especiais ficam explicitamente desligadas nessa prova. Faltam integrar as salas/seleção do protocolo 1 ao worker, reproduzir as animações nos dois clientes, tratar todas as mecânicas e validar entre dois computadores antes de disponibilizar o botão no Hub. O instalador, o ZIP e os atalhos offline não instalam o worker.
+
+### Repetir a prova
+
+Com o jogo fechado e o catálogo da etapa anterior em `.blue-work/online/catalog.json`:
+
+```powershell
+python scripts/online/turns.py --prepare
+python scripts/online/turns.py --demo
+```
+
+Enquanto a demonstração aguarda, abra `game/Game.exe` em até 120 segundos. Dois clientes enviam escolhas por HTTP, incluindo uma troca voluntária; o jogo encerra ao terminar. Confira `game/Data/blue-native-turns-validation.txt` (`RESULT=PASS`) e `.blue-work/online-turns/http-validation.json`. O demo usa uma dupla de quatro escolhidos entre seis. Para outra equipe, `--prepare --teams caminho.json` aceita `format` (`single`/`double`), `teams` (duas equipes de seis no contrato 1) e `picks` (duas seleções ordenadas de quatro). Espécies, habilidades, itens, golpes, Nature e IVs/EVs são validados contra o catálogo; o formato continua livre quanto a learnsets competitivos.
+
+Ao terminar e fechar o jogo:
+
+```powershell
+python scripts/online/turns.py --cleanup
+python scripts/launch_game.py --prepare-only
+```
+
+A limpeza remove apenas os três arquivos conhecidos do plugin experimental e o pedido de execução, recusa arquivos inesperados e preserva o cache antigo em backup para forçar uma recompilação sem o worker. Os relatórios permanecem locais. Nunca publique `.blue-work/online-turns/session.json`: contém os tokens dos dois lados para o servidor experimental.
+
+### API de comandos
+
+Para manter o transporte aberto, use `python scripts/online/turn_service.py --session .blue-work/online-turns/session.json`. O endereço padrão é `127.0.0.1:8792`; `--host 0.0.0.0 --lan` deve ser escolhido explicitamente para uma prova em rede local. Não abre portas do roteador, não muda firewall e não faz deploy.
+
+| Operação | Contrato |
+|---|---|
+| `GET /v2/hello` | Versão, compatibilidade e limites explícitos: sem UI no Hub, mecânicas especiais desligadas |
+| `GET /v2/state` | Estado público; opções legais pendentes apenas do próprio lado |
+| `POST /v2/command` | Somente `{"seq": 1, "option": 0}`; índice da opção oferecida pela engine |
+
+Estado e comando exigem Bearer token do lado e `X-Blue-Compatibility` igual ao fingerprint da sessão. O índice do Pokémon, o alvo e o golpe efetivos vêm da lista autoritativa, não de campos arbitrários enviados pelo cliente. Repetir o mesmo comando é idempotente; modificar uma decisão confirmada, atuar pelo outro jogador, usar índice inválido ou responder a um pedido antigo é recusado. Os tokens e a lista de golpes legais do adversário não aparecem no estado público. O limite atual é 60 segundos por decisão, 30 turnos e 180 segundos totais do worker diagnóstico; timeout cancela com erro, sem inventar um vencedor. Não há reconexão persistente, ranking ou servidor público nesta etapa.
+
+As seções abaixo descrevem o **protocolo 1 de salas e preparação**, com dois clientes independentes. Esse servidor continua retornando `battleAvailable: false`; confirmar equipes encerra a etapa no estado `prepared`. A prova de batalhas remotas agora existe separadamente no protocolo 2, descrito acima; a integração entre os dois ainda está pendente.
 
 O Hub offline, seus atalhos, o instalador normal, o pacote de download e os plugins de batalha existentes não são alterados por esta etapa. O código fica em `scripts/online/`. O teste nativo opcional instala um plugin próprio temporário; nenhum atalho normal o instala ou cria seu pedido de execução.
 
@@ -75,4 +115,4 @@ Estados: `waiting → selecting → prepared`, com saídas para `cancelled` ou `
 
 ## Próxima etapa
 
-Ligar comandos validados dos dois participantes a uma instância autoritativa da engine, resolver os turnos e enviar eventos para os dois jogos. Só depois de validar uma partida completa entre clientes independentes o modo PvP deve aparecer no menu do Hub. O [roadmap](ROADMAP_HUB.md) mantém os critérios dessa entrega futura.
+Integrar as salas e a seleção do protocolo 1 ao worker de comandos do protocolo 2, depois reproduzir os eventos e animações nos dois jogos. A prova da resolução já passou; a interface, as mecânicas e o teste entre computadores continuam pendentes antes de colocar PvP no menu do Hub. O [roadmap](ROADMAP_HUB.md) mantém os critérios dessa entrega futura.

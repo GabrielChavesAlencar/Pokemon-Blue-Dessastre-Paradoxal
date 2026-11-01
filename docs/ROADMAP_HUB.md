@@ -30,6 +30,8 @@ Os arquivos principais do offline foram comparados com a main anterior, e as reg
 
 ### Trabalho restante
 
+**Avanço do protocolo 2:** a resolução autoritativa já recebeu comandos de dois clientes HTTP e concluiu partidas nativas, inclusive uma com Cavefang. Golpes/alvos, trocas, substituições e reenvios foram exercitados. Detalhes e comandos estão em [Online experimental](ONLINE_EXPERIMENTAL.md). Isso conclui a prova do caminho de decisões remotas, não a entrega da interface PvP no Hub; salas, animações e mecânicas ainda precisam ser integradas.
+
 1. **Provar a execução de uma batalha remota.** Definir um servidor que possa manter o estado de uma batalha da engine; avaliar um processo dedicado de Essentials sem interface de jogador. Verificar o suporte da engine antes de escolher hospedagem. O portal Vercel existente não fornece essa execução automaticamente. Se for necessário outro simulador, comparar suas mecânicas com as espécies e habilidades deste projeto antes de adotar uma alternativa.
 2. **Definir protocolo e validação.** Versionar regras, catálogo, Pokémon, golpes e habilidades. Validar times e comandos no servidor; detectar clientes com versões incompatíveis. Manter aleatoriedade e resultados sob autoridade do servidor, sem aceitar dano calculado por um cliente.
 3. **Salas por código e prévia.** Criar/entrar em sala, identificar os dois participantes, transmitir apenas os dados permitidos e confirmar equipes. O servidor deve impor os 60 segundos de cada jogador, os quatro primeiros no timeout e os quatro integrantes em batalha. Reaproveitar a tela nativa de seleção desta entrega.

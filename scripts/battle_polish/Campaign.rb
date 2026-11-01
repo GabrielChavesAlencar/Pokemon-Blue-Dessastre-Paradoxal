@@ -34,10 +34,9 @@ module BlueCampaign
       if BlueCampaign.active? && args[4] && !Array(args[4]).empty?
         level=BlueCampaign.common_level
         args[4]=Array(args[4]).map do |trainer|
-          next trainer if BlueCampaign.boss?(trainer)
           copy=trainer.clone
           copy.party=trainer.party.map do |original|
-            pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level;pkmn.calc_stats;pkmn.heal;pkmn
+            pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level unless BlueCampaign.boss?(trainer);pkmn.calc_stats;pkmn.heal;pkmn
           end
           copy
         end
@@ -45,6 +44,7 @@ module BlueCampaign
       end
       super(*args)
       @blue_mechanics=BlueBattleOptions.snapshot(:campaign) if BlueCampaign.active?
+      BlueTrainerMoves.apply(self) if BlueCampaign.active? && trainerBattle?
     end
   end
   module Preparation
@@ -58,7 +58,8 @@ module BlueCampaign
   module TrainerMoney
     def base_money
       value=super
-      BlueCampaign.active? && value.to_i<=0 ? 30 : value
+      return value unless BlueCampaign.active?
+      (value.to_i<=0 ? 30 : value)*[1,2,3][BlueStory.stage]
     end
   end
   module Setup
@@ -111,9 +112,15 @@ module BlueCampaign
     Game.singleton_class.prepend(LoadedMap)
     PokemonMartAdapter.prepend(Prices)
     GameData::Item.prepend(ConsumableItems)
+    GameData::Item.singleton_class.prepend(BlueIVSelectors::Icons)
+    Game.singleton_class.prepend(BlueIVSelectors::Loaded)
+    MenuHandlers.singleton_class.prepend(BlueIVSelectors::PartyOptions)
+    UIHandlers.singleton_class.prepend(BlueIVSelectors::SummaryOptions) if defined?(UIHandlers)
+    PokemonSummary_Scene.prepend(BlueIVSelectors::SummaryActions)
     ItemHandlers::UseFromBag.singleton_class.prepend(NoBagTools)
     ItemHandlers::UseInField.singleton_class.prepend(NoFieldTools)
     ItemHandlers::ConfirmUseInField.singleton_class.prepend(NoFieldTools)
+    ItemHandlers::CanUseInBattle.singleton_class.prepend(NoFieldTools)
     EventHandlers.add(:on_enter_map,:blue_campaign_departure,proc { |*args| BlueCampaign.depart })
     @installed=true
   end
