@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0d8ff855398032229d97f86f8bc63732a9d40e47",
+      "date": "2026-11-02T02:42:52-03:00",
+      "title": "Add Portuguese story localization and polish battle UI, controls and Story rewards",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b6f14774aec5e9426e3eb16c6ad5a326598cd4ad",
       "date": "2026-11-01T23:50:26-03:00",
       "title": "fix(campaign): corrigir salvamento e aplicar regras de treino e status",
