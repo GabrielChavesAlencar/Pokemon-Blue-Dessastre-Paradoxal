@@ -17,6 +17,10 @@ module BluePresentation
       picture=addSprite(sprite,origin)
       picture.setDelta(0,-Graphics.width,0)
       picture.moveDelta(8,WILD_SLIDE,Graphics.width,0)
+      if name.start_with?('pokemon_')
+        battler=@battle.battlers[name.split('_').last.to_i]
+        BlueWeightEntry.schedule(self,picture,battler,sprite,8+WILD_SLIDE)
+      end
     end
   end
   module TrainerExit
@@ -56,6 +60,8 @@ module BluePresentation
       p.moveZoom(delay,EMERGE,100,[sprite,:pbPlayIntroAnimation])
       clear=color.clone;clear.alpha=0
       p.moveColor(delay+EMERGE,6,clear)
+      # Native Poké Ball glare ends at 19; the landing must remain visible.
+      BlueWeightEntry.schedule(self,p,@battler,sprite,delay+19)
     end
     def ballOpenUp(ball,delay,kind,*_args)
       ball.setSE(delay,'Battle recall')

@@ -15,6 +15,7 @@ module BluePolishValidation
     assert(BlueReadoutsValidation.run,'Native Dex numbers, stat multipliers, seen-only preview, boxes, startup restrictions and locale; Data/blue-readouts-validation.txt')
     assert(BlueTouchValidation.run,'Native title/menu/name/level mouse input, real monotype branch and below-HP modifiers/screens; Data/blue-touch-validation.txt')
     assert(BlueExplorationValidation.run,'Controls/character mouse, fishing, Habitat Dex and four campaign tiers; Data/blue-exploration-validation.txt')
+    assert(BlueDexFeaturesValidation.run,'Pause/summary mouse, Habitat map, Dex filters/comparisons and weight landings; Data/blue-dex-features-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'

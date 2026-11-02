@@ -152,10 +152,10 @@ module BlueBattleLab
   end
 
   # A scrollable menu with mouse-accessible paging and Back controls.
-  def self.choose(title, commands, default = 0)
+  def self.choose(title, commands, default = 0, viewport_z = 99999)
     log("MENU_OPEN | #{title}")
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-    viewport.z = 99999
+    viewport.z = viewport_z
     header = Window_UnformattedTextPokemon.newWithSize(title, 0, 0, Graphics.width, 64, viewport)
     list = Window_CommandPokemon.newWithSize(commands, 0, 64, Graphics.width, Graphics.height - 112, viewport)
     list.index = default.clamp(0, commands.length - 1)

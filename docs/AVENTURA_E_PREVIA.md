@@ -41,7 +41,7 @@ O novo jogo pula o questionário sobre emulador/speed-up e seu ramo punitivo. A 
 
 ## Comparação no portal
 
-A aba **O que mudou**, em `/o-que-mudou`, compara Pokémon Decades base e Dessastre Paradoxal em duas colunas, com 32 aspectos em ordem de relevância. O histórico por atualização continua automático na aba Atualizações.
+A aba **O que mudou**, em `/o-que-mudou`, compara Pokémon Decades base e Dessastre Paradoxal em duas colunas, com 33 aspectos em ordem de relevância. O histórico por atualização continua automático na aba Atualizações.
 
 `game/Data/blue-readouts-validation.txt` registra a prova nativa dos eventos reais de novo jogo, listas dos 18 tipos, bloqueio de conversão de modo, números da Pokédex, boxes, missões, multiplicadores e prévia por teclado/clique. Todos os testes usam dados novos em memória, com o save da campanha bloqueado pelo laboratório.
 
@@ -64,3 +64,35 @@ A tela inicial de explicação das teclas aceita um clique para continuar. Na es
 A Old Rod usa a tabela OldRod quando ela existe. Nos mapas da base que só cadastram SuperRod, as varas sem tabela herdam a tabela de pesca local em memória, preservando espécies e pesos. Tabelas próprias já existentes têm prioridade e os dados originais não são regravados. A base tinha um caminho de fisgada manual que repetia a espera mesmo após uma reação correta; o adaptador agora retorna sucesso e permite ao handler nativo iniciar o encontro. A mesma correção atende Good Rod e Super Rod. Clique ou use o comando de confirmação quando aparecer a mordida. Se o mapa não tem nenhuma tabela de pesca, não aparece Pokémon; encontros de Surf ou de grama não são convertidos em pesca.
 
 `game/Data/blue-exploration-validation.txt` registra a prova das telas nativas, handler da Old Rod, Habitat Dex e fronteiras das quatro faixas de campanha. Os testes usam memória temporária do laboratório.
+
+## Pausa e atalho do resumo
+
+Os ícones e as setas do carrossel de pausa aceitam cliques. Clicar em um ícone seleciona e executa a ação nativa correspondente, incluindo Pokémon, Pokédex e Salvar. O fechamento após salvar continua usando a proteção contra atualizar componentes já descartados.
+
+No resumo de um Pokémon da equipe, clique em **Pokédex [P]** ou pressione **P** para abrir a ficha daquela espécie e forma. Voltar retorna ao resumo e ao mesmo integrante. A opção **View Pokédex** também fica disponível no menu de opções das páginas. O atalho respeita a obtenção da Pokédex, não aparece para ovos e fica desativado durante a batalha.
+
+## Habitat atual e localização no mapa
+
+Ao abrir a Habitat Dex, ela entra diretamente na rota/cidade atual quando existe um habitat disponível. Interiores usam a posição regional cadastrada ou a de um mapa pai para encontrar a área correspondente. **Outros habitats** abre a lista de áreas visitadas. Se o local atual não tem encontros cadastrados, o título da lista informa onde você está.
+
+Escolha **Ver no mapa**, ou clique em **Mapa [M]** na página de espécies. O mapa regional usa o desenho instalado e as coordenadas nativas: dourado indica o habitat, azul indica o jogador quando está na mesma região. Os marcadores podem coincidir. Locais sem coordenadas cadastradas mostram uma mensagem, sem receber uma posição inventada.
+
+## Pesquisa e filtros da Pokédex
+
+Na lista da Pokédex, clique em **Pesquisa / Filtros [F]**, pressione **F** ou use o comando de pesquisa nativo. É possível buscar parte do nome, filtrar tipo, mostrar todas as entradas, somente vistos ou somente capturados, e ordenar por número, nome, altura ou peso. Nomes e tipos usam os dados atuais do jogo. Pesquisa por nome/tipo e ordens descritivas não revelam espécies desconhecidas.
+
+**Aplicar filtros** atualiza a lista; **Limpar filtros** restaura a lista e numeração nativas. Sem resultados, a consulta informa isso e permite ajustar os critérios. **Busca avançada** mantém a pesquisa original, incluindo suas outras categorias. Pesquisar não registra Pokémon como vistos ou capturados.
+
+## Comparações de altura e peso
+
+Na ficha de um Pokémon da Pokédex há duas abas novas: **Altura** e **Peso**, acessíveis pelas setas ou clicando nos cabeçalhos. Altura coloca a figura do Pokémon e a silhueta do jogador lado a lado, na mesma escala física e com as duas medidas. Peso usa uma balança que inclina para o lado mais pesado e mostra os dois valores.
+
+A referência do jogador começa em **1,70 m e 60 kg**, escolhidos pelo autor. Use **Referência jogador**, na parte inferior dessas abas, ou confirme com Enter para ajustar altura em centímetros e peso em quilos. A preferência acompanha os metadados do save quando a campanha for salva normalmente. As medidas do Pokémon vêm da espécie/forma atual; dados ausentes são indicados com `?`.
+
+## Impacto de entrada por peso
+
+A apresentação de entrada inclui um impacto cosmético inspirado no [efeito de entrada de Black/White](https://www.dragonflycave.com/unova/bw-changes/#weight-based-sendout). No Blue, as faixas são: abaixo de 50 kg sem impacto pesado; 50–149,9 kg com toque leve; 150–299,9 kg com poeira e impacto médio; 300 kg ou mais com estrondo e mais poeira. A poeira é desenhada pelo código e os sons vêm da instalação existente.
+
+O efeito começa após a materialização ou ao terminar o deslizamento de um selvagem. Pokémon Flying, com Levitate ou com altitude visual cadastrada não levantam poeira do chão. São usados o peso e a forma da espécie, sem alterar stats ou o cálculo de golpes. Os sprites e o fundo retornam à posição original, e as partículas são descartadas ao terminar a animação.
+
+`game/Data/blue-dex-features-validation.txt` registra a prova nativa dessas telas, da escala, dos filtros e da entrada pesada.

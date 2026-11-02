@@ -6,6 +6,21 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30].freeze
   MANUAL={
+    'Search Pokémon name'=>'Pesquisar nome de Pokémon','Search / Filters [F]'=>'Pesquisa / Filtros [F]',
+    'Pokédex / Search and filters'=>'Pokédex / Pesquisa e filtros','All entries'=>'Todas as entradas',
+    'Seen only'=>'Só vistos','Caught only'=>'Só capturados','Dex number'=>'Número na Dex',
+    'Tallest first'=>'Maior altura','Heaviest first'=>'Maior peso','Show'=>'Mostrar','Order'=>'Ordenar',
+    'Apply filters'=>'Aplicar filtros','Clear filters'=>'Limpar filtros','Advanced search'=>'Busca avançada',
+    'No Pokémon match these filters.'=>'Nenhum Pokémon corresponde a esses filtros.',
+    'Height comparison'=>'Comparação de altura','Weight comparison'=>'Comparação de peso',
+    'Height'=>'Altura','Weight'=>'Peso','Player'=>'Jogador','Player reference'=>'Referência jogador',
+    'Player height in cm'=>'Altura do jogador em cm','Player weight in kg'=>'Peso do jogador em kg',
+    'Reset to 1.70 m / 60 kg'=>'Restaurar 1,70 m / 60 kg',
+    'View on map'=>'Ver no mapa','Other habitats'=>'Outros habitats','Map [M]'=>'Mapa [M]',
+    'Habitat location'=>'Localização do habitat','Gold: Habitat · Blue: You'=>'Dourado: Habitat · Azul: Você',
+    'Habitat Dex / Here: {1}'=>'Habitat Dex / Aqui: {1}',
+    'Back / Esc'=>'Voltar / Esc',
+    'This habitat has no registered regional map position.'=>'Este habitat não tem posição cadastrada no mapa regional.',
     'Habitat Dex'=>'Habitat Dex','Pokémon list'=>'Lista de Pokémon',
     'Habitat Dex / V: Seen · C: Caught'=>'Habitat Dex / V: Vistos · C: Capturados',
     'Visit an area with wild Pokémon to fill the Habitat Dex.'=>'Visite uma área com Pokémon selvagens para preencher a Habitat Dex.',

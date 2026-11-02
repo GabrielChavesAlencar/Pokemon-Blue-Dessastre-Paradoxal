@@ -244,6 +244,7 @@ module Compiler
       BlueAdventure.install;BlueReadouts.install
       BlueStartMouse.install
       BlueExploration.install
+      BlueDexControls.install;BlueDexCompare.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

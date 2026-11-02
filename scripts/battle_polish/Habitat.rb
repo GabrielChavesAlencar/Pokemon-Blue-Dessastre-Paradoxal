@@ -42,23 +42,33 @@ module BlueHabitat
   def self.open
     list=areas
     if list.empty?;pbMessage(_INTL('Visit an area with wild Pokémon to fill the Habitat Dex.'));return;end
+    selected=BlueHabitatMap.current_index(list)
+    return if selected && open_area(list[selected])!=:areas
     loop do
       labels=list.map do |area|
         seen,caught,total=progress(area)
         area[:name]+"  /  #{seen}/#{total} V  #{caught}/#{total} C"+(caught==total ? ' ★' : '')
       end
-      chosen=BlueBattleLab.choose(_INTL('Habitat Dex / V: Seen · C: Caught'),labels)
+      title=_INTL('Habitat Dex / Here: {1}',map_name($game_map.map_id))
+      chosen=BlueBattleLab.choose(title,labels,selected || 0)
       break if chosen<0
-      area=list[chosen];methods=area[:methods].keys
-      loop do
-        method=BlueBattleLab.choose(area[:name],methods.map { |type| _INTL(METHODS[type] || type.to_s) })
-        break if method<0
-        Scene.new(area[:name],_INTL(METHODS[methods[method]] || methods[method].to_s),entries(area[:methods][methods[method]])).run
-      end
+      selected=chosen;open_area(list[chosen])
+    end
+  end
+  def self.open_area(area)
+    methods=area[:methods].keys
+    loop do
+      labels=[_INTL('View on map')]+methods.map { |type| _INTL(METHODS[type] || type.to_s) }+[_INTL('Other habitats')]
+      method=BlueBattleLab.choose(area[:name],labels)
+      return :back if method<0
+      return :areas if method==labels.length-1
+      if method==0;BlueHabitatMap.open(area[:map]);next;end
+      type=methods[method-1]
+      Scene.new(area[:name],_INTL(METHODS[type] || type.to_s),entries(area[:methods][type]),area[:map]).run
     end
   end
   class Scene
-    def initialize(area,method,entries);@area=area;@method=method;@entries=entries;@page=0;@sprites={};end
+    def initialize(area,method,entries,map_id=nil);@area=area;@method=method;@entries=entries;@map_id=map_id;@page=0;@sprites={};end
     def start
       @viewport=Viewport.new(0,0,Graphics.width,Graphics.height);@viewport.z=999999
       @sprites['canvas']=BitmapSprite.new(Graphics.width,Graphics.height,@viewport)
@@ -70,6 +80,9 @@ module BlueHabitat
       pbSetSmallFont(b);light=Color.new(238,247,255);shadow=Color.new(10,25,42)
       pbDrawTextPositions(b,[[_INTL('Habitat Dex'),16,8,:left,light,shadow],[@area,16,32,:left,light,shadow],
         [@method,16,56,:left,Color.new(135,198,247),shadow]])
+      if @map_id
+        b.fill_rect(Graphics.width-180,4,164,26,Color.new(28,64,94));b.draw_text(Graphics.width-180,4,164,26,_INTL('Map [M]'),1)
+      end
       @entries.slice(@page*6,6).to_a.each_with_index do |entry,i|
         x=16+i%3*164;y=88+i/3*100
         b.fill_rect(x,y,152,92,Color.new(25,48,69))
@@ -97,6 +110,10 @@ module BlueHabitat
       loop do
         Graphics.update;Input.update;pbUpdateSpriteHash(@sprites)
         break if Input.trigger?(Input::BACK)
+        clicked=Input.trigger?(Input::MOUSELEFT) && BlueLabPointer.inside?(BlueLabPointer.position,Graphics.width-180,4,164,26)
+        if @map_id && (Input.triggerex?(:M) || clicked)
+          BlueHabitatMap.open(@map_id);Input.update;next
+        end
         if Input.trigger?(Input::LEFT);turn(-1)
         elsif Input.trigger?(Input::RIGHT);turn(1)
         elsif Input.trigger?(Input::MOUSELEFT)

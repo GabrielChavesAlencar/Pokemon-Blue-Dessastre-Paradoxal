@@ -1,7 +1,7 @@
 """Install Blue's original presentation/story plugin, with a local backup."""
 from pathlib import Path
 import importlib.util,os,tempfile
-FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','Habitat.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
+FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','DexControls.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
 SUPPORT=['leaders.py','leaders_full_power.json','champions.py']
 def atomic(path,raw):
     path.parent.mkdir(parents=True,exist_ok=True)
