@@ -6,6 +6,11 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30].freeze
   MANUAL={
+    'Choose the type for your two starters.'=>'Escolha o tipo dos seus dois iniciais.',
+    'Your screens'=>'Suas telas','Foe screens'=>'Telas rivais','No screens'=>'Nenhuma tela',
+    'Confirm name'=>'Confirmar nome','Delta Speed Up'=>'Delta Speed Up',
+    'Use Delta Speed Up at 1x or 3x.'=>'Aceleração Delta em 1x ou 3x.',
+    'Starter {1}/2 · {2} options'=>'Inicial {1}/2 · {2} opções','Options: {1}'=>'Opções: {1}',
     'PC / Pokémon Boxes'=>'PC / Boxes Pokémon','Opponent team preview'=>'Prévia do time rival',
     'Only previously seen species are shown.'=>'Só aparecem espécies que você já viu.',
     'Enter / Esc / P / Click: Back'=>'Enter / Esc / P / Clique: Voltar',

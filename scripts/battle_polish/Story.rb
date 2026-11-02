@@ -242,6 +242,7 @@ module Compiler
       BlueJourney.install
       BlueBattleUI.install;BlueLocale.install
       BlueAdventure.install;BlueReadouts.install
+      BlueStartMouse.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

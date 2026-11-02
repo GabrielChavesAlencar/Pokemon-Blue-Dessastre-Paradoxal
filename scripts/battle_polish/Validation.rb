@@ -13,6 +13,7 @@ module BluePolishValidation
     assert(BlueJourneyValidation.run,'Journey scaling, trainer menus, Leech Seed, Champions statuses and pause/save lifecycle; Data/blue-journey-validation.txt')
     assert(BlueBattleUIValidation.run,'Readable misses, field HUD, Run shortcut, cleaner, doubles, gym prizes and Portuguese; Data/blue-ui-validation.txt')
     assert(BlueReadoutsValidation.run,'Native Dex numbers, stat multipliers, seen-only preview, boxes, startup restrictions and locale; Data/blue-readouts-validation.txt')
+    assert(BlueTouchValidation.run,'Native title/menu/name/level mouse input, real monotype branch and below-HP modifiers/screens; Data/blue-touch-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'

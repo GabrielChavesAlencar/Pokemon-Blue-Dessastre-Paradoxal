@@ -47,16 +47,31 @@ module BlueReadouts
     end
   end
   module DataBox
-    def draw_name
+    def initializeOtherGraphics(viewport)
+      super
+      @sprites['blueStages']=BitmapSprite.new(132,8,viewport)
+    end
+    def x=(value);super;blue_position_stages;end
+    def y=(value);super;blue_position_stages;end
+    def z=(value);super;blue_position_stages;end
+    def blue_position_stages
+      sprite=@sprites && @sprites['blueStages'];return unless sprite && !sprite.disposed?
+      sprite.x=self.x+@spriteBaseX+68
+      sprite.y=self.y+(@show_hp_numbers ? 84 : 52)
+      sprite.z=self.z+3
+      sprite.visible=self.visible
+    end
+    def refresh
       result=super
+      sprite=@sprites && @sprites['blueStages'];return result unless sprite
+      sprite.bitmap.clear;blue_position_stages
+      return result unless @battler && @battler.pokemon
       labels=BlueReadouts.stage_labels(@battler)
       return result if labels.empty?
-      # This eight-pixel strip is between the native name/level and HP rows.
-      # Reserve the left side for status/Mega icons and the right for shiny.
       cell=[132/labels.length,60].min
       labels.each_with_index do |(text,up),i|
         label=BlueReadouts.badge(text,cell-1,8,up)
-        self.bitmap.blt(@spriteBaseX+68+i*cell,32,label,Rect.new(0,0,label.width,label.height))
+        sprite.bitmap.blt(i*cell,0,label,Rect.new(0,0,label.width,label.height))
       end
       result
     end
@@ -70,15 +85,15 @@ module BlueReadouts
   end
   class Preview
     attr_reader :sprites
-    def initialize(entries)
-      @entries=entries;@sprites={}
+    def initialize(entries,screens=[])
+      @entries=entries;@screens=screens;@sprites={}
     end
     def start
       @viewport=Viewport.new(0,0,Graphics.width,Graphics.height);@viewport.z=999999
       canvas=BitmapSprite.new(Graphics.width,Graphics.height,@viewport);@sprites['canvas']=canvas
       b=canvas.bitmap;b.fill_rect(0,0,Graphics.width,Graphics.height,Color.new(8,20,36,247));pbSetSystemFont(b)
       pbDrawTextPositions(b,[[_INTL('Opponent team preview'),Graphics.width/2,12,:center,Color.new(235,247,255),Color.new(30,60,90)]])
-      rows=[(@entries.length+2)/3,1].max;cell_h=[(Graphics.height-94)/rows,92].min
+      rows=[(@entries.length+2)/3,1].max;cell_h=[(Graphics.height-(@screens.empty? ? 94 : 154))/rows,92].min
       @entries.each_with_index do |entry,i|
         x=16+(i%3)*160;y=52+(i/3)*cell_h
         b.fill_rect(x,y,152,cell_h-6,Color.new(25,46,67))
@@ -92,6 +107,9 @@ module BlueReadouts
         pbDrawTextPositions(b,[[entry[:name],x+76,y+cell_h-29,:center,Color.new(239,246,255),Color.new(25,46,67)]])
       end
       b.font.size=16
+      @screens.each_with_index do |line,i|
+        pbDrawTextPositions(b,[[line,16,Graphics.height-100+i*22,:left,Color.new(170,218,250),Color.new(8,20,36)]])
+      end
       pbDrawTextPositions(b,[[_INTL('Only previously seen species are shown.'),Graphics.width/2,Graphics.height-46,:center,Color.new(170,205,226),Color.new(8,20,36)],
         [_INTL('Enter / Esc / P / Click: Back'),Graphics.width/2,Graphics.height-24,:center,Color.new(239,246,255),Color.new(8,20,36)]])
     end
@@ -144,7 +162,7 @@ module BlueReadouts
       clicked=button && button.visible && Input.trigger?(Input::MOUSELEFT) && BlueLabPointer.hit_sprite?(button,BlueLabPointer.position)
       return unless clicked || Input.triggerex?(:P)
       @blue_preview_open=true
-      BlueReadouts::Preview.new(BlueReadouts.preview_entries(@battle)).run
+      BlueReadouts::Preview.new(BlueReadouts.preview_entries(@battle),BlueBattleUI.screen_details(@battle)).run
       Input.update
     ensure
       @blue_preview_open=false

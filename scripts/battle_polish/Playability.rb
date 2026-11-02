@@ -3,6 +3,19 @@ module BlueBattleUI
   MISS_SECONDS=1.6
   def self.clock;System.respond_to?(:unscaled_uptime) ? System.unscaled_uptime : System.uptime;end
   def self.duration(value);value.to_i>0 ? ' ('+value.to_s+')' : '';end
+  SCREENS=[[:Reflect,:REFLECT,'R'],[:LightScreen,:LIGHTSCREEN,'LS'],[:AuroraVeil,:AURORAVEIL,'AV']].freeze
+  def self.screens(battle,side)
+    SCREENS.filter_map do |effect,move,short|
+      turns=battle.sides[side].effects[PBEffects.const_get(effect)].to_i
+      [GameData::Move.get(move).name,turns,short] if turns>0
+    end
+  end
+  def self.screen_details(battle)
+    2.times.map do |side|
+      effects=screens(battle,side)
+      _INTL(side==0 ? 'Your side' : 'Opponent')+': '+(effects.empty? ? _INTL('No screens') : effects.map { |name,turns,short| name+duration(turns) }.join(', '))
+    end
+  end
   def self.field_rows(battle)
     rows=[];field=battle.field
     if field.weather!=:None
@@ -16,6 +29,8 @@ module BlueBattleUI
     2.times do |side|
       turns=battle.sides[side].effects[PBEffects::Tailwind]
       rows << ['Tailwind / '+_INTL(side==0 ? 'Your side' : 'Opponent')+duration(turns),side==0 ? :ally : :foe] if turns.to_i>0
+      shields=screens(battle,side)
+      rows << [_INTL(side==0 ? 'Your screens' : 'Foe screens')+': '+shields.map { |name,n,short| short+n.to_s }.join(' '),side==0 ? :ally : :foe] unless shields.empty?
     end
     rows << [_INTL('Field: clear'),:none] if rows.empty?
     rows << ['R: '+_INTL('Run'),:shortcut]
@@ -82,7 +97,7 @@ module BlueBattleUI
     end
     def pbInitSprites
       super
-      sprite=BitmapSprite.new(264,64,@viewport)
+      sprite=BitmapSprite.new(264,80,@viewport)
       sprite.x=Graphics.width-270;sprite.y=0;sprite.z=299
       sprite.bitmap.font.name=['Arial','Verdana'];sprite.bitmap.font.size=14
       @sprites['blueFieldHUD']=sprite
