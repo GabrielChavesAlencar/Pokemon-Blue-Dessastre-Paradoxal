@@ -63,7 +63,7 @@ module BlueCampaign
     def base_money
       value=super
       return value unless BlueCampaign.active?
-      (value.to_i<=0 ? 30 : value)*[1,2,3][BlueStory.stage]
+      (value.to_i<=0 ? 30 : value)*[1,2,3][BlueStory.stage]*(BlueJourney.gym_name(name) ? 2 : 1)
     end
   end
   module Setup

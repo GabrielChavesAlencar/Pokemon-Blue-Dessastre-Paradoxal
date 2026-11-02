@@ -11,6 +11,10 @@ module BlueJourney
   def self.gym_event?(list)
     list.any? { |c| [111,355,655].include?(c.code) && c.parameters.any? { |v| v.is_a?(String) && GYM_NAMES.any? { |n| v.include?(n+' (') } } }
   end
+  def self.double_option?(label)
+    value=label.to_s.strip
+    ['Double Battle','Doubles'].include?(value) || value.match?(/\A2\s+Pok[eé]mon\s*\(Doubles\)\z/)
+  end
   # Keep Essentials' original branch indices, including cancel. Never map Back to Heal.
   def self.filter_choices(result,gym=false)
     labels,cancel,mapping=result
@@ -18,8 +22,8 @@ module BlueJourney
       labels.each_index.select { |i| !labels[i].include?('Forfeit') && !labels[i].include?('Full Team Heal') }
     elsif gym && labels.include?('Full Power Team')
       labels.each_index.select { |i| ['Full Power Team','Cancel','No'].include?(labels[i]) }
-    elsif gym && labels.include?('Double Battle')
-      labels.each_index.select { |i| ['Double Battle','Cancel','No'].include?(labels[i]) }
+    elsif labels.any? { |s| double_option?(s) }
+      labels.each_index.select { |i| double_option?(labels[i]) || ['Cancel','No'].include?(labels[i]) }
     else
       labels.each_index.reject { |i| labels[i]=='Full Team Heal' }
     end
@@ -35,7 +39,9 @@ module BlueJourney
   module Choices
     def setup_choices(params)
       result=super
-      return result unless BlueCampaign.active? && BlueJourney.trainer_event?(@list)
+      return result unless BlueCampaign.active?
+      format=result[0].any? { |s| BlueJourney.double_option?(s) }
+      return result unless format || BlueJourney.trainer_event?(@list)
       gym=BlueJourney.gym_event?(@list)
       BlueJourney.filter_choices(result,gym)
     end

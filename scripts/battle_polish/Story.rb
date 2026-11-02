@@ -240,6 +240,7 @@ module Compiler
       BluePresentation.install;BlueStory.install
       BlueCampaign.install
       BlueJourney.install
+      BlueBattleUI.install;BlueLocale.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

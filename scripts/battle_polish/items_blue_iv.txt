@@ -1,3 +1,12 @@
+[BLUEEVCLEANER]
+Name = EV Cleaner
+NamePlural = EV Cleaners
+Pocket = 1
+Price = 2000
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets all EVs of one Pokémon. Consumed only when the EVs change.
+#-------------------------------
 [BLUEIVHP]
 Name = Seletor IV HP
 NamePlural = Seletores IV HP

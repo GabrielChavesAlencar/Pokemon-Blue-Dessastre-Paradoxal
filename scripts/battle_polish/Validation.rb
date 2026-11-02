@@ -11,6 +11,7 @@ module BluePolishValidation
     test_story
     BlueCampaignValidation.run(@lines)
     assert(BlueJourneyValidation.run,'Journey scaling, trainer menus, Leech Seed, Champions statuses and pause/save lifecycle; Data/blue-journey-validation.txt')
+    assert(BlueBattleUIValidation.run,'Readable misses, field HUD, Run shortcut, cleaner, doubles, gym prizes and Portuguese; Data/blue-ui-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'
