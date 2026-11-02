@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2a99d2f18cfcfc4c4f2812bad6a8ead8d34295f6",
+      "date": "2026-11-02T10:33:52-03:00",
+      "title": "Melhora Pokédex, prévia de batalha e escolhas da campanha",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0d8ff855398032229d97f86f8bc63732a9d40e47",
       "date": "2026-11-02T02:42:52-03:00",
       "title": "Add Portuguese story localization and polish battle UI, controls and Story rewards",
