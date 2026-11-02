@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f12a5bde6e316d99da6906614f77b0e0e7a77998",
+      "date": "2026-11-02T16:46:13-03:00",
+      "title": "Melhora Pokédex e habitats com cartões e zoom; corrige mouse dos golpes e costas do Ammnoid",
+      "category": "Correções"
+    },
+    {
       "sha": "7f2ce8c69d5e5b87728c880275e1aa37f6424dba",
       "date": "2026-11-02T15:21:29-03:00",
       "title": "feat: ampliar Pokédex, mapas de habitats e controles; animar entradas por peso",
