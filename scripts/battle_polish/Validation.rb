@@ -12,6 +12,7 @@ module BluePolishValidation
     BlueCampaignValidation.run(@lines)
     assert(BlueJourneyValidation.run,'Journey scaling, trainer menus, Leech Seed, Champions statuses and pause/save lifecycle; Data/blue-journey-validation.txt')
     assert(BlueBattleUIValidation.run,'Readable misses, field HUD, Run shortcut, cleaner, doubles, gym prizes and Portuguese; Data/blue-ui-validation.txt')
+    assert(BlueReadoutsValidation.run,'Native Dex numbers, stat multipliers, seen-only preview, boxes, startup restrictions and locale; Data/blue-readouts-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'
@@ -72,7 +73,7 @@ module BluePolishValidation
     commands << RPG::EventCommand.new(404,0,[]);commands << RPG::EventCommand.new
     interpreter=Interpreter.new;interpreter.setup(commands,0)
     choices=interpreter.setup_choices([names,3])
-    assert(choices[0].first=='Traditional Starters' && choices[2]==[2,0,1,3] && choices[1]==1,'Traditional Starters first; branch and cancel mappings retained')
+    assert(choices[0]==['Traditional Starters','Monotype Starters'] && choices[2]==[2,3] && choices[1]==1,'Traditional and Monotype only; original branches and cancel mapping retained')
     assert(names.first=='Options Details','Original choice data remains unchanged')
     # Exercise every non-Mega species/form against both native stat ceilings.
     checked=0;examples=[]

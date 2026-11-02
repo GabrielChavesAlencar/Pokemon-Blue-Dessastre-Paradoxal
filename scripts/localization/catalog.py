@@ -4,7 +4,7 @@ import argparse,collections,json,re,sys
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 from server.ruby_marshal import loads,text
-PROTECTED_TYPES={1,4,5,7,8,10,14,27,28,29,30}
+PROTECTED_TYPES={1,4,5,7,8,14,27,28,29,30}
 CONTROL=re.compile(r'#\{[^{}]*\}|<[^>]+>|(?:[A-Z]:[\\/]|(?:Graphics|Audio|Data|Plugins|Fonts|PBS)/)[^\s"<>]+|\\(?:[a-zA-Z]+\[[^\]]*\]|\[[0-9a-f]{8}\]|POG|PN|PM|PG|TN|TE|CN|WTNP|WT|OP|CL|WU|WM|WD|PT|TS|[Gnbrmlf0-9.!^|><])|\{\d+(?::[^}]+)?\}|%\d*\$?[sdif]|\n',re.I)
 def extract(project=ROOT):
     keys=set();protected=set();maps=set()
@@ -38,6 +38,15 @@ def extract(project=ROOT):
     for event in loads((project/'game/Data/CommonEvents.rxdata').read_bytes()):
         if event:events(event.attrs['@list'])
     keys.update(maps)
+    # MQS keeps its quest prose as plain data rather than _INTL calls. Extract
+    # only display fields; never interpret Ruby or include quest IDs/conditions.
+    quest=project/'game/Plugins/MQS/004_Quest_Data.rb'
+    if quest.is_file():
+        pattern=re.compile(r'^\s*:(?:Name|QuestGiver|QuestDescription|RewardString|Stage\d+|StageLabel\d+|Location\d+)\s*=>\s*("(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')',re.M)
+        for match in pattern.finditer(quest.read_text(encoding='utf8')):
+            literal=match[1][1:-1]
+            value=re.sub(r'\\(["\'\\nrt])',lambda m:{'n':'\n','r':'\r','t':'\t'}.get(m[1],m[1]),literal)
+            keys.add(value)
     protected={s for s in protected if s and not s.isdigit()}
     keys={s for s in keys if s.strip() and s not in protected and re.search('[A-Za-z]',CONTROL.sub('',s))}
     return {'version':1,'strings':sorted(keys),'mapStrings':sorted(maps & keys),'protected':sorted(protected,key=lambda s:(-len(s),s))}

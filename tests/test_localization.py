@@ -1,12 +1,25 @@
 import importlib.util,json,sys,tempfile,unittest
+from unittest.mock import patch
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts/localization'))
-from catalog import controls,validate
+from catalog import controls,validate,extract
 spec=importlib.util.spec_from_file_location('blue_locale_install',ROOT/'scripts/localization/install.py')
 installer=importlib.util.module_from_spec(spec);spec.loader.exec_module(installer)
-from server.ruby_marshal import loads,text
+from server.ruby_marshal import loads,text,dumps_simple
 class LocalizationTests(unittest.TestCase):
+    def test_quest_display_fields_and_abilities_are_collected_without_executing_ruby(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);data=root/'game/Data';data.mkdir(parents=True)
+            messages=[{} for _ in range(31)]
+            messages[5]={'Flamethrower':'Flamethrower'};messages[10]={'Blaze':'Blaze'}
+            for name in ['messages_core.dat','messages_game.dat','CommonEvents.rxdata']:(data/name).write_bytes(b'inert test data')
+            quest=root/'game/Plugins/MQS/004_Quest_Data.rb';quest.parent.mkdir(parents=True)
+            quest.write_text(':ID => "QuestInternalId",\n:Name => "A new quest",\n:Stage1 => "Find the clue.",\n:Condition => "SecretFlag",\nraise "Never execute Ruby"\n',encoding='utf8')
+            with patch('catalog.loads',side_effect=[messages,messages,[None]]):result=extract(root)
+            self.assertIn('Blaze',result['strings']);self.assertIn('A new quest',result['strings'])
+            self.assertIn('Find the clue.',result['strings'])
+            for protected in ['Flamethrower','QuestInternalId','SecretFlag','Never execute Ruby']:self.assertNotIn(protected,result['strings'])
     def test_gender_colour_prefix_does_not_consume_portuguese_word(self):
         validate(r'\bOK. Please return. \mI am here.',r'\bPode voltar. \mEu estou aqui.')
         self.assertEqual(controls(r'\bPode voltar.'),controls(r'\bHello.'))

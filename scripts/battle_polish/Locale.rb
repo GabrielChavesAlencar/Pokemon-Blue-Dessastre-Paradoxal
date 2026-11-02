@@ -4,8 +4,44 @@ class PokemonSystem
   def blue_locale;@blue_locale || 'en';end
 end
 module BlueLocale
-  NAME_TYPES=[1,4,5,7,8,10,14,18,19,21,27,28,29,30].freeze
+  NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30].freeze
   MANUAL={
+    'PC / Pokémon Boxes'=>'PC / Boxes Pokémon','Opponent team preview'=>'Prévia do time rival',
+    'Only previously seen species are shown.'=>'Só aparecem espécies que você já viu.',
+    'Enter / Esc / P / Click: Back'=>'Enter / Esc / P / Clique: Voltar',
+    'Monotype Starters'=>'Iniciais de um tipo','Traditional Starters'=>'Iniciais tradicionais',
+    'Yes (Metagame Wiki Dex)'=>'Metagame Wiki Dex',
+    'Quests'=>'Missões','Quest'=>'Missão','Active'=>'Ativas','Completed'=>'Concluídas','Failed'=>'Falhas',
+    'Active tasks'=>'Missões ativas','Completed tasks'=>'Missões concluídas','Failed tasks'=>'Missões falhas',
+    '{1} tasks'=>'Missões {1}',
+    'Trouble in The Woods'=>'Problemas na floresta',
+    'Investigate Cloakfall Forest'=>'Investigue a Floresta Cloakfall',
+    'An trio of troublesome Pokémon have made it dangerous for Cherryhill City\'s Gardener to gather fertilizer material. Find and best the trio in battle to make them leave Cloakfall Forest. (Cloakfall Forest is East of Cherryhill City)'=>'Um trio de Pokémon impede a jardineira de Cherryhill City de coletar adubo. Vá à Floresta Cloakfall, a leste da cidade, e vença os três em batalha para fazê-los ir embora.',
+    'Party: {1}'=>'Equipe: {1}',
+    'Moves'=>'Golpes','Abilities'=>'Habilidades','Encounters'=>'Encontros',
+    'Number Defeated: {1}'=>'Derrotados: {1}','Number Captured: {1}'=>'Capturados: {1}',
+    'New quest discovered!'=>'Nova missão descoberta!','Check your quest log for more details!'=>'Confira os detalhes no diário de missões!',
+    'ARROWS:'=>'SETAS:','Navigate'=>'Navegar','Jump Down/Up'=>'Pular abaixo/acima','New Activity:'=>'Nova atividade:',
+    'Overview:'=>'Resumo:','Task:'=>'Objetivo:','Location:'=>'Local:','Reward:'=>'Recompensa:',
+    'Quest received from:'=>'Missão recebida de:','Quest discovered in:'=>'Missão descoberta em:',
+    'Quest discovered on:'=>'Missão descoberta em:','Quest start time:'=>'Início da missão:',
+    'Quest completion time:'=>'Conclusão da missão:','Quest failure time:'=>'Falha na missão:',
+    'Stage %d/%d'=>'Etapa %d/%d','Stage {1}/{2}'=>'Etapa {1}/{2}',
+    'Change Quest'=>'Mudar missão','Hide Quest'=>'Ocultar missão','View Quest'=>'Ver missão',
+    'You have {1} new quest!'=>'Você tem {1} missão nova!','You have {1} new quests!'=>'Você tem {1} missões novas!',
+    'Oh! A wild {1} appeared!'=>'Um {1} selvagem apareceu!',
+    'Oh! A wild {1} and {2} appeared!'=>'{1} e {2} selvagens apareceram!',
+    'Oh! A wild {1}, {2} and {3} appeared!'=>'{1}, {2} e {3} selvagens apareceram!',
+    'You are challenged by {1}!'=>'{1} desafia você!',
+    'You are challenged by {1} and {2}!'=>'{1} e {2} desafiam você!',
+    'You are challenged by {1}, {2} and {3}!'=>'{1}, {2} e {3} desafiam você!',
+    'Go! {1}!'=>'Vai, {1}!','Go! {1} and {2}!'=>'Vão, {1} e {2}!',
+    'Go! {1}, {2} and {3}!'=>'Vão, {1}, {2} e {3}!',
+    '{1} sent out {2}!'=>'{1} enviou {2}!','{1} sent out {2} and {3}!'=>'{1} enviou {2} e {3}!',
+    '{1} sent out {2}, {3} and {4}!'=>'{1} enviou {2}, {3} e {4}!',
+    'The opposing {1}'=>'O {1} adversário','the opposing {1}'=>'o {1} adversário',
+    'The wild {1}'=>'O {1} selvagem','the wild {1}'=>'o {1} selvagem',
+    '{1} used {2}!'=>'{1} usou {2}!','Turn {1}'=>'Turno {1}',
     'Language / Idioma'=>'Language / Idioma','English'=>'Inglês','Portuguese (Brazil)'=>'Português (Brasil)',
     'Interface and story language. Pokémon, item and move names stay unchanged.'=>'Traduz interface e história. Mantém nomes de Pokémon, itens e golpes.',
     'Text Speed'=>'Velocidade do texto','Battle Scene'=>'Animações de batalha','Battle Style'=>'Estilo de batalha',
@@ -54,8 +90,9 @@ module BlueLocale
     @templates ||= begin
       rows=[]
       (MANUAL.to_a+translations.reject { |key,value| MANUAL.key?(key) }.to_a).each do |source,target|
-        next unless source.include?('#{') && source!=target
-        variables=source.scan(/#\{[^{}]*\}/);parts=source.split(/#\{[^{}]*\}/,-1)
+        next unless source.match?(/#\{[^{}]*\}|\{\d+(?::[^}]+)?\}|%[ds]/) && source!=target
+        tokens=/#\{[^{}]*\}|\{\d+(?::[^}]+)?\}|%[ds]/
+        variables=source.scan(tokens);parts=source.split(tokens,-1)
         needle=parts.max_by(&:length)
         next if variables.empty? || needle.length<4
         regex=Regexp.new('\\A'+parts.map { |p| Regexp.escape(p) }.join('(.*?)')+'\\z',Regexp::MULTILINE)
@@ -68,7 +105,8 @@ module BlueLocale
       next unless value.include?(needle)
       match=regex.match(value);next unless match
       substitutions=variables.each_with_index.to_h { |token,i| [token,match[i+1]] }
-      result=target.gsub(/#\{[^{}]*\}/) { |token| substitutions.fetch(token,token) }
+      printf=variables.each_index.select { |i| variables[i].match?(/\A%[ds]\z/) }.map { |i| match[i+1] }
+      result=target.gsub(/#\{[^{}]*\}|\{\d+(?::[^}]+)?\}|%[ds]/) { |token| token.start_with?('%') ? (printf.shift || token) : substitutions.fetch(token,token) }
       break
     end
     @dynamic_cache.clear if @dynamic_cache.length>2048
@@ -81,7 +119,20 @@ module BlueLocale
     # never turn a valid bitmap/audio/data path into a translated filename.
     return value if value.match?(/\A(?:Graphics|Audio|Data|Plugins|Fonts|PBS|Saves?)[\\\/]/i) || value.match?(/\A[^\s]+\.(?:png|bmp|jpg|ogg|mp3|wav|mid|dat|rxdata|rb|dll|txt)\z/i)
     return value if proper_names[value]
-    MANUAL[value] || translations[value] || dynamic_translation(value)
+    direct=MANUAL[value] || translations[value]
+    return direct if direct
+    dynamic=dynamic_translation(value)
+    return dynamic if dynamic!=value
+    # Translate before rich-text renderers split their input into individual glyphs.
+    if value.match?(/<[^>]+>/)
+      return value.split(/(<[^>]+>)/).map { |part| part.start_with?('<') ? part : translate(part) }.join
+    end
+    if value.include?("\n")
+      return value.split(/(\n)/).map { |line| line=="\n" ? line : translate(line) }.join
+    end
+    stripped=value.strip
+    return value.sub(stripped,translate(stripped)) if stripped!=value && !stripped.empty?
+    value
   end
   module NameProtection
     def name;BlueLocale.protect_name(super);end
@@ -99,6 +150,18 @@ module BlueLocale
     def getFromMapHash(*args);BlueLocale.translate(super);end
   end
   module Prompts
+    def _INTL(*args)
+      super(args[0],*args.drop(1).map { |value| value.is_a?(String) ? BlueLocale.translate(value) : value })
+    end
+    def _ISPRINTF(*args)
+      super(args[0],*args.drop(1).map { |value| value.is_a?(String) ? BlueLocale.translate(value) : value })
+    end
+    def drawFormattedTextEx(bitmap,x,y,width,text,*args)
+      super(bitmap,x,y,width,BlueLocale.translate(text),*args)
+    end
+    def drawTextEx(bitmap,x,y,width,numlines,text,*args)
+      super(bitmap,x,y,width,numlines,BlueLocale.translate(text),*args)
+    end
     def pbMessage(message,*args,&block)
       args[0]=args[0].map { |s| BlueLocale.translate(s) } if args[0].is_a?(Array)
       super(BlueLocale.translate(message),*args,&block)
@@ -146,7 +209,7 @@ module BlueLocale
   def self.install
     return if @installed
     MessageTypes.singleton_class.prepend(Messages);Object.prepend(Prompts)
-    Pokemon.prepend(NameProtection);NPCTrainer.prepend(NameProtection)
+    Pokemon.prepend(NameProtection);Trainer.prepend(NameProtection)
     Interpreter.prepend(ChoiceLogic);MenuHandlers.singleton_class.prepend(Menus)
     Bitmap.prepend(BitmapText)
     Battle::Scene::CommandMenu.prepend(CommandLabels)
