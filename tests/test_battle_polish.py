@@ -7,7 +7,7 @@ polish=importlib.util.module_from_spec(spec);spec.loader.exec_module(polish)
 class PolishInstallTests(unittest.TestCase):
     def fixture(self,root):
         source=root/'scripts/battle_polish';source.mkdir(parents=True)
-        for name in polish.FILES:shutil.copy2(ROOT/'scripts/battle_polish'/name,source/name)
+        for name in polish.FILES+polish.SUPPORT:shutil.copy2(ROOT/'scripts/battle_polish'/name,source/name)
         game=root/'game'
         for name in ['Data/Map001.rxdata','PBS/trainers.txt','Saves/Game.rxdata','Graphics/Pokemon/Front/TEST.png']:
             path=game/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'original '+name.encode())

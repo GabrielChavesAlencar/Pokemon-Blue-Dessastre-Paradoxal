@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "variant": "2v2 Full Power",
+  "replacements": [
+    {"leader":"Marigold","from":"SUNFLORA","species":"ARCHGUTOR","nature":"QUIET","evs":{"HP":252,"SPECIAL_ATTACK":252},"abilityIndex":1,"item":"LIFEORB","moves":["WEATHERBALL","SOLARBEAM","GROWTH","PSYCHIC"]},
+    {"leader":"Reva","from":"BRUXISH","species":"LUDICOLO","nature":"MODEST","evs":{"HP":200,"SPECIAL_ATTACK":252,"SPEED":52},"abilityIndex":0,"item":"DPLUDICOLOITE","moves":["FAKEOUT","GIGADRAIN","SURF","ICYWIND"]},
+    {"leader":"Keegan","from":"EMBOAR","species":"SCORCHMANE","nature":"ADAMANT","evs":{"ATTACK":252,"SPEED":252},"abilityIndex":0,"item":"HEATROCK","moves":["WILDCHARGE","FLAREBLITZ","SUNNYDAY","PROTECT"]},
+    {"leader":"Quinn","from":"WYRDEER","species":"MAGISCALE","nature":"MODEST","evs":{"HP":252,"SPECIAL_ATTACK":252},"abilityIndex":1,"item":"PSYCHICSEED","moves":["EXPANDINGFORCE","CALMMIND","SURF","PROTECT"]},
+    {"leader":"Luis","from":"INFERNAPE","species":"PRIMALPUNNY","nature":"ADAMANT","evs":{"HP":252,"ATTACK":252},"abilityIndex":0,"item":"BOOSTERENERGY","moves":["HEADLONGRUSH","CLOSECOMBAT","COACHING","TRIPLEAXEL"]},
+    {"leader":"Luna","from":"ABSOL","species":"MIRECREST","nature":"ADAMANT","evs":{"ATTACK":252,"SPEED":252},"abilityIndex":0,"item":"CHOICESCARF","moves":["CLOSECOMBAT","HEADSMASH","LASHOUT","PARTINGSHOT"]},
+    {"leader":"Galen","from":"NINJASK","species":"PRIMALMOTH","nature":"TIMID","evs":{"SPECIAL_ATTACK":252,"SPEED":252},"abilityIndex":0,"item":"FOCUSSASH","moves":["STRUGGLEBUG","BLIZZARD","HURRICANE","UTURN"]},
+    {"leader":"Christopher","from":"NOSEPASS","species":"PRIMALSECT","nature":"BRAVE","evs":{"HP":252,"ATTACK":252},"abilityIndex":0,"item":"SITRUSBERRY","moves":["SPORE","WOODHAMMER","LEECHLIFE","HEADSMASH"]},
+    {"leader":"Atlas","from":"IRONTREADS","species":"DREADCREST","nature":"BOLD","evs":{"HP":252,"SPECIAL_ATTACK":100,"DEFENSE":152},"abilityIndex":0,"item":"POWERHERB","moves":["METEORBEAM","ROOST","EARTHPOWER","AIRCUTTER"]},
+    {"leader":"Sophia","from":"SQUAWKABILLY","species":"IRONFEASTER","nature":"BRAVE","evs":{"HP":252,"ATTACK":252},"abilityIndex":0,"item":"CHOICEBAND","moves":["GYROBALL","HEATCRASH","HEAVYSLAM","DOUBLEEDGE"]},
+    {"leader":"Hermes","from":"MAGNEZONE","species":"DYNAMOTRODE","nature":"MODEST","evs":{"SPECIAL_ATTACK":252,"SPEED":252},"abilityIndex":2,"item":"AIRBALLOON","moves":["STEELBEAM","RISINGVOLTAGE","VOLTSWITCH","PROTECT"]},
+    {"leader":"Cethin","from":"BEEDRILL","species":"ANCESTRASH","nature":"SASSY","evs":{"HP":252,"ATTACK":152,"SPECIAL_DEFENSE":100},"abilityIndex":0,"item":"BLACKSLUDGE","moves":["HIGHHORSEPOWER","GUNKSHOT","ACIDSPRAY","CURSE"]},
+    {"leader":"Keiko","from":"ALCREMIE","species":"SAVEGEJOWL","nature":"BRAVE","evs":{"HP":252,"ATTACK":252},"abilityIndex":0,"item":"ASSAULTVEST","moves":["SUCKERPUNCH","THROATCHOP","SPIRITBREAK","PSYCHICFANGS"]},
+    {"leader":"Roho","from":"RUNERIGUS","species":"PHANTOMIRE","nature":"TIMID","evs":{"SPECIAL_ATTACK":252,"SPEED":252},"abilityIndex":0,"item":"BOOSTERENERGY","moves":["SHADOWBALL","DARKPULSE","ACIDSPRAY","PERISHSONG"]},
+    {"leader":"Belinda","from":"APPLETUN","species":"PRIMALDRENAW","nature":"ADAMANT","evs":{"ATTACK":252,"SPEED":252},"abilityIndex":0,"item":"WHITEHERB","moves":["SHELLSMASH","WAVECRASH","DRAGONCLAW","HEADSMASH"]},
+    {"leader":"Gohar","from":"EMPOLEON","species":"TITANBALEEN","nature":"SASSY","evs":{"HP":252,"ATTACK":200,"SPECIAL_DEFENSE":52},"abilityIndex":0,"item":"LEFTOVERS","moves":["WAVECRASH","HEAVYSLAM","AQUARING","BODYPRESS"]},
+    {"leader":"Eira","from":"BAXCALIBUR","species":"PRIAMALGONG","nature":"MODEST","evs":{"HP":252,"SPECIAL_ATTACK":252},"abilityIndex":0,"item":"LIFEORB","moves":["DRAGONPULSE","ICEBEAM","FREEZEDRY","EARTHPOWER"]},
+    {"leader":"Azure","from":"CELESTEELA","species":"IRONMAELTROM","nature":"MODEST","evs":{"HP":252,"SPECIAL_ATTACK":252},"abilityIndex":0,"item":"TERRAINEXTENDER","moves":["FLASHCANNON","HURRICANE","STEELBEAM","ELECTRICTERRAIN"]}
+  ],
+  "extraItems": [{"leader":"Cethin","species":"ARBOK","item":"DPARBOKITE"}]
+}

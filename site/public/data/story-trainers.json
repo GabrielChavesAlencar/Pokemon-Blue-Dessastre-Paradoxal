@@ -392,23 +392,25 @@
               "teraType": "FIGHTING"
             },
             {
-              "species": "SUNFLORA",
+              "species": "ARCHGUTOR",
               "level": 1,
+              "form": "0",
               "moves": [
-                "BLASTBURN",
+                "WEATHERBALL",
                 "SOLARBEAM",
-                "SLUDGEBOMB",
-                "EARTHPOWER"
+                "GROWTH",
+                "PSYCHIC"
               ],
-              "abilityIndex": "6",
-              "item": "WEAKNESSPOLICY",
+              "abilityIndex": "1",
+              "item": "LIFEORB",
               "nature": "QUIET",
-              "evs": "256,256,0,0,0,0",
+              "evs": "252,0,0,0,252,0",
               "ivs": "31,0,31,0,31,31",
               "dynamaxLv": "10",
               "teraType": "GROUND"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -889,19 +891,20 @@
               "teraType": "POISON"
             },
             {
-              "species": "BRUXISH",
+              "species": "LUDICOLO",
               "level": 1,
+              "form": "0",
               "moves": [
-                "FISHIOUSREND",
-                "PROTECT",
-                "ICEFANG",
-                "PSYCHICFANGS"
+                "FAKEOUT",
+                "GIGADRAIN",
+                "SURF",
+                "ICYWIND"
               ],
-              "abilityIndex": "2",
-              "item": "GOLDTEETH",
-              "nature": "JOLLY",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "abilityIndex": "0",
+              "item": "DPLUDICOLOITE",
+              "nature": "MODEST",
+              "evs": "200,0,0,52,252,0",
+              "ivs": "31,31,31,31,31,31",
               "teraType": "FIRE"
             },
             {
@@ -921,7 +924,8 @@
               "dynamaxLv": "10",
               "teraType": "BUG"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -1423,23 +1427,25 @@
               "teraType": "FAIRY"
             },
             {
-              "species": "EMBOAR",
+              "species": "SCORCHMANE",
               "level": 1,
+              "form": "0",
               "moves": [
-                "GRASSKNOT",
-                "BLASTBURN",
-                "STRENGTH",
-                "SPIRITBREAK"
+                "WILDCHARGE",
+                "FLAREBLITZ",
+                "SUNNYDAY",
+                "PROTECT"
               ],
-              "abilityIndex": "4",
-              "item": "ASSAULTVEST",
-              "nature": "RASH",
-              "evs": "0,256,0,256,0,0",
+              "abilityIndex": "0",
+              "item": "HEATROCK",
+              "nature": "ADAMANT",
+              "evs": "0,252,0,252,0,0",
               "ivs": "31,31,31,31,31,31",
               "dynamaxLv": "10",
               "teraType": "GRASS"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -1932,18 +1938,19 @@
               "teraType": "ICE"
             },
             {
-              "species": "WYRDEER",
+              "species": "MAGISCALE",
               "level": 1,
+              "form": "0",
               "moves": [
-                "HELPINGHAND",
-                "ICYWIND",
                 "EXPANDINGFORCE",
+                "CALMMIND",
+                "SURF",
                 "PROTECT"
               ],
-              "abilityIndex": "4",
-              "item": "COLBURBERRY",
-              "nature": "TIMID",
-              "evs": "0,256,0,256,0,0",
+              "abilityIndex": "1",
+              "item": "PSYCHICSEED",
+              "nature": "MODEST",
+              "evs": "252,0,0,0,252,0",
               "ivs": "31,0,31,31,31,31",
               "teraType": "FAIRY"
             },
@@ -1964,7 +1971,8 @@
               "dynamaxLv": "10",
               "teraType": "FIGHTING"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -2456,19 +2464,20 @@
               "teraType": "ELECTRIC"
             },
             {
-              "species": "INFERNAPE",
+              "species": "PRIMALPUNNY",
               "level": 1,
+              "form": "0",
               "moves": [
-                "POUND",
-                "COMETPUNCH",
-                "FURYSWIPES",
-                "PROTECT"
+                "HEADLONGRUSH",
+                "CLOSECOMBAT",
+                "COACHING",
+                "TRIPLEAXEL"
               ],
-              "abilityIndex": "2",
-              "item": "LOADEDDICE",
-              "nature": "JOLLY",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "abilityIndex": "0",
+              "item": "BOOSTERENERGY",
+              "nature": "ADAMANT",
+              "evs": "252,252,0,0,0,0",
+              "ivs": "31,31,31,31,31,31",
               "teraType": "DARK"
             },
             {
@@ -2488,7 +2497,8 @@
               "dynamaxLv": "10",
               "teraType": "FAIRY"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -2923,18 +2933,20 @@
               "teraType": "FLYING"
             },
             {
-              "species": "ABSOL",
+              "species": "MIRECREST",
               "level": 1,
+              "abilityIndex": "0",
+              "form": "0",
               "moves": [
-                "SLASH",
-                "NIGHTSLASH",
-                "SACREDSWORD",
-                "PROTECT"
+                "CLOSECOMBAT",
+                "HEADSMASH",
+                "LASHOUT",
+                "PARTINGSHOT"
               ],
-              "item": "MEGAITE",
-              "nature": "JOLLY",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "item": "CHOICESCARF",
+              "nature": "ADAMANT",
+              "evs": "0,252,0,252,0,0",
+              "ivs": "31,31,31,31,31,31",
               "teraType": "PSYCHIC"
             },
             {
@@ -3002,7 +3014,8 @@
               "dynamaxLv": "10",
               "teraType": "FIGHTING"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -3452,19 +3465,20 @@
               "teraType": "GHOST"
             },
             {
-              "species": "NINJASK",
+              "species": "PRIMALMOTH",
               "level": 1,
+              "form": "0",
               "moves": [
-                "SKYATTACK",
-                "LEECHLIFE",
-                "SWORDSDANCE",
-                "HEADLONGRUSH"
+                "STRUGGLEBUG",
+                "BLIZZARD",
+                "HURRICANE",
+                "UTURN"
               ],
-              "abilityIndex": "3",
-              "item": "SHARPBEAK",
-              "nature": "ADAMANT",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "abilityIndex": "0",
+              "item": "FOCUSSASH",
+              "nature": "TIMID",
+              "evs": "0,0,0,252,252,0",
+              "ivs": "31,31,31,31,31,31",
               "teraType": "ROCK"
             },
             {
@@ -3515,7 +3529,8 @@
               "dynamaxLv": "10",
               "teraType": "FLYING"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -4023,23 +4038,25 @@
               "teraType": "FIGHTING"
             },
             {
-              "species": "NOSEPASS",
+              "species": "PRIMALSECT",
               "level": 1,
+              "form": "0",
               "moves": [
-                "ANCIENTPOWER",
-                "THUNDERBOLT",
-                "EARTHPOWER",
-                "DAZZLINGGLEAM"
+                "SPORE",
+                "WOODHAMMER",
+                "LEECHLIFE",
+                "HEADSMASH"
               ],
               "abilityIndex": "0",
-              "item": "EVIOLITE",
-              "nature": "RELAXED",
-              "evs": "256,256,0,0,0,0",
-              "ivs": "31,0,31,0,31,31",
+              "item": "SITRUSBERRY",
+              "nature": "BRAVE",
+              "evs": "252,252,0,0,0,0",
+              "ivs": "31,31,31,0,31,31",
               "dynamaxLv": "10",
               "teraType": "ICE"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -4495,19 +4512,20 @@
               "teraType": "WATER"
             },
             {
-              "species": "IRONTREADS",
+              "species": "DREADCREST",
               "level": 1,
+              "form": "0",
               "moves": [
-                "RAPIDSPIN",
-                "STOMPINGTANTRUM",
-                "KNOCKOFF",
-                "ICESPINNER"
+                "METEORBEAM",
+                "ROOST",
+                "EARTHPOWER",
+                "AIRCUTTER"
               ],
-              "abilityIndex": "5",
-              "item": "ASSAULTVEST",
-              "nature": "JOLLY",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "abilityIndex": "0",
+              "item": "POWERHERB",
+              "nature": "BOLD",
+              "evs": "252,0,152,0,100,0",
+              "ivs": "31,0,31,31,31,31",
               "teraType": "FAIRY"
             },
             {
@@ -4559,7 +4577,8 @@
               "dynamaxLv": "10",
               "teraType": "POISON"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -4983,19 +5002,20 @@
           "label": "2v2 Full Power",
           "team": [
             {
-              "species": "SQUAWKABILLY",
+              "species": "IRONFEASTER",
               "level": 1,
+              "form": "0",
               "moves": [
-                "TAILWIND",
-                "QUICKATTACK",
-                "BRAVEBIRD",
-                "PARTINGSHOT"
+                "GYROBALL",
+                "HEATCRASH",
+                "HEAVYSLAM",
+                "DOUBLEEDGE"
               ],
-              "abilityIndex": "3",
-              "item": "FOCUSSASH",
-              "nature": "JOLLY",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "abilityIndex": "0",
+              "item": "CHOICEBAND",
+              "nature": "BRAVE",
+              "evs": "252,252,0,0,0,0",
+              "ivs": "31,31,31,0,31,31",
               "teraType": "FIGHTING"
             },
             {
@@ -5078,7 +5098,8 @@
               "dynamaxLv": "10",
               "teraType": "GRASS"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -5575,19 +5596,20 @@
               "teraType": "FAIRY"
             },
             {
-              "species": "MAGNEZONE",
+              "species": "DYNAMOTRODE",
               "level": 1,
+              "form": "0",
               "moves": [
-                "IRONDEFENSE",
-                "BODYPRESS",
-                "CHARGEBEAM",
-                "TRIATTACK"
+                "STEELBEAM",
+                "RISINGVOLTAGE",
+                "VOLTSWITCH",
+                "PROTECT"
               ],
-              "abilityIndex": "4",
-              "item": "CHOPLEBERRY",
+              "abilityIndex": "2",
+              "item": "AIRBALLOON",
               "nature": "MODEST",
-              "evs": "256,0,256,0,0,0",
-              "ivs": "31,31,31,31,31,31",
+              "evs": "0,0,0,252,252,0",
+              "ivs": "31,0,31,31,31,31",
               "teraType": "FIGHTING"
             },
             {
@@ -5607,7 +5629,8 @@
               "dynamaxLv": "10",
               "teraType": "FLYING"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -6056,7 +6079,7 @@
                 "PROTECT"
               ],
               "abilityIndex": "5",
-              "item": "AIRBALLOON",
+              "item": "DPARBOKITE",
               "nature": "JOLLY",
               "evs": "256,0,0,256,0,0",
               "ivs": "31,31,31,31,0,31",
@@ -6111,18 +6134,20 @@
               "teraType": "GRASS"
             },
             {
-              "species": "BEEDRILL",
+              "species": "ANCESTRASH",
               "level": 1,
+              "abilityIndex": "0",
+              "form": "0",
               "moves": [
-                "MEGAHORN",
-                "CROSSPOISON",
-                "PROTECT",
-                "HORNLEECH"
+                "HIGHHORSEPOWER",
+                "GUNKSHOT",
+                "ACIDSPRAY",
+                "CURSE"
               ],
-              "item": "MEGAITE",
-              "nature": "JOLLY",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "item": "BLACKSLUDGE",
+              "nature": "SASSY",
+              "evs": "252,152,0,0,0,100",
+              "ivs": "31,31,31,0,31,31",
               "teraType": "BUG"
             },
             {
@@ -6143,7 +6168,8 @@
               "dynamaxLv": "10",
               "teraType": "ICE"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -6649,22 +6675,25 @@
               "teraType": "FAIRY"
             },
             {
-              "species": "ALCREMIE",
+              "species": "SAVEGEJOWL",
               "level": 1,
+              "abilityIndex": "0",
+              "form": "0",
               "moves": [
-                "DRAININGKISS",
-                "GIGADRAIN",
-                "PSYCHIC",
-                "ACIDARMOR"
+                "SUCKERPUNCH",
+                "THROATCHOP",
+                "SPIRITBREAK",
+                "PSYCHICFANGS"
               ],
-              "item": "GRASSYSEED",
-              "nature": "BOLD",
-              "evs": "256,0,256,0,0,0",
-              "ivs": "31,0,31,31,31,31",
+              "item": "ASSAULTVEST",
+              "nature": "BRAVE",
+              "evs": "252,252,0,0,0,0",
+              "ivs": "31,31,31,0,31,31",
               "dynamaxLv": "10",
               "teraType": "POISON"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -7084,19 +7113,20 @@
           "label": "2v2 Full Power",
           "team": [
             {
-              "species": "RUNERIGUS",
+              "species": "PHANTOMIRE",
               "level": 1,
+              "form": "0",
               "moves": [
-                "IRONDEFENSE",
-                "BODYSLAM",
-                "BODYPRESS",
-                "PROTECT"
+                "SHADOWBALL",
+                "DARKPULSE",
+                "ACIDSPRAY",
+                "PERISHSONG"
               ],
-              "abilityIndex": "3",
-              "item": "RAWSTBERRY",
-              "nature": "RELAXED",
-              "evs": "256,0,256,0,0,0",
-              "ivs": "31,31,31,0,0,31",
+              "abilityIndex": "0",
+              "item": "BOOSTERENERGY",
+              "nature": "TIMID",
+              "evs": "0,0,0,252,252,0",
+              "ivs": "31,31,31,31,31,31",
               "teraType": "DRAGON"
             },
             {
@@ -7180,7 +7210,8 @@
               "dynamaxLv": "10",
               "teraType": "STEEL"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -7633,19 +7664,20 @@
               "teraType": "POISON"
             },
             {
-              "species": "APPLETUN",
+              "species": "PRIMALDRENAW",
               "level": 1,
+              "form": "0",
               "moves": [
-                "DRACOMETEOR",
-                "LEAFSTORM",
-                "EARTHPOWER",
-                "HYDROPUMP"
+                "SHELLSMASH",
+                "WAVECRASH",
+                "DRAGONCLAW",
+                "HEADSMASH"
               ],
               "abilityIndex": "0",
-              "item": "CHOICESPECS",
-              "nature": "QUIET",
-              "evs": "256,256,0,0,0,0",
-              "ivs": "31,0,31,0,31,31",
+              "item": "WHITEHERB",
+              "nature": "ADAMANT",
+              "evs": "0,252,0,252,0,0",
+              "ivs": "31,31,31,31,31,31",
               "teraType": "STEEL"
             },
             {
@@ -7697,7 +7729,8 @@
               "dynamaxLv": "10",
               "teraType": "FIRE"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -8181,19 +8214,20 @@
               "teraType": "GRASS"
             },
             {
-              "species": "EMPOLEON",
+              "species": "TITANBALEEN",
               "level": 1,
+              "form": "0",
               "moves": [
-                "FLASHCANNON",
-                "SCALD",
-                "ICEBEAM",
-                "GRASSKNOT"
+                "WAVECRASH",
+                "HEAVYSLAM",
+                "AQUARING",
+                "BODYPRESS"
               ],
-              "abilityIndex": "3",
-              "item": "ASSAULTVEST",
-              "nature": "TIMID",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,0,31,31,31,31",
+              "abilityIndex": "0",
+              "item": "LEFTOVERS",
+              "nature": "SASSY",
+              "evs": "252,200,0,0,0,52",
+              "ivs": "31,31,31,0,31,31",
               "teraType": "STEEL"
             },
             {
@@ -8213,7 +8247,8 @@
               "dynamaxLv": "10",
               "teraType": "STEEL"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -8723,23 +8758,25 @@
               "teraType": "FLYING"
             },
             {
-              "species": "BAXCALIBUR",
+              "species": "PRIAMALGONG",
               "level": 1,
+              "form": "0",
               "moves": [
-                "DRAGONDANCE",
-                "ICICLESPEAR",
-                "SCALESHOT",
-                "EARTHQUAKE"
+                "DRAGONPULSE",
+                "ICEBEAM",
+                "FREEZEDRY",
+                "EARTHPOWER"
               ],
               "abilityIndex": "0",
-              "item": "LOADEDDICE",
-              "nature": "ADAMANT",
-              "evs": "0,256,0,256,0,0",
-              "ivs": "31,31,31,31,0,31",
+              "item": "LIFEORB",
+              "nature": "MODEST",
+              "evs": "252,0,0,0,252,0",
+              "ivs": "31,0,31,31,31,31",
               "dynamaxLv": "10",
               "teraType": "FAIRY"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",
@@ -9248,23 +9285,25 @@
               "teraType": "FAIRY"
             },
             {
-              "species": "CELESTEELA",
+              "species": "IRONMAELTROM",
               "level": 1,
+              "form": "0",
               "moves": [
-                "AUTOTOMIZE",
-                "METEORBEAM",
-                "AEROBLAST",
-                "FLASHCANNON"
+                "FLASHCANNON",
+                "HURRICANE",
+                "STEELBEAM",
+                "ELECTRICTERRAIN"
               ],
-              "abilityIndex": "3",
-              "item": "LEFTOVERS",
+              "abilityIndex": "0",
+              "item": "TERRAINEXTENDER",
               "nature": "MODEST",
-              "evs": "0,256,0,256,0,0",
+              "evs": "252,0,0,0,252,0",
               "ivs": "31,0,31,31,31,31",
               "dynamaxLv": "10",
               "teraType": "DRAGON"
             }
-          ]
+          ],
+          "origin": "blue-pbs"
         },
         {
           "id": "3v3-full-power",

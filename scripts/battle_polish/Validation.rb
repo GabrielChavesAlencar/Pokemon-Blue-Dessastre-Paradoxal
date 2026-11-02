@@ -10,6 +10,7 @@ module BluePolishValidation
     test_pointer_order
     test_story
     BlueCampaignValidation.run(@lines)
+    assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'
     true
