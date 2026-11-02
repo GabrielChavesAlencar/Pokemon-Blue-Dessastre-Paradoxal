@@ -4,6 +4,7 @@ import {home,pokedex,dexResults,locations,locationResults,locationDetail,updates
 import {pokemonDetail,moveRows} from './detail.js';
 import {storyIndex,bossesIndex,trainerDetail,allTrainers} from './story.js';
 import {changesPage} from './changes.js';
+import {downloadsPage} from './downloads.js';
 
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
@@ -46,6 +47,7 @@ async function render(scroll=false){
       else{main.innerHTML=locations(model,state);setPage('Localizações');}
     }else if(route==='atualizacoes'){main.innerHTML=updates(model,state);setPage('Atualizações');}
     else if(route==='o-que-mudou'){main.innerHTML=changesPage();setPage('O que mudou');}
+    else if(route==='downloads'){main.innerHTML=downloadsPage();setPage('Downloads');}
     else if(route==='historia'){main.innerHTML=storyIndex(model);setPage('Guia da História');}
     else if(route==='chefes'){
       if(parts[1]){

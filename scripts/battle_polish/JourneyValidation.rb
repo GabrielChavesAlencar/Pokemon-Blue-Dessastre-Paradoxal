@@ -111,11 +111,11 @@ module BlueJourneyValidation
     check(BlueCampaign.common_level==70 && BlueCampaign.wild_level==45,'Party maximum 100 gives trainers 70 and wild Pokemon 45')
     $player.party.last.level=51
     check(BlueCampaign.common_level==35 && BlueCampaign.wild_level==22,'Ratios round down and use the highest party member')
-    [0,2,4].each do |n|
-      $player.badges.map!.with_index { |v,i| i<n }
+    [0,2,5,11].each do |n|
+      $player.badges.replace(Array.new(18) { |i| i<n })
       mon=pbGenerateWildPokemon(:GARCHOMP,99)
       check(mon.level==22,'Wild generation overrides legacy automatic level scaling')
-      check(!BlueStory.cap || BlueStory.bst(mon.species_data)<=BlueStory.cap,'Wild species follows the current 350/450 BST ceiling')
+      check(!BlueStory.cap || BlueStory.bst(mon.species_data)<=BlueStory.cap,'Wild species follows the current 350/450/540 BST ceiling')
       source=BlueBattleLab.build(:GARCHOMP,99);before=Marshal.dump(source)
       b=Battle.new(QuietScene.new,$player.party,[source],[$player],nil)
       check(b.pbParty(1).first.level==22 && Marshal.dump(source)==before,'Direct/static wild battle entry also scales without mutating its source')
@@ -124,7 +124,7 @@ module BlueJourneyValidation
     trainer=NPCTrainer.new('Marigold (2v2 Full Power)',:HOENNIAN_ORAS_AROMALADY)
     trainer.party=[BlueBattleLab.build(:ARCHGUTOR,100)]
     b=Battle.new(QuietScene.new,$player.party,trainer.party,[$player],[trainer])
-    check(b.pbParty(1).first.level==35,'Named gym leaders receive the same trainer ratio')
+    check(b.pbParty(1).first.level==45,'Master gym leaders use 90 percent of party maximum 51, rounded down')
     args=StartCapture.start_core(:HOENNIAN_ORAS_AROMALADY,'Marigold (1v1 Basic Power)',0)
     check(args==[:HOENNIAN_ORAS_AROMALADY,'Marigold (2v2 Full Power)',0],'Gym adapter selects the compiled Full Power doubles roster')
     check($game_temp.battle_rules['size']=='double' && $game_temp.battle_rules['expGain']==true,'Gym adapter forces doubles and EXP even for old event scripts')

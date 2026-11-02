@@ -41,8 +41,26 @@ O novo jogo pula o questionário sobre emulador/speed-up e seu ramo punitivo. A 
 
 ## Comparação no portal
 
-A aba **O que mudou**, em `/o-que-mudou`, compara Pokémon Decades base e Dessastre Paradoxal em duas colunas, com 30 aspectos em ordem de relevância. O histórico por atualização continua automático na aba Atualizações.
+A aba **O que mudou**, em `/o-que-mudou`, compara Pokémon Decades base e Dessastre Paradoxal em duas colunas, com 32 aspectos em ordem de relevância. O histórico por atualização continua automático na aba Atualizações.
 
 `game/Data/blue-readouts-validation.txt` registra a prova nativa dos eventos reais de novo jogo, listas dos 18 tipos, bloqueio de conversão de modo, números da Pokédex, boxes, missões, multiplicadores e prévia por teclado/clique. Todos os testes usam dados novos em memória, com o save da campanha bloqueado pelo laboratório.
 
 `game/Data/blue-touch-validation.txt` registra os cliques nas telas nativas, o ramo real de escolha monotipo e a posição dos modificadores e telas em batalha dupla.
+
+## Habitat Dex
+
+Abra **Pausa → Pokédex → Habitat Dex**. A opção **Lista de Pokémon** continua abrindo a Pokédex normal. A Habitat Dex se inspira na lista de habitats do Black 2: primeiro escolha uma área visitada e depois o método de encontro, como grama, Surf ou Old Rod.
+
+As áreas mostram contadores de vistos (V) e capturados (C), com estrela quando todas as espécies disponíveis foram capturadas. Espécies vistas mostram nome e ícone; capturadas recebem indicação verde; as desconhecidas mostram somente **?**. Consultar não registra Pokémon como vistos nem libera áreas novas. A lista usa a versão ativa dos encontros, com a mesma tabela base de fallback da engine, e acompanha as substituições por BST da fase da campanha. Espécies repetidas em uma tabela contam uma vez.
+
+Use as setas esquerda/direita ou **Anterior/Próximo** para mudar de página; **Esc/Voltar** retorna ao menu de métodos. As áreas e métodos usam listas com paginação e mouse.
+
+Referência de funcionamento: [Habitat List de Black 2 e White 2](https://bulbapedia.bulbagarden.net/wiki/Habitat_List).
+
+## Ajuda, personagem e pesca
+
+A tela inicial de explicação das teclas aceita um clique para continuar. Na escolha de personagem, clique no personagem ou no retrato e confirme no diálogo Sim/Não; teclado e cancelamento do diálogo continuam disponíveis.
+
+A Old Rod usa a tabela OldRod quando ela existe. Nos mapas da base que só cadastram SuperRod, as varas sem tabela herdam a tabela de pesca local em memória, preservando espécies e pesos. Tabelas próprias já existentes têm prioridade e os dados originais não são regravados. A base tinha um caminho de fisgada manual que repetia a espera mesmo após uma reação correta; o adaptador agora retorna sucesso e permite ao handler nativo iniciar o encontro. A mesma correção atende Good Rod e Super Rod. Clique ou use o comando de confirmação quando aparecer a mordida. Se o mapa não tem nenhuma tabela de pesca, não aparece Pokémon; encontros de Surf ou de grama não são convertidos em pesca.
+
+`game/Data/blue-exploration-validation.txt` registra a prova das telas nativas, handler da Old Rod, Habitat Dex e fronteiras das quatro faixas de campanha. Os testes usam memória temporária do laboratório.

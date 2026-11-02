@@ -6,6 +6,14 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30].freeze
   MANUAL={
+    'Habitat Dex'=>'Habitat Dex','Pokémon list'=>'Lista de Pokémon',
+    'Habitat Dex / V: Seen · C: Caught'=>'Habitat Dex / V: Vistos · C: Capturados',
+    'Visit an area with wild Pokémon to fill the Habitat Dex.'=>'Visite uma área com Pokémon selvagens para preencher a Habitat Dex.',
+    'Seen / Caught / ?: Not yet identified'=>'Visto / Capturado / ?: Ainda não identificado',
+    'Caught'=>'Capturado','Seen'=>'Visto','Previous'=>'Anterior','Next'=>'Próximo',
+    'Grass'=>'Grama','Grass / Morning'=>'Grama / Manhã','Grass / Day'=>'Grama / Dia','Grass / Night'=>'Grama / Noite',
+    'Cave / Morning'=>'Caverna / Manhã','Cave / Day'=>'Caverna / Dia','Cave / Night'=>'Caverna / Noite',
+    'Surf / Morning'=>'Surf / Manhã','Surf / Day'=>'Surf / Dia','Surf / Night'=>'Surf / Noite',
     'Choose the type for your two starters.'=>'Escolha o tipo dos seus dois iniciais.',
     'Your screens'=>'Suas telas','Foe screens'=>'Telas rivais','No screens'=>'Nenhuma tela',
     'Confirm name'=>'Confirmar nome','Delta Speed Up'=>'Delta Speed Up',

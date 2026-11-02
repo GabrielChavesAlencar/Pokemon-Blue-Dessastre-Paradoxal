@@ -26,8 +26,14 @@ module BlueCampaign
     BOSSES.include?(trainer.name.split(' (').first) || trainer.trainer_type.to_s.match?(/LEADER|MASTER|BOSS|ELITE|CHAMPION|RIVAL|ADMIN/)
   end
   def self.common_level(party=$player.party)
+    scaled_level(party,70)
+  end
+  def self.scaled_level(party,percent)
     highest=party.reject(&:egg?).map(&:level).max || 1
-    [[highest*7/10,1].max,GameData::GrowthRate.max_level].min
+    [[highest*percent/100,1].max,GameData::GrowthRate.max_level].min
+  end
+  def self.trainer_level(trainer,party=$player.party)
+    scaled_level(party,BlueStory.stage==3 && BlueJourney.gym_name(trainer.name) ? 90 : 70)
   end
   def self.wild_level(party=$player.party)
     highest=party.reject(&:egg?).map(&:level).max || 1
@@ -36,8 +42,8 @@ module BlueCampaign
   module Teams
     def initialize(*args)
       if BlueCampaign.active? && args[4] && !Array(args[4]).empty?
-        level=BlueCampaign.common_level
         args[4]=Array(args[4]).map do |trainer|
+          level=BlueCampaign.trainer_level(trainer)
           copy=trainer.clone
           copy.party=trainer.party.map do |original|
             pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level;pkmn.calc_stats;pkmn.heal;pkmn
@@ -63,7 +69,7 @@ module BlueCampaign
     def base_money
       value=super
       return value unless BlueCampaign.active?
-      (value.to_i<=0 ? 30 : value)*[1,2,3][BlueStory.stage]*(BlueJourney.gym_name(name) ? 2 : 1)
+      (value.to_i<=0 ? 30 : value)*[1,2,3,4][BlueStory.stage]*(BlueJourney.gym_name(name) ? 2 : 1)
     end
   end
   module Setup

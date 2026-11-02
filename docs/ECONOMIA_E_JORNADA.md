@@ -6,7 +6,7 @@
 - TMs usam o golpe, não o número da TM: até 40 de poder = 500; até 60 = 1.500; até 80 = 3.000; até 100 = 4.500; até 120 = 5.500; acima disso = 7.500. Golpes de dano variável recebem 7.500; status comuns custam 2.500, cura/proteção/setup forte/campo relevante custam 5.000. TRs consumíveis custam 70% da faixa, arredondada para centenas. Ember seria 500 e Fire Blast custa 5.500; as TMs efetivamente disponíveis continuam sendo as cadastradas pela base. Não é criada uma TM de Ember se ela não existir.
 - A referência pesquisada é a [tabela de itens de Emerald](https://github.com/pret/pokeemerald/blob/master/src/data/items.h): Fire Blast/TM38 custa 5.500, Reflect/TM33 e Flamethrower/TM35 custam 3.000, Sludge Bomb/TM36 custa 1.000. As faixas do Blue são uma adaptação por força/utilidade, e não uma cópia literal de todos os preços oficiais.
 - Equipamentos agora têm preços individuais. Exemplos: guia/mapa 500; música/Old Rod 1.000; bicicleta/Good Rod 5.000; Box Link 12.000; Mega Ring/Z-Ring 15.000; Tera Orb/Dynamax Band 20.000; Ability Vial 25.000; Tera Jewel 30.000; Shiny Charm 80.000. Ferramentas de formas têm a faixa padrão de 10.000 quando não possuem preço específico.
-- A taxa de prêmio por nível da classe do treinador recebe multiplicador **1× no iniciante, 2× no intermediário e 3× no avançado**. O prêmio continua usando o maior nível real do adversário e os multiplicadores nativos de batalha. Assim, mantendo a classe e a fase, um oponente de nível maior paga mais; mantendo a classe e o nível, a fase mais avançada paga mais.
+- A taxa de prêmio por nível da classe do treinador recebe multiplicador **1× no Inicial, 2× no Intermediário, 3× no Avançado e 4× no Master**. O prêmio continua usando o maior nível real do adversário e os multiplicadores nativos de batalha. Assim, mantendo a classe e a fase, um oponente de nível maior paga mais; mantendo a classe e o nível, a fase mais avançada paga mais.
 
 ### Seis seletores de IV
 
@@ -14,7 +14,7 @@ Na aba **Treino**, há um seletor para cada atributo: HP, Ataque, Defesa, Ataque
 
 ### Golpes de treinadores por fase
 
-No iniciante (0–1 esmeralda), o poder base máximo é **60**; no intermediário (2–3), **90**. Isso vale também para líderes e bosses, que seguem o escalonamento de 70% descrito abaixo. No avançado (4+), seus golpes permanecem como antes.
+No iniciante (0–1 esmeralda), o poder base máximo é **60**; no intermediário (2–4), **90**. Isso vale também para líderes e bosses, que seguem o escalonamento de 70% descrito abaixo. No avançado (5–10) e Master (11+), seus golpes permanecem como antes.
 
 São retirados boosts/drops de dois ou mais estágios, alterações de vários atributos, resets/copias/inversões de estágios e golpes de dano extremo/variável ou chamadas de golpes que escapariam ao limite. Swords Dance, por exemplo, não passa. A troca procura golpes do mesmo papel, categoria e tipo, entre os aprendidos por nível até o nível atual ou por tutor; não usa egg moves como atalho. Não repete golpes. Se uma espécie não possui nenhum candidato permitido, fica sem golpes selecionáveis e a engine usa seu Struggle nativo, sem ensinar um golpe ilegal.
 
@@ -32,7 +32,7 @@ Ferramentas de gerar dinheiro/itens, atravessar paredes e o telefone de teleport
 
 ## Treinadores
 
-Cada Pokémon de qualquer treinador da campanha, inclusive líderes, mestres, bosses e rivais, usa `max(1, floor(maior nível do time × 0,70))`. O cálculo considera o time inteiro e ignora ovos: nível máximo 10 → adversários no 7; 50 → 35; 100 → 70. É calculado no início da luta, depois do escalonamento da base, sem regravar PBS nem modificar o Pokémon original do treinador.
+Cada Pokémon de treinador da campanha usa `max(1, floor(maior nível do time × 0,70))`. No **Master (11+ cristais)**, líderes de ginásio usam **90%** em vez de 70%: maior nível 100 → líder 90. Outros treinadores continuam em 70%. O cálculo considera o time inteiro e ignora ovos: nível máximo 10 → adversários no 7; 50 → 35; 100 → 70. É calculado no início da luta, depois do escalonamento da base, sem regravar PBS nem modificar o Pokémon original do treinador.
 
 A progressão de BST por esmeraldas continua valendo no Traditional Starters. Cada vitória contra treinador na campanha dá o prêmio nativo: nível máximo do adversário × dinheiro-base da classe, com os multiplicadores nativos. Classes com valor zero usam 30 por nível. O Hub continua sem recompensar a campanha.
 
@@ -66,7 +66,7 @@ O smoke nativo grava os resultados em `game/Data/blue-polish-validation.txt`. El
 
 Selvagens usam `max(1, floor(maior nível do time × 0,45))`, ignorando ovos, depois dos handlers de escalonamento da base. Maior nível 50 → selvagem 22; maior nível 100 → selvagem 45. A entrada direta de batalhas selvagens também recebe a regra. Os encontros gerados usam os golpes de nível da espécie no nível calculado.
 
-Na progressão Traditional Starters, selvagens seguem a mesma seleção por família/tipos usada nos treinadores: BST máximo 350 no inicial (0–1 esmeralda), 450 no intermediário (2–3), sem teto no avançado (4+). A restrição a mudanças de forma também vale para o adversário selvagem. O limite não altera Pokémon que o jogador já capturou.
+Na progressão Traditional Starters, selvagens seguem a mesma seleção por família/tipos usada nos treinadores: BST máximo 350 no inicial (0–1 esmeralda), 450 no intermediário (2–4), sem teto no avançado (4+). A restrição a mudanças de forma também vale para o adversário selvagem. O limite não altera Pokémon que o jogador já capturou.
 
 Os diálogos de treinadores da campanha oferecem **Start Battle (Exp Gain)** e saída. A cura gratuita por treinador e a alternativa Forfeit Option foram retiradas; as enfermeiras continuam funcionando. Ginásios oferecem apenas **Full Power Team → Double Battle → Start Battle (Exp Gain)**, além de cancelar. O adaptador de início também garante o time 2v2 Full Power em eventos antigos. Revanches Blue agora habilitam EXP e dinheiro, preservando o bloqueio de drops e a frequência por estágio. O Hub e o Battle Mode mantêm seus próprios formatos e não dão EXP à campanha.
 
@@ -81,3 +81,7 @@ Leech Seed mantém seu efeito clássico: drena 1/8 do HP máximo do alvo a cada 
 Salvar com sucesso encerra o menu e descarta seus sprites. O loop de pausa agora encerra imediatamente após esse callback, antes de atualizar o HUD de novas quests. Isso corrige `undefined method 'y' for nil:NilClass` após salvar, inclusive ao sair para a rota e retornar ao Centro Pokémon. Não há migração nem limpeza do save existente.
 
 A validação adicional fica em `game/Data/blue-journey-validation.txt`: inclui eventos reais dos mapas, os dois percentuais, os tetos de BST, ganho nativo de EXP, três turnos consecutivos de Leech Seed, probabilidades dos status, retorno ao Centro e fechamento do HUD. O teste de save serializa/recarrega apenas objetos temporários em memória; o laboratório mantém as proteções contra gravação da campanha.
+
+## Quatro faixas e dinheiro
+
+A taxa monetária usa **1×** no Inicial (0–1 cristal), **2×** no Intermediário (2–4), **3×** no Avançado (5–10) e **4×** no Master (11+). O bônus existente de ginásio continua em 2× sobre essa taxa; a engine calcula o pagamento com o nível do adversário e os demais modificadores nativos. Os níveis de selvagens continuam em 45%, sujeitos ao teto de BST da faixa.

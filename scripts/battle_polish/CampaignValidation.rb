@@ -111,8 +111,8 @@ module BlueCampaignValidation
     check(bb.pbParty(1).first.level==7,'Bosses use the same 70 percent campaign scaling as every trainer')
     badges=$player.badges.dup
     test_mon=BlueBattleLab.build(:CHARIZARD,50);test_mon.moves=[:FIREBLAST,:SWORDSDANCE,:DRAGONCLAW,:FLAMETHROWER].map { |id| Pokemon::Move.new(id) }
-    [0,2,4].each do |badge_count|
-      $player.badges.map!.with_index { |v,i| i<badge_count }
+    [0,2,5,11].each do |badge_count|
+      $player.badges.replace(Array.new(18) { |i| i<badge_count })
       sample=Marshal.load(Marshal.dump(test_mon));original_moves=sample.moves.map(&:id)
       cap=BlueTrainerMoves::CAPS[BlueStory.stage]
       BlueTrainerMoves.adjust(sample,cap,battle) if cap
@@ -120,8 +120,8 @@ module BlueCampaignValidation
       check(cap ? sample.moves.all? { |m| legal.include?(m.id) && BlueTrainerMoves.safe?(m.id,cap,battle) } : sample.moves.map(&:id)==original_moves,'Trainer moves obey legal '+(cap ? cap.to_s+' power cap' : 'unchanged advanced stage'))
       check(!cap || !sample.moves.any? { |m| m.id==:SWORDSDANCE },'Large stat boosts are excluded before the advanced stage')
     end
-    rewards=[0,2,4].map { |count| $player.badges.map!.with_index { |v,i| i<count };trainer.base_money }
-    check(rewards[1]==rewards[0]*2 && rewards[2]==rewards[0]*3,'Trainer prize rates grow 1x / 2x / 3x with campaign stage')
+    rewards=[0,2,5,11].map { |count| $player.badges.replace(Array.new(18) { |i| i<count });trainer.base_money }
+    check(rewards.each_with_index.all? { |value,i| value==rewards[0]*(i+1) },'Trainer prize rates grow 1x / 2x / 3x / 4x with campaign stage')
     $player.badges.replace(badges)
     $PokemonGlobal.blue_campaign_mechanics=BlueBattleOptions.defaults.transform_values { false }
     disabled=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,trainer.party,[$player],[trainer])

@@ -1,5 +1,7 @@
 # Baixar e instalar Pokémon Blue
 
+O portal reúne os dois downloads e os respectivos passos em **[Downloads — jogo e Hub](https://pokemondessastreparadosal.vercel.app/downloads)**. Os dois botões também estão na página inicial.
+
 **[⬇ Baixar a versão atual (ZIP)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/archive/refs/heads/main.zip)**
 
 O link baixa o instalador, as modificações Blue, o editor e os assets autorais. O instalador obtém a base Pokémon Decades separadamente. Enquanto este repositório for privado, somente pessoas com acesso no GitHub poderão baixar. Torná-lo público libera o mesmo link para os demais jogadores; este procedimento não altera a visibilidade do repositório.
@@ -10,7 +12,7 @@ O link baixa o instalador, as modificações Blue, o editor e os assets autorais
 2. Baixe o ZIP acima e use **Extrair tudo**. Abra a pasta extraída, que contém `INSTALAR_JOGO.bat`. Não execute de dentro do ZIP.
 3. Abra **`INSTALAR_JOGO.bat`**. Mantenha o CMD aberto enquanto ele baixa a base e as referências e aplica as alterações. A primeira instalação é grande e pode demorar. Se falhar, a mensagem permanece na tela; corrija a causa e execute novamente.
 4. Quando aparecer **`[OK] Instalado`**, abra **`ABRIR_JOGO.bat`**. Na primeira abertura, aguarde a compilação dos plugins e dos dados. As próximas aberturas usam os dados compilados.
-5. Para a campanha com balanceamento novo, escolha **Story Mode → Traditional Starters**, agora a primeira opção da lista de iniciais. Use **`TESTAR_BATALHA.bat`** para o laboratório separado, que não carrega nem salva a campanha.
+5. Para a campanha com balanceamento novo, escolha **Story Mode → Traditional Starters ou Monotype Starters**. Use **`TESTAR_BATALHA.bat`** para o laboratório separado, que não carrega nem salva a campanha.
 
 O instalador funciona a partir do ZIP, sem executar comandos Git na pasta do Blue. O Git é utilizado somente para obter a base em `game/`. Não é necessário instalar Node, RPG Maker XP ou criar conta na Vercel para jogar. O desenvolvimento e os testes atuais são para Windows; estes atalhos não geram APK.
 

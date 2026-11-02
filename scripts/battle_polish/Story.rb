@@ -3,7 +3,7 @@ class PokemonGlobalMetadata
   attr_accessor :blue_story_mode,:blue_traditional_starters,:blue_story_wins
 end
 module BlueStory
-  LABELS=['Inicial','Intermediario','Avancado'].freeze
+  LABELS=['Inicial','Intermediario','Avancado','Master'].freeze
   def self.story?
     return false unless $PokemonGlobal
     return $PokemonGlobal.blue_story_mode==:story if $PokemonGlobal.blue_story_mode
@@ -13,8 +13,8 @@ module BlueStory
     story? && $PokemonGlobal.blue_traditional_starters==true &&
       !(defined?(BlueBattleLab) && BlueBattleLab::ACTIVE) && !BlueBattleOptions.battle_area?
   end
-  def self.stage(badges=$player.badge_count);badges>=4 ? 2 : (badges>=2 ? 1 : 0);end
-  def self.cap;[350,450,nil][stage];end
+  def self.stage(badges=$player.badge_count);badges>=11 ? 3 : (badges>=5 ? 2 : (badges>=2 ? 1 : 0));end
+  def self.cap;[350,450,540,nil][stage];end
   def self.bst(data);data.base_stats.values.sum;end
   def self.choose_mode(mode)
     $PokemonGlobal.blue_story_mode=mode
@@ -205,7 +205,7 @@ module BlueStory
   end
   def self.menu
     unless $PokemonGlobal.blue_traditional_starters
-      if pbConfirmMessage('Ativar a progressao Traditional Starters neste save? Inicial ate 1 esmeralda; Intermediario com 2 e 3; Avancado a partir de 4.')
+      if pbConfirmMessage('Ativar a progressao neste save? Inicial: 0-1 cristais; Intermediario: 2-4; Avancado: 5-10 (540 BST); Master: 11+ (sem teto).')
         $PokemonGlobal.blue_traditional_starters=true
       end
       return
@@ -243,6 +243,7 @@ module Compiler
       BlueBattleUI.install;BlueLocale.install
       BlueAdventure.install;BlueReadouts.install
       BlueStartMouse.install
+      BlueExploration.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

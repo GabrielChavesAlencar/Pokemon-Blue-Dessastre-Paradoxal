@@ -14,6 +14,7 @@ module BluePolishValidation
     assert(BlueBattleUIValidation.run,'Readable misses, field HUD, Run shortcut, cleaner, doubles, gym prizes and Portuguese; Data/blue-ui-validation.txt')
     assert(BlueReadoutsValidation.run,'Native Dex numbers, stat multipliers, seen-only preview, boxes, startup restrictions and locale; Data/blue-readouts-validation.txt')
     assert(BlueTouchValidation.run,'Native title/menu/name/level mouse input, real monotype branch and below-HP modifiers/screens; Data/blue-touch-validation.txt')
+    assert(BlueExplorationValidation.run,'Controls/character mouse, fishing, Habitat Dex and four campaign tiers; Data/blue-exploration-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'
@@ -64,7 +65,7 @@ module BluePolishValidation
     old_enabled=BlueStory.method(:enabled?)
     BlueStory.choose_mode(:story);$PokemonGlobal.blue_traditional_starters=true
     assert(!BlueStory.enabled?,'Lab battles do not receive campaign balancing')
-    assert([0,1,2,3,4,18].map { |n| BlueStory.stage(n) }==[0,0,1,1,2,2],'Stage boundaries 0/1, 2/3 and 4+ badges')
+    assert([0,1,2,4,5,10,11,18].map { |n| BlueStory.stage(n) }==[0,0,1,1,2,2,3,3],'Stage boundaries 0-1, 2-4, 5-10 and 11+ crystals')
     BlueStory.define_singleton_method(:enabled?) { true }
     $PokemonGlobal.blue_story_wins={}
     # Choose ordering must preserve the original event's branch indices.
@@ -80,13 +81,13 @@ module BluePolishValidation
     checked=0;examples=[]
     GameData::Species.each do |s|
       next unless BlueStory.bst(s)>0
-      [350,450].each do |limit|
+      [350,450,540].each do |limit|
         selected=BlueStory.replacement(s,limit)
         assert(BlueStory.bst(selected)<=limit,"#{s.id} replacement obeys #{limit} BST")
       end
       checked+=1;Graphics.update if checked%20==0
     end
-    [350,450].each do |limit|
+    [350,450,540].each do |limit|
       [:CHARIZARD,:GYARADOS,:GARCHOMP,:FERROTHORN,:WISHIWASHI,:CAVEFANG,:MEWTWO,:BLISSEY,:LUCARIO,:DRAGONITE].each do |id|
         p=BlueBattleLab.build(id,50);before=Marshal.dump(p)
         replacement=BlueStory.adjust(p,limit)
@@ -130,7 +131,7 @@ module BluePolishValidation
     assert(row && row[:stages]==[0],'Previously beaten trainer becomes available in intermediate stage')
     BlueStory.record(context.merge(stage:1),1)
     assert(BlueStory.rematches.empty?,'Victory consumes that stage revanche')
-    $player.badges[2]=true;$player.badges[3]=true
+    $player.badges[2]=true;$player.badges[3]=true;$player.badges[4]=true
     assert(BlueStory.rematches.length==1,'Advanced stage unlocks a new revanche')
     $PokemonGlobal=Marshal.load(Marshal.dump($PokemonGlobal))
     assert(BlueStory.history.values.first[:stages]==[0,1],'Save-compatible history survives Marshal round-trip')

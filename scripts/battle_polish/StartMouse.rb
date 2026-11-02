@@ -12,7 +12,7 @@ module BlueStartMouse
   end
   module InputKeys
     def trigger?(key)
-      if key==Input::USE && [:title,:stats].include?(BlueStartMouse.scope) && BlueStartMouse.click?
+      if key==Input::USE && [:title,:stats,:controls,:fishing].include?(BlueStartMouse.scope) && BlueStartMouse.click?
         BlueLabPointer.claimed=true;return true
       end
       super

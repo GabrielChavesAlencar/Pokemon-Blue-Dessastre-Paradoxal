@@ -1,6 +1,6 @@
 # Progressão Story, entradas de batalha e mouse
 
-As regras novas de níveis, inventário inicial e lojas estão em [Economia e jornada](ECONOMIA_E_JORNADA.md). Treinadores comuns agora usam 70% do maior nível do time; bosses e líderes mantêm o escalonamento anterior. As regras de BST descritas abaixo continuam valendo depois do ajuste de nível.
+As regras novas de níveis, inventário inicial e lojas estão em [Economia e jornada](ECONOMIA_E_JORNADA.md). Treinadores usam 70% do maior nível do time; líderes de ginásio usam 90% no Master. Selvagens usam 45%. As regras de BST descritas abaixo continuam valendo depois do ajuste de nível.
 
 ## Traditional Starters
 
@@ -9,20 +9,21 @@ Escolha **Story Mode → Traditional Starters**, primeira opção na seleção d
 | Esmeraldas | Modo | Limite de BST dos adversários |
 |---|---|---|
 | 0 e 1 | Inicial | 350 |
-| 2 e 3 | Intermediário | 450 |
-| 4 ou mais | Avançado | Sem limite; equipe original da base |
+| 2 a 4 | Intermediário | 450 |
+| 5 a 10 | Avançado | 540 |
+| 11 ou mais | Master | Sem limite; equipe original da base |
 
 BST é a soma dos atributos base, não os atributos calculados no nível atual. Pokémon que já cabem no limite permanecem; os que ultrapassam são substituídos. A escolha prioriza pré-evoluções da mesma família, depois tipagem igual, tipo principal e tipos compartilhados. Não tenta preencher todo slot com o máximo permitido. Por exemplo, Charizard vira Charmander no Inicial e Charmeleon no Intermediário; Gyarados pode virar Magikarp nos dois estágios.
 
-O nível escalonado pela base, tamanho/formato do time, natureza e treinamento são mantidos. A substituição ajusta habilidade e golpes à espécie válida e remove pedras Mega incompatíveis. Formas e Megas do adversário que excederiam o teto são bloqueadas enquanto houver limite. Os Pokémon do jogador, parceiros e encontros selvagens não são substituídos. Battle Mode e laboratório usam seus times normais.
+O nível escalonado pela base, tamanho/formato do time, natureza e treinamento são mantidos. A substituição ajusta habilidade e golpes à espécie válida e remove pedras Mega incompatíveis. Formas e Megas do adversário que excederiam o teto são bloqueadas enquanto houver limite. Os Pokémon já capturados pelo jogador e os parceiros são preservados. Selvagens também seguem o teto de BST da fase. Battle Mode e laboratório usam seus times normais.
 
-As equipes são preparadas em memória, depois do escalonamento de nível. Os PBS de treinadores e os eventos não são regravados. Com quatro esmeraldas, as equipes normais voltam automaticamente. As esmeraldas são lidas quando a próxima luta começa; a segunda e a quarta não alteram uma batalha que já estava em andamento.
+As equipes são preparadas em memória, depois do escalonamento de nível. Os PBS de treinadores e os eventos não são regravados. Com onze cristais, as equipes sem teto voltam automaticamente. Os cristais são lidos quando a próxima luta começa; obter a segunda, quinta ou décima primeira insígnia não altera uma batalha já em andamento.
 
 Em um save anterior à atualização, abra **Pausa → Progressão / Revanches Blue** no Story Mode e confirme a ativação da progressão. A origem dos iniciais não era registrada pela base; por isso saves antigos não são classificados automaticamente como Traditional Starters.
 
 ## Revanches entre estágios
 
-O Decades já permite enfrentar novamente os treinadores pelos eventos normais. Além disso, o menu **Pausa → Progressão / Revanches Blue** registra as vitórias realizadas com a progressão ativa e libera uma revanche quando o modo passa de Inicial para Intermediário ou Avançado. Cada confronto pode ser vencido uma vez por estágio por esse menu. Perder não consome a oportunidade; o histórico é salvo com a campanha e distingue nomes, versões e batalhas contra dois treinadores.
+O Decades já permite enfrentar novamente os treinadores pelos eventos normais. Além disso, o menu **Pausa → Progressão / Revanches Blue** registra as vitórias realizadas com a progressão ativa e libera uma revanche quando o modo passa para Intermediário, Avançado ou Master. Cada confronto pode ser vencido uma vez por estágio por esse menu. Perder não consome a oportunidade; o histórico é salvo com a campanha e distingue nomes, versões e batalhas contra dois treinadores.
 
 A revanche Blue chama a batalha diretamente, sem executar novamente o evento da história. Ela agora dá **EXP e dinheiro da vitória**, seguindo a opção única Exp Gain da campanha; continua sem drops de Pickup/Honey Gather, esmeraldas ou recompensas de missão. Não apaga flags de treinadores, quests ou conquistas. Vitórias anteriores à instalação continuam acessíveis pelos treinadores normais, mas não são inventadas no histórico novo.
 
