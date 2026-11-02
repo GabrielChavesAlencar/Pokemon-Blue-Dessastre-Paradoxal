@@ -24,7 +24,7 @@ Em um save anterior à atualização, abra **Pausa → Progressão / Revanches B
 
 O Decades já permite enfrentar novamente os treinadores pelos eventos normais. Além disso, o menu **Pausa → Progressão / Revanches Blue** registra as vitórias realizadas com a progressão ativa e libera uma revanche quando o modo passa de Inicial para Intermediário ou Avançado. Cada confronto pode ser vencido uma vez por estágio por esse menu. Perder não consome a oportunidade; o histórico é salvo com a campanha e distingue nomes, versões e batalhas contra dois treinadores.
 
-A revanche Blue chama a batalha diretamente, sem executar novamente o evento da história. Ela dá **somente o dinheiro da vitória**, sem EXP, drops de Pickup/Honey Gather, esmeraldas ou recompensas de missão. Não apaga flags de treinadores, quests ou conquistas. Vitórias anteriores à instalação continuam acessíveis pelos treinadores normais, mas não são inventadas no histórico novo.
+A revanche Blue chama a batalha diretamente, sem executar novamente o evento da história. Ela agora dá **EXP e dinheiro da vitória**, seguindo a opção única Exp Gain da campanha; continua sem drops de Pickup/Honey Gather, esmeraldas ou recompensas de missão. Não apaga flags de treinadores, quests ou conquistas. Vitórias anteriores à instalação continuam acessíveis pelos treinadores normais, mas não são inventadas no histórico novo.
 
 ## Entradas inspiradas no FireRed
 

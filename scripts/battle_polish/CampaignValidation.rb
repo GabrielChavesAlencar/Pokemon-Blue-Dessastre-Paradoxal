@@ -108,7 +108,7 @@ module BlueCampaignValidation
     check(battle.pbParty(1).first.level==7 && Marshal.dump(trainer)==source,'Native Battle constructor scales common opponents without modifying their source data')
     boss=NPCTrainer.new('Danny (Singles)',:YOUNGSTER);boss.party=[BlueBattleLab.build(:PIKACHU,50)]
     bb=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,boss.party,[$player],[boss])
-    check(bb.pbParty(1).first.level==50,'Boss level and roster retain the existing scaling path')
+    check(bb.pbParty(1).first.level==7,'Bosses use the same 70 percent campaign scaling as every trainer')
     badges=$player.badges.dup
     test_mon=BlueBattleLab.build(:CHARIZARD,50);test_mon.moves=[:FIREBLAST,:SWORDSDANCE,:DRAGONCLAW,:FLAMETHROWER].map { |id| Pokemon::Move.new(id) }
     [0,2,4].each do |badge_count|

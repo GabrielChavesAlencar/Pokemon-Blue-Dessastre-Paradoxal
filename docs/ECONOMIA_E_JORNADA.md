@@ -14,7 +14,7 @@ Na aba **Treino**, há um seletor para cada atributo: HP, Ataque, Defesa, Ataque
 
 ### Golpes de treinadores por fase
 
-No iniciante (0–1 esmeralda), o poder base máximo é **60**; no intermediário (2–3), **90**. Isso vale também para bosses nessas fases, sem alterar o escalonamento de nível deles. No avançado (4+), seus golpes permanecem como antes.
+No iniciante (0–1 esmeralda), o poder base máximo é **60**; no intermediário (2–3), **90**. Isso vale também para líderes e bosses, que seguem o escalonamento de 70% descrito abaixo. No avançado (4+), seus golpes permanecem como antes.
 
 São retirados boosts/drops de dois ou mais estágios, alterações de vários atributos, resets/copias/inversões de estágios e golpes de dano extremo/variável ou chamadas de golpes que escapariam ao limite. Swords Dance, por exemplo, não passa. A troca procura golpes do mesmo papel, categoria e tipo, entre os aprendidos por nível até o nível atual ou por tutor; não usa egg moves como atalho. Não repete golpes. Se uma espécie não possui nenhum candidato permitido, fica sem golpes selecionáveis e a engine usa seu Struggle nativo, sem ensinar um golpe ilegal.
 
@@ -32,9 +32,9 @@ Ferramentas de gerar dinheiro/itens, atravessar paredes e o telefone de teleport
 
 ## Treinadores
 
-Cada Pokémon de um treinador comum usa `max(1, floor(maior nível do time × 0,70))`. O cálculo considera o time inteiro e ignora ovos: nível máximo 10 → adversários no 7; 50 → 35; 100 → 70. É calculado no início da luta, depois do escalonamento da base, sem regravar PBS nem modificar o Pokémon original do treinador.
+Cada Pokémon de qualquer treinador da campanha, inclusive líderes, mestres, bosses e rivais, usa `max(1, floor(maior nível do time × 0,70))`. O cálculo considera o time inteiro e ignora ovos: nível máximo 10 → adversários no 7; 50 → 35; 100 → 70. É calculado no início da luta, depois do escalonamento da base, sem regravar PBS nem modificar o Pokémon original do treinador.
 
-Líderes, mestres, bosses e rivais continuam no caminho anterior. A identificação usa os nomes dos 18 mestres e Danny, além das classes identificadas como Leader, Master, Boss, Elite, Champion, Rival ou Admin. A progressão anterior de BST por esmeraldas continua valendo no Traditional Starters. Cada vitória contra treinador na campanha dá o prêmio nativo: nível máximo do adversário × dinheiro-base da classe, com os multiplicadores nativos. Classes com valor zero usam 30 por nível. O Hub continua sem recompensar a campanha.
+A progressão de BST por esmeraldas continua valendo no Traditional Starters. Cada vitória contra treinador na campanha dá o prêmio nativo: nível máximo do adversário × dinheiro-base da classe, com os multiplicadores nativos. Classes com valor zero usam 30 por nível. O Hub continua sem recompensar a campanha.
 
 ## Loja por abas
 
@@ -60,4 +60,24 @@ As espécies Dessastre Paradoxal que usam escala traseira 1 passam para 1,5: os 
 
 ## Verificação
 
-O smoke nativo grava os resultados em `game/Data/blue-polish-validation.txt`. Ele verifica níveis, preservação dos bosses, escolhas da campanha, preços positivos, compras sem saldo, descontos exatos, limite de revenda, um vendedor acessível por Joy, remoção dos geradores, inserção sem duplicação, inventário inicial e renderização da loja. Os instaladores mantêm backups em `.blue-backups/`.
+O smoke nativo grava os resultados em `game/Data/blue-polish-validation.txt`. Ele verifica níveis de todos os treinadores, preservação dos times de origem, escolhas da campanha, preços positivos, compras sem saldo, descontos exatos, limite de revenda, um vendedor acessível por Joy, remoção dos geradores, inserção sem duplicação, inventário inicial e renderização da loja. Os instaladores mantêm backups em `.blue-backups/`.
+
+## Encontros selvagens e opções de batalha
+
+Selvagens usam `max(1, floor(maior nível do time × 0,45))`, ignorando ovos, depois dos handlers de escalonamento da base. Maior nível 50 → selvagem 22; maior nível 100 → selvagem 45. A entrada direta de batalhas selvagens também recebe a regra. Os encontros gerados usam os golpes de nível da espécie no nível calculado.
+
+Na progressão Traditional Starters, selvagens seguem a mesma seleção por família/tipos usada nos treinadores: BST máximo 350 no inicial (0–1 esmeralda), 450 no intermediário (2–3), sem teto no avançado (4+). A restrição a mudanças de forma também vale para o adversário selvagem. O limite não altera Pokémon que o jogador já capturou.
+
+Os diálogos de treinadores da campanha oferecem **Start Battle (Exp Gain)** e saída. A cura gratuita por treinador e a alternativa Forfeit Option foram retiradas; as enfermeiras continuam funcionando. Ginásios oferecem apenas **Full Power Team → Double Battle → Start Battle (Exp Gain)**, além de cancelar. O adaptador de início também garante o time 2v2 Full Power em eventos antigos. Revanches Blue agora habilitam EXP e dinheiro, preservando o bloqueio de drops e a frequência por estágio. O Hub e o Battle Mode mantêm seus próprios formatos e não dão EXP à campanha.
+
+## Status e efeitos de fim de turno
+
+Sono usa a distribuição de contadores **2, 3, 3**, que bloqueia respectivamente uma, duas e duas ações antes de acordar. Paralisia impede agir com probabilidade exata de **1/8 (12,5%)**; a redução normal de Speed é preservada. Rest continua com duração explícita e Early Bird mantém sua interação. Esses dois ajustes seguem o [mod Champions do Pokémon Showdown](https://github.com/smogon/pokemon-showdown/blob/master/data/mods/champions/conditions.ts); Freeze e outros golpes não recebem alterações não solicitadas.
+
+Leech Seed mantém seu efeito clássico: drena 1/8 do HP máximo do alvo a cada fim de turno e recupera o HP do Pokémon na posição beneficiária. O modo que ocultava mensagens/animações de fim de turno foi desativado. Imunidade de Grass, Magic Guard, Big Root e Liquid Ooze continuam usando a lógica da engine.
+
+## Correção do menu ao salvar
+
+Salvar com sucesso encerra o menu e descarta seus sprites. O loop de pausa agora encerra imediatamente após esse callback, antes de atualizar o HUD de novas quests. Isso corrige `undefined method 'y' for nil:NilClass` após salvar, inclusive ao sair para a rota e retornar ao Centro Pokémon. Não há migração nem limpeza do save existente.
+
+A validação adicional fica em `game/Data/blue-journey-validation.txt`: inclui eventos reais dos mapas, os dois percentuais, os tetos de BST, ganho nativo de EXP, três turnos consecutivos de Leech Seed, probabilidades dos status, retorno ao Centro e fechamento do HUD. O teste de save serializa/recarrega apenas objetos temporários em memória; o laboratório mantém as proteções contra gravação da campanha.

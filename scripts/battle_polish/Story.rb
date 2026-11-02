@@ -97,8 +97,8 @@ module BlueStory
   end
   module Teams
     def initialize(*args)
+      @blue_story_cap=BlueStory.cap if BlueStory.enabled?
       if BlueStory.enabled? && args[4] && !Array(args[4]).empty?
-        @blue_story_cap=BlueStory.cap
         trainers=Array(args[4])
         if BlueStory.context
           BlueStory.context[:foes]=trainers.map { |t| [t.trainer_type,t.name,t.version || 0] }
@@ -178,7 +178,7 @@ module BlueStory
         BlueStory.context[:size]="#{battle.pbSideSize(0)}v#{battle.pbSideSize(1)}"
       end
       if BlueStory.replaying?
-        battle.expGain=false;battle.moneyGain=true;battle.internalBattle=true
+        battle.expGain=true;battle.moneyGain=true;battle.internalBattle=true
       end
     end
   end
@@ -194,7 +194,7 @@ module BlueStory
     previous=$game_temp.battle_rules.dup
     @replaying=true
     $game_temp.clear_battle_rules
-    setBattleRule(row[:size] || 'single','canLose','noExp')
+    setBattleRule(row[:size] || 'single','canLose')
     TrainerBattle.start_core(*row[:foes])
   ensure
     @replaying=false
@@ -215,7 +215,7 @@ module BlueStory
       pbMessage("Modo #{LABELS[stage]}. As revanches Blue ficam disponiveis ao mudar de estagio, apos registrar uma vitoria. Treinadores da campanha continuam aceitando batalhas normalmente.")
       return
     end
-    choice=pbMessage("#{LABELS[stage]} / Revanche: somente dinheiro, sem EXP ou drops.",rows.map { |r| r[:foes].map { |f| f[1] }.join(' + ') }+['Voltar'],-1)
+    choice=pbMessage("#{LABELS[stage]} / Revanche: EXP e dinheiro, sem drops.",rows.map { |r| r[:foes].map { |f| f[1] }.join(' + ') }+['Voltar'],-1)
     replay(rows[choice]) if choice>=0 && choice<rows.length
   end
   def self.install
@@ -239,6 +239,7 @@ module Compiler
       blue_presentation_original_main
       BluePresentation.install;BlueStory.install
       BlueCampaign.install
+      BlueJourney.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

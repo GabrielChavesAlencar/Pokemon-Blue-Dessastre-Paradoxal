@@ -10,6 +10,7 @@ module BluePolishValidation
     test_pointer_order
     test_story
     BlueCampaignValidation.run(@lines)
+    assert(BlueJourneyValidation.run,'Journey scaling, trainer menus, Leech Seed, Champions statuses and pause/save lifecycle; Data/blue-journey-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'
@@ -113,11 +114,11 @@ module BluePolishValidation
     battle.party2starts=[0,1]
     BlueStory.instance_variable_set(:@replaying,true)
     BattleCreationHelperMethods.prepare_battle(battle)
-    assert(!battle.expGain && battle.moneyGain && battle.internalBattle,'Revanche awards money and disables EXP')
+    assert(battle.expGain && battle.moneyGain && battle.internalBattle,'Revanche enables EXP and money like other trainer battles')
     previous_money=$player.money
     previous_bag=Marshal.dump($bag);previous_exp=ally.exp
     battle.pbGainMoney
-    assert($player.money>previous_money && Marshal.dump($bag)==previous_bag && ally.exp==previous_exp,'Native revanche payout changes money, with no bag or EXP reward')
+    assert($player.money>previous_money && Marshal.dump($bag)==previous_bag && ally.exp==previous_exp,'Money payout itself does not mutate the bag or award experience twice')
     context={foes:[[:YOUNGSTER,'Test history',0]],stage:0,size:'single'}
     BlueStory.record(context,2);assert(BlueStory.history.empty?,'Losing does not unlock a completed revanche')
     BlueStory.record(context,1)

@@ -1,8 +1,8 @@
 """Install Blue's original presentation/story plugin, with a local backup."""
 from pathlib import Path
 import importlib.util,os,tempfile
-FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','items_blue_iv.txt','Shop.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
-SUPPORT=['leaders.py','leaders_full_power.json']
+FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
+SUPPORT=['leaders.py','leaders_full_power.json','champions.py']
 def atomic(path,raw):
     path.parent.mkdir(parents=True,exist_ok=True)
     fd,name=tempfile.mkstemp(prefix='.blue-polish-',dir=path.parent)
@@ -20,6 +20,9 @@ def install(project,game):
     trainer_plan=patch.plan(project,game)
     plans.update(trainer_plan)
     if trainer_plan:plans[target/'leader-teams.tsv']=patch.validation_rows(patch.manifest(project))
+    spec=importlib.util.spec_from_file_location('blue_champions_patch',source/'champions.py')
+    champions=importlib.util.module_from_spec(spec);spec.loader.exec_module(champions)
+    plans.update(champions.plan(project,game))
     changed={p:b for p,b in plans.items() if not p.is_file() or p.read_bytes()!=b}
     backup=project/'.blue-backups'/('story-presentation-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
     previous={p:p.read_bytes() if p.is_file() else None for p in changed};written=[]

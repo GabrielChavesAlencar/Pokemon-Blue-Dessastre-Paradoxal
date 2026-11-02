@@ -29,6 +29,10 @@ module BlueCampaign
     highest=party.reject(&:egg?).map(&:level).max || 1
     [[highest*7/10,1].max,GameData::GrowthRate.max_level].min
   end
+  def self.wild_level(party=$player.party)
+    highest=party.reject(&:egg?).map(&:level).max || 1
+    [[highest*45/100,1].max,GameData::GrowthRate.max_level].min
+  end
   module Teams
     def initialize(*args)
       if BlueCampaign.active? && args[4] && !Array(args[4]).empty?
@@ -36,7 +40,7 @@ module BlueCampaign
         args[4]=Array(args[4]).map do |trainer|
           copy=trainer.clone
           copy.party=trainer.party.map do |original|
-            pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level unless BlueCampaign.boss?(trainer);pkmn.calc_stats;pkmn.heal;pkmn
+            pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level;pkmn.calc_stats;pkmn.heal;pkmn
           end
           copy
         end
