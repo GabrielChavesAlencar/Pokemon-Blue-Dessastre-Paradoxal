@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dfd6af3d5f6efb13364d641d19e09e87ab983685",
+      "date": "2026-11-02T13:34:59-03:00",
+      "title": "feat: adicionar Habitat Dex, faixa Master e downloads; corrigir pesca e mouse",
+      "category": "Novidades"
+    },
+    {
       "sha": "cba5b1c867a02382d3f82c5aef3a399bac5e33f5",
       "date": "2026-11-02T11:52:51-03:00",
       "title": "feat: corrigir monotipo e mouse, mostrar telas e comparar versões no portal",
