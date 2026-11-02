@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cba5b1c867a02382d3f82c5aef3a399bac5e33f5",
+      "date": "2026-11-02T11:52:51-03:00",
+      "title": "feat: corrigir monotipo e mouse, mostrar telas e comparar versões no portal",
+      "category": "Novidades"
+    },
+    {
       "sha": "2a99d2f18cfcfc4c4f2812bad6a8ead8d34295f6",
       "date": "2026-11-02T10:33:52-03:00",
       "title": "Melhora Pokédex, prévia de batalha e escolhas da campanha",
