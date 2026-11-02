@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b6f14774aec5e9426e3eb16c6ad5a326598cd4ad",
+      "date": "2026-11-01T23:50:26-03:00",
+      "title": "fix(campaign): corrigir salvamento e aplicar regras de treino e status",
+      "category": "Correções"
+    },
+    {
       "sha": "6c99d7fef699e6ce28fcf40e57b52f1c0533ac66",
       "date": "2026-11-01T21:40:31-03:00",
       "title": "feat(story): atualizar os 18 líderes de duplas Full Power",
