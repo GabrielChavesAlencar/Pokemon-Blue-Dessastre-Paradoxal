@@ -1,5 +1,9 @@
 # Original in-game shop: native scrolling windows and bag/money transactions.
 module BlueCampaign
+  def self.shop_name(item)
+    return item.name unless item.is_machine? && GameData::Move.exists?(item.move)
+    item.name+' '+GameData::Move.get(item.move).name
+  end
   class ShopList < Window_CommandPokemon
     def drawItem(index,_count,rect)
       rect=drawCursor(index,rect)
@@ -38,7 +42,7 @@ module BlueCampaign
       b.fill_rect(322,108,Graphics.width-332,230,Color.new(21,36,54))
       draw_text(b,12,Graphics.height-34,Graphics.width-24,28,'Setas / abas: categoria     Confirmar: comprar     Esc: sair',16)
       @stock=BlueCampaign.stock(@tab)
-      commands=@stock.map { |id| i=GameData::Item.get(id);i.name+'  $'+BlueCampaign.price(i).to_s_formatted }
+      commands=@stock.map { |id| i=GameData::Item.get(id);BlueCampaign.shop_name(i)+'  $'+BlueCampaign.price(i).to_s_formatted }
       @list.commands=commands.empty? ? ['Sem itens nesta aba'] : commands
       @list.index=0;@last_index=nil
       details
@@ -51,6 +55,7 @@ module BlueCampaign
       return unless id
       item=GameData::Item.get(id)
       draw_text(b,0,0,170,24,'Na mochila: '+$bag.quantity(id).to_s,17)
+      draw_text(b,0,24,170,26,GameData::Move.get(item.move).name,17) if item.is_machine? && GameData::Move.exists?(item.move)
       words=item.description.split;lines=['']
       words.each do |word|
         candidate=(lines[-1]+' '+word).strip
@@ -71,9 +76,9 @@ module BlueCampaign
       max=[Settings::BAG_MAX_PER_SLOT,$player.money/cost].min
       max=1 if item.is_important?
       params=ChooseNumberParams.new;params.setRange(1,max);params.setInitialValue(1);params.setCancelValue(0)
-      qty=max==1 ? 1 : pbMessageChooseNumber('Quantos '+item.name+'? Preco unitario: $'+cost.to_s_formatted,params)
+      qty=max==1 ? 1 : pbMessageChooseNumber('Quantos '+BlueCampaign.shop_name(item)+'? Preco unitario: $'+cost.to_s_formatted,params)
       return if qty<=0
-      return unless pbConfirmMessage('Comprar '+qty.to_s+' x '+item.name+' por $'+(cost*qty).to_s_formatted+'?')
+      return unless pbConfirmMessage('Comprar '+qty.to_s+' x '+BlueCampaign.shop_name(item)+' por $'+(cost*qty).to_s_formatted+'?')
       result=BlueCampaign.purchase(id,qty)
       pbMessage(result==:ok ? 'Compra realizada!' : {funds:'Dinheiro insuficiente.',full:'Sem espaco na mochila.',owned:'Equipamento ja adquirido.'}[result] || 'Este item nao esta disponivel.')
       selected=@list.index;refresh;@list.index=selected;details

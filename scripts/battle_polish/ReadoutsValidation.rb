@@ -116,7 +116,7 @@ module BlueReadoutsValidation
     check(_INTL('{1} tasks','Active')=='Missões Ativas','Substituted UI state labels are translated before interpolation')
     check(BlueLocale.translate('The opposing Blastoise')=='O Blastoise adversário','Battle subject prefixes are translated')
     check(GameData::Move.get(:FLAMETHROWER).name=='Flamethrower' && GameData::Item.get(:CHARIZARDITEY).name=='Charizardite Y','Move and item names remain original')
-    check(GameData::Ability.get(:BLAZE).name!='Blaze','Ability names are localized while their IDs stay intact')
+    check(GameData::Ability.get(:BLAZE).name=='Blaze','Ability names remain in English while their IDs stay intact')
   end
   def self.render
     before=Marshal.dump([$player.party,$PokemonStorage]);dex=Marshal.dump($player.pokedex)

@@ -10,6 +10,7 @@ module BlueDexCards
       when /OldRod/ then :OLDROD
       when /GoodRod/ then :GOODROD
       when /SuperRod/ then :SUPERROD
+      when /Fishing/ then :SUPERROD
       when /Water/ then :MYSTICWATER
       when /RockSmash/ then :HARDSTONE
       when /Headbutt/ then :HONEY
@@ -116,12 +117,31 @@ end
 module BlueFanBackFacing
   FLIPPED=[:AMMNOID].freeze
   def setPokemonBitmap(pokemon,battler,back=false)
-    self.mirror=!self.mirror if @blue_fan_back_flip
+    self.mirror=@blue_fan_base_mirror if @blue_fan_back_flip
     @blue_fan_back_flip=false
     result=super
+    @blue_fan_base_mirror=self.mirror
     if back && !@substitute && pokemon && FLIPPED.include?(pokemon.species)
       self.mirror=!self.mirror;@blue_fan_back_flip=true
     end
     result
+  end
+  def blue_restore_facing
+    self.mirror=!@blue_fan_base_mirror if @blue_fan_back_flip
+  end
+  module Animations
+    def pbAnimation(*args,&block)
+      super
+    ensure
+      blue_restore_fan_facings
+    end
+    def pbCommonAnimation(*args,&block)
+      super
+    ensure
+      blue_restore_fan_facings
+    end
+    def blue_restore_fan_facings
+      (@sprites || {}).each_value { |sprite| sprite.blue_restore_facing if sprite.respond_to?(:blue_restore_facing) && !sprite.disposed? }
+    end
   end
 end

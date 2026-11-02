@@ -175,9 +175,14 @@ def main(argv=None):
     parser.add_argument('--install-only',action='store_true')
     parser.add_argument('--prepare-only',action='store_true',help='Preparar uma abertura pelo Game.exe nos proximos 120 segundos.')
     parser.add_argument('--smoke-test',action='store_true')
+    parser.add_argument('--export-campaign-reference',action='store_true',help='Exportar os perfis reais dos lideres durante a verificacao nativa.')
     parser.add_argument('--timeout',type=float,default=240)
     args=parser.parse_args(argv)
     try:
+        if args.export_campaign_reference:
+            if not args.smoke_test:raise ValueError('A exportacao requer --smoke-test para usar dados temporarios, sem carregar a campanha.')
+            game=install(project,args.game_dir)
+            atomic_write(game/'Data/blue-reference-export-request.txt',b'Export current Full Doubles campaign profiles.\n')
         if args.install_only:install(project,args.game_dir);print('Plugin instalado.');return 0
         if args.prepare_only:
             game=install(project,args.game_dir);prepare_request(game,args.smoke_test);print('Pronto para abrir Game.exe.');return 0

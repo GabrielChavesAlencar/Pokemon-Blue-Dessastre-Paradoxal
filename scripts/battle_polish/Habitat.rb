@@ -1,6 +1,6 @@
 # Read-only Habitat Dex: native visited maps, active encounter version and Dex flags.
 module BlueHabitat
-  METHODS={Land:'Grass',LandMorning:'Grass / Morning',LandDay:'Grass / Day',LandNight:'Grass / Night',
+  METHODS={Fishing:'Fishing',Land:'Grass',LandMorning:'Grass / Morning',LandDay:'Grass / Day',LandNight:'Grass / Night',
     Cave:'Cave',CaveMorning:'Cave / Morning',CaveDay:'Cave / Day',CaveNight:'Cave / Night',Water:'Surf',
     WaterMorning:'Surf / Morning',WaterDay:'Surf / Day',WaterNight:'Surf / Night',
     OldRod:'Old Rod',GoodRod:'Good Rod',SuperRod:'Super Rod',RockSmash:'Rock Smash',
@@ -57,7 +57,8 @@ module BlueHabitat
     end
   end
   def self.open_area(area)
-    methods=area[:methods].keys
+    methods=area[:methods].keys.reject { |type| BlueFishing::RODS.include?(type) }
+    methods << :Fishing if BlueFishing::RODS.any? { |rod| area[:methods][rod]&.any? }
     loop do
       labels=[_INTL('View on map')]+methods.map { |type| _INTL(METHODS[type] || type.to_s) }+[_INTL('Other habitats')]
       method=BlueBattleLab.choose(area[:name],labels,0,99999,BlueDexCards.methods(methods))
@@ -65,8 +66,20 @@ module BlueHabitat
       return :areas if method==labels.length-1
       if method==0;BlueHabitatMap.open(area[:map]);next;end
       type=methods[method-1]
-      Scene.new(area[:name],_INTL(METHODS[type] || type.to_s),entries(area[:methods][type]),area[:map]).run
+      rows=type==:Fishing ? fishing_entries(area[:methods]) : entries(area[:methods][type])
+      Scene.new(area[:name],_INTL(METHODS[type] || type.to_s),rows,area[:map]).run
     end
+  end
+  def self.fishing_entries(methods)
+    by_species={}
+    BlueFishing::RODS.each do |rod|
+      slots=methods[rod] || []
+      species(slots).zip(entries(slots)).each do |key,entry|
+        # The internal key only deduplicates; unknown names/icons/rod hints stay hidden.
+        row=(by_species[key] ||= entry.merge(rods:[]));row[:rods] << rod unless row[:rods].include?(rod)
+      end
+    end
+    by_species.values
   end
   class Scene
     def initialize(area,method,entries,map_id=nil);@area=area;@method=method;@entries=entries;@map_id=map_id;@page=0;@sprites={};end
@@ -85,19 +98,24 @@ module BlueHabitat
         b.fill_rect(Graphics.width-180,4,164,26,Color.new(28,64,94));b.draw_text(Graphics.width-180,4,164,26,_INTL('Map [M]'),1)
       end
       @entries.slice(@page*6,6).to_a.each_with_index do |entry,i|
-        x=16+i%3*164;y=88+i/3*100
-        b.fill_rect(x,y,152,92,Color.new(25,48,69))
+        x=16+i%3*164;y=88+i/3*104
+        b.fill_rect(x,y,152,100,Color.new(25,48,69))
         if entry[:species]
-          icon=PokemonSpeciesIconSprite.new(entry[:species],@viewport);icon.x=x+44;icon.y=y-6;icon.z=2;@sprites['icon'+i.to_s]=icon
+          icon=PokemonSpeciesIconSprite.new(entry[:species],@viewport);icon.x=x+56;icon.y=y+2;icon.zoom_x=icon.zoom_y=0.625;icon.z=2;@sprites['icon'+i.to_s]=icon
         else
           pbDrawTextPositions(b,[['?',x+76,y+14,:center,light,shadow]])
           next
         end
         label=entry[:status]==:caught ? _INTL('Caught') : (entry[:status]==:seen ? _INTL('Seen') : '?')
         color=entry[:status]==:caught ? Color.new(113,227,151) : Color.new(180,208,232)
-        pbDrawTextPositions(b,[[entry[:name],x+76,y+51,:center,light,shadow],[label,x+76,y+71,:center,color,shadow]])
+        pbDrawTextPositions(b,[[entry[:name],x+76,y+43,:center,light,shadow],[label,x+76,y+63,:center,color,shadow]])
+        if entry[:rods]
+          b.font.size=14;b.font.color=Color.new(173,214,245)
+          b.draw_text(x+2,y+81,148,18,entry[:rods].map { |rod| {OldRod:'Old',GoodRod:'Good',SuperRod:'Super'}[rod] }.join(' / '),1)
+          pbSetSmallFont(b)
+        end
       end
-      pbDrawTextPositions(b,[[_INTL('Seen / Caught / ?: Not yet identified'),16,298,:left,light,shadow],
+      pbDrawTextPositions(b,[[_INTL('Seen / Caught / ?: Not yet identified'),16,306,:left,light,shadow],
         [(1+@page).to_s+' / '+pages.to_s,Graphics.width-20,56,:right,light,shadow]])
       [_INTL('Previous'),_INTL('Next'),_INTL('Back')].each_with_index do |label,i|
         x=i*Graphics.width/3;b.fill_rect(x+4,336,Graphics.width/3-8,44,Color.new(30,67,99))

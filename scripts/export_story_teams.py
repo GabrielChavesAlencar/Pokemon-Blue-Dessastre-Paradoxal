@@ -5,6 +5,8 @@ Sem game/PBS/trainers_story_mode.txt não substitui os dados de referência.
 """
 from __future__ import annotations
 import json
+import sys
+import zlib
 from pathlib import Path
 import re
 
@@ -13,6 +15,46 @@ START_POKEMON = re.compile(r'^\s*Pokemon\s*=\s*([^,\r\n]+)\s*,\s*(\d+)', re.I)
 FIELD = re.compile(r'^\s*(Moves|Item|Form|AbilityIndex|TeraType|Nature|IV|EV|DynamaxLv)\s*=\s*([^#\r\n]+)')
 KEYS = {'Moves':'moves','Item':'item','Form':'form','AbilityIndex':'abilityIndex',
         'TeraType':'teraType','Nature':'nature','IV':'ivs','EV':'evs','DynamaxLv':'dynamaxLv'}
+
+def campaign_rules_crc() -> int:
+    root=Path(__file__).resolve().parent/'battle_polish'
+    return zlib.crc32(b''.join((root/name).read_bytes() for name in ['Story.rb','Balance.rb','Campaign.rb']))
+
+def campaign_profiles(game: Path, roster: dict, source: bytes) -> bool:
+    """Only publish native profiles belonging to the same current PBS source."""
+    crc=zlib.crc32(source);rules_crc=campaign_rules_crc()
+    reference=game/'Data/blue-campaign-reference.dat'
+    data=None
+    if reference.is_file():
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+        from server.ruby_marshal import loads
+        def normalize(value):
+            if isinstance(value,bytes):return value.decode('utf8')
+            if isinstance(value,dict):return {normalize(k):normalize(v) for k,v in value.items()}
+            if isinstance(value,list):return [normalize(v) for v in value]
+            return value
+        candidate=normalize(loads(reference.read_bytes()))
+        if candidate.get('version')==1 and candidate.get('sourceCRC')==crc and candidate.get('rulesCRC')==rules_crc:
+            data=candidate
+    if data:
+        masters=data.get('masters',{})
+        expected={'beginner','intermediate','advanced','master'}
+        if len(masters)!=18 or any(len(v)!=4 or {p.get('id') for p in v}!=expected or
+            any(p.get('origin')!='blue-engine' or len(p.get('team',[]))!=6 for p in v) for v in masters.values()):
+            raise ValueError('Invalid native Full Doubles campaign reference.')
+        for trainer in roster.get('masters',[]):
+            if trainer['name'] not in masters:raise ValueError('Missing native leader: '+trainer['name'])
+            trainer['campaignVariants']=masters[trainer['name']]
+        roster['campaignSourceCRC']=crc
+        roster['campaignRulesCRC']=rules_crc
+        roster['campaignProfiles']='blue-engine-full-doubles'
+        return True
+    if roster.get('campaignSourceCRC') not in (None,crc) or roster.get('campaignRulesCRC') not in (None,rules_crc):
+        for trainer in roster.get('masters',[]):trainer.pop('campaignVariants',None)
+        roster.pop('campaignSourceCRC',None);roster.pop('campaignRulesCRC',None);roster.pop('campaignProfiles',None)
+        print('Perfis de campanha antigos removidos: reexporte pela engine após alterar o PBS.')
+        return True
+    return False
 
 def parse_teams(raw: str) -> dict[tuple[str, str], list[dict]]:
     found = list(ENTRY.finditer(raw))
@@ -50,11 +92,17 @@ def update_story_teams(game: Path, output: Path) -> int:
                 variant['team']=possible[0][1]
                 variant['origin']='blue-pbs'
                 count+=1
-    if count:
+    profiles_updated=campaign_profiles(game,roster,source.read_bytes())
+    if count or profiles_updated:
         roster['version']='blue-pbs-with-reference-fallback'
         roster['basis']='Equipes sincronizadas com Blue Studio onde origin=blue-pbs; outras herdadas do Pokémon Decades'
         roster['syncedTeams']=count
-        target.write_text(json.dumps(roster,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        # Level-dependent native move series add many records; keep the portal's
+        # shared payload compact rather than tripling it with indentation.
+        options={'ensure_ascii':False}
+        if roster.get('campaignProfiles'):options['separators']=(',',':')
+        else:options['indent']=2
+        target.write_text(json.dumps(roster,**options)+'\n',encoding='utf-8')
     print(f'story-trainers.json: {count} variantes sincronizadas do Blue Studio')
     return count
 

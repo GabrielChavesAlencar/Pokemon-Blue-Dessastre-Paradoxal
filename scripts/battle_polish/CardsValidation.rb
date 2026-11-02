@@ -113,6 +113,9 @@ module BlueDexCardsValidation
     scene.pbStartBattle(battle);BlueBattleOptions::MechanicValidation.show_battlers(scene,battle)
     sprites=scene.instance_variable_get(:@sprites);shot('blue-ammnoid-facing-smoke')
     check(sprites['pokemon_0'].mirror && !sprites['pokemon_1'].mirror && !sprites['pokemon_2'].mirror,'Doubles mirror only the inverted Ammnoid back; opponent/front and Cephalonid stay unchanged')
+    check(!!scene.pbFindMoveAnimation(:ROLLOUT,0,0),'Native Rollout animation exists for the orientation regression')
+    scene.pbAnimation(:ROLLOUT,battle.battlers[0],[battle.battlers[1]],0)
+    check(sprites['pokemon_0'].mirror && !sprites['pokemon_1'].mirror,'A real Rollout animation restores the corrected Ammnoid back orientation')
     ['original','light','minimal'].each do |mode|
       $PokemonSystem.blue_sprite_quality=mode
       [false,true].each do |shiny|

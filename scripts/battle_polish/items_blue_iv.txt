@@ -60,3 +60,63 @@ Price = 50000
 FieldUse = OnPokemon
 Consumable = true
 Description = Escolhe o IV de Velocidade entre 0 e 31. Consumido apenas ao alterar o valor.
+
+#-------------------------------
+[BLUEEVHP]
+Name = EV Cleaner HP
+NamePlural = EV Cleaners HP
+Pocket = 1
+Price = 750
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets only HP EVs of one Pokemon. Consumed only when this stat changes.
+
+#-------------------------------
+[BLUEEVATTACK]
+Name = EV Cleaner Attack
+NamePlural = EV Cleaners Attack
+Pocket = 1
+Price = 750
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets only Attack EVs of one Pokemon. Consumed only when this stat changes.
+
+#-------------------------------
+[BLUEEVDEFENSE]
+Name = EV Cleaner Defense
+NamePlural = EV Cleaners Defense
+Pocket = 1
+Price = 750
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets only Defense EVs of one Pokemon. Consumed only when this stat changes.
+
+#-------------------------------
+[BLUEEVSPATK]
+Name = EV Cleaner Sp. Atk
+NamePlural = EV Cleaners Sp. Atk
+Pocket = 1
+Price = 750
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets only Sp. Atk EVs of one Pokemon. Consumed only when this stat changes.
+
+#-------------------------------
+[BLUEEVSPDEF]
+Name = EV Cleaner Sp. Def
+NamePlural = EV Cleaners Sp. Def
+Pocket = 1
+Price = 750
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets only Sp. Def EVs of one Pokemon. Consumed only when this stat changes.
+
+#-------------------------------
+[BLUEEVSPEED]
+Name = EV Cleaner Speed
+NamePlural = EV Cleaners Speed
+Pocket = 1
+Price = 750
+FieldUse = OnPokemon
+Consumable = true
+Description = Resets only Speed EVs of one Pokemon. Consumed only when this stat changes.

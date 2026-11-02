@@ -2,7 +2,7 @@
 
 Em **Configurações → Language / Idioma**, escolha **Português** (tradução para o português brasileiro). A preferência é salva com as configurações normais e pode voltar para English. A tela de configurações muda imediatamente. A localização inclui diálogos da história, menus, mensagens, descrições e textos extraídos dos eventos comuns/mapas. As escolhas continuam usando seus índices e condições originais, mesmo quando o rótulo exibido está traduzido.
 
-Os nomes registrados de Pokémon, itens e golpes, e os apelidos dos Pokémon do jogador, permanecem iguais. Isso inclui palavras ambíguas como **Psychic**, que continua sendo Psychic quando é o nome do golpe. O painel de terreno usa um contexto separado para indicar Psíquico. Não se alteram os IDs dos treinadores, espécies, golpes, quests, itens ou eventos.
+Os nomes registrados de Pokémon, itens, golpes e habilidades (nomes em inglês), e os apelidos dos Pokémon do jogador, permanecem iguais. Isso inclui palavras ambíguas como **Psychic**, que continua sendo Psychic quando é o nome do golpe. O painel de terreno usa um contexto separado para indicar Psíquico. Não se alteram os IDs dos treinadores, espécies, golpes, quests, itens ou eventos.
 
 Os botões principais da batalha recebem rótulos de texto em português sobre os mesmos alvos de clique. A imagem original dos botões é preservada para English. Arquivos de imagens/áudio passados por `_INTL` mantêm o caminho original, e interpolações são tratadas como valores opacos, sem executar código Ruby da tabela.
 

@@ -248,6 +248,8 @@ module Compiler
       PokemonSummary_Scene.prepend(BlueLearnMouse) unless PokemonSummary_Scene.ancestors.include?(BlueLearnMouse)
       MoveRelearner_Scene.prepend(BlueRelearnMouse) unless MoveRelearner_Scene.ancestors.include?(BlueRelearnMouse)
       Battle::Scene::BattlerSprite.prepend(BlueFanBackFacing) unless Battle::Scene::BattlerSprite.ancestors.include?(BlueFanBackFacing)
+      Battle::Scene.prepend(BlueFanBackFacing::Animations) unless Battle::Scene.ancestors.include?(BlueFanBackFacing::Animations)
+      BlueTraining.install
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

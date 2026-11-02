@@ -8,14 +8,16 @@ const site=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const load=f=>JSON.parse(readFileSync(path.join(site,'public/data',f+'.json'),'utf8'));
 const source=load('story-trainers'),region=load('region-points'),catalog=load('catalog'),locations=load('locations'),details=load('details');
 const model={story:source,region,catalog,locations:locations.locations,byId:new Map(catalog.species.map(x=>[x.id,x]))};
-test('importa 18 mestres de tipo reais e as seis variações do PBS do Decades',()=>{
+test('importa 18 mestres reais e quatro dificuldades Full Doubles da engine Blue',()=>{
   assert.equal(source.masters.length,18);
-  assert.equal(source.masters.filter(t=>t.variants.length===6).length,18);
+  assert.equal(source.masters.filter(t=>t.campaignVariants.length===4).length,18);
   assert.equal(new Set(source.masters.map(t=>t.type)).size,18);
   for(const trainer of source.masters){
-    assert.ok(trainer.variants.some(v=>v.id==='1v1-basic-power'&&v.team.length===4),trainer.name);
-    assert.ok(trainer.variants.some(v=>v.id==='1v1-full-power'&&v.team.length===6),trainer.name);
-    for(const v of trainer.variants)for(const p of v.team){assert.ok(p.species);assert.ok(p.level>0);}
+    assert.deepEqual(trainer.campaignVariants.map(v=>v.id),['beginner','intermediate','advanced','master']);
+    for(const v of trainer.campaignVariants){
+      assert.equal(v.team.length,6);assert.equal(v.origin,'blue-engine');assert.equal(v.format,'Full Doubles');
+      for(const p of v.team){assert.ok(p.species);assert.ok(p.movesByLevel.length);assert.equal(p.movesByLevel[0].level,1);}
+    }
   }
   assert.ok(source.bosses.find(t=>t.id==='zenith'));
 });
@@ -36,11 +38,31 @@ test('guia e chefes usam as mesmas equipes do arquivo extraído',()=>{
   assert.equal(allTrainers(source).length,19);
 });
 test('ficha do mestre apresenta Pokémon e golpes da variante selecionada',()=>{
-  const t=source.masters[0], v=t.variants.find(x=>x.id==='1v1-full-power');
+  const t=source.masters[0], v=t.campaignVariants.find(x=>x.id==='master');
   const html=trainerDetail(model,t,v.id,details);
-  assert.match(html,/1v1 Full Power/);
+  assert.match(html,/Full Doubles/);
+  assert.doesNotMatch(html,/1v1 Full Power|Basic Power|3v3/);
   for(const p of v.team)assert.ok(html.toLowerCase().includes(p.species.toLowerCase().replaceAll('_',' '))||model.byId.has(p.species),p.species);
-  assert.match(html,/Pokémon Decades/);
+  assert.match(html,/engine instalada do Blue/);
+});
+
+test('nível do jogador recalcula o nível dos líderes e os golpes da engine',()=>{
+  const t=source.masters[0];
+  for(const v of t.campaignVariants){
+    for(const highest of [1,30,50,100]){
+      const level=Math.max(1,Math.floor(highest*v.levelPercent/100));
+      const html=trainerDetail(model,t,v.id,details,highest);
+      assert.match(html,new RegExp('líderes no nível '+level+'\\.'));
+      assert.match(html,new RegExp('Nível previsto: '+level));
+      for(const p of v.team){
+        const moves=p.movesByLevel.filter(row=>row.level<=level).at(-1).moves;
+        for(const id of moves)assert.ok(html.includes(details.moves[id]?.name??''),id);
+      }
+    }
+  }
+  const fallback=trainerDetail(model,t,'1v1-basic-power',details);
+  assert.doesNotMatch(fallback,/Basic Power/);
+  assert.match(fallback,/90%/);
 });
 
 test('as localizações com coordenadas mostram recortes DIFERENTES em vez do mapa inteiro repetido',()=>{

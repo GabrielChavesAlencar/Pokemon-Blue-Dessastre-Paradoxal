@@ -31,9 +31,9 @@ Na seleção dos iniciais, clique nos ícones para mudar de Pokémon e na arte d
 
 ## Português e aceleração
 
-A preferência de idioma continua em **Configurações → Language / Idioma**. Foram ampliadas as traduções de aberturas de batalha, mensagens já montadas com nomes/valores, textos com cores, linhas de informação da Pokédex e dados das missões. Habilidades também são traduzidas. Nomes de Pokémon, apelidos, itens e golpes continuam preservados; IDs e condições dos eventos não são traduzidos.
+A preferência de idioma continua em **Configurações → Language / Idioma**. Foram ampliadas as traduções de aberturas de batalha, mensagens já montadas com nomes/valores, textos com cores, linhas de informação da Pokédex e dados das missões. Nomes de habilidades permanecem em inglês. Nomes de Pokémon, apelidos, itens e golpes continuam preservados; IDs e condições dos eventos não são traduzidos.
 
-As descrições de missões e nomes de habilidades entram no catálogo offline. Como no restante da localização inicial, a tradução assistida pode precisar de revisão de contexto durante a campanha. A tabela distribuída não requer um serviço de tradução para jogar.
+As descrições de missões e os efeitos das habilidades entram no catálogo offline; os nomes registrados das habilidades ficam preservados. Como no restante da localização inicial, a tradução assistida pode precisar de revisão de contexto durante a campanha. A tabela distribuída não requer um serviço de tradução para jogar.
 
 **Delta Speed Up** é o plugin de aceleração da base, e não um emulador. A configuração instalada alterna entre **1x** e **3x**. Ele acelera a linha de tempo das animações; as opções definem se vale sempre ou só nas batalhas. A espera de leitura das mensagens de erro de ataque usa tempo real para continuar legível com o turbo.
 
@@ -108,3 +108,31 @@ A apresentação de entrada inclui um impacto cosmético inspirado no [efeito de
 O efeito começa após a materialização ou ao terminar o deslizamento de um selvagem. Pokémon Flying, com Levitate ou com altitude visual cadastrada não levantam poeira do chão. São usados o peso e a forma da espécie, sem alterar stats ou o cálculo de golpes. Os sprites e o fundo retornam à posição original, e as partículas são descartadas ao terminar a animação.
 
 `game/Data/blue-dex-features-validation.txt` registra a prova nativa dessas telas, da escala, dos filtros e da entrada pesada.
+
+## Treino, pesca e consulta dos líderes
+
+A loja mostra **número da TM/TR + nome do golpe em inglês**, também nas confirmações. Habilidades preservam seus nomes registrados em inglês nas mensagens e menus, mesmo usando Português.
+
+Há seis itens consumíveis novos na aba **Treino**, por **$750 cada**: EV Cleaner HP, Attack, Defense, Sp. Atk, Sp. Def e Speed. Cada um zera somente o atributo correspondente, recalcula os stats e mantém os outros EVs. Cancelar, escolher um ovo ou usar no atributo já zerado não gasta o item. O EV Cleaner completo continua disponível por $2.000.
+
+No menu de contexto de um Pokémon da equipe, **Relembrar golpes** abre o relembrador nativo sem cobrar item. Mostra golpes do learnset por nível até o nível atual, incluindo os anteriores ao nível de captura, e os primeiros golpes registrados pelo jogo; exclui os que já são conhecidos. Não libera golpes de níveis futuros nem o catálogo geral de tutor/TMs. Usa as confirmações e a troca de um dos quatro golpes da engine. Ovos, Pokémon Shadow e o menu durante uma batalha não recebem essa opção.
+
+O Trainer Card mostra a dificuldade atual e o total de cristais: Iniciante (0–1), Intermediário (2–4), Avançado (5–10) ou Master (11+).
+
+### Varas e Habitat Dex
+
+As três varas deixam de copiar a mesma tabela. A classificação usa a menor categoria de vara encontrada nas tabelas de [FireRed/LeafGreen](https://github.com/pret/pokefirered/blob/master/src/data/wild_encounters.json) e [Emerald](https://github.com/pret/pokeemerald/blob/master/src/data/wild_encounters.json). Feebas recebe tratamento raro no Blue. Para espécies sem referência nesses arquivos, a adaptação do Blue usa taxa de captura, BST e estágio evolutivo: taxa menor que 90 ou BST maior que 450 são raros; base com taxa de pelo menos 190 e BST de até 350 é comum; os demais são intermediários. Isso é um balanceamento do Blue para o catálogo ampliado, não uma reprodução de chances oficiais de todas as gerações.
+
+Old Rod acessa comuns; Good Rod acessa comuns e intermediários; Super Rod acessa todas as espécies locais de pesca, incluindo as raras. Quando as três categorias estão presentes, as massas de chance são 100% comuns na Old, 30% comuns/70% intermediários na Good e 10% comuns/75% intermediários/15% raros na Super. Dentro de cada grupo, a proporção dos slots locais é preservada. Grupos ausentes são redistribuídos entre os disponíveis; uma vara sem espécies elegíveis não tem encontro. Áreas com uma única espécie ou categoria podem repetir encontros entre varas.
+
+Nenhuma espécie de fora da tabela local é introduzida. Surf, encontros de terra, fases, versões da campanha e os arquivos PBS permanecem preservados. A Habitat Dex reúne as três varas em um único cartão **Pesca**. Cada Pokémon identificado aparece uma vez e indica Old, Good e/ou Super conforme a tabela efetiva; desconhecidos continuam ocultos.
+
+### Chefes no portal
+
+As fichas dos 18 líderes mostram somente **Full Doubles**, com seis Pokémon e quatro dificuldades. Os dados são exportados da engine instalada usando as mesmas substituições de espécie e filtros de golpes da campanha. As séries de golpes cobrem os níveis 1–100; o site permite informar o maior nível do jogador e usa 70% nas primeiras três faixas e 90% no Master, com arredondamento para baixo e mínimo 1. Itens, habilidades e EVs acompanham a forma adaptada. Os demais chefes mantêm suas referências específicas.
+
+Para atualizar esses perfis após alterar treinadores ou regras, com o jogo fechado: `python scripts/battle_lab/launch.py --prepare-only --smoke-test --export-campaign-reference`, abra o Game.exe preparado e aguarde a conclusão dos testes, depois execute `python scripts/export_story_teams.py`. A exportação usa memória temporária e não carrega a campanha. O sincronizador só aceita dados nativos com o mesmo CRC do PBS e das regras de campanha; perfis antigos são removidos se a fonte ou as regras mudarem sem uma nova exportação.
+
+A correção de direção do Ammnoid também é reaplicada ao terminar animações de golpes e animações comuns, incluindo Rollout. O movimento animado continua funcionando; a orientação de repouso é restaurada depois.
+
+`game/Data/blue-next-validation.txt` registra a prova dos seis itens, relembrador com aprendizado real, todas as tabelas de pesca, nomes de TMs/habilidades, agrupamento de varas e quatro dificuldades do Trainer Card. O teste de Rollout está em `blue-dex-cards-validation.txt`.

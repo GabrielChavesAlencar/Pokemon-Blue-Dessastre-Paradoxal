@@ -1,5 +1,5 @@
 Name = Blue Battle Presentation and Story
-Version = 1.2
+Version = 1.3
 Essentials = 21.1
 Credits = Gabriel Chaves Alencar
-Scripts = Presentation.rb,Title.rb,Story.rb,Campaign.rb,Economy.rb,Balance.rb,IVSelectors.rb,Shop.rb,Journey.rb,JourneyValidation.rb,Playability.rb,Locale.rb,Adventure.rb,Readouts.rb,StartMouse.rb,DexControls.rb,DexCards.rb,LearnMouse.rb,DexCompare.rb,WeightEntry.rb,Habitat.rb,HabitatMap.rb,Exploration.rb,ExplorationValidation.rb,TouchValidation.rb,ReadoutsValidation.rb,UIValidation.rb,CampaignValidation.rb,FullPowerValidation.rb,DexFeaturesValidation.rb,CardsValidation.rb,Validation.rb
+Scripts = Presentation.rb,Title.rb,Story.rb,Campaign.rb,Economy.rb,Balance.rb,IVSelectors.rb,Training.rb,Shop.rb,Journey.rb,JourneyValidation.rb,Playability.rb,Locale.rb,Adventure.rb,Readouts.rb,StartMouse.rb,DexControls.rb,DexCards.rb,LearnMouse.rb,DexCompare.rb,WeightEntry.rb,FishingTables.rb,Habitat.rb,HabitatMap.rb,Exploration.rb,ExplorationValidation.rb,TouchValidation.rb,ReadoutsValidation.rb,UIValidation.rb,CampaignValidation.rb,FullPowerValidation.rb,DexFeaturesValidation.rb,CardsValidation.rb,CampaignReference.rb,NextValidation.rb,Validation.rb

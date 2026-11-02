@@ -67,11 +67,11 @@ module BlueExplorationValidation
     $game_map.define_singleton_method(:passable?) { |*args| true }
     $game_player.define_singleton_method(:pbFacingTerrainTag) { Struct.new(:can_fish).new(true) }
     map=nil;infos=load_data('Data/MapInfos.rxdata')
-    GameData::Encounter.each { |data| map ||= data.map if infos[data.map] && data.types[:SuperRod]&.any? && !data.types[:OldRod]&.any? }
+    GameData::Encounter.each { |data| map ||= data.map if infos[data.map] && data.types[:SuperRod]&.any? && !data.types[:OldRod]&.any? && BlueFishing.tables(data.types)[:OldRod]&.any? }
     check(!!map,'A real current map has Super Rod encounters but no Old Rod table in the base')
     original=Marshal.dump(GameData::Encounter.get(map,$PokemonGlobal.encounter_version).types)
     $PokemonEncounters=PokemonEncounters.new;$PokemonEncounters.setup(map)
-    check($PokemonEncounters.has_encounter_type?(:OldRod) && Marshal.dump(GameData::Encounter.get(map,$PokemonGlobal.encounter_version).types)==original,'Missing rod tables inherit the local fishing table in memory without changing original encounter data')
+    check($PokemonEncounters.has_encounter_type?(:OldRod) && Marshal.dump(GameData::Encounter.get(map,$PokemonGlobal.encounter_version).types)==original,'Rod-specific local fishing tables are generated in memory without changing original encounter data')
     animation=Object.new;animation.define_singleton_method(:addUserAnimation) { |*args| }
     $scene=Struct.new(:spriteset).new(animation)
     Object.prepend(FishingHarness) unless Object.ancestors.include?(FishingHarness)

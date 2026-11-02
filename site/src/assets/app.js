@@ -54,7 +54,7 @@ async function render(scroll=false){
         const trainer=allTrainers(model.story).find(x=>x.id===decodeURIComponent(parts[1]));
         if(!trainer)throw new Error('not-found');
         detailData=await loadDetails();if(id!==renderId)return;
-        main.innerHTML=trainerDetail(model,trainer,url.searchParams.get('modo'),detailData);setPage(trainer.name);
+        main.innerHTML=trainerDetail(model,trainer,url.searchParams.get('modo'),detailData,url.searchParams.get('nivel')??50);setPage(trainer.name);
       }else{main.innerHTML=bossesIndex(model);setPage('Mestres e Chefes');}
     }
     else if(route==='guias'){
@@ -93,10 +93,13 @@ main.addEventListener('input',event=>{
   else{state.moveQ=input.value;state.moveLimit=40;}
   updateResults();
 });
+function updateTrainerLevel(value){const url=new URL(location.href);url.searchParams.set('nivel',String(Math.min(100,Math.max(1,Math.trunc(Number(value))||50))));history.replaceState({},'',url);render(false);}
+main.addEventListener('keydown',event=>{if(event.target.dataset.select==='trainerLevel'&&event.key==='Enter'){event.preventDefault();updateTrainerLevel(event.target.value);}});
 main.addEventListener('change',event=>{
   const key=event.target.dataset.select;if(!key)return;state[key]=event.target.value;
   if(key==='version')render(false);
   else if(key==='trainerVariant'){const url=new URL(location.href);url.searchParams.set('modo',state.trainerVariant);history.replaceState({},'',url);render(false);}
+  else if(key==='trainerLevel')updateTrainerLevel(state.trainerLevel);
   else if(key==='form'){const url=new URL(location.href);if(state.form)url.searchParams.set('forma',state.form);else url.searchParams.delete('forma');history.replaceState({},'',url);render(false);}
   else{state.limit=24;state.locationLimit=12;updateResults();}
 });

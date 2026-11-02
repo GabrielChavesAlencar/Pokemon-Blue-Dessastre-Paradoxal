@@ -52,6 +52,7 @@ module BlueCampaign
     end
   end
   def self.category(item)
+    return 4 if BlueTraining::CLEANERS.key?(item.id)
     return 4 if item.id==:BLUEEVCLEANER
     return 4 if BlueIVSelectors::STATS.key?(item.id)
     return 2 if item.is_mega_stone?
@@ -64,6 +65,7 @@ module BlueCampaign
     7
   end
   def self.price(item)
+    return 750 if BlueTraining::CLEANERS.key?(item.id)
     return 2_000 if item.id==:BLUEEVCLEANER
     return 50_000 if BlueIVSelectors::STATS.key?(item.id)
     return RETAIL[item.id] if RETAIL.key?(item.id)

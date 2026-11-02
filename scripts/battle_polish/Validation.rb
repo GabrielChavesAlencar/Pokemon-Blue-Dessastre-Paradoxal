@@ -17,6 +17,7 @@ module BluePolishValidation
     assert(BlueExplorationValidation.run,'Controls/character mouse, fishing, Habitat Dex and four campaign tiers; Data/blue-exploration-validation.txt')
     assert(BlueDexFeaturesValidation.run,'Pause/summary mouse, Habitat map, Dex filters/comparisons and weight landings; Data/blue-dex-features-validation.txt')
     assert(BlueDexCardsValidation.run,'Native Dex cards, habitat zoom, move learning mouse and author back-facing audit; Data/blue-dex-cards-validation.txt')
+    assert(BlueNextValidation.run,'Rod rarities, selective cleaners, party reminder, English abilities, TM names and trainer difficulty; Data/blue-next-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'
@@ -33,6 +34,8 @@ module BluePolishValidation
     [[0,90,100],[90,91,100]].each do |from,to,range|
       values=[]
       box.define_singleton_method(:refresh_exp) { values << instance_variable_get(:@anim_exp_current) }
+      # Flush the startup/music-check frame before measuring a short animation.
+      5.times { Graphics.update }
       box.animate_exp(from,to,range)
       started=System.uptime
       while box.animating_exp?
@@ -40,6 +43,7 @@ module BluePolishValidation
         raise 'EXP animation timeout' if System.uptime-started>4
       end
       duration=System.uptime-started
+      @lines << 'EXP_SAMPLES='+values.uniq.length.to_s+' FROM='+from.to_s+' TO='+to.to_s+' SECONDS='+duration.round(3).to_s
       assert(values.uniq.length>3 && values.last==to,'EXP samples include intermediate values and exact endpoint')
       assert(values.each_cons(2).all? { |a,b| b>=a },'EXP is monotonic')
       assert(duration>=0.28,'Even a small EXP award takes at least 0.3 seconds')

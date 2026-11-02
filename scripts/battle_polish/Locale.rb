@@ -4,8 +4,13 @@ class PokemonSystem
   def blue_locale;@blue_locale || 'en';end
 end
 module BlueLocale
-  NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30].freeze
+  NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30,MessageTypes::ABILITY_NAMES].uniq.freeze
   MANUAL={
+    'Beginner'=>'Iniciante','Intermediate'=>'Intermediário','Advanced'=>'Avançado','Difficulty'=>'Dificuldade',
+    '{1} crystals'=>'{1} cristais','Remember moves'=>'Relembrar golpes',
+    'No forgotten moves are available at this level.'=>'Não há golpes esquecidos disponíveis neste nível.',
+    'Reset {1} EVs of {2}?'=>'Zerar os EVs de {1} de {2}?',
+    'Fishing'=>'Pesca','Old / Good / Super Rod'=>'Old / Good / Super Rod',
     'Choose a section'=>'Escolha uma seção','Encounters and location'=>'Encontros e localização',
     'Cancel / Back'=>'Cancelar / Voltar','Center'=>'Centralizar','Region'=>'Região',
     'I/O: Zoom · Arrows / Drag: Move'=>'I/O: Zoom · Setas / Arraste: Mover',
@@ -110,7 +115,7 @@ module BlueLocale
   def self.proper_names
     @proper_names ||= begin
       result={}
-      [GameData::Species,GameData::Move,GameData::Item].each { |klass| klass.each { |data| result[data.name]=true } }
+      [GameData::Species,GameData::Move,GameData::Item,GameData::Ability].each { |klass| klass.each { |data| result[data.name]=true } }
       result
     end
   end
@@ -168,6 +173,9 @@ module BlueLocale
   end
   module NameProtection
     def name;BlueLocale.protect_name(super);end
+  end
+  module AbilityNames
+    def name;BlueLocale.with_raw { super };end
   end
   module CommandLabels
     attr_reader :blue_command_labels
@@ -242,6 +250,7 @@ module BlueLocale
     return if @installed
     MessageTypes.singleton_class.prepend(Messages);Object.prepend(Prompts)
     Pokemon.prepend(NameProtection);Trainer.prepend(NameProtection)
+    GameData::Ability.prepend(AbilityNames)
     Interpreter.prepend(ChoiceLogic);MenuHandlers.singleton_class.prepend(Menus)
     Bitmap.prepend(BitmapText)
     Battle::Scene::CommandMenu.prepend(CommandLabels)
@@ -253,7 +262,7 @@ module BlueLocale
     MenuHandlers.add(:options_menu,:blue_language,{
       'name'=>'Language / Idioma','order'=>5,'type'=>EnumOption,
       'parameters'=>['English','Português'],
-      'description'=>'Interface and story language. Pokémon, item and move names stay unchanged.',
+    'description'=>'Interface and story language. Pokémon, item, move and ability names stay unchanged.',
       'get_proc'=>proc { $PokemonSystem.blue_locale=='pt-BR' ? 1 : 0 },
       'set_proc'=>proc do |value,scene|
         next_locale=value==1 ? 'pt-BR' : 'en'

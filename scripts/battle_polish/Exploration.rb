@@ -1,12 +1,7 @@
 # Original adapters for the installed help/character screens and fishing handler.
 module BlueExploration
   def self.encounter_types(types)
-    copy=types.transform_values { |slots| slots.map(&:dup) }
-    fishing=[:SuperRod,:GoodRod,:OldRod].filter_map { |type| copy[type] }.find { |slots| !slots.empty? }
-    if fishing
-      [:OldRod,:GoodRod,:SuperRod].each { |type| copy[type]=fishing.map(&:dup) if !copy[type] || copy[type].empty? }
-    end
-    copy
+    BlueFishing.tables(types)
   end
   module Encounters
     def setup(map_id)
