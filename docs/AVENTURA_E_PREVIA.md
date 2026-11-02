@@ -77,6 +77,18 @@ Ao abrir a Habitat Dex, ela entra diretamente na rota/cidade atual quando existe
 
 Escolha **Ver no mapa**, ou clique em **Mapa [M]** na página de espécies. O mapa regional usa o desenho instalado e as coordenadas nativas: dourado indica o habitat, azul indica o jogador quando está na mesma região. Os marcadores podem coincidir. Locais sem coordenadas cadastradas mostram uma mensagem, sem receber uma posição inventada.
 
+O mapa abre com **zoom de 3×**, centralizado no habitat. Use **+ / −** ou **I / O** para ampliar/reduzir, setas ou arraste com o mouse para mover, **Centralizar** para retornar ao habitat e **Região** para ver o mapa inteiro. Os limites do recorte acompanham as bordas da imagem.
+
+A entrada da Pokédex usa dois cartões grandes com imagens: **Lista de Pokémon** e **Habitat Dex**. Os métodos de encontro de cada habitat também usam cartões quadrados, com ícones de mapa, grama, pedras, varas e outros métodos. Há até seis cartões por página, botões de página e Voltar. As setas e a confirmação pelo teclado continuam funcionando. Os ícones dos métodos não revelam Pokémon desconhecidos.
+
+## Aprender golpes e sprites de costas
+
+Na tela de escolher um golpe para esquecer, clique na linha do golpe desejado ou em **Cancelar / Voltar**. O clique percorre a seleção nativa e mantém as confirmações e restrições originais. Espaços vazios não são selecionáveis. A tela de esquecer um golpe sem aprender outro também recebe o mesmo controle. No relembrador de golpes, as linhas visíveis, setas de rolagem e botão de voltar também aceitam cliques.
+
+Foram revisados visualmente os 70 sprites de costas disponíveis dos Pokémon autorais, incluindo as 12 Megas. Somente **Ammnoid** tinha direção claramente invertida: sua imagem de costas agora é espelhada durante a renderização, inclusive nos dois espaços aliados em duplas, shiny e opções de qualidade. A arte original permanece preservada; imagens da frente e substituições por outras espécies mantêm sua orientação.
+
+`game/Data/blue-dex-cards-validation.txt` registra os testes nativos dos cartões, seleção de golpes, zoom e orientação das formas autorais prontas para batalha. Os testes usam memória temporária do laboratório e não carregam a campanha.
+
 ## Pesquisa e filtros da Pokédex
 
 Na lista da Pokédex, clique em **Pesquisa / Filtros [F]**, pressione **F** ou use o comando de pesquisa nativo. É possível buscar parte do nome, filtrar tipo, mostrar todas as entradas, somente vistos ou somente capturados, e ordenar por número, nome, altura ou peso. Nomes e tipos usam os dados atuais do jogo. Pesquisa por nome/tipo e ordens descritivas não revelam espécies desconhecidas.

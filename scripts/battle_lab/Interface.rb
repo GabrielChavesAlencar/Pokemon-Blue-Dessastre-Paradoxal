@@ -152,7 +152,8 @@ module BlueBattleLab
   end
 
   # A scrollable menu with mouse-accessible paging and Back controls.
-  def self.choose(title, commands, default = 0, viewport_z = 99999)
+  def self.choose(title, commands, default = 0, viewport_z = 99999, cards = nil)
+    return BlueDexCards::Scene.new(title,commands,cards,default,viewport_z).run if cards
     log("MENU_OPEN | #{title}")
     viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     viewport.z = viewport_z

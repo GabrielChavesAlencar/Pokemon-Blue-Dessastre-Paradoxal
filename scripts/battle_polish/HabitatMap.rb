@@ -20,12 +20,14 @@ module BlueHabitatMap
     Scene.new(map,point).run
   end
   class Scene
-    def initialize(map,point);@map=map;@point=point;@sprites={};end
+    ZOOMS=[1,2,3,4,6].freeze
+    BUTTONS=[[8,52,:out,'-'],[64,52,:in,'+'],[120,132,:center,'Center'],[256,104,:region,'Region'],[364,140,:back,'Back']].freeze
+    def initialize(map,point);@map=map;@point=point;@sprites={};@zoom_index=2;end
     def marker(bitmap,point,color,size)
       return unless point && point[0]==@point[0]
       cell_w=defined?(ARMSettings::SquareWidth) ? ARMSettings::SquareWidth : 16
       cell_h=defined?(ARMSettings::SquareHeight) ? ARMSettings::SquareHeight : 16
-      x=@map_x+(point[1]+0.5)*cell_w*@scale;y=@map_y+(point[2]+0.5)*cell_h*@scale
+      x=@map_x+((point[1]+0.5)*cell_w-@source_x)*@scale;y=@map_y+((point[2]+0.5)*cell_h-@source_y)*@scale
       return unless x>=@map_x && x<@map_x+@map_width && y>=@map_y && y<@map_y+@map_height
       bitmap.fill_rect((x-size/2).round,(y-size/2).round,size,size,Color.new(8,20,36))
       bitmap.fill_rect((x-size/2+2).round,(y-size/2+2).round,size-4,size-4,color)
@@ -33,32 +35,70 @@ module BlueHabitatMap
     def start
       @viewport=Viewport.new(0,0,Graphics.width,Graphics.height);@viewport.z=1_000_005
       canvas=BitmapSprite.new(Graphics.width,Graphics.height,@viewport);@sprites['canvas']=canvas
-      b=canvas.bitmap;b.fill_rect(0,0,Graphics.width,Graphics.height,Color.new(9,24,41));pbSetSmallFont(b)
       data=GameData::TownMap.get(@point[0]);path='Graphics/UI/Town Map/Regions/'+data.filename
       path='Graphics/UI/Town Map/'+data.filename unless pbResolveBitmap(path)
-      raw=Bitmap.new(path);@scale=[480.0/raw.width,244.0/raw.height,1.0].min
-      @map_width=(raw.width*@scale).round;@map_height=(raw.height*@scale).round
+      @raw=Bitmap.new(path);@base_scale=[480.0/@raw.width,244.0/@raw.height,1.0].min
+      center;refresh;Graphics.transition(0)
+    end
+    def center
+      cell_w=defined?(ARMSettings::SquareWidth) ? ARMSettings::SquareWidth : 16
+      cell_h=defined?(ARMSettings::SquareHeight) ? ARMSettings::SquareHeight : 16
+      @center_x=(@point[1]+0.5)*cell_w;@center_y=(@point[2]+0.5)*cell_h
+    end
+    def zoom(delta);@zoom_index=(@zoom_index+delta).clamp(0,ZOOMS.length-1);refresh;end
+    def pan(dx,dy);@center_x+=dx/@scale;@center_y+=dy/@scale;refresh;end
+    def refresh
+      b=@sprites['canvas'].bitmap;b.clear;b.fill_rect(0,0,Graphics.width,Graphics.height,Color.new(9,24,41));pbSetSmallFont(b)
+      @scale=@base_scale*ZOOMS[@zoom_index]
+      sw=[(480/@scale).floor,@raw.width].min;sh=[(244/@scale).floor,@raw.height].min
+      @source_x=(@center_x-sw/2.0).round.clamp(0,@raw.width-sw);@source_y=(@center_y-sh/2.0).round.clamp(0,@raw.height-sh)
+      @center_x=@source_x+sw/2.0;@center_y=@source_y+sh/2.0
+      @map_width=(sw*@scale).round;@map_height=(sh*@scale).round
       @map_x=(Graphics.width-@map_width)/2;@map_y=76+(244-@map_height)/2
-      b.stretch_blt(Rect.new(@map_x,@map_y,@map_width,@map_height),raw,Rect.new(0,0,raw.width,raw.height))
+      b.stretch_blt(Rect.new(@map_x,@map_y,@map_width,@map_height),@raw,Rect.new(@source_x,@source_y,sw,sh))
       marker(b,@point,Color.new(255,210,96),14);marker(b,BlueHabitatMap.position($game_map.map_id),Color.new(102,202,255),8)
       light=Color.new(240,248,255);shadow=Color.new(9,24,41)
       pbDrawTextPositions(b,[[_INTL('Habitat location'),16,8,:left,light,shadow],[BlueHabitat.map_name(@map),16,34,:left,light,shadow],
-        [_INTL('Gold: Habitat · Blue: You'),16,322,:left,Color.new(178,212,239),shadow]])
-      b.fill_rect(8,352,496,28,Color.new(28,64,94));b.draw_text(8,352,496,28,_INTL('Back / Esc'),1)
-      Graphics.transition(0)
-    ensure
-      raw&.dispose
+        [ZOOMS[@zoom_index].to_s+'x',492,8,:right,light,shadow],[_INTL('Gold: Habitat · Blue: You'),16,322,:left,Color.new(178,212,239),shadow]])
+      b.font.size=16;pbDrawTextPositions(b,[[_INTL('I/O: Zoom · Arrows / Drag: Move'),16,58,:left,Color.new(157,193,224),shadow]])
+      b.font.size=18;b.font.color=light
+      BUTTONS.each { |x,w,id,label| b.fill_rect(x,352,w,28,Color.new(28,64,94));b.draw_text(x,352,w,28,_INTL(label),1) }
     end
     def run
       start
       loop do
         Graphics.update;Input.update
         break if Input.trigger?(Input::BACK) || Input.trigger?(Input::USE)
-        break if Input.trigger?(Input::MOUSELEFT) && BlueLabPointer.inside?(BlueLabPointer.position,0,352,Graphics.width,32)
+        if Input.triggerex?(:I);zoom(1)
+        elsif Input.triggerex?(:O);zoom(-1)
+        elsif Input.repeat?(Input::LEFT);pan(-32,0)
+        elsif Input.repeat?(Input::RIGHT);pan(32,0)
+        elsif Input.repeat?(Input::UP);pan(0,-32)
+        elsif Input.repeat?(Input::DOWN);pan(0,32)
+        elsif Input.trigger?(Input::MOUSELEFT)
+          point=BlueLabPointer.position
+          button=BUTTONS.find { |x,w,id,label| BlueLabPointer.inside?(point,x,352,w,28) }
+          if button
+            case button[2]
+            when :back then break
+            when :in then zoom(1)
+            when :out then zoom(-1)
+            when :center then center;refresh
+            when :region then @zoom_index=0;center;refresh
+            end
+          elsif BlueLabPointer.inside?(point,@map_x,@map_y,@map_width,@map_height)
+            @drag_point=point
+          end
+        elsif @drag_point && Input.press?(Input::MOUSELEFT)
+          point=BlueLabPointer.position
+          if point && point!=@drag_point;pan(@drag_point[0]-point[0],@drag_point[1]-point[1]);@drag_point=point;end
+        else
+          @drag_point=nil
+        end
       end
     ensure
       dispose
     end
-    def dispose;pbDisposeSpriteHash(@sprites);@viewport&.dispose;@viewport=nil;end
+    def dispose;pbDisposeSpriteHash(@sprites);@raw&.dispose;@raw=nil;@viewport&.dispose;@viewport=nil;end
   end
 end

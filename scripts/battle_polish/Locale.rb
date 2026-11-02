@@ -6,6 +6,10 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30].freeze
   MANUAL={
+    'Choose a section'=>'Escolha uma seção','Encounters and location'=>'Encontros e localização',
+    'Cancel / Back'=>'Cancelar / Voltar','Center'=>'Centralizar','Region'=>'Região',
+    'I/O: Zoom · Arrows / Drag: Move'=>'I/O: Zoom · Setas / Arraste: Mover',
+    'Headbutt / High'=>'Headbutt / Alto','Headbutt / Low'=>'Headbutt / Baixo',
     'Search Pokémon name'=>'Pesquisar nome de Pokémon','Search / Filters [F]'=>'Pesquisa / Filtros [F]',
     'Pokédex / Search and filters'=>'Pokédex / Pesquisa e filtros','All entries'=>'Todas as entradas',
     'Seen only'=>'Só vistos','Caught only'=>'Só capturados','Dex number'=>'Número na Dex',

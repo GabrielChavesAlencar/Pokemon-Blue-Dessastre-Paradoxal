@@ -3,7 +3,8 @@ module BlueHabitat
   METHODS={Land:'Grass',LandMorning:'Grass / Morning',LandDay:'Grass / Day',LandNight:'Grass / Night',
     Cave:'Cave',CaveMorning:'Cave / Morning',CaveDay:'Cave / Day',CaveNight:'Cave / Night',Water:'Surf',
     WaterMorning:'Surf / Morning',WaterDay:'Surf / Day',WaterNight:'Surf / Night',
-    OldRod:'Old Rod',GoodRod:'Good Rod',SuperRod:'Super Rod',RockSmash:'Rock Smash'}.freeze
+    OldRod:'Old Rod',GoodRod:'Good Rod',SuperRod:'Super Rod',RockSmash:'Rock Smash',
+    HeadbuttHigh:'Headbutt / High',HeadbuttLow:'Headbutt / Low'}.freeze
   def self.map_name(map)
     name=pbGetMapNameFromId(map)
     if name.to_s.empty?
@@ -59,7 +60,7 @@ module BlueHabitat
     methods=area[:methods].keys
     loop do
       labels=[_INTL('View on map')]+methods.map { |type| _INTL(METHODS[type] || type.to_s) }+[_INTL('Other habitats')]
-      method=BlueBattleLab.choose(area[:name],labels)
+      method=BlueBattleLab.choose(area[:name],labels,0,99999,BlueDexCards.methods(methods))
       return :back if method<0
       return :areas if method==labels.length-1
       if method==0;BlueHabitatMap.open(area[:map]);next;end
@@ -131,7 +132,7 @@ module BlueHabitat
   module DexMenu
     def pbStartScreen
       loop do
-        choice=BlueBattleLab.choose(_INTL('Pokédex'),[_INTL('Pokémon list'),_INTL('Habitat Dex'),_INTL('Back')])
+        choice=BlueBattleLab.choose(_INTL('Pokédex'),[_INTL('Pokémon list'),_INTL('Habitat Dex'),_INTL('Back')],0,99999,BlueDexCards.home)
         break if choice<0 || choice==2
         choice==0 ? super : BlueHabitat.open
       end
