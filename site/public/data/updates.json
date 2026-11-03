@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9ff3d1514cbe8151f71361548cd2f7267392afd1",
+      "date": "2026-11-02T22:20:33-03:00",
+      "title": "feat: álbum de treinadores, mapas atuais e correções da Habitat Dex",
+      "category": "Novidades"
+    },
+    {
       "sha": "3d7e933e23c783e7c183b15d7d8db905516109d8",
       "date": "2026-11-02T18:56:38-03:00",
       "title": "Atualiza líderes Full Doubles, treino e pesca; corrige Ammnoid e nomes",
