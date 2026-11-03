@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7fa01cf61d81433f8551267e1bc6f80d1393b09a",
+      "date": "2026-11-03T20:52:14-03:00",
+      "title": "fix: resolver auxiliares no Python portátil sem conflito com servidor online",
+      "category": "Correções"
+    },
+    {
       "sha": "fe59bbce7144054cf002e401405c7e3b3775f51e",
       "date": "2026-11-03T20:48:23-03:00",
       "title": "feat: inicializadores atualizáveis, JoiPlay e 130 times prontos",
