@@ -46,7 +46,7 @@ def build(game,output,revision):
     marker=game/'Data/blue-android-compiled.txt'
     if not marker.is_file() or marker.read_text()!=fingerprint(game):raise ValueError('The native compiler did not finish for the current plugins. No Android download can be published.')
     # Own runtime configuration/data are selected explicitly; logs, saves and machine paths are excluded.
-    own=['blue-trainer-album.dat','blue-hub-presets.dat','blue-music.rxdata','blue-music-categories.rxdata','blue-official-rules.dat','blue-radical-ai.dat']
+    own=['blue-trainer-album.dat','blue-hub-presets.dat','blue-pt-br.dat','blue-music.rxdata','blue-music-categories.rxdata','blue-official-rules.dat','blue-radical-ai.dat']
     plans={p.relative_to(game).as_posix():p for p in game.rglob('*') if p.is_file() and not p.is_symlink() and allowed(p.relative_to(game))}
     for name in own:
         file=game/'Data'/name

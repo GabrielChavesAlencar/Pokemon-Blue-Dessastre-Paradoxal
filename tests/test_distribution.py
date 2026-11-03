@@ -30,13 +30,14 @@ class DistributionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.game(root);output=root/'out.zip'
             with self.assertRaises(ValueError):android.build(game,output,'test')
-            for name in ['Game.exe','Game.ini','Data/Map001.rxdata','Data/blue-hub-presets.dat','Game.rxdata','Data/Game.rxdata','Data/blue-hub-python.txt','BlueHub/private-team.txt']:
+            for name in ['Game.exe','Game.ini','Data/Map001.rxdata','Data/blue-hub-presets.dat','Data/blue-pt-br.dat','Game.rxdata','Data/Game.rxdata','Data/blue-hub-python.txt','BlueHub/private-team.txt']:
                 p=game/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'synthetic data')
             (game/'Data/blue-android-compiled.txt').write_text(android.fingerprint(game))
             android.build(game,output,'test')
             with zipfile.ZipFile(output) as z:
                 names=z.namelist();self.assertIn('Pokemon-Blue-Android/Game.exe',names)
                 self.assertIn('Pokemon-Blue-Android/Data/blue-hub-presets.dat',names)
+                self.assertIn('Pokemon-Blue-Android/Data/blue-pt-br.dat',names)
                 self.assertFalse(any('Game.rxdata' in n or 'python.txt' in n or 'private-team' in n for n in names))
             (game/'Plugins/Blue/main.rb').write_text('changed own plugin')
             with self.assertRaises(ValueError):android.build(game,root/'stale.zip','test')
