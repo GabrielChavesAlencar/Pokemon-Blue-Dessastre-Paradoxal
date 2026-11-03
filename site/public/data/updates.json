@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97f6ac04f55f57d8c0617d347158b229b6cd46ff",
+      "date": "2026-11-03T20:57:57-03:00",
+      "title": "fix(android): incluir o catálogo português no pacote JoiPlay",
+      "category": "Correções"
+    },
+    {
       "sha": "7fa01cf61d81433f8551267e1bc6f80d1393b09a",
       "date": "2026-11-03T20:52:14-03:00",
       "title": "fix: resolver auxiliares no Python portátil sem conflito com servidor online",
