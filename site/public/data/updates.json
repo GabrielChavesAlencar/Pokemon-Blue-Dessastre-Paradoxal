@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fe59bbce7144054cf002e401405c7e3b3775f51e",
+      "date": "2026-11-03T20:48:23-03:00",
+      "title": "feat: inicializadores atualizáveis, JoiPlay e 130 times prontos",
+      "category": "Novidades"
+    },
+    {
       "sha": "ff4f92a8939ec736abe8a0f77ce91684de266f2b",
       "date": "2026-11-03T14:28:57-03:00",
       "title": "feat: adicionar multiplayer ao Hub de Batalha",
