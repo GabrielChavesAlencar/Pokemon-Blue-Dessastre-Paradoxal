@@ -599,9 +599,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ccf63beec8487e404a0e61151c2511f41e4658f19e6cf294205542221161c0fd"
+      "sha256": "c9bf67df485b1bcda0972827162a3f35cd4637030e46966a5efd18f98a0be9cd"
     },
     "81": {
       "src": "/assets/route-maps/route-81.png",
@@ -614,9 +615,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "64a4bfc32f4e7d2189d6a116415fa71187ed5821750f096f2870c1cff5f0ea05"
+      "sha256": "41bd85a999f7838be090edda78e21b343e68728dc3acb037cfcbf83b8a7a235b"
     },
     "82": {
       "src": "/assets/route-maps/route-82.png",
@@ -629,9 +631,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "031579b47cf917227a0a864993357c892cd9cd0403a31bbcb7977b4ffdca4378"
+      "sha256": "14e15a916da492ba74d640592d645a04d719c7a9805fa4d1181421af5c31435b"
     },
     "84": {
       "src": "/assets/route-maps/route-84.png",
@@ -644,9 +647,10 @@
         34
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "0d85ec13dd07c2acb52064f2f6659322f26c9e1e2cb6b8b3bc877aef9efe3363"
+      "sha256": "88c3d6be4d20bc679cf7f6a9eed5bb14e7b0512af97555066a03dd29d42409fa"
     },
     "86": {
       "src": "/assets/route-maps/route-86.png",
@@ -659,9 +663,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "538e1f5fe986660df305673f63b1fc6e0c5db69bc4eb67c2b1943effdbb7c6d1"
+      "sha256": "fe6b6ae6db909e56d23466614014a02d8d1fd8648980f16b97ec262c34ad6d33"
     },
     "87": {
       "src": "/assets/route-maps/route-87.png",
@@ -674,9 +679,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "65e9f2c8827f5a5543cedef056770640cd14ff97e00d74cbf320c716caaac04e"
+      "sha256": "d4b5e1b8329c4fa777a73a3dfb25c85d7e5ae6aa1385c3d1a88a9932fdced470"
     },
     "88": {
       "src": "/assets/route-maps/route-88.png",
@@ -689,9 +695,10 @@
         32
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "20320bb2464b53745a529f136aae76e4adf538d83510560bd75f94054fbeb6e4"
+      "sha256": "de4e55a3de20fbbc2f2c9c11ef0fe7d35f4ca4652e36d22036880f661a49f6ce"
     },
     "89": {
       "src": "/assets/route-maps/route-89.png",
@@ -704,9 +711,10 @@
         31
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "d91d82b2a2d498ad669e7842be66ef9f838eb4e7bb17512cd9cab77628924f5b"
+      "sha256": "9bae8aeb502bfbf25c16e9d0c567f7e7d80847911f1baf4d83a06691f1a496e5"
     },
     "90": {
       "src": "/assets/route-maps/route-90.png",
@@ -719,9 +727,10 @@
         30
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "06bc010d7b0281437a775fc16c940d1374bf29da22f289c7162a1847b9041040"
+      "sha256": "1a10ab8beb23b7fb0c9ef5fa49c1877c92d3056f776b97b7311dbfa645c82cae"
     },
     "91": {
       "src": "/assets/route-maps/route-91.png",
@@ -734,9 +743,10 @@
         32
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "6b6545d41b113fccb0c2cca6226c04f7fb5c6af104d775281a10ca27575b2082"
+      "sha256": "cb2ac59dbfe244671d21904390de7d8174e14db4b9264a398d2c826758e9fe7e"
     },
     "93": {
       "src": "/assets/route-maps/route-93.png",
@@ -749,9 +759,10 @@
         30
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ccbce43ff23c2561c2afa40367adcb9ad9bb5e37ae5df91d9733d77b3246c638"
+      "sha256": "f6c9722363ab88cfb9d126ae8cfe6788668a56f17ac579791ba7a15e10def376"
     },
     "94": {
       "src": "/assets/route-maps/route-94.png",
@@ -764,9 +775,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "10c33d0410832ed68e5c81bd5c12cc00b1dcb486676662c409eeb3713267d9e3"
+      "sha256": "99e7bf0f89c00ae06c4f9223aeffe0c785cb6232d22a48b2793e01f89cbb0d35"
     },
     "95": {
       "src": "/assets/route-maps/route-95.png",
@@ -779,9 +791,10 @@
         30
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "30858b98108f3680fdd1b7696ea022d4617fdf531d0b5126e656dc2730883414"
+      "sha256": "35ed7cc25d8f411b15b96efd110f506d8ad2bbae2ade0a96fdcab917a788c792"
     },
     "96": {
       "src": "/assets/route-maps/route-96.png",
@@ -794,9 +807,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "f8819ac3e333b7b57a540433f9c6ac692edc7e322d1a9c604575658e2c500336"
+      "sha256": "4d616e3759316c34b2ed98671d7d4b675c89afd8921c3f353a63552eef79fcc7"
     },
     "98": {
       "src": "/assets/route-maps/route-98.png",
@@ -809,9 +823,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "a352921a4d16bd19ac57a48beafcd22ec46db698c4a70a198c7d418eb3d3ca90"
+      "sha256": "997ca52ae51a447c464e287142f21847323fde78bdf75d16f0192087dd70652c"
     },
     "99": {
       "src": "/assets/route-maps/route-99.png",
@@ -824,9 +839,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "fce35ad3d1f9c2c24de7eaccaa1e477bac0887d244f7a81b5fa452d75b59737c"
+      "sha256": "94f721226a221f93d9eace561f83b93bdf33fa98d202ede399d7748ae8fcc442"
     },
     "100": {
       "src": "/assets/route-maps/route-100.png",
@@ -839,9 +855,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "868ce0f97931f798ba84205742a124accaf9efca579a16a4382ca5f80b3491b4"
+      "sha256": "2a2d23779697d95d17d251c2709454f81c3a42afa99f05e2f4b190243bf09651"
     },
     "101": {
       "src": "/assets/route-maps/route-101.png",
@@ -854,9 +871,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "92fe4d9b980bc18b5a60bd771f0ed5c9a1bfdc2684f77ed2cc246ca719196c14"
+      "sha256": "619f70673f0e0e658bdeb0264888ad06df59cdc15946a8d08f9bcd9fa6c0ec7b"
     },
     "102": {
       "src": "/assets/route-maps/route-102.png",
@@ -869,9 +887,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "968c9bab6f8f37670b4b8b51893a44a2d47b3be2e96b68423afb1ca9cb0dc316"
+      "sha256": "772be30ca8ac710671610e1f90fef6ba9842bceed449971c08d357e3dc3e05e1"
     },
     "103": {
       "src": "/assets/route-maps/route-103.png",
@@ -884,9 +903,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "34c7c897c5d573bc73027d5dc704182cec6172e95cf12b4f4ec414c229da10e8"
+      "sha256": "5d9011319250eaf2eaff1b6a02092a2290016a7d1b7dd12d2a3a6f39f8ca9115"
     },
     "105": {
       "src": "/assets/route-maps/route-105.png",
@@ -899,9 +919,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "47f04274a447ec16e5522c29ac9b747b57040734e96b7079d58faee6df6eff34"
+      "sha256": "21b111762158c9ecfa44e6b24f5225b4da40452f425a347873848eb514cc76e7"
     },
     "106": {
       "src": "/assets/route-maps/route-106.png",
@@ -914,9 +935,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "56b3e141adde5ebc7e197a5cd960ebe955c912cae873d48c4c26552be608dea2"
+      "sha256": "56c0dd61c986f74b8957e8c920d65bc67465c86383fdef57bd6f7f449d673c4a"
     },
     "108": {
       "src": "/assets/route-maps/route-108.png",
@@ -929,9 +951,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ebb77868b1afe954bec4b1e4cfa5a83b50d00ae665d292b02bd34b9fbca82aee"
+      "sha256": "c58f8399b44368b6794ec62cfa1973d53a96a692e6a62561aa9637c70694cbae"
     },
     "109": {
       "src": "/assets/route-maps/route-109.png",
@@ -944,9 +967,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "c33b375d9b713e0ef77a3cee92d8a7ba4138247d33310de8354001bf28b41596"
+      "sha256": "f6e46a78eedaf8981b23f07ec98453123ab1103535047c51a06e5e1717d1343d"
     },
     "110": {
       "src": "/assets/route-maps/route-110.png",
@@ -959,9 +983,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "066c75be3cae74e7720c671cbb08719a828d3944d85c7f6970b297586f756622"
+      "sha256": "82921a750b240f7257f0d3ae57bf21df15826753115dd57a45eeca2810d49314"
     },
     "111": {
       "src": "/assets/route-maps/route-111.png",
@@ -974,9 +999,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "f238bd7fe15a1de859769dd385fa0664c5acaed2066956500e6922f45ee40485"
+      "sha256": "291db52db27f7659281220fcba1fd3783a6d9b3636da88df4c7971f96d0951d6"
     },
     "112": {
       "src": "/assets/route-maps/route-112.png",
@@ -989,9 +1015,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "8638ad1387632be7387fd95e51637bb8f628a037ac0cc6aeb467fedae214c3d3"
+      "sha256": "735e30a8465398ef42837355953895d14a99cb51d77244d12facf18befb46783"
     },
     "113": {
       "src": "/assets/route-maps/route-113.png",
@@ -1004,9 +1031,10 @@
         24
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "a57aee9dc376b37f9683056fffc34edffcbe77ac165853600e6476a4e52a713b"
+      "sha256": "7d162ae84db61f6ddf85a17cc6874178c993e54da9a622c52e445daf8de5bf7f"
     },
     "114": {
       "src": "/assets/route-maps/route-114.png",
@@ -1019,9 +1047,10 @@
         22
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "99a724b613419020c7aade006990e018f67a4a83dc6f99259c21ae5a75f320d8"
+      "sha256": "d37855310b32b6193f89c87123ba1685fb9685e2e18daf8ce705969ed0b1b217"
     },
     "115": {
       "src": "/assets/route-maps/route-115.png",
@@ -1034,9 +1063,10 @@
         22
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "d66bd4b39e889fed226bbedd0c4af4fd48e92b6d85b01fa39d91d03ffee8f2f7"
+      "sha256": "64640ec3a410ae07e1859ba8dc0c0dcfaacd34d98227767ecf82d93c769478de"
     },
     "116": {
       "src": "/assets/route-maps/route-116.png",
@@ -1049,9 +1079,10 @@
         22
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "8731d0189abb225a4aae6e8e19ce556b0a758e4336505567ba0406708eb5fe6d"
+      "sha256": "018d685f98218c895ece21f99272032f8bdbcf9f46951880d9ca2fdc3c3bc216"
     },
     "117": {
       "src": "/assets/route-maps/route-117.png",
@@ -1064,9 +1095,10 @@
         20
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "f87b46d40e75f527e18b2524366415eb22c36d7c1669ae2fc9ef8fb27dddf24f"
+      "sha256": "436d7b64239cb99b852057bc0fa81c871dda2c2198b230b016b207d4eba53442"
     },
     "118": {
       "src": "/assets/route-maps/route-118.png",
@@ -1079,9 +1111,10 @@
         20
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "1b7377303b25a16d76760f69adbeb36d362ac2ac110a4c642b2169f4cf4cbdf4"
+      "sha256": "afbcdf28306858621ad4c2a6a1778afd3c80dc6c047c02ae54786933172709a5"
     },
     "119": {
       "src": "/assets/route-maps/route-119.png",
@@ -1094,9 +1127,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "a893c1f92d0e99360dd0549c77b9f4a863a7b0e2a91d158b1adac37ca04e4028"
+      "sha256": "484b3730a21d8969414ee9d5e50380b119c32e382239f8d53d5dc5d5ea3096c5"
     },
     "120": {
       "src": "/assets/route-maps/route-120.png",
@@ -1109,9 +1143,10 @@
         18
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "75b286eaa532e9a1b151577a411247aeee5b5a6fb81b0998724cf9e787b1ab87"
+      "sha256": "ede28a4236b33e44d0d3d9082f5ab115dffb77be20ecbe021fbc850c0961e225"
     },
     "121": {
       "src": "/assets/route-maps/route-121.png",
@@ -1124,9 +1159,10 @@
         17
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "2d699512ec64ac83736c500ba1c9febe24c58ba0996a30fc93a56033db49e673"
+      "sha256": "753dfd15944494f35040acc96b10b51d52514fabfab957e9e2685266545a5871"
     },
     "122": {
       "src": "/assets/route-maps/route-122.png",
@@ -1139,9 +1175,10 @@
         14
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ea2246e98816f9c2af2ae800e0750f0e97d8494c27f4127e48795976e496715d"
+      "sha256": "070c6af052e3c7550bb0721c3435ddd4b6550c9cefdf24207a51e0141753e6a7"
     },
     "123": {
       "src": "/assets/route-maps/route-123.png",
@@ -1154,9 +1191,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "eb156cc220eb4c698ab3495de1e7d3701b24b92d5b329232c0bad8486330ee35"
+      "sha256": "ac684dcc06fa8d79083ec3955deadb861a62c615d7e971569b93ccc2f435f77f"
     },
     "124": {
       "src": "/assets/route-maps/route-124.png",
@@ -1169,9 +1207,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "7265d3f8251624e7572003d91db01466bdf85ffaac8d4b6b62fecedb0746f4b0"
+      "sha256": "ec44e496a6b7bcc648b0b5f721a398b3e0465d8157bae13225990adce9a256c5"
     },
     "125": {
       "src": "/assets/route-maps/route-125.png",
@@ -1184,9 +1223,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "786c60e17c8d7cc4fff94df7689db8f0bbdc25681dd5547b071d297736508410"
+      "sha256": "57e373d5702c346c986c035028d99224a6d9713265a71e2a0ea961bfb55ee957"
     },
     "126": {
       "src": "/assets/route-maps/route-126.png",
@@ -1199,9 +1239,10 @@
         9
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "0425218e92953768200dc6cd9da4b442084e260f793eedd286791dff7248e140"
+      "sha256": "8876b3502ce3ecfe0bfaa07fbaaa32707f09011a1c37acc19733be5e33c9adcc"
     },
     "127": {
       "src": "/assets/route-maps/route-127.png",
@@ -1214,9 +1255,10 @@
         8
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "20aca7ea7ad4a3767901e4891901778304751f717b8d708c797d4c11479b31c7"
+      "sha256": "e59963bba6aa50793cf1e7da095bdd67e90908dd8bdd89ebc9f8e9735ab9302e"
     },
     "128": {
       "src": "/assets/route-maps/route-128.png",
@@ -1229,9 +1271,10 @@
         8
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "0efa0b3b5df455bc06e66b2968429b65ea6a6a8b31793c3567f8214fda6e1d66"
+      "sha256": "0610ee85d4c64d6f6d947757bf59075310f28d263309d7324408473df59abb45"
     },
     "129": {
       "src": "/assets/route-maps/route-129.png",
@@ -1244,9 +1287,10 @@
         7
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e70000a2397faf819af32f1b330f7641922ff803920be5ab85494d01183960e3"
+      "sha256": "63f3d8fcb9cad56372bc208b22d1678d28f6195aa63683019f69bd6b7faa9ce8"
     },
     "130": {
       "src": "/assets/route-maps/route-130.png",
@@ -1259,9 +1303,10 @@
         6
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "a66c2b304be9e068ab9dc6bb841f41076be63e96f176b4fb297a8a4b7900a563"
+      "sha256": "dba8ab5e7734205db60fa55b63dbfa9ec905d9f5d727efd5a42ad0776130ec33"
     },
     "131": {
       "src": "/assets/route-maps/route-131.png",
@@ -1274,9 +1319,10 @@
         6
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "00155050c709c25cd08780e29cb57ae8a965dcfe911d2e18502e9e0b6d873978"
+      "sha256": "c35e363e7dee1cbd859937c4df62f80801fb09344ab1780c9a46b2669543aba5"
     },
     "132": {
       "src": "/assets/route-maps/route-132.png",
@@ -1289,9 +1335,10 @@
         4
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "c4099531ae0fdd49f8dad1b4c231957702ff9c0c521140a417b36552fd688f42"
+      "sha256": "e40c21e9ee4b23527ef2b8e13ce9c195407b3cd4e7c53c0b50f354e839f22686"
     },
     "133": {
       "src": "/assets/route-maps/route-133.png",
@@ -1304,9 +1351,10 @@
         3
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "c6908ef2acfad20071012be83bf4ca0f7a0f8b3c896aef3cb307690b7b3e7eb6"
+      "sha256": "4ae76baad206a3ab18aab6e339097596a9c97e9215c4ff8254f4f3568d26e8c2"
     },
     "138": {
       "src": "/assets/route-maps/route-138.png",
@@ -1319,9 +1367,10 @@
         34
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "b2acb39185882b4daeb65ff475676a6a07ab7ab63c842e4bed940e1159dd9bb8"
+      "sha256": "60122160043447f0773995c819b69337590b12cb37204e8a2fa26e8c6b9a1051"
     },
     "140": {
       "src": "/assets/route-maps/route-140.png",
@@ -1334,9 +1383,10 @@
         14
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "c61d897303a6235c5dbbb838d1e2f9df4abcb0901fce20e45f4a9d59819339b9"
+      "sha256": "cd5c9ef39054b6715eb78e15d768d43810ecbfd80b2d93c3394c727e2d81afaa"
     },
     "142": {
       "src": "/assets/route-maps/route-142.png",
@@ -1349,9 +1399,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "be25d5c00c809570b5efd00c2b57219bf96ea4bd8f70496f2e7fa98b7b6da605"
+      "sha256": "608a66da7944e4113abbe8de37dc55af48287836fa051eb79c28c7c66f32f0e4"
     },
     "144": {
       "src": "/assets/route-maps/route-144.png",
@@ -1364,9 +1415,10 @@
         22
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "201a28d1b87f1a61771e315769385ac595d6a81d62c44f865f293685dce430d5"
+      "sha256": "4899751714b92ef618b90a0dc3b07b0c52769b4a605e963db8b0941f40de0565"
     },
     "146": {
       "src": "/assets/route-maps/route-146.png",
@@ -1379,9 +1431,10 @@
         20
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "fb0528c275c1588f8547e82ee9a0847876276e75fb88bdceaa4e8e14ba6561f2"
+      "sha256": "773ee3f2d45df9c7339cb8fb7c33cd5ae58d15f20cbfd6c710c45eb0ff3c560f"
     },
     "148": {
       "src": "/assets/route-maps/route-148.png",
@@ -1394,9 +1447,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "02431b115aadf8263e6eb27592af12904ddc64f7b779718f4e43eb0b093c4f48"
+      "sha256": "e59ff44337d77ffa569832d0a222f078c24314a18f322983414e5fed3d2b7b59"
     },
     "150": {
       "src": "/assets/route-maps/route-150.png",
@@ -1409,9 +1463,10 @@
         8
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "5799f9c8b11f787242d2e37deb067bd01b9848d72c62785b0b7c3caf2302cce5"
+      "sha256": "171ab876e08b37eea577831122ce206d783d63dec3e98a2244fc336168cec7c0"
     },
     "152": {
       "src": "/assets/route-maps/route-152.png",
@@ -1424,9 +1479,10 @@
         6
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "21dfbb743ac05bc7c64f05d3290e1d4df2c8fd1eefbbad31f0535e61f318f60d"
+      "sha256": "78c98563fca4b95051158082ad7e3f373d3b9531a366502f0a930535fb6fa131"
     },
     "153": {
       "src": "/assets/route-maps/route-153.png",
@@ -1439,9 +1495,10 @@
         6
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "93a445381c79b7bd7894f2450aa97330f526994bb9b2d738a1a4276475b7b7d5"
+      "sha256": "5e0a99c64e78772272013e963d855c6e423ebf873db73d1bdc756c827f8ea58a"
     },
     "154": {
       "src": "/assets/route-maps/route-154.png",
@@ -1454,9 +1511,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "c5fd20ac2979f45dff0c3635a5a8fa44605fad1bd8cf60a5ff6f239aea17a3bf"
+      "sha256": "2163b43abc5ce0487e90b74fa612f089f899574158688c9bdfb1ccec35b3dea0"
     },
     "155": {
       "src": "/assets/route-maps/route-155.png",
@@ -1469,9 +1527,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e0b6f6957a57dba7670e5f3c7ad48e5069951e9073eaf304be628aa190d394bf"
+      "sha256": "d926cacf47dd94b5c192a376e1e77d69def1931c289c5f694f7997d5f48c4397"
     },
     "156": {
       "src": "/assets/route-maps/route-156.png",
@@ -1484,9 +1543,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "b66543742c8e0c617d3820d8d1e12a5b87d2c6be399fdd2610faac80494ac3ba"
+      "sha256": "1f0bd79e3289c04069ce8211ede73378a734940305d8a87142c9e30786451fb3"
     },
     "157": {
       "src": "/assets/route-maps/route-157.png",
@@ -1499,9 +1559,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ba556e0fe0c118f70d802004d3207ce8cfd5c2403fb03613a18208f341012ba3"
+      "sha256": "8f072b2934bec9d6f086769a7227c6e0275493ff548053090c1a8dfd653e3156"
     },
     "158": {
       "src": "/assets/route-maps/route-158.png",
@@ -1514,9 +1575,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "4c1c61af11f49990e4ed4eae072af14487a7c8384fb7c3b03c725f25f229135c"
+      "sha256": "0d65badc7b14296440b88b6a9a500ebdf549d92944c2f4745223f1ef0359b9f0"
     },
     "159": {
       "src": "/assets/route-maps/route-159.png",
@@ -1529,9 +1591,10 @@
         26
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "dda9a06bec8eb97fdf08786a8d9806f6303861a756db625b4be10640208aedd5"
+      "sha256": "dc237212c639b896880224bbf8b0bdd50fd255bdd7575578bda9f1a7ea3614ce"
     },
     "160": {
       "src": "/assets/route-maps/route-160.png",
@@ -1544,9 +1607,10 @@
         26
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "cceaa2bcaac7e09dbc5034df782204157b93a42a9decf1910301513f5f66bf4d"
+      "sha256": "dfdb7cee7c490a97a0de4186a0dee64a12f9c18e2d3336a3116b849bf9a9a40e"
     },
     "162": {
       "src": "/assets/route-maps/route-162.png",
@@ -1559,9 +1623,10 @@
         24
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "a8d62a607b68074898c8c8b5c283e1f09e93daee9a597da87e619fa6f4acc682"
+      "sha256": "dfe8e107cf819b38760944ff72dfee822468a10145c615e13b1beaed9d78dcf5"
     },
     "163": {
       "src": "/assets/route-maps/route-163.png",
@@ -1574,9 +1639,10 @@
         20
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "5f3057b7da6d04e9b5e0270a93d57b54abebaafc090e87e48fc97ad55e248938"
+      "sha256": "55b4d5f98627d956ef06a4a090624411d6dbae040ad4bb41d1d40394dc0a92bb"
     },
     "166": {
       "src": "/assets/route-maps/route-166.png",
@@ -1589,9 +1655,10 @@
         13
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e0288e0ae1afc7575e819c9afe84b7c1e12c600a41532f3836135b858c422679"
+      "sha256": "f7d9b84a6e4a46a76c89249e6bf21fcc9252e68b2b534994bad42251108144d0"
     },
     "167": {
       "src": "/assets/route-maps/route-167.png",
@@ -1604,9 +1671,10 @@
         6
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "3ff5eb0337c22b694ff3c2dee864fc05288eb6da9ba4e0b64f24d4418ebba5ba"
+      "sha256": "a2bae5e8e852912ba91f50b46e2411d2f3594bf69ab1b98201a4e93e16ffe095"
     },
     "169": {
       "src": "/assets/route-maps/route-169.png",
@@ -1619,9 +1687,10 @@
         7
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "533883d4af82e7790c96ab8e60e2b5a39f349ccd127919278a175c9cfebb6090"
+      "sha256": "6f78766f6e417eeffb55d849a4cd8ef4969c64e3774d9b40077875ade1099914"
     },
     "171": {
       "src": "/assets/route-maps/route-171.png",
@@ -1634,9 +1703,10 @@
         1
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "0be99bab2634e5630643cbfa0d7962acd3b7aacdefa7ee45173da3210146099c"
+      "sha256": "6a3832a00cef4e1db52e2d9b6ee88231e5e4b8668f065c2f66e407bce70f7814"
     },
     "173": {
       "src": "/assets/route-maps/route-173.png",
@@ -1649,9 +1719,10 @@
         16
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "dc1f450547b6b657bc7dc4b18a98872f4a343d3dfbf975b509bb2122c84673ce"
+      "sha256": "6a37a5172ca0bda172581938fe5dc54c6d99a8278445c91b93258351a2aeb98f"
     },
     "174": {
       "src": "/assets/route-maps/route-174.png",
@@ -1664,9 +1735,10 @@
         11
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "26a5904753639c735e29fa19d285258a735bc56096fa2cb1f95b9ecf60c7ed2c"
+      "sha256": "6389c6eb9365105d8fcacd01071f67a332ec4d4fd187cbda96d4bc062701d07f"
     },
     "175": {
       "src": "/assets/route-maps/route-175.png",
@@ -1679,9 +1751,10 @@
         11
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "2026daeeb108017b48ab0b24dc957f26d5fe23d7b8ede52bbd5bcd23552b5848"
+      "sha256": "baee12e1c464482707b9c23de1f0cfdf684a213c0347a867e7d8ee31f2d6ee65"
     },
     "177": {
       "src": "/assets/route-maps/route-177.png",
@@ -1694,9 +1767,10 @@
         14
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "6cee8787e7a8492258552b80a2f247e203558045692543add8bc8862254c0fe3"
+      "sha256": "bcef95826d36b3f78dedc526b6894e7a1dcca62029fe9b76dcc8f6b5ae40e3b6"
     },
     "178": {
       "src": "/assets/route-maps/route-178.png",
@@ -1709,9 +1783,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "9077ceecad1cc408bf5b4cdb2a687e8d0bf16cbfa3f398843ad043fb4c624a10"
+      "sha256": "2a5ccc8fbb1a0d2720de9319ac042d33054fc090f93f5d5d0f40502711a658e7"
     },
     "179": {
       "src": "/assets/route-maps/route-179.png",
@@ -1724,9 +1799,10 @@
         8
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e7fe04691224a0d0566b1bb3bc295a5e60f51993851edb9f66e64d55ca64afce"
+      "sha256": "e933ea77371a643231925d50ffc859eb47e43785d060c718a142e40656f1bc26"
     },
     "180": {
       "src": "/assets/route-maps/route-180.png",
@@ -1739,9 +1815,10 @@
         13
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "4b6f66c2ef1124d927fc7a0fdf2b8b59ff52f7e4168ad8f2f455398c36284e32"
+      "sha256": "a0059f5838b7fd295378a60c7c918a773540bc0be42af5f3cd7f35159f2c0330"
     },
     "181": {
       "src": "/assets/route-maps/route-181.png",
@@ -1754,9 +1831,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "9f96d1d381bf4c9840936ac8798777ea0dab8c2a86b207dfb18f551c1db6e4b7"
+      "sha256": "4a6fab0c9e1d094cff56e8c0ef53d022372bee66d3dd303792537525201f92fb"
     },
     "182": {
       "src": "/assets/route-maps/route-182.png",
@@ -1769,9 +1847,10 @@
         13
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "be8ba3826b6788d133047e6d9d1e4502858b41c250496754baedc635312a52c5"
+      "sha256": "757076240ca2276030d5e3e080a002c219d23310327907ee7773d8e864a9d7bd"
     },
     "183": {
       "src": "/assets/route-maps/route-183.png",
@@ -1784,9 +1863,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e1251f16d297e5d9f68ab41078e4142af49b03b6b2cfd1ed054a3ef9d32fca64"
+      "sha256": "ba9cb4332b863e04574969ac2898761e6b6e550c38cc236bd9a0b55ef0cacb74"
     },
     "184": {
       "src": "/assets/route-maps/route-184.png",
@@ -1799,9 +1879,10 @@
         13
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e4bfb907ebf49e148e5de2ae1fc9b55b20d05e9f94365c5d23fb68244c7701e0"
+      "sha256": "13522027e24c02136522fb32b58c51d8a2e26eafa86a518c143dd75545bb0ae0"
     },
     "185": {
       "src": "/assets/route-maps/route-185.png",
@@ -1814,9 +1895,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "f3c8f70f066d95d4095cced8a8bb025cb365bf18bc2f634c02eb1a396853abfe"
+      "sha256": "ccbdfc5db453643d63907038a7d4bd932f03090a99d5b03685716a204e8a211e"
     },
     "186": {
       "src": "/assets/route-maps/route-186.png",
@@ -1829,9 +1911,10 @@
         13
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "9677b6b7f2e04a3eeba170007362846b21101d04ade5969127a09cdac5b0ee5b"
+      "sha256": "0ce2835f2dddbe1c6ebd0dac9967d2602e3852dd3d7d0b6a94e380e06ba50057"
     },
     "187": {
       "src": "/assets/route-maps/route-187.png",
@@ -1844,9 +1927,10 @@
         12
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "89ae9e1f17fdf5cb0daeb3e89f6ad41faccd71658b0fcc2b8f4515035c185adc"
+      "sha256": "307dec18a8aa5b557b6c1daaee69a551b16d5901709f7f2e4d1b8c4c01e6eb78"
     },
     "188": {
       "src": "/assets/route-maps/route-188.png",
@@ -1859,9 +1943,10 @@
         13
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "2c4498624b72e8e981d8570617699932b2e1b90309db52e7edaad2c15ac04555"
+      "sha256": "7cd53d70efd4ec2ca6c06d49cbc27766776262b82002d4ac43fa31957dd4b3dc"
     },
     "190": {
       "src": "/assets/route-maps/route-190.png",
@@ -1874,9 +1959,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "f8a61169406d5267597fa9d12892508a489f0d6d31b79029d942dc99d923c3e1"
+      "sha256": "cb97a2e5c33d5cf33f303538a7bf75db36ac3983fad6a8211a5e1b66e20f89e8"
     },
     "191": {
       "src": "/assets/route-maps/route-191.png",
@@ -1889,9 +1975,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "509c8b4175d1f0da087409e88fb939b871fe66d7ca77732e5a60efd87d5f046a"
+      "sha256": "338418e06b9d05e5cc601f277e8e22ffb993fea93d16cd40c1edfabe4f095dd4"
     },
     "192": {
       "src": "/assets/route-maps/route-192.png",
@@ -1904,9 +1991,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "a3d831db94adca367047acadac4999fcba08577df2dc8078aa8fc3fa8ba04033"
+      "sha256": "4282962b432c5aed87f442548b43003cc4b3f86ad0b3285bdbe42c63f2a8d00d"
     },
     "227": {
       "src": "/assets/route-maps/route-227.png",
@@ -1919,9 +2007,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "f3a763736569859aded60d29fb980b7dc3c94d6bbb66951e68a392696ae34a78"
+      "sha256": "864b999010d20732841504adb28a44bcb16da8f5b07b44fc340b94e66022089b"
     },
     "228": {
       "src": "/assets/route-maps/route-228.png",
@@ -1934,9 +2023,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "c6f3982e279c55ba48fa5e4c1b626b5c0fd93a319229f4f81788c824da51ccde"
+      "sha256": "186256c90e79e7083956a9e09a3b42df66542783f82342da02620ebe2baed088"
     },
     "229": {
       "src": "/assets/route-maps/route-229.png",
@@ -1949,9 +2039,10 @@
         37
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "10fe4990a081e926c5d9dd29cc7e3263830dd6dc1026e5d47d82f3241c7d0afb"
+      "sha256": "4622d2e01352412004f541ec42cea551d7745a09d83f594668cccebedcd75e07"
     },
     "230": {
       "src": "/assets/route-maps/route-230.png",
@@ -1964,9 +2055,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "da7c2665cf5eeaf730a9fb5a8c615fd5db1471cc257e8dcb201d491e9cefd045"
+      "sha256": "475a47b5b6144e79f2fac3ccd4d25c84416ec8784d5e397b14b1e1f837cac430"
     },
     "231": {
       "src": "/assets/route-maps/route-231.png",
@@ -1979,9 +2071,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "1738780a85c2ccc7a5d252fd4c597a9df4b2f8680b7fc1012f3461b4111e4e72"
+      "sha256": "cf7390e10593d791bea4f34bbf0cb1309e95d35b2d84b16c3120b08352b3dbcc"
     },
     "232": {
       "src": "/assets/route-maps/route-232.png",
@@ -1994,9 +2087,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "90fcd88d1da1356c9884551073fcf0d61d0bae6fe406465c7c57616a718d27a7"
+      "sha256": "6d3891cb7a868c5a40d7ed490a784d6a2a3bdfed71c4002983126fef3217ba54"
     },
     "233": {
       "src": "/assets/route-maps/route-233.png",
@@ -2009,9 +2103,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ae4bf56035aad5f7138a4346429211a7acc81b4fa048c4cbf5417549390c1f24"
+      "sha256": "eb38db00b296ebba2ebd332cc4e3ebb2567c8c443939764b293c5d60080ebcd0"
     },
     "234": {
       "src": "/assets/route-maps/route-234.png",
@@ -2024,9 +2119,10 @@
         35
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "18a34c9872730909877bca98c4ea59286de9d9ad77dfa1ddca5c9760d7b23444"
+      "sha256": "28ed814c73b2fbdfa582e33a5f363959b8ca86cb5d43fb5ed496230062a3df9d"
     },
     "235": {
       "src": "/assets/route-maps/route-235.png",
@@ -2039,9 +2135,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "d5637e673dc9d5bc042de3b40dcb5348c480d2738b0770ac4487fa09280c6764"
+      "sha256": "693fa10d9858f54040cf4ff5c2d6ba45f3fc4fdc76575f6ea7c8a4c2fe2b837f"
     },
     "236": {
       "src": "/assets/route-maps/route-236.png",
@@ -2054,9 +2151,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "4ab2c766d1e594d16705201f7055e4860484860f5b12b442296f009ac77b1bfd"
+      "sha256": "fc06c826c8385bebcdeb3cf97bab12a9c3b88e195916f25c94b0d5060955d8e4"
     },
     "237": {
       "src": "/assets/route-maps/route-237.png",
@@ -2069,9 +2167,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "4daf42b4449d7b580c9691fbbce37035a3159f9af11ec95c5620d1cd79b17a6f"
+      "sha256": "d9882172b18f49fe0ea131f26c1855a5187ab57c21ee026ef16913cc4f57eb6f"
     },
     "238": {
       "src": "/assets/route-maps/route-238.png",
@@ -2084,9 +2183,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "72da1e6d14609944f2e19c0e6525505f791deec51dd40b34784c7f324fa311b4"
+      "sha256": "7ab4cd93c854b31f188c7f562c88c84e4f8fe4fe9059454c8da33f480d5c0bf3"
     },
     "239": {
       "src": "/assets/route-maps/route-239.png",
@@ -2099,9 +2199,10 @@
         33
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "336620aadca8c6a67966cf0215d632964d975ebe1d03ed89b19c7e0c331bc07f"
+      "sha256": "fb4ad0404a9902cbc2c764922bfb245cb80074f75083ba52f9eb7a0923bee68c"
     },
     "240": {
       "src": "/assets/route-maps/route-240.png",
@@ -2114,9 +2215,10 @@
         31
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "b69e910ae865fed68f5f4fedeec0bc1f6f4c25e2838f1c6f927dc1c713246bcd"
+      "sha256": "8e3861500160fbf7e813d852cee44732417ab5f380abc4cb477c3d31deb5d854"
     },
     "241": {
       "src": "/assets/route-maps/route-241.png",
@@ -2129,9 +2231,10 @@
         31
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "67140e8aaf41089a68e63cf11baa7d7ea68e35bd86c6dceaea27bca9c2c11a26"
+      "sha256": "6d54f4670472854e74e4319b5259be4d5122602104a92f7d445fd7972624e835"
     },
     "242": {
       "src": "/assets/route-maps/route-242.png",
@@ -2144,9 +2247,10 @@
         31
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "11ea8a9c49a90819528e5def25654c354a7048d3950cd896309def158d7e19f9"
+      "sha256": "07613c0542001fa374f48fc35808ebdd170378594e20169e3e5d0fcfab60135e"
     },
     "243": {
       "src": "/assets/route-maps/route-243.png",
@@ -2159,9 +2263,10 @@
         31
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "885345529151de1dea03658061da4556e4fdf81b0e69bc9c649c5cf8f1f8b0e4"
+      "sha256": "5fac5be7944d7f908069fbb8d51a88dc145c6900220bd8c77c31bf87097ea71d"
     },
     "244": {
       "src": "/assets/route-maps/route-244.png",
@@ -2174,9 +2279,10 @@
         31
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "581d4fb810427b4b4963cddcf3b9236b9fa4fa9e9fd407bf1ff8fc1a015a0ca3"
+      "sha256": "ab9a00a0dda8674185ce60b0945fa605d951de6188ff547d51c769dc6a90f3d1"
     },
     "245": {
       "src": "/assets/route-maps/route-245.png",
@@ -2189,9 +2295,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "355b976d1bc4af953801a2f0c81ae5bd57d490492c37fd398dc736b6d67cb7f5"
+      "sha256": "9588919ab415a7953c918f45f3648c6a33909eb907dc96d2982d603f1c2d6e99"
     },
     "246": {
       "src": "/assets/route-maps/route-246.png",
@@ -2204,9 +2311,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "5b5ea23b43ea2159279ad90efd0c173bcdce58b888e729a744b729d7066069a7"
+      "sha256": "b0ace057fd3e4a5bad7b43f63bf0489cff475538222d257af7770947b3709c40"
     },
     "247": {
       "src": "/assets/route-maps/route-247.png",
@@ -2219,9 +2327,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "b4ddfe08a9b699a10f72268285d81d49f4c584c06ce9266b72ce1700e94cfd45"
+      "sha256": "c522b7614167b8fb1f41a195091976224e96dcb941570e40b1d015c8be028b60"
     },
     "248": {
       "src": "/assets/route-maps/route-248.png",
@@ -2234,9 +2343,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "5e4a920417803dea382389b838e7c34ffad6d3a04bbdfa9d838bf8dfd15ca7c8"
+      "sha256": "ded3e052e2bda0298692aa9492cc17ed66d220c7ae52249608c3d024a5ca5f8e"
     },
     "249": {
       "src": "/assets/route-maps/route-249.png",
@@ -2249,9 +2359,10 @@
         29
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "2e5f0d6588634870b92f13315042d01932be78b451ad2b11a5a0bd05fb5fa7d8"
+      "sha256": "be48ac6944246210e0c2913cc759a9e7b2a4a8f5f6f8ceebadd45d228537d6ed"
     },
     "250": {
       "src": "/assets/route-maps/route-250.png",
@@ -2264,9 +2375,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e017589d67fd76de900a7c80ff3d5d410e7c3a9675c2008acd4035e098ca87c4"
+      "sha256": "9186dd8e68de4a0d8636b917da9d3726fbee89165dd25f5a0b2b859df6616773"
     },
     "251": {
       "src": "/assets/route-maps/route-251.png",
@@ -2279,9 +2391,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "bd6875d6ab9c1d4a78e9ad1bb98737c0b9a4eb6b6c2005f9eafd8a557aba66b7"
+      "sha256": "3a970623042f5cac15a9916af937f77165a752c9f6a9770089c76f6e3790b0ba"
     },
     "252": {
       "src": "/assets/route-maps/route-252.png",
@@ -2294,9 +2407,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "343c6bc46e78b72e0ee5ef04fddd0b6ed3a6317fa0dabd58297fce53c7bac229"
+      "sha256": "ce0b649009ae4df5abb12967d7dddcfaaaef44a031cf719fe44f3413a4f3d1c6"
     },
     "253": {
       "src": "/assets/route-maps/route-253.png",
@@ -2309,9 +2423,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "7bd40968a94c56135ef4718c3c2fa3d53c3e4cd921e277ebd645719cee716e73"
+      "sha256": "48f94d092c6e986306f63628bb7e7a3ffe31617818eafb8f20c1dce9a593ad82"
     },
     "254": {
       "src": "/assets/route-maps/route-254.png",
@@ -2324,9 +2439,10 @@
         27
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "6515295e8bb9dff210eb7a7e80535fc085b7cf379e2d190c7af432a209a92cbc"
+      "sha256": "21a09d3bea4fc2925ab449bcfff89ec38d963370688197f830a0062b3d40bbb0"
     },
     "255": {
       "src": "/assets/route-maps/route-255.png",
@@ -2339,9 +2455,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "b53134d01376cd7dd21d88e57ba1ac47971f2e8f14d870ed38a5e55cec2def19"
+      "sha256": "5e14c9640d46200c38a6fb20d27040387f9b7b9264e3564fbe385b6b35184da3"
     },
     "256": {
       "src": "/assets/route-maps/route-256.png",
@@ -2354,9 +2471,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "61568530cd4924c103d4cc5056e3abc5706d7bba94f6f529a6d552199bcd8c26"
+      "sha256": "b6b5a02f0a330f3d0562a7f08d7419f85cd2c766960da784d1a16303ad18ec3d"
     },
     "257": {
       "src": "/assets/route-maps/route-257.png",
@@ -2369,9 +2487,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "d3ad9485498fe317f452b3ba0f2d4fe0360f5eacc1cd9e0e12af38288064353f"
+      "sha256": "f8b9d3d9e4f5bed9656ff99c930f4c166f500be0542dc73db0114f02a9879d39"
     },
     "258": {
       "src": "/assets/route-maps/route-258.png",
@@ -2384,9 +2503,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "14e6c47a2e8ae9c6ec997fbde2e5ab75739197e68cbf688f3eb46c2ad076fef1"
+      "sha256": "d5f6bd94b487373ba6aab1b8c33058246a1dd5314cc90c0ec388faede808270a"
     },
     "259": {
       "src": "/assets/route-maps/route-259.png",
@@ -2399,9 +2519,10 @@
         25
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "6264017b21c1fdd984d6e2c2a19485a4951d3d79686bc8a24a87defc071dd7a5"
+      "sha256": "e00fe7dfbd80902eb7922ae89c6a1d73911473514a408e4495d379399571aa70"
     },
     "260": {
       "src": "/assets/route-maps/route-260.png",
@@ -2414,9 +2535,10 @@
         23
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "1e6566b8286387a1e827165a7576b9086a596fe78060e27aeb7bbd5b5d7e6361"
+      "sha256": "6be9c42d343150fee503e796e39cfac84d4dd0f0b7280bffaf4facee27cde48c"
     },
     "261": {
       "src": "/assets/route-maps/route-261.png",
@@ -2429,9 +2551,10 @@
         23
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "9b9e8fd1683bd501aa5db25368c0c81fc05d89523fe3acade2493090e2760732"
+      "sha256": "33c28d406ae95ce34ac51f2233f0863f693c70f3979dc82f28d6d36d3f23aaf3"
     },
     "262": {
       "src": "/assets/route-maps/route-262.png",
@@ -2444,9 +2567,10 @@
         23
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "cdad3373bccbc3906ade3ad7c0bb236e30c199c097431c9deba95810fbf09fd9"
+      "sha256": "62e34255bc4bb347e980c240fd2490314648f3006d031789b185a2121311b6e2"
     },
     "263": {
       "src": "/assets/route-maps/route-263.png",
@@ -2459,9 +2583,10 @@
         23
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "316e3df2887392aadffc87d5354841d977a70c78cfd1ce11b6cdda53a85259a3"
+      "sha256": "ab0f42a94e34c2e3b170a1d9c60a0cd30f0ea49a6df2d027d9e104f1d1fc028e"
     },
     "264": {
       "src": "/assets/route-maps/route-264.png",
@@ -2474,9 +2599,10 @@
         23
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "dda2eedcfdf8b38d6e6c2708af5e06452b0d6d51b4601d2d9c5d1bd135bd6213"
+      "sha256": "520dac8b0164e72c47eeabbd3a7d9ef1aac64327024d1b088de5f648a855c115"
     },
     "265": {
       "src": "/assets/route-maps/route-265.png",
@@ -2489,9 +2615,10 @@
         21
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "6bb70a654463d9215b9fea7f95f3190c2ba5a0fa6c0f3c36569100651b7005ef"
+      "sha256": "2764fb87ebff1589ee2b8a767e277d56f5db1f31e91c94a7612e559e03d50004"
     },
     "266": {
       "src": "/assets/route-maps/route-266.png",
@@ -2504,9 +2631,10 @@
         21
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "3de89c3dddc02b94c7885cb93a3150d8f17cea29d7eb54785690aef5c95844b9"
+      "sha256": "d875461a95ae5fbdb0fe84727d83a51fcd3fdd992dca8000dfe8df5fb9fb85c0"
     },
     "267": {
       "src": "/assets/route-maps/route-267.png",
@@ -2519,9 +2647,10 @@
         21
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "881f881a5d061dac4ad59664a61097ad4ddad817a62398be094b060e6b67335e"
+      "sha256": "df495214f71dcf598d9752a5dd692531368efb3d8c7ac54bf1b27eeeec7ffb61"
     },
     "268": {
       "src": "/assets/route-maps/route-268.png",
@@ -2534,9 +2663,10 @@
         21
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "e72efcc0ce1ea6509a881a3f4881fcfe457350c8b642f8efb28eddcb7e612098"
+      "sha256": "60264aefbc39cec30e4279334f587bacbf6bf654646cc763847666a66e2dd726"
     },
     "269": {
       "src": "/assets/route-maps/route-269.png",
@@ -2549,9 +2679,10 @@
         21
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "587c9d23b897712235a657b1fa394375694a15ce118ffd87ccb6e666a37a9fcb"
+      "sha256": "1fa6ae2e53194c40cd6c63ae8dff96056cafef9b1ff17dfe69ba1e8681a722ba"
     },
     "270": {
       "src": "/assets/route-maps/route-270.png",
@@ -2564,9 +2695,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "ffa436cf0f57d0b8b29fd19f7e9c60f3e30176479c4f993d1223b260ba94c001"
+      "sha256": "824efdb1c0ba8c1bbbe7a9ff3e2b157dad1b568e0981439dfd65b7c8728ad767"
     },
     "271": {
       "src": "/assets/route-maps/route-271.png",
@@ -2579,9 +2711,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "13a1bd54e176d6bf7ab7de5bd27bdaaa57a4ed871e409f1064ac9241adb5b2ab"
+      "sha256": "fc8c5cc76a1ef15556dda9897b22fb38a3f5d0ccaae5e937109ae24ac8528033"
     },
     "272": {
       "src": "/assets/route-maps/route-272.png",
@@ -2594,9 +2727,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "5ed79cef1dfcfb0cd261d8b7407ba69ffcc84ef9fd88376bc79199f96a6d1543"
+      "sha256": "4180e0fd376b107444a2588877d668698ca62bc63da39ae59d9154744a63ecca"
     },
     "273": {
       "src": "/assets/route-maps/route-273.png",
@@ -2609,9 +2743,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "3b5823c5dccfbba3ac4a7e218774dba72f1037f1518d7e89bdf83540889abbcb"
+      "sha256": "d39c67d8d4e008fabf55750540d384d656f03b5fbefd52483016499b45320ae2"
     },
     "274": {
       "src": "/assets/route-maps/route-274.png",
@@ -2624,9 +2759,10 @@
         19
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "97ceccce3d9730e52b529afaf0b4b467f3e3e32612a0213ae72bdeff6d5cf6ba"
+      "sha256": "49b449eddb61747d52525260d7d38e822f56de41df6f33f0d8bc0c98fd3a4ba1"
     },
     "275": {
       "src": "/assets/route-maps/route-275.png",
@@ -2639,9 +2775,10 @@
         17
       ],
       "zoom": 3,
+      "highlightColor": "#ff3679",
       "width": 480,
       "height": 274,
-      "sha256": "13e624d699b9d69e04cb4fadeae69a304a3e02cebe38c067910166184e2f2b7e"
+      "sha256": "971f6371407f1007a889e477bf97d81025c70814080d4719a8858de86419830b"
     }
   },
   "imagePriority": [
@@ -2670,5 +2807,5 @@
     70,
     75
   ],
-  "captureSource": "Local Habitat Dex renderer; regional map at 3x; gold habitat marker; no player marker."
+  "captureSource": "Local Habitat Dex renderer; regional map at 3x; selected area highlighted in pink; no player marker."
 }

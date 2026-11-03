@@ -119,12 +119,15 @@ module BlueTrainerAlbum
   def self.open
     list=areas
     if list.empty?;pbMessage(_INTL('Visit an area with trainers to start the album.'));return;end
+    current=BlueHabitatMap.current_index(list)
+    Scene.new(list[current]).run if current
+    selected=current || 0
     loop do
       labels=list.map do |a|
         s=state(a[:map]);won=s[:entries].values.count { |r| r[:won] }
         a[:name]+" / #{won}/#{a[:rows].length}"+(s[:paid] ? ' ★' : '')
       end
-      selected=BlueBattleLab.choose(_INTL('Trainer Album'),labels);break if selected<0
+      selected=BlueBattleLab.choose(_INTL('Trainer Album'),labels,selected);break if selected<0
       Scene.new(list[selected]).run
     end
   end

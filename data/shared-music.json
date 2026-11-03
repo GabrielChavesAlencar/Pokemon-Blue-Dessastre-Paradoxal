@@ -1,0 +1,587 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "BlueRandom/trainer/dd81b8505fed1e05967de23b.mp3",
+      "asset": "assets/music/dd81b8505fed1e05967de23b838ef967b74be712d7816487cb25fd2b85ddf2ca.mp3",
+      "title": "1-07. Battle! Cheren Â· Belle",
+      "bytes": 3960708,
+      "sha256": "dd81b8505fed1e05967de23b838ef967b74be712d7816487cb25fd2b85ddf2ca"
+    },
+    {
+      "path": "BlueRandom/trainer/6c3e66f82af8b34688ca0308.mp3",
+      "asset": "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3",
+      "title": "1-11. Battle! (Trainer)",
+      "bytes": 6285752,
+      "sha256": "6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4",
+      "chunks": [
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-00",
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-01",
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-02",
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-03",
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-04",
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-05",
+        "assets/music/6c3e66f82af8b34688ca0308d887f44c95469c9cce13b89bbf481dbe8c6adaa4.mp3.part-06"
+      ]
+    },
+    {
+      "path": "BlueRandom/trainer/b2bfb5f87774e84ffb5b673c.mp3",
+      "asset": "assets/music/b2bfb5f87774e84ffb5b673c3e8d39e924200ce1d1a50f26adb71f14284dd6b7.mp3",
+      "title": "1-20. Battle! (Trainer Battle)",
+      "bytes": 3436552,
+      "sha256": "b2bfb5f87774e84ffb5b673c3e8d39e924200ce1d1a50f26adb71f14284dd6b7"
+    },
+    {
+      "path": "BlueRandom/trainer/1f63970f4446314cbff13c9d.mp3",
+      "asset": "assets/music/1f63970f4446314cbff13c9de708050c2e8a81ef1bdbc340266dcacb6b0b008a.mp3",
+      "title": "1-21. Battle! (Trainer Battle)",
+      "bytes": 5534544,
+      "sha256": "1f63970f4446314cbff13c9de708050c2e8a81ef1bdbc340266dcacb6b0b008a"
+    },
+    {
+      "path": "BlueRandom/trainer/dcba35576db17a9feefea67c.mp3",
+      "asset": "assets/music/dcba35576db17a9feefea67cdfd2cd50014ff3a1706783c411a3e12bbe45a414.mp3",
+      "title": "10. Battle! (Nemona)",
+      "bytes": 5582310,
+      "sha256": "dcba35576db17a9feefea67cdfd2cd50014ff3a1706783c411a3e12bbe45a414"
+    },
+    {
+      "path": "BlueRandom/trainer/e90952efea15465e47b1fd5d.mp3",
+      "asset": "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3",
+      "title": "133. Battle! (Academy Ace Tournament)",
+      "bytes": 20612351,
+      "sha256": "e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92",
+      "chunks": [
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-00",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-01",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-02",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-03",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-04",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-05",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-06",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-07",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-08",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-09",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-10",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-11",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-12",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-13",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-14",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-15",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-16",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-17",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-18",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-19",
+        "assets/music/e90952efea15465e47b1fd5d50037ede3852c0056821dba0c69704b080cbaf92.mp3.part-20"
+      ]
+    },
+    {
+      "path": "BlueRandom/trainer/3a0078b0ebffd4f4f585cb41.mp3",
+      "asset": "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3",
+      "title": "39. Battle! (Team Star)",
+      "bytes": 8176881,
+      "sha256": "3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f",
+      "chunks": [
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-00",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-01",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-02",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-03",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-04",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-05",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-06",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-07",
+        "assets/music/3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f.mp3.part-08"
+      ]
+    },
+    {
+      "path": "BlueRandom/trainer/d08747904df890a8b2520f70.mp3",
+      "asset": "assets/music/d08747904df890a8b2520f70a413e5ccb6251c5e140c11e1f7d4e128022ee827.mp3",
+      "title": "1-27. Battle! (Rival)",
+      "bytes": 4006464,
+      "sha256": "d08747904df890a8b2520f70a413e5ccb6251c5e140c11e1f7d4e128022ee827"
+    },
+    {
+      "path": "BlueRandom/trainer/cd4906dca3ee86ffca110fd5.mp3",
+      "asset": "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3",
+      "title": "1-35. Battle! (Rank Match)",
+      "bytes": 8039367,
+      "sha256": "cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445",
+      "chunks": [
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-00",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-01",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-02",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-03",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-04",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-05",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-06",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-07",
+        "assets/music/cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445.mp3.part-08"
+      ]
+    },
+    {
+      "path": "BlueRandom/trainer/a8d6a53bf95438eabbff08b4.mp3",
+      "asset": "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3",
+      "title": "1-82. Battle! (Corbeau)",
+      "bytes": 6067899,
+      "sha256": "a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62",
+      "chunks": [
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-00",
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-01",
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-02",
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-03",
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-04",
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-05",
+        "assets/music/a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62.mp3.part-06"
+      ]
+    },
+    {
+      "path": "BlueRandom/trainer/51dc0f891d56cb278455e9a4.mp3",
+      "asset": "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3",
+      "title": "1-86. Battle! (Jacinthe)",
+      "bytes": 7759420,
+      "sha256": "51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153",
+      "chunks": [
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-00",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-01",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-02",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-03",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-04",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-05",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-06",
+        "assets/music/51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153.mp3.part-07"
+      ]
+    },
+    {
+      "path": "BlueRandom/trainer/d630065b534546c5d5eb247c.mp3",
+      "asset": "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3",
+      "title": "1-88. Battle! (Team Flare Nouveau)",
+      "bytes": 6242734,
+      "sha256": "d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4",
+      "chunks": [
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-00",
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-01",
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-02",
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-03",
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-04",
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-05",
+        "assets/music/d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4.mp3.part-06"
+      ]
+    },
+    {
+      "path": "BlueRandom/wild/8022dbab30cb017ad525b493.mp3",
+      "asset": "assets/music/8022dbab30cb017ad525b4939b86b792ba385ef383099da568e5d4af34254522.mp3",
+      "title": "1-09. Battle! (Wild Pokémon)",
+      "bytes": 2491892,
+      "sha256": "8022dbab30cb017ad525b4939b86b792ba385ef383099da568e5d4af34254522"
+    },
+    {
+      "path": "BlueRandom/wild/98f5277de345c2aeb3bf1824.mp3",
+      "asset": "assets/music/98f5277de345c2aeb3bf18248f88b7e8311ade4c07bade3d586094a890e6d0bf.mp3",
+      "title": "1-14. Battle! Wild Pokemon",
+      "bytes": 4946333,
+      "sha256": "98f5277de345c2aeb3bf18248f88b7e8311ade4c07bade3d586094a890e6d0bf"
+    },
+    {
+      "path": "BlueRandom/wild/85e9d6a8f01449df9f61fd17.mp3",
+      "asset": "assets/music/85e9d6a8f01449df9f61fd178f5bced83535e83a9ef87bfa164e5d3e32cb4ccc.mp3",
+      "title": "1-16. Battle! (Wild Pokémon)",
+      "bytes": 2956495,
+      "sha256": "85e9d6a8f01449df9f61fd178f5bced83535e83a9ef87bfa164e5d3e32cb4ccc"
+    },
+    {
+      "path": "BlueRandom/wild/137ce6601be412b6667b3a36.mp3",
+      "asset": "assets/music/137ce6601be412b6667b3a364feadb1d0fda662db2d5d9930c1e30d3ce396dc3.mp3",
+      "title": "1-18. Battle! (Wild Pokémon)",
+      "bytes": 2825124,
+      "sha256": "137ce6601be412b6667b3a364feadb1d0fda662db2d5d9930c1e30d3ce396dc3"
+    },
+    {
+      "path": "BlueRandom/wild/30c5a5603d4423e113beb88c.mp3",
+      "asset": "assets/music/30c5a5603d4423e113beb88c85f94ca2a29d8e6b2ec9e043287164b75dee1d2c.mp3",
+      "title": "10 - Battle! (Wild Pokémon)",
+      "bytes": 4894996,
+      "sha256": "30c5a5603d4423e113beb88c85f94ca2a29d8e6b2ec9e043287164b75dee1d2c"
+    },
+    {
+      "path": "BlueRandom/wild/b3ab883669ae493b2e2a1655.mp3",
+      "asset": "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3",
+      "title": "12. Battle! (Wild Pokémon)",
+      "bytes": 8141269,
+      "sha256": "b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a",
+      "chunks": [
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-00",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-01",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-02",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-03",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-04",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-05",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-06",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-07",
+        "assets/music/b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a.mp3.part-08"
+      ]
+    },
+    {
+      "path": "BlueRandom/wild/5f3220295dd6d105da12cd81.mp3",
+      "asset": "assets/music/5f3220295dd6d105da12cd818d01423399539c58e5e126807bf867e65f7c704c.mp3",
+      "title": "1-08 Wild Pokémon Battle!",
+      "bytes": 2984667,
+      "sha256": "5f3220295dd6d105da12cd818d01423399539c58e5e126807bf867e65f7c704c"
+    },
+    {
+      "path": "BlueRandom/wild/ddc4179e63fac80ed2886206.mp3",
+      "asset": "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3",
+      "title": "1-29. Battle! (Wild Pokémon)",
+      "bytes": 8919690,
+      "sha256": "ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4",
+      "chunks": [
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-00",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-01",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-02",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-03",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-04",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-05",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-06",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-07",
+        "assets/music/ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4.mp3.part-08"
+      ]
+    },
+    {
+      "path": "BlueRandom/gym/795de7ed64dfb4da7455f9a7.mp3",
+      "asset": "assets/music/795de7ed64dfb4da7455f9a785ab50db6754be1b719db5eba1b5723dadf62f00.mp3",
+      "title": "1-27. Battle! (Gym Leader)",
+      "bytes": 4280605,
+      "sha256": "795de7ed64dfb4da7455f9a785ab50db6754be1b719db5eba1b5723dadf62f00"
+    },
+    {
+      "path": "BlueRandom/gym/d66f95ae7bc516c060adb358.mp3",
+      "asset": "assets/music/d66f95ae7bc516c060adb3587f2ff7a430832dbe0431aa74d6bc45dd3cd2f47b.mp3",
+      "title": "1-32. Battle! (Gym Leader)",
+      "bytes": 3283242,
+      "sha256": "d66f95ae7bc516c060adb3587f2ff7a430832dbe0431aa74d6bc45dd3cd2f47b"
+    },
+    {
+      "path": "BlueRandom/gym/1d9632cd83e478e948ce0752.mp3",
+      "asset": "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3",
+      "title": "1-44. Battle! Gym Leader",
+      "bytes": 6944547,
+      "sha256": "1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1",
+      "chunks": [
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-00",
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-01",
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-02",
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-03",
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-04",
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-05",
+        "assets/music/1d9632cd83e478e948ce075285ac0e2b5840034e8c82e971306099e39d177bd1.mp3.part-06"
+      ]
+    },
+    {
+      "path": "BlueRandom/gym/70738c61a28b87301717f9fb.mp3",
+      "asset": "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3",
+      "title": "54. Battle! (Gym Leader)",
+      "bytes": 7133746,
+      "sha256": "70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692",
+      "chunks": [
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-00",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-01",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-02",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-03",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-04",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-05",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-06",
+        "assets/music/70738c61a28b87301717f9fb743146ed73b9df1ac0e427a597c5ef57c439b692.mp3.part-07"
+      ]
+    },
+    {
+      "path": "BlueRandom/gym/f5443af556688de93a1fa79f.mp3",
+      "asset": "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3",
+      "title": "60 - Battle! (Gym Leader)",
+      "bytes": 11955380,
+      "sha256": "f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52",
+      "chunks": [
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-00",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-01",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-02",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-03",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-04",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-05",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-06",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-07",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-08",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-09",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-10",
+        "assets/music/f5443af556688de93a1fa79fb274e4a31e6374e77aa10ff01de04fc51b99ce52.mp3.part-11"
+      ]
+    },
+    {
+      "path": "BlueRandom/gym/1d39271f7222cef6bc5109a0.mp3",
+      "asset": "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3",
+      "title": "73. Battle! (Team Star Boss)",
+      "bytes": 12763766,
+      "sha256": "1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87",
+      "chunks": [
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-00",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-01",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-02",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-03",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-04",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-05",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-06",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-07",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-08",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-09",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-10",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-11",
+        "assets/music/1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87.mp3.part-12"
+      ]
+    },
+    {
+      "path": "BlueRandom/gym/050285b6efd4b5ac3881673e.mp3",
+      "asset": "assets/music/050285b6efd4b5ac3881673e1f36f4bd5ee01b3af5ebce9cf121bd81539de3fd.mp3",
+      "title": "1-99 Elite Four Member Battle!",
+      "bytes": 3650584,
+      "sha256": "050285b6efd4b5ac3881673e1f36f4bd5ee01b3af5ebce9cf121bd81539de3fd"
+    },
+    {
+      "path": "BlueRandom/gym/608403f3376ed0435217d3b3.mp3",
+      "asset": "assets/music/608403f3376ed0435217d3b3190e5e6fa05d973a911787f5bd2626b3197aeae5.mp3",
+      "title": "2-66. Champion Cynthia",
+      "bytes": 2853907,
+      "sha256": "608403f3376ed0435217d3b3190e5e6fa05d973a911787f5bd2626b3197aeae5"
+    },
+    {
+      "path": "BlueRandom/gym/40ce336d6da2bf655358fb44.mp3",
+      "asset": "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3",
+      "title": "4-04. Battle! (Elite Four)",
+      "bytes": 7188029,
+      "sha256": "40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652",
+      "chunks": [
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-00",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-01",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-02",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-03",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-04",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-05",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-06",
+        "assets/music/40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652.mp3.part-07"
+      ]
+    }
+  ],
+  "config": {
+    "version": 1,
+    "global": {
+      "trainer": {
+        "mode": "random",
+        "track": "",
+        "tracks": [
+          "BlueRandom/trainer/dd81b8505fed1e05967de23b.mp3",
+          "BlueRandom/trainer/6c3e66f82af8b34688ca0308.mp3",
+          "BlueRandom/trainer/b2bfb5f87774e84ffb5b673c.mp3",
+          "BlueRandom/trainer/1f63970f4446314cbff13c9d.mp3",
+          "BlueRandom/trainer/dcba35576db17a9feefea67c.mp3",
+          "BlueRandom/trainer/e90952efea15465e47b1fd5d.mp3",
+          "BlueRandom/trainer/3a0078b0ebffd4f4f585cb41.mp3",
+          "BlueRandom/trainer/d08747904df890a8b2520f70.mp3",
+          "BlueRandom/trainer/cd4906dca3ee86ffca110fd5.mp3",
+          "BlueRandom/trainer/a8d6a53bf95438eabbff08b4.mp3",
+          "BlueRandom/trainer/51dc0f891d56cb278455e9a4.mp3",
+          "BlueRandom/trainer/d630065b534546c5d5eb247c.mp3"
+        ],
+        "volume": 100,
+        "pitch": 100
+      },
+      "wild": {
+        "mode": "random",
+        "track": "",
+        "tracks": [
+          "BlueRandom/wild/8022dbab30cb017ad525b493.mp3",
+          "BlueRandom/wild/98f5277de345c2aeb3bf1824.mp3",
+          "BlueRandom/wild/85e9d6a8f01449df9f61fd17.mp3",
+          "BlueRandom/wild/137ce6601be412b6667b3a36.mp3",
+          "BlueRandom/wild/30c5a5603d4423e113beb88c.mp3",
+          "BlueRandom/wild/b3ab883669ae493b2e2a1655.mp3",
+          "BlueRandom/wild/5f3220295dd6d105da12cd81.mp3",
+          "BlueRandom/wild/ddc4179e63fac80ed2886206.mp3"
+        ],
+        "volume": 100,
+        "pitch": 100
+      },
+      "gym": {
+        "mode": "random",
+        "track": "",
+        "tracks": [
+          "BlueRandom/gym/795de7ed64dfb4da7455f9a7.mp3",
+          "BlueRandom/gym/d66f95ae7bc516c060adb358.mp3",
+          "BlueRandom/gym/1d9632cd83e478e948ce0752.mp3",
+          "BlueRandom/gym/70738c61a28b87301717f9fb.mp3",
+          "BlueRandom/gym/f5443af556688de93a1fa79f.mp3",
+          "BlueRandom/gym/1d39271f7222cef6bc5109a0.mp3",
+          "BlueRandom/gym/050285b6efd4b5ac3881673e.mp3",
+          "BlueRandom/gym/608403f3376ed0435217d3b3.mp3",
+          "BlueRandom/gym/40ce336d6da2bf655358fb44.mp3"
+        ],
+        "volume": 100,
+        "pitch": 100
+      }
+    },
+    "maps": {}
+  },
+  "gymTrainerTypes": [
+    "GALARIAN_SWSH_KABU",
+    "GALARIAN_SWSH_MILO",
+    "GALARIAN_SWSH_NESSA",
+    "GALARIAN_SWSH_PIERS",
+    "HOENNIAN_B2W2_BRAWLY",
+    "HOENNIAN_B2W2_FLANNERY",
+    "HOENNIAN_B2W2_JUAN",
+    "HOENNIAN_B2W2_LIZA",
+    "HOENNIAN_B2W2_LIZA_TATE",
+    "HOENNIAN_B2W2_NORMAN",
+    "HOENNIAN_B2W2_ROXANNE",
+    "HOENNIAN_B2W2_TATE",
+    "HOENNIAN_B2W2_WATTSON",
+    "HOENNIAN_B2W2_WINONA",
+    "JOHTOIAN_HGSS_BUGSY",
+    "JOHTOIAN_HGSS_CHUCK",
+    "JOHTOIAN_HGSS_CLAIR",
+    "JOHTOIAN_HGSS_FALKNER",
+    "JOHTOIAN_HGSS_JASMINE",
+    "JOHTOIAN_HGSS_MORTY",
+    "JOHTOIAN_HGSS_PRYCE",
+    "JOHTOIAN_HGSS_WHITNEY",
+    "KALOIAN_XY_CLEMONT",
+    "KALOIAN_XY_GRANT",
+    "KALOIAN_XY_KORINNA",
+    "KALOIAN_XY_OLYMPIA",
+    "KALOIAN_XY_RAMOS",
+    "KALOIAN_XY_VALERIE",
+    "KALOIAN_XY_VIOLA",
+    "KALOIAN_XY_WULFRIC",
+    "KANTOIAN_FRLG_SABRINA",
+    "KANTOIAN_HGSS_BLAINE_CASUAL",
+    "KANTOIAN_HGSS_BLUE_OAK",
+    "KANTOIAN_HGSS_BROCK_CASUAL",
+    "KANTOIAN_HGSS_ERIKA",
+    "KANTOIAN_HGSS_JANINE",
+    "KANTOIAN_HGSS_LT_SURGE",
+    "KANTOIAN_HGSS_MISTY_SWIMSUIT",
+    "KANTOIAN_HGSS_SABRINA",
+    "KANTOIAN_LGPE_BLANNE_SCIENCE",
+    "KANTOIAN_LGPE_BROCK_TRAVEL",
+    "KANTOIAN_LGPE_ERIKA",
+    "KANTOIAN_LGPE_LT_SURGE",
+    "KANTOIAN_LGPE_MISTY_CASUAL",
+    "KANTOIAN_LGPE_SABRINA",
+    "LEADER_Blaine",
+    "LEADER_Brock",
+    "LEADER_Erika",
+    "LEADER_Giovanni",
+    "LEADER_Koga",
+    "LEADER_Misty",
+    "LEADER_Sabrina",
+    "LEADER_Surge",
+    "PALDEAN_SV_RYME",
+    "SINNOHIAN_DPP_BYRON",
+    "SINNOHIAN_DPP_CANDICE",
+    "SINNOHIAN_DPP_CRASHER_WAKE",
+    "SINNOHIAN_DPP_FANTINA",
+    "SINNOHIAN_DPP_GARDENIA",
+    "SINNOHIAN_DPP_MAYLENE",
+    "SINNOHIAN_DPP_ROARK",
+    "SINNOHIAN_DPP_VOLKNER",
+    "SINNOHIAN_UNOFFICAL_BYRON",
+    "SINNOHIAN_UNOFFICAL_CANDICE",
+    "SINNOHIAN_UNOFFICAL_CRASHER_WAKE",
+    "SINNOHIAN_UNOFFICAL_FANTINA",
+    "SINNOHIAN_UNOFFICAL_GARDENIA",
+    "SINNOHIAN_UNOFFICAL_MAYLENE",
+    "SINNOHIAN_UNOFFICAL_ROARK",
+    "SINNOHIAN_UNOFFICAL_VOLKNER",
+    "UNOVAIAN_B1W1_ELESA",
+    "UNOVAIAN_B2W2_BURGH",
+    "UNOVAIAN_B2W2_CHEREN",
+    "UNOVAIAN_B2W2_CHILI",
+    "UNOVAIAN_B2W2_CILAN",
+    "UNOVAIAN_B2W2_CLAY",
+    "UNOVAIAN_B2W2_CRESS",
+    "UNOVAIAN_B2W2_DRAYDEN",
+    "UNOVAIAN_B2W2_ELESA",
+    "UNOVAIAN_B2W2_MARLON",
+    "UNOVAIAN_B2W2_ROXIE",
+    "UNOVAIAN_B2W2_SKYLA"
+  ],
+  "gymTrainers": [
+    [
+      "ALOLAN_USUM_BEAUTY",
+      "Eira"
+    ],
+    [
+      "ALOLAN_USUM_HIKER",
+      "Christopher"
+    ],
+    [
+      "HOENNIAN_ORAS_AROMALADY",
+      "Marigold"
+    ],
+    [
+      "HOENNIAN_ORAS_KINDLER",
+      "Keegan"
+    ],
+    [
+      "HOENNIAN_ORAS_NINJA_BOY",
+      "Cethin"
+    ],
+    [
+      "HOENNIAN_ORAS_POKEFAN_WOMAN",
+      "Belinda"
+    ],
+    [
+      "JOHTOIAN_HGSS_BIKER",
+      "Atlas"
+    ],
+    [
+      "JOHTOIAN_HGSS_BLACK_BELT",
+      "Luis"
+    ],
+    [
+      "JOHTOIAN_HGSS_SAGE",
+      "Roho"
+    ],
+    [
+      "JOHTOIAN_HGSS_TEACHER",
+      "Quinn"
+    ],
+    [
+      "KALOIAN_XY_BLACK_FURISODE_GIRL",
+      "Luna"
+    ],
+    [
+      "KALOIAN_XY_SKYTRAINER_MAN",
+      "Hermes"
+    ],
+    [
+      "KALOIAN_XY_SKYTRAINER_WOMAN",
+      "Azure"
+    ],
+    [
+      "KANTOIAN_FRLG_LADY",
+      "Keiko"
+    ],
+    [
+      "SINNOHIAN_DPP_PARASOL_LADY",
+      "Reva"
+    ],
+    [
+      "SINNOHIAN_DPP_WORKER",
+      "Gohar"
+    ],
+    [
+      "UNOVAIAN_B2W2_BACKPACKER_WOMAN",
+      "Sophia"
+    ],
+    [
+      "UNOVAIAN_B2W2_DOCTOR",
+      "Galen"
+    ]
+  ]
+}

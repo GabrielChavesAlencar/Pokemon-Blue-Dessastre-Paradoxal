@@ -1,37 +1,29 @@
 # Baixar e instalar Pokémon Blue
 
-O portal reúne os dois downloads e os respectivos passos em **[Downloads — jogo e Hub](https://pokemondessastreparadosal.vercel.app/downloads)**. Os dois botões também estão na página inicial.
+Abra [Downloads](https://pokemondessastreparadosal.vercel.app/downloads) e escolha **Blue-Story.exe** para a campanha ou **Blue-Battle-Hub.exe** para a arena. Use Windows 10/11 de 64 bits.
 
-**[⬇ Baixar a versão atual (ZIP)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/archive/refs/heads/main.zip)**
+1. Abra o EXE escolhido. A primeira instalação baixa a base e as modificações do projeto.
+2. Aguarde a preparação e a compilação. Python e Git portáteis são obtidos automaticamente, com verificação SHA-256; não é necessário instalá-los no Windows.
+3. Jogue. O inicializador confere a main pública ao abrir e atualiza os scripts quando existe uma revisão nova.
 
-O link baixa o instalador, as modificações Blue, o editor e os assets autorais. O instalador obtém a base Pokémon Decades separadamente. Enquanto este repositório for privado, somente pessoas com acesso no GitHub poderão baixar. Torná-lo público libera o mesmo link para os demais jogadores; este procedimento não altera a visibilidade do repositório.
+Os dois EXEs usam uma instalação compartilhada. Em um PC novo, ela fica em `%LOCALAPPDATA%/PokemonBlueDessastreParadoxal`. Quando o inicializador está dentro de uma instalação existente, reconhece a pasta do projeto. Feche o jogo antes de atualizar. Saves, equipes, `game/` e ferramentas privadas são preservados na atualização do código; arquivos substituídos recebem backup.
 
-## Primeira instalação — Windows 64 bits
+## Conteúdo instalado
 
-1. Instale **[Python 3.10 ou superior](https://www.python.org/downloads/windows/)** e **[Git para Windows](https://git-scm.com/downloads/win)**. Feche e abra o Explorador após a instalação.
-2. Baixe o ZIP acima e use **Extrair tudo**. Abra a pasta extraída, que contém `INSTALAR_JOGO.bat`. Não execute de dentro do ZIP.
-3. Abra **`INSTALAR_JOGO.bat`**. Mantenha o CMD aberto enquanto ele baixa a base e as referências e aplica as alterações. A primeira instalação é grande e pode demorar. Se falhar, a mensagem permanece na tela; corrija a causa e execute novamente.
-4. Quando aparecer **`[OK] Instalado`**, abra **`ABRIR_JOGO.bat`**. Na primeira abertura, aguarde a compilação dos plugins e dos dados. As próximas aberturas usam os dados compilados.
-5. Para a campanha com balanceamento novo, escolha **Story Mode → Traditional Starters ou Monotype Starters**. Use **`TESTAR_BATALHA.bat`** para o laboratório separado, que não carrega nem salva a campanha.
+- Base Decades no commit fixado `ff6091b23603b3298ad72a7584b02a51e1d01c0e`.
+- Regras oficiais do projeto, geração Dessastre Paradoxal, sprites, cries, descrições e pedras autorais.
+- Campanha Blue, IA, opções de mecânicas, controles por mouse e Hub com multiplayer.
+- 130 times prontos por jogo/regulamento, disponíveis sem internet.
+- As mesmas listas compartilhadas de música: 12 faixas de treinador, 8 selvagens e 9 de líderes.
 
-O instalador funciona a partir do ZIP, sem executar comandos Git na pasta do Blue. O Git é utilizado somente para obter a base em `game/`. Não é necessário instalar Node, RPG Maker XP ou criar conta na Vercel para jogar. O desenvolvimento e os testes atuais são para Windows; estes atalhos não geram APK.
+## Android experimental
 
-## O que será instalado
+Baixe **Blue-Android-JoiPlay.zip**, instale JoiPlay e RPG Maker Plugin pelos [downloads oficiais](https://www.joiplay.net/), extraia o ZIP inteiro e adicione `Pokemon-Blue-Android/Game.exe` ao JoiPlay. Na abertura, escolha História ou Hub offline. O pacote já contém os dados compilados e as músicas.
 
-- Base Decades fixada no commit `ff6091b23603b3298ad72a7584b02a51e1d01c0e` (referência 3.0.8).
-- Restauração dos Pokémon/golpes para as referências oficiais do projeto.
-- Geração Dessastre Paradoxal, sprites, cries, descrições e pedras autorais.
-- IA Blue Radical, laboratório, opções de mecânicas, controles por mouse, animações e progressão Traditional Starters.
-- Editor de músicas. As músicas MP3 da coleção pessoal do autor não estão no ZIP; a instalação usa a trilha da base até você [importar suas próprias listas](EDITOR_MUSICAS.md).
+É um pacote para o interpretador, não um APK nativo. Ainda requer validação em aparelhos Android reais. O multiplayer e o download de links PokéPaste usam o auxiliar Windows; no Android, utilize os times prontos ou o texto do time.
 
-## Atualizar e preservar a campanha
+## Desenvolvimento e verificação
 
-Feche o jogo antes de atualizar. Quem clonou o repositório pode usar o atualizador `RUN.bat`. Quem baixou o ZIP pode baixar o ZIP novo e copiar suas pastas de código sobre a instalação anterior, preservando `game/` e `.blue-work/installation.json`; depois execute `INSTALAR_JOGO.bat` novamente. A restauração oficial concluída fica registrada e não é repetida sobre os PBS que você editou. Os plugins e assets próprios são atualizados com backup em `.blue-backups/`.
+Os arquivos BAT continuam disponíveis no código-fonte para manutenção e instalações antigas. A página pública de downloads usa os EXEs. `RUN.bat` abre o editor, e `ABRIR_SITE.bat` abre o portal local com Node.
 
-Não copie pastas de um segundo jogo sobre `game/`. Uma pasta parcial desconhecida é recusada pelo instalador para preservar seus arquivos. Não apague saves ou `.blue-backups/` para resolver uma falha de instalação.
-
-**`ABRIR_JOGO.bat`** prepara os plugins e pede recompilação quando necessário. **`RUN.bat`** abre o Blue Studio. **`ABRIR_SITE.bat`** abre o portal local e depende de Node; é uma ferramenta opcional, separada do jogo.
-
-## Verificações
-
-Os testes automáticos verificam instalação a partir de pasta sem `.git`, retomada das etapas, versão fixada da base, proteção de pastas parciais e instalação dos plugins com reversão. Os recursos de batalha são validados no motor instalado. O fluxo de download completo em uma máquina vazia depende da disponibilidade dos servidores da base e das referências; não é um pacote autossuficiente com o jogo embutido.
+O build testa extração segura, proteção dos arquivos existentes, instalação sem Python/Git no PATH, hashes dos áudios, importação dos times, recompilação nativa e exclusão de saves/logs do pacote Android. Consulte [Distribuição e presets](DISTRIBUICAO_E_PRESETS.md) e [Álbum e mapas](ALBUM_E_MAPAS.md).

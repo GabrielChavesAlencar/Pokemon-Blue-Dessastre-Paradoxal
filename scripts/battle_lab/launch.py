@@ -11,8 +11,9 @@ import sys
 import zlib
 import tempfile
 import importlib.util
+import json
 
-PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'TeamPreview.rb', 'Multiplayer.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'mp_client.py', 'mp_server.py', 'meta.txt']
+PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'TeamPreview.rb', 'Mobile.rb', 'Multiplayer.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'mp_client.py', 'mp_server.py', 'meta.txt']
 
 
 def atomic_write(path: Path, data: bytes):
@@ -46,6 +47,14 @@ def install(project: Path, game: Path) -> Path:
     config=(str(interpreter.resolve())+'\n').encode('utf8')
     config_path=game/'Data/blue-hub-python.txt'
     if not config_path.is_file() or config_path.read_bytes()!=config:atomic_write(config_path,config)
+    presets=project/'data/preset-teams.json'
+    if presets.is_file():
+        sys.path.insert(0,str(project))
+        from server.ruby_marshal import dumps_simple
+        entries=json.loads(presets.read_text('utf8'))['teams']
+        raw=dumps_simple([1,[[r['game'],r['regulation'],r['title'],r['url'],r['format'],r['text'],r['available']] for r in entries]])
+        target=game/'Data/blue-hub-presets.dat'
+        if not target.is_file() or target.read_bytes()!=raw:atomic_write(target,raw)
     options_installer=project/'scripts'/'battle_options'/'install.py'
     if options_installer.is_file():
         spec=importlib.util.spec_from_file_location('blue_battle_options_install',options_installer)

@@ -2,4 +2,4 @@ Name = Blue Battle Hub
 Version = 0.7
 Essentials = 21.1
 Credits = Gabriel Chaves Alencar
-Scripts = BlueBattleLab.rb, Interface.rb, Teams.rb, HubData.rb, HubUI.rb, TeamPreview.rb, Multiplayer.rb, HubValidation.rb, Validation.rb
+Scripts = BlueBattleLab.rb, Interface.rb, Teams.rb, HubData.rb, HubUI.rb, TeamPreview.rb, Mobile.rb, Multiplayer.rb, HubValidation.rb, Validation.rb

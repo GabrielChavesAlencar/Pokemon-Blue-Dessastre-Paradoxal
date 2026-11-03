@@ -29,6 +29,7 @@ module BlueMultiplayer
     BlueBattleLab.log('MP_CONFIG_WARNING | '+e.message)
   end
   def self.python
+    raise BlueBattleHub::ImportError,'O multiplayer usa um auxiliar Windows e nao esta disponivel nesta versao Android.' if defined?(BlueMobile) && BlueMobile.enabled?
     config='Data/blue-hub-python.txt'
     raise BlueBattleHub::ImportError,'Reabra HUB_DE_BATALHA.bat para preparar o multiplayer.' unless File.file?(config)
     File.read(config,encoding:'UTF-8').strip

@@ -46,7 +46,7 @@ def install(project,game,hub_only=False):
     else:
         run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
-    print('Musicas MP3 particulares nao fazem parte do download. O jogo usa a trilha da base ate voce importar suas listas.')
+    print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--apply',action='store_true');parser.add_argument('--hub-only',action='store_true');args=parser.parse_args()

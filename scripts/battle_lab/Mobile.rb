@@ -1,0 +1,20 @@
+# Android distribution uses the same game data, with an explicit offline Hub entry.
+module BlueMobile
+  def self.enabled?;File.file?('Data/blue-mobile.txt');end
+  module Title
+    def pbCallTitle
+      return super unless BlueMobile.enabled? && !BlueBattleLab::ACTIVE
+      unless @blue_mobile_selected
+        @blue_mobile_selected=true
+        choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',['Modo historia','Hub de batalha offline','Sair'])
+        return nil if choice<0 || choice==2
+        if choice==1
+          BlueBattleLab.send(:remove_const,:ACTIVE);BlueBattleLab.const_set(:ACTIVE,true)
+          BlueBattleLab.install;return BlueBattleLab::Scene.new
+        end
+      end
+      super
+    end
+  end
+end
+Object.prepend(BlueMobile::Title)

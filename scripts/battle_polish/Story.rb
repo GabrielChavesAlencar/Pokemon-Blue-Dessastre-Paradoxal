@@ -253,6 +253,8 @@ module Compiler
       PokemonRegionMap_Scene.prepend(BlueRegionMapSafety) unless PokemonRegionMap_Scene.ancestors.include?(BlueRegionMapSafety)
       BlueTraining.install
       BlueTrainerAlbum.install
+      BlueHabitatRewards.install
+      PokemonSummary_Scene.prepend(BlueSummaryBackdrop) unless PokemonSummary_Scene.ancestors.include?(BlueSummaryBackdrop)
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
     end
   end

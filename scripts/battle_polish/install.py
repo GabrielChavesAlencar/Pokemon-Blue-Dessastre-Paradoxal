@@ -1,7 +1,7 @@
 """Install Blue's original presentation/story plugin, with a local backup."""
 from pathlib import Path
 import importlib.util,os,tempfile
-FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','Training.rb','TrainerAlbum.rb','FishingTables.rb','CampaignReference.rb','NextValidation.rb','WorldValidation.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','DexControls.rb','DexCards.rb','LearnMouse.rb','CardsValidation.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','WorldMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
+FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','Training.rb','TrainerAlbum.rb','HabitatRewards.rb','FishingTables.rb','CampaignReference.rb','NextValidation.rb','WorldValidation.rb','ReleaseValidation.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','DexControls.rb','DexCards.rb','LearnMouse.rb','CardsValidation.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','WorldMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
 SUPPORT=['leaders.py','leaders_full_power.json','champions.py','trainer_album_catalog.py']
 def atomic(path,raw):
     path.parent.mkdir(parents=True,exist_ok=True)

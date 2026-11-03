@@ -16,7 +16,7 @@ const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
 const round=value=>Number(value.toFixed(3));
 export function regionCaption(model,area){
   const map=model.region??{},image=imageFor(map,area);
-  if(image?.kind==='habitat-region-capture')return 'Captura local do mapa regional em zoom de 3×, como Ver no mapa na Habitat Dex. O marcador dourado indica esta área; não é uma foto do cenário interno.';
+  if(image?.kind==='habitat-region-capture')return 'Captura local do mapa regional em zoom de 3×, como Ver no mapa na Habitat Dex. A área selecionada está destacada em rosa.';
   if(image?.src)return 'Miniatura específica encontrada nos arquivos públicos de Pokémon Decades. Não é uma captura completa do cenário jogável.';
   if(pointFor(map,area))return 'Recorte ampliado do mapa regional oficial de Beatha, centrado nesta localização. Não é a imagem do mapa interno de jogo.';
   return 'Não foi encontrada uma imagem pública confiável desta área. Nenhuma imagem de outro mapa foi usada como substituta.';

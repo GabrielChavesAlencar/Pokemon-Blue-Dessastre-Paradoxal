@@ -45,6 +45,25 @@ module BlueHabitatMap
       cell_h=defined?(ARMSettings::SquareHeight) ? ARMSettings::SquareHeight : 16
       @center_x=(@point[1]+0.5)*cell_w;@center_y=(@point[2]+0.5)*cell_h
     end
+    def highlighted_cells
+      points=GameData::TownMap.get(@point[0]).point
+      anchor=points.find { |row| row[0]==@point[1] && row[1]==@point[2] }
+      cells=anchor ? points.select { |row| row[2]==anchor[2] }.map { |row| row.first(2) } : []
+      cells << @point[1,2] if cells.empty?
+      cells.uniq
+    end
+    def highlight(bitmap)
+      cw=defined?(ARMSettings::SquareWidth) ? ARMSettings::SquareWidth : 16
+      ch=defined?(ARMSettings::SquareHeight) ? ARMSettings::SquareHeight : 16
+      highlighted_cells.each do |cx,cy|
+        x=(@map_x+(cx*cw-@source_x)*@scale).round;y=(@map_y+(cy*ch-@source_y)*@scale).round
+        right=[(x+cw*@scale).round,@map_x+@map_width].min;bottom=[(y+ch*@scale).round,@map_y+@map_height].min
+        x=[x,@map_x].max;y=[y,@map_y].max;w=right-x;h=bottom-y;next if w<=0 || h<=0
+        bitmap.fill_rect(x,y,w,h,Color.new(255,66,133,135))
+        edge=Color.new(255,54,121);bitmap.fill_rect(x,y,w,2,edge);bitmap.fill_rect(x,bottom-2,w,2,edge)
+        bitmap.fill_rect(x,y,2,h,edge);bitmap.fill_rect(right-2,y,2,h,edge)
+      end
+    end
     def zoom(delta);@zoom_index=(@zoom_index+delta).clamp(0,ZOOMS.length-1);refresh;end
     def pan(dx,dy);@center_x+=dx/@scale;@center_y+=dy/@scale;refresh;end
     def refresh
@@ -56,11 +75,11 @@ module BlueHabitatMap
       @map_width=(sw*@scale).round;@map_height=(sh*@scale).round
       @map_x=(Graphics.width-@map_width)/2;@map_y=76+(244-@map_height)/2
       b.stretch_blt(Rect.new(@map_x,@map_y,@map_width,@map_height),@raw,Rect.new(@source_x,@source_y,sw,sh))
-      marker(b,@point,Color.new(255,210,96),14)
+      highlight(b)
       marker(b,BlueHabitatMap.position($game_map.map_id),Color.new(102,202,255),8) if @show_player
       light=Color.new(240,248,255);shadow=Color.new(9,24,41)
       pbDrawTextPositions(b,[[_INTL('Habitat location'),16,8,:left,light,shadow],[BlueHabitat.map_name(@map),16,34,:left,light,shadow],
-        [ZOOMS[@zoom_index].to_s+'x',492,8,:right,light,shadow],[_INTL('Gold: Habitat · Blue: You'),16,322,:left,Color.new(178,212,239),shadow]])
+        [ZOOMS[@zoom_index].to_s+'x',492,8,:right,light,shadow],[_INTL('Pink: Selected area · Blue: You'),16,322,:left,Color.new(178,212,239),shadow]])
       b.font.size=16;pbDrawTextPositions(b,[[_INTL('I/O: Zoom · Arrows / Drag: Move'),16,58,:left,Color.new(157,193,224),shadow]])
       b.font.size=18;b.font.color=light
       BUTTONS.each { |x,w,id,label| b.fill_rect(x,352,w,28,Color.new(28,64,94));b.draw_text(x,352,w,28,_INTL(label),1) }

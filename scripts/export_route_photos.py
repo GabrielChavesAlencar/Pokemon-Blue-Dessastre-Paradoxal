@@ -33,13 +33,13 @@ def import_photos(root):
         if (width,height)!=(480,274) or len(raw)<24 or raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or struct.unpack('>II',raw[16:24])!=(width,height):raise ValueError('Invalid capture PNG.')
         seen.add(id);plans.append((file,raw))
         images[str(id)]={'src':'/assets/route-maps/'+file,'kind':'habitat-region-capture','name':name,
-            'mapId':id,'region':region,'point':[x,y],'zoom':3,'width':width,'height':height,
+            'mapId':id,'region':region,'point':[x,y],'zoom':3,'highlightColor':'#ff3679','width':width,'height':height,
             'sha256':hashlib.sha256(raw).hexdigest()}
     missing={row[0] for row in data[2]}
     if seen & missing or seen|missing!=set(areas):raise ValueError('Native export does not cover every listed area.')
     # The user requested hiding removed legacy maps, without deleting their data.
     manifest['inactiveAreaIds']=sorted(missing)
-    manifest['captureSource']='Local Habitat Dex renderer; regional map at 3x; gold habitat marker; no player marker.'
+    manifest['captureSource']='Local Habitat Dex renderer; regional map at 3x; selected area highlighted in pink; no player marker.'
     target.mkdir(parents=True,exist_ok=True)
     for file,raw in plans:(target/file).write_bytes(raw)
     regions.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n','utf8')

@@ -351,7 +351,8 @@ module BlueBattleHub
       value.to_i
     end
     def import_menu
-      selection=choose('Importar para '+@names[@side],['Colar time ou link da area de transferencia','Digitar link Pokepaste','Voltar'])
+      selection=choose('Importar para '+@names[@side],['Colar time ou link da area de transferencia','Digitar link Pokepaste','Times prontos por jogo e regulamento','Voltar'])
+      return import_preset if selection==2
       return unless [0,1].include?(selection)
       raw=selection==0 ? Input.clipboard.to_s : prompt('Link https://pokepast.es/...','',2048)
       return if raw.nil?
@@ -366,9 +367,23 @@ module BlueBattleHub
       BlueBattleLab.log('HUB_IMPORT_ERROR | '+error.message)
       choose('Nao foi possivel importar. Seu time foi mantido.',error.message.scan(/.{1,62}/)+['Voltar'])
     end
-    def confirm_import(raw)
-      format=:classic
-      if BlueBattleHub.champions_candidate?(raw)
+    def import_preset
+      path='Data/blue-hub-presets.dat'
+      raise ImportError,'Catalogo de times ausente. Atualize a instalacao.' unless File.file?(path)
+      data=load_data(path);raise ImportError,'Catalogo de times invalido.' unless data.is_a?(Array) && data[0]==1
+      rows=data[1];games=rows.map { |row| row[0] }.uniq
+      g=choose('Times prontos / jogo',games+['Voltar']);return unless g>=0 && g<games.length
+      regs=rows.select { |r| r[0]==games[g] }.map { |r| r[1] }.uniq
+      r=choose(games[g]+' / regulamento',regs.map { |v| 'Regulamento '+v }+['Voltar']);return unless r>=0 && r<regs.length
+      teams=rows.select { |row| row[0]==games[g] && row[1]==regs[r] }
+      n=choose('Regulamento '+regs[r]+' / time',teams.map { |row| row[2]+(row[6] ? '' : ' [indisponivel]') }+['Voltar'])
+      return unless n>=0 && n<teams.length
+      team=teams[n];raise ImportError,'Este Pokepaste nao estava disponivel na ultima sincronizacao.' unless team[6]
+      confirm_import(team[5],team[4].to_sym)
+    end
+    def confirm_import(raw,format_hint=nil)
+      format=format_hint || :classic
+      if !format_hint && BlueBattleHub.champions_candidate?(raw)
         mode=choose('Valores ate 32: qual e o formato dos atributos?',['Champions: converter pontos para EVs (limite 510)','EVs classicos: manter valores literais','Cancelar'])
         return unless [0,1].include?(mode)
         format=:champions if mode==0
@@ -394,6 +409,7 @@ module BlueBattleHub
       changed
     end
     def fetch_with_progress(raw)
+      raise ImportError,'No Android, use Times prontos ou cole o texto do time. O download por link requer o auxiliar Python do Windows.' if defined?(BlueMobile) && BlueMobile.enabled?
       url=BlueBattleHub.url(raw)
       config='Data/blue-hub-python.txt'
       raise ImportError,'Reabra HUB_DE_BATALHA.bat para preparar a importacao.' unless File.file?(config)

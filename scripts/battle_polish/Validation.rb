@@ -19,6 +19,7 @@ module BluePolishValidation
     assert(BlueDexCardsValidation.run,'Native Dex cards, habitat zoom, move learning mouse and author back-facing audit; Data/blue-dex-cards-validation.txt')
     assert(BlueNextValidation.run,'Rod rarities, selective cleaners, party reminder, English abilities, TM names and trainer difficulty; Data/blue-next-validation.txt')
     assert(BlueWorldValidation.run,'Native Pokegear, 12-slot Habitat Dex, canonical back animation and trainer-album rewards; Data/blue-world-validation.txt')
+    assert(BlueReleaseValidation.run,'Preset imports, habitat prizes, memo backdrop and selected-route highlight; Data/blue-release-validation.txt')
     assert(BlueFullPowerValidation.run,'All 18 double Full Power leaders and both author Mega Stones; Data/blue-full-power-validation.txt')
     test_entries
     @lines << 'RESULT=PASS'

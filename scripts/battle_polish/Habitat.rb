@@ -57,6 +57,7 @@ module BlueHabitat
     end
   end
   def self.open_area(area)
+    BlueHabitatRewards.claim(area)
     methods=area[:methods].keys.reject { |type| BlueFishing::RODS.include?(type) }
     methods << :Fishing if BlueFishing::RODS.any? { |rod| area[:methods][rod]&.any? }
     loop do

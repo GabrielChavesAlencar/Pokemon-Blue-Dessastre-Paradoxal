@@ -6,6 +6,8 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30,MessageTypes::ABILITY_NAMES].uniq.freeze
   MANUAL={
+    'Pink: Selected area · Blue: You'=>'Rosa: Área selecionada · Azul: Você',
+    'Habitat complete: {1}! {2} Pokémon × $500 = ${3}.'=>'Habitat completo: {1}! {2} Pokémon × $500 = ${3}.',
     'Trainer Album'=>'Álbum de treinadores','Encountered'=>'Enfrentado','Not encountered'=>'Não enfrentado','Defeated'=>'Derrotado',
     'Visit an area with trainers to start the album.'=>'Visite uma área com treinadores para iniciar o álbum.',
     'Trainer Album: {1} complete! Bonus: ${2}.'=>'Álbum: {1} concluída! Bônus: ${2}.',

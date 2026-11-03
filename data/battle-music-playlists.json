@@ -50,6 +50,41 @@
         "title": "39. Battle! (Team Star)",
         "bytes": 8176881,
         "sha256": "3a0078b0ebffd4f4f585cb41d72d85d43186c038d7b836843f3c3ab934e5f51f"
+      },
+      {
+        "source": "treinador/1-27. Battle! (Rival).mp3",
+        "file": "BlueRandom/trainer/d08747904df890a8b2520f70.mp3",
+        "title": "1-27. Battle! (Rival)",
+        "bytes": 4006464,
+        "sha256": "d08747904df890a8b2520f70a413e5ccb6251c5e140c11e1f7d4e128022ee827"
+      },
+      {
+        "source": "treinador/1-35. Battle! (Rank Match).mp3",
+        "file": "BlueRandom/trainer/cd4906dca3ee86ffca110fd5.mp3",
+        "title": "1-35. Battle! (Rank Match)",
+        "bytes": 8039367,
+        "sha256": "cd4906dca3ee86ffca110fd5f0efaade09d4a53edfcf9ccd33f7e1d3d74a3445"
+      },
+      {
+        "source": "treinador/1-82. Battle! (Corbeau).mp3",
+        "file": "BlueRandom/trainer/a8d6a53bf95438eabbff08b4.mp3",
+        "title": "1-82. Battle! (Corbeau)",
+        "bytes": 6067899,
+        "sha256": "a8d6a53bf95438eabbff08b4fa9d114814cc11701008903ae2d18675d6978d62"
+      },
+      {
+        "source": "treinador/1-86. Battle! (Jacinthe).mp3",
+        "file": "BlueRandom/trainer/51dc0f891d56cb278455e9a4.mp3",
+        "title": "1-86. Battle! (Jacinthe)",
+        "bytes": 7759420,
+        "sha256": "51dc0f891d56cb278455e9a4203d13933977a1f3c007155a6bc3696615142153"
+      },
+      {
+        "source": "treinador/1-88. Battle! (Team Flare Nouveau).mp3",
+        "file": "BlueRandom/trainer/d630065b534546c5d5eb247c.mp3",
+        "title": "1-88. Battle! (Team Flare Nouveau)",
+        "bytes": 6242734,
+        "sha256": "d630065b534546c5d5eb247c917fa19a75f76d69d51a4e55f4a6e7bf0cc3eef4"
       }
     ],
     "wild": [
@@ -94,6 +129,20 @@
         "title": "12. Battle! (Wild Pokémon)",
         "bytes": 8141269,
         "sha256": "b3ab883669ae493b2e2a1655ae4967c0886e7a1589657ff936638d259fe68b6a"
+      },
+      {
+        "source": "pokemons selvagens/1-08 Wild Pokémon Battle!.mp3",
+        "file": "BlueRandom/wild/5f3220295dd6d105da12cd81.mp3",
+        "title": "1-08 Wild Pokémon Battle!",
+        "bytes": 2984667,
+        "sha256": "5f3220295dd6d105da12cd818d01423399539c58e5e126807bf867e65f7c704c"
+      },
+      {
+        "source": "pokemons selvagens/1-29. Battle! (Wild Pokémon).mp3",
+        "file": "BlueRandom/wild/ddc4179e63fac80ed2886206.mp3",
+        "title": "1-29. Battle! (Wild Pokémon)",
+        "bytes": 8919690,
+        "sha256": "ddc4179e63fac80ed28862063b2da5b2ff8e3d69e2b206e98e48f393ae8cb6f4"
       }
     ],
     "gym": [
@@ -138,6 +187,27 @@
         "title": "73. Battle! (Team Star Boss)",
         "bytes": 12763766,
         "sha256": "1d39271f7222cef6bc5109a085dc6b23e27327ddd4571ffd177fce55d8c42d87"
+      },
+      {
+        "source": "lider ginasio/1-99 Elite Four Member Battle!.mp3",
+        "file": "BlueRandom/gym/050285b6efd4b5ac3881673e.mp3",
+        "title": "1-99 Elite Four Member Battle!",
+        "bytes": 3650584,
+        "sha256": "050285b6efd4b5ac3881673e1f36f4bd5ee01b3af5ebce9cf121bd81539de3fd"
+      },
+      {
+        "source": "lider ginasio/2-66. Champion Cynthia.mp3",
+        "file": "BlueRandom/gym/608403f3376ed0435217d3b3.mp3",
+        "title": "2-66. Champion Cynthia",
+        "bytes": 2853907,
+        "sha256": "608403f3376ed0435217d3b3190e5e6fa05d973a911787f5bd2626b3197aeae5"
+      },
+      {
+        "source": "lider ginasio/4-04. Battle! (Elite Four).mp3",
+        "file": "BlueRandom/gym/40ce336d6da2bf655358fb44.mp3",
+        "title": "4-04. Battle! (Elite Four)",
+        "bytes": 7188029,
+        "sha256": "40ce336d6da2bf655358fb4467e5cc996d1120559b2d45494312a4b7ddc5c652"
       }
     ]
   },

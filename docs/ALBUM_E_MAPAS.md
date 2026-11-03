@@ -16,7 +16,7 @@ Vitórias antigas só são reconhecidas quando há um registro inequívoco no hi
 
 ## Capturas para o site
 
-As páginas de localização usam capturas do **mesmo renderizador da Habitat Dex**, com zoom de 3×, marcador dourado do habitat e sem marcador do jogador. São recortes do mapa regional; não são fotografias do cenário interno de cada rota. Mapas diferentes podem ocupar a mesma posição regional quando a própria engine os associa ao mesmo ponto.
+As páginas de localização usam capturas do **mesmo renderizador da Habitat Dex**, com zoom de 3×, destaque rosa do habitat e sem marcador do jogador. São recortes do mapa regional; não são fotografias do cenário interno de cada rota. Mapas diferentes podem ocupar a mesma posição regional quando a própria engine os associa ao mesmo ponto.
 
 Há 137 mapas atuais com captura. As 18 áreas antigas cujos arquivos de mapa não existem na instalação atual ficam ocultas na lista e nos guias gerados, sem apagar os registros brutos. A associação das imagens usa o ID real de mapa, evitando confundir versões antigas e atuais das Rotas 1–8.
 
@@ -34,3 +34,7 @@ npm run build
 ```
 
 `game/Data/blue-world-validation.txt` registra as provas nativas de abertura do Pokégear, grade 4×3, animações, recebimento real de dinheiro, persistência do álbum e capturas. A execução usa jogador temporário e bloqueia leitura/escrita de saves da campanha. Publicam-se apenas as capturas renderizadas e os scripts próprios; os mapas e binários originais do jogo ficam locais.
+
+## Recompensa de captura da Habitat Dex
+
+Ao capturar todas as espécies únicas da tabela ativa de uma área, você recebe **$500 × o total de espécies**. Espécies repetidas entre métodos/varas contam uma vez. O prêmio é único por área e fica registrado no save; mudanças de estágio, versões de encontros e reabertura do menu não geram outro pagamento. Se a carteira estiver cheia, o prêmio fica pendente até você abrir o habitat novamente com espaço. Habitats já completos também são reconhecidos. O álbum de treinadores abre primeiro na área atual, incluindo a referência regional de interiores, quando ela possui treinadores cadastrados.

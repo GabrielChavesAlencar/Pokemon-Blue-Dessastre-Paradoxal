@@ -1,19 +1,14 @@
-# Blue — Hub de Batalha
+# Hub de Batalha
 
-**[⬇ Baixar somente o Hub de Batalha para Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/latest/download/Blue-Battle-Hub.zip)** · [Releases e SHA-256](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases)
+**[Baixar Blue-Battle-Hub.exe](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/latest/download/Blue-Battle-Hub.exe)** · [Downloads e Android](https://pokemondessastreparadosal.vercel.app/downloads)
 
-Um minijogo local contra a IA, com montador inteiro dentro da janela do jogo, inspirado na facilidade do teambuilder do Pokémon Showdown. A batalha usa a engine real do Blue, incluindo a geração Dessastre Paradoxal. Você configura seu time e o adversário, joga em individual ou dupla e volta ao montador após a luta. O Hub não carrega nem salva a campanha.
+O Hub usa a engine real, com montador inteiro na janela do jogo, batalhas individuais/duplas contra a IA e [multiplayer](MULTIPLAYER.md). As equipes ficam separadas da campanha.
 
-## Instalar o pacote separado
+## Instalar
 
-1. Instale [Python 3.10+](https://www.python.org/downloads/windows/) e [Git para Windows](https://git-scm.com/downloads/win).
-2. Baixe o ZIP pelo botão acima e escolha **Extrair tudo**. Não execute de dentro do arquivo ZIP.
-3. Abra **`INSTALAR_HUB.bat`** na pasta extraída. Mantenha o CMD aberto até aparecer **Hub instalado**. A primeira instalação baixa a base do jogo e as referências; pode demorar.
-4. Abra **`HUB_DE_BATALHA.bat`**. Aguarde a compilação na primeira abertura. O atalho antigo **`TESTAR_BATALHA.bat`** também abre o Hub.
+Abra o EXE e aguarde a primeira preparação. Python e Git portáteis são baixados automaticamente. O inicializador confere a main ao abrir, mantém uma instalação compartilhada com o modo História e preserva os saves e equipes durante as atualizações. Feche o jogo antes de atualizar.
 
-O pacote separado contém somente os módulos do Hub, instaladores, dados e sprites/cries autorais necessários. Não inclui o Blue Studio nem o portal. Os arquivos originais do Decades são obtidos separadamente pelo instalador; por isso o ZIP pequeno não representa o tamanho total da instalação. Não precisa de navegador, Node ou RPG Maker XP para jogar. A conexão é necessária para instalar e para buscar links PokéPaste; a montagem e as batalhas funcionam localmente.
-
-Enquanto o repositório for privado, o download exige acesso autorizado no GitHub. O mesmo link fica público quando o autor tornar o projeto público. O Hub oferece batalhas contra a IA e [multiplayer entre dois jogadores](MULTIPLAYER.md), sem contas.
+No Android experimental, use o pacote JoiPlay indicado em Downloads. O Hub offline pode usar os 130 times incluídos; o multiplayer e a importação por link precisam do auxiliar Windows.
 
 ## Montar os times
 
@@ -76,7 +71,7 @@ O nível do paste é normalizado para **50**. Também são lidos IVs, Nature, ha
 
 ### Abertura
 
-A tela do logo usa Iron Maeltrom, raios azuis animados e o subtítulo **Dessastre Paradoxal** sob Pokémon Decades. A faixa `60 - Battle! (Gym Leader).mp3` toca nessa tela quando já está instalada na biblioteca local. O MP3 continua fora do Git e do pacote; sem ele, a abertura usa a música padrão da base.
+A tela do logo usa Iron Maeltrom, raios azuis animados e o subtítulo **Dessastre Paradoxal** sob Pokémon Decades. A faixa `60 - Battle! (Gym Leader).mp3` toca nessa tela quando já está instalada na biblioteca local. A faixa e as listas compartilhadas acompanham a instalação.
 
 ## Biblioteca e exportação
 
@@ -88,6 +83,10 @@ A sessão mantém os dois times e as opções ao fechar e reabrir o Hub, em arqu
 
 A rotina **Hub de Batalha — download separado** cria uma Release com `Blue-Battle-Hub.zip` e seu SHA-256 quando os módulos do Hub são atualizados na `main`. Cada pacote inclui `hub-manifest.json`, com a revisão e os hashes dos arquivos. Para atualizar, feche o jogo, extraia o ZIP novo sobre a pasta do Hub preservando `game/` e `.blue-work/`, e execute `INSTALAR_HUB.bat` novamente.
 
-O pacote não distribui saves, backups, MP3s pessoais, executáveis ou assets originais do fangame. A base usada pelo instalador continua fixada na referência do projeto.
+O pacote de fontes não distribui saves ou backups. As listas de música fornecidas pelo mantenedor estão versionadas; a base original é obtida separadamente pelo instalador. O pacote Android compilado fica nos arquivos da release, fora do Git.
 
 O smoke nativo grava `game/Data/blue-hub-validation.txt`, que deve terminar em **RESULT=PASS**. Ele verifica importação/exportação, pedras Mega, EVs/IVs, erros de dados, todos os painéis e a renderização nativa. O smoke completo também executa batalhas reais individuais/duplas e confirma a proteção do save da campanha. Testes Python verificam o pacote separado, seus hashes, a ausência dos arquivos do jogo e a instalação sem abrir a campanha.
+
+## Times prontos e distribuição
+
+Use **Importar → Times prontos por jogo e regulamento**. Os 130 textos estão incluídos, com prévia antes de substituir a equipe. Veja [Distribuição e presets](DISTRIBUICAO_E_PRESETS.md) para formatos Champions, aliases de formas e músicas compartilhadas.

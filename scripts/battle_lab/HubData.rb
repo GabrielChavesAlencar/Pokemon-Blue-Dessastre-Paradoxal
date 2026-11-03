@@ -24,6 +24,8 @@ module BlueBattleHub
   def self.form_label(s)
     return real(s) if s.form==0
     base=real(GameData::Species.get(s.species))
+    showdown={OGERPON:{1=>'Wellspring',2=>'Hearthflame',3=>'Cornerstone'},URSHIFU:{1=>'Rapid-Strike'},FLOETTE:{5=>'Eternal'}}
+    return base+'-'+showdown[s.species][s.form] if showdown.dig(s.species,s.form)
     canonical={TAUROS:{1=>'Paldea-Combat',2=>'Paldea-Blaze',3=>'Paldea-Aqua'},MEOWSTIC:{1=>'F',2=>'Mega',3=>'Mega-F'},MAGEARNA:{1=>'Original',2=>'Mega',3=>'Original-Mega'},TATSUGIRI:{1=>'Droopy',2=>'Stretchy',3=>'Mega',4=>'Droopy-Mega',5=>'Stretchy-Mega'}}
     return base+'-'+canonical[s.species][s.form] if canonical.dig(s.species,s.form)
     form=s.respond_to?(:real_form_name) ? s.real_form_name.to_s : s.form_name.to_s
@@ -45,6 +47,28 @@ module BlueBattleHub
         names << form_label(s) if kind==:species && s.form>0
         names << real(s)+'-'+s.real_form_name.to_s if kind==:species && s.form>0 && s.respond_to?(:real_form_name)
         names.each { |n| result[token(n)]=s }
+      end
+      if kind==:species
+        aliases={OGERPON:{0=>['Ogerpon-Teal','Ogerpon-Teal-Mask'],1=>['Ogerpon-Wellspring','Ogerpon-Wellspring-Mask'],
+          2=>['Ogerpon-Hearthflame','Ogerpon-Hearthflame-Mask'],3=>['Ogerpon-Cornerstone','Ogerpon-Cornerstone-Mask']},
+          URSHIFU:{0=>['Urshifu-Single-Strike','Urshifu-Single-Strike-Style','Urshifu-Gmax'],
+          1=>['Urshifu-Rapid-Strike','Urshifu-Rapid-Strike-Style','Urshifu-Rapid-Strike-Gmax']},
+          FLOETTE:{5=>['Floette-Eternal','Floette-Eternal-Flower','Eternal Floette','Eternal Flower Floette']},
+          TAUROS:{1=>['Tauros-Paldea-Combat'],2=>['Tauros-Paldea-Fire','Tauros-Paldea-Blaze'],3=>['Tauros-Paldea-Water','Tauros-Paldea-Aqua']},
+          CALYREX:{1=>['Calyrex-Ice'],2=>['Calyrex-Shadow']},ZACIAN:{1=>['Zacian-Crowned']},ZAMAZENTA:{1=>['Zamazenta-Crowned']},
+          MAUSHOLD:{0=>['Maushold-Four'],1=>['Maushold-Three']},GASTRODON:{1=>['Gastrodon-East']},
+          ARCEUS:{10=>['Arceus-Fire'],15=>['Arceus-Ice']}}
+        aliases.each do |base,forms|
+          forms.each do |form,labels|
+            data=GameData::Species.get_species_form(base,form)
+            labels.each { |label| result[token(label)]=data } if data && data.form==form
+          end
+        end
+      end
+      if kind==:ability
+        {'As One (Glastrier)'=>:ASONECHILLINGNEIGH,'As One (Spectrier)'=>:ASONEGRIMNEIGH}.each do |label,id|
+          result[token(label)]=GameData::Ability.get(id) if GameData::Ability.try_get(id)
+        end
       end
       result
     end
@@ -161,7 +185,8 @@ module BlueBattleHub
     mon.shiny=row['shiny']==true
     mon.nature=resolve(:nature,row['nature']).id
     unless row['ability'].to_s.empty?
-      ability=resolve(:ability,row['ability'])
+      local_ability=mon.getAbilityList.map(&:first).map { |id| GameData::Ability.get(id) }.find { |a| token(real(a))==token(row['ability']) || token(a.id)==token(row['ability']) }
+      ability=local_ability || resolve(:ability,row['ability'])
       # A Mega paste can contain either the pre-Mega or post-Mega ability.
       available=mon.getAbilityList.map(&:first)
       if available.include?(ability.id)
