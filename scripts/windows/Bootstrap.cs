@@ -39,6 +39,7 @@ internal static class Bootstrap {
                 string py=Runtime("python","python.exe"),git=Runtime("git",Path.Combine("cmd","git.exe"));
                 Run(py,new[]{"--version"},Path.GetDirectoryName(git));Run(git,new[]{"ls-remote","https://github.com/"+Repo+".git","refs/heads/main"},Path.GetDirectoryName(git));
                 if(File.Exists(Path.Combine(Root,"scripts","official_rules","restore.py")))Run(py,new[]{"scripts/official_rules/restore.py","--help"},Path.GetDirectoryName(git));
+                if(File.Exists(Path.Combine(Root,"server","ruby_marshal.py")))Run(py,new[]{"-c","import server.ruby_marshal"},Path.GetDirectoryName(git));
                 File.WriteAllText(args[runtimeTest+1],Json.Serialize(new { ok=true,python=py,git=git }));return 0;
             }
             bool held;using(var mutex=new Mutex(true,"Local\\PokemonBlueDessastreParadoxalLauncher",out held)) {

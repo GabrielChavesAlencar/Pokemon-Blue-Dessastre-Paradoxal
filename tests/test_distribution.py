@@ -1,4 +1,4 @@
-import importlib.util,json,sys,tempfile,unittest,zipfile,zlib,hashlib
+import importlib.util,json,sys,tempfile,unittest,zipfile,zlib,hashlib,subprocess
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts/official_rules'))
@@ -9,6 +9,9 @@ android=load('blue_android_package','scripts/android/package.py')
 music=load('blue_shared_music','scripts/music/install.py')
 presets=load('blue_preset_catalog','scripts/battle_lab/import_presets.py')
 class DistributionTests(unittest.TestCase):
+    def test_shared_helpers_win_over_the_standalone_online_server_on_embedded_search_path(self):
+        code="import sys;sys.path[:0]=[sys.argv[1],sys.argv[2]];import server.ruby_marshal;assert server.ruby_marshal.dumps_simple([1]).startswith(b'\\x04\\x08')"
+        subprocess.run([sys.executable,'-I','-c',code,str(ROOT),str(ROOT/'scripts/online')],check=True,capture_output=True)
     def game(self,root):
         game=root/'game';(game/'Data').mkdir(parents=True);(game/'Plugins/Blue').mkdir(parents=True)
         (game/'Plugins/Blue/main.rb').write_text('original own plugin')

@@ -4,7 +4,7 @@ import argparse,hashlib,json,zipfile
 ROOT=Path(__file__).resolve().parents[2]
 SCRIPT_DIRS=['official_rules','dessastre_paradoxal','battle_lab','battle_options','battle_polish','radical_ai','music','za_megas','localization']
 REQUIRED=['HUB_DE_BATALHA.bat','TESTAR_BATALHA.bat','INSTALAR_HUB.bat','scripts/install_game.py',
-          'server/prepare_game.py','server/music_editor.py','server/ruby_marshal.py',
+          'server/__init__.py','server/prepare_game.py','server/music_editor.py','server/ruby_marshal.py',
           'data/dessastre-paradoxal.json','data/fan-assets.json','data/national-species.json','data/radical-ai.json','data/za-megas.json','data/preset-teams.json','data/shared-music.json',
           'site/assets/fan-pokemon.tar.gz','site/assets/fan-pokemon.sha256',
           'site/assets/fan-extras.tar.gz','site/assets/fan-extras.sha256','site/assets/fan-extras.manifest.json',
