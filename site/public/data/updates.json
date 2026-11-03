@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ff4f92a8939ec736abe8a0f77ce91684de266f2b",
+      "date": "2026-11-03T14:28:57-03:00",
+      "title": "feat: adicionar multiplayer ao Hub de Batalha",
+      "category": "Novidades"
+    },
+    {
       "sha": "9ff3d1514cbe8151f71361548cd2f7267392afd1",
       "date": "2026-11-02T22:20:33-03:00",
       "title": "feat: álbum de treinadores, mapas atuais e correções da Habitat Dex",
