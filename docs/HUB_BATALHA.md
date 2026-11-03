@@ -13,7 +13,7 @@ Um minijogo local contra a IA, com montador inteiro dentro da janela do jogo, in
 
 O pacote separado contém somente os módulos do Hub, instaladores, dados e sprites/cries autorais necessários. Não inclui o Blue Studio nem o portal. Os arquivos originais do Decades são obtidos separadamente pelo instalador; por isso o ZIP pequeno não representa o tamanho total da instalação. Não precisa de navegador, Node ou RPG Maker XP para jogar. A conexão é necessária para instalar e para buscar links PokéPaste; a montagem e as batalhas funcionam localmente.
 
-Enquanto o repositório for privado, o download exige acesso autorizado no GitHub. O mesmo link fica público quando o autor tornar o projeto público. A versão inicial do Hub oferece batalhas contra IA; não há salas, contas ou multiplayer online nesta etapa.
+Enquanto o repositório for privado, o download exige acesso autorizado no GitHub. O mesmo link fica público quando o autor tornar o projeto público. O Hub oferece batalhas contra a IA e [multiplayer entre dois jogadores](MULTIPLAYER.md), sem contas.
 
 ## Montar os times
 
@@ -41,7 +41,11 @@ No Hub, habilitar Dynamax permite usá-lo sem depender do mapa da campanha. Fora
 
 A tela mostra os seis Pokémon de cada lado. Você tem **60 segundos** para selecionar quatro, na ordem desejada; os dois primeiros começam em campo. Clique nos cartões ou use setas + Enter; Espaço ou **Confirmar quatro** finaliza. A IA escolhe quatro usando espécies e tipos públicos. Se o tempo terminar, entram exatamente os **quatro primeiros da lista original**, mesmo que você tenha feito uma seleção parcial. **Voltar ao montador** cancela antes da batalha. Os seis integrantes continuam salvos no montador.
 
-O modo disponível é offline contra IA. O [roadmap do PvP online](ROADMAP_HUB.md) registra as etapas de servidor, salas e sincronização que ainda precisam ser feitas.
+Contra a IA, ela escolhe seus quatro sozinha. No [multiplayer](MULTIPLAYER.md), cada jogador escolhe os seus, com o mesmo prazo.
+
+## Multiplayer
+
+Clique em **MULTIPLAYER**, no canto superior direito, para criar uma sala ou entrar na de outro jogador. [Como jogar e como conectar pela internet](MULTIPLAYER.md).
 
 ## Importar PokéPaste ou texto do Showdown
 

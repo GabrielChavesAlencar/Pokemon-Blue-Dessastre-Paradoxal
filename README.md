@@ -29,7 +29,7 @@ Na base local, 52 espécies e as 12 Megas estão compiladas. Use **`IMPORTAR_DES
 
 ## Testar batalhas sem avançar na campanha
 
-Abra **`HUB_DE_BATALHA.bat`** (ou o atalho compatível `TESTAR_BATALHA.bat`) para o **Hub de Batalha**: montador dentro da janela do jogo, importação de PokéPaste/Showdown para os dois lados, biblioteca de times, busca, EVs/IVs/Nature e lutas individuais ou duplas. A sessão não carrega nem salva a campanha. A barra de HP tem descida e recuperação graduais. [Manual do Hub](docs/HUB_BATALHA.md) · [Notas do laboratório original](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
+Abra **`HUB_DE_BATALHA.bat`** (ou o atalho compatível `TESTAR_BATALHA.bat`) para o **Hub de Batalha**: montador dentro da janela do jogo, importação de PokéPaste/Showdown para os dois lados, biblioteca de times, busca, EVs/IVs/Nature e lutas individuais ou duplas. A sessão não carrega nem salva a campanha. O botão **MULTIPLAYER** cria ou entra em uma sala para lutar contra outro jogador: [como jogar](docs/MULTIPLAYER.md). A barra de HP tem descida e recuperação graduais. [Manual do Hub](docs/HUB_BATALHA.md) · [Notas do laboratório original](docs/LABORATORIO_BATALHA.md). Para abrir o portal local, execute **`ABRIR_SITE.bat`** e visite `http://127.0.0.1:4173`.
 
 A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor à engine instalada: dano, prioridade, trocas, hazards, suporte e duplas. O laboratório permite compará-la à IA original da base. Execute **`APLICAR_IA_RADICAL.bat`** para instalar em outra cópia da mesma base. [Perfis, fontes, logs e testes](docs/IA_BLUE_RADICAL.md).
 

@@ -4,11 +4,13 @@ on:
     branches: [main]
     paths:
       - 'scripts/online/**'
+      - 'scripts/battle_lab/mp_*.py'
       - 'tests/test_online*.py'
       - '.github/workflows/online-tests.yml'
   pull_request:
     paths:
       - 'scripts/online/**'
+      - 'scripts/battle_lab/mp_*.py'
       - 'tests/test_online*.py'
       - '.github/workflows/online-tests.yml'
   workflow_dispatch:

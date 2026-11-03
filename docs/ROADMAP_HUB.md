@@ -14,11 +14,13 @@ Não há acesso ao saldo de tokens/créditos da conta pelo ambiente do projeto. 
 | Raichu Mega Y | Offline atual | Raichu normal, Raichunite Y equipada, transformação disponível durante a batalha |
 | Todos no nível 50 | Offline atual | Editor sem campo de nível; importação, sessão carregada e equipes de batalha normalizadas |
 | Abertura e música | Atual | Iron Maeltrom, raios azuis animados, subtítulo Dessastre Paradoxal e faixa de Gym Leader já instalada |
-| PvP online | **Preparação experimental iniciada; partidas futuras** | Dois clientes independentes jogam uma batalha sincronizada, com seleção e tratamento de desconexão |
+| PvP online | **Disponível: [botão MULTIPLAYER](MULTIPLAYER.md), hospedado no PC de um jogador** | Dois clientes independentes jogam uma batalha sincronizada, com seleção e tratamento de desconexão |
 
-O Hub desta entrega é **offline contra a IA**. Não existe um botão que prometa PvP sem infraestrutura funcionando. As regras implementadas de duplas são as solicitadas: seis inscritos, quatro selecionados, dois em campo e nível 50. Isso não aplica automaticamente uma lista de banimentos de torneio oficial aos Pokémon autorais.
+O Hub joga **contra a IA** e, pelo botão **MULTIPLAYER**, contra outro jogador ([manual](MULTIPLAYER.md)). As regras implementadas de duplas são as solicitadas: seis inscritos, quatro selecionados, dois em campo e nível 50. Isso não aplica automaticamente uma lista de banimentos de torneio oficial aos Pokémon autorais.
 
-## PvP online: entregas futuras
+## PvP online: histórico e próximos passos
+
+O multiplayer entregue usa simulação sincronizada nos dois jogos ([MULTIPLAYER.md](MULTIPLAYER.md)), e não o worker autoritativo descrito abaixo. O worker exigiria um servidor Windows com `Game.exe` por partida e a reprodução de animações em cada cliente. A lista abaixo fica como registro e ainda vale para um futuro modo com ranking, em que o servidor precisaria calcular o resultado.
 
 ### Progresso da primeira etapa
 

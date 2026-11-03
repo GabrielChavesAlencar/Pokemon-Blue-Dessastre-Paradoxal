@@ -37,7 +37,8 @@ module BlueBattleHub
       return unless @canvas
       @buttons=[];@bitmap.clear;rect(0,0,W,H,:bg)
       text('BLUE / HUB DE BATALHA',24,14,480,30)
-      text('OFFLINE / CONTRA A IA',690,18,246,16,:blue)
+      text('OFFLINE / CONTRA A IA',440,18,220,16,:blue)
+      button(:multiplayer,'MULTIPLAYER',690,14,246,38,true) { start_multiplayer }
       button(:side0,'MEU TIME',24,62,130,34,@side==0) { change_side(0) }
       button(:side1,'ADVERSARIO',162,62,150,34,@side==1) { change_side(1) }
       button(:name,@names[@side],328,62,230) { value=prompt('Nome do time',@names[@side],40);@names[@side]=value if value && !value.strip.empty?;changed }
@@ -231,6 +232,8 @@ module BlueBattleHub
     end
     def mount
       Graphics.resize_screen(W,H)
+      # The window keeps its old corner when it grows; on small screens the bottom buttons would be cut off.
+      Graphics.center if Graphics.respond_to?(:center)
       @viewport=Viewport.new(0,0,W,H);@viewport.z=99999
       @canvas=BitmapSprite.new(W,H,@viewport);@bitmap=@canvas.bitmap;@decorations=[]
       @portrait_dirty=true;render;update_portraits;Graphics.transition(0);Input.update

@@ -1,5 +1,7 @@
 # Primeira etapa do online — experimento separado
 
+> O multiplayer para jogadores agora fica em [MULTIPLAYER.md](MULTIPLAYER.md). Esta página documenta os protocolos 1 e 2, que continuam sendo um experimento separado.
+
 ## Avanço: comandos remotos autoritativos (protocolo 2)
 
 O novo experimento em `scripts/online/turns.py`, `turn_service.py` e `TurnBridge.rb` liga **dois clientes HTTP independentes às decisões da engine nativa**. Golpes, alvos, trocas voluntárias e substituições após desmaio são oferecidos/validados pelo servidor e validados novamente pelo motor. O cliente não pode enviar dano, HP ou vencedor. A preparação de salas do protocolo 1 abaixo continua independente e compatível.

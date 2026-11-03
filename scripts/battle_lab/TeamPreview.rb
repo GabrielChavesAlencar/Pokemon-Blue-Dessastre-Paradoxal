@@ -33,6 +33,7 @@ module BlueBattleHub
     def confirm_selection
       @finished=true if @selected.length==4
     end
+    def opponent_status;'Adversario / IA pronta';end
     def render
       return unless @canvas
       @buttons=[];@bitmap.clear;rect(0,0,W,H,:bg)
@@ -40,7 +41,7 @@ module BlueBattleHub
       text("#{remaining}s",820,20,110,30,remaining<=10 ? :red : :blue)
       text('A ordem importa: os dois primeiros comecam em campo.',24,66,910,20,:muted)
       text(@names[0]+' / '+@selected.length.to_s+'/4',24,110,660,22,:green)
-      text('Adversario / IA pronta',24,350,660,22,:blue)
+      text(opponent_status,24,350,660,22,:blue)
       2.times do |side|
         @teams[side].each_with_index do |mon,i|
           x=24+i*154;y=side==0 ? 154 : 394
