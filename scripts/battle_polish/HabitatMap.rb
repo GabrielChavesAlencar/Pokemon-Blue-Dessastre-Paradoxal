@@ -22,7 +22,7 @@ module BlueHabitatMap
   class Scene
     ZOOMS=[1,2,3,4,6].freeze
     BUTTONS=[[8,52,:out,'-'],[64,52,:in,'+'],[120,132,:center,'Center'],[256,104,:region,'Region'],[364,140,:back,'Back']].freeze
-    def initialize(map,point);@map=map;@point=point;@sprites={};@zoom_index=2;end
+    def initialize(map,point,show_player=true);@map=map;@point=point;@sprites={};@zoom_index=2;@show_player=show_player;end
     def marker(bitmap,point,color,size)
       return unless point && point[0]==@point[0]
       cell_w=defined?(ARMSettings::SquareWidth) ? ARMSettings::SquareWidth : 16
@@ -56,7 +56,8 @@ module BlueHabitatMap
       @map_width=(sw*@scale).round;@map_height=(sh*@scale).round
       @map_x=(Graphics.width-@map_width)/2;@map_y=76+(244-@map_height)/2
       b.stretch_blt(Rect.new(@map_x,@map_y,@map_width,@map_height),@raw,Rect.new(@source_x,@source_y,sw,sh))
-      marker(b,@point,Color.new(255,210,96),14);marker(b,BlueHabitatMap.position($game_map.map_id),Color.new(102,202,255),8)
+      marker(b,@point,Color.new(255,210,96),14)
+      marker(b,BlueHabitatMap.position($game_map.map_id),Color.new(102,202,255),8) if @show_player
       light=Color.new(240,248,255);shadow=Color.new(9,24,41)
       pbDrawTextPositions(b,[[_INTL('Habitat location'),16,8,:left,light,shadow],[BlueHabitat.map_name(@map),16,34,:left,light,shadow],
         [ZOOMS[@zoom_index].to_s+'x',492,8,:right,light,shadow],[_INTL('Gold: Habitat · Blue: You'),16,322,:left,Color.new(178,212,239),shadow]])
@@ -99,6 +100,35 @@ module BlueHabitatMap
     ensure
       dispose
     end
+    def capture(path,label)
+      start
+      photo=Bitmap.new(480,274);photo.fill_rect(0,0,480,274,Color.new(9,24,41))
+      photo.blt((480-@map_width)/2,(244-@map_height)/2,@sprites['canvas'].bitmap,Rect.new(@map_x,@map_y,@map_width,@map_height))
+      pbSetSmallFont(photo);photo.font.size=18;photo.font.color=Color.new(239,248,255)
+      photo.draw_text(8,246,464,26,label,1);photo.to_file(path)
+    ensure
+      photo&.dispose;dispose
+    end
     def dispose;pbDisposeSpriteHash(@sprites);@raw&.dispose;@raw=nil;@viewport&.dispose;@viewport=nil;end
+  end
+end
+
+module BlueRouteCaptures
+  REQUEST='Data/blue-route-captures-request.dat'
+  def self.export
+    rows=load_data(REQUEST);result=[];missing=[];folder='Data/blue-route-captures'
+    Dir.mkdir(folder) unless Dir.exist?(folder)
+    rows.each do |id,name|
+      point=BlueHabitatMap.position(id)
+      if !File.file?(sprintf('Data/Map%03d.rxdata',id)) || !point
+        missing << [id,name];next
+      end
+      file='route-'+id.to_s+'.png'
+      BlueHabitatMap::Scene.new(id,point,false).capture(folder+'/'+file,name)
+      result << [id,name,file,*point,480,274]
+      Graphics.update;Input.update
+    end
+    File.binwrite('Data/blue-route-captures.dat',Marshal.dump([1,result,missing]))
+    File.delete(REQUEST);result
   end
 end

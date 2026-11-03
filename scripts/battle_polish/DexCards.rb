@@ -117,31 +117,77 @@ end
 module BlueFanBackFacing
   FLIPPED=[:AMMNOID].freeze
   def setPokemonBitmap(pokemon,battler,back=false)
-    self.mirror=@blue_fan_base_mirror if @blue_fan_back_flip
-    @blue_fan_back_flip=false
-    result=super
-    @blue_fan_base_mirror=self.mirror
-    if back && !@substitute && pokemon && FLIPPED.include?(pokemon.species)
-      self.mirror=!self.mirror;@blue_fan_back_flip=true
-    end
-    result
+    old=blue_fan_normalized?
+    blue_release_fan_frames
+    @blue_fan_canonical=back && !@substitute && pokemon && FLIPPED.include?(pokemon.species)
+    self.mirror=false if old || @blue_fan_canonical
+    self.angle=0 if old
+    super
   end
-  def blue_restore_facing
-    self.mirror=!@blue_fan_base_mirror if @blue_fan_back_flip
+  def blue_fan_normalized?;!!@blue_fan_canonical;end
+  def bitmap=(value)
+    wrapper=@_iconBitmap
+    if @blue_fan_canonical && value && !value.disposed? && wrapper && !wrapper.disposed?
+      original=wrapper.bitmap
+      if value.equal?(original)
+        frame=wrapper.respond_to?(:frame_idx) ? wrapper.frame_idx : 0
+        box=wrapper.respond_to?(:box) ? wrapper.box.dup : nil
+        key=[value,frame,box,wrapper.instance_variable_get(:@changed_hue)]
+        @blue_fan_frames ||= {}
+        canonical=@blue_fan_frames[key]
+        unless canonical && !canonical.disposed?
+          canonical=Bitmap.new(value.width,value.height)
+          value.width.times { |x| canonical.blt(value.width-1-x,0,value,Rect.new(x,0,1,value.height)) }
+          @blue_fan_frames[key]=canonical
+        end
+        return super(canonical)
+      end
+    end
+    super
+  end
+  def blue_release_fan_frames
+    (@blue_fan_frames || {}).each_value { |b| b.dispose unless b.disposed? }
+    @blue_fan_frames={}
+  end
+  def dispose
+    super
+  ensure
+    blue_release_fan_frames
+  end
+  def blue_restore_facing(mirrored=false,angle=0)
+    return unless blue_fan_normalized? && !disposed?
+    self.mirror=mirrored;self.angle=angle
+    self.bitmap=@_iconBitmap.bitmap if @_iconBitmap && !@_iconBitmap.disposed?
   end
   module Animations
     def pbAnimation(*args,&block)
-      super
-    ensure
-      blue_restore_fan_facings
+      blue_with_fan_facing { super }
     end
     def pbCommonAnimation(*args,&block)
+      blue_with_fan_facing { super }
+    end
+    def pbAnimationCore(*args,&block)
+      blue_with_fan_facing { super }
+    end
+    def blue_with_fan_facing
+      saved=(@sprites || {}).values.filter_map { |s| [s,s.mirror,s.angle] if s.respond_to?(:blue_fan_normalized?) && s.blue_fan_normalized? && !s.disposed? }
+      yield
+    ensure
+      saved&.each { |s,mirror,angle| s.blue_restore_facing(mirror,angle) unless s.disposed? }
+    end
+  end
+  # Covers asynchronous status/entry players that bypass the scene wrappers.
+  module Player
+    def initialize(*args)
+      super
+      @blue_fan_origins=[@usersprite,@targetsprite].compact.uniq.filter_map do |s|
+        [s,s.mirror,s.angle] if s.respond_to?(:blue_fan_normalized?) && s.blue_fan_normalized?
+      end
+    end
+    def dispose
       super
     ensure
-      blue_restore_fan_facings
-    end
-    def blue_restore_fan_facings
-      (@sprites || {}).each_value { |sprite| sprite.blue_restore_facing if sprite.respond_to?(:blue_restore_facing) && !sprite.disposed? }
+      @blue_fan_origins&.each { |s,mirror,angle| s.blue_restore_facing(mirror,angle) unless s.disposed? }
     end
   end
 end

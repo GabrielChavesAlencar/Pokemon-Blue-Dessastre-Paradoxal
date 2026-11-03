@@ -587,6 +587,2061 @@
       "source": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/Graphics/UI/Town%20Map/UI/Default/LocationPreview/MiniMaps/mapLappetTown.png",
       "kind": "minimap",
       "credit": "Minimapa encontrado na pasta de pré-visualizações de Pokémon Decades"
+    },
+    "77": {
+      "src": "/assets/route-maps/route-77.png",
+      "kind": "habitat-region-capture",
+      "name": "Cherryhill City",
+      "mapId": 77,
+      "region": 0,
+      "point": [
+        45,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ccf63beec8487e404a0e61151c2511f41e4658f19e6cf294205542221161c0fd"
+    },
+    "81": {
+      "src": "/assets/route-maps/route-81.png",
+      "kind": "habitat-region-capture",
+      "name": "Cherryhill East Gatehouse",
+      "mapId": 81,
+      "region": 0,
+      "point": [
+        46,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "64a4bfc32f4e7d2189d6a116415fa71187ed5821750f096f2870c1cff5f0ea05"
+    },
+    "82": {
+      "src": "/assets/route-maps/route-82.png",
+      "kind": "habitat-region-capture",
+      "name": "Cloakfall Forest",
+      "mapId": 82,
+      "region": 0,
+      "point": [
+        47,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "031579b47cf917227a0a864993357c892cd9cd0403a31bbcb7977b4ffdca4378"
+    },
+    "84": {
+      "src": "/assets/route-maps/route-84.png",
+      "kind": "habitat-region-capture",
+      "name": "Abandoned Cabin",
+      "mapId": 84,
+      "region": 0,
+      "point": [
+        47,
+        34
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "0d85ec13dd07c2acb52064f2f6659322f26c9e1e2cb6b8b3bc877aef9efe3363"
+    },
+    "86": {
+      "src": "/assets/route-maps/route-86.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 1",
+      "mapId": 86,
+      "region": 0,
+      "point": [
+        45,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "538e1f5fe986660df305673f63b1fc6e0c5db69bc4eb67c2b1943effdbb7c6d1"
+    },
+    "87": {
+      "src": "/assets/route-maps/route-87.png",
+      "kind": "habitat-region-capture",
+      "name": "Shimmer Coast City",
+      "mapId": 87,
+      "region": 0,
+      "point": [
+        42,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "65e9f2c8827f5a5543cedef056770640cd14ff97e00d74cbf320c716caaac04e"
+    },
+    "88": {
+      "src": "/assets/route-maps/route-88.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 2",
+      "mapId": 88,
+      "region": 0,
+      "point": [
+        42,
+        32
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "20320bb2464b53745a529f136aae76e4adf538d83510560bd75f94054fbeb6e4"
+    },
+    "89": {
+      "src": "/assets/route-maps/route-89.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 3",
+      "mapId": 89,
+      "region": 0,
+      "point": [
+        45,
+        31
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "d91d82b2a2d498ad669e7842be66ef9f838eb4e7bb17512cd9cab77628924f5b"
+    },
+    "90": {
+      "src": "/assets/route-maps/route-90.png",
+      "kind": "habitat-region-capture",
+      "name": "Obsidian Peak City",
+      "mapId": 90,
+      "region": 0,
+      "point": [
+        45,
+        30
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "06bc010d7b0281437a775fc16c940d1374bf29da22f289c7162a1847b9041040"
+    },
+    "91": {
+      "src": "/assets/route-maps/route-91.png",
+      "kind": "habitat-region-capture",
+      "name": "Cherryhill West Gatehouse",
+      "mapId": 91,
+      "region": 0,
+      "point": [
+        43,
+        32
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "6b6545d41b113fccb0c2cca6226c04f7fb5c6af104d775281a10ca27575b2082"
+    },
+    "93": {
+      "src": "/assets/route-maps/route-93.png",
+      "kind": "habitat-region-capture",
+      "name": "Obsidian Volcano Exterior",
+      "mapId": 93,
+      "region": 0,
+      "point": [
+        46,
+        30
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ccbce43ff23c2561c2afa40367adcb9ad9bb5e37ae5df91d9733d77b3246c638"
+    },
+    "94": {
+      "src": "/assets/route-maps/route-94.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 4",
+      "mapId": 94,
+      "region": 0,
+      "point": [
+        42,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "10c33d0410832ed68e5c81bd5c12cc00b1dcb486676662c409eeb3713267d9e3"
+    },
+    "95": {
+      "src": "/assets/route-maps/route-95.png",
+      "kind": "habitat-region-capture",
+      "name": "Obsidian Peak West Gatehouse",
+      "mapId": 95,
+      "region": 0,
+      "point": [
+        43,
+        30
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "30858b98108f3680fdd1b7696ea022d4617fdf531d0b5126e656dc2730883414"
+    },
+    "96": {
+      "src": "/assets/route-maps/route-96.png",
+      "kind": "habitat-region-capture",
+      "name": "Mantic City",
+      "mapId": 96,
+      "region": 0,
+      "point": [
+        39,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "f8819ac3e333b7b57a540433f9c6ac692edc7e322d1a9c604575658e2c500336"
+    },
+    "98": {
+      "src": "/assets/route-maps/route-98.png",
+      "kind": "habitat-region-capture",
+      "name": "Mantic City East Gatehouse",
+      "mapId": 98,
+      "region": 0,
+      "point": [
+        40,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "a352921a4d16bd19ac57a48beafcd22ec46db698c4a70a198c7d418eb3d3ca90"
+    },
+    "99": {
+      "src": "/assets/route-maps/route-99.png",
+      "kind": "habitat-region-capture",
+      "name": "Mantic City West Gatehouse",
+      "mapId": 99,
+      "region": 0,
+      "point": [
+        37,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "fce35ad3d1f9c2c24de7eaccaa1e477bac0887d244f7a81b5fa452d75b59737c"
+    },
+    "100": {
+      "src": "/assets/route-maps/route-100.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 5",
+      "mapId": 100,
+      "region": 0,
+      "point": [
+        36,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "868ce0f97931f798ba84205742a124accaf9efca579a16a4382ca5f80b3491b4"
+    },
+    "101": {
+      "src": "/assets/route-maps/route-101.png",
+      "kind": "habitat-region-capture",
+      "name": "Boulevard City",
+      "mapId": 101,
+      "region": 0,
+      "point": [
+        34,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "92fe4d9b980bc18b5a60bd771f0ed5c9a1bfdc2684f77ed2cc246ca719196c14"
+    },
+    "102": {
+      "src": "/assets/route-maps/route-102.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 6",
+      "mapId": 102,
+      "region": 0,
+      "point": [
+        30,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "968c9bab6f8f37670b4b8b51893a44a2d47b3be2e96b68423afb1ca9cb0dc316"
+    },
+    "103": {
+      "src": "/assets/route-maps/route-103.png",
+      "kind": "habitat-region-capture",
+      "name": "Penumbra City",
+      "mapId": 103,
+      "region": 0,
+      "point": [
+        31,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "34c7c897c5d573bc73027d5dc704182cec6172e95cf12b4f4ec414c229da10e8"
+    },
+    "105": {
+      "src": "/assets/route-maps/route-105.png",
+      "kind": "habitat-region-capture",
+      "name": "Boulevard City East Gatehouse",
+      "mapId": 105,
+      "region": 0,
+      "point": [
+        35,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "47f04274a447ec16e5522c29ac9b747b57040734e96b7079d58faee6df6eff34"
+    },
+    "106": {
+      "src": "/assets/route-maps/route-106.png",
+      "kind": "habitat-region-capture",
+      "name": "Boulevard City West Gatehouse",
+      "mapId": 106,
+      "region": 0,
+      "point": [
+        32,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "56b3e141adde5ebc7e197a5cd960ebe955c912cae873d48c4c26552be608dea2"
+    },
+    "108": {
+      "src": "/assets/route-maps/route-108.png",
+      "kind": "habitat-region-capture",
+      "name": "Penumbra City West Gatehouse",
+      "mapId": 108,
+      "region": 0,
+      "point": [
+        29,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ebb77868b1afe954bec4b1e4cfa5a83b50d00ae665d292b02bd34b9fbca82aee"
+    },
+    "109": {
+      "src": "/assets/route-maps/route-109.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 7",
+      "mapId": 109,
+      "region": 0,
+      "point": [
+        30,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "c33b375d9b713e0ef77a3cee92d8a7ba4138247d33310de8354001bf28b41596"
+    },
+    "110": {
+      "src": "/assets/route-maps/route-110.png",
+      "kind": "habitat-region-capture",
+      "name": "Stygian Woods",
+      "mapId": 110,
+      "region": 0,
+      "point": [
+        28,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "066c75be3cae74e7720c671cbb08719a828d3944d85c7f6970b297586f756622"
+    },
+    "111": {
+      "src": "/assets/route-maps/route-111.png",
+      "kind": "habitat-region-capture",
+      "name": "Apterygota City",
+      "mapId": 111,
+      "region": 0,
+      "point": [
+        33,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "f238bd7fe15a1de859769dd385fa0664c5acaed2066956500e6922f45ee40485"
+    },
+    "112": {
+      "src": "/assets/route-maps/route-112.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 8",
+      "mapId": 112,
+      "region": 0,
+      "point": [
+        35,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "8638ad1387632be7387fd95e51637bb8f628a037ac0cc6aeb467fedae214c3d3"
+    },
+    "113": {
+      "src": "/assets/route-maps/route-113.png",
+      "kind": "habitat-region-capture",
+      "name": "Bulwark City",
+      "mapId": 113,
+      "region": 0,
+      "point": [
+        35,
+        24
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "a57aee9dc376b37f9683056fffc34edffcbe77ac165853600e6476a4e52a713b"
+    },
+    "114": {
+      "src": "/assets/route-maps/route-114.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 9",
+      "mapId": 114,
+      "region": 0,
+      "point": [
+        35,
+        22
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "99a724b613419020c7aade006990e018f67a4a83dc6f99259c21ae5a75f320d8"
+    },
+    "115": {
+      "src": "/assets/route-maps/route-115.png",
+      "kind": "habitat-region-capture",
+      "name": "Virga City",
+      "mapId": 115,
+      "region": 0,
+      "point": [
+        32,
+        22
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "d66bd4b39e889fed226bbedd0c4af4fd48e92b6d85b01fa39d91d03ffee8f2f7"
+    },
+    "116": {
+      "src": "/assets/route-maps/route-116.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 10",
+      "mapId": 116,
+      "region": 0,
+      "point": [
+        29,
+        22
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "8731d0189abb225a4aae6e8e19ce556b0a758e4336505567ba0406708eb5fe6d"
+    },
+    "117": {
+      "src": "/assets/route-maps/route-117.png",
+      "kind": "habitat-region-capture",
+      "name": "Lucid City",
+      "mapId": 117,
+      "region": 0,
+      "point": [
+        29,
+        20
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "f87b46d40e75f527e18b2524366415eb22c36d7c1669ae2fc9ef8fb27dddf24f"
+    },
+    "118": {
+      "src": "/assets/route-maps/route-118.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 11",
+      "mapId": 118,
+      "region": 0,
+      "point": [
+        26,
+        20
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "1b7377303b25a16d76760f69adbeb36d362ac2ac110a4c642b2169f4cf4cbdf4"
+    },
+    "119": {
+      "src": "/assets/route-maps/route-119.png",
+      "kind": "habitat-region-capture",
+      "name": "Circuit City",
+      "mapId": 119,
+      "region": 0,
+      "point": [
+        24,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "a893c1f92d0e99360dd0549c77b9f4a863a7b0e2a91d158b1adac37ca04e4028"
+    },
+    "120": {
+      "src": "/assets/route-maps/route-120.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 12",
+      "mapId": 120,
+      "region": 0,
+      "point": [
+        22,
+        18
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "75b286eaa532e9a1b151577a411247aeee5b5a6fb81b0998724cf9e787b1ab87"
+    },
+    "121": {
+      "src": "/assets/route-maps/route-121.png",
+      "kind": "habitat-region-capture",
+      "name": "Noxious City",
+      "mapId": 121,
+      "region": 0,
+      "point": [
+        22,
+        17
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "2d699512ec64ac83736c500ba1c9febe24c58ba0996a30fc93a56033db49e673"
+    },
+    "122": {
+      "src": "/assets/route-maps/route-122.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 13",
+      "mapId": 122,
+      "region": 0,
+      "point": [
+        21,
+        14
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ea2246e98816f9c2af2ae800e0750f0e97d8494c27f4127e48795976e496715d"
+    },
+    "123": {
+      "src": "/assets/route-maps/route-123.png",
+      "kind": "habitat-region-capture",
+      "name": "Sylph City",
+      "mapId": 123,
+      "region": 0,
+      "point": [
+        20,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "eb156cc220eb4c698ab3495de1e7d3701b24b92d5b329232c0bad8486330ee35"
+    },
+    "124": {
+      "src": "/assets/route-maps/route-124.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 14",
+      "mapId": 124,
+      "region": 0,
+      "point": [
+        21,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "7265d3f8251624e7572003d91db01466bdf85ffaac8d4b6b62fecedb0746f4b0"
+    },
+    "125": {
+      "src": "/assets/route-maps/route-125.png",
+      "kind": "habitat-region-capture",
+      "name": "Revenant City",
+      "mapId": 125,
+      "region": 0,
+      "point": [
+        24,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "786c60e17c8d7cc4fff94df7689db8f0bbdc25681dd5547b071d297736508410"
+    },
+    "126": {
+      "src": "/assets/route-maps/route-126.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 15",
+      "mapId": 126,
+      "region": 0,
+      "point": [
+        23,
+        9
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "0425218e92953768200dc6cd9da4b442084e260f793eedd286791dff7248e140"
+    },
+    "127": {
+      "src": "/assets/route-maps/route-127.png",
+      "kind": "habitat-region-capture",
+      "name": "Draco City",
+      "mapId": 127,
+      "region": 0,
+      "point": [
+        22,
+        8
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "20aca7ea7ad4a3767901e4891901778304751f717b8d708c797d4c11479b31c7"
+    },
+    "128": {
+      "src": "/assets/route-maps/route-128.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 16",
+      "mapId": 128,
+      "region": 0,
+      "point": [
+        19,
+        8
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "0efa0b3b5df455bc06e66b2968429b65ea6a6a8b31793c3567f8214fda6e1d66"
+    },
+    "129": {
+      "src": "/assets/route-maps/route-129.png",
+      "kind": "habitat-region-capture",
+      "name": "Iron City",
+      "mapId": 129,
+      "region": 0,
+      "point": [
+        16,
+        7
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e70000a2397faf819af32f1b330f7641922ff803920be5ab85494d01183960e3"
+    },
+    "130": {
+      "src": "/assets/route-maps/route-130.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 17",
+      "mapId": 130,
+      "region": 0,
+      "point": [
+        13,
+        6
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "a66c2b304be9e068ab9dc6bb841f41076be63e96f176b4fb297a8a4b7900a563"
+    },
+    "131": {
+      "src": "/assets/route-maps/route-131.png",
+      "kind": "habitat-region-capture",
+      "name": "Crystal City",
+      "mapId": 131,
+      "region": 0,
+      "point": [
+        11,
+        6
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "00155050c709c25cd08780e29cb57ae8a965dcfe911d2e18502e9e0b6d873978"
+    },
+    "132": {
+      "src": "/assets/route-maps/route-132.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 18",
+      "mapId": 132,
+      "region": 0,
+      "point": [
+        11,
+        4
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "c4099531ae0fdd49f8dad1b4c231957702ff9c0c521140a417b36552fd688f42"
+    },
+    "133": {
+      "src": "/assets/route-maps/route-133.png",
+      "kind": "habitat-region-capture",
+      "name": "Stratos City",
+      "mapId": 133,
+      "region": 0,
+      "point": [
+        11,
+        3
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "c6908ef2acfad20071012be83bf4ca0f7a0f8b3c896aef3cb307690b7b3e7eb6"
+    },
+    "138": {
+      "src": "/assets/route-maps/route-138.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 1 Underground",
+      "mapId": 138,
+      "region": 0,
+      "point": [
+        45,
+        34
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "b2acb39185882b4daeb65ff475676a6a07ab7ab63c842e4bed940e1159dd9bb8"
+    },
+    "140": {
+      "src": "/assets/route-maps/route-140.png",
+      "kind": "habitat-region-capture",
+      "name": "Forest Zone",
+      "mapId": 140,
+      "region": 0,
+      "point": [
+        29,
+        14
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "c61d897303a6235c5dbbb838d1e2f9df4abcb0901fce20e45f4a9d59819339b9"
+    },
+    "142": {
+      "src": "/assets/route-maps/route-142.png",
+      "kind": "habitat-region-capture",
+      "name": "Apterygota City East Gatehouse",
+      "mapId": 142,
+      "region": 0,
+      "point": [
+        34,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "be25d5c00c809570b5efd00c2b57219bf96ea4bd8f70496f2e7fa98b7b6da605"
+    },
+    "144": {
+      "src": "/assets/route-maps/route-144.png",
+      "kind": "habitat-region-capture",
+      "name": "Virga City East Gatehouse",
+      "mapId": 144,
+      "region": 0,
+      "point": [
+        33,
+        22
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "201a28d1b87f1a61771e315769385ac595d6a81d62c44f865f293685dce430d5"
+    },
+    "146": {
+      "src": "/assets/route-maps/route-146.png",
+      "kind": "habitat-region-capture",
+      "name": "Lucid City West Gatehouse",
+      "mapId": 146,
+      "region": 0,
+      "point": [
+        27,
+        20
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "fb0528c275c1588f8547e82ee9a0847876276e75fb88bdceaa4e8e14ba6561f2"
+    },
+    "148": {
+      "src": "/assets/route-maps/route-148.png",
+      "kind": "habitat-region-capture",
+      "name": "Circuit City East Gatehouse",
+      "mapId": 148,
+      "region": 0,
+      "point": [
+        25,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "02431b115aadf8263e6eb27592af12904ddc64f7b779718f4e43eb0b093c4f48"
+    },
+    "150": {
+      "src": "/assets/route-maps/route-150.png",
+      "kind": "habitat-region-capture",
+      "name": "Draco City West Gatehouse",
+      "mapId": 150,
+      "region": 0,
+      "point": [
+        20,
+        8
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "5799f9c8b11f787242d2e37deb067bd01b9848d72c62785b0b7c3caf2302cce5"
+    },
+    "152": {
+      "src": "/assets/route-maps/route-152.png",
+      "kind": "habitat-region-capture",
+      "name": "Iron City West Gatehouse",
+      "mapId": 152,
+      "region": 0,
+      "point": [
+        14,
+        6
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "21dfbb743ac05bc7c64f05d3290e1d4df2c8fd1eefbbad31f0535e61f318f60d"
+    },
+    "153": {
+      "src": "/assets/route-maps/route-153.png",
+      "kind": "habitat-region-capture",
+      "name": "Iron City East Gatehouse",
+      "mapId": 153,
+      "region": 0,
+      "point": [
+        17,
+        6
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "93a445381c79b7bd7894f2450aa97330f526994bb9b2d738a1a4276475b7b7d5"
+    },
+    "154": {
+      "src": "/assets/route-maps/route-154.png",
+      "kind": "habitat-region-capture",
+      "name": "Scatter Flood Islands",
+      "mapId": 154,
+      "region": 0,
+      "point": [
+        33,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "c5fd20ac2979f45dff0c3635a5a8fa44605fad1bd8cf60a5ff6f239aea17a3bf"
+    },
+    "155": {
+      "src": "/assets/route-maps/route-155.png",
+      "kind": "habitat-region-capture",
+      "name": "Obsidian Volcano",
+      "mapId": 155,
+      "region": 0,
+      "point": [
+        46,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e0b6f6957a57dba7670e5f3c7ad48e5069951e9073eaf304be628aa190d394bf"
+    },
+    "156": {
+      "src": "/assets/route-maps/route-156.png",
+      "kind": "habitat-region-capture",
+      "name": "Prehistoric Grotto",
+      "mapId": 156,
+      "region": 0,
+      "point": [
+        38,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "b66543742c8e0c617d3820d8d1e12a5b87d2c6be399fdd2610faac80494ac3ba"
+    },
+    "157": {
+      "src": "/assets/route-maps/route-157.png",
+      "kind": "habitat-region-capture",
+      "name": "Futuristic Grotto",
+      "mapId": 157,
+      "region": 0,
+      "point": [
+        40,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ba556e0fe0c118f70d802004d3207ce8cfd5c2403fb03613a18208f341012ba3"
+    },
+    "158": {
+      "src": "/assets/route-maps/route-158.png",
+      "kind": "habitat-region-capture",
+      "name": "Route 5 Cave",
+      "mapId": 158,
+      "region": 0,
+      "point": [
+        36,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "4c1c61af11f49990e4ed4eae072af14487a7c8384fb7c3b03c725f25f229135c"
+    },
+    "159": {
+      "src": "/assets/route-maps/route-159.png",
+      "kind": "habitat-region-capture",
+      "name": "Stygian Cave",
+      "mapId": 159,
+      "region": 0,
+      "point": [
+        28,
+        26
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "dda9a06bec8eb97fdf08786a8d9806f6303861a756db625b4be10640208aedd5"
+    },
+    "160": {
+      "src": "/assets/route-maps/route-160.png",
+      "kind": "habitat-region-capture",
+      "name": "Apterygota Nest",
+      "mapId": 160,
+      "region": 0,
+      "point": [
+        33,
+        26
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "cceaa2bcaac7e09dbc5034df782204157b93a42a9decf1910301513f5f66bf4d"
+    },
+    "162": {
+      "src": "/assets/route-maps/route-162.png",
+      "kind": "habitat-region-capture",
+      "name": "Gemstone Cave",
+      "mapId": 162,
+      "region": 0,
+      "point": [
+        37,
+        24
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "a8d62a607b68074898c8c8b5c283e1f09e93daee9a597da87e619fa6f4acc682"
+    },
+    "163": {
+      "src": "/assets/route-maps/route-163.png",
+      "kind": "habitat-region-capture",
+      "name": "Virga Underpass",
+      "mapId": 163,
+      "region": 0,
+      "point": [
+        31,
+        20
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "5f3057b7da6d04e9b5e0270a93d57b54abebaafc090e87e48fc97ad55e248938"
+    },
+    "166": {
+      "src": "/assets/route-maps/route-166.png",
+      "kind": "habitat-region-capture",
+      "name": "Revenant Tomb",
+      "mapId": 166,
+      "region": 0,
+      "point": [
+        24,
+        13
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e0288e0ae1afc7575e819c9afe84b7c1e12c600a41532f3836135b858c422679"
+    },
+    "167": {
+      "src": "/assets/route-maps/route-167.png",
+      "kind": "habitat-region-capture",
+      "name": "Draco Cave",
+      "mapId": 167,
+      "region": 0,
+      "point": [
+        22,
+        6
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "3ff5eb0337c22b694ff3c2dee864fc05288eb6da9ba4e0b64f24d4418ebba5ba"
+    },
+    "169": {
+      "src": "/assets/route-maps/route-169.png",
+      "kind": "habitat-region-capture",
+      "name": "Crystal Lake",
+      "mapId": 169,
+      "region": 0,
+      "point": [
+        10,
+        7
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "533883d4af82e7790c96ab8e60e2b5a39f349ccd127919278a175c9cfebb6090"
+    },
+    "171": {
+      "src": "/assets/route-maps/route-171.png",
+      "kind": "habitat-region-capture",
+      "name": "Stratos Horizon",
+      "mapId": 171,
+      "region": 0,
+      "point": [
+        11,
+        1
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "0be99bab2634e5630643cbfa0d7962acd3b7aacdefa7ee45173da3210146099c"
+    },
+    "173": {
+      "src": "/assets/route-maps/route-173.png",
+      "kind": "habitat-region-capture",
+      "name": "Mt.Vile",
+      "mapId": 173,
+      "region": 0,
+      "point": [
+        24,
+        16
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "dc1f450547b6b657bc7dc4b18a98872f4a343d3dfbf975b509bb2122c84673ce"
+    },
+    "174": {
+      "src": "/assets/route-maps/route-174.png",
+      "kind": "habitat-region-capture",
+      "name": "City Zone",
+      "mapId": 174,
+      "region": 0,
+      "point": [
+        29,
+        11
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "26a5904753639c735e29fa19d285258a735bc56096fa2cb1f95b9ecf60c7ed2c"
+    },
+    "175": {
+      "src": "/assets/route-maps/route-175.png",
+      "kind": "habitat-region-capture",
+      "name": "Desert Zone",
+      "mapId": 175,
+      "region": 0,
+      "point": [
+        35,
+        11
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "2026daeeb108017b48ab0b24dc957f26d5fe23d7b8ede52bbd5bcd23552b5848"
+    },
+    "177": {
+      "src": "/assets/route-maps/route-177.png",
+      "kind": "habitat-region-capture",
+      "name": "Scrubland Zone",
+      "mapId": 177,
+      "region": 0,
+      "point": [
+        35,
+        14
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "6cee8787e7a8492258552b80a2f247e203558045692543add8bc8862254c0fe3"
+    },
+    "178": {
+      "src": "/assets/route-maps/route-178.png",
+      "kind": "habitat-region-capture",
+      "name": "Crag Zone",
+      "mapId": 178,
+      "region": 0,
+      "point": [
+        30,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "9077ceecad1cc408bf5b4cdb2a687e8d0bf16cbfa3f398843ad043fb4c624a10"
+    },
+    "179": {
+      "src": "/assets/route-maps/route-179.png",
+      "kind": "habitat-region-capture",
+      "name": "Sub Zero Islands",
+      "mapId": 179,
+      "region": 0,
+      "point": [
+        4,
+        8
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e7fe04691224a0d0566b1bb3bc295a5e60f51993851edb9f66e64d55ca64afce"
+    },
+    "180": {
+      "src": "/assets/route-maps/route-180.png",
+      "kind": "habitat-region-capture",
+      "name": "Volcano Zone",
+      "mapId": 180,
+      "region": 0,
+      "point": [
+        30,
+        13
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "4b6f66c2ef1124d927fc7a0fdf2b8b59ff52f7e4168ad8f2f455398c36284e32"
+    },
+    "181": {
+      "src": "/assets/route-maps/route-181.png",
+      "kind": "habitat-region-capture",
+      "name": "Tundra Zone",
+      "mapId": 181,
+      "region": 0,
+      "point": [
+        31,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "9f96d1d381bf4c9840936ac8798777ea0dab8c2a86b207dfb18f551c1db6e4b7"
+    },
+    "182": {
+      "src": "/assets/route-maps/route-182.png",
+      "kind": "habitat-region-capture",
+      "name": "Cave Zone",
+      "mapId": 182,
+      "region": 0,
+      "point": [
+        31,
+        13
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "be8ba3826b6788d133047e6d9d1e4502858b41c250496754baedc635312a52c5"
+    },
+    "183": {
+      "src": "/assets/route-maps/route-183.png",
+      "kind": "habitat-region-capture",
+      "name": "Beach Zone",
+      "mapId": 183,
+      "region": 0,
+      "point": [
+        32,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e1251f16d297e5d9f68ab41078e4142af49b03b6b2cfd1ed054a3ef9d32fca64"
+    },
+    "184": {
+      "src": "/assets/route-maps/route-184.png",
+      "kind": "habitat-region-capture",
+      "name": "Seafloor Zone",
+      "mapId": 184,
+      "region": 0,
+      "point": [
+        32,
+        13
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e4bfb907ebf49e148e5de2ae1fc9b55b20d05e9f94365c5d23fb68244c7701e0"
+    },
+    "185": {
+      "src": "/assets/route-maps/route-185.png",
+      "kind": "habitat-region-capture",
+      "name": "River Zone",
+      "mapId": 185,
+      "region": 0,
+      "point": [
+        33,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "f3c8f70f066d95d4095cced8a8bb025cb365bf18bc2f634c02eb1a396853abfe"
+    },
+    "186": {
+      "src": "/assets/route-maps/route-186.png",
+      "kind": "habitat-region-capture",
+      "name": "Sky Zone",
+      "mapId": 186,
+      "region": 0,
+      "point": [
+        33,
+        13
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "9677b6b7f2e04a3eeba170007362846b21101d04ade5969127a09cdac5b0ee5b"
+    },
+    "187": {
+      "src": "/assets/route-maps/route-187.png",
+      "kind": "habitat-region-capture",
+      "name": "Industral Zone",
+      "mapId": 187,
+      "region": 0,
+      "point": [
+        34,
+        12
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "89ae9e1f17fdf5cb0daeb3e89f6ad41faccd71658b0fcc2b8f4515035c185adc"
+    },
+    "188": {
+      "src": "/assets/route-maps/route-188.png",
+      "kind": "habitat-region-capture",
+      "name": "Simple Field",
+      "mapId": 188,
+      "region": 0,
+      "point": [
+        34,
+        13
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "2c4498624b72e8e981d8570617699932b2e1b90309db52e7edaad2c15ac04555"
+    },
+    "190": {
+      "src": "/assets/route-maps/route-190.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 0",
+      "mapId": 190,
+      "region": 0,
+      "point": [
+        19,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "f8a61169406d5267597fa9d12892508a489f0d6d31b79029d942dc99d923c3e1"
+    },
+    "191": {
+      "src": "/assets/route-maps/route-191.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 1",
+      "mapId": 191,
+      "region": 0,
+      "point": [
+        17,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "509c8b4175d1f0da087409e88fb939b871fe66d7ca77732e5a60efd87d5f046a"
+    },
+    "192": {
+      "src": "/assets/route-maps/route-192.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 2",
+      "mapId": 192,
+      "region": 0,
+      "point": [
+        16,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "a3d831db94adca367047acadac4999fcba08577df2dc8078aa8fc3fa8ba04033"
+    },
+    "227": {
+      "src": "/assets/route-maps/route-227.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 3",
+      "mapId": 227,
+      "region": 0,
+      "point": [
+        15,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "f3a763736569859aded60d29fb980b7dc3c94d6bbb66951e68a392696ae34a78"
+    },
+    "228": {
+      "src": "/assets/route-maps/route-228.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 4",
+      "mapId": 228,
+      "region": 0,
+      "point": [
+        14,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "c6f3982e279c55ba48fa5e4c1b626b5c0fd93a319229f4f81788c824da51ccde"
+    },
+    "229": {
+      "src": "/assets/route-maps/route-229.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 5",
+      "mapId": 229,
+      "region": 0,
+      "point": [
+        13,
+        37
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "10fe4990a081e926c5d9dd29cc7e3263830dd6dc1026e5d47d82f3241c7d0afb"
+    },
+    "230": {
+      "src": "/assets/route-maps/route-230.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 6",
+      "mapId": 230,
+      "region": 0,
+      "point": [
+        16,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "da7c2665cf5eeaf730a9fb5a8c615fd5db1471cc257e8dcb201d491e9cefd045"
+    },
+    "231": {
+      "src": "/assets/route-maps/route-231.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 7",
+      "mapId": 231,
+      "region": 0,
+      "point": [
+        15,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "1738780a85c2ccc7a5d252fd4c597a9df4b2f8680b7fc1012f3461b4111e4e72"
+    },
+    "232": {
+      "src": "/assets/route-maps/route-232.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 8",
+      "mapId": 232,
+      "region": 0,
+      "point": [
+        14,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "90fcd88d1da1356c9884551073fcf0d61d0bae6fe406465c7c57616a718d27a7"
+    },
+    "233": {
+      "src": "/assets/route-maps/route-233.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 9",
+      "mapId": 233,
+      "region": 0,
+      "point": [
+        13,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ae4bf56035aad5f7138a4346429211a7acc81b4fa048c4cbf5417549390c1f24"
+    },
+    "234": {
+      "src": "/assets/route-maps/route-234.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 10",
+      "mapId": 234,
+      "region": 0,
+      "point": [
+        12,
+        35
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "18a34c9872730909877bca98c4ea59286de9d9ad77dfa1ddca5c9760d7b23444"
+    },
+    "235": {
+      "src": "/assets/route-maps/route-235.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 11",
+      "mapId": 235,
+      "region": 0,
+      "point": [
+        15,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "d5637e673dc9d5bc042de3b40dcb5348c480d2738b0770ac4487fa09280c6764"
+    },
+    "236": {
+      "src": "/assets/route-maps/route-236.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 12",
+      "mapId": 236,
+      "region": 0,
+      "point": [
+        14,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "4ab2c766d1e594d16705201f7055e4860484860f5b12b442296f009ac77b1bfd"
+    },
+    "237": {
+      "src": "/assets/route-maps/route-237.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 13",
+      "mapId": 237,
+      "region": 0,
+      "point": [
+        13,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "4daf42b4449d7b580c9691fbbce37035a3159f9af11ec95c5620d1cd79b17a6f"
+    },
+    "238": {
+      "src": "/assets/route-maps/route-238.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 14",
+      "mapId": 238,
+      "region": 0,
+      "point": [
+        12,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "72da1e6d14609944f2e19c0e6525505f791deec51dd40b34784c7f324fa311b4"
+    },
+    "239": {
+      "src": "/assets/route-maps/route-239.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 15",
+      "mapId": 239,
+      "region": 0,
+      "point": [
+        11,
+        33
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "336620aadca8c6a67966cf0215d632964d975ebe1d03ed89b19c7e0c331bc07f"
+    },
+    "240": {
+      "src": "/assets/route-maps/route-240.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 16",
+      "mapId": 240,
+      "region": 0,
+      "point": [
+        14,
+        31
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "b69e910ae865fed68f5f4fedeec0bc1f6f4c25e2838f1c6f927dc1c713246bcd"
+    },
+    "241": {
+      "src": "/assets/route-maps/route-241.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 17",
+      "mapId": 241,
+      "region": 0,
+      "point": [
+        13,
+        31
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "67140e8aaf41089a68e63cf11baa7d7ea68e35bd86c6dceaea27bca9c2c11a26"
+    },
+    "242": {
+      "src": "/assets/route-maps/route-242.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 18",
+      "mapId": 242,
+      "region": 0,
+      "point": [
+        12,
+        31
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "11ea8a9c49a90819528e5def25654c354a7048d3950cd896309def158d7e19f9"
+    },
+    "243": {
+      "src": "/assets/route-maps/route-243.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 19",
+      "mapId": 243,
+      "region": 0,
+      "point": [
+        11,
+        31
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "885345529151de1dea03658061da4556e4fdf81b0e69bc9c649c5cf8f1f8b0e4"
+    },
+    "244": {
+      "src": "/assets/route-maps/route-244.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 20",
+      "mapId": 244,
+      "region": 0,
+      "point": [
+        10,
+        31
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "581d4fb810427b4b4963cddcf3b9236b9fa4fa9e9fd407bf1ff8fc1a015a0ca3"
+    },
+    "245": {
+      "src": "/assets/route-maps/route-245.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 21",
+      "mapId": 245,
+      "region": 0,
+      "point": [
+        13,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "355b976d1bc4af953801a2f0c81ae5bd57d490492c37fd398dc736b6d67cb7f5"
+    },
+    "246": {
+      "src": "/assets/route-maps/route-246.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 22",
+      "mapId": 246,
+      "region": 0,
+      "point": [
+        12,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "5b5ea23b43ea2159279ad90efd0c173bcdce58b888e729a744b729d7066069a7"
+    },
+    "247": {
+      "src": "/assets/route-maps/route-247.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 23",
+      "mapId": 247,
+      "region": 0,
+      "point": [
+        11,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "b4ddfe08a9b699a10f72268285d81d49f4c584c06ce9266b72ce1700e94cfd45"
+    },
+    "248": {
+      "src": "/assets/route-maps/route-248.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 24",
+      "mapId": 248,
+      "region": 0,
+      "point": [
+        10,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "5e4a920417803dea382389b838e7c34ffad6d3a04bbdfa9d838bf8dfd15ca7c8"
+    },
+    "249": {
+      "src": "/assets/route-maps/route-249.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 25",
+      "mapId": 249,
+      "region": 0,
+      "point": [
+        9,
+        29
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "2e5f0d6588634870b92f13315042d01932be78b451ad2b11a5a0bd05fb5fa7d8"
+    },
+    "250": {
+      "src": "/assets/route-maps/route-250.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 26",
+      "mapId": 250,
+      "region": 0,
+      "point": [
+        12,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e017589d67fd76de900a7c80ff3d5d410e7c3a9675c2008acd4035e098ca87c4"
+    },
+    "251": {
+      "src": "/assets/route-maps/route-251.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 27",
+      "mapId": 251,
+      "region": 0,
+      "point": [
+        11,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "bd6875d6ab9c1d4a78e9ad1bb98737c0b9a4eb6b6c2005f9eafd8a557aba66b7"
+    },
+    "252": {
+      "src": "/assets/route-maps/route-252.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 28",
+      "mapId": 252,
+      "region": 0,
+      "point": [
+        10,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "343c6bc46e78b72e0ee5ef04fddd0b6ed3a6317fa0dabd58297fce53c7bac229"
+    },
+    "253": {
+      "src": "/assets/route-maps/route-253.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 29",
+      "mapId": 253,
+      "region": 0,
+      "point": [
+        9,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "7bd40968a94c56135ef4718c3c2fa3d53c3e4cd921e277ebd645719cee716e73"
+    },
+    "254": {
+      "src": "/assets/route-maps/route-254.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 30",
+      "mapId": 254,
+      "region": 0,
+      "point": [
+        8,
+        27
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "6515295e8bb9dff210eb7a7e80535fc085b7cf379e2d190c7af432a209a92cbc"
+    },
+    "255": {
+      "src": "/assets/route-maps/route-255.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 31",
+      "mapId": 255,
+      "region": 0,
+      "point": [
+        11,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "b53134d01376cd7dd21d88e57ba1ac47971f2e8f14d870ed38a5e55cec2def19"
+    },
+    "256": {
+      "src": "/assets/route-maps/route-256.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 32",
+      "mapId": 256,
+      "region": 0,
+      "point": [
+        10,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "61568530cd4924c103d4cc5056e3abc5706d7bba94f6f529a6d552199bcd8c26"
+    },
+    "257": {
+      "src": "/assets/route-maps/route-257.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 33",
+      "mapId": 257,
+      "region": 0,
+      "point": [
+        9,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "d3ad9485498fe317f452b3ba0f2d4fe0360f5eacc1cd9e0e12af38288064353f"
+    },
+    "258": {
+      "src": "/assets/route-maps/route-258.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 34",
+      "mapId": 258,
+      "region": 0,
+      "point": [
+        8,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "14e6c47a2e8ae9c6ec997fbde2e5ab75739197e68cbf688f3eb46c2ad076fef1"
+    },
+    "259": {
+      "src": "/assets/route-maps/route-259.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 35",
+      "mapId": 259,
+      "region": 0,
+      "point": [
+        7,
+        25
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "6264017b21c1fdd984d6e2c2a19485a4951d3d79686bc8a24a87defc071dd7a5"
+    },
+    "260": {
+      "src": "/assets/route-maps/route-260.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 36",
+      "mapId": 260,
+      "region": 0,
+      "point": [
+        10,
+        23
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "1e6566b8286387a1e827165a7576b9086a596fe78060e27aeb7bbd5b5d7e6361"
+    },
+    "261": {
+      "src": "/assets/route-maps/route-261.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 37",
+      "mapId": 261,
+      "region": 0,
+      "point": [
+        9,
+        23
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "9b9e8fd1683bd501aa5db25368c0c81fc05d89523fe3acade2493090e2760732"
+    },
+    "262": {
+      "src": "/assets/route-maps/route-262.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 38",
+      "mapId": 262,
+      "region": 0,
+      "point": [
+        8,
+        23
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "cdad3373bccbc3906ade3ad7c0bb236e30c199c097431c9deba95810fbf09fd9"
+    },
+    "263": {
+      "src": "/assets/route-maps/route-263.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 39",
+      "mapId": 263,
+      "region": 0,
+      "point": [
+        7,
+        23
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "316e3df2887392aadffc87d5354841d977a70c78cfd1ce11b6cdda53a85259a3"
+    },
+    "264": {
+      "src": "/assets/route-maps/route-264.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 40",
+      "mapId": 264,
+      "region": 0,
+      "point": [
+        6,
+        23
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "dda2eedcfdf8b38d6e6c2708af5e06452b0d6d51b4601d2d9c5d1bd135bd6213"
+    },
+    "265": {
+      "src": "/assets/route-maps/route-265.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 41",
+      "mapId": 265,
+      "region": 0,
+      "point": [
+        9,
+        21
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "6bb70a654463d9215b9fea7f95f3190c2ba5a0fa6c0f3c36569100651b7005ef"
+    },
+    "266": {
+      "src": "/assets/route-maps/route-266.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 42",
+      "mapId": 266,
+      "region": 0,
+      "point": [
+        8,
+        21
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "3de89c3dddc02b94c7885cb93a3150d8f17cea29d7eb54785690aef5c95844b9"
+    },
+    "267": {
+      "src": "/assets/route-maps/route-267.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 43",
+      "mapId": 267,
+      "region": 0,
+      "point": [
+        7,
+        21
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "881f881a5d061dac4ad59664a61097ad4ddad817a62398be094b060e6b67335e"
+    },
+    "268": {
+      "src": "/assets/route-maps/route-268.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 44",
+      "mapId": 268,
+      "region": 0,
+      "point": [
+        6,
+        21
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "e72efcc0ce1ea6509a881a3f4881fcfe457350c8b642f8efb28eddcb7e612098"
+    },
+    "269": {
+      "src": "/assets/route-maps/route-269.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 45",
+      "mapId": 269,
+      "region": 0,
+      "point": [
+        5,
+        21
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "587c9d23b897712235a657b1fa394375694a15ce118ffd87ccb6e666a37a9fcb"
+    },
+    "270": {
+      "src": "/assets/route-maps/route-270.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 46",
+      "mapId": 270,
+      "region": 0,
+      "point": [
+        8,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "ffa436cf0f57d0b8b29fd19f7e9c60f3e30176479c4f993d1223b260ba94c001"
+    },
+    "271": {
+      "src": "/assets/route-maps/route-271.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 47",
+      "mapId": 271,
+      "region": 0,
+      "point": [
+        7,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "13a1bd54e176d6bf7ab7de5bd27bdaaa57a4ed871e409f1064ac9241adb5b2ab"
+    },
+    "272": {
+      "src": "/assets/route-maps/route-272.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 48",
+      "mapId": 272,
+      "region": 0,
+      "point": [
+        6,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "5ed79cef1dfcfb0cd261d8b7407ba69ffcc84ef9fd88376bc79199f96a6d1543"
+    },
+    "273": {
+      "src": "/assets/route-maps/route-273.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 49",
+      "mapId": 273,
+      "region": 0,
+      "point": [
+        5,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "3b5823c5dccfbba3ac4a7e218774dba72f1037f1518d7e89bdf83540889abbcb"
+    },
+    "274": {
+      "src": "/assets/route-maps/route-274.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 50",
+      "mapId": 274,
+      "region": 0,
+      "point": [
+        4,
+        19
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "97ceccce3d9730e52b529afaf0b4b467f3e3e32612a0213ae72bdeff6d5cf6ba"
+    },
+    "275": {
+      "src": "/assets/route-maps/route-275.png",
+      "kind": "habitat-region-capture",
+      "name": "Mystery Zone 51",
+      "mapId": 275,
+      "region": 0,
+      "point": [
+        4,
+        17
+      ],
+      "zoom": 3,
+      "width": 480,
+      "height": 274,
+      "sha256": "13e624d699b9d69e04cb4fadeae69a304a3e02cebe38c067910166184e2f2b7e"
     }
   },
   "imagePriority": [
@@ -594,5 +2649,26 @@
     "focused-region-if-verified-point",
     "placeholder-if-no-evidence"
   ],
-  "mapMetadataSource": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/PBS/map_metadata.txt"
+  "mapMetadataSource": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/PBS/map_metadata.txt",
+  "inactiveAreaIds": [
+    2,
+    5,
+    21,
+    28,
+    31,
+    34,
+    39,
+    41,
+    44,
+    47,
+    49,
+    50,
+    51,
+    66,
+    68,
+    69,
+    70,
+    75
+  ],
+  "captureSource": "Local Habitat Dex renderer; regional map at 3x; gold habitat marker; no player marker."
 }

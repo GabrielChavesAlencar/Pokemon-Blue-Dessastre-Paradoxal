@@ -82,6 +82,7 @@ module BlueHabitat
     by_species.values
   end
   class Scene
+    PER_PAGE=12
     def initialize(area,method,entries,map_id=nil);@area=area;@method=method;@entries=entries;@map_id=map_id;@page=0;@sprites={};end
     def start
       @viewport=Viewport.new(0,0,Graphics.width,Graphics.height);@viewport.z=999999
@@ -97,32 +98,34 @@ module BlueHabitat
       if @map_id
         b.fill_rect(Graphics.width-180,4,164,26,Color.new(28,64,94));b.draw_text(Graphics.width-180,4,164,26,_INTL('Map [M]'),1)
       end
-      @entries.slice(@page*6,6).to_a.each_with_index do |entry,i|
-        x=16+i%3*164;y=88+i/3*104
-        b.fill_rect(x,y,152,100,Color.new(25,48,69))
+      @entries.slice(@page*PER_PAGE,PER_PAGE).to_a.each_with_index do |entry,i|
+        x=10+i%4*124;y=78+i/4*76
+        b.fill_rect(x,y,120,74,Color.new(25,48,69));b.font.size=16
         if entry[:species]
-          icon=PokemonSpeciesIconSprite.new(entry[:species],@viewport);icon.x=x+56;icon.y=y+2;icon.zoom_x=icon.zoom_y=0.625;icon.z=2;@sprites['icon'+i.to_s]=icon
+          icon=PokemonSpeciesIconSprite.new(entry[:species],@viewport);icon.x=x+46;icon.y=y+1;icon.zoom_x=icon.zoom_y=0.4375;icon.z=2;@sprites['icon'+i.to_s]=icon
         else
-          pbDrawTextPositions(b,[['?',x+76,y+14,:center,light,shadow]])
+          pbDrawTextPositions(b,[['?',x+60,y+14,:center,light,shadow]])
           next
         end
         label=entry[:status]==:caught ? _INTL('Caught') : (entry[:status]==:seen ? _INTL('Seen') : '?')
         color=entry[:status]==:caught ? Color.new(113,227,151) : Color.new(180,208,232)
-        pbDrawTextPositions(b,[[entry[:name],x+76,y+43,:center,light,shadow],[label,x+76,y+63,:center,color,shadow]])
+        b.font.color=light;b.draw_text(x+2,y+29,116,20,entry[:name],1)
+        b.font.size=14;b.font.color=color;b.draw_text(x+2,y+47,116,18,label,1)
         if entry[:rods]
-          b.font.size=14;b.font.color=Color.new(173,214,245)
-          b.draw_text(x+2,y+81,148,18,entry[:rods].map { |rod| {OldRod:'Old',GoodRod:'Good',SuperRod:'Super'}[rod] }.join(' / '),1)
-          pbSetSmallFont(b)
+          b.font.size=12;b.font.color=Color.new(173,214,245)
+          b.draw_text(x+2,y+61,116,13,entry[:rods].map { |rod| {OldRod:'Old',GoodRod:'Good',SuperRod:'Super'}[rod] }.join('/'),1)
         end
       end
-      pbDrawTextPositions(b,[[_INTL('Seen / Caught / ?: Not yet identified'),16,306,:left,light,shadow],
+      pbSetSmallFont(b);b.font.size=16
+      pbDrawTextPositions(b,[[_INTL('Seen / Caught / ?: Not yet identified'),16,309,:left,light,shadow],
         [(1+@page).to_s+' / '+pages.to_s,Graphics.width-20,56,:right,light,shadow]])
+      pbSetSmallFont(b);b.font.color=light
       [_INTL('Previous'),_INTL('Next'),_INTL('Back')].each_with_index do |label,i|
         x=i*Graphics.width/3;b.fill_rect(x+4,336,Graphics.width/3-8,44,Color.new(30,67,99))
         b.draw_text(x,342,Graphics.width/3,32,label,1)
       end
     end
-    def pages;[(@entries.length+5)/6,1].max;end
+    def pages;[(@entries.length+PER_PAGE-1)/PER_PAGE,1].max;end
     def turn(delta);@page=(@page+delta)%pages;refresh;end
     def run
       start

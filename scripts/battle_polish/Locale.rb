@@ -6,6 +6,12 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30,MessageTypes::ABILITY_NAMES].uniq.freeze
   MANUAL={
+    'Trainer Album'=>'Álbum de treinadores','Encountered'=>'Enfrentado','Not encountered'=>'Não enfrentado','Defeated'=>'Derrotado',
+    'Visit an area with trainers to start the album.'=>'Visite uma área com treinadores para iniciar o álbum.',
+    'Trainer Album: {1} complete! Bonus: ${2}.'=>'Álbum: {1} concluída! Bônus: ${2}.',
+    'Recorded: ${1} / Bonus 33%: ${2}'=>'Registrado: ${1} / Bônus 33%: ${2}',
+    'Reward received: ${1}'=>'Prêmio recebido: ${1}','Defeat every trainer in this area.'=>'Derrote todos os treinadores desta área.',
+    'Collect reward'=>'Resgatar prêmio','Reward unavailable, already received, or wallet full.'=>'Prêmio indisponível, já recebido ou carteira cheia.',
     'Beginner'=>'Iniciante','Intermediate'=>'Intermediário','Advanced'=>'Avançado','Difficulty'=>'Dificuldade',
     '{1} crystals'=>'{1} cristais','Remember moves'=>'Relembrar golpes',
     'No forgotten moves are available at this level.'=>'Não há golpes esquecidos disponíveis neste nível.',

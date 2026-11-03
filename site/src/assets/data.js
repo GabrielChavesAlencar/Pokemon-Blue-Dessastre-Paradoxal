@@ -1,3 +1,4 @@
+export function activeLocations(locations,region){const hidden=new Set(region?.inactiveAreaIds??[]);return locations.filter(a=>!hidden.has(a.id));}
 export async function loadPortal(){
   const files=['catalog','locations','updates','guides','story-trainers','region-points'];
   const values=await Promise.all(files.map(async name=>{const response=await fetch(`/data/${name}.json`);if(!response.ok)throw new Error(`Não foi possível abrir ${name}.`);return response.json();}));
@@ -14,7 +15,7 @@ export async function loadPortal(){
   }
   const byId=new Map([...values[0].species,...(values[0].customForms??[])].map(p=>[p.id,p]));
   for(const [id,form] of Object.entries(values[0].encounterForms??{})){const base=byId.get(form.base);if(base)byId.set(id,{...base,name:base.name+' · '+form.name,encounterForm:form.form});}
-  return {catalog:values[0],locations:values[1].locations,updates:values[2].commits,guides:values[3].guides,story:values[4],region:values[5],byId};
+  return {catalog:values[0],locations:activeLocations(values[1].locations,values[5]),updates:values[2].commits,guides:values[3].guides,story:values[4],region:values[5],byId};
 }
 let details;
 export async function loadDetails(){if(!details){const response=await fetch('/data/details.json');if(!response.ok)throw new Error('Não foi possível abrir a ficha.');details=await response.json();}return details;}

@@ -1,8 +1,8 @@
 """Install Blue's original presentation/story plugin, with a local backup."""
 from pathlib import Path
 import importlib.util,os,tempfile
-FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','Training.rb','FishingTables.rb','CampaignReference.rb','NextValidation.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','DexControls.rb','DexCards.rb','LearnMouse.rb','CardsValidation.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
-SUPPORT=['leaders.py','leaders_full_power.json','champions.py']
+FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','Training.rb','TrainerAlbum.rb','FishingTables.rb','CampaignReference.rb','NextValidation.rb','WorldValidation.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','DexControls.rb','DexCards.rb','LearnMouse.rb','CardsValidation.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','WorldMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
+SUPPORT=['leaders.py','leaders_full_power.json','champions.py','trainer_album_catalog.py']
 def atomic(path,raw):
     path.parent.mkdir(parents=True,exist_ok=True)
     fd,name=tempfile.mkstemp(prefix='.blue-polish-',dir=path.parent)
@@ -15,6 +15,10 @@ def install(project,game):
     from datetime import datetime,timezone
     source=project/'scripts/battle_polish';target=game/'Plugins/ZZZZ Blue Story and Presentation'
     plans={(game/'PBS'/name if name.startswith('items_') else target/name):(source/name).read_bytes() for name in FILES}
+    spec=importlib.util.spec_from_file_location('blue_album_catalog',source/'trainer_album_catalog.py')
+    album=importlib.util.module_from_spec(spec);spec.loader.exec_module(album)
+    catalogue=album.build(project,game)
+    if catalogue is not None:plans[game/'Data/blue-trainer-album.dat']=catalogue
     spec=importlib.util.spec_from_file_location('blue_leader_patch',source/'leaders.py')
     patch=importlib.util.module_from_spec(spec);spec.loader.exec_module(patch)
     trainer_plan=patch.plan(project,game)

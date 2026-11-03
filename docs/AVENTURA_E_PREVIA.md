@@ -133,6 +133,6 @@ As fichas dos 18 líderes mostram somente **Full Doubles**, com seis Pokémon e 
 
 Para atualizar esses perfis após alterar treinadores ou regras, com o jogo fechado: `python scripts/battle_lab/launch.py --prepare-only --smoke-test --export-campaign-reference`, abra o Game.exe preparado e aguarde a conclusão dos testes, depois execute `python scripts/export_story_teams.py`. A exportação usa memória temporária e não carrega a campanha. O sincronizador só aceita dados nativos com o mesmo CRC do PBS e das regras de campanha; perfis antigos são removidos se a fonte ou as regras mudarem sem uma nova exportação.
 
-A correção de direção do Ammnoid também é reaplicada ao terminar animações de golpes e animações comuns, incluindo Rollout. O movimento animado continua funcionando; a orientação de repouso é restaurada depois.
+A correção de direção do Ammnoid normaliza cada quadro de costas em memória antes de a engine aplicar as animações, incluindo Rollout e efeitos recebidos. A orientação e o ângulo de repouso são restaurados ao terminar os players. Veja também [Álbum e mapas](ALBUM_E_MAPAS.md) para a grade de 12 Pokémon, prêmio por área e capturas do site.
 
 `game/Data/blue-next-validation.txt` registra a prova dos seis itens, relembrador com aprendizado real, todas as tabelas de pesca, nomes de TMs/habilidades, agrupamento de varas e quatro dificuldades do Trainer Card. O teste de Rollout está em `blue-dex-cards-validation.txt`.

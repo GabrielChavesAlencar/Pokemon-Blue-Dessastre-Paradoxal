@@ -114,7 +114,7 @@ module BlueExplorationValidation
     check(area[:methods]==expected,'Habitat methods match the active encounter version, native base fallback and usable rod tables')
     check(BlueHabitat.species(slots+slots).length==3,'Repeated encounter slots count each species only once')
     before=Marshal.dump([$player.pokedex,$PokemonGlobal.visitedMaps])
-    scene=HabitatScene.new('Habitat / '+area[:name],'Old Rod',entries*3)
+    scene=HabitatScene.new('Habitat / '+area[:name],'Old Rod',entries*5)
     BlueTouchValidation.drive([[250,354],[450,354]]) { scene.run }
     check(scene.instance_variable_get(:@page)==1,'Habitat Next and Back buttons work by mouse through the real scene loop')
     choose=BlueBattleLab.method(:choose);open=BlueHabitat.method(:open);@opened=0;selections=[1,-1]

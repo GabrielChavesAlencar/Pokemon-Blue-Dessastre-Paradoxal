@@ -112,16 +112,16 @@ module BlueDexCardsValidation
     scene=BlueBattleUIValidation::Scene.new;battle.instance_variable_set(:@scene,scene)
     scene.pbStartBattle(battle);BlueBattleOptions::MechanicValidation.show_battlers(scene,battle)
     sprites=scene.instance_variable_get(:@sprites);shot('blue-ammnoid-facing-smoke')
-    check(sprites['pokemon_0'].mirror && !sprites['pokemon_1'].mirror && !sprites['pokemon_2'].mirror,'Doubles mirror only the inverted Ammnoid back; opponent/front and Cephalonid stay unchanged')
+    check(sprites['pokemon_0'].blue_fan_normalized? && !sprites['pokemon_0'].mirror && !sprites['pokemon_1'].blue_fan_normalized? && !sprites['pokemon_2'].blue_fan_normalized?,'Only the inverted Ammnoid back receives a canonical frame; native sprite mirror stays neutral')
     check(!!scene.pbFindMoveAnimation(:ROLLOUT,0,0),'Native Rollout animation exists for the orientation regression')
     scene.pbAnimation(:ROLLOUT,battle.battlers[0],[battle.battlers[1]],0)
-    check(sprites['pokemon_0'].mirror && !sprites['pokemon_1'].mirror,'A real Rollout animation restores the corrected Ammnoid back orientation')
+    check(sprites['pokemon_0'].blue_fan_normalized? && !sprites['pokemon_0'].mirror && !sprites['pokemon_1'].mirror,'A real Rollout animation restores the corrected Ammnoid back orientation')
     ['original','light','minimal'].each do |mode|
       $PokemonSystem.blue_sprite_quality=mode
       [false,true].each do |shiny|
         mon=BlueBattleLab.build(:AMMNOID,50);mon.shiny=shiny
         scene.pbChangePokemon(0,mon);scene.pbChangePokemon(2,mon)
-        check(sprites['pokemon_0'].mirror && sprites['pokemon_2'].mirror,'Both allied Ammnoid slots face right: '+mode+' shiny='+shiny.to_s)
+        check(sprites['pokemon_0'].blue_fan_normalized? && sprites['pokemon_2'].blue_fan_normalized? && !sprites['pokemon_0'].mirror && !sprites['pokemon_2'].mirror,'Both allied Ammnoid slots use canonical right-facing frames: '+mode+' shiny='+shiny.to_s)
         scene.pbChangePokemon(0,BlueBattleLab.build(:PIKACHU,50))
         check(!sprites['pokemon_0'].mirror,'Replacing Ammnoid restores ordinary sprite orientation: '+mode)
       end
@@ -130,7 +130,7 @@ module BlueDexCardsValidation
     GameData::Species.each do |data|
       next unless data.flags.include?('DessastreParadoxal')
       mon=BlueBattleLab.build(data.id,50);scene.pbChangePokemon(0,mon)
-      check(sprites['pokemon_0'].mirror==BlueFanBackFacing::FLIPPED.include?(mon.species),'Native author back-facing rule: '+data.id.to_s)
+      check(sprites['pokemon_0'].blue_fan_normalized? == BlueFanBackFacing::FLIPPED.include?(mon.species),'Native author back-facing rule: '+data.id.to_s)
       count+=1;Graphics.update if count%10==0
     end
     check(count>=60,'All battle-ready author species and Mega forms were checked in the engine')

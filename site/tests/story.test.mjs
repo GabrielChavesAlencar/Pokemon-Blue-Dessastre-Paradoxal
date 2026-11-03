@@ -4,10 +4,12 @@ import {readFileSync} from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {regionImage,regionCaption,storyIndex,bossesIndex,trainerDetail,allTrainers} from '../src/assets/story.js';
+import {activeLocations} from '../src/assets/data.js';
+import {createHash} from 'node:crypto';
 const site=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const load=f=>JSON.parse(readFileSync(path.join(site,'public/data',f+'.json'),'utf8'));
 const source=load('story-trainers'),region=load('region-points'),catalog=load('catalog'),locations=load('locations'),details=load('details');
-const model={story:source,region,catalog,locations:locations.locations,byId:new Map(catalog.species.map(x=>[x.id,x]))};
+const model={story:source,region,catalog,locations:activeLocations(locations.locations,region),byId:new Map(catalog.species.map(x=>[x.id,x]))};
 test('importa 18 mestres reais e quatro dificuldades Full Doubles da engine Blue',()=>{
   assert.equal(source.masters.length,18);
   assert.equal(source.masters.filter(t=>t.campaignVariants.length===4).length,18);
@@ -89,10 +91,29 @@ test('Rock Cave 1F sem imagem comprovada não exibe a mesma Beatha inteira',()=>
   assert.ok(!html.includes('region-marker'));
   assert.ok(regionCaption(model,{id:49,name:'Rock Cave 1F'}).includes('Nenhuma imagem'));
 });
-test('a maioria dos locais com dados na base pode ser focada e os sem coordenadas são explícitos',()=>{
-  const rendered=locations.locations.map(area=>regionImage(model,area,true));
-  const focused=rendered.filter(html=>html.includes('region-map--focused')).length;
-  assert.ok(focused>=130,'esperava dezenas de recortes regionais distintos, obteve '+focused);
-  assert.equal(rendered.length,locations.locations.length);
-  assert.ok(rendered.every(html=>html.includes('region-map--')));
+test('os 137 mapas atuais têm captura nativa própria e os 18 antigos ficam ocultos',()=>{
+  assert.equal(model.locations.length,137);
+  assert.equal(region.inactiveAreaIds.length,18);
+  assert.equal(locations.locations.length,155,'registros brutos antigos permanecem preservados');
+  for(const area of model.locations){
+    const capture=region.areaImages[String(area.id)];
+    assert.equal(capture.kind,'habitat-region-capture');
+    assert.equal(capture.src,'/assets/route-maps/route-'+area.id+'.png');
+    const raw=readFileSync(path.join(site,'public',capture.src));
+    assert.equal(raw.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+    assert.equal(raw.readUInt32BE(16),480);assert.equal(raw.readUInt32BE(20),274);
+    assert.equal(createHash('sha256').update(raw).digest('hex'),capture.sha256);
+    const html=regionImage(model,area,true);
+    assert.match(html,/region-map--capture/);assert.ok(html.includes(capture.src));
+    assert.ok(!html.includes('raw.githubusercontent.com'));
+    assert.match(regionCaption(model,area),/Captura local.*3×/);
+    assert.ok(!region.inactiveAreaIds.includes(area.id));
+  }
+  assert.ok(model.locations.some(a=>a.id===86&&a.name==='Route 1'));
+  assert.ok(!model.locations.some(a=>a.id===5));
+});
+test('filtro de mapas não modifica a entrada nem depende de IDs presumidos',()=>{
+  const areas=[{id:1},{id:2}];
+  assert.deepEqual(activeLocations(areas,{inactiveAreaIds:[1]}),[{id:2}]);
+  assert.deepEqual(areas,[{id:1},{id:2}]);assert.deepEqual(activeLocations(areas,{}),areas);
 });

@@ -9,7 +9,7 @@ REQUIRED=['HUB_DE_BATALHA.bat','TESTAR_BATALHA.bat','INSTALAR_HUB.bat','scripts/
           'site/assets/fan-pokemon.tar.gz','site/assets/fan-pokemon.sha256',
           'site/assets/fan-extras.tar.gz','site/assets/fan-extras.sha256','site/assets/fan-extras.manifest.json',
           'site/public/data/story-trainers.json','docs/HUB_BATALHA.md','docs/ROADMAP_HUB.md','docs/ECONOMIA_E_JORNADA.md',
-          'scripts/battle_polish/leaders_full_power.json','docs/LIDERES_FULL_POWER.md','data/pt-br.json','docs/PORTUGUES_E_UI.md','docs/AVENTURA_E_PREVIA.md']
+          'scripts/battle_polish/leaders_full_power.json','docs/LIDERES_FULL_POWER.md','data/pt-br.json','docs/PORTUGUES_E_UI.md','docs/AVENTURA_E_PREVIA.md','docs/ALBUM_E_MAPAS.md']
 def files(project):
     selected=set(REQUIRED)
     for directory in SCRIPT_DIRS:
