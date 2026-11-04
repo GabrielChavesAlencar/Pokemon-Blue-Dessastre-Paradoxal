@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4b9445acbcb87444bcf5d01ed9f91183cf895a3f",
+      "date": "2026-11-03T21:12:04-03:00",
+      "title": "fix(build): concluir reinício nativo e retomar downloads de referências",
+      "category": "Correções"
+    },
+    {
       "sha": "927e1237c2241f8a63899ab8ebdae3dc2aa34781",
       "date": "2026-11-03T21:06:05-03:00",
       "title": "build: registrar saída e estágio do compilador Android em CI",
