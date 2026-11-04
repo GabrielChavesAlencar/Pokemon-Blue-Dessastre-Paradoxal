@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e80152e4f7ed50c88bf316c37ee0b53efee9f56e",
+      "date": "2026-11-03T22:42:23-03:00",
+      "title": "test(android): toque não depende de estado de mouse físico",
+      "category": "Testes"
+    },
+    {
+      "sha": "5c97c241884bb9e17f5527208c5fb62124fc716a",
+      "date": "2026-11-03T22:42:14-03:00",
+      "title": "fix(android): tratar toque como dentro da tela sem depender do mouse físico",
+      "category": "Correções"
+    },
+    {
       "sha": "08e2e27578ac2ad8458ba05f4c9c51efa739691b",
       "date": "2026-11-03T22:40:47-03:00",
       "title": "test(android): validar fallback de toques no JoiPlay sem alterar Windows",
