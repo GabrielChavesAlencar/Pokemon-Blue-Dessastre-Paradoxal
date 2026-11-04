@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ceb9e86def7b221a5e6f9b26177ae52abb7b4983",
+      "date": "2026-11-03T21:00:49-03:00",
+      "title": "fix(ci): usar distribuição Mesa com OpenGL x64 disponível",
+      "category": "Correções"
+    },
+    {
       "sha": "97f6ac04f55f57d8c0617d347158b229b6cd46ff",
       "date": "2026-11-03T20:57:57-03:00",
       "title": "fix(android): incluir o catálogo português no pacote JoiPlay",
