@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f5c2299eedfee1bdfb4c7dcaf2cb3dd8cb972dce",
+      "date": "2026-11-03T21:58:20-03:00",
+      "title": "test(android): cobrir callback de titulo com self=nil",
+      "category": "Testes"
+    },
+    {
+      "sha": "9db53186181b07c4d094a5e858f8dedaf403201a",
+      "date": "2026-11-03T21:58:01-03:00",
+      "title": "fix(android): evitar FrozenError ao abrir titulo no JoiPlay",
+      "category": "Correções"
+    },
+    {
       "sha": "41792d9e5537a63c2cc2f0020b205b24e31293f2",
       "date": "2026-11-03T21:38:05-03:00",
       "title": "site: adicionar download oficial do JoiPlay para Android",
