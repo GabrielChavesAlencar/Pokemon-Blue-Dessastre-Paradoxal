@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "08e2e27578ac2ad8458ba05f4c9c51efa739691b",
+      "date": "2026-11-03T22:40:47-03:00",
+      "title": "test(android): validar fallback de toques no JoiPlay sem alterar Windows",
+      "category": "Testes"
+    },
+    {
+      "sha": "1bd0cdfba74c3741be4f3e534c4400200dfa6b6e",
+      "date": "2026-11-03T22:40:22-03:00",
+      "title": "fix(android): fornecer Input.mouse_in_window ausente no JoiPlay",
+      "category": "Correções"
+    },
+    {
       "sha": "f5c2299eedfee1bdfb4c7dcaf2cb3dd8cb972dce",
       "date": "2026-11-03T21:58:20-03:00",
       "title": "test(android): cobrir callback de titulo com self=nil",
