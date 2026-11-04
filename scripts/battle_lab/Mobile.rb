@@ -11,6 +11,32 @@ module BlueMobile
     # physical-mouse state (it can be false even when a finger is touching).
     Input.define_singleton_method(:mouse_in_window) { true }
   end
+  # JoiPlay's error popup only displays "EventScriptError", hiding the
+  # underlying exception, event, and Ruby script. Keep a local diagnostic log.
+  module EventDiagnostics
+    def execute_script(script)
+      super
+    rescue Exception => error
+      if BlueMobile.enabled?
+        begin
+          File.open('Data/blue-android-event-error.txt','ab') do |log|
+            log.puts("\n=== #{Time.now} ===")
+            log.puts("Map: #{defined?(@map_id) ? @map_id : '?'} | Event: #{defined?(@event_id) ? @event_id : '?'} | Command: #{defined?(@index) ? @index : '?'}")
+            log.puts("Error: #{error.class}: #{error.message}")
+            log.puts("Full script:\n#{script}")
+            log.puts("Backtrace:\n#{Array(error.backtrace).first(20).join("\n")}")
+          end
+        rescue StandardError
+          # Logging must never replace the original interpreter failure.
+        end
+      end
+      raise
+    end
+  end
+  def self.install_event_diagnostics
+    return unless enabled? && defined?(Interpreter)
+    Interpreter.prepend(EventDiagnostics) unless Interpreter.ancestors.include?(EventDiagnostics)
+  end
   # The title callback can be invoked with self=nil by JoiPlay/RGSS.
   # Keep the selection state on this module instead of the callback receiver.
   class << self
@@ -33,4 +59,5 @@ module BlueMobile
   end
 end
 BlueMobile.install_input_compatibility
+BlueMobile.install_event_diagnostics
 Object.prepend(BlueMobile::Title)
