@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3ef0e7734af0ede3c98fe558883467a955dcfab3",
+      "date": "2026-11-03T22:47:17-03:00",
+      "title": "test(android): registrar exceção original dos eventos sem interromper fluxo normal",
+      "category": "Testes"
+    },
+    {
+      "sha": "7c2adb4afd2a7570249a69e125e532de2fa9fffd",
+      "date": "2026-11-03T22:46:59-03:00",
+      "title": "fix(android): registrar causa real de EventScriptError dos iniciais no JoiPlay",
+      "category": "Correções"
+    },
+    {
       "sha": "e80152e4f7ed50c88bf316c37ee0b53efee9f56e",
       "date": "2026-11-03T22:42:23-03:00",
       "title": "test(android): toque não depende de estado de mouse físico",
