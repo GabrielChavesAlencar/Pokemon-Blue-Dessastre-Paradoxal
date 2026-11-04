@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "16858c2431580e4e96145aa0b81151aea86995b2",
+      "date": "2026-11-03T22:48:09-03:00",
+      "title": "test(android): comparar quebra de linha real no log do evento",
+      "category": "Testes"
+    },
+    {
       "sha": "3ef0e7734af0ede3c98fe558883467a955dcfab3",
       "date": "2026-11-03T22:47:17-03:00",
       "title": "test(android): registrar exceção original dos eventos sem interromper fluxo normal",
