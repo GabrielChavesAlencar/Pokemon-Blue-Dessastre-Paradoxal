@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "966aaa4c260cf367f13339f4bccf4f465df74e19",
+      "date": "2026-11-03T21:22:24-03:00",
+      "title": "feat(site): liberar EXEs de História e Hub e download JoiPlay",
+      "category": "Novidades"
+    },
+    {
       "sha": "d7ee5b97131673045266a122ab1d6aa2a0773284",
       "date": "2026-11-03T21:16:32-03:00",
       "title": "fix(ci): reabrir engine após fase de compilação confirmada",
