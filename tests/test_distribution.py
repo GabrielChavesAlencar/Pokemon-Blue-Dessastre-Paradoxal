@@ -152,7 +152,7 @@ rescue RuntimeError => e
 end
 log=File.read('Data/blue-android-event-error.txt')
 raise 'missing underlying error' unless log.include?('RuntimeError: Original starter script problem')
-raise 'missing event script' unless log.include?('Full script:\\nchoose starters')
+raise 'missing event script' unless log.include?("Full script:\\nchoose starters")
 """
         with tempfile.TemporaryDirectory() as tmp:
             game=Path(tmp);(game/'Data').mkdir()
