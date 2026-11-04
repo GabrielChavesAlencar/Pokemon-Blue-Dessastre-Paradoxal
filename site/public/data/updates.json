@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "41792d9e5537a63c2cc2f0020b205b24e31293f2",
+      "date": "2026-11-03T21:38:05-03:00",
+      "title": "site: adicionar download oficial do JoiPlay para Android",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f85c78aa903d68932d40884e8442f06cd4fa9390",
+      "date": "2026-11-03T21:38:00-03:00",
+      "title": "site: adicionar download oficial do JoiPlay para Android",
+      "category": "Novidades"
+    },
+    {
+      "sha": "e184c94f858802e0ea11acf4e6354d3148a468c1",
+      "date": "2026-11-03T21:37:56-03:00",
+      "title": "site: adicionar download oficial do JoiPlay para Android",
+      "category": "Novidades"
+    },
+    {
       "sha": "966aaa4c260cf367f13339f4bccf4f465df74e19",
       "date": "2026-11-03T21:22:24-03:00",
       "title": "feat(site): liberar EXEs de História e Hub e download JoiPlay",
