@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Confirmar runtime dos testes de compatibilidade JoiPlay
+        run: ruby --version
       - run: python -m unittest discover -s tests -v
       - run: python scripts/battle_hub/package.py --revision "${{ github.sha }}"
       - uses: actions/upload-artifact@v4
@@ -121,5 +123,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python scripts/android/package.py --verify --revision "$GITHUB_SHA"
           tag="battle-hub-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}"
           gh release create "$tag" dist/Blue-Story.exe dist/Blue-Battle-Hub.exe dist/Blue-Battle-Hub.zip dist/Blue-Battle-Hub.zip.sha256 dist/Blue-Android-JoiPlay.zip dist/Blue-Android-JoiPlay.zip.sha256 --target "$GITHUB_SHA" --title "Pokémon Blue - build ${GITHUB_RUN_NUMBER}" --notes-file docs/INSTALACAO.md --latest

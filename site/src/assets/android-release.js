@@ -1,0 +1,31 @@
+import {esc} from './utils.js';
+const repo='GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal';
+const api=`https://api.github.com/repos/${repo}`;
+let cached;
+export async function androidReleaseStatus(fetcher=fetch){
+  const [releaseResult,runsResult]=await Promise.allSettled([
+    fetcher(`${api}/releases/latest`).then(r=>{if(!r.ok)throw Error('release');return r.json();}),
+    fetcher(`${api}/actions/runs?branch=main&per_page=30`).then(r=>{if(!r.ok)throw Error('build');return r.json();})
+  ]);
+  if(releaseResult.status!=='fulfilled')return {state:'unavailable'};
+  const release=releaseResult.value;
+  const asset=release.assets?.find(a=>a.name==='Blue-Android-JoiPlay.zip'&&a.state==='uploaded');
+  if(!asset||!/^[a-f0-9]{40}$/.test(release.target_commitish??''))return {state:'unavailable'};
+  const run=runsResult.status==='fulfilled'?runsResult.value.workflow_runs?.find(x=>x.path==='.github/workflows/battle-hub-release.yml'):null;
+  const pending=run&&run.head_sha!==release.target_commitish;
+  return {state:pending?(run.status==='completed'?'outdated':'building'):'published',buildKnown:!!run,
+    tag:release.tag_name,revision:release.target_commitish,date:release.published_at,
+    bytes:asset.size,digest:asset.digest??'',runId:run?.id};
+}
+export function androidReleaseHtml(status){
+  if(status.state==='unavailable')return '<p>Não foi possível consultar a revisão agora. Confira a linha <code>Revision:</code> no arquivo <code>LEIA-ME-ANDROID.txt</code> do ZIP.</p>';
+  const warning=status.state==='outdated'?'Download desatualizado: a publicação da revisão mais recente não terminou. O botão ainda baixa o pacote abaixo.':status.state==='building'?'Uma nova revisão está sendo preparada. O botão ainda baixa o pacote publicado abaixo.':'';
+  const href=`https://github.com/${repo}/releases/tag/${encodeURIComponent(status.tag)}`;
+  return `${warning?`<p class="android-release-warning">${esc(warning)}</p>`:''}<p><strong>Pacote publicado:</strong> <a href="${href}" target="_blank" rel="noopener noreferrer">${esc(status.tag)}</a><br>Revisão <code>${esc(status.revision)}</code>${Number.isFinite(status.bytes)?` · ${(status.bytes/1e9).toFixed(2).replace('.',',')} GB`:''}</p><p>Depois de extrair, compare essa revisão com <code>LEIA-ME-ANDROID.txt</code>. Se um evento falhar, o diagnóstico fica em <code>Data/blue-android-event-error.txt</code>.</p>${status.buildKnown?'':'<p>Estado da compilação mais recente indisponível.</p>'}`;
+}
+export async function bindAndroidRelease(container){
+  const target=container.querySelector('[data-android-release]');if(!target)return;
+  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:androidReleaseStatus()};
+  const status=await cached.promise;
+  if(target.isConnected)target.innerHTML=androidReleaseHtml(status);
+}

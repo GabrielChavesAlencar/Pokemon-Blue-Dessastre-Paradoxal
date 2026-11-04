@@ -5,7 +5,7 @@ module BlueMobile
   # Input.mouse_in_window, which the game's Input script calls on a tap.
   # Install this shim only in the Android distribution; leave Windows untouched.
   def self.install_input_compatibility
-    return unless enabled?
+    return unless enabled? && defined?(Input)
     return if Input.respond_to?(:mouse_in_window)
     # The Android game surface is the input window; do not consult System's
     # physical-mouse state (it can be false even when a finger is touching).
@@ -13,29 +13,68 @@ module BlueMobile
   end
   # JoiPlay's error popup only displays "EventScriptError", hiding the
   # underlying exception, event, and Ruby script. Keep a local diagnostic log.
+  def self.build_info
+    path='Data/blue-mobile-build.txt'
+    File.file?(path) ? File.read(path).strip : 'Revision: unknown (older package)'
+  end
+  def self.write_event_error(error,context)
+    return if error.is_a?(SystemExit) || error.class.to_s=='Reset'
+    interpreter=context[:interpreter]
+    File.open('Data/blue-android-event-error.txt','ab') do |log|
+      log.puts("\n=== #{Time.now} ===\n#{build_info}")
+      values=[:@map_id,:@event_id,:@index].map { |key| interpreter.instance_variable_get(key) || '?' }
+      log.puts("Map: #{values[0]} | Event: #{values[1]} | Command: #{values[2]}")
+      log.puts("Full script:\n#{context[:script]}")
+      visited=[]
+      while error && !visited.include?(error.object_id) && visited.length<6
+        visited << error.object_id
+        log.puts("Error: #{error.class}: #{error.message}")
+        log.puts("Backtrace:\n#{Array(error.backtrace).first(20).join("\n")}")
+        error=error.respond_to?(:cause) ? error.cause : nil
+      end
+    end
+    context[:logged]=true
+  rescue StandardError
+    # Diagnostics must not replace the original failure, including write errors.
+  end
   module EventDiagnostics
     def execute_script(script)
-      super
-    rescue Exception => error
-      if BlueMobile.enabled?
-        begin
-          File.open('Data/blue-android-event-error.txt','ab') do |log|
-            log.puts("\n=== #{Time.now} ===")
-            log.puts("Map: #{defined?(@map_id) ? @map_id : '?'} | Event: #{defined?(@event_id) ? @event_id : '?'} | Command: #{defined?(@index) ? @index : '?'}")
-            log.puts("Error: #{error.class}: #{error.message}")
-            log.puts("Full script:\n#{script}")
-            log.puts("Backtrace:\n#{Array(error.backtrace).first(20).join("\n")}")
-          end
-        rescue StandardError
-          # Logging must never replace the original interpreter failure.
-        end
+      return super unless BlueMobile.enabled?
+      previous=Thread.current[:blue_mobile_event]
+      context={interpreter:self,script:script,logged:false}
+      Thread.current[:blue_mobile_event]=context
+      begin
+        super
+      rescue Exception => error
+        BlueMobile.write_event_error(error,context) unless context[:logged]
+        raise
+      ensure
+        Thread.current[:blue_mobile_event]=previous
       end
-      raise
+    end
+  end
+  # The stock Interpreter asks for this message BEFORE wrapping the exception.
+  # Record that original error while keeping JoiPlay's eval overrides intact.
+  module EventExceptionMessages
+    def pbGetExceptionMessage(error,*args)
+      context=Thread.current[:blue_mobile_event]
+      BlueMobile.write_event_error(error,context) if BlueMobile.enabled? && context && !context[:logged]
+      super
     end
   end
   def self.install_event_diagnostics
     return unless enabled? && defined?(Interpreter)
     Interpreter.prepend(EventDiagnostics) unless Interpreter.ancestors.include?(EventDiagnostics)
+    Object.prepend(EventExceptionMessages) unless Object.ancestors.include?(EventExceptionMessages)
+  end
+  def self.log_boot
+    return unless enabled? && !@boot_logged
+    @boot_logged=true
+    File.open('Data/blue-android-runtime.txt','ab') do |log|
+      log.puts("\n=== #{Time.now} ===\n#{build_info}\nRuby: #{RUBY_VERSION} / #{RUBY_PLATFORM}")
+      [:mouse_in_window,:mouse_x,:mouse_y,:press?,:trigger?].each { |name| log.puts("Input.#{name}: #{defined?(Input) && Input.respond_to?(name)}") }
+    end
+  rescue StandardError
   end
   # The title callback can be invoked with self=nil by JoiPlay/RGSS.
   # Keep the selection state on this module instead of the callback receiver.
@@ -45,6 +84,8 @@ module BlueMobile
   module Title
     def pbCallTitle
       return super unless BlueMobile.enabled? && !BlueBattleLab::ACTIVE
+      BlueMobile.install_input_compatibility
+      BlueMobile.log_boot
       unless BlueMobile.title_selected
         BlueMobile.title_selected=true
         choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',['Modo historia','Hub de batalha offline','Sair'])
@@ -60,4 +101,5 @@ module BlueMobile
 end
 BlueMobile.install_input_compatibility
 BlueMobile.install_event_diagnostics
+BlueMobile.log_boot
 Object.prepend(BlueMobile::Title)

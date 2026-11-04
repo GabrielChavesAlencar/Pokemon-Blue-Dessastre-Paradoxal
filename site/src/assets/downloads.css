@@ -6,3 +6,4 @@
 @media(min-width:901px) and (max-width:1200px){.header-inner{gap:20px}nav{gap:15px}nav a{font-size:12px}.development{display:none}}
 @media(max-width:800px){.download-strip{align-items:start;flex-direction:column;padding:22px}.download-strip-actions{width:100%}.download-strip-actions .text-link{margin-left:0}.download-cards,.download-instructions{grid-template-columns:1fr}.download-card{padding:26px}.download-card h2{font-size:34px}.download-instructions{gap:22px}}
 @media(max-width:420px){.download-strip-actions .button{font-size:12px;padding:11px 13px}}
+.android-release{width:100%;padding:14px 16px;border:1px solid #294760;border-radius:8px;margin:0 0 20px;background:#0b1624}.android-release p{font-size:12px;margin:0;line-height:1.8;overflow-wrap:anywhere}.android-release p+p{margin-top:10px}.android-release a{color:#a5d5ff;text-decoration:underline}.android-release .android-release-warning{color:#ffd48b}

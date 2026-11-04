@@ -33,6 +33,8 @@ class DistributionTests(unittest.TestCase):
     def game(self,root):
         game=root/'game';(game/'Data').mkdir(parents=True);(game/'Plugins/Blue').mkdir(parents=True)
         (game/'Plugins/Blue/main.rb').write_text('original own plugin')
+        mobile=game/android.MOBILE;mobile.parent.mkdir(parents=True);mobile.write_bytes(b'module BlueMobile; end')
+        (game/'Data/PluginScripts.rxdata').write_bytes(b'\x04\x08'+dump([[RubyString(b'Blue Battle Lab'),None,[[RubyString(b'Mobile.rb'),RubyString(zlib.compress(mobile.read_bytes()))]]]]))
         rows=[[1,RubyString(b'Main'),RubyString(zlib.compress(b'    PluginManager.runPlugins\n    Compiler.main\n    Game.initialize'))]]
         (game/'Data/Scripts.rxdata').write_bytes(b'\x04\x08'+dump(rows))
         return game
@@ -54,6 +56,8 @@ class DistributionTests(unittest.TestCase):
         if not ruby:
             self.skipTest('Ruby is not installed; static check passed')
         runner="""
+module Input
+end
 module BlueBattleLab
   ACTIVE = false
   @calls = 0
@@ -71,7 +75,8 @@ raise 'mobile menu appeared more than once' unless BlueBattleLab.calls == 1
         with tempfile.TemporaryDirectory() as tmp:
             marker=Path(tmp)/'Data/blue-mobile.txt'
             marker.parent.mkdir(parents=True);marker.write_text('experimental-v1')
-            subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb')],cwd=tmp,capture_output=True,text=True,check=True)
+            result=subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb')],cwd=tmp,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stdout+' '+result.stderr)
     def test_android_joiplay_touch_shim_works_without_mouse_in_window(self):
         ruby=shutil.which('ruby')
         source=(ROOT/'scripts/battle_lab/Mobile.rb').read_text(encoding='utf-8')
@@ -172,9 +177,71 @@ raise 'missing event script' unless log.include?("Full script:\\nchoose starters
                 names=z.namelist();self.assertIn('Pokemon-Blue-Android/Game.exe',names)
                 self.assertIn('Pokemon-Blue-Android/Data/blue-hub-presets.dat',names)
                 self.assertIn('Pokemon-Blue-Android/Data/blue-pt-br.dat',names)
+                self.assertIn('Pokemon-Blue-Android/Data/blue-mobile-build.txt',names)
                 self.assertFalse(any('Game.rxdata' in n or 'python.txt' in n or 'private-team' in n for n in names))
             (game/'Plugins/Blue/main.rb').write_text('changed own plugin')
             with self.assertRaises(ValueError):android.build(game,root/'stale.zip','test')
+            with self.assertRaisesRegex(ValueError,'revision'):android.verify_archive(output,'wrong-commit')
+    def test_android_records_original_event_error_before_interpreter_wraps_it(self):
+        ruby=shutil.which('ruby')
+        if not ruby:self.skipTest('Ruby is required for runtime compatibility fixtures')
+        runner=r"""
+module Input; end
+module BlueBattleLab; ACTIVE=false; end
+class EventScriptError < StandardError; end
+class Object
+  def pbCallTitle; :story; end
+  def pbGetExceptionMessage(error); error.message; end
+end
+class Interpreter
+  def initialize;@map_id=1;@event_id=7;@index=177;end
+  def execute_script(script)
+    eval(script)
+  rescue StandardError => error
+    pbGetExceptionMessage(error)
+    raise EventScriptError,'opaque wrapper'
+  end
+end
+load ARGV.fetch(0)
+Thread.current[:blue_mobile_event]=:previous
+begin
+  Interpreter.new.execute_script('Input.missing_starter_api')
+  raise 'error was swallowed'
+rescue EventScriptError => error
+  raise unless error.message=='opaque wrapper'
+end
+raise 'event context leaked' unless Thread.current[:blue_mobile_event]==:previous
+log=File.read('Data/blue-android-event-error.txt')
+raise 'original cause lost' unless log.include?('NoMethodError') && log.include?('missing_starter_api')
+raise 'logged wrapper instead of original error' if log.include?('opaque wrapper')
+raise 'event coordinates lost' unless log.include?('Map: 1 | Event: 7 | Command: 177')
+raise 'build revision missing' unless log.include?('Revision: test-device')
+class << File
+  alias blue_real_open open
+  def open(path,*args,&block)
+    raise Errno::EACCES if path=='Data/blue-android-event-error.txt'
+    blue_real_open(path,*args,&block)
+  end
+end
+begin
+  Interpreter.new.execute_script('Input.another_missing_api')
+rescue EventScriptError => error
+  raise unless error.message=='opaque wrapper'
+end
+raise 'write failure leaked context' unless Thread.current[:blue_mobile_event]==:previous
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp);(folder/'Data').mkdir()
+            (folder/'Data/blue-mobile.txt').write_text('experimental-v1')
+            (folder/'Data/blue-mobile-build.txt').write_text('Revision: test-device\n')
+            result=subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb')],cwd=tmp,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stdout+' '+result.stderr)
+    def test_android_refuses_stale_compiled_mobile_even_with_a_current_plugin_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);game=self.game(root)
+            (game/android.MOBILE).write_text('module BlueMobile; VERSION=2; end')
+            (game/'Data/blue-android-compiled.txt').write_text(android.fingerprint(game))
+            with self.assertRaisesRegex(ValueError,'Compiled Mobile.rb differs'):android.build(game,root/'bad.zip','test')
     def test_shared_music_checksum_failure_prevents_all_writes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);(root/'data').mkdir();(root/'assets/music').mkdir(parents=True);(root/'assets/music/test.mp3').write_bytes(b'changed')
