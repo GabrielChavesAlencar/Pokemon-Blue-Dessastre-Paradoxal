@@ -1,15 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {gameDownload,hubDownload,downloadStrip,downloadsPage} from '../src/assets/downloads.js';
+import {gameDownload,hubDownload,androidDownload,downloadStrip,downloadsPage} from '../src/assets/downloads.js';
 test('downloads usam a main e o último pacote do Hub, com instalação dos dois modos',()=>{
-  assert.ok(gameDownload.endsWith('/archive/refs/heads/main.zip'));
-  assert.ok(hubDownload.endsWith('/releases/latest/download/Blue-Battle-Hub.zip'));
+  assert.ok(gameDownload.endsWith('/releases/latest/download/Blue-Story.exe'));
+  assert.ok(hubDownload.endsWith('/releases/latest/download/Blue-Battle-Hub.exe'));
   for(const html of [downloadStrip(),downloadsPage()]){assert.ok(html.includes(gameDownload));assert.ok(html.includes(hubDownload));}
   const html=downloadsPage();
-  for(const filename of ['INSTALAR_JOGO.bat','ABRIR_JOGO.bat','INSTALAR_HUB.bat','HUB_DE_BATALHA.bat'])assert.ok(html.includes(filename));
+  assert.doesNotMatch(html,/\.bat|RUN\.bat|archive\/refs\/heads/);
+  assert.ok(html.includes(androidDownload));assert.match(html,/Android reais/);
+  assert.match(html,/Python ou Git/);assert.match(html,/cópias portáteis verificadas/);
   assert.equal((html.match(/<ol>/g)||[]).length,2);
-  assert.ok(html.includes('base Pokémon Decades separadamente'));
+  assert.ok(html.includes('130 times prontos'));
 });
 test('downloads ficam acessíveis pela navegação e pela página inicial',()=>{
   const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
