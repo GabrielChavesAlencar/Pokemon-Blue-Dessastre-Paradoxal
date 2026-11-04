@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {gameDownload,hubDownload,androidDownload,downloadStrip,downloadsPage} from '../src/assets/downloads.js';
+import {gameDownload,hubDownload,androidDownload,joiplayDownload,downloadStrip,downloadsPage} from '../src/assets/downloads.js';
 test('downloads usam a main e o último pacote do Hub, com instalação dos dois modos',()=>{
   assert.ok(gameDownload.endsWith('/releases/latest/download/Blue-Story.exe'));
   assert.ok(hubDownload.endsWith('/releases/latest/download/Blue-Battle-Hub.exe'));
@@ -9,6 +9,11 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   const html=downloadsPage();
   assert.doesNotMatch(html,/\.bat|RUN\.bat|archive\/refs\/heads/);
   assert.ok(html.includes(androidDownload));assert.match(html,/Android reais/);
+  assert.equal(joiplayDownload,'https://www.joiplay.net/');
+  assert.ok(html.includes(`href="${joiplayDownload}"`));
+  assert.ok(html.includes('Baixar JoiPlay · site oficial'));
+  assert.ok(html.includes('android-download-actions'));
+  assert.ok(html.includes('RPG Maker Plugin'));
   assert.match(html,/Python ou Git/);assert.match(html,/cópias portáteis verificadas/);
   assert.equal((html.match(/<ol>/g)||[]).length,2);
   assert.ok(html.includes('130 times prontos'));
