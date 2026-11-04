@@ -1,4 +1,4 @@
-import importlib.util,json,sys,tempfile,unittest,zipfile,zlib,hashlib,subprocess
+import importlib.util,json,sys,tempfile,unittest,zipfile,zlib,hashlib,subprocess,shutil
 import io
 from unittest.mock import patch
 from urllib.error import URLError
@@ -46,6 +46,32 @@ class DistributionTests(unittest.TestCase):
             self.assertEqual(source.count('# BLUE_ANDROID_DEBUG'),1)
             self.assertIn("$DEBUG = true if File.file?('Data/blue-android-build-request.txt')",source)
             self.assertEqual(save.read_bytes(),b'private save')
+    def test_android_title_is_safe_when_joiplay_calls_it_with_nil_receiver(self):
+        source=(ROOT/'scripts/battle_lab/Mobile.rb').read_text(encoding='utf-8')
+        self.assertIn('BlueMobile.title_selected=true',source)
+        self.assertNotIn('@blue_mobile_selected',source)
+        ruby=shutil.which('ruby')
+        if not ruby:
+            self.skipTest('Ruby is not installed; static check passed')
+        runner="""
+module BlueBattleLab
+  ACTIVE = false
+  @calls = 0
+  def self.choose(*args); @calls += 1; 0; end
+  def self.calls; @calls; end
+end
+class Object
+  def pbCallTitle; :story; end
+end
+load ARGV.fetch(0)
+raise 'title callback failed with nil' unless nil.pbCallTitle == :story
+raise 'subsequent title callback failed' unless nil.pbCallTitle == :story
+raise 'mobile menu appeared more than once' unless BlueBattleLab.calls == 1
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            marker=Path(tmp)/'Data/blue-mobile.txt'
+            marker.parent.mkdir(parents=True);marker.write_text('experimental-v1')
+            subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb')],cwd=tmp,capture_output=True,text=True,check=True)
     def test_android_bundle_requires_a_current_native_compile_and_excludes_private_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.game(root);output=root/'out.zip'
