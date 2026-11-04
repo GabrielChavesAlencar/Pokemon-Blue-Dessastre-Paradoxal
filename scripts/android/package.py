@@ -20,8 +20,8 @@ def request_compile(game):
         if '# BLUE_ANDROID_BUILD' not in source:
             needle='    Compiler.main'
             if source.count(needle)!=1:raise ValueError('Unknown Main compiler entry.')
-            source=source.replace(needle,needle+"\n    # BLUE_ANDROID_BUILD\n    if File.file?('Data/blue-android-build-request.txt')\n      File.write('Data/blue-android-compiled.txt',File.read('Data/blue-android-build-request.txt'))\n      File.delete('Data/blue-android-build-request.txt')\n      exit\n    end")
-            source=source.replace('    PluginManager.runPlugins',"    if File.file?('Data/blue-android-build-request.txt')\n      Object.send(:define_method,:pbPrintException) { |error| File.write('Data/blue-android-error.txt',error.to_s+\"\\n\"+Array(error.backtrace).join(\"\\n\"));exit! 1 }\n    end\n    PluginManager.runPlugins")
+            source=source.replace(needle,"    File.write('Data/blue-android-stage.txt','compiler') if File.file?('Data/blue-android-build-request.txt')\n"+needle+"\n    # BLUE_ANDROID_BUILD\n    if File.file?('Data/blue-android-build-request.txt')\n      File.write('Data/blue-android-compiled.txt',File.read('Data/blue-android-build-request.txt'))\n      File.delete('Data/blue-android-build-request.txt')\n      exit\n    end")
+            source=source.replace('    PluginManager.runPlugins',"    if File.file?('Data/blue-android-build-request.txt')\n      File.write('Data/blue-android-stage.txt','plugins')\n      Object.send(:define_method,:pbPrintException) { |error| File.write('Data/blue-android-error.txt',error.to_s+\"\\n\"+Array(error.backtrace).join(\"\\n\"));exit! 1 }\n    end\n    PluginManager.runPlugins")
             row[2]=RubyString(zlib.compress(source.encode('utf8')))
         found=True
     if not found:raise ValueError('Main is missing.')
@@ -44,7 +44,8 @@ def allowed(path):
 
 def build(game,output,revision):
     marker=game/'Data/blue-android-compiled.txt'
-    if not marker.is_file() or marker.read_text()!=fingerprint(game):raise ValueError('The native compiler did not finish for the current plugins. No Android download can be published.')
+    if not marker.is_file():raise ValueError('The native compiler did not produce its completion marker. No Android download can be published.')
+    if marker.read_text()!=fingerprint(game):raise ValueError('The native compiler completion marker is stale for the current plugins. No Android download can be published.')
     # Own runtime configuration/data are selected explicitly; logs, saves and machine paths are excluded.
     own=['blue-trainer-album.dat','blue-hub-presets.dat','blue-pt-br.dat','blue-music.rxdata','blue-music-categories.rxdata','blue-official-rules.dat','blue-radical-ai.dat']
     plans={p.relative_to(game).as_posix():p for p in game.rglob('*') if p.is_file() and not p.is_symlink() and allowed(p.relative_to(game))}

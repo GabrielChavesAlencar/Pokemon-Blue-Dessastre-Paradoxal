@@ -61,6 +61,7 @@ jobs:
       - name: Preparar OpenGL por software para o compilador nativo
         shell: powershell
         run: |
+          $ProgressPreference='SilentlyContinue'
           $mesa=Join-Path $env:RUNNER_TEMP 'mesa.7z'
           Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
           if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
@@ -76,9 +77,12 @@ jobs:
           GALLIUM_DRIVER: llvmpipe
           ALSOFT_DRIVERS: 'null'
         run: |
-          $compiler=Start-Process -FilePath "$pwd\game\Game.exe" -WorkingDirectory "$pwd\game" -WindowStyle Hidden -PassThru
+          $compiler=Start-Process -FilePath "$pwd\game\Game.exe" -WorkingDirectory "$pwd\game" -WindowStyle Hidden -PassThru -RedirectStandardOutput "$pwd\.blue-work\native-stdout.txt" -RedirectStandardError "$pwd\.blue-work\native-stderr.txt"
           if(-not $compiler.WaitForExit(300000)){Stop-Process -Id $compiler.Id;throw 'Native compiler timed out'}
-          if($compiler.ExitCode -ne 0){Get-Content game/Data/blue-android-error.txt -ErrorAction SilentlyContinue;throw 'Native compiler failed'}
+          if($compiler.ExitCode -ne 0 -or -not (Test-Path game/Data/blue-android-compiled.txt)){
+            Get-Content .blue-work/native-stdout.txt,.blue-work/native-stderr.txt,game/Data/blue-android-stage.txt,game/Data/blue-android-error.txt,game/errorlog.txt -ErrorAction SilentlyContinue | Select-Object -Last 100
+            throw 'Native compiler failed to produce its completion marker'
+          }
           & $env:BLUE_PRIVATE_PYTHON scripts/android/package.py --revision '${{ github.sha }}'
           if($LASTEXITCODE -ne 0){throw 'Android bundle verification failed'}
       - uses: actions/upload-artifact@v4
