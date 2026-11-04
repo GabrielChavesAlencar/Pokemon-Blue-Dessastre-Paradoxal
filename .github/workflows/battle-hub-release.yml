@@ -62,10 +62,11 @@ jobs:
         shell: powershell
         run: |
           $mesa=Join-Path $env:RUNNER_TEMP 'mesa.7z'
-          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-msvc.7z' -OutFile $mesa
-          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'b2e00615feaba45942343c265cc8c5f576142ca682c1ac6661922d4b72492877'){throw 'Mesa checksum failed'}
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
           $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
           & "$env:ProgramFiles\7-Zip\7z.exe" x $mesa "-o$mesaFolder" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
           $drivers=@(Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' | Where-Object { $_.FullName -match '[\\/]x64[\\/]' })
           if(-not ($drivers | Where-Object { $_.Name -eq 'opengl32.dll' })){throw 'x64 OpenGL driver missing'}
           $drivers | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination game -Force }
