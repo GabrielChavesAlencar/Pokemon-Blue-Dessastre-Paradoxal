@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d7ee5b97131673045266a122ab1d6aa2a0773284",
+      "date": "2026-11-03T21:16:32-03:00",
+      "title": "fix(ci): reabrir engine após fase de compilação confirmada",
+      "category": "Correções"
+    },
+    {
       "sha": "4b9445acbcb87444bcf5d01ed9f91183cf895a3f",
       "date": "2026-11-03T21:12:04-03:00",
       "title": "fix(build): concluir reinício nativo e retomar downloads de referências",
