@@ -7,14 +7,9 @@ module BlueMobile
   def self.install_input_compatibility
     return unless enabled?
     return if Input.respond_to?(:mouse_in_window)
-    Input.define_singleton_method(:mouse_in_window) do
-      if defined?(System) && System.respond_to?(:mouse_in_window)
-        !!System.mouse_in_window
-      else
-        # In JoiPlay the playable surface is the touch window itself.
-        true
-      end
-    end
+    # The Android game surface is the input window; do not consult System's
+    # physical-mouse state (it can be false even when a finger is touching).
+    Input.define_singleton_method(:mouse_in_window) { true }
   end
   # The title callback can be invoked with self=nil by JoiPlay/RGSS.
   # Keep the selection state on this module instead of the callback receiver.
