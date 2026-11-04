@@ -1,6 +1,8 @@
 # Android / JoiPlay — compatibilidade e diagnóstico
 
-O relato de teste usa um Poco C85, JoiPlay e RPG Maker Plugin descritos como as versões mais recentes. Os números exatos dos aplicativos ainda não foram informados. A seleção escolhida foi **Traditional Starters**.
+O relato de teste usa um Poco C85, JoiPlay e RPG Maker Plugin descritos como as versões mais recentes. Os números exatos dos aplicativos ainda não foram informados. A sequência foi **História → Traditional Starters → Double Starters**.
+
+O diagnóstico enviado do aparelho confirmou `NoMethodError: undefined method clear_rect for Bitmap`, em `StartMouse.rb`, ao desenhar o seletor. O cabeçalho agora usa preenchimento transparente, disponível no RGSS/JoiPlay. O teste nativo remove `Bitmap.clear_rect`, abre o seletor real e executa os comandos originais de um e dois iniciais, verificando a quantidade entregue. Não se suprime o erro de evento nem se pula a escolha.
 
 O ZIP antigo pode continuar disponível quando um teste impede a publicação, mesmo que o site e a main tenham sido atualizados. A página Downloads consulta a release pública e compara sua revisão com a última execução do workflow de distribuição. Ela avisa quando existe uma publicação pendente ou com falha.
 
@@ -9,7 +11,8 @@ O ZIP antigo pode continuar disponível quando um teste impede a publicação, m
 1. Baixe o pacote Android identificado na página Downloads.
 2. Extraia por completo em uma pasta nova e adicione esse `Game.exe` como outra entrada do JoiPlay. Preserve a pasta anterior e os saves.
 3. Confira a linha `Revision:` em `LEIA-ME-ANDROID.txt`; ela deve coincidir com a revisão publicada no site.
-4. Teste o menu com toque e com os botões virtuais. Abra História, escolha Traditional Starters e confira a seleção do inicial.
+4. Teste o menu com toque e com os botões virtuais. Abra História → Traditional Starters → Double Starters, confirme as duas escolhas e confira os dois Pokémon na equipe. Confira também Single Starters em um jogo novo.
+5. No Álbum de Treinadores, confira a abertura na rota/cidade atual e dentro de um prédio. Cidades sem treinadores continuam selecionadas com um aviso, sem criar recompensa.
 
 O adaptador fornece `Input.mouse_in_window` somente no pacote mobile e quando o runtime não possui essa função. A superfície de toque conta como janela de entrada; não se usa o estado de um mouse físico. Implementações nativas existentes e o Windows são preservados.
 

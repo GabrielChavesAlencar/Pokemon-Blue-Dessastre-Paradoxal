@@ -10,6 +10,7 @@ module BlueLocale
     'Habitat complete: {1}! {2} Pokémon × $500 = ${3}.'=>'Habitat completo: {1}! {2} Pokémon × $500 = ${3}.',
     'Trainer Album'=>'Álbum de treinadores','Encountered'=>'Enfrentado','Not encountered'=>'Não enfrentado','Defeated'=>'Derrotado',
     'Visit an area with trainers to start the album.'=>'Visite uma área com treinadores para iniciar o álbum.',
+    'No trainers registered in this area.'=>'Nenhum treinador registrado nesta área.',
     'Trainer Album: {1} complete! Bonus: ${2}.'=>'Álbum: {1} concluída! Bônus: ${2}.',
     'Recorded: ${1} / Bonus 33%: ${2}'=>'Registrado: ${1} / Bônus 33%: ${2}',
     'Reward received: ${1}'=>'Prêmio recebido: ${1}','Defeat every trainer in this area.'=>'Derrote todos os treinadores desta área.',

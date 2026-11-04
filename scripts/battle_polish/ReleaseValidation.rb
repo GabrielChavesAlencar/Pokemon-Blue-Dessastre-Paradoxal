@@ -1,6 +1,69 @@
 # Focused native proof: imports, every cached team, memo compositing and rewards.
 module BlueReleaseValidation
   def self.check(value,label);raise label unless value;@lines << 'PASS | '+label;end
+  module StarterPick
+    def pbScene(*args)
+      return super unless BlueReleaseValidation.instance_variable_get(:@starter_probe)
+      BlueReleaseValidation.shot_starter
+      @pokemon
+    end
+  end
+  def self.shot_starter
+    return if @starter_shot
+    @starter_shot=true;BlueWorldValidation.shot('blue-android-starter-smoke')
+  end
+  def self.starters
+    party=$player.party;dex=Marshal.dump($player.pokedex);mode=$PokemonGlobal.blue_story_mode;active=BlueBattleLab::ACTIVE
+    clear=Bitmap.instance_method(:clear_rect) if Bitmap.method_defined?(:clear_rect)
+    Bitmap.send(:undef_method,:clear_rect) if clear
+    bitmap=Bitmap.new(3,3);bitmap.fill_rect(0,0,3,3,Color.new(255,0,0,255));bitmap.fill_rect(1,1,1,1,Color.new(0,0,0,0))
+    check(bitmap.get_pixel(1,1).alpha==0 && bitmap.get_pixel(0,0).alpha==255,'RGSS transparent fill clears only the starter header region without clear_rect')
+    bitmap.dispose;bitmap=nil
+    ModularSelection_Scene.prepend(StarterPick) unless ModularSelection_Scene.ancestors.include?(StarterPick)
+    @starter_probe=true;@starter_shot=false
+    BlueBattleLab.send(:remove_const,:ACTIVE);BlueBattleLab.const_set(:ACTIVE,false)
+    $PokemonGlobal.blue_story_mode=:story
+    lists=load_data('Data/Map001.rxdata').events.values.flat_map { |event| event.pages.map { |page| [event.id,page.list] } }
+    [1,2].each do |count|
+      found=nil
+      lists.each do |event,list|
+        root=list.index { |c| c.code==402 && c.parameters[1]=='Traditional Starters' };next unless root
+        finish=(root+1...list.length).find { |i| list[i].indent<=list[root].indent } || list.length
+        branch=(root+1...finish).find do |i|
+          c=list[i];c.code==402 && c.indent==list[root].indent+1 &&
+            c.parameters[1].to_s.match?(count==1 ? /Single/ : /Double/)
+        end
+        next unless branch
+        script=(branch+1...finish).find { |i| list[i].code==355 }
+        found=[event,list,script] if script
+        break if found
+      end
+      raise 'Traditional starter event branch missing: '+count.to_s unless found
+      event,list,index=found;$player.party=[]
+      interpreter=Interpreter.new;interpreter.setup(list,event,1)
+      interpreter.instance_variable_set(:@index,index);interpreter.instance_variable_set(:@parameters,list[index].parameters)
+      interpreter.command_355
+      check($player.party.length==count && $player.party.all? { |p| p.level==5 && p.hp>0 && PokemonSelections::Traditional_Starters.include?(p.species_data.id) },
+        'Native Traditional '+count.to_s+' starter event renders, grants exactly the requested Pokemon, and returns without Bitmap.clear_rect')
+    end
+  ensure
+    @starter_probe=false;bitmap&.dispose
+    Bitmap.send(:define_method,:clear_rect,clear) if clear
+    $player.party=party if party;$PokemonGlobal.blue_story_mode=mode
+    $player.instance_variable_set(:@pokedex,Marshal.load(dex)) if dex
+    if defined?(active);BlueBattleLab.send(:remove_const,:ACTIVE);BlueBattleLab.const_set(:ACTIVE,active);end
+  end
+  def self.album_location
+    original_map=$game_map
+    {86=>86,92=>90,93=>93,77=>77,79=>77}.each do |here,wanted|
+      $game_map=Game_Map.new;$game_map.setup(here)
+      areas=BlueTrainerAlbum.areas;selected=areas[BlueTrainerAlbum.initial_index(areas)]
+      check(selected[:map]==wanted,'Trainer Album starts in the current area including parent cities and towns without trainers: '+here.to_s)
+      check(!BlueTrainerAlbum.complete?(wanted),'An empty town never creates a trainer reward') if selected[:rows].empty?
+    end
+  ensure
+    $game_map=original_map if original_map
+  end
   def self.imports
     aliases={'Ogerpon-Wellspring'=>[:OGERPON,1],'Ogerpon-Hearthflame'=>[:OGERPON,2],'Ogerpon-Cornerstone'=>[:OGERPON,3],
       'Urshifu'=>[:URSHIFU,0],'Urshifu-Single-Strike'=>[:URSHIFU,0],'Urshifu-Rapid-Strike'=>[:URSHIFU,1],
@@ -86,7 +149,7 @@ module BlueReleaseValidation
   end
   def self.run
     @lines=[];language=$PokemonSystem.blue_locale;$PokemonSystem.blue_locale='pt-BR'
-    imports;rewards;summary;maps;mobile;@lines << 'RESULT=PASS';true
+    starters;album_location;imports;rewards;summary;maps;mobile;@lines << 'RESULT=PASS';true
   rescue StandardError=>error
     @lines << "FAIL | #{error.class}: #{error.message}";@lines.concat(error.backtrace || []);@lines << 'RESULT=FAIL';false
   ensure

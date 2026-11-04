@@ -113,15 +113,35 @@ module BlueTrainerAlbum
       super
     end
   end
+  # Interiors can have their own town-map coordinates. Resolve their real map
+  # parent first, instead of guessing another route from a shared map square.
+  def self.current_area(map=$game_map.map_id)
+    infos=load_data('Data/MapInfos.rxdata');visited=[];fallback=map
+    while map && map>0 && !visited.include?(map)
+      visited << map
+      return catalog[map] if catalog[map]
+      data=GameData::MapMetadata.try_get(map)
+      return {map:map,name:BlueHabitat.map_name(map),rows:[]} if data && data.outdoor_map
+      map=infos[map]&.parent_id
+    end
+    {map:fallback,name:BlueHabitat.map_name(fallback),rows:[]}
+  end
   def self.areas
-    catalog.values.select { |a| $PokemonGlobal.visitedMaps[a[:map]] || $game_map.map_id==a[:map] || state(a[:map])[:entries].values.any? { |r| r[:seen] } }.sort_by { |a| [a[:name],a[:map]] }
+    current=current_area
+    list=catalog.values.select { |a| $PokemonGlobal.visitedMaps[a[:map]] || a[:map]==current[:map] || state(a[:map])[:entries].values.any? { |r| r[:seen] } }
+    # Even towns with no trainer events must open on the player's location.
+    list << current unless list.any? { |a| a[:map]==current[:map] }
+    list.sort_by { |a| [a[:name],a[:map]] }
+  end
+  def self.initial_index(list)
+    current=current_area
+    list.index { |a| a[:map]==current[:map] } || 0
   end
   def self.open
     list=areas
     if list.empty?;pbMessage(_INTL('Visit an area with trainers to start the album.'));return;end
-    current=BlueHabitatMap.current_index(list)
-    Scene.new(list[current]).run if current
-    selected=current || 0
+    selected=initial_index(list)
+    Scene.new(list[selected]).run
     loop do
       labels=list.map do |a|
         s=state(a[:map]);won=s[:entries].values.count { |r| r[:won] }
@@ -171,7 +191,14 @@ module BlueTrainerAlbum
         b.draw_text(x+2,y+59,116,13,entry[:won] ? _INTL('Defeated') : _INTL(entry[:seen] ? 'Encountered' : 'Not encountered'),1)
       end
       b.font.size=16;b.font.color=light
-      status=s[:paid] ? _INTL('Reward received: ${1}',s[:award].to_i.to_s_formatted) : _INTL('Defeat every trainer in this area.');b.draw_text(12,307,490,25,status)
+      status=if @area[:rows].empty?
+        _INTL('No trainers registered in this area.')
+      elsif s[:paid]
+        _INTL('Reward received: ${1}',s[:award].to_i.to_s_formatted)
+      else
+        _INTL('Defeat every trainer in this area.')
+      end
+      b.draw_text(12,307,490,25,status)
       [_INTL('Previous'),_INTL('Next'),_INTL('Back')].each_with_index { |label,i| x=i*Graphics.width/3;b.fill_rect(x+4,336,Graphics.width/3-8,44,Color.new(30,67,99));b.draw_text(x,342,Graphics.width/3,32,label,1) }
       if BlueTrainerAlbum.complete?(@area[:map]) && !s[:paid]
         b.fill_rect(332,4,172,26,Color.new(38,107,105));b.draw_text(332,4,172,26,_INTL('Collect reward'),1)

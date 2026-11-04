@@ -88,7 +88,9 @@ module BlueStartMouse
       super
     end
     def drawPage
-      result=super;bitmap=@sprites['overlay'].bitmap;bitmap.clear_rect(294,74,218,26)
+      # RGSS/JoiPlay Bitmap lacks mkxp's clear_rect. A transparent fill also
+      # replaces the old header pixels without clearing the rest of the overlay.
+      result=super;bitmap=@sprites['overlay'].bitmap;bitmap.fill_rect(294,74,218,26,Color.new(0,0,0,0))
       text=@blue_monotype_pick ? _INTL('Starter {1}/2 · {2} options',@blue_monotype_pick,@pokemonlist.length) : _INTL('Options: {1}',@pokemonlist.length)
       pbSetSmallFont(bitmap);pbDrawTextPositions(bitmap,[[text,298,78,:left,Color.new(248,248,248),Color.new(104,104,104)]]);pbSetSystemFont(bitmap)
       result
