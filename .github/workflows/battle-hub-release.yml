@@ -79,9 +79,13 @@ jobs:
         run: |
           for($compileAttempt=1;$compileAttempt -le 3;$compileAttempt++){
             $compiler=Start-Process -FilePath "$pwd\game\Game.exe" -WorkingDirectory "$pwd\game" -WindowStyle Hidden -PassThru -RedirectStandardOutput "$pwd\.blue-work\native-stdout.txt" -RedirectStandardError "$pwd\.blue-work\native-stderr.txt"
+            $nativeHandle=$compiler.Handle
             if(-not $compiler.WaitForExit(300000)){Stop-Process -Id $compiler.Id;throw 'Native compiler timed out'}
+            $nativeExit=$compiler.ExitCode
+            Write-Output "Native phase $compileAttempt exit: $nativeExit"
             if(Test-Path game/Data/blue-android-compiled.txt){break}
-            if($compiler.ExitCode -ne 0 -or (Test-Path game/Data/blue-android-error.txt)){break}
+            $compiledPhase=(Get-Content .blue-work/native-stdout.txt -Raw) -match 'Successfully compiled all game data'
+            if((Test-Path game/Data/blue-android-error.txt) -or ($nativeExit -ne 0 -and -not $compiledPhase)){break}
             Write-Output "Compiler phase $compileAttempt exited normally; reopening to complete the engine restart."
           }
           if(-not (Test-Path game/Data/blue-android-compiled.txt)){
