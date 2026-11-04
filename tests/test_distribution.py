@@ -101,7 +101,7 @@ case mode
 when 'touch'
   raise 'Android click compatibility missing' unless Input.respond_to?(:mouse_in_window) && Input.mouse_in_window==true
 when 'system'
-  raise 'Native System mouse state not respected' unless Input.mouse_in_window==false
+  raise 'Android touch must not depend on physical mouse state' unless Input.mouse_in_window==true
 when 'existing'
   raise 'Native Input implementation was replaced' unless Input.mouse_in_window==:original
 when 'desktop'
