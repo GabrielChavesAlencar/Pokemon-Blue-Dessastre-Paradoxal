@@ -72,6 +72,52 @@ raise 'mobile menu appeared more than once' unless BlueBattleLab.calls == 1
             marker=Path(tmp)/'Data/blue-mobile.txt'
             marker.parent.mkdir(parents=True);marker.write_text('experimental-v1')
             subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb')],cwd=tmp,capture_output=True,text=True,check=True)
+    def test_android_joiplay_touch_shim_works_without_mouse_in_window(self):
+        ruby=shutil.which('ruby')
+        source=(ROOT/'scripts/battle_lab/Mobile.rb').read_text(encoding='utf-8')
+        self.assertIn('Input.define_singleton_method(:mouse_in_window)',source)
+        self.assertIn('BlueMobile.install_input_compatibility',source)
+        if not ruby:
+            self.skipTest('Ruby is not installed; static check passed')
+        runner="""
+module Input
+end
+module BlueBattleLab
+  ACTIVE = false
+end
+class Object
+  def pbCallTitle; :story; end
+end
+mode=ARGV.fetch(1)
+if mode=='system'
+  module System
+    def self.mouse_in_window; false; end
+  end
+elsif mode=='existing'
+  def Input.mouse_in_window; :original; end
+end
+load ARGV.fetch(0)
+case mode
+when 'touch'
+  raise 'Android click compatibility missing' unless Input.respond_to?(:mouse_in_window) && Input.mouse_in_window==true
+when 'system'
+  raise 'Native System mouse state not respected' unless Input.mouse_in_window==false
+when 'existing'
+  raise 'Native Input implementation was replaced' unless Input.mouse_in_window==:original
+when 'desktop'
+  raise 'Android shim was installed on Windows' if Input.respond_to?(:mouse_in_window)
+end
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            for mode in ('touch','system','existing','desktop'):
+                folder=Path(tmp)/mode
+                folder.mkdir()
+                if mode!='desktop':
+                    marker=folder/'Data/blue-mobile.txt'
+                    marker.parent.mkdir();marker.write_text('experimental-v1')
+                result=subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb'),mode],
+                                      cwd=folder,capture_output=True,text=True)
+                self.assertEqual(result.returncode,0,f'{mode}: {result.stdout} {result.stderr}')
     def test_android_bundle_requires_a_current_native_compile_and_excludes_private_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.game(root);output=root/'out.zip'
