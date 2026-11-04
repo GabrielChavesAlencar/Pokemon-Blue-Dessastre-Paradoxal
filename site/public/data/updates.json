@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e9a233be433099331188df4dcd3110808c43203d",
+      "date": "2026-11-03T23:32:38-03:00",
+      "title": "fix(android): liberar correções JoiPlay com revisão e diagnóstico verificáveis",
+      "category": "Correções"
+    },
+    {
       "sha": "16858c2431580e4e96145aa0b81151aea86995b2",
       "date": "2026-11-03T22:48:09-03:00",
       "title": "test(android): comparar quebra de linha real no log do evento",
