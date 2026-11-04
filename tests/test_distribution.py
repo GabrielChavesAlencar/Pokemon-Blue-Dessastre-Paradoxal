@@ -118,6 +118,48 @@ end
                 result=subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb'),mode],
                                       cwd=folder,capture_output=True,text=True)
                 self.assertEqual(result.returncode,0,f'{mode}: {result.stdout} {result.stderr}')
+    def test_android_event_error_logs_real_cause_without_suppressing_exception(self):
+        ruby=shutil.which('ruby')
+        source=(ROOT/'scripts/battle_lab/Mobile.rb').read_text(encoding='utf-8')
+        self.assertIn('blue-android-event-error.txt',source)
+        self.assertIn('Interpreter.prepend(EventDiagnostics)',source)
+        if not ruby:
+            self.skipTest('Ruby is not installed; static check passed')
+        runner="""
+module Input
+  def self.mouse_in_window; true; end
+end
+module BlueBattleLab
+  ACTIVE = false
+end
+class Object
+  def pbCallTitle; :story; end
+end
+class Interpreter
+  def execute_script(script)
+    raise RuntimeError, 'Original starter script problem' if script=='choose starters'
+    :ok
+  end
+end
+load ARGV.fetch(0)
+i=Interpreter.new
+raise 'normal interpreter execution changed' unless i.execute_script('ok') == :ok
+begin
+  i.execute_script('choose starters')
+  raise 'original failure was swallowed'
+rescue RuntimeError => e
+  raise unless e.message=='Original starter script problem'
+end
+log=File.read('Data/blue-android-event-error.txt')
+raise 'missing underlying error' unless log.include?('RuntimeError: Original starter script problem')
+raise 'missing event script' unless log.include?('Full script:\\nchoose starters')
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            game=Path(tmp);(game/'Data').mkdir()
+            (game/'Data/blue-mobile.txt').write_text('experimental-v1')
+            result=subprocess.run([ruby,'-e',runner,str(ROOT/'scripts/battle_lab/Mobile.rb')],
+                                  cwd=tmp,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stdout+' '+result.stderr)
     def test_android_bundle_requires_a_current_native_compile_and_excludes_private_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.game(root);output=root/'out.zip'
