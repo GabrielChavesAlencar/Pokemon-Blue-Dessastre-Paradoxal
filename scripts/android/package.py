@@ -22,11 +22,13 @@ def request_compile(game):
             if source.count(needle)!=1:raise ValueError('Unknown Main compiler entry.')
             source=source.replace(needle,"    File.write('Data/blue-android-stage.txt','compiler') if File.file?('Data/blue-android-build-request.txt')\n"+needle+"\n    # BLUE_ANDROID_BUILD\n    if File.file?('Data/blue-android-build-request.txt')\n      File.write('Data/blue-android-compiled.txt',File.read('Data/blue-android-build-request.txt'))\n      File.delete('Data/blue-android-build-request.txt')\n      exit\n    end")
             source=source.replace('    PluginManager.runPlugins',"    if File.file?('Data/blue-android-build-request.txt')\n      File.write('Data/blue-android-stage.txt','plugins')\n      Object.send(:define_method,:pbPrintException) { |error| File.write('Data/blue-android-error.txt',error.to_s+\"\\n\"+Array(error.backtrace).join(\"\\n\"));exit! 1 }\n    end\n    PluginManager.runPlugins")
-            row[2]=RubyString(zlib.compress(source.encode('utf8')))
+        if '# BLUE_ANDROID_DEBUG' not in source:
+            source=source.replace('    PluginManager.runPlugins',"    $DEBUG = true if File.file?('Data/blue-android-build-request.txt') # BLUE_ANDROID_DEBUG\n    PluginManager.runPlugins")
+        row[2]=RubyString(zlib.compress(source.encode('utf8')))
         found=True
     if not found:raise ValueError('Main is missing.')
     path.write_bytes(b'\x04\x08'+dump(rows))
-    for name in ['blue-battle-lab-request.txt','blue-android-compiled.txt']:
+    for name in ['blue-battle-lab-request.txt','blue-android-compiled.txt','blue-android-error.txt','blue-android-stage.txt']:
         file=game/'Data'/name
         if file.is_file():file.unlink()
     (game/'Data/blue-compile-request.txt').write_text('compile','ascii')

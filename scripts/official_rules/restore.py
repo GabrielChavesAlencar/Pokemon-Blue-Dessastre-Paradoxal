@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import time
 from html.parser import HTMLParser
 from urllib.request import Request, urlopen
 import zipfile
@@ -16,6 +17,7 @@ ESSENTIALS_SHA256 = '1bea20fbf6e96a3d7a74eea15ee343533ec73f3e91e88af5eed6704b0b0
 GEN9_SHA256 = '1a12e96a48f790ac082b06e119c3422b00e7a12e59d5de218a02d67331881e85'
 ESSENTIALS_URL = 'https://codeload.github.com/Maruno17/pokemon-essentials/zip/refs/tags/v21.1'
 GEN9_URL = 'https://eeveeexpo.com/resources/1101/version/3285/download'
+GEN9_DOWNLOAD_PAGE = 'https://www.mediafire.com/file/3clyiys8mrkerbx/Generation_9_Pack_v3.3.3.rar/file'
 
 def sha256(path):
     value = hashlib.sha256()
@@ -24,14 +26,38 @@ def sha256(path):
     return value.hexdigest()
 
 def download(url, path):
-    with urlopen(Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=90) as source, path.open('wb') as target:
-        shutil.copyfileobj(source, target)
+    partial=path.with_name(path.name+'.part')
+    try:
+        for attempt in range(3):
+            try:
+                with urlopen(Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=90) as source, partial.open('wb') as target:
+                    shutil.copyfileobj(source, target)
+                os.replace(partial,path);return
+            except OSError:
+                if attempt==2:raise
+                time.sleep(attempt+1)
+    finally:
+        if partial.exists():partial.unlink()
 
 class DownloadLink(HTMLParser):
     url = None
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
         if tag == 'a' and values.get('id') == 'downloadButton': self.url = values.get('href')
+
+def gen9_download_url():
+    # The second page is the public destination of the original version's redirect.
+    # Keep the pinned archive hash below; never substitute another pack/version.
+    for page_url in (GEN9_URL,GEN9_DOWNLOAD_PAGE):
+        for attempt in range(3):
+            try:
+                with urlopen(Request(page_url,headers={'User-Agent':'Mozilla/5.0'}),timeout=60) as page:
+                    parser=DownloadLink();parser.feed(page.read().decode('utf8',errors='replace'))
+                if parser.url and parser.url.startswith('https://'):return parser.url
+            except OSError:
+                pass
+            if attempt<2:time.sleep(attempt+1)
+    raise ValueError('Download link unavailable after retries; supply --gen9-rar.')
 
 def references(work, essentials_zip=None, gen9_rar=None):
     expected = {'essentials': ESSENTIALS_SHA256, 'gen9': GEN9_SHA256}
@@ -41,16 +67,13 @@ def references(work, essentials_zip=None, gen9_rar=None):
     work.mkdir(parents=True, exist_ok=True)
     essential = Path(essentials_zip).resolve() if essentials_zip else work / 'essentials-v21.1.zip'
     gen9 = Path(gen9_rar).resolve() if gen9_rar else work / 'gen9-v3.3.3.rar'
-    if not essential.is_file():
+    if not essential.is_file() or (not essentials_zip and sha256(essential)!=ESSENTIALS_SHA256):
         print('Downloading Essentials v21.1 reference...')
         download(ESSENTIALS_URL, essential)
     if sha256(essential) != ESSENTIALS_SHA256: raise ValueError('Essentials archive SHA-256 mismatch.')
-    if not gen9.is_file():
+    if not gen9.is_file() or (not gen9_rar and sha256(gen9)!=GEN9_SHA256):
         print('Downloading original Gen 9 Pack v3.3.3 reference...')
-        with urlopen(Request(GEN9_URL, headers={'User-Agent':'Mozilla/5.0'}), timeout=60) as page:
-            parser = DownloadLink(); parser.feed(page.read().decode('utf-8', errors='replace'))
-        if not parser.url or not parser.url.startswith('https://'): raise ValueError('Download link unavailable; supply --gen9-rar.')
-        download(parser.url, gen9)
+        download(gen9_download_url(), gen9)
     if sha256(gen9) != GEN9_SHA256: raise ValueError('Gen 9 archive SHA-256 mismatch.')
     essential_root = work/'essentials-reference'
     with zipfile.ZipFile(essential) as archive:

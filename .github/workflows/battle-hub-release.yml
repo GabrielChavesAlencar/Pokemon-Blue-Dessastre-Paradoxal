@@ -77,9 +77,14 @@ jobs:
           GALLIUM_DRIVER: llvmpipe
           ALSOFT_DRIVERS: 'null'
         run: |
-          $compiler=Start-Process -FilePath "$pwd\game\Game.exe" -WorkingDirectory "$pwd\game" -WindowStyle Hidden -PassThru -RedirectStandardOutput "$pwd\.blue-work\native-stdout.txt" -RedirectStandardError "$pwd\.blue-work\native-stderr.txt"
-          if(-not $compiler.WaitForExit(300000)){Stop-Process -Id $compiler.Id;throw 'Native compiler timed out'}
-          if($compiler.ExitCode -ne 0 -or -not (Test-Path game/Data/blue-android-compiled.txt)){
+          for($compileAttempt=1;$compileAttempt -le 3;$compileAttempt++){
+            $compiler=Start-Process -FilePath "$pwd\game\Game.exe" -WorkingDirectory "$pwd\game" -WindowStyle Hidden -PassThru -RedirectStandardOutput "$pwd\.blue-work\native-stdout.txt" -RedirectStandardError "$pwd\.blue-work\native-stderr.txt"
+            if(-not $compiler.WaitForExit(300000)){Stop-Process -Id $compiler.Id;throw 'Native compiler timed out'}
+            if(Test-Path game/Data/blue-android-compiled.txt){break}
+            if($compiler.ExitCode -ne 0 -or (Test-Path game/Data/blue-android-error.txt)){break}
+            Write-Output "Compiler phase $compileAttempt exited normally; reopening to complete the engine restart."
+          }
+          if(-not (Test-Path game/Data/blue-android-compiled.txt)){
             Get-Content .blue-work/native-stdout.txt,.blue-work/native-stderr.txt,game/Data/blue-android-stage.txt,game/Data/blue-android-error.txt,game/errorlog.txt -ErrorAction SilentlyContinue | Select-Object -Last 100
             throw 'Native compiler failed to produce its completion marker'
           }

@@ -1,4 +1,7 @@
 import importlib.util,json,sys,tempfile,unittest,zipfile,zlib,hashlib,subprocess
+import io
+from unittest.mock import patch
+from urllib.error import URLError
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts/official_rules'))
@@ -8,7 +11,22 @@ def load(name,path):
 android=load('blue_android_package','scripts/android/package.py')
 music=load('blue_shared_music','scripts/music/install.py')
 presets=load('blue_preset_catalog','scripts/battle_lab/import_presets.py')
+restore=load('blue_reference_downloads','scripts/official_rules/restore.py')
 class DistributionTests(unittest.TestCase):
+    def test_reference_download_retries_atomically_and_keeps_existing_files_on_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target=Path(tmp)/'reference.rar';target.write_bytes(b'original')
+            with patch.object(restore,'urlopen',side_effect=[URLError('timeout'),io.BytesIO(b'complete')]),patch.object(restore.time,'sleep'):
+                restore.download('https://example.invalid/reference.rar',target)
+            self.assertEqual(target.read_bytes(),b'complete')
+            with patch.object(restore,'urlopen',side_effect=URLError('timeout')),patch.object(restore.time,'sleep'):
+                with self.assertRaises(URLError):restore.download('https://example.invalid/reference.rar',target)
+            self.assertEqual(target.read_bytes(),b'complete');self.assertFalse(target.with_name(target.name+'.part').exists())
+    def test_reference_landing_page_uses_the_original_public_destination_after_retries(self):
+        pages=[io.BytesIO(b'no link') for _ in range(3)]+[io.BytesIO(b'<a id="downloadButton" href="https://example.invalid/pinned.rar">Download</a>')]
+        with patch.object(restore,'urlopen',side_effect=pages) as opening,patch.object(restore.time,'sleep'):
+            self.assertEqual(restore.gen9_download_url(),'https://example.invalid/pinned.rar')
+        self.assertEqual(opening.call_args_list[-1].args[0].full_url,restore.GEN9_DOWNLOAD_PAGE)
     def test_shared_helpers_win_over_the_standalone_online_server_on_embedded_search_path(self):
         code="import sys;sys.path[:0]=[sys.argv[1],sys.argv[2]];import server.ruby_marshal;assert server.ruby_marshal.dumps_simple([1]).startswith(b'\\x04\\x08')"
         subprocess.run([sys.executable,'-I','-c',code,str(ROOT),str(ROOT/'scripts/online')],check=True,capture_output=True)
@@ -25,6 +43,8 @@ class DistributionTests(unittest.TestCase):
             self.assertEqual((game/'Data/Scripts.rxdata').read_bytes(),first)
             source=zlib.decompress(Marshal(first).read()[0][2]).decode()
             self.assertEqual(source.count('# BLUE_ANDROID_BUILD'),1);self.assertIn("exit! 1",source)
+            self.assertEqual(source.count('# BLUE_ANDROID_DEBUG'),1)
+            self.assertIn("$DEBUG = true if File.file?('Data/blue-android-build-request.txt')",source)
             self.assertEqual(save.read_bytes(),b'private save')
     def test_android_bundle_requires_a_current_native_compile_and_excludes_private_files(self):
         with tempfile.TemporaryDirectory() as tmp:
