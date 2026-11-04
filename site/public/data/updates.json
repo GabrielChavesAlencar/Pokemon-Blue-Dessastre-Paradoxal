@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cd42de6aaeda5ba07652d0b42cf25b2895d3693e",
+      "date": "2026-11-04T06:39:54-03:00",
+      "title": "fix(android): corrigir seletor de iniciais no JoiPlay e abrir álbum na área atual",
+      "category": "Correções"
+    },
+    {
       "sha": "e9a233be433099331188df4dcd3110808c43203d",
       "date": "2026-11-03T23:32:38-03:00",
       "title": "fix(android): liberar correções JoiPlay com revisão e diagnóstico verificáveis",
