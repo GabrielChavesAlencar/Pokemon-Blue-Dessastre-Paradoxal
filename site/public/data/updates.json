@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "77804de88a72904f72ac0b1b18e7476c870e1177",
+      "date": "2026-11-05T14:57:31-03:00",
+      "title": "feat(windows): remapear teclado pelo menu Configuracoes, com WASD e persistencia",
+      "category": "Novidades"
+    },
+    {
       "sha": "cd42de6aaeda5ba07652d0b42cf25b2895d3693e",
       "date": "2026-11-04T06:39:54-03:00",
       "title": "fix(android): corrigir seletor de iniciais no JoiPlay e abrir álbum na área atual",
