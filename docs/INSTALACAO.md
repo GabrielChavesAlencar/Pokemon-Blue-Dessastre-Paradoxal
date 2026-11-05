@@ -16,6 +16,14 @@ Os dois EXEs usam uma instalação compartilhada. Em um PC novo, ela fica em `%L
 - 130 times prontos por jogo/regulamento, disponíveis sem internet.
 - As mesmas listas compartilhadas de música: 12 faixas de treinador, 8 selvagens e 9 de líderes.
 
+## Configurar o teclado no Windows (sem setas e sem F1–F12)
+
+No **Modo História** ou no **Hub de Batalha**, abra **Configurações → Teclas → Editar**. A tela permite atribuir outras teclas a cada ação (movimento, confirmar, cancelar, menu, navegação entre páginas e itens registrados). Escolha uma ação, selecione **Replace new key** ou **Add key**, pressione a tecla desejada e confirme **Keep changes?** ao sair. **Default** restaura os controles.
+
+Os dois conjuntos de movimento já estão disponíveis desde a primeira abertura: **W/A/S/D** e as **setas**. Para evitar conflitos com WASD, os padrões de rolagem passam a ser **Q/E**, e o menu de itens registrados fica em **R**. **Enter/Espaço/C** confirmam, **X/Esc** cancelam e **Z/Shift** abrem o menu. É possível trocar todas essas teclas sem usar F1, F2 ou qualquer tecla de função.
+
+As escolhas ficam salvas separadamente dos saves em `blue-keyboard-controls.txt`, no diretório de dados do usuário utilizado pelo motor. São compartilhadas entre História e Hub. O jogo continua com o menu de controles acessível no próprio menu de opções. Ao baixar uma atualização, a pasta do usuário e os saves são preservados.
+
 ## Android experimental
 
 Baixe **Blue-Android-JoiPlay.zip**, instale JoiPlay e RPG Maker Plugin pelos [downloads oficiais](https://www.joiplay.net/), extraia o ZIP inteiro e adicione `Pokemon-Blue-Android/Game.exe` ao JoiPlay. Na abertura, escolha História ou Hub offline. O pacote já contém os dados compilados e as músicas.

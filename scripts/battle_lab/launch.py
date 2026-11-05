@@ -60,6 +60,11 @@ def install(project: Path, game: Path) -> Path:
         spec=importlib.util.spec_from_file_location('blue_battle_options_install',options_installer)
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         module.install(project,game)
+    controls_installer=project/'scripts'/'controls'/'install.py'
+    if controls_installer.is_file():
+        spec=importlib.util.spec_from_file_location('blue_controls_install',controls_installer)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module.install(project,game)
     ai_installer=project/'scripts'/'radical_ai'/'install.py'
     if ai_installer.is_file():
         spec=importlib.util.spec_from_file_location('blue_radical_ai_install',ai_installer)

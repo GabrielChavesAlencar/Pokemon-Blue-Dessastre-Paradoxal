@@ -17,6 +17,9 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.match(html,/Python ou Git/);assert.match(html,/cópias portáteis verificadas/);
   assert.equal((html.match(/<ol>/g)||[]).length,2);
   assert.ok(html.includes('130 times prontos'));
+  assert.match(html,/Configurações → Teclas → Editar/);
+  assert.match(html,/WASD funciona/);
+  assert.match(html,/nenhuma tecla F é necessária/);
 });
 test('downloads ficam acessíveis pela navegação e pela página inicial',()=>{
   const read=path=>readFileSync(new URL(path,import.meta.url),'utf8');
