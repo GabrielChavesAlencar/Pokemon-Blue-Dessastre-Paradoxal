@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "156f37ede89a74b5bb7190393c44f19ea0852fd4",
+      "date": "2026-11-06T20:38:24-03:00",
+      "title": "fix(site): permitir link de downloads no guia Android",
+      "category": "Correções"
+    },
+    {
       "sha": "9651b53c9985c90af3e659702d40aef209383bd7",
       "date": "2026-11-06T20:32:39-03:00",
       "title": "feat(android): distribuir Paradoxos raros e otimizar PC, Hub e loja",
