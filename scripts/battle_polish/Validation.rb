@@ -9,6 +9,7 @@ module BluePolishValidation
     test_exp
     test_pointer_order
     test_story
+    assert(BlueMenuValidation.run,'Rare encounter crystal gates, PC touch, lightweight Android Hub, pick-four and searchable paged shop; Data/blue-menu-validation.txt')
     BlueCampaignValidation.run(@lines)
     assert(BlueJourneyValidation.run,'Journey scaling, trainer menus, Leech Seed, Champions statuses and pause/save lifecycle; Data/blue-journey-validation.txt')
     assert(BlueBattleUIValidation.run,'Readable misses, field HUD, Run shortcut, cleaner, doubles, gym prizes and Portuguese; Data/blue-ui-validation.txt')

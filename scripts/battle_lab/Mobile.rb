@@ -17,6 +17,19 @@ module BlueMobile
     path='Data/blue-mobile-build.txt'
     File.file?(path) ? File.read(path).strip : 'Revision: unknown (older package)'
   end
+  def self.save_directory
+    return File.expand_path(SaveData::SAVE_DIR) if defined?(SaveData::SAVE_DIR)
+    return File.dirname(File.expand_path(SaveData::FILE_PATH)) if defined?(SaveData::FILE_PATH)
+    File.expand_path('.')
+  end
+  def self.show_save_location
+    directory=save_directory
+    lines=['Pasta real de saves:',*directory.scan(/.{1,48}/),
+      'Copie File A.rxdata ate File H.rxdata, Auto 1-3.rxdata, Game.rxdata e arquivos .bak existentes.',
+      'Guarde essa copia fora da pasta do jogo antes de atualizar.','Voltar']
+    File.write('Data/blue-save-location.txt',directory+"\nFile A-H.rxdata | Auto 1-3.rxdata | Game.rxdata | *.bak\n") rescue nil
+    BlueBattleLab.choose('Onde fica meu save?',lines)
+  end
   def self.write_event_error(error,context)
     return if error.is_a?(SystemExit) || error.class.to_s=='Reset'
     interpreter=context[:interpreter]
@@ -86,9 +99,10 @@ module BlueMobile
       return super unless BlueMobile.enabled? && !BlueBattleLab::ACTIVE
       BlueMobile.install_input_compatibility
       BlueMobile.log_boot
-      unless BlueMobile.title_selected
+      until BlueMobile.title_selected
+        choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',['Modo historia','Hub de batalha offline','Sair','Onde fica meu save?'])
+        if choice==3;BlueMobile.show_save_location;next;end
         BlueMobile.title_selected=true
-        choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',['Modo historia','Hub de batalha offline','Sair'])
         return nil if choice<0 || choice==2
         if choice==1
           BlueBattleLab.send(:remove_const,:ACTIVE);BlueBattleLab.const_set(:ACTIVE,true)

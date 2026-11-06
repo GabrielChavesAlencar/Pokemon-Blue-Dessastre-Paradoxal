@@ -7,6 +7,26 @@ installer=importlib.util.module_from_spec(spec);spec.loader.exec_module(installe
 MANIFEST=json.loads((ROOT/'data/dessastre-paradoxal.json').read_text(encoding='utf8'))
 
 class NamedGenerationTests(unittest.TestCase):
+    def test_rare_spread_has_all_ready_paradoxes_once_and_excludes_drafts_and_megas(self):
+        config=json.loads((ROOT/'data/fan-encounters.json').read_text('utf8'))
+        placed=[id for area in config['areas'] for id in area['species']]
+        expected={p['id'] for p in MANIFEST['entries'] if p['category'] in ('past_paradox','future_paradox') and not p['pending']}
+        self.assertEqual(len(placed),44);self.assertEqual(len(placed),len(set(placed)))
+        self.assertEqual(set(placed),expected);self.assertEqual(config['chancePerSpecies'],5)
+        self.assertTrue(all(a['reason'] and a['mapId'] not in (156,157) for a in config['areas']))
+
+    def test_rare_spread_migrates_grottos_and_versions_without_losing_original_slots(self):
+        entries=[{'id':'CAVEFANG','category':'past_paradox','pending':False}, {'id':'IRONCRUSHER','category':'future_paradox','pending':False}, {'id':'DRAFT','category':'past_paradox','pending':True}]
+        config={'version':2,'chancePerSpecies':5,'areas':[{'mapId':88,'method':'Land','species':['CAVEFANG','IRONCRUSHER']}]}
+        original='[88]\nLand,21\n    60,PIKACHU,5,8\n    40,EEVEE,8\nWater,10\n    100,MAGIKARP,3\n[88,1]\nLand,21\n    100,VULPIX,5\n[156]\nLand,21\n    50,ZUBAT,65,70\n    50,CAVEFANG,65,70\n'
+        result=installer.update_encounters(original,entries,config)
+        self.assertIn('    54,PIKACHU,5,8\n    36,EEVEE,8\n    5,CAVEFANG,5,8\n    5,IRONCRUSHER,5,8',result)
+        self.assertIn('[88,1]\nLand,21\n    90,VULPIX,5\n    5,CAVEFANG,5\n    5,IRONCRUSHER,5\n',result)
+        self.assertIn('[156]\nLand,21\n    100,ZUBAT,65,70\n',result)
+        self.assertIn('Water,10\n    100,MAGIKARP,3\n',result)
+        self.assertEqual(installer.update_encounters(result,entries,config),result)
+        config['areas'][0]['species']=['DRAFT']
+        with self.assertRaisesRegex(ValueError,'nao liberado'):installer.update_encounters(original,entries,config)
     def test_extra_assets_are_exact_and_archive_corruption_is_rejected(self):
         import hashlib,wave,io
         with tempfile.TemporaryDirectory() as tmp:

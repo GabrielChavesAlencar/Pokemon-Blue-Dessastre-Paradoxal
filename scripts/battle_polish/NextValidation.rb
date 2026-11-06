@@ -85,7 +85,7 @@ module BlueNextValidation
     check(GameData::Ability.get(:BLAZE).name=='Blaze' && BlueLocale.translate('Blaze')=='Blaze','Ability names remain English in Portuguese menus and battle text')
     check(BlueCampaign.shop_name(GameData::Item.get(:TM025)).include?(GameData::Move.get(GameData::Item.get(:TM025).move).name),'TM shop labels combine the actual TM number and English move name')
     BlueCampaign::Shop.new.open do |shop|
-      shop.instance_variable_set(:@tab,5);shop.refresh;shot('blue-tm-names-smoke')
+      shop.instance_variable_set(:@tab,5);shop.instance_variable_set(:@query,'Protect');shop.refresh;shot('blue-tm-names-smoke')
       check(shop.instance_variable_get(:@list).instance_variable_get(:@commands).any? { |s| s.include?('Protect') },'Native TM stock visibly includes English move names')
     end
     badges=$player.badges.dup;card=nil

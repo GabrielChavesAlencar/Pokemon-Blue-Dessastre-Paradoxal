@@ -8,6 +8,8 @@ O ZIP antigo pode continuar disponível quando um teste impede a publicação, m
 
 ## Testar a correção
 
+Antes de substituir a pasta do Android, use **Onde fica meu save?** no menu inicial. Essa opção mostra o diretório usado pelo JoiPlay; copie `File A.rxdata` a `File H.rxdata`, `Auto 1–3.rxdata`, `Game.rxdata` e os `.bak` existentes. O arquivo `Data/blue-save-location.txt` registra o caminho, mas não guarda uma cópia da partida. Veja [encontros e menus Android](ENCONTROS_E_MENUS_ANDROID.md) para as instruções completas.
+
 1. Baixe o pacote Android identificado na página Downloads.
 2. Extraia por completo em uma pasta nova e adicione esse `Game.exe` como outra entrada do JoiPlay. Preserve a pasta anterior e os saves.
 3. Confira a linha `Revision:` em `LEIA-ME-ANDROID.txt`; ela deve coincidir com a revisão publicada no site.

@@ -169,3 +169,8 @@
 @media(max-width:620px){.changes-intro{display:block}.changes-intro>span{display:block;margin-bottom:12px}.changes-intro p{font-size:12px}.comparison-table thead th{font-size:24px;padding:21px 20px}.comparison-table tbody th,.comparison-table tbody td{padding:20px}.comparison-table p{font-size:12px;line-height:1.85}.comparison-topic{font-size:14px;gap:8px}.comparison-mobile-topic{font-size:14px}.changes-scroll-hint{display:block}.changes-note{padding:21px}.changes-note p{font-size:12px}}
 .difficulty-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.difficulty-grid>div{padding:18px;border:1px solid var(--line);border-radius:8px;background:#0b1726}.difficulty-grid b,.difficulty-grid span,.difficulty-grid small{display:block}.difficulty-grid b{color:#9bd4ff}.difficulty-grid span{margin:8px 0;font-size:13px}.difficulty-grid small{font-size:11px;line-height:1.8;color:var(--muted)}.trainer-choice{flex-wrap:wrap;gap:20px}.trainer-level input{width:160px;background:#101f32;color:#eef6ff;border:1px solid var(--line);border-radius:6px;padding:12px;font:inherit}@media(max-width:760px){.difficulty-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.difficulty-grid{grid-template-columns:1fr}}
 .trainer-level small{display:block;margin-top:6px;font-size:10px;color:var(--muted)}
+/* Rare encounter policy is shared with the game's distribution manifest. */
+.rare-encounter-note{margin:20px 0;padding:20px 24px;border:1px solid #385b79;border-left:4px solid #ef77ac;border-radius:12px;background:#102338;color:#c5d8e9;line-height:1.65}
+.rare-encounter-note strong{color:#f3b0cf;font-size:1.05rem}
+.rare-encounter-note p{margin:8px 0 0;font-size:.92rem}
+.rare-habitat-reason{color:#97c5e7}

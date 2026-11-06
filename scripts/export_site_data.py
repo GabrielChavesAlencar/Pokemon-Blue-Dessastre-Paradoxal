@@ -155,8 +155,10 @@ def export(game,output):
            'locations':len(locations),'moves':len(moves),'paradox':sum('Paradox' in x['flags'] for x in catalogue)},
            'encounterForms':encounter_forms,
            'basis':'Dados atuais do projeto, com referências da geração 9'}
+    encounter_config=project/'data/fan-encounters.json'
+    author_encounters=json.loads(encounter_config.read_text(encoding='utf8')) if encounter_config.is_file() else None
     payloads={'catalog.json':index,'details.json':{'species':details,'moves':moves,'abilities':abilities,'items':items},
-              'locations.json':{'updatedAt':generated,'locations':sorted(locations.values(),key=lambda x:x['id'])}}
+              'locations.json':{'updatedAt':generated,'locations':sorted(locations.values(),key=lambda x:x['id']),'authorEncounters':author_encounters}}
     for name,data in payloads.items():
         path=output/name;path.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')),encoding='utf-8',newline='\n')
         print(name,path.stat().st_size)

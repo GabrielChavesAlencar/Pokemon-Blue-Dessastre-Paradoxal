@@ -83,6 +83,7 @@ def distribute(weights,total):
     return result
 
 def update_encounters(text,entries,config=None):
+    if config and config.get('version')==2:return spread_encounters(text,entries,config)
     config=config or {'authorPoolPercent':50,'areas':[{'mapId':156,'category':'past_paradox','method':'Land'},{'mapId':157,'category':'future_paradox','method':'Land'}]}
     pool=config['authorPoolPercent']
     if type(pool) is not int or not 1<=pool<=99:raise ValueError('Percentual de encontros invalido.')
@@ -111,6 +112,39 @@ def update_encounters(text,entries,config=None):
         lines+=['    '+','.join([str(weight),id,low]+([high] if high else [])) for id,weight in zip(fans,author)]
         new=block[:match.start(1)]+newline.join(lines)+newline+block[match.end(1):]
         text=text[:start]+new+text[end:]
+    return text
+
+def spread_encounters(text,entries,config):
+    """Replace rare slots deterministically, including migration from both grottos."""
+    chance=config.get('chancePerSpecies')
+    if type(chance) is not int or not 1<=chance<100:raise ValueError('Chance por especie invalida.')
+    known={p['id']:p for p in entries};author={p['id'] for p in entries if not p.get('base')}
+    plans={};found=set()
+    for area in config['areas']:
+        key=(area['mapId'],area['method']);ids=area['species']
+        if type(key[0]) is not int or not re.fullmatch(r'[A-Za-z]+',key[1]) or key in plans:raise ValueError('Area de encontro invalida ou duplicada.')
+        if not ids or len(ids)!=len(set(ids)) or len(ids)*chance>=100:raise ValueError('Distribuicao de encontros invalida.')
+        for id in ids:
+            p=known.get(id)
+            if not p or p.get('base') or p['pending'] or p['category'] not in ('past_paradox','future_paradox'):raise ValueError('Paradoxo nao liberado: '+id)
+        plans[key]=ids
+    pattern=re.compile(r'(?m)^([A-Za-z]+),\d+[^\r\n]*\r?\n((?:[ \t]+\d+,[^\r\n]+(?:\r?\n|$))+)')
+    for header,start,end in reversed(parse_sections(text)):
+        map_id=int(header.split(',')[0]);block=text[start:end]
+        def replace(match):
+            key=(map_id,match[1]);ids=plans.get(key,[])
+            cells=[[s.strip() for s in line.split(',')] for line in match[2].splitlines() if line.strip()]
+            base=[row for row in cells if row[1] not in author]
+            if not ids and len(base)==len(cells):return match[0]
+            if not base:raise ValueError('Encontros originais ausentes: '+str(key))
+            weights=distribute([int(row[0]) for row in base],100-len(ids)*chance)
+            newline='\r\n' if '\r\n' in match[0] else '\n'
+            rows=['    '+','.join([str(w),*row[1:]]) for row,w in zip(base,weights)]
+            rows+=['    '+','.join([str(chance),id,*base[0][2:]]) for id in ids]
+            if ids:found.add(key)
+            return match[0][:match.start(2)-match.start()]+newline.join(rows)+newline
+        block=pattern.sub(replace,block);text=text[:start]+block+text[end:]
+    if found!=set(plans):raise ValueError('Tabelas de encontro ausentes: '+str(sorted(set(plans)-found)))
     return text
 
 def make_plan(project,game):

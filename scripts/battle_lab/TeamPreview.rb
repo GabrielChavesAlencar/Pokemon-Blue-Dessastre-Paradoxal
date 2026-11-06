@@ -68,7 +68,7 @@ module BlueBattleHub
       @decorations&.each(&:dispose);@decorations=[]
       @teams.each_with_index do |team,side|
         team.each_with_index do |mon,i|
-          icon=PokemonIconSprite.new(mon,@viewport);icon.x=50+i*154;icon.y=(side==0 ? 185 : 425);icon.z=3
+          icon=menu_icon(mon,64,50+i*154,(side==0 ? 185 : 425))
           @decorations << icon
         end
       end
@@ -76,12 +76,11 @@ module BlueBattleHub
     end
     def tick
       if System.uptime>=@deadline;expire!;return;end
-      @decorations.each(&:update)
       if Input.trigger?(Input::MOUSELEFT)
-        hit=@buttons.reverse.find { |b| inside(Mouse.getMousePos,b[:rect]) };hit[:action].call if hit
+        hit=@buttons.reverse.find { |b| inside(pointer,b[:rect]) };hit[:action].call if hit
       elsif Input.triggerex?(:LEFT) || Input.repeatex?(:LEFT);@cursor=(@cursor-1)%6;@dirty=true
       elsif Input.triggerex?(:RIGHT) || Input.repeatex?(:RIGHT);@cursor=(@cursor+1)%6;@dirty=true
-      elsif Input.triggerex?(:RETURN);toggle(@cursor)
+      elsif Input.trigger?(Input::USE) || Input.triggerex?(:RETURN);toggle(@cursor)
       elsif Input.triggerex?(:SPACE);confirm_selection
       elsif Input.trigger?(Input::BACK);@cancelled=true;@finished=true
       end

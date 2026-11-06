@@ -22,8 +22,21 @@ module BlueBattleHub
     end
     def text(value,x,y,w,size=19,key=:text)
       @bitmap.font.name=['Arial','Verdana'];@bitmap.font.size=size;@bitmap.font.bold=false;@bitmap.font.color=color(key)
-      str=value.to_s.gsub(/\n/,' ')
-      while str.length>2 && @bitmap.text_size(str).width>w;str=str[0...-2]+'…';end
+      original=value.to_s.gsub(/\n/,' ');@text_fit ||= {};key=[original,w,size]
+      str=@text_fit[key]
+      unless str
+        str=original
+        if @bitmap.text_size(str).width>w
+          low=0;high=str.length
+          while low<high
+            mid=(low+high+1)/2
+            @bitmap.text_size(str[0,mid]+'…').width<=w ? low=mid : high=mid-1
+          end
+          str=str[0,low]+'…'
+        end
+        @text_fit.clear if @text_fit.length>1024
+        @text_fit[key]=str
+      end
       @bitmap.draw_text(x,y,w,30,str)
     end
     def button(id,label,x,y,w,h=32,active=false,&action)
@@ -107,6 +120,12 @@ module BlueBattleHub
       end
     end
     def data_rows
+      @picker_cache ||= {};key=[@tab,@query,@fan,@sort,@free_moves,mon&.species_data&.id,$PokemonSystem.blue_locale]
+      return @picker_cache[key] if @picker_cache.key?(key)
+      @picker_cache.shift if @picker_cache.length>=24
+      @picker_cache[key]=build_data_rows
+    end
+    def build_data_rows
       list=case @tab
       when :species then BlueBattleHub.species.select { |s| !@fan || s.flags.include?('DessastreParadoxal') }
       when :ability then mon ? mon.getAbilityList.map { |a| GameData::Ability.get(a[0]) }.uniq : []
@@ -130,7 +149,7 @@ module BlueBattleHub
     end
     def render_picker
       labels={species:'Pokemon',item:'Item',ability:'Habilidade',move:'Golpe',nature:'Nature',type:'Tera Type'}
-      button(:search,(@query.empty? ? 'Buscar '+labels.fetch(@tab,'Pokemon')+'...' : @query)+(@focus ? ' |' : ''),40,416,394,32,@focus) { @focus=true;Input.text_input=true;@dirty=true }
+      button(:search,(@query.empty? ? 'Buscar '+labels.fetch(@tab,'Pokemon')+'...' : @query)+(@focus ? ' |' : ''),40,416,394,32,@focus) { search }
       if @tab==:species
         button(:fan,@fan ? 'Dessastre Paradoxal' : 'Todas as geracoes',446,416,195,32,@fan) { @fan=!@fan;@page=0;@dirty=true }
         button(:sort,@sort==:bst ? 'BST ↓' : 'Nome A–Z',652,416,100) { @sort=@sort==:name ? :bst : :name;@dirty=true }
@@ -177,6 +196,14 @@ module BlueBattleHub
     def tab(kind)
       @tab=kind;@query='';@page=0;@row=0;@focus=false;Input.text_input=false;@dirty=true
     end
+    def search
+      if BlueMenuSupport.mobile?
+        value=prompt('Pesquisar',@query,48)
+        if value;@query=value;@row=0;@page=0;@dirty=true;end
+      else
+        @focus=true;Input.text_input=true;@dirty=true
+      end
+    end
     def changed(persist=true)
       @teams.flatten.each do |pokemon|
         next if pokemon.level==BlueBattleHub::LEVEL
@@ -217,30 +244,43 @@ module BlueBattleHub
     end
     def update_portraits
       return unless @portrait_dirty
+      signature=[@side,@slot,@teams[@side].map { |p| [p.species,p.form,p.gender,p.shiny?,p.egg?,p.instance_variable_get(:@blue_hub_mega)] }]
+      if signature==@portrait_signature;@portrait_dirty=false;return;end
+      @portrait_signature=signature;@art ||= BlueMenuSupport::Art.new
       @decorations&.each(&:dispose);@decorations=[]
       @teams[@side].each_with_index do |p,i|
-        icon=PokemonIconSprite.new(p,@viewport);icon.x=32+i*154;icon.y=136;icon.zoom_x=icon.zoom_y=0.7;icon.z=3;@decorations << icon
+        icon=menu_icon(p,42,32+i*154,136);@decorations << icon
       end
       if mon
         p=mon.clone;target=p.instance_variable_get(:@blue_hub_mega);p.form=GameData::Species.get(target).form if target
-        portrait=PokemonSprite.new(@viewport);portrait.setPokemonBitmap(p);portrait.x=96;portrait.y=340;portrait.z=4
-        size=[portrait.src_rect.width,portrait.src_rect.height,1].max
-        scale=[124.0/size,1.5].min;portrait.zoom_x=portrait.zoom_y=scale
-        portrait.setOffset(PictureOrigin::BOTTOM);@decorations << portrait
+        @decorations << menu_icon(p,96,50,242)
       end
       @portrait_dirty=false
     end
+    def menu_icon(mon,size,x,y)
+      @art ||= BlueMenuSupport::Art.new
+      sprite=@art.sprite(mon,size,@viewport);scale=@ui_scale || 1.0
+      sprite.x=(x*scale).round;sprite.y=(y*scale).round;sprite.zoom_x=sprite.zoom_y=scale;sprite
+    end
+    def pointer
+      point=BlueLabPointer.position;return nil unless point
+      scale=@ui_scale || 1.0;[point[0]/scale,point[1]/scale]
+    end
     def mount
-      Graphics.resize_screen(W,H)
+      wanted=BlueMenuSupport.mobile? ? [640,480] : [W,H]
+      Graphics.resize_screen(*wanted)
+      @ui_scale=[Graphics.width.to_f/W,Graphics.height.to_f/H].min
       # The window keeps its old corner when it grows; on small screens the bottom buttons would be cut off.
       Graphics.center if Graphics.respond_to?(:center)
-      @viewport=Viewport.new(0,0,W,H);@viewport.z=99999
+      @viewport=Viewport.new(0,0,Graphics.width,Graphics.height);@viewport.z=99999
       @canvas=BitmapSprite.new(W,H,@viewport);@bitmap=@canvas.bitmap;@decorations=[]
+      @canvas.zoom_x=@canvas.zoom_y=@ui_scale;@portrait_signature=nil
       @portrait_dirty=true;render;update_portraits;Graphics.transition(0);Input.update
     end
     def unmount
       @focus=false;Input.text_input=false
       @decorations&.each(&:dispose);@decorations=[]
+      @art&.dispose;@art=nil;@portrait_signature=nil
       @canvas&.dispose;@viewport&.dispose;@canvas=nil
     end
     def run
@@ -257,12 +297,11 @@ module BlueBattleHub
     end
     def frame
       Graphics.update;Input.update
-      @decorations.each(&:update)
       handle_input
       render if @dirty;update_portraits
     end
     def handle_input
-      point=Mouse.getMousePos
+      point=pointer
       if @drag_stat
         if Input.press?(Input::MOUSELEFT);drag_ev;else;@drag_stat=nil;changed;end
       elsif Input.trigger?(Input::MOUSELEFT)
@@ -301,7 +340,7 @@ module BlueBattleHub
       @notice=e.message;@dirty=true;BlueBattleLab.log('HUB_UI_ERROR | '+e.message+' '+e.backtrace.first.to_s)
     end
     def drag_ev
-      point=Mouse.getMousePos;return unless point && mon
+      point=pointer;return unless point && mon
       max=[252,510-mon.ev.values.sum+mon.ev[@drag_stat]].min
       mon.ev[@drag_stat]=(((point[0]-412)*252.0/274).round).clamp(0,max)
       changed(false)
@@ -319,6 +358,15 @@ module BlueBattleHub
     end
     def confirm(title);choose(title,['Sim','Cancelar'])==0;end
     def prompt(title,value='',max=256)
+      if BlueMenuSupport.mobile?
+        previous_visible=@viewport.visible;@viewport.visible=false;before=[Graphics.width,Graphics.height]
+        begin
+          Graphics.resize_screen(512,384)
+          return BlueMenuSupport.entry(title,value.to_s,max)
+        ensure
+          Graphics.resize_screen(*before);@viewport.visible=previous_visible;@dirty=true;Input.update
+        end
+      end
       overlay=BitmapSprite.new(W,H,@viewport);overlay.z=100;backup=@bitmap;@bitmap=overlay.bitmap
       input=value.to_s;selected=true;Input.text_input=true;Input.update
       loop do
@@ -328,7 +376,7 @@ module BlueBattleHub
         rect(552,394,134,38,:blue);text('Confirmar',568,398,102,19,:bg)
         rect(700,394,134,38,:field);text('Cancelar',716,398,102,19)
         Graphics.update;Input.update
-        point=Mouse.getMousePos;click=Input.trigger?(Input::MOUSELEFT)
+        point=pointer;click=Input.trigger?(Input::MOUSELEFT)
         return input if Input.triggerex?(:RETURN) || (click && inside(point,[552,394,134,38]))
         return nil if Input.triggerex?(:ESCAPE) || (click && inside(point,[700,394,134,38]))
         if Input.press?(Input::CTRL) && Input.triggerex?(:A);selected=true
@@ -342,7 +390,7 @@ module BlueBattleHub
         end
       end
     ensure
-      Input.text_input=false;overlay&.dispose;@bitmap=backup;@dirty=true;Input.update
+      Input.text_input=false;overlay&.dispose;@bitmap=backup if backup;@dirty=true;Input.update
     end
     def number(title,current,min,max)
       value=prompt(title+' / '+min.to_s+' a '+max.to_s,current.to_s,4)

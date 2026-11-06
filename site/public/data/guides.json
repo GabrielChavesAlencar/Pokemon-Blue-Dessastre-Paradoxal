@@ -183,6 +183,19 @@
             "As doze Megas são formas alternativas de suas espécies-base e usam pedras DP próprias. Cada ficha mostra a pedra correspondente e o sprite autoral.",
             "Mega Sol permite que os golpes do portador considerem sol sem mudar o clima do campo ou beneficiar outros Pokémon. Solar Beam dispensa o carregamento; o dano de Fogo recebido não ganha um bônus por essa habilidade."
           ]
+        },
+        {
+          "title": "Encontros raros pelo mapa",
+          "paragraphs": [
+            "Os 44 Paradoxos autorais prontos foram distribuídos em habitats compatíveis. Cada espécie ocupa 5% da tabela do método indicado. Florestas, cavernas, vulcões, gelo, águas profundas e cidades tecnológicas receberam encontros próprios; as concentrações antigas nas duas grutas foram removidas.",
+            "Na campanha com progressão Blue ativa, os Paradoxos de 570 BST aparecem a partir de 11 cristais, na fase Master. Antes disso, o encontro gera uma espécie substituta que respeita o limite de 350, 450 ou 540 BST da dificuldade atual. A Habitat Dex aplica a mesma regra. Espécies pendentes e Megas não foram liberadas como encontros selvagens."
+          ],
+          "links": [
+            {
+              "label": "Consultar as localizações atualizadas",
+              "href": "/localizacoes"
+            }
+          ]
         }
       ]
     },
@@ -226,6 +239,49 @@
               "label": "Funcionamento e testes da IA",
               "href": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/IA_BLUE_RADICAL.md"
             }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "android-saves-e-menus",
+      "title": "Android: saves, toque e menus",
+      "category": "Jogar no Android",
+      "excerpt": "Localize sua partida antes de atualizar e conheça a pesquisa, os filtros e os menus leves.",
+      "icon": "shield",
+      "minutes": 4,
+      "synced": true,
+      "sections": [
+        {
+          "title": "Onde fica meu save?",
+          "paragraphs": [
+            "Abra a opção Onde fica meu save? no menu inicial Android. O jogo mostra o diretório real usado pelo JoiPlay e registra o caminho em Data/blue-save-location.txt. Esse texto não é um backup da partida.",
+            "Os slots se chamam File A.rxdata até File H.rxdata, além de Auto 1.rxdata, Auto 2.rxdata e Auto 3.rxdata. Preserve também Game.rxdata e os arquivos .bak existentes. A pasta varia conforme a instalação do JoiPlay; não use o caminho de outro aparelho como referência."
+          ]
+        },
+        {
+          "title": "Atualizar sem perder a partida",
+          "paragraphs": [
+            "Antes de apagar qualquer pasta, copie os arquivos de save para outro local e mantenha esse backup. Extraia o ZIP atualizado e cadastre seu Game.exe no JoiPlay. Consulte a pasta de saves dessa nova entrada e restaure suas cópias ali. Só remova o backup depois de carregar e conferir sua partida."
+          ],
+          "links": [
+            {
+              "label": "Baixar a versão Android",
+              "href": "/downloads"
+            }
+          ]
+        },
+        {
+          "title": "Montar times e escolher quatro",
+          "paragraphs": [
+            "O Hub usa ícones estáticos pequenos e reaproveita os resultados do catálogo entre os redesenhos. No Android, toque na busca para abrir o teclado na tela. Na prévia de duplas, toque em quatro Pokémon na ordem desejada e depois em Confirmar quatro. Os dois primeiros começam a batalha; a equipe salva mantém seis membros."
+          ]
+        },
+        {
+          "title": "PC e loja",
+          "paragraphs": [
+            "As boxes aceitam clique e toque nos espaços, na equipe, nas setas e em Sair. As verificações normais de depósito, retirada, troca e liberação continuam ativas.",
+            "A loja mostra cinco resultados por página, aceita pesquisa por item ou golpe da TM/TR e oferece filtros Todos, Posso comprar, Não possuo e Na mochila. Use os botões Anterior e Próxima para navegar."
           ]
         }
       ]

@@ -13,7 +13,7 @@ import tempfile
 import importlib.util
 import json
 
-PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'HubUI.rb', 'TeamPreview.rb', 'Mobile.rb', 'Multiplayer.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'mp_client.py', 'mp_server.py', 'meta.txt']
+PLUGIN_FILES = ['BlueBattleLab.rb', 'Interface.rb', 'Teams.rb', 'HubData.rb', 'MenuSupport.rb', 'HubUI.rb', 'TeamPreview.rb', 'Mobile.rb', 'Multiplayer.rb', 'HubValidation.rb', 'Validation.rb', 'pokepaste.py', 'mp_client.py', 'mp_server.py', 'meta.txt']
 
 
 def atomic_write(path: Path, data: bytes):

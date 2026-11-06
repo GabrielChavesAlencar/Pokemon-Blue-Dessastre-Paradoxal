@@ -84,9 +84,13 @@ module BlueCampaign
     [1_000,1_000,30_000,20_000,5_000,5_000,10_000,3_000][category(item)]
   end
   def self.stock(tab)
-    rows=[]
-    GameData::Item.each { |i| rows << i if sellable_item?(i) && category(i)==tab }
-    rows.sort_by { |i| i.name.downcase }.map(&:id)
+    key=[active?,$PokemonSystem.blue_locale,GameData::Item::DATA.length]
+    if @shop_stock_key!=key
+      @shop_stock_key=key;@shop_stocks=Array.new(TABS.length) { [] }
+      GameData::Item.each { |i| @shop_stocks[category(i)] << i if sellable_item?(i) }
+      @shop_stocks.map! { |rows| rows.sort_by { |i| i.name.downcase }.map(&:id).freeze }
+    end
+    @shop_stocks.fetch(tab).dup
   end
   def self.purchase(id,quantity)
     item=GameData::Item.get(id)

@@ -7,10 +7,11 @@ from prepare_restore import Marshal,RubyString,dump
 def module(name,file):
     spec=importlib.util.spec_from_file_location(name,ROOT/file);obj=importlib.util.module_from_spec(spec);spec.loader.exec_module(obj);return obj
 setup=module('blue_setup','scripts/install_game.py');campaign=module('blue_launch','scripts/launch_game.py')
+lab=module('blue_install_lab_files','scripts/battle_lab/launch.py')
 class InstallationTests(unittest.TestCase):
     def fixture(self,root):
         source=root/'scripts/battle_lab';source.mkdir(parents=True)
-        for name in ['launch.py','BlueBattleLab.rb','Interface.rb','Teams.rb','HubData.rb','HubUI.rb','TeamPreview.rb','Mobile.rb','Multiplayer.rb','mp_client.py','mp_server.py','HubValidation.rb','Validation.rb','pokepaste.py','meta.txt']:shutil.copy2(ROOT/'scripts/battle_lab'/name,source/name)
+        for name in ['launch.py',*lab.PLUGIN_FILES]:shutil.copy2(ROOT/'scripts/battle_lab'/name,source/name)
         game=root/'game';(game/'Data').mkdir(parents=True);(game/'PBS').mkdir()
         (game/'Game.exe').write_bytes(b'synthetic exe');(game/'PBS/pokemon.txt').write_text('[PIKACHU]')
         rows=[[1,RubyString(b'Other'),RubyString(zlib.compress(b'original script'))],[2,RubyString(b'Main'),RubyString(zlib.compress(b'PluginManager.runPlugins\nCompiler.main'))]]

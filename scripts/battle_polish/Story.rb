@@ -243,6 +243,7 @@ module Compiler
       BlueBattleUI.install;BlueLocale.install
       BlueAdventure.install;BlueReadouts.install
       BlueStartMouse.install
+      PokemonStorageScene.prepend(BlueStorageMouse::Scene) unless PokemonStorageScene.ancestors.include?(BlueStorageMouse::Scene)
       BlueExploration.install
       BlueDexControls.install;BlueDexCompare.install
       PokemonSummary_Scene.prepend(BlueLearnMouse) unless PokemonSummary_Scene.ancestors.include?(BlueLearnMouse)

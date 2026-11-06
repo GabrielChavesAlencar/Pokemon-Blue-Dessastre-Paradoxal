@@ -134,10 +134,6 @@ module BlueDessastreParadoxal
   }
   CRIES = [:ABYSSLURE,:AMMNOID,:ANCESTRASH,:ARCHGUTOR,:BURIALGAZE,:CAVEFANG,:CEPHALONID,:CRAGGYSIPHON,:DIRERUFF,:DREADCREST,:DYNAMOTRODE,:FETIDGULLET,:FOSSILHUSK,:FOSSLTIDE,:IRONCRAWLER,:IRONCRUSHER,:IRONFEASTER,:IRONLEPORIS,:IRONMAELTROM,:JAGGEDMAW,:MAGISCALE,:MAGNETRIX,:MIASMIC,:MIRECREST,:PHANTOMIRE,:PRIAMALGONG,:PRIMALCATERPIE,:PRIMALDRENAW,:PRIMALPUNNY,:PRIMALDUURR,:PRIMALGEOT,:PRIMALMOTH,:PRIMALMUK,:PRIMALSEAKING,:PRIMALSECT,:PRIMALVIPER,:PRIMATIZER,:RAMPAGEHORN,:RAVENOUSCREST,:RAZORCARAPACE,:SAVEGEJOWL,:SCORCHMANE,:SCORIASHELL,:STUNDRIFT,:SWADLOADNE,:THORNBASTION,:TITANBALEEN,:WOOLYSTING]
   STONES = [:DPARBOKITE,:DPFEAROWITE,:DPHYPNOITE,:DPKABUTOPSITE,:DPLEDIANITE,:DPLUDICOLOITE,:DPMILTANKITE,:DPPURUGLYITE,:DPSUNFLORAITE,:DPTENTACRUELITE,:DPVILEPLUMEITE,:DPWALREINITE]
-  ENCOUNTERS = {
-    156 => [:CAVEFANG,:ABYSSLURE,:ANCESTRASH,:BURIALGAZE,:CRAGGYSIPHON,:DIRERUFF,:DREADCREST,:FETIDGULLET,:FOSSILHUSK,:FOSSLTIDE,:JAGGEDMAW,:MIASMIC,:MIRECREST,:PHANTOMIRE,:PRIAMALGONG,:PRIMALCATERPIE,:PRIMALDRENAW,:PRIMALPUNNY,:PRIMALTROPICAL,:PRIMALDUURR,:PRIMALGEOT,:PRIMALKORCH,:PRIMALMOTH,:PRIMALMUK,:PRIMALSEAKING,:PRIMALSECT,:PRIMALVIPER,:PRIMATIZER,:RAMPAGEHORN,:RAVENOUSCREST,:RAZORCARAPACE,:SAVEGEJOWL,:SCORCHMANE,:SCORIASHELL,:THORNBASTION,:TITANBALEEN,:WOOLYSTING],
-    157 => [:IRONCRAWLER,:IRONCRUSHER,:IRONFEASTER,:IRONINVERNOSE,:IRONLEPORIS,:IRONMAELTROM,:IRONMATRIARCH]
-  }
   def self.run_checks
     lines=[]
     check=proc { |label,ok| lines << "#{ok ? 'PASS' : 'FAIL'} | #{label}"; raise label unless ok }
@@ -182,13 +178,22 @@ module BlueDessastreParadoxal
       mon.level=pair[0]
       check.call("Native level evolution #{from} -> #{pair[1]}",mon.check_evolution_on_level_up==pair[1])
     end
-    ENCOUNTERS.each do |map,ids|
-      data=GameData::Encounter.get(map,0)
-      slots=data.types[:Land]
-      check.call("#{map} encounter weights sum 100",slots.sum { |s| s[0] }==100)
-      ids.each { |id| check.call("#{id} present in #{map}",slots.any? { |s| s[1]==id }) }
-      check.call("#{map} excludes draft Pokemon",slots.none? { |s| PENDING.include?(s[1]) })
+    expected=EXPECTED_SPECIES.filter_map do |species,form,*rest|
+      data=GameData::Species.get_species_form(species,form)
+      data.id if form==0 && data.flags.include?('Paradox')
     end
+    encountered=[]
+    GameData::Encounter.each do |data|
+      data.types.each do |method,slots|
+        own=slots.select { |s| expected.include?(s[1]) }
+        next if own.empty?
+        check.call("#{data.map} #{method} encounter weights sum 100",slots.sum { |s| s[0] }==100)
+        check.call("#{data.map} #{method} each author species has exactly 5 percent",own.all? { |s| s[0]==5 })
+        check.call("#{data.map} no obsolete grotto pool",![156,157].include?(data.map))
+        encountered.concat(own.map { |s| s[1] })
+      end
+    end
+    check.call('All 44 ready author Paradoxes are spread through real habitats',expected.length==44 && encountered.uniq.sort==expected.sort)
     check.call('Laboratory has Mega Ring',$bag.has?(:MEGARING))
     {EXEGGUTOR: :ARCHGUTOR,ELECTRODE: :DYNAMOTRODE,MAGNETON: :MAGNETRIX,MAGIKARP: :MAGISCALE,OMANYTE: :AMMNOID,AMMNOID: :CEPHALONID,STUNFISK: :STUNDRIFT,SWADLOON: :SWADLOADNE}.each do |from,to|
       check.call("Evolution #{from} -> #{to}",GameData::Species.get(from).evolutions.any? { |e| e[0]==to })
