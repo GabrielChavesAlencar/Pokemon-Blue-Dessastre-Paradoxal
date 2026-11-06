@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9651b53c9985c90af3e659702d40aef209383bd7",
+      "date": "2026-11-06T20:32:39-03:00",
+      "title": "feat(android): distribuir Paradoxos raros e otimizar PC, Hub e loja",
+      "category": "Novidades"
+    },
+    {
       "sha": "77804de88a72904f72ac0b1b18e7476c870e1177",
       "date": "2026-11-05T14:57:31-03:00",
       "title": "feat(windows): remapear teclado pelo menu Configuracoes, com WASD e persistencia",
