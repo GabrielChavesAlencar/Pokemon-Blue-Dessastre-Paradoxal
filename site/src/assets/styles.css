@@ -227,3 +227,7 @@
 /* Real Eevee regional sprites in trainer portraits and team summaries. */
 .story-poke-header>.future-team-sprite{width:76px;height:76px;flex:none;background-color:#13263b;border-radius:8px}
 .regular-pokemon-strip>.future-trainer-icon{width:68px;height:68px;background-color:#15263b;border:1px solid #29405d;border-radius:8px}
+
+/* Preview-only Paradox encounter sprites, cropped from seven-by-seven atlas. */
+.location-sprites .future-location-thumb{width:40px;height:40px;flex:0 0 40px;margin-left:0;border-radius:5px;background-color:#13263b}
+.encounter-row .future-location-sprite{width:42px;height:42px;flex:0 0 42px;border-radius:6px;background-color:#13263b}

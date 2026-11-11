@@ -1,9 +1,9 @@
 import {mergeFutureCatalog,mergeFutureDetails,mergeRegionalLocations} from './future-eevee.js';
-import {mergeIronCatalog,mergeIronDetails} from './future-iron.js';
-let futureManifest,futureIronManifest;
+import {mergeIronCatalog,mergeIronDetails,mergeIronLocations,mergeIronTrainerPlans} from './future-iron.js';
+let futureManifest,futureIronManifest,futureIronPlacements;
 export function activeLocations(locations,region){const hidden=new Set(region?.inactiveAreaIds??[]);return locations.filter(a=>!hidden.has(a.id));}
 export async function loadPortal(){
-  const files=['catalog','locations','updates','guides','story-trainers','region-points','future-eevee','eevee-regional-encounters','future-iron'];
+  const files=['catalog','locations','updates','guides','story-trainers','region-points','future-eevee','eevee-regional-encounters','future-iron','future-iron-placements'];
   const values=await Promise.all(files.map(async name=>{const response=await fetch(`/data/${name}.json`);if(!response.ok)throw new Error(`Não foi possível abrir ${name}.`);return response.json();}));
   const approvedResponse=await fetch('/data/pokedex-approved.json');
   if(!approvedResponse.ok)throw new Error('Não foi possível abrir as descrições aprovadas.');
@@ -21,17 +21,26 @@ export async function loadPortal(){
   futureIronManifest=values[8];
   mergeIronCatalog(values[0],futureIronManifest);
   mergeRegionalLocations(values[1],values[7]);
+  futureIronPlacements=values[9];
+  mergeIronLocations(values[1],futureIronPlacements,values[7]);
   const byId=new Map([...values[0].species,...(values[0].customForms??[])].map(p=>[p.id,p]));
   for(const entry of futureManifest.forms||[]){
     const card=entry.card;
     byId.set(card.base+'_50',{...card,id:card.base,encounterForm:50});
   }
   for(const [id,form] of Object.entries(values[0].encounterForms??{})){const base=byId.get(form.base);if(base)byId.set(id,{...base,name:base.name+' · '+form.name,encounterForm:form.form});}
-  return {catalog:values[0],locations:activeLocations(values[1].locations,values[5]),encounterPolicy:values[1].authorEncounters,updates:values[2].commits,guides:values[3].guides,story:values[4],region:values[5],futureEevee:futureManifest,futureIron:futureIronManifest,byId};
+  return {catalog:values[0],locations:activeLocations(values[1].locations,values[5]),encounterPolicy:values[1].authorEncounters,updates:values[2].commits,guides:values[3].guides,story:values[4],region:values[5],futureEevee:futureManifest,futureIron:futureIronManifest,futureIronPlacements,byId};
 }
 let regularData;
 export async function loadRegularTrainers(){
-  if(!regularData){const response=await fetch('/data/regular-trainers.json');if(!response.ok)throw new Error('Não foi possível carregar os treinadores.');regularData=await response.json();}
+  if(!regularData){const response=await fetch('/data/regular-trainers.json');if(!response.ok)throw new Error('Não foi possível carregar os treinadores.');regularData=await response.json();
+    if(!futureIronPlacements){
+      const placementResponse=await fetch('/data/future-iron-placements.json');
+      if(!placementResponse.ok)throw new Error('Não foi possível abrir os treinadores futuros.');
+      futureIronPlacements=await placementResponse.json();
+    }
+    mergeIronTrainerPlans(regularData,futureIronPlacements);
+  }
   return regularData;
 }
 let details;

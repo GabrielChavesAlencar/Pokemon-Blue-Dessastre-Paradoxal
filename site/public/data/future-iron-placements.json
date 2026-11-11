@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "status": "site-only-planned",
+  "wildChancePerSpecies": 5,
+  "wildChanceScope": "5% of the specific encounter method's table, per map version; not capture chance",
+  "trainerMode": "master",
+  "note": "Preview placements: the live game's PBS, saves, maps, trainers and installer are unchanged.",
+  "encounters": [
+    {
+      "species": "IRONORACLE",
+      "mapId": 175,
+      "method": "Land",
+      "name": "Desert Zone",
+      "percent": 5,
+      "reason": "Relíquias, areia e fenômenos psíquicos combinam com o Claydol de sensores."
+    },
+    {
+      "species": "IRONCOIL",
+      "mapId": 129,
+      "method": "Land",
+      "name": "Iron City",
+      "percent": 5,
+      "reason": "Estruturas industriais e engrenagens combinam com o Furret de corpo metálico."
+    },
+    {
+      "species": "IRONECHO",
+      "mapId": 119,
+      "method": "Land",
+      "name": "Circuit City",
+      "percent": 5,
+      "reason": "Circuitos, descargas e amplificadores elétricos são o habitat do Exploud robótico."
+    },
+    {
+      "species": "IRONGLIMMER",
+      "mapId": 184,
+      "method": "Land",
+      "name": "Seafloor Zone",
+      "percent": 5,
+      "reason": "Habitat submerso para o Lumineon de nadadeiras holográficas (encontros terrestres da zona submarina)."
+    },
+    {
+      "species": "IRONWRAITH",
+      "mapId": 159,
+      "method": "Land",
+      "name": "Stygian Cave",
+      "percent": 5,
+      "reason": "Aparições e estruturas subterrâneas alimentam o reator espectral do Spiritomb digital."
+    },
+    {
+      "species": "IRONRAPTOR",
+      "mapId": 171,
+      "method": "Land",
+      "name": "Stratos Horizon",
+      "percent": 5,
+      "reason": "Penhascos e fortes correntes de ar permitem a caça aérea supersônica."
+    },
+    {
+      "species": "IRONSTINGER",
+      "mapId": 82,
+      "method": "Land",
+      "name": "Cloakfall Forest",
+      "percent": 5,
+      "reason": "Vegetação densa e insetos voadores favorecem a libélula robótica de reconhecimento."
+    }
+  ],
+  "trainers": [
+    {
+      "species": "IRONORACLE",
+      "trainerId": "johtoian-hgss-medium-sachiko",
+      "trainerName": "Sachiko",
+      "location": "Mantic City",
+      "mode": "master",
+      "reason": "Médium que investiga antiguidades e energia psíquica."
+    },
+    {
+      "species": "IRONCOIL",
+      "trainerId": "oerrian-colo-chaser-man-layton",
+      "trainerName": "Layton",
+      "location": "Iron City",
+      "mode": "master",
+      "reason": "Treinador da cidade industrial com Pokémon de aço."
+    },
+    {
+      "species": "IRONECHO",
+      "trainerId": "galarian-swsh-ball-guy-ball-guy",
+      "trainerName": "Ball Guy",
+      "location": "Circuit City",
+      "mode": "master",
+      "reason": "Equipe com afinidade elétrica na cidade tecnológica."
+    },
+    {
+      "species": "IRONGLIMMER",
+      "trainerId": "alolan-usum-bellhop-lester",
+      "trainerName": "Lester",
+      "location": "Shimmer Coast City",
+      "mode": "master",
+      "reason": "Treinador da cidade costeira, próximo ao ambiente marinho."
+    },
+    {
+      "species": "IRONWRAITH",
+      "trainerId": "kaloian-xy-hex-maniac-ume",
+      "trainerName": "Ume",
+      "location": "Route 15",
+      "mode": "master",
+      "reason": "Especialista em fenômenos fantasmagóricos na região de Revenant."
+    },
+    {
+      "species": "IRONRAPTOR",
+      "trainerId": "unovaian-b2w2-veteran-woman-julia",
+      "trainerName": "Julia",
+      "location": "Stratos City",
+      "mode": "master",
+      "reason": "Veterana de região elevada que enfrenta adversários com Pokémon velozes."
+    },
+    {
+      "species": "IRONSTINGER",
+      "trainerId": "hoennian-oras-bug-maniac-dean",
+      "trainerName": "Dean",
+      "location": "Apterygota City",
+      "mode": "master",
+      "reason": "Especialista em insetos que já utiliza Yanmega."
+    }
+  ]
+}

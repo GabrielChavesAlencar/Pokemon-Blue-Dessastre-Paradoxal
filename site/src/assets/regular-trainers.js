@@ -75,6 +75,10 @@ export function regularTeam(model,data,trainer,mode,details,highest=50){
   const level=Math.max(1,Math.floor(clampLevel(highest)*difficulty.percent/100));
   const team=(trainer.team||[]).map(p=>({...p,level,calculatedLevel:true,
     moves:p.moves?.length?p.moves:Number(p.form)===50?lastMoves(p.species+',50',level,details):p.moves}));
+  if(difficulty.id==='master' && trainer.plannedIronSpecies && !team.some(p=>p.species===trainer.plannedIronSpecies) && team.length<6){
+    team.push({species:trainer.plannedIronSpecies,level,calculatedLevel:true,planned:true,
+      ability:'Quark Drive',moves:lastMoves(trainer.plannedIronSpecies,level,details)});
+  }
   if(difficulty.id==='master' && !trainer.name.includes('(Auto Grind)')){
     while(team.length>0&&team.length<4){
       const newMember=nextPartner(team,trainer,level,model,details,data.typeChart||{});
@@ -84,10 +88,11 @@ export function regularTeam(model,data,trainer,mode,details,highest=50){
   }
   return {team,level,difficulty};
 }
-const sourceNote='Times-base extraídos do Pokémon Decades; nove treinadores recebem formas regionais de Eevee na instalação do Blue. O reforço Master automático continua sendo uma prévia calculada.';
+const sourceNote='Times-base extraídos do Pokémon Decades; nove treinadores recebem formas regionais de Eevee na instalação do Blue. Sete treinadores têm Paradoxos adicionais apenas como proposta para a equipe Master no site (não instalados no jogo). O reforço Master automático continua sendo uma prévia calculada.';
 
 function card(model,trainer){
-  const images=trainer.team.slice(-3).map(p=>{
+  const shown=trainer.plannedIronSpecies?[...trainer.team.slice(-2),{species:trainer.plannedIronSpecies}]:trainer.team.slice(-3);
+  const images=shown.map(p=>{
     const found=(Number(p.form)===50?model.byId.get(p.species+',50'):null)||model.byId.get(p.species);
     return found?.future?futureSprite(found,'icon','future-trainer-icon'):
       '<img loading="lazy" src="'+esc(found?sprite(found):'/assets/fan-placeholder.svg')+'" alt="'+esc(found?.name||p.species)+'"/>';
@@ -95,7 +100,7 @@ function card(model,trainer){
   return '<a class="regular-card" href="/treinadores/'+encodeURIComponent(trainer.id)+'">'+
     '<div class="regular-card-meta"><span class="mini-label">'+esc(trainer.trainerClass)+'</span><span>'+esc(trainer.location)+'</span></div>'+
     '<h3>'+esc(trainer.name)+'</h3><div class="regular-pokemon-strip">'+images+'</div>'+
-    '<p>'+trainer.team.length+' Pokémon no PBS · '+(trainer.name.includes('(Auto Grind)')?'Batalha automática':'4 fases de dificuldade')+'</p>'+
+    '<p>'+trainer.team.length+' Pokémon no PBS · '+(trainer.plannedIronSpecies?'1 Paradoxo futuro planejado no Master':trainer.name.includes('(Auto Grind)')?'Batalha automática':'4 fases de dificuldade')+'</p>'+
     '<span class="regular-card-action">Ver equipes '+icon('arrow')+'</span></a>';
 }
 export function regularResults(model,data,state){
@@ -104,7 +109,8 @@ export function regularResults(model,data,state){
     (area==='all'||trainer.location===area) &&
     (!search||normalize([
       trainer.name,trainer.trainerClass,trainer.trainerType,trainer.location,
-      ...trainer.team.map(p=>model.byId.get(p.species)?.name||p.species)
+      ...trainer.team.map(p=>model.byId.get(p.species)?.name||p.species),
+      trainer.plannedIronSpecies?(model.byId.get(trainer.plannedIronSpecies)?.name||trainer.plannedIronSpecies):''
     ].join(' ')).includes(search))
   );
   const visible=filtered.slice(0,state.trainerLimit||24);
@@ -140,6 +146,7 @@ export function regularDetail(model,data,trainer,variant,details,highest=50){
     '<label class="select-field"><span>Dificuldade</span><select data-select="trainerVariant" aria-label="Escolher variante da equipe">'+
     DIFFICULTIES.map(m=>'<option value="'+m.id+'" '+(m.id===mode.id?'selected':'')+'>'+m.label+' · '+m.crystals+'</option>').join('')+'</select></label>'+
     '<label class="select-field trainer-level"><span>Maior nível da sua equipe</span><input type="number" data-select="trainerLevel" aria-label="Maior nível da sua equipe" min="1" max="100" value="'+clampLevel(highest)+'"/><small>Enter ou sair do campo para calcular</small></label></div>'+
+    (trainer.plannedIronSpecies?'<p class="future-notice"><strong>Paradoxo futuro planejado para o Master:</strong> '+esc(model.byId.get(trainer.plannedIronSpecies)?.name||trainer.plannedIronSpecies)+'. '+esc(trainer.plannedIronReason||'')+' Esta inclusão é exclusiva da prévia do site e não altera o PBS nem as batalhas do Game.exe.</p>':'')+
     '<p class="data-note">Prévia: maior nível do jogador '+clampLevel(highest)+' → equipe no nível '+outcome.level+' ('+outcome.difficulty.percent+'%). '+
     (mode.id==='master'?'Master pode completar times menores até 4 Pokémon com cobertura de tipos.':'Os limites de BST e golpes são aplicados pela engine durante a batalha.')+'</p>'+
     '<div class="story-pokemon-grid">'+outcome.team.map(p=>teamPokemon(p,model,details)).join('')+'</div>'+

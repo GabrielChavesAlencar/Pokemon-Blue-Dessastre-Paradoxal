@@ -100,7 +100,7 @@ export function teamPokemon(p,model,details){
   const name=entity?.name||simple(baseId);
   const url=entity?pokemonPath(entity):null;
   return '<article class="story-pokemon"><div class="story-poke-header">'+artwork+'<div><h3>'+(url?'<a href="'+esc(url)+'">'+esc(name)+'</a>':esc(name))+'</h3><span>'+ ((p.movesByLevel||p.calculatedLevel)?'Nível previsto: '+esc(p.level):p.level===1?'Nível base 1 · escalonável':'Nível PBS: '+esc(p.level)) +'</span></div></div>'+
-    '<p class="story-poke-extras">'+subtitle.map(esc).join(' · ')+(p.ability?' · Ability: '+esc(p.ability):'')+(p.abilityIndex!=null?' · Índice da habilidade: '+esc(p.abilityIndex):'')+(p.preview?' · Reforço Master estimado':'')+'</p>'+
+    '<p class="story-poke-extras">'+subtitle.map(esc).join(' · ')+(p.ability?' · Ability: '+esc(p.ability):'')+(p.abilityIndex!=null?' · Índice da habilidade: '+esc(p.abilityIndex):'')+(p.preview?' · Reforço Master estimado':'')+(p.planned?' · PARADOXO FUTURO PLANEJADO (só no site)':'')+'</p>'+
     (p.evs?'<p class="story-poke-extras">EVs: '+Object.entries(p.evs).filter(([,n])=>n>0).map(([s,n])=>esc(({HP:'HP',ATTACK:'Atk',DEFENSE:'Def',SPECIAL_ATTACK:'SpA',SPECIAL_DEFENSE:'SpD',SPEED:'Spe'}[s]??s)+' '+n)).join(' / ')+'</p>':'')+
     (Array.isArray(p.moves)&&p.moves.length?'<div class="story-poke-moves">'+p.moves.map(m=>'<span>'+moveName(m,details)+'</span>').join('')+'</div>':'<p class="data-note">'+(p.movesByLevel?'Sem golpe legal disponível neste nível; a engine usa Struggle.':'Golpes não informados no PBS')+'</p>')+
     '</article>';
