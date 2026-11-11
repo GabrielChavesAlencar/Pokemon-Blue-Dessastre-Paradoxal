@@ -62,27 +62,27 @@ test('cada evolução tem condição única e explicação visível; Eevee fanta
     const panel=futureEvolutionPanels(model,card);
     assert.ok(panel.includes(manifest.evolutions[card.base].title));
     assert.match(panel,/Eevee regional · Fantasma/);
-    assert.match(panel,/não disponível em saves ou batalhas atuais/);
+    assert.match(panel,/Método implementado na engine Blue/);
   }
 });
 test('ficha da Dex mostra sprites reais, tipos, habilidades, níveis e evolução sem afetar a forma base',()=>{
   for(const {card} of manifest.forms){
     const base=model.byId.get(card.base);
     const html=pokemonDetail(model,base,details,state,new Set());
-    assert.match(html,/Pokémon futuro/);
+    assert.match(html,/Forma regional jogável/);
     assert.match(html,/sprites-atlas.png/);
     assert.match(html,/image-rendering|background-size:700% 900%/);
-    assert.match(html,/FUTURO|regional proposta|Evoluções futuras/);
+    assert.match(html,/regional jogável|Evoluções regionais/i);
     assert.match(html,/Sprites de/);
     assert.match(html,/Atributos base/);
     assert.match(html,/HABILIDADES/);
     assert.match(html,/Golpes e aprendizado/);
-    assert.ok(pokemonCard(card).includes('FORMA REGIONAL FUTURA'));
+    assert.ok(pokemonCard(card).includes('FORMA REGIONAL DISPONÍVEL'));
     assert.equal(details.species[card.id].evolutions.length,0);
   }
   const eevee=model.byId.get('EEVEE');
   const official=pokemonDetail(model,eevee,details,{...state,form:''},new Set());
-  assert.doesNotMatch(official,/Pokémon futuro/);
+  assert.doesNotMatch(official,/Forma regional jogável/);
   assert.match(official,/Forma padrão/);
   assert.match(official,/Eevee regional/);
 });
