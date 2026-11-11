@@ -93,7 +93,7 @@ export function bossesIndex(model){
 const moveName=(id,details)=>esc(details?.moves?.[id]?.name??simple(id));
 export function teamPokemon(p,model,details){
   const baseId=p.species;
-  const entity=(p.form===50?model.byId.get(baseId+',50'):null)||model.byId.get(baseId);
+  const entity=(Number(p.form)===50?model.byId.get(baseId+',50'):null)||model.byId.get(baseId);
   const image=entity?sprite(entity):'/assets/fan-placeholder.svg';
   const artwork=entity?.future?futureSprite(entity,'front','future-team-sprite'):'<img src="'+esc(image)+'" alt="'+esc(entity?.name||baseId)+'" loading="lazy"/>';
   const subtitle=[p.form?('Forma '+p.form):null,p.item?('Item: '+(details?.items?.[p.item]??simple(p.item))):null,p.teraType?('Tera: '+(types[p.teraType]||simple(p.teraType))):null,p.nature?('Nature: '+simple(p.nature)):null].filter(Boolean);
