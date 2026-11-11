@@ -1,4 +1,5 @@
 import {esc,icon,sprite,types,normalize,pokemonPath} from './utils.js';
+import {futureSprite} from './future-eevee.js';
 
 const baseImage='https://raw.githubusercontent.com/HazyCrazy/Pokemon-Decades/main/Graphics/Pictures/';
 const emerald=type=>baseImage+String(type||'normal').toLowerCase()+'Emerald.png';
@@ -92,12 +93,13 @@ export function bossesIndex(model){
 const moveName=(id,details)=>esc(details?.moves?.[id]?.name??simple(id));
 export function teamPokemon(p,model,details){
   const baseId=p.species;
-  const entity=model.byId.get(baseId);
+  const entity=(p.form===50?model.byId.get(baseId+',50'):null)||model.byId.get(baseId);
   const image=entity?sprite(entity):'/assets/fan-placeholder.svg';
+  const artwork=entity?.future?futureSprite(entity,'front','future-team-sprite'):'<img src="'+esc(image)+'" alt="'+esc(entity?.name||baseId)+'" loading="lazy"/>';
   const subtitle=[p.form?('Forma '+p.form):null,p.item?('Item: '+(details?.items?.[p.item]??simple(p.item))):null,p.teraType?('Tera: '+(types[p.teraType]||simple(p.teraType))):null,p.nature?('Nature: '+simple(p.nature)):null].filter(Boolean);
   const name=entity?.name||simple(baseId);
   const url=entity?pokemonPath(entity):null;
-  return '<article class="story-pokemon"><div class="story-poke-header"><img src="'+esc(image)+'" alt="'+esc(name)+'" loading="lazy"/><div><h3>'+(url?'<a href="'+esc(url)+'">'+esc(name)+'</a>':esc(name))+'</h3><span>'+ ((p.movesByLevel||p.calculatedLevel)?'Nível previsto: '+esc(p.level):p.level===1?'Nível base 1 · escalonável':'Nível PBS: '+esc(p.level)) +'</span></div></div>'+
+  return '<article class="story-pokemon"><div class="story-poke-header">'+artwork+'<div><h3>'+(url?'<a href="'+esc(url)+'">'+esc(name)+'</a>':esc(name))+'</h3><span>'+ ((p.movesByLevel||p.calculatedLevel)?'Nível previsto: '+esc(p.level):p.level===1?'Nível base 1 · escalonável':'Nível PBS: '+esc(p.level)) +'</span></div></div>'+
     '<p class="story-poke-extras">'+subtitle.map(esc).join(' · ')+(p.ability?' · Ability: '+esc(p.ability):'')+(p.abilityIndex!=null?' · Índice da habilidade: '+esc(p.abilityIndex):'')+(p.preview?' · Reforço Master estimado':'')+'</p>'+
     (p.evs?'<p class="story-poke-extras">EVs: '+Object.entries(p.evs).filter(([,n])=>n>0).map(([s,n])=>esc(({HP:'HP',ATTACK:'Atk',DEFENSE:'Def',SPECIAL_ATTACK:'SpA',SPECIAL_DEFENSE:'SpD',SPEED:'Spe'}[s]??s)+' '+n)).join(' / ')+'</p>':'')+
     (Array.isArray(p.moves)&&p.moves.length?'<div class="story-poke-moves">'+p.moves.map(m=>'<span>'+moveName(m,details)+'</span>').join('')+'</div>':'<p class="data-note">'+(p.movesByLevel?'Sem golpe legal disponível neste nível; a engine usa Struggle.':'Golpes não informados no PBS')+'</p>')+
