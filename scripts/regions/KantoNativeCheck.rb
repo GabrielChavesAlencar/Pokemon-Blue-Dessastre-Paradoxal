@@ -36,7 +36,7 @@ module KantoNativeCheck
     require!(battle_calls.last == [:BLUE_KANTO_RIVAL, "Blue", 11], "Wrong rival team")
     require!(BlueKantoPilot.rival_done?, "Rival result not recorded")
     connections = MapFactoryHelper.getMapConnections
-    first_route = connections.find { |edge| edge[0] == current }&.[](3)
+    first_route = connections.compact.find { |edge| edge[0] == current }&.[](3)
     require!(first_route, "Route 1 connection missing")
     require!(GameData::Encounter.get(first_route).types[:LandDay].any? { |slot| slot[1] == :PIDGEY },
              "Route 1 wild table missing")

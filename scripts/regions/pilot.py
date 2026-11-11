@@ -68,6 +68,10 @@ def new_event(event, ops, trigger, character):
     if not character:
         graphic["@tile_id"] = 0
     page["@move_type"] = 0
+    page["@move_route"] = RubyObject("RPG::MoveRoute", {
+        "@repeat": False, "@skippable": True,
+        "@list": [RubyObject("RPG::MoveCommand", {"@code": 0, "@parameters": []})],
+    })
     page["@trigger"] = trigger
     page["@through"] = trigger == 1
     page["@direction_fix"] = trigger == 1
