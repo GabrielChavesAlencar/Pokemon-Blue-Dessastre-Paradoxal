@@ -190,11 +190,13 @@ def make_plan(project,game):
         plans[target]=data.encode('utf8') if isinstance(data,str) else data
     for mega,name in [(False,'pokemon_dessastre_paradoxal.txt'),(True,'pokemon_forms_dessastre_paradoxal.txt')]:
         put('PBS/'+name,'# Geracao especial autoral. Descricoes pendentes: ????\n#-------------------------------\n'+'#-------------------------------\n'.join(pbs_entry(p,ready) for p in ready if bool(p.get('base'))==mega))
-    metrics='# Metricas de batalha da geracao autoral; frente 2x e costas 1x.\n'
-    # The Decades engine's default FRONT_BATTLER_SPRITE_SCALE is 2.
-    # An explicit scale of 1 shrank every author sprite relative to native Pokemon.
-    # Do not change back sprite scale or any source PNGs.
-    for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
+    metrics='# Metricas de batalha da geracao autoral; frente 2x e costas 2x.\n'
+    # All 64 authored battle forms have 128x128 sprites (audited: front and back).
+    # Decades uses 2x front and 3x back for smaller ~38-98px original frames.
+    # Author art is already ~100-112px wide; 2x both sides avoids tiny backs
+    # without enlarging their 128px canvases to an excessive 384px.
+    # Leave normal/shiny source pixels and frame geometry unchanged.
+    for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,2\nBackSprite = 0,0,2\nShadowSprite = 0,0,2\n"
     future=future_module()
     future_manifest=future.load_manifest(project)
     regional_form_ids={entry['card']['base']+',50' for entry in future_manifest['forms']}
@@ -205,7 +207,7 @@ def make_plan(project,game):
     put('PBS/pokemon_forms_future_eevee.txt',form_pbs)
     for entry in future_manifest['forms']:
         p=entry['card']
-        metrics+=f"#-------------------------------\n[{p['base']},50]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
+        metrics+=f"#-------------------------------\n[{p['base']},50]\nFrontSprite = 0,0,2\nBackSprite = 0,0,2\nShadowSprite = 0,0,2\n"
     put('PBS/pokemon_metrics_dessastre_paradoxal.txt',metrics)
     put('Data/blue-future-eevee-compatibility.txt',
         'Golpes do estudo que nao existem neste PBS (nao compilados):\n'+
