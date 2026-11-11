@@ -248,10 +248,10 @@ def make_plan(project,game):
     paradox_ids={p['id'] for p in entries if p['category'] in ('past_paradox','future_paradox')}
     put('PBS/encounters.txt',future.regional_encounters(encounter_text,regional_config,paradox_ids))
     trainer_file=game/'PBS/trainers_story_mode.txt'
-    if trainer_file.is_file():
-        trainer_config=json.loads((project/'data/eevee-regional-trainers.json').read_text(encoding='utf8'))
-        changed_trainers,number_added=future.patch_trainers(trainer_file.read_text(encoding='utf-8-sig'),trainer_config)
-        if number_added:put('PBS/trainers_story_mode.txt',changed_trainers)
+    if not trainer_file.is_file():raise ValueError('PBS de treinadores de historia nao encontrado; nenhuma alteracao aplicada.')
+    trainer_config=json.loads((project/'data/eevee-regional-trainers.json').read_text(encoding='utf8'))
+    changed_trainers,number_added=future.patch_trainers(trainer_file.read_text(encoding='utf-8-sig'),trainer_config)
+    if number_added:put('PBS/trainers_story_mode.txt',changed_trainers)
     changed={p:b for p,b in plans.items() if not p.is_file() or p.read_bytes()!=b}
     return manifest,changed
 
