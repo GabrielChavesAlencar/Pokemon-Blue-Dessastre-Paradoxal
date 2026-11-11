@@ -110,6 +110,9 @@ class NamedGenerationTests(unittest.TestCase):
             for method in sorted({a['method'] for a in area_list}):
                 original+=f'{method},21\n    60,PIKACHU,6,8\n    40,RATTATA,7,9\n'
         (game/'PBS/encounters.txt').write_text(original,encoding='utf8')
+        trainer_config=json.loads((ROOT/'data/eevee-regional-trainers.json').read_text('utf8'))
+        trainer_raw=''.join(f"[{row['trainerType']},{row['name']}]\\nPokemon = PIKACHU,20\\nPokemon = BULBASAUR,23\\nPokemon = CHARMANDER,24\\n" for row in trainer_config['trainers'])
+        (game/'PBS/trainers_story_mode.txt').write_text(trainer_raw.replace('\\n','\n'),encoding='utf8')
         (game/'PBS/pokemon.txt').write_text('[BULBASAUR]\nName = Bulbasaur\n',encoding='utf8')
         return game
 
