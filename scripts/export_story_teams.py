@@ -71,7 +71,11 @@ def parse_teams(raw: str) -> dict[tuple[str, str], list[dict]]:
             field=FIELD.match(line)
             if field and team:
                 value=field.group(2).strip()
-                team[-1][KEYS[field.group(1)]]=[x.strip() for x in value.split(',')] if field.group(1)=='Moves' else value
+                key=field.group(1)
+                parsed=([x.strip() for x in value.split(',')] if key=='Moves'
+                        else int(value) if key in ('Form','AbilityIndex','DynamaxLv') and value.isdigit()
+                        else value)
+                team[-1][KEYS[key]]=parsed
         if team: teams[(match.group(1).strip(),match.group(2).strip())]=team
     return teams
 
