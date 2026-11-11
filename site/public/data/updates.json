@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7c69a4f0bee094850eef487f467df581d7c6c3ef",
+      "date": "2026-11-11T20:50:37-03:00",
+      "title": "fix(kanto): validar conexões e gerar movimentos neutros para NPCs",
+      "category": "Correções"
+    },
+    {
       "sha": "bb546386c6ebbb27e54fac26098f9dc50fee7601",
       "date": "2026-11-11T20:47:35-03:00",
       "title": "feat(kanto): montar o piloto de Pallet até Pewter em uma cópia local",
