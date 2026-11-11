@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5046c86fd22c2efe3e90d729d3290bf3b6e3fc6d",
+      "date": "2026-11-11T20:23:42-03:00",
+      "title": "feat: preparar circuito regional e piloto de Kanto",
+      "category": "Novidades"
+    },
+    {
       "sha": "3912ff56df02932f52e580ff9cc89006d4606401",
       "date": "2026-11-11T19:54:42-03:00",
       "title": "feat(pokedex): revisar tipos e learnsets de quatro Paradoxos futuros",
