@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "75489b4cb5fb579645a7cb16fb69dc54367db344",
+      "date": "2026-11-11T12:33:07-03:00",
+      "title": "feat: animate static author Pokémon in battles without new frames",
+      "category": "Novidades"
+    },
+    {
       "sha": "156f37ede89a74b5bb7190393c44f19ea0852fd4",
       "date": "2026-11-06T20:38:24-03:00",
       "title": "fix(site): permitir link de downloads no guia Android",
