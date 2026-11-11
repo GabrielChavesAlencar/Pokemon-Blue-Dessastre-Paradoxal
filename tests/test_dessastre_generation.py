@@ -121,9 +121,9 @@ class NamedGenerationTests(unittest.TestCase):
             root=Path(tmp);game=self.fixture(root);before=(game/'PBS/pokemon.txt').read_bytes()
             result=installer.install(root,game,True);self.assertTrue(result['applied']);self.assertEqual(result['pending'],1)
             species=(game/'PBS/pokemon_dessastre_paradoxal.txt').read_text();self.assertIn('[CAVEFANG]',species);self.assertNotIn('[HORSAND]',species)
-            # Engine front scale is 2x; back, shiny and graphics remain unchanged.
+            # Authored 128px frames render 2x front/back; shiny and source art stay intact.
             metrics=(game/'PBS/pokemon_metrics_dessastre_paradoxal.txt').read_text()
-            self.assertIn('[CAVEFANG]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2',metrics)
+            self.assertIn('[CAVEFANG]\nFrontSprite = 0,0,2\nBackSprite = 0,0,2\nShadowSprite = 0,0,2',metrics)
             self.assertNotIn('[HORSAND]',metrics)
             self.assertEqual(metrics.count('FrontSprite = 0,0,2'),10)
             self.assertIn('[EEVEE,50]',metrics)
