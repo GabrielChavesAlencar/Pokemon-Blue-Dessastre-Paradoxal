@@ -14,7 +14,9 @@ test('treinadores reais foram extraídos do PBS, sem incluir líderes e chefes',
   assert.equal(data.trainers.length,63);
   assert.equal(Object.keys(data.typeChart).length,18);
   assert.equal(new Set(data.trainers.map(t=>t.id)).size,63);
-  assert.equal(data.trainers.filter(t=>t.team.length===3).length,62);
+  assert.equal(data.trainers.filter(t=>t.team.length===3).length,53);
+  assert.equal(data.trainers.filter(t=>t.team.length===4).length,9);
+  assert.equal(data.trainers.filter(t=>t.team.some(p=>p.form===50)).length,9);
   assert.equal(data.trainers.find(t=>t.name==='Nomi (Auto Grind)').team.length,1);
   assert.ok(data.trainers.every(t=>t.name&&t.trainerType&&t.trainerClass&&t.location));
   assert.ok(data.trainers.every(t=>t.team.every(p=>p.species&&Number.isInteger(p.level)&&p.level>=1)));
