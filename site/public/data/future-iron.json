@@ -1,0 +1,1294 @@
+{
+  "schemaVersion": 1,
+  "status": "site-preview-only",
+  "plannedForGame": true,
+  "sourceStudy": "Paradoxos_Futuro_7_Pokemon_Atualizado(1).md",
+  "sourceSprites": "Sprites_Iron_06-11-2026_Completo(2).zip",
+  "note": "Prévia de sete Paradoxos futuros. Nenhum PBS, encontro, treinador, instalador ou jogo é alterado.",
+  "atlas": {
+    "path": "/assets/future-iron/sprites-atlas.png",
+    "columns": 7,
+    "rows": 7,
+    "cellSize": 128,
+    "roleOrder": [
+      "front",
+      "front-shiny",
+      "back",
+      "back-shiny",
+      "icon",
+      "icon-shiny",
+      "footprint"
+    ],
+    "spriteAssetIds": [
+      "Iron_Claydol",
+      "Iron_Coil",
+      "Iron_Exploud",
+      "Iron_Lumineon",
+      "Iron_Spiritomb",
+      "Iron_Swellow",
+      "Iron_Yanmega"
+    ]
+  },
+  "forms": [
+    {
+      "card": {
+        "id": "IRONORACLE",
+        "number": 1085,
+        "name": "Iron Oracle",
+        "types": [
+          "GROUND",
+          "PSYCHIC"
+        ],
+        "stats": [
+          80,
+          65,
+          125,
+          50,
+          115,
+          135
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "CLAYDOL",
+        "spriteAssetId": "Iron_Claydol",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 0,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Oráculo Orbital",
+        "description": "Seu corpo abriga sensores que giram sem cessar. Dizem que ele consegue antecipar movimentos adversários por meio de cálculos feitos em frações de segundo.",
+        "height": 1.8,
+        "weight": 172,
+        "typeStatus": "confirmed-in-sprite-package"
+      },
+      "details": {
+        "name": "Iron Oracle",
+        "types": [
+          "GROUND",
+          "PSYCHIC"
+        ],
+        "stats": [
+          80,
+          65,
+          125,
+          50,
+          115,
+          135
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "CONFUSION"
+          ],
+          [
+            1,
+            "RAPIDSPIN"
+          ],
+          [
+            1,
+            "HARDEN"
+          ],
+          [
+            1,
+            "MUDSLAP"
+          ],
+          [
+            7,
+            "PSYBEAM"
+          ],
+          [
+            14,
+            "ROCKTOMB"
+          ],
+          [
+            21,
+            "COSMICPOWER"
+          ],
+          [
+            28,
+            "ANCIENTPOWER"
+          ],
+          [
+            35,
+            "EARTHPOWER"
+          ],
+          [
+            42,
+            "PSYSHOCK"
+          ],
+          [
+            49,
+            "IRONDEFENSE"
+          ],
+          [
+            56,
+            "PSYCHIC"
+          ],
+          [
+            63,
+            "STEALTHROCK"
+          ],
+          [
+            70,
+            "POWERGEM"
+          ],
+          [
+            77,
+            "EARTHQUAKE"
+          ],
+          [
+            84,
+            "FUTURESIGHT"
+          ],
+          [
+            91,
+            "EXPLOSION"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "PSYCHIC",
+          "PSYSHOCK",
+          "EARTHPOWER",
+          "EARTHQUAKE",
+          "ROCKSLIDE",
+          "FLASHCANNON",
+          "BODYPRESS",
+          "TRICKROOM",
+          "CALMMIND",
+          "SANDSTORM",
+          "REFLECT",
+          "LIGHTSCREEN",
+          "SUBSTITUTE",
+          "TERABLAST"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "Seu corpo abriga sensores que giram sem cessar. Dizem que ele consegue antecipar movimentos adversários por meio de cálculos feitos em frações de segundo.",
+        "height": 1.8,
+        "weight": 172,
+        "baseSpecies": "CLAYDOL",
+        "speciesCategory": "Pokémon Oráculo Orbital",
+        "pokedexDescription": "Seu corpo abriga sensores que giram sem cessar. Dizem que ele consegue antecipar movimentos adversários por meio de cálculos feitos em frações de segundo.",
+        "expandedDescription": "Uma unidade de observação construída a partir de um corpo em formato de ídolo antigo. Seus olhos vermelhos alinhados ao redor da cabeça captam o ambiente; os anéis cianos emitem padrões de leitura que lembram rituais esquecidos. Move braços desacoplados ao redor do núcleo para reorientar energia psíquica.",
+        "bodyProportionsNotes": "altura total de 1,8 m do topo do chapéu-sensor à ponta inferior, **largura aproximada de 2,1 m** incluindo os módulos laterais. A cúpula superior representa cerca de **35%** da altura, o núcleo central **40%** e a extremidade inferior **25%**. Os braços não devem ultrapassar a cúpula em massa visual.",
+        "typeStatus": "confirmed-in-sprite-package",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    },
+    {
+      "card": {
+        "id": "IRONCOIL",
+        "number": 1086,
+        "name": "Iron Coil",
+        "types": [
+          "NORMAL",
+          "STEEL"
+        ],
+        "stats": [
+          85,
+          105,
+          95,
+          135,
+          70,
+          80
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "FURRET",
+        "spriteAssetId": "Iron_Coil",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 1,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Bobina Móvel",
+        "description": "As placas de seu corpo se articulam como uma corrente flexível. Ao acelerar, ele se enrola e desliza pelo chão quase sem produzir ruído.",
+        "height": 2.2,
+        "weight": 54,
+        "typeStatus": "proposed-in-study"
+      },
+      "details": {
+        "name": "Iron Coil",
+        "types": [
+          "NORMAL",
+          "STEEL"
+        ],
+        "stats": [
+          85,
+          105,
+          95,
+          135,
+          70,
+          80
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "DEFENSECURL"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "METALCLAW"
+          ],
+          [
+            7,
+            "SWIFT"
+          ],
+          [
+            14,
+            "IRONTAIL"
+          ],
+          [
+            21,
+            "UTURN"
+          ],
+          [
+            28,
+            "SPARK"
+          ],
+          [
+            35,
+            "IRONHEAD"
+          ],
+          [
+            42,
+            "AGILITY"
+          ],
+          [
+            49,
+            "DOUBLEEDGE"
+          ],
+          [
+            56,
+            "TIDYUP"
+          ],
+          [
+            63,
+            "IRONDEFENSE"
+          ],
+          [
+            70,
+            "COIL"
+          ],
+          [
+            77,
+            "WILDCHARGE"
+          ],
+          [
+            84,
+            "SUPERFANG"
+          ],
+          [
+            91,
+            "GIGAIMPACT"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "IRONHEAD",
+          "UTURN",
+          "VOLTSWITCH",
+          "THUNDERWAVE",
+          "THUNDERPUNCH",
+          "BRICKBREAK",
+          "TRAILBLAZE",
+          "SUBSTITUTE",
+          "BODYPRESS",
+          "HEAVYSLAM",
+          "TERABLAST",
+          "DOUBLEEDGE",
+          "GIGAIMPACT",
+          "METALSOUND"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "As placas de seu corpo se articulam como uma corrente flexível. Ao acelerar, ele se enrola e desliza pelo chão quase sem produzir ruído.",
+        "height": 2.2,
+        "weight": 54,
+        "baseSpecies": "FURRET",
+        "speciesCategory": "Pokémon Bobina Móvel",
+        "pokedexDescription": "As placas de seu corpo se articulam como uma corrente flexível. Ao acelerar, ele se enrola e desliza pelo chão quase sem produzir ruído.",
+        "expandedDescription": "A silhueta delicada de Furret foi reproduzida com segmentos marrons de liga leve e sensores cianos. O longo tronco pode curvar-se ao redor de obstáculos, enquanto pequenos emissores nas costas ajustam o equilíbrio. Apesar do aspecto amistoso, pode atingir velocidades difíceis de acompanhar.",
+        "bodyProportionsNotes": "**2,2 m do focinho à ponta da cauda**, e não de altura quando em pé; **altura ereta típica de cerca de 0,9 m**, variando conforme a curvatura. Cabeça com aproximadamente **20%** do comprimento projetado, tronco articulado **45%** e cauda **35%**. Evitar engrossar demais o tronco, preservando o perfil esguio de Furret.",
+        "typeStatus": "proposed-in-study",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    },
+    {
+      "card": {
+        "id": "IRONECHO",
+        "number": 1087,
+        "name": "Iron Echo",
+        "types": [
+          "NORMAL",
+          "ELECTRIC"
+        ],
+        "stats": [
+          110,
+          70,
+          82,
+          86,
+          140,
+          82
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "EXPLOUD",
+        "spriteAssetId": "Iron_Exploud",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 2,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Amplificador",
+        "description": "Sua boca contém um emissor de ondas ultrapotente. Quando todos os amplificadores entram em ressonância, o solo vibra mesmo a grandes distâncias.",
+        "height": 1.9,
+        "weight": 205,
+        "typeStatus": "proposed-in-study"
+      },
+      "details": {
+        "name": "Iron Echo",
+        "types": [
+          "NORMAL",
+          "ELECTRIC"
+        ],
+        "stats": [
+          110,
+          70,
+          82,
+          86,
+          140,
+          82
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "ECHOEDVOICE"
+          ],
+          [
+            1,
+            "THUNDERSHOCK"
+          ],
+          [
+            1,
+            "SUPERSONIC"
+          ],
+          [
+            1,
+            "HOWL"
+          ],
+          [
+            7,
+            "CHARGE"
+          ],
+          [
+            14,
+            "SNARL"
+          ],
+          [
+            21,
+            "SHOCKWAVE"
+          ],
+          [
+            28,
+            "HYPERVOICE"
+          ],
+          [
+            35,
+            "THUNDERWAVE"
+          ],
+          [
+            42,
+            "DISCHARGE"
+          ],
+          [
+            49,
+            "SCREECH"
+          ],
+          [
+            56,
+            "THUNDERBOLT"
+          ],
+          [
+            63,
+            "METALSOUND"
+          ],
+          [
+            70,
+            "EERIEIMPULSE"
+          ],
+          [
+            77,
+            "THUNDER"
+          ],
+          [
+            84,
+            "BOOMBURST"
+          ],
+          [
+            91,
+            "HYPERBEAM"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "THUNDERBOLT",
+          "THUNDER",
+          "CHARGEBEAM",
+          "VOLTSWITCH",
+          "ELECTRICTERRAIN",
+          "HYPERVOICE",
+          "SNARL",
+          "METALSOUND",
+          "THUNDERWAVE",
+          "ELECTROBALL",
+          "LIGHTSCREEN",
+          "SUBSTITUTE",
+          "TERABLAST",
+          "HYPERBEAM"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "Sua boca contém um emissor de ondas ultrapotente. Quando todos os amplificadores entram em ressonância, o solo vibra mesmo a grandes distâncias.",
+        "height": 1.9,
+        "weight": 205,
+        "baseSpecies": "EXPLOUD",
+        "speciesCategory": "Pokémon Amplificador",
+        "pokedexDescription": "Sua boca contém um emissor de ondas ultrapotente. Quando todos os amplificadores entram em ressonância, o solo vibra mesmo a grandes distâncias.",
+        "expandedDescription": "Seu tronco robusto sustenta um grande alto-falante circular no interior da boca e diversas colunas acústicas nas costas. A carcaça violeta e os anéis luminosos lembram um equipamento industrial móvel. Ele pode transformar oscilações sonoras em descargas elétricas.",
+        "bodyProportionsNotes": "**1,9 m de altura**, cerca de **1,5 m de largura máxima** entre as peças laterais. Cabeça, boca e amplificadores devem dominar a silhueta: aproximadamente **45% da altura visual**. Tronco perto de **35%** e pernas robustas nos **20% restantes**. O círculo do emissor bucal deve ocupar cerca de **um terço da largura do tronco**.",
+        "typeStatus": "proposed-in-study",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    },
+    {
+      "card": {
+        "id": "IRONGLIMMER",
+        "number": 1088,
+        "name": "Iron Glimmer",
+        "types": [
+          "WATER",
+          "ELECTRIC"
+        ],
+        "stats": [
+          80,
+          65,
+          85,
+          125,
+          120,
+          95
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "LUMINEON",
+        "spriteAssetId": "Iron_Lumineon",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 3,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Néon Abissal",
+        "description": "Nadadeiras translúcidas projetam padrões de luz sobre a água. Esses sinais atraem presas e podem descarregar eletricidade ao menor contato.",
+        "height": 1.5,
+        "weight": 29,
+        "typeStatus": "proposed-in-study"
+      },
+      "details": {
+        "name": "Iron Glimmer",
+        "types": [
+          "WATER",
+          "ELECTRIC"
+        ],
+        "stats": [
+          80,
+          65,
+          85,
+          125,
+          120,
+          95
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "WATERGUN"
+          ],
+          [
+            1,
+            "CHARM"
+          ],
+          [
+            1,
+            "SUPERSONIC"
+          ],
+          [
+            1,
+            "THUNDERSHOCK"
+          ],
+          [
+            7,
+            "AQUARING"
+          ],
+          [
+            14,
+            "WATERPULSE"
+          ],
+          [
+            21,
+            "CHARGEBEAM"
+          ],
+          [
+            28,
+            "ICYWIND"
+          ],
+          [
+            35,
+            "FLIPTURN"
+          ],
+          [
+            42,
+            "DISCHARGE"
+          ],
+          [
+            49,
+            "SOAK"
+          ],
+          [
+            56,
+            "SURF"
+          ],
+          [
+            63,
+            "TAILWIND"
+          ],
+          [
+            70,
+            "THUNDERBOLT"
+          ],
+          [
+            77,
+            "RAINDANCE"
+          ],
+          [
+            84,
+            "HYDROPUMP"
+          ],
+          [
+            91,
+            "THUNDER"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "SURF",
+          "HYDROPUMP",
+          "ICEBEAM",
+          "ICYWIND",
+          "SCALD",
+          "CHILLINGWATER",
+          "VOLTSWITCH",
+          "THUNDERBOLT",
+          "ELECTRICTERRAIN",
+          "CHARGEBEAM",
+          "DAZZLINGGLEAM",
+          "RAINDANCE",
+          "SUBSTITUTE",
+          "TERABLAST"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "Nadadeiras translúcidas projetam padrões de luz sobre a água. Esses sinais atraem presas e podem descarregar eletricidade ao menor contato.",
+        "height": 1.5,
+        "weight": 29,
+        "baseSpecies": "LUMINEON",
+        "speciesCategory": "Pokémon Néon Abissal",
+        "pokedexDescription": "Nadadeiras translúcidas projetam padrões de luz sobre a água. Esses sinais atraem presas e podem descarregar eletricidade ao menor contato.",
+        "expandedDescription": "Um corpo de peixe escuro e elegante sustenta grandes nadadeiras holográficas azuis, recortadas por linhas semelhantes a circuitos. O brilho pulsante pode enganar sistemas de localização submarinos. Em vez de nadar rapidamente apenas com movimentos musculares, utiliza impulso eletromagnético para manobras precisas.",
+        "bodyProportionsNotes": "**1,5 m do focinho à extremidade da cauda**. O corpo fusiforme representa aproximadamente **60% do comprimento**, enquanto cauda e pontas externas completam **40%**. As nadadeiras superiores e laterais ampliam a **largura visual para cerca de 2,3 m**, mas devem permanecer finas e translúcidas. Manter a cabeça compacta para não transformar o desenho em peixe robusto.",
+        "typeStatus": "proposed-in-study",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    },
+    {
+      "card": {
+        "id": "IRONWRAITH",
+        "number": 1089,
+        "name": "Iron Wraith",
+        "types": [
+          "GHOST",
+          "ELECTRIC"
+        ],
+        "stats": [
+          85,
+          75,
+          105,
+          50,
+          130,
+          125
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "SPIRITOMB",
+        "spriteAssetId": "Iron_Spiritomb",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 4,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Aparição Digital",
+        "description": "Um reator mantém uma sombra digital suspensa sobre o chão. Seus inúmeros olhos observam tudo ao redor, como se fossem fragmentos de uma única mente.",
+        "height": 1.4,
+        "weight": 126,
+        "typeStatus": "proposed-in-study"
+      },
+      "details": {
+        "name": "Iron Wraith",
+        "types": [
+          "GHOST",
+          "ELECTRIC"
+        ],
+        "stats": [
+          85,
+          75,
+          105,
+          50,
+          130,
+          125
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "CONFUSERAY"
+          ],
+          [
+            1,
+            "NIGHTSHADE"
+          ],
+          [
+            1,
+            "THUNDERSHOCK"
+          ],
+          [
+            1,
+            "SPITE"
+          ],
+          [
+            7,
+            "SHADOWSNEAK"
+          ],
+          [
+            14,
+            "HEX"
+          ],
+          [
+            21,
+            "THUNDERWAVE"
+          ],
+          [
+            28,
+            "SHOCKWAVE"
+          ],
+          [
+            35,
+            "WILLOWISP"
+          ],
+          [
+            42,
+            "SHADOWBALL"
+          ],
+          [
+            49,
+            "CURSE"
+          ],
+          [
+            56,
+            "NASTYPLOT"
+          ],
+          [
+            63,
+            "DARKPULSE"
+          ],
+          [
+            70,
+            "DISCHARGE"
+          ],
+          [
+            77,
+            "MEMENTO"
+          ],
+          [
+            84,
+            "THUNDER"
+          ],
+          [
+            91,
+            "DESTINYBOND"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "HEX",
+          "SHADOWBALL",
+          "WILLOWISP",
+          "THUNDERBOLT",
+          "THUNDERWAVE",
+          "FOULPLAY",
+          "SNARL",
+          "TRICK",
+          "TAUNT",
+          "NASTYPLOT",
+          "REFLECT",
+          "LIGHTSCREEN",
+          "SUBSTITUTE",
+          "TERABLAST"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "Um reator mantém uma sombra digital suspensa sobre o chão. Seus inúmeros olhos observam tudo ao redor, como se fossem fragmentos de uma única mente.",
+        "height": 1.4,
+        "weight": 126,
+        "baseSpecies": "SPIRITOMB",
+        "speciesCategory": "Pokémon Aparição Digital",
+        "pokedexDescription": "Um reator mantém uma sombra digital suspensa sobre o chão. Seus inúmeros olhos observam tudo ao redor, como se fossem fragmentos de uma única mente.",
+        "expandedDescription": "A formação espectral violeta com olhos verdes brilhantes é projetada por um pedestal de metal circular. Anéis e fragmentos de luz orbitam o rosto digital. Arquivos misteriosos encontrados no núcleo indicam padrões de consciência, embora ninguém saiba de onde eles vieram.",
+        "bodyProportionsNotes": "**1,4 m da base do reator ao topo da manifestação**, com **largura máxima aproximada de 1,7 m** para a projeção. O pedestal ocupa cerca de **30% da altura**, a aparição superior **70%**. O rosto espectral deve ser maior que o suporte metálico, e o peso se concentra no pedestal — a projeção não pesa 126 kg por si só.",
+        "typeStatus": "proposed-in-study",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    },
+    {
+      "card": {
+        "id": "IRONRAPTOR",
+        "number": 1090,
+        "name": "Iron Raptor",
+        "types": [
+          "NORMAL",
+          "FLYING"
+        ],
+        "stats": [
+          74,
+          140,
+          82,
+          132,
+          70,
+          72
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "SWELLOW",
+        "spriteAssetId": "Iron_Swellow",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 5,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Caça Supersônico",
+        "description": "Suas asas rígidas cortam o ar como lâminas. Durante mergulhos de caça, rastreia alvos com sensores que brilham no peito e nas penas.",
+        "height": 1,
+        "weight": 31,
+        "typeStatus": "confirmed-in-sprite-package"
+      },
+      "details": {
+        "name": "Iron Raptor",
+        "types": [
+          "NORMAL",
+          "FLYING"
+        ],
+        "stats": [
+          74,
+          140,
+          82,
+          132,
+          70,
+          72
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "PECK"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "FOCUSENERGY"
+          ],
+          [
+            1,
+            "GROWL"
+          ],
+          [
+            7,
+            "WINGATTACK"
+          ],
+          [
+            14,
+            "STEELWING"
+          ],
+          [
+            21,
+            "AERIALACE"
+          ],
+          [
+            28,
+            "AGILITY"
+          ],
+          [
+            35,
+            "UTURN"
+          ],
+          [
+            42,
+            "FACADE"
+          ],
+          [
+            49,
+            "DUALWINGBEAT"
+          ],
+          [
+            56,
+            "BRAVEBIRD"
+          ],
+          [
+            63,
+            "DOUBLEEDGE"
+          ],
+          [
+            70,
+            "ROOST"
+          ],
+          [
+            77,
+            "ENDEAVOR"
+          ],
+          [
+            84,
+            "REVERSAL"
+          ],
+          [
+            91,
+            "GIGAIMPACT"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "BRAVEBIRD",
+          "AERIALACE",
+          "ACROBATICS",
+          "UTURN",
+          "TAILWIND",
+          "DOUBLEEDGE",
+          "FACADE",
+          "AGILITY",
+          "THIEF",
+          "SUBSTITUTE",
+          "AIRSLASH",
+          "REVERSAL",
+          "TERABLAST",
+          "GIGAIMPACT"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "Suas asas rígidas cortam o ar como lâminas. Durante mergulhos de caça, rastreia alvos com sensores que brilham no peito e nas penas.",
+        "height": 1,
+        "weight": 31,
+        "baseSpecies": "SWELLOW",
+        "speciesCategory": "Pokémon Caça Supersônico",
+        "pokedexDescription": "Suas asas rígidas cortam o ar como lâminas. Durante mergulhos de caça, rastreia alvos com sensores que brilham no peito e nas penas.",
+        "expandedDescription": "A ave mantém o bico, a cauda e a silhueta inconfundível de Swellow, mas apresenta plumagem metálica escura, linhas azuis energizadas e estabilizadores longos nas costas. Seu comportamento lembra uma aeronave de interceptação em miniatura, com aceleração e curvas abruptas.",
+        "bodyProportionsNotes": "**1,0 m de dimensão corporal nominal** do bico à cauda, com **envergadura aproximada de 2,4 m** quando as asas estão totalmente abertas. Peito e cabeça ocupam cerca de **40% do comprimento**, tronco **35%** e cauda/estabilizadores **25%**. As asas devem parecer finas e pontiagudas, sem se transformar em grandes placas pesadas.",
+        "typeStatus": "confirmed-in-sprite-package",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    },
+    {
+      "card": {
+        "id": "IRONSTINGER",
+        "number": 1091,
+        "name": "Iron Stinger",
+        "types": [
+          "BUG",
+          "FLYING"
+        ],
+        "stats": [
+          88,
+          70,
+          88,
+          114,
+          135,
+          75
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "Paradox",
+          "Future"
+        ],
+        "category": "future_paradox",
+        "future": true,
+        "pending": false,
+        "inGame": false,
+        "designOnly": true,
+        "baseSpecies": "YANMEGA",
+        "spriteAssetId": "Iron_Yanmega",
+        "art": "/assets/future-iron/sprites-atlas.png",
+        "sprite": "/assets/future-iron/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-iron/sprites-atlas.png",
+          "front-shiny": "/assets/future-iron/sprites-atlas.png",
+          "back": "/assets/future-iron/sprites-atlas.png",
+          "back-shiny": "/assets/future-iron/sprites-atlas.png",
+          "icon": "/assets/future-iron/sprites-atlas.png",
+          "icon-shiny": "/assets/future-iron/sprites-atlas.png",
+          "footprint": "/assets/future-iron/sprites-atlas.png"
+        },
+        "spriteAtlas": "/assets/future-iron/sprites-atlas.png",
+        "atlasRow": 6,
+        "atlasRows": 7,
+        "speciesCategory": "Pokémon Libélula de Combate",
+        "description": "Seus olhos mecânicos rastreiam movimentos quase imperceptíveis. As quatro asas vibram em frequências distintas para emboscar alvos sem perder altitude.",
+        "height": 2.2,
+        "weight": 83,
+        "typeStatus": "confirmed-in-sprite-package"
+      },
+      "details": {
+        "name": "Iron Stinger",
+        "types": [
+          "BUG",
+          "FLYING"
+        ],
+        "stats": [
+          88,
+          70,
+          88,
+          114,
+          135,
+          75
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "inGame": false,
+        "designOnly": true,
+        "learnsetStatus": "design-proposal-only",
+        "abilities": [
+          "QUARKDRIVE"
+        ],
+        "hidden": [],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "DETECT"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "SUPERSONIC"
+          ],
+          [
+            7,
+            "AIRCUTTER"
+          ],
+          [
+            14,
+            "STRUGGLEBUG"
+          ],
+          [
+            21,
+            "ANCIENTPOWER"
+          ],
+          [
+            28,
+            "AGILITY"
+          ],
+          [
+            35,
+            "UTURN"
+          ],
+          [
+            42,
+            "BUGBUZZ"
+          ],
+          [
+            49,
+            "AIRSLASH"
+          ],
+          [
+            56,
+            "PSYCHICNOISE"
+          ],
+          [
+            63,
+            "SCREECH"
+          ],
+          [
+            70,
+            "DISCHARGE"
+          ],
+          [
+            77,
+            "HURRICANE"
+          ],
+          [
+            84,
+            "TAILWIND"
+          ],
+          [
+            91,
+            "HYPERBEAM"
+          ]
+        ],
+        "tm": [
+          "PROTECT",
+          "AIRSLASH",
+          "BUGBUZZ",
+          "HURRICANE",
+          "UTURN",
+          "PSYCHICNOISE",
+          "PSYCHIC",
+          "GIGADRAIN",
+          "FLASHCANNON",
+          "ELECTROBALL",
+          "ENERGYBALL",
+          "SOLARBEAM",
+          "TAILWIND",
+          "SUBSTITUTE",
+          "TERABLAST"
+        ],
+        "tutor": [],
+        "egg": [],
+        "evolutions": [],
+        "preEvolution": null,
+        "description": "Seus olhos mecânicos rastreiam movimentos quase imperceptíveis. As quatro asas vibram em frequências distintas para emboscar alvos sem perder altitude.",
+        "height": 2.2,
+        "weight": 83,
+        "baseSpecies": "YANMEGA",
+        "speciesCategory": "Pokémon Libélula de Combate",
+        "pokedexDescription": "Seus olhos mecânicos rastreiam movimentos quase imperceptíveis. As quatro asas vibram em frequências distintas para emboscar alvos sem perder altitude.",
+        "expandedDescription": "Carapaça preta e vermelha, olhos eletrônicos e quatro asas translúcidas com padrões avermelhados transformam Yanmega em uma unidade de reconhecimento. Articulações finas e membros em forma de garras permitem mudanças bruscas de direção durante a perseguição.",
+        "bodyProportionsNotes": "**2,2 m do focinho ao final do abdômen**; **envergadura total de cerca de 3,4 m** considerando as quatro asas estendidas. Cabeça e tórax somam aproximadamente **55% do corpo**, e abdômen segmentado **45%**. As asas devem permanecer grandes em relação ao tronco, mas leves e alongadas; os membros devem ser finos, evitando aspecto de robô humanoide.",
+        "typeStatus": "confirmed-in-sprite-package",
+        "genderRatio": "Genderless",
+        "eggGroups": [
+          "Undiscovered"
+        ]
+      }
+    }
+  ]
+}

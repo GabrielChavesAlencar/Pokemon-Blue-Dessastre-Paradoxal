@@ -64,8 +64,9 @@ export function futureSprite(p,role='front',className=''){
   if(!p?.future||!p.spriteAtlas||!Number.isInteger(p.atlasRow))return '';
   const col=roles.indexOf(role);
   if(col<0)return '';
-  const x=Number((col/6*100).toFixed(4)),y=Number((p.atlasRow/8*100).toFixed(4));
-  const style='background-image:url('+JSON.stringify(p.spriteAtlas)+');background-size:700% 900%;'+
+  const atlasRows=p.atlasRows??9;
+  const x=Number((col/6*100).toFixed(4)),y=Number((p.atlasRow/(atlasRows-1)*100).toFixed(4));
+  const style='background-image:url('+JSON.stringify(p.spriteAtlas)+');background-size:700% '+(atlasRows*100)+'%;'+
     'background-position:'+x+'% '+y+'%;';
   return '<span class="future-sprite '+esc(className)+'" role="img" aria-label="'+
     esc(p.name+' · '+({'front':'frente','front-shiny':'frente shiny','back':'costas','back-shiny':'costas shiny',
