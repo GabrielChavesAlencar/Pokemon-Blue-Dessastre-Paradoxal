@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9e7d2df035c04cb777b86d29f40a3cd8fd7410e0",
+      "date": "2026-11-11T20:53:25-03:00",
+      "title": "test(kanto): consultar conexões com o iterador do mapa da engine",
+      "category": "Testes"
+    },
+    {
       "sha": "7c69a4f0bee094850eef487f467df581d7c6c3ef",
       "date": "2026-11-11T20:50:37-03:00",
       "title": "fix(kanto): validar conexões e gerar movimentos neutros para NPCs",
