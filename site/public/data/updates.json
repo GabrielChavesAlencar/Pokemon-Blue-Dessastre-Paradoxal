@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5ea5dec018521974c5853c32c65d10bddd844113",
+      "date": "2026-11-11T14:16:34-03:00",
+      "title": "feat(site): aba Treinadores com equipes e variações",
+      "category": "Novidades"
+    },
+    {
       "sha": "45751faca6c648255b5a043cc72fb915c745aa0c",
       "date": "2026-11-11T13:55:00-03:00",
       "title": "test(campaign): align native sprite metric expectation with 2x front fix",
