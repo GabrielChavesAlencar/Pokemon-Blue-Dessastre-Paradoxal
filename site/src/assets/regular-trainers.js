@@ -15,7 +15,7 @@ function multiplier(attack,defending,chart){
   if(!defending?.length)return 1;
   return defending.reduce((acc,type)=>{
     const rules=chart[type];
-    return acc*(rules?.immunities.includes(attack)?0:rules?.weaknesses.includes(attack)?2:rules?.resistances.includes(attack)?.5:1);
+    return acc*(rules?.immunities.includes(attack)?0:rules?.weaknesses.includes(attack)?2:rules?.resistances.includes(attack)?0.5:1);
   },1);
 }
 function lastMoves(species,level,details){
