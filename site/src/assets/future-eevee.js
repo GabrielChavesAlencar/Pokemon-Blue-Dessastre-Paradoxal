@@ -11,6 +11,42 @@ export function mergeFutureCatalog(catalog,manifest){
   catalog.counts.futureRegionalForms=(catalog.customForms??[]).filter(x=>x.future===true).length;
   return catalog;
 }
+// Merge only the nine planned encounter slots. Keep original slots and the
+// already-published 5% Paradox slots; reweight other species deterministically.
+export function mergeRegionalLocations(data,config){
+  if(!config?.areas?.length)return data;
+  const configured=new Set(config.areas.map(a=>a.species));
+  const fallback=data.authorEncounters?.areas||[];
+  for(const plan of config.areas){
+    const area=data.locations.find(x=>x.id===plan.mapId);
+    if(!area)continue;
+    const fixed=new Set(fallback.filter(x=>x.mapId===plan.mapId&&x.method===plan.method).flatMap(x=>x.species));
+    for(const version of area.versions){
+      const method=version.methods.find(m=>m.id===plan.method);
+      if(!method)continue;
+      const original=method.slots.filter(row=>!configured.has(row[0]));
+      const held=original.filter(row=>fixed.has(row[0]));
+      const common=original.filter(row=>!fixed.has(row[0]));
+      if(!common.length)continue;
+      const balance=100-plan.percent-held.reduce((sum,row)=>sum+row[3],0);
+      const total=common.reduce((sum,row)=>sum+row[3],0);
+      if(balance<common.length||total<=0)continue;
+      const exact=common.map(row=>row[3]*balance/total);
+      const weights=exact.map(Math.floor);
+      const fractions=exact.map((weight,i)=>({i,fraction:weight-weights[i]}))
+        .sort((a,b)=>b.fraction-a.fraction||a.i-b.i);
+      for(const {i} of fractions.slice(0,balance-weights.reduce((a,b)=>a+b,0)))weights[i]++;
+      method.slots=[
+        ...common.map((row,i)=>[...row.slice(0,3),weights[i]]),
+        ...held,
+        [plan.species,common[0][1],common[0][2],plan.percent]
+      ];
+    }
+    area.species=[...new Set(area.versions.flatMap(v=>v.methods.flatMap(m=>m.slots.map(s=>s[0]))))].sort();
+  }
+  return data;
+}
+
 export function mergeFutureDetails(details,manifest){
   if(!manifest?.forms?.length)return details;
   for(const entry of manifest.forms){
