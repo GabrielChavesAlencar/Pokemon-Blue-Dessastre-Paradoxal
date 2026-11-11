@@ -1,8 +1,8 @@
-import {mergeFutureCatalog,mergeFutureDetails} from './future-eevee.js';
+import {mergeFutureCatalog,mergeFutureDetails,mergeRegionalLocations} from './future-eevee.js';
 let futureManifest;
 export function activeLocations(locations,region){const hidden=new Set(region?.inactiveAreaIds??[]);return locations.filter(a=>!hidden.has(a.id));}
 export async function loadPortal(){
-  const files=['catalog','locations','updates','guides','story-trainers','region-points','future-eevee'];
+  const files=['catalog','locations','updates','guides','story-trainers','region-points','future-eevee','eevee-regional-encounters'];
   const values=await Promise.all(files.map(async name=>{const response=await fetch(`/data/${name}.json`);if(!response.ok)throw new Error(`Não foi possível abrir ${name}.`);return response.json();}));
   const approvedResponse=await fetch('/data/pokedex-approved.json');
   if(!approvedResponse.ok)throw new Error('Não foi possível abrir as descrições aprovadas.');
@@ -17,7 +17,12 @@ export async function loadPortal(){
   }
   futureManifest=values[6];
   mergeFutureCatalog(values[0],futureManifest);
+  mergeRegionalLocations(values[1],values[7]);
   const byId=new Map([...values[0].species,...(values[0].customForms??[])].map(p=>[p.id,p]));
+  for(const entry of futureManifest.forms||[]){
+    const card=entry.card;
+    byId.set(card.base+'_50',{...card,id:card.base,encounterForm:50});
+  }
   for(const [id,form] of Object.entries(values[0].encounterForms??{})){const base=byId.get(form.base);if(base)byId.set(id,{...base,name:base.name+' · '+form.name,encounterForm:form.form});}
   return {catalog:values[0],locations:activeLocations(values[1].locations,values[5]),encounterPolicy:values[1].authorEncounters,updates:values[2].commits,guides:values[3].guides,story:values[4],region:values[5],futureEevee:futureManifest,byId};
 }
