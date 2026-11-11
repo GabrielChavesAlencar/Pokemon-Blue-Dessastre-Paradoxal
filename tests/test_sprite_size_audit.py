@@ -52,22 +52,3 @@ class SpriteSizeAuditTests(unittest.TestCase):
                 checked+=1
         print('AUDITED_SHINY_PAIRS',checked)
         self.assertEqual(checked,128)
-
-    def test_upstream_decades_reference_sizes_if_available(self):
-        """Optional pinned base-game comparison; no network dependency for CI PASS."""
-        from urllib.request import Request,urlopen
-        commit="ff6091b23603b3298ad72a7584b02a51e1d01c0e"
-        for species in ('BULBASAUR','CHARIZARD','GENGAR','SNORLAX','PIKACHU','WALREIN'):
-            for role in ('Front','Back'):
-                url=("https://raw.githubusercontent.com/HazyCrazy/Pokemon-Decades/"+
-                     commit+"/Graphics/Pokemon/"+role+"/"+species+".png")
-                try:
-                    with urlopen(Request(url,headers={'User-Agent':'blue-sprite-audit'}),timeout=6) as source:
-                        parsed=audit.png_bounds(source.read())
-                except (OSError,ValueError) as error:
-                    print('REFERENCE_UNAVAILABLE',species,role,str(error)[:110])
-                    continue
-                box=parsed['frameBoxes'][0]
-                if box:
-                    print('DEC參_REF',species,role,parsed['frameWidth'],parsed['height'],
-                          box[2]-box[0],box[3]-box[1],box[0],box[1],parsed['frames'])
