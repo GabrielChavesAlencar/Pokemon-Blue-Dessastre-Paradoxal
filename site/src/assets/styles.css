@@ -197,3 +197,29 @@
 .regular-banner h1{overflow-wrap:anywhere}
 @media(max-width:1050px){.regular-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.regular-grid{grid-template-columns:1fr}.regular-toolbar .search-field,.regular-toolbar .select-field{width:100%}.regular-avatar{width:68px;height:68px;font-size:48px}.regular-card{padding:18px}}
+
+/* Future regional Eevee sprites (9 rows x 7 views in one atlas). */
+.future-sprite{display:block;flex:none;background-repeat:no-repeat;image-rendering:pixelated;object-fit:contain}
+.future-card-art{width:168px;height:168px;filter:drop-shadow(0 7px 7px #0006);transition:transform .25s}
+.pokemon-card:hover .future-card-art{transform:translateY(-3px) scale(1.035)}
+.future-gallery-sprite{width:128px;height:128px}
+.future-gallery-icon{width:82px;height:82px}
+.future-evo-icon{width:64px;height:64px}
+.future-notice{margin-top:18px;padding:13px 16px;border:1px solid #4a7391;border-radius:8px;background:#112e40;color:#beddf4;font-size:12px;line-height:1.75}
+.future-evo-panel{margin:22px 0;padding:25px}
+.future-evo-panel .panel-heading h2{font-size:28px}
+.future-evo-panel .panel-note{font-size:12px;color:#a5bad0;line-height:1.8;margin:8px 0 18px}
+.future-evo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.future-evo-option,.future-evo-origin{display:flex;align-items:center;gap:13px;padding:12px;border:1px solid #31536e;border-radius:9px;background:#10283b}
+.future-evo-option:hover,.future-evo-origin:hover{border-color:#78b6e8;background:#153650}
+.future-evo-option>span:nth-child(2){flex:1;min-width:0}
+.future-evo-option b,.future-evo-origin b{display:block;color:#e0efff;font-size:12px;overflow-wrap:anywhere}
+.future-evo-option small{display:block;color:#97bfe0;font-size:10px;margin-top:3px}
+.future-evo-option em{display:block;font-style:normal;font-size:10px;color:#adc0cf;margin-top:6px;line-height:1.6}
+.future-evo-option>.icon,.future-evo-origin>.icon{width:15px;margin-left:auto;color:#8ac5ed}
+.future-evo-origin{width:fit-content;max-width:100%;font-size:12px;color:#a5bed6;margin:15px 0}
+.future-requirements{padding:0 0 0 22px;color:#bbd0e4;font-size:12px;line-height:1.9}
+.future-requirements li{padding:2px 0}
+.future-requirements-note{font-size:11px;color:#91a9c5;margin-top:15px}
+@media(max-width:750px){.future-evo-grid{grid-template-columns:1fr}}
+@media(max-width:440px){.future-card-art{width:145px;height:145px}.future-evo-panel{padding:17px}.future-evo-option{padding:8px;gap:8px}}
