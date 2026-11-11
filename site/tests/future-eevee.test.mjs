@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {mergeFutureCatalog,mergeFutureDetails,futureSprite,futureEvolutionPanels} from '../src/assets/future-eevee.js';
+import {mergeFutureCatalog,mergeFutureDetails,mergeRegionalLocations,futureSprite,futureEvolutionPanels} from '../src/assets/future-eevee.js';
 import {filterSpecies,pokemonPath} from '../src/assets/utils.js';
 import {pokemonCard} from '../src/assets/views.js';
 import {pokemonDetail} from '../src/assets/detail.js';
@@ -92,4 +92,31 @@ test('mesclagem é idempotente e não coloca formas futuras em encontros ou no b
   assert.equal(clone.customForms.filter(x=>x.future).length,9);
   assert.ok(manifest.forms.every(x=>x.card.pending===false&&x.card.future===true));
   assert.ok(manifest.forms.every(x=>x.details.learnsetStatus==='design-proposal-only'));
+});
+
+test('nove encontros regionais aparecem em áreas distintas com probabilidades precisas',()=>{
+  const base=read('locations'),plans=read('eevee-regional-encounters');
+  assert.equal(plans.areas.length,9);
+  assert.equal(new Set(plans.areas.map(p=>p.mapId)).size,9);
+  assert.equal(plans.areas.find(p=>p.species==='EEVEE_50').percent,20);
+  assert.ok(plans.areas.filter(p=>p.species!=='EEVEE_50').every(p=>p.percent===5));
+  mergeRegionalLocations(base,plans);
+  const snapshot=JSON.stringify(base);
+  mergeRegionalLocations(base,plans);
+  assert.equal(JSON.stringify(base),snapshot,'nunca duplicar encontros regionais');
+  for(const plan of plans.areas){
+    const area=base.locations.find(a=>a.id===plan.mapId);
+    assert.ok(area,'área existente '+plan.name);
+    for(const version of area.versions){
+      const method=version.methods.find(m=>m.id===plan.method);
+      if(!method)continue;
+      const chance=method.slots.filter(row=>row[0]===plan.species).reduce((sum,row)=>sum+row[3],0);
+      assert.equal(chance,plan.percent,plan.name+' versão '+version.id);
+      assert.equal(method.slots.reduce((sum,row)=>sum+row[3],0),100,'pesos somam 100');
+      const rare=(base.authorEncounters?.areas||[]).filter(a=>a.mapId===plan.mapId&&a.method===plan.method);
+      for(const record of rare)for(const id of record.species)
+        assert.equal(method.slots.find(row=>row[0]===id)?.[3],5,'paradoxos preservados');
+    }
+    assert.ok(area.species.includes(plan.species));
+  }
 });
