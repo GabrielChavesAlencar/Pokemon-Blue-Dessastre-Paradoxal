@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1a8ca38e5d2a8308d1b3bbe016673f8285cfd699",
+      "date": "2026-11-11T20:42:19-03:00",
+      "title": "feat(site): publicar localizações e adversários do piloto de Kanto",
+      "category": "Novidades"
+    },
+    {
       "sha": "2800414a55c49f3d0f6ed5f8ef27ca2ba5bcd9d7",
       "date": "2026-11-11T20:27:19-03:00",
       "title": "test: validar a aba Regiões no Chromium",
