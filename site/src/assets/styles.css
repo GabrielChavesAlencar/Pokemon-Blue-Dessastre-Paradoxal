@@ -223,3 +223,7 @@
 .future-requirements-note{font-size:11px;color:#91a9c5;margin-top:15px}
 @media(max-width:750px){.future-evo-grid{grid-template-columns:1fr}}
 @media(max-width:440px){.future-card-art{width:145px;height:145px}.future-evo-panel{padding:17px}.future-evo-option{padding:8px;gap:8px}}
+
+/* Real Eevee regional sprites in trainer portraits and team summaries. */
+.story-poke-header>.future-team-sprite{width:76px;height:76px;flex:none;background-color:#13263b;border-radius:8px}
+.regular-pokemon-strip>.future-trainer-icon{width:68px;height:68px;background-color:#15263b;border:1px solid #29405d;border-radius:8px}
