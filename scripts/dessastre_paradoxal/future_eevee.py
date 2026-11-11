@@ -195,16 +195,23 @@ def regional_encounters(text,config,paradox_ids):
 def patch_trainers(text,config):
     headers=list(re.finditer(r"(?m)^\[([^,\]\r\n]+),([^\]\r\n]+)\][^\r\n]*\r?\n",text))
     target={(x["trainerType"],x["name"]):x for x in config["trainers"]}
+    if len(target)!=len(config["trainers"]):
+        raise ValueError("Treinadores regionais duplicados na configuracao")
+    matched=set()
     updated=0
     for i in range(len(headers)-1,-1,-1):
         m=headers[i];key=(m[1].strip(),m[2].strip());entry=target.get(key)
         if not entry:continue
+        matched.add(key)
         stop=headers[i+1].start() if i+1<len(headers) else len(text)
         original=text[m.end():stop]
         blocks=re.findall(r"(?m)^\s*Pokemon\s*=\s*([A-Z0-9_]+)\s*,\s*(\d+)",original)
-        if any(mon==entry["species"] and re.search(r"(?m)^\s*Form\s*=\s*50\s*$",original) for mon,level in blocks):
+        # For an already-installed trainer, preserve existing format unchanged.
+        if re.search(r"(?m)^\s*Pokemon\s*=\s*"+re.escape(entry["species"])+
+                     r"\s*,\s*\d+\s*\r?\n\s*Form\s*=\s*50\s*$",original):
             continue
-        if not blocks or len(blocks)>=6:continue
+        if not blocks or len(blocks)>=6:
+            raise ValueError("Treinador sem espaco para Eevee regional: "+key[1])
         level=max(int(level) for mon,level in blocks)
         newline="\r\n" if "\r\n" in original else "\n"
         new="Pokemon = "+entry["species"]+","+str(level)+newline+"    Form = 50"+newline
@@ -212,4 +219,8 @@ def patch_trainers(text,config):
         if pos<0:pos=len(original)
         text=text[:m.end()+pos]+new+text[m.end()+pos:]
         updated+=1
+    missing=set(target)-matched
+    if missing:
+        raise ValueError("Treinadores regionais nao encontrados no PBS: "+
+                         ", ".join(name for category,name in sorted(missing)))
     return text,updated
