@@ -158,7 +158,7 @@ module BlueCampaignValidation
     before=$player.money;battle.pbGainMoney
     check($player.money-before==7*trainer.base_money && battle.moneyGain,'Common trainer victory pays exactly native level times class reward')
     metrics=GameData::SpeciesMetrics.get_species_form(:CAVEFANG,0)
-    check(metrics.back_sprite_scale==1.5 && metrics.front_sprite_scale==1,'Author back sprites grow to 192px frames; front scale stays unchanged')
+    check(metrics.back_sprite_scale==1.5 && metrics.front_sprite_scale==2,'Author back sprites stay scaled to 1.5x; front sprites use 2x')
     BlueCampaign::Shop.new.open do |shop|
       shot=Graphics.snap_to_bitmap;shot.to_file('Data/blue-campaign-shop-smoke.png');shot.dispose
       shop.instance_variable_set(:@tab,2);shop.refresh
