@@ -27,3 +27,11 @@ A geração autoral **Dessastre Paradoxal** acrescenta 59 espécies e 12 Megas. 
 A rota `/treinadores` lista os treinadores comuns do `PBS/trainers_story_mode.txt` original de Pokémon Decades, preservando classe, área, Pokémon, golpes e itens. As fichas oferecem as quatro fases da campanha Blue com níveis previstos: 70% do Pokémon mais forte nas três primeiras fases e 90% no Master. Equipes de três membros recebem a prévia de um reforço no Master usando a mesma lógica de cobertura de tipos; a escolha final deve ser verificada no Game.exe. O Auto Grind não recebe reforço fictício.
 
 `site/public/data/regular-trainers.json` é a referência estática extraída dos dados públicos do Decades. Ao executar `python scripts/export_story_teams.py` após editar os treinadores locais, o script sincroniza também os times comuns encontrados no PBS instalado, mantendo os registros originais quando não há correspondente. Os perfis que dependem de ajustes realizados dentro da engine não são tratados como uma exportação nativa confirmada.
+
+## Eevee e oito Eeveelutions regionais futuras
+
+A Pokédex tem nove formas regionais propostas na geração **Dessastre Paradoxal**, sem substituição das formas oficiais nem compilação no jogo. Acesse `/pokedex?geracao=dessastre-paradoxal&grupo=future` ou abra cada espécie original e selecione **regional · [tipo]**.
+
+As fichas trazem os stats, habilidades, golpes por nível e compatibilidade de MTs do estudo `Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md` fornecido pelo autor, exibidos como **proposta**. Os sprites do ZIP fornecido estão preservados nas sete vistas de cada forma em um único atlas PNG de 896×1152 pixels, em `site/public/assets/future-eevee/sprites-atlas.png`. A extração de imagens para 128 px foi feita apenas para o portal; os PNGs originais não foram alterados.
+
+**Oito métodos evolutivos inéditos** estão documentados em `site/public/data/future-eevee.json` e nas fichas regionais. São especificações para futura implementação: requerem eventos customizados e não existem ainda no Game.exe. A versão original de Eevee e suas oito evoluções permanece com os métodos já existentes.

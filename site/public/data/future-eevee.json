@@ -1,0 +1,3230 @@
+{
+  "schemaVersion": 1,
+  "status": "future-design-only",
+  "speciesFamily": "EEVEE",
+  "formIndex": 50,
+  "sourceStudy": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+  "sourceSprites": "Sprites_Eeveelutions_Regionais_04-11-2026_Todos(2).zip",
+  "note": "Dados planejados para a Pokédex; NÃO compilados no jogo. Métodos evolutivos são propostas inéditas e precisam de scripts e validação.",
+  "forms": [
+    {
+      "card": {
+        "id": "EEVEE,50",
+        "base": "EEVEE",
+        "form": 50,
+        "number": 133,
+        "name": "Eevee regional · Fantasma",
+        "types": [
+          "GHOST"
+        ],
+        "stats": [
+          50,
+          45,
+          45,
+          60,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Uma forma espiritual de Eevee, de pelagem escura e chamas fantasmagóricas. Conceito regional em desenvolvimento.",
+        "atlasRow": 0,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Eevee regional · Fantasma",
+        "base": "EEVEE",
+        "form": 50,
+        "types": [
+          "GHOST"
+        ],
+        "stats": [
+          50,
+          45,
+          45,
+          60,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Uma forma espiritual de Eevee, de pelagem escura e chamas fantasmagóricas. Conceito regional em desenvolvimento.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "CURSEDBODY",
+          "ADAPTABILITY"
+        ],
+        "hidden": [
+          "INFILTRATOR"
+        ],
+        "moves": [
+          [
+            1,
+            "ASTONISH"
+          ],
+          [
+            1,
+            "GROWL"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            5,
+            "LICK"
+          ],
+          [
+            10,
+            "QUICKATTACK"
+          ],
+          [
+            12,
+            "SHADOWSNEAK"
+          ],
+          [
+            15,
+            "BABYDOLLEYES"
+          ],
+          [
+            18,
+            "CONFUSERAY"
+          ],
+          [
+            20,
+            "SWIFT"
+          ],
+          [
+            23,
+            "HEX"
+          ],
+          [
+            25,
+            "BITE"
+          ],
+          [
+            28,
+            "WILLOWISP"
+          ],
+          [
+            30,
+            "COPYCAT"
+          ],
+          [
+            35,
+            "BATONPASS"
+          ],
+          [
+            40,
+            "SHADOWBALL"
+          ],
+          [
+            45,
+            "CHARM"
+          ],
+          [
+            50,
+            "DOUBLEEDGE"
+          ],
+          [
+            55,
+            "PAINSPLIT"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "MUDSLAP",
+          "PROTECT",
+          "CONFUSERAY",
+          "THIEF",
+          "TRAILBLAZE",
+          "FACADE",
+          "HEX",
+          "SWIFT",
+          "NIGHTSHADE",
+          "ENDURE",
+          "SHADOWCLAW",
+          "SLEEPTALK",
+          "REST",
+          "SUBSTITUTE",
+          "WILLOWISP",
+          "SHADOWBALL",
+          "HYPERVOICE",
+          "CALMMIND",
+          "HELPINGHAND",
+          "BATONPASS",
+          "PHANTOMFORCE",
+          "TERABLAST",
+          "ROAR",
+          "HAZE",
+          "TOXIC",
+          "SPITE",
+          "WEATHERBALL",
+          "PAINSPLIT",
+          "PSYCHUP",
+          "DOUBLEEDGE",
+          "CURSE"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": null,
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": null,
+        "atlasRow": 0,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "futureBase": true
+      }
+    },
+    {
+      "card": {
+        "id": "VAPOREON,50",
+        "base": "VAPOREON",
+        "form": 50,
+        "number": 134,
+        "name": "Vaporeon regional · Veneno",
+        "types": [
+          "POISON"
+        ],
+        "stats": [
+          130,
+          65,
+          95,
+          60,
+          110,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Esta forma reúne secreções tóxicas nas membranas que recobrem seu corpo, preservando sua silhueta aquática.",
+        "atlasRow": 1,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Vaporeon regional · Veneno",
+        "base": "VAPOREON",
+        "form": 50,
+        "types": [
+          "POISON"
+        ],
+        "stats": [
+          130,
+          65,
+          95,
+          60,
+          110,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Esta forma reúne secreções tóxicas nas membranas que recobrem seu corpo, preservando sua silhueta aquática.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "LIQUIDOOZE"
+        ],
+        "hidden": [
+          "CORROSION"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "BITE"
+          ],
+          [
+            5,
+            "ACID"
+          ],
+          [
+            10,
+            "HAZE"
+          ],
+          [
+            15,
+            "ACIDSPRAY"
+          ],
+          [
+            20,
+            "VENOSHOCK"
+          ],
+          [
+            25,
+            "ACIDARMOR"
+          ],
+          [
+            30,
+            "SLUDGE"
+          ],
+          [
+            35,
+            "TOXICSPIKES"
+          ],
+          [
+            40,
+            "SLUDGEBOMB"
+          ],
+          [
+            45,
+            "MUDDYWATER"
+          ],
+          [
+            50,
+            "POISONGAS"
+          ],
+          [
+            55,
+            "SLUDGEWAVE"
+          ],
+          [
+            60,
+            "HYDROPUMP"
+          ],
+          [
+            65,
+            "CLEARSMOG"
+          ],
+          [
+            0,
+            "ACIDSPRAY"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "MUDSLAP",
+          "PROTECT",
+          "WATERPULSE",
+          "ACIDSPRAY",
+          "CONFUSERAY",
+          "CHILLINGWATER",
+          "FACADE",
+          "HEX",
+          "SWIFT",
+          "NIGHTSHADE",
+          "VENOSHOCK",
+          "ENDURE",
+          "RAINDANCE",
+          "SLEEPTALK",
+          "REST",
+          "TOXICSPIKES",
+          "SUBSTITUTE",
+          "LIQUIDATION",
+          "SHADOWBALL",
+          "HYPERVOICE",
+          "SURF",
+          "AMNESIA",
+          "CALMMIND",
+          "HELPINGHAND",
+          "BATONPASS",
+          "SLUDGEBOMB",
+          "TERABLAST",
+          "ROAR",
+          "HAZE",
+          "TOXIC",
+          "SCALD",
+          "WEATHERBALL",
+          "FLIPTURN",
+          "PAINSPLIT",
+          "DOUBLEEDGE",
+          "WHIRLPOOL",
+          "MUDDYWATER",
+          "SLUDGEWAVE"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Simbiose tóxica",
+          "methodId": "PoisonBondLevel",
+          "minLevel": 28,
+          "summary": "Subir de nível junto a água contaminada, segurando Poison Barb e estando envenenado.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 28 ou superior",
+            "Segurar Poison Barb",
+            "Estar envenenado e subir de nível próximo de água contaminada"
+          ],
+          "location": "Zona aquática contaminada"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "ACIDSPRAY",
+        "atlasRow": 1,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "JOLTEON,50",
+        "base": "JOLTEON",
+        "form": 50,
+        "number": 135,
+        "name": "Jolteon regional · Aço",
+        "types": [
+          "STEEL"
+        ],
+        "stats": [
+          65,
+          95,
+          110,
+          130,
+          65,
+          60
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Sua pelagem assume a forma de espinhos e placas metálicas, combinando ataques físicos com grande velocidade.",
+        "atlasRow": 2,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Jolteon regional · Aço",
+        "base": "JOLTEON",
+        "form": 50,
+        "types": [
+          "STEEL"
+        ],
+        "stats": [
+          65,
+          95,
+          110,
+          130,
+          65,
+          60
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Sua pelagem assume a forma de espinhos e placas metálicas, combinando ataques físicos com grande velocidade.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "IRONBARBS"
+        ],
+        "hidden": [
+          "TOUGHCLAWS"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "BITE"
+          ],
+          [
+            5,
+            "METALCLAW"
+          ],
+          [
+            10,
+            "AGILITY"
+          ],
+          [
+            15,
+            "FURYCUTTER"
+          ],
+          [
+            20,
+            "PINMISSILE"
+          ],
+          [
+            25,
+            "SMARTSTRIKE"
+          ],
+          [
+            30,
+            "IRONDEFENSE"
+          ],
+          [
+            35,
+            "SPIKES"
+          ],
+          [
+            40,
+            "IRONHEAD"
+          ],
+          [
+            45,
+            "SCREECH"
+          ],
+          [
+            50,
+            "DOUBLEEDGE"
+          ],
+          [
+            55,
+            "IRONTAIL"
+          ],
+          [
+            60,
+            "SWORDSDANCE"
+          ],
+          [
+            65,
+            "METALBURST"
+          ],
+          [
+            0,
+            "METALCLAW"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "AGILITY",
+          "MUDSLAP",
+          "PROTECT",
+          "THUNDERFANG",
+          "THIEF",
+          "TRAILBLAZE",
+          "POUNCE",
+          "FACADE",
+          "METALCLAW",
+          "SWIFT",
+          "ENDURE",
+          "SMARTSTRIKE",
+          "FALSESWIPE",
+          "UTURN",
+          "BODYSLAM",
+          "SLEEPTALK",
+          "REST",
+          "SWORDSDANCE",
+          "SPIKES",
+          "FLASHCANNON",
+          "IRONHEAD",
+          "SUBSTITUTE",
+          "IRONDEFENSE",
+          "XSCISSOR",
+          "CRUNCH",
+          "HYPERVOICE",
+          "HELPINGHAND",
+          "BATONPASS",
+          "GIGAIMPACT",
+          "STEELBEAM",
+          "TERABLAST",
+          "ROAR",
+          "GYROBALL",
+          "KNOCKOFF",
+          "WEATHERBALL",
+          "DOUBLEEDGE",
+          "METALSOUND",
+          "HARDPRESS"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Ressonância metálica",
+          "methodId": "MagneticResonanceLevel",
+          "minLevel": 28,
+          "summary": "Subir de nível segurando Metal Coat em uma área de campo magnético.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 28 ou superior",
+            "Segurar Metal Coat",
+            "Subir de nível em área com campo magnético ativo"
+          ],
+          "location": "Usina ou caverna magnética"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "METALCLAW",
+        "atlasRow": 2,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "FLAREON,50",
+        "base": "FLAREON",
+        "form": 50,
+        "number": 136,
+        "name": "Flareon regional · Terrestre",
+        "types": [
+          "GROUND"
+        ],
+        "stats": [
+          95,
+          130,
+          110,
+          65,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Uma pelagem coberta por sedimentos e crostas de solo protege esta forma de ataques físicos.",
+        "atlasRow": 3,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Flareon regional · Terrestre",
+        "base": "FLAREON",
+        "form": 50,
+        "types": [
+          "GROUND"
+        ],
+        "stats": [
+          95,
+          130,
+          110,
+          65,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Uma pelagem coberta por sedimentos e crostas de solo protege esta forma de ataques físicos.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "SANDFORCE"
+        ],
+        "hidden": [
+          "GUTS"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "BITE"
+          ],
+          [
+            5,
+            "SANDATTACK"
+          ],
+          [
+            10,
+            "MUDSLAP"
+          ],
+          [
+            15,
+            "SANDTOMB"
+          ],
+          [
+            20,
+            "BULLDOZE"
+          ],
+          [
+            25,
+            "DIG"
+          ],
+          [
+            30,
+            "SANDSTORM"
+          ],
+          [
+            35,
+            "STOMPINGTANTRUM"
+          ],
+          [
+            40,
+            "CRUNCH"
+          ],
+          [
+            45,
+            "HIGHHORSEPOWER"
+          ],
+          [
+            50,
+            "CURSE"
+          ],
+          [
+            55,
+            "EARTHQUAKE"
+          ],
+          [
+            60,
+            "STONEEDGE"
+          ],
+          [
+            65,
+            "FISSURE"
+          ],
+          [
+            0,
+            "SANDTOMB"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "MUDSLAP",
+          "PROTECT",
+          "FIREFANG",
+          "THIEF",
+          "TRAILBLAZE",
+          "FACADE",
+          "BULLDOZE",
+          "MUDSHOT",
+          "ROCKTOMB",
+          "ENDURE",
+          "SANDSTORM",
+          "DIG",
+          "BRICKBREAK",
+          "BODYSLAM",
+          "SLEEPTALK",
+          "ROCKBLAST",
+          "STOMPINGTANTRUM",
+          "REST",
+          "ROCKSLIDE",
+          "TAUNT",
+          "SWORDSDANCE",
+          "SUBSTITUTE",
+          "CRUNCH",
+          "STEALTHROCK",
+          "HYPERVOICE",
+          "HELPINGHAND",
+          "BATONPASS",
+          "EARTHPOWER",
+          "EARTHQUAKE",
+          "STONEEDGE",
+          "GIGAIMPACT",
+          "TERABLAST",
+          "ROAR",
+          "SANDTOMB",
+          "SMACKDOWN",
+          "KNOCKOFF",
+          "HIGHHORSEPOWER",
+          "WEATHERBALL",
+          "DOUBLEEDGE",
+          "SCORCHINGSANDS",
+          "CURSE"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Pacto das dunas",
+          "methodId": "SandstormMoveLevel",
+          "minLevel": 28,
+          "summary": "Subir de nível em uma tempestade de areia conhecendo Mud-Slap.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 28 ou superior",
+            "Conhecer Mud-Slap",
+            "Ganhar um nível durante uma tempestade de areia"
+          ],
+          "location": "Área de dunas ou deserto"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "SANDTOMB",
+        "atlasRow": 3,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "ESPEON,50",
+        "base": "ESPEON",
+        "form": 50,
+        "number": 196,
+        "name": "Espeon regional · Dragão",
+        "types": [
+          "DRAGON"
+        ],
+        "stats": [
+          65,
+          60,
+          95,
+          110,
+          130,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Chifres, escamas e membranas canalizam energia dracônica; sua agilidade e poder especial continuam marcantes.",
+        "atlasRow": 4,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Espeon regional · Dragão",
+        "base": "ESPEON",
+        "form": 50,
+        "types": [
+          "DRAGON"
+        ],
+        "stats": [
+          65,
+          60,
+          95,
+          110,
+          130,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Chifres, escamas e membranas canalizam energia dracônica; sua agilidade e poder especial continuam marcantes.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "SYNCHRONIZE"
+        ],
+        "hidden": [
+          "MAGICBOUNCE"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "SWIFT"
+          ],
+          [
+            5,
+            "TWISTER"
+          ],
+          [
+            10,
+            "BABYDOLLEYES"
+          ],
+          [
+            15,
+            "DRAGONBREATH"
+          ],
+          [
+            20,
+            "DRAGONTAIL"
+          ],
+          [
+            25,
+            "BREAKINGSWIPE"
+          ],
+          [
+            30,
+            "MORNINGSUN"
+          ],
+          [
+            35,
+            "CALMMIND"
+          ],
+          [
+            40,
+            "DRAGONCHEER"
+          ],
+          [
+            45,
+            "PSYCHIC"
+          ],
+          [
+            50,
+            "DRAGONPULSE"
+          ],
+          [
+            55,
+            "DRAGONDANCE"
+          ],
+          [
+            60,
+            "DRACOMETEOR"
+          ],
+          [
+            65,
+            "OUTRAGE"
+          ],
+          [
+            0,
+            "DRAGONBREATH"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "AGILITY",
+          "MUDSLAP",
+          "PROTECT",
+          "PSYBEAM",
+          "CONFUSERAY",
+          "TRAILBLAZE",
+          "FACADE",
+          "SWIFT",
+          "STOREDPOWER",
+          "DRAGONTAIL",
+          "ENDURE",
+          "PSYSHOCK",
+          "ZENHEADBUTT",
+          "SLEEPTALK",
+          "REFLECT",
+          "LIGHTSCREEN",
+          "DRAGONCLAW",
+          "REST",
+          "IMPRISON",
+          "SKILLSWAP",
+          "DRAGONDANCE",
+          "SUBSTITUTE",
+          "TRICK",
+          "SHADOWBALL",
+          "DRAGONPULSE",
+          "HYPERVOICE",
+          "PSYCHIC",
+          "CALMMIND",
+          "HELPINGHAND",
+          "BATONPASS",
+          "NASTYPLOT",
+          "OUTRAGE",
+          "HYPERBEAM",
+          "DRACOMETEOR",
+          "TERABLAST",
+          "ROAR",
+          "WEATHERBALL",
+          "SCALESHOT",
+          "PSYCHUP",
+          "DOUBLEEDGE",
+          "FUTURESIGHT",
+          "BREAKINGSWIPE",
+          "DRAGONCHEER",
+          "PSYCHICNOISE"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Despertar dracônico",
+          "methodId": "DragonDawnBondLevel",
+          "minLevel": 30,
+          "summary": "Subir de nível ao amanhecer com Dragon Fang e amizade elevada.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 30 ou superior",
+            "Amizade de pelo menos 160",
+            "Segurar Dragon Fang e subir de nível ao amanhecer"
+          ],
+          "location": "Qualquer local ao amanhecer"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "DRAGONBREATH",
+        "atlasRow": 4,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "UMBREON,50",
+        "base": "UMBREON",
+        "form": 50,
+        "number": 197,
+        "name": "Umbreon regional · Inseto",
+        "types": [
+          "BUG"
+        ],
+        "stats": [
+          95,
+          110,
+          65,
+          130,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Asas membranosas e marcas semelhantes a ocelos acompanham uma transformação em atacante veloz do tipo Inseto.",
+        "atlasRow": 5,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Umbreon regional · Inseto",
+        "base": "UMBREON",
+        "form": 50,
+        "types": [
+          "BUG"
+        ],
+        "stats": [
+          95,
+          110,
+          65,
+          130,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Asas membranosas e marcas semelhantes a ocelos acompanham uma transformação em atacante veloz do tipo Inseto.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "SWARM"
+        ],
+        "hidden": [
+          "SHIELDDUST"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "BITE"
+          ],
+          [
+            5,
+            "STRINGSHOT"
+          ],
+          [
+            10,
+            "FURYCUTTER"
+          ],
+          [
+            15,
+            "BUGBITE"
+          ],
+          [
+            20,
+            "CONFUSERAY"
+          ],
+          [
+            25,
+            "POUNCE"
+          ],
+          [
+            30,
+            "UTURN"
+          ],
+          [
+            35,
+            "LUNGE"
+          ],
+          [
+            40,
+            "XSCISSOR"
+          ],
+          [
+            45,
+            "SCREECH"
+          ],
+          [
+            50,
+            "LEECHLIFE"
+          ],
+          [
+            55,
+            "FIRSTIMPRESSION"
+          ],
+          [
+            60,
+            "BATONPASS"
+          ],
+          [
+            65,
+            "MEGAHORN"
+          ],
+          [
+            0,
+            "FURYCUTTER"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "AGILITY",
+          "MUDSLAP",
+          "PROTECT",
+          "STRUGGLEBUG",
+          "THIEF",
+          "TRAILBLAZE",
+          "POUNCE",
+          "FACADE",
+          "AERIALACE",
+          "SWIFT",
+          "ENDURE",
+          "UTURN",
+          "FOULPLAY",
+          "SLEEPTALK",
+          "REST",
+          "TAUNT",
+          "SWORDSDANCE",
+          "LEECHLIFE",
+          "SUBSTITUTE",
+          "XSCISSOR",
+          "CRUNCH",
+          "HYPERVOICE",
+          "HELPINGHAND",
+          "BATONPASS",
+          "REVERSAL",
+          "GIGAIMPACT",
+          "BUGBUZZ",
+          "TERABLAST",
+          "ROAR",
+          "KNOCKOFF",
+          "BUGBITE",
+          "LUNGE",
+          "WEATHERBALL",
+          "DOUBLEEDGE",
+          "ENDEAVOR",
+          "SKITTERSMACK"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Metamorfose noturna",
+          "methodId": "NightForestCocoonLevel",
+          "minLevel": 28,
+          "summary": "Subir de nível à noite em uma floresta, segurando Silver Powder.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 28 ou superior",
+            "Segurar Silver Powder",
+            "Subir de nível à noite em uma área de floresta"
+          ],
+          "location": "Floresta à noite"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "FURYCUTTER",
+        "atlasRow": 5,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "LEAFEON,50",
+        "base": "LEAFEON",
+        "form": 50,
+        "number": 470,
+        "name": "Leafeon regional · Pedra",
+        "types": [
+          "ROCK"
+        ],
+        "stats": [
+          95,
+          110,
+          130,
+          65,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Seus antigos traços vegetais tornam-se estruturas minerais rígidas, feitas para suportar impactos.",
+        "atlasRow": 6,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Leafeon regional · Pedra",
+        "base": "LEAFEON",
+        "form": 50,
+        "types": [
+          "ROCK"
+        ],
+        "stats": [
+          95,
+          110,
+          130,
+          65,
+          60,
+          65
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Seus antigos traços vegetais tornam-se estruturas minerais rígidas, feitas para suportar impactos.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "STURDY"
+        ],
+        "hidden": [
+          "ROCKHEAD"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "BITE"
+          ],
+          [
+            5,
+            "ROCKTHROW"
+          ],
+          [
+            10,
+            "SANDATTACK"
+          ],
+          [
+            15,
+            "ROCKTOMB"
+          ],
+          [
+            20,
+            "HARDEN"
+          ],
+          [
+            25,
+            "ROCKBLAST"
+          ],
+          [
+            30,
+            "ROCKSLIDE"
+          ],
+          [
+            35,
+            "STEALTHROCK"
+          ],
+          [
+            40,
+            "IRONDEFENSE"
+          ],
+          [
+            45,
+            "STONEEDGE"
+          ],
+          [
+            50,
+            "SWORDSDANCE"
+          ],
+          [
+            55,
+            "HEADSMASH"
+          ],
+          [
+            60,
+            "WIDEGUARD"
+          ],
+          [
+            65,
+            "ROCKPOLISH"
+          ],
+          [
+            0,
+            "ROCKTHROW"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "MUDSLAP",
+          "PROTECT",
+          "TRAILBLAZE",
+          "FACADE",
+          "BULLDOZE",
+          "ROCKTOMB",
+          "ENDURE",
+          "SANDSTORM",
+          "DIG",
+          "BRICKBREAK",
+          "BODYSLAM",
+          "SLEEPTALK",
+          "ROCKBLAST",
+          "STOMPINGTANTRUM",
+          "REST",
+          "ROCKSLIDE",
+          "SWORDSDANCE",
+          "BODYPRESS",
+          "POWERGEM",
+          "SUBSTITUTE",
+          "IRONDEFENSE",
+          "CRUNCH",
+          "STEALTHROCK",
+          "HYPERVOICE",
+          "HELPINGHAND",
+          "BATONPASS",
+          "EARTHQUAKE",
+          "STONEEDGE",
+          "GIGAIMPACT",
+          "TERABLAST",
+          "ROAR",
+          "SANDTOMB",
+          "SMACKDOWN",
+          "KNOCKOFF",
+          "HIGHHORSEPOWER",
+          "WEATHERBALL",
+          "PAINSPLIT",
+          "DOUBLEEDGE",
+          "METEORBEAM",
+          "CURSE"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Cristalização subterrânea",
+          "methodId": "CaveCurseStoneLevel",
+          "minLevel": 30,
+          "summary": "Subir de nível em uma caverna conhecendo Curse e segurando Hard Stone.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 30 ou superior",
+            "Conhecer Curse",
+            "Segurar Hard Stone e subir de nível dentro de uma caverna"
+          ],
+          "location": "Caverna mineral"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "ROCKTHROW",
+        "atlasRow": 6,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "GLACEON,50",
+        "base": "GLACEON",
+        "form": 50,
+        "number": 471,
+        "name": "Glaceon regional · Voador",
+        "types": [
+          "FLYING"
+        ],
+        "stats": [
+          65,
+          60,
+          65,
+          110,
+          130,
+          95
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Asas e penas claras conduzem esta forma pelos ventos em altitude, mantendo seu poder especial.",
+        "atlasRow": 7,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Glaceon regional · Voador",
+        "base": "GLACEON",
+        "form": 50,
+        "types": [
+          "FLYING"
+        ],
+        "stats": [
+          65,
+          60,
+          65,
+          110,
+          130,
+          95
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Asas e penas claras conduzem esta forma pelos ventos em altitude, mantendo seu poder especial.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "KEENEYE"
+        ],
+        "hidden": [
+          "INFILTRATOR"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "SWIFT"
+          ],
+          [
+            5,
+            "GUST"
+          ],
+          [
+            10,
+            "ICYWIND"
+          ],
+          [
+            15,
+            "AIRCUTTER"
+          ],
+          [
+            20,
+            "TAILWIND"
+          ],
+          [
+            25,
+            "WINGATTACK"
+          ],
+          [
+            30,
+            "AIRSLASH"
+          ],
+          [
+            35,
+            "FEATHERDANCE"
+          ],
+          [
+            40,
+            "AGILITY"
+          ],
+          [
+            45,
+            "HURRICANE"
+          ],
+          [
+            50,
+            "MIST"
+          ],
+          [
+            55,
+            "WEATHERBALL"
+          ],
+          [
+            60,
+            "BRAVEBIRD"
+          ],
+          [
+            65,
+            "SKYATTACK"
+          ],
+          [
+            0,
+            "GUST"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "AGILITY",
+          "MUDSLAP",
+          "PROTECT",
+          "ACROBATICS",
+          "CONFUSERAY",
+          "TRAILBLAZE",
+          "FACADE",
+          "AERIALACE",
+          "SWIFT",
+          "ICYWIND",
+          "AIRCUTTER",
+          "ENDURE",
+          "RAINDANCE",
+          "SNOWSCAPE",
+          "AIRSLASH",
+          "SLEEPTALK",
+          "LIGHTSCREEN",
+          "REST",
+          "FLY",
+          "SUBSTITUTE",
+          "TAILWIND",
+          "HYPERVOICE",
+          "HELPINGHAND",
+          "BATONPASS",
+          "ICEBEAM",
+          "GIGAIMPACT",
+          "HURRICANE",
+          "HYPERBEAM",
+          "BRAVEBIRD",
+          "TERABLAST",
+          "ROAR",
+          "WEATHERBALL",
+          "DUALWINGBEAT",
+          "PSYCHUP",
+          "DOUBLEEDGE",
+          "FEATHERDANCE"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Batismo dos ventos",
+          "methodId": "SummitSkyLevel",
+          "minLevel": 30,
+          "summary": "Subir de nível no topo de uma montanha, segurando Sky Plate e conhecendo Swift.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 30 ou superior",
+            "Conhecer Swift",
+            "Segurar Sky Plate e subir de nível no cume de uma montanha"
+          ],
+          "location": "Cume de montanha"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "GUST",
+        "atlasRow": 7,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    },
+    {
+      "card": {
+        "id": "SYLVEON,50",
+        "base": "SYLVEON",
+        "form": 50,
+        "number": 700,
+        "name": "Sylveon regional · Lutador",
+        "types": [
+          "FIGHTING"
+        ],
+        "stats": [
+          95,
+          130,
+          65,
+          65,
+          60,
+          110
+        ],
+        "generation": "dessastre-paradoxal",
+        "generationLabel": "Dessastre Paradoxal",
+        "flags": [
+          "DessastreParadoxal",
+          "RegionalForm",
+          "Future"
+        ],
+        "future": true,
+        "pending": false,
+        "category": "regional_future",
+        "art": "/assets/future-eevee/sprites-atlas.png",
+        "artKind": "sprite",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
+        "sprites": {
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
+        },
+        "height": null,
+        "weight": null,
+        "description": "Faixas de treino e postura disciplinada transformam esta forma em combatente físico do tipo Lutador.",
+        "atlasRow": 8,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      },
+      "details": {
+        "name": "Sylveon regional · Lutador",
+        "base": "SYLVEON",
+        "form": 50,
+        "types": [
+          "FIGHTING"
+        ],
+        "stats": [
+          95,
+          130,
+          65,
+          65,
+          60,
+          110
+        ],
+        "generation": "dessastre-paradoxal",
+        "pending": false,
+        "future": true,
+        "description": "Faixas de treino e postura disciplinada transformam esta forma em combatente físico do tipo Lutador.",
+        "own": [
+          "Abilities",
+          "HiddenAbilities",
+          "Moves",
+          "TutorMoves",
+          "EggMoves",
+          "Evolutions"
+        ],
+        "abilities": [
+          "INNERFOCUS"
+        ],
+        "hidden": [
+          "SCRAPPY"
+        ],
+        "moves": [
+          [
+            1,
+            "TACKLE"
+          ],
+          [
+            1,
+            "TAILWHIP"
+          ],
+          [
+            1,
+            "HELPINGHAND"
+          ],
+          [
+            1,
+            "QUICKATTACK"
+          ],
+          [
+            1,
+            "BABYDOLLEYES"
+          ],
+          [
+            5,
+            "DOUBLEKICK"
+          ],
+          [
+            10,
+            "FOCUSENERGY"
+          ],
+          [
+            15,
+            "MACHPUNCH"
+          ],
+          [
+            20,
+            "LOWSWEEP"
+          ],
+          [
+            25,
+            "DETECT"
+          ],
+          [
+            30,
+            "BRICKBREAK"
+          ],
+          [
+            35,
+            "BULKUP"
+          ],
+          [
+            40,
+            "DRAINPUNCH"
+          ],
+          [
+            45,
+            "FORCEPALM"
+          ],
+          [
+            50,
+            "CLOSECOMBAT"
+          ],
+          [
+            55,
+            "COACHING"
+          ],
+          [
+            60,
+            "REVERSAL"
+          ],
+          [
+            65,
+            "FOCUSPUNCH"
+          ],
+          [
+            0,
+            "MACHPUNCH"
+          ]
+        ],
+        "tm": [
+          "TAKEDOWN",
+          "CHARM",
+          "FAKETEARS",
+          "MUDSLAP",
+          "PROTECT",
+          "LOWKICK",
+          "THIEF",
+          "TRAILBLAZE",
+          "FACADE",
+          "LOWSWEEP",
+          "ENDURE",
+          "BRICKBREAK",
+          "BULKUP",
+          "BODYSLAM",
+          "SLEEPTALK",
+          "DRAINPUNCH",
+          "REST",
+          "TAUNT",
+          "SWORDSDANCE",
+          "SUBSTITUTE",
+          "CRUNCH",
+          "AURASPHERE",
+          "HYPERVOICE",
+          "PLAYROUGH",
+          "HELPINGHAND",
+          "BATONPASS",
+          "REVERSAL",
+          "GIGAIMPACT",
+          "FOCUSBLAST",
+          "CLOSECOMBAT",
+          "TERABLAST",
+          "ROAR",
+          "KNOCKOFF",
+          "VACUUMWAVE",
+          "FOCUSPUNCH",
+          "WEATHERBALL",
+          "PSYCHUP",
+          "DOUBLEEDGE",
+          "COACHING",
+          "UPPERHAND"
+        ],
+        "tutor": [],
+        "egg": [
+          "CURSE",
+          "DETECT",
+          "DOUBLEKICK",
+          "FLAIL",
+          "MUDSLAP",
+          "TICKLE",
+          "WISH",
+          "YAWN",
+          "DISABLE",
+          "SPITE",
+          "CONFUSERAY",
+          "SHADOWSNEAK"
+        ],
+        "evolutions": [],
+        "catchRate": 0,
+        "preEvolution": null,
+        "evolutionProposal": {
+          "title": "Disciplina do vínculo",
+          "methodId": "HelpingHandBondLevel",
+          "minLevel": 30,
+          "summary": "Subir de nível com alta amizade após usar Helping Hand três vezes em batalhas duplas.",
+          "conditions": [
+            "Eevee regional Fantasma, nível 30 ou superior",
+            "Amizade de pelo menos 180",
+            "Usar Helping Hand três vezes em batalhas duplas desde o último nível",
+            "Subir de nível após cumprir os requisitos"
+          ],
+          "location": "Qualquer local"
+        },
+        "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
+        "learnsetStatus": "design-proposal-only",
+        "evolutionMove": "MACHPUNCH",
+        "atlasRow": 8,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+      }
+    }
+  ],
+  "evolutions": {
+    "VAPOREON": {
+      "title": "Simbiose tóxica",
+      "methodId": "PoisonBondLevel",
+      "minLevel": 28,
+      "summary": "Subir de nível junto a água contaminada, segurando Poison Barb e estando envenenado.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 28 ou superior",
+        "Segurar Poison Barb",
+        "Estar envenenado e subir de nível próximo de água contaminada"
+      ],
+      "location": "Zona aquática contaminada"
+    },
+    "JOLTEON": {
+      "title": "Ressonância metálica",
+      "methodId": "MagneticResonanceLevel",
+      "minLevel": 28,
+      "summary": "Subir de nível segurando Metal Coat em uma área de campo magnético.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 28 ou superior",
+        "Segurar Metal Coat",
+        "Subir de nível em área com campo magnético ativo"
+      ],
+      "location": "Usina ou caverna magnética"
+    },
+    "FLAREON": {
+      "title": "Pacto das dunas",
+      "methodId": "SandstormMoveLevel",
+      "minLevel": 28,
+      "summary": "Subir de nível em uma tempestade de areia conhecendo Mud-Slap.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 28 ou superior",
+        "Conhecer Mud-Slap",
+        "Ganhar um nível durante uma tempestade de areia"
+      ],
+      "location": "Área de dunas ou deserto"
+    },
+    "ESPEON": {
+      "title": "Despertar dracônico",
+      "methodId": "DragonDawnBondLevel",
+      "minLevel": 30,
+      "summary": "Subir de nível ao amanhecer com Dragon Fang e amizade elevada.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 30 ou superior",
+        "Amizade de pelo menos 160",
+        "Segurar Dragon Fang e subir de nível ao amanhecer"
+      ],
+      "location": "Qualquer local ao amanhecer"
+    },
+    "UMBREON": {
+      "title": "Metamorfose noturna",
+      "methodId": "NightForestCocoonLevel",
+      "minLevel": 28,
+      "summary": "Subir de nível à noite em uma floresta, segurando Silver Powder.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 28 ou superior",
+        "Segurar Silver Powder",
+        "Subir de nível à noite em uma área de floresta"
+      ],
+      "location": "Floresta à noite"
+    },
+    "LEAFEON": {
+      "title": "Cristalização subterrânea",
+      "methodId": "CaveCurseStoneLevel",
+      "minLevel": 30,
+      "summary": "Subir de nível em uma caverna conhecendo Curse e segurando Hard Stone.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 30 ou superior",
+        "Conhecer Curse",
+        "Segurar Hard Stone e subir de nível dentro de uma caverna"
+      ],
+      "location": "Caverna mineral"
+    },
+    "GLACEON": {
+      "title": "Batismo dos ventos",
+      "methodId": "SummitSkyLevel",
+      "minLevel": 30,
+      "summary": "Subir de nível no topo de uma montanha, segurando Sky Plate e conhecendo Swift.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 30 ou superior",
+        "Conhecer Swift",
+        "Segurar Sky Plate e subir de nível no cume de uma montanha"
+      ],
+      "location": "Cume de montanha"
+    },
+    "SYLVEON": {
+      "title": "Disciplina do vínculo",
+      "methodId": "HelpingHandBondLevel",
+      "minLevel": 30,
+      "summary": "Subir de nível com alta amizade após usar Helping Hand três vezes em batalhas duplas.",
+      "conditions": [
+        "Eevee regional Fantasma, nível 30 ou superior",
+        "Amizade de pelo menos 180",
+        "Usar Helping Hand três vezes em batalhas duplas desde o último nível",
+        "Subir de nível após cumprir os requisitos"
+      ],
+      "location": "Qualquer local"
+    }
+  },
+  "moveNames": {
+    "ASTONISH": {
+      "name": "Astonish",
+      "type": "GHOST",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "GROWL": {
+      "name": "Growl",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "HELPINGHAND": {
+      "name": "Helping Hand",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "TACKLE": {
+      "name": "Tackle",
+      "type": "NORMAL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "TAILWHIP": {
+      "name": "Tail Whip",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "LICK": {
+      "name": "Lick",
+      "type": "GHOST",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "QUICKATTACK": {
+      "name": "Quick Attack",
+      "type": "NORMAL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "SHADOWSNEAK": {
+      "name": "Shadow Sneak",
+      "type": "GHOST",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "BABYDOLLEYES": {
+      "name": "Baby-Doll Eyes",
+      "type": "FAIRY",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "CONFUSERAY": {
+      "name": "Confuse Ray",
+      "type": "GHOST",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SWIFT": {
+      "name": "Swift",
+      "type": "NORMAL",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "HEX": {
+      "name": "Hex",
+      "type": "GHOST",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "BITE": {
+      "name": "Bite",
+      "type": "DARK",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "WILLOWISP": {
+      "name": "Will-O-Wisp",
+      "type": "FIRE",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "COPYCAT": {
+      "name": "Copycat",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "BATONPASS": {
+      "name": "Baton Pass",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SHADOWBALL": {
+      "name": "Shadow Ball",
+      "type": "GHOST",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "CHARM": {
+      "name": "Charm",
+      "type": "FAIRY",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "DOUBLEEDGE": {
+      "name": "Double-Edge",
+      "type": "NORMAL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "PAINSPLIT": {
+      "name": "Pain Split",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "TAKEDOWN": {
+      "name": "Take Down",
+      "source": "design-proposal-gen9"
+    },
+    "FAKETEARS": {
+      "name": "Fake Tears",
+      "source": "design-proposal-gen9"
+    },
+    "MUDSLAP": {
+      "name": "Mud-Slap",
+      "source": "design-proposal-gen9"
+    },
+    "PROTECT": {
+      "name": "Protect",
+      "source": "design-proposal-gen9"
+    },
+    "THIEF": {
+      "name": "Thief",
+      "source": "design-proposal-gen9"
+    },
+    "TRAILBLAZE": {
+      "name": "Trailblaze",
+      "source": "design-proposal-gen9"
+    },
+    "FACADE": {
+      "name": "Facade",
+      "source": "design-proposal-gen9"
+    },
+    "NIGHTSHADE": {
+      "name": "Night Shade",
+      "source": "design-proposal-gen9"
+    },
+    "ENDURE": {
+      "name": "Endure",
+      "source": "design-proposal-gen9"
+    },
+    "SHADOWCLAW": {
+      "name": "Shadow Claw",
+      "source": "design-proposal-gen9"
+    },
+    "SLEEPTALK": {
+      "name": "Sleep Talk",
+      "source": "design-proposal-gen9"
+    },
+    "REST": {
+      "name": "Rest",
+      "source": "design-proposal-gen9"
+    },
+    "SUBSTITUTE": {
+      "name": "Substitute",
+      "source": "design-proposal-gen9"
+    },
+    "HYPERVOICE": {
+      "name": "Hyper Voice",
+      "source": "design-proposal-gen9"
+    },
+    "CALMMIND": {
+      "name": "Calm Mind",
+      "source": "design-proposal-gen9"
+    },
+    "PHANTOMFORCE": {
+      "name": "Phantom Force",
+      "source": "design-proposal-gen9"
+    },
+    "TERABLAST": {
+      "name": "Tera Blast",
+      "source": "design-proposal-gen9"
+    },
+    "ROAR": {
+      "name": "Roar",
+      "source": "design-proposal-gen9"
+    },
+    "HAZE": {
+      "name": "Haze",
+      "source": "design-proposal-gen9"
+    },
+    "TOXIC": {
+      "name": "Toxic",
+      "source": "design-proposal-gen9"
+    },
+    "SPITE": {
+      "name": "Spite",
+      "source": "design-proposal-gen9"
+    },
+    "WEATHERBALL": {
+      "name": "Weather Ball",
+      "source": "design-proposal-gen9"
+    },
+    "PSYCHUP": {
+      "name": "Psych Up",
+      "source": "design-proposal-gen9"
+    },
+    "CURSE": {
+      "name": "Curse",
+      "source": "design-proposal-gen9"
+    },
+    "ACID": {
+      "name": "Acid",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "ACIDSPRAY": {
+      "name": "Acid Spray",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "VENOSHOCK": {
+      "name": "Venoshock",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "ACIDARMOR": {
+      "name": "Acid Armor",
+      "type": "POISON",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SLUDGE": {
+      "name": "Sludge",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "TOXICSPIKES": {
+      "name": "Toxic Spikes",
+      "type": "POISON",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SLUDGEBOMB": {
+      "name": "Sludge Bomb",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "MUDDYWATER": {
+      "name": "Muddy Water",
+      "type": "WATER",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "POISONGAS": {
+      "name": "Poison Gas",
+      "type": "POISON",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SLUDGEWAVE": {
+      "name": "Sludge Wave",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "HYDROPUMP": {
+      "name": "Hydro Pump",
+      "type": "WATER",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "CLEARSMOG": {
+      "name": "Clear Smog",
+      "type": "POISON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "WATERPULSE": {
+      "name": "Water Pulse",
+      "source": "design-proposal-gen9"
+    },
+    "CHILLINGWATER": {
+      "name": "Chilling Water",
+      "source": "design-proposal-gen9"
+    },
+    "RAINDANCE": {
+      "name": "Rain Dance",
+      "source": "design-proposal-gen9"
+    },
+    "LIQUIDATION": {
+      "name": "Liquidation",
+      "source": "design-proposal-gen9"
+    },
+    "SURF": {
+      "name": "Surf",
+      "source": "design-proposal-gen9"
+    },
+    "AMNESIA": {
+      "name": "Amnesia",
+      "source": "design-proposal-gen9"
+    },
+    "SCALD": {
+      "name": "Scald",
+      "source": "design-proposal-gen9"
+    },
+    "FLIPTURN": {
+      "name": "Flip Turn",
+      "source": "design-proposal-gen9"
+    },
+    "WHIRLPOOL": {
+      "name": "Whirlpool",
+      "source": "design-proposal-gen9"
+    },
+    "METALCLAW": {
+      "name": "Metal Claw",
+      "type": "STEEL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "AGILITY": {
+      "name": "Agility",
+      "type": "PSYCHIC",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "FURYCUTTER": {
+      "name": "Fury Cutter",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "PINMISSILE": {
+      "name": "Pin Missile",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "SMARTSTRIKE": {
+      "name": "Smart Strike",
+      "type": "STEEL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "IRONDEFENSE": {
+      "name": "Iron Defense",
+      "type": "STEEL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SPIKES": {
+      "name": "Spikes",
+      "type": "GROUND",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "IRONHEAD": {
+      "name": "Iron Head",
+      "type": "STEEL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "SCREECH": {
+      "name": "Screech",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "IRONTAIL": {
+      "name": "Iron Tail",
+      "type": "STEEL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "SWORDSDANCE": {
+      "name": "Swords Dance",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "METALBURST": {
+      "name": "Metal Burst",
+      "type": "STEEL",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "THUNDERFANG": {
+      "name": "Thunder Fang",
+      "source": "design-proposal-gen9"
+    },
+    "POUNCE": {
+      "name": "Pounce",
+      "source": "design-proposal-gen9"
+    },
+    "FALSESWIPE": {
+      "name": "False Swipe",
+      "source": "design-proposal-gen9"
+    },
+    "UTURN": {
+      "name": "U-turn",
+      "source": "design-proposal-gen9"
+    },
+    "BODYSLAM": {
+      "name": "Body Slam",
+      "source": "design-proposal-gen9"
+    },
+    "FLASHCANNON": {
+      "name": "Flash Cannon",
+      "source": "design-proposal-gen9"
+    },
+    "XSCISSOR": {
+      "name": "X-Scissor",
+      "source": "design-proposal-gen9"
+    },
+    "CRUNCH": {
+      "name": "Crunch",
+      "source": "design-proposal-gen9"
+    },
+    "GIGAIMPACT": {
+      "name": "Giga Impact",
+      "source": "design-proposal-gen9"
+    },
+    "STEELBEAM": {
+      "name": "Steel Beam",
+      "source": "design-proposal-gen9"
+    },
+    "GYROBALL": {
+      "name": "Gyro Ball",
+      "source": "design-proposal-gen9"
+    },
+    "KNOCKOFF": {
+      "name": "Knock Off",
+      "source": "design-proposal-gen9"
+    },
+    "METALSOUND": {
+      "name": "Metal Sound",
+      "source": "design-proposal-gen9"
+    },
+    "HARDPRESS": {
+      "name": "Hard Press",
+      "source": "design-proposal-gen9"
+    },
+    "SANDATTACK": {
+      "name": "Sand Attack",
+      "type": "GROUND",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "SANDTOMB": {
+      "name": "Sand Tomb",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "BULLDOZE": {
+      "name": "Bulldoze",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "DIG": {
+      "name": "Dig",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "SANDSTORM": {
+      "name": "Sandstorm",
+      "type": "ROCK",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "STOMPINGTANTRUM": {
+      "name": "Stomping Tantrum",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "HIGHHORSEPOWER": {
+      "name": "High Horsepower",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "EARTHQUAKE": {
+      "name": "Earthquake",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "STONEEDGE": {
+      "name": "Stone Edge",
+      "type": "ROCK",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "FISSURE": {
+      "name": "Fissure",
+      "type": "GROUND",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "FIREFANG": {
+      "name": "Fire Fang",
+      "source": "design-proposal-gen9"
+    },
+    "MUDSHOT": {
+      "name": "Mud Shot",
+      "source": "design-proposal-gen9"
+    },
+    "ROCKTOMB": {
+      "name": "Rock Tomb",
+      "source": "design-proposal-gen9"
+    },
+    "BRICKBREAK": {
+      "name": "Brick Break",
+      "source": "design-proposal-gen9"
+    },
+    "ROCKBLAST": {
+      "name": "Rock Blast",
+      "source": "design-proposal-gen9"
+    },
+    "ROCKSLIDE": {
+      "name": "Rock Slide",
+      "source": "design-proposal-gen9"
+    },
+    "TAUNT": {
+      "name": "Taunt",
+      "source": "design-proposal-gen9"
+    },
+    "STEALTHROCK": {
+      "name": "Stealth Rock",
+      "source": "design-proposal-gen9"
+    },
+    "EARTHPOWER": {
+      "name": "Earth Power",
+      "source": "design-proposal-gen9"
+    },
+    "SMACKDOWN": {
+      "name": "Smack Down",
+      "source": "design-proposal-gen9"
+    },
+    "SCORCHINGSANDS": {
+      "name": "Scorching Sands",
+      "source": "design-proposal-gen9"
+    },
+    "TWISTER": {
+      "name": "Twister",
+      "type": "DRAGON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "DRAGONBREATH": {
+      "name": "Dragon Breath",
+      "type": "DRAGON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "DRAGONTAIL": {
+      "name": "Dragon Tail",
+      "type": "DRAGON",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "BREAKINGSWIPE": {
+      "name": "Breaking Swipe",
+      "type": "DRAGON",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "MORNINGSUN": {
+      "name": "Morning Sun",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "DRAGONCHEER": {
+      "name": "Dragon Cheer",
+      "type": "DRAGON",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "PSYCHIC": {
+      "name": "Psychic",
+      "type": "PSYCHIC",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "DRAGONPULSE": {
+      "name": "Dragon Pulse",
+      "type": "DRAGON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "DRAGONDANCE": {
+      "name": "Dragon Dance",
+      "type": "DRAGON",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "DRACOMETEOR": {
+      "name": "Draco Meteor",
+      "type": "DRAGON",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "OUTRAGE": {
+      "name": "Outrage",
+      "type": "DRAGON",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "PSYBEAM": {
+      "name": "Psybeam",
+      "source": "design-proposal-gen9"
+    },
+    "STOREDPOWER": {
+      "name": "Stored Power",
+      "source": "design-proposal-gen9"
+    },
+    "PSYSHOCK": {
+      "name": "Psyshock",
+      "source": "design-proposal-gen9"
+    },
+    "ZENHEADBUTT": {
+      "name": "Zen Headbutt",
+      "source": "design-proposal-gen9"
+    },
+    "REFLECT": {
+      "name": "Reflect",
+      "source": "design-proposal-gen9"
+    },
+    "LIGHTSCREEN": {
+      "name": "Light Screen",
+      "source": "design-proposal-gen9"
+    },
+    "DRAGONCLAW": {
+      "name": "Dragon Claw",
+      "source": "design-proposal-gen9"
+    },
+    "IMPRISON": {
+      "name": "Imprison",
+      "source": "design-proposal-gen9"
+    },
+    "SKILLSWAP": {
+      "name": "Skill Swap",
+      "source": "design-proposal-gen9"
+    },
+    "TRICK": {
+      "name": "Trick",
+      "source": "design-proposal-gen9"
+    },
+    "NASTYPLOT": {
+      "name": "Nasty Plot",
+      "source": "design-proposal-gen9"
+    },
+    "HYPERBEAM": {
+      "name": "Hyper Beam",
+      "source": "design-proposal-gen9"
+    },
+    "SCALESHOT": {
+      "name": "Scale Shot",
+      "source": "design-proposal-gen9"
+    },
+    "FUTURESIGHT": {
+      "name": "Future Sight",
+      "source": "design-proposal-gen9"
+    },
+    "PSYCHICNOISE": {
+      "name": "Psychic Noise",
+      "source": "design-proposal-gen9"
+    },
+    "STRINGSHOT": {
+      "name": "String Shot",
+      "type": "BUG",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "BUGBITE": {
+      "name": "Bug Bite",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "LUNGE": {
+      "name": "Lunge",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "LEECHLIFE": {
+      "name": "Leech Life",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "FIRSTIMPRESSION": {
+      "name": "First Impression",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "MEGAHORN": {
+      "name": "Megahorn",
+      "type": "BUG",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "STRUGGLEBUG": {
+      "name": "Struggle Bug",
+      "source": "design-proposal-gen9"
+    },
+    "AERIALACE": {
+      "name": "Aerial Ace",
+      "source": "design-proposal-gen9"
+    },
+    "FOULPLAY": {
+      "name": "Foul Play",
+      "source": "design-proposal-gen9"
+    },
+    "REVERSAL": {
+      "name": "Reversal",
+      "source": "design-proposal-gen9"
+    },
+    "BUGBUZZ": {
+      "name": "Bug Buzz",
+      "source": "design-proposal-gen9"
+    },
+    "ENDEAVOR": {
+      "name": "Endeavor",
+      "source": "design-proposal-gen9"
+    },
+    "SKITTERSMACK": {
+      "name": "Skitter Smack",
+      "source": "design-proposal-gen9"
+    },
+    "ROCKTHROW": {
+      "name": "Rock Throw",
+      "type": "ROCK",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "HARDEN": {
+      "name": "Harden",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "HEADSMASH": {
+      "name": "Head Smash",
+      "type": "ROCK",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "WIDEGUARD": {
+      "name": "Wide Guard",
+      "type": "ROCK",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "ROCKPOLISH": {
+      "name": "Rock Polish",
+      "type": "ROCK",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "BODYPRESS": {
+      "name": "Body Press",
+      "source": "design-proposal-gen9"
+    },
+    "POWERGEM": {
+      "name": "Power Gem",
+      "source": "design-proposal-gen9"
+    },
+    "METEORBEAM": {
+      "name": "Meteor Beam",
+      "source": "design-proposal-gen9"
+    },
+    "GUST": {
+      "name": "Gust",
+      "type": "FLYING",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "ICYWIND": {
+      "name": "Icy Wind",
+      "type": "ICE",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "AIRCUTTER": {
+      "name": "Air Cutter",
+      "type": "FLYING",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "TAILWIND": {
+      "name": "Tailwind",
+      "type": "FLYING",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "WINGATTACK": {
+      "name": "Wing Attack",
+      "type": "FLYING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "AIRSLASH": {
+      "name": "Air Slash",
+      "type": "FLYING",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "FEATHERDANCE": {
+      "name": "Feather Dance",
+      "type": "FLYING",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "HURRICANE": {
+      "name": "Hurricane",
+      "type": "FLYING",
+      "category": "Special",
+      "source": "design-proposal-gen9"
+    },
+    "MIST": {
+      "name": "Mist",
+      "type": "ICE",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "BRAVEBIRD": {
+      "name": "Brave Bird",
+      "type": "FLYING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "SKYATTACK": {
+      "name": "Sky Attack",
+      "type": "FLYING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "ACROBATICS": {
+      "name": "Acrobatics",
+      "source": "design-proposal-gen9"
+    },
+    "SNOWSCAPE": {
+      "name": "Snowscape",
+      "source": "design-proposal-gen9"
+    },
+    "FLY": {
+      "name": "Fly",
+      "source": "design-proposal-gen9"
+    },
+    "ICEBEAM": {
+      "name": "Ice Beam",
+      "source": "design-proposal-gen9"
+    },
+    "DUALWINGBEAT": {
+      "name": "Dual Wingbeat",
+      "source": "design-proposal-gen9"
+    },
+    "DOUBLEKICK": {
+      "name": "Double Kick",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "FOCUSENERGY": {
+      "name": "Focus Energy",
+      "type": "NORMAL",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "MACHPUNCH": {
+      "name": "Mach Punch",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "LOWSWEEP": {
+      "name": "Low Sweep",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "DETECT": {
+      "name": "Detect",
+      "type": "FIGHTING",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "BULKUP": {
+      "name": "Bulk Up",
+      "type": "FIGHTING",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "DRAINPUNCH": {
+      "name": "Drain Punch",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "FORCEPALM": {
+      "name": "Force Palm",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "CLOSECOMBAT": {
+      "name": "Close Combat",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "COACHING": {
+      "name": "Coaching",
+      "type": "FIGHTING",
+      "category": "Status",
+      "source": "design-proposal-gen9"
+    },
+    "FOCUSPUNCH": {
+      "name": "Focus Punch",
+      "type": "FIGHTING",
+      "category": "Physical",
+      "source": "design-proposal-gen9"
+    },
+    "LOWKICK": {
+      "name": "Low Kick",
+      "source": "design-proposal-gen9"
+    },
+    "AURASPHERE": {
+      "name": "Aura Sphere",
+      "source": "design-proposal-gen9"
+    },
+    "PLAYROUGH": {
+      "name": "Play Rough",
+      "source": "design-proposal-gen9"
+    },
+    "FOCUSBLAST": {
+      "name": "Focus Blast",
+      "source": "design-proposal-gen9"
+    },
+    "VACUUMWAVE": {
+      "name": "Vacuum Wave",
+      "source": "design-proposal-gen9"
+    },
+    "UPPERHAND": {
+      "name": "Upper Hand",
+      "source": "design-proposal-gen9"
+    }
+  },
+  "atlas": {
+    "src": "/assets/future-eevee/sprites-atlas.png",
+    "columns": 7,
+    "rows": 9,
+    "cellSize": 128,
+    "roleOrder": [
+      "front",
+      "front-shiny",
+      "back",
+      "back-shiny",
+      "icon",
+      "icon-shiny",
+      "footprint"
+    ],
+    "speciesOrder": [
+      "EEVEE",
+      "VAPOREON",
+      "JOLTEON",
+      "FLAREON",
+      "ESPEON",
+      "UMBREON",
+      "LEAFEON",
+      "GLACEON",
+      "SYLVEON"
+    ]
+  }
+}
