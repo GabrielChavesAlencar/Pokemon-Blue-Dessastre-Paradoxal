@@ -74,7 +74,7 @@ export function regularTeam(model,data,trainer,mode,details,highest=50){
   const difficulty=DIFFICULTIES.find(x=>x.id===mode)||DIFFICULTIES[0];
   const level=Math.max(1,Math.floor(clampLevel(highest)*difficulty.percent/100));
   const team=(trainer.team||[]).map(p=>({...p,level,calculatedLevel:true,
-    moves:p.moves?.length?p.moves:p.form===50?lastMoves(p.species+',50',level,details):p.moves}));
+    moves:p.moves?.length?p.moves:Number(p.form)===50?lastMoves(p.species+',50',level,details):p.moves}));
   if(difficulty.id==='master' && !trainer.name.includes('(Auto Grind)')){
     while(team.length>0&&team.length<4){
       const newMember=nextPartner(team,trainer,level,model,details,data.typeChart||{});
@@ -88,7 +88,7 @@ const sourceNote='Times-base extraídos do Pokémon Decades; nove treinadores re
 
 function card(model,trainer){
   const images=trainer.team.slice(-3).map(p=>{
-    const found=(p.form===50?model.byId.get(p.species+',50'):null)||model.byId.get(p.species);
+    const found=(Number(p.form)===50?model.byId.get(p.species+',50'):null)||model.byId.get(p.species);
     return found?.future?futureSprite(found,'icon','future-trainer-icon'):
       '<img loading="lazy" src="'+esc(found?sprite(found):'/assets/fan-placeholder.svg')+'" alt="'+esc(found?.name||p.species)+'"/>';
   }).join('');
