@@ -7,7 +7,7 @@
 - ZIP recebido: `Sprites_Iron_06-11-2026_Completo(1).zip` (sete pastas com sprites normais/shiny, party e imagens de costas/frente).
 - Documento prévio: `Estudo_Comparativo_Paradoxos_Futuro_Base_Stats_Movesets_Gen9.md`; regra adotada para Paradox comuns: **570 de BST, Quark Drive e learnset temático**.
 - **Iron Coil é baseado em Furret**, confirmado pela aparência do sprite; esse já era um nome original no ZIP e foi preservado. Os outros seis receberam nomes de exibição novos sem alterar os diretórios e arquivos dos sprites.
-- As descrições do ZIP indicam tipagens **Terra/Psíquico** para Iron Oracle, **Normal/Voador** para Iron Raptor e **Inseto/Voador** para Iron Stinger, preservadas aqui. Nos outros quatro, a tipagem consta como **proposta** e deve ser confirmada antes de incluir no jogo.
+- **Atualização autoral em 11/11/2026:** Iron Oracle passou a **Psíquico/Elétrico**, Iron Raptor a **Elétrico/Voador**, Iron Stinger a **Inseto/Elétrico** e Iron Glimmer a **Água/Aço**. Os tipos anteriores permanecem apenas como histórico do pacote de sprites. Os três outros Paradoxos continuam como estavam.
 - **Não há golpes inventados:** foram escolhidos nomes de golpes que existem nos jogos de Pokémon, mas seu aprendizado por estes sete fan-Pokémon é proposto; nem todas as TMs são oficialmente compatíveis com as espécies base.
 
 ## 2. Regras de criação adotadas
@@ -23,13 +23,13 @@ Ordem de atributos: **HP / Atk / Def / SpA / SpD / Spe**. Todos os Paradox suger
 
 | Original → futuro | Tipo original → tipo proposto | Original (HP/Atk/Def/SpA/SpD/Spe) | Futuro (HP/Atk/Def/SpA/SpD/Spe) | BST original → futuro | Δ BST |
 |---|---|---|---|---:|---:|
-| Claydol → Iron Oracle | Terra/Psíquico → **Terra/Psíquico** | 60 / 70 / 105 / 70 / 120 / 75 | **80 / 65 / 125 / 115 / 135 / 50** | 500 → 570 | **+70** |
+| Claydol → Iron Oracle | Terra/Psíquico → **Psíquico/Elétrico** | 60 / 70 / 105 / 70 / 120 / 75 | **80 / 65 / 125 / 115 / 135 / 50** | 500 → 570 | **+70** |
 | Furret → Iron Coil | Normal → **Normal/Aço** | 85 / 76 / 64 / 45 / 55 / 90 | **85 / 105 / 95 / 70 / 80 / 135** | 415 → 570 | **+155** |
 | Exploud → Iron Echo | Normal → **Normal/Elétrico** | 104 / 91 / 63 / 91 / 73 / 68 | **110 / 70 / 82 / 140 / 82 / 86** | 490 → 570 | **+80** |
-| Lumineon → Iron Glimmer | Água → **Água/Elétrico** | 69 / 69 / 76 / 69 / 86 / 91 | **80 / 65 / 85 / 120 / 95 / 125** | 460 → 570 | **+110** |
+| Lumineon → Iron Glimmer | Água → **Água/Aço** | 69 / 69 / 76 / 69 / 86 / 91 | **80 / 65 / 85 / 120 / 95 / 125** | 460 → 570 | **+110** |
 | Spiritomb → Iron Wraith | Fantasma/Sombrio → **Fantasma/Elétrico** | 50 / 92 / 108 / 92 / 108 / 35 | **85 / 75 / 105 / 130 / 125 / 50** | 485 → 570 | **+85** |
-| Swellow → Iron Raptor | Normal/Voador → **Normal/Voador** | 60 / 85 / 60 / 75 / 50 / 125 | **74 / 140 / 82 / 70 / 72 / 132** | 455 → 570 | **+115** |
-| Yanmega → Iron Stinger | Inseto/Voador → **Inseto/Voador** | 86 / 76 / 86 / 116 / 56 / 95 | **88 / 70 / 88 / 135 / 75 / 114** | 515 → 570 | **+55** |
+| Swellow → Iron Raptor | Normal/Voador → **Elétrico/Voador** | 60 / 85 / 60 / 75 / 50 / 125 | **74 / 140 / 82 / 70 / 72 / 132** | 455 → 570 | **+115** |
+| Yanmega → Iron Stinger | Inseto/Voador → **Inseto/Elétrico** | 86 / 76 / 86 / 116 / 56 / 95 | **88 / 70 / 88 / 135 / 75 / 114** | 515 → 570 | **+55** |
 
 ### Variação individual por atributo
 | Espécie | ΔHP | ΔAtk | ΔDef | ΔSpA | ΔSpD | ΔSpe |
@@ -48,7 +48,7 @@ Ordem de atributos: **HP / Atk / Def / SpA / SpD / Spe**. Todos os Paradox suger
 | Iron Oracle | Sp. Defense 135 | Tanque especial, controle de campo e removedor de hazards |
 | Iron Coil | Speed 135 | Pivot físico extremamente rápido e utilitário |
 | Iron Echo | Sp. Attack 140 | Wallbreaker especial de som, lento-médio e com boa resistência |
-| Iron Glimmer | Speed 125 | Atacante especial rápido de Água/Elétrico e pivot de campo |
+| Iron Glimmer | Speed 125 | Atacante especial rápido de Água/Aço e pivot de campo |
 | Iron Wraith | Sp. Attack 130 | Tanque especial lento com status, Hex e cobertura elétrica |
 | Iron Raptor | Attack 140 | Atacante físico veloz e pivot aéreo |
 | Iron Stinger | Sp. Attack 135 | Atacante especial veloz, reconhecimento aéreo e cobertura técnica |
@@ -60,13 +60,13 @@ Os Paradox do futuro seguem a convenção de **duas palavras iniciadas por “Ir
 
 | Nome na Pokédex | Identificador do sprite no ZIP | Pokémon de referência | Nome escolhido por quê? | Tipagem proposta/mantida |
 |---|---|---|---|---|
-| **Iron Oracle** | `Iron_Claydol` | Claydol | Esfera de sensores e anéis de observação, como um oráculo eletrônico | Terra/Psíquico (mantida do ZIP) |
+| **Iron Oracle** | `Iron_Claydol` | Claydol | Esfera de sensores e anéis de observação, como um oráculo eletrônico | Psíquico/Elétrico (revisão autoral) |
 | **Iron Coil** | `Iron_Coil` | Furret | Corpo segmentado e flexível, semelhante a bobina mecânica | Normal/Aço (proposta) |
 | **Iron Echo** | `Iron_Exploud` | Exploud | Boca-subwoofer e amplificadores que reproduzem ondas sonoras | Normal/Elétrico (proposta) |
-| **Iron Glimmer** | `Iron_Lumineon` | Lumineon | Nadadeiras holográficas que brilham como placas de luz | Água/Elétrico (proposta) |
+| **Iron Glimmer** | `Iron_Lumineon` | Lumineon | Nadadeiras holográficas que brilham como placas de luz | Água/Aço (revisão autoral) |
 | **Iron Wraith** | `Iron_Spiritomb` | Spiritomb | Aparição digital projetada por um reator de energia | Fantasma/Elétrico (proposta) |
-| **Iron Raptor** | `Iron_Swellow` | Swellow | Ave de caça com asas de propulsão e silhueta aerodinâmica | Normal/Voador (mantida do ZIP) |
-| **Iron Stinger** | `Iron_Yanmega` | Yanmega | Libélula mecânica predadora, com corpo perfurante e sensores | Inseto/Voador (mantida do ZIP) |
+| **Iron Raptor** | `Iron_Swellow` | Swellow | Ave de caça com asas de propulsão e silhueta aerodinâmica | Elétrico/Voador (revisão autoral) |
+| **Iron Stinger** | `Iron_Yanmega` | Yanmega | Libélula mecânica predadora, com corpo perfurante e sensores | Inseto/Elétrico (revisão autoral) |
 
 ### Dimensões: espécies originais vs. Paradox criados
 Alturas e pesos **originais** são dados da Pokédex oficial; dimensões **futuras** são sugestões autorais para o fan game. Altura não deve ser confundida com a altura de voo e, para criaturas alongadas, a dimensão principal pode representar o comprimento nominal do corpo, conforme a convenção usada na ficha.
@@ -84,7 +84,7 @@ Alturas e pesos **originais** são dados da Pokédex oficial; dimensões **futur
 **Fonte das medidas originais:** [Pokémon Database — Height & Weight](https://pokemondb.net/pokedex/stats/height-weight) e as fichas individuais listadas na seção 8. Os números propostos **não vêm dos sprites**, porque o ZIP contém artes em resoluções variadas e sem escala física. As proporções a seguir são guias de design, não medições da imagem ou exigências do motor.
 
 ### 3.1.1. Iron Oracle — “Pokémon Oráculo Orbital”
-- **Origem:** Claydol · **Tipo:** Terra/Psíquico · **Altura:** 1,8 m · **Peso:** 172,0 kg.
+- **Origem:** Claydol · **Tipo:** Psíquico/Elétrico · **Altura:** 1,8 m · **Peso:** 172,0 kg.
 - **Entrada de Pokédex (curta):** “Seu corpo abriga sensores que giram sem cessar. Dizem que ele consegue antecipar movimentos adversários por meio de cálculos feitos em frações de segundo.”
 - **Descrição expandida:** Uma unidade de observação construída a partir de um corpo em formato de ídolo antigo. Seus olhos vermelhos alinhados ao redor da cabeça captam o ambiente; os anéis cianos emitem padrões de leitura que lembram rituais esquecidos. Move braços desacoplados ao redor do núcleo para reorientar energia psíquica.
 - **Proporções físicas:** altura total de 1,8 m do topo do chapéu-sensor à ponta inferior, **largura aproximada de 2,1 m** incluindo os módulos laterais. A cúpula superior representa cerca de **35%** da altura, o núcleo central **40%** e a extremidade inferior **25%**. Os braços não devem ultrapassar a cúpula em massa visual.
@@ -108,12 +108,12 @@ Alturas e pesos **originais** são dados da Pokédex oficial; dimensões **futur
 - **Coerência com o moveset:** Echoed Voice, Hyper Voice e Boomburst formam uma progressão acústica; Discharge e Thunderbolt acrescentam a conversão elétrica.
 
 ### 3.1.4. Iron Glimmer — “Pokémon Néon Abissal”
-- **Origem:** Lumineon · **Tipo:** Água/Elétrico · **Comprimento:** 1,5 m · **Peso:** 29,0 kg.
+- **Origem:** Lumineon · **Tipo:** Água/Aço · **Comprimento:** 1,5 m · **Peso:** 29,0 kg.
 - **Entrada de Pokédex (curta):** “Nadadeiras translúcidas projetam padrões de luz sobre a água. Esses sinais atraem presas e podem descarregar eletricidade ao menor contato.”
 - **Descrição expandida:** Um corpo de peixe escuro e elegante sustenta grandes nadadeiras holográficas azuis, recortadas por linhas semelhantes a circuitos. O brilho pulsante pode enganar sistemas de localização submarinos. Em vez de nadar rapidamente apenas com movimentos musculares, utiliza impulso eletromagnético para manobras precisas.
 - **Proporções físicas:** **1,5 m do focinho à extremidade da cauda**. O corpo fusiforme representa aproximadamente **60% do comprimento**, enquanto cauda e pontas externas completam **40%**. As nadadeiras superiores e laterais ampliam a **largura visual para cerca de 2,3 m**, mas devem permanecer finas e translúcidas. Manter a cabeça compacta para não transformar o desenho em peixe robusto.
 - **Justificativa dimensional:** cresceu em comprimento e envergadura das nadadeiras sem ganhar muita massa, porque a superfície luminosa é leve; isso combina com Speed 125.
-- **Coerência com o moveset:** Aqua Ring e Surf mantêm o tema aquático; Charge Beam, Discharge e Thunderbolt usam as nadadeiras como condutores; Flip Turn representa movimentação rápida.
+- **Coerência com o moveset:** Aqua Ring, Surf e Hydro Pump mantêm o tema aquático; Flash Cannon, Iron Defense e Steel Beam representam lâminas e blindagem de Aço; Flip Turn preserva o pivot.
 
 ### 3.1.5. Iron Wraith — “Pokémon Aparição Digital”
 - **Origem:** Spiritomb · **Tipo:** Fantasma/Elétrico · **Altura:** 1,4 m · **Peso:** 126,0 kg.
@@ -124,7 +124,7 @@ Alturas e pesos **originais** são dados da Pokédex oficial; dimensões **futur
 - **Coerência com o moveset:** Hex, Shadow Ball e Confuse Ray representam a projeção fantasmagórica, enquanto Discharge e Thunder Wave derivam do reator elétrico.
 
 ### 3.1.6. Iron Raptor — “Pokémon Caça Supersônico”
-- **Origem:** Swellow · **Tipo:** Normal/Voador · **Altura/comprimento nominal:** 1,0 m · **Peso:** 31,0 kg.
+- **Origem:** Swellow · **Tipo:** Elétrico/Voador · **Altura/comprimento nominal:** 1,0 m · **Peso:** 31,0 kg.
 - **Entrada de Pokédex (curta):** “Suas asas rígidas cortam o ar como lâminas. Durante mergulhos de caça, rastreia alvos com sensores que brilham no peito e nas penas.”
 - **Descrição expandida:** A ave mantém o bico, a cauda e a silhueta inconfundível de Swellow, mas apresenta plumagem metálica escura, linhas azuis energizadas e estabilizadores longos nas costas. Seu comportamento lembra uma aeronave de interceptação em miniatura, com aceleração e curvas abruptas.
 - **Proporções físicas:** **1,0 m de dimensão corporal nominal** do bico à cauda, com **envergadura aproximada de 2,4 m** quando as asas estão totalmente abertas. Peito e cabeça ocupam cerca de **40% do comprimento**, tronco **35%** e cauda/estabilizadores **25%**. As asas devem parecer finas e pontiagudas, sem se transformar em grandes placas pesadas.
@@ -132,7 +132,7 @@ Alturas e pesos **originais** são dados da Pokédex oficial; dimensões **futur
 - **Coerência com o moveset:** Brave Bird, Dual Wingbeat, Agility e U-turn refletem velocidade e ataques de passagem; Double-Edge reforça mergulho agressivo.
 
 ### 3.1.7. Iron Stinger — “Pokémon Libélula de Combate”
-- **Origem:** Yanmega · **Tipo:** Inseto/Voador · **Comprimento nominal:** 2,2 m · **Peso:** 83,0 kg.
+- **Origem:** Yanmega · **Tipo:** Inseto/Elétrico · **Comprimento nominal:** 2,2 m · **Peso:** 83,0 kg.
 - **Entrada de Pokédex (curta):** “Seus olhos mecânicos rastreiam movimentos quase imperceptíveis. As quatro asas vibram em frequências distintas para emboscar alvos sem perder altitude.”
 - **Descrição expandida:** Carapaça preta e vermelha, olhos eletrônicos e quatro asas translúcidas com padrões avermelhados transformam Yanmega em uma unidade de reconhecimento. Articulações finas e membros em forma de garras permitem mudanças bruscas de direção durante a perseguição.
 - **Proporções físicas:** **2,2 m do focinho ao final do abdômen**; **envergadura total de cerca de 3,4 m** considerando as quatro asas estendidas. Cabeça e tórax somam aproximadamente **55% do corpo**, e abdômen segmentado **45%**. As asas devem permanecer grandes em relação ao tronco, mas leves e alongadas; os membros devem ser finos, evitando aspecto de robô humanoide.
@@ -150,10 +150,10 @@ Alturas e pesos **originais** são dados da Pokédex oficial; dimensões **futur
 ## 4. Fichas completas, movesets por nível e TMs propostas
 
 ### 4.1. Iron Oracle — origem: Claydol
-**Tipo:** Terra/Psíquico · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** Tanque especial, controle de campo e removedor de hazards.
-**Status da tipagem:** Tipagem indicada no LEIA-ME do ZIP (mantida).
+**Tipo:** Psíquico/Elétrico · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** tanque especial, suporte de campo e remoção de hazards.
+**Status da tipagem:** Definida pelo autor em 11/11/2026, substituindo Terra/Psíquico da proposta anterior.
 
-Mantém a silhueta flutuante e a especialidade defensiva de Claydol, mas transforma o corpo em uma plataforma de processamento com placas e braços mecânicos. A redução de Speed reforça o papel de sentinela pesada.
+Mantém sensores e previsão psíquica de Claydol, agora associados a descargas elétricas e controle de terreno. O ritmo lento e a resistência especial continuam, sem ganhar Levitate.
 
 | Atributo | Base original | Novo Paradox | Diferença |
 |---|---:|---:|---:|
@@ -166,9 +166,9 @@ Mantém a silhueta flutuante e a especialidade defensiva de Claydol, mas transfo
 | **TOTAL (BST)** | **500** | **570** | **+70** |
 
 **Análise comparativa dos golpes**
-- **Golpes/temas preservados:** Rapid Spin, Cosmic Power, Earth Power, Psychic, Ancient Power, Explosion, Trick Room e Stealth Rock preservam a ideia de clay doll levitante/controle do campo.
-- **Golpes/temas adicionados:** Psyshock, Iron Defense e maior potência de golpes especiais deixam de depender do Attack 70 do original. Quark Drive substitui Levitate.
-- **Mudança ou perda de função:** Perde a imunidade a Terra decorrente de Levitate; o visual de flutuação não a concede automaticamente. Não recebe Recover ou Quiver Dance, evitando durabilidade excessiva.
+- **Mantidos:** Rapid Spin, Cosmic Power, Psyshock, Psychic, Stealth Rock e Future Sight mantêm a defesa e o controle de campo.
+- **Novos STAB elétricos:** Thunder Shock, Charge Beam, Discharge, Thunderbolt e Thunder; Thunder Wave e Volt Switch acrescentam controle e pivot lento.
+- **Cobertura:** Earth Power permanece disponível por TM, mas não recebe bônus STAB; Quark Drive permanece como habilidade única.
 
 #### Learnset completo por nível — proposta para o fan game
 | Nível | Golpe |
@@ -176,31 +176,31 @@ Mantém a silhueta flutuante e a especialidade defensiva de Claydol, mas transfo
 | 1 | Confusion |
 | 1 | Rapid Spin |
 | 1 | Harden |
-| 1 | Mud-Slap |
+| 1 | Thunder Shock |
 | 7 | Psybeam |
-| 14 | Rock Tomb |
+| 14 | Charge Beam |
 | 21 | Cosmic Power |
-| 28 | Ancient Power |
-| 35 | Earth Power |
+| 28 | Thunder Wave |
+| 35 | Discharge |
 | 42 | Psyshock |
 | 49 | Iron Defense |
 | 56 | Psychic |
 | 63 | Stealth Rock |
-| 70 | Power Gem |
-| 77 | Earthquake |
+| 70 | Thunderbolt |
+| 77 | Volt Switch |
 | 84 | Future Sight |
-| 91 | Explosion |
+| 91 | Thunder |
 
 #### TMs e tutores propostos (15 golpes)
-`Protect`, `Psychic`, `Psyshock`, `Earth Power`, `Earthquake`, `Rock Slide`, `Flash Cannon`, `Body Press`, `Trick Room`, `Calm Mind`, `Sandstorm`, `Reflect`, `Light Screen`, `Substitute`, `Tera Blast`.
+`Protect`, `Psychic`, `Psyshock`, `Thunderbolt`, `Thunder`, `Charge Beam`, `Thunder Wave`, `Volt Switch`, `Electric Terrain`, `Earth Power`, `Trick Room`, `Calm Mind`, `Reflect`, `Light Screen`, `Tera Blast`.
 
 > A lista de TM é uma proposta de compatibilidade para o fan game; **não indica que o Pokémon de referência aprenda cada TM em Scarlet/Violet**. Golpes repetidos entre nível e TM significam duas rotas possíveis de aprendizagem.
 
 #### Sets de teste para balanceamento
-- **Controle resistente:** Nature Calm; EVs 252 HP / 4 Def / 252 Sp. Def; `Earth Power / Psychic / Rapid Spin / Stealth Rock`. Paredes especiais e utilidade; Quark Drive costuma reforçar Sp. Def.
-- **Ofensivo lento:** Nature Modest; EVs 252 HP / 252 Sp. Atk / 4 Sp. Def; `Earth Power / Psyshock / Power Gem / Trick Room`. Atacante de Trick Room, sem recuperação confiável.
+- **Controle resistente:** Calm, 252 HP / 4 Def / 252 SpD; `Psychic / Discharge / Rapid Spin / Stealth Rock`.
+- **Trick Room:** Modest, 252 HP / 252 SpA / 4 SpD; `Psychic / Thunderbolt / Earth Power / Trick Room`.
 
-**Risco específico de balanceamento:** Com Sp. Defense 135, Quark Drive pode reforçar a defesa especial, em vez do Sp. Attack 115. Isso é intencional. Electric Terrain funciona apenas se a criatura for considerada grounded no motor.
+**Risco de balanceamento:** imunidade a Terra não é garantida pela flutuação visual; conferir Electric Terrain, Quark Drive e a fraqueza a golpes de Terra.
 
 ### 4.2. Iron Coil — origem: Furret
 **Tipo:** Normal/Aço · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** Pivot físico extremamente rápido e utilitário.
@@ -309,10 +309,10 @@ O alto-falante no interior da boca substitui a expressão orgânica de Exploud. 
 **Risco específico de balanceamento:** Boomburst com STAB Normal, Sp. Attack 140 e Quark Drive pode ser muito forte: liberar apenas no nível 84 e testar PP, cobertura de tipos e uso de Booster Energy. NUNCA dar Scrappy como habilidade extra simultânea.
 
 ### 4.4. Iron Glimmer — origem: Lumineon
-**Tipo:** Água/Elétrico · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** Atacante especial rápido de Água/Elétrico e pivot de campo.
-**Status da tipagem:** Proposta baseada nas nadadeiras holográficas de circuito; ZIP não fixa tipo.
+**Tipo:** Água/Aço · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** atacante especial rápido com resistência metálica e pivot aquático.
+**Status da tipagem:** Definida pelo autor em 11/11/2026, substituindo Água/Elétrico da proposta anterior.
 
-Conserva a silhueta fina de Lumineon, mas as nadadeiras tornam-se painéis luminosos com circuitos ciano. Em vez de depender de chuva e de Storm Drain, usa energia de Electric Terrain.
+As nadadeiras passam a usar lâminas de liga leve e escudos refletores. Mantém Surf, Flip Turn e Hydro Pump, mas substitui os ataques elétricos por Flash Cannon, Iron Defense e Steel Beam.
 
 | Atributo | Base original | Novo Paradox | Diferença |
 |---|---:|---:|---:|
@@ -325,9 +325,9 @@ Conserva a silhueta fina de Lumineon, mas as nadadeiras tornam-se painéis lumin
 | **TOTAL (BST)** | **460** | **570** | **+110** |
 
 **Análise comparativa dos golpes**
-- **Golpes/temas preservados:** Aqua Ring, Water Pulse, Soak, Surf, Rain Dance e Hydro Pump mantêm a identidade aquática e de suporte.
-- **Golpes/temas adicionados:** Charge Beam, Discharge, Thunderbolt, Thunder e Volt Switch adicionam STAB Elétrico. Flip Turn reforça a função de pivot aquático.
-- **Mudança ou perda de função:** A troca de Swift Swim/Storm Drain por Quark Drive remove a imunidade e o aumento de Sp. Attack proporcionados por Storm Drain quando atingido por golpe de Água. Não herda a duplicação de Speed por Swift Swim na chuva.
+- **Mantidos:** Aqua Ring, Water Pulse, Soak, Surf, Flip Turn, Rain Dance e Hydro Pump preservam a identidade aquática.
+- **Novos STAB e utilidade de Aço:** Metal Claw, Flash Cannon, Steel Beam, Metal Sound e Iron Defense.
+- **Custo:** remove a cobertura elétrica e perde resistência elétrica de Água/Elétrico; Steel Beam causa recoil alto e deve ser usado apenas no fim da progressão.
 
 #### Learnset completo por nível — proposta para o fan game
 | Nível | Golpe |
@@ -335,31 +335,31 @@ Conserva a silhueta fina de Lumineon, mas as nadadeiras tornam-se painéis lumin
 | 1 | Water Gun |
 | 1 | Charm |
 | 1 | Supersonic |
-| 1 | Thunder Shock |
+| 1 | Metal Claw |
 | 7 | Aqua Ring |
 | 14 | Water Pulse |
-| 21 | Charge Beam |
+| 21 | Metal Sound |
 | 28 | Icy Wind |
 | 35 | Flip Turn |
-| 42 | Discharge |
+| 42 | Iron Defense |
 | 49 | Soak |
 | 56 | Surf |
-| 63 | Tailwind |
-| 70 | Thunderbolt |
-| 77 | Rain Dance |
+| 63 | Flash Cannon |
+| 70 | Rain Dance |
+| 77 | Mirror Coat |
 | 84 | Hydro Pump |
-| 91 | Thunder |
+| 91 | Steel Beam |
 
 #### TMs e tutores propostos (15 golpes)
-`Protect`, `Surf`, `Hydro Pump`, `Ice Beam`, `Icy Wind`, `Scald`, `Chilling Water`, `Volt Switch`, `Thunderbolt`, `Electric Terrain`, `Charge Beam`, `Dazzling Gleam`, `Rain Dance`, `Substitute`, `Tera Blast`.
+`Protect`, `Surf`, `Hydro Pump`, `Ice Beam`, `Icy Wind`, `Scald`, `Chilling Water`, `Flash Cannon`, `Steel Beam`, `Iron Defense`, `Metal Sound`, `Dazzling Gleam`, `Rain Dance`, `Substitute`, `Tera Blast`.
 
 > A lista de TM é uma proposta de compatibilidade para o fan game; **não indica que o Pokémon de referência aprenda cada TM em Scarlet/Violet**. Golpes repetidos entre nível e TM significam duas rotas possíveis de aprendizagem.
 
 #### Sets de teste para balanceamento
-- **Pivot veloz:** Nature Timid; EVs 252 Sp. Atk / 4 Sp. Def / 252 Speed; `Surf / Thunderbolt / Flip Turn / Ice Beam`. Pivot com STAB duplo e cobertura Gelo; Quark Drive tende a Speed.
-- **Controle aquático:** Nature Timid; EVs 252 HP / 4 Sp. Atk / 252 Speed; `Surf / Volt Switch / Tailwind / Aqua Ring`. Suporte de velocidade e reposicionamento; não tem grande Attack físico.
+- **Pivot rápido:** Timid, 252 SpA / 4 SpD / 252 Spe; `Surf / Flash Cannon / Flip Turn / Ice Beam`.
+- **Suporte resistente:** Timid, 252 HP / 4 SpA / 252 Spe; `Surf / Flash Cannon / Iron Defense / Aqua Ring`.
 
-**Risco específico de balanceamento:** Como Speed 125 supera Sp. Attack 120 em base, Quark Drive pode favorecer Speed — especialmente com EVs em velocidade. Para usar Sp. Attack como alvo, é preciso verificar os atributos efetivos ou alterar a distribuição de EVs.
+**Risco de balanceamento:** Água/Aço perde a antiga fraqueza a Terra neutra de Água/Elétrico? Água/Aço sofre dano super-efetivo de Terra e Lutador; verificar essas interações com Quark Drive e cobertura Gelo.
 
 ### 4.5. Iron Wraith — origem: Spiritomb
 **Tipo:** Fantasma/Elétrico · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** Tanque especial lento com status, Hex e cobertura elétrica.
@@ -415,10 +415,10 @@ As 108 almas assumem a aparência de um programa de consciência fragmentado em 
 **Risco específico de balanceamento:** Hex dobrado em alvo com status, Nasty Plot e Quark Drive são uma combinação potencialmente muito forte. Contra times defensivos, revisar acesso a Will-O-Wisp e a Thunder Wave no mesmo conjunto.
 
 ### 4.6. Iron Raptor — origem: Swellow
-**Tipo:** Normal/Voador · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** Atacante físico veloz e pivot aéreo.
-**Status da tipagem:** Tipagem indicada no LEIA-ME do ZIP (mantida).
+**Tipo:** Elétrico/Voador · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** atacante físico rápido e pivot aéreo.
+**Status da tipagem:** Definida pelo autor em 11/11/2026, substituindo Normal/Voador da proposta anterior.
 
-Preserva a forma aerodinâmica da ave e a paleta metálica do corpo, mas utiliza asas e propulsores tecnológicos. Ganha força física para combinar Brave Bird e Double-Edge.
+Os propulsores das asas geram eletricidade para ataques físicos. Brave Bird continua como STAB Voador; Spark, Wild Charge e Supercell Slam assumem o papel de STAB Elétrico.
 
 | Atributo | Base original | Novo Paradox | Diferença |
 |---|---:|---:|---:|
@@ -431,9 +431,9 @@ Preserva a forma aerodinâmica da ave e a paleta metálica do corpo, mas utiliza
 | **TOTAL (BST)** | **455** | **570** | **+115** |
 
 **Análise comparativa dos golpes**
-- **Golpes/temas preservados:** Quick Attack, Wing Attack, Aerial Ace, Facade, Agility, Brave Bird, Double-Edge, Endeavor e Reversal mantêm a base da ave agressiva de Hoenn.
-- **Golpes/temas adicionados:** U-turn e Dual Wingbeat promovem pressão constante e reposicionamento; maior Attack dá força mesmo sem Guts.
-- **Mudança ou perda de função:** Guts deixa de fornecer bônus quando há status e Scrappy deixa de permitir que Normal/Lutador acerte Fantasma. Quark Drive pode melhorar Attack ou Speed conforme os atributos calculados.
+- **Mantidos:** Quick Attack, Wing Attack, Aerial Ace, U-turn, Dual Wingbeat, Brave Bird, Agility e Roost preservam a agressividade aérea.
+- **Novos STAB elétricos:** Spark, Thunder Fang, Wild Charge, Thunder Punch e Supercell Slam. Thunder Shock atua como golpe elétrico inicial.
+- **Custo:** perde STAB Normal e já não depende de Double-Edge; Brave Bird, Wild Charge e Supercell Slam têm riscos de dano ao próprio usuário.
 
 #### Learnset completo por nível — proposta para o fan game
 | Nível | Golpe |
@@ -441,37 +441,37 @@ Preserva a forma aerodinâmica da ave e a paleta metálica do corpo, mas utiliza
 | 1 | Peck |
 | 1 | Quick Attack |
 | 1 | Focus Energy |
-| 1 | Growl |
+| 1 | Thunder Shock |
 | 7 | Wing Attack |
-| 14 | Steel Wing |
+| 14 | Spark |
 | 21 | Aerial Ace |
 | 28 | Agility |
 | 35 | U-turn |
-| 42 | Facade |
+| 42 | Thunder Fang |
 | 49 | Dual Wingbeat |
 | 56 | Brave Bird |
-| 63 | Double-Edge |
+| 63 | Wild Charge |
 | 70 | Roost |
-| 77 | Endeavor |
-| 84 | Reversal |
-| 91 | Giga Impact |
+| 77 | Tailwind |
+| 84 | Thunder Punch |
+| 91 | Supercell Slam |
 
 #### TMs e tutores propostos (15 golpes)
-`Protect`, `Brave Bird`, `Aerial Ace`, `Acrobatics`, `U-turn`, `Tailwind`, `Double-Edge`, `Facade`, `Agility`, `Thief`, `Substitute`, `Air Slash`, `Reversal`, `Tera Blast`, `Giga Impact`.
+`Protect`, `Brave Bird`, `Aerial Ace`, `Acrobatics`, `U-turn`, `Tailwind`, `Wild Charge`, `Thunder Punch`, `Thunder Fang`, `Agility`, `Facade`, `Volt Switch`, `Supercell Slam`, `Substitute`, `Tera Blast`.
 
 > A lista de TM é uma proposta de compatibilidade para o fan game; **não indica que o Pokémon de referência aprenda cada TM em Scarlet/Violet**. Golpes repetidos entre nível e TM significam duas rotas possíveis de aprendizagem.
 
 #### Sets de teste para balanceamento
-- **Ataque prioritário:** Nature Adamant; EVs 252 Attack / 4 Sp. Def / 252 Speed; `Brave Bird / Double-Edge / Quick Attack / U-turn`. Em muitos spreads Adamant favorece Attack em Quark Drive; conferir valores efetivos.
-- **Velocidade extrema:** Nature Jolly; EVs 252 Attack / 4 Sp. Def / 252 Speed; `Brave Bird / U-turn / Roost / Facade`. Jolly pode levar Quark Drive a amplificar Speed, em vez de Attack.
+- **Atacante físico:** Adamant, 252 Atk / 4 SpD / 252 Spe; `Brave Bird / Wild Charge / U-turn / Quick Attack`.
+- **Pivot de alta velocidade:** Jolly, 252 Atk / 4 SpD / 252 Spe; `Brave Bird / Thunder Punch / Roost / U-turn`.
 
-**Risco específico de balanceamento:** Attack 140 e Speed 132 já são ofensivos. Não dar Extreme Speed, Swords Dance nem habilidade secundária Guts; recoil de Brave Bird e Double-Edge é a contrapartida principal.
+**Risco de balanceamento:** Attack 140 e Speed 132 são altos; Supercell Slam tem risco de dano ao errar, e Wild Charge/Brave Bird causam recoil. Não conceder Swords Dance nem Guts.
 
 ### 4.7. Iron Stinger — origem: Yanmega
-**Tipo:** Inseto/Voador · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** Atacante especial veloz, reconhecimento aéreo e cobertura técnica.
-**Status da tipagem:** Tipagem indicada no LEIA-ME do ZIP (mantida).
+**Tipo:** Inseto/Elétrico · **Habilidade:** Quark Drive · **BST:** 570 · **Função:** atacante especial ágil, reconhecimento e controle elétrico.
+**Status da tipagem:** Definida pelo autor em 11/11/2026, substituindo Inseto/Voador da proposta anterior.
 
-A libélula ganha carapaça robótica e asas com circuitos, mantendo a silhueta original e a movimentação aérea. A melhoria ocorre principalmente em Sp. Attack, Sp. Defense e Speed.
+A libélula robótica preserva as asas e o sensoramento, mas agora descarrega eletricidade. Bug Buzz e Struggle Bug continuam como STAB Inseto; Discharge e Thunderbolt fornecem STAB Elétrico.
 
 | Atributo | Base original | Novo Paradox | Diferença |
 |---|---:|---:|---:|
@@ -484,60 +484,60 @@ A libélula ganha carapaça robótica e asas com circuitos, mantendo a silhueta 
 | **TOTAL (BST)** | **515** | **570** | **+55** |
 
 **Análise comparativa dos golpes**
-- **Golpes/temas preservados:** Detect, Quick Attack, Supersonic, Ancient Power, U-turn, Bug Buzz, Air Slash, Screech e Tailwind preservam a identidade do Yanmega.
-- **Golpes/temas adicionados:** Psychic Noise, Discharge e Flash Cannon representam sensores e armas tecnológicas; as duas últimas são coberturas sem STAB.
-- **Mudança ou perda de função:** Não conserva Speed Boost nem Tinted Lens. Speed sobe diretamente de 95 para 114, mas não cresce automaticamente a cada turno; golpes resistidos continuam resistidos.
+- **Mantidos:** Detect, Supersonic, Ancient Power, Agility, U-turn, Bug Buzz, Air Slash e Tailwind conservam reconhecimento e controle aéreo.
+- **Novos STAB elétricos:** Thunder Shock, Electroweb, Charge Beam, Discharge, Thunderbolt e Thunder; Volt Switch aparece como opção TM.
+- **Custo:** Air Slash deixa de receber STAB, e não conserva Speed Boost ou Tinted Lens; Ground deixa de ser imune, enquanto a fraqueza a Rock cai de 4× para 2×.
 
 #### Learnset completo por nível — proposta para o fan game
 | Nível | Golpe |
 |---:|---|
 | 1 | Tackle |
 | 1 | Detect |
-| 1 | Quick Attack |
+| 1 | Thunder Shock |
 | 1 | Supersonic |
-| 7 | Air Cutter |
-| 14 | Struggle Bug |
+| 7 | Struggle Bug |
+| 14 | Electroweb |
 | 21 | Ancient Power |
 | 28 | Agility |
 | 35 | U-turn |
 | 42 | Bug Buzz |
-| 49 | Air Slash |
-| 56 | Psychic Noise |
+| 49 | Charge Beam |
+| 56 | Discharge |
 | 63 | Screech |
-| 70 | Discharge |
-| 77 | Hurricane |
+| 70 | Thunderbolt |
+| 77 | Air Slash |
 | 84 | Tailwind |
-| 91 | Hyper Beam |
+| 91 | Thunder |
 
 #### TMs e tutores propostos (15 golpes)
-`Protect`, `Air Slash`, `Bug Buzz`, `Hurricane`, `U-turn`, `Psychic Noise`, `Psychic`, `Giga Drain`, `Flash Cannon`, `Electro Ball`, `Energy Ball`, `Solar Beam`, `Tailwind`, `Substitute`, `Tera Blast`.
+`Protect`, `Bug Buzz`, `U-turn`, `Thunderbolt`, `Thunder`, `Electro Ball`, `Charge Beam`, `Volt Switch`, `Electric Terrain`, `Thunder Wave`, `Air Slash`, `Giga Drain`, `Energy Ball`, `Substitute`, `Tera Blast`.
 
 > A lista de TM é uma proposta de compatibilidade para o fan game; **não indica que o Pokémon de referência aprenda cada TM em Scarlet/Violet**. Golpes repetidos entre nível e TM significam duas rotas possíveis de aprendizagem.
 
 #### Sets de teste para balanceamento
-- **Special attacker:** Nature Timid; EVs 252 Sp. Atk / 4 Sp. Def / 252 Speed; `Bug Buzz / Air Slash / Discharge / Psychic Noise`. Cobertura especial ampla; Quark Drive geralmente aumenta Sp. Attack.
-- **Controle aéreo:** Nature Timid; EVs 4 HP / 252 Sp. Atk / 252 Speed; `Bug Buzz / Hurricane / Tailwind / U-turn`. Ajuda times ofensivos sem contar com Speed Boost.
+- **Atacante especial:** Timid, 252 SpA / 4 SpD / 252 Spe; `Bug Buzz / Thunderbolt / Air Slash / Volt Switch`.
+- **Controle elétrico:** Timid, 4 HP / 252 SpA / 252 Spe; `Bug Buzz / Discharge / Tailwind / U-turn`.
 
-**Risco específico de balanceamento:** Bug/Flying continua 4× vulnerável a Rock e sujeito a Stealth Rock se o campo estiver sem proteção; testar equilíbrio com Quark Drive e Boots. Não adicionar Quiver Dance ao pool inicial.
+**Risco de balanceamento:** Inseto/Elétrico recebe dano 2× de Pedra (não 4×); testar Stealth Rock, Electric Terrain e a nova cobertura elétrica com Quark Drive.
 
 ## 5. Quais golpes são mantidos e quais realmente mudam?
 
 | Paradox | Identidade herdada | Alteração principal | Custo / fraqueza intencional |
 |---|---|---|---|
-| Iron Oracle | Rapid Spin, Earth Power, Psychic, Cosmic Power | Defesa reforçada e SpA de 70 → 115; toolkit de Aço auxiliar | Perde Levitate e Speed 75 → 50 |
+| Iron Oracle | Rapid Spin, Psychic, Cosmic Power, Future Sight | Novo STAB Elétrico com Discharge e Thunderbolt; mantém controle/hazards | Perde Levitate, tem Speed 50 e fraqueza a Terra |
 | Iron Coil | Quick Attack, U-turn, Double-Edge, Tidy Up | Novo STAB Aço; Speed 90 → 135 | Fraqueza 4× a Lutador e sem Extreme Speed |
 | Iron Echo | Hyper Voice, Boomburst, Supersonic | STAB Elétrico e SpA 91 → 140 | Perde Scrappy/Soundproof; Boomburst só no Nv. 84 |
-| Iron Glimmer | Aqua Ring, Soak, Surf, Hydro Pump | STAB Elétrico, SpA 69 → 120 e Speed 91 → 125 | Sem Swift Swim/Storm Drain; fraqueza a Terra |
+| Iron Glimmer | Aqua Ring, Soak, Surf, Hydro Pump | Troca Elétrico por STAB Aço (Flash Cannon/Steel Beam), mantendo Speed 125 | Vulnerável a Terra e Lutador; Steel Beam cobra HP |
 | Iron Wraith | Hex, Will-O-Wisp, Shadow Ball, Nasty Plot | Fantasma/Elétrico e SpA 92 → 130 | Perde imunidade Psíquico, SpD muito mais crucial que Speed |
-| Iron Raptor | Quick Attack, Brave Bird, Facade, Double-Edge | Attack 85 → 140 mantendo Speed alta | Perde Guts/Scrappy e sofre recoil |
-| Iron Stinger | Bug Buzz, Air Slash, Detect, Ancient Power | SpA 116 → 135, Speed 95 → 114, cobertura tech | Perde Speed Boost/Tinted Lens e mantém fraqueza 4× a Pedra |
+| Iron Raptor | Quick Attack, Brave Bird, U-turn, Agility | STAB Elétrico físico (Wild Charge/Supercell Slam) com Attack 140 | Perde STAB Normal e recebe recoil/dano por falha |
+| Iron Stinger | Bug Buzz, Air Slash, Detect, Ancient Power | STAB Elétrico com Discharge/Thunderbolt, Speed 114 | Perde STAB Voador e imunidade a Terra; Pedra passa a 2× |
 
 ## 6. Regras para integrar no Blue Dessastre Paradoxal
 1. Cadastrar sete espécies **separadas** das originais. Definir os **nomes de exibição** `Iron Oracle`, `Iron Coil`, `Iron Echo`, `Iron Glimmer`, `Iron Wraith`, `Iron Raptor` e `Iron Stinger`, mas manter por enquanto os identificadores originais dos assets no ZIP: `Iron_Claydol`, `Iron_Coil`, `Iron_Exploud`, `Iron_Lumineon`, `Iron_Spiritomb`, `Iron_Swellow`, `Iron_Yanmega`.
 2. Usar **stats exatamente** da tabela da seção 3 e habilidade **Quark Drive**. Não reutilizar habilidades das originais nem adicionar uma segunda habilidade sem novo balanceamento.
 3. Criar os learnsets por nível listados e um conjunto de compatibilidades TM. `TM` não é um nível: manter estruturas separadas no banco e no editor.
 4. Cada espécie Paradox deve usar grupo ovo `Undiscovered`, ser sem gênero, não evoluir e não possuir egg moves, se o sistema seguir a lógica dos Paradox oficiais.
-5. Manter o STAB conforme a **tipagem futura**, não a original: Iron Wraith perde STAB Sombrio; Iron Echo ganha Elétrico; Iron Coil ganha Aço; Iron Glimmer ganha Elétrico.
+5. Manter o STAB conforme a **tipagem futura**, não a original: Iron Wraith perde STAB Sombrio; Iron Echo ganha Elétrico; Iron Coil ganha Aço; Iron Glimmer ganha Aço; Iron Oracle, Iron Raptor e Iron Stinger ganham Elétrico.
 6. Validar a seleção do atributo que Quark Drive potencializa **com os stats efetivos**, Nature/EV/IV; não simplesmente selecionar o maior valor dos Base Stats. Atenção especial a Iron Raptor e Iron Glimmer.
 7. Validar no motor a condição de Electric Terrain: um sprite visualmente suspenso não implica imunidade a Terra; a habilidade Levitate não foi herdada por Iron Oracle. Uma condição de altitude/grounding tratada por código pode mudar o efeito.
 8. Validar quais movimentos já existem no jogo-base e atualizar a tabela de golpes apenas para os ausentes; não atribuir IDs novos sem checagem.
@@ -546,8 +546,8 @@ A libélula ganha carapaça robótica e asas com circuitos, mantendo a silhueta 
 
 ## 7. Testes de regressão / aceitação
 - [ ] Cada BST resulta em **570** e nenhum stat individual é negativo ou acima do limite do motor.
-- [ ] Tipagens Terra/Psíquico (Claydol), Normal/Voador (Swellow) e Inseto/Voador (Yanmega) reproduzem o metadata do ZIP.
-- [ ] Tipagens de Coil, Exploud, Lumineon e Spiritomb foram aprovadas antes de serem aplicadas.
+- [ ] Tipagens autorais de 11/11/2026 confirmadas: Oracle Psíquico/Elétrico, Raptor Elétrico/Voador, Stinger Inseto/Elétrico, Glimmer Água/Aço.
+- [ ] Tipagens dos três outros Paradoxos (Coil, Echo e Wraith) permanecem sem alterações nesta revisão.
 - [ ] Todos os Pokémon possuem exatamente uma habilidade: Quark Drive.
 - [ ] Golpes por nível são gravados e reaprendidáveis; golpes de TM aparecem somente se a TM estiver habilitada.
 - [ ] Booster Energy e Electric Terrain ativam Quark Drive corretamente; troca de atributos após EV/Nature não é ignorada.
@@ -556,8 +556,8 @@ A libélula ganha carapaça robótica e asas com circuitos, mantendo a silhueta 
 - [ ] Iron Echo não atinge Fantasma com Boomburst sem um efeito extra do jogo.
 - [ ] Iron Glimmer não ativa Swift Swim nem Storm Drain (habilidades não herdadas).
 - [ ] Iron Wraith recebe ataque Psíquico normalmente, conforme Fantasma/Elétrico.
-- [ ] Iron Raptor aplica recoil corretamente a Brave Bird e Double-Edge.
-- [ ] Iron Stinger recebe dano 4× de Pedra e dano de Stealth Rock correspondente, se não houver proteção.
+- [ ] Iron Raptor aplica recoil em Brave Bird/Wild Charge e dano de falha em Supercell Slam.
+- [ ] Iron Stinger recebe dano 2× de Pedra e Stealth Rock correspondente, se não houver proteção.
 - [ ] Sprites normal/shiny e sprites de costas são específicos de cada espécie; nenhuma sprite base foi sobrescrita.
 - [ ] Novos nomes aparecem na Pokédex e em batalha, enquanto os identificadores dos sprites continuam funcionais.
 - [ ] Entradas de Pokédex curtas, categoria, altura e peso foram cadastrados conforme a seção 3.1, e os sete sprites mantêm escala/pivô coerentes.

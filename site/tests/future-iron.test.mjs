@@ -61,9 +61,32 @@ test('sprite atlas real e todas as sete perspectivas são renderizados',()=>{
   assert.match(html,/sem alteração no instalador, PBS/);
  }
 });
-test('tipagens propostas não são apresentadas como aprovadas para implementação',()=>{
+test('tipagens dos quatro Paradoxos revisados pelo autor e compatibilidade dos golpes',()=>{
+ const accepted={
+  IRONORACLE:{types:['PSYCHIC','ELECTRIC'],level:['THUNDERSHOCK','DISCHARGE','THUNDERBOLT'],tm:['ELECTRICTERRAIN']},
+  IRONRAPTOR:{types:['ELECTRIC','FLYING'],level:['WILDCHARGE','BRAVEBIRD','SUPERCELLSLAM'],tm:['THUNDERPUNCH']},
+  IRONSTINGER:{types:['BUG','ELECTRIC'],level:['BUGBUZZ','DISCHARGE','THUNDERBOLT'],tm:['VOLTSWITCH']},
+  IRONGLIMMER:{types:['WATER','STEEL'],level:['SURF','FLASHCANNON','STEELBEAM'],tm:['IRONDEFENSE']},
+ };
  for(const entry of manifest.forms){
-  if(['IRONORACLE','IRONRAPTOR','IRONSTINGER'].includes(entry.card.id))assert.equal(entry.card.typeStatus,'confirmed-in-sprite-package');
-  else assert.equal(entry.card.typeStatus,'proposed-in-study');
+  if(!accepted[entry.card.id]){
+   assert.equal(entry.card.typeStatus,'proposed-in-study');
+   continue;
+  }
+  const config=accepted[entry.card.id];
+  assert.equal(entry.card.typeStatus,'approved-by-author');
+  assert.equal(entry.details.typeStatus,'approved-by-author');
+  assert.deepEqual(entry.card.types,config.types);
+  assert.deepEqual(entry.details.types,config.types);
+  assert.equal(entry.details.moves.length,17);
+  assert.equal(entry.details.tm.length,15);
+  assert.equal(new Set(entry.details.tm).size,15);
+  assert.ok(entry.details.moves.every(([level],index,rows)=>index===0||level>=rows[index-1][0]));
+  for(const move of config.level)assert.ok(entry.details.moves.some(row=>row[1]===move),entry.card.id+': '+move);
+  for(const move of config.tm)assert.ok(entry.details.tm.includes(move),entry.card.id+': '+move);
+  assert.deepEqual(entry.details.abilities,['QUARKDRIVE']);
+  assert.equal(entry.card.stats.reduce((sum,value)=>sum+value,0),570);
+  assert.equal(entry.card.inGame,false);
  }
+ assert.ok(!manifest.forms.find(x=>x.card.id==='IRONGLIMMER').details.tm.includes('VOLTSWITCH'));
 });
