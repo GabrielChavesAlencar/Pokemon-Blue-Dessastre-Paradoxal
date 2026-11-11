@@ -43,14 +43,14 @@ class ShellRegression(unittest.TestCase):
         core = {"project","script","flags","pokemon","pokemon-moves","items","starters","trainers","wild",
                 "map","title-logo","title-flames","music","midi-studio","test-lab"}
         extra = {"hex","table","graphics","sprite","text","patch"}
-        self.assertEqual(set(self.dom.panels),core|extra)
-        self.assertEqual(len(self.dom.panels),21)
+        self.assertEqual(set(self.dom.panels),core|extra|{"regions"})
+        self.assertEqual(len(self.dom.panels),22)
         self.assertEqual(set(self.dom.shells),{"home","rom","movesets"})
 
     def test_scripts_and_css_exist(self):
-        for f in ("style.css","studio-shell.css","app.js","sprites.js","pokemon.js","moves-editor.js","navigation.js"):
+        for f in ("style.css","studio-shell.css","app.js","sprites.js","pokemon.js","moves-editor.js","regions.js","navigation.js"):
             self.assertTrue((ROOT/"web"/f).is_file())
-        self.assertEqual(self.dom.scripts,["/app.js","/sprites.js","/pokemon.js","/moves-editor.js","/music-editor.js","/navigation.js"])
+        self.assertEqual(self.dom.scripts,["/app.js","/sprites.js","/pokemon.js","/moves-editor.js","/music-editor.js","/regions.js","/navigation.js"])
         self.assertIn('href="/studio-shell.css"',HTML)
 
     def test_html_div_balanced(self):

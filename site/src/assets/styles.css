@@ -231,3 +231,5 @@
 /* Preview-only Paradox encounter sprites, cropped from seven-by-seven atlas. */
 .location-sprites .future-location-thumb{width:40px;height:40px;flex:0 0 40px;margin-left:0;border-radius:5px;background-color:#13263b}
 .encounter-row .future-location-sprite{width:42px;height:42px;flex:0 0 42px;border-radius:6px;background-color:#13263b}
+
+.region-circuit{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none;margin:10px 0 28px}.region-circuit li{border:1px solid var(--line);border-radius:6px;padding:6px 12px}.region-entries{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,255px),1fr));gap:16px;margin-bottom:42px}.region-entry h2{margin:5px 0 9px}.region-entry p+p,.region-entry p+a{margin-top:8px}

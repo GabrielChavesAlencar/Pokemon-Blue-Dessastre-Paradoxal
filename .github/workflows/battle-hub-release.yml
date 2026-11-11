@@ -2,7 +2,7 @@ name: Hub de Batalha - download separado
 on:
   push:
     branches: [main]
-    paths: ['scripts/**', 'server/prepare_game.py', 'server/music_editor.py', 'server/ruby_marshal.py', 'data/**', 'assets/music/**', 'site/assets/**', 'site/public/data/story-trainers.json', 'docs/**', '.github/workflows/battle-hub-release.yml']
+    paths: ['scripts/**', 'server/prepare_game.py', 'server/music_editor.py', 'server/ruby_marshal.py', 'data/**', 'assets/music/**', 'site/assets/**', 'site/public/data/story-trainers.json', 'site/public/data/regions.json', 'docs/**', '.github/workflows/battle-hub-release.yml']
   workflow_dispatch:
 permissions:
   contents: write

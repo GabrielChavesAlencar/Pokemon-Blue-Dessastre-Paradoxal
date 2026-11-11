@@ -1,0 +1,23 @@
+{
+  "region": "KANTO",
+  "name": "Essentials FRLG 21.1 / 1.1",
+  "author": "TheTinfoilTemplar",
+  "source": "https://eeveeexpo.com/resources/1797/",
+  "sha256": "48883c8217bcd9e7fa1b9446bddaa9db5f9715a7ba73ac02785b6660769e2683",
+  "policy": "Reuse the maps/events with Essentials credits; do not redistribute the archive, soundtrack or engine.",
+  "maps": {
+    "5": "PALLET_TOWN",
+    "6": "OAK_LAB",
+    "7": "PLAYER_HOME",
+    "9": "ROUTE_1",
+    "10": "VIRIDIAN_CITY",
+    "11": "VIRIDIAN_CENTER",
+    "12": "VIRIDIAN_MART",
+    "18": "ROUTE_2",
+    "19": "FOREST_GATE_SOUTH",
+    "20": "FOREST_GATE_NORTH",
+    "24": "VIRIDIAN_FOREST",
+    "25": "PEWTER_CITY",
+    "28": "PEWTER_GYM"
+  }
+}

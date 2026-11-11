@@ -405,6 +405,18 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                 if p == "/api/status":
                     files = list((game_root / "PBS").glob("*.txt")) if (game_root / "PBS").is_dir() else []
                     self.send_json(200, {"gameReady": (game_root / "Game.exe").is_file(), "pbsReady": bool(files), "gameDir": str(game_root), "pbsFiles": len(files), "origin": "HazyCrazy/Pokemon-Decades", "version": "0.1.0"})
+                elif p == "/api/regions":
+                    registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8-sig"))
+                    plan_path = ROOT / ".blue-work/kanto-preview/plan.json"
+                    preview = []
+                    if plan_path.is_file():
+                        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+                        if plan["status"] == "geometry_staged":
+                            preview = [{"name": row["name"], "source_id": row["source_id"],
+                                        "proposed_id": row["proposed_id"],
+                                        "review_count": len(row["needs_manual_review"])}
+                                       for row in plan["maps"]]
+                    self.send_json(200, {"registry": registry, "preview": preview})
                 elif p == "/api/files":
                     files = [{"name": f.name, "size": f.stat().st_size} for f in (game_root / "PBS").glob("*.txt") if f.is_file()] if (game_root / "PBS").is_dir() else []
                     self.send_json(200, {"files": sorted(files, key=lambda f: f["name"].casefold())})
@@ -502,7 +514,7 @@ def build_handler(game_root: Path, backup_root: Path, port: int):
                     self.send_header("Content-Length", str(len(raw)))
                     self.end_headers()
                     self.wfile.write(raw)
-                elif p == "/" or p in ("/index.html", "/app.js", "/sprites.js", "/pokemon.js", "/moves-editor.js", "/music-editor.js", "/music-editor.css", "/navigation.js", "/style.css", "/studio-shell.css"):
+                elif p == "/" or p in ("/index.html", "/app.js", "/sprites.js", "/pokemon.js", "/moves-editor.js", "/music-editor.js", "/regions.js", "/music-editor.css", "/navigation.js", "/style.css", "/studio-shell.css"):
                     requested = "index.html" if p == "/" else p.lstrip("/")
                     data = (WEB / requested).read_bytes()
                     content_type = mimetypes.guess_type(requested)[0] or "application/octet-stream"

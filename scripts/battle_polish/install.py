@@ -1,7 +1,7 @@
 """Install Blue's original presentation/story plugin, with a local backup."""
 from pathlib import Path
 import importlib.util,os,tempfile
-FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Economy.rb','Balance.rb','IVSelectors.rb','Training.rb','TrainerAlbum.rb','HabitatRewards.rb','FishingTables.rb','CampaignReference.rb','NextValidation.rb','WorldValidation.rb','ReleaseValidation.rb','MenuValidation.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','StorageMouse.rb','DexControls.rb','DexCards.rb','LearnMouse.rb','CardsValidation.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','WorldMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
+FILES=['Presentation.rb','Title.rb','Story.rb','Campaign.rb','Regions.rb','Economy.rb','Balance.rb','IVSelectors.rb','Training.rb','TrainerAlbum.rb','HabitatRewards.rb','FishingTables.rb','CampaignReference.rb','NextValidation.rb','WorldValidation.rb','ReleaseValidation.rb','MenuValidation.rb','items_blue_iv.txt','Shop.rb','Journey.rb','JourneyValidation.rb','Playability.rb','Locale.rb','Adventure.rb','Readouts.rb','StartMouse.rb','StorageMouse.rb','DexControls.rb','DexCards.rb','LearnMouse.rb','CardsValidation.rb','DexCompare.rb','WeightEntry.rb','DexFeaturesValidation.rb','Habitat.rb','HabitatMap.rb','WorldMap.rb','Exploration.rb','ExplorationValidation.rb','TouchValidation.rb','ReadoutsValidation.rb','UIValidation.rb','CampaignValidation.rb','FullPowerValidation.rb','Validation.rb','meta.txt']
 SUPPORT=['leaders.py','leaders_full_power.json','champions.py','trainer_album_catalog.py']
 def atomic(path,raw):
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -32,6 +32,9 @@ def install(project,game):
         spec=importlib.util.spec_from_file_location('blue_locale_install',locale)
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         plans.update(module.plan(project,game))
+    region_spec=importlib.util.spec_from_file_location("blue_regions_install",project/"scripts/regions/runtime.py")
+    regions=importlib.util.module_from_spec(region_spec);region_spec.loader.exec_module(regions)
+    plans.update(regions.plan(project,game,target))
     changed={p:b for p,b in plans.items() if not p.is_file() or p.read_bytes()!=b}
     backup=project/'.blue-backups'/('story-presentation-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
     previous={p:p.read_bytes() if p.is_file() else None for p in changed};written=[]

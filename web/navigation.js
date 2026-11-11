@@ -12,6 +12,7 @@
     "starters": ["⭐", "Iniciais", "Inicialização dos Pokémon e eventos iniciais depende dos scripts e mapas.", "Indexar os eventos iniciais do projeto e criar editor guiado de starters.", "planejado"],
     "trainers": ["⚔️", "Treinadores", "Editor PBS de equipes, níveis, itens e golpes de treinadores.", "Criar formulários visuais com retratos, validação de equipes e dificuldades.", "pbs", "trainers_story_mode.txt"],
     "wild": ["🌿", "Selvagens", "Editor PBS de encontros por mapa, dia e noite.", "Adicionar tabela de probabilidades, mapa visual e teste de encontros.", "pbs", "encounters.txt"],
+    "regions": ["🧭", "Regiões", "Circuito de campanhas e prévia de Kanto.", "", "custom"],
     "map": ["🗺️", "Mapas", "A edição de terrenos e eventos usa Game.rxproj / Data do RPG Maker XP.", "Implementar visualizador seguro de MapXXX.rxdata e editor de tiles em fase posterior.", "planejado"],
     "title-logo": ["🖼️", "Logo inicial", "Tela inicial e imagens do jogo são recursos locais do projeto Essentials.", "Encontrar recursos de título e adicionar importação com prévia e backup.", "planejado"],
     "title-flames": ["🔥", "Fundo animado", "No Decades não há a mesma animação binária de chamas do Radical Red.", "Criar um sistema de efeitos próprios (ex.: raios azuis) sem depender de offsets GBA.", "planejado"],
@@ -76,11 +77,15 @@
     work.hidden = !ready;
     movesWork.hidden = !movesMode;
     byId("musicWorkspace").hidden = !musicMode;
-    placeholder.hidden = ready || movesMode || musicMode;
+    const regionsMode = which === "regions";
+    byId("regionsWorkspace").hidden = !regionsMode;
+    placeholder.hidden = ready || movesMode || musicMode || regionsMode;
     if (movesMode) {
       window.BluePokemonMoves?.open();
     } else if (musicMode) {
       if (!musicAlreadyOpen) window.BlueMusic?.open();
+    } else if (regionsMode) {
+      window.BlueStudioRegions?.open();
     } else if (!ready) {
       byId("featureIcon").textContent = data[0];
       byId("featureTitle").textContent = data[1];

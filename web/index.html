@@ -43,6 +43,7 @@
         <button role="tab" data-panel="starters">⭐ Iniciais</button>
         <button role="tab" data-panel="trainers">⚔️ Treinadores</button>
         <button role="tab" data-panel="wild">🌿 Selvagens</button>
+        <button role="tab" data-panel="regions">🧭 Regiões</button>
         <button role="tab" data-panel="map">🗺️ Mapas</button>
         <button role="tab" data-panel="title-logo">🖼️ Logo inicial</button>
         <button role="tab" data-panel="title-flames">🔥 Fundo animado</button>
@@ -68,6 +69,11 @@
       <div class="next-steps"><h2>Próximos passos</h2><p id="featureNext"></p></div>
       <button type="button" class="btn btn-primary" data-shortcut="pokemon">Abrir editor PBS</button></div>
     </section>
+  <section id="regionsWorkspace" class="feature-panel" hidden aria-label="Catálogo de regiões">
+    <div class="feature-body"><div class="kicker">BLUE STUDIO · SOMENTE LEITURA</div>
+      <h1>Circuito de regiões</h1><div id="regionsResults" aria-live="polite"></div>
+    </div>
+  </section>
   <section id="movesWorkspace" class="moves-workspace" hidden aria-label="Editor exclusivo de golpes de Pokémon"></section>
   <section id="musicWorkspace" class="music-workspace" hidden aria-label="Editor de músicas do jogo"></section>
   <div class="app" id="pbsWorkspace">
@@ -98,5 +104,6 @@
 <script src="/pokemon.js" defer></script>
 <script src="/moves-editor.js" defer></script>
 <script src="/music-editor.js" defer></script>
+<script src="/regions.js" defer></script>
 <script src="/navigation.js" defer></script>
 </body></html>

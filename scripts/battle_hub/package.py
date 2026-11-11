@@ -8,7 +8,7 @@ REQUIRED=['HUB_DE_BATALHA.bat','TESTAR_BATALHA.bat','INSTALAR_HUB.bat','scripts/
           'data/dessastre-paradoxal.json','data/fan-assets.json','data/national-species.json','data/radical-ai.json','data/za-megas.json','data/preset-teams.json','data/shared-music.json',
           'site/assets/fan-pokemon.tar.gz','site/assets/fan-pokemon.sha256',
           'site/assets/fan-extras.tar.gz','site/assets/fan-extras.sha256','site/assets/fan-extras.manifest.json',
-          'site/public/data/story-trainers.json','docs/HUB_BATALHA.md','docs/MULTIPLAYER.md','docs/ROADMAP_HUB.md','docs/ECONOMIA_E_JORNADA.md',
+          'site/public/data/story-trainers.json','site/public/data/regions.json','scripts/regions/runtime.py','docs/HUB_BATALHA.md','docs/MULTIPLAYER.md','docs/ROADMAP_HUB.md','docs/ECONOMIA_E_JORNADA.md',
           'scripts/battle_polish/leaders_full_power.json','docs/LIDERES_FULL_POWER.md','data/pt-br.json','docs/PORTUGUES_E_UI.md','docs/AVENTURA_E_PREVIA.md','docs/ALBUM_E_MAPAS.md','docs/DISTRIBUICAO_E_PRESETS.md']
 def files(project):
     selected=set(REQUIRED)

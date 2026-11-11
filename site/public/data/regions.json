@@ -1,0 +1,562 @@
+{
+  "version": 1,
+  "circuit": [
+    "DECADES",
+    "KANTO",
+    "JOHTO",
+    "HOENN",
+    "SINNOH",
+    "UNOVA",
+    "KALOS",
+    "ALOLA",
+    "GALAR",
+    "PALDEA"
+  ],
+  "hisui": {
+    "startExits": [
+      "SINNOH",
+      "DECADES"
+    ],
+    "questRegion": "SINNOH"
+  },
+  "regions": {
+    "DECADES": {
+      "name": "Decades",
+      "base": "Pokémon Decades",
+      "versions": [
+        "Decades"
+      ],
+      "status": "playable",
+      "milestones": [],
+      "field": {}
+    },
+    "KANTO": {
+      "name": "Kanto",
+      "base": "FireRed / LeafGreen",
+      "versions": [
+        "FireRed",
+        "LeafGreen"
+      ],
+      "status": "prototype",
+      "milestones": [
+        "BOULDER",
+        "CASCADE",
+        "THUNDER",
+        "RAINBOW",
+        "SOUL",
+        "MARSH",
+        "VOLCANO",
+        "EARTH"
+      ],
+      "field": {
+        "FLASH": {
+          "badge": "KANTO:BOULDER",
+          "tool": true
+        },
+        "CUT": {
+          "badge": "KANTO:CASCADE",
+          "tool": true
+        },
+        "FLY": {
+          "badge": "KANTO:THUNDER",
+          "tool": true
+        },
+        "STRENGTH": {
+          "badge": "KANTO:RAINBOW",
+          "tool": true
+        },
+        "SURF": {
+          "badge": "KANTO:SOUL",
+          "tool": true
+        },
+        "ROCK_SMASH": {
+          "badge": "KANTO:MARSH",
+          "tool": true
+        },
+        "WATERFALL": {
+          "badge": "KANTO:VOLCANO",
+          "tool": true
+        }
+      },
+      "pilot": [
+        "Pallet Town",
+        "Laboratório do Professor Oak",
+        "Rota 1",
+        "Viridian City",
+        "Rota 2",
+        "Viridian Forest",
+        "Pewter City",
+        "Ginásio de Pewter"
+      ]
+    },
+    "JOHTO": {
+      "name": "Johto",
+      "base": "HeartGold / SoulSilver",
+      "versions": [
+        "HeartGold",
+        "SoulSilver",
+        "Crystal"
+      ],
+      "status": "planned",
+      "milestones": [
+        "ZEPHYR",
+        "HIVE",
+        "PLAIN",
+        "FOG",
+        "STORM",
+        "MINERAL",
+        "GLACIER",
+        "RISING"
+      ],
+      "field": {
+        "ROCK_SMASH": {
+          "badge": "JOHTO:ZEPHYR",
+          "tool": true
+        },
+        "CUT": {
+          "badge": "JOHTO:HIVE",
+          "tool": true
+        },
+        "STRENGTH": {
+          "badge": "JOHTO:PLAIN",
+          "tool": true
+        },
+        "SURF": {
+          "badge": "JOHTO:FOG",
+          "tool": true
+        },
+        "FLY": {
+          "badge": "JOHTO:STORM",
+          "tool": true
+        },
+        "WHIRLPOOL": {
+          "badge": "JOHTO:GLACIER",
+          "tool": true
+        },
+        "WATERFALL": {
+          "badge": "JOHTO:RISING",
+          "tool": true
+        },
+        "ROCK_CLIMB": {
+          "badge": "KANTO:EARTH",
+          "tool": true
+        }
+      }
+    },
+    "HOENN": {
+      "name": "Hoenn",
+      "base": "Emerald",
+      "versions": [
+        "Emerald",
+        "Ruby",
+        "Sapphire",
+        "Omega Ruby",
+        "Alpha Sapphire"
+      ],
+      "status": "planned",
+      "milestones": [
+        "STONE",
+        "KNUCKLE",
+        "DYNAMO",
+        "HEAT",
+        "BALANCE",
+        "FEATHER",
+        "MIND",
+        "RAIN"
+      ],
+      "field": {
+        "CUT": {
+          "badge": "HOENN:STONE",
+          "tool": true
+        },
+        "FLASH": {
+          "badge": "HOENN:KNUCKLE",
+          "tool": true
+        },
+        "ROCK_SMASH": {
+          "badge": "HOENN:DYNAMO",
+          "tool": true
+        },
+        "STRENGTH": {
+          "badge": "HOENN:HEAT",
+          "tool": true
+        },
+        "SURF": {
+          "badge": "HOENN:BALANCE",
+          "tool": true
+        },
+        "FLY": {
+          "badge": "HOENN:FEATHER",
+          "tool": true
+        },
+        "DIVE": {
+          "badge": "HOENN:MIND",
+          "tool": true
+        },
+        "WATERFALL": {
+          "badge": "HOENN:RAIN",
+          "tool": true
+        }
+      }
+    },
+    "SINNOH": {
+      "name": "Sinnoh",
+      "base": "Platinum",
+      "versions": [
+        "Platinum",
+        "Diamond",
+        "Pearl",
+        "Brilliant Diamond",
+        "Shining Pearl"
+      ],
+      "status": "planned",
+      "milestones": [
+        "COAL",
+        "FOREST",
+        "COBBLE",
+        "RELIC",
+        "FEN",
+        "MINE",
+        "ICICLE",
+        "BEACON"
+      ],
+      "field": {
+        "ROCK_SMASH": {
+          "badge": "SINNOH:COAL",
+          "tool": true
+        },
+        "CUT": {
+          "badge": "SINNOH:FOREST",
+          "tool": true
+        },
+        "FLY": {
+          "badge": "SINNOH:COBBLE",
+          "tool": true
+        },
+        "DEFOG": {
+          "badge": "SINNOH:RELIC",
+          "tool": true
+        },
+        "SURF": {
+          "badge": "SINNOH:FEN",
+          "tool": true
+        },
+        "STRENGTH": {
+          "badge": "SINNOH:MINE",
+          "tool": true
+        },
+        "ROCK_CLIMB": {
+          "badge": "SINNOH:ICICLE",
+          "tool": true
+        },
+        "WATERFALL": {
+          "badge": "SINNOH:BEACON",
+          "tool": true
+        }
+      }
+    },
+    "UNOVA": {
+      "name": "Unova",
+      "base": "Black / White → Black 2 / White 2",
+      "versions": [
+        "Black",
+        "White",
+        "Black 2",
+        "White 2"
+      ],
+      "status": "planned",
+      "milestones": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE",
+        "JET",
+        "FREEZE",
+        "LEGEND"
+      ],
+      "field": {
+        "CUT": {
+          "event": "CUT_LOCAL",
+          "tool": true
+        },
+        "FLY": {
+          "event": "FLY_LOCAL",
+          "tool": true
+        },
+        "SURF": {
+          "event": "SURF_LOCAL",
+          "tool": true
+        },
+        "STRENGTH": {
+          "event": "STRENGTH_LOCAL",
+          "tool": true
+        },
+        "WATERFALL": {
+          "event": "WATERFALL_LOCAL",
+          "tool": true
+        },
+        "DIVE": {
+          "event": "DIVE_LOCAL",
+          "tool": true
+        }
+      }
+    },
+    "KALOS": {
+      "name": "Kalos",
+      "base": "X / Y",
+      "versions": [
+        "X",
+        "Y"
+      ],
+      "status": "planned",
+      "milestones": [
+        "BUG",
+        "CLIFF",
+        "RUMBLE",
+        "PLANT",
+        "VOLTAGE",
+        "FAIRY",
+        "PSYCHIC",
+        "ICEBERG"
+      ],
+      "field": {
+        "CUT": {
+          "badge": "KALOS:BUG",
+          "tool": true
+        },
+        "STRENGTH": {
+          "badge": "KALOS:CLIFF",
+          "tool": true
+        },
+        "SURF": {
+          "badge": "KALOS:RUMBLE",
+          "tool": true
+        },
+        "FLY": {
+          "badge": "KALOS:PLANT",
+          "tool": true
+        },
+        "WATERFALL": {
+          "badge": "KALOS:ICEBERG",
+          "tool": true
+        },
+        "ROCK_SMASH": {
+          "event": "ROCK_SMASH_LOCAL",
+          "tool": true
+        }
+      }
+    },
+    "ALOLA": {
+      "name": "Alola",
+      "base": "Ultra Sun / Ultra Moon",
+      "versions": [
+        "Ultra Sun",
+        "Ultra Moon",
+        "Sun",
+        "Moon"
+      ],
+      "status": "planned",
+      "milestones": [
+        "ILIMA",
+        "LANA",
+        "KIAWE",
+        "MALLOW",
+        "SOPHOCLES",
+        "ACEROLA",
+        "VAST_PONI",
+        "MINA"
+      ],
+      "field": {
+        "TAUROS_CHARGE": {
+          "event": "HALA_GRAND_TRIAL",
+          "tool": false
+        },
+        "STOUTLAND_SEARCH": {
+          "event": "PANIOLA_MALLOW",
+          "tool": false
+        },
+        "LAPRAS_PADDLE": {
+          "event": "BROOKLET_LANA",
+          "tool": false
+        },
+        "CHARIZARD_GLIDE": {
+          "event": "KIAWE_RIDE",
+          "tool": false
+        },
+        "MUDSDALE_GALLOP": {
+          "event": "ROUTE_12_HAPU",
+          "tool": false
+        },
+        "SHARPEDO_JET": {
+          "event": "ROUTE_15_GRIMSLEY",
+          "tool": false
+        },
+        "MACHAMP_SHOVE": {
+          "event": "ANCIENT_PONI_PATH",
+          "tool": false
+        }
+      }
+    },
+    "GALAR": {
+      "name": "Galar",
+      "base": "Sword / Shield",
+      "versions": [
+        "Sword",
+        "Shield",
+        "Isle of Armor",
+        "Crown Tundra"
+      ],
+      "status": "planned",
+      "milestones": [
+        "GRASS",
+        "WATER",
+        "FIRE",
+        "FIGHTING_GHOST",
+        "FAIRY",
+        "ROCK_ICE",
+        "DARK",
+        "DRAGON"
+      ],
+      "field": {
+        "FLYING_TAXI": {
+          "event": "MOTOSTOKE_TAXI",
+          "tool": false
+        },
+        "ROTOM_BIKE": {
+          "event": "ROTOM_BIKE",
+          "tool": false
+        },
+        "WATER_MODE": {
+          "event": "ROUTE_9_WATER_BIKE",
+          "tool": false
+        }
+      }
+    },
+    "PALDEA": {
+      "name": "Paldea",
+      "base": "Scarlet / Violet",
+      "versions": [
+        "Scarlet",
+        "Violet",
+        "The Teal Mask",
+        "The Indigo Disk"
+      ],
+      "status": "planned",
+      "milestones": [
+        "CORTONDO",
+        "ARTAZON",
+        "LEVINCIA",
+        "CASCARRAFA",
+        "MEDALI",
+        "MONTENEVERA",
+        "ALFORNADA",
+        "GLASEADO"
+      ],
+      "field": {
+        "DASH": {
+          "event": "STONY_CLIFF",
+          "tool": false
+        },
+        "SURF": {
+          "event": "OPEN_SKY",
+          "tool": false
+        },
+        "HIGH_JUMP": {
+          "event": "LURKING_STEEL",
+          "tool": false
+        },
+        "GLIDE": {
+          "event": "QUAKING_EARTH",
+          "tool": false
+        },
+        "CLIMB": {
+          "event": "FALSE_DRAGON",
+          "tool": false
+        }
+      }
+    },
+    "HISUI": {
+      "name": "Hisui",
+      "base": "Legends: Arceus",
+      "versions": [
+        "Legends: Arceus"
+      ],
+      "status": "planned",
+      "milestones": [],
+      "field": {
+        "WYRDEER": {
+          "event": "WYRDEER",
+          "tool": false
+        },
+        "URSALUNA": {
+          "event": "URSALUNA",
+          "tool": false
+        },
+        "BASCULEGION": {
+          "event": "BASCULEGION",
+          "tool": false
+        },
+        "SNEASLER": {
+          "event": "SNEASLER",
+          "tool": false
+        },
+        "BRAVIARY": {
+          "event": "BRAVIARY",
+          "tool": false
+        }
+      }
+    }
+  },
+  "decades": {
+    "league": {
+      "map": 136,
+      "event": 2,
+      "badge": 18,
+      "switch": 122,
+      "trainer": "Danny"
+    },
+    "milestones": [
+      {
+        "map": 80,
+        "event": 2,
+        "badge": 0
+      },
+      {
+        "map": 196,
+        "event": 2,
+        "badge": 1
+      },
+      {
+        "map": 195,
+        "event": 2,
+        "badge": 2
+      },
+      {
+        "map": 213,
+        "event": 2,
+        "badge": 3
+      },
+      {
+        "map": 214,
+        "event": 2,
+        "badge": 4
+      },
+      {
+        "map": 198,
+        "event": 2,
+        "badge": 5
+      },
+      {
+        "map": 217,
+        "event": 2,
+        "badge": 6
+      },
+      {
+        "map": 216,
+        "event": 2,
+        "badge": 7
+      }
+    ]
+  }
+}

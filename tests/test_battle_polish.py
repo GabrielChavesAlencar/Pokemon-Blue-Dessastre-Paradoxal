@@ -8,6 +8,8 @@ class PolishInstallTests(unittest.TestCase):
     def fixture(self,root):
         source=root/'scripts/battle_polish';source.mkdir(parents=True)
         for name in polish.FILES+polish.SUPPORT:shutil.copy2(ROOT/'scripts/battle_polish'/name,source/name)
+        for name in ('site/public/data/regions.json','scripts/regions/runtime.py'):
+            destination=root/name;destination.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(ROOT/name,destination)
         game=root/'game'
         for name in ['Data/Map001.rxdata','PBS/trainers.txt','Saves/Game.rxdata','Graphics/Pokemon/Front/TEST.png']:
             path=game/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'original '+name.encode())
@@ -15,7 +17,7 @@ class PolishInstallTests(unittest.TestCase):
     def test_installs_only_own_plugin_and_preserves_campaign(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root);before={p:p.read_bytes() for p in game.rglob('*') if p.is_file()}
-            self.assertEqual(polish.install(root,game),len(polish.FILES));self.assertEqual(polish.install(root,game),0)
+            self.assertEqual(polish.install(root,game),len(polish.FILES)+1);self.assertEqual(polish.install(root,game),0)
             self.assertTrue(all(p.read_bytes()==raw for p,raw in before.items()))
     def test_master_team_rules_are_isolated_and_native_smoke_covers_them(self):
         import subprocess
