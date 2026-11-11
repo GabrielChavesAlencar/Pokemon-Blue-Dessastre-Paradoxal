@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "45751faca6c648255b5a043cc72fb915c745aa0c",
+      "date": "2026-11-11T13:55:00-03:00",
+      "title": "test(campaign): align native sprite metric expectation with 2x front fix",
+      "category": "Testes"
+    },
+    {
+      "sha": "b5ee51c71e25debcaee5b71bce4702bda02283a8",
+      "date": "2026-11-11T13:53:34-03:00",
+      "title": "test(master): validate Ruby campaign and smoke-test syntax",
+      "category": "Testes"
+    },
+    {
+      "sha": "61879fab3677372fbe86373c1c36c7004d3e8b3f",
+      "date": "2026-11-11T13:52:20-03:00",
+      "title": "feat(master): four-Pokemon trainer teams and 90% levels with weakness coverage",
+      "category": "Novidades"
+    },
+    {
       "sha": "a3e816142119e340bc96c02335a7f0a99e3d5fba",
       "date": "2026-11-11T13:30:45-03:00",
       "title": "fix(battle): recalculate Chlorophyll turn order after Mega Drought",
