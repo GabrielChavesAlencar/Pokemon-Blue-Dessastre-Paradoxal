@@ -18,6 +18,13 @@ class PolishInstallTests(unittest.TestCase):
             self.assertEqual(polish.install(root,game),len(polish.FILES));self.assertEqual(polish.install(root,game),0)
             self.assertTrue(all(p.read_bytes()==raw for p,raw in before.items()))
     def test_master_team_rules_are_isolated_and_native_smoke_covers_them(self):
+        import subprocess
+        ruby=shutil.which('ruby')
+        if ruby:
+            for filename in ('Campaign.rb','CampaignValidation.rb'):
+                checked=subprocess.run([ruby,'-c',str(ROOT/'scripts/battle_polish'/filename)],
+                                       capture_output=True,text=True)
+                self.assertEqual(checked.returncode,0,checked.stderr)
         source=(ROOT/'scripts/battle_polish/Campaign.rb').read_text()
         validation=(ROOT/'scripts/battle_polish/CampaignValidation.rb').read_text()
         self.assertIn('scaled_level(party,master? ? 90 : 70)',source)
