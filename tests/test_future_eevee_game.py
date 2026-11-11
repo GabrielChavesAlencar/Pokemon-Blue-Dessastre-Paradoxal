@@ -64,7 +64,10 @@ class RegionalEeveeTests(unittest.TestCase):
                 self.assertEqual(int(next(x[0] for x in lines if x[1]==a['species'])),a['percent'])
                 self.assertEqual(int(next(x[0] for x in lines if x[1]=='CAVEFANG')),5)
                 self.assertIn('PIKACHU',{x[1] for x in lines})
-                self.assertIn('RATTATA',{x[1] for x in lines} if 'RATTATA' in fragment else {'PIKACHU'})
+                if section.endswith(',1]'):
+                    self.assertNotIn('RATTATA',{x[1] for x in lines})
+                else:
+                    self.assertIn('RATTATA',{x[1] for x in lines})
 
     def test_trainers_get_one_regional_form_without_replacing_originals(self):
         raw=''
