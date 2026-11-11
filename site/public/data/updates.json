@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "75968f642808d4cc885c5a238ab4100fa95357e4",
+      "date": "2026-11-11T14:50:43-03:00",
+      "title": "feat(pokedex): formas regionais futuras do Eevee e evoluções alternativas",
+      "category": "Novidades"
+    },
+    {
       "sha": "5ea5dec018521974c5853c32c65d10bddd844113",
       "date": "2026-11-11T14:16:34-03:00",
       "title": "feat(site): aba Treinadores com equipes e variações",
