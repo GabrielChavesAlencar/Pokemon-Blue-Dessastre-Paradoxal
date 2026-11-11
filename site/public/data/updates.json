@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a24b2a95be1a8a3ae85a14008d1b01adb27088b7",
+      "date": "2026-11-11T13:00:58-03:00",
+      "title": "fix(sprites): restore native 2x front scale for author Pokémon",
+      "category": "Correções"
+    },
+    {
       "sha": "75489b4cb5fb579645a7cb16fb69dc54367db344",
       "date": "2026-11-11T12:33:07-03:00",
       "title": "feat: animate static author Pokémon in battles without new frames",
