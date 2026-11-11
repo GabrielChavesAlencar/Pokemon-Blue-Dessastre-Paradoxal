@@ -33,7 +33,9 @@ jobs:
   smoke-browser:
     name: Navegacao real + salvamento PBS (Chromium)
     needs: python-and-contract
-    runs-on: ubuntu-latest
+    # Playwright 1.56 cannot install Chromium dependencies on ubuntu-26.04.
+    # Pin a supported runner instead of following ubuntu-latest.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
