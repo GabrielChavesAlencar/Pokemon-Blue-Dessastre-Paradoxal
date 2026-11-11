@@ -19,6 +19,17 @@ class BattleOptionsInstallTests(unittest.TestCase):
             self.assertEqual(options.install(root,game),len(options.FILES))
             self.assertEqual(options.install(root,game),0)
             for p,raw in before.items():self.assertEqual(p.read_bytes(),raw)
+    def test_mega_weather_rechecks_all_battler_speeds(self):
+        # Regression contract for the in-engine Chlorophyll test.
+        mechanics=(ROOT/'scripts/battle_options/Mechanics.rb').read_text()
+        validation=(ROOT/'scripts/battle_options/MechanicsValidation.rb').read_text()
+        self.assertIn('module WeatherPriorityAfterMega',mechanics)
+        self.assertIn('Battle.prepend(WeatherPriorityAfterMega)',mechanics)
+        self.assertIn('weather_before=@field.weather',mechanics)
+        self.assertIn('pbCalculatePriority(false)',mechanics)
+        self.assertIn('chlorophyll.ability=:CHLOROPHYLL',validation)
+        self.assertIn('battle.pbPriority.index(chlorophyll)<battle.pbPriority.index(foe)',validation)
+
     def test_replacing_old_own_plugin_keeps_exact_backup(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root)

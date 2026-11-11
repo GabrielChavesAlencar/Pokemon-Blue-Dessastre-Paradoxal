@@ -125,6 +125,23 @@ module BlueBattleOptions
       catch(:blue_selector_test_done) { scene.pbFightMenu(0,battle.pbGetEligibleBattleMechanic(0)) { |cmd| false } }
       check.call('Mouse selector activates Mega in the real double battle menu',scene.blue_captured==[:mega,2,:mega,true])
       scene.pbEndBattle(0);scene=nil
+      # Regression: a partner with Chlorophyll must jump ahead of a faster foe
+      # on the SAME turn that Charizard Y Mega Evolves and starts Drought.
+      battle=fixture(:CHARIZARDITEY,'double')
+      scene=Scene.new;battle.instance_variable_set(:@scene,scene)
+      battle.backdrop='indoor1';battle.environment=:None;battle.time=0;battle.showAnims=false
+      scene.pbStartBattle(battle);show_battlers(scene,battle)
+      chlorophyll=battle.battlers[2];foe=battle.battlers[3]
+      chlorophyll.ability=:CHLOROPHYLL
+      check.call('Chlorophyll fixture starts with no Sun',battle.field.weather==:None)
+      check.call('Chlorophyll partner initially slower than opposing Sneasler',chlorophyll.pbSpeed<foe.pbSpeed)
+      battle.pbCalculatePriority(true)
+      check.call('Initial turn order puts fast foe before Chlorophyll',battle.pbPriority.index(foe)<battle.pbPriority.index(chlorophyll))
+      battle.blue_choose_mechanic(0,:mega);battle.pbMegaEvolve(0)
+      check.call('Mega Charizard Y starts Sun immediately',battle.battlers[0].form==2 && battle.field.weather==:Sun)
+      check.call('Chlorophyll receives Sun Speed boost immediately',chlorophyll.pbSpeed>foe.pbSpeed)
+      check.call('Weather change reorders other battlers before their moves',battle.pbPriority.index(chlorophyll)<battle.pbPriority.index(foe))
+      scene.pbEndBattle(0);scene=nil
       battle=fixture;scene=Scene.new;battle.instance_variable_set(:@scene,scene)
       battle.backdrop='indoor1';battle.environment=:None;battle.time=0;battle.showAnims=false
       scene.pbStartBattle(battle);battle.blue_choose_mechanic(0,:tera);battle.pbTerastallize(0)

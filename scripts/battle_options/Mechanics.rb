@@ -133,10 +133,25 @@ module BlueBattleOptions
       Input.update
     end
   end
+  # Drought/Drizzle/etc. gained on Mega Evolution can change the Speed of
+  # *other* battlers (Chlorophyll, Swift Swim, Sand Rush, Slush Rush).
+  # The Decades/DBK Mega hook only refreshes the Mega battler's cached Speed.
+  # Re-sort everyone once weather has actually changed, before moves execute.
+  module WeatherPriorityAfterMega
+    def pbMegaEvolve(idxBattler)
+      weather_before=@field.weather
+      result=super
+      if @field.weather!=weather_before && @priority && !@priority.empty?
+        pbCalculatePriority(false)
+      end
+      result
+    end
+  end
   def self.install_mechanic_selector
     Pokemon.prepend(StoneCompatibility) unless Pokemon.ancestors.include?(StoneCompatibility)
     Battle::Battler.prepend(AlternativeEligibility) unless Battle::Battler.ancestors.include?(AlternativeEligibility)
     Battle.prepend(MechanicChoice) unless Battle.ancestors.include?(MechanicChoice)
+    Battle.prepend(WeatherPriorityAfterMega) unless Battle.ancestors.include?(WeatherPriorityAfterMega)
     Battle::Scene.prepend(MechanicMenu) unless Battle::Scene.ancestors.include?(MechanicMenu)
   end
 end
