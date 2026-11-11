@@ -24,6 +24,13 @@ module BlueBattleOptions
     selected=choose('Qualidade dos sprites / novos carregamentos',BlueSpriteQuality::LABELS.values+['Voltar'],keys.index(BlueSpriteQuality.mode))
     $PokemonSystem.blue_sprite_quality=keys[selected] if selected>=0 && selected<keys.length
   end
+  def self.procedural_menu
+    keys=BlueProceduralAnimation::MODES.keys
+    index=keys.index(BlueProceduralAnimation.mode) || 1
+    choice=choose('Animacao procedural / sprites autorais estaticos',
+      BlueProceduralAnimation::MODES.values+['Voltar'],index)
+    $PokemonSystem.blue_procedural_animation=keys[choice] if choice>=0 && choice<keys.length
+  end
   def self.author_species
     list=[]
     GameData::Species.each { |s| list << s if s.flags.include?('DessastreParadoxal') }
@@ -60,7 +67,7 @@ module BlueBattleOptions
   def self.main_menu
     loop do
       campaign=defined?(BlueCampaign) && BlueCampaign.active?
-      labels=['Mecanicas de batalha','Qualidade dos sprites','Voltar']
+      labels=['Mecanicas de batalha','Qualidade dos sprites','Animacao procedural','Voltar']
       labels.unshift('Gerar Pokemon Dessastre Paradoxal') unless campaign
       choice=choose(campaign ? 'BLUE / Jornada' : 'BLUE / Battle Mode',labels)
       selected=choice>=0 ? labels[choice] : nil
@@ -68,6 +75,7 @@ module BlueBattleOptions
       when 'Gerar Pokemon Dessastre Paradoxal' then generator
       when 'Mecanicas de batalha' then mechanics_menu(campaign ? :campaign : :mode)
       when 'Qualidade dos sprites' then quality_menu
+      when 'Animacao procedural' then procedural_menu
       else break
       end
     end
@@ -120,6 +128,13 @@ module BlueBattleOptions
       'description'=>'Reduz resolucao e quadros em memoria. Vale para os proximos sprites carregados.',
       'get_proc'=>proc { BlueSpriteQuality::LABELS.keys.index(BlueSpriteQuality.mode) },
       'set_proc'=>proc { |value,scene| $PokemonSystem.blue_sprite_quality=BlueSpriteQuality::LABELS.keys[value] }
+    })
+    MenuHandlers.add(:options_menu,:blue_procedural_animation,{
+      'name'=>'Animacao procedural','order'=>37,'type'=>EnumOption,
+      'parameters'=>BlueProceduralAnimation::MODES.values,
+      'description'=>'Move sprites autorais estaticos na batalha sem criar novos PNGs.',
+      'get_proc'=>proc { BlueProceduralAnimation::MODES.keys.index(BlueProceduralAnimation.mode) || 1 },
+      'set_proc'=>proc { |value,scene| $PokemonSystem.blue_procedural_animation=BlueProceduralAnimation::MODES.keys[value] }
     })
     EventHandlers.add(:on_enter_map,:blue_author_generator,proc { |*args| BlueBattleOptions.inject_generator($game_map) if $game_map })
     MenuHandlers.add(:pause_menu,:blue_battle_options,{

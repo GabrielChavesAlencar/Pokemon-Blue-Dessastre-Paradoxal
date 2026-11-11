@@ -1,6 +1,6 @@
 # Own per-battle rules. Never repurpose the original game's numbered switches.
 class PokemonSystem
-  attr_accessor :blue_battle_mechanics, :blue_sprite_quality
+  attr_accessor :blue_battle_mechanics, :blue_sprite_quality, :blue_procedural_animation
 end
 
 module BlueBattleOptions
@@ -71,6 +71,7 @@ module BlueBattleOptions
     Battle.prepend(BattleRules)
     Game_Map.prepend(MapEvents)
     DeluxeBitmapWrapper.prepend(BlueSpriteQuality::Wrapper)
+    BlueProceduralAnimation.install
     install_menus
     install_mechanic_selector
     @installed=true
