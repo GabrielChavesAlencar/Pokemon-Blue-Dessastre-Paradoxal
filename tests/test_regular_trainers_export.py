@@ -18,7 +18,7 @@ class RegularTrainerExportTests(unittest.TestCase):
             regular=json.loads((ROOT/'site/public/data/regular-trainers.json').read_text('utf8'))
             (output/'regular-trainers.json').write_text(json.dumps(regular),encoding='utf8')
             raw=('[SINNOHIAN_DPP_ARTIST,Pyotr]\n'
-                 'Pokemon = PIKACHU,20\n\tMoves = THUNDERBOLT\n'
+                 'Pokemon = PIKACHU,20\n\tMoves = THUNDERBOLT\n\tForm = 50\n'
                  '[HOENNIAN_ORAS_AROMALADY,Marigold (2v2 Full Power)]\n'
                  'Pokemon = MEWTWO,50\n'
                  '[TEST_CLASS_NEW,New Tester]\n'
@@ -30,6 +30,7 @@ class RegularTrainerExportTests(unittest.TestCase):
             self.assertEqual(pyotr['team'][0]['species'],'PIKACHU')
             self.assertEqual(pyotr['teamOrigin'],'blue-pbs')
             self.assertEqual(pyotr['team'][0]['moves'],['THUNDERBOLT'])
+            self.assertEqual(pyotr['team'][0]['form'],50)
             self.assertEqual(next(t for t in result['trainers'] if t['name']=='New Tester')['team'][0]['species'],'EEVEE')
             self.assertFalse(any(t['name'].startswith('Marigold') for t in result['trainers']))
             self.assertEqual(export.sync_regular_trainers(raw,output,roster),0)
