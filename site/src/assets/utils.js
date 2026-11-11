@@ -21,5 +21,5 @@ export function groupSlots(method){
 }
 export function filterSpecies(list,state,favorites=new Set()){
   const q=normalize(state.q);
-  return list.filter(p=>(!q||normalize(`${p.name} ${p.id} ${number(p.number)}`).includes(q))&&(!state.type||p.types.includes(state.type))&&(!state.generation||String(p.generation)===String(state.generation))&&(state.group!=='paradox'||p.flags.includes('Paradox'))&&(state.group!=='legendary'||p.flags.some(x=>['Legendary','Mythical'].includes(x)))&&(state.group!=='favorites'||favorites.has(p.id))).sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name):state.sort==='bst'?b.stats.reduce((x,y)=>x+y,0)-a.stats.reduce((x,y)=>x+y,0):a.number-b.number);
+  return list.filter(p=>(!q||normalize(`${p.name} ${p.id} ${number(p.number)}`).includes(q))&&(!state.type||p.types.includes(state.type))&&(!state.generation||String(p.generation)===String(state.generation))&&(state.group!=='future'||p.future===true)&&(state.group!=='paradox'||p.flags.includes('Paradox'))&&(state.group!=='legendary'||p.flags.some(x=>['Legendary','Mythical'].includes(x)))&&(state.group!=='favorites'||favorites.has(p.id))).sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name):state.sort==='bst'?b.stats.reduce((x,y)=>x+y,0)-a.stats.reduce((x,y)=>x+y,0):a.number-b.number);
 }
