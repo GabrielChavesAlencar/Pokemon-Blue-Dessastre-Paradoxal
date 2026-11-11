@@ -35,21 +35,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/EEVEE/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/EEVEE/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/EEVEE/front.png",
-          "front-shiny": "/assets/future-eevee/EEVEE/front-shiny.png",
-          "back": "/assets/future-eevee/EEVEE/back.png",
-          "back-shiny": "/assets/future-eevee/EEVEE/back-shiny.png",
-          "icon": "/assets/future-eevee/EEVEE/icon.png",
-          "icon-shiny": "/assets/future-eevee/EEVEE/icon-shiny.png",
-          "footprint": "/assets/future-eevee/EEVEE/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Uma forma espiritual de Eevee, de pelagem escura e chamas fantasmagóricas. Conceito regional em desenvolvimento."
+        "description": "Uma forma espiritual de Eevee, de pelagem escura e chamas fantasmagóricas. Conceito regional em desenvolvimento.",
+        "atlasRow": 0,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Eevee regional · Fantasma",
@@ -224,7 +226,10 @@
         "evolutionProposal": null,
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": null
+        "evolutionMove": null,
+        "atlasRow": 0,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "futureBase": true
       }
     },
     {
@@ -255,21 +260,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/VAPOREON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/VAPOREON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/VAPOREON/front.png",
-          "front-shiny": "/assets/future-eevee/VAPOREON/front-shiny.png",
-          "back": "/assets/future-eevee/VAPOREON/back.png",
-          "back-shiny": "/assets/future-eevee/VAPOREON/back-shiny.png",
-          "icon": "/assets/future-eevee/VAPOREON/icon.png",
-          "icon-shiny": "/assets/future-eevee/VAPOREON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/VAPOREON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Esta forma reúne secreções tóxicas nas membranas que recobrem seu corpo, preservando sua silhueta aquática."
+        "description": "Esta forma reúne secreções tóxicas nas membranas que recobrem seu corpo, preservando sua silhueta aquática.",
+        "atlasRow": 1,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Vaporeon regional · Veneno",
@@ -442,11 +449,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "POISON"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Simbiose tóxica",
           "methodId": "PoisonBondLevel",
@@ -461,7 +464,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "ACIDSPRAY"
+        "evolutionMove": "ACIDSPRAY",
+        "atlasRow": 1,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -492,21 +497,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/JOLTEON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/JOLTEON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/JOLTEON/front.png",
-          "front-shiny": "/assets/future-eevee/JOLTEON/front-shiny.png",
-          "back": "/assets/future-eevee/JOLTEON/back.png",
-          "back-shiny": "/assets/future-eevee/JOLTEON/back-shiny.png",
-          "icon": "/assets/future-eevee/JOLTEON/icon.png",
-          "icon-shiny": "/assets/future-eevee/JOLTEON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/JOLTEON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Sua pelagem assume a forma de espinhos e placas metálicas, combinando ataques físicos com grande velocidade."
+        "description": "Sua pelagem assume a forma de espinhos e placas metálicas, combinando ataques físicos com grande velocidade.",
+        "atlasRow": 2,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Jolteon regional · Aço",
@@ -679,11 +686,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "STEEL"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Ressonância metálica",
           "methodId": "MagneticResonanceLevel",
@@ -698,7 +701,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "METALCLAW"
+        "evolutionMove": "METALCLAW",
+        "atlasRow": 2,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -729,21 +734,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/FLAREON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/FLAREON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/FLAREON/front.png",
-          "front-shiny": "/assets/future-eevee/FLAREON/front-shiny.png",
-          "back": "/assets/future-eevee/FLAREON/back.png",
-          "back-shiny": "/assets/future-eevee/FLAREON/back-shiny.png",
-          "icon": "/assets/future-eevee/FLAREON/icon.png",
-          "icon-shiny": "/assets/future-eevee/FLAREON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/FLAREON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Uma pelagem coberta por sedimentos e crostas de solo protege esta forma de ataques físicos."
+        "description": "Uma pelagem coberta por sedimentos e crostas de solo protege esta forma de ataques físicos.",
+        "atlasRow": 3,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Flareon regional · Terrestre",
@@ -919,11 +926,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "GROUND"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Pacto das dunas",
           "methodId": "SandstormMoveLevel",
@@ -938,7 +941,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "SANDTOMB"
+        "evolutionMove": "SANDTOMB",
+        "atlasRow": 3,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -969,21 +974,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/ESPEON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/ESPEON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/ESPEON/front.png",
-          "front-shiny": "/assets/future-eevee/ESPEON/front-shiny.png",
-          "back": "/assets/future-eevee/ESPEON/back.png",
-          "back-shiny": "/assets/future-eevee/ESPEON/back-shiny.png",
-          "icon": "/assets/future-eevee/ESPEON/icon.png",
-          "icon-shiny": "/assets/future-eevee/ESPEON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/ESPEON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Chifres, escamas e membranas canalizam energia dracônica; sua agilidade e poder especial continuam marcantes."
+        "description": "Chifres, escamas e membranas canalizam energia dracônica; sua agilidade e poder especial continuam marcantes.",
+        "atlasRow": 4,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Espeon regional · Dragão",
@@ -1162,11 +1169,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "DRAGON"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Despertar dracônico",
           "methodId": "DragonDawnBondLevel",
@@ -1181,7 +1184,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "DRAGONBREATH"
+        "evolutionMove": "DRAGONBREATH",
+        "atlasRow": 4,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -1212,21 +1217,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/UMBREON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/UMBREON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/UMBREON/front.png",
-          "front-shiny": "/assets/future-eevee/UMBREON/front-shiny.png",
-          "back": "/assets/future-eevee/UMBREON/back.png",
-          "back-shiny": "/assets/future-eevee/UMBREON/back-shiny.png",
-          "icon": "/assets/future-eevee/UMBREON/icon.png",
-          "icon-shiny": "/assets/future-eevee/UMBREON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/UMBREON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Asas membranosas e marcas semelhantes a ocelos acompanham uma transformação em atacante veloz do tipo Inseto."
+        "description": "Asas membranosas e marcas semelhantes a ocelos acompanham uma transformação em atacante veloz do tipo Inseto.",
+        "atlasRow": 5,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Umbreon regional · Inseto",
@@ -1397,11 +1404,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "BUG"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Metamorfose noturna",
           "methodId": "NightForestCocoonLevel",
@@ -1416,7 +1419,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "FURYCUTTER"
+        "evolutionMove": "FURYCUTTER",
+        "atlasRow": 5,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -1447,21 +1452,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/LEAFEON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/LEAFEON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/LEAFEON/front.png",
-          "front-shiny": "/assets/future-eevee/LEAFEON/front-shiny.png",
-          "back": "/assets/future-eevee/LEAFEON/back.png",
-          "back-shiny": "/assets/future-eevee/LEAFEON/back-shiny.png",
-          "icon": "/assets/future-eevee/LEAFEON/icon.png",
-          "icon-shiny": "/assets/future-eevee/LEAFEON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/LEAFEON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Seus antigos traços vegetais tornam-se estruturas minerais rígidas, feitas para suportar impactos."
+        "description": "Seus antigos traços vegetais tornam-se estruturas minerais rígidas, feitas para suportar impactos.",
+        "atlasRow": 6,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Leafeon regional · Pedra",
@@ -1636,11 +1643,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "ROCK"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Cristalização subterrânea",
           "methodId": "CaveCurseStoneLevel",
@@ -1655,7 +1658,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "ROCKTHROW"
+        "evolutionMove": "ROCKTHROW",
+        "atlasRow": 6,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -1686,21 +1691,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/GLACEON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/GLACEON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/GLACEON/front.png",
-          "front-shiny": "/assets/future-eevee/GLACEON/front-shiny.png",
-          "back": "/assets/future-eevee/GLACEON/back.png",
-          "back-shiny": "/assets/future-eevee/GLACEON/back-shiny.png",
-          "icon": "/assets/future-eevee/GLACEON/icon.png",
-          "icon-shiny": "/assets/future-eevee/GLACEON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/GLACEON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Asas e penas claras conduzem esta forma pelos ventos em altitude, mantendo seu poder especial."
+        "description": "Asas e penas claras conduzem esta forma pelos ventos em altitude, mantendo seu poder especial.",
+        "atlasRow": 7,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Glaceon regional · Voador",
@@ -1871,11 +1878,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "FLYING"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Batismo dos ventos",
           "methodId": "SummitSkyLevel",
@@ -1890,7 +1893,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "GUST"
+        "evolutionMove": "GUST",
+        "atlasRow": 7,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     },
     {
@@ -1921,21 +1926,23 @@
         "future": true,
         "pending": false,
         "category": "regional_future",
-        "art": "/assets/future-eevee/SYLVEON/front.png",
+        "art": "/assets/future-eevee/sprites-atlas.png",
         "artKind": "sprite",
-        "sprite": "/assets/future-eevee/SYLVEON/front.png",
+        "sprite": "/assets/future-eevee/sprites-atlas.png",
         "sprites": {
-          "front": "/assets/future-eevee/SYLVEON/front.png",
-          "front-shiny": "/assets/future-eevee/SYLVEON/front-shiny.png",
-          "back": "/assets/future-eevee/SYLVEON/back.png",
-          "back-shiny": "/assets/future-eevee/SYLVEON/back-shiny.png",
-          "icon": "/assets/future-eevee/SYLVEON/icon.png",
-          "icon-shiny": "/assets/future-eevee/SYLVEON/icon-shiny.png",
-          "footprint": "/assets/future-eevee/SYLVEON/footprint.png"
+          "front": "/assets/future-eevee/sprites-atlas.png",
+          "front-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "back": "/assets/future-eevee/sprites-atlas.png",
+          "back-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "icon": "/assets/future-eevee/sprites-atlas.png",
+          "icon-shiny": "/assets/future-eevee/sprites-atlas.png",
+          "footprint": "/assets/future-eevee/sprites-atlas.png"
         },
         "height": null,
         "weight": null,
-        "description": "Faixas de treino e postura disciplinada transformam esta forma em combatente físico do tipo Lutador."
+        "description": "Faixas de treino e postura disciplinada transformam esta forma em combatente físico do tipo Lutador.",
+        "atlasRow": 8,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       },
       "details": {
         "name": "Sylveon regional · Lutador",
@@ -2107,11 +2114,7 @@
         ],
         "evolutions": [],
         "catchRate": 0,
-        "preEvolution": [
-          "EEVEE",
-          "RegionalFuture",
-          "FIGHTING"
-        ],
+        "preEvolution": null,
         "evolutionProposal": {
           "title": "Disciplina do vínculo",
           "methodId": "HelpingHandBondLevel",
@@ -2127,7 +2130,9 @@
         },
         "learnsetSource": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
         "learnsetStatus": "design-proposal-only",
-        "evolutionMove": "MACHPUNCH"
+        "evolutionMove": "MACHPUNCH",
+        "atlasRow": 8,
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
       }
     }
   ],
@@ -3195,5 +3200,31 @@
       "name": "Upper Hand",
       "source": "design-proposal-gen9"
     }
+  },
+  "atlas": {
+    "src": "/assets/future-eevee/sprites-atlas.png",
+    "columns": 7,
+    "rows": 9,
+    "cellSize": 128,
+    "roleOrder": [
+      "front",
+      "front-shiny",
+      "back",
+      "back-shiny",
+      "icon",
+      "icon-shiny",
+      "footprint"
+    ],
+    "speciesOrder": [
+      "EEVEE",
+      "VAPOREON",
+      "JOLTEON",
+      "FLAREON",
+      "ESPEON",
+      "UMBREON",
+      "LEAFEON",
+      "GLACEON",
+      "SYLVEON"
+    ]
   }
 }
