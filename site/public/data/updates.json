@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a3e816142119e340bc96c02335a7f0a99e3d5fba",
+      "date": "2026-11-11T13:30:45-03:00",
+      "title": "fix(battle): recalculate Chlorophyll turn order after Mega Drought",
+      "category": "Correções"
+    },
+    {
       "sha": "a24b2a95be1a8a3ae85a14008d1b01adb27088b7",
       "date": "2026-11-11T13:00:58-03:00",
       "title": "fix(sprites): restore native 2x front scale for author Pokémon",
