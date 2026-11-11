@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3912ff56df02932f52e580ff9cc89006d4606401",
+      "date": "2026-11-11T19:54:42-03:00",
+      "title": "feat(pokedex): revisar tipos e learnsets de quatro Paradoxos futuros",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f526d59888a478330c71466712e0365306a80db0",
+      "date": "2026-11-11T17:19:08-03:00",
+      "title": "feat(site): distribuir sete Paradoxos futuros em mapas 5% e equipes Master planejadas",
+      "category": "Novidades"
+    },
+    {
       "sha": "0e809dfc349b455993eff7a7b73721b20e94d084",
       "date": "2026-11-11T17:04:54-03:00",
       "title": "feat(site): cadastrar sete Paradoxos futuros com sprites e fichas completas na Pokédex",
