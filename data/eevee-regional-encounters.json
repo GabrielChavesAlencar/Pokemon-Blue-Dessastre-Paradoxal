@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "form": 50,
+  "policy": "Uma forma regional distinta por área e método; probabilidades finais sobre a tabela de encontros, preservando slots de Paradoxos em 5%. Eevee Fantasma 20%, as demais formas 5%.",
+  "areas": [
+    {
+      "mapId": 84,
+      "name": "Abandoned Cabin",
+      "method": "Land",
+      "species": "EEVEE_50",
+      "percent": 20,
+      "reason": "O Eevee espectral habita a cabana abandonada."
+    },
+    {
+      "mapId": 121,
+      "name": "Noxious City",
+      "method": "Water",
+      "species": "VAPOREON_50",
+      "percent": 5,
+      "reason": "Vaporeon venenoso adaptou-se às águas contaminadas."
+    },
+    {
+      "mapId": 119,
+      "name": "Circuit City",
+      "method": "Land",
+      "species": "JOLTEON_50",
+      "percent": 5,
+      "reason": "Jolteon metálico se desenvolve entre circuitos e campos eletromagnéticos."
+    },
+    {
+      "mapId": 175,
+      "name": "Desert Zone",
+      "method": "Land",
+      "species": "FLAREON_50",
+      "percent": 5,
+      "reason": "Flareon terrestre vive nas dunas e tempestades de areia."
+    },
+    {
+      "mapId": 167,
+      "name": "Draco Cave",
+      "method": "Land",
+      "species": "ESPEON_50",
+      "percent": 5,
+      "reason": "Espeon dracônico habita a caverna dos dragões."
+    },
+    {
+      "mapId": 82,
+      "name": "Cloakfall Forest",
+      "method": "Land",
+      "species": "UMBREON_50",
+      "percent": 5,
+      "reason": "Umbreon inseto esconde-se na mata e surge entre a folhagem."
+    },
+    {
+      "mapId": 162,
+      "name": "Gemstone Cave",
+      "method": "Land",
+      "species": "LEAFEON_50",
+      "percent": 5,
+      "reason": "Leafeon cristalino se camufla entre minerais e rochas."
+    },
+    {
+      "mapId": 171,
+      "name": "Stratos Horizon",
+      "method": "Land",
+      "species": "GLACEON_50",
+      "percent": 5,
+      "reason": "Glaceon voador cruza as correntes aéreas do horizonte."
+    },
+    {
+      "mapId": 113,
+      "name": "Bulwark City",
+      "method": "Land",
+      "species": "SYLVEON_50",
+      "percent": 5,
+      "reason": "Sylveon lutador é atraído pela cultura de artes marciais da cidade."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "note": "Adições de 1 Pokémon regional por treinador existente, sem remover integrantes originais. Form=50. Maior nível original do time; a campanha escala normalmente.",
+  "trainers": [
+    {
+      "trainerType": "KANTOIAN_LGPE_JUGGLER",
+      "name": "Salvadore",
+      "species": "EEVEE"
+    },
+    {
+      "trainerType": "KITAKAMIAN_SV_CARETAKER",
+      "name": "Horace",
+      "species": "VAPOREON"
+    },
+    {
+      "trainerType": "GALARIAN_SWSH_BALL_GUY",
+      "name": "Ball Guy",
+      "species": "JOLTEON"
+    },
+    {
+      "trainerType": "KALOIAN_XY_BACKPACKER",
+      "name": "Maxence",
+      "species": "FLAREON"
+    },
+    {
+      "trainerType": "HOENNIAN_ORAS_DRAGON_TAMER",
+      "name": "Vincent",
+      "species": "ESPEON"
+    },
+    {
+      "trainerType": "PASIOIAN_MAEX_COLLECTOR",
+      "name": "Mariano",
+      "species": "UMBREON"
+    },
+    {
+      "trainerType": "OERRIAN_COLO_CHASER_MAN",
+      "name": "Layton",
+      "species": "LEAFEON"
+    },
+    {
+      "trainerType": "UNOVAIAN_B2W2_VETERAN_WOMAN",
+      "name": "Julia",
+      "species": "GLACEON"
+    },
+    {
+      "trainerType": "PALDEAN_SV_BODYBUILDER_MAN",
+      "name": "Alfie",
+      "species": "SYLVEON"
+    }
+  ]
+}

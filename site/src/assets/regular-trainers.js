@@ -1,5 +1,6 @@
 import {esc,icon,sprite,normalize} from './utils.js';
 import {teamPokemon} from './story.js';
+import {futureSprite} from './future-eevee.js';
 
 export const DIFFICULTIES=[
   {id:'beginner',label:'Inicial',crystals:'0–1 cristais',percent:70,bst:350},
@@ -72,7 +73,8 @@ function nextPartner(team,trainer,level,model,details,chart){
 export function regularTeam(model,data,trainer,mode,details,highest=50){
   const difficulty=DIFFICULTIES.find(x=>x.id===mode)||DIFFICULTIES[0];
   const level=Math.max(1,Math.floor(clampLevel(highest)*difficulty.percent/100));
-  const team=(trainer.team||[]).map(p=>({...p,level,calculatedLevel:true}));
+  const team=(trainer.team||[]).map(p=>({...p,level,calculatedLevel:true,
+    moves:p.moves?.length?p.moves:p.form===50?lastMoves(p.species+',50',level,details):p.moves}));
   if(difficulty.id==='master' && !trainer.name.includes('(Auto Grind)')){
     while(team.length>0&&team.length<4){
       const newMember=nextPartner(team,trainer,level,model,details,data.typeChart||{});
@@ -82,12 +84,13 @@ export function regularTeam(model,data,trainer,mode,details,highest=50){
   }
   return {team,level,difficulty};
 }
-const sourceNote='Times-base extraídos do PBS original do Pokémon Decades. A campanha Blue pode adaptar espécies e golpes conforme a dificuldade; o reforço do Master é uma prévia calculada, não uma exportação validada do Game.exe.';
+const sourceNote='Times-base extraídos do Pokémon Decades; nove treinadores recebem formas regionais de Eevee na instalação do Blue. O reforço Master automático continua sendo uma prévia calculada.';
 
 function card(model,trainer){
-  const images=trainer.team.slice(0,3).map(p=>{
-    const found=model.byId.get(p.species);
-    return '<img loading="lazy" src="'+esc(found?sprite(found):'/assets/fan-placeholder.svg')+'" alt="'+esc(found?.name||p.species)+'"/>';
+  const images=trainer.team.slice(-3).map(p=>{
+    const found=(p.form===50?model.byId.get(p.species+',50'):null)||model.byId.get(p.species);
+    return found?.future?futureSprite(found,'icon','future-trainer-icon'):
+      '<img loading="lazy" src="'+esc(found?sprite(found):'/assets/fan-placeholder.svg')+'" alt="'+esc(found?.name||p.species)+'"/>';
   }).join('');
   return '<a class="regular-card" href="/treinadores/'+encodeURIComponent(trainer.id)+'">'+
     '<div class="regular-card-meta"><span class="mini-label">'+esc(trainer.trainerClass)+'</span><span>'+esc(trainer.location)+'</span></div>'+

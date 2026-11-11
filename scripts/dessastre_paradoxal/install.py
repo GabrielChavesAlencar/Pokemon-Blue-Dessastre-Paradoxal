@@ -1,11 +1,17 @@
 """Install the author's special generation from a checked-in manifest and sprite bundle."""
 from __future__ import annotations
-import argparse,hashlib,io,json,os,re,shutil,sys,tarfile,tempfile
+import argparse,hashlib,importlib.util,io,json,os,re,shutil,sys,tarfile,tempfile
 from datetime import datetime,timezone
 from pathlib import Path
 PROJECT=Path(__file__).resolve().parents[2]
-OWN_PBS={'pokemon_dessastre_paradoxal.txt','pokemon_forms_dessastre_paradoxal.txt','pokemon_metrics_dessastre_paradoxal.txt','items_dessastre_paradoxal.txt','abilities_dessastre_paradoxal.txt'}
+OWN_PBS={'pokemon_dessastre_paradoxal.txt','pokemon_forms_dessastre_paradoxal.txt','pokemon_forms_future_eevee.txt','pokemon_metrics_dessastre_paradoxal.txt','items_dessastre_paradoxal.txt','abilities_dessastre_paradoxal.txt'}
 ROLES={'front':'Front','front-shiny':'Front shiny','back':'Back','back-shiny':'Back shiny','icon':'Icons','icon-shiny':'Icons shiny','footprint':'Footprints'}
+def future_module():
+    spec=importlib.util.spec_from_file_location('blue_future_eevee',Path(__file__).with_name('future_eevee.py'))
+    module=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
 def sha(data):return hashlib.sha256(data).hexdigest()
 def atomic(path,data):
     path.parent.mkdir(parents=True,exist_ok=True)
@@ -189,7 +195,23 @@ def make_plan(project,game):
     # An explicit scale of 1 shrank every author sprite relative to native Pokemon.
     # Do not change back sprite scale or any source PNGs.
     for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
+    future=future_module()
+    future_manifest=future.load_manifest(project)
+    regional_form_ids={entry['card']['base']+',50' for entry in future_manifest['forms']}
+    conflicts=sorted(regional_form_ids&existing)
+    if conflicts:raise ValueError('Forma regional 50 ja existente em PBS oficial: '+','.join(conflicts))
+    form_pbs,skipped_moves,skipped_abilities=future.build_forms(future_manifest,known_moves,known_abilities)
+    if skipped_abilities:raise ValueError('Regional Eevee abilities missing from engine: '+','.join(skipped_abilities))
+    put('PBS/pokemon_forms_future_eevee.txt',form_pbs)
+    for entry in future_manifest['forms']:
+        p=entry['card']
+        metrics+=f"#-------------------------------\n[{p['base']},50]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
     put('PBS/pokemon_metrics_dessastre_paradoxal.txt',metrics)
+    put('Data/blue-future-eevee-compatibility.txt',
+        'Golpes do estudo que nao existem neste PBS (nao compilados):\n'+
+        ('\n'.join(skipped_moves) if skipped_moves else 'Nenhum')+'\n')
+    for graphic,blob in future.extract_sprites(project,future_manifest).items():
+        put(graphic,blob)
     items='# Pedras das Mega Evolucoes autorais.\n'
     for p in ready:
         if p.get('megaStone'):items+=f"#-------------------------------\n[{p['megaStone']}]\nName = {p['base'].title()}ita DP\nNamePlural = {p['base'].title()}itas DP\nPocket = 6\nPrice = 0\nFlags = MegaStone,Fling_80\nDescription = Permite a Mega Evolucao de {p['base'].title()} em sua forma de Dessastre Paradoxal.\n"
@@ -214,13 +236,22 @@ def make_plan(project,game):
             if blob is None or sha(blob)!=info['sha256']:raise ValueError('Sprite hash mismatch: '+p['id'])
             # Draft sprites can be installed, but draft species are never compiled or battle-selectable.
             put('Graphics/Pokemon/'+ROLES[role]+'/'+p['fileId']+'.png',blob)
-    for name in ['Generation.rb','RuntimeChecks.rb','meta.txt']:
+    for name in ['Generation.rb','FutureEevee.rb','RuntimeChecks.rb','meta.txt']:
         put('Plugins/ZZZ Dessastre Paradoxal/'+name,(project/'scripts/dessastre_paradoxal'/name).read_bytes())
     for path,data in extra_assets(project,game).items():plans[path]=data
     encounters=game/'PBS/encounters.txt'
+    encounter_text=encounters.read_bytes().decode('utf8')
     if (project/'data/fan-encounters.json').is_file():
         config=json.loads((project/'data/fan-encounters.json').read_text(encoding='utf8'))
-        put('PBS/encounters.txt',update_encounters(encounters.read_bytes().decode('utf8'),entries,config))
+        encounter_text=update_encounters(encounter_text,entries,config)
+    regional_config=json.loads((project/'data/eevee-regional-encounters.json').read_text(encoding='utf8'))
+    paradox_ids={p['id'] for p in entries if p['category'] in ('past_paradox','future_paradox')}
+    put('PBS/encounters.txt',future.regional_encounters(encounter_text,regional_config,paradox_ids))
+    trainer_file=game/'PBS/trainers_story_mode.txt'
+    if not trainer_file.is_file():raise ValueError('PBS de treinadores de historia nao encontrado; nenhuma alteracao aplicada.')
+    trainer_config=json.loads((project/'data/eevee-regional-trainers.json').read_text(encoding='utf8'))
+    changed_trainers,number_added=future.patch_trainers(trainer_file.read_text(encoding='utf-8-sig'),trainer_config)
+    if number_added:put('PBS/trainers_story_mode.txt',changed_trainers)
     changed={p:b for p,b in plans.items() if not p.is_file() or p.read_bytes()!=b}
     return manifest,changed
 

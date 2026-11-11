@@ -78,16 +78,41 @@ class NamedGenerationTests(unittest.TestCase):
 
     def fixture(self,root):
         game=root/'game';(game/'PBS').mkdir(parents=True);(game/'Data').mkdir();(game/'Data/Scripts.rxdata').write_bytes(b'fixture');(game/'Data/Map001.rxdata').write_bytes(b'campaign map')
-        (root/'data').mkdir();(root/'site/assets').mkdir(parents=True);(root/'scripts/dessastre_paradoxal').mkdir(parents=True)
+        (root/'data').mkdir();(root/'site/assets').mkdir(parents=True);(root/'site/public/data').mkdir(parents=True);(root/'site/public/assets/future-eevee').mkdir(parents=True);(root/'scripts/dessastre_paradoxal').mkdir(parents=True)
         shutil.copy2(ROOT/'site/assets/fan-pokemon.tar.gz',root/'site/assets/fan-pokemon.tar.gz')
         shutil.copy2(ROOT/'site/assets/fan-extras.tar.gz',root/'site/assets/fan-extras.tar.gz')
         shutil.copy2(ROOT/'data/fan-assets.json',root/'data/fan-assets.json')
         mini={**MANIFEST,'entries':[p for p in MANIFEST['entries'] if p['id'] in ['CAVEFANG','HORSAND']]}
         (root/'data/dessastre-paradoxal.json').write_text(json.dumps(mini),encoding='utf8')
-        for name in ['Generation.rb','RuntimeChecks.rb','meta.txt']:shutil.copy2(ROOT/'scripts/dessastre_paradoxal'/name,root/'scripts/dessastre_paradoxal'/name)
+        for name in ['Generation.rb','FutureEevee.rb','RuntimeChecks.rb','meta.txt']:shutil.copy2(ROOT/'scripts/dessastre_paradoxal'/name,root/'scripts/dessastre_paradoxal'/name)
+        for name in ('eevee-regional-encounters.json','eevee-regional-trainers.json'):
+            shutil.copy2(ROOT/'data'/name,root/'data'/name)
+        shutil.copy2(ROOT/'site/public/data/future-eevee.json',root/'site/public/data/future-eevee.json')
+        shutil.copy2(ROOT/'site/public/assets/future-eevee/sprites-atlas.png',root/'site/public/assets/future-eevee/sprites-atlas.png')
+        future=json.loads((ROOT/'site/public/data/future-eevee.json').read_text('utf8'))
         moves={m['id'] for p in mini['entries'] for group in p['learnset'].values() for m in group}
+        for form in future['forms']:
+            d=form['details']
+            moves.update(m for level,m in d['moves'])
+            moves.update(d['tm']);moves.update(d.get('tutor',[]));moves.update(d['egg'])
         (game/'PBS/moves.txt').write_text('\n'.join('['+x+']' for x in sorted(moves)),encoding='utf8')
-        (game/'PBS/abilities.txt').write_text('[PROTOSYNTHESIS]\n',encoding='utf8')
+        ability_ids={'PROTOSYNTHESIS'}
+        for form in future['forms']:
+            ability_ids.update(form['details']['abilities']+form['details']['hidden'])
+        (game/'PBS/abilities.txt').write_text(''.join(f'[{id}]\n' for id in sorted(ability_ids)),encoding='utf8')
+        areas=json.loads((ROOT/'data/eevee-regional-encounters.json').read_text('utf8'))['areas']
+        encounter_sections={}
+        for area in areas:
+            encounter_sections.setdefault(area['mapId'],[]).append(area)
+        original=''
+        for map_id,area_list in encounter_sections.items():
+            original+=f'[{map_id}]\n'
+            for method in sorted({a['method'] for a in area_list}):
+                original+=f'{method},21\n    60,PIKACHU,6,8\n    40,RATTATA,7,9\n'
+        (game/'PBS/encounters.txt').write_text(original,encoding='utf8')
+        trainer_config=json.loads((ROOT/'data/eevee-regional-trainers.json').read_text('utf8'))
+        trainer_raw=''.join(f"[{row['trainerType']},{row['name']}]\\nPokemon = PIKACHU,20\\nPokemon = BULBASAUR,23\\nPokemon = CHARMANDER,24\\n" for row in trainer_config['trainers'])
+        (game/'PBS/trainers_story_mode.txt').write_text(trainer_raw.replace('\\n','\n'),encoding='utf8')
         (game/'PBS/pokemon.txt').write_text('[BULBASAUR]\nName = Bulbasaur\n',encoding='utf8')
         return game
 
@@ -100,7 +125,10 @@ class NamedGenerationTests(unittest.TestCase):
             metrics=(game/'PBS/pokemon_metrics_dessastre_paradoxal.txt').read_text()
             self.assertIn('[CAVEFANG]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2',metrics)
             self.assertNotIn('[HORSAND]',metrics)
-            self.assertEqual(metrics.count('FrontSprite = 0,0,2'),1)
+            self.assertEqual(metrics.count('FrontSprite = 0,0,2'),10)
+            self.assertIn('[EEVEE,50]',metrics)
+            self.assertTrue((game/'Graphics/Pokemon/Front/EEVEE_50.png').is_file())
+            self.assertIn('[EEVEE,50]',(game/'PBS/pokemon_forms_future_eevee.txt').read_text())
             self.assertEqual((game/'Data/Map001.rxdata').read_bytes(),b'campaign map');self.assertEqual((game/'PBS/pokemon.txt').read_bytes(),before)
             self.assertEqual(installer.install(root,game,True)['files'],0)
 

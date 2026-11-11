@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "status": "future-design-only",
+  "status": "installed-by-blue-game-installer",
   "speciesFamily": "EEVEE",
   "formIndex": 50,
   "sourceStudy": "Estudo_Formas_Regionais_Eevee_Base_Stats_Learnsets_Completos_Gen9(1).md",
   "sourceSprites": "Sprites_Eeveelutions_Regionais_04-11-2026_Todos(2).zip",
-  "note": "Dados planejados para a Pokédex; NÃO compilados no jogo. Métodos evolutivos são propostas inéditas e precisam de scripts e validação.",
+  "note": "Nove formas regionais e oito metodos evolutivos inclusos no instalador Blue; atualize o jogo. Golpes ausentes no PBS nao sao compilados.",
   "forms": [
     {
       "card": {
@@ -29,8 +29,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -51,7 +50,8 @@
         "weight": null,
         "description": "Uma forma espiritual de Eevee, de pelagem escura e chamas fantasmagóricas. Conceito regional em desenvolvimento.",
         "atlasRow": 0,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Eevee regional · Fantasma",
@@ -229,7 +229,8 @@
         "evolutionMove": null,
         "atlasRow": 0,
         "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
-        "futureBase": true
+        "futureBase": true,
+        "inGame": true
       }
     },
     {
@@ -254,8 +255,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -276,7 +276,8 @@
         "weight": null,
         "description": "Esta forma reúne secreções tóxicas nas membranas que recobrem seu corpo, preservando sua silhueta aquática.",
         "atlasRow": 1,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Vaporeon regional · Veneno",
@@ -466,7 +467,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "ACIDSPRAY",
         "atlasRow": 1,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -491,8 +493,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -513,7 +514,8 @@
         "weight": null,
         "description": "Sua pelagem assume a forma de espinhos e placas metálicas, combinando ataques físicos com grande velocidade.",
         "atlasRow": 2,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Jolteon regional · Aço",
@@ -703,7 +705,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "METALCLAW",
         "atlasRow": 2,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -728,8 +731,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -750,7 +752,8 @@
         "weight": null,
         "description": "Uma pelagem coberta por sedimentos e crostas de solo protege esta forma de ataques físicos.",
         "atlasRow": 3,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Flareon regional · Terrestre",
@@ -943,7 +946,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "SANDTOMB",
         "atlasRow": 3,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -968,8 +972,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -990,7 +993,8 @@
         "weight": null,
         "description": "Chifres, escamas e membranas canalizam energia dracônica; sua agilidade e poder especial continuam marcantes.",
         "atlasRow": 4,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Espeon regional · Dragão",
@@ -1186,7 +1190,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "DRAGONBREATH",
         "atlasRow": 4,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -1211,8 +1216,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -1233,7 +1237,8 @@
         "weight": null,
         "description": "Asas membranosas e marcas semelhantes a ocelos acompanham uma transformação em atacante veloz do tipo Inseto.",
         "atlasRow": 5,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Umbreon regional · Inseto",
@@ -1421,7 +1426,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "FURYCUTTER",
         "atlasRow": 5,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -1446,8 +1452,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -1468,7 +1473,8 @@
         "weight": null,
         "description": "Seus antigos traços vegetais tornam-se estruturas minerais rígidas, feitas para suportar impactos.",
         "atlasRow": 6,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Leafeon regional · Pedra",
@@ -1660,7 +1666,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "ROCKTHROW",
         "atlasRow": 6,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -1685,8 +1692,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -1707,7 +1713,8 @@
         "weight": null,
         "description": "Asas e penas claras conduzem esta forma pelos ventos em altitude, mantendo seu poder especial.",
         "atlasRow": 7,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Glaceon regional · Voador",
@@ -1895,7 +1902,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "GUST",
         "atlasRow": 7,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     },
     {
@@ -1920,8 +1928,7 @@
         "generationLabel": "Dessastre Paradoxal",
         "flags": [
           "DessastreParadoxal",
-          "RegionalForm",
-          "Future"
+          "RegionalForm"
         ],
         "future": true,
         "pending": false,
@@ -1942,7 +1949,8 @@
         "weight": null,
         "description": "Faixas de treino e postura disciplinada transformam esta forma em combatente físico do tipo Lutador.",
         "atlasRow": 8,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       },
       "details": {
         "name": "Sylveon regional · Lutador",
@@ -2132,7 +2140,8 @@
         "learnsetStatus": "design-proposal-only",
         "evolutionMove": "MACHPUNCH",
         "atlasRow": 8,
-        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png"
+        "spriteAtlas": "/assets/future-eevee/sprites-atlas.png",
+        "inGame": true
       }
     }
   ],
