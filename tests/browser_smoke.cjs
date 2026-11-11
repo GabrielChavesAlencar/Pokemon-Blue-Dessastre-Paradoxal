@@ -57,9 +57,15 @@ async function ready(url, child) {
     page.on("pageerror", error => errors.push(String(error)));
     await page.goto(url, {waitUntil:"domcontentloaded"});
     await page.waitForFunction(() => document.getElementById("fileTitle").textContent === "pokemon.txt");
-    assert.equal(await page.locator("[data-panel]").count(), 21, "As 21 abas devem existir");
+    assert.equal(await page.locator("[data-panel]").count(), 22, "As 22 abas devem existir");
     assert.equal(await page.locator('[data-panel="pokemon"]').getAttribute("aria-selected"),"true");
     assert.equal(await page.locator("#pbsWorkspace").isVisible(),true);
+
+    await page.locator('[data-panel="regions"]').click();
+    await page.locator("#regionsResults li").filter({hasText:"Decades"}).waitFor();
+    assert.equal(await page.locator("#regionsWorkspace").isVisible(),true);
+    assert.match(await page.locator("#regionsResults").textContent(),/Kanto.*Piloto em prepara/);
+    assert.equal(await page.locator("#pbsWorkspace").isVisible(),false);
 
     await page.locator('[data-panel="items"]').click();
     await page.waitForFunction(() => document.getElementById("fileTitle").textContent === "items.txt");
@@ -166,7 +172,7 @@ async function ready(url, child) {
     const shotDir = path.join(root,"tests","artifacts");
     fs.mkdirSync(shotDir,{recursive:true});
     await page.screenshot({path:path.join(shotDir,"blue-studio-smoke.png"),fullPage:true});
-    console.log("PASS: 21 abas, CRUD PBS, sprites, novas espécies, moves por nível e nenhuma regressão JS.");
+    console.log("PASS: 22 abas, CRUD PBS, sprites, novas espécies, moves por nível e nenhuma regressão JS.");
   } catch (error) {
     console.error("REGRESSION FAILURE:", error);
     console.error(serverLog.slice(-2500));
