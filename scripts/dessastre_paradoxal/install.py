@@ -197,6 +197,9 @@ def make_plan(project,game):
     for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
     future=future_module()
     future_manifest=future.load_manifest(project)
+    regional_form_ids={entry['card']['base']+',50' for entry in future_manifest['forms']}
+    conflicts=sorted(regional_form_ids&existing)
+    if conflicts:raise ValueError('Forma regional 50 ja existente em PBS oficial: '+','.join(conflicts))
     form_pbs,skipped_moves,skipped_abilities=future.build_forms(future_manifest,known_moves,known_abilities)
     if skipped_abilities:raise ValueError('Regional Eevee abilities missing from engine: '+','.join(skipped_abilities))
     put('PBS/pokemon_forms_future_eevee.txt',form_pbs)
