@@ -68,6 +68,7 @@ module Compiler
     def main
       blue_dp_original_main
       BlueDessastreParadoxal.install
+      BlueFutureEevee.install if defined?(BlueFutureEevee)
     end
   end
 end
