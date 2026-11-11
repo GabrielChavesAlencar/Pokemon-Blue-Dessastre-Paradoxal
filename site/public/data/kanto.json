@@ -1,0 +1,667 @@
+{
+  "version": 1,
+  "source": {
+    "name": "Essentials FRLG 21.1 / 1.1",
+    "url": "https://eeveeexpo.com/resources/1797/",
+    "author": "TheTinfoilTemplar"
+  },
+  "locations": [
+    {
+      "id": "kanto-pallet-town",
+      "name": "Pallet Town",
+      "methods": [
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "TENTACOOL",
+              "chance": 100,
+              "min": 5,
+              "max": 40
+            }
+          ]
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100,
+              "min": 5,
+              "max": 10
+            }
+          ]
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 40,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "KRABBY",
+              "chance": 40,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20,
+              "min": 5,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "KRABBY",
+              "chance": 40,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "SHELLDER",
+              "chance": 20,
+              "min": 15,
+              "max": 25
+            },
+            {
+              "species": "STARYU",
+              "chance": 20,
+              "min": 15,
+              "max": 25
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 10,
+              "min": 15,
+              "max": 25
+            },
+            {
+              "species": "KINGLER",
+              "chance": 4,
+              "min": 25,
+              "max": 35
+            },
+            {
+              "species": "SEADRA",
+              "chance": 4,
+              "min": 25,
+              "max": 35
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 1,
+              "min": 25,
+              "max": 35
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 1,
+              "min": 25,
+              "max": 35
+            }
+          ]
+        }
+      ],
+      "trainers": []
+    },
+    {
+      "id": "kanto-oak-lab",
+      "name": "Laboratório do Professor Oak",
+      "methods": [],
+      "trainers": [
+        "kanto-blue"
+      ]
+    },
+    {
+      "id": "kanto-player-home",
+      "name": "Casa do jogador",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-1",
+      "name": "Rota 1",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "PIDGEY",
+              "chance": 50,
+              "min": 2,
+              "max": 5
+            },
+            {
+              "species": "RATTATA",
+              "chance": 50,
+              "min": 2,
+              "max": 4
+            }
+          ]
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "PIDGEY",
+              "chance": 50,
+              "min": 2,
+              "max": 5
+            },
+            {
+              "species": "RATTATA",
+              "chance": 50,
+              "min": 2,
+              "max": 4
+            }
+          ]
+        }
+      ],
+      "trainers": []
+    },
+    {
+      "id": "kanto-viridian-city",
+      "name": "Viridian City",
+      "methods": [
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "PSYDUCK",
+              "chance": 50,
+              "min": 20,
+              "max": 40
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 50,
+              "min": 20,
+              "max": 40
+            }
+          ]
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100,
+              "min": 5,
+              "max": 5
+            }
+          ]
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "POLIWAG",
+              "chance": 60,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "GOLDEEN",
+              "chance": 20,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20,
+              "min": 5,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "POLIWAG",
+              "chance": 40,
+              "min": 15,
+              "max": 25
+            },
+            {
+              "species": "POLIWHIRL",
+              "chance": 35,
+              "min": 20,
+              "max": 30
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 15,
+              "min": 15,
+              "max": 25
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 5,
+              "min": 20,
+              "max": 35
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 5,
+              "min": 20,
+              "max": 35
+            }
+          ]
+        }
+      ],
+      "trainers": []
+    },
+    {
+      "id": "kanto-viridian-center",
+      "name": "Centro Pokémon de Viridian",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-viridian-mart",
+      "name": "Poké Mart de Viridian",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-2",
+      "name": "Rota 2",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "PIDGEY",
+              "chance": 45,
+              "min": 2,
+              "max": 5
+            },
+            {
+              "species": "RATTATA",
+              "chance": 45,
+              "min": 2,
+              "max": 5
+            },
+            {
+              "species": "CATERPIE",
+              "chance": 5,
+              "min": 4,
+              "max": 5
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 5,
+              "min": 4,
+              "max": 5
+            }
+          ]
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "PIDGEY",
+              "chance": 45,
+              "min": 2,
+              "max": 5
+            },
+            {
+              "species": "RATTATA",
+              "chance": 45,
+              "min": 2,
+              "max": 5
+            },
+            {
+              "species": "CATERPIE",
+              "chance": 5,
+              "min": 4,
+              "max": 5
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 5,
+              "min": 4,
+              "max": 5
+            }
+          ]
+        }
+      ],
+      "trainers": []
+    },
+    {
+      "id": "kanto-forest-gate-south",
+      "name": "Portaria sul da Floresta de Viridian",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-forest-gate-north",
+      "name": "Portaria norte da Floresta de Viridian",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-viridian-forest",
+      "name": "Floresta de Viridian",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "CATERPIE",
+              "chance": 40,
+              "min": 3,
+              "max": 5
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 35,
+              "min": 3,
+              "max": 5
+            },
+            {
+              "species": "KAKUNA",
+              "chance": 10,
+              "min": 4,
+              "max": 6
+            },
+            {
+              "species": "METAPOD",
+              "chance": 10,
+              "min": 4,
+              "max": 6
+            },
+            {
+              "species": "PIKACHU",
+              "chance": 5,
+              "min": 3,
+              "max": 5
+            }
+          ]
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "CATERPIE",
+              "chance": 40,
+              "min": 3,
+              "max": 5
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 35,
+              "min": 3,
+              "max": 5
+            },
+            {
+              "species": "KAKUNA",
+              "chance": 10,
+              "min": 4,
+              "max": 6
+            },
+            {
+              "species": "METAPOD",
+              "chance": 10,
+              "min": 4,
+              "max": 6
+            },
+            {
+              "species": "PIKACHU",
+              "chance": 5,
+              "min": 3,
+              "max": 5
+            }
+          ]
+        }
+      ],
+      "trainers": [
+        "kanto-rick",
+        "kanto-doug",
+        "kanto-anthony",
+        "kanto-charlie",
+        "kanto-sammy"
+      ]
+    },
+    {
+      "id": "kanto-pewter-city",
+      "name": "Pewter City",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pewter-gym",
+      "name": "Ginásio de Pewter",
+      "methods": [],
+      "trainers": [
+        "kanto-liam",
+        "kanto-brock"
+      ]
+    }
+  ],
+  "trainers": [
+    {
+      "id": "kanto-blue",
+      "name": "Blue",
+      "role": "Rival",
+      "location": "kanto-oak-lab",
+      "leader": false,
+      "variants": [
+        {
+          "starter": "BULBASAUR",
+          "team": [
+            {
+              "species": "CHARMANDER",
+              "level": 5,
+              "moves": [
+                "SCRATCH",
+                "GROWL"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "CHARMANDER",
+          "team": [
+            {
+              "species": "SQUIRTLE",
+              "level": 5,
+              "moves": [
+                "TACKLE",
+                "TAILWHIP"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "SQUIRTLE",
+          "team": [
+            {
+              "species": "BULBASAUR",
+              "level": 5,
+              "moves": [
+                "TACKLE",
+                "GROWL"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rick",
+      "name": "Rick",
+      "role": "Caçador de insetos",
+      "location": "kanto-viridian-forest",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "WEEDLE",
+              "level": 6
+            },
+            {
+              "species": "CATERPIE",
+              "level": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-doug",
+      "name": "Doug",
+      "role": "Caçador de insetos",
+      "location": "kanto-viridian-forest",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "WEEDLE",
+              "level": 7
+            },
+            {
+              "species": "KAKUNA",
+              "level": 7
+            },
+            {
+              "species": "WEEDLE",
+              "level": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-anthony",
+      "name": "Anthony",
+      "role": "Caçador de insetos",
+      "location": "kanto-viridian-forest",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 7
+            },
+            {
+              "species": "CATERPIE",
+              "level": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-charlie",
+      "name": "Charlie",
+      "role": "Caçador de insetos",
+      "location": "kanto-viridian-forest",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 7
+            },
+            {
+              "species": "METAPOD",
+              "level": 7
+            },
+            {
+              "species": "CATERPIE",
+              "level": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-sammy",
+      "name": "Sammy",
+      "role": "Caçador de insetos",
+      "location": "kanto-viridian-forest",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "WEEDLE",
+              "level": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-liam",
+      "name": "Liam",
+      "role": "Campista",
+      "location": "kanto-pewter-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 10
+            },
+            {
+              "species": "SANDSHREW",
+              "level": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-brock",
+      "name": "Brock",
+      "role": "Líder de ginásio",
+      "location": "kanto-pewter-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 12,
+              "moves": [
+                "TACKLE",
+                "DEFENSECURL"
+              ]
+            },
+            {
+              "species": "ONIX",
+              "level": 14,
+              "moves": [
+                "TACKLE",
+                "ROCKTOMB",
+                "BIND"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

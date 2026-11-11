@@ -5,7 +5,8 @@ import {pokemonDetail,moveRows} from './detail.js';
 import {storyIndex,bossesIndex,trainerDetail,allTrainers} from './story.js';
 import {regularIndex,regularResults,regularTrainerById,regularDetail} from './regular-trainers.js';
 import {changesPage} from './changes.js';
-import {loadRegions,regionsPage} from './regions.js';
+import {loadRegions,regionsPage,regionPicker} from './regions.js';
+import {loadKanto,kantoIndex,kantoLocation,kantoTrainer} from './kanto.js';
 import {downloadsPage} from './downloads.js';
 import {bindAndroidRelease} from './android-release.js';
 
@@ -32,9 +33,13 @@ function updateResults(){
     const result=moveRows(currentEffective,detailData,state);document.getElementById('moves-body').innerHTML=result.html;document.getElementById('moves-count').textContent=`${result.count} golpes`;
   }
 }
+function addRegionPicker(route){
+  main.firstElementChild?.insertAdjacentHTML('afterbegin',regionPicker(route,'decades'));
+}
+
 async function render(scroll=false){
   const id=++renderId;const url=new URL(location.href);const parts=url.pathname.split('/').filter(Boolean);const section=parts[0]??'home';const route=section==='pokedex'&&parts[1]?'pokemon':section;
-  const identity=`${route}/${parts[1]??''}`;
+  const identity=[route,parts[1],url.searchParams.get('regiao')].join('/');
   if(main.dataset.identity!==identity){state=initial();if(['paradox','future'].includes(url.searchParams.get('grupo')))state.group=url.searchParams.get('grupo');if(url.searchParams.get('pokemon'))state.locationQ=model?.byId.get(url.searchParams.get('pokemon'))?.name??url.searchParams.get('pokemon');state.form=url.searchParams.get('forma')??'';state.generation=url.searchParams.get('geracao')??'';}
   main.dataset.identity=identity;currentRoute=route;currentBase=null;currentEffective=null;
   document.getElementById('nav').classList.remove('open');document.getElementById('menu-toggle').setAttribute('aria-expanded','false');
@@ -49,9 +54,25 @@ async function render(scroll=false){
       detailData=await loadDetails();if(id!==renderId)return;
       currentBase=base;const form=state.form?detailData.species[`${base.id},${state.form}`]:null;currentEffective=effectiveDetail(base,form,detailData);
       main.innerHTML=pokemonDetail(model,base,detailData,state,favorites);setPage(base.name);
+    }else if(['localizacoes','treinadores','chefes'].includes(route) &&
+      (parts[1]?.startsWith('kanto-') || (!parts[1] && url.searchParams.get('regiao')==='kanto'))){
+      const data=await loadKanto();if(id!==renderId)return;
+      if(!parts[1]){
+        main.innerHTML=kantoIndex(model,data,route);
+        setPage({localizacoes:'Localizações de Kanto',treinadores:'Treinadores de Kanto',chefes:'Líderes de Kanto'}[route]);
+      }else if(route==='localizacoes'){
+        const area=data.locations.find(row=>row.id===parts[1]);
+        if(!area)throw new Error('not-found');
+        currentBase=area;main.innerHTML=kantoLocation(model,data,area);setPage(area.name);
+      }else{
+        const trainer=data.trainers.find(row=>row.id===parts[1] && row.leader===(route==='chefes'));
+        if(!trainer)throw new Error('not-found');
+        const details=await loadDetails();if(id!==renderId)return;
+        currentBase=trainer;main.innerHTML=kantoTrainer(model,data,trainer,details);setPage(trainer.name);
+      }
     }else if(route==='localizacoes'){
       if(parts[1]){const area=model.locations.find(x=>x.id===Number(parts[1]));if(!area)throw new Error('not-found');currentBase=area;main.innerHTML=locationDetail(model,area,state);setPage(area.name);}
-      else{main.innerHTML=locations(model,state);setPage('Localizações');}
+      else{main.innerHTML=locations(model,state);addRegionPicker(route);setPage('Localizações');}
     }else if(route==='regioes'){
       const registry=await loadRegions();if(id!==renderId)return;
       main.innerHTML=regionsPage(registry);setPage('Circuito de regiões');
@@ -69,7 +90,7 @@ async function render(scroll=false){
         currentBase=trainer;
         main.innerHTML=regularDetail(model,data,trainer,url.searchParams.get('modo'),detailData,url.searchParams.get('nivel')??50);
         setPage(trainer.name);
-      }else{main.innerHTML=regularIndex(model,data,state);setPage('Treinadores');}
+      }else{main.innerHTML=regularIndex(model,data,state);addRegionPicker(route);setPage('Treinadores');}
     }
     else if(route==='chefes'){
       if(parts[1]){
@@ -77,7 +98,7 @@ async function render(scroll=false){
         if(!trainer)throw new Error('not-found');
         detailData=await loadDetails();if(id!==renderId)return;
         main.innerHTML=trainerDetail(model,trainer,url.searchParams.get('modo'),detailData,url.searchParams.get('nivel')??50);setPage(trainer.name);
-      }else{main.innerHTML=bossesIndex(model);setPage('Mestres e Chefes');}
+      }else{main.innerHTML=bossesIndex(model);addRegionPicker(route);setPage('Mestres e Chefes');}
     }
     else if(route==='guias'){
       if(parts[1]){const guide=model.guides.find(x=>x.id===parts[1]);if(!guide)throw new Error('not-found');main.innerHTML=guideDetail(model,guide);setPage(guide.title);}

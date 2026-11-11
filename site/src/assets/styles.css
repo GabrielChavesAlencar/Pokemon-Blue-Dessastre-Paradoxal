@@ -233,3 +233,10 @@
 .encounter-row .future-location-sprite{width:42px;height:42px;flex:0 0 42px;border-radius:6px;background-color:#13263b}
 
 .region-circuit{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none;margin:10px 0 28px}.region-circuit li{border:1px solid var(--line);border-radius:6px;padding:6px 12px}.region-entries{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,255px),1fr));gap:16px;margin-bottom:42px}.region-entry h2{margin:5px 0 9px}.region-entry p+p,.region-entry p+a{margin-top:8px}
+
+.region-picker{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:16px 0}
+.region-picker a[aria-current="page"]{color:var(--blue)}
+.kanto-encounters{min-width:0}
+.kanto-encounters table{width:100%;border-collapse:collapse;text-align:left;margin-top:10px}
+.kanto-encounters td,.kanto-encounters th{padding:6px 5px;border-bottom:1px solid var(--line)}
+.kanto-encounters td a{text-decoration:underline;text-underline-offset:.18em}
