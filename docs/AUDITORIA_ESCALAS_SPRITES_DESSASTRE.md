@@ -43,7 +43,7 @@ O instalador mantém os PNGs de origem e os PNGs instalados **idênticos byte a 
 
 ```bat
 python scripts/dessastre_paradoxal/sprite_size_audit.py
-python -m unittest tests.test_sprite_size_audit -v
+python -m unittest discover -s tests -p test_sprite_size_audit.py -v
 ```
 
 O primeiro comando lista largura, altura, ocupação real do PNG, origem visível e quadros de cada sprite de frente/costas. O teste verifica os 64 cadastros jogáveis, os 128 pares normal/shiny e a consistência de todas as dimensões.
