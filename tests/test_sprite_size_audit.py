@@ -30,6 +30,29 @@ class SpriteSizeAuditTests(unittest.TestCase):
         print('SPRITE_AUDIT_TOTAL',len(data))
         self.assertGreaterEqual(len(data),128)
 
+    def test_shiny_front_back_use_the_same_frame_geometry(self):
+        sprites=audit.analyze(ROOT)
+        checked=0
+        for mon in sprites:
+            if mon['pending']:continue
+            for role in ('front','back'):
+                normal=mon['sides'].get(role)
+                shiny=mon['sides'].get(role+'-shiny')
+                self.assertIsNotNone(shiny,f"{mon['id']} missing {role} shiny")
+                self.assertEqual((normal['width'],normal['height'],normal['frames']),
+                                 (shiny['width'],shiny['height'],shiny['frames']),
+                                 f"{mon['id']} {role} normal/shiny geometry")
+                self.assertEqual((normal['frameWidth'],normal['height']),(128,128))
+                self.assertTrue(shiny['frameBoxes'][0],f"{mon['id']} {role} shiny blank")
+                box=normal['frameBoxes'][0]
+                shiny_box=shiny['frameBoxes'][0]
+                deviation=max(abs(a-b) for a,b in zip(box,shiny_box))
+                if deviation>8:
+                    print('SHINY_BOUND_DIFFERENCE',mon['id'],role,box,shiny_box)
+                checked+=1
+        print('AUDITED_SHINY_PAIRS',checked)
+        self.assertEqual(checked,128)
+
     def test_upstream_decades_reference_sizes_if_available(self):
         """Optional pinned base-game comparison; no network dependency for CI PASS."""
         from urllib.request import Request,urlopen
