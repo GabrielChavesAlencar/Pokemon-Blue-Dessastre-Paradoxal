@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b6d48d7505e84cf6b013fbdf0407777beb67dcd5",
+      "date": "2026-11-11T15:58:29-03:00",
+      "title": "fix(site): preservar forma regional de treinadores ao sincronizar PBS",
+      "category": "Correções"
+    },
+    {
       "sha": "c017e5df3fe67b1e2f0cf34caecafcc236cdc340",
       "date": "2026-11-11T15:54:58-03:00",
       "title": "feat(game): integrar Eevee regionais, evolução, encontros e treinadores",
