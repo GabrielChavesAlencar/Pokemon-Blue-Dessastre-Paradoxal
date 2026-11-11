@@ -21,3 +21,9 @@ Em Settings → Build and Deployment → Root Directory, mantenha **Skip deploym
 Veja [o procedimento completo e a rotina de atualizações](../docs/SITE_E_VERCEL.md).
 
 A geração autoral **Dessastre Paradoxal** acrescenta 59 espécies e 12 Megas. O build extrai os sprites de `assets/fan-pokemon.tar.gz`, verificando seu SHA-256. O pacote contém somente os sprites autorais normalizados. [Cadastro, pendências e importação no jogo](../docs/GERACAO_DESSASTRE_PARADOXAL.md).
+
+## Treinadores da campanha
+
+A rota `/treinadores` lista os treinadores comuns do `PBS/trainers_story_mode.txt` original de Pokémon Decades, preservando classe, área, Pokémon, golpes e itens. As fichas oferecem as quatro fases da campanha Blue com níveis previstos: 70% do Pokémon mais forte nas três primeiras fases e 90% no Master. Equipes de três membros recebem a prévia de um reforço no Master usando a mesma lógica de cobertura de tipos; a escolha final deve ser verificada no Game.exe. O Auto Grind não recebe reforço fictício.
+
+`site/public/data/regular-trainers.json` é a referência estática extraída dos dados públicos do Decades. Ao executar `python scripts/export_story_teams.py` após editar os treinadores locais, o script sincroniza também os times comuns encontrados no PBS instalado, mantendo os registros originais quando não há correspondente. Os perfis que dependem de ajustes realizados dentro da engine não são tratados como uma exportação nativa confirmada.

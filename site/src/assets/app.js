@@ -1,8 +1,9 @@
-import {loadPortal,loadDetails,effectiveDetail} from './data.js';
+import {loadPortal,loadDetails,loadRegularTrainers,effectiveDetail} from './data.js';
 import {esc,icon} from './utils.js';
 import {home,pokedex,dexResults,locations,locationResults,locationDetail,updates,updateResults as updateTimelineResults,guides,guideDetail,empty} from './views.js';
 import {pokemonDetail,moveRows} from './detail.js';
 import {storyIndex,bossesIndex,trainerDetail,allTrainers} from './story.js';
+import {regularIndex,regularResults,regularTrainerById,regularDetail} from './regular-trainers.js';
 import {changesPage} from './changes.js';
 import {downloadsPage} from './downloads.js';
 import {bindAndroidRelease} from './android-release.js';
@@ -10,7 +11,7 @@ import {bindAndroidRelease} from './android-release.js';
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
 let favorites;try{favorites=new Set(JSON.parse(localStorage.getItem('blue:favorites')??'[]'));}catch{favorites=new Set();}
-const initial=()=>({q:'',type:'',generation:'',group:'all',sort:'number',limit:24,locationQ:'',method:'',locationLimit:12,version:'0',category:'all',updateQ:'',updateLimit:24,form:'',moveKind:'level',moveQ:'',moveLimit:40});
+const initial=()=>({q:'',type:'',generation:'',group:'all',sort:'number',limit:24,locationQ:'',method:'',locationLimit:12,version:'0',category:'all',updateQ:'',updateLimit:24,form:'',moveKind:'level',moveQ:'',moveLimit:40,trainerQ:'',trainerArea:'all',trainerLimit:24});
 let state=initial();
 const toast=message=>{const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2600);};
 function navigate(url){history.pushState({},'',url);render(true);}
@@ -22,6 +23,10 @@ function updateResults(){
     const result=locationResults(model,state);document.getElementById('location-results').innerHTML=result.html;document.getElementById('location-count').textContent=result.count;
   }else if(currentRoute==='atualizacoes'){
     const result=updateTimelineResults(model,state);document.getElementById('update-results').innerHTML=result.html;document.getElementById('update-count').textContent=result.count;
+  }else if(currentRoute==='treinadores'&&!currentBase&&model.regularData){
+    const result=regularResults(model,model.regularData,state);
+    document.getElementById('regular-results').innerHTML=result.html;
+    document.getElementById('regular-count').textContent=result.count;
   }else if(currentRoute==='pokemon'&&currentEffective){
     const result=moveRows(currentEffective,detailData,state);document.getElementById('moves-body').innerHTML=result.html;document.getElementById('moves-count').textContent=`${result.count} golpes`;
   }
@@ -50,6 +55,18 @@ async function render(scroll=false){
     else if(route==='o-que-mudou'){main.innerHTML=changesPage();setPage('O que mudou');}
     else if(route==='downloads'){main.innerHTML=downloadsPage();setPage('Downloads');void bindAndroidRelease(main);}
     else if(route==='historia'){main.innerHTML=storyIndex(model);setPage('Guia da História');}
+    else if(route==='treinadores'){
+      const data=await loadRegularTrainers();if(id!==renderId)return;
+      model.regularData=data;
+      if(parts[1]){
+        const trainer=regularTrainerById(data,decodeURIComponent(parts[1]));
+        if(!trainer)throw new Error('not-found');
+        detailData=await loadDetails();if(id!==renderId)return;
+        currentBase=trainer;
+        main.innerHTML=regularDetail(model,data,trainer,url.searchParams.get('modo'),detailData,url.searchParams.get('nivel')??50);
+        setPage(trainer.name);
+      }else{main.innerHTML=regularIndex(model,data,state);setPage('Treinadores');}
+    }
     else if(route==='chefes'){
       if(parts[1]){
         const trainer=allTrainers(model.story).find(x=>x.id===decodeURIComponent(parts[1]));
@@ -83,7 +100,7 @@ main.addEventListener('click',event=>{
   const group=event.target.closest('[data-group]');if(group){state.group=group.dataset.group;state.limit=24;document.querySelectorAll('[data-group]').forEach(b=>{b.classList.toggle('active',b===group);b.setAttribute('aria-pressed',String(b===group));});updateResults();return;}
   const category=event.target.closest('[data-category]');if(category){state.category=category.dataset.category;state.updateLimit=24;document.querySelectorAll('[data-category]').forEach(b=>{b.classList.toggle('active',b===category);b.setAttribute('aria-pressed',String(b===category));});updateResults();return;}
   const kind=event.target.closest('[data-move-kind]');if(kind){state.moveKind=kind.dataset.moveKind;state.moveLimit=40;document.querySelectorAll('[data-move-kind]').forEach(b=>{b.classList.toggle('active',b===kind);b.setAttribute('aria-pressed',String(b===kind));});updateResults();return;}
-  const more=event.target.closest('[data-more]');if(more){if(more.dataset.more==='dex')state.limit+=24;else if(more.dataset.more==='locations')state.locationLimit+=12;else if(more.dataset.more==='updates')state.updateLimit+=24;else state.moveLimit+=40;updateResults();return;}
+  const more=event.target.closest('[data-more]');if(more){if(more.dataset.more==='dex')state.limit+=24;else if(more.dataset.more==='locations')state.locationLimit+=12;else if(more.dataset.more==='updates')state.updateLimit+=24;else if(more.dataset.more==='trainers')state.trainerLimit+=24;else state.moveLimit+=40;updateResults();return;}
   const reset=event.target.closest('[data-reset]');if(reset){state=initial();render(false);}
 });
 main.addEventListener('input',event=>{
@@ -91,6 +108,7 @@ main.addEventListener('input',event=>{
   if(input.dataset.search==='dex'){state.q=input.value;state.limit=24;}
   else if(input.dataset.search==='locations'){state.locationQ=input.value;state.locationLimit=12;}
   else if(input.dataset.search==='updates'){state.updateQ=input.value;state.updateLimit=24;}
+  else if(input.dataset.search==='trainers'){state.trainerQ=input.value;state.trainerLimit=24;}
   else{state.moveQ=input.value;state.moveLimit=40;}
   updateResults();
 });
@@ -101,6 +119,7 @@ main.addEventListener('change',event=>{
   if(key==='version')render(false);
   else if(key==='trainerVariant'){const url=new URL(location.href);url.searchParams.set('modo',state.trainerVariant);history.replaceState({},'',url);render(false);}
   else if(key==='trainerLevel')updateTrainerLevel(state.trainerLevel);
+  else if(key==='trainerArea'){state.trainerLimit=24;updateResults();}
   else if(key==='form'){const url=new URL(location.href);if(state.form)url.searchParams.set('forma',state.form);else url.searchParams.delete('forma');history.replaceState({},'',url);render(false);}
   else{state.limit=24;state.locationLimit=12;updateResults();}
 });

@@ -1,0 +1,2258 @@
+{
+  "version": 1,
+  "origin": "decades-story-pbs",
+  "sourceUrl": "https://github.com/HazyCrazy/Pokemon-Decades/blob/main/PBS/trainers_story_mode.txt",
+  "sourceBlob": "c571b61202e53b47e792fbec5800a31eabfe3854",
+  "note": "Times originais do PBS Decades; escala e quarto Pokémon do Master são aplicados em execução pelo Blue.",
+  "typeChart": {
+    "NORMAL": {
+      "weaknesses": [
+        "FIGHTING"
+      ],
+      "resistances": [
+        "FAIRY"
+      ],
+      "immunities": [
+        "GHOST"
+      ]
+    },
+    "FIGHTING": {
+      "weaknesses": [
+        "FLYING",
+        "PSYCHIC",
+        "POISON",
+        "FAIRY"
+      ],
+      "resistances": [
+        "ICE",
+        "ROCK",
+        "BUG",
+        "DARK"
+      ],
+      "immunities": []
+    },
+    "FLYING": {
+      "weaknesses": [
+        "ROCK",
+        "ELECTRIC",
+        "ICE"
+      ],
+      "resistances": [
+        "FIGHTING",
+        "BUG",
+        "GRASS"
+      ],
+      "immunities": [
+        "GROUND"
+      ]
+    },
+    "POISON": {
+      "weaknesses": [
+        "GROUND",
+        "PSYCHIC"
+      ],
+      "resistances": [
+        "FIGHTING",
+        "POISON",
+        "BUG",
+        "GRASS",
+        "FAIRY"
+      ],
+      "immunities": []
+    },
+    "GROUND": {
+      "weaknesses": [
+        "WATER",
+        "GRASS",
+        "ICE",
+        "BUG"
+      ],
+      "resistances": [
+        "POISON",
+        "ROCK"
+      ],
+      "immunities": [
+        "ELECTRIC"
+      ]
+    },
+    "ROCK": {
+      "weaknesses": [
+        "FIGHTING",
+        "GROUND",
+        "STEEL",
+        "WATER",
+        "GRASS"
+      ],
+      "resistances": [
+        "ELECTRIC",
+        "FIRE",
+        "FLYING",
+        "POISON",
+        "NORMAL",
+        "GHOST"
+      ],
+      "immunities": []
+    },
+    "BUG": {
+      "weaknesses": [
+        "FLYING",
+        "ROCK",
+        "FIRE"
+      ],
+      "resistances": [
+        "FIGHTING",
+        "GROUND",
+        "GRASS",
+        "PSYCHIC"
+      ],
+      "immunities": []
+    },
+    "GHOST": {
+      "weaknesses": [
+        "GHOST",
+        "DARK",
+        "FIRE"
+      ],
+      "resistances": [
+        "POISON",
+        "ICE"
+      ],
+      "immunities": [
+        "NORMAL",
+        "FIGHTING"
+      ]
+    },
+    "STEEL": {
+      "weaknesses": [
+        "FIRE",
+        "FIGHTING",
+        "GROUND",
+        "ELECTRIC"
+      ],
+      "resistances": [
+        "NORMAL",
+        "FLYING",
+        "ROCK",
+        "BUG",
+        "STEEL",
+        "GRASS",
+        "ICE",
+        "DRAGON",
+        "FAIRY",
+        "PSYCHIC"
+      ],
+      "immunities": [
+        "POISON"
+      ]
+    },
+    "FIRE": {
+      "weaknesses": [
+        "GROUND",
+        "ROCK",
+        "WATER"
+      ],
+      "resistances": [
+        "BUG",
+        "STEEL",
+        "FIRE",
+        "GRASS",
+        "ICE",
+        "FAIRY"
+      ],
+      "immunities": []
+    },
+    "WATER": {
+      "weaknesses": [
+        "GRASS",
+        "ELECTRIC",
+        "POISON"
+      ],
+      "resistances": [
+        "STEEL",
+        "FIRE",
+        "WATER",
+        "ICE"
+      ],
+      "immunities": []
+    },
+    "GRASS": {
+      "weaknesses": [
+        "POISON",
+        "BUG",
+        "FIRE",
+        "ICE"
+      ],
+      "resistances": [
+        "GROUND",
+        "WATER",
+        "GRASS",
+        "ELECTRIC",
+        "FAIRY",
+        "GHOST"
+      ],
+      "immunities": []
+    },
+    "ELECTRIC": {
+      "weaknesses": [
+        "GROUND"
+      ],
+      "resistances": [
+        "FLYING",
+        "ELECTRIC",
+        "STEEL"
+      ],
+      "immunities": []
+    },
+    "PSYCHIC": {
+      "weaknesses": [
+        "BUG",
+        "GHOST",
+        "DARK"
+      ],
+      "resistances": [
+        "FAIRY",
+        "FIGHTING",
+        "PSYCHIC"
+      ],
+      "immunities": []
+    },
+    "ICE": {
+      "weaknesses": [
+        "FIGHTING",
+        "FIRE",
+        "ROCK",
+        "STEEL"
+      ],
+      "resistances": [
+        "GROUND",
+        "ICE",
+        "FLYING",
+        "DRAGON"
+      ],
+      "immunities": []
+    },
+    "DRAGON": {
+      "weaknesses": [
+        "ICE",
+        "DRAGON",
+        "FAIRY"
+      ],
+      "resistances": [
+        "FIRE",
+        "WATER",
+        "GRASS",
+        "ELECTRIC"
+      ],
+      "immunities": []
+    },
+    "DARK": {
+      "weaknesses": [
+        "FIGHTING",
+        "BUG",
+        "FAIRY",
+        "ELECTRIC"
+      ],
+      "resistances": [
+        "GHOST",
+        "DARK"
+      ],
+      "immunities": [
+        "PSYCHIC"
+      ]
+    },
+    "FAIRY": {
+      "weaknesses": [
+        "POISON",
+        "STEEL",
+        "BUG"
+      ],
+      "resistances": [
+        "FIGHTING",
+        "DARK"
+      ],
+      "immunities": [
+        "DRAGON"
+      ]
+    }
+  },
+  "trainers": [
+    {
+      "id": "johtoian-hgss-youngster-ben",
+      "name": "Ben",
+      "trainerType": "JOHTOIAN_HGSS_YOUNGSTER",
+      "trainerClass": "Youngster",
+      "location": "Área de testes",
+      "team": [
+        {
+          "species": "BOLTUND",
+          "level": 1,
+          "moves": [
+            "THUNDERFANG",
+            "CRUNCH",
+            "PSYCHICFANGS",
+            "CHARGE"
+          ]
+        },
+        {
+          "species": "CAMERUPT",
+          "level": 1,
+          "moves": [
+            "FIREBLAST",
+            "EARTHPOWER",
+            "NATUREPOWER",
+            "SOLARBEAM"
+          ]
+        },
+        {
+          "species": "TOUCANNON",
+          "level": 1,
+          "moves": [
+            "TAILSLAP",
+            "BULLETSEED",
+            "FURYATTACK",
+            "SPIKECANNON"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hoennian-rse-ninja-boy-nomi-auto-grind",
+      "name": "Nomi (Auto Grind)",
+      "trainerType": "HOENNIAN_RSE_NINJA_BOY",
+      "trainerClass": "Ninja Boy",
+      "location": "Centro Pokémon · Auto Grind",
+      "team": [
+        {
+          "species": "BLISSEY",
+          "level": 1,
+          "moves": [
+            "MEMENTO"
+          ],
+          "item": "TOXICORB"
+        }
+      ]
+    },
+    {
+      "id": "hubian-pokengine-cafe-master-dustin",
+      "name": "Dustin",
+      "trainerType": "HUBIAN_POKENGINE_CAFE_MASTER",
+      "trainerClass": "Cafe Master",
+      "location": "Cherryhill City",
+      "team": [
+        {
+          "species": "BOLTUND",
+          "level": 1,
+          "moves": [
+            "THUNDERFANG",
+            "CRUNCH",
+            "PSYCHICFANGS",
+            "CHARGE"
+          ]
+        },
+        {
+          "species": "CAMERUPT",
+          "level": 1,
+          "moves": [
+            "FIREBLAST",
+            "EARTHPOWER",
+            "NATUREPOWER",
+            "SOLARBEAM"
+          ]
+        },
+        {
+          "species": "TOUCANNON",
+          "level": 1,
+          "moves": [
+            "TAILSLAP",
+            "BULLETSEED",
+            "FURYATTACK",
+            "SPIKECANNON"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-artist-pyotr",
+      "name": "Pyotr",
+      "trainerType": "SINNOHIAN_DPP_ARTIST",
+      "trainerClass": "Artist",
+      "location": "Route 1",
+      "team": [
+        {
+          "species": "GARGANACL",
+          "level": 1,
+          "moves": [
+            "SALTCURE",
+            "EARTHQUAKE",
+            "HAMMERARM",
+            "IRONHEAD"
+          ]
+        },
+        {
+          "species": "HATTERENE",
+          "level": 1,
+          "moves": [
+            "DRAININGKISS",
+            "PSYSHOCK",
+            "MYSTICALFIRE",
+            "GIGADRAIN"
+          ]
+        },
+        {
+          "species": "FLAPPLE",
+          "level": 1,
+          "moves": [
+            "GRAVAPPLE",
+            "FLY",
+            "IRONHEAD",
+            "DRAGONASCENT"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kaloian-xy-swimmer-woman-regine",
+      "name": "Régine",
+      "trainerType": "KALOIAN_XY_SWIMMER_WOMAN",
+      "trainerClass": "Swimmer Woman",
+      "location": "Route 1",
+      "team": [
+        {
+          "species": "BLASTOISE",
+          "level": 1,
+          "moves": [
+            "HYDROPUMP",
+            "FLASHCANNON",
+            "AURASPHERE",
+            "DARKPULSE"
+          ]
+        },
+        {
+          "species": "SEAKING",
+          "level": 1,
+          "moves": [
+            "HORNATTACK",
+            "PECK",
+            "LIQUIDATION",
+            "POISONJAB"
+          ]
+        },
+        {
+          "species": "GASTRODON",
+          "level": 1,
+          "moves": [
+            "ANCIENTPOWER",
+            "BRINE",
+            "EARTHPOWER",
+            "SLUDGEBOMB"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kaloian-xy-fisherman-gaultier",
+      "name": "Gaultier",
+      "trainerType": "KALOIAN_XY_FISHERMAN",
+      "trainerClass": "Fisherman",
+      "location": "Route 1",
+      "team": [
+        {
+          "species": "RIBOMBEE",
+          "level": 1,
+          "moves": [
+            "BUGBUZZ",
+            "MOONBLAST",
+            "GRASSKNOT",
+            "PSYCHIC"
+          ]
+        },
+        {
+          "species": "VIGOROTH",
+          "level": 1,
+          "moves": [
+            "CRUSHCLAW",
+            "DYNAMICPUNCH",
+            "NIGHTSLASH",
+            "SCRATCH"
+          ]
+        },
+        {
+          "species": "DRAGALGE",
+          "level": 1,
+          "moves": [
+            "DRAGONPULSE",
+            "SLUDGEBOMB",
+            "HYDROPUMP",
+            "MUDSHOT"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oerrian-colo-bodybuilder-roberto",
+      "name": "Roberto",
+      "trainerType": "OERRIAN_COLO_BODYBUILDER",
+      "trainerClass": "Bodybuilder",
+      "location": "Route 1",
+      "team": [
+        {
+          "species": "BLAZIKEN",
+          "level": 1,
+          "moves": [
+            "HIGHJUMPKICK",
+            "BLAZEKICK",
+            "SCRATCH",
+            "SMELLINGSALTS"
+          ]
+        },
+        {
+          "species": "SCEPTILE",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "LEAFBLADE",
+            "IRONTAIL",
+            "CRUNCH"
+          ]
+        },
+        {
+          "species": "SWAMPERT",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "WATERFALL",
+            "ICEBALL",
+            "ROCKCLIMB"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kantoian-lgpe-juggler-salvadore",
+      "name": "Salvadore",
+      "trainerType": "KANTOIAN_LGPE_JUGGLER",
+      "trainerClass": "Juggler",
+      "location": "Route 1",
+      "team": [
+        {
+          "species": "GOODRA",
+          "level": 1,
+          "moves": [
+            "ACIDSPRAY",
+            "DRAGONPULSE",
+            "FLAMETHROWER",
+            "HYDROPUMP"
+          ]
+        },
+        {
+          "species": "SPIRITOMB",
+          "level": 1,
+          "moves": [
+            "ANCIENTPOWER",
+            "OMINOUSWIND",
+            "DARKPULSE",
+            "EXTRASENSORY"
+          ]
+        },
+        {
+          "species": "PASSIMIAN",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "CLOSECOMBAT",
+            "IRONTAIL",
+            "GUNKSHOT"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alolan-usum-bellhop-lester",
+      "name": "Lester",
+      "trainerType": "ALOLAN_USUM_BELLHOP",
+      "trainerClass": "Bellhop",
+      "location": "Shimmer Coast City",
+      "team": [
+        {
+          "species": "KROOKODILE",
+          "level": 1,
+          "moves": [
+            "CRUNCH",
+            "HYPERFANG",
+            "IRONTAIL",
+            "AQUATAIL"
+          ]
+        },
+        {
+          "species": "VENOMOTH",
+          "level": 1,
+          "moves": [
+            "POISONPOWDER",
+            "BUGBUZZ",
+            "GIGADRAIN",
+            "PSYCHIC"
+          ]
+        },
+        {
+          "species": "WALREIN",
+          "level": 1,
+          "moves": [
+            "ICEBALL",
+            "LIQUIDATION",
+            "CRUNCH",
+            "FISSURE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hoennian-oras-acetrainer-man-nobu",
+      "name": "Nobu",
+      "trainerType": "HOENNIAN_ORAS_ACETRAINER_MAN",
+      "trainerClass": "Acetrainer Man",
+      "location": "Route 2",
+      "team": [
+        {
+          "species": "ABSOL",
+          "level": 1,
+          "moves": [
+            "NIGHTSLASH",
+            "CUT",
+            "MEGAHORN",
+            "PSYCHOCUT"
+          ]
+        },
+        {
+          "species": "LUVDISC",
+          "level": 1,
+          "moves": [
+            "DRAININGKISS",
+            "BUBBLEBEAM",
+            "ICEBEAM",
+            "SWEETKISS"
+          ]
+        },
+        {
+          "species": "TROPIUS",
+          "level": 1,
+          "moves": [
+            "DRAGONASCENT",
+            "LEAFTORNADO",
+            "FLY",
+            "SILVERWIND"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "galarian-swsh-beauty-jessica",
+      "name": "Jessica",
+      "trainerType": "GALARIAN_SWSH_BEAUTY",
+      "trainerClass": "Beauty",
+      "location": "Route 2",
+      "team": [
+        {
+          "species": "MIENSHAO",
+          "level": 1,
+          "moves": [
+            "RAPIDSPIN",
+            "DRAINPUNCH",
+            "STONEEDGE",
+            "ACROBATICS"
+          ]
+        },
+        {
+          "species": "TOGEKISS",
+          "level": 1,
+          "moves": [
+            "RAZORWIND",
+            "SPARKLYSWIRL",
+            "FLAMETHROWER",
+            "GRASSKNOT"
+          ]
+        },
+        {
+          "species": "PLUSLE",
+          "level": 1,
+          "moves": [
+            "FLAMETHROWER",
+            "SPARK",
+            "UPROAR",
+            "PLAYROUGH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-poke-maniac-barney",
+      "name": "Barney",
+      "trainerType": "JOHTOIAN_HGSS_POKE_MANIAC",
+      "trainerClass": "Poke Maniac",
+      "location": "Route 3",
+      "team": [
+        {
+          "species": "WOBBUFFET",
+          "level": 1,
+          "moves": [
+            "ENCORE",
+            "COMEUPPANCE",
+            "REST",
+            "TRICK"
+          ],
+          "abilityIndex": 2,
+          "item": "STICKYBARB"
+        },
+        {
+          "species": "STUNFISK",
+          "level": 1,
+          "moves": [
+            "CURSE",
+            "SPARK",
+            "BODYSLAM",
+            "SNATCH"
+          ]
+        },
+        {
+          "species": "LICKILICKY",
+          "level": 1,
+          "moves": [
+            "LICK",
+            "BUBBLEBEAM",
+            "BODYSLAM",
+            "FOCUSBLAST"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paldean-sv-artist-valeria",
+      "name": "Valeria",
+      "trainerType": "PALDEAN_SV_ARTIST",
+      "trainerClass": "Artist",
+      "location": "Route 3",
+      "team": [
+        {
+          "species": "FLORGES",
+          "level": 1,
+          "form": 4,
+          "moves": [
+            "TRIATTACK",
+            "ICEBEAM",
+            "CHILLINGWATER",
+            "ENERGYBALL"
+          ]
+        },
+        {
+          "species": "BRUXISH",
+          "level": 1,
+          "moves": [
+            "FISHIOUSREND",
+            "CRUNCH",
+            "ICEFANG",
+            "PSYCHICFANGS"
+          ]
+        },
+        {
+          "species": "VIVILLON",
+          "level": 1,
+          "form": 19,
+          "moves": [
+            "TRIATTACK",
+            "BUGBUZZ",
+            "AIRSLASH",
+            "POISONPOWDER"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unovaian-b2w2-hiker-hugo",
+      "name": "Hugo",
+      "trainerType": "UNOVAIAN_B2W2_HIKER",
+      "trainerClass": "Hiker",
+      "location": "Obsidian Peak City",
+      "team": [
+        {
+          "species": "FLAMIGO",
+          "level": 1,
+          "moves": [
+            "WINGATTACK",
+            "LOWKICK",
+            "LIQUIDATION",
+            "FRUSTRATION"
+          ]
+        },
+        {
+          "species": "SLAKING",
+          "level": 1,
+          "moves": [
+            "GIGAIMPACT",
+            "MOUNTAINGALE",
+            "PLAYROUGH",
+            "SLACKOFF"
+          ]
+        },
+        {
+          "species": "ORTHWORM",
+          "level": 1,
+          "moves": [
+            "IRONTAIL",
+            "HIGHHORSEPOWER",
+            "BODYPRESS",
+            "ROCKTOMB"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unovaian-b2w2-fisherman-odin",
+      "name": "Odin",
+      "trainerType": "UNOVAIAN_B2W2_FISHERMAN",
+      "trainerClass": "Fisherman",
+      "location": "Obsidian Volcano Exterior",
+      "team": [
+        {
+          "species": "PALOSSAND",
+          "level": 1,
+          "moves": [
+            "SHADOWBALL",
+            "SCORCHINGSANDS",
+            "GIGADRAIN",
+            "ANCIENTPOWER"
+          ]
+        },
+        {
+          "species": "BEWEAR",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "DRAINPUNCH",
+            "DRAGONCLAW",
+            "DARKESTLARIAT"
+          ]
+        },
+        {
+          "species": "WISHIWASHI",
+          "level": 1,
+          "moves": [
+            "EGGBOMB",
+            "IRONTAIL",
+            "NORETREAT",
+            "SCREECH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-veteran-igor",
+      "name": "Igor",
+      "trainerType": "SINNOHIAN_DPP_VETERAN",
+      "trainerClass": "Veteran",
+      "location": "Route 4",
+      "team": [
+        {
+          "species": "EMPOLEON",
+          "level": 1,
+          "moves": [
+            "BUBBLE",
+            "FLASHCANNON",
+            "ICEBEAM",
+            "AIRSLASH"
+          ]
+        },
+        {
+          "species": "AMBIPOM",
+          "level": 1,
+          "moves": [
+            "FAKEOUT",
+            "ACROBATICS",
+            "BRICKBREAK",
+            "CUT"
+          ]
+        },
+        {
+          "species": "LEAFEON",
+          "level": 1,
+          "moves": [
+            "LEAFBLADE",
+            "WATERFALL",
+            "FLAREBLITZ",
+            "THUNDERFANG"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oerrian-colo-street-performer-sienna",
+      "name": "Sienna",
+      "trainerType": "OERRIAN_COLO_STREET_PERFORMER",
+      "trainerClass": "Street Performer",
+      "location": "Route 4",
+      "team": [
+        {
+          "species": "SPINDA",
+          "level": 1,
+          "moves": [
+            "DIZZYPUNCH",
+            "TEETERDANCE",
+            "DYNAMICPUNCH",
+            "PSYCHOCUT"
+          ]
+        },
+        {
+          "species": "MAWILE",
+          "level": 1,
+          "moves": [
+            "CRUNCH",
+            "PLAYROUGH",
+            "IRONHEAD",
+            "POISONFANG"
+          ]
+        },
+        {
+          "species": "RAICHU",
+          "level": 1,
+          "form": 1,
+          "moves": [
+            "THUNDERBOLT",
+            "GRASSKNOT",
+            "PSYCHIC",
+            "SPLISHYSPLASH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kantoian-lgpe-gambler-leandro",
+      "name": "Leandro",
+      "trainerType": "KANTOIAN_LGPE_GAMBLER",
+      "trainerClass": "Gambler",
+      "location": "Route 4",
+      "team": [
+        {
+          "species": "AERODACTYL",
+          "level": 1,
+          "moves": [
+            "WINGATTACK",
+            "ROCKCLIMB",
+            "DRILLRUN",
+            "CRUNCH"
+          ]
+        },
+        {
+          "species": "OINKOLOGNE",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "LANDSWRATH",
+            "BULKUP",
+            "TRAILBLAZE"
+          ]
+        },
+        {
+          "species": "CARNIVINE",
+          "level": 1,
+          "moves": [
+            "HYPERFANG",
+            "SNAPTRAP",
+            "FISHIOUSREND",
+            "LEECHLIFE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-medium-sachiko",
+      "name": "Sachiko",
+      "trainerType": "JOHTOIAN_HGSS_MEDIUM",
+      "trainerClass": "Medium",
+      "location": "Mantic City",
+      "team": [
+        {
+          "species": "POLTEAGEIST",
+          "level": 1,
+          "moves": [
+            "SPARKLYSWIRL",
+            "GIGADRAIN",
+            "SHADOWBALL",
+            "DARKPULSE"
+          ]
+        },
+        {
+          "species": "GALVANTULA",
+          "level": 1,
+          "moves": [
+            "ELECTROWEB",
+            "BUGBUZZ",
+            "CROSSPOISON",
+            "THROATCHOP"
+          ]
+        },
+        {
+          "species": "SHIFTRY",
+          "level": 1,
+          "moves": [
+            "LEAFBLADE",
+            "NIGHTSLASH",
+            "RAZORWIND",
+            "SILVERWIND"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alolan-usum-acetrainer-man-koa",
+      "name": "Koa",
+      "trainerType": "ALOLAN_USUM_ACETRAINER_MAN",
+      "trainerClass": "Acetrainer Man",
+      "location": "Route 5",
+      "team": [
+        {
+          "species": "LURANTIS",
+          "level": 1,
+          "moves": [
+            "LEAFBLADE",
+            "BUGBITE",
+            "NIGHTSLASH",
+            "CROSSPOISON"
+          ]
+        },
+        {
+          "species": "TURTONATOR",
+          "level": 1,
+          "moves": [
+            "FLAMETHROWER",
+            "DRAGONPULSE",
+            "CHARGEBEAM",
+            "SCORCHINGSANDS"
+          ]
+        },
+        {
+          "species": "CRABOMINABLE",
+          "level": 1,
+          "moves": [
+            "DIZZYPUNCH",
+            "DYNAMICPUNCH",
+            "CRABHAMMER",
+            "ROCKTOMB"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "galarian-swsh-black-belt-mark",
+      "name": "Mark",
+      "trainerType": "GALARIAN_SWSH_BLACK_BELT",
+      "trainerClass": "Black Belt",
+      "location": "Route 5",
+      "team": [
+        {
+          "species": "BASTIODON",
+          "level": 1,
+          "moves": [
+            "STONEEDGE",
+            "IRONHEAD",
+            "STRENGTH",
+            "OUTRAGE"
+          ]
+        },
+        {
+          "species": "TRUMBEAK",
+          "level": 1,
+          "moves": [
+            "TAILSLAP",
+            "BULLETSEED",
+            "FURYATTACK",
+            "SPIKECANNON"
+          ],
+          "item": "EVIOLITE"
+        },
+        {
+          "species": "INCINEROAR",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "DARKESTLARIAT",
+            "LEECHLIFE",
+            "LOWKICK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hoennian-oras-birdkeeper-alfred",
+      "name": "Alfred",
+      "trainerType": "HOENNIAN_ORAS_BIRDKEEPER",
+      "trainerClass": "Birdkeeper",
+      "location": "Route 5",
+      "team": [
+        {
+          "species": "NINJASK",
+          "level": 1,
+          "moves": [
+            "BUGBITE",
+            "ACROBATICS",
+            "SHADOWCLAW",
+            "SCRATCH"
+          ]
+        },
+        {
+          "species": "MANTINE",
+          "level": 1,
+          "moves": [
+            "BUBBLEBEAM",
+            "AIRSLASH",
+            "ICEBEAM",
+            "TWISTER"
+          ]
+        },
+        {
+          "species": "SWELLOW",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "WINGATTACK",
+            "STEELWING",
+            "UTURN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hubian-pokengine-courier-simon",
+      "name": "Simon",
+      "trainerType": "HUBIAN_POKENGINE_COURIER",
+      "trainerClass": "Courier",
+      "location": "Route 5",
+      "team": [
+        {
+          "species": "DACHSBUN",
+          "level": 1,
+          "moves": [
+            "BITE",
+            "FIREFANG",
+            "PSYCHICFANGS",
+            "LICK"
+          ]
+        },
+        {
+          "species": "LEAVANNY",
+          "level": 1,
+          "moves": [
+            "BUGBITE",
+            "CUT",
+            "LOWKICK",
+            "TRIPLEAXEL"
+          ]
+        },
+        {
+          "species": "SALAMENCE",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "DRAGONCLAW",
+            "AQUATAIL",
+            "STRENGTH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oerrian-colo-beauty-jade",
+      "name": "Jade",
+      "trainerType": "OERRIAN_COLO_BEAUTY",
+      "trainerClass": "Beauty",
+      "location": "Boulevard City",
+      "team": [
+        {
+          "species": "SMEARGLE",
+          "level": 1,
+          "moves": [
+            "SACREDFIRE",
+            "FREEZEDRY",
+            "SILVERWIND",
+            "CUT"
+          ]
+        },
+        {
+          "species": "JUMPLUFF",
+          "level": 1,
+          "moves": [
+            "FLOWERTRICK",
+            "FLOATYFALL",
+            "FRUSTRATION",
+            "RETURN"
+          ]
+        },
+        {
+          "species": "FLYGON",
+          "level": 1,
+          "moves": [
+            "BUGBUZZ",
+            "DRAGONPULSE",
+            "EARTHPOWER",
+            "FLAMETHROWER"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kantoian-lgpe-punk-guy-egon",
+      "name": "Egon",
+      "trainerType": "KANTOIAN_LGPE_PUNK_GUY",
+      "trainerClass": "Punk Guy",
+      "location": "Boulevard City",
+      "team": [
+        {
+          "species": "MAROWAK",
+          "level": 1,
+          "form": 1,
+          "moves": [
+            "BONEMERANG",
+            "SACREDFIRE",
+            "DYNAMICPUNCH",
+            "IRONHEAD"
+          ]
+        },
+        {
+          "species": "FERALIGATR",
+          "level": 1,
+          "moves": [
+            "WATERFALL",
+            "DRAGONCLAW",
+            "SUPERPOWER",
+            "CRUNCH"
+          ]
+        },
+        {
+          "species": "HITMONTOP",
+          "level": 1,
+          "moves": [
+            "DIZZYPUNCH",
+            "FIREPUNCH",
+            "ICEPUNCH",
+            "THUNDERPUNCH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-acetrainer-woman-fumiko",
+      "name": "Fumiko",
+      "trainerType": "JOHTOIAN_HGSS_ACETRAINER_WOMAN",
+      "trainerClass": "Acetrainer Woman",
+      "location": "Route 6",
+      "team": [
+        {
+          "species": "NOCTOWL",
+          "level": 1,
+          "moves": [
+            "AEROBLAST",
+            "SHADOWBALL",
+            "EXTRASENSORY",
+            "FLASH"
+          ]
+        },
+        {
+          "species": "UMBREON",
+          "level": 1,
+          "moves": [
+            "DARKPULSE",
+            "PSYCHIC",
+            "FLAMETHROWER",
+            "THUNDERBOLT"
+          ]
+        },
+        {
+          "species": "GRANBULL",
+          "level": 1,
+          "moves": [
+            "MEGAPUNCH",
+            "DYNAMICPUNCH",
+            "CRUNCH",
+            "ICEFANG"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paldean-sv-backpacker-rory",
+      "name": "Rory",
+      "trainerType": "PALDEAN_SV_BACKPACKER",
+      "trainerClass": "Backpacker",
+      "location": "Route 6",
+      "team": [
+        {
+          "species": "BELLIBOLT",
+          "level": 1,
+          "moves": [
+            "THUNDERBOLT",
+            "WATERPULSE",
+            "MUDSLAP",
+            "CONFUSERAY"
+          ]
+        },
+        {
+          "species": "SQUAWKABILLY",
+          "level": 1,
+          "moves": [
+            "BRAVEBIRD",
+            "RETURN",
+            "FRUSTRATION",
+            "QUICKATTACK"
+          ]
+        },
+        {
+          "species": "LOKIX",
+          "level": 1,
+          "moves": [
+            "BUGBITE",
+            "PAYBACK",
+            "BRICKBREAK",
+            "TRAILBLAZE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-private-investigator-jack",
+      "name": "Jack",
+      "trainerType": "SINNOHIAN_DPP_PRIVATE_INVESTIGATOR",
+      "trainerClass": "Private Investigator",
+      "location": "Penumbra City",
+      "team": [
+        {
+          "species": "GOLEM",
+          "level": 1,
+          "form": 1,
+          "moves": [
+            "THUNDERPUNCH",
+            "ROCKCLIMB",
+            "FISSURE",
+            "FIREPUNCH"
+          ]
+        },
+        {
+          "species": "TYPHLOSION",
+          "level": 1,
+          "moves": [
+            "FLAMETHROWER",
+            "FOCUSBLAST",
+            "EXTRASENSORY",
+            "EARTHPOWER"
+          ]
+        },
+        {
+          "species": "BRELOOM",
+          "level": 1,
+          "moves": [
+            "CUT",
+            "REVENGE",
+            "ROCKTOMB",
+            "IRONTAIL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unovaian-b2w2-harlequin-dustin",
+      "name": "Dustin",
+      "trainerType": "UNOVAIAN_B2W2_HARLEQUIN",
+      "trainerClass": "Harlequin",
+      "location": "Route 7",
+      "team": [
+        {
+          "species": "ARCTOVISH",
+          "level": 1,
+          "moves": [
+            "CRUNCH",
+            "FREEZEDRY",
+            "LIQUIDATION",
+            "ANCIENTPOWER"
+          ]
+        },
+        {
+          "species": "SIRFETCHD",
+          "level": 1,
+          "moves": [
+            "CUT",
+            "SLASH",
+            "IRONTAIL",
+            "THROATCHOP"
+          ]
+        },
+        {
+          "species": "PINCURCHIN",
+          "level": 1,
+          "moves": [
+            "SPARK",
+            "GUNKSHOT",
+            "ASSURANCE",
+            "PECK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hoennian-oras-bug-maniac-dean",
+      "name": "Dean",
+      "trainerType": "HOENNIAN_ORAS_BUG_MANIAC",
+      "trainerClass": "Bug Maniac",
+      "location": "Apterygota City",
+      "team": [
+        {
+          "species": "ARMALDO",
+          "level": 1,
+          "moves": [
+            "XSCISSOR",
+            "ROCKCLIMB",
+            "AQUAJET",
+            "SCRATCH"
+          ]
+        },
+        {
+          "species": "YANMEGA",
+          "level": 1,
+          "moves": [
+            "SILVERWIND",
+            "TWISTER",
+            "ANCIENTPOWER",
+            "GIGADRAIN"
+          ]
+        },
+        {
+          "species": "DURANT",
+          "level": 1,
+          "moves": [
+            "BODYSLAM",
+            "IRONHEAD",
+            "ROCKCLIMB",
+            "CRUNCH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kantoian-lgpe-super-nerd-dwayne",
+      "name": "Dwayne",
+      "trainerType": "KANTOIAN_LGPE_SUPER_NERD",
+      "trainerClass": "Super Nerd",
+      "location": "Route 8",
+      "team": [
+        {
+          "species": "REUNICLUS",
+          "level": 1,
+          "moves": [
+            "AURASPHERE",
+            "ZENHEADBUTT",
+            "MORTALSPIN",
+            "ENERGYBALL"
+          ]
+        },
+        {
+          "species": "VANILLUXE",
+          "level": 1,
+          "moves": [
+            "ICEBEAM",
+            "BUBBLEBEAM",
+            "SPARKLYSWIRL",
+            "MIRRORSHOT"
+          ]
+        },
+        {
+          "species": "KLEAVOR",
+          "level": 1,
+          "moves": [
+            "ROCKTHROW",
+            "XSCISSOR",
+            "WINGATTACK",
+            "BRICKBREAK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paldean-sv-bodybuilder-man-alfie",
+      "name": "Alfie",
+      "trainerType": "PALDEAN_SV_BODYBUILDER_MAN",
+      "trainerClass": "Bodybuilder Man",
+      "location": "Bulwark City",
+      "team": [
+        {
+          "species": "CYCLIZAR",
+          "level": 1,
+          "moves": [
+            "FACADE",
+            "CRUNCH",
+            "AQUATAIL",
+            "DRAGONRUSH"
+          ],
+          "item": "EVIOLITE"
+        },
+        {
+          "species": "IRONJUGULIS",
+          "level": 1,
+          "moves": [
+            "DARKPULSE",
+            "FLASHCANNON",
+            "FIREBLAST",
+            "HYDROPUMP"
+          ]
+        },
+        {
+          "species": "HOUNDSTONE",
+          "level": 1,
+          "moves": [
+            "NIGHTSHADE",
+            "ACCELEROCK",
+            "BODYPRESS",
+            "BITE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kaloian-xy-backpacker-maxence",
+      "name": "Maxence",
+      "trainerType": "KALOIAN_XY_BACKPACKER",
+      "trainerClass": "Backpacker",
+      "location": "Route 9",
+      "team": [
+        {
+          "species": "FURRET",
+          "level": 1,
+          "moves": [
+            "SLAM",
+            "DYNAMICPUNCH",
+            "AQUATAIL",
+            "CUT"
+          ]
+        },
+        {
+          "species": "TALONFLAME",
+          "level": 1,
+          "moves": [
+            "PECK",
+            "QUICKATTACK",
+            "RETURN",
+            "FRUSTRATION"
+          ]
+        },
+        {
+          "species": "HAXORUS",
+          "level": 1,
+          "moves": [
+            "SLASH",
+            "DRAGONCLAW",
+            "XSCISSOR",
+            "IRONHEAD"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oerrian-colo-chaser-woman-liliana",
+      "name": "Liliana",
+      "trainerType": "OERRIAN_COLO_CHASER_WOMAN",
+      "trainerClass": "Chaser Woman",
+      "location": "Virga City",
+      "team": [
+        {
+          "species": "FEAROW",
+          "level": 1,
+          "moves": [
+            "RETURN",
+            "DRILLRUN",
+            "PURSUIT",
+            "FLOATYFALL"
+          ]
+        },
+        {
+          "species": "POLITOED",
+          "level": 1,
+          "moves": [
+            "HYPERVOICE",
+            "BUBBLEBEAM",
+            "ICEBEAM",
+            "EARTHPOWER"
+          ]
+        },
+        {
+          "species": "NIDOKING",
+          "level": 1,
+          "moves": [
+            "EARTHPOWER",
+            "SLUDGEBOMB",
+            "STRENGTH",
+            "ROCKCLIMB"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-pokemon-ranger-man-yeromeyev",
+      "name": "Yeromeyev",
+      "trainerType": "SINNOHIAN_DPP_POKEMON_RANGER_MAN",
+      "trainerClass": "Pokemon Ranger Man",
+      "location": "Route 10",
+      "team": [
+        {
+          "species": "STOUTLAND",
+          "level": 1,
+          "moves": [
+            "RETALIATE",
+            "RETURN",
+            "STRENGTH",
+            "PSYCHICFANGS"
+          ]
+        },
+        {
+          "species": "VESPIQUEN",
+          "level": 1,
+          "moves": [
+            "POWERGEM",
+            "BUGBUZZ",
+            "SLUDGEBOMB",
+            "HURRICANE"
+          ]
+        },
+        {
+          "species": "BLASTOISE",
+          "level": 1,
+          "moves": [
+            "LIQUIDATION",
+            "HEAVYSLAM",
+            "ICESPINNER",
+            "RETURN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kaloian-xy-acetrainer-man-mael",
+      "name": "Mael",
+      "trainerType": "KALOIAN_XY_ACETRAINER_MAN",
+      "trainerClass": "Acetrainer Man",
+      "location": "Lucid City",
+      "team": [
+        {
+          "species": "BARBARACLE",
+          "level": 1
+        },
+        {
+          "species": "FURFROU",
+          "level": 1,
+          "form": 8
+        },
+        {
+          "species": "DEDENNE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-fisherman-harper",
+      "name": "Harper",
+      "trainerType": "SINNOHIAN_DPP_FISHERMAN",
+      "trainerClass": "Fisherman",
+      "location": "Route 11",
+      "team": [
+        {
+          "species": "JOLTEON",
+          "level": 1
+        },
+        {
+          "species": "SNEASLER",
+          "level": 1
+        },
+        {
+          "species": "DECIDUEYE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-super-nerd-bobby",
+      "name": "Bobby",
+      "trainerType": "JOHTOIAN_HGSS_SUPER_NERD",
+      "trainerClass": "Super Nerd",
+      "location": "Route 11",
+      "team": [
+        {
+          "species": "DHELMISE",
+          "level": 1
+        },
+        {
+          "species": "CERULEDGE",
+          "level": 1
+        },
+        {
+          "species": "GREEDENT",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "galarian-swsh-ball-guy-ball-guy",
+      "name": "Ball Guy",
+      "trainerType": "GALARIAN_SWSH_BALL_GUY",
+      "trainerClass": "Ball Guy",
+      "location": "Circuit City",
+      "team": [
+        {
+          "species": "AMOONGUSS",
+          "level": 1
+        },
+        {
+          "species": "TOGETIC",
+          "level": 1,
+          "item": "EVIOLITE"
+        },
+        {
+          "species": "ELECTRODE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "kantoian-lgpe-tamer-kambiz",
+      "name": "Kambiz",
+      "trainerType": "KANTOIAN_LGPE_TAMER",
+      "trainerClass": "Tamer",
+      "location": "Route 12",
+      "team": [
+        {
+          "species": "SWANNA",
+          "level": 1
+        },
+        {
+          "species": "PYROAR",
+          "level": 1
+        },
+        {
+          "species": "AROMATISSE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "pasioian-maex-street-thug-lavern",
+      "name": "Lavern",
+      "trainerType": "PASIOIAN_MAEX_STREET_THUG",
+      "trainerClass": "Street Thug",
+      "location": "Route 12",
+      "team": [
+        {
+          "species": "TYRANTRUM",
+          "level": 1
+        },
+        {
+          "species": "VENOMOTH",
+          "level": 1
+        },
+        {
+          "species": "HOUNDOOM",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "kitakamian-sv-caretaker-horace",
+      "name": "Horace",
+      "trainerType": "KITAKAMIAN_SV_CARETAKER",
+      "trainerClass": "Caretaker",
+      "location": "Noxious City",
+      "team": [
+        {
+          "species": "SCOLIPEDE",
+          "level": 1
+        },
+        {
+          "species": "IRONBUNDLE",
+          "level": 1
+        },
+        {
+          "species": "SHIFTRY",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-fire-breather-fred",
+      "name": "Fred",
+      "trainerType": "JOHTOIAN_HGSS_FIRE_BREATHER",
+      "trainerClass": "Fire Breather",
+      "location": "Mt. Vile",
+      "team": [
+        {
+          "species": "MANTINE",
+          "level": 1
+        },
+        {
+          "species": "MUDSDALE",
+          "level": 1
+        },
+        {
+          "species": "SKELEDIRGE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "hoennian-oras-battle-girl-hikari",
+      "name": "Hikari",
+      "trainerType": "HOENNIAN_ORAS_BATTLE_GIRL",
+      "trainerClass": "Battle Girl",
+      "location": "Mt. Vile",
+      "team": [
+        {
+          "species": "SWAMPERT",
+          "level": 1
+        },
+        {
+          "species": "SABLEYE",
+          "level": 1
+        },
+        {
+          "species": "PLUSLE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "hubian-pokengine-model-evandro",
+      "name": "Evandro",
+      "trainerType": "HUBIAN_POKENGINE_MODEL",
+      "trainerClass": "Model",
+      "location": "Route 13",
+      "team": [
+        {
+          "species": "STARAVIA",
+          "level": 1,
+          "item": "EVIOLITE"
+        },
+        {
+          "species": "KECLEON",
+          "level": 1
+        },
+        {
+          "species": "CINCCINO",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "hoennian-oras-triathlete-running-maki",
+      "name": "Maki",
+      "trainerType": "HOENNIAN_ORAS_TRIATHLETE_RUNNING",
+      "trainerClass": "Triathlete Running",
+      "location": "Route 13",
+      "team": [
+        {
+          "species": "ACCELGOR",
+          "level": 1
+        },
+        {
+          "species": "SANDSLASH",
+          "level": 1
+        },
+        {
+          "species": "MINUN",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "pasioian-maex-swimmer-travis",
+      "name": "Travis",
+      "trainerType": "PASIOIAN_MAEX_SWIMMER",
+      "trainerClass": "Swimmer",
+      "location": "Route 13",
+      "team": [
+        {
+          "species": "GRAPPLOCT",
+          "level": 1
+        },
+        {
+          "species": "JELLICENT",
+          "level": 1
+        },
+        {
+          "species": "GOLDUCK",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "pasioian-maex-punk-girl-celeste",
+      "name": "Celeste",
+      "trainerType": "PASIOIAN_MAEX_PUNK_GIRL",
+      "trainerClass": "Punk Girl",
+      "location": "Sylph City",
+      "team": [
+        {
+          "species": "AZUMARILL",
+          "level": 1
+        },
+        {
+          "species": "CARNIVINE",
+          "level": 1
+        },
+        {
+          "species": "TURTONATOR",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "kitakamian-sv-nurse-katsura",
+      "name": "Katsura",
+      "trainerType": "KITAKAMIAN_SV_NURSE",
+      "trainerClass": "Nurse",
+      "location": "Route 14",
+      "team": [
+        {
+          "species": "SHIINOTIC",
+          "level": 1
+        },
+        {
+          "species": "TALONFLAME",
+          "level": 1
+        },
+        {
+          "species": "EELEKTROSS",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-unoffical-dpp-clown-dorthy",
+      "name": "Dorthy",
+      "trainerType": "SINNOHIAN_UNOFFICAL_DPP_CLOWN",
+      "trainerClass": "Dpp Clown",
+      "location": "Route 14",
+      "team": [
+        {
+          "species": "ALTARIA",
+          "level": 1
+        },
+        {
+          "species": "PASSIMIAN",
+          "level": 1
+        },
+        {
+          "species": "GENGAR",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-acetrainer-man-hinata",
+      "name": "Hinata",
+      "trainerType": "JOHTOIAN_HGSS_ACETRAINER_MAN",
+      "trainerClass": "Acetrainer Man",
+      "location": "Revenant City",
+      "team": [
+        {
+          "species": "SUDOWOODO",
+          "level": 1
+        },
+        {
+          "species": "ARIADOS",
+          "level": 1,
+          "moves": [
+            "SWORDSDANCE",
+            "LEECHLIFE",
+            "POISONSTING",
+            "THROATCHOP"
+          ]
+        },
+        {
+          "species": "FERALIGATR",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "kaloian-xy-hex-maniac-ume",
+      "name": "Ume",
+      "trainerType": "KALOIAN_XY_HEX_MANIAC",
+      "trainerClass": "Hex Maniac",
+      "location": "Route 15",
+      "team": [
+        {
+          "species": "FARIGIRAF",
+          "level": 1
+        },
+        {
+          "species": "URSALUNA",
+          "level": 1,
+          "form": 1
+        },
+        {
+          "species": "DRACOZOLT",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "hoennian-oras-dragon-tamer-vincent",
+      "name": "Vincent",
+      "trainerType": "HOENNIAN_ORAS_DRAGON_TAMER",
+      "trainerClass": "Dragon Tamer",
+      "location": "Draco City",
+      "team": [
+        {
+          "species": "SERPERIOR",
+          "level": 1
+        },
+        {
+          "species": "LYCANROC",
+          "level": 1
+        },
+        {
+          "species": "BLASTOISE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "galarian-swsh-post-man-pat",
+      "name": "Pat",
+      "trainerType": "GALARIAN_SWSH_POST_MAN",
+      "trainerClass": "Post Man",
+      "location": "Route 16",
+      "team": [
+        {
+          "species": "FALINKS",
+          "level": 1
+        },
+        {
+          "species": "RAPIDASH",
+          "level": 1
+        },
+        {
+          "species": "PORYGON2",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-jogger-zhirenkov",
+      "name": "Zhirenkov",
+      "trainerType": "SINNOHIAN_DPP_JOGGER",
+      "trainerClass": "Jogger",
+      "location": "Route 16",
+      "team": [
+        {
+          "species": "MIGHTYENA",
+          "level": 1
+        },
+        {
+          "species": "GRANBULL",
+          "level": 1
+        },
+        {
+          "species": "GOGOAT",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "pasioian-maex-collector-mariano",
+      "name": "Mariano",
+      "trainerType": "PASIOIAN_MAEX_COLLECTOR",
+      "trainerClass": "Collector",
+      "location": "Route 16",
+      "team": [
+        {
+          "species": "HATTERENE",
+          "level": 1
+        },
+        {
+          "species": "UMBREON",
+          "level": 1
+        },
+        {
+          "species": "MANECTRIC",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "oerrian-colo-chaser-man-layton",
+      "name": "Layton",
+      "trainerType": "OERRIAN_COLO_CHASER_MAN",
+      "trainerClass": "Chaser Man",
+      "location": "Iron City",
+      "team": [
+        {
+          "species": "MAGNEZONE",
+          "level": 1
+        },
+        {
+          "species": "STARMIE",
+          "level": 1
+        },
+        {
+          "species": "SEVIPER",
+          "level": 1,
+          "moves": [
+            "COIL",
+            "POISONFANG",
+            "THROATCHOP",
+            "AQUATAIL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kaloian-xy-veteran-woman-lili",
+      "name": "Lili",
+      "trainerType": "KALOIAN_XY_VETERAN_WOMAN",
+      "trainerClass": "Veteran Woman",
+      "location": "Route 17",
+      "team": [
+        {
+          "species": "QUILLADIN",
+          "level": 1,
+          "moves": [
+            "BODYPRESS",
+            "CUT",
+            "IRONDEFENSE",
+            "SPIKYSHIELD"
+          ],
+          "item": "EVIOLITE"
+        },
+        {
+          "species": "FLORGES",
+          "level": 1,
+          "form": 1,
+          "moves": [
+            "CHARGEBEAM",
+            "DRAININGKISS",
+            "PSYCHICNOISE",
+            "ENERGYBALL"
+          ]
+        },
+        {
+          "species": "AEGISLASH",
+          "level": 1,
+          "moves": [
+            "SWORDSDANCE",
+            "SLASH",
+            "SACREDSWORD",
+            "SHADOWSNEAK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alolan-usum-nurse-malia",
+      "name": "Malia",
+      "trainerType": "ALOLAN_USUM_NURSE",
+      "trainerClass": "Nurse",
+      "location": "Route 17",
+      "team": [
+        {
+          "species": "AURORUS",
+          "level": 1
+        },
+        {
+          "species": "ROTOM",
+          "level": 1
+        },
+        {
+          "species": "INDEEDEE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "johtoian-hgss-guitarist-daichi",
+      "name": "Daichi",
+      "trainerType": "JOHTOIAN_HGSS_GUITARIST",
+      "trainerClass": "Guitarist",
+      "location": "Route 17",
+      "team": [
+        {
+          "species": "YANMEGA",
+          "level": 1
+        },
+        {
+          "species": "TYPHLOSION",
+          "level": 1,
+          "form": 1
+        },
+        {
+          "species": "HITMONLEE",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "sinnohian-dpp-clown-gleb",
+      "name": "Gleb",
+      "trainerType": "SINNOHIAN_DPP_CLOWN",
+      "trainerClass": "Clown",
+      "location": "Crystal City",
+      "team": [
+        {
+          "species": "KLAWF",
+          "level": 1
+        },
+        {
+          "species": "HARIYAMA",
+          "level": 1
+        },
+        {
+          "species": "MRMIME",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "kantoian-lgpe-burglar-dylan",
+      "name": "Dylan",
+      "trainerType": "KANTOIAN_LGPE_BURGLAR",
+      "trainerClass": "Burglar",
+      "location": "Route 18",
+      "team": [
+        {
+          "species": "MUK",
+          "level": 1,
+          "form": 1
+        },
+        {
+          "species": "CHARIZARD",
+          "level": 1
+        },
+        {
+          "species": "VENUSAUR",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "unovaian-b2w2-veteran-woman-julia",
+      "name": "Julia",
+      "trainerType": "UNOVAIAN_B2W2_VETERAN_WOMAN",
+      "trainerClass": "Veteran Woman",
+      "location": "Stratos City",
+      "team": [
+        {
+          "species": "GLACEON",
+          "level": 1
+        },
+        {
+          "species": "NINETALES",
+          "level": 1
+        },
+        {
+          "species": "DONPHAN",
+          "level": 1
+        }
+      ]
+    }
+  ]
+}

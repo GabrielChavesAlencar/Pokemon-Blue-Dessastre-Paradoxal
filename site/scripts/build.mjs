@@ -22,5 +22,5 @@ const locationData=await readJson('locations');
 const generatedGuides=generateGuides({catalog:await readJson('catalog'),locations:{...locationData,locations:activeLocations(locationData.locations,await readJson('region-points'))},details:await readJson('details'),editorial:await readJson('guides')});
 await writeFile(path.join(output,'data/guides.json'),JSON.stringify(generatedGuides));
 console.log('Guias sincronizados: '+generatedGuides.guides.length);
-for (const file of ['catalog.json','details.json','locations.json','updates.json','guides.json','story-trainers.json','region-points.json']) JSON.parse(await readFile(path.join(output,'data',file),'utf8'));
+for (const file of ['catalog.json','details.json','locations.json','updates.json','guides.json','story-trainers.json','regular-trainers.json','region-points.json']) JSON.parse(await readFile(path.join(output,'data',file),'utf8'));
 console.log('Portal Blue pronto: dist/');

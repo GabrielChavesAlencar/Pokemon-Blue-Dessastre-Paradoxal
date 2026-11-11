@@ -75,6 +75,63 @@ def parse_teams(raw: str) -> dict[tuple[str, str], list[dict]]:
         if team: teams[(match.group(1).strip(),match.group(2).strip())]=team
     return teams
 
+
+def sync_regular_trainers(raw: str, output: Path, roster: dict) -> int:
+    """Synchronize regular trainer teams from the LOCAL game PBS when available.
+
+    Preserve identities, locations and fallback data for entries not in the
+    local file; do not replace the Gym/Master roster. The static JSON source
+    is committed separately so the website also works without game assets.
+    """
+    import unicodedata
+    target=output/'regular-trainers.json'
+    if not target.is_file():
+        return 0
+    data=json.loads(target.read_text(encoding='utf8'))
+    if not isinstance(data.get('trainers'),list):
+        raise ValueError('Invalid regular trainer manifest.')
+    parsed=parse_teams(raw)
+    current={(t['trainerType'],t['name']):t for t in data['trainers']}
+    protected={t['name'] for t in roster.get('masters',[])+roster.get('bosses',[])}
+    changes=0
+    for trainer in data['trainers']:
+        team=parsed.pop((trainer['trainerType'],trainer['name']),None)
+        if team is None:
+            continue
+        if team!=trainer['team'] or trainer.get('teamOrigin')!='blue-pbs':
+            trainer['team']=team
+            trainer['teamOrigin']='blue-pbs'
+            changes+=1
+    # New trainers authored directly in Blue Studio also appear in this tab.
+    used={t['id'] for t in data['trainers']}
+    for (category,name),team in sorted(parsed.items()):
+        base=name.split(' (',1)[0]
+        if base in protected or re.search(r'\((?:1v1|2v2|3v3)\s+(?:Basic|Full)\s+Power\)',name,re.I):
+            continue
+        safe=unicodedata.normalize('NFKD',category+'-'+name)
+        safe=''.join(ch for ch in safe if not unicodedata.combining(ch))
+        slug=re.sub(r'[^a-z0-9]+','-',safe.lower()).strip('-')
+        if not slug:
+            continue
+        ident=slug
+        suffix=2
+        while ident in used:
+            ident=f'{slug}-{suffix}'
+            suffix+=1
+        used.add(ident)
+        trainer_class=' '.join(category.split('_')[2:]).replace('_',' ').title() or category
+        data['trainers'].append({
+            'id':ident,'name':name,'trainerType':category,
+            'trainerClass':trainer_class,'location':'Local não informado',
+            'team':team,'teamOrigin':'blue-pbs'
+        })
+        changes+=1
+    if changes:
+        data['basis']='Registros locais do Blue Studio onde teamOrigin=blue-pbs; demais preservados do PBS Decades'
+        data['sourceCRC']=zlib.crc32(raw.encode('utf8'))
+        target.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    return changes
+
 def update_story_teams(game: Path, output: Path) -> int:
     source=game/'PBS'/'trainers_story_mode.txt'
     target=output/'story-trainers.json'
@@ -92,6 +149,7 @@ def update_story_teams(game: Path, output: Path) -> int:
                 variant['team']=possible[0][1]
                 variant['origin']='blue-pbs'
                 count+=1
+    sync_regular_trainers(source.read_text(encoding='utf-8-sig'),output,roster)
     profiles_updated=campaign_profiles(game,roster,source.read_bytes())
     if count or profiles_updated:
         roster['version']='blue-pbs-with-reference-fallback'
