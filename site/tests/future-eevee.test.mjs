@@ -7,6 +7,7 @@ import {mergeFutureCatalog,mergeFutureDetails,mergeRegionalLocations,futureSprit
 import {filterSpecies,pokemonPath} from '../src/assets/utils.js';
 import {pokemonCard} from '../src/assets/views.js';
 import {pokemonDetail} from '../src/assets/detail.js';
+import {teamPokemon} from '../src/assets/story.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=name=>JSON.parse(readFileSync(path.join(root,'public/data',name+'.json'),'utf8'));
 const manifest=read('future-eevee');
@@ -119,4 +120,12 @@ test('nove encontros regionais aparecem em áreas distintas com probabilidades p
     }
     assert.ok(area.species.includes(plan.species));
   }
+});
+
+test('a ficha de treinador renderiza sprite regional também quando Form vem como texto no PBS',()=>{
+  const p={species:'VAPOREON',form:'50',level:35};
+  const html=teamPokemon(p,model,details);
+  assert.match(html,/future-team-sprite/);
+  assert.match(html,/sprites-atlas\.png/);
+  assert.match(html,/Vaporeon regional/);
 });
