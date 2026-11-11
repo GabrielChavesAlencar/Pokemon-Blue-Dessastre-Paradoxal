@@ -20,8 +20,10 @@ CLASSES = {"RPG::Map", "RPG::MapInfo", "RPG::Tileset", "RPG::AudioFile"}
 NATIVE = {"Table", "Color", "Tone"}
 
 
-def serialize(value):
+def serialize(value, extra_classes=()):
     """Serialize only the structures used by this map/tileset preview."""
+    classes = CLASSES | set(extra_classes)
+
     def symbol(s):
         b = s.encode("ascii")
         return b":" + integer(len(b)) + b
@@ -39,7 +41,7 @@ def serialize(value):
             return b"[" + integer(len(obj)) + b"".join(map(write, obj))
         if isinstance(obj, dict):
             return b"{" + integer(len(obj)) + b"".join(write(k) + write(v) for k, v in obj.items())
-        if isinstance(obj, RubyObject) and obj.name in CLASSES:
+        if isinstance(obj, RubyObject) and obj.name in classes:
             return b"o" + symbol(obj.name) + integer(len(obj.attrs)) + b"".join(
                 symbol(k) + write(v) for k, v in obj.attrs.items())
         if isinstance(obj, RubyData) and obj.name in NATIVE:
@@ -154,3 +156,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
+

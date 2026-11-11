@@ -80,3 +80,30 @@ contém eventos ativos nem substitui a campanha.
 4. Quando houver dados reais no jogo, exportar encontros, treinadores e
    localizações por região para Pokédex, Habitat Dex, álbum e portal.
    Publicar revanches oficiais com as fontes e sem inventar equipes.
+
+## Piloto de Kanto em uma cópia local
+
+Na pasta do Blue, execute:
+
+~~~powershell
+python scripts/regions/pilot.py --launch
+~~~
+
+A primeira execução monta a cópia em .blue-work/kanto-pilot com a
+instalação do Blue e a fonte Essentials FRLG 1.1 extraída em
+.blue-work/frlg-source/Essentials FRLG. Para outro caminho da fonte,
+informe --source. O executável também pode ser aberto diretamente na
+pasta do piloto. Os saves usam o perfil Kanto Piloto, dentro de
+Dessastre Paradoxal Kanto Testes.
+
+Comece uma partida e entre no laboratório de Oak em Pallet Town.
+Fale com Oak para escolher o inicial e com Blue para a primeira batalha.
+Explore a Rota 1 e Viridian, atravesse a floresta e desafie Brock em
+Pewter. As fichas do portal usam os níveis base do PBS do piloto.
+A Boulder Badge conta como conquista local nesse save.
+
+O catálogo público é gerado com python scripts/regions/export_kanto.py
+a partir dos mesmos rascunhos de encontros e equipes usados na cópia.
+A verificação nativa compila a cópia, carrega Pallet e o laboratório,
+confere encontros e equipes e verifica save e recarga. A verificação
+automatiza a escolha do inicial e fornece os resultados das batalhas.

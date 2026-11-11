@@ -1,0 +1,71 @@
+name: Piloto de Kanto - verificação nativa
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/regions/**', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      GALLIUM_DRIVER: llvmpipe
+      ALSOFT_DRIVERS: 'null'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: http.sslBackend
+      GIT_CONFIG_VALUE_0: openssl
+      GIT_TERMINAL_PROMPT: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preparar Blue e a fonte editável de Kanto
+        shell: powershell
+        run: |
+          python scripts/install_game.py --apply
+          if($LASTEXITCODE -ne 0){throw 'Blue installation failed'}
+          $ProgressPreference='SilentlyContinue'
+          $source=New-Item -ItemType Directory -Force '.blue-work/frlg-source'
+          $archive=Join-Path $source.FullName 'FRLG.rar'
+          $url='https://drive.usercontent.google.com/download?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t'
+          Invoke-WebRequest -UseBasicParsing $url -OutFile $archive
+          $manifest=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
+          if((Get-FileHash $archive -Algorithm SHA256).Hash.ToLower() -ne $manifest.sha256){throw 'FRLG archive hash differs'}
+          $list=Join-Path $source.FullName 'files.txt'
+          $entries=@(tar -tf $archive | Where-Object { $_ -match '^Essentials FRLG/(Data/(Map[0-9]+|MapInfos|Tilesets|System)\.rxdata|PBS/(encounters|trainers|map_connections|map_metadata)\.txt|Graphics/(Characters|Tilesets|Autotiles)/[^/]+\.png)$' })
+          if($LASTEXITCODE -ne 0 -or $entries.Count -lt 200){throw 'FRLG archive listing failed'}
+          [IO.File]::WriteAllLines($list,[string[]]$entries,(New-Object System.Text.UTF8Encoding($false)))
+          tar -xf $archive -C $source.FullName -T $list
+          if($LASTEXITCODE -ne 0){throw 'FRLG extraction failed'}
+          python scripts/regions/pilot.py
+          if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
+          python scripts/regions/native_check.py .blue-work/kanto-pilot
+          if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
+      - name: Compilar e testar Kanto na engine
+        shell: powershell
+        run: |
+          $ProgressPreference='SilentlyContinue'
+          $mesa=Join-Path $env:RUNNER_TEMP 'mesa.7z'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/pal1000/mesa-dist-win/releases/download/26.2.6/mesa3d-26.2.6-release-mingw.7z' -OutFile $mesa
+          if((Get-FileHash -LiteralPath $mesa -Algorithm SHA256).Hash.ToLower() -ne 'da0f71d9181b672c1918f3c342f11118c687f6059a46b16502845160733cc388'){throw 'Mesa checksum failed'}
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
+          & "$env:ProgramFiles\7-Zip\7z.exe" x $mesa "-o$mesaFolder" -y | Out-Null
+          if($LASTEXITCODE -ne 0){throw 'Mesa extraction failed'}
+          $pilot=(Resolve-Path .blue-work/kanto-pilot).Path
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $pilot }
+          if(-not (Test-Path "$pilot/opengl32.dll")){throw 'x64 OpenGL driver missing'}
+          for($attempt=1;$attempt -le 3;$attempt++){
+            $process=Start-Process -FilePath "$pilot/Game.exe" -WorkingDirectory $pilot -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-native-out.txt" -RedirectStandardError ".blue-work/kanto-native-err.txt"
+            $handle=$process.Handle
+            if(-not $process.WaitForExit(150000)){Stop-Process -Id $process.Id;throw 'Kanto native test timed out'}
+            if(Test-Path "$pilot/Data/blue-kanto-proof.txt"){Get-Content "$pilot/Data/blue-kanto-proof.txt";exit 0}
+            if(Test-Path "$pilot/Data/blue-kanto-error.txt"){break}
+            if($process.ExitCode -ne 0 -and -not (Select-String -Path .blue-work/kanto-native-out.txt -Pattern 'Successfully compiled all game data' -Quiet)){break}
+          }
+          Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+          throw 'Kanto native proof missing'
