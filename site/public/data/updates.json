@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4156af45a3644792adc3deb12b94e1ff461f39d8",
+      "date": "2026-11-11T16:22:36-03:00",
+      "title": "fix(battle): padronizar frente e costas dos sprites Dessastre em 128px",
+      "category": "Correções"
+    },
+    {
       "sha": "b6d48d7505e84cf6b013fbdf0407777beb67dcd5",
       "date": "2026-11-11T15:58:29-03:00",
       "title": "fix(site): preservar forma regional de treinadores ao sincronizar PBS",
