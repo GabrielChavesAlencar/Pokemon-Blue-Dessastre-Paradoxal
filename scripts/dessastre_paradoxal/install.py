@@ -184,8 +184,11 @@ def make_plan(project,game):
         plans[target]=data.encode('utf8') if isinstance(data,str) else data
     for mega,name in [(False,'pokemon_dessastre_paradoxal.txt'),(True,'pokemon_forms_dessastre_paradoxal.txt')]:
         put('PBS/'+name,'# Geracao especial autoral. Descricoes pendentes: ????\n#-------------------------------\n'+'#-------------------------------\n'.join(pbs_entry(p,ready) for p in ready if bool(p.get('base'))==mega))
-    metrics='# Metricas de sprites estaticos normalizados; escala 1.\n'
-    for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,1\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
+    metrics='# Metricas de batalha da geracao autoral; frente 2x e costas 1x.\n'
+    # The Decades engine's default FRONT_BATTLER_SPRITE_SCALE is 2.
+    # An explicit scale of 1 shrank every author sprite relative to native Pokemon.
+    # Do not change back sprite scale or any source PNGs.
+    for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,2\nBackSprite = 0,0,1\nShadowSprite = 0,0,2\n"
     put('PBS/pokemon_metrics_dessastre_paradoxal.txt',metrics)
     items='# Pedras das Mega Evolucoes autorais.\n'
     for p in ready:
