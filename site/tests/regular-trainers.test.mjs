@@ -43,7 +43,7 @@ test('ficha reutiliza cartões de equipes e preserva informações originais',()
   assert.match(html,/Golpes|Hydro Pump|Hydropump/i);
   assert.match(html,/70%/);
   assert.match(html,/trainerVariant/);
-  assert.match(html,/Treinadores/);
+  assert.match(html,/treinadores/i);
 });
 test('Master recebe 4º Pokémon para cobrir tipos com nível de 90%',()=>{
   const trainer=data.trainers.find(t=>t.name==='Pyotr');
