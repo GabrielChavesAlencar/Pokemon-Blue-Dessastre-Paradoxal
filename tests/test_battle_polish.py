@@ -17,6 +17,18 @@ class PolishInstallTests(unittest.TestCase):
             root=Path(tmp);game=self.fixture(root);before={p:p.read_bytes() for p in game.rglob('*') if p.is_file()}
             self.assertEqual(polish.install(root,game),len(polish.FILES));self.assertEqual(polish.install(root,game),0)
             self.assertTrue(all(p.read_bytes()==raw for p,raw in before.items()))
+    def test_master_team_rules_are_isolated_and_native_smoke_covers_them(self):
+        source=(ROOT/'scripts/battle_polish/Campaign.rb').read_text()
+        validation=(ROOT/'scripts/battle_polish/CampaignValidation.rb').read_text()
+        self.assertIn('scaled_level(party,master? ? 90 : 70)',source)
+        self.assertIn('trainer.party.length.between?(1,3)',source)
+        self.assertIn('slots=[6-trainers.sum',source)
+        self.assertIn('master_weaknesses(party)',source)
+        self.assertIn('Effectiveness.calculate',source)
+        self.assertIn('BlueCampaign.expand_master_teams(trainers,level)',source)
+        self.assertIn('Master fills 3-member trainer teams to 4 at 90 percent level',validation)
+        self.assertIn('Master keeps complete six-Pokemon boss/leader teams intact',validation)
+
     def test_failure_rolls_back_existing_plugin(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root);polish.install(root,game)

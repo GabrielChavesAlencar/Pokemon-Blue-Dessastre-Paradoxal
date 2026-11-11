@@ -93,6 +93,8 @@ module BlueCampaignValidation
     check($bag.pockets.all?(&:empty?) && !$PokemonGlobal.blue_campaign_departure,'Leaving intro removes starter item suites exactly once')
     $bag.add(:POTION,1);BlueCampaign.depart
     check($bag.quantity(:POTION)==1,'Later map entries preserve legitimately acquired items')
+    badges=$player.badges.dup
+    $player.badges.replace(Array.new(18,false))
     $player.party=[BlueBattleLab.build(:PIKACHU,10),BlueBattleLab.build(:MAGIKARP,5)]
     check(BlueCampaign.common_level==7,'Highest party level 10 yields common trainer level 7')
     $player.party[0].level=1
@@ -109,7 +111,33 @@ module BlueCampaignValidation
     boss=NPCTrainer.new('Danny (Singles)',:YOUNGSTER);boss.party=[BlueBattleLab.build(:PIKACHU,50)]
     bb=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,boss.party,[$player],[boss])
     check(bb.pbParty(1).first.level==7,'Bosses use the same 70 percent campaign scaling as every trainer')
-    badges=$player.badges.dup
+    # Master starts at 11 badges: 90 percent of the strongest party Pokemon.
+    $player.badges.replace(Array.new(18) { |i| i<11 })
+    $player.party[0].level=50;$player.party[0].calc_stats
+    check(BlueCampaign.master? && BlueCampaign.common_level==45,'Master trainer level is 90 percent for every trainer')
+    first=NPCTrainer.new('Master coverage sample',:YOUNGSTER)
+    first.party=[:CHARIZARD,:ARCANINE,:FLAREON].map { |id| BlueBattleLab.build(id,50) }
+    original=Marshal.dump(first)
+    master_battle=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,first.party,[$player],[first])
+    foes=master_battle.pbParty(1)
+    check(foes.length==4 && foes.all? { |mon| mon.level==45 },'Master fills 3-member trainer teams to 4 at 90 percent level')
+    check(Marshal.dump(first)==original,'Master adds a Pokemon to battle copies, never the source trainer')
+    check(!first.party.map(&:species).include?(foes.last.species),'Master partner is a new species, not a duplicate')
+    check([:WATER,:GROUND,:ROCK].any? { |type| Effectiveness.calculate(type,*foes.last.species_data.types)<1 },
+      'Master extra Pokemon resists a shared Fire team weakness')
+    again=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,first.party,[$player],[first])
+    check(again.pbParty(1).last.species==foes.last.species,'Master coverage is deterministic for the same trainer')
+    full=NPCTrainer.new('Master full roster',:YOUNGSTER)
+    full.party=[:PIKACHU,:GENGAR,:BLASTOISE,:VENUSAUR,:DRAGONITE,:LUCARIO].map { |id| BlueBattleLab.build(id,50) }
+    full_battle=Battle.new(BlueBattleLab::SmokeScene.new,$player.party,full.party,[$player],[full])
+    check(full_battle.pbParty(1).length==6 && full_battle.pbParty(1).all? { |p| p.level==45 },
+      'Master keeps complete six-Pokemon boss/leader teams intact at 90 percent')
+    copies=[first.clone,first.clone]
+    copies.each { |t| t.party=Marshal.load(Marshal.dump(first.party)) }
+    BlueCampaign.expand_master_teams(copies,45)
+    check(copies.sum { |t| t.party.length }==6,'Two opposing trainers never exceed six party slots')
+    $player.badges.replace(Array.new(18,false))
+    $player.party[0].level=10;$player.party[0].calc_stats
     test_mon=BlueBattleLab.build(:CHARIZARD,50);test_mon.moves=[:FIREBLAST,:SWORDSDANCE,:DRAGONCLAW,:FLAMETHROWER].map { |id| Pokemon::Move.new(id) }
     [0,2,5,11].each do |badge_count|
       $player.badges.replace(Array.new(18) { |i| i<badge_count })
