@@ -563,8 +563,15 @@
             "IRONTAIL",
             "GUNKSHOT"
           ]
+        },
+        {
+          "species": "EEVEE",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "alolan-usum-bellhop-lester",
@@ -1508,8 +1515,15 @@
             "BODYPRESS",
             "BITE"
           ]
+        },
+        {
+          "species": "SYLVEON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "kaloian-xy-backpacker-maxence",
@@ -1547,8 +1561,15 @@
             "XSCISSOR",
             "IRONHEAD"
           ]
+        },
+        {
+          "species": "FLAREON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "oerrian-colo-chaser-woman-liliana",
@@ -1711,8 +1732,15 @@
         {
           "species": "ELECTRODE",
           "level": 1
+        },
+        {
+          "species": "JOLTEON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "kantoian-lgpe-tamer-kambiz",
@@ -1774,8 +1802,15 @@
         {
           "species": "SHIFTRY",
           "level": 1
+        },
+        {
+          "species": "VAPOREON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "johtoian-hgss-fire-breather-fred",
@@ -2013,8 +2048,15 @@
         {
           "species": "BLASTOISE",
           "level": 1
+        },
+        {
+          "species": "ESPEON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "galarian-swsh-post-man-pat",
@@ -2076,8 +2118,15 @@
         {
           "species": "MANECTRIC",
           "level": 1
+        },
+        {
+          "species": "UMBREON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "oerrian-colo-chaser-man-layton",
@@ -2103,8 +2152,15 @@
             "THROATCHOP",
             "AQUATAIL"
           ]
+        },
+        {
+          "species": "LEAFEON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     },
     {
       "id": "kaloian-xy-veteran-woman-lili",
@@ -2251,8 +2307,15 @@
         {
           "species": "DONPHAN",
           "level": 1
+        },
+        {
+          "species": "GLACEON",
+          "form": 50,
+          "level": 1,
+          "origin": "blue-regional-eevee"
         }
-      ]
+      ],
+      "teamOrigin": "blue-regional-eevee"
     }
   ]
 }
