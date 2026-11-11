@@ -84,19 +84,19 @@ export function futureEvolutionPanels(model,profile){
         ' · '+esc(rule?.title||'Evolução planejada')+'</small><em>'+esc(rule?.summary??'')+'</em></span>'+icon('arrow')+'</a>';
     }).join('');
     return '<section class="panel future-evo-panel"><div class="panel-heading"><div><span class="eyebrow">OITO CAMINHOS REGIONAIS</span>'+
-      '<h2>Evoluções futuras do Eevee Fantasma</h2></div></div><p class="panel-note">'+
-      'As condições abaixo são propostas inéditas e ainda não funcionam no jogo. Eevee original mantém suas evoluções.</p>'+
+      '<h2>Evoluções regionais do Eevee Fantasma</h2></div></div><p class="panel-note">'+
+      'Os oito métodos de evolução estão implementados no instalador do Blue. Atualize o jogo; Eevee original mantém suas evoluções.</p>'+
       '<div class="future-evo-grid">'+links+'</div></section>';
   }
   const rule=manifest.evolutions[profile.base];
   if(!rule)return '';
   const eevee=manifest.forms.find(x=>x.card.base==='EEVEE')?.card;
-  return '<section class="panel future-evo-panel"><div class="panel-heading"><div><span class="eyebrow">EVOLUÇÃO REGIONAL · PROPOSTA</span>'+
+  return '<section class="panel future-evo-panel"><div class="panel-heading"><div><span class="eyebrow">EVOLUÇÃO REGIONAL · BLUE</span>'+
     '<h2>'+esc(rule.title)+'</h2></div></div>'+
     (eevee?'<a class="future-evo-origin" href="'+pokemonPath(eevee)+'">'+
       futureSprite(eevee,'icon','future-evo-icon')+'<span>Evolui de <b>Eevee regional · Fantasma</b></span>'+icon('arrow')+'</a>':'')+
     '<p class="panel-note">'+esc(rule.summary)+'</p><ul class="future-requirements">'+
     (rule.conditions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+
     '<p class="future-requirements-note">Local sugerido: '+esc(rule.location||'não definido')+
-    '. Requer método próprio na engine; não disponível em saves ou batalhas atuais.</p></section>';
+    '. Método implementado na engine Blue; atualize o jogo para ativar.</p></section>';
 }
