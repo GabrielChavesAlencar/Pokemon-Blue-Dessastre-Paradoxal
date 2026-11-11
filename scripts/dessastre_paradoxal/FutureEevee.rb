@@ -42,7 +42,7 @@ module BlueFutureEevee
       pokemon=@pokemon
       if pokemon && BlueFutureEevee.regional?(pokemon) &&
          move && move.respond_to?(:id) && move.id==:HELPINGHAND &&
-         @battle && @battle.pbSideSize(0)>1 && !opposes?
+         !@lastMoveFailed && @battle && @battle.pbSideSize(0)>1 && !opposes?
         level=pokemon.instance_variable_get(:@blue_future_eevee_helping_level)
         count=(level==pokemon.level) ? pokemon.instance_variable_get(:@blue_future_eevee_helping_uses).to_i : 0
         pokemon.instance_variable_set(:@blue_future_eevee_helping_level,pokemon.level)
