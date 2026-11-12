@@ -58,17 +58,19 @@ def inspect(game: Path) -> dict:
         if maps[mapping[source]].attrs["@events"]:
             raise ValueError(f"Phase 09-11 preview must not import events into {expected[source]}")
     system = load(game / "Data/System.rxdata").attrs
-    if system["@start_map_id"] != mapping[5]:
-        raise ValueError("New game does not start at Kanto's Pallet Town")
-    if not (0 <= system["@start_x"] < maps[mapping[5]].attrs["@width"] and
-            0 <= system["@start_y"] < maps[mapping[5]].attrs["@height"]):
-        raise ValueError("New-game start position is outside Pallet Town")
+    if system["@start_map_id"] != mapping[7]:
+        raise ValueError("Kanto new game must start in the player's house")
+    if not (0 <= system["@start_x"] < maps[mapping[7]].attrs["@width"] and
+            0 <= system["@start_y"] < maps[mapping[7]].attrs["@height"]):
+        raise ValueError("New-game start position is outside the player's house")
 
     # MAN-01: only audited pairs of original exterior/interior door events.
     # Both directions must be present after remapping to Blue map IDs; an
     # accessible house with no exit is a softlock, not a successful import.
     safe_interior_pairs = (
+        (5, 1, 7, 1),          # Player residence; initial spawn
         (5, 2, 8, 1),          # Pallet rival house
+        (5, 3, 6, 1),          # Professor Oak's lab
         (10, 2, 14, 4),        # Viridian houses
         (10, 3, 15, 3),
         (18, 8, 21, 4),        # Route 2 gatehouse — main entry
@@ -94,6 +96,18 @@ def inspect(game: Path) -> dict:
                     results.add(args[1])
         return results
 
+    for eid in (1, 2, 3):
+        pallet_event = maps[mapping[5]].attrs["@events"][eid]
+        if pallet_event.attrs["@pages"][0].attrs["@trigger"] != 1:
+            raise ValueError(f"Pallet residence/lab door {eid} must trigger on touch")
+    agent = maps[mapping[5]].attrs["@events"][9]
+    agent_scripts = [text(op.attrs["@parameters"][0])
+                     for page in agent.attrs["@pages"] for op in page.attrs["@list"]
+                     if op.attrs["@code"] in (355, 655) and op.attrs["@parameters"]]
+    if not any("BlueRegionTravel.agent" in cmd for cmd in agent_scripts):
+        raise ValueError("Pallet NPC for regional travel is not installed")
+    if mapping[7] not in event_transfers(7, 3) or mapping[7] not in event_transfers(7, 4):
+        raise ValueError("Player home upstairs/downstairs warps do not return")
     for outer, entry, inside, exit_id in safe_interior_pairs:
         if mapping[inside] not in event_transfers(outer, entry):
             raise ValueError(f"Interior {inside}: missing entry from {outer}/{entry}")
@@ -446,7 +460,7 @@ def inspect(game: Path) -> dict:
     stops_file = game / "Data/blue-kanto-experimental-stops.txt"
     if not stops_file.is_file():
         raise ValueError("Experimental Kanto destinations were not generated")
-    required_stops = {"PALLET", "PEWTER", "ROUTE4", "MOON_CENTER",
+    required_stops = {"PALLET", "PLAYER_HOME", "PEWTER", "ROUTE4", "MOON_CENTER",
                       "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
@@ -488,6 +502,8 @@ def inspect(game: Path) -> dict:
                                    for source in preview_only),
         "active_maps": len(active_ids),
         "audited_interiors_bidirectional": len(safe_interior_pairs),
+        "pallet_residence_doors": 3,
+        "kanto_start_inside_player_home": True,
         "viridian_oak_parcel_shopkeeper": parcel_mart[0],
         "trainers_with_line_of_sight": sight_count,
         "connections": count_connections,
