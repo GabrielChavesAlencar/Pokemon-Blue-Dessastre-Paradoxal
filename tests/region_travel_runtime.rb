@@ -117,6 +117,10 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $player.party=[normal,special]
     before=$player.party.dup
 
+    # A fresh Kanto save, before its League, must not see the agent.
+    check(!BlueRegionTravel.available?(BlueRegions.new_state("KANTO")),
+          "Kanto travel agent appeared before a League or prior visit")
+
     # Read-only until a real, successful transfer.
     state=BlueRegions.snapshot
     check(state["leagues"] == ["DECADES"], "Audited Decades finale was not recognized")
