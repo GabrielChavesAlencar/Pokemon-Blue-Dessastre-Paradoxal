@@ -144,9 +144,12 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     File.delete("Johto pilot.json")
 
     old_save = {"version"=>1,"initial"=>"DECADES","current"=>"DECADES","leagues"=>["DECADES"]}
+    # A load must never start a new game, irrespective of the last tested
+    # regional spawn. Johto tests above intentionally changed Game.seen.
+    before_load = Game.seen.dup
     Game.load(old_save)
     check($PokemonGlobal.blue_regions.equal?(old_save), "Legacy load was modified")
-    check(Game.seen == [4,7,8], "Loading old save unexpectedly restarted game")
+    check(Game.seen == before_load, "Loading old save unexpectedly restarted game")
 
     # The stand-alone pilot is always Kanto and never opens a region picker.
     File.write("Kanto pilot.json", "{}")
