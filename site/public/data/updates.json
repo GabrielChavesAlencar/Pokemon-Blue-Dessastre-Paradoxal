@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "45c43d3c63e9c1b05033111ab17e512ff44b5dd9",
+      "date": "2026-11-12T07:17:33-03:00",
+      "title": "Registrar implementação da fase 08, CI nativa e checklist de aceite manual",
+      "category": "Documentação"
+    },
+    {
       "sha": "3bc062c8267e63f0280cff01da5ec61da6675625",
       "date": "2026-11-12T07:16:24-03:00",
       "title": "Kanto: marcar desenvolvimento da fase 08 como 8/16 após CI nativa aprovada",
