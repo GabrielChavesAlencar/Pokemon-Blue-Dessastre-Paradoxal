@@ -13,7 +13,8 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, load
 from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
-                   CINNABAR_GYM_QUIZZES, MANSION_DOORS, MANSION_STATUES)
+                   CINNABAR_GYM_QUIZZES, CINNABAR_GYM_TRAINER_GROUPS,
+                   MANSION_DOORS, MANSION_STATUES)
 from server.ruby_marshal import text
 
 
@@ -451,6 +452,12 @@ def inspect(game: Path) -> dict:
             anchors[(source_id, event_id)] = (
                 f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}"'
             )
+    for event_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
+        kind, name, *_ = TRAINERS[202][event_id]
+        key = f"KANTO_202_{event_id:03d}"
+        anchors[(202, event_id)] = (
+            f'BlueKantoPilot.cinnabar_trainer(:BLUE_KANTO_{kind}, "{name}", "{key}", {group})'
+        )
     for entry in (9, 29, 30):
         anchors[(64, entry)] = "BlueKantoPilot.harbor_gate"
     for entry in (4, 10, *range(22, 35)):
