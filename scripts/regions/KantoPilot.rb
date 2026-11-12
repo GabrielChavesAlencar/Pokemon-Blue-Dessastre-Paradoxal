@@ -82,6 +82,25 @@ module BlueKantoPilot
     end
   end
 
+  # MAN-02: keep the native line-of-sight trainer on Event Touch until a
+  # real victory. This is invoked only by the trainer's own local event page.
+  # The page's second state is a self-switch A; old name-only saves still work.
+  def self.sync_trainer_event(key, name, event_id)
+    won = progress.fetch("pilot_wins", [])
+    return false unless won.include?(key) || won.include?(name)
+    return false if !$game_map || !$game_map.events[event_id]
+    index = [$game_map.map_id, event_id, "A"]
+    unless $game_self_switches[index]
+      $game_self_switches[index] = true
+      $game_map.need_refresh = true
+    end
+    true
+  end
+
+  def self.trainer_repeat(name)
+    pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
+  end
+
   SURGE_CANS = ([4, 10] + (22..34).to_a).freeze
   SURGE_LOCKS = ([8] + (11..19).to_a).freeze
 
