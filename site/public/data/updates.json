@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9b537bfca980a913f985b3ef89b0c432caa6a1c6",
+      "date": "2026-11-12T06:54:04-03:00",
+      "title": "Registrar fase 08 em auditoria sem inflar as barras de progresso",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b32e0d7ad8be482343945bbeb787182d0222273d",
       "date": "2026-11-12T06:53:42-03:00",
       "title": "Documentar escopo, auditoria e critérios reais de aceite da fase 08",
