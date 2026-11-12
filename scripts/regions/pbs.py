@@ -88,6 +88,19 @@ TRAINERS.update({
 })
 
 
+# Fuchsia Gym Map147: six sight trainers + Koga. Teams/levels/moves
+# are copied verbatim from the pinned source's selected PBS trainer blocks.
+TRAINERS.update({
+    "LEADER_Koga,Koga": ("LEADER_KOGA", "Koga", 0),
+    "JUGGLER,Nate": ("JUGGLER", "Nate", 0),
+    "JUGGLER,Kayden": ("JUGGLER", "Kayden", 0),
+    "JUGGLER,Kirk": ("JUGGLER", "Kirk", 0),
+    "JUGGLER,Shawn": ("JUGGLER", "Shawn", 0),
+    "TAMER,Edgar": ("TAMER", "Edgar", 0),
+    "TAMER,Phil": ("TAMER", "Phil", 0),
+})
+
+
 def read_blocks(path, selected=None):
     blocks = {}
     key = None
