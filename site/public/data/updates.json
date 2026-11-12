@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5143a81e9ec22f552949caea727e836ecfe182d1",
+      "date": "2026-11-11T23:40:12-03:00",
+      "title": "fix(kanto): preservar IDs dos 13 mapas antigos ao adicionar Mt Moon e Cerulean",
+      "category": "Novidades"
+    },
+    {
       "sha": "c174dfdb071e1ad6eaa015fd0101c707aa03fd84",
       "date": "2026-11-11T23:38:44-03:00",
       "title": "feat(kanto): menu de teletransporte de teste em Pallet, Mt Moon e Cerulean no piloto isolado",
