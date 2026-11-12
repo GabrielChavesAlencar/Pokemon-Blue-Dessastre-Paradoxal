@@ -104,7 +104,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
             compiler.compile_bytes(self.project,self.game,broken)
         missing = self.game / "Data" / f"Map{self.mapping['5']:03d}.rxdata"
         missing.unlink()
-        with self.assertRaisesRegex(ValueError, "compiled Kanto map missing"):
+        with self.assertRaisesRegex(ValueError, "Compiled Kanto map missing"):
             self.compile()
 
     def test_rejects_cross_region_and_wrong_music_kind(self):
