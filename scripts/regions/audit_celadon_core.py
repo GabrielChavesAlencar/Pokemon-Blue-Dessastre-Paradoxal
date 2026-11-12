@@ -37,12 +37,18 @@ def main():
             print(f"KANTO_CELADON_CORE_EVENT:{source_id}|{event_id}|{name}|"
                   f"trigger={first['@trigger']}|pages={len(pages)}|graphic={graphic}|"
                   f"trainer={';'.join(scripts[:2])}")
-    blocks = read_blocks(ROOT_SOURCE / "PBS/trainers.txt")
-    for key, lines in blocks.items():
-        if re.search(r"(?i)(erika|picnicker|beauty|lass)", key):
-            if "erika" in key.lower():
-                print("KANTO_CELADON_CORE_ROSTER:" + key + "|" +
-                      "|".join(line for line in lines if line.strip())[:2600])
+    # The full FRLG source contains repeated unrelated Rocket headers. Read
+    # only the eight verified gym trainer identities; never parse all rosters.
+    selected = {
+        "LEADER_Erika,Erika", "PICNICKER,Tina", "LASS,Kay",
+        "BEAUTY,Bridget", "BEAUTY,Tamia", "BEAUTY,Lori",
+        "LASS,Lisa", "COOLTRAINER_F,Mary",
+    }
+    blocks = read_blocks(ROOT_SOURCE / "PBS/trainers.txt", selected)
+    for key, lines in sorted(blocks.items()):
+        print("KANTO_CELADON_CORE_ROSTER:" + key + "|" +
+              "|".join(line for line in lines if line.strip())[:2600])
+    print("KANTO_CELADON_CORE_ROSTER_COUNT:" + str(len(blocks)))
 
 
 if __name__ == "__main__":
