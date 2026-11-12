@@ -66,6 +66,6 @@ Os testes da CI compilam a engine e inspecionam estados, mas **não substituem**
 - [ ] Atualizar o portal apenas com os dados realmente presentes e manter fases 09–11 sem eventos.
 - [ ] Completar os interiores, bloqueios e diálogos ainda faltantes antes do aceite integral de MAN-01/MAN-02.
 
-**Barras oficiais de Kanto ainda inalteradas:** desenvolvimento funcional **8/16 (50%)**, aceitação integral **1/16 (6,25%)**, até concluir e validar etapas completas. O lote MAN-01/02 acrescenta funções reais, mas não corresponde, isoladamente, à conclusão de outra etapa de 16.
+**Contadores reavaliados após esta implementação (12/11/2026):** [Barra 1: **6/16 (37,5%)**, faltam **10 passos**; Barra 2: **1/16 (6,25%)**, faltam **15 passos**](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). O lote MAN-01/02 acrescenta funções reais, mas não corresponde, isoladamente, à conclusão de outra etapa de 16.
 
 **Diálogos EN/PT-BR:** nenhuma transcrição da fonte GBA foi importada automaticamente. Os diálogos internos e pós-batalha finais permanecem no [roadmap de localização](KANTO_ROADMAP_DIALOGOS_EN_PT.md).
