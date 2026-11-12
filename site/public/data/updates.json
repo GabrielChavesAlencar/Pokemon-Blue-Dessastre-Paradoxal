@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "add4771e2d3020154611e2569d8137b23b48a65f",
+      "date": "2026-11-12T08:56:18-03:00",
+      "title": "Congelar slots de 100 mapas e adicionar Fan Club sem deslocar saves de Saffron",
+      "category": "Novidades"
+    },
+    {
       "sha": "80f56c84bcbd22912629c7862cb40c7e596d733c",
       "date": "2026-11-12T08:55:46-03:00",
       "title": "Kanto 11: incluir clube de treinadores 173 com ID auditado, sem eventos",
