@@ -34,7 +34,7 @@ py -3 --version
 node --version
 Test-Path .\game\Game.exe
 Test-Path .\game\Data\MapInfos.rxdata
-Test-Path .\game\Plugins\ZZZZ Blue Story and Presentation\Regions.rb
+Test-Path ".\game\Plugins\ZZZZ Blue Story and Presentation\Regions.rb"
 ```
 
 **Se houver modificações locais não relacionadas, preservar e isolar**; não executar reset/clean destrutivo. Criar uma pasta de evidências com identificador único dentro de `.blue-work/kanto-codex-e2e/`, fora do controle de versão.
