@@ -19,6 +19,7 @@ from pathlib import Path, PurePosixPath
 
 DEFAULT_TAG = "kanto-audio-user-supplied-2026-11-12"
 DEFAULT_REPO = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
+EXPECTED_ZIP_SHA256 = "60af6717ee93bc1381b2c38103c6ec5ddf162650bd80cc45432ef0d7f3dd5284"
 MAX_ARCHIVE_BYTES = 250 * 1024 * 1024
 MAX_UNCOMPRESSED_BYTES = 300 * 1024 * 1024
 MAX_TRACK_BYTES = 15 * 1024 * 1024
@@ -71,6 +72,8 @@ def inspect_archive(source: Path) -> dict:
     with source.open("rb") as file:
         for block in iter(lambda: file.read(1024 * 1024), b""):
             digest.update(block)
+    if digest.hexdigest() != EXPECTED_ZIP_SHA256:
+        raise ValueError("O ZIP nao corresponde ao pacote de Kanto enviado neste chat (SHA-256)")
     return {
         "archive_name": source.name,
         "archive_sha256": digest.hexdigest(),
