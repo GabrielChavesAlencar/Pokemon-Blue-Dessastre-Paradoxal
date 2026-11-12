@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d9f3f97694afa1c895802e239b879dd98664aa67",
+      "date": "2026-11-12T20:36:58-03:00",
+      "title": "test(johto): cobre Farfetch'd, Cut, radio, Whitney, Plain, Sudowoodo e saves",
+      "category": "Testes"
+    },
+    {
       "sha": "86e87122ffc3b9bbf422fcb275f56f0a361f7e52",
       "date": "2026-11-12T20:36:02-03:00",
       "title": "feat(johto): exige diálogo com lenhador para iniciar Farfetch'd da Ilex",
