@@ -36,6 +36,12 @@
 
 O extrator não gera RXDATA, não interpreta todo script global, não define equipes e não importa encontros selvagens em PBS. Seu êxito **não** libera eventos automaticamente.
 
+## Estado de implementação de eventos no trecho inicial — MAN-01 e MAN-02
+
+A [correção funcional de Pallet a Pewter](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md) está implementada em código e aprovada na [CI nativa 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042): **8 interiores com ida/volta**, **50 treinadores com `Sight(n)`/Event Touch** e página 2 persistente pós-vitória; os outros 6 treinadores mantêm interação manual conforme a fonte. A **regressão de projeto** também foi aprovada. O mapa fonte 13 (Ginásio Viridian) e o 23 (Diglett's Cave) continuam fora do lote de portas por dependerem de progressão e de outros mapas.
+
+**Estado:** MAN-01 e MAN-02 estão **parcialmente implementados**, **não concluídos**. Os interiores de outros trechos, guardas/quest, bloqueios obrigatórios, diálogos finais, validação manual e MAN-03 ainda faltam. Esta entrega não alterou os 61 mapas `preview_only` das fases 09–11, não aumentou as duas barras de Kanto e não distribuiu textos originais de FireRed.
+
 ## 3. Sequência prioritária de correções — conforme teste do jogador
 
 | ID | Ação, na ordem | Famílias do estudo | Critério de aceite | Dependência |
