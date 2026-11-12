@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "91375928a1c7402a0968a4cfd690b6dd85483075",
+      "date": "2026-11-12T08:52:26-03:00",
+      "title": "Kanto 11: regression de IDs 71 preservados e 29 prévias sem Sabrina",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ef96140f9e36f7ce531ee7c46962d5ed328b0012",
       "date": "2026-11-12T08:51:45-03:00",
       "title": "Kanto 11: teste nativo das prévias Saffron/Silph e bloqueio Marsh Badge",
