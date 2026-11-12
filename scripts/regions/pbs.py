@@ -213,17 +213,20 @@ def normalize_encounters(source, rows, species):
                     raise ValueError(f"Unsupported encounter method {fields[0]}")
                 methods[method] = (fields, [])
             else:
-                if method is None or len(fields) < 3 or fields[1] not in species:
+                if method is None or len(fields) not in (3, 4) or fields[1] not in species:
                     raise ValueError(f"Invalid encounter {line} in map {key}")
                 weight = int(fields[0])
-                levels = list(map(int, fields[2:]))
-                if not 0 < weight <= 100 or not all(1 <= n <= 100 for n in levels):
-                    raise ValueError(f"Invalid encounter weight or level in map {key}")
-                # Essentials stores an inclusive min/max range. Do not fill gaps
-                # in a source encounter's levels without an explicit decision.
-                if levels != list(range(levels[0], levels[-1] + 1)):
-                    raise ValueError(f"Non-contiguous encounter range in pilot map {key}: {line}")
-                methods[method][1].append([weight, fields[1], levels[0], levels[-1]])
+                # Essentials v21.1 PBS slot syntax: chance,species,min[,max].
+                # Two levels mean an INCLUSIVE range, not a discrete list.
+                # The previous "contiguous levels" check incorrectly rejected
+                # all min/max pairs wider than 1 (e.g. SPEAROW,3,5).
+                low = int(fields[2])
+                high = int(fields[3]) if len(fields) == 4 else low
+                if not 0 < weight <= 100 or not 1 <= low <= high <= 100:
+                    raise ValueError(f"Invalid encounter weight or level in map {key}: {line}")
+                # Preserve exact source weight, species and range; the engine
+                # selects a random integer within [min,max] inclusive.
+                methods[method][1].append([weight, fields[1], low, high])
         for method, (_, entries) in methods.items():
             if sum(row[0] for row in entries) != 100:
                 raise ValueError(f"Encounter weights must total 100: {key}/{method}")
@@ -274,22 +277,19 @@ def trainer_draft(path, species, moves, items):
 def build_drafts(source, game, plan):
     species, moves, items = (catalogue(game, "pokemon"), catalogue(game, "moves"),
                              catalogue(game, "items"))
-    # Remaining terrain previews (Celadon store, Fuchsia, Saffron) must not activate foreign trainers,
-    # encounter tables or story scripts before event review.
+    # Enable source-derived wild tables only on functional maps; ALL 45
+    # geometry-only previews remain protected. Route 22/23, Victory Road,
+    # Fuchsia, Cinnabar, Saffron, etc. can now retain their actual FRLG
+    # inclusive level ranges instead of being rejected as "non-contiguous".
+    # This does not grant access to maps/events still gated by story/HMs.
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
-    # Fuchsia City's source has a non-contiguous fishing range (e.g. levels
-    # 15,16,17,19..) that cannot be collapsed to min/max without creating
-    # encounter levels not present in the source. Keep Fuchsia core entirely
-    # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209), 16, 17, *range(209, 222)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
-               if row["source_id"] not in no_gameplay
-               and row["source_id"] not in review_encounters}
+               if row["source_id"] not in no_gameplay}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
-                      "source_policy": "Essentials FRLG merged tables; independent official verification pending"}
+                      "source_policy": "Essentials FRLG 1.1 tables; inclusive min/max and exact source weights; official FireRed/LeafGreen version exclusivities not independently verified"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
     return {Path("drafts", "encounters.txt"): (warning + encounters).encode("utf-8"),
             Path("drafts", "trainers.txt"): (warning + trainers).encode("utf-8")}
