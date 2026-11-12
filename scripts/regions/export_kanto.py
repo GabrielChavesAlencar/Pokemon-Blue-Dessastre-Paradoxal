@@ -136,9 +136,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preview", type=Path, default=ROOT / ".blue-work/kanto-preview")
     parser.add_argument("--output", type=Path, default=ROOT / "site/public/data/kanto.json")
+    parser.add_argument("--print-preview-chunks", action="store_true",
+                        help="Emit source-derived website JSON for manual review in CI logs")
     args = parser.parse_args()
     data = export(args.preview)
     args.output.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
+    if args.print_preview_chunks:
+        raw = json.dumps(data, ensure_ascii=True, separators=(",", ":"))
+        for index in range(0, len(raw), 2500):
+            print(f"KANTO_PORTAL_PART_{index // 2500:03d}:" + raw[index:index + 2500])
 
 
 if __name__ == "__main__":
