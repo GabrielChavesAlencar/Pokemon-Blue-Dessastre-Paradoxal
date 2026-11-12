@@ -2,7 +2,7 @@
 
 **Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).** O contador é atualizado somente com testes concluídos.
 
-**Desenvolvimento atual: etapa 05/16. Conclusão validada: 01/16.** O piloto de Kanto já compila, abre no runner Windows e recarrega um save simulado; a caminhada e as batalhas em sessão interativa ainda precisam de validação. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md).
+**Desenvolvimento atual: etapa 06/16 (37,5%). Conclusão validada: 01/16 (6,25%).** O piloto de Kanto já compila, abre no runner Windows e recarrega um save simulado; a caminhada e as batalhas em sessão interativa ainda precisam de validação. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md).
 
 ## Especificações de referência — regras já definidas
 
@@ -48,9 +48,9 @@ O comando usa `.blue-work/kanto-pilot` e o perfil de save **Kanto Piloto**. Se p
 - [ ] Ligar o agente a um ponto de chegada confirmado em Kanto e a um ponto de retorno acessível. Mostrar destinos jogáveis, condições de bloqueio e opção de cancelar. Validar em uma cópia antes de abrir a viagem na campanha.
 - [ ] Usar um único save para a campanha integrada. Acrescentar estado regional versionado e preservar equipe, PC, Pokédex, itens, dinheiro, conquistas e missões. Exercitar save antigo, viagem, retorno, salvamento e recarga.
 - [ ] Validar visualmente a seleção de região inicial no Windows: o [seletor e a instalação opt-in de Kanto](KANTO_ESCOLHA_REGIAO.md) já foram implementados, com proteção para regiões não instaladas, Decades e saves antigos. Só marcar após confirmar a interface e o carregamento em ambas as origens.
-- [ ] Integrar o cálculo de insígnias ao balanceamento atual. Cada conquista de ginásio ou equivalente soma uma esmeralda global uma vez. As permissões de campo e de Pokémon especiais usam conquistas locais.
+- [ ] **Validar visualmente** o cálculo de insígnias no balanceamento Blue. A [fase 06](KANTO_FASE_06.md) já soma conquistas locais únicas ao estágio global nativo e aplica permissões regionais de especiais e HMs, com testes Ruby/nativos aprovados. Faltam cobertura completa de caminhos alternativos e aceitação manual.
 - [ ] Classificar lendários, míticos, Ultra Beasts e Paradoxos, incluindo os autorais. Aplicar a regra das oito conquistas locais à equipe e ao PC. Na viagem, reservar slots antes de depositar os especiais e validar que sobra equipe utilizável. Se faltar espaço ou equipe, manter o estado anterior e permitir reorganizar a equipe.
-- [ ] Ligar HMs, montarias e outras ações de campo às permissões da região atual. Usar as provas de Alola e a conclusão do arco de Hisui conforme o [catálogo regional](../site/public/data/regions.json).
+- [ ] Validar as HMs locais em mapas reais e expandir montarias/outras ações; [RegionalPolicy.rb](../scripts/battle_polish/RegionalPolicy.rb) já intercepta os comandos padrão de campo, mantendo as regras de Decades. Aplicar também as provas de Alola e o arco de Hisui conforme o [catálogo regional](../site/public/data/regions.json).
 
 ## 3. Completar Kanto
 
