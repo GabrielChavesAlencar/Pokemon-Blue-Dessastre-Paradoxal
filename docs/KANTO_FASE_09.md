@@ -1,7 +1,7 @@
 # Kanto — Fase 09/16: Celadon e Erika (prévia do cenário)
 
 **Data:** 12/11/2026  
-**Estado:** prévia de terreno implementada e aprovada na CI nativa Windows (51 mapas, 11 sem eventos). **Eventos adiados por pedido do usuário**, enquanto ele analisa os eventos de mapa.  
+**Estado:** prévia de terreno implementada e aprovada na CI nativa Windows (51 mapas, 11 sem eventos). **Eventos ainda adiados por pedido do usuário:** o estudo de eventos foi recebido e incorporado ao [roadmap específico](KANTO_ROADMAP_EVENTOS_FIRERED.md), mas esta tarefa não autoriza instalar eventos.  
 **Contadores preservados até conclusão da fase:** desenvolvimento integral 8/16 (50%); etapas integralmente aceitas 1/16 (6,25%).
 
 ## Escopo desta entrega — somente mapas e navegação de teste
@@ -38,7 +38,7 @@ No menu do **Game.exe principal → Testar Kanto**, escolha o inicial no piloto 
 
 As cinco novas paradas são exclusivas do **piloto isolado**, totalizando **22**. A transferência de teste não concede insígnias, dinheiro, itens ou flags de história. Lembre-se de salvar em um slot exclusivo de testes: a aceitação de caminhada/colisões ainda depende de jogar no Windows.
 
-## Decisões congeladas até a análise do usuário
+## Decisões mantidas após recebimento da análise de eventos
 
 - **Não criar nem adaptar eventos de treinadores.** Isso inclui linhas de visão e bloqueios obrigatórios (pendência MAN-02).
 - **Não conectar casas nem estabelecimentos por eventos de porta.** As entradas corretas dependem da auditoria manual (pendência MAN-01).
@@ -53,6 +53,8 @@ As cinco novas paradas são exclusivas do **piloto isolado**, totalizando **22**
 - [x] O teste nativo abre o cenário vazio e confirma que **Rainbow Badge permanece bloqueada**.
 - [x] A [CI Windows 43202005222](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43202005222) validou a compilação, abertura de janela, save e importação em cópia descartável; regressão adicional de código está no workflow padrão.
 - [ ] Jogabilidade manual confirma arte, passabilidade, transição e coordenadas.
-- [ ] O usuário termina sua análise de eventos e autoriza retomá-los antes de marcar a fase 09 funcionalmente concluída.
+- [x] O estudo técnico dos eventos FireRed foi recebido, analisado e vinculado ao [roadmap](KANTO_ROADMAP_EVENTOS_FIRERED.md).
+- [ ] **Autorização explícita** para implementar eventos da fase 09 e retirar os 11 IDs de `preview_only`; até lá zero eventos novos.
+- [ ] Validar gameplay interativo e os eventos **quando** forem autorizados e implementados.
 
-**Próxima fase técnica:** concluir a preparação do cenário e aguardar o estudo de eventos do usuário. Sem autorização, não iniciar os eventos de Erika, interiores ou Rocket.
+**Próximo trabalho permitido:** auditar referências, mapas, scripts e flags segundo o roadmap, **sem mexer nos eventos**. A implementação de Erika, interiores, Rocket, NPCs e Rainbow Badge depende de autorização posterior.
