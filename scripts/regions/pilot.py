@@ -304,7 +304,7 @@ def install_runtime(target, mapping, game):
         ("MISTY", "Cerulean Gym (Misty)", 42, 8, 18),
     ]
     (data / "blue-kanto-experimental-stops.txt").write_text(
-        "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\\n"
+        "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\n"
                 for code, title, old, x, y in stops), encoding="utf-8"
     )
     # Force compiler to consume new PBS, but keep a real release-mode title after the first boot.
