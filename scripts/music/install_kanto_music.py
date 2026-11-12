@@ -169,21 +169,31 @@ def main() -> int:
                         help="game/ local ou piloto isolado em .blue-work/")
     parser.add_argument("--apply", action="store_true",
                         help="Copiar sem sobrescrever Audio/BGM e Audio/ME")
-    parser.add_argument("--phase2", action="store_true",
-                        help="Instalar somente as BGM ambientais e de transporte habilitadas")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--phase2", action="store_true",
+                      help="Somente temas de mapa/transporte da Fase 2")
+    mode.add_argument("--phase3", action="store_true",
+                      help="Somente temas de batalha/vitoria da Fase 3")
+    mode.add_argument("--approved", action="store_true",
+                      help="Todas as BGM aprovadas de Kanto (Fases 2 e 3)")
     args = parser.parse_args()
     try:
         if args.audit and args.apply:
             parser.error("--audit e --apply nao podem ser combinados")
-        if args.audit and args.phase2:
-            parser.error("--audit e --phase2 nao podem ser combinados")
+        if args.audit and (args.phase2 or args.phase3 or args.approved):
+            parser.error("--audit nao pode ser combinado com subconjunto regional")
         numbers = None
-        if args.phase2:
+        if args.phase2 or args.phase3 or args.approved:
             try:
-                from scripts.music.compile_kanto_music import phase2_track_numbers
+                from scripts.music import compile_kanto_music as music_rules
             except ModuleNotFoundError:
-                from compile_kanto_music import phase2_track_numbers
-            numbers = phase2_track_numbers(ROOT)
+                import compile_kanto_music as music_rules
+            if args.phase2:
+                numbers = music_rules.phase2_track_numbers(ROOT)
+            elif args.phase3:
+                numbers = music_rules.phase3_track_numbers(ROOT)
+            else:
+                numbers = music_rules.approved_track_numbers(ROOT)
         result = (audit() if args.audit else install(args.game, apply=args.apply, numbers=numbers))
         if args.audit:
             result = {k:v for k,v in result.items() if k not in ("manifest","base")}
