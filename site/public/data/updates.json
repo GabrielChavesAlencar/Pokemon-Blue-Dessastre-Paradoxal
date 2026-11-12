@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "80841df25fc2581c4dba7352f46c11507eb2126d",
+      "date": "2026-11-12T08:50:52-03:00",
+      "title": "Kanto 11: adicionar 10 atalhos Saffron e Silph preservando isolamento",
+      "category": "Novidades"
+    },
+    {
       "sha": "31e7a833ab640beb0c1ed4d2292109295dfe5d1d",
       "date": "2026-11-12T08:50:23-03:00",
       "title": "Kanto 11: incluir 29 localizações de Saffron, Dojo e Silph no portal",
