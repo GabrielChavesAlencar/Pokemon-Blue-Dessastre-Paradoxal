@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5d33cce1f8a3ac1092bbba529e296c7d5163a8fa",
+      "date": "2026-11-12T20:04:21-03:00",
+      "title": "test(johto): prova início opcional sem mudar Kanto, Decades ou saves",
+      "category": "Testes"
+    },
+    {
       "sha": "a3eee4125c19d4b7332b27b791599499f3c522d1",
       "date": "2026-11-12T20:03:56-03:00",
       "title": "feat(johto): prepara novo jogo condicionado a mapa e marcador regional válidos",
