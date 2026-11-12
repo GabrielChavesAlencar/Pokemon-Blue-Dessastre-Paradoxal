@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9a7d90304318d395f4f2d0e38f10f5e131ef6ecb",
+      "date": "2026-11-12T09:28:18-03:00",
+      "title": "MAN-01: nomear 8 interiores visitáveis de Pallet a Pewter no portal",
+      "category": "Melhorias"
+    },
+    {
       "sha": "93edd1a48483d5b0742272d9d4618d6bf9aa3879",
       "date": "2026-11-12T09:28:05-03:00",
       "title": "MAN-01: fixar slot do Fan Club e adicionar interiores sem deslocar MapIDs",
