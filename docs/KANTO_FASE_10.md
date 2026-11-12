@@ -74,6 +74,7 @@ Esses eventos permanecem **pendentes**, junto de MAN-01 (portas), MAN-02 (treina
 - [x] Atalhos de teste registrados, sem alterar o Decades principal nem saves existentes.
 - [x] [CI Windows 43208948705](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43208948705) **aprovada**: 71 mapas, 31 em `preview_only`, zero eventos nessas áreas, 31 atalhos, abertura nativa dos cenários e Soul Badge ausente; importação em Decades descartável verificada.
 - [x] [Site checks 43209021242](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43209021242) **aprovados**: 71 localidades e 54 perfis de treinadores anteriores; as 20 localidades novas não têm treinadores ou habitats.
+- [x] [Regressão 43209244103](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43209244103) **aprovada**: testes de PBS/contratos, RUN.bat no Windows e navegação de site no Chromium.
 - [ ] QA manual Windows: tilesets, passabilidade e coordenadas de chegada da Fuchsia City, gym e Safari.
 - [ ] Eventos da Safari Zone, Warden e Koga traduzidos para Essentials e testados em gamepad/teclado.
 - [ ] Soul Badge obtida **apenas após vitória real**, save/reload, HM Surf com requisito regional, derrota sem prêmio, ida/volta de interiores.
