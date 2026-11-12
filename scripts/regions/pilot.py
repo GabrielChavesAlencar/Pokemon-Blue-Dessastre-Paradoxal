@@ -499,8 +499,8 @@ def install_events(source, target, mapping):
                         graphic = collected.attrs["@graphic"].attrs
                         graphic["@character_name"] = b""
                         graphic["@tile_id"] = 0
-                        collected["@through"] = True
-                        collected["@list"] = [command(0)]
+                        collected.attrs["@through"] = True
+                        collected.attrs["@list"] = [command(0)]
                         scripted.attrs["@pages"].append(collected)
                     selected[event_id] = scripted
                 continue
