@@ -105,6 +105,8 @@ module BlueKantoPilot
       pbMessage(_INTL("Lt. Surge: A Thunder Badge é sua! Agora você pode usar Fly em Kanto."))
     elsif type == :BLUE_KANTO_LEADER_ERIKA && BlueRegions.award(progress, "KANTO", "RAINBOW")
       pbMessage(_INTL("Erika: Você conquistou a Rainbow Badge!"))
+    elsif type == :BLUE_KANTO_LEADER_KOGA && BlueRegions.award(progress, "KANTO", "SOUL")
+      pbMessage(_INTL("Koga: A Soul Badge agora é sua!"))
     end
   end
 
@@ -300,6 +302,15 @@ module BlueKantoPilot
     rescue StandardError => e
       pbMessage(_INTL("Falha no destino experimental: {1}",e.message))
     end
+  end
+
+  # The source Safari Gate is mapped for navigation, but the isolated
+  # pilot must NOT start a fake Safari session: native catch rules, step
+  # limits, Safari Balls and exit restoration have not been audited.
+  # Both the gate's counter and its guide use this non-transactional message.
+  def self.safari_preview
+    pbMessage(_INTL("Safari Zone: a entrada para captura está em preparação. " +
+                    "Nenhum ingresso, dinheiro ou Safari Ball será consumido nesta versão."))
   end
 
   def self.heal
