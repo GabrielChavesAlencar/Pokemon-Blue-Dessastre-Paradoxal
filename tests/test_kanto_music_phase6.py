@@ -20,7 +20,10 @@ class KantoPhaseSixAuditTests(unittest.TestCase):
         rows=phase6.classify_catalog(ROOT,self.manifest)
         self.assertEqual(len(rows),64)
         self.assertEqual(sum(x["status"]=="VINCULADA" for x in rows),36)
-        self.assertEqual(sum(x["status"]=="PENDENTE_EVENTO" for x in rows),28)
+        self.assertEqual(sum(x["status"]=="PENDENTE_EVENTO" for x in rows),21)
+        self.assertEqual(sum(x["status"]=="MAPA_AUSENTE" for x in rows),7)
+        self.assertEqual({x["number"] for x in rows if x["status"]=="MAPA_AUSENTE"},
+                         set(phase6.ABSENT_KANTO_AREAS))
         self.assertEqual(sum(x["kind"]=="ME" and x["status"]=="VINCULADA" for x in rows),6)
         self.assertEqual(sum(x["kind"]=="BGM" and x["status"]=="VINCULADA" for x in rows),30)
         self.assertEqual({x["number"] for x in rows if x["status"]=="VINCULADA"},
