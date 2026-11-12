@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a2c0db0b8b38e3f2c403c5d279e44c239f8c9fdb",
+      "date": "2026-11-12T09:30:27-03:00",
+      "title": "MAN-01/02: verificar 8 interiores bidirecionais e 50 treinadores com Event Touch",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9a7d90304318d395f4f2d0e38f10f5e131ef6ecb",
       "date": "2026-11-12T09:28:18-03:00",
       "title": "MAN-01: nomear 8 interiores visitáveis de Pallet a Pewter no portal",
