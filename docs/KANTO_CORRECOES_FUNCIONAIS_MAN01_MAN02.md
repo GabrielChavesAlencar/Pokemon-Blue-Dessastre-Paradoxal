@@ -66,6 +66,7 @@ Os testes da CI compilam a engine e inspecionam estados, mas **não substituem**
 - [ ] Atualizar o portal apenas com os dados realmente presentes e manter fases 09–11 sem eventos.
 - [ ] Completar os interiores, bloqueios e diálogos ainda faltantes antes do aceite integral de MAN-01/MAN-02.
 
-**Contadores atuais após o avanço do pacote de Oak (12/11/2026):** [Barra 1 **7/16 (43,75%)**, faltam **9 passos**; Barra 2 **1/16 (6,25%)**, faltam **15 passos**](KANTO_AVANCO_FUNCIONAL_07.md). O marco original de 6/16 permanece no histórico de reavaliação. O lote MAN-01/02 acrescenta funções reais, mas não corresponde, isoladamente, à conclusão de outra etapa de 16.
+**Status geral atual (posterior a este lote):** [Barra 1 = **8/16 (50%, faltam 8)**; Barra 2 = **1/16 (6,25%, faltam 15)**](KANTO_AVANCO_FUNCIONAL_08.md). O lote MAN-01/02 foi contabilizado no 7º núcleo; Erika/Celadon é o 8º.
+
 
 **Diálogos EN/PT-BR:** nenhuma transcrição da fonte GBA foi importada automaticamente. Os diálogos internos e pós-batalha finais permanecem no [roadmap de localização](KANTO_ROADMAP_DIALOGOS_EN_PT.md).
