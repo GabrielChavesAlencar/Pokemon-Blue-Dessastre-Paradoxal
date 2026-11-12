@@ -36,6 +36,64 @@ Referências: [plano geral](KANTO_PLANO_APLICAR_MUSICAS.md), [contratos da Fase 
 
 **Observação:** a ativação em uma área experimental significa apenas que sua geometria/MapID consta do piloto e que a regra de música está vinculada; não certifica interações, NPCs ou campanha finalizados.
 
+### MapIDs compilados comprovados no piloto da CI
+
+Os números abaixo foram observados na **cópia isolada do Blue/Decades usada pela CI** (run [43294567862](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43294567862)). **Não devem ser hardcodados**: cada instalação usa seu próprio arquivo de tradução de IDs, e saves existentes não são renumerados.
+
+| MapID na CI | Mapa Kanto | Faixa BGM |
+|---:|---|---:|
+| 300 | `PALLET_TOWN` | 1-06 |
+| 301 | `OAK_LAB` | 1-08 |
+| 303 | `ROUTE_1` | 1-13 |
+| 305 | `VIRIDIAN_CENTER` | 1-21 |
+| 310 | `VIRIDIAN_FOREST` | 1-17 |
+| 311 | `PEWTER_CITY` | 1-15 |
+| 312 | `PEWTER_GYM` | 1-25 |
+| 313 | `PEWTER_CENTER` | 1-21 |
+| 317 | `MT_MOON_CENTER` | 1-21 |
+| 318 | `MT_MOON_1F` | 1-34 |
+| 319 | `MT_MOON_B1F` | 1-34 |
+| 320 | `MT_MOON_B2F` | 1-34 |
+| 322 | `CERULEAN_CENTER` | 1-21 |
+| 324 | `CERULEAN_GYM` | 1-25 |
+| 330 | `VERMILION_CITY` | 1-35 |
+| 331 | `VERMILION_CENTER` | 1-21 |
+| 333 | `VERMILION_GYM` | 1-25 |
+| 335 | `SS_ANNE_1F` | 1-36 |
+| 336 | `SS_ANNE_2F` | 1-36 |
+| 337 | `SS_ANNE_CAPTAIN` | 1-36 |
+| 338 | `SS_ANNE_B1F` | 1-36 |
+| 339 | `SS_ANNE_DECK` | 1-36 |
+| 341 | `CELADON_CITY` | 1-40 |
+| 342 | `CELADON_CENTER` | 1-21 |
+| 350 | `CELADON_GYM` | 1-25 |
+| 354 | `FUCHSIA_CITY` | 1-50 |
+| 355 | `FUCHSIA_CENTER` | 1-21 |
+| 357 | `FUCHSIA_GYM` | 1-25 |
+| 380 | `SAFFRON_CENTER` | 1-21 |
+| 382 | `SAFFRON_GYM` | 1-25 |
+| 388 | `SILPH_1F` | 1-47 |
+| 389 | `SILPH_2F` | 1-47 |
+| 390 | `SILPH_3F` | 1-47 |
+| 391 | `SILPH_4F` | 1-47 |
+| 392 | `SILPH_5F` | 1-47 |
+| 393 | `SILPH_6F` | 1-47 |
+| 394 | `SILPH_7F` | 1-47 |
+| 395 | `SILPH_8F` | 1-47 |
+| 396 | `SILPH_9F` | 1-47 |
+| 397 | `SILPH_10F` | 1-47 |
+| 398 | `SILPH_11F` | 1-47 |
+| 417 | `CINNABAR_ISLAND` | 1-55 |
+| 418 | `CINNABAR_CENTER` | 1-21 |
+| 420 | `CINNABAR_GYM` | 1-25 |
+| 422 | `MANSION_1F` | 1-56 |
+| 423 | `MANSION_2F` | 1-56 |
+| 424 | `MANSION_3F` | 1-56 |
+| 425 | `MANSION_B1F` | 1-56 |
+| 426 | `VIRIDIAN_GYM` | 1-25 |
+
+Mapas não ativados: `ROUTE_4` → MapID **316** (trecho não verificado); `SILPH_LOBBY` → MapID **387** (prévia).
+
 ## Pendências explícitas, sem inventar mapas
 
 - `ROUTE_4` / `1-32`: a fonte confirma a rota, mas a música é específica da saída de Mt. Moon para Cerulean; associar ao MapID inteiro sem validar o trecho poderia tocar no segmento errado. **PENDENTE_TRANSICAO**, sem ativação.
