@@ -23,6 +23,10 @@ module BlueRegionStart
 
   def self.choose_initial
     return "DECADES" unless $PokemonGlobal
+    # Existing installations without Kanto maps must keep their native new
+    # game flow. The temporary standalone pilot always starts in Kanto.
+    return "DECADES" unless kanto_spawn
+    return "KANTO" if File.file?("Kanto pilot.json")
     keys = BlueRegions.circuit + ["HISUI"]
     labels = keys.map do |key|
       label = BlueRegions.info(key)["name"]
