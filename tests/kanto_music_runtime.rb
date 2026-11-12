@@ -17,6 +17,9 @@ module RPG
     end
   end
 end
+module BlueRegions
+  def self.active?; true; end
+end
 module BlueRegionalPolicy
   def self.state; @state; end
   def self.region=(region)
@@ -48,7 +51,7 @@ Dir.mktmpdir('blue-kanto-music-runtime-') do |folder|
                "MAP\t701\tKanto/sample.mp3\t72\t101\n"+
                "BATTLE\twild\tKanto/sample.mp3\t91\t99\n")
     $game_map=Struct.new(:map_id).new(701)
-    $PokemonGlobal=Struct.new(:nextBattleBGM).new(nil)
+    $PokemonGlobal=Struct.new(:nextBattleBGM,:blue_regions).new(nil,nil)
     BlueMusic.instance_variable_set(:@testing,[1,[],[]])
     BlueRegionalPolicy.region=nil
     MusicAssert.check('Legacy save without region never switches sound',
@@ -56,6 +59,17 @@ Dir.mktmpdir('blue-kanto-music-runtime-') do |folder|
     BlueRegionalPolicy.region='DECADES'
     MusicAssert.check('Decades never switches sound',
                       BlueMusic.kanto_audio_for('map',701).nil?)
+    # Isolated pilot has no installed Kanto manifest. It still must use
+    # the actual Kanto save and never a Decades or uninitialized save.
+    File.write('Kanto pilot.json','{"maps":{}}')
+    $PokemonGlobal.blue_regions={'version'=>1,'current'=>'KANTO'}
+    MusicAssert.check('Isolated pilot fallback honors its Kanto save',
+                      BlueMusic.kanto_region?)
+    $PokemonGlobal.blue_regions={'version'=>1,'current'=>'DECADES'}
+    MusicAssert.check('Isolated pilot cannot assign music to a Decades save',
+                      !BlueMusic.kanto_region?)
+    File.delete('Kanto pilot.json')
+    $PokemonGlobal.blue_regions=nil
     BlueRegionalPolicy.region='KANTO'
     regional=BlueMusic.kanto_audio_for('map',701)
     MusicAssert.check('Real compiled MapID and volume are used',
