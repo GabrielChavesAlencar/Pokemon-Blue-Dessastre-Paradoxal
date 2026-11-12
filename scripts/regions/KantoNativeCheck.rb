@@ -108,7 +108,28 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "Vermilion S.S. Ticket permit was not granted after Cascade")
     BlueKantoPilot.ticketmaster
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
-    require!(surge.pokemon.length >= 2, "Lt. Surge original FRLG roster missing")
+    require!(surge.pokemon.length == 3, "Lt. Surge original FRLG roster missing")
+    require!(surge.pokemon.map { |pokemon| pokemon[:species] } == [:VOLTORB,:PIKACHU,:RAICHU],
+             "Lt. Surge team differs from the pinned FRLG source")
+    # The locked gym must be inaccessible until two adjacent cans are activated.
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
+    require!(battle_calls.none? { |row| row[1] == "Lt. Surge" },
+             "Surge could be challenged while the gym puzzle was locked")
+    surge_destination = BlueKantoPilot.experimental_stops.find { |label, _point| label.include?("Surge") }
+    require!(surge_destination, "Surge gym stop unavailable")
+    surge_map_id = surge_destination[1][0]
+    $map_factory.setup(surge_map_id)
+    $game_player.moveto(5, 18)
+    pairs = BlueKantoPilot.surge_pairs
+    require!(!pairs.empty?, "No adjacent trash cans in Surge gym")
+    first, second = pairs.first
+    BlueKantoPilot.progress["pilot_surge_solution"] = [first, second]
+    BlueKantoPilot.surge_can(first)
+    require!(BlueKantoPilot.progress["pilot_surge_first"], "First Surge lock not triggered")
+    BlueKantoPilot.surge_can(second)
+    require!(BlueKantoPilot.progress["pilot_surge_unlocked"], "Surge puzzle did not unlock")
+    require!($game_self_switches[[surge_map_id, 8, "A"]] == true,
+             "Surge gym barrier did not receive its local self switch")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO") ==
              ["BOULDER","CASCADE","THUNDER"], "Thunder Badge was not awarded uniquely")
@@ -118,6 +139,10 @@ module KantoNativeCheck
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 5,
              "Three Kanto milestones were double-counted or omitted")
 
+    # Keep the legacy reload-map assertion stable while proving the gym
+    # can be loaded and the puzzle flags persist across the same save.
+    $map_factory.setup(lab)
+    $game_player.moveto(6, 12)
     slot = "Kanto Native Verification"
     require!(Game.save(slot), "Pilot save failed")
     save_file = SaveData.get_full_path(slot)
