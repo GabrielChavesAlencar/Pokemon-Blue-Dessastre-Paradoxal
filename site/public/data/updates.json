@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "673480ced54e7328d778c53a44b9011be736e3d4",
+      "date": "2026-11-12T09:00:16-03:00",
+      "title": "Kanto fase 11: publicar 30 localizações Saffron/Silph sem gameplay no site",
+      "category": "Melhorias"
+    },
+    {
       "sha": "d8b2ca38b83e126bdbbae8b1b9769e5f4b1eefd5",
       "date": "2026-11-12T08:59:42-03:00",
       "title": "Kanto 11: registrar Saffron/Silph como prévia sem eventos e manter duas barras",
