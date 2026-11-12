@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "443229717cd1957d0af0bbf2820e60be33b8b67e",
+      "date": "2026-11-11T21:28:55-03:00",
+      "title": "feat(kanto): adicionar diagnostico de abertura grafica em copia isolada no Windows",
+      "category": "Novidades"
+    },
+    {
       "sha": "41e6ad132d5e44792b7701bd096e9495f83bf68b",
       "date": "2026-11-11T21:23:50-03:00",
       "title": "docs(kanto): validar etapa 01 e registrar 15 etapas restantes",
