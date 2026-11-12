@@ -1583,33 +1583,48 @@
     },
     {
       "id": "kanto-saffron-city",
-      "name": "Saffron City (prévia)",
+      "name": "Saffron City",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-center",
-      "name": "Centro Pokémon de Saffron (prévia)",
+      "name": "Centro Pokémon de Saffron",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-mart",
-      "name": "Poké Mart de Saffron (prévia)",
+      "name": "Poké Mart de Saffron",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-gym",
-      "name": "Ginásio de Saffron — Sabrina não ativa (prévia)",
+      "name": "Ginásio de Saffron — Sabrina",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-sabrina",
+        "kanto-cameron",
+        "kanto-preston",
+        "kanto-johan",
+        "kanto-tyron",
+        "kanto-tasha",
+        "kanto-stacy",
+        "kanto-amanda"
+      ]
     },
     {
       "id": "kanto-saffron-dojo",
-      "name": "Fighting Dojo (prévia)",
+      "name": "Fighting Dojo",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-hideki",
+        "kanto-hitoshi",
+        "kanto-aaron",
+        "kanto-mike",
+        "kanto-koichi"
+      ]
     },
     {
       "id": "kanto-saffron-house-a",
@@ -1691,75 +1706,228 @@
     },
     {
       "id": "kanto-silph-elevator",
-      "name": "Silph Co. — elevador (prévia)",
+      "name": "Silph Co. — elevador",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-silph-1f",
-      "name": "Silph Co. — 1F (prévia)",
+      "name": "Silph Co. — 1F",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-silph-2f",
-      "name": "Silph Co. — 2F (prévia)",
+      "name": "Silph Co. — 2F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-21",
+        "kanto-grunt-silph-22"
+      ]
     },
     {
       "id": "kanto-silph-3f",
-      "name": "Silph Co. — 3F (prévia)",
+      "name": "Silph Co. — 3F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-23"
+      ]
     },
     {
       "id": "kanto-silph-4f",
-      "name": "Silph Co. — 4F (prévia)",
+      "name": "Silph Co. — 4F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-24",
+        "kanto-grunt-silph-25"
+      ]
     },
     {
       "id": "kanto-silph-5f",
-      "name": "Silph Co. — 5F (prévia)",
+      "name": "Silph Co. — 5F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-26",
+        "kanto-grunt-silph-27"
+      ]
     },
     {
       "id": "kanto-silph-6f",
-      "name": "Silph Co. — 6F (prévia)",
+      "name": "Silph Co. — 6F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-28",
+        "kanto-grunt-silph-29"
+      ]
     },
     {
       "id": "kanto-silph-7f",
-      "name": "Silph Co. — 7F (prévia)",
+      "name": "Silph Co. — 7F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-30",
+        "kanto-grunt-silph-31",
+        "kanto-grunt-silph-32",
+        "kanto-blue-silph"
+      ]
     },
     {
       "id": "kanto-silph-8f",
-      "name": "Silph Co. — 8F (prévia)",
+      "name": "Silph Co. — 8F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-33",
+        "kanto-grunt-silph-34"
+      ]
     },
     {
       "id": "kanto-silph-9f",
-      "name": "Silph Co. — 9F (prévia)",
+      "name": "Silph Co. — 9F",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-grunt-silph-35",
+        "kanto-grunt-silph-36"
+      ]
     },
     {
       "id": "kanto-silph-10f",
-      "name": "Silph Co. — 10F (prévia)",
+      "name": "Silph Co. — 10F",
+      "methods": [],
+      "trainers": [
+        "kanto-grunt-silph-37"
+      ]
+    },
+    {
+      "id": "kanto-silph-11f",
+      "name": "Silph Co. — 11F",
+      "methods": [],
+      "trainers": [
+        "kanto-grunt-silph-38",
+        "kanto-grunt-silph-39",
+        "kanto-giovanni"
+      ]
+    },
+    {
+      "id": "kanto-route-19",
+      "name": "Rota 19 (prévia aquática)",
       "methods": [],
       "trainers": []
     },
     {
-      "id": "kanto-silph-11f",
-      "name": "Silph Co. — 11F (prévia)",
+      "id": "kanto-route-20",
+      "name": "Rota 20 (prévia aquática)",
       "methods": [],
       "trainers": []
+    },
+    {
+      "id": "kanto-seafoam-1f",
+      "name": "Seafoam Islands — 1F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-seafoam-b1f",
+      "name": "Seafoam Islands — B1F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-seafoam-b2f",
+      "name": "Seafoam Islands — B2F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-seafoam-b3f",
+      "name": "Seafoam Islands — B3F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-seafoam-b4f",
+      "name": "Seafoam Islands — B4F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-21",
+      "name": "Rota 21 (prévia aquática)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cinnabar-island",
+      "name": "Cinnabar Island",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cinnabar-center",
+      "name": "Centro Pokémon de Cinnabar",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cinnabar-mart",
+      "name": "Poké Mart de Cinnabar",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cinnabar-gym",
+      "name": "Ginásio de Cinnabar — Blaine",
+      "methods": [],
+      "trainers": [
+        "kanto-blaine",
+        "kanto-quinn",
+        "kanto-ramon",
+        "kanto-dusty",
+        "kanto-erik",
+        "kanto-avery",
+        "kanto-derek",
+        "kanto-zac"
+      ]
+    },
+    {
+      "id": "kanto-cinnabar-lab",
+      "name": "Laboratório de Cinnabar (prévia de salas)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-mansion-1f",
+      "name": "Pokémon Mansion — 1F",
+      "methods": [],
+      "trainers": [
+        "kanto-ted",
+        "kanto-johnson"
+      ]
+    },
+    {
+      "id": "kanto-mansion-2f",
+      "name": "Pokémon Mansion — 2F",
+      "methods": [],
+      "trainers": [
+        "kanto-arnie"
+      ]
+    },
+    {
+      "id": "kanto-mansion-3f",
+      "name": "Pokémon Mansion — 3F",
+      "methods": [],
+      "trainers": [
+        "kanto-simon",
+        "kanto-braydon"
+      ]
+    },
+    {
+      "id": "kanto-mansion-b1f",
+      "name": "Pokémon Mansion — B1F",
+      "methods": [],
+      "trainers": [
+        "kanto-lewis",
+        "kanto-ivan"
+      ]
     }
   ],
   "trainers": [
@@ -3477,6 +3645,1408 @@
             },
             {
               "species": "ARBOK",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-sabrina",
+      "name": "Sabrina",
+      "role": "Líder de ginásio",
+      "location": "kanto-saffron-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "KADABRA",
+              "level": 38,
+              "moves": [
+                "PSYBEAM",
+                "FUTURESIGHT",
+                "CALMMIND",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "MRMIME",
+              "level": 37,
+              "moves": [
+                "PSYBEAM",
+                "CALMMIND",
+                "BARRIER",
+                "BATONPASS"
+              ]
+            },
+            {
+              "species": "VENOMOTH",
+              "level": 38,
+              "moves": [
+                "PSYBEAM",
+                "GUST",
+                "LEECHLIFE",
+                "SUPERSONIC"
+              ]
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 43,
+              "moves": [
+                "PSYCHIC",
+                "FUTURESIGHT",
+                "CALMMIND",
+                "RECOVER"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-cameron",
+      "name": "Cameron",
+      "role": "Psíquico",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SLOWPOKE",
+              "level": 33
+            },
+            {
+              "species": "SLOWPOKE",
+              "level": 33
+            },
+            {
+              "species": "SLOWBRO",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-preston",
+      "name": "Preston",
+      "role": "Psíquico",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SLOWBRO",
+              "level": 38
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-johan",
+      "name": "Johan",
+      "role": "Psíquico",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "KADABRA",
+              "level": 31
+            },
+            {
+              "species": "MRMIME",
+              "level": 31
+            },
+            {
+              "species": "SLOWPOKE",
+              "level": 31
+            },
+            {
+              "species": "KADABRA",
+              "level": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-tyron",
+      "name": "Tyron",
+      "role": "Psíquico",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MRMIME",
+              "level": 34
+            },
+            {
+              "species": "KADABRA",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-tasha",
+      "name": "Tasha",
+      "role": "Médium",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 33
+            },
+            {
+              "species": "GASTLY",
+              "level": 33
+            },
+            {
+              "species": "HAUNTER",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-stacy",
+      "name": "Stacy",
+      "role": "Médium",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HAUNTER",
+              "level": 38
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-amanda",
+      "name": "Amanda",
+      "role": "Médium",
+      "location": "kanto-saffron-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GASTLY",
+              "level": 34
+            },
+            {
+              "species": "HAUNTER",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-hideki",
+      "name": "Hideki",
+      "role": "Lutador",
+      "location": "kanto-saffron-dojo",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 32
+            },
+            {
+              "species": "MACHOKE",
+              "level": 32
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-hitoshi",
+      "name": "Hitoshi",
+      "role": "Lutador",
+      "location": "kanto-saffron-dojo",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 31
+            },
+            {
+              "species": "MANKEY",
+              "level": 31
+            },
+            {
+              "species": "PRIMEAPE",
+              "level": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-aaron",
+      "name": "Aaron",
+      "role": "Lutador",
+      "location": "kanto-saffron-dojo",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PRIMEAPE",
+              "level": 36
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-mike",
+      "name": "Mike",
+      "role": "Lutador",
+      "location": "kanto-saffron-dojo",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MANKEY",
+              "level": 31
+            },
+            {
+              "species": "MANKEY",
+              "level": 31
+            },
+            {
+              "species": "PRIMEAPE",
+              "level": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-koichi",
+      "name": "Koichi",
+      "role": "Lutador",
+      "location": "kanto-saffron-dojo",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HITMONCHAN",
+              "level": 37,
+              "moves": [
+                "SKYUPPERCUT",
+                "FIREPUNCH",
+                "THUNDERPUNCH",
+                "ICEPUNCH"
+              ]
+            },
+            {
+              "species": "HITMONLEE",
+              "level": 37,
+              "moves": [
+                "HIGHJUMPKICK",
+                "FORESIGHT",
+                "MINDREADER",
+                "FOCUSENERGY"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-21",
+      "name": "Grunt 21",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GOLBAT",
+              "level": 25
+            },
+            {
+              "species": "ZUBAT",
+              "level": 25
+            },
+            {
+              "species": "ZUBAT",
+              "level": 25
+            },
+            {
+              "species": "SANDSHREW",
+              "level": 25
+            },
+            {
+              "species": "ZUBAT",
+              "level": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-22",
+      "name": "Grunt 22",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CUBONE",
+              "level": 29
+            },
+            {
+              "species": "ZUBAT",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-23",
+      "name": "Grunt 23",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATICATE",
+              "level": 28
+            },
+            {
+              "species": "HYPNO",
+              "level": 28
+            },
+            {
+              "species": "RATICATE",
+              "level": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-24",
+      "name": "Grunt 24",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-4f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EKANS",
+              "level": 28
+            },
+            {
+              "species": "ZUBAT",
+              "level": 28
+            },
+            {
+              "species": "CUBONE",
+              "level": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-25",
+      "name": "Grunt 25",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-4f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 29
+            },
+            {
+              "species": "DROWZEE",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-26",
+      "name": "Grunt 26",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-5f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HYPNO",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-27",
+      "name": "Grunt 27",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-5f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ARBOK",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-28",
+      "name": "Grunt 28",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-6f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 29
+            },
+            {
+              "species": "MACHOKE",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-29",
+      "name": "Grunt 29",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-6f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ZUBAT",
+              "level": 28
+            },
+            {
+              "species": "ZUBAT",
+              "level": 28
+            },
+            {
+              "species": "GOLBAT",
+              "level": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-30",
+      "name": "Grunt 30",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-7f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CUBONE",
+              "level": 29
+            },
+            {
+              "species": "CUBONE",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-31",
+      "name": "Grunt 31",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-7f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATICATE",
+              "level": 26
+            },
+            {
+              "species": "ZUBAT",
+              "level": 26
+            },
+            {
+              "species": "GOLBAT",
+              "level": 26
+            },
+            {
+              "species": "RATTATA",
+              "level": 26
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-32",
+      "name": "Grunt 32",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-7f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSHREW",
+              "level": 29
+            },
+            {
+              "species": "SANDSLASH",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-33",
+      "name": "Grunt 33",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-8f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATICATE",
+              "level": 26
+            },
+            {
+              "species": "GOLBAT",
+              "level": 26
+            },
+            {
+              "species": "ARBOK",
+              "level": 26
+            },
+            {
+              "species": "KOFFING",
+              "level": 26
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-34",
+      "name": "Grunt 34",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-8f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "WEEZING",
+              "level": 28
+            },
+            {
+              "species": "GOLBAT",
+              "level": 28
+            },
+            {
+              "species": "KOFFING",
+              "level": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-35",
+      "name": "Grunt 35",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-9f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GOLBAT",
+              "level": 28
+            },
+            {
+              "species": "DROWZEE",
+              "level": 28
+            },
+            {
+              "species": "HYPNO",
+              "level": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-36",
+      "name": "Grunt 36",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-9f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DROWZEE",
+              "level": 28
+            },
+            {
+              "species": "GRIMER",
+              "level": 28
+            },
+            {
+              "species": "MACHOP",
+              "level": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-37",
+      "name": "Grunt 37",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-10f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOKE",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-38",
+      "name": "Grunt 38",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-11f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HYPNO",
+              "level": 48
+            },
+            {
+              "species": "MAROWAK",
+              "level": 49
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt-silph-39",
+      "name": "Grunt 39",
+      "role": "Equipe Rocket",
+      "location": "kanto-silph-11f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GOLBAT",
+              "level": 48
+            },
+            {
+              "species": "RATICATE",
+              "level": 49
+            },
+            {
+              "species": "ARBOK",
+              "level": 50
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-giovanni",
+      "name": "Giovanni",
+      "role": "Chefe da Equipe Rocket",
+      "location": "kanto-silph-11f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "NIDORINO",
+              "level": 37,
+              "moves": [
+                "POISONSTING",
+                "HORNATTACK",
+                "FURYATTACK",
+                "HELPINGHAND"
+              ]
+            },
+            {
+              "species": "RHYHORN",
+              "level": 37,
+              "moves": [
+                "ROCKBLAST",
+                "FURYATTACK",
+                "SCARYFACE",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "KANGASKHAN",
+              "level": 35,
+              "moves": [
+                "MEGAPUNCH",
+                "RAGE",
+                "FAKEOUT",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "NIDOQUEEN",
+              "level": 41,
+              "moves": [
+                "POISONSTING",
+                "BODYSLAM",
+                "DOUBLEKICK",
+                "TAILWHIP"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-silph",
+      "name": "Blue (Silph)",
+      "role": "Rival",
+      "location": "kanto-silph-7f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": "BULBASAUR",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 25,
+              "moves": [
+                "QUICKATTACK",
+                "GUST",
+                "WHIRLWIND",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 20,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "EXEGGCUTE",
+              "level": 23,
+              "moves": [
+                "CONFUSION",
+                "LEECHSEED",
+                "HYPNOSIS",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "GYARADOS",
+              "level": 22,
+              "moves": [
+                "THRASH",
+                "BITE"
+              ]
+            },
+            {
+              "species": "CHARMELEON",
+              "level": 25,
+              "moves": [
+                "EMBER",
+                "METALCLAW",
+                "SMOKESCREEN",
+                "GROWL"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "CHARMANDER",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 25,
+              "moves": [
+                "QUICKATTACK",
+                "GUST",
+                "WHIRLWIND",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 20,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "EXEGGCUTE",
+              "level": 22,
+              "moves": [
+                "CONFUSION",
+                "LEECHSEED",
+                "HYPNOSIS",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "GROWLITHE",
+              "level": 22,
+              "moves": [
+                "EMBER",
+                "ROAR",
+                "LEER",
+                "ODORSLEUTH"
+              ]
+            },
+            {
+              "species": "WARTORTLE",
+              "level": 25,
+              "moves": [
+                "WATERGUN",
+                "BITE",
+                "RAPIDSPIN",
+                "WITHDRAW"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "SQUIRTLE",
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 25,
+              "moves": [
+                "QUICKATTACK",
+                "GUST",
+                "WHIRLWIND",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "KADABRA",
+              "level": 20,
+              "moves": [
+                "CONFUSION",
+                "DISABLE",
+                "KINESIS",
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "GROWLITHE",
+              "level": 22,
+              "moves": [
+                "EMBER",
+                "ROAR",
+                "LEER",
+                "ODORSLEUTH"
+              ]
+            },
+            {
+              "species": "GYARADOS",
+              "level": 23,
+              "moves": [
+                "THRASH",
+                "BITE"
+              ]
+            },
+            {
+              "species": "IVYSAUR",
+              "level": 25,
+              "moves": [
+                "VINEWHIP",
+                "RAZORLEAF",
+                "POISONPOWDER",
+                "SLEEPPOWDER"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blaine",
+      "name": "Blaine",
+      "role": "Líder de ginásio",
+      "location": "kanto-cinnabar-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GROWLITHE",
+              "level": 42,
+              "moves": [
+                "FIREBLAST",
+                "TAKEDOWN",
+                "BITE",
+                "ROAR"
+              ]
+            },
+            {
+              "species": "PONYTA",
+              "level": 40,
+              "moves": [
+                "FIREBLAST",
+                "FIRESPIN",
+                "STOMP",
+                "BOUNCE"
+              ]
+            },
+            {
+              "species": "RAPIDASH",
+              "level": 42,
+              "moves": [
+                "FIREBLAST",
+                "FIRESPIN",
+                "STOMP",
+                "BOUNCE"
+              ]
+            },
+            {
+              "species": "ARCANINE",
+              "level": 47,
+              "moves": [
+                "FIREBLAST",
+                "TAKEDOWN",
+                "BITE",
+                "ROAR"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-quinn",
+      "name": "Quinn",
+      "role": "Ladrão",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GROWLITHE",
+              "level": 36
+            },
+            {
+              "species": "VULPIX",
+              "level": 36
+            },
+            {
+              "species": "NINETALES",
+              "level": 36
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ramon",
+      "name": "Ramon",
+      "role": "Ladrão",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PONYTA",
+              "level": 41
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-dusty",
+      "name": "Dusty",
+      "role": "Ladrão",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "VULPIX",
+              "level": 37
+            },
+            {
+              "species": "GROWLITHE",
+              "level": 37
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-arnie",
+      "name": "Arnie",
+      "role": "Ladrão",
+      "location": "kanto-mansion-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CHARMANDER",
+              "level": 34
+            },
+            {
+              "species": "CHARMELEON",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-simon",
+      "name": "Simon",
+      "role": "Ladrão",
+      "location": "kanto-mansion-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "NINETALES",
+              "level": 38
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lewis",
+      "name": "Lewis",
+      "role": "Ladrão",
+      "location": "kanto-mansion-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GROWLITHE",
+              "level": 34
+            },
+            {
+              "species": "PONYTA",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-erik",
+      "name": "Erik",
+      "role": "Super Nerd",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "VULPIX",
+              "level": 36
+            },
+            {
+              "species": "VULPIX",
+              "level": 36
+            },
+            {
+              "species": "NINETALES",
+              "level": 36
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-avery",
+      "name": "Avery",
+      "role": "Super Nerd",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PONYTA",
+              "level": 34
+            },
+            {
+              "species": "CHARMANDER",
+              "level": 34
+            },
+            {
+              "species": "VULPIX",
+              "level": 34
+            },
+            {
+              "species": "GROWLITHE",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-derek",
+      "name": "Derek",
+      "role": "Super Nerd",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RAPIDASH",
+              "level": 41
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-zac",
+      "name": "Zac",
+      "role": "Super Nerd",
+      "location": "kanto-cinnabar-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GROWLITHE",
+              "level": 37
+            },
+            {
+              "species": "VULPIX",
+              "level": 37
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ted",
+      "name": "Ted",
+      "role": "Cientista",
+      "location": "kanto-mansion-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ELECTRODE",
+              "level": 29
+            },
+            {
+              "species": "WEEZING",
+              "level": 29
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-braydon",
+      "name": "Braydon",
+      "role": "Cientista",
+      "location": "kanto-mansion-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAGNEMITE",
+              "level": 33
+            },
+            {
+              "species": "MAGNETON",
+              "level": 33
+            },
+            {
+              "species": "VOLTORB",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ivan",
+      "name": "Ivan",
+      "role": "Cientista",
+      "location": "kanto-mansion-b1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAGNEMITE",
+              "level": 34
+            },
+            {
+              "species": "ELECTRODE",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-johnson",
+      "name": "Johnson",
+      "role": "Jovem treinador",
+      "location": "kanto-mansion-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EKANS",
+              "level": 33
+            },
+            {
+              "species": "EKANS",
+              "level": 33
+            },
+            {
+              "species": "RATICATE",
               "level": 34
             }
           ]
