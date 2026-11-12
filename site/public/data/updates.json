@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "28b5d024e730826133ad96541d591287b00fc392",
+      "date": "2026-11-12T08:17:16-03:00",
+      "title": "Kanto fase 10: auditar IDs reais de Fuchsia, Safari e rotas sem eventos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5921bba5129e09f677b41dab199c3ea7e130d823",
       "date": "2026-11-12T08:02:15-03:00",
       "title": "docs(kanto): integrar estudo de eventos no roadmap e manter Celadon sem eventos",
