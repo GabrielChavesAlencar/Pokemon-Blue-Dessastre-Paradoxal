@@ -22,3 +22,9 @@ Thumbs.db
 /site/node_modules/
 /site/.vercel/
 /dist/
+
+# Kanto official soundtrack from user-supplied ZIP: local only unless
+# publication rights are confirmed and a Release is uploaded explicitly.
+/pkm msc kanto.zip
+/pkm msc kanto/
+/assets/music/kanto-original/
