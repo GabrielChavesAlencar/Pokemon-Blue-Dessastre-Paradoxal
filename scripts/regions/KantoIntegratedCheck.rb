@@ -75,6 +75,14 @@ module KantoIntegratedCheck
     league = BlueRegionData::REGISTRY["decades"]["league"]
     $player.badges[league["badge"]] = true
     $game_switches[league["switch"]] = true
+    # An actual Legendary in the native storage implementation must be
+    # deposited before arriving in Kanto without eight local badges.
+    special = Pokemon.new(:MEWTWO, 50)
+    $player.party << special
+    status, reservations = BlueRegionTravel.preview(BlueRegions.snapshot, "KANTO")
+    require!(status == :ok && reservations.length == 1, "Special travel reservation missing")
+    reserved = reservations.first.last
+    require!(BlueRegionTravel.special?(special), "Mewtwo not classified as Legendary")
     stage("travel_decades_to_kanto")
     require!(BlueRegionTravel.perform(BlueRegions.snapshot, "KANTO"),
              "Decades->Kanto travel did not complete")
@@ -82,10 +90,15 @@ module KantoIntegratedCheck
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Return state was not committed")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Return changed the starting region")
     require!($PokemonGlobal.blue_regions["travel_history"].length == 2, "Two-way history missing")
-    require!($player.party.first.equal?(pokemon), "Return replaced the Pokémon")
+    require!($player.party == [pokemon], "Special was not removed from active party")
+    boxed = $PokemonStorage[reserved[0], reserved[1]]
+    require!(boxed.equal?(special), "Legendary was not deposited in the reserved PC slot")
+    require!(BlueRegionTravel.restricted?(boxed), "Kanto did not lock Mewtwo before eight badges")
+    restored_pc = Marshal.load(Marshal.dump($PokemonStorage))
+    restored_pc[reserved[0], reserved[1]] = nil
+    require!(Marshal.dump(restored_pc) == original_pc, "Other PC data changed during travel")
     require!($player.money == original_money, "Travel altered player money")
     require!(Marshal.dump($bag) == original_bag, "Travel altered the bag")
-    require!(Marshal.dump($PokemonStorage) == original_pc, "Travel altered the PC")
     require!(Marshal.dump($player.pokedex) == original_dex, "Travel altered Pokédex")
 
     stage("before_kanto_save")
@@ -101,8 +114,10 @@ module KantoIntegratedCheck
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region did not survive save")
     require!($PokemonGlobal.blue_regions["travel_history"].length == 2, "Travel history lost on save/reload")
     require!($player.party.first.species == :BULBASAUR, "Team changed after save/reload")
+    require!($PokemonStorage[reserved[0], reserved[1]]&.species == :MEWTWO,
+             "Boxed Legendary did not survive reload")
     File.write("Data/blue-kanto-integrated-proof.txt",
-               "Two-way Kanto/Decades transfer, PC/bag/dex/money, same-save reload OK; simulated League only in CI")
+               "Two-way Kanto/Decades transfer, native Legendary PC deposit, bag/dex/money, same-save reload OK; simulated League only in CI")
     stage("completed")
   end
 end
