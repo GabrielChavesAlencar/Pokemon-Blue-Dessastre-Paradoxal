@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "99234dfda69b8db9e92106b71a917eb56e23105d",
+      "date": "2026-11-11T21:41:46-03:00",
+      "title": "test(kanto): detectar piloto local obsoleto apos mudancas no codigo",
+      "category": "Testes"
+    },
+    {
       "sha": "ad252d8fa1991ec8c223fc4b0e10684ffadc1b84",
       "date": "2026-11-11T21:41:27-03:00",
       "title": "fix(kanto): nao executar copia antiga apos atualizacao do Blue",
