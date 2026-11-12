@@ -10,9 +10,9 @@
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
 
-**Barra 1 — Desenvolvimento:** etapa **08/16 (50%)**, piloto experimental expandido a Vermilion, S.S. Anne e Lt. Surge com 40 mapas e teste nativo automatizado aprovado. Esta barra indica desenvolvimento implementado, não aceitação manual.
+**Barra 1 — Núcleos de desenvolvimento implementados (reavaliada em 12/11/2026): 06/16 (37,5%) — faltam 10 passos.** Contam somente os marcos 01, 04, 05, 06, 07 e 08 com núcleo executável e CI; 02, 03, 15 e 16 estão parciais; 09–11 têm apenas terreno; 12–14 não têm núcleo entregue. [Metodologia e 16 avaliações](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). O antigo 08/16 indicava a última fase com núcleo inicial, **não oito etapas funcionalmente completas**.
  
-**Barra 2 — Conclusão validada:** **01/16 (6,25%)**, restam **15 etapas** para aceitação completa. A aprovação da etapa 01 cobre apenas integridade estrutural e smoke test nativo.
+**Barra 2 — Etapas integralmente aceitas (reavaliada em 12/11/2026): 01/16 (6,25%) — faltam 15 passos.** A única aceitação registrada é a auditoria estrutural 01. As outras 15 etapas continuam aguardando seus critérios de aceite, especialmente gameplay manual. [Critérios e cálculo](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
 
 **Marco inicial:** Pallet → Pewter com 13 mapas. **Fase 07:** 25 mapas até Cerulean e Misty. **Fase 08:** 40 mapas até Vermilion e S.S. Anne, 54 perfis de treinadores no portal e testes nativos automatizados. As batalhas foram simuladas na CI; a validação visual/manual permanece necessária.
 
@@ -26,7 +26,7 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **MAN-02 — Gatilhos de treinadores:** iniciar confrontos na aproximação/linha de visão; exigir batalha nos pontos de bloqueio obrigatórios sem tornar todos os NPCs opcionais barreiras artificiais. Persistir vitórias, derrotas e estado após save/reload; prioridade alta.
 - [ ] **MAN-03 — Interfaces de insígnias:** criar layout das oito insígnias de Kanto e painel de conquistas de todas as regiões/gerações, com indicadores próprios para Alola, Decades e Hisui, ligados ao mesmo progresso regional do save; prioridade média.
 
-**Impacto:** etapas 02 e 03 **continuam abertas**, assim como o aceite gráfico do trecho de Mt. Moon (07). A fase 08 não foi testada manualmente segundo o TXT. **Barra 1 permanece 8/16 (50%) e Barra 2 permanece 1/16 (6,25%).**
+**Impacto do feedback original (registro histórico):** etapas 02 e 03 permaneceram abertas, assim como o aceite gráfico do trecho de Mt. Moon (07). A fase 08 não havia sido testada manualmente segundo o TXT. **A contagem histórica era 8/16 e 1/16; a reavaliação atual é 6/16 e 1/16**, conforme o documento de barras.
 
 ## Roadmap de eventos FireRed — análise recebida em 12/11/2026
 
@@ -73,6 +73,10 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 
 ## 16 etapas de fechamento
 
+**Classificação nova por evidências, independente do número mais alto já iniciado:** **6 núcleos entregues (01,04,05,06,07,08); 4 parciais (02,03,15,16); 3 somente cenário (09,10,11); 3 ainda não implementadas (12,13,14)**. O marcador `[ ]` abaixo significa **não aceita integralmente**, mesmo nas 5 etapas com núcleo funcional experimental e na infraestrutura parcial. **Barra 1: 6/16, faltam 10; Barra 2: 1/16, faltam 15.** [Detalhamento](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+
+
+
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
 - [ ] **02 — Abrir o piloto e caminhar no Windows.** **Em validação:** disponível o [atalho de teste gráfico](../KANTO_TESTAR_WINDOWS.bat), o [diagnóstico com logs](../scripts/regions/gui_diagnostics.py) e o [checklist detalhado](KANTO_TESTE_WINDOWS.md). A verificação de janela na CI não substitui caminhada real. Falta conferir colisões, portas, transições, todos os iniciais, batalhas reais, cura, captura, derrota e save/reload numa sessão interativa.
 - [ ] **03 — Fechar os erros do trecho Pallet → Pewter.** **Correções automatizadas aprovadas:** vitórias dos treinadores usam chaves estáveis `KANTO_mapa_evento` (com leitura de saves antigos), e a auditoria verifica transferências por direção e caminho de retorno; o teste nativo cobre nomes iguais, derrota/repetição e salvamento. [CI nativa](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43128730834). O piloto detecta builds antigos e prepara cópia nova sem apagar a anterior, [validado na CI](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43129122399). Falta repetir o roteiro manual, incluindo colisões, portas e respawn.
@@ -93,6 +97,9 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — Reavaliação dos contadores:** [auditoria das 16 etapas](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) reconciliou implementações, 109 mapas (61 somente cenário), 8 interiores, 50 eventos de visão e CI. **Barra 1 passou de 8/16 para 6/16** porque só seis etapas possuem núcleo implementado e evidência; **Barra 2 permanece 1/16**. Faltam 10 passos para núcleos funcionais e 15 para aceites integrais. Os valores antigos listados abaixo são **registros históricos**, não a medição atual.
+
 
 - **12/11/2026 — Correções funcionais MAN-01 e MAN-02:** [especificação, código e QA](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md) para oito interiores do percurso testado e 50 eventos de treinador com visão automática `Sight(n)`, persistência de vitória em self-switch e revisão de bloqueio canônico. O código foi enviado ao GitHub, e a verificação da revisão atual deve ser conferida antes de registrar aceite manual. **Barras preservadas.**
 
