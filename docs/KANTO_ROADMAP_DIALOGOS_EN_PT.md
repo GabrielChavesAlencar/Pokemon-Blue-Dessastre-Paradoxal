@@ -41,7 +41,7 @@ As referências abaixo são **IDs de resumos temáticos** do guia, não IDs inst
 | **DLG-B** | `KAN-011`–`KAN-022` | Pewter/Brock, Mt. Moon/fósseis, Cerulean/Misty, Nugget Bridge e Bill | 03, 07, 08 | Alta; escolhas, treinadores, fóssil, ticket e flags |
 | **DLG-C** | `KAN-023`–`KAN-033` | Vermilion/S.S. Anne/Surge, Diglett's Cave, Rock Tunnel, Lavender/Pokémon Tower/Fuji | 08, 09, 11 e lacunas de acesso | Alta no trecho já implementado; Lavender pendente |
 | **DLG-D** | `KAN-034`–`KAN-046` | Celadon/loja/Rocket/Game Corner/Erika, Saffron/Dojo/Silph/Sabrina | 09 e 11 | **Erika/Celadon já possui núcleo experimental (3 mapas); 8 mapas Celadon + 30 Saffron continuam `preview_only`, sem eventos/diálogos integrados** |
-| **DLG-E** | `KAN-047`–`KAN-052` | Fuchsia/Safari/Secret House/Warden/Koga e Snorlax das rotas 12/16 | 10 e pré-requisitos de Lavender | **Somente análise:** 20 mapas Fuchsia em `preview_only`, sem eventos |
+| **DLG-E** | `KAN-047`–`KAN-052` | Fuchsia/Safari/Secret House/Warden/Koga e Snorlax das rotas 12/16 | 10 e pré-requisitos de Lavender | **Núcleo Fuchsia/Koga ativado em 5 mapas; 15 mapas de Fuchsia/Safari continuam `preview_only` sem eventos ou diálogos** |
 | **DLG-F** | `KAN-053`–`KAN-057` | Cinnabar/Mansion/Blaine, Viridian final/Giovanni e pesquisa de Oak | 12–13 | Planejado; fase ainda não implementada |
 | **DLG-G** | `KAN-058`–`KAN-067` | Verificação de badges, Victory Road, Elite Four, rival campeão, Hall of Fame, Oak e Cerulean Cave | 14–16 | Planejado; separar Liga do pós-jogo |
 | **DLG-SEV** | `SEV-001`–`SEV-014` | One–Seven Island, Celio, Rocket Warehouse, Lorelei e afins | Pós-jogo/escopo opcional; fases 15–16 só se decidido | Não altera automaticamente 16 etapas; precisa decisão de escopo |
@@ -63,7 +63,7 @@ A **referência GBA** não pode virar `engine_english_key` por substituição de
 3. Opcionalmente usar `--traduzir --limite 50` para pequeno lote de revisão, sem concluir que o tradutor gerou pt-BR aprovado.
 4. Confrontar com a saída privada de `scripts/regions/extrair_eventos_firered.py`; registrar o roteiro de `text.inc` / `scripts.inc` e condições de fala, sem executar código de terceiros.
 5. Aplicar QA de preservação de tokens e revisão de localização segundo `scripts/localization/catalog.py`, `scripts/localization/review.py`, `docs/PORTUGUES_E_UI.md`.
-6. **Não modificar os 58 mapas ainda em `preview_only` nem liberar seus diálogos antes da autorização dos eventos**. O teste `Testar Kanto` é uma cópia com save isolado.
+6. **Não modificar os 53 mapas ainda em `preview_only` nem liberar seus diálogos antes da autorização dos eventos**. O teste `Testar Kanto` é uma cópia com save isolado.
 
 ## 6. Critérios de aceite do diálogo em cada evento
 
@@ -78,7 +78,7 @@ A **referência GBA** não pode virar `engine_english_key` por substituição de
 
 ## 7. Progresso e bloqueios
 
-- **Campanha Kanto, núcleos funcionais comprovados:** **8/16 (50%); faltam 8 etapas**. A [entrega do 8º núcleo](KANTO_AVANCO_FUNCIONAL_08.md) tem Erika/Rainbow e diálogos autorais provisórios; revisão sistemática EN/PT-BR do FireRed ainda pendente. Celadon City/Center/Gym possuem eventos locais; os demais 58 mapas continuam sem eventos.
+- **Campanha Kanto, núcleos funcionais comprovados:** **9/16 (56,25%); faltam 7 etapas**. O [9º núcleo](KANTO_AVANCO_FUNCIONAL_09.md) ativou Fuchsia/Koga com textos locais provisórios; adaptação sistemática de diálogos FireRed EN/PT-BR ainda pendente. **53 mapas protegidos** sem eventos ou diálogos.
 - **Campanha Kanto, aceitação completa:** **1/16 (6,25%); faltam 15 etapas**. QA humano pendente.
 - **Auditoria de eventos FireRed:** 12 marcos; sem porcentagem aferida.
 - **Auditoria/localização de diálogos:** 10 tarefas DIA-01–DIA-10; **0 finalizadas nesta revisão documental**, execução ainda não registrada.
