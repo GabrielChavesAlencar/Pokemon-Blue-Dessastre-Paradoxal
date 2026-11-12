@@ -162,6 +162,13 @@ def game_snapshot(game: Path) -> dict:
     if not data.is_dir():
         raise ValueError("Game directory lacks Data/: " + str(game))
     files = map_files(data)
+    registered = set()
+    mapinfos = data / "MapInfos.rxdata"
+    if mapinfos.is_file():
+        infos = read_map_data(mapinfos)
+        if not isinstance(infos, dict) or not all(type(n) is int and n > 0 for n in infos):
+            raise ValueError("Invalid native MapInfos; refusing map ID collision assumptions")
+        registered = set(infos)
     protected = {}
     for filename in ("MapInfos.rxdata", "Tilesets.rxdata", "Scripts.rxdata",
                      "System.rxdata", "blue-kanto-install.json", "blue-kanto-music.txt"):
@@ -169,6 +176,7 @@ def game_snapshot(game: Path) -> dict:
         if path.is_file():
             protected["Data/" + filename] = checksum(path)
     return {"present": True, "existing_ids": sorted(files),
+            "registered_ids": sorted(registered),
             "protected_hashes": protected}
 
 
