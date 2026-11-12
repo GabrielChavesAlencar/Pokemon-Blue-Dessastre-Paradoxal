@@ -135,6 +135,9 @@ TRAINERS.update({
     },
 })
 
+SURGE_CANS = {4, 10, *range(22, 35)}
+SURGE_LOCKS = {8, *range(11, 20)}
+
 MART = 'pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])'
 
 
@@ -242,6 +245,32 @@ def install_events(source, target, mapping):
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            if original == 67 and event_id in (SURGE_CANS | SURGE_LOCKS):
+                # The foreign gym's puzzle depends on game-wide switches.
+                # Translate each trash can to a single audited callback, and
+                # each barrier to a local self-switch-driven two-page event.
+                is_can = event_id in SURGE_CANS
+                script = (f"BlueKantoPilot.surge_can({event_id})" if is_can
+                          else "BlueKantoPilot.surge_gate")
+                original_graphic = event.attrs["@pages"][0].attrs["@graphic"]
+                graphic_name = original_graphic.attrs["@character_name"]
+                character = actor(event) if graphic_name else b""
+                replacement = new_event(event, [command(355, script.encode())], 0, character)
+                if not graphic_name:
+                    replacement.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(original_graphic)
+                if not is_can:
+                    opened = copy.deepcopy(replacement.attrs["@pages"][0])
+                    c = opened.attrs["@condition"].attrs
+                    c["@self_switch_valid"] = True
+                    c["@self_switch_ch"] = b"A"
+                    g = opened.attrs["@graphic"].attrs
+                    g["@tile_id"] = 0
+                    g["@character_name"] = b""
+                    opened.attrs["@through"] = True
+                    opened.attrs["@list"] = [command(0)]
+                    replacement.attrs["@pages"].append(opened)
+                selected[event_id] = replacement
+                continue
             if event_id in scripts:
                 floor_trigger = original == 64 and event_id in (9, 29, 30)
                 selected[event_id] = new_event(
