@@ -11,7 +11,7 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Pallet events missing")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 41 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 42 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
