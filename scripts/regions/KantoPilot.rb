@@ -683,6 +683,18 @@ module BlueKantoPilot
   # The regional transport NPC already exists in starter-town Pallet. The
   # Lobby's guide is an additional after-League point and uses the same
   # single-save travel service (only destinations with maps can be visited).
+  def self.league_champion_npc
+    pbMessage(_INTL("Blue: Vencer a Elite foi só o começo! Quero ver se você supera o Campeão."))
+  end
+
+  def self.league_oak
+    if progress.fetch("leagues", []).include?("KANTO")
+      pbMessage(_INTL("Oak: Seu nome entrou para o Hall of Fame de Kanto!"))
+    else
+      pbMessage(_INTL("Oak: Primeiro derrote Blue e conclua a jornada no Hall of Fame."))
+    end
+  end
+
   def self.league_guide
     if progress.fetch("leagues", []).include?("KANTO")
       pbMessage(_INTL("Guia da Liga: Parabéns, Campeão! Consulte o agente regional aqui ou em Pallet."))
