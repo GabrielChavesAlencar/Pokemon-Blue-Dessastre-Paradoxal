@@ -8,6 +8,14 @@ Abra [Downloads](https://pokemondessastreparadosal.vercel.app/downloads) e escol
 
 Os dois EXEs usam uma instalação compartilhada. Em um PC novo, ela fica em `%LOCALAPPDATA%/PokemonBlueDessastreParadoxal`. Quando o inicializador está dentro de uma instalação existente, reconhece a pasta do projeto. Feche o jogo antes de atualizar. Saves, equipes, `game/` e ferramentas privadas são preservados na atualização do código; arquivos substituídos recebem backup.
 
+## Testar Kanto pelo EXE do Modo História
+
+O **`Blue-Story.exe`** do site instala/atualiza o jogo. Quando a janela principal `game/Game.exe` abrir, o menu de slots terá as opções **Continuar → Novo Jogo → Testar Kanto** (nessa ordem quando houver save). O novo comando **Testar Kanto** usa o lançador experimental que vem com a mesma instalação, sem exigir que você abra arquivos BAT.
+
+A primeira execução do teste pode baixar a **fonte FRLG original fixada** e preparar uma cópia isolada do piloto com o Python portátil já incluído pelo instalador. São verificados o SHA-256 do pacote e os destinos dos mapas; nenhum arquivo de save da campanha normal é sobrescrito. O jogo principal fecha seu menu depois de abrir o piloto em outro processo, e o relatório de jogabilidade fica em `.blue-work/kanto-gui-reports`. Se o servidor de origem estiver indisponível, o teste mostra uma mensagem de erro sem apagar saves.
+
+A opção é adicionada por [`TitleKanto.rb`](../scripts/battle_polish/TitleKanto.rb) e não exige trocar o `Game.exe` original por um binário modificado. [Veja o roteiro de testes da fase 07](KANTO_TESTE_EXPERIMENTAL.md).
+
 ## Conteúdo instalado
 
 - Base Decades no commit fixado `ff6091b23603b3298ad72a7584b02a51e1d01c0e`.
