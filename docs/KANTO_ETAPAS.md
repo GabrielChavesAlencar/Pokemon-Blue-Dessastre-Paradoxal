@@ -6,6 +6,10 @@
 
 **Referência de times históricos:** [estudo completo de líderes, Elite Four e campeões de Kanto](ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md) e [guia de implementação passo a passo](KANTO_TIMES_FORTES_IMPLEMENTACAO_PASSO_A_PASSO.md). **Material de documentação apenas:** não altera equipes no jogo nem os indicadores de desenvolvimento/aceite.
 
+## Testes completos delegados ao Codex
+
+Para que o usuário **não precise jogar manualmente**, o Codex deve seguir o [roteiro E2E de 16 etapas](KANTO_CODEX_TESTES_E2E.md) e o [prompt pronto para execução](KANTO_CODEX_PROMPT.md). O roteiro prevê automação real da janela do `Game.exe`, coleta de screenshots/logs, verificação de save/reload e correção de bugs com reexecução. **Não aumentar a Barra 2 por CI headless, documentação ou relatório autogerado sem gameplay.** Testes sem ambiente Windows com GUI ou sem JoiPlay devem ficar expressamente bloqueados.
+
 ## Como ler o contador
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
