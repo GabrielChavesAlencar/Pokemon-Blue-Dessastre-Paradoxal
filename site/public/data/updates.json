@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f1b4eb64e340221890c2b84e289a823c56812218",
+      "date": "2026-11-12T11:36:52-03:00",
+      "title": "feat(kanto): núcleo funcional 10/16 — Saffron, Sabrina e Silph Co.",
+      "category": "Novidades"
+    },
+    {
       "sha": "4177f41ea6e852e2c2be79affd26e1db27cbae96",
       "date": "2026-11-12T11:08:56-03:00",
       "title": "test(kanto): audit Saffron/Sabrina/Silph source anchors before functional integration",
