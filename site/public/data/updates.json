@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "be942ba5d4be26c89c9bfbc43db4bc7911e4dcbc",
+      "date": "2026-11-11T21:29:36-03:00",
+      "title": "ci(kanto): investigar janela Game.exe sem mocks apos verificação nativa",
+      "category": "Melhorias"
+    },
+    {
       "sha": "32e4ba9e293cc62b0f650835462c3588c332a1bf",
       "date": "2026-11-11T21:29:14-03:00",
       "title": "feat(kanto): atalho unico para testar piloto em janela e registrar logs",
