@@ -88,6 +88,9 @@ TYPES = {
     "RIVAL_SILPH": "RIVAL2",
     "ROCKETBOSS": "ROCKETBOSS",
     "TAMER": "TAMER",
+    # Temporary Decades portraits until separately licensed FRLG trainer art is reviewed.
+    "BURGLAR": "SUPERNERD", "SCIENTIST": "SUPERNERD",
+    "LEADER_BLAINE": "SUPERNERD",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -199,6 +202,53 @@ for source_id, versions in SILPH_ROCKET_EVENTS.items():
                            for eid, version in versions.items()}
 TRAINERS[188][10] = ("ROCKETBOSS", "Giovanni", 2)
 
+# Phase 12: IDs, coordinates and trainer names verified against the pinned
+# FRLG Map199-208 source by audit_cinnabar.py. No source event scripts run.
+TRAINERS[202] = {
+    4: ("BURGLAR", "Quinn"), 5: ("SUPERNERD", "Erik"),
+    6: ("SUPERNERD", "Avery"), 7: ("BURGLAR", "Ramon"),
+    8: ("SUPERNERD", "Derek"), 9: ("BURGLAR", "Dusty"),
+    10: ("SUPERNERD", "Zac"), 16: ("LEADER_BLAINE", "Blaine"),
+}
+TRAINERS[205] = {3: ("YOUNGSTER", "Johnson"), 9: ("SCIENTIST", "Ted")}
+TRAINERS[206] = {5: ("BURGLAR", "Arnie")}
+TRAINERS[207] = {4: ("BURGLAR", "Simon"), 5: ("SCIENTIST", "Braydon")}
+TRAINERS[208] = {4: ("BURGLAR", "Lewis"), 5: ("SCIENTIST", "Ivan")}
+
+CINNABAR_GYM_DOORS = {
+    1: (20, 21, 22, 23), 2: (1, 25, 26, 27),
+    3: (2, 18, 19, 29), 4: (13, 31, 32),
+    5: (34, 35, 36, 37), 6: (39, 40, 41, 42),
+}
+CINNABAR_GYM_QUIZZES = {24: 1, 28: 2, 30: 3, 33: 4, 38: 5, 43: 6}
+CINNABAR_GYM_TRAINER_GROUPS = {4: 1, 6: 2, 7: 3, 8: 4, 9: 5, 10: 6}
+CINNABAR_DOOR_TO_GROUP = {
+    event: group for group, events in CINNABAR_GYM_DOORS.items() for event in events
+}
+MANSION_DOORS = {
+    205: (14, *range(16, 39)),
+    206: (*range(9, 14), *range(16, 27)),
+    207: tuple(range(10, 21)),
+    208: tuple(range(12, 34)),
+}
+MANSION_STATUES = {205: (4,), 206: (15,), 207: (9,), 208: (10, 11)}
+MANSION_WARPS = {
+    205: (1, 2, 5, 6), 206: (1, 2, 3, 4),
+    207: (1, 2, 3, 21, 22, 23, 24, 25), 208: (1,),
+}
+CINNABAR_EVENTS = {
+    199: {1, 2, 3, 4, 5},
+    200: {1, 2}, 201: {1, 2}, 203: {1, 2, 3, 4, 5, 6, 7},
+    202: ({3} | set(TRAINERS[202]) | set(CINNABAR_GYM_QUIZZES)
+          | set(CINNABAR_DOOR_TO_GROUP)),
+}
+for _map_id in MANSION_DOORS:
+    CINNABAR_EVENTS[_map_id] = (set(MANSION_WARPS[_map_id]) |
+                                 set(MANSION_STATUES[_map_id]) |
+                                 set(MANSION_DOORS[_map_id]) |
+                                 set(TRAINERS[_map_id]) |
+                                 ({8} if _map_id == 208 else set()))
+
 SAFFRON_STATIC_EVENTS = {
     168: {6, 10, 12, 13, 14},             # City <-> gym, Silph, Mart, Center, Dojo
     169: {1, 2},                         # Center exit + nurse
@@ -216,6 +266,12 @@ SILPH_FLOOR_LANDINGS = {
     184: (23, 5), 185: (22, 5), 186: (24, 5),
     187: (13, 5), 188: (13, 5),
 }
+
+def cinnabar_event_allowed(source_id, event_id):
+    if source_id in CINNABAR_EVENTS:
+        return event_id in CINNABAR_EVENTS[source_id]
+    return True
+
 
 def saffron_event_allowed(source_id, event_id, event):
     if source_id in SAFFRON_STATIC_EVENTS:
