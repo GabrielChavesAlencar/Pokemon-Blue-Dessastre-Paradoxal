@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7a92aefb02d7d6090b0573d215b6c7cedb2ad6e1",
+      "date": "2026-11-12T09:22:49-03:00",
+      "title": "Fix: capture FRLG trainer sight range in audit regex",
+      "category": "Correções"
+    },
+    {
       "sha": "aaeff6045e397701565cbdb041994e323635f0e0",
       "date": "2026-11-12T09:22:09-03:00",
       "title": "Kanto: auditar automaticamente entradas e saídas de interiores de Pallet a Pewter",
