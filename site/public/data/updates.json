@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b35fdec53fa1f3f990b1832a752ae36d20828a8a",
+      "date": "2026-11-12T07:27:46-03:00",
+      "title": "docs(kanto): incluir checklist real de testes do jogador em 8 areas",
+      "category": "Documentação"
+    },
+    {
       "sha": "5334e523207b03d9a65b0d7e102b5eeae385db5a",
       "date": "2026-11-12T07:27:29-03:00",
       "title": "docs(kanto): ligar feedback ao codigo que descarta portas e eventos de visao",
