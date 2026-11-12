@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "abd9eafd666bc857e756b0da3def28c9f6cbb0b1",
+      "date": "2026-11-12T10:41:01-03:00",
+      "title": "Kanto núcleo 9: auditar âncoras exatas Fuchsia/Koga/Safari e equipes FRLG sem importar scripts",
+      "category": "Melhorias"
+    },
+    {
       "sha": "046d17b36eab55ac3e435505b4d84245357e56f0",
       "date": "2026-11-12T10:37:27-03:00",
       "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
