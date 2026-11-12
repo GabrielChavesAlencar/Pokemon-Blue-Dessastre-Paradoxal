@@ -45,6 +45,7 @@ KANTO_PHASE11_EARLY_SOURCE_IDS = (
     57, 62, 107, 108, 109, 110, 112, 113, 168, 169,
     170, 171, 172, 174, 175, 176, 177, 178, 179, 180,
     181, 182, 183, 184, 185, 186, 187, 188, 189,
+    173,  # Late-discovered Saffron Fan Club; keep its already published slot.
 )
 
 
