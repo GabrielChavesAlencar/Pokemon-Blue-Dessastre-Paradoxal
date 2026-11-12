@@ -93,6 +93,13 @@ TYPES = {
     "LEADER_BLAINE": "SUPERNERD",
     "COOLTRAINER_M": "COOLTRAINER_F",  # Provisional battle portrait; authentic male overworld sprites.
     "LEADER_GIOVANNI": "ROCKETBOSS",  # Local fallback battle portrait pending art licensing.
+    "POKEMANIAC": "SUPERNERD",
+    "COOLCOUPLE": "COOLTRAINER_F",
+    "ELITE_LORELEI": "LEADER_Erika",
+    "ELITE_BRUNO": "LEADER_Brock",
+    "ELITE_AGATHA": "LEADER_Sabrina",
+    "ELITE_LANCE": "ROCKETBOSS",
+    "CHAMPION_BLUE": "RIVAL1",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -222,6 +229,62 @@ TRAINERS[13] = {
 }
 VIRIDIAN_GYM_EVENTS = set(TRAINERS[13]) | {11, 16}
 
+# Phase 14 / Victory Road source IDs. Trainer events 15 and 16 on 3F
+# are the same original double battle, with one shared victory key.
+TRAINERS[211] = {7: ("COOLTRAINER_F", "Naomi"),
+                 11: ("COOLTRAINER_M", "Rolando")}
+TRAINERS[212] = {9: ("BLACKBELT", "Daisuke"), 11: ("TAMER", "Vincent"),
+                 13: ("JUGGLER", "Nelson"), 14: ("JUGGLER", "Gregory"),
+                 16: ("POKEMANIAC", "Dawson")}
+TRAINERS[213] = {10: ("COOLTRAINER_M", "George"),
+                 12: ("COOLTRAINER_F", "Alexa"),
+                 13: ("COOLTRAINER_F", "Caroline"),
+                 14: ("COOLTRAINER_M", "Colby"),
+                 15: ("COOLCOUPLE", "Ray & Tyra"),
+                 16: ("COOLCOUPLE", "Ray & Tyra")}
+
+# Only reviewed events may enter the pilot; source global switches,
+# rival commands, wall/boulder position checks, credits and story flags
+# must never be copied from the FRLG project.
+LEAGUE_BADGE_GATES = {17: {4: (1, 5)}, 209: {
+    7: (2, 6), 9: (3, 8), 11: (4, 10), 13: (5, 12),
+    15: (6, 14), 17: (7, 16), 19: (8, 18),
+}}
+LEAGUE_BARRIER_GATES = {17: {5: 1}, 209: {
+    6: 2, 8: 3, 10: 4, 12: 5, 14: 6, 16: 7, 18: 8,
+}}
+VICTORY_ROAD_BARRIERS = {211: (14, 15), 212: (21, 22, 24, 25),
+                         213: (17, 18)}
+VICTORY_ROAD_BOULDERS = {211: (3, 5, 16), 212: (7, 26, 27),
+                         213: (6, 7, 8, 19)}
+LEAGUE_EVENT_WHITELIST = {
+    16: {1},
+    17: {1, 3, 4, 5},
+    209: {1, 2, 4, *range(6,20)},
+    211: {1, 2, 3, 5, 7, 11, 14, 15, 16},
+    212: {1,2,3,4,5,6,7,9,11,13,14,16,21,22,24,25,26,27},
+    213: {1,2,3,4,5,6,7,8,10,12,13,14,15,16,17,18,19},
+    214: {1},
+    215: {1,3,4,6,14},
+    216: {1,3},
+    217: {1,3},
+    218: {1,3},
+    219: {1,3},
+    220: {1,2,6},
+    221: {1,2},
+}
+LEAGUE_NEXT_ROOMS = {
+    216: (1,217,6,12), 217:(3,218,6,12), 218:(3,219,23,10),
+    219:(3,220,7,19), 220:(2,221,5,12),
+}
+LEAGUE_TRAINER_SPECS = {
+    216:(3,"ELITE_LORELEI","Lorelei",0,0),
+    217:(1,"ELITE_BRUNO","Bruno",1,0),
+    218:(1,"ELITE_AGATHA","Agatha",2,0),
+    219:(1,"ELITE_LANCE","Lance",3,0),
+    220:(6,"CHAMPION_BLUE","Blue",4,-1),
+}
+
 TRAINERS[202] = {
     4: ("BURGLAR", "Quinn"), 5: ("SUPERNERD", "Erik"),
     6: ("SUPERNERD", "Avery"), 7: ("BURGLAR", "Ramon"),
@@ -284,6 +347,12 @@ SILPH_FLOOR_LANDINGS = {
     184: (23, 5), 185: (22, 5), 186: (24, 5),
     187: (13, 5), 188: (13, 5),
 }
+
+def league_event_allowed(source_id, event_id):
+    return source_id not in LEAGUE_EVENT_WHITELIST or (
+        event_id in LEAGUE_EVENT_WHITELIST[source_id]
+    )
+
 
 def viridian_event_allowed(source_id, event_id):
     # Do not leak FRLG Gym plaques, global script page conditions, or its
