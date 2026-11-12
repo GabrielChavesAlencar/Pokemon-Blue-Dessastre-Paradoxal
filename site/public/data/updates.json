@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5d96bf77d0a2fdbd2e6fd0aacb8c24c0dba2affd",
+      "date": "2026-11-12T20:13:22-03:00",
+      "title": "feat(johto): extrai pacote RMXP ZIP somente de mapas e gráficos em workspace isolado",
+      "category": "Novidades"
+    },
+    {
       "sha": "8d41b0cd47dc88b024dcd7a8eb16ac397126d5c7",
       "date": "2026-11-12T20:11:38-03:00",
       "title": "test(johto): inclui núcleo Ruby de história nas regressões Python",
