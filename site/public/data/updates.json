@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1f633e708cb3f1074b5a4d4fc680ca061bef5d3b",
+      "date": "2026-11-12T07:59:57-03:00",
+      "title": "docs(kanto): adicionar passo a passo de implementação de revanches históricas",
+      "category": "Novidades"
+    },
+    {
       "sha": "3829634bf4366797112ecf2a08de33b1d416efee",
       "date": "2026-11-12T07:56:06-03:00",
       "title": "docs(kanto): registrar estudo de times oficiais de líderes, Elite Four e campeões",
