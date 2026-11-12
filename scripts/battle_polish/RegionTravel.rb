@@ -29,7 +29,10 @@ module BlueRegionTravel
       # Old Decades saves can expose Kanto only after BOTH audited final flags.
       ending_verified? && state["leagues"].include?("DECADES")
     when "KANTO"
-      installed?
+      # A fresh Kanto start must not show a transport agent before a League.
+      # Returning visitors already have a trusted Decades origin to revisit.
+      installed? && (state["leagues"].include?("KANTO") ||
+                     state["decades_return"].is_a?(Array))
     else
       false
     end
