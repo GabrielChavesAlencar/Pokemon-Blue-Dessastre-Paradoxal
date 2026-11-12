@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f2856d90c3379ed7d1c0a5a5b8df3c0433ea2694",
+      "date": "2026-11-12T10:19:52-03:00",
+      "title": "Corrigir regression: apenas 8 mapas de Celadon continuam em preview_only",
+      "category": "Correções"
+    },
+    {
       "sha": "ce0afac49d81288d87defe43522bf4de418c0703",
       "date": "2026-11-12T10:19:00-03:00",
       "title": "Kanto Erika: corrigir asserção de persistência para depois do reload, não antes do combate",
