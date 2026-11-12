@@ -107,8 +107,14 @@ class KantoPilotAuditTests(unittest.TestCase):
             ("kanto-fuchsia-", "kanto-safari-", "kanto-route-15",
              "kanto-route-18"))]
         self.assertEqual(len(phase10), 20)
-        self.assertTrue(all(not x["methods"] and not x["trainers"] for x in phase10))
-        self.assertFalse(any("Koga" in trainer["name"] for trainer in data["trainers"]))
+        active_fuchsia = {"kanto-fuchsia-city", "kanto-fuchsia-center",
+                          "kanto-fuchsia-mart", "kanto-fuchsia-gym",
+                          "kanto-fuchsia-safari-gate"}
+        protected_fuchsia = [x for x in phase10 if x["id"] not in active_fuchsia]
+        self.assertEqual(len(protected_fuchsia), 15)
+        self.assertTrue(all(not x["methods"] and not x["trainers"]
+                            for x in protected_fuchsia))
+        self.assertEqual(sum(t["name"] == "Koga" for t in data["trainers"]), 1)
         phase11 = [x for x in data["locations"] if x["id"].startswith(
             ("kanto-saffron-", "kanto-silph-", "kanto-route-8",
              "kanto-underground-route"))]
