@@ -43,6 +43,20 @@ Os **17 atalhos antigos** são: Pallet, Pewter, Rota 4, Centro e três andares d
 
 **Importante:** o menu usa somente mapas da cópia experimental e **não libera Liga, não concede insígnias, não altera a campanha principal e não existe no jogo Decades instalado**. Os pontos de chegada foram derivados de entradas/saídas da fonte FRLG, mas ainda precisam de validação visual de colisão no Windows.
 
+## Correção funcional MAN-01/MAN-02 — teste prioritário
+
+[Checklist exato dos 8 interiores e 50 treinadores Sight(n)](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md). A CI inspeciona o estado de eventos na engine, mas o teste de controles e colisões precisa ocorrer no Windows com **Testar Kanto**.
+
+- [ ] Pallet: casa do rival e retorno.
+- [ ] Viridian: duas casas, entrada e saída.
+- [ ] Rota 2: portaria secreta e casa escondida, retorno ao caminho.
+- [ ] Pewter: Museu e duas casas, retorno pela porta real.
+- [ ] Viridian Forest: Rick avista o jogador a 5 casas (quando direção e obstáculos permitem), sem pressionar ação; combate iniciado.
+- [ ] Após derrota: lutar novamente é permitido. Após vitória: Rick não repete batalha ao passar na visão.
+- [ ] Salvar, recarregar e testar novamente; flag de vitória e estado da página 2 preservados.
+
+**Não testar ainda como completas:** Viridian Gym/Giovanni, Diglett's Cave profunda, NPCs/diálogos dos novos interiores e as 61 prévias de cenário. Não marcar etapas 02/03/07 como totalmente aprovadas sem validar o percurso.
+
 ## Teste manual relatado em 12/11/2026
 
 [Registro e análise do TXT enviado](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md): o jogador visitou **Pallet Town, Rota 1, Rota 2, Viridian City, Viridian Forest, Pewter City, lado esquerdo da Rota 4 e Mt. Moon**.
