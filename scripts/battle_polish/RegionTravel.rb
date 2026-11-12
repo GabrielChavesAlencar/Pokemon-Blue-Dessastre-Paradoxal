@@ -188,17 +188,14 @@ module BlueRegionTravel
         end
       end
       choice = pbMessage(_INTL("Agente de Transporte Regional"), names +
-                         [_INTL("Organizar PC"),_INTL("Curar equipe"),_INTL("Permanecer")], -1)
-      break if !choice || choice < 0 || choice == keys.length + 2
+                         [_INTL("Organizar PC"),_INTL("Permanecer")], -1)
+      break if !choice || choice < 0 || choice == keys.length + 1
       if choice == keys.length
         if defined?(BlueAdventure) && BlueAdventure.pc_available?
           BlueAdventure.open_pc
         else
           pbMessage(_INTL("PC indisponível neste momento."))
         end
-      elsif choice == keys.length + 1
-        $player.heal_party
-        pbMessage(_INTL("Equipe recuperada."))
       elsif choice < keys.length
         key = keys[choice]
         if key == state["current"]
