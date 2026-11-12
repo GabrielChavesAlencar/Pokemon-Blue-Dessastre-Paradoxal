@@ -8,7 +8,8 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   for(const html of [downloadStrip(),downloadsPage()]){assert.ok(html.includes(gameDownload));assert.ok(html.includes(hubDownload));}
   const html=downloadsPage();
   assert.doesNotMatch(html,/\.bat|RUN\.bat|archive\/refs\/heads/);
-  assert.ok(html.includes(androidDownload));assert.match(html,/Android reais/);
+  assert.ok(html.includes(androidDownload));
+  assert.ok(html.includes('Testar Kanto (experimental)'));assert.match(html,/Android reais/);
   assert.equal(joiplayDownload,'https://www.joiplay.net/');
   assert.ok(html.includes(`href="${joiplayDownload}"`));
   assert.ok(html.includes('Baixar JoiPlay · site oficial'));
