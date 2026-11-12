@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2eb6dc210b2f85f91a28349f78f0ed902d134e78",
+      "date": "2026-11-12T06:25:49-03:00",
+      "title": "feat(kanto): carregar terceira opcao do menu na instalacao principal Blue",
+      "category": "Novidades"
+    },
+    {
+      "sha": "6b8bd92a2806e31028eae8ad0acfd9ce41ea7857",
+      "date": "2026-11-12T06:25:46-03:00",
+      "title": "feat(kanto): carregar terceira opcao do menu na instalacao principal Blue",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b7a7a57c254c8f3a5e31d101985ecac621d0bfcc",
+      "date": "2026-11-12T06:25:43-03:00",
+      "title": "feat(kanto): carregar terceira opcao do menu na instalacao principal Blue",
+      "category": "Novidades"
+    },
+    {
       "sha": "9e9718abf3fa828d64fac293df864b01c7b82ff5",
       "date": "2026-11-12T06:25:16-03:00",
       "title": "feat(kanto): inserir Testar Kanto no menu inicial do Game.exe preservando saves",
