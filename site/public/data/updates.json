@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2963054fed2113a396387d5e18e53d905ee74dcf",
+      "date": "2026-11-11T23:07:10-03:00",
+      "title": "feat(regions): ativar politica regional no plugin Blue com integracao opcional",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0e2956568615ffbe16f5b1f196c274b346924982",
+      "date": "2026-11-11T23:07:08-03:00",
+      "title": "feat(regions): ativar politica regional no plugin Blue com integracao opcional",
+      "category": "Novidades"
+    },
+    {
+      "sha": "6f2dc7000e8736e313f8da7ebd3494829e643342",
+      "date": "2026-11-11T23:07:05-03:00",
+      "title": "feat(regions): ativar politica regional no plugin Blue com integracao opcional",
+      "category": "Novidades"
+    },
+    {
       "sha": "0169a322b5b53e8bc0387f9d179fda424b1b55a1",
       "date": "2026-11-11T23:06:34-03:00",
       "title": "feat(regions): regras locais HM, deposito seguro de especiais e protecao de PC",
