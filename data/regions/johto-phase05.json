@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "05/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "notes": "Symbolic topology, not verified RMXP map IDs or real walkability. Never permit a pilot release based only on this manifest.",
+  "corridor": [
+    {
+      "key": "JOHTO_NEW_BARK_TOWN",
+      "label": "New Bark Town"
+    },
+    {
+      "key": "JOHTO_ROUTE_29",
+      "label": "Route 29"
+    },
+    {
+      "key": "JOHTO_CHERRYGROVE_CITY",
+      "label": "Cherrygrove City"
+    },
+    {
+      "key": "JOHTO_ROUTE_30",
+      "label": "Route 30"
+    },
+    {
+      "key": "JOHTO_ROUTE_31",
+      "label": "Route 31"
+    },
+    {
+      "key": "JOHTO_VIOLET_CITY",
+      "label": "Violet City"
+    }
+  ],
+  "additional_required": [
+    {
+      "key": "JOHTO_SPROUT_TOWER",
+      "label": "Sprout Tower"
+    },
+    {
+      "key": "JOHTO_VIOLET_GYM",
+      "label": "Violet Gym"
+    },
+    {
+      "key": "JOHTO_VIOLET_POKEMON_CENTER",
+      "label": "Violet Pokemon Center"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_NEW_BARK_TOWN",
+      "to": "JOHTO_ROUTE_29",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_29",
+      "to": "JOHTO_CHERRYGROVE_CITY",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_CHERRYGROVE_CITY",
+      "to": "JOHTO_ROUTE_30",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_30",
+      "to": "JOHTO_ROUTE_31",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_31",
+      "to": "JOHTO_VIOLET_CITY",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_VIOLET_CITY",
+      "to": "JOHTO_SPROUT_TOWER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_VIOLET_CITY",
+      "to": "JOHTO_VIOLET_GYM",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_VIOLET_CITY",
+      "to": "JOHTO_VIOLET_POKEMON_CENTER",
+      "two_way": true
+    }
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_ELDER",
+      "name": "Li",
+      "version": 0
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_FALKNER",
+      "name": "Falkner",
+      "version": 0
+    }
+  ],
+  "badge": {
+    "key": "ZEPHYR",
+    "region": "JOHTO",
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1
+  },
+  "validation": {
+    "source_map_ids_verified": false,
+    "graphics_rights_verified": false,
+    "transitions_verified": false,
+    "trainers_compiled": false,
+    "win_save_reload_verified_in_game": false
+  },
+  "integrated": false
+}
