@@ -1515,6 +1515,186 @@
       "name": "Portaria da Rota 15 (prévia)",
       "methods": [],
       "trainers": []
+    },
+    {
+      "id": "kanto-saffron-gate-north",
+      "name": "Portaria norte de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-gate-south",
+      "name": "Portaria sul de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-8",
+      "name": "Rota 8 (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-gate-east",
+      "name": "Portaria leste de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-underground-route8-east",
+      "name": "Passagem Subterrânea leste — entrada (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-underground-route8-tunnel",
+      "name": "Passagem Subterrânea leste — túnel (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-gate-west",
+      "name": "Portaria oeste de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-underground-route7-west",
+      "name": "Passagem Subterrânea oeste — entrada (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-city",
+      "name": "Saffron City (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-center",
+      "name": "Centro Pokémon de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-mart",
+      "name": "Poké Mart de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-gym",
+      "name": "Ginásio de Saffron — Sabrina não ativa (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-dojo",
+      "name": "Fighting Dojo (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-house-a",
+      "name": "Casa de Saffron A (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-house-b",
+      "name": "Casa de Saffron B (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-house-c",
+      "name": "Casa de Saffron C (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-saffron-trainer-fan-club",
+      "name": "Clube de Treinadores Pokémon de Saffron (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-lobby",
+      "name": "Silph Co. — recepção (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-elevator",
+      "name": "Silph Co. — elevador (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-1f",
+      "name": "Silph Co. — 1F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-2f",
+      "name": "Silph Co. — 2F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-3f",
+      "name": "Silph Co. — 3F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-4f",
+      "name": "Silph Co. — 4F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-5f",
+      "name": "Silph Co. — 5F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-6f",
+      "name": "Silph Co. — 6F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-7f",
+      "name": "Silph Co. — 7F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-8f",
+      "name": "Silph Co. — 8F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-9f",
+      "name": "Silph Co. — 9F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-10f",
+      "name": "Silph Co. — 10F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-silph-11f",
+      "name": "Silph Co. — 11F (prévia)",
+      "methods": [],
+      "trainers": []
     }
   ],
   "trainers": [
