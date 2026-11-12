@@ -50,6 +50,29 @@ module KantoNativeCheck
     end
     BlueKantoPilot.choose_starter
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
+    # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
+    # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
+    mart_visits = []
+    Object.send(:define_method, :pbPokemonMart) do |stock|
+      mart_visits << stock
+      true
+    end
+    BlueKantoPilot.viridian_mart
+    require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true,
+             "Viridian Mart did not register Oak's parcel")
+    require!(!BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
+             "Oak's parcel delivered without returning to the laboratory")
+    BlueKantoPilot.viridian_mart
+    require!(mart_visits.length == 2, "Oak parcel interaction disabled Mart shopping")
+    BlueKantoPilot.choose_starter
+    require!(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
+             "Oak did not accept the parcel upon return")
+    require!($player.has_pokedex, "Oak parcel delivery did not unlock the Pokedex") if $player.respond_to?(:has_pokedex)
+    BlueKantoPilot.choose_starter
+    BlueKantoPilot.viridian_mart
+    require!(mart_visits.length == 3 &&
+             BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
+             "Returning to Mart after delivery did not keep the shop available")
     BlueKantoPilot.rival
     require!(battle_calls.last == [:BLUE_KANTO_RIVAL, "Blue", 11], "Wrong rival team")
     require!(BlueKantoPilot.rival_done?, "Rival result not recorded")
@@ -232,6 +255,9 @@ module KantoNativeCheck
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
+    require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
+             BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
+             "Oak parcel quest flags did not persist through save/reload")
     File.write("Data/blue-kanto-proof.txt", "Kanto 40 maps: Pallet/Mt Moon/Cerulean/Vermilion, ticket, Surge, three badges and save/reload verified (battles simulated)")
   end
 end
