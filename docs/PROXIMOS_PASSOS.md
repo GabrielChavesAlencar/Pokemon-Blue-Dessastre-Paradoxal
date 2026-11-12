@@ -23,6 +23,22 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [x] O teste nativo compilou o conteúdo, carregou Pallet e o laboratório, consultou encontros e equipes, registrou a Boulder Badge e recarregou o save. As vitórias de batalha foram simuladas pelo teste. [Execução no GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43123226204).
 - [ ] Jogar o percurso manualmente. Na última tentativa de abrir a cópia local por automação, o motor falhou ao inicializar o sistema de arquivos (PhysFS). A abertura em uma sessão normal do Windows ainda precisa ser confirmada.
 
+## Roadmap de eventos FireRed — análise consolidada
+
+**Documento operacional:** [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md). Lido junto ao [estudo de 50 famílias de eventos](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md), ao [guia de implementação](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) e ao **Plano de regiões v2** (que prevalece para as regras do Blue). A análise considera **425 mapas catalogados na decompilação GBA**, não 425 conversões concluídas; a fonte dos **51 MapIDs da cópia Essentials** é distinta.
+
+**Trabalho de análise autorizado agora, sem instalar eventos:**
+
+1. [ ] Fixar SHA da referência `pret/pokefirered`; executar o extrator e gerar CSV/JSON/MD com contagens reais. Depois resolver a correspondência GBA → FRLG → Blue e as referências de `scripts.inc` e flags, sem inventar IDs.
+2. [ ] **Prioridade MAN-01:** portas e interiores de Pallet/Rotas 1–2/Viridian/Forest/Pewter/Rota 4/Mt. Moon e demais mapas já integrados; checar ida/volta e save.
+3. [ ] **Prioridade MAN-02:** visão de treinadores, distância, obstáculos, luta obrigatória somente quando canônica, não duplicar vitória ou recompensa.
+4. [ ] **Prioridade MAN-03:** telas das oito insígnias Kanto e conquistas regionais sem mudar `BlueRegions`.
+5. [ ] Auditar a sequência **Bill → S.S. Ticket → embarque → capitão/Cut**, distinguindo o ponteiro experimental atual da história oficial. Validar HMs por insígnia/região, inventário cheio, derrota/fuga e persistência.
+6. [ ] Revisar em documento os lotes **A–I**: Pallet, Pewter/Mt. Moon, Cerulean, Vermilion, Celadon/Lavender/Saffron, Fuchsia/Snorlax, Cinnabar/Viridian, Liga e pós-jogo/Sevii opcional.
+7. [ ] Definir a matriz de QA por evento: fonte/MapID/EventID, trigger, páginas, estado, teste estrutural, teste real Windows/JoiPlay, rollback. Somente após autorização implementar e retirar mapas de `preview_only`.
+
+**Duas contagens de trabalho diferentes:** Kanto (desenvolvimento **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
+
 ## Fase 09 — autorização limitada a cenários
 
 Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tileset das áreas selecionadas, sem eventos de qualquer tipo no lote novo. **Manter MAN-01 (interiores), MAN-02 (treinadores) e eventos de Erika/Team Rocket em espera pela análise do usuário.** Não apagar as pendências nem criar atalhos que concedam insígnias.
