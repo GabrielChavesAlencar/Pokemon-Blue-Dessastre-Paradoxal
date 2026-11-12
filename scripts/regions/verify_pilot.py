@@ -364,7 +364,7 @@ def inspect(game: Path) -> dict:
     if len(TRAINERS[202]) != 8 or any(eid not in maps[mapping[202]].attrs["@events"] for eid in TRAINERS[202]):
         raise ValueError("Blaine and seven Cinnabar trainers must be present")
 
-    # MAN-02: the source-proven 94 line-of-sight trainers require Event Touch,
+    # MAN-02: the source-proven 101 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -400,7 +400,7 @@ def inspect(game: Path) -> dict:
                 sight_count += 1
                 if "pbNoticePlayer(get_self)" not in script:
                     raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 94:
+    if sight_count != 101:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
