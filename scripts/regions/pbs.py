@@ -205,8 +205,14 @@ def build_drafts(source, game, plan):
     # encounter tables or story scripts before event review.
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
+    # Fuchsia City's source has a non-contiguous fishing range (e.g. levels
+    # 15,16,17,19..) that cannot be collapsed to min/max without creating
+    # encounter levels not present in the source. Keep Fuchsia core entirely
+    # free of wild encounters until an exact slot-preserving migration exists.
+    review_encounters = {144, 145, 146, 147, 153}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
-               if row["source_id"] not in no_gameplay}
+               if row["source_id"] not in no_gameplay
+               and row["source_id"] not in review_encounters}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
