@@ -20,6 +20,8 @@ jobs:
           node-version: '22'
       - name: Testes unitarios e API (sem ROM)
         run: python -m unittest discover -s tests -v
+      - name: Validar integridade dos 64 MP3 de Kanto
+        run: python scripts/music/install_kanto_music.py --audit
       - name: Validar sintaxe JavaScript
         run: |
           node --check web/app.js
