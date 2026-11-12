@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "999a0e8da0820394cdd4a41b0034b112a3ba3179",
+      "date": "2026-11-12T20:21:21-03:00",
+      "title": "feat(johto): prepara Violet, Torre Sprout e Falkner com Zephyr Badge regional e guardas",
+      "category": "Novidades"
+    },
+    {
       "sha": "7bcd153e31f689440559a73f645ec6db5c708189",
       "date": "2026-11-12T20:17:47-03:00",
       "title": "docs(johto): sincroniza plano com eventos Elm e preparo de fonte ZIP",
