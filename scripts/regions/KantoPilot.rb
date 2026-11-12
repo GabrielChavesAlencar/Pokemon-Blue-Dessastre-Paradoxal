@@ -90,9 +90,72 @@ module BlueKantoPilot
     end
   end
 
+  # Travel shortcuts exist only in the standalone pilot, NEVER in the
+  # main Blue campaign. Stops are generated from source-defined warp entries.
+  def self.experimental?
+    File.file?("Kanto pilot.json") &&
+      File.file?("Data/blue-kanto-experimental-stops.txt") &&
+      $PokemonGlobal && $PokemonGlobal.blue_regions.is_a?(Hash) &&
+      $PokemonGlobal.blue_regions["current"] == "KANTO"
+  end
+
+  def self.experimental_stops
+    return [] unless experimental?
+    File.readlines("Data/blue-kanto-experimental-stops.txt", encoding: "UTF-8").filter_map do |raw|
+      parts = raw.strip.split("|")
+      next unless parts.length == 6
+      map, x, y, dir = parts[2,4].map { |part| Integer(part, 10) rescue nil }
+      next unless [map,x,y,dir].all? { |item| item.is_a?(Integer) }
+      next unless map > 0 && x >= 0 && y >= 0 && [2,4,6,8].include?(dir)
+      next unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", map))
+      [parts[1], [map,x,y,dir]]
+    end
+  end
+
+  def self.experimental_menu
+    return unless experimental?
+    unless $player.party.any? { |pkmn| !pkmn.egg? }
+      pbMessage(_INTL("Escolha um Pokémon com Oak antes de usar os teletransportes de teste."))
+      return
+    end
+    unless $scene && $scene.respond_to?(:transfer_player) && $game_temp && !$game_temp.in_battle
+      pbMessage(_INTL("O transporte de teste não está disponível durante batalhas."))
+      return
+    end
+    stops = experimental_stops
+    if stops.empty?
+      pbMessage(_INTL("Nenhum destino experimental foi preparado."))
+      return
+    end
+    choice = pbMessage(_INTL("Teste experimental: viajar sem concluir a história anterior."),
+                       stops.map(&:first) + [_INTL("Cancelar")], -1)
+    return if !choice || choice < 0 || choice >= stops.length
+    label, point = stops[choice]
+    return unless pbConfirmMessage(_INTL("Ir para {1}? Esta opção existe apenas no piloto de testes.", label))
+    begin
+      pbFadeOutIn { BlueRegionTravel.move_to(point) }
+      pbMessage(_INTL("Chegou a {1}. Continue jogando e salve no perfil Kanto Piloto.",label))
+    rescue StandardError => e
+      pbMessage(_INTL("Falha no destino experimental: {1}",e.message))
+    end
+  end
+
   def self.heal
     $player.heal_party
     pbSetPokemonCenter
     pbMessage(_INTL("Sua equipe está descansada."))
   end
 end
+
+# This menu is visible ONLY in the isolated pilot with its local stop manifest.
+MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
+  "name"=>_INTL("Testes Kanto (experimental)"),
+  "order"=>71,
+  "condition"=>proc { |_menu| BlueKantoPilot.experimental? },
+  "effect"=>proc do |menu|
+    menu.pbHideMenu
+    BlueKantoPilot.experimental_menu
+    menu.pbShowMenu
+    false
+  end
+})
