@@ -21,7 +21,8 @@ class KantoReleaseArchiveTests(unittest.TestCase):
     def make_archive(self, count=64, malicious=None):
         with zipfile.ZipFile(self.archive, "w", zipfile.ZIP_DEFLATED) as z:
             for n in range(count):
-                name = f"pkm msc kanto/1-{n+1:02d}. Demo.mp3"
+                track_no = n + 1 if n < 60 else 70 + (n - 60)
+                name = f"pkm msc kanto/1-{track_no:02d}. Demo.mp3"
                 z.writestr(name, b"ID3" + (b"\x00" * 1024))
             if malicious:
                 z.writestr(malicious, b"ID3" + (b"\x00" * 1024))
