@@ -46,6 +46,16 @@ O usuário informou ter testado os seguintes locais:
 
 **Aceite:** visual consistente com a UI existente, navegação por controle/teclado e mouse, atualização após obter insígnia e após recarregar, persistência, correspondência do total com o balanceamento Blue, legibilidade no Windows e JoiPlay. Não modificar contador global por desenhar o layout.
 
+## 2.1. Análise do código atual (causas prováveis, não correções aplicadas)
+
+A inspeção de [pilot.py](../scripts/regions/pilot.py) e [kanto-source.json](../data/regions/kanto-source.json) aponta causas técnicas coerentes com o relato:
+
+- **Interiores ausentes:** `extract_warps(event, mapping)` ignora a transferência quando o mapa de destino não pertence ao catálogo regional atual. O manifesto ainda não inclui diversas casas e outros interiores do FRLG. Assim, o importador simplesmente descarta parte das portas, mesmo que elas existam na fonte; precisamos auditar os IDs de destino de cada entrada e importar os interiores autorizados.
+- **Treinadores sem visão/agressão automática:** em `install_events`, os NPCs de batalha criados a partir de `TRAINERS` recebem `new_event(..., trigger=0, actor(event))`. Esse valor corresponde à ativação por ação/interação, não a um sistema de alcance/linha de visão. O importador também fixa `@move_type = 0` em todos os eventos adaptados e reduz as páginas para uma só, perdendo comportamentos originais dependentes de páginas e condicionais. O teste nativo chama diretamente as funções de batalha, sem reproduzir a aproximação do jogador.
+- **UI de insígnias:** o estado de conquistas por região já existe em `BlueRegions`, porém o pedido é uma nova camada visual: duas telas distintas lendo esse estado. Não há evidência no TXT de que essa interface exista ou esteja correta.
+
+**Conclusão técnica:** os problemas MAN-01 e MAN-02 têm explicações plausíveis na implementação atual. Ainda faltam testes em sessão gráfica para demonstrar cada falha/solução em coordenadas concretas. Esta análise **não muda código de gameplay nem declara os defeitos corrigidos**.
+
 ## 3. Relação com as 16 etapas
 
 - **02 — Caminhada real:** recebeu **evidência parcial de percurso**; segue aberta até teste real dos elementos internos e os demais cenários do checklist.
