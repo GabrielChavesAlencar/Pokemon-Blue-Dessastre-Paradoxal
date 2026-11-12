@@ -13,7 +13,19 @@ module BlueStory
     story? && $PokemonGlobal.blue_traditional_starters==true &&
       !(defined?(BlueBattleLab) && BlueBattleLab::ACTIVE) && !BlueBattleOptions.battle_area?
   end
-  def self.stage(badges=$player.badge_count);badges>=11 ? 3 : (badges>=5 ? 2 : (badges>=2 ? 1 : 0));end
+  def self.stage(badges=nil)
+    if badges.nil?
+      badges = $player ? $player.badge_count : 0
+      # Keep the native Decades count intact. Each UNIQUE regional badge is
+      # additive to Blue progression; never write a synthetic native badge.
+      if defined?(BlueRegions) && $PokemonGlobal &&
+         $PokemonGlobal.blue_regions.is_a?(Hash)
+        state = BlueRegions.snapshot
+        badges = BlueRegions.crystal_total(state, badges) if state
+      end
+    end
+    badges >= 11 ? 3 : (badges >= 5 ? 2 : (badges >= 2 ? 1 : 0))
+  end
   def self.cap;[350,450,540,nil][stage];end
   def self.bst(data);data.base_stats.values.sum;end
   def self.choose_mode(mode)
