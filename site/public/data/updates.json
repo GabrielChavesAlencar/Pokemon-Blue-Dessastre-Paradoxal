@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "60fbc7e1332ec1ab92e99e746bb374fb2c603cae",
+      "date": "2026-11-12T20:06:35-03:00",
+      "title": "fix(test): valida que load não reinicia após simulação de Johto",
+      "category": "Correções"
+    },
+    {
       "sha": "71a9a074592d83a9b611a2afb1e73685fdcc2d45",
       "date": "2026-11-12T20:05:23-03:00",
       "title": "docs(johto): acompanha Etapa 04 parcial e guards de nova partida",
