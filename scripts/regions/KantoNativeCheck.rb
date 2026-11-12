@@ -225,6 +225,7 @@ module KantoNativeCheck
       row.code == 201 && row.parameters[1] == celadon_center
     }, "Celadon city doors do not reach the audited destinations")
     $map_factory.setup(celadon_center)
+    puts("KANTO_CELADON_CENTER_DIAG:map=#{$game_map.map_id} target=#{celadon_city} "          + "events=#{$game_map.events.keys.inspect} "          + "exit=#{($game_map.events[1]&.list || []).map { |cmd| [cmd.code, cmd.parameters] }.inspect}")
     require!($game_map.events.keys.sort == [1, 2] &&
              $game_map.events[1].list.any? { |row|
                row.code == 201 && row.parameters[1] == celadon_city
