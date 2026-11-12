@@ -30,6 +30,31 @@ Consultar **antes de cada fase**:
 - [BlueMusic.rb](../scripts/music/BlueMusic.rb) e [compile_kanto_music.py](../scripts/music/compile_kanto_music.py) têm adaptação regional de Kanto; exigir novo catálogo e isolamento para Johto.
 - Não foi encontrado **JOHTO_*.md**, **data/regions/johto-source.json** nem instalador/piloto de Johto no inventário da branch main. Tratar todos esses itens como **a criar**.
 
+### 0.1. Regra prioritária de compatibilidade — NUNCA quebrar o projeto existente
+
+**Referência obrigatória:** [análise das fontes, proteção contra regressões e botão Testar Johto](JOHTO_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md), seções 2.1 e 2.2.
+
+**Contrato para todas as 16 etapas:**
+
+1. Toda mudança deve ser **aditiva, regionalizada, reversível e testada**; Decades, Kanto, Blue Studio, portal, batalhas, áudio, saves e jogos já publicados não podem sofrer regressões por causa de Johto.
+2. **Antes de mexer:** guardar hashes/baseline de mapas, IDs, plugins, áudio e saves de teste; executar as suítes de regressão existentes. **Depois:** repetir exatamente as mesmas verificações, registrar diferenças justificadas e bloquear publicação em caso de falha.
+3. **Não substituir** `MapInfos.rxdata`, `Tilesets.rxdata`, `Scripts.rxdata`, `System.rxdata`, todo `game/Data`, o executável ou o perfil de saves com arquivos de outro jogo. Usar MapIDs livres, remap explícito de origem→destino, hashes, backups e rollback.
+4. Generalizar componentes de Kanto com interfaces **retrocompatíveis**; jamais remover uma opção, hook, classe, regra, preferência de música ou evento de Kanto/Decades para favorecer Johto. Criar novos testes de contrato antes de mudar comportamentos compartilhados.
+5. Compilar Johto em **cópia isolada** e save próprio. Só disponibilizar Nova Partida em Johto quando New Bark e introdução estiverem comprovadas; só disponibilizar viagem se a Liga e o destino instalado satisfizerem as condições.
+6. Nenhum teste estrutural/headless ou presença de botão permite elevar a Barra 2 de aceitação integral; documentar evidência real e os bloqueios.
+
+### 0.2. Menu inicial do mesmo Game.exe: Testar Kanto + Testar Johto
+
+A opção **`Testar Johto` foi adicionada ao mesmo menu onde já existe `Testar Kanto`**, por `scripts/battle_polish/TitleKanto.rb`, sem mexer nos índices retornados ao carregador de saves Essentials/Auto Multi Save. A ordem na instalação principal é **Continuar (quando existir) → Novo Jogo → Testar Kanto → Testar Johto → demais comandos originais**.
+
+- `Testar Kanto` mantém seu lançador `KANTO_JOGAR_EXPERIMENTAL.bat`, mapas e saves separados.
+- `Testar Johto` procura **seu próprio** `JOHTO_JOGAR_EXPERIMENTAL.bat` e `scripts/regions/pilot_johto.py` (ambos **a implementar**); na ausência, apresenta **Johto ainda está em preparação** e retorna ao menu sem alterar nada.
+- Ao disponibilizar o piloto, construir uma **cópia isolada Johto** e perfil de save diferente dos de Kanto e Decades. Nunca abrir o piloto de Kanto como fallback.
+- Nenhum dos dois botões deve aparecer dentro de pilotos isolados (evitar lançamentos recursivos). O Game.exe principal, seus saves e seus comandos `New Game`, `Continue`, `Mystery Gift`, `Options` e `Quit Game` permanecem nativos.
+- A suíte `tests/title_kanto_runtime.rb` deve validar a **terceira** e a **quarta** opções, a tradução para índices originais, setas de slots, isolamento e caminhos autorizados dos dois lançadores. `tests/test_title_kanto.py` mantém a integração com os testes Python.
+
+**Estado atual:** botão e proteção de fallback são código implementado; **piloto de Johto, mapas e lançador ainda não estão implementados**. Não interpretar este ajuste de interface como conclusão das Etapas 01–16.
+
 ## 1. Decisão das fontes e direitos
 
 | Tipo | Fonte prioritária | Utilização permitida no plano |
