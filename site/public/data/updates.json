@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "52cae94983e842ab908504c8783631cf4afc11f6",
+      "date": "2026-11-12T09:13:36-03:00",
+      "title": "docs(kanto): roadmap detalhado de dialogos EN/PT-BR com 67 cenas e 10 tarefas DIA",
+      "category": "Documentação"
+    },
+    {
       "sha": "0c762d953f5d1ddea2faff6a9a1d77adc1f6bbd1",
       "date": "2026-11-12T09:09:04-03:00",
       "title": "docs(kanto): adicionar guia FireRed EN/PT e passo a passo de integração",
