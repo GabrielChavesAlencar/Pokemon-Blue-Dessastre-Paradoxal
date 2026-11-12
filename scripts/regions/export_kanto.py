@@ -20,6 +20,18 @@ LOCATION_NAMES = {
     "VIRIDIAN_FOREST": "Floresta de Viridian",
     "PEWTER_CITY": "Pewter City",
     "PEWTER_GYM": "Ginásio de Pewter",
+    "PEWTER_CENTER": "Centro Pokémon de Pewter",
+    "PEWTER_MART": "Poké Mart de Pewter",
+    "ROUTE_3": "Rota 3",
+    "ROUTE_4": "Rota 4",
+    "MT_MOON_CENTER": "Centro Pokémon de Mt. Moon",
+    "MT_MOON_1F": "Mt. Moon — 1F",
+    "MT_MOON_B1F": "Mt. Moon — B1F",
+    "MT_MOON_B2F": "Mt. Moon — B2F",
+    "CERULEAN_CITY": "Cerulean City",
+    "CERULEAN_CENTER": "Centro Pokémon de Cerulean",
+    "CERULEAN_MART": "Poké Mart de Cerulean",
+    "CERULEAN_GYM": "Ginásio de Cerulean",
 }
 TRAINER_LOCATIONS = {
     "RIVAL": ("OAK_LAB", "Rival"),
@@ -27,6 +39,27 @@ TRAINER_LOCATIONS = {
     "CAMPER": ("PEWTER_GYM", "Campista"),
     "LEADER": ("PEWTER_GYM", "Líder de ginásio"),
 }
+TRAINER_LOCATIONS.update({
+    **{("BUGCATCHER", name): ("ROUTE_3", "Caçador de insetos")
+       for name in ("Colton", "Greg", "James")},
+    **{("BUGCATCHER", name): ("MT_MOON_1F", "Caçador de insetos")
+       for name in ("Kent", "Robby")},
+    **{("LASS", name): ("ROUTE_3", "Treinadora")
+       for name in ("Janice", "Sally", "Robin")},
+    **{("LASS", name): ("MT_MOON_1F", "Treinadora")
+       for name in ("Iris", "Miriam")},
+    **{("YOUNGSTER", name): ("ROUTE_3", "Jovem treinador")
+       for name in ("Ben", "Calvin")},
+    ("YOUNGSTER", "Josh"): ("MT_MOON_1F", "Jovem treinador"),
+    ("SUPERNERD", "Jovan"): ("MT_MOON_1F", "Super Nerd"),
+    ("SUPERNERD", "Miguel"): ("MT_MOON_B2F", "Super Nerd"),
+    ("HIKER", "Marcos"): ("MT_MOON_1F", "Montanhista"),
+    ("ROCKET", "Grunt"): ("MT_MOON_B2F", "Equipe Rocket"),
+    ("SWIMMER", "Luis"): ("CERULEAN_GYM", "Nadador"),
+    ("PICNICKER", "Diana"): ("CERULEAN_GYM", "Piqueniqueira"),
+    ("LEADER_MISTY", "Misty"): ("CERULEAN_GYM", "Líder de ginásio"),
+})
+
 STARTERS = {11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE"}
 
 
@@ -64,7 +97,9 @@ def export(preview: Path):
     for header, lines in read_blocks(preview / "drafts/trainers.txt").items():
         trainer_type, name, version = header.split(",")
         kind = trainer_type.removeprefix("BLUE_KANTO_")
-        key, role = TRAINER_LOCATIONS[kind]
+        key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
+        if key is None:
+            raise ValueError(f"Trainer location has not been audited: {header}")
         trainer_id = slug(name)
         if trainer_id not in trainers:
             trainers[trainer_id] = {"id": trainer_id, "name": name, "role": role,
