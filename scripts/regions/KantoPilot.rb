@@ -72,8 +72,57 @@ module BlueKantoPilot
     if type == :BLUE_KANTO_LEADER && BlueRegions.award(progress, "KANTO", "BOULDER")
       pbMessage(_INTL("Brock: A Boulder Badge é sua. O caminho para Cerulean está aberto!"))
     elsif type == :BLUE_KANTO_LEADER_MISTY && BlueRegions.award(progress, "KANTO", "CASCADE")
-      pbMessage(_INTL("Misty: Você conquistou a Cascade Badge! O próximo desafio fica para a próxima etapa."))
+      pbMessage(_INTL("Misty: Você conquistou a Cascade Badge! Siga ao sul para Vermilion!"))
+    elsif type == :BLUE_KANTO_LEADER_SURGE && BlueRegions.award(progress, "KANTO", "THUNDER")
+      pbMessage(_INTL("Lt. Surge: A Thunder Badge é sua! Agora você pode usar Fly em Kanto."))
     end
+  end
+
+  # TEMPORARY phase 08 story bridge: Bill's canonical S.S. Ticket event is
+  # outside the installed route until the Cerulean north passage is audited.
+  # Only players with Cascade may claim a ticket; never award it more than once.
+  def self.ticketmaster
+    if !BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
+      pbMessage(_INTL("Porto: Primeiro conquiste a Cascade Badge em Cerulean."))
+      return
+    end
+    if $bag.has?(:SSTICKET)
+      pbMessage(_INTL("Porto: Sua passagem para o S.S. Anne está liberada!"))
+    elsif $bag.add(:SSTICKET, 1)
+      progress["pilot_ss_ticket"] = true
+      pbMessage(_INTL("Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
+    else
+      pbMessage(_INTL("Você precisa liberar espaço na Bolsa para receber o S.S. Ticket."))
+    end
+  end
+
+  def self.harbor_gate(map_id, x, y)
+    unless $bag.has?(:SSTICKET)
+      pbMessage(_INTL("O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
+      return
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+  end
+
+  # The captain's original scripts are not executed in Blue. Give the audited
+  # Cut HM once, using the item ID actually available in the installed game.
+  def self.captain
+    events = (progress["field_events"]["KANTO"] ||= [])
+    if events.include?("SS_ANNE_CAPTAIN")
+      pbMessage(_INTL("Capitão: Use Cut para abrir caminhos onde tiver permissão."))
+      return
+    end
+    item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
+    unless item
+      pbMessage(_INTL("O HM Cut ainda não está cadastrado nesta versão do Blue."))
+      return
+    end
+    unless $bag.add(item, 1)
+      pbMessage(_INTL("Capitão: Libere espaço na Bolsa para receber o HM Cut."))
+      return
+    end
+    events << "SS_ANNE_CAPTAIN"
+    pbMessage(_INTL("O Capitão entregou o HM Cut! A Cascade Badge permite usá-lo em Kanto."))
   end
 
   def self.pickup(item, key)
