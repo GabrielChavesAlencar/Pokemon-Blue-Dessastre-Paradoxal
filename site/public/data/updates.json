@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7303f8a152b541d5fc9908050c8c3e5a6b079298",
+      "date": "2026-11-12T09:56:58-03:00",
+      "title": "Kanto etapa 03: implementar missão persistente do pacote de Oak com Pokédex e sem itens inválidos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f7b2ecf14f37213f01a372288e7972ae4c26aa9f",
       "date": "2026-11-12T09:56:36-03:00",
       "title": "Kanto etapa 03: conectar o Poké Mart de Viridian ao pacote virtual de Oak, mantendo comércio",
