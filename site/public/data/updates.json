@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bd7433cde7f5ebacc76766cacc75ad99bccbb507",
+      "date": "2026-11-12T06:51:23-03:00",
+      "title": "Kanto fase 08: auditoria segura da fonte Vermilion e S.S. Anne",
+      "category": "Melhorias"
+    },
+    {
       "sha": "65beec4c5a0192ecc20b5be9f706a5bd820dead2",
       "date": "2026-11-12T06:44:45-03:00",
       "title": "test(kanto): tornar sensivel a checagem de caminhos do BAT experimental",
