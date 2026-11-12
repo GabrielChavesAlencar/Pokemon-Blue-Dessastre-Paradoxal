@@ -1,7 +1,8 @@
 """Compile symbolic Kanto music rules against the *installed* pilot MapIDs.
 
-F4 keeps F2/F3 regional music and compiles only six confirmed Kanto ME triggers
-from the catalog of fourteen. No native/global audio or saves are overwritten.
+F5 keeps the isolated F2/F3/F4 rules and enables only verified Kanto scene BGM:
+title in the pilot, Oak parcel, rival, evolution animation and Hall of Fame.
+Unverified opening/credits remain entirely silent. Decades saves are untouched.
 """
 from __future__ import annotations
 
@@ -19,6 +20,8 @@ MAGIC = "BLUE_KANTO_MUSIC_V1"
 ME_ENABLED_PHASE4 = frozenset({"obtained_pokemon", "obtained_item", "healed",
                                "badge_awarded", "evolved", "caught"})
 ME_NUMBERS = frozenset({1,9,14,22,23,29,31,42,43,44,49,51,54,58})
+SCENE_NUMBERS = frozenset({2,3,4,5,7,10,16,24,30,60,71,72,73})
+SCENE_ENABLED_PHASE5 = frozenset({"pilot_title", "oak_talk", "rival_appears", "evolution", "hall_of_fame"})
 BATTLE_KEYS = frozenset({
     "wild", "trainer", "gym", "legendary", "champion",
     "wildVictory", "trainerVictory", "gymVictory",
@@ -71,7 +74,7 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     source = load_json(project / "data/regions/kanto-source.json")
     manifest = load_json(project / "data/kanto-music.json")
     if (rules.get("schema"), rules.get("region"),
-        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2, 3, 4):
+        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2, 3, 4, 5):
         raise ValueError("Invalid Kanto rules/version")
     if source.get("region") != "KANTO" or manifest.get("region") != "KANTO":
         raise ValueError("Not a Kanto source or soundtrack catalog")
@@ -135,6 +138,7 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
               "active_map_bindings": 0, "active_battle_bindings": 0,
               "default_global_pool_signatures": 0,
               "active_me_bindings": 0, "pending_me_events": [],
+              "active_scene_bindings": 0, "pending_scenes": [],
               "missing_audio": [], "preview_skipped": [],
               "native_playback_tested": False}
     seen = set()
@@ -244,16 +248,35 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
             raise ValueError("Only the six proven Phase 4 ME hooks may be active")
 
     seen.clear()
+    scene_numbers = set()
     for row in rules.get("scenes", []):
         key = row.get("scene")
         if (not isinstance(key, str) or not key or
                 not key.replace("_", "").isalnum() or key in seen):
-            raise ValueError("Invalid Kanto scene name")
+            raise ValueError("Invalid or duplicated Kanto scene name")
         seen.add(key)
-        _track(catalog, row.get("track"), "BGM")
+        number = row.get("track")
+        track = _track(catalog, number, "BGM")
+        if number in scene_numbers:
+            raise ValueError("Duplicate Kanto scene soundtrack")
+        scene_numbers.add(number)
         report["staged_scenes"] += 1
-        if _enabled(row):
-            raise ValueError("Scene playback requires a verified Phase 5 hook")
+        if not _enabled(row):
+            report["pending_scenes"].append(key)
+            continue
+        if rules["phase"] < 5 or key not in SCENE_ENABLED_PHASE5:
+            raise ValueError(f"Unverified Kanto scene cannot be enabled: {key}")
+        if not (game / "Audio/BGM" / track).is_file():
+            report["missing_audio"].append(track)
+            continue
+        vol, pitch = _settings(row)
+        lines.append(f"SCENE\t{key}\t{track}\t{vol}\t{pitch}")
+        report["active_scene_bindings"] += 1
+    if rules["phase"] >= 5:
+        if scene_numbers != SCENE_NUMBERS or len(seen) != 13:
+            raise ValueError("Phase 5 requires all 13 audited Kanto scene tracks")
+        if {row["scene"] for row in rules["scenes"] if row["enabled"]} != SCENE_ENABLED_PHASE5:
+            raise ValueError("Only the five proven Phase 5 scene hooks may be active")
     report["lines"] = len(lines)
     return ("\n".join(lines) + "\n").encode("utf-8"), report
 
@@ -296,6 +319,19 @@ def phase4_track_numbers(project: Path) -> set[int]:
     return numbers
 
 
+def phase5_track_numbers(project: Path) -> set[int]:
+    """Approved Kanto scene BGM only, not film, credits or unverified events."""
+    rules, _, catalog = _rules(project)
+    numbers: set[int] = set()
+    for row in rules.get("scenes", []):
+        _track(catalog, row["track"], "BGM")
+        if _enabled(row):
+            if rules["phase"] < 5 or row["scene"] not in SCENE_ENABLED_PHASE5:
+                raise ValueError("Unverified Kanto scene cannot be installed")
+            numbers.add(row["track"])
+    return numbers
+
+
 def approved_audio_track_numbers(project: Path) -> set[int]:
     """All approved Kanto MP3s, both looping BGM and triggered ME."""
     return approved_track_numbers(project) | phase4_track_numbers(project)
@@ -303,7 +339,7 @@ def approved_audio_track_numbers(project: Path) -> set[int]:
 
 def approved_track_numbers(project: Path) -> set[int]:
     """Minimal BGM payload for all approved Kanto phases."""
-    return phase2_track_numbers(project) | phase3_track_numbers(project)
+    return phase2_track_numbers(project) | phase3_track_numbers(project) | phase5_track_numbers(project)
 
 
 def phase2_track_numbers(project: Path) -> set[int]:
