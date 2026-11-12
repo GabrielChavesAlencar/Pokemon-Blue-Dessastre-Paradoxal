@@ -225,11 +225,14 @@ module KantoNativeCheck
       row.code == 201 && row.parameters[1] == celadon_center
     }, "Celadon city doors do not reach the audited destinations")
     $map_factory.setup(celadon_center)
-    puts("KANTO_CELADON_CENTER_DIAG:map=#{$game_map.map_id} target=#{celadon_city} "          + "events=#{$game_map.events.keys.inspect} "          + "exit=#{($game_map.events[1]&.list || []).map { |cmd| [cmd.code, cmd.parameters] }.inspect}")
-    require!($game_map.events.keys.sort == [1, 2] &&
-             $game_map.events[1].list.any? { |row|
-               row.code == 201 && row.parameters[1] == celadon_city
-             }, "Celadon Pokemon Center lacks its return exit")
+    require!($game_map.events.keys.sort == [1, 2],
+             "Celadon Center wrong active map/events: map=#{$game_map.map_id}, " +
+             "target=#{celadon_center}, events=#{$game_map.events.keys.inspect}")
+    exit_events = $game_map.events[1].list.map { |row| [row.code, row.parameters] }
+    require!(exit_events.any? { |op|
+      op[0] == 201 && op[1][1] == celadon_city
+    }, "Celadon Center exit target mismatch: current=#{celadon_center} " +
+       "city=#{celadon_city} events=#{exit_events.inspect}")
     $map_factory.setup(celadon_gym)
     require!($game_map.events.keys.sort == [1, 5, 7, 42, 43, 44, 45, 46, 47],
              "Celadon Gym imported non-whitelisted events")
