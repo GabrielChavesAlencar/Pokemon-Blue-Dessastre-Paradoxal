@@ -1,7 +1,7 @@
 # Roadmap de eventos FireRed para o Pokémon Blue: Dessastre Paradoxal
 
 **Base consultada em:** 12/11/2026. **Status:** análise consolidada, implementação e testes dos novos eventos **pendentes**. **Escopo:** Kanto, com trilha opcional separada para Ilhas Sevii e pós-jogo.
-**Autorização neste momento:** atualizar documentação e planejamento; **não** modificar RXDATA, treinadores, portas, eventos, estados de save ou o Game.exe.
+**Estado atual:** a expansão de **terreno** Fuchsia da fase 10 foi autorizada e preparada em cópia isolada; não houve autorização específica para ativar os eventos de Koga/Safari, nem alteração de scripts, itens, insígnias ou progresso de história do Game.exe principal.
 
 ## 0. Fontes, limites e precedência
 
@@ -11,17 +11,17 @@
 4. [Plano de regiões v2](PLANO_REGIOES_DESSASTRE_V2.md): **prevalece** para as regras do Blue (balanceamento, circuito, HMs por região, bloqueio de especiais, pós-jogo, save único).
 5. [Feedback dos testes manuais](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md): MAN-01, MAN-02 e MAN-03, todos ainda pendentes.
 
-**Não misturar três contagens:** os **425** mapas em **43 grupos** são o índice da decompilação GBA `pret/pokefirered` descrito no estudo; os **51** mapas do piloto são arquivos de geometria da fonte Essentials FRLG (40 trechos anteriores + 11 prévias de Celadon); os **16** itens são as etapas de construção/aceitação de Kanto. **Os 425 mapas não foram todos auditados semanticamente**, convertidos ou instalados.
+**Não misturar três contagens:** os **425** mapas em **43 grupos** são o índice da decompilação GBA `pret/pokefirered` descrito no estudo; os **71** mapas do piloto são arquivos de geometria da fonte Essentials FRLG (40 trechos anteriores + 11 prévias de Celadon + 20 prévias de Fuchsia/Safari); os **16** itens são as etapas de construção/aceitação de Kanto. **Os 425 mapas não foram todos auditados semanticamente**, convertidos ou instalados.
 
 **Fonte de comportamento:** `pret/pokefirered` (map.json, scripts.inc, text.inc, scripts globais); é preciso fixar SHA antes de nova auditoria. **Fonte de geometria e IDs RMXP:** Essentials FRLG 21.1/1.1, hash já fixado em [kanto-source.json](../data/regions/kanto-source.json). Flags KANTO_* da análise são **propostas**, não switches já implementados. Não presumir que `dest_warp_id` da origem GBA seja MapID no RPG Maker; resolver o warp e as coordenadas no destino.
 
 ## 1. Duas barras gerais e uma trilha de auditoria independente
 
-- **Barra de desenvolvimento de Kanto:** 8/16 = **50%**. A fase 09 contém somente terrenos de Celadon e **não conta** como fase funcional completa.
+- **Barra de desenvolvimento de Kanto:** 8/16 = **50%**. As fases 09 (Celadon) e 10 (Fuchsia) contêm somente terrenos novos e **não contam** como fases funcionalmente completas.
 - **Barra de aceitação de Kanto:** 1/16 = **6,25%**. Testes simulados/nativos não substituem caminhada, colisões e batalhas reais no Windows.
 - **Trilha de eventos FireRed:** **12 marcos de auditoria e adaptação**, definidos no estudo e listados abaixo; **progresso numérico ainda não aferido**. O total de eventos em escopo precisa vir da execução real do extrator e da triagem das salas opcionais, não de um percentual estimado.
 
-**Proteção vigente:** os IDs de origem `111, 114, 115, 117, 118, 119, 120, 121, 122, 123, 124` permanecem em `preview_only` e com **zero eventos**. Ler esses cenários é permitido; instalar qualquer gatilho, porta, NPC, batalha, item, cura ou insígnia nesses mapas exige autorização posterior. A entrega desta documentação **não** é autorização implícita.
+**Proteção vigente:** os 11 IDs Celadon (111, 114, 115, 117–124) e 20 IDs Fuchsia/Safari (141–147, 152, 153, 155–163, 164, 165; conferir manifesto exato) permanecem em `preview_only` e com **zero eventos**. Ler esses cenários é permitido; instalar qualquer gatilho, porta, NPC, batalha, item, cura ou insígnia nesses mapas exige autorização posterior. A entrega desta documentação **não** é autorização implícita.
 
 ## 2. Preparação / auditoria sem alterar gameplay
 
@@ -56,8 +56,8 @@ O extrator não gera RXDATA, não interpreta todo script global, não define equ
 | **B** | Viridian/Rotas 2/3/Forest/Pewter/Mt. Moon: Parcel, Mart/Center, treinadores por visão, Brock/Boulder, escadas, Rockets, escolha Helix/Dome | 03, 06, 07, 15 | Revisão pendente; parte da geometria e batalha simulada existe |
 | **C** | Cerulean/Rotas 24/25/Bill: rival, Nugget Bridge, Rocket, Misty, Bill, S.S. Ticket e guarda da Cave | 07, 08, 15 | Não substituir a quest de Bill por concessão automática baseada apenas na Cascade |
 | **D** | Rotas 5/6/11/Vermilion/S.S. Anne: guardas, ticket, embarque, rival, capitão/Cut, lata dupla, Surge/Thunder | 06, 08, 15 | Implementação experimental parcial; falta sequência canônica e testes reais |
-| **E** | Celadon/Lavender/Saffron: Rocket/Game Corner, Lift Key/Silph Scope, Pokémon Tower/Marowak/Mr. Fuji/Poké Flute, chá/guardas, Silph Co./Card Key/portais, Erika e Sabrina | 09, 11, 15 | **Celadon apenas terreno; eventos proibidos até autorização** |
-| **F** | Fuchsia/Snorlax/Rotas 12–18/Safari: Poké Flute, dois Snorlax independentes, Cycling Road, Gold Teeth, Surf/Strength, Koga | 06, 10, 15 | Pendente |
+| **E** | Celadon/Lavender/Saffron: Rocket/Game Corner, Lift Key/Silph Scope, Pokémon Tower/Marowak/Mr. Fuji/Poké Flute, chá/guardas, Silph Co./Card Key/portais, Erika e Sabrina | 09, 11, 15 | **Celadon apenas terreno; eventos aguardam autorização** |
+| **F** | Fuchsia/Snorlax/Rotas 12–18/Safari: Poké Flute, dois Snorlax independentes, Cycling Road, Gold Teeth, Surf/Strength, Koga | 06, 10, 15 | **20 mapas Fuchsia/Safari preparados sem eventos; gameplay pendente** |
 | **G** | Seafoam/Cinnabar/Viridian final: pedras e correnteza, Mansion/Secret Key, Blaine/Volcano, Giovanni/Earth, arcos Sevii 1–3 quando aprovados | 12, 13, 15 | Pendente |
 | **H** | Rotas 22/23, oito portões, Victory Road, Elite Four, campeão, Hall of Fame e liberação Decades/Johto somente após Liga | 14, 15, 16 | Pendente |
 | **I** | Pós-jogo/Sevii 4–7: National Dex, Ruby/Sapphire, Celio, Icefall, Warehouse, Network Machine, Cerulean Cave, lendários e eventos especiais | Escopo opcional separado / 15, 16 se incluído | Pendente de decisão de escopo |
@@ -115,7 +115,7 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 - [ ] Testes manuais em Game.exe para caminhada/combate, save/reload, retorno e modos de dificuldade; depois JoiPlay.
 - [ ] Política regional de HMs, insignias e especiais verificada; rollback funcional registrado.
 - [ ] Registros públicos (guia, treinadores, locais) atualizados somente com dados efetivamente implementados.
-- [ ] **Fase 09:** remover `preview_only` exclusivamente quando houver autorização explícita e testes; até lá exigir zero eventos.
+- [ ] **Fases 09 e 10:** remover `preview_only` exclusivamente quando houver autorização explícita e testes; até lá exigir zero eventos.
 
 ## 8. Próxima ação permitida
 
