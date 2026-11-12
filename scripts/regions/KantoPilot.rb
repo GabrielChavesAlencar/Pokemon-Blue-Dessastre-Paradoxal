@@ -144,8 +144,14 @@ module BlueKantoPilot
       pbMessage(_INTL("Porto: Primeiro conquiste a Cascade Badge em Cerulean."))
       return
     end
-    if $bag.has?(:SSTICKET)
+    if progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
+      progress["pilot_ss_ticket"] = true
       pbMessage(_INTL("Porto: Sua passagem para o S.S. Anne está liberada!"))
+    elsif !GameData::Item.exists?(:SSTICKET)
+      # Decades does not guarantee the FRLG ticket item exists. Use a local
+      # save-state permit without changing native item PBS or other saves.
+      progress["pilot_ss_ticket"] = true
+      pbMessage(_INTL("Acesso experimental: a passagem digital para o S.S. Anne está liberada."))
     elsif $bag.add(:SSTICKET, 1)
       progress["pilot_ss_ticket"] = true
       pbMessage(_INTL("Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
@@ -155,7 +161,7 @@ module BlueKantoPilot
   end
 
   def self.harbor_gate(map_id, x, y)
-    unless $bag.has?(:SSTICKET)
+    unless progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
       pbMessage(_INTL("O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
       return
     end
