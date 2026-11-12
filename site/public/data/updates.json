@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4177f41ea6e852e2c2be79affd26e1db27cbae96",
+      "date": "2026-11-12T11:08:56-03:00",
+      "title": "test(kanto): audit Saffron/Sabrina/Silph source anchors before functional integration",
+      "category": "Testes"
+    },
+    {
       "sha": "d69c916b9b05a6a71bb4a140e5ab6fcb30534e31",
       "date": "2026-11-12T11:01:46-03:00",
       "title": "Kanto docs: registrar 9º núcleo Koga, 53 previews e QA Safari pendente",
