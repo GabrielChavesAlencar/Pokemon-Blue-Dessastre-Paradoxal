@@ -84,7 +84,7 @@ O estudo de FireRed indica dependências para uma futura implementação:
 
 ## Progresso
 
-**Atualização após a auditoria de 12/11/2026:** [Barra de núcleos funcionais 6/16 (10 faltando) e Barra de aceite 1/16 (15 faltando)](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). A contagem 8/16 no registro de construção abaixo é histórica, não a nova medição.
+**Status geral atualizado:** [Barra de núcleos 7/16 (43,75%, faltam 9 passos) e Barra de aceite 1/16 (6,25%, faltam 15 passos)](KANTO_AVANCO_FUNCIONAL_07.md). Os 8/16 e 6/16 dos registros anteriores são históricos; a fase 11 continua apenas cenário, sem Sabrina ou Silph jogáveis.
 
 **Barra 1 — Desenvolvimento funcional:** 8/16 (50%). **Barra 2 — Aceitação completa:** 1/16 (6,25%). As fases 09, 10 e 11 são novas áreas de cenário, ainda não completas funcionalmente. **Trilha de eventos FireRed:** 12 marcos próprios ainda sem medição quantitativa confiável.
 
