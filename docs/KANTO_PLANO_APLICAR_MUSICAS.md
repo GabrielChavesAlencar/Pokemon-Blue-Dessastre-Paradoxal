@@ -1,6 +1,6 @@
 # Kanto — Plano para aplicar as 64 músicas por este chat
 
-> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. A [Fase 4](KANTO_MUSICAS_FASE_4.md) catalogou as 14 ME e ativou apenas 6 com gatilhos reais de sucesso (8 seguem PENDENTE_EVENTO). A [Fase 5](KANTO_MUSICAS_FASE_5.md) adicionou cinco cenas comprovadas (título do piloto, Oak, rival, evolução e Hall of Fame), e oito cenas permanecem PENDENTE_EVENTO, incluindo abertura cinematográfica e créditos. Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
+> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. A [Fase 4](KANTO_MUSICAS_FASE_4.md) catalogou as 14 ME e ativou apenas 6 com gatilhos reais de sucesso (8 seguem PENDENTE_EVENTO). A [Fase 5](KANTO_MUSICAS_FASE_5.md) adicionou cinco cenas comprovadas (título do piloto, Oak, rival, evolução e Hall of Fame), e oito cenas permanecem PENDENTE_EVENTO, incluindo abertura cinematográfica e créditos. A [Fase 6](KANTO_MUSICAS_RESULTADOS.md) adicionou auditoria de decodificação integral dos 64 MP3, prova nativa de BGM/ME, correções de cenas e matriz 64/64: 36 VINCULADA, 21 PENDENTE_EVENTO e 7 MAPA_AUSENTE. Kanto continua como `prototype`. Audição real (loop/fade/ME em caixas de som) permanece BLOCKED_ENV, sem aumentar a Barra 2.
 
 ## Objetivo e como trabalharemos aqui no ChatGPT
 
@@ -146,6 +146,8 @@ Implementar hook ME com `Audio/ME/Kanto/` na engine e respeitar prioridade, volu
 Conferir Liga Lorelei → Bruno → Agatha → Lance → Blue, derrota não libera Hall, repetições não concedem prêmio duas vezes, e voltar a Decades restaura sua trilha. Se não houver evento real, registrar **PENDENTE_EVENTO** no relatório, não ativar antecipadamente.
 
 ## Fase 6 — Regressões e instalação segura
+
+**Implementação técnica:** ver [resultados 64/64 e plano de audição](KANTO_MUSICAS_RESULTADOS.md). A auditoria FFmpeg/FFprobe é obrigatória na CI e decodifica cada MP3 inteiro; as provas de API BGM/ME na engine são distintas de áudio perceptível. Corrigido o retorno ao silêncio após uma cena em mapas sem música anterior. **As 28 faixas sem vínculo não foram ativadas artificialmente.**
 
 1. Validar as **64 entradas** do catálogo contra arquivos reais e verificar soma 50 BGM + 14 ME, ausência de duplicação, faixas com destino e integridade SHA.
 2. Simular o plano de instalação na cópia isolada antes de aplicar; não reescrever `MapXXX.rxdata` do Decades ou um arquivo `Data/blue-music.json` personalizado.
