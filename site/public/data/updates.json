@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "699fde4d597afe7c1a57013dfa419503e919b7dc",
+      "date": "2026-11-12T13:42:09-03:00",
+      "title": "feat(kanto): Victory Road e Liga — núcleo 13/16",
+      "category": "Novidades"
+    },
+    {
       "sha": "f62bbd2f356cda8f9ab44b024a6016b4290d9df2",
       "date": "2026-11-12T13:10:08-03:00",
       "title": "feat(kanto): Viridian, Giovanni e Earth Badge — núcleo 12/16",
