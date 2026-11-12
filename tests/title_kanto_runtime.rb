@@ -32,8 +32,8 @@ original = [" <- My Save -> ", "New Game", "Options", "Quit Game"]
 scene = PokemonLoad_Scene.new
 scene.queue = [1]
 scene.pbStartScene(original, true, nil, nil, 0)
-require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Options", "Quit Game"],
-              "Kanto is not the THIRD title action with Continue")
+require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Options", "Quit Game"],
+              "Kanto/Johto test options have wrong positions after Continue")
 require_check(scene.pbChoose(original, 0) == 1, "New Game index changed")
 require_check(scene.last_continue == 0, "Continue slot arrows were remapped")
 require_check(original == [" <- My Save -> ", "New Game", "Options", "Quit Game"],
@@ -48,9 +48,9 @@ require_check(scene.pbChoose(original, 0) == -2, "Next save-slot arrow changed")
 # slot and the ORIGINAL handler index must be preserved.
 gift = [" <- Save 2 -> ", "Mystery Gift", "New Game", "Options", "Quit Game"]
 scene2 = PokemonLoad_Scene.new
-scene2.queue = [1, 3]
+scene2.queue = [1, 4]
 scene2.pbStartScene(gift, true, nil, nil, 0)
-require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto",
+require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto", "Testar Johto",
                                    "Mystery Gift", "Options", "Quit Game"],
               "Mystery Gift broke title menu order")
 require_check(scene2.pbChoose(gift, 0) == 2, "New Game handler no longer maps to original")
@@ -61,7 +61,7 @@ fresh = ["New Game", "Options", "Quit Game"]
 scene3 = PokemonLoad_Scene.new
 scene3.queue = [0]
 scene3.pbStartScene(fresh, false, nil, nil, 0)
-require_check(scene3.displayed == ["New Game", "Testar Kanto", "Options", "Quit Game"],
+require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Options", "Quit Game"],
               "No-save title order is invalid")
 require_check(scene3.pbChoose(fresh, -1) == 0, "No-save New Game changed")
 
@@ -74,6 +74,14 @@ BlueKantoTitle.define_singleton_method(:launch) { false }
 scene.queue = [2, 1]
 require_check(scene.pbChoose(original, 0) == 1, "Pilot failure must return to normal title")
 
+# Johto uses the fourth option and must never hijack Kanto or save-slot indexes.
+BlueKantoTitle.define_singleton_method(:launch_johto) { true }
+scene.queue = [3]
+require_check(scene.pbChoose(original, 0) == 3, "Johto pilot success did not cleanly quit main game")
+BlueKantoTitle.define_singleton_method(:launch_johto) { false }
+scene.queue = [3, 1]
+require_check(scene.pbChoose(original, 0) == 1, "Johto unavailable must return to normal title")
+
 # Isolated pilot cannot spawn itself recursively from its own Game.exe.
 Dir.mktmpdir("blue-title-") do |folder|
   Dir.chdir(folder) do
@@ -84,6 +92,7 @@ Dir.mktmpdir("blue-title-") do |folder|
     require_check(isolated.displayed == original, "Test option appeared inside the pilot")
     require_check(isolated.pbChoose(original, 0) == 1, "Pilot New Game no longer works")
     require_check(BlueKantoTitle.launcher.nil?, "Pilot may recursively launch another pilot")
+    require_check(BlueKantoTitle.johto_launcher.nil?, "Kanto pilot may launch Johto recursively")
   end
 end
 
@@ -100,6 +109,11 @@ Dir.mktmpdir("blue-title-root-") do |root|
     files = BlueKantoTitle.launcher
     require_check(files == [File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), root],
                   "Pilot launcher escaped the project root")
+    require_check(BlueKantoTitle.johto_launcher.nil?, "Johto must not reuse Kanto launcher")
+    File.write(File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
+    File.write(File.join(root, "scripts/regions/pilot_johto.py"), "# isolated Johto pilot")
+    require_check(BlueKantoTitle.johto_launcher == [File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), root],
+                  "Johto launcher must use only its own project-owned pilot")
   end
 end
-puts "Third title option, slot navigation, Mystery Gift, pilot isolation and launcher path OK"
+puts "Third and fourth title options, save slots, Mystery Gift, pilot isolation and launcher paths OK"
