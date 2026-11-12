@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e64ea31011cbe5c41b291788e52c1cdd1f1b5043",
+      "date": "2026-11-12T09:15:04-03:00",
+      "title": "docs(kanto): vincular guia de dialogos EN/PT ao roadmap de fases e eventos",
+      "category": "Documentação"
+    },
+    {
+      "sha": "b3348487234878e443a92f6a58caa8a5785cf554",
+      "date": "2026-11-12T09:15:01-03:00",
+      "title": "docs(kanto): vincular guia de dialogos EN/PT ao roadmap de fases e eventos",
+      "category": "Documentação"
+    },
+    {
+      "sha": "dd58f7c0f2d00556ec3899aa983d91d7e91c5d52",
+      "date": "2026-11-12T09:14:56-03:00",
+      "title": "docs(kanto): vincular guia de dialogos EN/PT ao roadmap de fases e eventos",
+      "category": "Documentação"
+    },
+    {
       "sha": "52cae94983e842ab908504c8783631cf4afc11f6",
       "date": "2026-11-12T09:13:36-03:00",
       "title": "docs(kanto): roadmap detalhado de dialogos EN/PT-BR com 67 cenas e 10 tarefas DIA",
