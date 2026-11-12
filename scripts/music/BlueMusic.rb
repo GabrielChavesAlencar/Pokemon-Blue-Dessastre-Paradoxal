@@ -34,12 +34,15 @@ module BlueMusic
     Array(trainers).any? { |t| gym_trainer?(t) } ? 'gym' : 'trainer'
   end
   def self.begin_battle
-    @battle_context={selected:{},category:nil}
+    # on_start_battle can fire after the preparer classified the opponents.
+    # Keep the selected class and track for the *same* ongoing encounter.
+    @battle_context ||= {selected:{},category:nil}
   end
   def self.end_battle; @battle_context=nil; end
   def self.with_battle
     previous=@battle_context
-    begin_battle
+    # A genuinely new encounter gets a fresh selection, including doubles.
+    @battle_context={selected:{},category:nil}
     yield
   ensure
     @battle_context=previous
