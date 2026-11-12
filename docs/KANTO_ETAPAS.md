@@ -8,11 +8,13 @@
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
 
+**Progresso:** **1/16 etapas concluídas — 15 restantes (6,25%)**. A aprovação da etapa 01 cobre apenas integridade estrutural e smoke test nativo.
+
 **Marco anterior (já entregue):** protótipo isolado Pallet → Pewter com 13 mapas, Oak, rival, encontros, treinadores, Brock e save no teste nativo simulado. Esse marco **não significa Kanto concluída**.
 
 ## 16 etapas de fechamento
 
-- [ ] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador foi implementado em [verify_pilot.py](../scripts/regions/verify_pilot.py), mas só marcar após a execução aprovada do workflow.
+- [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
 - [ ] **02 — Abrir o piloto e caminhar no Windows.** Resolver ou descartar o problema PhysFS com log reproduzível; conferir colisões, portas, transições, todos os iniciais, batalhas reais, cura, captura, derrota e save/reload em sessão gráfica.
 - [ ] **03 — Fechar os erros do trecho Pallet → Pewter.** Corrigir qualquer evento inacessível, porta sem retorno, treinador duplicado, script incompatível ou ponto de respawn; repetir o roteiro manual do piloto.
 - [ ] **04 — Escolha real de Kanto como região inicial.** Integrar o seletor de região ao fluxo de nova partida, sem iniciar a introdução de Decades, preservando starters/mecânicas e saves antigos.
@@ -34,4 +36,5 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 ## Registro de execução
 
 - **11/11/2026 — Etapa 01, implementação:** adicionado `scripts/regions/verify_pilot.py` para auditoria somente leitura; workflow `kanto-pilot-check.yml` executa a verificação antes do teste nativo. Foram criados testes de grafo em `tests/test_kanto_verifier.py`.
-- **Pendente:** conferir resultado da CI e a abertura gráfica do piloto. Um teste nativo com simulação de resultado de batalha não comprova vitória/derrota real.
+- **11/11/2026 — Etapa 01 concluída:** CI de Kanto aprovada, com **13 mapas**, **4 conexões**, **25 transferências**, **10 eventos obrigatórios** e smoke test nativo de compilação/save/reload. [Evidência](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
+- **Pendente (etapa 02):** abrir e percorrer Kanto em sessão gráfica normal do Windows, testar batalhas e movimentos reais. Um teste nativo com simulação de resultado de batalha não comprova vitória/derrota real.
