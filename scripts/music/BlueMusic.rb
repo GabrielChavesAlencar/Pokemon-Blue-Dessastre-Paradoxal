@@ -68,6 +68,71 @@ module BlueMusic
   rescue StandardError
     [1,[],[]]
   end
+  # Kanto-only compiled map scope. Never write to the Decades music config.
+  KANTO_PATH='Data/blue-kanto-music.txt'
+  def self.kanto_region?
+    return false unless defined?(BlueRegionalPolicy) && BlueRegionalPolicy.respond_to?(:state)
+    state=BlueRegionalPolicy.state
+    return true if state.is_a?(Hash) && state['current']=='KANTO'
+    # The disposable standalone pilot has Kanto pilot.json, but deliberately
+    # has no Data/blue-kanto-install.json (required by RegionalPolicy.state).
+    # Only permit this fallback inside that isolated pilot with a real Kanto save.
+    return false unless File.file?('Kanto pilot.json') && defined?(BlueRegions) && BlueRegions.active?
+    stored=$PokemonGlobal && $PokemonGlobal.blue_regions
+    stored.is_a?(Hash) && stored['version']==1 && stored['current']=='KANTO'
+  rescue StandardError
+    false
+  end
+  def self.kanto_data
+    return [{},{},{}] unless File.file?(KANTO_PATH)
+    stamp=[File.mtime(KANTO_PATH).to_f,File.size(KANTO_PATH)]
+    return @kanto_data if @kanto_stamp==stamp && @kanto_data
+    lines=File.readlines(KANTO_PATH)
+    header=lines.shift.to_s.chomp.split("\t")
+    raise 'Invalid Kanto music version' unless header.length==3 && header[0]=='BLUE_KANTO_MUSIC_V1' && header[1]=='KANTO' && header[2].match?(/\A[0-9a-f]{64}\z/)
+    scope={};maps={};battles={}
+    lines.each do |line|
+      parts=line.chomp.split("\t")
+      case parts[0]
+      when 'SCOPE'
+        raise 'Invalid Kanto map scope' unless parts.length==4 && parts[1].match?(/\A[1-9]\d*\z/) && parts[2].match?(/\A[A-Z0-9_]+\z/) && ['0','1'].include?(parts[3])
+        id=parts[1].to_i
+        raise 'Duplicate Kanto map scope' if scope.key?(id)
+        scope[id]=[parts[2],parts[3]=='1']
+      when 'MAP','BATTLE'
+        raise 'Invalid Kanto BGM binding' unless parts.length==5 && parts[2].start_with?('Kanto/') && parts[3].match?(/\A\d+\z/) && parts[4].match?(/\A\d+\z/)
+        id=parts[1]
+        if parts[0]=='MAP'
+          raise 'Invalid Kanto map binding' unless id.match?(/\A[1-9]\d*\z/) && scope.key?(id.to_i) && !scope[id.to_i][1]
+          id=id.to_i
+          dest=maps
+        else
+          raise 'Invalid Kanto battle binding' unless ['wild','trainer','gym','legendary','champion','wildVictory','trainerVictory','gymVictory'].include?(id)
+          dest=battles
+        end
+        raise 'Duplicate Kanto binding' if dest.key?(id)
+        volume=parts[3].to_i; pitch=parts[4].to_i
+        raise 'Invalid Kanto music volume/pitch' unless (0..100).include?(volume) && (50..150).include?(pitch)
+        dest[id]=[parts[2],volume,pitch]
+      else
+        raise 'Unknown Kanto music binding'
+      end
+    end
+    @kanto_data=[scope,maps,battles]
+    @kanto_stamp=stamp
+    @kanto_data
+  rescue StandardError
+    [{},{},{}]
+  end
+  def self.kanto_audio_for(kind,key)
+    return nil unless kanto_region?
+    scope,maps,battles=kanto_data
+    map_id=(kind=='map' ? key : ($game_map && $game_map.map_id))
+    return nil unless map_id && scope.key?(map_id.to_i)
+    row=(kind=='map' ? maps[map_id.to_i] : battles[key.to_s])
+    return nil unless row && valid_track?(row[0])
+    RPG::AudioFile.new(row[0],row[1],row[2])
+  end
   def self.entry(scope,key)
     rows=config[scope=='map' ? 2 : 1]
     found=rows.find { |row| row.is_a?(Array) && row[0].to_s==key.to_s }
@@ -93,7 +158,9 @@ module BlueMusic
       return selected if selected
     end
     return nil if $PokemonGlobal.nextBattleBGM
-    audio_for('global',key) unless row && row[1]=='random'
+    return nil if row && row[1]=='random'
+    return audio_for('global',key) if row
+    kanto_audio_for('battle',key)
   end
   def self.apply_map(game_map)
     map=game_map.instance_variable_get(:@map)
@@ -103,7 +170,8 @@ module BlueMusic
       original=[map.autoplay_bgm,map.bgm.clone]
       game_map.instance_variable_set(:@blue_music_original,original)
     end
-    audio=audio_for('map',game_map.map_id)
+    row=entry('map',game_map.map_id)
+    audio=row ? audio_for('map',game_map.map_id) : kanto_audio_for('map',game_map.map_id)
     if audio
       map.autoplay_bgm=true;map.bgm=audio
     else
@@ -148,14 +216,16 @@ module BlueMusic
     end
     def pbGetWildVictoryBGM(*args)
       return super if $PokemonGlobal.nextBattleVictoryBGM
-      audio=BlueMusic.audio_for('global','wildVictory')
+      row=BlueMusic.entry('global','wildVictory')
+      audio=row ? BlueMusic.audio_for('global','wildVictory') : BlueMusic.kanto_audio_for('battle','wildVictory')
       return super unless audio
       audio.name='../../Audio/BGM/'+audio.name unless audio.name.empty?
       audio
     end
     def pbGetTrainerVictoryBGM(*args)
       return super if $PokemonGlobal.nextBattleVictoryBGM
-      audio=BlueMusic.audio_for('global','trainerVictory')
+      row=BlueMusic.entry('global','trainerVictory')
+      audio=row ? BlueMusic.audio_for('global','trainerVictory') : BlueMusic.kanto_audio_for('battle','trainerVictory')
       return super unless audio
       audio.name='../../Audio/BGM/'+audio.name unless audio.name.empty?
       audio

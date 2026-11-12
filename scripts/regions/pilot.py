@@ -34,6 +34,10 @@ PILOT_INPUTS = (
     "scripts/battle_polish/RegionStart.rb",
     "scripts/battle_polish/Story.rb",
     "data/regions/kanto-source.json",
+    "data/kanto-music-rules.json",
+    "data/kanto-music.json",
+    "scripts/music/compile_kanto_music.py",
+    "scripts/music/BlueMusic.rb",
 )
 
 
@@ -1035,6 +1039,10 @@ def install_runtime(target, mapping, game):
             for name in ("MapInfos.rxdata", "Tilesets.rxdata")
         },
     }), encoding="utf8")
+    # Only the isolated copy receives the generated Kanto soundtrack scope.
+    from scripts.music.compile_kanto_music import compile_bytes
+    compiled, _ = compile_bytes(ROOT, target, mapping)
+    (data / "blue-kanto-music.txt").write_bytes(compiled)
 
 
 def build(source, game, output):

@@ -8,6 +8,9 @@ def shared_plan(project,game):
     if not path.is_file():return {}
     raw=path.read_bytes();digest=hashlib.sha256(raw).hexdigest();marker=game/'Data/blue-shared-music.sha256'
     if marker.is_file() and marker.read_text('ascii')==digest:return {}
+    # A first install may create defaults, but an existing user configuration
+    # always wins over later shared-music releases and regional add-ons.
+    if (game/'Data/blue-music.json').is_file() or (game/'Data/blue-music.rxdata').is_file():return {}
     data=json.loads(raw);plan={}
     if data.get('version')!=1:raise ValueError('Invalid shared music version.')
     for row in data['files']:
@@ -30,6 +33,12 @@ def install(project,game):
     source=project/'scripts/music';plugin=game/'Plugins/ZZZZ Blue Music'
     plan={plugin/name:(source/name).read_bytes() for name in ['BlueMusic.rb','RandomValidation.rb','meta.txt']}
     plan.update(shared_plan(project,game))
+    # Recompile only the regional mapping for an already-integrated Kanto.
+    # The generated file is separate from blue-music.json/rxdata.
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('blue_kanto_music_compile',source/'compile_kanto_music.py')
+    regional=importlib.util.module_from_spec(spec);spec.loader.exec_module(regional)
+    plan.update(regional.plan_installed(project,game))
     changed={p:b for p,b in plan.items() if not p.is_file() or p.read_bytes()!=b}
     backup=project/'.blue-backups'/('music-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
     for path,raw in changed.items():
