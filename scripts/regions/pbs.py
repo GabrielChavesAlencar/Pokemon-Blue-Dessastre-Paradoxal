@@ -3,8 +3,13 @@ import re
 from pathlib import Path
 
 HEADER = re.compile(r"^\[([^]]+)]\s*(?:#.*)?$")
-ENCOUNTER_TYPES = {"Land", "LandDay", "LandNight", "LandMorning", "Cave", "Water",
-                   "OldRod", "GoodRod", "SuperRod", "RockSmash"}
+# Extended Gen 9/Essentials encounter variants used inside Mt. Moon.
+ENCOUNTER_TYPES = {
+    "Land", "LandMorning", "LandDay", "LandAfternoon", "LandEvening", "LandNight",
+    "Cave", "CaveMorning", "CaveDay", "CaveAfternoon", "CaveEvening", "CaveNight",
+    "Water", "WaterMorning", "WaterDay", "WaterNight",
+    "OldRod", "GoodRod", "SuperRod", "RockSmash",
+}
 # Source keys stay attached to the original roster. Destination names are stable.
 TRAINERS = {
     "RIVAL1,Blue,11": ("RIVAL", "Blue", 11),
