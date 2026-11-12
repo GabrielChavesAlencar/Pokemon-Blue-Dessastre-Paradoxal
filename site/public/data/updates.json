@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6f63b3ddc69c0740b13aea3934f1b0590323add5",
+      "date": "2026-11-12T15:15:08-03:00",
+      "title": "feat(music): verificação ZIP Kanto e preparação de upload com direitos",
+      "category": "Novidades"
+    },
+    {
       "sha": "877ad932521939a81cc500178e83e758c552d67c",
       "date": "2026-11-12T15:02:15-03:00",
       "title": "docs(kanto): instruções Codex E2E para aceite das 16 etapas",
