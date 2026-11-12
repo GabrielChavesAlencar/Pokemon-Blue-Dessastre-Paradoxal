@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3542d9206ba24a178deb82cf2f2ecd73c867db5e",
+      "date": "2026-11-12T06:38:58-03:00",
+      "title": "docs(instalacao): ensinar Testar Kanto pelo EXE do site com saves isolados",
+      "category": "Documentação"
+    },
+    {
       "sha": "13fe1480242460df9385dde5f6418c94a31f5431",
       "date": "2026-11-12T06:38:21-03:00",
       "title": "test(site): confirmar instrucoes de Testar Kanto na pagina de downloads",
