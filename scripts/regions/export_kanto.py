@@ -13,6 +13,7 @@ LOCATION_NAMES = {
     "PLAYER_HOME": "Casa do jogador",
     "ROUTE_1": "Rota 1",
     "VIRIDIAN_CITY": "Viridian City",
+    "VIRIDIAN_GYM": "Ginásio de Viridian — Giovanni",
     "VIRIDIAN_CENTER": "Centro Pokémon de Viridian",
     "VIRIDIAN_MART": "Poké Mart de Viridian",
     "ROUTE_2": "Rota 2",
@@ -238,6 +239,16 @@ TRAINER_LOCATIONS.update({
     ("SCIENTIST", "Ivan"): ("MANSION_B1F", "Cientista"),
 })
 
+TRAINER_LOCATIONS.update({
+    ("LEADER_GIOVANNI", "Giovanni"): ("VIRIDIAN_GYM", "Líder de ginásio"),
+    **{("BLACKBELT", name): ("VIRIDIAN_GYM", "Lutador")
+       for name in ("Takashi", "Kiyo", "Atsushi")},
+    **{("COOLTRAINER_M", name): ("VIRIDIAN_GYM", "Treinador experiente")
+       for name in ("Samuel", "Yuji", "Warren")},
+    **{("TAMER", name): ("VIRIDIAN_GYM", "Domador")
+       for name in ("Cole", "Jason")},
+})
+
 
 SILPH_GRUNT_FLOORS = {
     21: "SILPH_2F", 22: "SILPH_2F", 23: "SILPH_3F",
@@ -302,7 +313,9 @@ def export(preview: Path):
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
         else:
             key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
-            trainer_id = slug("blue_silph") if kind == "RIVAL_SILPH" else slug(name)
+            trainer_id = (slug("giovanni_viridian") if kind == "LEADER_GIOVANNI"
+                          else slug("blue_silph") if kind == "RIVAL_SILPH"
+                          else slug(name))
             shown_name = "Blue (Silph)" if kind == "RIVAL_SILPH" else name
         if key is None:
             raise ValueError(f"Trainer location has not been audited: {header}")

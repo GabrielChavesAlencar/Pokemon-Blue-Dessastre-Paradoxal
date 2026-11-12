@@ -91,6 +91,8 @@ TYPES = {
     # Temporary Decades portraits until separately licensed FRLG trainer art is reviewed.
     "BURGLAR": "SUPERNERD", "SCIENTIST": "SUPERNERD",
     "LEADER_BLAINE": "SUPERNERD",
+    "COOLTRAINER_M": "COOLTRAINER_F",  # Provisional battle portrait; authentic male overworld sprites.
+    "LEADER_GIOVANNI": "ROCKETBOSS",  # Local fallback battle portrait pending art licensing.
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -204,6 +206,22 @@ TRAINERS[188][10] = ("ROCKETBOSS", "Giovanni", 2)
 
 # Phase 12: IDs, coordinates and trainer names verified against the pinned
 # FRLG Map199-208 source by audit_cinnabar.py. No source event scripts run.
+# Viridian Gym 13: audited event identities and trainer Sight(n) triggers.
+# FRLG mistakenly starts Tamer Cole for the event named Jason (8); use the
+# distinct [TAMER,Jason] PBS team instead of executing that foreign script.
+TRAINERS[13] = {
+    2: ("BLACKBELT", "Takashi"),
+    3: ("COOLTRAINER_M", "Samuel"),
+    4: ("LEADER_GIOVANNI", "Giovanni"),
+    5: ("BLACKBELT", "Kiyo"),
+    6: ("TAMER", "Cole"),
+    7: ("COOLTRAINER_M", "Yuji"),
+    8: ("TAMER", "Jason"),
+    9: ("BLACKBELT", "Atsushi"),
+    10: ("COOLTRAINER_M", "Warren"),
+}
+VIRIDIAN_GYM_EVENTS = set(TRAINERS[13]) | {11, 16}
+
 TRAINERS[202] = {
     4: ("BURGLAR", "Quinn"), 5: ("SUPERNERD", "Erik"),
     6: ("SUPERNERD", "Avery"), 7: ("BURGLAR", "Ramon"),
@@ -266,6 +284,12 @@ SILPH_FLOOR_LANDINGS = {
     184: (23, 5), 185: (22, 5), 186: (24, 5),
     187: (13, 5), 188: (13, 5),
 }
+
+def viridian_event_allowed(source_id, event_id):
+    # Do not leak FRLG Gym plaques, global script page conditions, or its
+    # original variable-controlled events into Decades.
+    return source_id != 13 or event_id in VIRIDIAN_GYM_EVENTS
+
 
 def cinnabar_event_allowed(source_id, event_id):
     if source_id in CINNABAR_EVENTS:
@@ -393,6 +417,8 @@ def install_events(source, target, mapping):
         map_data = load(dest_file)
         selected = {}
         script_events = {5: {9: "BlueRegionTravel.agent(true)"},
+                         10: {1: f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)"},
+                         13: {16: "BlueKantoPilot.viridian_gym_guide"},
                           7: {13: "BlueKantoPilot.mom"},
                           8: {8: "BlueKantoPilot.daisy"},
                           6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
@@ -454,6 +480,8 @@ def install_events(source, target, mapping):
             if not saffron_event_allowed(original, event_id, event):
                 continue
             if not cinnabar_event_allowed(original, event_id):
+                continue
+            if not viridian_event_allowed(original, event_id):
                 continue
             if original == 202 and event_id in CINNABAR_DOOR_TO_GROUP:
                 group = CINNABAR_DOOR_TO_GROUP[event_id]
@@ -632,6 +660,14 @@ def install_events(source, target, mapping):
                         scripted.attrs["@pages"].append(collected)
                     if original == 5 and event_id == 9:
                         scripted.attrs["@name"] = b"Agente Regional"
+                    if original == 10 and event_id == 1:
+                        # FRLG Map010/1 has a foreign global-switch second
+                        # page. Replace that gate with our guarded transfer,
+                        # preserving the visible doors6 sprite on Player Touch.
+                        local_page = scripted.attrs["@pages"][0].attrs
+                        local_page["@trigger"] = 1
+                        local_page["@through"] = True
+                        local_page["@direction_fix"] = True
                     selected[event_id] = scripted
                 continue
             if original == 5 and event_id in (11, 13):
@@ -733,6 +769,8 @@ def install_runtime(target, mapping, game):
     stops = [
         ("PALLET", "Pallet Town (Oak)", 5, 28, 14),
         ("PLAYER_HOME", "Casa do jogador (inicio)", 7, 25, 7),
+        ("VIRIDIAN", "Viridian City (Ginasio)", 10, 36, 11),
+        ("VIR_GYM", "Ginasio Viridian Giovanni (sete insignias)", 13, 17, 22),
         ("PEWTER", "Pewter City (Gym)", 25, 19, 21),
         ("ROUTE4", "Route 4 (Mt Moon exit)", 33, 92, 21),
         ("MOON_CENTER", "Mt Moon Pokemon Center", 34, 7, 8),

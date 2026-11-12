@@ -27,7 +27,7 @@ module KantoNativeCheck
     }, "Player Home door cannot be entered from Pallet")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 52 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 54 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
@@ -38,6 +38,7 @@ module KantoNativeCheck
              labels.any? { |row| row.include?("Silph Co.") } &&
              labels.any? { |row| row.include?("Cinnabar") } &&
              labels.any? { |row| row.include?("Blaine") } &&
+             labels.any? { |row| row.include?("Ginasio Viridian Giovanni") } &&
              labels.any? { |row| row.include?("Mansion") },
              "Experimental Kanto phase 11 Saffron/Silph destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
@@ -527,6 +528,77 @@ module KantoNativeCheck
     require!(battle_calls.count { |row| row[1] == "Blaine" } == 2,
       "Blaine battle could be repeated after earning Volcano Badge")
 
+    # Phase 13 — independent Viridian Giovanni gym: seven LOCAL Kanto badges
+    # and rescued Silph required. All fights here are simulated by this CI test.
+    viridian_gym = map_for.call("Ginasio Viridian Giovanni")
+    viridian = map_for.call("Viridian City")
+    $map_factory.setup(viridian)
+    gate = $game_map.events[1]
+    require!(gate && gate.trigger == 1 &&
+             gate.list.none? { |row| row.code == 201 } &&
+             gate.list.any? { |row| row.code == 355 &&
+               row.parameters[0].include?("BlueKantoPilot.viridian_gym_gate") },
+             "Viridian Gym entrance bypasses the local badge gate")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").include?("EARTH"),
+             "Earth Badge awarded before the gym")
+    earned = BlueKantoPilot.progress["achievements"]["KANTO"]
+    require!(earned.include?("VOLCANO"), "Blaine's Volcano Badge is missing before Giovanni")
+    earned.delete("VOLCANO")
+    require!(!BlueKantoPilot.viridian_access? &&
+             BlueKantoPilot.viridian_gym_gate(viridian_gym,17,22)==false,
+             "Viridian Gym opened without seven local badges")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_GIOVANNI,"Giovanni","KANTO_013_004")
+    require!(battle_calls.none? { |row| row[0]==:BLUE_KANTO_LEADER_GIOVANNI },
+             "Giovanni accepted a battle before all seven local badges")
+    earned << "VOLCANO"
+    BlueKantoPilot.progress["pilot_silph_rescued"] = false
+    require!(!BlueKantoPilot.viridian_access?,
+             "Viridian Gym opened before saving Silph Co.")
+    BlueKantoPilot.progress["pilot_silph_rescued"] = true
+    require!(BlueKantoPilot.viridian_access?, "Viridian Gym stayed locked after requirements")
+    $map_factory.setup(viridian_gym)
+    require!($game_map.events.keys.sort == [2,3,4,5,6,7,8,9,10,11,16],
+             "Viridian gym imported unsanctioned source events")
+    require!([2,3,5,6,7,8,9,10].all? { |eid| $game_map.events[eid].trigger==2 } &&
+             $game_map.events[4].trigger==0,
+             "Viridian eight Sight trainers/leader triggers are incorrect")
+    require!($game_map.events[11].list.any? { |row|
+      row.code == 201 && row.parameters[1]==viridian
+    }, "Giovanni Gym has no exit to Viridian City")
+    jason = GameData::Trainer.get(:BLUE_KANTO_TAMER,"Jason")
+    cole  = GameData::Trainer.get(:BLUE_KANTO_TAMER,"Cole")
+    require!(jason.pokemon.any? && cole.pokemon.any? &&
+             $game_map.events[8].list.any? { |row|
+               row.code == 355 && row.parameters[0].include?('"Jason"')
+             }, "FRLG source Jason/Cole battle typo not repaired")
+    leader = GameData::Trainer.get(:BLUE_KANTO_LEADER_GIOVANNI,"Giovanni")
+    require!(leader.pokemon.length >= 4, "Giovanni Gym original FRLG roster unavailable")
+    wins = (BlueKantoPilot.progress["pilot_wins"] ||= [])
+    require!(wins.include?("KANTO_188_010"), "Silph Giovanni's separate victory was lost")
+    wins << "Giovanni"  # Simulate an older Silph save with name-only victory.
+    losses_remaining["Giovanni"] = 1
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_GIOVANNI,"Giovanni","KANTO_013_004")
+    require!(battle_calls.count { |row| row[0]==:BLUE_KANTO_LEADER_GIOVANNI }==1 &&
+             !wins.include?("KANTO_013_004") &&
+             !BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").include?("EARTH"),
+             "Giovanni loss or legacy Silph flag incorrectly granted Earth")
+    wins.delete("Giovanni")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_GIOVANNI,"Giovanni","KANTO_013_004")
+    require!(wins.include?("KANTO_013_004") &&
+             BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").last=="EARTH",
+             "Giovanni victory did not grant Earth Badge")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_013_004","Giovanni",4),
+             "Giovanni Gym event win flag was not saved")
+    $game_map.refresh
+    require!($game_self_switches[[viridian_gym,4,"A"]],
+             "Giovanni did not move to his defeated event page")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_GIOVANNI,"Giovanni","KANTO_013_004")
+    require!(battle_calls.count { |row| row[0]==:BLUE_KANTO_LEADER_GIOVANNI }==2,
+             "Giovanni Gym repeated a defeated battle")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").length==8 &&
+             !BlueKantoPilot.progress["leagues"].include?("KANTO"),
+             "Eight badges completed League prematurely or duplicated progress")
+
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
     $map_factory.setup(lab)
@@ -536,7 +608,7 @@ module KantoNativeCheck
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL","MARSH","VOLCANO"],
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL","MARSH","VOLCANO","EARTH"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
@@ -550,6 +622,9 @@ module KantoNativeCheck
              BlueKantoPilot.progress.fetch("pilot_cinnabar_doors", []).include?(1) &&
              BlueKantoPilot.progress["pilot_wins"].include?("KANTO_202_016"),
              "Cinnabar Secret Key, gym door and Blaine did not survive reload")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_013_004") &&
+             $game_self_switches[[viridian_gym,4,"A"]],
+             "Giovanni Gym Earth Badge/self-switch did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_147_011"),
              "Koga victory did not persist through save/reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
@@ -558,6 +633,6 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 126 maps: seven badges incl Blaine, Cinnabar Secret Key/Mansion/quiz, ocean previews protected, save/reload verified (battles simulated)")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 127 maps: eight local Kanto badges incl Giovanni Earth; gate, Jason correction, separate Silph boss, save/reload verified (battles simulated)")
   end
 end

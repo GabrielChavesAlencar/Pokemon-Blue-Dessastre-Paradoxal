@@ -14,7 +14,7 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, load
 from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    CINNABAR_GYM_QUIZZES, CINNABAR_GYM_TRAINER_GROUPS,
-                   MANSION_DOORS, MANSION_STATUES)
+                   MANSION_DOORS, MANSION_STATUES, VIRIDIAN_GYM_EVENTS)
 from server.ruby_marshal import text
 
 
@@ -115,8 +115,8 @@ def inspect(game: Path) -> dict:
             raise ValueError(f"Interior {inside}: missing entry from {outer}/{entry}")
         if mapping[outer] not in event_transfers(inside, exit_id):
             raise ValueError(f"Interior {inside}: missing return to {outer}/{entry}")
-    if 13 in mapping or 23 in mapping:
-        raise ValueError("Viridian Gym or Diglett Cave unlocked before story audit")
+    if 23 in mapping:
+        raise ValueError("Diglett Cave was imported before its source audit")
 
     # A unique Viridian Mart shopkeeper now anchors the Pallet <-> Viridian
     # story loop, without executing foreign source event scripts or forcing a
@@ -365,7 +365,41 @@ def inspect(game: Path) -> dict:
     if len(TRAINERS[202]) != 8 or any(eid not in maps[mapping[202]].attrs["@events"] for eid in TRAINERS[202]):
         raise ValueError("Blaine and seven Cinnabar trainers must be present")
 
-    # MAN-02: the source-proven 101 line-of-sight trainers require Event Touch,
+    # Stage 13: source Map013 must be safely re-implemented, while keeping
+    # the original Map010 entrance and the exact one-way return.
+    gym_events = maps[mapping[13]].attrs["@events"]
+    if set(gym_events) != VIRIDIAN_GYM_EVENTS:
+        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ VIRIDIAN_GYM_EVENTS}")
+    if len(TRAINERS[13]) != 9:
+        raise ValueError("Viridian Gym must have Giovanni and exactly eight source trainers")
+    if mapping[10] not in event_transfers(13, 11):
+        raise ValueError("Viridian gym has no return to its city")
+    exit_event = gym_events[11].attrs["@pages"][0].attrs
+    if exit_event["@trigger"] != 1:
+        raise ValueError("Viridian gym exit must activate on Player Touch")
+    entry = maps[mapping[10]].attrs["@events"].get(1)
+    if entry is None or len(entry.attrs["@pages"]) != 1:
+        raise ValueError("Viridian City gym door still has unsafe source pages")
+    door = entry.attrs["@pages"][0].attrs
+    if door["@trigger"] != 1 or not door["@through"] or not door["@graphic"].attrs["@character_name"]:
+        raise ValueError("Viridian Gym source door must be visible and Player Touch")
+    if event_transfers(10, 1):
+        raise ValueError("Viridian gym door bypassed badge guard by direct RPG warp")
+    expected_gate = f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)"
+    if first_scripts(10, 1) != [expected_gate]:
+        raise ValueError("Viridian entrance lacks an exact safe badge-gated callback")
+    if first_scripts(13, 16) != ["BlueKantoPilot.viridian_gym_guide"]:
+        raise ValueError("Viridian Gym guide retained unreviewed foreign scripts")
+    for eid in TRAINERS[13]:
+        if eid not in gym_events:
+            raise ValueError(f"Viridian trainer {eid} absent")
+    if not first_scripts(13, 4) or "BLUE_KANTO_LEADER_GIOVANNI" not in first_scripts(13, 4)[0]:
+        raise ValueError("Viridian Giovanni not bound to independent gym leader type")
+    battle_scripts = [line for line in first_scripts(13, 8) if "BlueKantoPilot.battle(" in line]
+    if len(battle_scripts) != 1 or '"Jason"' not in battle_scripts[0] or '"Cole"' in battle_scripts[0]:
+        raise ValueError("FRLG source typo Tamer Jason -> Cole has leaked into Blue")
+
+    # MAN-02: the source-proven 109 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -401,7 +435,7 @@ def inspect(game: Path) -> dict:
                 sight_count += 1
                 if "pbNoticePlayer(get_self)" not in script:
                     raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 101:
+    if sight_count != 109:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -428,6 +462,8 @@ def inspect(game: Path) -> dict:
 
     anchors = {
         (6, 15): "BlueKantoPilot.choose_starter",
+        (10, 1): "BlueKantoPilot.viridian_gym_gate",
+        (13, 16): "BlueKantoPilot.viridian_gym_guide",
         (6, 14): "BlueKantoPilot.rival",
         (11, 2): "BlueKantoPilot.heal",
         (26, 2): "BlueKantoPilot.heal",
@@ -494,6 +530,9 @@ def inspect(game: Path) -> dict:
                         # Phase 12: the only scripted Cinnabar map transfer
                         # is gated by the unique Mansion Secret Key. Check the
                         # exact local callback/landing before adding this edge.
+                        if source == 10 and event_id == 1:
+                            if script == f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)":
+                                edges[dest].add(mapping[13])
                         if source == 199 and event_id == 4:
                             guarded = f"BlueKantoPilot.cinnabar_gym_gate({mapping[202]}, 25, 23)"
                             if script == guarded:
@@ -539,7 +578,7 @@ def inspect(game: Path) -> dict:
     stops_file = game / "Data/blue-kanto-experimental-stops.txt"
     if not stops_file.is_file():
         raise ValueError("Experimental Kanto destinations were not generated")
-    required_stops = {"PALLET", "PLAYER_HOME", "PEWTER", "ROUTE4", "MOON_CENTER",
+    required_stops = {"PALLET", "PLAYER_HOME", "VIRIDIAN", "PEWTER", "ROUTE4", "MOON_CENTER",
                       "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
@@ -549,7 +588,7 @@ def inspect(game: Path) -> dict:
                       "ROUTE8", "SAFF_WEST", "SAFFRON", "SABRINA", "SAFF_DOJO",
                       "SAFF_CENTER", "SILPH_1F", "SILPH_5F", "SILPH_11F", "SILPH_LIFT",
                        "ROUTE19", "ROUTE20", "SEAFOAM", "CINNABAR", "CIN_CENTER",
-                       "CIN_GYM", "CIN_LAB", "MANSION", "MANSION_B1F"}
+                       "CIN_GYM", "CIN_LAB", "MANSION", "MANSION_B1F", "VIR_GYM"}
     seen_stops = set()
     for raw in stops_file.read_text(encoding="utf-8").splitlines():
         parts = raw.split("|")
@@ -572,6 +611,8 @@ def inspect(game: Path) -> dict:
         "phase12_cinnabar_functional_maps": len(CINNABAR_EVENTS),
         "phase12_preview_only": len(preview_only & {190,191,193,194,195,196,197,198}),
         "phase12_mansion_floors": len(MANSION_DOORS),
+        "phase13_viridian_gym_trainers": len(TRAINERS[13]),
+        "phase13_viridian_gym_gate_required_badges": 7,
         "phase09_geometry_only": len(preview_only & {111,114,115,117,118,119,120,121,122,123,124}),
         "phase09_functional_maps": len(set(core_events) - preview_only),
         "celadon_verified_return_pairs": 2,
