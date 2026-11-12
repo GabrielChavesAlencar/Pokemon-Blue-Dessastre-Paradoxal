@@ -25,7 +25,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 ## Roadmap de eventos FireRed — análise consolidada
 
-**Documento operacional:** [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md). Lido junto ao [estudo de 50 famílias de eventos](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md), ao [guia de implementação](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) e ao **Plano de regiões v2** (que prevalece para as regras do Blue). A análise considera **425 mapas catalogados na decompilação GBA**, não 425 conversões concluídas; a fonte dos **71 MapIDs do piloto Essentials** é distinta (40 mapas das fases anteriores, 11 prévias de Celadon e 20 de Fuchsia/Safari).
+**Documento operacional:** [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md). Lido junto ao [estudo de 50 famílias de eventos](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md), ao [guia de implementação](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) e ao **Plano de regiões v2** (que prevalece para as regras do Blue). A análise considera **425 mapas catalogados na decompilação GBA**, não 425 conversões concluídas; a fonte dos **101 MapIDs do piloto Essentials** é distinta (40 mapas anteriormente integrados, 11 prévias de Celadon, 20 de Fuchsia/Safari e 30 de Saffron/Silph).
 
 **Trabalho de análise autorizado agora, sem instalar eventos:**
 
@@ -39,9 +39,20 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 **Duas contagens de trabalho diferentes:** Kanto (desenvolvimento **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
 
+## Fase 11 — Saffron/Sabrina/Silph Co. (terreno apenas)
+
+Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG (Saffron, quatro portarias, Rota 8, Dojo, Fan Club, Silph Co. 1F–11F e elevador) adicionados como `preview_only`, preservando os IDs históricos do piloto. **Total: 101 mapas, 61 prévias sem eventos, 41 destinos experimentais.**
+
+- [x] Auditar IDs, mapas e coordenadas com a referência SHA-256 fixada; importar apenas geometria, nunca scripts estrangeiros.
+- [x] Fixar a sequência dos 71 mapas anteriores e dos 29 primeiros de Saffron para evitar deslocamentos de MapID.
+- [ ] Integrar portarias, Fighting Dojo, Sabrina, Marsh Badge, teletransportadores e campanha Silph Co. **somente após revisão de eventos e testes de regressão**.
+- [ ] Validar manualmente tilesets, passabilidade, entrada/saída e compatibilidade de saves; manter os 54 perfis existentes sem inventar treinadores novos.
+
+**As barras funcionais continuam 8/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
+
 ## Fase 10 — Fuchsia/Safari preparada sem eventos
 
-[Documentação técnica de Fuchsia e Koga](KANTO_FASE_10.md). Foram adicionados **20 mapas** auditados da fonte FRLG (cidade, Centro, Mart, ginásio, casa do Warden, portão, quatro setores Safari com casas de descanso/Secret House e Rotas 15/18). O projeto mantém **71 mapas no catálogo, 31 mapas `preview_only` sem NPCs, scripts, encontros ou prêmios**, e 31 destinos de teste na cópia isolada.
+[Documentação técnica de Fuchsia e Koga](KANTO_FASE_10.md). Foram adicionados **20 mapas** auditados da fonte FRLG (cidade, Centro, Mart, ginásio, casa do Warden, portão, quatro setores Safari com casas de descanso/Secret House e Rotas 15/18). O projeto mantém **101 mapas no catálogo, dos quais 61 em `preview_only` sem NPCs, scripts, encontros ou prêmios**, e 41 destinos de teste na cópia isolada, após a expansão de Saffron.
 
 - [x] Fonte/IDs do mapa auditados e 20 terrenos importados ao piloto.
 - [x] Exportação do portal com as 20 localidades da Fase 10 vazias de treinadores e encontros.
