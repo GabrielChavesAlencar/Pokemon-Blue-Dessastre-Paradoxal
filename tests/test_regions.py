@@ -38,6 +38,14 @@ class RegionsTest(unittest.TestCase):
             stage.serialize(terrain)
 
     @unittest.skipUnless(shutil.which("ruby"), "Ruby command not available")
+    def test_new_game_region_selection_and_legacy_save_safety(self):
+        result = subprocess.run(
+            ["ruby", str(ROOT / "tests/region_start_runtime.rb"),
+             str(ROOT / "scripts/battle_polish/RegionStart.rb")],
+            capture_output=True, text=True, encoding="utf-8", timeout=20)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    @unittest.skipUnless(shutil.which("ruby"), "Ruby command not available")
     def test_runtime_ring_old_saves_and_travel_rules(self):
         with tempfile.TemporaryDirectory() as temp:
             target = Path(temp)
