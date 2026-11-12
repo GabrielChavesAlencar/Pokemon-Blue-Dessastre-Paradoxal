@@ -1,5 +1,11 @@
 # Editor de músicas
 
+## Biblioteca Kanto organizada no GitHub
+
+As **64 MP3s de Kanto** adicionadas manualmente ao repositório foram reorganizadas com os **mesmos hashes** em `assets/music/kanto/BGM/` (50 faixas de mapa/batalha) e `assets/music/kanto/ME/` (14 vinhetas musicais). A lista completa de utilizações previstas está em [KANTO_MUSICAS_MAPEAMENTO.md](KANTO_MUSICAS_MAPEAMENTO.md).
+
+Para instalá-las na sua cópia local do Decades/Blue, execute na raiz `INSTALAR_MUSICAS_KANTO.bat` ou `py -3 scripts/music/install_kanto_music.py --apply`. O script valida os 64 hashes, evita sobrescrever qualquer áudio preexistente e distribui as faixas em `game/Audio/BGM/Kanto` e `game/Audio/ME/Kanto`. **Não ativa nenhuma música nos mapas automaticamente**; use este editor para selecionar as BGM conforme as áreas e cenas. As músicas de vitória ficam em BGM por compatibilidade com o plugin BlueMusic. O repositório é público e a licença das faixas oficiais precisa ser revisada.
+
 Abra `RUN.bat` e escolha **Editor de ROM → Músicas**. A biblioteca usa os arquivos locais de `game/Audio/BGM`; a prévia não precisa abrir o jogo. Selecione uma faixa e clique **Usar esta faixa**, escolha o destino e clique **Aplicar música**.
 
 Os destinos são batalhas selvagens, treinadores, líderes de ginásio/Mestres de Tipo, músicas de vitória e cada cidade/mapa instalado. Os mapas aparecem com o nome do RPG Maker e seu ID. **Música original do jogo** remove a escolha personalizada; **Sem música** silencia o destino. Faixas personalizadas e sorteios oferecem volume de 0 a 100% e tom/velocidade de 50 a 150%. Reabra o jogo depois de aplicar. Eventos da história que definem explicitamente a próxima música têm prioridade sobre os modos de faixa fixa e silêncio.
