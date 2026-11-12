@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c408b553631b7f540476e7ce365129bf660a7720",
+      "date": "2026-11-12T20:24:08-03:00",
+      "title": "docs(johto): detalha etapa 05 Violet e Falkner com testes e pendências reais",
+      "category": "Documentação"
+    },
+    {
       "sha": "a09dee71c8a480200f0f3abf46aae3486ca18f49",
       "date": "2026-11-12T20:23:21-03:00",
       "title": "test(johto): valida percurso simbólico, badge Zephyr e bloqueios de liberação",
