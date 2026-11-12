@@ -462,13 +462,23 @@ module KantoNativeCheck
     mansion_b1f = map_for.call("Pokémon Mansion B1F")
     $map_factory.setup(cinnabar)
     require!($game_map.events.keys.sort == [1,2,3,4,5], "Cinnabar imported unaudited city events")
-    [[1,"Cinnabar Mart"], [2,"Cinnabar Centro"], [3,"Pokémon Mansion 1F"]].each do |eid, label|
-      target = map_for.call(label)
+    mart_entry = $game_map.events[1]
+    mart_transfer = mart_entry.list.find { |op| op.code == 201 } if mart_entry
+    require!(mart_entry && mart_entry.trigger == 1 && mart_transfer,
+      "Cinnabar Mart does not have a real Player Touch entrance")
+    cinnabar_mart = mart_transfer.parameters[1]
+    require!(cinnabar_mart != cinnabar_center && cinnabar_mart != mansion,
+      "Cinnabar Mart entrance points at the wrong interior")
+    [[2,cinnabar_center], [3,mansion]].each do |eid, target|
       ev = $game_map.events[eid]
       require!(ev && ev.trigger == 1 && ev.list.any? { |op|
         op.code == 201 && op.parameters[1] == target
       }, "Cinnabar city entrance #{eid} is invalid")
     end
+    $map_factory.setup(cinnabar_mart)
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == cinnabar
+    }, "Cinnabar Mart does not return to the city")
     $map_factory.setup(cinnabar_center)
     require!($game_map.events[1].list.any? { |op|
       op.code == 201 && op.parameters[1] == cinnabar
