@@ -24,9 +24,24 @@ DIRECTION = {"North": "South", "South": "North", "West": "East", "East": "West"}
 PILOT_V1_SOURCE_IDS = (5, 6, 7, 9, 10, 11, 12, 18, 19, 20, 24, 25, 28)
 
 
+# Freeze the phase-10 order: earlier saves and map transfers refer to these
+# assigned Kanto IDs. Appending later source maps by their raw numeric order
+# would shift prior ids (e.g. new Saffron gates have source IDs below Fuchsia).
+KANTO_PHASE10_SOURCE_IDS = (
+    5, 6, 7, 9, 10, 11, 12, 18, 19, 20, 24, 25, 28,
+    26, 27, 32, 33, 34, 36, 37, 38, 39, 40, 41,
+    42, 56, 59, 60, 61, 63, 64, 65, 66, 67, 72,
+    74, 75, 76, 77, 78, 111, 114, 115, 117, 118, 119,
+    120, 121, 122, 123, 124, 141, 142, 143, 144, 145, 146,
+    147, 152, 153, 155, 156, 157, 158, 159, 160, 161, 162,
+    163, 164, 165,
+)
+
+
 def stable_source_order(wanted):
-    result = [source for source in PILOT_V1_SOURCE_IDS if source in wanted]
-    result.extend(sorted(set(wanted) - set(PILOT_V1_SOURCE_IDS)))
+    chosen = set(wanted)
+    result = [source for source in KANTO_PHASE10_SOURCE_IDS if source in chosen]
+    result.extend(sorted(chosen - set(KANTO_PHASE10_SOURCE_IDS)))
     return result
 
 
