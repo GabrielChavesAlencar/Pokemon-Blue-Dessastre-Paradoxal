@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f3f68cf5446cfd0b9e189aa62a1a28709d20fa4b",
+      "date": "2026-11-12T07:10:28-03:00",
+      "title": "Fase 08: regressão de slots históricos e equipe real de Lt. Surge",
+      "category": "Melhorias"
+    },
+    {
       "sha": "29b636772a29ec26cc596bc92bdb45cd718ecb4c",
       "date": "2026-11-12T07:08:51-03:00",
       "title": "Fase 08: reconhecer transferência condicional por bilhete até o porto na auditoria de rotas",
