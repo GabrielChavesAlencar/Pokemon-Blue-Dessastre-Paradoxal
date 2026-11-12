@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d8b2ca38b83e126bdbbae8b1b9769e5f4b1eefd5",
+      "date": "2026-11-12T08:59:42-03:00",
+      "title": "Kanto 11: registrar Saffron/Silph como prévia sem eventos e manter duas barras",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a3d5d5e6cb239edf78127637ac02d95b8ca2f907",
+      "date": "2026-11-12T08:59:40-03:00",
+      "title": "Kanto 11: registrar Saffron/Silph como prévia sem eventos e manter duas barras",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0fa3128d6fcee57af303a2303b959bd85fb93c6c",
+      "date": "2026-11-12T08:59:38-03:00",
+      "title": "Kanto 11: registrar Saffron/Silph como prévia sem eventos e manter duas barras",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8e73bb3a2c98efae2c2c134f414a8ddc2d9a7926",
+      "date": "2026-11-12T08:59:35-03:00",
+      "title": "Kanto 11: registrar Saffron/Silph como prévia sem eventos e manter duas barras",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e1896886e06a827270e380f4516da37f47a3c0ec",
       "date": "2026-11-12T08:57:57-03:00",
       "title": "Kanto 11: documentar 30 mapas de Saffron/Silph e eventos deixados para depois",
