@@ -2,6 +2,21 @@
 
 **Status:** disponível como **cópia isolada**, com 25 mapas de Pallet a Cerulean. A CI valida mapas, NPCs, equipes, Misty e salvamento com resultados de batalha simulados. **A jogabilidade interativa ainda depende do seu teste.**
 
+## Opção diretamente no Game.exe principal
+
+Depois de atualizar a `main` e executar a preparação/instalação do Blue para recompilar os plugins, abra **`game/Game.exe`** pela forma habitual. A tela onde ficam os saves terá:
+
+1. **Continuar** (ou o nome do slot de save, se o plugin Auto Multi Save estiver ativo);
+2. **Novo Jogo**;
+3. **Testar Kanto**;
+4. As opções anteriores, como Mystery Gift, Opções e Sair (sem perder funcionalidades).
+
+Ao escolher **Testar Kanto**, o jogo pede confirmação, abre automaticamente o piloto experimental pelo lançador do próprio repositório e **fecha o menu do EXE principal**. O piloto abre em outra janela/processo com um perfil de saves separado: nenhuma rotina de instalação escreve no save original de Decades. O botão reaproveita `KANTO_JOGAR_EXPERIMENTAL.bat`, mas **você não precisa executar esse arquivo manualmente**.
+
+**Pré-requisitos:** execute o Game.exe da pasta `game/` dentro de uma cópia completa do repositório. `KANTO_JOGAR_EXPERIMENTAL.bat` e `scripts/regions/pilot.py` devem estar na pasta anterior; para preparar uma nova cópia do piloto são necessários Python 3.10+, a instalação Blue e a fonte FRLG local descritos abaixo. Se faltar algum item, o EXE mostra uma mensagem e mantém o menu da campanha disponível. A opção não aparece dentro do próprio piloto, para impedir abertura em cadeia.
+
+**Importante:** o botão fica **dentro do EXE principal**, mas por segurança a jogabilidade experimental ocorre na cópia isolada de Kanto. Não foram incorporados arquivos de mapas/terceiros ao binário `Game.exe`, e isso **não é uma fusão de saves**. A terceira posição é exibida quando há um save e, portanto, a opção Continuar; sem save, Novo Jogo vem em primeiro e Testar Kanto em segundo.
+
 ## 1. Abrir com um clique
 
 1. Feche a instalação principal, atualize a `main` e confira que `game/Game.exe` foi preparado com `INSTALAR_JOGO.bat` ou o fluxo de instalação existente.
