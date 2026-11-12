@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a3eee4125c19d4b7332b27b791599499f3c522d1",
+      "date": "2026-11-12T20:03:56-03:00",
+      "title": "feat(johto): prepara novo jogo condicionado a mapa e marcador regional válidos",
+      "category": "Novidades"
+    },
+    {
       "sha": "a365dd23512c343aa7c810cb92e79a47764475ea",
       "date": "2026-11-12T20:02:43-03:00",
       "title": "docs(johto): referencia etapa 03 parcial e controles de mapa/tileset",
