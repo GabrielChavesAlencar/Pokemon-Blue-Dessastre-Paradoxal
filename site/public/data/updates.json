@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "be63029a6ff7cd4348ca612b41063162441cff88",
+      "date": "2026-11-12T08:53:49-03:00",
+      "title": "Auditoria Saffron: inspecionar também interior 173 ligado diretamente à cidade",
+      "category": "Melhorias"
+    },
+    {
       "sha": "91375928a1c7402a0968a4cfd690b6dd85483075",
       "date": "2026-11-12T08:52:26-03:00",
       "title": "Kanto 11: regression de IDs 71 preservados e 29 prévias sem Sabrina",
