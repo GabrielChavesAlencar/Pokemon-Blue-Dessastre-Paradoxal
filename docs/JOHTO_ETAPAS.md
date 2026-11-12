@@ -42,6 +42,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `data/regions/johto-phase05.json` define caminho New Bark → Route 29 → Cherrygrove → Routes 30–31 → Violet e interiores sem alegar MapIDs reais, com `tests/test_johto_phase05_contract.py` validando o contrato.
 - [x] [MD de Violet City/Falkner e critérios de aceite](JOHTO_FASE_05_VIOLET_FALKNER.md).
 - [ ] Montar mapas reais, PBS dos treinadores, transições e jogar o trecho completo no Game.exe isolado; somente então finalizar Etapa 05.
+- [x] **Etapa 06 iniciada:** `scripts/regions/JohtoAzalea.rb` implementa chegada a Azalea, missão do Kurt, dois Rockets, Proton, Bugsy, HIVE e rival com marcadores de PBS isolados.
+- [x] `tests/johto_azalea_runtime.rb` e `tests/test_johto_azalea_runtime.py` verificam pré-requisitos, perdas, vitórias, não duplicação de HIVE/esmeraldas, Cut, save/reload e nenhuma alteração em Kanto/Decades.
+- [x] `data/regions/johto-phase06.json` descreve Route 32 → Union Cave → Route 33 → Azalea, seus interiores e a ligação futura com Ilex Forest, sem fingir MapIDs reais.
+- [x] `tests/test_johto_phase06_contract.py` garante o contrato HIVE/CUT, origem Violet, treinadores previstos e marcadores de integração desativados.
+- [x] [MD de Azalea/Slowpoke Well/Bugsy e critérios de aceite](JOHTO_FASE_06_AZALEA_BUGSY.md).
+- [ ] Conectar mapas e eventos reais de Azalea, Union Cave, Slowpoke Well, Rocket e Ginásio de Bugsy em piloto separado; compilar equipes PBS e testar a jornada dentro do Game.exe.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -54,7 +60,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 03 | Importador isolado e prévia | **PARCIAL**: código e testes sintéticos; pacote, IDs e prévia reais pendentes |
 | 04 | New Bark, casa, Elm e inicial | **PARCIAL**: início condicionado, roteiro de Elm/mãe/iniciais/rival e testes Ruby; eventos ainda sem mapas reais e sem piloto jogável |
 | 05 | Violet e Falkner | **PARCIAL**: lógica de ginásio/Torre Sprout, insígnia e rota simbólica prontas; faltam mapas reais, PBS e gameplay |
-| 06 | Azalea e Bugsy | PENDENTE |
+| 06 | Azalea e Bugsy | **PARCIAL**: arco Kurt/Rocket, Bugsy/HIVE, Cut e rota simbólica com testes; faltam fonte, mapas reais, PBS e gameplay |
 | 07 | Goldenrod e Whitney | PENDENTE |
 | 08 | Ecruteak e Morty | PENDENTE |
 | 09 | Cianwood e Chuck | PENDENTE |
