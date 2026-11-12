@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "10383299a0c6a10e34b2930d6382cf7f69e6e800",
+      "date": "2026-11-12T06:34:28-03:00",
+      "title": "fix(kanto): aceitar pasta do Python portatil com espacos no Windows",
+      "category": "Correções"
+    },
+    {
       "sha": "2ed02a0830a30950afbdaad3d7579867e0548a06",
       "date": "2026-11-12T06:34:07-03:00",
       "title": "feat(kanto): abrir via Blue-Story.exe com Python portatil e baixar fonte FRLG validada",
