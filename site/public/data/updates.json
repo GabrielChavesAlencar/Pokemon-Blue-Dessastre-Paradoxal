@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db05f3646169bba82ada032ba391d66bd22ec0b7",
+      "date": "2026-11-12T07:06:11-03:00",
+      "title": "Fase 08: exigir todos os eventos de lixeiras, portões e quebra-cabeça no verificador",
+      "category": "Melhorias"
+    },
+    {
       "sha": "937091e65b095f1d4814108a18d1c85be8756e66",
       "date": "2026-11-12T07:05:52-03:00",
       "title": "Fase 08: implementar quebra-cabeça elétrico isolado com persistência e reset",
