@@ -89,13 +89,13 @@ module BlueMusic
     false
   end
   def self.kanto_data
-    return [{},{},{},{},{}] unless File.file?(KANTO_PATH)
+    return [{},{},{},{},{},{}] unless File.file?(KANTO_PATH)
     stamp=[File.mtime(KANTO_PATH).to_f,File.size(KANTO_PATH)]
     return @kanto_data if @kanto_stamp==stamp && @kanto_data
     lines=File.readlines(KANTO_PATH)
     header=lines.shift.to_s.chomp.split("\t")
     raise 'Invalid Kanto music version' unless header.length==3 && header[0]=='BLUE_KANTO_MUSIC_V1' && header[1]=='KANTO' && header[2].match?(/\A[0-9a-f]{64}\z/)
-    scope={};maps={};battles={};transports={};defaults={}
+    scope={};maps={};battles={};transports={};defaults={};me_events={}
     lines.each do |line|
       parts=line.chomp.split("\t")
       case parts[0]
@@ -108,6 +108,15 @@ module BlueMusic
         raise 'Invalid Kanto default pool signature' unless parts.length==3 && %w[wild trainer gym].include?(parts[1]) && parts[2].match?(/\A[0-9a-f]{64}\z/)
         raise 'Duplicate default pool signature' if defaults.key?(parts[1])
         defaults[parts[1]]=parts[2]
+      when 'ME'
+        raise 'Invalid Kanto ME binding' unless parts.length==5 &&
+          %w[obtained_pokemon obtained_item healed badge_awarded evolved caught].include?(parts[1]) &&
+          parts[2].start_with?('Kanto/') && parts[2].end_with?('.mp3') &&
+          parts[3].match?(/\A\d+\z/) && parts[4].match?(/\A\d+\z/)
+        raise 'Duplicate Kanto ME event' if me_events.key?(parts[1])
+        volume=parts[3].to_i; pitch=parts[4].to_i
+        raise 'Invalid Kanto ME volume/pitch' unless (0..100).include?(volume) && (50..150).include?(pitch)
+        me_events[parts[1]]=[parts[2],volume,pitch]
       when 'MAP','BATTLE','TRANSPORT'
         raise 'Invalid Kanto BGM binding' unless parts.length==5 && parts[2].start_with?('Kanto/') && parts[3].match?(/\A\d+\z/) && parts[4].match?(/\A\d+\z/)
         id=parts[1]
@@ -130,11 +139,11 @@ module BlueMusic
         raise 'Unknown Kanto music binding'
       end
     end
-    @kanto_data=[scope,maps,battles,transports,defaults]
+    @kanto_data=[scope,maps,battles,transports,defaults,me_events]
     @kanto_stamp=stamp
     @kanto_data
   rescue StandardError
-    [{},{},{},{},{}]
+    [{},{},{},{},{},{}]
   end
   def self.kanto_audio_for(kind,key)
     return nil unless kanto_region?
@@ -223,6 +232,57 @@ module BlueMusic
     kind=kanto_trainer_kind(opponents)
     return nil unless kind
     kind=='gym' ? 'gymVictory' : 'trainerVictory'
+  end
+  # ME uses the native Essentials sound engine (Audio/ME), which pauses and
+  # resumes the already playing map/battle BGM. Never force a new BGM on return.
+  def self.kanto_me_audio(event)
+    return nil unless kanto_battle_scope?
+    row=kanto_data[5][event.to_s]
+    return nil unless row
+    track=row[0]
+    return nil unless track.is_a?(String) &&
+      track.start_with?('Kanto/') &&
+      !track.include?('..') && !track.include?('\\') &&
+      File.file?('Audio/ME/'+track)
+    RPG::AudioFile.new(track,row[1],row[2])
+  end
+  def self.kanto_me_play(event)
+    audio=kanto_me_audio(event)
+    return false unless audio
+    pbMEPlay(audio)
+    true
+  end
+  # Essentials v21.1 plays "Pkmn get" only after capacity was checked and
+  # "Evolution success" only after the evolution could no longer be canceled.
+  # Replacing that one original ME avoids double playback from extra hooks.
+  module NativeME
+    private
+    def pbMEPlay(param, volume=nil, pitch=nil)
+      event=if param.is_a?(String) && volume.nil? && pitch.nil?
+              case param
+              when 'Pkmn get' then 'obtained_pokemon'
+              when 'Evolution success' then 'evolved'
+              end
+            end
+      replacement=event && BlueMusic.kanto_me_audio(event)
+      replacement ? super(replacement) : super(param,volume,pitch)
+    end
+  end
+  # Essentials v21.1 calls pbRecordAndStoreCaughtPokemon after the battle was
+  # decided and clears @caughtPokemon *after* storing. Trigger only on a
+  # successful return and a genuinely non-empty, now-consumed capture list.
+  module CaptureME
+    def pbRecordAndStoreCaughtPokemon(*args)
+      captured=instance_variable_get(:@caughtPokemon)
+      count=captured.is_a?(Array) ? captured.length : 0
+      successful=(count>0 && respond_to?(:wildBattle?) && wildBattle?)
+      result=super(*args)
+      remaining=instance_variable_get(:@caughtPokemon)
+      if successful && remaining.is_a?(Array) && remaining.empty?
+        BlueMusic.kanto_me_play('caught')
+      end
+      result
+    end
   end
   def self.kanto_vehicle_audio
     return nil unless $PokemonGlobal && $game_map
@@ -408,6 +468,10 @@ module BlueMusic
     Game_Map.prepend(MapAudio) unless Game_Map.ancestors.include?(MapAudio)
     Object.prepend(BattleAudio) unless Object.ancestors.include?(BattleAudio)
     Object.prepend(VehicleAudio) unless Object.ancestors.include?(VehicleAudio)
+    Object.prepend(NativeME) unless Object.ancestors.include?(NativeME)
+    if defined?(Battle::CatchAndStoreMixin)
+      Battle::CatchAndStoreMixin.prepend(CaptureME) unless Battle::CatchAndStoreMixin.ancestors.include?(CaptureME)
+    end
     [WildBattle,TrainerBattle].each { |k| k.singleton_class.prepend(EntryScope) unless k.singleton_class.ancestors.include?(EntryScope) }
     BattleCreationHelperMethods.singleton_class.prepend(PrepareMusic) unless BattleCreationHelperMethods.singleton_class.ancestors.include?(PrepareMusic)
     if defined?(BlueBattleLab) && BlueBattleLab.respond_to?(:battle)
