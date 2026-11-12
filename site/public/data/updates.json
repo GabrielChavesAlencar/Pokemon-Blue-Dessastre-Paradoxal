@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5672de519509b864868cbf78c5693c41b4f356ce",
+      "date": "2026-11-12T08:56:46-03:00",
+      "title": "Saffron: incluir Fan Club auditado sem eventos e atualizar regressão dos 101 mapas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "68fcc133e51aba7bf85134262b245c43079c7c25",
+      "date": "2026-11-12T08:56:44-03:00",
+      "title": "Saffron: incluir Fan Club auditado sem eventos e atualizar regressão dos 101 mapas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "149b968b2efba2266ad5bec4a43ab463776259b6",
+      "date": "2026-11-12T08:56:41-03:00",
+      "title": "Saffron: incluir Fan Club auditado sem eventos e atualizar regressão dos 101 mapas",
+      "category": "Melhorias"
+    },
+    {
       "sha": "add4771e2d3020154611e2569d8137b23b48a65f",
       "date": "2026-11-12T08:56:18-03:00",
       "title": "Congelar slots de 100 mapas e adicionar Fan Club sem deslocar saves de Saffron",
