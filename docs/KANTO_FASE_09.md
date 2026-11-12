@@ -1,6 +1,6 @@
 # Kanto — Etapa 09/16: Celadon e Erika
 
-> **Atualização de gameplay (12/11/2026):** a [entrega do 8º núcleo funcional](KANTO_AVANCO_FUNCIONAL_08.md) ativa **somente Celadon City, o Centro Pokémon e o ginásio de Erika**, com portas, enfermeira e oito treinadores. **A CI nativa da revisão atual ainda é requisito de aprovação.** Os outros oito mapas de Celadon continuam sem eventos. **Os dados e condições abaixo descrevem a antiga prévia de terreno** e são mantidos como histórico, não como proibição atual de implementar o núcleo autorizado.
+> **Atualização de gameplay (12/11/2026):** a [entrega do 8º núcleo funcional](KANTO_AVANCO_FUNCIONAL_08.md) ativa **somente Celadon City, o Centro Pokémon e o ginásio de Erika**, com portas, enfermeira e oito treinadores. **[CI Windows 43227499299](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão 43227499314](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314) aprovadas para o núcleo de gameplay parcial.** Os outros oito mapas de Celadon continuam sem eventos. **Barra 1 vigente: 8/16 (50%, faltam 8); Barra 2: 1/16 (6,25%, faltam 15). Os dados e condições abaixo descrevem a antiga prévia de terreno** e são mantidos como histórico, não como proibição atual de implementar o núcleo autorizado.
 
 ## Histórico da primeira entrega de cenário
 
