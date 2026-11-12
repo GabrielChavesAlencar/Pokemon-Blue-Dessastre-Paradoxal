@@ -121,29 +121,31 @@ Dir.mktmpdir('kanto-battle-music-') do |folder|
     assert_music('Kanto mixed doubles with leader',
                  bgm(:pbGetTrainerBattleBGM,[common,leader]),'Kanto/gym.mp3')
     assert_music('Decades trainer type in Kanto preserves native',
-                 bgm(:pbGetTrainerBattleBGM,[foreign]),'native-trainer')
+                 bgm(:pbGetTrainerBattleBGM,[foreign]),'BlueRandom/trainer.mp3')
     assert_music('Kanto gym victory dedicated BGM',
                  bgm(:pbGetTrainerVictoryBGM,[leader]),
                  '../../Audio/BGM/Kanto/gym-win.mp3')
     assert_music('Trainer victory not gym',
                  bgm(:pbGetTrainerVictoryBGM,[common]),
                  '../../Audio/BGM/Kanto/trainer-win.mp3')
+    assert_music('Foreign trainer victory remains native',
+                 bgm(:pbGetTrainerVictoryBGM,[foreign]),'native-trainer-win')
     assert_music('Wild victory',
                  bgm(:pbGetWildVictoryBGM,[]),
                  '../../Audio/BGM/Kanto/wild-win.mp3')
     BlueKantoPilot.league_active=true
     assert_music('Champion type outside Hall of Fame is not final',
-                 bgm(:pbGetTrainerBattleBGM,[champion]),'native-trainer')
+                 bgm(:pbGetTrainerBattleBGM,[champion]),'BlueRandom/trainer.mp3')
     $game_map.map_id=702
     assert_music('Blue League champion uses 1-70',
                  bgm(:pbGetTrainerBattleBGM,[champion]),'Kanto/champion.mp3')
     BlueKantoPilot.league_active=false
     assert_music('Champion with inactive League is not final',
-                 bgm(:pbGetTrainerBattleBGM,[champion]),'native-trainer')
+                 bgm(:pbGetTrainerBattleBGM,[champion]),'BlueRandom/trainer.mp3')
     BlueKantoPilot.league_active=true
     $game_map.map_id=703
     assert_music('Preview map gets no Kanto BGM',
-                 bgm(:pbGetTrainerBattleBGM,[common]),'native-trainer')
+                 bgm(:pbGetTrainerBattleBGM,[common]),'BlueRandom/trainer.mp3')
     $game_map.map_id=701
     # User-modified random list, volume and custom choice must never become
     # Kanto defaults. No writing to blue-music.rxdata or any save occurs.
