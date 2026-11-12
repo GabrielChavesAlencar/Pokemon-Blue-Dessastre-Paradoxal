@@ -1,6 +1,6 @@
-# Kanto — jogar e testar fases 07 a 10 no Windows (experimental)
+# Kanto — jogar e testar fases 07 a 11 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **11 prévias sem eventos em Celadon** e **20 prévias sem eventos em Fuchsia/Safari** (71 no catálogo). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **11 prévias sem eventos em Celadon**, **20 prévias sem eventos em Fuchsia/Safari** e **30 prévias sem eventos em Saffron/Silph Co.** (101 no catálogo). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
 
 ## Opção diretamente no Game.exe principal
 
@@ -66,6 +66,18 @@ A [prévia da fase 09](KANTO_FASE_09.md) adiciona **11 mapas** (total **51**) pa
 - [ ] Verificar tilesets, coordenadas e limites do ginásio, Centro Pokémon e loja 1F.
 - [ ] Confirmar que as cenas novas estão vazias e não alteram saves, equipe, insígnias ou os 40 mapas anteriores.
 - [ ] Registrar pontos com colisão/passabilidade ruim para retomar junto à análise de eventos.
+
+## Fase 11 — Saffron City, Sabrina e Silph Co. (prévia sem eventos)
+
+Os [30 novos cenários](KANTO_FASE_11.md) incluem Saffron e portarias, Rota 8, Dojo, Fan Club, ginásio de Sabrina e os 11 andares da Silph Co. (**101 mapas no total; 61 somente cenário**). Foram acrescentados dez atalhos de acesso pelo menu de pausa de Testar Kanto: Rota 8, portaria oeste, Saffron City, ginásio Sabrina, Fighting Dojo, Centro Pokémon, Silph Co. 1F/5F/11F e elevador (41 atalhos no total).
+
+**Nesta prévia os novos cenários não contêm NPCs, Rocket, batalhas, teletransportadores, elevador funcional, Card Key, Marsh Badge, lojas ou eventos de porta.** Os atalhos servem apenas para inspecionar terrenos e coordenadas sem tocar no save Decades. Não relatar como aprovado o que não foi testado no Windows interativo.
+
+- [ ] Conferir visual/tileset de Saffron City, Rota 8, ginásio Sabrina, Dojo e Silph Co.
+- [ ] Conferir pontas dos corredores, colisões e posições dos dez destinos; nenhum deles concede itens ou insígnias.
+- [ ] Confirmar que a instalação e os saves de Decades permanecem sem alterações.
+- [ ] Registrar visualmente a passabilidade dos andares da Silph e os limites de seus teletransportadores (ainda inativos).
+- [ ] Adiar os eventos até revisão específica e testar cada um por ida/volta, batalha, reload e derrota.
 
 ## Fase 10 — Fuchsia, Koga e Safari Zone (prévia sem eventos)
 
