@@ -84,6 +84,11 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
             raise ValueError("Map209 received unofficial/mixed encounter probabilities")
 
     species = {mon["id"] for mon in dex["species"]}
+    # The editable FRLG kit uses mixed-case PBS IDs NIDORANfE/NIDORANmA;
+    # the public Pokédex stores NIDORANFE/NIDORANMA. This is a DISPLAY
+    # alias only: never rewrite Pokémon species in native PBS or saves.
+    normalize_species = lambda value: value.upper()
+    display_species = {normalize_species(ident) for ident in species}
     if len(species) != len(dex["species"]):
         raise ValueError("Duplicate species in Pokédex")
     trainer_ids = {item["id"] for item in site["trainers"]}
@@ -110,7 +115,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
             if not variant["team"]:
                 raise ValueError("Empty trainer party")
             for pokemon in variant["team"]:
-                if pokemon["species"] not in species:
+                if normalize_species(pokemon["species"]) not in display_species:
                     raise ValueError("Pokémon not in site Pokédex: " + pokemon["species"])
                 if not 1 <= pokemon["level"] <= 100:
                     raise ValueError("Invalid trainer Pokémon level")
@@ -132,7 +137,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
                 raise ValueError(f"Chances not normalized to 100: {loc['id']}")
             for slot in method["slots"]:
                 encounter_species.add(slot["species"])
-                if slot["species"] not in species:
+                if normalize_species(slot["species"]) not in display_species:
                     raise ValueError(f"Wild Pokémon absent from site's Pokédex: {slot['species']}")
                 if (slot["weight"] <= 0 or
                     not 1 <= slot["min"] <= slot["max"] <= 100):
