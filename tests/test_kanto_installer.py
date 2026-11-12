@@ -33,6 +33,55 @@ class KantoInstallerTest(unittest.TestCase):
                  Path("Data/Map300.rxdata"): src / "map-300"}
         return root, game, src, files
 
+    def test_four_trainer_portraits_are_mandatory_and_not_general_graphics(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            graphics = root / "Graphics/Trainers"
+            graphics.mkdir(parents=True)
+            with self.assertRaisesRegex(ValueError, "Missing or invalid"):
+                installer.trainer_portraits(root)
+            for name in installer.PORTRAITS:
+                (graphics / name).write_bytes(b"\x89PNG\r\n\x1a\n" + name.encode())
+            portraits = installer.trainer_portraits(root)
+            self.assertEqual(len(portraits), 4)
+            self.assertEqual(set(p.name for p in portraits), set(installer.PORTRAITS))
+
+    def test_existing_kanto_install_can_repair_missing_portraits_only(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root, game, src, files = self.with_game(folder)
+            (game / installer.MARKER).write_text("installed")
+            install_manifest = game / "Data/blue-kanto-install.json"
+            install_manifest.write_text('{"schema":1,"installed_sha256":{}}')
+            graphics = game / "Graphics/Trainers"
+            graphics.mkdir(parents=True)
+            for kind, base in installer.TYPES.items():
+                (graphics / f"{base}.png").write_bytes(b"\x89PNG\r\n\x1a\n" + base.encode())
+            with mock.patch.object(installer, "ROOT", root):
+                preview = installer.repair_portraits(game, False)
+                self.assertEqual(len(preview["missing_portraits"]), 4)
+                self.assertEqual(installer.repair_portraits(game, True)["status"], "repaired")
+                self.assertEqual(installer.repair_portraits(game, True)["status"], "already_correct")
+            self.assertEqual((game / "Data/MapInfos.rxdata").read_bytes(), b"original maps")
+            self.assertEqual((game / "Data/Tilesets.rxdata").read_bytes(), b"original tiles")
+            self.assertEqual((game / "saves/old.rxdata").read_bytes(), b"precious save")
+            self.assertEqual(len(list(graphics.glob("BLUE_KANTO_*.png"))), 4)
+            data = __import__("json").loads(install_manifest.read_text())
+            self.assertEqual(len(data["installed_sha256"]), 4)
+
+    def test_portrait_repair_does_not_overwrite_user_edited_image(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root, game, src, files = self.with_game(folder)
+            (game / installer.MARKER).write_text("installed")
+            (game / "Data/blue-kanto-install.json").write_text('{"schema":1}')
+            graphics = game / "Graphics/Trainers"
+            graphics.mkdir(parents=True)
+            for kind, base in installer.TYPES.items():
+                (graphics / f"{base}.png").write_bytes(b"\x89PNG\r\n\x1a\n" + base.encode())
+            (graphics / "BLUE_KANTO_RIVAL.png").write_bytes(b"\x89PNG\r\n\x1a\ncustom")
+            with self.assertRaisesRegex(ValueError, "refusing to overwrite"):
+                installer.repair_portraits(game, True)
+            self.assertFalse((graphics / "BLUE_KANTO_CAMPER.png").exists())
+
     def test_dry_run_never_writes_into_game(self):
         with tempfile.TemporaryDirectory() as folder:
             root, game, src, files = self.with_game(folder)
