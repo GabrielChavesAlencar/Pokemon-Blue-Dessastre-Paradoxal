@@ -2,6 +2,8 @@
 
 **Registro histórico da reavaliação:** esta análise documenta a passagem de 8/16 para 6/16 com base nas evidências disponíveis naquele instante. **O progresso mais recente foi atualizado para 7/16 (43,75%; faltam 9 passos) e 1/16 (6,25%; faltam 15 passos)** após a [entrega funcional do pacote de Oak e testes de portas](KANTO_AVANCO_FUNCIONAL_07.md) e [CI Windows 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441). As tabelas de 6/16 abaixo permanecem preservadas **como fotografia anterior, não como status vigente**.
 
+**Atualização posterior (8º núcleo funcional):** [etapa 09 — Celadon/Erika](KANTO_AVANCO_FUNCIONAL_08.md) aprovada na CI 43227499299 e regressão 43227499314. O progresso **vigente** passou a **8/16 (50%, faltam 8 núcleos)**, mantendo **1/16 (6,25%, faltam 15 aceites)**; as tabelas 6/16 deste documento permanecem como registro histórico e **não descrevem o estado atual**.
+
 ## Barras reavaliadas
 
 **Barra 1 — Desenvolvimento funcional com núcleo comprovado:** **6/16 (37,5%) — faltam 10 etapas** para alcançar 16/16 com núcleo implementado.
