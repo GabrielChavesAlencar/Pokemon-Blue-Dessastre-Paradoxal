@@ -1,5 +1,10 @@
 # Kanto — Fase 10/16: Fuchsia City, Safari Zone e Koga
 
+> **Atualização funcional posterior (12/11/2026):** [9º núcleo de Kanto](KANTO_AVANCO_FUNCIONAL_09.md) **aprovado** na [CI nativa 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342): **Fuchsia City, Centro, Mart, Ginásio de Koga e Safari Gate** agora possuem eventos locais seguros. **15 áreas restantes de Fuchsia/Safari ainda são cenário `preview_only`; o portão não libera ingresso ou captura.** Estado atual **Barra 1 9/16 (56,25%, faltam 7); Barra 2 1/16 (6,25%, faltam 15)**. O conteúdo abaixo é o **registro histórico da primeira prévia de geometria**, não a descrição do estado presente.
+
+## Histórico da preparação da fase 10
+
+
 **Data:** 12/11/2026. **Escopo desta entrega:** prévia de mapas/tilesets apenas; nada de eventos, treinadores, encontros, itens, HMs, recompensas, história ou batalha de Koga.
 
 A análise de eventos do FireRed está documentada em [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md) e no [estudo de eventos](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md). Essa referência **não equivale a eventos instalados**. A expansão dos terrenos preserva os mapas anteriores e a jogabilidade da base Decades em uma cópia de testes.
