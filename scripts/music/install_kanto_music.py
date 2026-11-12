@@ -134,9 +134,12 @@ def install(game: Path, *, apply: bool = False,
                 raise FileExistsError("Destino mudou durante a instalacao: " + str(destination))
             # Use an exclusive new-file create rather than overwrite existing
             # audio in a race with another editor or import process.
-            with destination.open("xb") as out, temp.open("rb") as file:
-                shutil.copyfileobj(file, out, length=1024*1024)
-            installed.append(destination)
+            with destination.open("xb") as out:
+                # Track the newly created path immediately, including failures
+                # halfway through the transfer, so rollback removes partial MP3s.
+                installed.append(destination)
+                with temp.open("rb") as file:
+                    shutil.copyfileobj(file, out, length=1024*1024)
             if git_blob_sha(destination) != git_blob_sha(temp):
                 raise OSError("Falha ao conferir musica instalada: " + str(destination))
     except BaseException:
