@@ -150,7 +150,52 @@ def inspect(game: Path) -> dict:
     if nurse_scripts != ["BlueKantoPilot.heal"]:
         raise ValueError("Celadon Center must use exactly the local heal callback")
 
-    # MAN-02: the source-proven 57 line-of-sight trainers require Event Touch,
+    # Stage 10: restricted Fuchsia gameplay core. Warden, Safari South,
+    # Gold Teeth, encounters and the 15 protected Fuchsia maps stay untouched.
+    fuchsia = {
+        144: {5, 17, 18, 24},           # City to gym/Center/Mart/Safari gate
+        145: {1, 2},                   # Center exit + nurse
+        146: {1, 2},                   # Mart exit + licensed generic Mart
+        147: {3, 4, 5, 6, 7, 8, 9, 11},  # Six trainers, Koga, gym exit
+        153: {1, 2, 5},                # Gate counter/guide (not admission), exit
+    }
+    for origin, allowed in fuchsia.items():
+        found_ids = set(maps[mapping[origin]].attrs["@events"])
+        if found_ids != allowed:
+            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ allowed}")
+    fuchsia_returns = (
+        (144, 5, 147, 9),
+        (144, 17, 145, 1),
+        (144, 18, 146, 1),
+        (144, 24, 153, 2),
+    )
+    for exterior, entry, interior, leave in fuchsia_returns:
+        if mapping[interior] not in event_transfers(exterior, entry):
+            raise ValueError(f"Fuchsia {exterior}/{entry} missing doorway to {interior}")
+        if mapping[exterior] not in event_transfers(interior, leave):
+            raise ValueError(f"Fuchsia {interior}/{leave} missing return to {exterior}")
+        exterior_event = maps[mapping[exterior]].attrs["@events"][entry]
+        if exterior_event.attrs["@pages"][0].attrs["@trigger"] != 1:
+            raise ValueError("Fuchsia city entrances must trigger when walked into")
+    for origin, eid, script in ((145, 2, "BlueKantoPilot.heal"),
+                                (146, 2, "pbPokemonMart"),
+                                (153, 1, "BlueKantoPilot.safari_preview"),
+                                (153, 5, "BlueKantoPilot.safari_preview")):
+        found_scripts = [
+            text(op.attrs["@parameters"][0])
+            for op in maps[mapping[origin]].attrs["@events"][eid].attrs["@pages"][0].attrs["@list"]
+            if op.attrs["@code"] in (355, 655) and op.attrs["@parameters"]
+        ]
+        if len(found_scripts) != 1 or script not in found_scripts[0]:
+            raise ValueError(f"Fuchsia {origin}/{eid}: unsafe shop/nurse/gate callback")
+    for event in maps[mapping[153]].attrs["@events"].values():
+        for page in event.attrs["@pages"]:
+            for op in page.attrs["@list"]:
+                args = op.attrs["@parameters"]
+                if op.attrs["@code"] == 201 and len(args) > 1 and args[1] == mapping[155]:
+                    raise ValueError("Safari admission must not bypass the unimplemented session and catch rules")
+
+    # MAN-02: the source-proven 63 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -185,7 +230,7 @@ def inspect(game: Path) -> dict:
                 sight_count += 1
                 if "pbNoticePlayer(get_self)" not in script:
                     raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 57:
+    if sight_count != 63:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -338,6 +383,10 @@ def inspect(game: Path) -> dict:
         "celadon_verified_return_pairs": 2,
         "erika_roster_events": len(TRAINERS.get(124, {})),
         "phase10_geometry_only": len(preview_only & {141,142,143,144,145,146,147,152,153,155,156,157,158,159,160,161,162,163,164,165}),
+        "fuchsia_functional_maps": len(set(fuchsia) - preview_only),
+        "fuchsia_bidirectional_core_doors": len(fuchsia_returns),
+        "fuchsia_gym_battle_events": len(TRAINERS[147]),
+        "safari_admission_blocked": True,
         "phase11_geometry_only": len(preview_only & {57,62,107,108,109,110,112,113,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189}),
         "preview_event_count": sum(len(maps[mapping[source]].attrs["@events"])
                                    for source in preview_only),
@@ -351,7 +400,7 @@ def inspect(game: Path) -> dict:
         "required_events": len(found),
         "experimental_stops": len(seen_stops),
         "route": [expected[source] for source in route],
-        "limitations": "Celadon City, Center and Erika Gym have a limited experimental gameplay core with selective events; the other 58 preview maps stay empty. Rocket/Game Corner, full Celadon story, Fuchsia, Saffron, Safari and all interactive manual QA remain pending.",
+        "limitations": "Celadon and Fuchsia City/Center/Gym plus Fuchsia Mart and Safari Gate have limited selective gameplay. Remaining 53 preview maps include ALL Safari capture areas, Warden, Fuchsia approaches and Saffron; Safari admission/capture, Gold Teeth, Surf/Strength and interactive Windows/JoiPlay QA remain pending.",
     }
 
 
