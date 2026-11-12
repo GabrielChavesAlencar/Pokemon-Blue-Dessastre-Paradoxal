@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a93be4b95d7429d5479a813adca573dc87b47321",
+      "date": "2026-11-12T10:27:38-03:00",
+      "title": "Teste nativo Celadon: aceitar PC dinâmico de Essentials sem permitir source events indevidos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "76dd57232f1042550da23aaf972b90e5149427ef",
       "date": "2026-11-12T10:26:49-03:00",
       "title": "docs: registrar ativação seletiva do núcleo de Erika sem reescrever histórico da prévia",
