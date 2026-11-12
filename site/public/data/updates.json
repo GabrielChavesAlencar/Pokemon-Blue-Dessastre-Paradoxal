@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b5972b9431891ff4145a93e55c3fcbfe2ae9d63b",
+      "date": "2026-11-12T09:37:39-03:00",
+      "title": "Kanto MAN-01: publicar 8 novos interiores e preservar 54 treinadores no portal",
+      "category": "Novidades"
+    },
+    {
       "sha": "54c410269067c7496360cf5235642f54fc5abb4c",
       "date": "2026-11-12T09:37:09-03:00",
       "title": "Kanto: acompanhar MAN-01/02 funcionais, QA real e preservar duas barras",
