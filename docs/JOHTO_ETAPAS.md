@@ -53,6 +53,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `data/regions/johto-phase07.json` define trajeto simbólico Azalea → Ilex → Route 34 → Goldenrod, incluindo interiores, sem MapIDs fictícios ou integração prematura; contrato testado em `tests/test_johto_phase07_contract.py`.
 - [x] [MD da Etapa 07 e critérios de aceitação](JOHTO_FASE_07_ILEX_GOLDENROD_WHITNEY.md).
 - [ ] Importar mapas reais de Ilex/Goldenrod, modelar movimentação dos Farfetch'd, compilar PBS, conectar NPCs e testar Whitney e save no Game.exe isolado.
+- [x] **Etapa 08 iniciada:** `scripts/regions/JohtoEcruteak.rb` prepara Rotas 35–37, National Park introdutório, bloqueio de Sudowoodo, Burned Tower, rival, despertar simbólico, Rocket do Dance Theater, Morty/FOG e Surf local.
+- [x] `tests/johto_ecruteak_runtime.rb` e `tests/test_johto_ecruteak_runtime.py` validam derrotas, vitórias, itens, FOG única, Surf, save/reload e ausência de efeitos em Kanto/Decades.
+- [x] `data/regions/johto-phase08.json` descreve a topologia planejada Goldenrod → Rota 35 → Rota 36 → Rota 37 → Ecruteak, National Park, torres e interiores sem alegar MapIDs reais.
+- [x] `tests/test_johto_phase08_contract.py` protege o contrato de FOG/SURF e o estado não integrado, mantendo competições/lendários como pendências explícitas.
+- [x] [MD da Etapa 08 e critérios de aceitação](JOHTO_FASE_08_ECRUTEAK_MORTY.md).
+- [ ] Implantar mapas originais validados, rotas físicas, National Park, Burned Tower, treinadores PBS, prêmio Surf real e testar Morty no piloto executável isolado.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -67,7 +73,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 05 | Violet e Falkner | **PARCIAL**: lógica de ginásio/Torre Sprout, insígnia e rota simbólica prontas; faltam mapas reais, PBS e gameplay |
 | 06 | Azalea e Bugsy | **PARCIAL**: arco Kurt/Rocket, Bugsy/HIVE, Cut e rota simbólica com testes; faltam fonte, mapas reais, PBS e gameplay |
 | 07 | Goldenrod e Whitney | **PARCIAL**: Ilex/Farfetch'd, Cut, Rádio, Whitney/PLAIN e mapa simbólico programados; faltam mapas reais, PBS e gameplay |
-| 08 | Ecruteak e Morty | PENDENTE |
+| 08 | Ecruteak e Morty | **PARCIAL**: eventos das rotas, Burned Tower, rival, Rocket, FOG/Surf e topologia simbólica; faltam fonte, mapas, PBS e gameplay |
 | 09 | Cianwood e Chuck | PENDENTE |
 | 10 | Olivine e Jasmine | PENDENTE |
 | 11 | Mahogany, Rocket e Pryce | PENDENTE |
