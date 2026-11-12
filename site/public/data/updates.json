@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "58652c0c4c31a2b07b82081da2af7c672fced6f5",
+      "date": "2026-11-12T08:22:37-03:00",
+      "title": "Kanto fase 10: testar 71 mapas, Safari sem eventos e Soul bloqueada",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "55904ae924c2ebf0579a755d624bd26386cfe8bb",
+      "date": "2026-11-12T08:22:35-03:00",
+      "title": "Kanto fase 10: testar 71 mapas, Safari sem eventos e Soul bloqueada",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4045d15d6e5c638befb7a61ae3684fc1d7ed2a5e",
       "date": "2026-11-12T08:22:00-03:00",
       "title": "Kanto fase 10: integrar preview de Fuchsia, Safari, 31 atalhos e nenhum evento",
