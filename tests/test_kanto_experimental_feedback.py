@@ -81,6 +81,35 @@ class KantoExperimentalFeedbackTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,"Plataforma ou seção"):
                     kanto_feedback.write_report({},"",root/".blue-work",platform="unknown")
 
+    def test_walk_scope_is_isolated_and_requires_real_observations(self):
+        import json
+        route_keys = {key for key, _ in kanto_feedback.SECTIONS["caminhada"]}
+        self.assertEqual(len(route_keys), 13)
+        self.assertIn("walk_home_stairs", route_keys)
+        self.assertIn("walk_forest", route_keys)
+        self.assertIn("walk_moon", route_keys)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with patch.object(kanto_feedback, "ROOT", root):
+                report = kanto_feedback.write_report(
+                    {"walk_home_stairs": "pass", "walk_route1": "fail"},
+                    "Porta da Rota 1 nao abre; verificar mapa e coordenadas",
+                    root / ".blue-work" / "kanto-gui-reports",
+                    scope="caminhada",
+                    platform="windows",
+                )
+                text = report.read_text("utf-8")
+                companion = json.loads(report.with_suffix(".json").read_text("utf-8"))
+                self.assertIn("### Caminhada", text)
+                self.assertIn("Porta da Rota 1 nao abre", text)
+                self.assertEqual(companion["checks"]["walk_home_stairs"], "pass")
+                self.assertEqual(companion["checks"]["walk_route1"], "fail")
+                self.assertEqual(companion["checks"]["elite"], "not_tested")
+                self.assertFalse(companion["summary"]["accepted_integrally"])
+                self.assertTrue(companion["summary"]["manual_review_required"])
+                self.assertEqual(companion["summary"]["passed_reported"], 1)
+                self.assertEqual(companion["summary"]["failed_reported"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
