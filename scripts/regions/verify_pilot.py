@@ -392,7 +392,8 @@ def inspect(game: Path) -> dict:
             script = "\\n".join(value.decode("utf-8") if isinstance(value, bytes)
                                   else str(value) for value in commands)
             key = f"KANTO_{original:03d}_{event_id:03d}"
-            if ("BlueKantoPilot.battle(" not in script or
+            if (not ("BlueKantoPilot.battle(" in script or
+                     "BlueKantoPilot.cinnabar_trainer(" in script) or
                 f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
                 raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
             if sight:
