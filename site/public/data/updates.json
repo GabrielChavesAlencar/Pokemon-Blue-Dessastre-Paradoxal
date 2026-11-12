@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a0126e0a641bd2f77d41ff4d8797a5fef301372d",
+      "date": "2026-11-12T10:37:24-03:00",
+      "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "b5cc5000fc6c766e93705abb743cffbbce7a8227",
+      "date": "2026-11-12T10:37:21-03:00",
+      "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "0be25b1700fe64c48944b19077f9e54cf2a40081",
+      "date": "2026-11-12T10:37:18-03:00",
+      "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "de0022255735f10f20cf09af6ae7ae9dc7cc5974",
+      "date": "2026-11-12T10:37:15-03:00",
+      "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "e383101ec4416b2fd5df0bea10b36ef39ea14b54",
+      "date": "2026-11-12T10:37:12-03:00",
+      "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
+      "category": "Documentação"
+    },
+    {
       "sha": "fbbd8ab0ed8651675deb9119eece7e47808935ec",
       "date": "2026-11-12T10:36:07-03:00",
       "title": "Kanto Celadon: substituir status pendente por CI nativa aprovada e registrar duas barras",
