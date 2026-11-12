@@ -27,7 +27,7 @@ module KantoNativeCheck
     }, "Player Home door cannot be entered from Pallet")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 43 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 52 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
@@ -35,7 +35,10 @@ module KantoNativeCheck
              labels.any? { |row| row.include?("Koga") } &&
              labels.any? { |row| row.include?("Safari Zone") } &&
              labels.any? { |row| row.include?("Sabrina") } &&
-             labels.any? { |row| row.include?("Silph Co.") },
+             labels.any? { |row| row.include?("Silph Co.") } &&
+             labels.any? { |row| row.include?("Cinnabar") } &&
+             labels.any? { |row| row.include?("Blaine") } &&
+             labels.any? { |row| row.include?("Mansion") },
              "Experimental Kanto phase 11 Saffron/Silph destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
              "Pilot pointed at Decades save directory")
@@ -53,7 +56,7 @@ module KantoNativeCheck
     # Supply the choice and battle results so the compiler can run without a user.
     Object.send(:define_method, :pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     battle_calls = []
-    losses_remaining = { "Doug" => 1, "Erika" => 1, "Koga" => 1, "Giovanni" => 1, "Sabrina" => 1 }
+    losses_remaining = { "Doug" => 1, "Erika" => 1, "Koga" => 1, "Giovanni" => 1, "Sabrina" => 1, "Blaine" => 1 }
     TrainerBattle.define_singleton_method(:start) do |type, name, version = 0|
       data = GameData::Trainer.get(type, name, version)
       battle_calls << [type, name, version]
@@ -445,6 +448,75 @@ module KantoNativeCheck
     require!(battle_calls.count { |row| row[1]=="Sabrina" }==2,
       "Sabrina battle repeated after Marsh")
     
+    # Phase 12: Cinnabar Island/Center/Mart/Gym/Mansion in the isolated game.
+    # The battle runner simulates victory and defeat; it does not assert visual QA.
+    ["Rota 19", "Rota 20", "Seafoam 1F"].each do |label|
+      id = map_for.call(label)
+      $map_factory.setup(id)
+      require!($game_map.events.empty?, "Phase 12 ocean/Seafoam preview imported foreign events")
+    end
+    cinnabar = map_for.call("Cinnabar Island")
+    cinnabar_gym = map_for.call("Ginasio Cinnabar Blaine")
+    cinnabar_center = map_for.call("Cinnabar Centro")
+    mansion = map_for.call("Pokémon Mansion 1F")
+    mansion_b1f = map_for.call("Pokémon Mansion B1F")
+    $map_factory.setup(cinnabar)
+    require!($game_map.events.keys.sort == [1,2,3,4,5], "Cinnabar imported unaudited city events")
+    [[1,"Cinnabar Mart"], [2,"Cinnabar Centro"], [3,"Pokémon Mansion 1F"]].each do |eid, label|
+      target = map_for.call(label)
+      ev = $game_map.events[eid]
+      require!(ev && ev.trigger == 1 && ev.list.any? { |op|
+        op.code == 201 && op.parameters[1] == target
+      }, "Cinnabar city entrance #{eid} is invalid")
+    end
+    $map_factory.setup(cinnabar_center)
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == cinnabar
+    }, "Cinnabar Center cannot return to the city")
+    $map_factory.setup(mansion)
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == cinnabar
+    }, "Cinnabar Mansion has no exit")
+    require!($game_map.events[4].list.any? { |op|
+      op.code == 355 && op.parameters[0].include?("mansion_switch")
+    }, "Cinnabar Mansion statue still uses original switches")
+    $map_factory.setup(cinnabar_gym)
+    require!(!$game_self_switches[[cinnabar_gym, 20, "A"]],
+      "Blaine quiz door was unlocked before any action")
+    require!(!BlueKantoPilot.progress["pilot_cinnabar_secret_key"],
+      "Secret Key was granted before reaching the Mansion")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_BLAINE, "Blaine", "KANTO_202_016")
+    require!(battle_calls.none? { |row| row[1] == "Blaine" },
+      "Blaine could be fought without the Secret Key")
+    $map_factory.setup(mansion_b1f)
+    BlueKantoPilot.mansion_secret_key
+    require!(BlueKantoPilot.progress["pilot_cinnabar_secret_key"] &&
+             $game_self_switches[[mansion_b1f, 8, "A"]],
+      "Secret Key was not recorded as a unique local event")
+    BlueKantoPilot.mansion_secret_key
+    require!(BlueKantoPilot.progress["pilot_cinnabar_secret_key"],
+      "Secret Key disappeared after revisiting the pickup")
+    $map_factory.setup(cinnabar_gym)
+    BlueKantoPilot.cinnabar_quiz(1)
+    require!(BlueKantoPilot.progress.fetch("pilot_cinnabar_doors", []).include?(1) &&
+             $game_self_switches[[cinnabar_gym, 20, "A"]],
+      "The first Blaine quiz failed to open its linked door group")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("VOLCANO"),
+      "Volcano Badge was granted before Blaine's battle")
+    blaine = GameData::Trainer.get(:BLUE_KANTO_LEADER_BLAINE, "Blaine")
+    require!(blaine.pokemon.length >= 2, "Blaine's original PBS team is missing")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_BLAINE, "Blaine", "KANTO_202_016")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("VOLCANO"),
+      "Blaine defeat granted Volcano Badge")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_BLAINE, "Blaine", "KANTO_202_016")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("VOLCANO"),
+      "Blaine victory did not grant Volcano Badge")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_202_016", "Blaine", 16),
+      "Blaine victory was not attached to his map/event key")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_BLAINE, "Blaine", "KANTO_202_016")
+    require!(battle_calls.count { |row| row[1] == "Blaine" } == 2,
+      "Blaine battle could be repeated after earning Volcano Badge")
+
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
     $map_factory.setup(lab)
@@ -454,7 +526,7 @@ module KantoNativeCheck
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL","MARSH"],
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL","MARSH","VOLCANO"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
@@ -464,6 +536,10 @@ module KantoNativeCheck
               "Silph Card Key/boss progress lost after reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_171_002"),
               "Sabrina victory did not persist")
+    require!(BlueKantoPilot.progress["pilot_cinnabar_secret_key"] &&
+             BlueKantoPilot.progress.fetch("pilot_cinnabar_doors", []).include?(1) &&
+             BlueKantoPilot.progress["pilot_wins"].include?("KANTO_202_016"),
+             "Cinnabar Secret Key, gym door and Blaine did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_147_011"),
              "Koga victory did not persist through save/reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
@@ -472,6 +548,6 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 109 maps: six badges incl Sabrina, 94 sight trainers, Saffron/Silph local doors, no Safari entry, save/reload verified (battles simulated)")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 126 maps: seven badges incl Blaine, Cinnabar Secret Key/Mansion/quiz, ocean previews protected, save/reload verified (battles simulated)")
   end
 end
