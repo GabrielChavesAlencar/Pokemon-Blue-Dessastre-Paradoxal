@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fd7e0786c21eeb74c29b83bfddf0762459e31285",
+      "date": "2026-11-11T22:14:11-03:00",
+      "title": "docs(kanto): relacionar piloto isolado ao seletor e importador opt-in",
+      "category": "Documentação"
+    },
+    {
       "sha": "7bbe1c6b2c4cd8fbfbd4aaa212d2545e61620d5b",
       "date": "2026-11-11T22:13:35-03:00",
       "title": "fix(kanto): reconhecer instalacao ja integrada e evitar confirmacao repetida",
