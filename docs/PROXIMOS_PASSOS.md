@@ -2,6 +2,15 @@
 
 **Comece pela etapa 1.** O piloto de Kanto já compila e recarrega um save no teste nativo, mas o percurso completo com os controles ainda precisa ser jogado. Esse teste decide se o piloto está pronto para servir de base às próximas regiões.
 
+## Especificações de referência — regras já definidas
+
+As decisões funcionais do circuito regional, balanceamento, pós-jogo, regras locais, viagens e preservação de saves **já estão especificadas** nos documentos abaixo. Este roteiro acompanha a implementação e a validação; **não substitui nem redefine** essas decisões.
+
+- [Plano de regiões Dessastre v2 — especificação funcional principal](PLANO_REGIOES_DESSASTRE_V2.md): escolha da região inicial, duas regiões vizinhas por Liga, integração com esmeraldas e balanceamento atuais, pós-jogo após dez Ligas, classificação/bloqueio de especiais, NPC de transporte, HMs/montarias regionais, saves e testes.
+- [Estudo de fangames e todas as regiões — referência técnica](ESTUDO_FANGAME_TODAS_AS_REGIOES_POKEMON.md): levantamento de fontes, licenças, importação modular de mapas e eventos, remapeamento de IDs, compatibilidade do Essentials e critérios de validação.
+
+Se houver diferença entre uma sugestão exploratória do estudo e uma decisão explícita do Plano v2, usar a decisão do Plano v2. O estado do código deve ser verificado separadamente: documentação de regra não equivale a funcionalidade implementada.
+
 ## Ponto de partida
 
 - [x] Decades é a campanha principal. O menu **Circuito de Regiões** reconhece o encerramento de Decades em saves existentes. As regras de progresso regional, viagem e pós-jogo já têm uma base em [`Regions.rb`](../scripts/battle_polish/Regions.rb).
