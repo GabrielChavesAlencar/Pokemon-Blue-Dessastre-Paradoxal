@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5943b441b7e4b53c2878bffccdd8200e0e110d55",
+      "date": "2026-11-12T06:52:07-03:00",
+      "title": "Executar auditoria da fase 08 na CI Windows com fonte FRLG verificada",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6222a238c869fcda457251c0d0ae404587a9df59",
       "date": "2026-11-12T06:51:55-03:00",
       "title": "Ajustar regex da auditoria de Vermilion ao padrão Python",
