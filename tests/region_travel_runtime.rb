@@ -4,10 +4,11 @@ def check(v, name); raise name unless v; end
 class PokemonGlobalMetadata
   attr_accessor :blue_regions
 end
+FakeSpeciesData = Struct.new(:flags, :form)
 class FakePokemon
   attr_reader :species_data
   def initialize(flags = [], can_fight = true)
-    @species_data = Struct.new(:flags, :form).new(flags, 0)
+    @species_data = FakeSpeciesData.new(flags, 0)
     @fighting = can_fight
   end
   def egg?; false; end
