@@ -269,20 +269,26 @@ module BlueMusic
   end
   def self.with_kanto_scene(name)
     audio=kanto_scene_audio(name)
-    previous=current_bgm if audio
-    return yield unless audio && previous && previous.respond_to?(:name) &&
-      !previous.name.to_s.empty?
+    return yield unless audio
+    previous=current_bgm
     old_map=$game_map.map_id
+    # Even a truly silent map must be allowed a story cue. A missing
+    # previous BGM means restore *silence*, never keep the scene theme looping.
     pbBGMPlay(audio)
     begin
       yield
     ensure
-      # Restore exactly what was playing before, not a guessed map soundtrack.
-      # Do not undo a battle/map/region transition or a new story-specific BGM.
+      # Restore the exact previous audio (or silence) only when the scene
+      # still owns playback on this same regional map. Never interrupt a
+      # newly selected battle/event cue or music after a region transfer.
       current=current_bgm
       if kanto_battle_scope? && $game_map.map_id==old_map &&
         current && current.name==audio.name
-        pbBGMPlay(previous)
+        if previous && previous.respond_to?(:name) && !previous.name.to_s.empty?
+          pbBGMPlay(previous)
+        else
+          pbBGMStop
+        end
       end
     end
   end
