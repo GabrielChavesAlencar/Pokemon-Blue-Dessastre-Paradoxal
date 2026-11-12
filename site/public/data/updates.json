@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "25fda473cc95991531de45819931c5487be3a6b7",
+      "date": "2026-11-12T10:52:41-03:00",
+      "title": "Kanto 9º núcleo: documentar gameplay seguro Fuchsia/Koga, Soul e fronteira Safari",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c5d4be184862d60676c8ce3ca2f6f2ef3a4972dc",
       "date": "2026-11-12T10:50:45-03:00",
       "title": "Kanto test: 53 áreas preview, Koga e 6 treinadores no portal e 69 perfis",
