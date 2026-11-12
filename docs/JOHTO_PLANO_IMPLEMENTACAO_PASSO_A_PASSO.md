@@ -188,6 +188,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 04/16 — Nova partida completa em New Bark Town
 
+**Continuação parcial já implementada:** [JOHTO_FASE_04_EVENTOS_NEW_BARK.md](JOHTO_FASE_04_EVENTOS_NEW_BARK.md). `JohtoPilot.rb` contém eventos próprios para a mãe, Elm, escolha dos três iniciais e rival condicionado aos treinadores PBS; `tests/test_johto_story_runtime.py` valida a lógica Ruby. O ZIP original do Map Pack pode ser preparado localmente com `prepare_johto_source.py`, sem importar executáveis ou scripts de terceiros. Essas mudanças **não** substituem os mapas reais, nem criam um piloto jogável, nem devem habilitar o início em Johto antecipadamente.
+
+
 **Implementar:** criar e auditar interior da casa, escada, saída/retorno, ruas e laboratório de Elm; intro, mãe, encontro do rival e seleção Chikorita/Cyndaquil/Totodile. Adaptar RegionStart.rb para descobrir **marcador genérico por região**, não só blue-kanto-start.txt. O novo jogo deve nascer **no quarto**, enquanto a chegada por transporte ocorre em ponto seguro externo da cidade. Preservar novo jogo/continue Decades e testes de Kanto.
 
 **Entregar:** mapas funcionais e scripts de eventos Johto, spawn auditado, teste isolado e instruções de entrada pelo menu com Johto apenas se instalado.
