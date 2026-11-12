@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8d41b0cd47dc88b024dcd7a8eb16ac397126d5c7",
+      "date": "2026-11-12T20:11:38-03:00",
+      "title": "test(johto): inclui núcleo Ruby de história nas regressões Python",
+      "category": "Testes"
+    },
+    {
+      "sha": "890fda65d894a15e289a75b2da12f74820b9a53a",
+      "date": "2026-11-12T20:11:28-03:00",
+      "title": "test(johto): valida Elm, iniciais, rival, saves e isolamento Decades/Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "477931451795f7ff49b15cfd75b5515ab10fafa4",
       "date": "2026-11-12T20:10:44-03:00",
       "title": "feat(johto): cria eventos isolados de Elm, mãe, iniciais e rival com guardas",
