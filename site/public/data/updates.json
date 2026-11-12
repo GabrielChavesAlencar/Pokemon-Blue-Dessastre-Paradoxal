@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "caef800f37c05f9ac14d505fbfb7345247ab4428",
+      "date": "2026-11-11T23:27:10-03:00",
+      "title": "feat(kanto): botao Windows para jogar piloto isolado e gerar checklist real",
+      "category": "Novidades"
+    },
+    {
       "sha": "902242e6a44e3ff710ee80687c2af10000bd048e",
       "date": "2026-11-11T23:25:42-03:00",
       "title": "feat(kanto): registrar checklist manual experimental local sem mexer nos saves",
