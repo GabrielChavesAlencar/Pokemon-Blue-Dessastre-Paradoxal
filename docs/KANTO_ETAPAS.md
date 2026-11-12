@@ -4,6 +4,8 @@
 **Escopo:** campanha Kanto completa, de Pallet até a Liga, integrada ao jogo-mestre Decades.  
 **Referências obrigatórias:** [Plano v2](PLANO_REGIOES_DESSASTRE_V2.md) (regras de gameplay), [estudo de fontes](ESTUDO_FANGAME_TODAS_AS_REGIOES_POKEMON.md) (importação e créditos) e [roteiro geral](PROXIMOS_PASSOS.md).
 
+**Referência de times históricos:** [estudo completo de líderes, Elite Four e campeões de Kanto](ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md) e [guia de implementação passo a passo](KANTO_TIMES_FORTES_IMPLEMENTACAO_PASSO_A_PASSO.md). **Material de documentação apenas:** não altera equipes no jogo nem os indicadores de desenvolvimento/aceite.
+
 ## Como ler o contador
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
