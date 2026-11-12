@@ -18,6 +18,33 @@ TRAINERS = {
     "CAMPER,Liam": ("CAMPER", "Liam", 0),
     "LEADER_Brock,Brock": ("LEADER", "Brock", 0),
 }
+# Verified against FRLG Map32 / Map36 / Map38 / Map42 source event calls.
+TRAINERS.update({
+    "LASS,Janice": ("LASS", "Janice", 0),
+    "BUGCATCHER,Colton": ("BUGCATCHER", "Colton", 0),
+    "YOUNGSTER,Ben": ("YOUNGSTER", "Ben", 0),
+    "LASS,Sally": ("LASS", "Sally", 0),
+    "BUGCATCHER,Greg": ("BUGCATCHER", "Greg", 0),
+    "BUGCATCHER,James": ("BUGCATCHER", "James", 0),
+    "YOUNGSTER,Calvin": ("YOUNGSTER", "Calvin", 0),
+    "LASS,Robin": ("LASS", "Robin", 0),
+    "LASS,Iris": ("LASS", "Iris", 0),
+    "BUGCATCHER,Kent": ("BUGCATCHER", "Kent", 0),
+    "BUGCATCHER,Robby": ("BUGCATCHER", "Robby", 0),
+    "SUPERNERD,Jovan": ("SUPERNERD", "Jovan", 0),
+    "LASS,Miriam": ("LASS", "Miriam", 0),
+    "YOUNGSTER,Josh": ("YOUNGSTER", "Josh", 0),
+    "HIKER,Marcos": ("HIKER", "Marcos", 0),
+    "TEAMROCKET_M,Grunt,1": ("ROCKET", "Grunt", 1),
+    "TEAMROCKET_M,Grunt,2": ("ROCKET", "Grunt", 2),
+    "TEAMROCKET_M,Grunt,3": ("ROCKET", "Grunt", 3),
+    "TEAMROCKET_M,Grunt,4": ("ROCKET", "Grunt", 4),
+    "SUPERNERD,Miguel": ("SUPERNERD", "Miguel", 0),
+    "LEADER_Misty,Misty": ("LEADER_MISTY", "Misty", 0),
+    "SWIMMER2_M,Luis": ("SWIMMER", "Luis", 0),
+    "PICNICKER,Diana": ("PICNICKER", "Diana", 0),
+})
+
 
 
 def read_blocks(path, selected=None):
