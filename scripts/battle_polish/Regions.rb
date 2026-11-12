@@ -114,7 +114,7 @@ module BlueRegions
 
   def self.snapshot
     stored = $PokemonGlobal.blue_regions
-    # This release exposes only Decades. No other campaign can write this field yet.
+    # Preserve old Decades saves; regional state is persisted only on travel.
     return nil if stored && (!stored.is_a?(Hash) || stored["version"] != 1)
     state = stored ? Marshal.load(Marshal.dump(stored)) : new_state
     # Audited native ending: the switch is set after the Hall of Fame and the
@@ -137,6 +137,9 @@ module BlueRegions
         name = info(key)["name"]
         if key == state["current"]
           _INTL("{1} · atual",name)
+        elsif ready.include?(key) && defined?(BlueRegionTravel) &&
+              BlueRegionTravel.available?(state) && BlueRegionTravel.destination(state,key)
+          _INTL("{1} · viajar",name)
         elsif ready.include?(key)
           _INTL("{1} · mapa em preparação",name)
         else
@@ -146,7 +149,10 @@ module BlueRegions
       choice = pbMessage(_INTL("Circuito de regiões"),options + [_INTL("Voltar")],-1)
       break if !choice || choice < 0 || choice >= keys.length
       key = keys[choice]
-      if key == "DECADES"
+      if key != state["current"] && defined?(BlueRegionTravel) &&
+         BlueRegionTravel.available?(state) && BlueRegionTravel.destination(state,key)
+        break if BlueRegionTravel.travel(key)
+      elsif key == "DECADES"
         amount = local_achievements(state,key,$player.badges).length
         ending = state["leagues"].include?(key) ? _INTL("Final registrado") : _INTL("Final pendente")
         pbMessage(_INTL("Decades: {1}/8 marcos regionais. {2}.",amount,ending))
@@ -165,7 +171,7 @@ module BlueRegions
     MenuHandlers.add(:pause_menu,:blue_regions,{
       "name"=>_INTL("Circuito de regiões"),"order"=>67,
       "condition"=>proc { |_menu| active? },
-      "effect"=>proc { |menu| menu.pbHideMenu; pbFadeOutIn { BlueRegions.menu }; menu.pbShowMenu; false }
+      "effect"=>proc { |menu| menu.pbHideMenu; BlueRegions.menu; menu.pbShowMenu; false }
     })
   end
 end
