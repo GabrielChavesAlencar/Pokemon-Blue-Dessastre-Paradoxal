@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0d9b39b3391c0d5d452da2f006d26d4e8ec7f906",
+      "date": "2026-11-12T10:15:10-03:00",
+      "title": "Kanto etapa 09: validar whitelist exata de Celadon, cura, 2 portas e 57 Sight(n)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6f2cd065d01fcc04cdb0d75e8776f9505dd68b44",
       "date": "2026-11-12T10:14:33-03:00",
       "title": "Kanto Erika: conceder Rainbow somente após vitória real, sem repetir recompensa",
