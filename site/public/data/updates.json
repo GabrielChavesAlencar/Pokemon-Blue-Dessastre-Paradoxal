@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "14f4b602b187f64b529593b719cead15e22a6173",
+      "date": "2026-11-11T21:56:46-03:00",
+      "title": "test(regions): verificar nova partida Kanto, Decades, bloqueios e saves legados",
+      "category": "Novidades"
+    },
+    {
       "sha": "ba600075ab2212decea713303dfd331a23fc8027",
       "date": "2026-11-11T21:55:57-03:00",
       "title": "test(kanto): invalidar piloto quando seletor regional ou Story mudar",
