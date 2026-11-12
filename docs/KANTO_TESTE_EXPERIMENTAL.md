@@ -17,9 +17,12 @@ Se você baixou **`Blue-Story.exe`** pelo [site oficial do projeto](https://poke
 1. **Continuar** (ou o nome do slot de save, se o plugin Auto Multi Save estiver ativo);
 2. **Novo Jogo**;
 3. **Testar Kanto**;
-4. As opções anteriores, como Mystery Gift, Opções e Sair (sem perder funcionalidades).
+4. **Testar Johto** — mostra aviso de preparação até existir seu piloto e lançador próprios, sem executar o piloto de Kanto;
+5. As opções anteriores, como Mystery Gift, Opções e Sair (sem perder funcionalidades).
 
 Ao escolher **Testar Kanto**, o jogo pede confirmação, abre automaticamente o piloto experimental pelo lançador do próprio repositório e **fecha o menu do EXE principal**. O piloto abre em outra janela/processo com um perfil de saves separado: nenhuma rotina de instalação escreve no save original de Decades. O botão reaproveita `KANTO_JOGAR_EXPERIMENTAL.bat`, mas **você não precisa executar esse arquivo manualmente**.
+
+**Isolamento de Johto:** o menu agora tem a quarta opção **Testar Johto**, mas os arquivos `JOHTO_JOGAR_EXPERIMENTAL.bat` e `scripts/regions/pilot_johto.py` ainda não existem. Até serem entregues e auditados, a opção apenas informa que o teste está em preparação; não interfere no terceiro botão, na campanha Decades, em Kanto ou nos saves. Veja [a análise de segurança de Johto](JOHTO_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md) e [seu roteiro de 16 etapas](JOHTO_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md).
 
 **Pré-requisitos:** a instalação deve estar completa e conectada à internet na primeira execução do teste. O menu usa o `KANTO_JOGAR_EXPERIMENTAL.bat` e `scripts/regions/pilot.py` que o próprio `Blue-Story.exe` atualiza; o BAT encontra **primeiro o Python portátil já instalado pelo Blue**, mesmo que o nome da pasta do Windows contenha espaços. O [preparador da fonte](../scripts/regions/ensure_source.py) baixa o arquivo original FRLG fixado no manifesto, confere o SHA-256 e extrai **somente mapas, PBS e gráficos necessários** para `.blue-work/frlg-source/`. Se a fonte já existir, ela não é sobrescrita. O download depende de o servidor original estar acessível; falhas geram mensagem no console do teste, sem modificar saves. O botão não aparece dentro do próprio piloto, para impedir abertura em cadeia.
 
