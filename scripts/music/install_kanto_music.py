@@ -63,7 +63,8 @@ def audit(manifest_path: Path = MANIFEST, base: Path = ROOT) -> dict:
             raise ValueError("Categoria invalida no catalogo")
         if (
             Path(name).name != name
-            or ".." in name
+            or name in (".", "..")
+            or "\x00" in name
             or "/" in name
             or "\\" in name
             or not name.lower().endswith(".mp3")
