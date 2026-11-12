@@ -93,6 +93,8 @@ def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[i
     titles: set[str] = set()
     started = time.monotonic()
     exited = None
+    terminated_by_probe = False
+    interrupted_by_user = False
     print("[INFO] Abrindo Game.exe no piloto isolado (nao usa save do Decades).", flush=True)
     with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:
         process = subprocess.Popen([str(pilot / "Game.exe")], cwd=str(pilot),
@@ -115,9 +117,11 @@ def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[i
                     seconds = 10**12
                 time.sleep(0.4)
         except KeyboardInterrupt:
+            interrupted_by_user = True
             print("[INFO] Interrompido. Fechando somente a copia piloto.", flush=True)
         finally:
             if probe and process.poll() is None:
+                terminated_by_probe = True
                 process.terminate()
                 try:
                     process.wait(timeout=5)
@@ -137,7 +141,7 @@ def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[i
     after_error = errors.stat().st_mtime_ns if errors.exists() else None
     error_text = tail(errors) if after_error is not None and after_error != before_error else ""
     stderr_text = tail(stderr_path)
-    result = classify(seen, None if probe and exited in (0, 1, -15) else exited, stderr_text, error_text)
+    result = classify(seen, None if terminated_by_probe or interrupted_by_user else exited, stderr_text, error_text)
     # A probe is deliberately stopped after inspecting startup; that termination
     # is NOT a gameplay failure or a successful full playthrough.
     data = {
