@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b10e501268a6a86836c2e16e44a82b1067292191",
+      "date": "2026-11-12T10:12:53-03:00",
+      "title": "Kanto 8º núcleo: importar apenas portas, cura e 8 batalhas da academia de Erika",
+      "category": "Melhorias"
+    },
+    {
       "sha": "37f6cc4f1aa3728db060870a19553ca3b82674b7",
       "date": "2026-11-12T10:12:07-03:00",
       "title": "Kanto 8º núcleo: habilitar Celadon City/Center/Gym somente para eventos adaptados",
