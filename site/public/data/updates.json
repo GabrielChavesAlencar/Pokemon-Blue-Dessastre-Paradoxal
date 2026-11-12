@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "368fc6628055ac251b6e2dbb83a3e53d7716ca33",
+      "date": "2026-11-12T07:41:25-03:00",
+      "title": "Regressao: garantir 40 slots antigos e 11 cenarios Celadon sem encontros ou Erika",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bf27aebb22c7b80dfeff7684abd15457f822c044",
       "date": "2026-11-12T07:40:46-03:00",
       "title": "Kanto fase 09: publicar 11 locais de cenario de Celadon sem eventos/treinadores",
