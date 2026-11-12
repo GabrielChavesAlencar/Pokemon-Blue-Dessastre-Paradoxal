@@ -90,11 +90,14 @@ def manifest(pilot, game):
             continue
         relative = Path(item["game_path"])
         source_audio = pilot / relative
-        if not source_audio.is_file() or not source_audio.is_relative_to(pilot):
+        if (source_audio.is_symlink() or not source_audio.is_file() or
+                not source_audio.resolve().is_relative_to(pilot.resolve())):
             raise ValueError("Musica de Kanto nao preparada: " + str(relative))
         if digest(source_audio) != digest(ROOT / item["repo_path"]):
             raise ValueError("Musica de Kanto divergente: " + str(relative))
         destination_audio = game / relative
+        if not destination_audio.resolve().is_relative_to(game.resolve()):
+            raise ValueError("Destino de audio inseguro: " + str(relative))
         if destination_audio.exists():
             if not destination_audio.is_file() or digest(destination_audio) != digest(source_audio):
                 raise ValueError("Audio existente diferente, recusar sobrescrita: " + str(relative))
