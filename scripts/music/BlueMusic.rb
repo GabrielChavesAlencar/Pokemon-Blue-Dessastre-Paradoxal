@@ -211,12 +211,14 @@ module BlueMusic
   def self.kanto_trainer_victory_kind(opponents=nil)
     return nil unless kanto_battle_scope?
     context=@battle_context
-    if context && context[:kanto_eligible] && context[:category]=='gym'
-      return 'gymVictory'
+    if context && context.key?(:kanto_eligible)
+      return nil unless context[:kanto_eligible]
+      return context[:category]=='gym' ? 'gymVictory' : 'trainerVictory'
     end
-    # When the native engine supplies trainer data instead of the battle
-    # context, a leader type is still safely distinguishable from Decades.
+    # Without context, use the actual Kanto trainer identity, not the name
+    # or a provisional borrowed Decades portrait. Foreign types stay native.
     kind=kanto_trainer_kind(opponents)
+    return nil unless kind
     kind=='gym' ? 'gymVictory' : 'trainerVictory'
   end
   def self.kanto_vehicle_audio
