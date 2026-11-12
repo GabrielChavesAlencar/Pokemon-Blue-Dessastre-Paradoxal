@@ -82,6 +82,15 @@ class RegionsTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
     @unittest.skipUnless(shutil.which("ruby"), "Ruby command not available")
+    def test_kanto_uses_exact_decades_scaling_for_trainers_and_wild(self):
+        result = subprocess.run(
+            ["ruby", str(ROOT / "tests/kanto_balance_runtime.rb"),
+             str(ROOT / "scripts/battle_polish/Campaign.rb"),
+             str(ROOT / "scripts/battle_polish/Balance.rb")],
+            capture_output=True, text=True, encoding="utf-8", timeout=20)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    @unittest.skipUnless(shutil.which("ruby"), "Ruby command not available")
     def test_two_trainer_pages_show_local_and_global_emeralds(self):
         with tempfile.TemporaryDirectory() as temp:
             target = Path(temp)
