@@ -27,7 +27,9 @@ def audit(source: Path) -> dict:
         if source_id not in paths:
             continue
         name = text(info.attrs["@name"])
-        if not TARGET.search(name):
+        # Source 168 has a direct doorway to 173; include this unnamed
+        # interior even when the source title lacks Saffron/Psychic.
+        if not TARGET.search(name) and source_id != 173:
             continue
         selected[source_id] = name
         raw = load(paths[source_id]).attrs
