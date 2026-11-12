@@ -126,8 +126,6 @@
     111,
     112,
     113,
-    114,
-    115,
     117,
     118,
     119,
@@ -135,7 +133,6 @@
     121,
     122,
     123,
-    124,
     141,
     142,
     143,
@@ -179,5 +176,5 @@
     188,
     189
   ],
-  "preview_policy": "Fases 09-11: mapas preview_only carregam SOMENTE geometria, sem eventos, itens, NPCs, transferencias de portas, treinadores, encontros, HMs ou insignias. Celadon, Fuchsia/Safari e Saffron/Silph/Sabrina requerem implementacao de gameplay e QA separado."
+  "preview_policy": "Fase 09: Celadon City (114), Center (115) e Gym (124) sao gameplay experimental auditado (portas, cura e Erika/Rainbow, sem importacao de scripts de terceiros). Route 7 (111), Dept Store 117-123, Fuchsia e Saffron permanecem preview_only sem NPCs, encontros, eventos, itens, portais ou insígnias ate revisao."
 }
