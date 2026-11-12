@@ -34,12 +34,14 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[100:101], [173])
         self.assertEqual(order[101:], [8,14,15,21,22,29,30,31])
         self.assertEqual(manifest["preview_only"], sorted([
-            111,114,115,117,118,119,120,121,122,123,124,
+            111,117,118,119,120,121,122,123,
             141,142,143,144,145,146,147,152,153,155,156,157,158,159,
             160,161,162,163,164,165,
             57,62,107,108,109,110,112,113,168,169,170,171,172,
             173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189]))
         self.assertIn(42, order[13:])
+        self.assertEqual(len(manifest["preview_only"]), 58)
+        self.assertTrue({114, 115, 124}.isdisjoint(manifest["preview_only"]))
 
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
