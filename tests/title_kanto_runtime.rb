@@ -1,0 +1,105 @@
+# Pure Ruby regression for the original Essentials + Decades Auto Multi Save
+# title menu. No graphics/ROM/saves/Windows process is required.
+require "tmpdir"
+require "fileutils"
+
+def _INTL(text, *); text; end
+def pbMessage(*); $notices += 1; end
+def pbConfirmMessage(*); true; end
+def require_check(condition, label)
+  raise(label) unless condition
+end
+
+class PokemonLoad_Scene
+  attr_accessor :queue
+  attr_reader :displayed, :last_continue
+  def pbStartScene(commands, has_continue, *args)
+    @displayed = commands
+    @with_save = has_continue
+  end
+  # Matches Decades' Auto Multi Save: TWO arguments and negative slot arrows.
+  def pbChoose(commands, continue_idx)
+    @last_continue = continue_idx
+    @queue.shift
+  end
+end
+
+$notices = 0
+require ARGV.fetch(0)
+BlueKantoTitle.install
+
+original = [" <- My Save -> ", "New Game", "Options", "Quit Game"]
+scene = PokemonLoad_Scene.new
+scene.queue = [1]
+scene.pbStartScene(original, true, nil, nil, 0)
+require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Options", "Quit Game"],
+              "Kanto is not the THIRD title action with Continue")
+require_check(scene.pbChoose(original, 0) == 1, "New Game index changed")
+require_check(scene.last_continue == 0, "Continue slot arrows were remapped")
+require_check(original == [" <- My Save -> ", "New Game", "Options", "Quit Game"],
+              "Original load command array was mutated")
+
+scene.queue = [-3]
+require_check(scene.pbChoose(original, 0) == -3, "Previous save-slot arrow changed")
+scene.queue = [-2]
+require_check(scene.pbChoose(original, 0) == -2, "Next save-slot arrow changed")
+
+# Mystery Gift can appear before New Game in Decades' loader. Both the third
+# slot and the ORIGINAL handler index must be preserved.
+gift = [" <- Save 2 -> ", "Mystery Gift", "New Game", "Options", "Quit Game"]
+scene2 = PokemonLoad_Scene.new
+scene2.queue = [1, 3]
+scene2.pbStartScene(gift, true, nil, nil, 0)
+require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto",
+                                   "Mystery Gift", "Options", "Quit Game"],
+              "Mystery Gift broke title menu order")
+require_check(scene2.pbChoose(gift, 0) == 2, "New Game handler no longer maps to original")
+require_check(scene2.pbChoose(gift, 0) == 1, "Mystery Gift handler no longer maps to original")
+
+# In a first-time launch, without Continue, New Game must remain first.
+fresh = ["New Game", "Options", "Quit Game"]
+scene3 = PokemonLoad_Scene.new
+scene3.queue = [0]
+scene3.pbStartScene(fresh, false, nil, nil, 0)
+require_check(scene3.displayed == ["New Game", "Testar Kanto", "Options", "Quit Game"],
+              "No-save title order is invalid")
+require_check(scene3.pbChoose(fresh, -1) == 0, "No-save New Game changed")
+
+# Successful test choice dispatches to the original Quit command for native
+# cleanup, rather than overwriting Decades' save profile or altering Game.start_new.
+BlueKantoTitle.define_singleton_method(:launch) { true }
+scene.queue = [2]
+require_check(scene.pbChoose(original, 0) == 3, "Pilot success did not cleanly quit main game")
+BlueKantoTitle.define_singleton_method(:launch) { false }
+scene.queue = [2, 1]
+require_check(scene.pbChoose(original, 0) == 1, "Pilot failure must return to normal title")
+
+# Isolated pilot cannot spawn itself recursively from its own Game.exe.
+Dir.mktmpdir("blue-title-") do |folder|
+  Dir.chdir(folder) do
+    File.write("Kanto pilot.json", "{}")
+    isolated = PokemonLoad_Scene.new
+    isolated.queue = [1]
+    isolated.pbStartScene(original, true, nil, nil, 0)
+    require_check(isolated.displayed == original, "Test option appeared inside the pilot")
+    require_check(isolated.pbChoose(original, 0) == 1, "Pilot New Game no longer works")
+    require_check(BlueKantoTitle.launcher.nil?, "Pilot may recursively launch another pilot")
+  end
+end
+
+# The real launcher is resolved relative to game/Game.exe and must reference
+# the project-owned BAT and Python pilot, never an arbitrary path.
+Dir.mktmpdir("blue-title-root-") do |root|
+  game = File.join(root, "game")
+  FileUtils.mkdir_p(File.join(root, "scripts/regions"))
+  FileUtils.mkdir_p(game)
+  File.write(File.join(game, "Game.exe"), "native game")
+  File.write(File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
+  File.write(File.join(root, "scripts/regions/pilot.py"), "# pilot")
+  Dir.chdir(game) do
+    files = BlueKantoTitle.launcher
+    require_check(files == [File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), root],
+                  "Pilot launcher escaped the project root")
+  end
+end
+puts "Third title option, slot navigation, Mystery Gift, pilot isolation and launcher path OK"
