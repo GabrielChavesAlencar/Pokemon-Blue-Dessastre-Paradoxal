@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9d1fb5cc956aa8b36727abe9ad51b3e9f9c4d680",
+      "date": "2026-11-12T20:00:25-03:00",
+      "title": "fix(test johto): adiciona nome do pacote exigido pela auditoria",
+      "category": "Novidades"
+    },
+    {
       "sha": "278f855c4d9ab44721bb4e050e3641d9a34907da",
       "date": "2026-11-12T19:59:51-03:00",
       "title": "test(johto): cobre verificador contra eventos estrangeiros e alterações nativas",
