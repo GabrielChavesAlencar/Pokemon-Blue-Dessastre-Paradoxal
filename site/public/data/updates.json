@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9020ccb4fab04386cf6b4ff8f29c8db0e3da8f07",
+      "date": "2026-11-12T06:58:24-03:00",
+      "title": "Fase 08: incluir 15 mapas auditados de Vermilion e S.S. Anne preservando slots anteriores",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1269dae0e9c776f8cd8bba0cc6a460976a1f7357",
       "date": "2026-11-12T06:57:59-03:00",
       "title": "Ampliar inventário fase 08 com equipes e eventos do navio e ginásio",
