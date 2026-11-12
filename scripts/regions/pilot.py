@@ -209,7 +209,18 @@ def install_events(source, target, mapping):
         shutil.copyfile(src, dest_graphics / (new_name + ".png"))
         return new_name.encode("utf8")
 
+    preview_only = set(json_file(KANTO).get("preview_only", []))
+    if preview_only - mapping.keys():
+        raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
+        # Phase 09 is GEOMETRY ONLY until the user's event analysis finishes.
+        # stage() already serializes a blank event table for every imported map.
+        if original in preview_only:
+            dest_file = target / "Data" / f"Map{destination:03}.rxdata"
+            staged_map = load(dest_file)
+            if staged_map.attrs["@events"]:
+                raise ValueError(f"Phase 09 map {original} contains foreign events")
+            continue
         events = load(source / "Data" / f"Map{original:03}.rxdata").attrs["@events"]
         dest_file = target / "Data" / f"Map{destination:03}.rxdata"
         map_data = load(dest_file)
@@ -328,7 +339,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
@@ -384,6 +395,12 @@ def install_runtime(target, mapping, game):
         ("SSANNE", "S.S. Anne (1F)", 74, 20, 2),
         ("SSCAPTAIN", "S.S. Anne (Captain)", 76, 4, 8),
         ("SSDECK", "S.S. Anne (Deck)", 78, 58, 3),
+        # Phase 09: verified incoming warp coordinates; preview maps have NO events.
+        ("ROUTE7", "Rota 7 (cenario, sem eventos)", 111, 15, 25),
+        ("CELADON", "Celadon City (cenario)", 114, 48, 17),
+        ("ERIKA", "Ginasio Celadon (Erika, sem batalha)", 124, 6, 18),
+        ("CEL_CENTER", "Celadon Center (cenario)", 115, 7, 8),
+        ("CEL_STORE", "Celadon Loja 1F (cenario)", 117, 2, 14),
     ]
     (data / "blue-kanto-experimental-stops.txt").write_text(
         "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\n"
