@@ -12,6 +12,8 @@ def safe(value):
     value=text(value) if isinstance(value,bytes) else str(value)
     return value.replace("|","/").replace("\r"," ").replace("\n"," ")[:120]
 def main():
+    system=load(SOURCE/"Data/System.rxdata").attrs
+    print(f"PALLET_SOURCE_START:{system['@start_map_id']}|{system['@start_x']}|{system['@start_y']}")
     for original in MAPS:
         map_=load(SOURCE/"Data"/f"Map{original:03}.rxdata").attrs
         print(f"PALLET_AUDIT_MAP:{original}|{map_['@width']}|{map_['@height']}|events={len(map_['@events'])}")
