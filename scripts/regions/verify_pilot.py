@@ -80,6 +80,9 @@ def inspect(game: Path) -> dict:
         (26, 2): "BlueKantoPilot.heal",
         (34, 2): "BlueKantoPilot.heal",
         (40, 2): "BlueKantoPilot.heal",
+        (65, 2): "BlueKantoPilot.heal",
+        (64, 7): "BlueKantoPilot.ticketmaster",
+        (76, 2): "BlueKantoPilot.captain",
         (36, 18): 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018")',
         (28, 6): 'BlueKantoPilot.battle(:BLUE_KANTO_CAMPER, "Liam", "KANTO_028_006")',
         (28, 7): 'BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")',
@@ -96,6 +99,8 @@ def inspect(game: Path) -> dict:
             anchors[(source_id, event_id)] = (
                 f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}"'
             )
+    for entry in (9, 29, 30):
+        anchors[(64, entry)] = "BlueKantoPilot.harbor_gate"
     found = set()
     warps = 0
     for source, dest in mapping.items():
@@ -137,7 +142,9 @@ def inspect(game: Path) -> dict:
         trapped = [expected[source] for source, dest in mapping.items() if dest not in returnable]
         raise ValueError(f"Maps without a directed route BACK to Pallet: {trapped}")
     route = [5, 9, 10, 18, 19, 24, 20, 25, 28, 32, 33, 34,
-             36, 37, 38, 39, 40, 41, 42]
+             36, 37, 38, 39, 40, 41, 42,
+             56, 59, 60, 63, 61, 64, 65, 66, 67,
+             72, 74, 75, 76, 77, 78]
     for source in route:
         if mapping[source] not in seen:
             raise ValueError(f"Story route is not connected to Pallet: {expected[source]}")
@@ -147,7 +154,9 @@ def inspect(game: Path) -> dict:
     if not stops_file.is_file():
         raise ValueError("Experimental Kanto destinations were not generated")
     required_stops = {"PALLET", "PEWTER", "ROUTE4", "MOON_CENTER",
-                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY"}
+                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
+                      "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
+                      "SSANNE", "SSCAPTAIN", "SSDECK"}
     seen_stops = set()
     for raw in stops_file.read_text(encoding="utf-8").splitlines():
         parts = raw.split("|")
