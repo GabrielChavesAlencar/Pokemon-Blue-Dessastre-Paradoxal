@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e97a0aa8f75ea1df43730c3a9a885dc40f620f58",
+      "date": "2026-11-12T20:48:23-03:00",
+      "title": "test(johto): valida Ecruteak Route 35-37 e bloqueios de FOG Surf e mapas",
+      "category": "Testes"
+    },
+    {
       "sha": "ce091b596b4bb92b42ea6a59aed84b9ad90f2ae5",
       "date": "2026-11-12T20:47:56-03:00",
       "title": "docs(johto): define grafo simbólico de rotas, Ecruteak, Burned Tower, Morty e FOG",
