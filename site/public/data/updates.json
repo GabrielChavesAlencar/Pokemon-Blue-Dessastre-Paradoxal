@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ef96140f9e36f7ce531ee7c46962d5ed328b0012",
+      "date": "2026-11-12T08:51:45-03:00",
+      "title": "Kanto 11: teste nativo das prévias Saffron/Silph e bloqueio Marsh Badge",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0d691ba01bdb3b8b8cee8c7a078d0cd435278ccf",
       "date": "2026-11-12T08:51:19-03:00",
       "title": "Kanto 11: verificar 41 destinos e 29 mapas sem eventos na fase Saffron",
