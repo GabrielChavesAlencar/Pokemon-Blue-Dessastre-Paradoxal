@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "da00a04b8c61b04972dae84cbad4badafd9331b4",
+      "date": "2026-11-12T19:27:34-03:00",
+      "title": "feat(johto): adiciona Testar Johto ao menu inicial sem afetar piloto Kanto",
+      "category": "Novidades"
+    },
+    {
       "sha": "3283d3e0e08231b45d1cd6c49e0630265ab940db",
       "date": "2026-11-12T19:12:14-03:00",
       "title": "test(kanto-music): Fase 6 — decodificação de 64 MP3, prova nativa e matriz de resultados",
