@@ -128,6 +128,14 @@ def inspect(game: Path) -> dict:
                         expected_script = anchors.get((source, event_id))
                         if expected_script and expected_script in script:
                             found.add((source, event_id))
+                        # The harbor entrance is a ticket-gated scripted
+                        # transfer, not an RPG::EventCommand 201. Admit it into
+                        # the topology only if the whitelisted destination
+                        # agrees with the pinned FRLG harbor exit.
+                        if source == 64 and event_id in (9, 29, 30):
+                            allowed = f"BlueKantoPilot.harbor_gate({mapping[72]}, 9, 7)"
+                            if script == allowed:
+                                edges[dest].add(mapping[72])
 
     if found != set(anchors):
         missing = sorted(set(anchors) - found)
