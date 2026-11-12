@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d11debe527c06e7165c64f7352a2584a91195c7f",
+      "date": "2026-11-12T09:27:19-03:00",
+      "title": "MAN-02: detectar nome Sight(n) real da fonte e exigir Event Touch 2",
+      "category": "Melhorias"
+    },
+    {
       "sha": "714117ee03fee50003425ada174c5d73890f4ffc",
       "date": "2026-11-12T09:25:59-03:00",
       "title": "MAN-02: persistir página pós-vitória por self-switch sem repetir batalhas",
