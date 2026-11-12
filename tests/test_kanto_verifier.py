@@ -45,7 +45,7 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
         self.assertEqual(len(data["locations"]), 109)
-        self.assertGreaterEqual(len(data["trainers"]), 54)
+        self.assertEqual(len(data["trainers"]), 62)
         for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
                      "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
                      "kanto-route2-hidden-house", "kanto-pewter-museum",
@@ -59,11 +59,25 @@ class KantoPilotAuditTests(unittest.TestCase):
             [(p["species"], p["level"]) for p in misty["variants"][0]["team"]],
             [("STARYU", 18), ("STARMIE", 21)]
         )
+        # Stage 09 opens ONLY the three core maps for adapted gameplay.
+        # Route 7 and all seven department-store floors stay geometry-only.
         preview = [x for x in data["locations"] if x["id"].startswith(
-            ("kanto-celadon-", "kanto-route-7"))]
-        self.assertEqual(len(preview), 11)
+            ("kanto-celadon-dept-", "kanto-route-7"))]
+        self.assertEqual(len(preview), 8)
         self.assertTrue(all(not x["methods"] and not x["trainers"] for x in preview))
-        self.assertFalse(any("Erika" in trainer["name"] for trainer in data["trainers"]))
+        erika = next(t for t in data["trainers"] if t["id"] == "kanto-erika")
+        self.assertTrue(erika["leader"])
+        self.assertEqual(erika["location"], "kanto-celadon-gym")
+        self.assertEqual([(p["species"], p["level"]) for p in erika["variants"][0]["team"]],
+                         [("VICTREEBEL", 29), ("TANGELA", 24), ("VILEPLUME", 29)])
+        gym = next(x for x in data["locations"] if x["id"] == "kanto-celadon-gym")
+        self.assertEqual(len(gym["trainers"]), 8)
+        self.assertTrue(all(x in {t["id"] for t in data["trainers"]}
+                            for x in gym["trainers"]))
+        for slug in ("kanto-celadon-city", "kanto-celadon-center"):
+            city = next(x for x in data["locations"] if x["id"] == slug)
+            self.assertEqual(city["methods"], [])
+            self.assertEqual(city["trainers"], [])
         phase10 = [x for x in data["locations"] if x["id"].startswith(
             ("kanto-fuchsia-", "kanto-safari-", "kanto-route-15",
              "kanto-route-18"))]
