@@ -145,6 +145,36 @@ module KantoNativeCheck
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 5,
              "Three Kanto milestones were double-counted or omitted")
 
+    # MAN-01: the two-way Rival's House doors use REAL map transfers.
+    # MAN-02: Rick starts as a Sight(5) Event Touch trainer, and on a
+    # recorded victory the same event switches to Action Button via A.
+    metadata = File.read("Kanto pilot.json")
+    pallet_id = metadata.match(/"5":\s*(\d+)/)[1].to_i
+    house_id = metadata.match(/"8":\s*(\d+)/)[1].to_i
+    forest_id = metadata.match(/"24":\s*(\d+)/)[1].to_i
+    $map_factory.setup(pallet_id)
+    require!($game_map.events[2].list.any? { |op|
+      op.code == 201 && op.parameters[1] == house_id
+    }, "Pallet rival house door was not connected")
+    $map_factory.setup(house_id)
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == pallet_id
+    }, "Rival house return to Pallet was not connected")
+    $map_factory.setup(forest_id)
+    trainer_event = $game_map.events[16]
+    require!(trainer_event.name.include?("Sight(5)") && trainer_event.trigger == 2,
+             "Rick must automatically notice the player five tiles away")
+    require!(!BlueKantoPilot.sync_trainer_event("KANTO_024_018", "Anthony", 18),
+             "An undefeated trainer was incorrectly marked defeated")
+    require!(!$game_self_switches[[forest_id, 18, "A"]],
+             "A lost or unplayed trainer already has self-switch A")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_024_016", "Rick", 16),
+             "Trainer victory was not applied to the source event")
+    $game_map.refresh
+    require!($game_self_switches[[forest_id, 16, "A"]] &&
+             $game_map.events[16].trigger == 0,
+             "Trainer must stop auto-challenging after victory")
+
     # Phase 09: inspect scenery in the native engine without executing or
     # pretending that Celadon trainers, Erika, doors or quests exist yet.
     stage09 = ["Rota 7", "Celadon City", "Erika", "Celadon Center", "Celadon Loja"]
