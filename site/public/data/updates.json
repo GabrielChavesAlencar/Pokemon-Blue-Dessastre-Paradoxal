@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "be807c75fca58666ee79a379dfbe287595133356",
+      "date": "2026-11-11T21:39:46-03:00",
+      "title": "docs(kanto): registrar correcoes da etapa 03 sem marcar aceite manual",
+      "category": "Correções"
+    },
+    {
       "sha": "f795eabfb653609ed2831173fa18eb2986fa9c73",
       "date": "2026-11-11T21:38:29-03:00",
       "title": "test(kanto): detectar transfers que permitem somente ida",
