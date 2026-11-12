@@ -11,10 +11,9 @@ echo [INFO] Backup automatico em .blue-backups\kanto-...
 echo.
 
 if exist "game\Data\blue-kanto-start.txt" (
-  echo [OK] Kanto ja esta integrado na instalacao principal.
-  echo [INFO] Use ABRIR_JOGO.bat para iniciar a campanha.
-  pause
-  exit /b 0
+  echo [INFO] Kanto ja esta instalado. Conferindo retratos que faltaram no importador antigo.
+  call "%~dp0KANTO_CORRIGIR_RETRATOS.bat"
+  exit /b %errorlevel%
 )
 if not exist "game\Game.exe" (
   echo [ERRO] Jogo principal nao encontrado. Execute INSTALAR_JOGO.bat.
