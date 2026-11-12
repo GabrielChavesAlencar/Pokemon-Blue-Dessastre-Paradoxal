@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8539d891c75bc09b3877235b34ea34e4faa5fe7d",
+      "date": "2026-11-12T07:40:20-03:00",
+      "title": "Kanto 09: documentar preview de Celadon, eventos adiados e progresso mantido",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c43db4304f8310223348245cb81df34df4c4601b",
+      "date": "2026-11-12T07:40:15-03:00",
+      "title": "Kanto 09: documentar preview de Celadon, eventos adiados e progresso mantido",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0fe6ccf54acb75cfce0ac7274a0ccd36f4d194f4",
+      "date": "2026-11-12T07:40:12-03:00",
+      "title": "Kanto 09: documentar preview de Celadon, eventos adiados e progresso mantido",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9126b9c6bbce5a1587bc21b529e5c1b8c039bd3b",
       "date": "2026-11-12T07:39:09-03:00",
       "title": "Documentar fase 09 Celadon como previsualizacao sem eventos aguardando analise",
