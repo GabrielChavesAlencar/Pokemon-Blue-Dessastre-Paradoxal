@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9a42cffc0ea453298ca38a12a75a6236c1100834",
+      "date": "2026-11-11T21:37:35-03:00",
+      "title": "test(kanto): validar ida e volta por conexoes direcionais reais",
+      "category": "Testes"
+    },
+    {
       "sha": "5d98e687c1ed3752d69cc39977bb09bfab5c2a7d",
       "date": "2026-11-11T21:37:13-03:00",
       "title": "fix(kanto): persistir chave estavel do NPC e respeitar saves antigos",
