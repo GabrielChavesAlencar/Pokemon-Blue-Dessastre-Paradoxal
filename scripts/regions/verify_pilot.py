@@ -141,6 +141,28 @@ def inspect(game: Path) -> dict:
     for source in route:
         if mapping[source] not in seen:
             raise ValueError(f"Story route is not connected to Pallet: {expected[source]}")
+    # The test-only teleport manifest must refer exclusively to prepared maps
+    # and coordinates proven in the pinned FRLG source's incoming warps.
+    stops_file = game / "Data/blue-kanto-experimental-stops.txt"
+    if not stops_file.is_file():
+        raise ValueError("Experimental Kanto destinations were not generated")
+    required_stops = {"PALLET", "PEWTER", "ROUTE4", "MOON_CENTER",
+                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY"}
+    seen_stops = set()
+    for raw in stops_file.read_text(encoding="utf-8").splitlines():
+        parts = raw.split("|")
+        if len(parts) != 6:
+            raise ValueError(f"Malformed experimental destination: {raw}")
+        code, label, map_no, x, y, direction = parts
+        if code in seen_stops or code not in required_stops or not label:
+            raise ValueError(f"Invalid test destination: {code}")
+        seen_stops.add(code)
+        dest_map, tx, ty, direction = map(int, (map_no, x, y, direction))
+        if dest_map not in maps or not 0 <= tx < maps[dest_map].attrs["@width"] or not 0 <= ty < maps[dest_map].attrs["@height"] or direction not in (2,4,6,8):
+            raise ValueError(f"Experimental destination outside prepared map: {code}")
+    if seen_stops != required_stops:
+        raise ValueError(f"Missing experimental stops: {required_stops - seen_stops}")
+
     return {
         "result": "structural_check_passed",
         "maps": len(maps),
@@ -148,6 +170,7 @@ def inspect(game: Path) -> dict:
         "mapped_transfers": warps,
         "returnable_maps": len(returnable),
         "required_events": len(found),
+        "experimental_stops": len(seen_stops),
         "route": [expected[source] for source in route],
         "limitations": "Topology and data only; physical walkability, player controls, real battles and saves still need testing.",
     }
