@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0844734d6d536a342b9acd9928ebfa92c4491ebc",
+      "date": "2026-11-12T19:31:13-03:00",
+      "title": "docs(kanto): documenta Testar Johto como quarta opção sem mexer no piloto Kanto",
+      "category": "Documentação"
+    },
+    {
       "sha": "05d3b594088c519e2dcfd227f7ac0d29bce4dafa",
       "date": "2026-11-12T19:30:51-03:00",
       "title": "docs(johto): exige antirregressão e detalha Testar Johto no menu principal",
