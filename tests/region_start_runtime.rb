@@ -112,6 +112,37 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check(Game.seen == [4,7,8], "Locked Johto was incorrectly selected")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Decades fallback missing")
 
+    # A Johto map alone is not enough; only a verified local install/pilot
+    # will write the dedicated Johto start and installation markers.
+    File.binwrite("Data/Map712.rxdata", "synthetic Johto player room")
+    File.write("Data/blue-johto-start.txt", "BLUE_JOHTO_START_V1,JOHTO,712,9,6\n")
+    check(!BlueRegionStart.playable?("JOHTO"), "Uninstalled Johto was enabled by a lone marker")
+    check(BlueRegionStart.johto_spawn.nil?, "Johto start without install proof was accepted")
+
+    File.write("Data/blue-johto-install.json", "{}")
+    check(BlueRegionStart.playable?("JOHTO"), "Valid Johto markers should enable region")
+    $choices = [2]
+    Game.start_new
+    check(Game.seen == [712,9,6], "Johto home spawn is wrong")
+    check($PokemonGlobal.blue_regions["initial"] == "JOHTO", "Johto initial region not saved")
+    check($PokemonGlobal.blue_story_mode == :story, "Johto regional start lost story mode")
+    check($PokemonGlobal.blue_campaign_departure == false, "Johto starter event would lose items")
+    check([$data_system.start_map_id,$data_system.start_x,$data_system.start_y] == [4,7,8],
+          "Johto changed the native Decades start coordinates")
+
+    File.write("Data/blue-johto-start.txt", "BLUE_JOHTO_START_V1,JOHTO,321,-1,5\n")
+    check(BlueRegionStart.johto_spawn.nil?, "Invalid Johto spawn was accepted")
+    File.write("Data/blue-johto-start.txt", "BLUE_JOHTO_START_V1,JOHTO,712,9,6\n")
+
+    # Both regional pilot switches must be isolated: Kanto's pilot remains
+    # Kanto, Johto's pilot goes to Johto, neither opens the region picker.
+    File.write("Johto pilot.json", "{}")
+    $messages = 0
+    Game.start_new
+    check(Game.seen == [712,9,6], "Johto pilot did not start in Johto")
+    check($messages == 0, "Johto pilot unexpectedly opened region picker")
+    File.delete("Johto pilot.json")
+
     old_save = {"version"=>1,"initial"=>"DECADES","current"=>"DECADES","leagues"=>["DECADES"]}
     Game.load(old_save)
     check($PokemonGlobal.blue_regions.equal?(old_save), "Legacy load was modified")
