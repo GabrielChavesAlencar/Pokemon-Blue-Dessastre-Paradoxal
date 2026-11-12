@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "df1c6ed69673043b45e9b4d2128c4e3252a67589",
+      "date": "2026-11-12T19:37:20-03:00",
+      "title": "feat(johto): registra fonte de mapas com importação bloqueada até auditoria",
+      "category": "Novidades"
+    },
+    {
       "sha": "19b4a8295cb68ea6ef79b7bf244a775cd67404ec",
       "date": "2026-11-12T19:32:43-03:00",
       "title": "test(johto): atualiza prova nativa de Kanto para novo menu de quatro opções",
