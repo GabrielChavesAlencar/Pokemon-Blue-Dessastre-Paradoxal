@@ -1,4 +1,4 @@
-"""Verify that the downloaded Game.exe displays and dispatches Testar Kanto.
+"""Verify Game.exe displays and dispatches Testar Kanto and Testar Johto.
 
 The runtime fixture emulates Essentials and the Decades Auto Multi Save
 signature without touching the original saves or launching processes.
@@ -20,7 +20,7 @@ class TitleKantoTests(unittest.TestCase):
             capture_output=True, text=True, encoding="utf-8", timeout=25
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Third title option", result.stdout)
+        self.assertIn("Third and fourth title options", result.stdout)
 
     def test_installer_and_compiler_include_main_game_title_option(self):
         importer = (ROOT / "scripts/battle_polish/install.py").read_text("utf-8")
