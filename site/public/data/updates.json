@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3c903dec83a9bf3337d8bb28e44734f512f92625",
+      "date": "2026-11-11T22:11:26-03:00",
+      "title": "ci(kanto): copiar todas as dependencias Mesa OpenGL no jogo integrado do runner",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1fd8eda30c3ceb0ebafa2b7030d218e804858275",
       "date": "2026-11-11T22:10:23-03:00",
       "title": "ci(kanto): registrar checkpoint de teste e evitar nova partida Decades sem controles",
