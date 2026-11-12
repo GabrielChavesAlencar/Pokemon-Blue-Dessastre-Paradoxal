@@ -23,6 +23,8 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 ## 1. Validar o piloto de Kanto
 
+**Teste gráfico da etapa 02:** execute [`KANTO_TESTAR_WINDOWS.bat`](../KANTO_TESTAR_WINDOWS.bat) em um Windows com sessão de desktop ou siga o [checklist completo](KANTO_TESTE_WINDOWS.md). O runner Windows já [detectou a janela real do Game.exe](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43127669413), mas os controles, batalhas e caminhada continuam pendentes de teste interativo. **Contador: 1/16 concluída, 15 restantes.**
+
 Prepare a [instalação do Blue](INSTALACAO.md) e extraia o Essentials FRLG 1.1 conforme o [guia do circuito](CIRCUITO_REGIONAL.md). Na raiz do repositório, execute:
 
 ```powershell
