@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9e9718abf3fa828d64fac293df864b01c7b82ff5",
+      "date": "2026-11-12T06:25:16-03:00",
+      "title": "feat(kanto): inserir Testar Kanto no menu inicial do Game.exe preservando saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "e004f1d48e8a74bd7a98d913b0c0d8dd27889c56",
       "date": "2026-11-11T23:53:10-03:00",
       "title": "test(kanto): preservar 13 IDs e conferir Misty + 25 locais no portal",
