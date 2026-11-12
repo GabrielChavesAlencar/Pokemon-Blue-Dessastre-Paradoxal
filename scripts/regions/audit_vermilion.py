@@ -86,5 +86,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path,
                         default=ROOT / ".blue-work/frlg-source/Essentials FRLG")
+    parser.add_argument("--output", type=Path, help="Write source audit JSON")
     arguments = parser.parse_args()
-    print(json.dumps(describe(arguments.source), ensure_ascii=False, indent=2))
+    report = describe(arguments.source)
+    raw = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+    if arguments.output:
+        arguments.output.parent.mkdir(parents=True, exist_ok=True)
+        arguments.output.write_text(raw, encoding="utf-8")
+        print("Kanto phase 08: " + str(report["matched"]) + " candidate maps")
+        for item in report["maps"]:
+            print("  Map" + str(item["id"]) + " " + item["name"])
+    else:
+        print(raw)
