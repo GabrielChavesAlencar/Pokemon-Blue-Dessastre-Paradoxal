@@ -483,12 +483,26 @@ def install_events(source, target, mapping):
                     trainer.attrs["@pages"].append(after_win)
                     selected[event_id] = trainer
                 else:
-                    selected[event_id] = new_event(
+                    scripted = new_event(
                         event, [command(355, scripts[event_id].encode())],
                         1 if floor_trigger else 0,
                         b"" if (floor_trigger or
                                 not event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"])
                         else actor(event))
+                    if (original, event_id) in {(182, 9), (172, 1), (172, 2)}:
+                        # A one-time Card Key/Dojo prize no longer appears
+                        # after the region-local reward has been recorded.
+                        collected = copy.deepcopy(scripted.attrs["@pages"][0])
+                        condition = collected.attrs["@condition"].attrs
+                        condition["@self_switch_valid"] = True
+                        condition["@self_switch_ch"] = b"A"
+                        graphic = collected.attrs["@graphic"].attrs
+                        graphic["@character_name"] = b""
+                        graphic["@tile_id"] = 0
+                        collected["@through"] = True
+                        collected["@list"] = [command(0)]
+                        scripted.attrs["@pages"].append(collected)
+                    selected[event_id] = scripted
                 continue
             if original == 5 and event_id in (11, 13):
                 # Professor Oak's original path anchors span the two exit tiles.
