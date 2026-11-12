@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "49c0218fa7b3dd0f280c65660fa55dc2af4e55f1",
+      "date": "2026-11-11T23:47:29-03:00",
+      "title": "feat(site): adicionar 25 locais e 28 perfis de Kanto até Misty via fonte auditada",
+      "category": "Novidades"
+    },
+    {
       "sha": "04cb007411e756bc32d1215f78c8fc17b9e0a4f3",
       "date": "2026-11-11T23:47:08-03:00",
       "title": "fix(site): classificar Misty como lider de ginasio no catalogo Kanto",
