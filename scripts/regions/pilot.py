@@ -417,6 +417,8 @@ def install_events(source, target, mapping):
         map_data = load(dest_file)
         selected = {}
         script_events = {5: {9: "BlueRegionTravel.agent(true)"},
+                         10: {1: f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)"},
+                         13: {16: "BlueKantoPilot.viridian_gym_guide"},
                           7: {13: "BlueKantoPilot.mom"},
                           8: {8: "BlueKantoPilot.daisy"},
                           6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
@@ -478,6 +480,8 @@ def install_events(source, target, mapping):
             if not saffron_event_allowed(original, event_id, event):
                 continue
             if not cinnabar_event_allowed(original, event_id):
+                continue
+            if not viridian_event_allowed(original, event_id):
                 continue
             if original == 202 and event_id in CINNABAR_DOOR_TO_GROUP:
                 group = CINNABAR_DOOR_TO_GROUP[event_id]
@@ -656,6 +660,14 @@ def install_events(source, target, mapping):
                         scripted.attrs["@pages"].append(collected)
                     if original == 5 and event_id == 9:
                         scripted.attrs["@name"] = b"Agente Regional"
+                    if original == 10 and event_id == 1:
+                        # FRLG Map010/1 has a foreign global-switch second
+                        # page. Replace that gate with our guarded transfer,
+                        # preserving the visible doors6 sprite on Player Touch.
+                        local_page = scripted.attrs["@pages"][0].attrs
+                        local_page["@trigger"] = 1
+                        local_page["@through"] = True
+                        local_page["@direction_fix"] = True
                     selected[event_id] = scripted
                 continue
             if original == 5 and event_id in (11, 13):
@@ -757,6 +769,7 @@ def install_runtime(target, mapping, game):
     stops = [
         ("PALLET", "Pallet Town (Oak)", 5, 28, 14),
         ("PLAYER_HOME", "Casa do jogador (inicio)", 7, 25, 7),
+        ("VIR_GYM", "Ginasio Viridian Giovanni (sete insignias)", 13, 17, 22),
         ("PEWTER", "Pewter City (Gym)", 25, 19, 21),
         ("ROUTE4", "Route 4 (Mt Moon exit)", 33, 92, 21),
         ("MOON_CENTER", "Mt Moon Pokemon Center", 34, 7, 8),
