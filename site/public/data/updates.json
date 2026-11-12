@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb550b07879eecff5b8ba4c82404479d3af6021c",
+      "date": "2026-11-11T22:05:30-03:00",
+      "title": "docs(kanto): alinhar proximos passos com etapa 04 e implantacao opcional",
+      "category": "Documentação"
+    },
+    {
       "sha": "def68ca1a23cfa8f869c691f56b438410b6088df",
       "date": "2026-11-11T22:05:12-03:00",
       "title": "docs(kanto): registrar desenvolvimento 04/16 com duas barras distintas e aceite pendente",
