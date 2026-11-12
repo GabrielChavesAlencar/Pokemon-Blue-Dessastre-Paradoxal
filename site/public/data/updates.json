@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f62bbd2f356cda8f9ab44b024a6016b4290d9df2",
+      "date": "2026-11-12T13:10:08-03:00",
+      "title": "feat(kanto): Viridian, Giovanni e Earth Badge — núcleo 12/16",
+      "category": "Novidades"
+    },
+    {
       "sha": "080c07c9201f724e4e51dcd4acb262331d8410f9",
       "date": "2026-11-12T12:49:26-03:00",
       "title": "feat(kanto): Cinnabar, Mansion e Blaine — núcleo 11/16",
