@@ -37,7 +37,7 @@ module KantoNativeCheck
     # Supply the choice and battle results so the compiler can run without a user.
     Object.send(:define_method, :pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     battle_calls = []
-    losses_remaining = { "Doug" => 1, "Erika" => 1, "Koga" => 1 }
+    losses_remaining = { "Doug" => 1, "Erika" => 1, "Koga" => 1, "Giovanni" => 1, "Sabrina" => 1 }
     TrainerBattle.define_singleton_method(:start) do |type, name, version = 0|
       data = GameData::Trainer.get(type, name, version)
       battle_calls << [type, name, version]
@@ -338,21 +338,97 @@ module KantoNativeCheck
     require!(battle_calls.count { |row| row[1] == "Koga" } == 2,
              "Koga battle repeated or grant awarded twice")
 
-    # Phase 11 Saffron: isolated terrain previews, no teleporter scripts,
-    # Silph Rocket boss, Sabrina battles or Marsh Badge may be installed.
-    stage11 = ["Rota 8", "Portaria Oeste Saffron", "Saffron City",
-               "Sabrina", "Fighting Dojo", "Saffron Centro Pokemon",
-               "Silph Co. 1F", "Silph Co. 5F", "Silph Co. 11F",
-               "Silph Co. Elevador"]
-    stage11.each do |label|
-      stop = BlueKantoPilot.experimental_stops.find { |entry| entry[0].include?(label) }
-      require!(stop, "Phase 11 preview destination missing: #{label}")
-      $map_factory.setup(stop[1][0])
-      require!($game_map.events.empty?, "Phase 11 unexpectedly imported an event: #{label}")
+    # Stage 11: sourced Saffron city -> interiors; Silph card-key, rival,
+    # Giovanni and Sabrina awards use region-only state, not the Decades save.
+    ["Rota 8", "Portaria Oeste Saffron"].each do |label|
+      id = map_for.call(label)
+      $map_factory.setup(id)
+      require!($game_map.events.empty?, "Saffron gate/Route 8 must remain a preview")
     end
-    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("MARSH"),
-             "Marsh Badge awarded before Sabrina battle was implemented")
+    saffron = map_for.call("Saffron City")
+    sabrina_gym = map_for.call("Ginasio Sabrina")
+    saffron_center = map_for.call("Saffron Centro")
+    silph_1f = map_for.call("Silph Co. 1F")
+    silph_5f = map_for.call("Silph Co. 5F")
+    silph_11f = map_for.call("Silph Co. 11F")
+    silph_elevator = map_for.call("Silph Co. Elevador")
+    $map_factory.setup(saffron)
+    [[6,sabrina_gym],[10,silph_1f],[13,saffron_center]].each do |eid,dest|
+      ev = $game_map.events[eid]
+      require!(ev && ev.trigger == 1 && ev.list.any? { |op|
+        op.code == 201 && op.parameters[1] == dest
+      }, "Broken Saffron City entrance #{eid}")
+    end
+    $map_factory.setup(saffron_center)
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == saffron
+    }, "Saffron Center exit does not return to city")
+    $map_factory.setup(silph_1f)
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == saffron
+    }, "Silph 1F is a one-way trap")
+    $map_factory.setup(silph_elevator)
+    require!($game_map.events.keys.sort == [1,2] &&
+      $game_map.events[1].list.none? { |op| op.code == 201 },
+      "Silph elevator imported unmapped FRLG targets")
+    require!(File.readlines("Data/blue-kanto-silph-floors.txt").length == 11,
+      "Silph elevator must offer 11 real floors")
 
+    $map_factory.setup(sabrina_gym)
+    require!($game_map.events.values.count { |ev|
+      ev.name.start_with?("Warp Tile ")
+    } == 30, "Sabrina gym should have 30 source teleporter events")
+    require!($game_map.events[3].trigger == 2 &&
+      $game_map.events[2].trigger == 0, "Sabrina/trainer trigger mismatch")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("MARSH"),
+      "Marsh Badge granted before defeating Sabrina")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SABRINA,"Sabrina","KANTO_171_002")
+    require!(battle_calls.none? { |row| row[1]=="Sabrina" },
+      "Sabrina challenged before the Silph rescue")
+    $map_factory.setup(silph_5f)
+    BlueKantoPilot.silph_card_key
+    require!(BlueKantoPilot.progress["pilot_silph_card_key"],
+      "Silph Card Key was not stored locally")
+    require!($game_self_switches[[silph_5f, 9, "A"]],
+      "Silph Card Key pickup should not respawn")
+    $map_factory.setup(silph_11f)
+    locked = $game_map.events.values.find { |ev| ev.name=="Locked Door" }
+    if locked
+      # Representative Card Key door tile: not open before using the key.
+      require!(!$game_self_switches[[silph_11f,locked.id,"A"]],
+        "Silph door opened without the Card Key")
+    end
+    boss = GameData::Trainer.get(:BLUE_KANTO_ROCKETBOSS,"Giovanni",2)
+    require!(boss.pokemon.length >= 2, "Silph Giovanni PBS team is missing")
+    BlueKantoPilot.battle(:BLUE_KANTO_ROCKETBOSS,"Giovanni","KANTO_188_010",2)
+    require!(!BlueKantoPilot.progress["pilot_silph_rescued"],
+      "Giovanni defeat incorrectly marked Silph rescue")
+    BlueKantoPilot.battle(:BLUE_KANTO_ROCKETBOSS,"Giovanni","KANTO_188_010",2)
+    require!(BlueKantoPilot.progress["pilot_silph_rescued"],
+      "Giovanni victory did not liberate Silph")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_188_010","Giovanni",10),
+      "Giovanni event did not persist")
+    BlueKantoPilot.battle(:BLUE_KANTO_ROCKETBOSS,"Giovanni","KANTO_188_010",2)
+    require!(battle_calls.count { |row| row[1]=="Giovanni" }==2,
+      "Giovanni boss battle repeated")
+    $map_factory.setup(sabrina_gym)
+    sabrina = GameData::Trainer.get(:BLUE_KANTO_LEADER_SABRINA,"Sabrina")
+    require!(sabrina.pokemon.length == 4, "Sabrina source roster missing")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SABRINA,"Sabrina","KANTO_171_002")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").include?("MARSH"),
+      "Sabrina defeat awarded Marsh Badge")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SABRINA,"Sabrina","KANTO_171_002")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO").include?("MARSH"),
+      "Sabrina victory did not grant Marsh Badge")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_171_002","Sabrina",2),
+      "Sabrina event not linked to Marsh reward")
+    $game_map.refresh
+    require!($game_self_switches[[sabrina_gym,2,"A"]],
+      "Sabrina victory self-switch did not persist")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SABRINA,"Sabrina","KANTO_171_002")
+    require!(battle_calls.count { |row| row[1]=="Sabrina" }==2,
+      "Sabrina battle repeated after Marsh")
+    
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
     $map_factory.setup(lab)
@@ -362,12 +438,16 @@ module KantoNativeCheck
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL"],
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL","MARSH"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_124_001"),
              "Erika victory did not persist through save/reload")
+    require!(BlueKantoPilot.progress["pilot_silph_card_key"] && BlueKantoPilot.progress["pilot_silph_rescued"],
+              "Silph Card Key/boss progress lost after reload")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_171_002"),
+              "Sabrina victory did not persist")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_147_011"),
              "Koga victory did not persist through save/reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
@@ -376,6 +456,6 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 109 maps: five badges incl Koga, 63 sight trainers, Fuchsia gym/Centre/Mart/Safari Gate, no Safari entry, save/reload verified (battles simulated)")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 109 maps: six badges incl Sabrina, 94 sight trainers, Saffron/Silph local doors, no Safari entry, save/reload verified (battles simulated)")
   end
 end

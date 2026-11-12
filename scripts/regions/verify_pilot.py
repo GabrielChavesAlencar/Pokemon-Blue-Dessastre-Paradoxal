@@ -195,7 +195,98 @@ def inspect(game: Path) -> dict:
                 if op.attrs["@code"] == 201 and len(args) > 1 and args[1] == mapping[155]:
                     raise ValueError("Safari admission must not bypass the unimplemented session and catch rules")
 
-    # MAN-02: the source-proven 63 line-of-sight trainers require Event Touch,
+
+    # Saffron 10th functional nucleus: exact city, Center, Mart, Gym,
+    # Dojo and elevator scripts; 11 floor maps have source-verified stairs.
+    saffron = {
+        168: {6, 10, 12, 13, 14},
+        169: {1, 2}, 170: {1, 2},
+        171: {2, 3, 5, 6, 7, 8, 9, 10, 11, 13, *range(17, 46)},
+        172: {1, 2, 4, 6, 7, 9, 10, 12},
+        189: {1, 2},
+    }
+    for original, whitelist in saffron.items():
+        actual = set(maps[mapping[original]].attrs["@events"])
+        if actual != whitelist:
+            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ whitelist}")
+    saffron_pairs = (
+        (168, 6, 171, 10), (168, 10, 178, 1),
+        (168, 12, 170, 1), (168, 13, 169, 1),
+        (168, 14, 172, 4),
+    )
+    for city, entry, interior, leave in saffron_pairs:
+        if mapping[interior] not in event_transfers(city, entry):
+            raise ValueError(f"Saffron door {city}/{entry} missing {interior}")
+        if mapping[city] not in event_transfers(interior, leave):
+            raise ValueError(f"Saffron door {interior}/{leave} has no return")
+        if maps[mapping[city]].attrs["@events"][entry].attrs["@pages"][0].attrs["@trigger"] != 1:
+            raise ValueError(f"Saffron entrance {city}/{entry} is not player-touch")
+    silph_stairs = (
+        (178, 4, 179, 2), (179, 1, 180, 3),
+        (180, 2, 181, 3), (181, 4, 182, 3),
+        (182, 4, 183, 3), (183, 4, 184, 3),
+        (184, 4, 185, 4), (185, 3, 186, 3),
+        (186, 4, 187, 4), (187, 3, 188, 3),
+    )
+    for lower, ascend, upper, descend in silph_stairs:
+        if mapping[upper] not in event_transfers(lower, ascend):
+            raise ValueError(f"Silph stairs {lower}/{ascend} missing ascending transfer")
+        if mapping[lower] not in event_transfers(upper, descend):
+            raise ValueError(f"Silph stairs {upper}/{descend} missing descending transfer")
+    gym = maps[mapping[171]].attrs["@events"]
+    gym_teleports = [event for event in gym.values()
+                     if text(event.attrs["@name"]).startswith("Warp Tile ")]
+    if len(gym_teleports) != 30:
+        raise ValueError(f"Sabrina warp network is incomplete: {len(gym_teleports)}")
+    for ev in gym_teleports:
+        if ev.attrs["@pages"][0].attrs["@trigger"] != 1:
+            raise ValueError("Sabrina warp must activate on Player Touch")
+        for page in ev.attrs["@pages"]:
+            for op in page.attrs["@list"]:
+                if op.attrs["@code"] == 201 and op.attrs["@parameters"][1] != mapping[171]:
+                    raise ValueError("Sabrina warp escaped the gym")
+    for original, eid, script in (
+            (169, 2, "BlueKantoPilot.heal"), (170, 2, "pbPokemonMart"),
+            (182, 9, "BlueKantoPilot.silph_card_key"),
+            (184, 43, "BlueKantoPilot.silph_rival"),
+            (188, 18, "BlueKantoPilot.silph_president"),
+            (189, 1, "BlueKantoPilot.silph_elevator"),
+            (189, 2, "BlueKantoPilot.silph_elevator")):
+        ev = maps[mapping[original]].attrs["@events"].get(eid)
+        commands = [text(op.attrs["@parameters"][0])
+                    for p in ev.attrs["@pages"] for op in p.attrs["@list"]
+                    if op.attrs["@code"] in (355, 655) and op.attrs["@parameters"]]
+        if not any(script in line for line in commands):
+            raise ValueError(f"Saffron {original}/{eid}: required local callback missing")
+    if any(event_transfers(189, eid) for eid in (1, 2)):
+        raise ValueError("Silph elevator retained foreign Map207-217 destinations")
+    floors_file = game / "Data/blue-kanto-silph-floors.txt"
+    lines = floors_file.read_text(encoding="ascii").splitlines()
+    if len(lines) != 11:
+        raise ValueError("Silph elevator must serve 11 verified local floors")
+    for floor, line in enumerate(lines, 1):
+        parts = [int(x) for x in line.split("|")]
+        source = 177 + floor
+        if len(parts) != 5 or parts[0] != floor or parts[1] != mapping[source]:
+            raise ValueError(f"Silph elevator floor {floor}: invalid local mapping")
+        x, y = parts[2:4]
+        size = maps[mapping[source]].attrs
+        if not (0 <= x < size["@width"] and 0 <= y < size["@height"]):
+            raise ValueError(f"Silph elevator floor {floor}: landing is out of bounds")
+    for original in range(179, 189):
+        for eid, event in maps[mapping[original]].attrs["@events"].items():
+            if text(event.attrs["@name"]) != "Locked Door":
+                continue
+            if len(event.attrs["@pages"]) != 2:
+                raise ValueError(f"Silph {original}/{eid} missing Card Key open state")
+            cond = event.attrs["@pages"][1].attrs["@condition"].attrs
+            if cond["@self_switch_valid"] is not True or cond["@self_switch_ch"] != b"A":
+                raise ValueError(f"Silph {original}/{eid} Card Key state is unsafe")
+    if len([e for e in maps[mapping[171]].attrs["@events"].values()
+            if e.attrs["@pages"][0].attrs["@trigger"] == 2]) != 7:
+        raise ValueError("Sabrina gym must have seven sight trainers")
+
+    # MAN-02: the source-proven 94 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -230,7 +321,7 @@ def inspect(game: Path) -> dict:
                 sight_count += 1
                 if "pbNoticePlayer(get_self)" not in script:
                     raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 63:
+    if sight_count != 94:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -319,6 +410,11 @@ def inspect(game: Path) -> dict:
                             if script == allowed:
                                 edges[dest].add(mapping[72])
 
+    # The Map189 source elevator used foreign Map207-217 targets. Native
+    # local controls are validated above and provide return edges to every floor.
+    if mapping[189] in edges:
+        for source in range(178, 189):
+            edges[mapping[189]].add(mapping[source])
     if found != set(anchors):
         missing = sorted(set(anchors) - found)
         raise ValueError(f"Required Kanto event scripts are missing: {missing}")
@@ -400,7 +496,7 @@ def inspect(game: Path) -> dict:
         "required_events": len(found),
         "experimental_stops": len(seen_stops),
         "route": [expected[source] for source in route],
-        "limitations": "Celadon and Fuchsia City/Center/Gym plus Fuchsia Mart and Safari Gate have limited selective gameplay. Remaining 53 preview maps include ALL Safari capture areas, Warden, Fuchsia approaches and Saffron; Safari admission/capture, Gold Teeth, Surf/Strength and interactive Windows/JoiPlay QA remain pending.",
+        "limitations": "Celadon and Fuchsia City/Center/Gym plus Fuchsia Mart and Safari Gate have limited selective gameplay. Remaining 36 preview maps include Safari capture areas, Warden, Fuchsia approaches and Saffron gatehouses; Safari admission/capture, Gold Teeth, Surf/Strength and interactive Windows/JoiPlay QA remain pending.",
     }
 
 

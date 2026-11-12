@@ -37,17 +37,20 @@ class KantoPilotAuditTests(unittest.TestCase):
             111,117,118,119,120,121,122,123,
             141,142,143,152,155,156,157,158,159,
             160,161,162,163,164,165,
-            57,62,107,108,109,110,112,113,168,169,170,171,172,
-            173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189]))
+            57,62,107,108,109,110,112,113,
+            173,174,175,176,177]))
         self.assertIn(42, order[13:])
-        self.assertEqual(len(manifest["preview_only"]), 53)
-        self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153}.isdisjoint(manifest["preview_only"]))
+        self.assertEqual(len(manifest["preview_only"]), 36)
+        self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,
+                         168,169,170,171,172,*range(178,190)}.isdisjoint(manifest["preview_only"]))
 
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
         self.assertEqual(len(data["locations"]), 109)
-        self.assertEqual(len(data["trainers"]), 69)
+        # Portal sync commits separately after the pilot passes CI on main.
+        # Both generations are valid during a pull-request pre-merge check.
+        self.assertIn(len(data["trainers"]), (69, 103))
         for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
                      "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
                      "kanto-route2-hidden-house", "kanto-pewter-museum",
@@ -119,8 +122,16 @@ class KantoPilotAuditTests(unittest.TestCase):
             ("kanto-saffron-", "kanto-silph-", "kanto-route-8",
              "kanto-underground-route"))]
         self.assertEqual(len(phase11), 30)
-        self.assertTrue(all(not x["methods"] and not x["trainers"] for x in phase11))
-        self.assertFalse(any("Sabrina" in trainer["name"] for trainer in data["trainers"]))
+        inactive = [x for x in phase11 if x["id"].startswith(
+            ("kanto-route-8", "kanto-underground-route", "kanto-saffron-gate",
+             "kanto-saffron-house", "kanto-saffron-trainer-fan-club", "kanto-silph-lobby"))]
+        self.assertTrue(all(not x["methods"] and not x["trainers"] for x in inactive))
+        if len(data["trainers"]) > 69:
+            sabrina = next(x for x in data["trainers"] if x["id"] == "kanto-sabrina")
+            self.assertTrue(sabrina["leader"])
+            self.assertEqual(sabrina["location"], "kanto-saffron-gym")
+            gym = next(x for x in phase11 if x["id"] == "kanto-saffron-gym")
+            self.assertEqual(len(gym["trainers"]), 8)
         surge = next(t for t in data["trainers"] if t["id"] == "kanto-lt. surge")
         self.assertTrue(surge["leader"])
         self.assertEqual(surge["location"], "kanto-vermilion-gym")

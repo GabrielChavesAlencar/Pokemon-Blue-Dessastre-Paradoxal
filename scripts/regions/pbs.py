@@ -101,6 +101,25 @@ TRAINERS.update({
 })
 
 
+
+# Saffron gym, Fighting Dojo and Silph Co. PBS identities audited from
+# the pinned FRLG 1.1 source. Preserve real versions, levels and moves.
+TRAINERS.update({
+    "LEADER_Sabrina,Sabrina": ("LEADER_SABRINA", "Sabrina", 0),
+    **{f"PSYCHIC_M,{name}": ("PSYCHIC", name, 0)
+       for name in ("Cameron", "Preston", "Johan", "Tyron")},
+    **{f"CHANNELER,{name}": ("CHANNELER", name, 0)
+       for name in ("Tasha", "Stacy", "Amanda")},
+    **{f"BLACKBELT,{name}": ("BLACKBELT", name, 0)
+       for name in ("Hideki", "Hitoshi", "Aaron", "Mike", "Koichi")},
+    **{f"TEAMROCKET_M,Grunt,{version}": ("ROCKET", "Grunt", version)
+       for version in range(21, 40)},
+    "ROCKETBOSS,Giovanni,2": ("ROCKETBOSS", "Giovanni", 2),
+    **{f"RIVAL2,Blue,{version}": ("RIVAL_SILPH", "Blue", version)
+       for version in (51, 52, 53)},
+})
+
+
 def read_blocks(path, selected=None):
     blocks = {}
     key = None
@@ -171,7 +190,7 @@ def normalize_encounters(source, rows, species):
     return "\n".join(out), len(tables)
 
 
-def trainer_draft(path, species, moves):
+def trainer_draft(path, species, moves, items):
     blocks = read_blocks(path, TRAINERS)
     out = []
     for original, (kind, name, version) in TRAINERS.items():
@@ -190,6 +209,11 @@ def trainer_draft(path, species, moves):
             elif field == "Moves":
                 if any(move.strip() not in moves for move in value.split(",")):
                     raise ValueError(f"Unknown move in {original}: {value}")
+            elif field == "Item":
+                # Held item on this trainer's Pokémon: preserve native PBS value
+                # only when Decades already knows the exact item identifier.
+                if value not in items:
+                    raise ValueError(f"Unknown held item in {original}: {value}")
             elif field != "LoseText":
                 raise ValueError(f"Field {field} in {original} requires manual review.")
             out.append(line)
@@ -200,7 +224,8 @@ def trainer_draft(path, species, moves):
 
 
 def build_drafts(source, game, plan):
-    species, moves = catalogue(game, "pokemon"), catalogue(game, "moves")
+    species, moves, items = (catalogue(game, "pokemon"), catalogue(game, "moves"),
+                             catalogue(game, "items"))
     # Remaining terrain previews (Celadon store, Fuchsia, Saffron) must not activate foreign trainers,
     # encounter tables or story scripts before event review.
     from audit import KANTO, json_file
@@ -209,12 +234,12 @@ def build_drafts(source, game, plan):
     # 15,16,17,19..) that cannot be collapsed to min/max without creating
     # encounter levels not present in the source. Keep Fuchsia core entirely
     # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153}
+    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
                if row["source_id"] not in no_gameplay
                and row["source_id"] not in review_encounters}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
-    trainers = trainer_draft(source / "PBS/trainers.txt", species, moves)
+    trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
                       "source_policy": "Essentials FRLG merged tables; independent official verification pending"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
