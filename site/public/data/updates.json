@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "208a873bd578c8997d576e04d3449a2fdd0ebe86",
+      "date": "2026-11-11T22:41:39-03:00",
+      "title": "test(regions): provar deposito do lendario no PC real e save unico",
+      "category": "Testes"
+    },
+    {
       "sha": "0e0017c4fd9cfb0e7dc1dcc9c5d9126056d08faf",
       "date": "2026-11-11T22:39:13-03:00",
       "title": "test(regions): nao expor agente no inicio precoce de Kanto",
