@@ -28,7 +28,7 @@ Consultar **antes de cada fase**:
 - [RegionTravel.rb](../scripts/battle_polish/RegionTravel.rb) **só tem destinos implementados para Decades/Kanto**, com detecção de instalação presa aos marcadores de Kanto.
 - [audit.py](../scripts/regions/audit.py), [stage.py](../scripts/regions/stage.py), [pilot.py](../scripts/regions/pilot.py) e [install_kanto.py](../scripts/regions/install_kanto.py) são **Kanto-específicos** e não devem ser apenas renomeados ou usados diretamente contra a fonte de Johto.
 - [BlueMusic.rb](../scripts/music/BlueMusic.rb) e [compile_kanto_music.py](../scripts/music/compile_kanto_music.py) têm adaptação regional de Kanto; exigir novo catálogo e isolamento para Johto.
-- Não foi encontrado **JOHTO_*.md**, **data/regions/johto-source.json** nem instalador/piloto de Johto no inventário da branch main. Tratar todos esses itens como **a criar**.
+- **Início da implementação (12/11/2026):** [docs/JOHTO_ETAPAS.md](JOHTO_ETAPAS.md) acompanha o progresso. Já existem **data/regions/johto-source.json** (importação bloqueada), **scripts/regions/audit_johto.py** (auditoria somente leitura) e **tests/test_johto_source_audit.py** (testes sintéticos). **Não existem** ainda instalador/piloto jogável, mapa de New Bark integrado ou fonte original local auditada; não confundir auditoria preparatória com região instalada.
 
 ### 0.1. Regra prioritária de compatibilidade — NUNCA quebrar o projeto existente
 
@@ -54,6 +54,12 @@ A opção **`Testar Johto` foi adicionada ao mesmo menu onde já existe `Testar 
 - A suíte `tests/title_kanto_runtime.rb` deve validar a **terceira** e a **quarta** opções, a tradução para índices originais, setas de slots, isolamento e caminhos autorizados dos dois lançadores. `tests/test_title_kanto.py` mantém a integração com os testes Python.
 
 **Estado atual:** botão e proteção de fallback são código implementado; **piloto de Johto, mapas e lançador ainda não estão implementados**. Não interpretar este ajuste de interface como conclusão das Etapas 01–16.
+
+### 0.3. Início da implementação e leitura do progresso
+
+**Registro de execução:** [JOHTO_ETAPAS.md](JOHTO_ETAPAS.md). As Etapas 01 e 02 estão parcialmente implementadas; duas barras permanecem **0/16** até satisfazerem seus respectivos critérios.
+
+**Ferramenta já existente:** scripts/regions/audit_johto.py. Essa auditoria aceita --source, --game, --archive e --output, valida IDs e hashes e produz JSON somente em .blue-work/. Não faz download, não instala nem executa scripts de terceiros. O arquivo de origem distribuído externamente ainda é requisito para uma auditoria real. O comando sem a fonte deve falhar de modo explícito, não marcar a etapa como aprovada.
 
 ## 1. Decisão das fontes e direitos
 
