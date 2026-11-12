@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "73057caffc944bb03655b74213de6b4ea529fcf5",
+      "date": "2026-11-11T22:45:01-03:00",
+      "title": "docs(kanto): registrar prova de viagem e depósito nativo aprovada",
+      "category": "Documentação"
+    },
+    {
       "sha": "7aa357d82b5e8022226876a384944613f797eabc",
       "date": "2026-11-11T22:43:48-03:00",
       "title": "fix(regions): depositar identidade exata do Pokemon reservado",
