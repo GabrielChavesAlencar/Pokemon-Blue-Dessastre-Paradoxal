@@ -243,6 +243,11 @@ def install_runtime(target, mapping):
     config_text = config_text.replace("{", "{\n  " + isolated + ",", 1)
     config_text = re.sub(r'(?m)^(\s*"windowTitle"\s*:).*$', r'\1 "Pokémon Blue — Piloto de Kanto",', config_text)
     config.write_text(config_text, encoding="utf8")
+    # The standalone pilot must always select Kanto automatically on a new
+    # game. The main installation uses this marker only after explicit import.
+    (data / "blue-kanto-start.txt").write_text(
+        f"BLUE_KANTO_START_V1,KANTO,{mapping[5]},28,14\\n", encoding="ascii"
+    )
     # Force compiler to consume new PBS, but keep a real release-mode title after the first boot.
     (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
     (data / "PluginScripts.rxdata").unlink(missing_ok=True)
