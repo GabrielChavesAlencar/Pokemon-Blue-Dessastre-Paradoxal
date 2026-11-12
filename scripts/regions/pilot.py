@@ -66,12 +66,44 @@ EVENT_CLASSES = {
     "RPG::MoveRoute", "RPG::MoveCommand", "RPG::EventCommand",
 }
 SYSTEM_CLASSES = {"RPG::System", "RPG::System::Words", "RPG::System::TestBattler"}
-TYPES = {"RIVAL": "RIVAL1", "BUGCATCHER": "BUGCATCHER", "CAMPER": "CAMPER", "LEADER": "LEADER_Brock"}
+TYPES = {
+    "RIVAL": "RIVAL1", "BUGCATCHER": "BUGCATCHER",
+    "CAMPER": "CAMPER", "LEADER": "LEADER_Brock",
+    "LASS": "LASS", "YOUNGSTER": "YOUNGSTER",
+    "SUPERNERD": "SUPERNERD", "HIKER": "HIKER",
+    "ROCKET": "TEAMROCKET_M", "SWIMMER": "SWIMMER2_M",
+    "PICNICKER": "PICNICKER", "LEADER_MISTY": "LEADER_Misty",
+}
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
          19: ("BUGCATCHER", "Charlie"), 20: ("BUGCATCHER", "Sammy")},
     28: {6: ("CAMPER", "Liam"), 7: ("LEADER", "Brock")},
 }
+# These event IDs and trainer roles come from a read-only source map audit.
+TRAINERS.update({
+    32: {
+        1: ("LASS", "Janice"), 2: ("BUGCATCHER", "Colton"),
+        3: ("YOUNGSTER", "Ben"), 4: ("LASS", "Sally"),
+        5: ("BUGCATCHER", "Greg"), 6: ("BUGCATCHER", "James"),
+        7: ("YOUNGSTER", "Calvin"), 8: ("LASS", "Robin"),
+    },
+    36: {
+        1: ("LASS", "Iris"), 3: ("BUGCATCHER", "Kent"),
+        4: ("BUGCATCHER", "Robby"), 5: ("SUPERNERD", "Jovan"),
+        7: ("LASS", "Miriam"), 8: ("YOUNGSTER", "Josh"),
+        9: ("HIKER", "Marcos"),
+    },
+    38: {
+        5: ("ROCKET", "Grunt", 1), 8: ("ROCKET", "Grunt", 2),
+        12: ("ROCKET", "Grunt", 3), 18: ("ROCKET", "Grunt", 4),
+        19: ("SUPERNERD", "Miguel"),
+    },
+    42: {
+        1: ("LEADER_MISTY", "Misty"), 11: ("SWIMMER", "Luis"),
+        16: ("PICNICKER", "Diana"),
+    },
+})
+
 MART = 'pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])'
 
 
@@ -149,15 +181,23 @@ def install_events(source, target, mapping):
         map_data = load(dest_file)
         selected = {}
         script_events = {6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
-                         11: {2: "BlueKantoPilot.heal"}}
+                         11: {2: "BlueKantoPilot.heal"},
+                         26: {2: "BlueKantoPilot.heal"},
+                         34: {2: "BlueKantoPilot.heal"},
+                         40: {2: "BlueKantoPilot.heal"},
+                         36: {18: 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018")'}}
         scripts = dict(script_events.get(original, {}))
-        if original == 12:
+        if original in (12, 27, 41):
             scripts[find_shopkeeper(events)] = MART
-        for event_id, (kind, name) in TRAINERS.get(original, {}).items():
+        for event_id, spec in TRAINERS.get(original, {}).items():
+            kind, name, *versions = spec
+            version = versions[0] if versions else 0
             # Map/event identity prevents two NPCs with the same display name
             # from sharing their victory flag. Never key trainer progress by name.
             key = f"KANTO_{original:03d}_{event_id:03d}"
-            scripts[event_id] = f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}")'
+            arguments = f':BLUE_KANTO_{kind}, "{name}", "{key}"'
+            arguments += f", {version}" if version else ""
+            scripts[event_id] = f"BlueKantoPilot.battle({arguments})"
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
@@ -214,7 +254,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
