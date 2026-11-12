@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "23d01ecc02c9b1629b77bffe5f79d42bae08d25e",
+      "date": "2026-11-12T10:08:20-03:00",
+      "title": "Kanto 8º núcleo: executar auditoria de IDs de Erika na CI Windows antes do gameplay",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cf9c26c24a136f6c985d34eeb1f18a4a1bacc13c",
+      "date": "2026-11-12T10:08:06-03:00",
+      "title": "Kanto 8º núcleo: auditar nomes e IDs reais de Erika, ginásio e pontos de Celadon",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ca022c2378f577b9f9016e68e18f181b7f6d5b33",
       "date": "2026-11-12T10:05:04-03:00",
       "title": "Kanto: separar fotografia histórica 6/16 do progresso vigente 7/16",
