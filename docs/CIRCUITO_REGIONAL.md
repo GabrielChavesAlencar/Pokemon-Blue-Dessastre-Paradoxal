@@ -116,3 +116,11 @@ A [etapa 04](KANTO_ESCOLHA_REGIAO.md) acrescentou o seletor regional ao início 
 Para integrar o piloto no jogo principal, com o jogo fechado e a fonte FRLG extraída, execute `KANTO_INSTALAR_NO_JOGO.bat`. O atalho mostra a prévia e solicita confirmação; [`install_kanto.py`](../scripts/regions/install_kanto.py) usa cópia separada, hashes da base, backups e rollback. Após a importação, use `ABRIR_JOGO.bat` para compilar o conteúdo e selecionar Decades ou Kanto numa nova partida. Saves já existentes não passam pela seleção.
 
 **Importante:** o conteúdo integrado cobre apenas **Pallet Town a Pewter City e Brock**; a viagem entre regiões, as oito insígnias e a Liga ainda não estão completos. Não distribuir a cópia local de mapas e gráficos de terceiros a partir deste repositório. A validação final de interface, movimentação e batalhas reais depende do checklist Windows. O [contador de Kanto](KANTO_ETAPAS.md) distingue etapa em desenvolvimento de etapas plenamente aprovadas.
+
+## 5. Expansão experimental Pallet → Mt. Moon → Cerulean (fase 07)
+
+A primeira versão do piloto tinha **13 mapas até Brock**; a fase 07 adicionou **12 mapas** (Rota 3, Rota 4, Mt. Moon 1F/B1F/B2F, Cerulean e seus serviços), totalizando **25 mapas auditados**, com Misty e Cascade Badge. [Detalhes da implementação e das limitações](KANTO_FASE_07.md).
+
+Para experimentar agora sem tocar na campanha principal, execute **`KANTO_JOGAR_EXPERIMENTAL.bat`**, inicie uma nova partida na cópia isolada e abra **Testes Kanto (experimental)** no menu de pausa. Esse menu permite visitar pontos da nova região sem avançar artificialmente a história. Ao fechar, o script cria um relatório local de observações. [Passo a passo completo](KANTO_TESTE_EXPERIMENTAL.md).
+
+**Instalações do jogo principal que já têm apenas os 13 mapas anteriores não são atualizadas automaticamente** para 25: é necessário um procedimento de migração auditado para evitar que saves antigos apontem para mapas errados. O piloto novo mantém os IDs dos 13 mapas anteriores e adiciona os demais em slots distintos; o teste de compatibilidade visual e a migração incremental permanecem pendentes.
