@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "16805da16abc661199c5f45cbf975bcf64859073",
+      "date": "2026-11-12T07:05:30-03:00",
+      "title": "Fase 08: adaptar 15 lixeiras e 10 barreiras do quebra-cabeça elétrico de Surge",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a809a8064d29146729fc147f4a32c96c416c171b",
       "date": "2026-11-12T07:04:47-03:00",
       "title": "Corrigir classe de Lt. Surge indisponível em Decades com retrato temporário de engenheiro",
