@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "def68ca1a23cfa8f869c691f56b438410b6088df",
+      "date": "2026-11-11T22:05:12-03:00",
+      "title": "docs(kanto): registrar desenvolvimento 04/16 com duas barras distintas e aceite pendente",
+      "category": "Documentação"
+    },
+    {
       "sha": "dc2eccfb87f4c175480442ce16f9ef1ca2f32cdc",
       "date": "2026-11-11T22:04:24-03:00",
       "title": "test(regions): resetar valores em memoria ao simular outra nova partida e load",
