@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db9c77432db6668698520b1eec7a5570354f9abb",
+      "date": "2026-11-12T20:24:40-03:00",
+      "title": "docs(johto): sincroniza plano mestre com Violet e Falkner parciais",
+      "category": "Documentação"
+    },
+    {
+      "sha": "831ad541ee54f918d4d22d31849aaa26af684a30",
+      "date": "2026-11-12T20:24:30-03:00",
+      "title": "docs(johto): registra etapa 05 parcial, testes e critério de mapa jogável",
+      "category": "Documentação"
+    },
+    {
       "sha": "c408b553631b7f540476e7ce365129bf660a7720",
       "date": "2026-11-12T20:24:08-03:00",
       "title": "docs(johto): detalha etapa 05 Violet e Falkner com testes e pendências reais",
