@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "31e7a833ab640beb0c1ed4d2292109295dfe5d1d",
+      "date": "2026-11-12T08:50:23-03:00",
+      "title": "Kanto 11: incluir 29 localizações de Saffron, Dojo e Silph no portal",
+      "category": "Melhorias"
+    },
+    {
       "sha": "07dc389192e258097d3b45055bc384b3ee08969e",
       "date": "2026-11-12T08:50:02-03:00",
       "title": "Kanto fase 11: adicionar 29 cenarios Saffron/Silph a preview_only sem eventos",
