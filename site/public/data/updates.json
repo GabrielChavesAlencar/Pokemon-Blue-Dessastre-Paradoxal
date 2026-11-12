@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5031213782d125f4e252faef88dfc36cbfc5ef25",
+      "date": "2026-11-11T23:34:36-03:00",
+      "title": "fix(kanto): aceitar encontros CaveDay/Night de Mt Moon na importacao PBS",
+      "category": "Correções"
+    },
+    {
       "sha": "43e6bc12f1086106e01181ac4dfff7614884dab8",
       "date": "2026-11-11T23:33:57-03:00",
       "title": "fix(kanto): auditoria do instalador acompanha quantidade de mapas da fase 07",
