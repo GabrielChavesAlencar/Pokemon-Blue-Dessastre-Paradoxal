@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "459d3ed6c99de57f0b24a388f5bea5dacaacd212",
+      "date": "2026-11-11T22:35:52-03:00",
+      "title": "docs(kanto): explicar viagem, save unico, testes e pendencias da fase 05",
+      "category": "Documentação"
+    },
+    {
       "sha": "ebe9f580477dfea5fb9bf849f9ed78eac47b0c37",
       "date": "2026-11-11T22:33:57-03:00",
       "title": "test(regions): expor excecao real de transferencia no teste nativo",
