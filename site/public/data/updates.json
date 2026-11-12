@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1fd8eda30c3ceb0ebafa2b7030d218e804858275",
+      "date": "2026-11-11T22:10:23-03:00",
+      "title": "ci(kanto): registrar checkpoint de teste e evitar nova partida Decades sem controles",
+      "category": "Novidades"
+    },
+    {
       "sha": "e00a916ad7dd8dad43ba3f3626ffaece7d0d2d05",
       "date": "2026-11-11T22:10:04-03:00",
       "title": "test(kanto): isolar prova headless de Kanto e registrar fase antes de diálogos Decades",
