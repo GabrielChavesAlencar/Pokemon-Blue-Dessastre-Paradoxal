@@ -81,6 +81,12 @@ TYPES = {
     "COOLTRAINER_F": "COOLTRAINER_F",
     "LEADER_KOGA": "LEADER_Koga",
     "JUGGLER": "JUGGLER",
+    "LEADER_SABRINA": "LEADER_Sabrina",
+    "PSYCHIC": "PSYCHIC_M",
+    "CHANNELER": "CHANNELER",
+    "BLACKBELT": "BLACKBELT",
+    "RIVAL_SILPH": "RIVAL2",
+    "ROCKETBOSS": "ROCKETBOSS",
     "TAMER": "TAMER",
 }
 TRAINERS = {
@@ -165,6 +171,77 @@ TRAINERS[147] = {
     8: ("JUGGLER", "Shawn"),
     11: ("LEADER_KOGA", "Koga"),
 }
+
+# Verified in read-only FRLG Map171/172 audit. No source Ruby commands run.
+TRAINERS[171] = {
+    2: ("LEADER_SABRINA", "Sabrina"),
+    3: ("PSYCHIC", "Cameron"), 5: ("CHANNELER", "Tasha"),
+    6: ("CHANNELER", "Stacy"), 7: ("PSYCHIC", "Preston"),
+    8: ("CHANNELER", "Amanda"), 9: ("PSYCHIC", "Johan"),
+    13: ("PSYCHIC", "Tyron"),
+}
+TRAINERS[172] = {
+    6: ("BLACKBELT", "Hideki"),
+    7: ("BLACKBELT", "Hitoshi"),  # Source event typo: Hitoshii; PBS: Hitoshi.
+    9: ("BLACKBELT", "Aaron"), 10: ("BLACKBELT", "Mike"),
+    12: ("BLACKBELT", "Koichi"),
+}
+SILPH_ROCKET_EVENTS = {
+    179: {5: 21, 6: 22},
+    180: {5: 23}, 181: {5: 24, 7: 25},
+    182: {5: 26, 8: 27}, 183: {5: 28, 7: 29},
+    184: {5: 30, 6: 31, 10: 32},
+    185: {5: 33, 6: 34}, 186: {5: 35, 9: 36},
+    187: {6: 37}, 188: {4: 38, 7: 39},
+}
+for source_id, versions in SILPH_ROCKET_EVENTS.items():
+    TRAINERS[source_id] = {eid: ("ROCKET", "Grunt", version)
+                           for eid, version in versions.items()}
+TRAINERS[188][10] = ("ROCKETBOSS", "Giovanni", 2)
+
+SAFFRON_STATIC_EVENTS = {
+    168: {6, 10, 12, 13, 14},             # City <-> gym, Silph, Mart, Center, Dojo
+    169: {1, 2},                         # Center exit + nurse
+    170: {1, 2},                         # Mart exit + clerk
+    171: {2, 3, 5, 6, 7, 8, 9, 10, 11, 13, *range(17, 46)},
+    172: {1, 2, 4, 6, 7, 9, 10, 12},     # Dojo fights, prizes, exit
+    189: {1, 2},                         # Local elevator replaces original warps
+}
+SILPH_EXTRAS = {(178, 1), (182, 9), (184, 43), (188, 18)}
+# Map189 source elevator jumps to unimported Map207..217. Safe
+# destinations are interior tiles adjacent to the audited elevator entrances.
+SILPH_FLOOR_LANDINGS = {
+    178: (22, 5), 179: (22, 5), 180: (22, 5),
+    181: (22, 5), 182: (22, 5), 183: (20, 5),
+    184: (23, 5), 185: (22, 5), 186: (24, 5),
+    187: (13, 5), 188: (13, 5),
+}
+
+def saffron_event_allowed(source_id, event_id, event):
+    if source_id in SAFFRON_STATIC_EVENTS:
+        return event_id in SAFFRON_STATIC_EVENTS[source_id]
+    if 178 <= source_id <= 188:
+        name = text(event.attrs["@name"])
+        return (event_id in TRAINERS.get(source_id, {}) or
+                (source_id, event_id) in SILPH_EXTRAS or
+                name.startswith(("Stairs ", "Elevator Door", "Warp Tile ", "Locked Door")))
+    return True
+
+def silph_locked_group(events, event_id):
+    """Group only orthogonally adjacent locked-door event tiles."""
+    doors = {eid: (ev.attrs["@x"], ev.attrs["@y"])
+             for eid, ev in events.items()
+             if text(ev.attrs["@name"]) == "Locked Door"}
+    if event_id not in doors:
+        raise ValueError(f"Missing audited Silph locked door {event_id}")
+    seen, pending = {event_id}, [event_id]
+    while pending:
+        x, y = doors[pending.pop()]
+        for other, (xx, yy) in doors.items():
+            if other not in seen and abs(x - xx) + abs(y - yy) == 1:
+                seen.add(other)
+                pending.append(other)
+    return sorted(seen)
 
 SURGE_CANS = {4, 10, *range(22, 35)}
 SURGE_LOCKS = {8, *range(11, 20)}
