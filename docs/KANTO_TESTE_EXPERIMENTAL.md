@@ -1,6 +1,6 @@
 # Kanto — jogar e testar as fases 07 e 08 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com 40 mapas de Pallet a Vermilion, incluindo S.S. Anne. A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+**Status:** disponível como **cópia isolada**, com **40 mapas jogáveis/anteriormente integrados** e **11 mapas de cenário sem eventos** na prévia de Celadon (51 no catálogo). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
 
 ## Opção diretamente no Game.exe principal
 
@@ -39,7 +39,7 @@ O perfil de saves **Kanto Piloto** pode ser compartilhado pelas cópias do pilot
 
 Após escolher o inicial com Oak, abra o **menu de pausa → Testes Kanto (experimental)**. Confirme o destino para visitar os trechos das fases 07 e 08 sem precisar repetir toda a campanha anterior.
 
-São 17 atalhos: Pallet, Pewter, Rota 4, Centro e três andares de Mt. Moon, Cerulean, Misty, Rota 5, Rota 6, Vermilion, Lt. Surge, porto, S.S. Anne 1F, cabine do capitão e convés. O acesso à **Rota 3** é caminhando para leste a partir de Pewter; assim você também poderá testar os treinadores e as conexões originais.
+Os **17 atalhos antigos** são: Pallet, Pewter, Rota 4, Centro e três andares de Mt. Moon, Cerulean, Misty, Rota 5, Rota 6, Vermilion, Lt. Surge, porto, S.S. Anne 1F, cabine do capitão e convés. O acesso à **Rota 3** é caminhando para leste a partir de Pewter; assim você também poderá testar os treinadores e as conexões originais.
 
 **Importante:** o menu usa somente mapas da cópia experimental e **não libera Liga, não concede insígnias, não altera a campanha principal e não existe no jogo Decades instalado**. Os pontos de chegada foram derivados de entradas/saídas da fonte FRLG, mas ainda precisam de validação visual de colisão no Windows.
 
@@ -55,6 +55,17 @@ São 17 atalhos: Pallet, Pewter, Rota 4, Centro e três andares de Mt. Moon, Cer
 - [ ] Repetir os testes nos mapas visitados depois das correções e registrar resultado *por mapa e evento*.
 
 A lista de visitação **não comprova** aprovação manual dos testes de combate, colisão, portas, save/reload ou todos os andares de Mt. Moon; o progresso de aceite permanece **1/16**.
+
+## Fase 09 — Celadon (apenas terreno, sem eventos)
+
+A [prévia da fase 09](KANTO_FASE_09.md) adiciona **11 mapas** (total **51**) para inspecionar cenário, tilesets e dimensões. No **menu de pausa → Testes Kanto (experimental)**, cinco novos atalhos permitem visitar **Rota 7**, **Celadon City**, **Ginásio de Celadon (sem Erika)**, **Centro Pokémon de Celadon (sem cura)** e **Loja de Celadon 1F (sem loja)**. Com isso, o menu tem **22 destinos**.
+
+**Aviso:** toda a fase 09 está intencionalmente sem eventos. Não é possível batalhar com Erika, entrar por portas ou usar escadas/elevadores da loja. Não tente avaliar esses recursos até que o usuário termine a análise dos eventos. Este estágio **não concede Rainbow Badge**.
+
+- [ ] Validar visualmente o terreno da Rota 7 e de Celadon City.
+- [ ] Verificar tilesets, coordenadas e limites do ginásio, Centro Pokémon e loja 1F.
+- [ ] Confirmar que as cenas novas estão vazias e não alteram saves, equipe, insígnias ou os 40 mapas anteriores.
+- [ ] Registrar pontos com colisão/passabilidade ruim para retomar junto à análise de eventos.
 
 ## 3. O que testar nas fases 07 e 08
 
