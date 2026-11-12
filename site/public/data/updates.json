@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "41e6ad132d5e44792b7701bd096e9495f83bf68b",
+      "date": "2026-11-11T21:23:50-03:00",
+      "title": "docs(kanto): validar etapa 01 e registrar 15 etapas restantes",
+      "category": "Documentação"
+    },
+    {
       "sha": "a6f2246647eebc7e82aa8a9dd7a3c6520aaca845",
       "date": "2026-11-11T21:22:54-03:00",
       "title": "docs(kanto): vincular contador de etapas ao roteiro principal",
