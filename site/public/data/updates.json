@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0169a322b5b53e8bc0387f9d179fda424b1b55a1",
+      "date": "2026-11-11T23:06:34-03:00",
+      "title": "feat(regions): regras locais HM, deposito seguro de especiais e protecao de PC",
+      "category": "Novidades"
+    },
+    {
       "sha": "b442c81be2b791cb479afc647c80e07be0ce8660",
       "date": "2026-11-11T23:04:52-03:00",
       "title": "feat(kanto): considerar insígnias regionais únicas no estágio global Blue",
