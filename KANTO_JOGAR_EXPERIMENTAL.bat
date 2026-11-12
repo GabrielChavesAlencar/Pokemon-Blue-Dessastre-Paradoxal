@@ -15,15 +15,17 @@ echo.
 
 rem Blue-Story.exe already installs an isolated portable Python runtime.
 rem Prefer it so people downloading the EXE do NOT have to install Python.
-set "PYTHON="
-for /d %%D in ("%~dp0tools\python-*") do if exist "%%~fD\python.exe" set "PYTHON=%%~fD\python.exe"
-if defined PYTHON goto :run
+set "PYTHON_EXE="
+set "PYTHON_EXTRA="
+for /d %%D in ("%~dp0tools\python-*") do if exist "%%~fD\python.exe" set "PYTHON_EXE=%%~fD\python.exe"
+if defined PYTHON_EXE goto :run
 
 where py >nul 2>&1
 if not errorlevel 1 (
   py -3 -c "import sys;sys.exit(0 if sys.version_info >= (3,10) else 1)" >nul 2>&1
   if not errorlevel 1 (
-    set "PYTHON=py -3"
+    set "PYTHON_EXE=py"
+    set "PYTHON_EXTRA=-3"
     goto :run
   )
 )
@@ -31,7 +33,7 @@ where python >nul 2>&1
 if not errorlevel 1 (
   python -c "import sys;sys.exit(0 if sys.version_info >= (3,10) else 1)" >nul 2>&1
   if not errorlevel 1 (
-    set "PYTHON=python"
+    set "PYTHON_EXE=python"
     goto :run
   )
 )
@@ -39,16 +41,16 @@ echo [ERRO] Python portatil/3.10+ nao encontrado. Abra Blue-Story.exe para prepa
 goto :error
 
 :run
-%PYTHON% -X utf8 "scripts\regions\ensure_source.py"
+"%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\ensure_source.py"
 if errorlevel 1 (
   echo [ERRO] Nao foi possivel preparar os mapas de Kanto.
   echo [AJUDA] Confira a internet, a fonte FRLG e docs\KANTO_TESTE_EXPERIMENTAL.md.
   goto :error
 )
 
-%PYTHON% -X utf8 "scripts\regions\gui_diagnostics.py" --launch-only %*
+"%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\gui_diagnostics.py" --launch-only %*
 set "GAME_EXIT=%errorlevel%"
-%PYTHON% -X utf8 "scripts\regions\kanto_feedback.py"
+"%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\kanto_feedback.py"
 echo.
 if "%GAME_EXIT%"=="0" (
   echo [OK] Game.exe do piloto foi encerrado sem erro detectado.
