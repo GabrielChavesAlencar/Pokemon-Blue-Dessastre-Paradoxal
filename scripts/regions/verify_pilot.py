@@ -484,6 +484,13 @@ def inspect(game: Path) -> dict:
                         # transfer, not an RPG::EventCommand 201. Admit it into
                         # the topology only if the whitelisted destination
                         # agrees with the pinned FRLG harbor exit.
+                        # Phase 12: the only scripted Cinnabar map transfer
+                        # is gated by the unique Mansion Secret Key. Check the
+                        # exact local callback/landing before adding this edge.
+                        if source == 199 and event_id == 4:
+                            guarded = f"BlueKantoPilot.cinnabar_gym_gate({mapping[202]}, 25, 23)"
+                            if script == guarded:
+                                edges[dest].add(mapping[202])
                         if source == 64 and event_id in (9, 29, 30):
                             allowed = f"BlueKantoPilot.harbor_gate({mapping[72]}, 9, 7)"
                             if script == allowed:
