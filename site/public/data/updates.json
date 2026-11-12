@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bd37f56b3317826e2c40b67d70ba42eaa568cdd",
+      "date": "2026-11-11T23:51:08-03:00",
+      "title": "docs(kanto): fase 07 Mt Moon, Misty, 25 mapas e modo experimental para testar",
+      "category": "Documentação"
+    },
+    {
       "sha": "fcf326bb6c46c1e7ee4acad9c9350008cd4f4a18",
       "date": "2026-11-11T23:49:34-03:00",
       "title": "ci(kanto): exigir os 12 retratos regionais da fase Misty",
