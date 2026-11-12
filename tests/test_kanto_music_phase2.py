@@ -19,7 +19,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         self.assertEqual(compiler.phase2_track_numbers(self.project),
                          {6, 8, 13, 15, 17, 21, 25, 34, 35, 36, 37, 40,
                           47, 50, 52, 55, 56})
-        self.assertFalse(any(x["enabled"] for x in self.rules["battles"]))
+        self.assertEqual(sum(x["enabled"] for x in self.rules["battles"]), 8)
         self.assertFalse(any(x["enabled"] for x in self.rules["events"]))
         self.assertFalse(any(x["enabled"] for x in self.rules["scenes"]))
 
