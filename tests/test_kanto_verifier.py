@@ -10,11 +10,34 @@ sys.path.insert(0, str(REGIONS))
 try:
     from verify_pilot import reachable
     from pilot import PILOT_META, build_signature, pilot_is_current
+    from audit import PILOT_V1_SOURCE_IDS, stable_source_order
 finally:
     sys.path.remove(str(REGIONS))
 
 
 class KantoPilotAuditTests(unittest.TestCase):
+    def test_phase07_preserves_original_13_map_slots(self):
+        root = REGIONS.parents[1]
+        manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
+        order = stable_source_order({int(k) for k in manifest["maps"]})
+        self.assertEqual(len(order), 25)
+        self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
+        self.assertEqual(len(set(order)), 25)
+        self.assertIn(42, order[13:])
+
+    def test_portal_matches_audited_cerulean_roster(self):
+        root = REGIONS.parents[1]
+        data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
+        self.assertEqual(len(data["locations"]), 25)
+        self.assertEqual(len(data["trainers"]), 28)
+        misty = next(t for t in data["trainers"] if t["id"] == "kanto-misty")
+        self.assertTrue(misty["leader"])
+        self.assertEqual(misty["location"], "kanto-cerulean-gym")
+        self.assertEqual(
+            [(p["species"], p["level"]) for p in misty["variants"][0]["team"]],
+            [("STARYU", 18), ("STARMIE", 21)]
+        )
+
     def test_reachability_follows_bidirectional_corridor(self):
         graph = {300: {301}, 301: {300, 302}, 302: {301}}
         self.assertEqual(reachable(graph, 300), {300, 301, 302})
