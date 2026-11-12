@@ -97,12 +97,12 @@ jobs:
           python scripts/regions/install_kanto.py --apply --game game --pilot .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Kanto transaction failed'}
           if(-not (Test-Path 'game/Data/blue-kanto-start.txt')){throw 'Kanto marker missing'}
-          foreach($kind in @('RIVAL','BUGCATCHER','CAMPER','LEADER')){
+          foreach($kind in @('RIVAL','BUGCATCHER','CAMPER','LEADER','LASS','YOUNGSTER','SUPERNERD','HIKER','ROCKET','SWIMMER','PICNICKER','LEADER_MISTY')){
             $portrait="game/Graphics/Trainers/BLUE_KANTO_$kind.png"
             if(-not (Test-Path $portrait)){throw "Kanto portrait missing: $portrait"}
             if((Get-Item $portrait).Length -lt 8){throw "Kanto portrait empty: $portrait"}
           }
-          Write-Host 'Four Kanto trainer portraits are present in the integrated game.'
+          Write-Host 'All twelve regional trainer portraits are present in the integrated game.'
           if((Get-FileHash 'game/Data/System.rxdata' -Algorithm SHA256).Hash -ne $originalSystem){throw 'Native start was overwritten'}
           if((Get-FileHash 'game/Game.ini' -Algorithm SHA256).Hash -ne $originalIni){throw 'Native game title was overwritten'}
           if((Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash -ne $originalConfig){throw 'Native save directory was changed'}
