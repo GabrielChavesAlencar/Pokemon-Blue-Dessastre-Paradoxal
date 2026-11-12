@@ -1,8 +1,8 @@
 # Kanto — jogar e testar fases 07 a 11 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **8 interiores adicionais com transferência de ida e volta**, **11 prévias sem eventos em Celadon**, **20 prévias sem eventos em Fuchsia/Safari** e **30 prévias sem eventos em Saffron/Silph Co.** (**109 no catálogo**). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **8 interiores adicionais**, **3 mapas funcionais em Celadon**, **8 prévias restantes de Celadon**, **20 prévias Fuchsia/Safari** e **30 prévias Saffron/Silph Co.** (**109 no catálogo**). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
 
-**Progresso atual:** [7/16 núcleos funcionais — faltam 9; 1/16 aceito integralmente — faltam 15](KANTO_AVANCO_FUNCIONAL_07.md). A CI da missão do pacote de Oak passou, mas nenhuma validação manual foi concluída com essa atualização.
+**Progresso atual:** [8/16 núcleos funcionais — faltam 8; 1/16 aceito integralmente — faltam 15](KANTO_AVANCO_FUNCIONAL_08.md). A [CI de Celadon/Erika](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) passou; o aceite ainda depende de caminhar, batalhar e salvar manualmente.
 
 ## Opção diretamente no Game.exe principal
 
@@ -85,16 +85,20 @@ Após [CI Windows aprovada](https://github.com/GabrielChavesAlencar/Pokemon-Blue
 
 A lista de visitação **não comprova** aprovação manual dos testes de combate, colisão, portas, save/reload ou todos os andares de Mt. Moon; o progresso de aceite permanece **1/16**.
 
-## Fase 09 — Celadon (apenas terreno, sem eventos)
+## Fase 09 — núcleo funcional Erika/Celadon (8º avanço)
 
-A [prévia da fase 09](KANTO_FASE_09.md) adiciona **11 mapas** (total **51**) para inspecionar cenário, tilesets e dimensões. No **menu de pausa → Testes Kanto (experimental)**, cinco novos atalhos permitem visitar **Rota 7**, **Celadon City**, **Ginásio de Celadon (sem Erika)**, **Centro Pokémon de Celadon (sem cura)** e **Loja de Celadon 1F (sem loja)**. Com isso, o menu tem **22 destinos**.
+[Documentação e checklist da nova integração](KANTO_AVANCO_FUNCIONAL_08.md). Os **109 mapas** incluem três cenários de Celadon com eventos autorais limitados: **City (114)** com portas do ginásio e Centro Pokémon; **Center (115)** com cura e retorno; **Gym (124)** com Erika, sete treinadoras `Sight(n)`, Rainbow Badge e saída. Permanecem **58 mapas somente cenário**, incluindo Rota 7, loja Celadon, Fuchsia e Saffron. O menu de pausa mantém **41 atalhos experimentais**, inclusive os cinco de Celadon.
 
-**Aviso:** toda a fase 09 está intencionalmente sem eventos. Não é possível batalhar com Erika, entrar por portas ou usar escadas/elevadores da loja. Não tente avaliar esses recursos até que o usuário termine a análise dos eventos. Este estágio **não concede Rainbow Badge**.
+- [ ] Entrar na cidade, atravessar **a porta do ginásio e a do Centro** caminhando e voltar por cada saída.
+- [ ] Curar a equipe em Celadon, confirmar gráficos e ponto de retorno.
+- [ ] Testar batalhas com as **sete treinadoras** por linha de visão e suas equipes.
+- [ ] Perder para Erika: **não** receber Rainbow nem guardar vitória.
+- [ ] Vencer Erika: receber Rainbow **uma vez**; testar conversa pós-vitória e save/reload.
+- [ ] Confirmar que loja Celadon, Game Corner, Rocket Hideout e outros eventos ainda estão indisponíveis.
+- [ ] Verificar colisão, caminho até a líder, Cut trees, save antigo e posteriormente JoiPlay.
 
-- [ ] Validar visualmente o terreno da Rota 7 e de Celadon City.
-- [ ] Verificar tilesets, coordenadas e limites do ginásio, Centro Pokémon e loja 1F.
-- [ ] Confirmar que as cenas novas estão vazias e não alteram saves, equipe, insígnias ou os 40 mapas anteriores.
-- [ ] Registrar pontos com colisão/passabilidade ruim para retomar junto à análise de eventos.
+**Nota:** o [relatório original da prévia de cenário](KANTO_FASE_09.md) é histórico. O novo núcleo de gameplay possui [CI Windows aprovada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299), mas **não** tem QA manual concluído.
+
 
 ## Fase 11 — Saffron City, Sabrina e Silph Co. (prévia sem eventos)
 
