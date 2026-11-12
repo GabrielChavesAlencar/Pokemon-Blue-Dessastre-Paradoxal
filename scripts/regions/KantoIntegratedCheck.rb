@@ -33,6 +33,24 @@ module KantoIntegratedCheck
              "Native Decades System.rxdata start coordinates were changed")
 
     stage("before_travel_validation")
+    # Game.start_new does not run Scene_Map.main or initialize graphics
+    # spritesets in this headless proof. The installed DexNav overwrites
+    # transfer_player and needs those sprites. Only in this CI proof, replace
+    # that renderer-dependent method with the real PokemonMapFactory setup and
+    # real player movement. Production gameplay keeps the original method.
+    $scene.define_singleton_method(:transfer_player) do
+      target = $game_temp.player_new_map_id
+      $map_factory.setup(target) if $game_map.map_id != target
+      $game_player.moveto($game_temp.player_new_x, $game_temp.player_new_y)
+      case $game_temp.player_new_direction
+      when 2 then $game_player.turn_down
+      when 4 then $game_player.turn_left
+      when 6 then $game_player.turn_right
+      when 8 then $game_player.turn_up
+      end
+      $game_temp.player_transferring = false
+      $game_map.update
+    end
     # This is a discardable CI session. Simulate Kanto's future League here,
     # because only Pallet-Pewter exists today; real gameplay NEVER grants it.
     state = $PokemonGlobal.blue_regions
