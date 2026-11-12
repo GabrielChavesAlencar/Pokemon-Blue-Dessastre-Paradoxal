@@ -87,8 +87,12 @@ Dir.mktmpdir('kanto-me-') do |tmp|
           Object.new.send(:pbMEPlay,'Evolution success')==:native_me_engine &&
           $me_played.map(&:first)==['Kanto/evolve.mp3'])
     $me_played.clear
-    check('Native obtained Pokémon cue routed only once',
+    check('Native Pokemon get before storage remains native, not prematurely replaced',
           Object.new.send(:pbMEPlay,'Pkmn get')==:native_me_engine &&
+          $me_played.map(&:first)==['Pkmn get'])
+    $me_played.clear
+    check('Committed Kanto silent gift plays the regional ME exactly once',
+          BlueMusic.kanto_me_play('obtained_pokemon') &&
           $me_played.map(&:first)==['Kanto/pokemon.mp3'])
     $me_played.clear
     check('Other native and explicit story cues are untouched',
