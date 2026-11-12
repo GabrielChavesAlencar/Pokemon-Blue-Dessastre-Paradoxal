@@ -226,6 +226,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 08/16 — Routes 35–37, National Park, Ecruteak, Morty
 
+**Implementação parcial publicada no GitHub:** [JOHTO_FASE_08_ECRUTEAK_MORTY.md](JOHTO_FASE_08_ECRUTEAK_MORTY.md). O núcleo `JohtoEcruteak.rb` prepara a progressão por Rotas 35–37, visita ao National Park, porta do Sudowoodo, entrada em Ecruteak, Burned Tower e rival, despertar simbólico dos três lendários, Rocket do Dance Theater, prêmio Surf sujeito à chave de item real e Morty com concessão única de FOG. `data/regions/johto-phase08.json` só contém nós simbólicos e gates desativados; testes Ruby/Python verificam perdas, vitórias, recompensas, salva/carrega e isolamento. **Os mapas reais, o roaming dos lendários, os treinadores PBS, a competição de captura e a execução no Game.exe ainda não foram implementados. A etapa 08 permanece PARCIAL, sem habilitar Johto ficticiamente.**
+
+
 **Implementar:** Route 35/36/37, National Park e competição de captura quando os sistemas estiverem prontos, Ecruteak, Burned Tower, dança/Kimono Girls quando fizer parte da versão principal, ginásio Morty e FOG Badge. Ruins of Alph e Mt. Mortar podem ser preparados como módulos opcionais com status separado, não falsamente completos.
 
 **Teste/aceite:** caminho aberto por evento correto, torres com passabilidade e encontros, batalha de Morty, Surf desbloqueado apenas conforme regra local já registrada.
