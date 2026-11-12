@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ce091b596b4bb92b42ea6a59aed84b9ad90f2ae5",
+      "date": "2026-11-12T20:47:56-03:00",
+      "title": "docs(johto): define grafo simbólico de rotas, Ecruteak, Burned Tower, Morty e FOG",
+      "category": "Documentação"
+    },
+    {
       "sha": "6abaa824c61e73883658d77e486ff534ee4efdac",
       "date": "2026-11-12T20:47:19-03:00",
       "title": "test(johto): executa Ecruteak e Morty na regressao Python do Blue Studio",
