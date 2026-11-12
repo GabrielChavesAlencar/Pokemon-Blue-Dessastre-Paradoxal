@@ -14,8 +14,12 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from scripts.music import compile_kanto_music as compile_music
-from scripts.music import install_kanto_music
+try:
+    from scripts.music import compile_kanto_music as compile_music
+    from scripts.music import install_kanto_music
+except ModuleNotFoundError:
+    import compile_kanto_music as compile_music
+    import install_kanto_music
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / ".blue-work/kanto-music-phase6-audio.json"
