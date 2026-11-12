@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7d59fa3e38dadc01a2b4081714e5e658ce259b47",
+      "date": "2026-11-11T21:30:33-03:00",
+      "title": "docs(kanto): documentar reproduçao PhysFS e checklist manual de jogabilidade",
+      "category": "Documentação"
+    },
+    {
       "sha": "be942ba5d4be26c89c9bfbc43db4bc7911e4dcbc",
       "date": "2026-11-11T21:29:36-03:00",
       "title": "ci(kanto): investigar janela Game.exe sem mocks apos verificação nativa",
