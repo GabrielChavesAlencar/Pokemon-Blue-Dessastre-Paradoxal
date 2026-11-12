@@ -76,6 +76,9 @@ TYPES = {
     "SAILOR": "SAILOR", "ENGINEER": "ENGINEER",
     "GENTLEMAN": "GENTLEMAN", "FISHERMAN": "FISHERMAN",
     "LEADER_SURGE": "ENGINEER",  # Provisional electric-themed battle portrait; original FRLG trainer art not redistributed.
+    "LEADER_ERIKA": "LEADER_Erika",
+    "BEAUTY": "BEAUTY",
+    "COOLTRAINER_F": "COOLTRAINER_F",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -134,6 +137,19 @@ TRAINERS.update({
         9: ("SAILOR", "Trevor"), 10: ("SAILOR", "Edmond"),
     },
 })
+
+# Celadon Gym: all eight event IDs and sight values audited in the
+# pinned Essentials FRLG 1.1 Map124; no Rocket/Game Corner imports.
+TRAINERS[124] = {
+    1: ("LEADER_ERIKA", "Erika"),
+    7: ("PICNICKER", "Tina"),
+    42: ("LASS", "Kay"),
+    43: ("BEAUTY", "Bridget"),
+    44: ("BEAUTY", "Tamia"),
+    45: ("BEAUTY", "Lori"),
+    46: ("LASS", "Lisa"),
+    47: ("COOLTRAINER_F", "Mary"),
+}
 
 SURGE_CANS = {4, 10, *range(22, 35)}
 SURGE_LOCKS = {8, *range(11, 20)}
@@ -214,7 +230,8 @@ def install_events(source, target, mapping):
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
-        # Phases 09-11 are GEOMETRY ONLY until the user's event analysis finishes.
+        # Only the three audited phase-09 Celadon core maps have adapted
+        # gameplay; 58 other previews still forbid any foreign event.
         # stage() already serializes a blank event table for every imported map.
         if original in preview_only:
             dest_file = target / "Data" / f"Map{destination:03}.rxdata"
@@ -228,6 +245,7 @@ def install_events(source, target, mapping):
         selected = {}
         script_events = {6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
                          11: {2: "BlueKantoPilot.heal"},
+                         115: {2: "BlueKantoPilot.heal"},
                          26: {2: "BlueKantoPilot.heal"},
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
@@ -257,6 +275,15 @@ def install_events(source, target, mapping):
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            # Phase 09 selective import: only audited doors, healing, and
+            # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
+            # Cut trees, elevators or untranslated foreign story events.
+            if original == 114 and event_id not in (3, 20):
+                continue
+            if original == 115 and event_id not in (1, 2):
+                continue
+            if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47):
+                continue
             if original == 67 and event_id in (SURGE_CANS | SURGE_LOCKS):
                 # The foreign gym's puzzle depends on game-wide switches.
                 # Translate each trash can to a single audited callback, and
@@ -342,7 +369,10 @@ def install_events(source, target, mapping):
                 # Only explicitly supported source door destinations survive. Import no other commands.
                 character = actor(event) if graphic else b""
                 is_door = "door" in name.lower() and bool(character)
-                selected[event_id] = new_event(event, [warp], 0 if is_door else 1, character)
+                # For the audited Celadon entrance doors, keep the original
+                # Player Touch semantics rather than requiring an action key.
+                trigger = 1 if original == 114 and event_id in (3, 20) else (0 if is_door else 1)
+                selected[event_id] = new_event(event, [warp], trigger, character)
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
 
