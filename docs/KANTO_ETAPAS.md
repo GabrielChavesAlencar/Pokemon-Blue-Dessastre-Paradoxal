@@ -14,6 +14,18 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 
 **Marco inicial:** Pallet → Pewter com 13 mapas. **Fase 07:** 25 mapas até Cerulean e Misty. **Fase 08:** 40 mapas até Vermilion e S.S. Anne, 54 perfis de treinadores no portal e testes nativos automatizados. As batalhas foram simuladas na CI; a validação visual/manual permanece necessária.
 
+## Feedback manual de mapas — 12/11/2026
+
+**Registro do jogador:** [TXT de testes e pendências detalhadas](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md). Foram informados testes em **Pallet Town, Rotas 1 e 2, Viridian City, Viridian Forest, Pewter City, lado esquerdo da Rota 4 e Mt. Moon**. São **8 áreas visitadas**, não oito mapas aprovados integralmente; o TXT não detalha todas as batalhas, portas, interiores ou andares.
+
+**Bloqueadores de aceitação** a incorporar nas correções de mapa e não apagar ao ampliar Kanto:
+
+- [ ] **MAN-01 — Casas e estabelecimentos:** conectar corretamente entradas e saídas de todos os interiores auditados, testando portas e retorno na cópia Windows; prioridade alta.
+- [ ] **MAN-02 — Gatilhos de treinadores:** iniciar confrontos na aproximação/linha de visão; exigir batalha nos pontos de bloqueio obrigatórios sem tornar todos os NPCs opcionais barreiras artificiais. Persistir vitórias, derrotas e estado após save/reload; prioridade alta.
+- [ ] **MAN-03 — Interfaces de insígnias:** criar layout das oito insígnias de Kanto e painel de conquistas de todas as regiões/gerações, com indicadores próprios para Alola, Decades e Hisui, ligados ao mesmo progresso regional do save; prioridade média.
+
+**Impacto:** etapas 02 e 03 **continuam abertas**, assim como o aceite gráfico do trecho de Mt. Moon (07). A fase 08 não foi testada manualmente segundo o TXT. **Barra 1 permanece 8/16 (50%) e Barra 2 permanece 1/16 (6,25%).**
+
 ## 16 etapas de fechamento
 
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
@@ -36,6 +48,9 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — Feedback real de caminhada e pendências:** o arquivo `tetes de mapas.txt` informa oito áreas visitadas, com cobertura parcial da Rota 4 e sem aprovação por evento. Foram registradas três tarefas rastreáveis (**MAN-01** interiores/portas, **MAN-02** treinadores/linha de visão e **MAN-03** interfaces de insígnias), todas **pendentes de implementação e teste**; detalhes em [feedback dos testes](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md). Contadores inalterados.
+
 
 - **12/11/2026 — Etapa 08, integração experimental validada em CI:** [workflow Windows 43198430978](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43198430978) compilou os **40 mapas**, testou o quebra-cabeça das lixeiras e a equipe de Lt. Surge, registrou a Thunder Badge uma vez, manteve o S.S. Ticket no estado regional e confirmou save/reload; também importou a expansão numa cópia descartável de Decades sem alterar o começo nativo. No [guia Windows](KANTO_TESTE_EXPERIMENTAL.md) há 17 atalhos. **As batalhas e interações de campo não foram executadas por uma pessoa; o contador de aceitação permanece 1/16.** [Portal](../site/public/data/kanto.json) com 40 locais e 54 treinadores.
 
