@@ -49,8 +49,8 @@ LOCATION_NAMES = {
     "SS_ANNE_B1F": "S.S. Anne — B1F",
     "SS_ANNE_DECK": "S.S. Anne — convés",
     "ROUTE_7": "Rota 7",
-    "CELADON_CITY": "Celadon City — prévia sem eventos",
-    "CELADON_CENTER": "Centro Pokémon de Celadon — prévia",
+    "CELADON_CITY": "Celadon City",
+    "CELADON_CENTER": "Centro Pokémon de Celadon",
     "CELADON_DEPT_1F": "Loja de Celadon — 1F (prévia)",
     "CELADON_DEPT_2F": "Loja de Celadon — 2F (prévia)",
     "CELADON_DEPT_3F": "Loja de Celadon — 3F (prévia)",
@@ -58,7 +58,7 @@ LOCATION_NAMES = {
     "CELADON_DEPT_5F": "Loja de Celadon — 5F (prévia)",
     "CELADON_DEPT_ROOF": "Loja de Celadon — terraço (prévia)",
     "CELADON_DEPT_ELEVATOR": "Loja de Celadon — elevador (prévia)",
-    "CELADON_GYM": "Ginásio de Celadon — prévia sem Erika",
+    "CELADON_GYM": "Ginásio de Celadon — Erika",
     "ROUTE_18_FUCHSIA": "Rota 18 — trecho Fuchsia (prévia)",
     "ROUTE_18_GATE": "Portaria da Rota 18 (prévia)",
     "ROUTE_18_CYCLING": "Rota 18 — trecho Cycling Road (prévia)",
@@ -170,6 +170,18 @@ TRAINER_LOCATIONS.update({
        for name in ("Phillip", "Huey", "Dylan", "Duncan", "Leonard")},
     **{("SAILOR", name): ("SS_ANNE_DECK", "Marinheiro")
        for name in ("Trevor", "Edmond")},
+})
+
+
+TRAINER_LOCATIONS.update({
+    ("LEADER_ERIKA", "Erika"): ("CELADON_GYM", "Líder de ginásio"),
+    ("PICNICKER", "Tina"): ("CELADON_GYM", "Piqueniqueira"),
+    ("LASS", "Kay"): ("CELADON_GYM", "Treinadora"),
+    ("BEAUTY", "Bridget"): ("CELADON_GYM", "Beauty"),
+    ("BEAUTY", "Tamia"): ("CELADON_GYM", "Beauty"),
+    ("BEAUTY", "Lori"): ("CELADON_GYM", "Beauty"),
+    ("LASS", "Lisa"): ("CELADON_GYM", "Treinadora"),
+    ("COOLTRAINER_F", "Mary"): ("CELADON_GYM", "Treinadora experiente"),
 })
 
 
