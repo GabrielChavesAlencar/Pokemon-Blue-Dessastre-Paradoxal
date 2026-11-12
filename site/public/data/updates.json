@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "187786bb10a74f9976cd1f2ab6d9a2d7fa99168d",
+      "date": "2026-11-12T15:48:11-03:00",
+      "title": "feat(kanto-music): organizar 64 MP3 por função e instalar BGM/ME com segurança",
+      "category": "Novidades"
+    },
+    {
       "sha": "f11e02cc509576c434f674c119fbeea30aa9a4cd",
       "date": "2026-11-12T15:29:04-03:00",
       "title": "adicionando musicas de kanto p7",
