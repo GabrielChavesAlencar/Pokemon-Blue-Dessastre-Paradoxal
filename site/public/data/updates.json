@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5c7904d86c2fc33bdb1d27c85b14c14eda761a62",
+      "date": "2026-11-12T19:28:13-03:00",
+      "title": "test(johto): ajusta contrato do menu inicial para dois testes regionais",
+      "category": "Testes"
+    },
+    {
+      "sha": "534620b033fba3016e614c69c6781f78a06a1e01",
+      "date": "2026-11-12T19:28:02-03:00",
+      "title": "test(johto): preserva slots e testa ambas opções no menu de título",
+      "category": "Testes"
+    },
+    {
       "sha": "da00a04b8c61b04972dae84cbad4badafd9331b4",
       "date": "2026-11-12T19:27:34-03:00",
       "title": "feat(johto): adiciona Testar Johto ao menu inicial sem afetar piloto Kanto",
