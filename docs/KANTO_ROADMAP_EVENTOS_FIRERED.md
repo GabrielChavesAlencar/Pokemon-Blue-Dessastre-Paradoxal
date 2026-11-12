@@ -21,7 +21,7 @@
 - **Barra de aceitação de Kanto:** 1/16 = **6,25%**. Testes simulados/nativos não substituem caminhada, colisões e batalhas reais no Windows.
 - **Trilha de eventos FireRed:** **12 marcos de auditoria e adaptação**, definidos no estudo e listados abaixo; **progresso numérico ainda não aferido**. O total de eventos em escopo precisa vir da execução real do extrator e da triagem das salas opcionais, não de um percentual estimado.
 
-**Proteção vigente:** os 11 IDs Celadon (111, 114, 115, 117–124) e 20 IDs Fuchsia/Safari (141–147, 152, 153, 155–163, 164, 165; conferir manifesto exato), além de **30 IDs novos Saffron/Silph/Dojo** (57, 62, 107–110, 112–113, 168–172, 173–189 exceto IDs inexistentes na fonte; usar a lista exata do manifesto), permanecem em `preview_only` e com **zero eventos**. Ler esses cenários é permitido; instalar qualquer gatilho, porta, NPC, batalha, item, cura ou insígnia nesses mapas exige autorização posterior. A entrega desta documentação **não** é autorização implícita.
+**Proteção vigente:** os 11 IDs Celadon (111, 114, 115, 117–124) e 20 IDs Fuchsia/Safari (141–147, 152, 153, 155–163, 164, 165; conferir manifesto exato), além de **30 IDs novos Saffron/Silph/Dojo** (57, 62, 107–110, 112–113 e 168–189; consultar o manifesto para os nomes), permanecem em `preview_only` e com **zero eventos**. Ler esses cenários é permitido; instalar qualquer gatilho, porta, NPC, batalha, item, cura ou insígnia nesses mapas exige autorização posterior. A entrega desta documentação **não** é autorização implícita.
 
 ## 2. Preparação / auditoria sem alterar gameplay
 
