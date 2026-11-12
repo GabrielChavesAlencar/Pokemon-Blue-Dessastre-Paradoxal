@@ -137,6 +137,7 @@ end
 require ARGV.fetch(0)
 require ARGV.fetch(1)
 require ARGV.fetch(2)
+require ARGV.fetch(3)
 BlueRegionalPolicy.install
 
 Dir.mktmpdir("blue-regional-policy-") do |dir|
