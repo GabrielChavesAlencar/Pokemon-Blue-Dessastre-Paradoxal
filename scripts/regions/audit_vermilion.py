@@ -14,7 +14,7 @@ from audit import ROOT, inventory, load
 from server.ruby_marshal import text
 
 TARGET = re.compile(
-    r"(?i)(route\\s*0?[56]\\b|vermilion|s\\.?s\\.?\\s*anne|ship|harbor|"
+    r"(?i)(route\s*0?[56]\b|vermilion|s\.?s\.?\s*anne|ship|harbor|"
     r"port|underground|diglett|surge|cerulean|bike shop)"
 )
 IMPORTANT = re.compile(
