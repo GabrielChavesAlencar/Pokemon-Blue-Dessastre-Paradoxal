@@ -46,7 +46,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [x] Auditoria de fonte FRLG: **10 interiores ausentes**, dos quais **8** têm par de entrada/saída seguro e foram importados com eventos de transferência. Portas condicionais de Giovanni e Diglett's Cave completa continuam protegidas.
 - [x] Auditoria de **56 treinadores** da fonte: 50 com linha de visão `Sight(n)` e 6 originais de interação manual; restaurar `Event Touch` e abordagem nativa nos 50, sem importar scripts de terceiros.
 - [x] Implementar página de pós-vitória com `self-switch A` local e chave estável de evento. Derrota não deve registrar vitória; treinadores opcionais não viram barreiras artificiais.
-- [ ] Conferir **compilação nativa e regressão** da revisão publicada no GitHub Actions.
+- [x] **[Compilação nativa CI 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042) e [regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) aprovadas**: 109 mapas, oito interiores bidirecionais, 50 gatilhos Sight(n), saves, RUN.bat e Chromium.
 - [ ] **TESTE MANUAL:** Pallet → casa do rival → Viridian (2 casas) → Rota 2 (portaria/casa escondida) → Pewter (Museu/2 casas) com retorno; abordagem de Rick, derrota, vitória, repetição e save/reload na Forest.
 - [ ] Completar demais interiores, visão/travas de história e UI de insígnias (MAN-03), eventos canônicos e traduções EN/PT-BR.
 
