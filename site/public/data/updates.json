@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "19595e4bb619ce81e3a42322fe4bffdf706ffb4f",
+      "date": "2026-11-11T21:51:43-03:00",
+      "title": "feat(regions): conectar seletor de origem ao fluxo de nova partida",
+      "category": "Novidades"
+    },
+    {
+      "sha": "baa583df33d4ebccb1ce7bfbce5061e098b8f7b4",
+      "date": "2026-11-11T21:51:41-03:00",
+      "title": "feat(regions): conectar seletor de origem ao fluxo de nova partida",
+      "category": "Novidades"
+    },
+    {
+      "sha": "eb234e81e621d582df913d4f5bdc880e307106a2",
+      "date": "2026-11-11T21:51:38-03:00",
+      "title": "feat(regions): conectar seletor de origem ao fluxo de nova partida",
+      "category": "Novidades"
+    },
+    {
+      "sha": "27ffd7b5381ef673513ff9f5e26549f2289f7d5d",
+      "date": "2026-11-11T21:51:36-03:00",
+      "title": "feat(regions): conectar seletor de origem ao fluxo de nova partida",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ca26c0353898c63eac95fa65818121db5f93608f",
+      "date": "2026-11-11T21:51:33-03:00",
+      "title": "feat(regions): conectar seletor de origem ao fluxo de nova partida",
+      "category": "Novidades"
+    },
+    {
       "sha": "6bc965e51e2e1715a3dafe452fda85179fb99412",
       "date": "2026-11-11T21:50:52-03:00",
       "title": "feat(regions): selecionar regiao no inicio de nova partida sem afetar saves antigos",
