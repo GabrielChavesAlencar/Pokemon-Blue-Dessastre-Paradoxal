@@ -8,6 +8,8 @@ O projeto já possuía verificações de 142 mapas, 64 destinos de testes, event
 
 Os testes são injetados **exclusivamente na cópia descartável de `.blue-work` da CI**; não viram evento do jogo, não concedem insígnias, não modificam o arquivo de save e não são importados ao `game/Game.exe` original. A prova se refere a deslocamento de personagem em **headless**, não a input manual de teclado/joystick nem à renderização.
 
+**Evidência nativa obtida:** a [CI Windows 43272300652](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43272300652) concluiu com sucesso e registrou **16 destinos com passo efetivo do Game_Player**, além de **8 verificações diagnósticas de aproximação às portas**. Os 24 registros não equivalem a 24 percursos de gameplay; o script separa deliberadamente `native_step_verified` de caminhos apenas estimados e de casos não reproduzidos em modo headless. Também foram mantidos os testes de save/reload e Game.exe principal. O usuário ainda precisa validar os eventos no Windows.
+
 ## Rotas e eventos prioritários para testes manuais
 
 O usuário já relatou ter visitado Pallet, Route 1/2, Viridian, Viridian Forest, Pewter, lado oeste de Route 4 e Mt. Moon. Isso é evidência parcial de **visita**, não de que todos os comandos, colisões e portas funcionam.
