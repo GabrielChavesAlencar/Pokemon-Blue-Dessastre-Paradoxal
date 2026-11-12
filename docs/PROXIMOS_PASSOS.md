@@ -21,6 +21,12 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [x] O teste nativo compilou o conteúdo, carregou Pallet e o laboratório, consultou encontros e equipes, registrou a Boulder Badge e recarregou o save. As vitórias de batalha foram simuladas pelo teste. [Execução no GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43123226204).
 - [ ] Jogar o percurso manualmente. Na última tentativa de abrir a cópia local por automação, o motor falhou ao inicializar o sistema de arquivos (PhysFS). A abertura em uma sessão normal do Windows ainda precisa ser confirmada.
 
+## Fase 09 — autorização limitada a cenários
+
+Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tileset das áreas selecionadas, sem eventos de qualquer tipo no lote novo. **Manter MAN-01 (interiores), MAN-02 (treinadores) e eventos de Erika/Team Rocket em espera pela análise do usuário.** Não apagar as pendências nem criar atalhos que concedam insígnias.
+
+**Estado de Kanto:** etapa 09 iniciada (cenário), mas desenvolvimento funcional **8/16 (50%)**, aceitação **1/16 (6,25%)**, porque a fase 09 ainda não tem progressão nem batalha.
+
 ## 0. Correções prioritárias identificadas pelo usuário (12/11/2026)
 
 **Fonte:** [feedback de teste dos mapas — leitura e critérios de aceite](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md).
