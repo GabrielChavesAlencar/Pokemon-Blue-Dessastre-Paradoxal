@@ -1395,6 +1395,126 @@
       "name": "Ginásio de Celadon — prévia sem Erika",
       "methods": [],
       "trainers": []
+    },
+    {
+      "id": "kanto-route-18-fuchsia",
+      "name": "Rota 18 — trecho Fuchsia (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-18-gate",
+      "name": "Portaria da Rota 18 (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-18-cycling",
+      "name": "Rota 18 — trecho Cycling Road (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-fuchsia-city",
+      "name": "Fuchsia City — prévia sem eventos",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-fuchsia-center",
+      "name": "Centro Pokémon de Fuchsia (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-fuchsia-mart",
+      "name": "Poké Mart de Fuchsia (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-fuchsia-gym",
+      "name": "Ginásio de Fuchsia — sem Koga (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-fuchsia-warden-house",
+      "name": "Casa do Warden (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-fuchsia-safari-gate",
+      "name": "Portão da Safari Zone (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-south",
+      "name": "Safari Zone — setor sul (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-rest-south",
+      "name": "Safari Zone — casa de descanso sul (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-east",
+      "name": "Safari Zone — setor leste (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-rest-east",
+      "name": "Safari Zone — casa de descanso leste (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-north",
+      "name": "Safari Zone — setor norte (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-rest-north",
+      "name": "Safari Zone — casa de descanso norte (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-west",
+      "name": "Safari Zone — setor oeste (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-rest-west",
+      "name": "Safari Zone — casa de descanso oeste (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-safari-secret-house",
+      "name": "Safari Zone — Secret House (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-15",
+      "name": "Rota 15 (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-15-gate",
+      "name": "Portaria da Rota 15 (prévia)",
+      "methods": [],
+      "trainers": []
     }
   ],
   "trainers": [
