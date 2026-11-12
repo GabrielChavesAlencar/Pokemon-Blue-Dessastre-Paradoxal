@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a0fb281c7db90558dc91d500177e218246a6dc4e",
+      "date": "2026-11-12T10:13:26-03:00",
+      "title": "Kanto Erika: adicionar oito equipes do PBS FRLG auditadas sem alterar moves ou levels",
+      "category": "Novidades"
+    },
+    {
       "sha": "b10e501268a6a86836c2e16e44a82b1067292191",
       "date": "2026-11-12T10:12:53-03:00",
       "title": "Kanto 8º núcleo: importar apenas portas, cura e 8 batalhas da academia de Erika",
