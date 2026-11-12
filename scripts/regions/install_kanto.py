@@ -12,7 +12,7 @@ import shutil
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from audit import ROOT
+from audit import ROOT, KANTO, json_file
 from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, revised_path
 from verify_pilot import inspect
 
@@ -59,8 +59,9 @@ def manifest(pilot, game):
     if not pilot_is_current(pilot):
         raise ValueError("Piloto antigo ou ausente; reconstrua a copia.")
     proof = inspect(pilot)
-    if proof["maps"] != 13:
-        raise ValueError("A auditoria nao confirmou 13 mapas.")
+    expected_count = len(json_file(KANTO)["maps"])
+    if proof["maps"] != expected_count:
+        raise ValueError(f"A auditoria nao confirmou {expected_count} mapas.")
     info = json.loads((pilot / PILOT_META).read_text(encoding="utf-8"))
     expected = info.get("base_data_sha256", {})
     if set(expected) != set(DATA_NAMES):
