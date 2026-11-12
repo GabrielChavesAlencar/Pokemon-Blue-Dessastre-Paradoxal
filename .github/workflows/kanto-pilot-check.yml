@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    paths: ['scripts/regions/**', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
+    paths: ['scripts/regions/**', 'scripts/music/**', 'scripts/battle_polish/Title.rb', 'data/kanto-music-rules.json', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -86,13 +86,15 @@ jobs:
           if($vehicleRows.Count -ne 2){throw "Fase 2: expected bicycle and surf, got $($vehicleRows.Count)"}
           if(@(Get-Content $scope | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Fase 3: expected 8 regional battle/victory bindings'}
           if(@(Get-Content $scope | Where-Object { $_ -match '^ME[\t]' }).Count -ne 6){throw 'Fase 4: expected 6 confirmed ME bindings'}
+          if(@(Get-Content $scope | Where-Object { $_ -match '^SCENE[\t]' }).Count -ne 5){throw 'Fase 5: exactly five verified scene BGMs expected'}
+          if(@(Get-Content $scope | Where-Object { $_ -match '^SCENE[\t](credits|opening_movie|epilogue)[\t]' }).Count -ne 0){throw 'Unverified cinematic/credits must stay disabled'}
           $actualTracks=@(Get-ChildItem '.blue-work/kanto-pilot/Audio/BGM/Kanto' -Filter '*.mp3' -File)
-          if($actualTracks.Count -lt 25){throw 'Fase 3: 25 distinct approved BGM MP3s missing'}
+          if($actualTracks.Count -ne 30){throw 'Fase 5: exactly 30 approved BGM MP3s expected'}
           $meTracks=@(Get-ChildItem '.blue-work/kanto-pilot/Audio/ME/Kanto' -Filter '*.mp3' -File)
           if($meTracks.Count -ne 6){throw 'Fase 4: exactly 6 proven ME tracks are expected; unverified ME must remain absent'}
           python scripts/music/install_kanto_music.py --game .blue-work/kanto-pilot --approved
           if($LASTEXITCODE -ne 0){throw 'Fase 2 MP3 integrity failed'}
-          Write-Host 'Kanto F4: 49 maps, 2 vehicles, 8 battle BGM, 6 verified ME, 8 pending; 25 BGM and 6 ME installed.'
+          Write-Host 'Kanto F5: 49 maps, 2 vehicles, 8 battle, 6 ME, 5 scene BGM, 8 scene pending; 30 BGM + 6 ME installed.'
           python scripts/regions/audit_canonical.py --output .blue-work/kanto-phase-15-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 canonical PBS audit failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
@@ -225,6 +227,8 @@ jobs:
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Kanto 8 battle/victory themes missing from installed game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BASEPOOL[\t]' }).Count -ne 3){throw 'Decades baseline pool fingerprints missing'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^ME[\t]' }).Count -ne 6){throw 'Installed game lost six proven Kanto ME bindings'}
+          if(@(Get-Content $integrated | Where-Object { $_ -match '^SCENE[\t]' }).Count -ne 5){throw 'Installed game lost the five confirmed Kanto scenes'}
+          if(@(Get-ChildItem 'game/Audio/BGM/Kanto' -Filter '*.mp3' -File).Count -ne 30){throw 'Installed game must contain exactly 30 approved Kanto BGM files'}
           if(@(Get-ChildItem 'game/Audio/ME/Kanto' -Filter '*.mp3' -File).Count -ne 6){throw 'Kanto ME import must install exactly six proven files'}
           python scripts/music/install_kanto_music.py --game game --approved
           if($LASTEXITCODE -ne 0){throw 'Integrated game phase2 BGM integrity failed'}

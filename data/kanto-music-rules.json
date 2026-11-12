@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "region": "KANTO",
-  "phase": 4,
+  "phase": 5,
   "default_enabled": false,
-  "notes": "Fase 4: 14 ME catalogadas; 6 ativadas SOMENTE por eventos comprovados. Game Freak logo/Jigglypuff/minigame/jackpot/printer/flute/move deletion/Oak evaluation aguardam hooks e cenas reais. Native audio engine pauses/resumes BGM; never duplicate native cue or affect Decades. Fases 2/3 unchanged.",
+  "notes": "Fase 5: 13 scene BGMs catalogued; only 5 have verified entrypoints: pilot-isolated title, Oak parcel handoff, pre-battle rival, native evolution animation and Hall of Fame after the five victories and complete_league. Eight remain PENDENTE_EVENTO, notably no movie intro or Kanto credits. All scene overrides are regional and restore BGM; native title in Decades unchanged.",
   "maps": [
     {
       "map": "CELADON_CENTER",
@@ -393,29 +393,82 @@
   ],
   "scenes": [
     {
+      "scene": "opening_movie",
+      "track": 2,
+      "enabled": false,
+      "pending_reason": "PENDENTE_CINEMATIC_OPENING"
+    },
+    {
+      "scene": "pilot_title",
+      "track": 3,
+      "enabled": true,
+      "trigger": "ISOLATED_KANTO_PILOT_TITLE"
+    },
+    {
+      "scene": "tutorial",
+      "track": 4,
+      "enabled": false,
+      "pending_reason": "PENDENTE_REAL_TUTORIAL"
+    },
+    {
       "scene": "oak_intro",
       "track": 5,
-      "enabled": false
+      "enabled": false,
+      "pending_reason": "PENDENTE_WORLD_INTRO_CUTSCENE"
+    },
+    {
+      "scene": "oak_talk",
+      "track": 7,
+      "enabled": true,
+      "trigger": "PILOT_OAK_PARCEL_HANDOFF"
     },
     {
       "scene": "rival_appears",
       "track": 10,
-      "enabled": false
+      "enabled": true,
+      "trigger": "PILOT_RIVAL_PRE_BATTLE_DIALOGUE"
+    },
+    {
+      "scene": "teachy_tv",
+      "track": 16,
+      "enabled": false,
+      "pending_reason": "PENDENTE_TEACHY_TV"
+    },
+    {
+      "scene": "guide",
+      "track": 24,
+      "enabled": false,
+      "pending_reason": "PENDENTE_TIMED_GUIDE_EVENT"
     },
     {
       "scene": "evolution",
       "track": 30,
-      "enabled": false
+      "enabled": true,
+      "trigger": "NATIVE_EVOLUTION_ANIMATION_BGM"
+    },
+    {
+      "scene": "pokemon_jump",
+      "track": 60,
+      "enabled": false,
+      "pending_reason": "PENDENTE_POKEMON_JUMP"
+    },
+    {
+      "scene": "epilogue",
+      "track": 71,
+      "enabled": false,
+      "pending_reason": "PENDENTE_DISTINCT_EPILOGUE_SCENE"
     },
     {
       "scene": "hall_of_fame",
       "track": 72,
-      "enabled": false
+      "enabled": true,
+      "trigger": "PILOT_AFTER_FIVE_WINS_AND_COMPLETE_LEAGUE"
     },
     {
       "scene": "credits",
       "track": 73,
-      "enabled": false
+      "enabled": false,
+      "pending_reason": "PENDENTE_KANTO_CREDITS_SEQUENCE"
     }
   ],
   "transport": [

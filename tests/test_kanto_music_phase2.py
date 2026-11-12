@@ -21,7 +21,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
                           47, 50, 52, 55, 56})
         self.assertEqual(sum(x["enabled"] for x in self.rules["battles"]), 8)
         self.assertEqual(sum(x["enabled"] for x in self.rules["events"]),6)
-        self.assertFalse(any(x["enabled"] for x in self.rules["scenes"]))
+        self.assertEqual(sum(x["enabled"] for x in self.rules["scenes"]), 5)
 
     def test_real_compiled_ids_emit_49_maps_2_vehicles_no_decades(self):
         for number in compiler.phase2_track_numbers(self.project):
@@ -37,7 +37,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         self.assertEqual(report["active_battle_bindings"], 0)
         # This fixture installs only 17 F2 tracks. Missing F3 tracks must
         # remain non-binding while F2 MAP and TRANSPORT still compile.
-        self.assertEqual(len(report["missing_audio"]),14)
+        self.assertEqual(len(report["missing_audio"]),19)
         self.assertTrue(all(name.startswith(("Kanto/", "ME/Kanto/")) for name in report["missing_audio"]))
         self.assertEqual({row[1] for row in modes}, {"bicycle", "surf"})
         self.assertTrue(all(int(row[1]) >= 705 for row in maps))

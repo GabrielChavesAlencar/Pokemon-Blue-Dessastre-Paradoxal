@@ -89,13 +89,13 @@ module BlueMusic
     false
   end
   def self.kanto_data
-    return [{},{},{},{},{},{}] unless File.file?(KANTO_PATH)
+    return [{},{},{},{},{},{},{}] unless File.file?(KANTO_PATH)
     stamp=[File.mtime(KANTO_PATH).to_f,File.size(KANTO_PATH)]
     return @kanto_data if @kanto_stamp==stamp && @kanto_data
     lines=File.readlines(KANTO_PATH)
     header=lines.shift.to_s.chomp.split("\t")
     raise 'Invalid Kanto music version' unless header.length==3 && header[0]=='BLUE_KANTO_MUSIC_V1' && header[1]=='KANTO' && header[2].match?(/\A[0-9a-f]{64}\z/)
-    scope={};maps={};battles={};transports={};defaults={};me_events={}
+    scope={};maps={};battles={};transports={};defaults={};me_events={};scenes={}
     lines.each do |line|
       parts=line.chomp.split("\t")
       case parts[0]
@@ -117,6 +117,15 @@ module BlueMusic
         volume=parts[3].to_i; pitch=parts[4].to_i
         raise 'Invalid Kanto ME volume/pitch' unless (0..100).include?(volume) && (50..150).include?(pitch)
         me_events[parts[1]]=[parts[2],volume,pitch]
+      when 'SCENE'
+        raise 'Invalid Kanto scene binding' unless parts.length==5 &&
+          %w[pilot_title oak_talk rival_appears evolution hall_of_fame].include?(parts[1]) &&
+          parts[2].start_with?('Kanto/') && parts[2].end_with?('.mp3') &&
+          parts[3].match?(/\A\d+\z/) && parts[4].match?(/\A\d+\z/)
+        raise 'Duplicate Kanto scene' if scenes.key?(parts[1])
+        volume=parts[3].to_i; pitch=parts[4].to_i
+        raise 'Invalid Kanto scene volume/pitch' unless (0..100).include?(volume) && (50..150).include?(pitch)
+        scenes[parts[1]]=[parts[2],volume,pitch]
       when 'MAP','BATTLE','TRANSPORT'
         raise 'Invalid Kanto BGM binding' unless parts.length==5 && parts[2].start_with?('Kanto/') && parts[3].match?(/\A\d+\z/) && parts[4].match?(/\A\d+\z/)
         id=parts[1]
@@ -139,11 +148,11 @@ module BlueMusic
         raise 'Unknown Kanto music binding'
       end
     end
-    @kanto_data=[scope,maps,battles,transports,defaults,me_events]
+    @kanto_data=[scope,maps,battles,transports,defaults,me_events,scenes]
     @kanto_stamp=stamp
     @kanto_data
   rescue StandardError
-    [{},{},{},{},{},{}]
+    [{},{},{},{},{},{},{}]
   end
   def self.kanto_audio_for(kind,key)
     return nil unless kanto_region?
@@ -235,6 +244,59 @@ module BlueMusic
   end
   # ME uses the native Essentials sound engine (Audio/ME), which pauses and
   # resumes the already playing map/battle BGM. Never force a new BGM on return.
+  # No global title override: Kanto has a distinct experimental executable,
+  # and the regional title track must not touch the Decades Game.exe title.
+  def self.kanto_pilot_title_audio
+    return nil unless File.file?('Kanto pilot.json') &&
+      !File.file?('Data/blue-kanto-install.json') && kanto_data[0].length==142
+    row=kanto_data[6]['pilot_title']
+    return nil unless row && valid_track?(row[0])
+    RPG::AudioFile.new(row[0],row[1],row[2])
+  end
+  def self.kanto_scene_audio(name)
+    return nil if name.to_s=='pilot_title' || !kanto_battle_scope?
+    row=kanto_data[6][name.to_s]
+    return nil unless row && valid_track?(row[0])
+    RPG::AudioFile.new(row[0],row[1],row[2])
+  end
+  def self.current_bgm
+    return nil unless defined?($game_system) && $game_system
+    if $game_system.respond_to?(:getPlayingBGM)
+      $game_system.getPlayingBGM
+    elsif $game_system.respond_to?(:playing_bgm)
+      $game_system.playing_bgm
+    end
+  end
+  def self.with_kanto_scene(name)
+    audio=kanto_scene_audio(name)
+    previous=current_bgm if audio
+    return yield unless audio && previous && previous.respond_to?(:name) &&
+      !previous.name.to_s.empty?
+    old_map=$game_map.map_id
+    pbBGMPlay(audio)
+    begin
+      yield
+    ensure
+      # Restore exactly what was playing before, not a guessed map soundtrack.
+      # Do not undo a battle/map/region transition or a new story-specific BGM.
+      current=current_bgm
+      if kanto_battle_scope? && $game_map.map_id==old_map &&
+        current && current.name==audio.name
+        pbBGMPlay(previous)
+      end
+    end
+  end
+  # Essentials starts "Evolution" BGM only in the actual evolution animation.
+  # Replacing this *one* native play call retains the engine's cancellation,
+  # success jingle, and subsequent BGM restoration.
+  module EvolutionSceneAudio
+    private
+    def pbBGMPlay(param,volume=nil,pitch=nil)
+      replacement=(param=='Evolution' && volume.nil? && pitch.nil?) ?
+        BlueMusic.kanto_scene_audio('evolution') : nil
+      replacement ? super(replacement) : super(param,volume,pitch)
+    end
+  end
   def self.kanto_me_audio(event)
     return nil unless kanto_battle_scope?
     row=kanto_data[5][event.to_s]
@@ -468,6 +530,7 @@ module BlueMusic
     Object.prepend(BattleAudio) unless Object.ancestors.include?(BattleAudio)
     Object.prepend(VehicleAudio) unless Object.ancestors.include?(VehicleAudio)
     Object.prepend(NativeME) unless Object.ancestors.include?(NativeME)
+    Object.prepend(EvolutionSceneAudio) unless Object.ancestors.include?(EvolutionSceneAudio)
     if defined?(Battle::CatchAndStoreMixin)
       Battle::CatchAndStoreMixin.prepend(CaptureME) unless Battle::CatchAndStoreMixin.ancestors.include?(CaptureME)
     end

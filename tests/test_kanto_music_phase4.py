@@ -8,7 +8,7 @@ from scripts.music import compile_kanto_music as compiler
 
 class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
     def test_all_fourteen_me_inventoried_only_six_approved(self):
-        self.assertEqual(self.rules["phase"],4)
+        self.assertGreaterEqual(self.rules["phase"],4)
         self.assertEqual(len(self.rules["events"]),14)
         numbers={x["track"] for x in self.rules["events"]}
         self.assertEqual(numbers,compiler.ME_NUMBERS)
@@ -16,8 +16,8 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
         self.assertEqual(approved,compiler.ME_ENABLED_PHASE4)
         self.assertEqual(compiler.phase4_track_numbers(self.project),
                          {9,14,23,29,31,54})
-        self.assertEqual(len(compiler.approved_track_numbers(self.project)),25)
-        self.assertEqual(len(compiler.approved_audio_track_numbers(self.project)),31)
+        self.assertEqual(len(compiler.approved_track_numbers(self.project)),30)
+        self.assertEqual(len(compiler.approved_audio_track_numbers(self.project)),36)
         self.assertEqual(len([r for r in self.rules["events"] if not r["enabled"]]),8)
         self.assertTrue(all("pending_reason" in r for r in self.rules["events"]
                             if not r["enabled"]))
