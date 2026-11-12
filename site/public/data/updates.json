@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "645529a474c9f277c058870cacda343a85e98dea",
+      "date": "2026-11-11T22:03:26-03:00",
+      "title": "docs(kanto): explicar instalacao opcional e teste da selecao regional na campanha",
+      "category": "Documentação"
+    },
+    {
       "sha": "0e61e6fc3565efd695930a5e4a856bb7a67ab73e",
       "date": "2026-11-11T22:02:21-03:00",
       "title": "feat(kanto): atalho confirmado para instalar Kanto no jogo principal com backup",
