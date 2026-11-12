@@ -453,6 +453,62 @@ def install_events(source, target, mapping):
         for event_id, event in events.items():
             if not saffron_event_allowed(original, event_id, event):
                 continue
+            if not cinnabar_event_allowed(original, event_id):
+                continue
+            if original == 202 and event_id in CINNABAR_DOOR_TO_GROUP:
+                group = CINNABAR_DOOR_TO_GROUP[event_id]
+                locked = new_event(event, [
+                    command(355, f"BlueKantoPilot.cinnabar_door({group})".encode())
+                ], 0, b"")
+                locked.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                opened = copy.deepcopy(locked.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@through"] = True
+                opened.attrs["@graphic"].attrs["@tile_id"] = 0
+                opened.attrs["@graphic"].attrs["@character_name"] = b""
+                opened.attrs["@list"] = [command(0)]
+                locked.attrs["@pages"].append(opened)
+                selected[event_id] = locked
+                continue
+            if original == 202 and event_id in CINNABAR_GYM_QUIZZES:
+                group = CINNABAR_GYM_QUIZZES[event_id]
+                quiz = new_event(event, [
+                    command(355, f"BlueKantoPilot.cinnabar_quiz({group})".encode())
+                ], 0, b"")
+                quiz.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                selected[event_id] = quiz
+                continue
+            if original in MANSION_DOORS and event_id in MANSION_DOORS[original]:
+                door_list = list(MANSION_DOORS[original])
+                door = new_event(event, [
+                    command(355, f"BlueKantoPilot.mansion_door({original}, {door_list})".encode())
+                ], 0, b"")
+                door.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                opened = copy.deepcopy(door.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@graphic"].attrs["@tile_id"] = 0
+                opened.attrs["@graphic"].attrs["@character_name"] = b""
+                opened.attrs["@through"] = True
+                opened.attrs["@list"] = [command(0)]
+                door.attrs["@pages"].append(opened)
+                selected[event_id] = door
+                continue
+            if original in MANSION_STATUES and event_id in MANSION_STATUES[original]:
+                door_list = list(MANSION_DOORS[original])
+                statue = new_event(event, [
+                    command(355, f"BlueKantoPilot.mansion_switch({original}, {door_list})".encode())
+                ], 0, b"")
+                statue.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                selected[event_id] = statue
+                continue
             # Phase 09 selective import: only audited doors, healing, and
             # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
             # Cut trees, elevators or untranslated foreign story events.
