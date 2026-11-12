@@ -83,17 +83,20 @@ def describe(source: Path) -> dict:
             if int(parts[0]) in selected or int(parts[3]) in selected:
                 links.append(row)
     from pbs import read_blocks
-    roster = read_blocks(source / "PBS/trainers.txt")
     desired = {"Keigo","Nancy","Ricky","Elijah","Isabelle","Jeff",
                "Dwayne","Bailey","Tucker","Lt. Surge","Ann","Tyler",
                "Thomas","Arthur","Brooks","Dale","Lamar","Dawn",
                "Barny","Phillip","Huey","Dylan","Duncan","Leonard",
                "Trevor","Edmond","Blue"}
-    relevant = {k: v for k, v in roster.items()
-                if len(k.split(",")) >= 2 and k.split(",")[1] in desired
-                and (k.split(",")[1] != "Blue"
-                     or (len(k.split(",")) >= 3 and k.split(",")[-1] in
-                         {"41", "42", "43"}))}
+    headers = [line.strip()[1:-1] for line in
+               (source / "PBS/trainers.txt").read_text(encoding="utf-8-sig").splitlines()
+               if line.strip().startswith("[") and line.strip().endswith("]")]
+    selected = {k for k in headers if len(k.split(",")) >= 2
+                and k.split(",")[1] in desired
+                and (k.split(",")[1] != "Blue" or
+                     (len(k.split(",")) >= 3 and k.split(",")[-1] in
+                      {"41", "42", "43"}))}
+    relevant = read_blocks(source / "PBS/trainers.txt", selected)
     return {"trainer_profiles": relevant, "phase": "08", "matched": len(identified),
             "maps": result, "connections": links}
 
