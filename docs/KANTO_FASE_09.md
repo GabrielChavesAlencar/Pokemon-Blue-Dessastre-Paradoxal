@@ -1,7 +1,7 @@
 # Kanto — Fase 09/16: Celadon e Erika (prévia do cenário)
 
 **Data:** 12/11/2026  
-**Estado:** terreno em implementação na cópia experimental de Kanto. **Eventos adiados por pedido do usuário**, enquanto ele analisa os eventos de mapa.  
+**Estado:** prévia de terreno implementada e aprovada na CI nativa Windows (51 mapas, 11 sem eventos). **Eventos adiados por pedido do usuário**, enquanto ele analisa os eventos de mapa.  
 **Contadores preservados até conclusão da fase:** desenvolvimento integral 8/16 (50%); etapas integralmente aceitas 1/16 (6,25%).
 
 ## Escopo desta entrega — somente mapas e navegação de teste
@@ -48,10 +48,10 @@ As cinco novas paradas são exclusivas do **piloto isolado**, totalizando **22**
 
 ## Critérios de verificação
 
-- [ ] O inventário da fonte confirma IDs, nomes, dimensões e conexões; relatório `kanto-fase-09-auditoria` em [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/kanto-pilot-check.yml).
-- [ ] O teste estrutural compila os 51 mapas, garante **40 mapas com progresso anterior intacto** e **11 mapas sem eventos**, rejeita coordenadas de teleporte inválidas e valida 22 paradas.
-- [ ] O teste nativo abre o cenário vazio e confirma que **Rainbow Badge permanece bloqueada**.
-- [ ] Os testes de regressão e a importação em cópia descartável de Decades passam.
+- [x] O inventário da fonte confirma IDs, nomes, dimensões e conexões; relatório `kanto-fase-09-auditoria` em [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/kanto-pilot-check.yml).
+- [x] O teste estrutural compila os 51 mapas, garante **40 mapas com progresso anterior intacto** e **11 mapas sem eventos**, rejeita coordenadas de teleporte inválidas e valida 22 paradas.
+- [x] O teste nativo abre o cenário vazio e confirma que **Rainbow Badge permanece bloqueada**.
+- [x] A [CI Windows 43202005222](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43202005222) validou a compilação, abertura de janela, save e importação em cópia descartável; regressão adicional de código está no workflow padrão.
 - [ ] Jogabilidade manual confirma arte, passabilidade, transição e coordenadas.
 - [ ] O usuário termina sua análise de eventos e autoriza retomá-los antes de marcar a fase 09 funcionalmente concluída.
 
