@@ -27,6 +27,8 @@ module KantoNativeCheck
       row.code == 201 && row.parameters[1] == home
     }, "Home stairs do not connect both floors")
     $map_factory.setup(pallet)
+    load "Data/blue-kanto-music-native-probe.rb"
+    KantoMusicNativeProbe.run("pilot")
     require!($game_map.events.size >= 5, "Pallet Town events missing")
     require!([1, 2, 3].all? { |eid| $game_map.events[eid].trigger == 1 },
       "Pallet house and laboratory doors are not Player Touch")
