@@ -29,8 +29,10 @@ class KantoInstallerTest(unittest.TestCase):
         (game / "mkxp.json").write_bytes(b"precious config")
         (src / "new-infos").write_bytes(b"expanded maps")
         (src / "map-300").write_bytes(b"kanto pallet")
+        (src / "map-301").write_bytes(b"kanto player home")
         files = {Path("Data/MapInfos.rxdata"): src / "new-infos",
-                 Path("Data/Map300.rxdata"): src / "map-300"}
+                 Path("Data/Map300.rxdata"): src / "map-300",
+                  Path("Data/Map301.rxdata"): src / "map-301"}
         return root, game, src, files
 
     def test_all_regional_trainer_portraits_are_mandatory_and_not_general_graphics(self):
@@ -85,7 +87,7 @@ class KantoInstallerTest(unittest.TestCase):
     def test_dry_run_never_writes_into_game(self):
         with tempfile.TemporaryDirectory() as folder:
             root, game, src, files = self.with_game(folder)
-            with mock.patch.object(installer, "manifest", return_value=(files, {5: 300}, {})):
+            with mock.patch.object(installer, "manifest", return_value=(files, {5: 300, 7: 301}, {})):
                 result = installer.apply_install(game, src, False)
             self.assertEqual(result["status"], "dry_run")
             self.assertEqual((game / "Data/MapInfos.rxdata").read_bytes(), b"original maps")
@@ -96,13 +98,14 @@ class KantoInstallerTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root, game, src, files = self.with_game(folder)
             with mock.patch.object(installer, "ROOT", root), mock.patch.object(
-                    installer, "manifest", return_value=(files, {5: 300}, {})):
+                    installer, "manifest", return_value=(files, {5: 300, 7: 301}, {})):
                 result = installer.apply_install(game, src, True)
             self.assertEqual(result["status"], "installed")
             self.assertEqual((game / "Data/MapInfos.rxdata").read_bytes(), b"expanded maps")
             self.assertEqual((game / "Data/Map300.rxdata").read_bytes(), b"kanto pallet")
+            self.assertEqual((game / "Data/Map301.rxdata").read_bytes(), b"kanto player home")
             self.assertEqual((game / "Data/blue-kanto-start.txt").read_text().strip(),
-                             "BLUE_KANTO_START_V1,KANTO,300,28,14")
+                             "BLUE_KANTO_START_V1,KANTO,301,25,7")
             for filename, previous in (("Game.exe",b"precious exe"),
                                        ("Game.ini",b"precious ini"),
                                        ("mkxp.json",b"precious config"),
@@ -121,7 +124,7 @@ class KantoInstallerTest(unittest.TestCase):
                 real_atomic(path, raw)
 
             with mock.patch.object(installer, "ROOT", root), mock.patch.object(
-                    installer, "manifest", return_value=(files, {5: 300}, {})), mock.patch.object(
+                    installer, "manifest", return_value=(files, {5: 300, 7: 301}, {})), mock.patch.object(
                     installer, "atomic", side_effect=fail_on_map):
                 with self.assertRaisesRegex(OSError, "simulated full disk"):
                     installer.apply_install(game, src, True)
