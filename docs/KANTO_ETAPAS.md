@@ -66,7 +66,8 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 
 - [ ] **MAN-01 parcial:** as portas da casa do rival, duas casas de Viridian, portaria/casa escondida da Rota 2, Museu de Pewter e duas casas de Pewter agora possuem transferências de ida e volta. Ainda faltam todos os demais interiores/portas condicionais, NPCs internos e testes interativos.
 - [ ] **MAN-02 parcial:** 50 eventos `Sight(n)` usam agora `Event Touch`, alerta e batalha, com `self-switch A` pós-vitória; 6 NPCs originalmente manuais continuam Action Button. Faltam testes de caminhada real e barreiras obrigatórias específicas por evento.
-- [ ] **QA:** confirmar a compilação/regressão da revisão atual e testar em Windows; **nenhuma etapa de aceite pode ser fechada apenas por prova nativa simulada**.
+- [x] **CI de compilação e regressão aprovada:** [teste nativo 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042), [regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) e [site checks](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637630).
+- [ ] **QA manual Windows e JoiPlay:** a prova automatizada não substitui caminhada/colisão, abordagem e batalha real; nenhum aceite total ainda.
 
 **Barras inalteradas:** desenvolvimento funcional **8/16 (50%)** e aceitação **1/16 (6,25%)**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
 
