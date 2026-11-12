@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "744b2f8f40f52090c48dda8749e3953a0f105743",
+      "date": "2026-11-11T22:27:18-03:00",
+      "title": "feat(regions): permitir viagem pelo circuito quando destino seguro esta desbloqueado",
+      "category": "Novidades"
+    },
+    {
       "sha": "c79d921ccd85debbb97ec98082a36a3bc39d651e",
       "date": "2026-11-11T22:26:36-03:00",
       "title": "test(regions): rodar transporte no Ruby real da regressao",
