@@ -4,6 +4,12 @@
 
 **Progresso:** [9/16 núcleos com CI — faltam 7; 1/16 aceito integralmente — faltam 15](KANTO_AVANCO_FUNCIONAL_09.md). [CI nativa de Koga 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342) aprovadas.
 
+## Atualização de 12/11/2026 — núcleo 16
+
+O piloto agora tem **142 mapas**, **45 prévias apenas de cenário**, **144 perfis de treinadores no portal**, **22 áreas com encontros auditados** e **64 destinos de teletransporte experimental**. Os números de 109 mapas/53 prévias e 17 ou 41 atalhos encontrados nas seções históricas abaixo são registros das fases anteriores, não da versão atual.
+
+**Depois de jogar pelo terceiro botão “Testar Kanto”**, o BAT de teste solicita a **seção que você realmente testou**: início, ginásios, Liga, integração/viagem/PC ou JoiPlay. Marque somente S = passou de verdade, F = falhou, N = não testado. O relatório local fica em `.blue-work/kanto-gui-reports/` em Markdown **e JSON**, sem enviar saves ao GitHub. **Nenhum status do relatório aprova automaticamente a etapa 02 nem a etapa 16.** Consulte [fase 16 — preparação do aceite](KANTO_FASE_16.md) e [roteiro atualizado](KANTO_ETAPAS.md).
+
 ## Opção diretamente no Game.exe principal
 
 Se você baixou **`Blue-Story.exe`** pelo [site oficial do projeto](https://pokemondessastreparadosal.vercel.app/downloads), **basta abrir o mesmo EXE novamente**: ele busca a revisão atual da `main`, atualiza os plugins, prepara o jogo e abre `game/Game.exe` na pasta de instalação (normalmente `%LOCALAPPDATA%/PokemonBlueDessastreParadoxal`). Você não precisa instalar Python, Git ou mexer no repositório manualmente. Na tela dos saves do jogo aberto aparecerá:
