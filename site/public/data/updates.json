@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "595a120f3327d568008ced65d6a947f0e5c624fe",
+      "date": "2026-11-12T10:46:34-03:00",
+      "title": "Kanto núcleo 9: integrar Koga+6 treinadores ao guia Fuchsia e destacar portão Safari em preparação",
+      "category": "Documentação"
+    },
+    {
       "sha": "2aa895eb3fa08f17d345dbd6d15c4b69917f7797",
       "date": "2026-11-12T10:46:05-03:00",
       "title": "Kanto Fuchsia: importar sete equipes Koga/Juggler/Tamer auditadas no PBS da fonte",
