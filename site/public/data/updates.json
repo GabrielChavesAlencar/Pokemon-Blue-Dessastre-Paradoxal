@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f795eabfb653609ed2831173fa18eb2986fa9c73",
+      "date": "2026-11-11T21:38:29-03:00",
+      "title": "test(kanto): detectar transfers que permitem somente ida",
+      "category": "Testes"
+    },
+    {
+      "sha": "231b802c959fe70121000c1a1475fda6f1659c72",
+      "date": "2026-11-11T21:38:15-03:00",
+      "title": "test(kanto): testar nomes repetidos, derrota e saves antigos no motor nativo",
+      "category": "Testes"
+    },
+    {
       "sha": "9a42cffc0ea453298ca38a12a75a6236c1100834",
       "date": "2026-11-11T21:37:35-03:00",
       "title": "test(kanto): validar ida e volta por conexoes direcionais reais",
