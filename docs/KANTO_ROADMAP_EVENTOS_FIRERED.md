@@ -120,3 +120,7 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 ## 8. Próxima ação permitida
 
 **Agora:** somente consolidar especificação, crosswalk, fonte SHA, checklist e tarefas MAN-01/02/03. **Depois da autorização do usuário:** implementar MAN-01 primeiro, MAN-02 em seguida, salvar/flags e UI; avançar os lotes de história em cópia isolada. Nenhuma dessas pendências está declarada concluída neste roadmap.
+
+## Referência complementar — diálogos e tradução
+
+O [guia de inventário EN/PT-BR](Guia_Dialogos_Pokemon_FireRed_EN_PT.md) e o [passo a passo para integração dos diálogos no Blue](FIRERED_DIALOGOS_PASSO_A_PASSO.md) documentam extração, revisão, associação por NPC/flag e vínculo com `scripts/localization/catalog.py` e `data/pt-br.json`. O [extrator de falas](../scripts/localization/extrair_traduzir_dialogos_firered.py) é somente leitura da fonte FireRed local. **Nenhuma fala é ativada automaticamente** e a restrição preview_only segue vigente.

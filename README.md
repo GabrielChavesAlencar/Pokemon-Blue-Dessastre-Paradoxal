@@ -37,6 +37,10 @@ A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor 
 
 **Campanha Traditional Starters:** progressão Inicial (0–1 esmeralda, BST até 350), Intermediária (2–3, até 450) e Avançada (4+, equipes originais), com revanches por estágio sem repetir drops. Entradas de batalha inspiradas no FireRed, EXP suave e mouse nos menus da campanha. [Regras, controles e validação](docs/PROGRESSAO_E_ANIMACOES.md).
 
+## Diálogos FireRed e tradução de Kanto
+
+O projeto possui um [guia de catálogo e tradução dos diálogos FireRed](docs/Guia_Dialogos_Pokemon_FireRed_EN_PT.md), o [passo a passo de adaptação para o Dessastre Paradoxal](docs/FIRERED_DIALOGOS_PASSO_A_PASSO.md) e um [extrator local EN/PT-BR](scripts/localization/extrair_traduzir_dialogos_firered.py). O extrator funciona sobre uma fonte de referência local e não inclui o roteiro original. **Esta documentação não instala diálogos nem altera eventos**; novas cenas exigem autorização e testes no piloto isolado de Kanto.
+
 ## Continuidade do projeto
 
 [Próximos passos do jogo, de Kanto e do portal](docs/PROXIMOS_PASSOS.md)
