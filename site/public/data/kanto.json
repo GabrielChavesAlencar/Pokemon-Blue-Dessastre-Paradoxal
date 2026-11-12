@@ -1329,6 +1329,72 @@
         "kanto-trevor",
         "kanto-edmond"
       ]
+    },
+    {
+      "id": "kanto-route-7",
+      "name": "Rota 7",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-city",
+      "name": "Celadon City — prévia sem eventos",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-center",
+      "name": "Centro Pokémon de Celadon — prévia",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-1f",
+      "name": "Loja de Celadon — 1F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-2f",
+      "name": "Loja de Celadon — 2F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-3f",
+      "name": "Loja de Celadon — 3F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-4f",
+      "name": "Loja de Celadon — 4F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-5f",
+      "name": "Loja de Celadon — 5F (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-roof",
+      "name": "Loja de Celadon — terraço (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-dept-elevator",
+      "name": "Loja de Celadon — elevador (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-celadon-gym",
+      "name": "Ginásio de Celadon — prévia sem Erika",
+      "methods": [],
+      "trainers": []
     }
   ],
   "trainers": [
