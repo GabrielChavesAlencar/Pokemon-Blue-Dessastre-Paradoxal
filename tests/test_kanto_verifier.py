@@ -61,7 +61,7 @@ class KantoPilotAuditTests(unittest.TestCase):
         )
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
-        self.assertIn(len(data["trainers"]), (69, 103))
+        self.assertEqual(len(data["trainers"]), 118)
         for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
                      "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
                      "kanto-route2-hidden-house", "kanto-pewter-museum",
