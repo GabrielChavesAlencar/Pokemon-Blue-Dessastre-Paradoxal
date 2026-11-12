@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b54cf4816e4ce873571ff9df284db217a50e88ec",
+      "date": "2026-11-12T08:00:22-03:00",
+      "title": "docs(kanto): indexar estudo e guia de revanches sem alterar progresso",
+      "category": "Documentação"
+    },
+    {
       "sha": "1f633e708cb3f1074b5a4d4fc680ca061bef5d3b",
       "date": "2026-11-12T07:59:57-03:00",
       "title": "docs(kanto): adicionar passo a passo de implementação de revanches históricas",
