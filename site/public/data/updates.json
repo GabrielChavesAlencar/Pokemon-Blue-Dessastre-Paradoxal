@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c7754bbb3400d9df632f58340f1185dc434d0a2d",
+      "date": "2026-11-12T07:26:12-03:00",
+      "title": "docs(kanto): registrar cobertura manual e bloqueadores na lista 16 etapas",
+      "category": "Documentação"
+    },
+    {
       "sha": "fa60acaaf9722fa0590ff32388513d62215327fc",
       "date": "2026-11-12T07:25:47-03:00",
       "title": "docs(kanto): registrar feedback real do teste de mapas e tres pendencias",
