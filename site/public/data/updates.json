@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "76dd57232f1042550da23aaf972b90e5149427ef",
+      "date": "2026-11-12T10:26:49-03:00",
+      "title": "docs: registrar ativação seletiva do núcleo de Erika sem reescrever histórico da prévia",
+      "category": "Documentação"
+    },
+    {
       "sha": "f3caf2de2d715b7dac3831b256272ed68fa081bf",
       "date": "2026-11-12T10:24:47-03:00",
       "title": "Kanto Erika: detalhar erro de saída do Center em assertivas separadas no teste nativo",
