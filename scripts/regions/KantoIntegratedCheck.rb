@@ -32,6 +32,33 @@ module KantoIntegratedCheck
     require!([$data_system.start_map_id, $data_system.start_x, $data_system.start_y] == original,
              "Native Decades System.rxdata start coordinates were changed")
 
+    stage("regional_policy_start")
+    require!(defined?(BlueRegionalPolicy), "Regional policy plugin was not loaded")
+    current_state = $PokemonGlobal.blue_regions
+    mewtwo = Pokemon.new(:MEWTWO, 30)
+    require!(BlueRegionalPolicy.restricted?(mewtwo), "Kanto allowed Legendary before 8 badges")
+    require!(BlueRegionalPolicy.field_result(:FLASH) == :badge, "Flash allowed without Boulder")
+    # The retrofit must not retroactively lock old Decades saves.
+    $PokemonGlobal.blue_regions = BlueRegions.new_state("DECADES")
+    require!(!BlueRegionalPolicy.restricted?(mewtwo), "Native Decades PC was locked")
+    $PokemonGlobal.blue_regions = current_state
+    require!(BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder badge not awarded")
+    require!(!BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder was counted twice")
+    require!(BlueRegionalPolicy.field_result(:FLASH) == :allowed, "Boulder did not unlock Flash")
+    require!(BlueRegionalPolicy.field_result(:SURF) == :badge, "Surf unlocked without Soul Badge")
+    base_total = $player.badge_count
+    require!(BlueRegions.crystal_total(current_state, base_total) == base_total + 1,
+             "Local Kanto badge was not added to Blue global stage once")
+
+    # A restricted gift is caught before entering the party; it is deposited
+    # in the real native PC while keeping ownership/Pokédex.
+    stage("regional_policy_gift")
+    gift = Pokemon.new(:MEWTWO, 20)
+    require!(pbAddPokemonSilent(gift), "Restricted gift could not be stored")
+    require!(!$player.party.any? { |p| p.equal?(gift) }, "Restricted gift entered party")
+    boxed_gift = BlueRegionTravel.free_storage_slots(2)
+    require!($PokemonStorage[0,0]&.species == :MEWTWO, "Restricted gift missing from PC")
+
     stage("before_travel_validation")
     # Game.start_new does not run Scene_Map.main or initialize graphics
     # spritesets in this headless proof. The installed DexNav overwrites
@@ -116,8 +143,11 @@ module KantoIntegratedCheck
     require!($player.party.first.species == :BULBASAUR, "Team changed after save/reload")
     require!($PokemonStorage[reserved[0], reserved[1]]&.species == :MEWTWO,
              "Boxed Legendary did not survive reload")
+    require!($PokemonStorage[0,0]&.species == :MEWTWO, "Gift was lost after travel/save")
+    require!(BlueRegions.local_achievements($PokemonGlobal.blue_regions,"KANTO").include?("BOULDER"),
+             "Local Kanto badge did not survive reload")
     File.write("Data/blue-kanto-integrated-proof.txt",
-               "Two-way Kanto/Decades transfer, native Legendary PC deposit, bag/dex/money, same-save reload OK; simulated League only in CI")
+               "Two-way transfer, native PC gift and Legendary deposit, Boulder HM and unique badge, same-save reload OK; League simulated only in CI")
     stage("completed")
   end
 end
