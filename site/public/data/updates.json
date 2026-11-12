@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4168186a4c9d30c997dbb8be8c6cfe17ac0d71a3",
+      "date": "2026-11-11T22:08:06-03:00",
+      "title": "test(kanto): garantir dry-run, preservacao dos saves e rollback transacional",
+      "category": "Testes"
+    },
+    {
       "sha": "16d0cbf2ec619965f00d3b433b8f32a0aee2fc85",
       "date": "2026-11-11T22:06:29-03:00",
       "title": "ci(kanto): imprimir logs no timeout da nova partida integrada",
