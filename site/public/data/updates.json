@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "37f6cc4f1aa3728db060870a19553ca3b82674b7",
+      "date": "2026-11-12T10:12:07-03:00",
+      "title": "Kanto 8º núcleo: habilitar Celadon City/Center/Gym somente para eventos adaptados",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ff9e3fc20bb83aed23738b49b1b3888c1c3e2cb2",
       "date": "2026-11-12T10:10:17-03:00",
       "title": "Kanto Celadon audit: filtrar apenas os oito treinadores da academia evitando duplicatas Rocket",
