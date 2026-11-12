@@ -769,6 +769,7 @@ def install_runtime(target, mapping, game):
     stops = [
         ("PALLET", "Pallet Town (Oak)", 5, 28, 14),
         ("PLAYER_HOME", "Casa do jogador (inicio)", 7, 25, 7),
+        ("VIRIDIAN", "Viridian City (Ginasio)", 10, 36, 11),
         ("VIR_GYM", "Ginasio Viridian Giovanni (sete insignias)", 13, 17, 22),
         ("PEWTER", "Pewter City (Gym)", 25, 19, 21),
         ("ROUTE4", "Route 4 (Mt Moon exit)", 33, 92, 21),
