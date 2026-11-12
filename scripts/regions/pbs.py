@@ -133,6 +133,19 @@ TRAINERS.update({
     "YOUNGSTER,Johnson": ("YOUNGSTER", "Johnson", 0),
 })
 
+# Stage 13 / FRLG Map013. Exact source PBS rosters, levels and moves; the
+# native trainer script for Jason incorrectly calls Cole, so match the event
+# name and the dedicated existing [TAMER,Jason] PBS record instead.
+TRAINERS.update({
+    "LEADER_Giovanni,Giovanni": ("LEADER_GIOVANNI", "Giovanni", 0),
+    **{f"BLACKBELT,{name}": ("BLACKBELT", name, 0)
+       for name in ("Takashi", "Kiyo", "Atsushi")},
+    **{f"COOLTRAINER_M,{name}": ("COOLTRAINER_M", name, 0)
+       for name in ("Samuel", "Yuji", "Warren")},
+    **{f"TAMER,{name}": ("TAMER", name, 0)
+       for name in ("Cole", "Jason")},
+})
+
 
 def read_blocks(path, selected=None):
     blocks = {}
