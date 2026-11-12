@@ -11,17 +11,17 @@
 4. [Plano de regiões v2](PLANO_REGIOES_DESSASTRE_V2.md): **prevalece** para as regras do Blue (balanceamento, circuito, HMs por região, bloqueio de especiais, pós-jogo, save único).
 5. [Feedback dos testes manuais](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md): MAN-01, MAN-02 e MAN-03, todos ainda pendentes.
 
-**Não misturar três contagens:** os **425** mapas em **43 grupos** são o índice da decompilação GBA `pret/pokefirered` descrito no estudo; os **101** mapas do piloto são arquivos de geometria da fonte Essentials FRLG (40 trechos anteriores + 11 prévias Celadon + 20 prévias Fuchsia/Safari + 30 prévias Saffron/Silph); os **16** itens são as etapas de construção/aceitação de Kanto. **Os 425 mapas não foram todos auditados semanticamente**, convertidos ou instalados.
+**Não misturar três contagens:** o estudo GBA refere 425 mapas em 43 grupos; o piloto atual contém **109 mapas** da fonte Essentials FRLG (48 mapas antes de Celadon, **3 Celadon funcionais** e **58 em `preview_only`**); o roadmap de Kanto possui **16 etapas**. **Os 425 mapas não foram todos auditados semanticamente**, convertidos ou instalados.
 
 **Fonte de comportamento:** `pret/pokefirered` (map.json, scripts.inc, text.inc, scripts globais); é preciso fixar SHA antes de nova auditoria. **Fonte de geometria e IDs RMXP:** Essentials FRLG 21.1/1.1, hash já fixado em [kanto-source.json](../data/regions/kanto-source.json). Flags KANTO_* da análise são **propostas**, não switches já implementados. Não presumir que `dest_warp_id` da origem GBA seja MapID no RPG Maker; resolver o warp e as coordenadas no destino.
 
 ## 1. Duas barras gerais e uma trilha de auditoria independente
 
-- **Barra 1 — Desenvolvimento funcional atual:** **7/16 = 43,75%, faltam 9 etapas**. Núcleos com CI: 01, 03, 04, 05, 06, 07, 08. A etapa 03 ganhou pacote de Oak, 11 verificações de portas e 50 gatilhos de treinador; [entrega 07/16](KANTO_AVANCO_FUNCIONAL_07.md) e [CI 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441).
+- **Barra 1 — Desenvolvimento funcional atual:** **8/16 = 50%, faltam 8 etapas**. Os núcleos comprovados são 01/03/04/05/06/07/08/**09**; a [CI de Erika/Celadon](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314) aprovaram portas, cura, oito treinadores, Rainbow Badge única e save/reload simulado.
 - **Barra de aceitação integral:** **1/16 = 6,25%; faltam 15 etapas**. Só 01 está aceita (escopo estrutural); CI simulada não substitui caminhada, colisões e batalhas reais no Windows.
 - **Trilha de eventos FireRed:** **12 marcos de auditoria e adaptação**, definidos no estudo e listados abaixo; **progresso numérico ainda não aferido**. O total de eventos em escopo precisa vir da execução real do extrator e da triagem das salas opcionais, não de um percentual estimado.
 
-**Proteção vigente:** os 11 IDs Celadon (111, 114, 115, 117–124) e 20 IDs Fuchsia/Safari (141–147, 152, 153, 155–163, 164, 165; conferir manifesto exato), além de **30 IDs novos Saffron/Silph/Dojo** (57, 62, 107–110, 112–113 e 168–189; consultar o manifesto para os nomes), permanecem em `preview_only` e com **zero eventos**. Ler esses cenários é permitido; instalar qualquer gatilho, porta, NPC, batalha, item, cura ou insígnia nesses mapas exige autorização posterior. A entrega desta documentação **não** é autorização implícita.
+**Proteção vigente:** os **8 IDs de terreno restantes em Celadon** (111,117,118,119,120,121,122,123), os **20 IDs de Fuchsia/Safari** e os **30 IDs de Saffron/Silph** permanecem `preview_only`, **total de 58 mapas sem eventos**. **Somente 114/115/124** foram ativados com whitelist por EventID na [etapa 09](KANTO_AVANCO_FUNCIONAL_08.md); não inferir autorização para Rocket/Game Corner, Dept Store, eventos dos outros mapas ou diálogos originais.
 
 ## 2. Preparação / auditoria sem alterar gameplay
 
@@ -43,6 +43,8 @@ A [correção funcional de Pallet a Pewter](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN
 **Estado:** MAN-01 e MAN-02 estão **parcialmente implementados**, **não concluídos**. Os interiores de outros trechos, guardas/quest, bloqueios obrigatórios, diálogos finais, validação manual e MAN-03 ainda faltam. Esta entrega não alterou os 61 mapas `preview_only` das fases 09–11, não contou como conclusão de uma nova etapa; barras reavaliadas em [6/16 e 1/16](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) e não distribuiu textos originais de FireRed.
 
 **Atualização após estudo (12/11/2026):** o [sétimo núcleo de desenvolvimento](KANTO_AVANCO_FUNCIONAL_07.md) entrega o pacote regional de Oak no Mart de Viridian, valida 11 pares de portas e mantém 50 eventos `Sight(n)`. **MAN-01 e MAN-02 ainda não têm aceite integral**: interiores secundários, barreiras de história, textos e gameplay manual permanecem pendentes.
+
+**Novidade após o roteiro (12/11/2026):** [8º núcleo de Kanto](KANTO_AVANCO_FUNCIONAL_08.md) ativa apenas City/Center/Gym Celadon com Erika/Rainbow e sete treinadoras, sob whitelist; CI 43227499299 e regressão 43227499314 aprovadas. **Manter pendentes** Rocket/Game Corner, Silph Scope, Cut trees, loja, portas restantes, falas EN/PT-BR, QA de movimento e os eventos de Lavender/Saffron.
 
 ## 3. Sequência prioritária de correções — conforme teste do jogador
 
@@ -123,7 +125,7 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 - [ ] Testes manuais em Game.exe para caminhada/combate, save/reload, retorno e modos de dificuldade; depois JoiPlay.
 - [ ] Política regional de HMs, insignias e especiais verificada; rollback funcional registrado.
 - [ ] Registros públicos (guia, treinadores, locais) atualizados somente com dados efetivamente implementados.
-- [ ] **Fases 09, 10 e 11:** remover `preview_only` exclusivamente quando houver autorização explícita e testes; até lá exigir zero eventos.
+- [ ] **Demais mapas da fase 09 e fases 10/11:** remover `preview_only` somente ao implementar o evento específico e sua validação e testes; até lá exigir zero eventos.
 
 ## 8. Próxima ação permitida
 
@@ -137,6 +139,6 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 - Auditar referência `text.inc` → `scripts.inc`/flag → MapID/EventID **por uso**, incluindo diálogos pré/pós-batalha, escolha, repetição, itens e save/reload. Não confundir rótulos GBA com chaves de mensagens inglesas compiladas da engine.
 - Integrar pt-BR com `scripts/localization/catalog.py`, `scripts/localization/review.py`, `data/pt-br.json`, preservando `{PLAYER}`, `{RIVAL}`, outros controles e a opção English.
 - **Portões de aceite por evento:** fala EN e PT-BR revisada, renderização sem corte, branches e escolhas corretos, tokens intactos, nenhuma recompensa duplicada, teste Windows e depois JoiPlay.
-- **Fases 09–11:** manter os 61 mapas `preview_only` sem eventos/diálogos até implementação autorizada, com fontes originais restritas a pasta local e direitos respeitados.
+- **Mapas ainda pendentes em 09–11:** manter os 58 `preview_only` sem eventos/diálogos até implementação autorizada, com fontes originais restritas a pasta local e direitos respeitados.
 
-As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores atuais 7/16 ou 1/16.
+As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores atuais 8/16 ou 1/16.
