@@ -246,7 +246,7 @@ def install_runtime(target, mapping):
     # The standalone pilot must always select Kanto automatically on a new
     # game. The main installation uses this marker only after explicit import.
     (data / "blue-kanto-start.txt").write_text(
-        f"BLUE_KANTO_START_V1,KANTO,{mapping[5]},28,14\\n", encoding="ascii"
+        f"BLUE_KANTO_START_V1,KANTO,{mapping[5]},28,14\n", encoding="ascii"
     )
     # Force compiler to consume new PBS, but keep a real release-mode title after the first boot.
     (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
