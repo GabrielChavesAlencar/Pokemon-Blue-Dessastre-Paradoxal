@@ -31,6 +31,11 @@ export const KANTO_GYM_REWARDS=Object.freeze({
 const trainerLink=trainer=>'/'+(trainer.leader?'chefes':'treinadores')+'/'+encodeURIComponent(trainer.id);
 const locationLink=location=>'/localizacoes/'+encodeURIComponent(location.id);
 const link=(href,label)=>'<a class="text-link" href="'+esc(href)+'">'+esc(label)+' '+icon('arrow')+'</a>';
+// FRLG source uses PBS IDs NIDORANfE / NIDORANmA, while the portal Pokédex
+// uses uppercase NIDORANFE / NIDORANMA. Resolve only in the read-only UI.
+const pokemonFor=(model,id)=>model.byId.get(id)||model.byId.get(id?.toUpperCase());
+const displayPokemon=(model,p)=>pokemonFor(model,p.species)?.id && !model.byId.has(p.species)
+  ? {...p,species:p.species.toUpperCase()} : p;
 
 function layout(data,page,title,body,detail=false){
   const header='<header class="article-heading"><span class="eyebrow">KANTO · PILOTO</span><h1>'+esc(title)+'</h1>'+
@@ -62,7 +67,7 @@ function areaCard(area){
 function trainerCard(model,data,trainer){
   const area=data.locations.find(row=>row.id===trainer.location);
   const species=[...new Set(trainer.variants.flatMap(variant=>variant.team.map(pokemon=>pokemon.species)))];
-  const images=species.map(id=>model.byId.get(id)).filter(Boolean).map(pokemon=>
+  const images=species.map(id=>pokemonFor(model,id)).filter(Boolean).map(pokemon=>
     '<img loading="lazy" src="'+esc(sprite(pokemon))+'" alt="'+esc(pokemon.name)+'"/>').join('');
   return '<a class="regular-card" href="'+trainerLink(trainer)+'">'+
     '<div class="regular-card-meta"><span class="mini-label">'+esc(trainer.role)+'</span><span>'+esc(area.name)+'</span></div>'+
@@ -79,9 +84,9 @@ export function kantoIndex(model,data,page){
 
 function encounterTable(model,method){
   const slots=method.slots.map(slot=>{
-    const pokemon=model.byId.get(slot.species);
+    const pokemon=pokemonFor(model,slot.species);
     const name=esc(pokemon?.name||slot.species);
-    const target='/pokedex/'+encodeURIComponent(slot.species);
+    const target='/pokedex/'+encodeURIComponent(pokemon?.id||slot.species);
     const level=slot.min===slot.max?slot.min:slot.min+'–'+slot.max;
     return '<tr><td>'+(pokemon?'<a href="'+target+'">'+name+'</a>':name)+'</td><td>'+esc(level)+'</td><td>'+esc(slot.chance)+'%</td></tr>';
   }).join('');
@@ -110,7 +115,7 @@ export function kantoTrainer(model,data,trainer,details){
     const starter=model.byId.get(variant.starter);
     const title=variant.starter?'Se você escolheu '+(starter?.name||variant.starter):'Equipe';
     return '<section class="section"><h2>'+esc(title)+'</h2><div class="story-team-grid">'+
-      variant.team.map(pokemon=>teamPokemon(pokemon,model,details)).join('')+'</div></section>';
+      variant.team.map(pokemon=>teamPokemon(displayPokemon(model,pokemon),model,details)).join('')+'</div></section>';
   }).join('');
   return layout(data,trainer.leader?'chefes':'treinadores',trainer.name,
     '<p>'+esc(trainer.role)+' · '+link(locationLink(area),area.name)+'</p>'+
