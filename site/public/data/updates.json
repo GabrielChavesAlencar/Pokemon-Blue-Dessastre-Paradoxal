@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ca022c2378f577b9f9016e68e18f181b7f6d5b33",
+      "date": "2026-11-12T10:05:04-03:00",
+      "title": "Kanto: separar fotografia histórica 6/16 do progresso vigente 7/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4856fa6025d70f66f24ee7ee754173935b9c6578",
+      "date": "2026-11-12T10:05:01-03:00",
+      "title": "Kanto: separar fotografia histórica 6/16 do progresso vigente 7/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8084ff5fe28468d3e50cb32e81023473b4a173fc",
+      "date": "2026-11-12T10:04:59-03:00",
+      "title": "Kanto: separar fotografia histórica 6/16 do progresso vigente 7/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8d807bffcbf9f7c64f8b0550197ff745fa55a2a4",
+      "date": "2026-11-12T10:04:54-03:00",
+      "title": "Kanto: separar fotografia histórica 6/16 do progresso vigente 7/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "69aa0ce82820cd58f54c040303335a6e3d125825",
+      "date": "2026-11-12T10:04:52-03:00",
+      "title": "Kanto: separar fotografia histórica 6/16 do progresso vigente 7/16",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e61dd29acd8bc48ef04e09311bd4f24622838a79",
       "date": "2026-11-12T10:04:02-03:00",
       "title": "Kanto: registrar 7/16 núcleos funcionais (9 faltando) e 1/16 aceite após pacote de Oak",
