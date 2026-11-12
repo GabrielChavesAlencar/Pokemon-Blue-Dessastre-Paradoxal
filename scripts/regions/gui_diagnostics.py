@@ -81,7 +81,7 @@ def classify(window_seen: bool, returncode: int | None, stderr: str, errorlog: s
     return "window_observed_not_gameplay_verified"
 
 
-def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[int, Path]:
+def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path, launch_only: bool = False) -> tuple[int, Path]:
     report_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     output = report_dir / ("kanto-gui-" + stamp + ".json")
@@ -104,13 +104,18 @@ def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[i
                 exited = process.poll()
                 if exited is not None:
                     break
-                for window in windows_for_pid(process.pid):
-                    seen = True
-                    titles.add(str(window["title"]))
+                if not launch_only:
+                    try:
+                        for window in windows_for_pid(process.pid):
+                            seen = True
+                            titles.add(str(window["title"]))
+                    except OSError as error:
+                        print(f"[AVISO] Detecção de janela indisponível: {error}. O jogo continua aberto.", flush=True)
+                        launch_only = True
                 elapsed = time.monotonic() - started
                 if probe and elapsed >= seconds:
                     break
-                if not probe and not seen and elapsed >= seconds:
+                if not probe and not launch_only and not seen and elapsed >= seconds:
                     print("[AVISO] Nenhuma janela detectada. O jogo ainda esta em execucao.", flush=True)
                     print("[INFO] Verifique se esta compilando; feche o jogo para gerar relatorio.", flush=True)
                     # Only report this reminder once.
@@ -142,10 +147,14 @@ def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[i
     error_text = tail(errors) if after_error is not None and after_error != before_error else ""
     stderr_text = tail(stderr_path)
     result = classify(seen, None if terminated_by_probe or interrupted_by_user else exited, stderr_text, error_text)
+    if launch_only and not probe and result not in ("physfs_error", "process_failed"):
+        # Exit without a Win32 window probe is NOT evidence of playability.
+        result = "experimental_process_ended_gameplay_unverified"
     # A probe is deliberately stopped after inspecting startup; that termination
     # is NOT a gameplay failure or a successful full playthrough.
     data = {
-        "mode": "noninteractive_window_probe" if probe else "interactive_manual_session",
+        "mode": "noninteractive_window_probe" if probe else
+                ("interactive_launch_only" if launch_only else "interactive_manual_session"),
         "status": result,
         "window_seen": seen,
         "window_titles": sorted(titles),
@@ -164,7 +173,8 @@ def monitor(pilot: Path, seconds: int, probe: bool, report_dir: Path) -> tuple[i
         print("[ERRO DO MOTOR]\n" + error_text[-2000:], flush=True)
     if stderr_text:
         print("[STDERR]\n" + stderr_text[-2000:], flush=True)
-    return (0 if seen and not result.endswith("error") and result != "process_failed" else 2), output
+    good = (seen or (launch_only and not probe and exited == 0))
+    return (0 if good and result not in ("physfs_error", "process_failed") else 2), output
 
 
 def main() -> int:
@@ -176,10 +186,14 @@ def main() -> int:
     parser.add_argument("--seconds", type=int, default=30, help="Limite de detecao inicial")
     parser.add_argument("--no-build", action="store_true", help="Exige copia ja preparada")
     parser.add_argument("--rebuild", action="store_true", help="Monta nova pasta; nunca substitui a anterior")
+    parser.add_argument("--launch-only", action="store_true",
+                        help="Jogar até fechar o Game.exe sem depender do detector de janela Win32")
     args = parser.parse_args()
     if sys.platform != "win32":
         print("[ERRO] A verificacao grafica do Game.exe exige Windows.", file=sys.stderr)
         return 2
+    if args.launch_only and args.probe:
+        parser.error("--launch-only não pode ser combinado com --probe")
     if not 3 <= args.seconds <= 300:
         parser.error("--seconds deve ficar entre 3 e 300")
     output = args.output.resolve()
@@ -202,7 +216,8 @@ def main() -> int:
             print("[INFO] Preparando copia isolada, sem alterar a instalacao principal.", flush=True)
             build(args.source.resolve(), args.game.resolve(), output)
         inspect(output)
-        code, _ = monitor(output, args.seconds, args.probe, workspace / "kanto-gui-reports")
+        code, _ = monitor(output, args.seconds, args.probe,
+                          workspace / "kanto-gui-reports", launch_only=args.launch_only)
         return code
     except (OSError, ValueError, KeyError) as error:
         print(f"[ERRO] {type(error).__name__}: {error}", file=sys.stderr)
