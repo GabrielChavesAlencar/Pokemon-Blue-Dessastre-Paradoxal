@@ -19,15 +19,23 @@ const pages={
 };
 const methods={
   Land:'Grama',LandDay:'Grama durante o dia',LandNight:'Grama à noite',LandMorning:'Grama pela manhã',
-  Water:'Surf',OldRod:'Old Rod',GoodRod:'Good Rod',SuperRod:'Super Rod',Cave:'Caverna',RockSmash:'Rock Smash'
+  Water:'Surf',OldRod:'Old Rod',GoodRod:'Good Rod',SuperRod:'Super Rod',
+  Cave:'Caverna',CaveDay:'Caverna durante o dia',CaveNight:'Caverna à noite',RockSmash:'Rock Smash'
 };
+// The exact eight local Kanto badge rewards are pinned by regions.json.
+// Never claim that every gym awards Boulder (the former generic placeholder).
+export const KANTO_GYM_REWARDS=Object.freeze({
+  Brock:'Boulder',Misty:'Cascade','Lt. Surge':'Thunder',Erika:'Rainbow',
+  Koga:'Soul',Sabrina:'Marsh',Blaine:'Volcano',Giovanni:'Earth'
+});
 const trainerLink=trainer=>'/'+(trainer.leader?'chefes':'treinadores')+'/'+encodeURIComponent(trainer.id);
 const locationLink=location=>'/localizacoes/'+encodeURIComponent(location.id);
 const link=(href,label)=>'<a class="text-link" href="'+esc(href)+'">'+esc(label)+' '+icon('arrow')+'</a>';
 
 function layout(data,page,title,body,detail=false){
   const header='<header class="article-heading"><span class="eyebrow">KANTO · PILOTO</span><h1>'+esc(title)+'</h1>'+
-    '<p>Trecho de Pallet Town a Pewter City. Encontros e equipes do Essentials FRLG para a prévia de Kanto.</p></header>';
+    '<p>Catálogo experimental de '+data.locations.length+' locais e '+data.trainers.length+
+    ' treinadores de Kanto. Mapas, batalhas e encontros vêm da fonte Essentials FRLG; QA manual Windows/JoiPlay e eventos de história ainda estão pendentes.</p></header>';
   const tabs='<nav class="region-picker" aria-label="Catálogo de Kanto">'+Object.entries(pages).map(([key,name])=>
     '<a class="text-link" href="/'+key+'?regiao=kanto"'+(key===page?' aria-current="page"':'')+'>'+name+'</a>').join('')+'</nav>';
   const source='<p class="data-note">Fonte: <a href="'+esc(data.source.url)+'" target="_blank" rel="noopener noreferrer">'+
@@ -44,6 +52,8 @@ function areaCard(area){
   const summary=[];
   if(area.methods.length) summary.push(area.methods.length+' métodos de encontro');
   if(area.trainers.length) summary.push(area.trainers.length+' adversários');
+  if(area.status==='preview') summary.push('Somente cenário (sem eventos)');
+  if(area.status==='encounter_review') summary.push('Encontros sob revisão');
   return '<a class="regular-card" href="'+locationLink(area)+'"><h3>'+esc(area.name)+'</h3>'+
     (summary.length?'<p>'+esc(summary.join(' · '))+'</p>':'')+
     '<span class="regular-card-action">Ver local '+icon('arrow')+'</span></a>';
@@ -84,7 +94,11 @@ export function kantoLocation(model,data,area){
   const trainers=area.trainers.map(id=>data.trainers.find(row=>row.id===id));
   const encounters=area.methods.length
     ? '<section class="section"><h2>Encontros</h2><div class="region-entries">'+area.methods.map(method=>encounterTable(model,method)).join('')+'</div></section>'
-    : '<p class="data-note">Sem encontros selvagens na tabela deste local.</p>';
+    : '<p class="data-note">'+(area.status==='preview'
+      ? 'Somente cenário: eventos, treinadores e encontros ainda não estão liberados.'
+      : area.status==='encounter_review'
+        ? 'Encontros temporariamente suspensos: a fonte contém um método duplicado; não foram inventadas probabilidades.'
+        : 'A fonte auditada não possui encontros selvagens ativos neste local.')+'</p>';
   const battles=trainers.length
     ? '<section class="section"><h2>Adversários</h2>'+cards(trainers,row=>trainerCard(model,data,row))+'</section>' : '';
   return layout(data,'localizacoes',area.name,encounters+battles,true);
@@ -100,5 +114,7 @@ export function kantoTrainer(model,data,trainer,details){
   }).join('');
   return layout(data,trainer.leader?'chefes':'treinadores',trainer.name,
     '<p>'+esc(trainer.role)+' · '+link(locationLink(area),area.name)+'</p>'+
-    (trainer.leader?'<p>Recompensa: Boulder Badge</p>':'')+variants,true);
+    (trainer.leader&&KANTO_GYM_REWARDS[trainer.name]
+      ? '<p>Recompensa: '+esc(KANTO_GYM_REWARDS[trainer.name])+' Badge (somente após vitória)</p>'
+      : '')+variants,true);
 }
