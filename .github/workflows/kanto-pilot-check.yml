@@ -46,6 +46,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 08 source audit failed'}
           python scripts/regions/audit_celadon.py --output .blue-work/kanto-phase-09-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 09 source audit failed'}
+          python scripts/regions/audit_celadon_core.py
+          if($LASTEXITCODE -ne 0){throw 'Kanto Celadon core event audit failed'}
           python scripts/regions/audit_fuchsia.py --output .blue-work/kanto-phase-10-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 10 source audit failed'}
           python scripts/regions/audit_saffron.py --output .blue-work/kanto-phase-11-audit.json
