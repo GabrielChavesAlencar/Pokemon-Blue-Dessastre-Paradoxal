@@ -30,6 +30,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] Base de seleção de início Johto em `scripts/battle_polish/RegionStart.rb`, com guardas por marcador regional, instalação e mapa existente, sem liberar a região antes da instalação real.
 - [x] Regressões Ruby ampliadas em `tests/region_start_runtime.rb` para início sintético Johto, segurança de Kanto/Decades e saves.
 - [x] [Documento da Etapa 04 parcial](JOHTO_FASE_04_BASE_DO_INICIO.md).
+- [x] **scripts/regions/JohtoPilot.rb** criado com diálogos da mãe e de Elm, escolha segura de Chikorita/Cyndaquil/Totodile e combate com rival guardado até treinador PBS efetivo.
+- [x] O progresso de história fica em `blue_regions["johto_pilot"]` e não altera os marcadores de Kanto ou o save Decades.
+- [x] Teste Ruby puro `tests/johto_pilot_runtime.rb`, incorporado à regressão Python em `tests/test_johto_story_runtime.py`.
+- [x] Extrator **ZIP local** `scripts/regions/prepare_johto_source.py` e testes `tests/test_johto_source_prepare.py` com lista segura de RMXP/PNG, hashes e proteção contra diretórios externos e symlinks.
+- [x] [Estudo do núcleo New Bark + entrada segura do ZIP](JOHTO_FASE_04_EVENTOS_NEW_BARK.md).
+- [ ] Fazer o vínculo real dos eventos em New Bark e do rival aos mapas e treinadores PBS da cópia isolada, somente após auditoria do mapa original.
 - [ ] Criar New Bark, casa, laboratório de Elm, rival e inicial **realmente jogáveis** após auditar a fonte; não escrever em Decades/Kanto.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
@@ -41,7 +47,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 01 | Fonte, direitos e baseline | **PARCIAL**: manifesto criado; fonte real, hash e direitos pendentes |
 | 02 | Auditoria RXDATA e dependências | **PARCIAL**: scanner/testes criados; fonte real e validação pendentes |
 | 03 | Importador isolado e prévia | **PARCIAL**: código e testes sintéticos; pacote, IDs e prévia reais pendentes |
-| 04 | New Bark, casa, Elm e inicial | **PARCIAL**: guarda de início/teste Ruby; mapas, eventos e jogabilidade pendentes |
+| 04 | New Bark, casa, Elm e inicial | **PARCIAL**: início condicionado, roteiro de Elm/mãe/iniciais/rival e testes Ruby; eventos ainda sem mapas reais e sem piloto jogável |
 | 05 | Violet e Falkner | PENDENTE |
 | 06 | Azalea e Bugsy | PENDENTE |
 | 07 | Goldenrod e Whitney | PENDENTE |
@@ -90,4 +96,4 @@ O auditor nunca instala conteúdo e grava apenas um JSON em .blue-work/. Se a sa
 - [ ] Risco de sobrescrita removido, rollback e cópia isolada definidos.
 - [ ] Testes automatizados concluídos sem regressão e evidências documentadas.
 
-**Próxima ação:** executar `audit_johto.py`, `plan_johto.py`, `stage_johto.py` e `verify_johto.py` sobre o pacote original e jogo instalados, quando presentes, de acordo com [o guia da Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md). Não habilitar a Nova Partida Johto antes da Etapa 04. A fase permanece PARCIAL porque não há mapas reais auditados.
+**Próxima ação:** preparar o ZIP legítimo com `prepare_johto_source.py`, conferir SHA-256, credenciais de uso de artes e os IDs originais; então executar `audit_johto.py`, `plan_johto.py`, `stage_johto.py` e `verify_johto.py` sobre o pacote real e a instalação local, de acordo com [a Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md). Depois, ligar os eventos já preparados aos interiores de New Bark dentro de um piloto isolado. O botão de nova partida em Johto e o teste executável continuam bloqueados enquanto esses mapas reais não forem validados.
