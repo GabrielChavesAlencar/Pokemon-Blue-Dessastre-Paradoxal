@@ -148,28 +148,11 @@
     163,
     164,
     165,
-    168,
-    169,
-    170,
-    171,
-    172,
     173,
     174,
     175,
     176,
-    177,
-    178,
-    179,
-    180,
-    181,
-    182,
-    183,
-    184,
-    185,
-    186,
-    187,
-    188,
-    189
+    177
   ],
-  "preview_policy": "Celadon 114/115/124 e Fuchsia 144/145/146/147/153 possuem nucleo experimental auditado de portas, cura, Mart, batalha Koga/Soul e Safari Gate informativo; as 53 areas restantes (inclusive Safari setores, Secret House, Warden, Fuchsia rotas e Saffron) ficam SOMENTE geometria preview_only, sem encontros, scripts, NPCs ou itens ate implementacao de regras nativas e testes."
+  "preview_policy": "Celadon 114/115/124, Fuchsia 144/145/146/147/153 e Saffron 168-172/178-189 possuem somente eventos e batalhas whitelisted no piloto isolado. As 36 areas restantes, inclusive portarias sem guardas, Safari Zone, Warden e casas de Saffron, permanecem geometria sem eventos, encontros, itens ou scripts estrangeiros."
 }
