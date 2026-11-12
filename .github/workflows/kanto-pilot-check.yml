@@ -192,7 +192,14 @@ jobs:
             $process=Start-Process -FilePath "$pilot/Game.exe" -WorkingDirectory $pilot -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-native-out.txt" -RedirectStandardError ".blue-work/kanto-native-err.txt"
             $handle=$process.Handle
             if(-not $process.WaitForExit(150000)){Stop-Process -Id $process.Id;throw 'Kanto native test timed out'}
-            if(Test-Path "$pilot/Data/blue-kanto-proof.txt"){Get-Content "$pilot/Data/blue-kanto-proof.txt";exit 0}
+            if(Test-Path "$pilot/Data/blue-kanto-proof.txt"){
+              $nativeAudio="$pilot/Data/blue-kanto-music-native-pilot.txt"
+              if(-not (Test-Path $nativeAudio)){throw "Native Kanto F6 AudioFile probe missing"}
+              if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Kanto music F6 native probe did not pass"}
+              Get-Content $nativeAudio
+              Get-Content "$pilot/Data/blue-kanto-proof.txt"
+              exit 0
+            }
             if(Test-Path "$pilot/Data/blue-kanto-error.txt"){break}
             if($process.ExitCode -ne 0 -and -not (Select-String -Path .blue-work/kanto-native-out.txt -Pattern 'Successfully compiled all game data' -Quiet)){break}
           }
@@ -267,6 +274,10 @@ jobs:
               throw 'Integrated Kanto proof timed out; diagnostics above'
             }
             if(Test-Path "$game/Data/blue-kanto-integrated-proof.txt"){
+              $nativeAudio="$game/Data/blue-kanto-music-native-integrated.txt"
+              if(-not (Test-Path $nativeAudio)){throw "Integrated Kanto F6 native AudioFile probe missing"}
+              if(-not ((Get-Content $nativeAudio -Raw) -match "PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE")){throw "Integrated F6 BGM/ME engine dispatch failed"}
+              Get-Content $nativeAudio
               Get-Content "$game/Data/blue-kanto-integrated-proof.txt"
               exit 0
             }
