@@ -83,17 +83,31 @@ module KantoNativeCheck
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
     require!(battle_calls.count { |row| row[1] == "Brock" } == 1, "Brock battle repeated after victory")
 
+    # Phase 07: Misty must have a real compiled trainer profile and a
+    # distinct Cascade milestone. The battle result is stubbed ONLY in CI.
+    misty = GameData::Trainer.get(:BLUE_KANTO_LEADER_MISTY, "Misty")
+    require!(misty.pokemon.map { |pokemon| pokemon[:species] } == [:STARYU, :STARMIE],
+             "Misty original FRLG team differs from Staryu/Starmie")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO") == ["BOULDER","CASCADE"],
+             "Cascade Badge not awarded uniquely")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_MISTY, "Misty", "KANTO_042_001")
+    require!(battle_calls.count { |row| row[1] == "Misty" } == 1,
+             "Misty repeated after victory")
+    require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 4,
+             "Two Kanto milestones were double-counted or omitted")
+
     slot = "Kanto Native Verification"
     require!(Game.save(slot), "Pilot save failed")
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER"],
-             "Pilot badge did not survive reload")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE"],
+             "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
-    File.write("Data/blue-kanto-proof.txt", "Pallet, Oak, rival, Route 1, Brock, save and load verified")
+    File.write("Data/blue-kanto-proof.txt", "Pallet, Oak, rival, Route 1, Brock, Mt Moon/Cerulean trainers, Misty, Cascade, save and load verified")
   end
 end
