@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4778bdcae66ca80b888ae1451ce6cf90bff76de0",
+      "date": "2026-11-12T07:01:36-03:00",
+      "title": "Fase 08: checar 40 mapas, atalhos, bilhete, capitão e Lt. Surge no verificador",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c0905d2111348350a6f02c01d9f7e60d6e02e5d5",
       "date": "2026-11-12T07:01:15-03:00",
       "title": "Corrigir auditoria: filtrar PBS antes da leitura para ignorar duplicatas fora do escopo",
