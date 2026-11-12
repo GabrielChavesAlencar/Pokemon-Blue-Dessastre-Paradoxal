@@ -91,6 +91,8 @@ TYPES = {
     # Temporary Decades portraits until separately licensed FRLG trainer art is reviewed.
     "BURGLAR": "SUPERNERD", "SCIENTIST": "SUPERNERD",
     "LEADER_BLAINE": "SUPERNERD",
+    "COOLTRAINER_M": "COOLTRAINER_F",  # Provisional battle portrait; authentic male overworld sprites.
+    "LEADER_GIOVANNI": "ROCKETBOSS",  # Local fallback battle portrait pending art licensing.
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -204,6 +206,22 @@ TRAINERS[188][10] = ("ROCKETBOSS", "Giovanni", 2)
 
 # Phase 12: IDs, coordinates and trainer names verified against the pinned
 # FRLG Map199-208 source by audit_cinnabar.py. No source event scripts run.
+# Viridian Gym 13: audited event identities and trainer Sight(n) triggers.
+# FRLG mistakenly starts Tamer Cole for the event named Jason (8); use the
+# distinct [TAMER,Jason] PBS team instead of executing that foreign script.
+TRAINERS[13] = {
+    2: ("BLACKBELT", "Takashi"),
+    3: ("COOLTRAINER_M", "Samuel"),
+    4: ("LEADER_GIOVANNI", "Giovanni"),
+    5: ("BLACKBELT", "Kiyo"),
+    6: ("TAMER", "Cole"),
+    7: ("COOLTRAINER_M", "Yuji"),
+    8: ("TAMER", "Jason"),
+    9: ("BLACKBELT", "Atsushi"),
+    10: ("COOLTRAINER_M", "Warren"),
+}
+VIRIDIAN_GYM_EVENTS = set(TRAINERS[13]) | {11, 16}
+
 TRAINERS[202] = {
     4: ("BURGLAR", "Quinn"), 5: ("SUPERNERD", "Erik"),
     6: ("SUPERNERD", "Avery"), 7: ("BURGLAR", "Ramon"),
@@ -266,6 +284,12 @@ SILPH_FLOOR_LANDINGS = {
     184: (23, 5), 185: (22, 5), 186: (24, 5),
     187: (13, 5), 188: (13, 5),
 }
+
+def viridian_event_allowed(source_id, event_id):
+    # Do not leak FRLG Gym plaques, global script page conditions, or its
+    # original variable-controlled events into Decades.
+    return source_id != 13 or event_id in VIRIDIAN_GYM_EVENTS
+
 
 def cinnabar_event_allowed(source_id, event_id):
     if source_id in CINNABAR_EVENTS:
