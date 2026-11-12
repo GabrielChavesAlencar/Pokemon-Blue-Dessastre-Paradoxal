@@ -22,7 +22,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] **Testar Johto** já está no menu principal junto de **Testar Kanto**. Enquanto o piloto estiver ausente, informa que Johto está em preparação sem usar os arquivos de Kanto.
 - [ ] Confirmar arquivo original ZIP/RAR e SHA-256 do Map Pack.
 - [ ] Auditar mapa real de origem, permissões separadas de cada arte e inventário da instalação game/ local.
-- [ ] Criar cópia isolada da região com New Bark, mapa interno e Professor Elm, sem escrever em Decades/Kanto.
+- [x] Planejamento seguro de IDs implementado em `scripts/regions/plan_johto.py` (IDs livres ≥600, compatibilidade com mapeamentos anteriores).
+- [x] Staging de terreno em `scripts/regions/stage_johto.py`, somente em `.blue-work`, sem eventos nem músicas, com proteção dos arquivos originais.
+- [x] Verificador `scripts/regions/verify_johto.py` e testes sintéticos `tests/test_johto_map_plan.py` e `tests/test_johto_stage.py`.
+- [x] [Documento detalhado da Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md) com comandos, critérios e limites.
+- [ ] Gerar cópia isolada a partir dos **mapas reais de Johto**; sem a fonte externa validada o staging real permanece bloqueado.
+- [ ] Criar New Bark, casa, laboratório de Elm e inicial jogável após validar a fonte, sem escrever em Decades/Kanto.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -32,7 +37,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 |---|---|---|
 | 01 | Fonte, direitos e baseline | **PARCIAL**: manifesto criado; fonte real, hash e direitos pendentes |
 | 02 | Auditoria RXDATA e dependências | **PARCIAL**: scanner/testes criados; fonte real e validação pendentes |
-| 03 | Importador isolado e prévia | PENDENTE |
+| 03 | Importador isolado e prévia | **PARCIAL**: código e testes sintéticos; pacote, IDs e prévia reais pendentes |
 | 04 | New Bark, casa, Elm e inicial | PENDENTE |
 | 05 | Violet e Falkner | PENDENTE |
 | 06 | Azalea e Bugsy | PENDENTE |
@@ -82,4 +87,4 @@ O auditor nunca instala conteúdo e grava apenas um JSON em .blue-work/. Se a sa
 - [ ] Risco de sobrescrita removido, rollback e cópia isolada definidos.
 - [ ] Testes automatizados concluídos sem regressão e evidências documentadas.
 
-**Próxima ação:** auditar o arquivo original do Map Pack, atribuir chaves simbólicas aos mapas com base nos IDs reais e preparar o staging isolado da Etapa 03. Não habilitar a Nova Partida Johto antes da Etapa 04.
+**Próxima ação:** executar `audit_johto.py`, `plan_johto.py`, `stage_johto.py` e `verify_johto.py` sobre o pacote original e jogo instalados, quando presentes, de acordo com [o guia da Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md). Não habilitar a Nova Partida Johto antes da Etapa 04. A fase permanece PARCIAL porque não há mapas reais auditados.
