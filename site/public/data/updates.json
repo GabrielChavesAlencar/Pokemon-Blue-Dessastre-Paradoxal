@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "23f6d0f3742ccb8f75689331ea3895e359695dbc",
+      "date": "2026-11-12T09:33:18-03:00",
+      "title": "Corrigir regex Sight(n) para habilitar 50 treinadores com visão real",
+      "category": "Correções"
+    },
+    {
+      "sha": "2bf68f0930acb181e2604e3e4cb082a0322ff6c3",
+      "date": "2026-11-12T09:33:15-03:00",
+      "title": "Corrigir regex Sight(n) para habilitar 50 treinadores com visão real",
+      "category": "Correções"
+    },
+    {
       "sha": "9d4492b5de848e9f40c84044a768360b99e03243",
       "date": "2026-11-12T09:32:30-03:00",
       "title": "Prova nativa MAN-01/02: portas bidirecionais e visão Rick com vitória persistida",
