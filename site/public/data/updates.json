@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bf27aebb22c7b80dfeff7684abd15457f822c044",
+      "date": "2026-11-12T07:40:46-03:00",
+      "title": "Kanto fase 09: publicar 11 locais de cenario de Celadon sem eventos/treinadores",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8539d891c75bc09b3877235b34ea34e4faa5fe7d",
       "date": "2026-11-12T07:40:20-03:00",
       "title": "Kanto 09: documentar preview de Celadon, eventos adiados e progresso mantido",
