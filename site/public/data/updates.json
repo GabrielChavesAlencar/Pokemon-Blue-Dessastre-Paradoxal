@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "21f882d1cd07eb001bc391187ef60527b2500c37",
+      "date": "2026-11-12T07:00:46-03:00",
+      "title": "Fase 08: ticket experimental, capitão Cut e Thunder Badge única após Lt. Surge",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8baee3bba1c146351a9a644ea71ff92ea29854e6",
       "date": "2026-11-12T07:00:20-03:00",
       "title": "Fase 08: integrar mapas e eventos revisados de Vermilion, navio e Lt. Surge no piloto isolado",
