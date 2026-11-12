@@ -2,7 +2,7 @@
 
 **Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **8 interiores adicionais com transferência de ida e volta**, **11 prévias sem eventos em Celadon**, **20 prévias sem eventos em Fuchsia/Safari** e **30 prévias sem eventos em Saffron/Silph Co.** (**109 no catálogo**). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
 
-**Progresso atual reavaliado:** [6/16 núcleos implementados — 10 restantes; 1/16 aceito — 15 restantes](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). A reavaliação não significa novos testes manuais concluídos.
+**Progresso atual:** [7/16 núcleos funcionais — faltam 9; 1/16 aceito integralmente — faltam 15](KANTO_AVANCO_FUNCIONAL_07.md). A CI da missão do pacote de Oak passou, mas nenhuma validação manual foi concluída com essa atualização.
 
 ## Opção diretamente no Game.exe principal
 
@@ -44,6 +44,19 @@ Após escolher o inicial com Oak, abra o **menu de pausa → Testes Kanto (exper
 Os **17 atalhos antigos** são: Pallet, Pewter, Rota 4, Centro e três andares de Mt. Moon, Cerulean, Misty, Rota 5, Rota 6, Vermilion, Lt. Surge, porto, S.S. Anne 1F, cabine do capitão e convés. O acesso à **Rota 3** é caminhando para leste a partir de Pewter; assim você também poderá testar os treinadores e as conexões originais.
 
 **Importante:** o menu usa somente mapas da cópia experimental e **não libera Liga, não concede insígnias, não altera a campanha principal e não existe no jogo Decades instalado**. Os pontos de chegada foram derivados de entradas/saídas da fonte FRLG, mas ainda precisam de validação visual de colisão no Windows.
+
+## Passo funcional 07/16 — pacote de Oak e portas (etapa 03)
+
+Após [CI Windows aprovada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441), teste no `Game.exe → Testar Kanto` usando save próprio:
+
+- [ ] Inicie uma nova jornada, escolha um dos três iniciais e entre no Poké Mart de Viridian; o atendente deve entregar o **pacote virtual** de Oak e continuar vendendo.
+- [ ] Volte ao laboratório em Pallet e fale com Oak no mesmo evento do inicial para registrar a entrega; confira a Pokédex.
+- [ ] Converse com Oak novamente: não deve receber novo inicial, pacote ou outra recompensa.
+- [ ] Retorne ao Mart: loja normal sem nova missão; salve, feche e recarregue para conferir as flags.
+- [ ] Verifique os **dois acessos do Museu de Pewter** e os **três acessos verificados da portaria da Rota 2**, além das casas. Todos precisam permitir retorno.
+- [ ] Teste um treinador por visão, uma derrota e uma vitória, sem repetir prêmio ou perder progresso.
+
+**Atenção:** o pacote é um registro do save Kanto, não um item físico da Bolsa. As cinco Poké Bolas dadas na seleção do inicial foram preservadas por compatibilidade. A conclusão deste checklist manual ainda é necessária para a Barra 2.
 
 ## Correção funcional MAN-01/MAN-02 — teste prioritário
 
