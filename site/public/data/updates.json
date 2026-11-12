@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c77c35866c8e47fadae905a8f37d1ee3d53788ee",
+      "date": "2026-11-11T23:41:29-03:00",
+      "title": "feat(kanto): validar catálogo de 25 mapas a partir da cópia experimental",
+      "category": "Novidades"
+    },
+    {
       "sha": "539cfbf24b56fcfd759eb37270aa1322e6489f66",
       "date": "2026-11-11T23:41:11-03:00",
       "title": "feat(kanto): permitir exportar a Pokédex/portal diretamente do piloto compilado",
