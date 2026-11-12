@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6bc965e51e2e1715a3dafe452fda85179fb99412",
+      "date": "2026-11-11T21:50:52-03:00",
+      "title": "feat(regions): selecionar regiao no inicio de nova partida sem afetar saves antigos",
+      "category": "Novidades"
+    },
+    {
       "sha": "dee15f706a1593819d8a81eeb114813bdd2044bb",
       "date": "2026-11-11T21:44:10-03:00",
       "title": "docs(kanto): registrar sucesso da CI da etapa 03 e manter verificacao manual pendente",
