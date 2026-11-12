@@ -51,6 +51,28 @@ TRAINERS.update({
 })
 
 
+# Phase 08: source IDs, names and event anchors audited in the pinned FRLG kit.
+# Team data are copied from the source PBS; no levels or moves are fabricated.
+TRAINERS.update({
+    **{f"{kind},{name}": (dest, name, 0)
+       for kind, dest, names in (
+           ("BUGCATCHER", "BUGCATCHER", ("Keigo", "Elijah")),
+           ("PICNICKER", "PICNICKER", ("Nancy", "Isabelle")),
+           ("CAMPER", "CAMPER", ("Ricky", "Jeff")),
+           ("SAILOR", "SAILOR", ("Dwayne", "Phillip", "Huey",
+                                "Dylan", "Duncan", "Leonard", "Trevor", "Edmond")),
+           ("ENGINEER", "ENGINEER", ("Bailey",)),
+           ("GENTLEMAN", "GENTLEMAN", ("Tucker", "Thomas", "Arthur",
+                                      "Brooks", "Lamar")),
+           ("FISHERMAN", "FISHERMAN", ("Dale", "Barny")),
+           ("LASS", "LASS", ("Ann", "Dawn")),
+           ("YOUNGSTER", "YOUNGSTER", ("Tyler",)),
+           ("LEADER_LtSurge", "LEADER_SURGE", ("Lt. Surge",)),
+       )
+       for name in names},
+})
+
+
 
 def read_blocks(path, selected=None):
     blocks = {}
