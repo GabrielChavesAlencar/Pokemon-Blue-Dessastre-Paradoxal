@@ -9,6 +9,10 @@ module KantoNativeCheck
     Game.start_new
     require!($data_system.start_map_id == $game_map.map_id, "Pallet did not load")
     require!($game_map.events.size >= 4, "Pallet events missing")
+    require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
+    labels = BlueKantoPilot.experimental_stops.map(&:first)
+    require!(labels.length == 9 && labels.any? { |row| row.include?("Misty") },
+             "Experimental Mt Moon/Cerulean destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
              "Pilot pointed at Decades save directory")
 
