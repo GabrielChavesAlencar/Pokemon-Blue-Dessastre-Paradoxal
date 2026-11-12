@@ -79,6 +79,9 @@ TYPES = {
     "LEADER_ERIKA": "LEADER_Erika",
     "BEAUTY": "BEAUTY",
     "COOLTRAINER_F": "COOLTRAINER_F",
+    "LEADER_KOGA": "LEADER_Koga",
+    "JUGGLER": "JUGGLER",
+    "TAMER": "TAMER",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -149,6 +152,18 @@ TRAINERS[124] = {
     45: ("BEAUTY", "Lori"),
     46: ("LASS", "Lisa"),
     47: ("COOLTRAINER_F", "Mary"),
+}
+
+# Fuchsia Gym: Map147 anchors verified from pinned FRLG 1.1:
+# Koga + six trainers with authored battle wrappers; no source scripts run.
+TRAINERS[147] = {
+    3: ("JUGGLER", "Nate"),
+    4: ("JUGGLER", "Kayden"),
+    5: ("JUGGLER", "Kirk"),
+    6: ("TAMER", "Edgar"),
+    7: ("TAMER", "Phil"),
+    8: ("JUGGLER", "Shawn"),
+    11: ("LEADER_KOGA", "Koga"),
 }
 
 SURGE_CANS = {4, 10, *range(22, 35)}
@@ -230,8 +245,9 @@ def install_events(source, target, mapping):
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
-        # Only the three audited phase-09 Celadon core maps have adapted
-        # gameplay; 58 other previews still forbid any foreign event.
+        # Celadon: three maps; Fuchsia: five audited core maps (including
+        # Safari Gate informational NPC) with adapted gameplay only.
+        # All 53 remaining previews forbid any foreign event.
         # stage() already serializes a blank event table for every imported map.
         if original in preview_only:
             dest_file = target / "Data" / f"Map{destination:03}.rxdata"
@@ -246,6 +262,9 @@ def install_events(source, target, mapping):
         script_events = {6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
                          11: {2: "BlueKantoPilot.heal"},
                          115: {2: "BlueKantoPilot.heal"},
+                         145: {2: "BlueKantoPilot.heal"},
+                         146: {2: MART},
+                         153: {1: "BlueKantoPilot.safari_preview", 5: "BlueKantoPilot.safari_preview"},
                          26: {2: "BlueKantoPilot.heal"},
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
@@ -283,6 +302,18 @@ def install_events(source, target, mapping):
             if original == 115 and event_id not in (1, 2):
                 continue
             if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47):
+                continue
+            # Phase 10: exact Fuchsia whitelists, no Warden/Gold Teeth,
+            # Safari captures, Park South event transfers or source quests.
+            if original == 144 and event_id not in (5, 17, 18, 24):
+                continue
+            if original == 145 and event_id not in (1, 2):
+                continue
+            if original == 146 and event_id not in (1, 2):
+                continue
+            if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11):
+                continue
+            if original == 153 and event_id not in (1, 2, 5):
                 continue
             if original == 67 and event_id in (SURGE_CANS | SURGE_LOCKS):
                 # The foreign gym's puzzle depends on game-wide switches.
@@ -371,7 +402,9 @@ def install_events(source, target, mapping):
                 is_door = "door" in name.lower() and bool(character)
                 # For the audited Celadon entrance doors, keep the original
                 # Player Touch semantics rather than requiring an action key.
-                trigger = 1 if original == 114 and event_id in (3, 20) else (0 if is_door else 1)
+                auto_entry = (original == 114 and event_id in (3, 20)) or (
+                    original == 144 and event_id in (5, 17, 18, 24))
+                trigger = 1 if auto_entry else (0 if is_door else 1)
                 selected[event_id] = new_event(event, [warp], trigger, character)
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
@@ -470,12 +503,12 @@ def install_runtime(target, mapping, game):
         ("ERIKA", "Ginasio Celadon (Erika, sem batalha)", 124, 6, 18),
         ("CEL_CENTER", "Celadon Center (cenario)", 115, 7, 8),
         ("CEL_STORE", "Celadon Loja 1F (cenario)", 117, 2, 14),
-        # Phase 10: incoming FRLG warp coordinates, geometry-only.
-        ("FUCHSIA", "Fuchsia City (cenario, sem eventos)", 144, 25, 36),
-        ("KOGA", "Ginasio Fuchsia Koga (sem batalha)", 147, 7, 21),
-        ("FUCH_CENTER", "Fuchsia Centro Pokemon (cenario)", 145, 7, 8),
+        # Phase 10: audited incoming warp coordinates. Core Fuchsia and Koga active.
+        ("FUCHSIA", "Fuchsia City (Centro e Ginásio ativos)", 144, 25, 36),
+        ("KOGA", "Ginasio Fuchsia Koga (batalha experimental)", 147, 7, 21),
+        ("FUCH_CENTER", "Fuchsia Centro Pokemon (cura)", 145, 7, 8),
         ("FUCH_WARDEN", "Casa Warden (cenario)", 152, 6, 9),
-        ("SAF_GATE", "Safari Zone Portao (cenario)", 153, 4, 7),
+        ("SAF_GATE", "Safari Zone Portao (entrada bloqueada)", 153, 4, 7),
         ("SAF_SOUTH", "Safari Zone Sul (cenario)", 155, 26, 31),
         ("SAF_NORTH", "Safari Zone Norte (cenario)", 159, 25, 6),
         ("SAF_WEST", "Safari Zone Oeste (cenario)", 161, 14, 9),
