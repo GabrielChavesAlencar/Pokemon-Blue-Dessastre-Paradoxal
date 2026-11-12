@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8c4992fcb346e61a022240d2b3952f7aa7dbd9ba",
+      "date": "2026-11-12T10:48:55-03:00",
+      "title": "Kanto Fuchsia: adicionar atalho experimental para Poké Mart sem mudar Game.exe base",
+      "category": "Novidades"
+    },
+    {
       "sha": "8cea1eb794220380dbcccd48c85c010d60d72ea3",
       "date": "2026-11-12T10:48:36-03:00",
       "title": "Kanto Fuchsia CI: testar portas, cura, Mart/Safari bloqueado, derrota/vitória Koga e Soul save/reload",
