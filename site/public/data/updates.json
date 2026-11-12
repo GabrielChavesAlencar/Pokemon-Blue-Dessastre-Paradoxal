@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b73b88d9b93e9cdaef607cd02c6d40e1091df098",
+      "date": "2026-11-12T06:37:22-03:00",
+      "title": "test(kanto): verificar suporte a spawn e localizacao do launcher no Game.exe Windows",
+      "category": "Testes"
+    },
+    {
       "sha": "30d8c5c27870595d9ac5e3609387264f87edd32d",
       "date": "2026-11-12T06:36:34-03:00",
       "title": "docs(kanto): fluxo Testar Kanto no Blue-Story.exe baixado e Python portatil",
