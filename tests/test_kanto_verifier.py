@@ -41,7 +41,8 @@ class KantoPilotAuditTests(unittest.TestCase):
             173,174,175,176,177]))
         self.assertIn(42, order[13:])
         self.assertEqual(len(manifest["preview_only"]), 36)
-        self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,\n                         168,169,170,171,172,*range(178,190)}.isdisjoint(manifest["preview_only"]))
+        self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,
+                         168,169,170,171,172,*range(178,190)}.isdisjoint(manifest["preview_only"]))
 
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
