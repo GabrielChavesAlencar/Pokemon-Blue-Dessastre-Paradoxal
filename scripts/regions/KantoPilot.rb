@@ -52,7 +52,7 @@ module BlueKantoPilot
     end
   end
 
-  def self.battle(type, name, event_key = nil)
+  def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
     wins = (progress["pilot_wins"] ||= [])
     # New events persist stable region/map/event keys. Accept old name-only
@@ -63,15 +63,30 @@ module BlueKantoPilot
       return
     end
     setBattleRule("canLose")
-    won = TrainerBattle.start(type, name)
+    won = TrainerBattle.start(type, name, version)
     unless won
       $player.heal_party
       return
     end
     wins << key
-    return unless type == :BLUE_KANTO_LEADER
-    if BlueRegions.award(progress, "KANTO", "BOULDER")
-      pbMessage(_INTL("Brock: A Boulder Badge é sua. Você concluiu o piloto de Kanto!"))
+    if type == :BLUE_KANTO_LEADER && BlueRegions.award(progress, "KANTO", "BOULDER")
+      pbMessage(_INTL("Brock: A Boulder Badge é sua. O caminho para Cerulean está aberto!"))
+    elsif type == :BLUE_KANTO_LEADER_MISTY && BlueRegions.award(progress, "KANTO", "CASCADE")
+      pbMessage(_INTL("Misty: Você conquistou a Cascade Badge! O próximo desafio fica para a próxima etapa."))
+    end
+  end
+
+  def self.pickup(item, key)
+    collected = (progress["pilot_items"] ||= [])
+    if collected.include?(key)
+      pbMessage(_INTL("Você já recolheu este item."))
+      return
+    end
+    if $bag.add(item, 1)
+      collected << key
+      pbMessage(_INTL("Encontrou {1}!", GameData::Item.get(item).name))
+    else
+      pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
     end
   end
 
