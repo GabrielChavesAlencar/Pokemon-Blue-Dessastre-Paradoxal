@@ -177,6 +177,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 03/16 — Importador e prévia isolada de Johto
 
+**Implementação parcial entregue:** [JOHTO_FASE_03_PREVIA_SEGURA.md](JOHTO_FASE_03_PREVIA_SEGURA.md). `plan_johto.py` já planeja IDs e verifica colisões, `stage_johto.py` cria prévia apenas de geometria e `verify_johto.py` valida que o jogo-base não foi alterado. `tests/test_johto_map_plan.py` e `tests/test_johto_stage.py` usam mapas sintéticos. **A fonte real não está auditada, a prévia real não foi gerada e os mapas ainda não são jogáveis.** Não elevar esta etapa a concluída com base nos testes sintéticos.
+
+
 **Implementar:** preparar geometry-only em .blue-work/johto-pilot (e staging novo por execução), importar gráficos autorizados, **remapear MapIDs e IDs de tileset**, recuperar conexões sem sobrescrever arquivos antigos, manter o mapeamento de Kanto e Decades, distinguir preview/experimental/funcional. Criar dry-run de alteração de mapas, MapInfos, Tilesets, PBS e recursos. Preservar snapshots para rollback.
 
 **Entregar:** stage_johto.py, pilot_johto.py, verify_johto.py e testes de round trip; nenhum evento de terceiros ativado automaticamente.
