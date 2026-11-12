@@ -1,6 +1,6 @@
 # Kanto — Plano para aplicar as 64 músicas por este chat
 
-> **Documento de implementação, não uma instalação concluída.** Estado de 12/11/2026: 64 MP3 já publicados no repositório, **50 BGM** em `assets/music/kanto/BGM/` e **14 ME** em `assets/music/kanto/ME/`; 135.768.381 bytes no total. Os arquivos estão organizados, mas ainda **não estão associados automaticamente** a mapas, batalhas e eventos do jogo. Kanto continua como `prototype`.
+> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf, com 17 arquivos distintos copiados pelo instalador. Batalhas, ME e cenas permanecem pendentes; Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
 
 ## Objetivo e como trabalharemos aqui no ChatGPT
 
@@ -56,6 +56,8 @@ Criar:
 **Testar:** carregamento Kanto, retorno Decades, saves sem região inicializada, mapas prévia, config antiga, modo personalizado/sorteio e duplicação sem efeitos. Só avançar após CI verde.
 
 ## Fase 2 — BGM de cidades, rotas, interiores e transporte (25 faixas)
+
+**Fase 2 implementada:** ver [resultado e limitações](KANTO_MUSICAS_FASE_2.md). Foram aprovadas 49 associações de ambiente por MapID compilado, mais duas trilhas condicionais de bicicleta/Surf (17 MP3 distintos). `SILPH_LOBBY` continua em prévia; `ROUTE_4` aguarda comprovação do trecho após Mt. Moon. Faixas de localidades ausentes continuam pendentes. Este vínculo não comprova som audível nem modifica a Barra 2 de aceite.
 
 Aplicar BGM por **chaves de mapas**. Onde houver vários andares, conferir quais estão realmente instalados/ativos; o status de 45 mapas como prévias não deve ser falsamente promovido.
 
