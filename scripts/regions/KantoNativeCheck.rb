@@ -27,7 +27,7 @@ module KantoNativeCheck
     }, "Player Home door cannot be entered from Pallet")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 54 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 64 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
@@ -39,6 +39,8 @@ module KantoNativeCheck
              labels.any? { |row| row.include?("Cinnabar") } &&
              labels.any? { |row| row.include?("Blaine") } &&
              labels.any? { |row| row.include?("Ginasio Viridian Giovanni") } &&
+             labels.any? { |row| row.include?("Hall of Fame") } &&
+             labels.any? { |row| row.include?("Elite Four") } &&
              labels.any? { |row| row.include?("Mansion") },
              "Experimental Kanto phase 11 Saffron/Silph destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
@@ -599,6 +601,95 @@ module KantoNativeCheck
              !BlueKantoPilot.progress["leagues"].include?("KANTO"),
              "Eight badges completed League prematurely or duplicated progress")
 
+    # Phase 14 native proof. Battle outcomes are simulated, but the
+    # source maps, PBS identities, event triggers and regional state are real.
+    route22 = map_for.call("Route 22 (Plateau Gate)")
+    route23 = map_for.call("Route 23 (oito guardas)")
+    road1 = map_for.call("Victory Road 1F")
+    road2 = map_for.call("Victory Road 2F")
+    lobby = map_for.call("Indigo Lobby")
+    lorelei_room = map_for.call("Elite Four Lorelei")
+    lance_room = map_for.call("Elite Four Lance")
+    champion_room = map_for.call("Campeao Blue")
+    hall = map_for.call("Hall of Fame Kanto")
+    require!(!BlueKantoPilot.progress["leagues"].include?("KANTO"), "Kanto League prematurely completed")
+    earned = BlueKantoPilot.progress["achievements"]["KANTO"]
+    require!(earned.length == 8 && BlueKantoPilot.league_badges?, "Need exactly eight local Kanto badges")
+    earned.delete("EARTH")
+    require!(!BlueKantoPilot.league_badges? &&
+             BlueKantoPilot.league_begin(lorelei_room,6,12) == false,
+             "The League accepted seven local badges or global Decades crystals")
+    $map_factory.setup(route23)
+    require!(!BlueKantoPilot.league_badge_check(8,19,18) &&
+             !$game_self_switches[[route23,18,"A"]],
+             "The eighth Route 23 checkpoint was opened without Earth")
+    earned << "EARTH"
+    $map_factory.setup(route23)
+    BlueKantoPilot.league_badge_check(8,19,18)
+    require!($game_self_switches[[route23,18,"A"]] &&
+             $game_self_switches[[route23,19,"A"]],
+             "Route 23 eighth badge barrier/guard did not open")
+    $map_factory.setup(road1)
+    BlueKantoPilot.victory_strength([14,15])
+    require!($game_self_switches[[road1,14,"A"]] &&
+             $game_self_switches[[road1,15,"A"]],
+             "Victory Road adapted Strength barriers did not open")
+    $map_factory.setup(road2)
+    require!([9,11,13,14,16].all? { |event_id| $game_map.events[event_id].trigger == 2 },
+             "Victory Road has missing source sight trainers")
+    coolcouple = GameData::Trainer.get(:BLUE_KANTO_COOLCOUPLE, "Ray & Tyra")
+    require!(coolcouple.pokemon.length >= 2, "Victory Road double-battle roster unavailable")
+    $map_factory.setup(map_for.call("Victory Road 2F"))
+    $map_factory.setup(map_for.call("Elite Four Lorelei"))
+    require!($game_map.events[3].trigger == 0, "Lorelei is not an interactive boss")
+    require!(!BlueKantoPilot.league_active?, "League run activated without entering Lobby")
+    BlueKantoPilot.league_battle("LORELEI",:BLUE_KANTO_ELITE_LORELEI,"Lorelei",lobby)
+    require!(battle_calls.none? { |r| r[0] == :BLUE_KANTO_ELITE_LORELEI },
+             "Teleport to Lorelei bypassed the Lobby gate")
+    $map_factory.setup(lobby)
+    BlueKantoPilot.league_begin(lorelei_room,6,12)
+    require!(BlueKantoPilot.league_active?, "League did not start after badge check")
+    require!(BlueKantoPilot.league_battle("BRUNO",:BLUE_KANTO_ELITE_BRUNO,"Bruno",lobby) == false,
+             "Bruno accepted out-of-order battle before Lorelei")
+    losses_remaining["Lorelei"] = 1
+    BlueKantoPilot.league_battle("LORELEI",:BLUE_KANTO_ELITE_LORELEI,"Lorelei",lobby)
+    require!(!BlueKantoPilot.league_active? && BlueKantoPilot.progress["pilot_league_wins"].empty? &&
+             !BlueKantoPilot.progress["leagues"].include?("KANTO"),
+             "Lorelei loss did not reset local league attempt")
+    BlueKantoPilot.league_begin(lorelei_room,6,12)
+    [
+      ["LORELEI",:BLUE_KANTO_ELITE_LORELEI,"Lorelei"],
+      ["BRUNO",:BLUE_KANTO_ELITE_BRUNO,"Bruno"],
+      ["AGATHA",:BLUE_KANTO_ELITE_AGATHA,"Agatha"],
+      ["LANCE",:BLUE_KANTO_ELITE_LANCE,"Lance"],
+    ].each_with_index do |row, i|
+      require!(GameData::Trainer.get(row[1],row[2]).pokemon.length >= 4,
+               "Original PBS team missing for #{row[2]}")
+      require!(BlueKantoPilot.league_battle(*row,lobby),
+               "Elite Four battle did not record victory for #{row[2]}")
+      require!(BlueKantoPilot.progress["pilot_league_wins"].length == i+1,
+               "Elite Four win order was not preserved")
+    end
+    require!(BlueKantoPilot.league_advance("CHAMPION",hall,5,12) == false,
+             "Champion door bypassed Blue's battle")
+    champion = GameData::Trainer.get(:BLUE_KANTO_CHAMPION_BLUE,"Blue",1)
+    require!(champion.pokemon.length == 6,
+             "Champion Blue original team is missing or incomplete")
+    BlueKantoPilot.league_battle("CHAMPION",:BLUE_KANTO_CHAMPION_BLUE,"Blue",lobby)
+    require!(BlueKantoPilot.progress["pilot_league_wins"] == %w[LORELEI BRUNO AGATHA LANCE CHAMPION] &&
+             !BlueKantoPilot.progress["leagues"].include?("KANTO"),
+             "Champion win skipped Hall of Fame ceremony or sequence")
+    require!(BlueKantoPilot.league_finalize(pallet),
+             "Hall of Fame refused a valid run")
+    require!(BlueKantoPilot.progress["pilot_hall_of_fame"] &&
+             BlueKantoPilot.progress["leagues"] == ["KANTO"] &&
+             BlueRegions.unlocked(BlueKantoPilot.progress).include?("DECADES") &&
+             BlueRegions.unlocked(BlueKantoPilot.progress).include?("JOHTO"),
+             "Kanto clear did not unlock exactly the eligible adjacent regions")
+    require!(!BlueRegions.unlocked(BlueKantoPilot.progress).include?("HOENN") &&
+             !BlueKantoPilot.league_finalize(pallet),
+             "Hall of Fame duplicated completion or unlocked extra regions")
+
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
     $map_factory.setup(lab)
@@ -622,6 +713,10 @@ module KantoNativeCheck
              BlueKantoPilot.progress.fetch("pilot_cinnabar_doors", []).include?(1) &&
              BlueKantoPilot.progress["pilot_wins"].include?("KANTO_202_016"),
              "Cinnabar Secret Key, gym door and Blaine did not survive reload")
+    require!(BlueKantoPilot.progress["pilot_hall_of_fame"] &&
+             BlueKantoPilot.progress["leagues"] == ["KANTO"] &&
+             BlueKantoPilot.progress["pilot_league_wins"] == %w[LORELEI BRUNO AGATHA LANCE CHAMPION],
+             "Hall of Fame / Kanto League result did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_013_004") &&
              $game_self_switches[[viridian_gym,4,"A"]],
              "Giovanni Gym Earth Badge/self-switch did not survive reload")
@@ -633,6 +728,6 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 127 maps: eight local Kanto badges incl Giovanni Earth; gate, Jason correction, separate Silph boss, save/reload verified (battles simulated)")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 142 maps: Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated)")
   end
 end
