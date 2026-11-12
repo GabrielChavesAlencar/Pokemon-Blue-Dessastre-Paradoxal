@@ -62,12 +62,12 @@ LOCATION_NAMES = {
     "ROUTE_18_FUCHSIA": "Rota 18 — trecho Fuchsia (prévia)",
     "ROUTE_18_GATE": "Portaria da Rota 18 (prévia)",
     "ROUTE_18_CYCLING": "Rota 18 — trecho Cycling Road (prévia)",
-    "FUCHSIA_CITY": "Fuchsia City — prévia sem eventos",
-    "FUCHSIA_CENTER": "Centro Pokémon de Fuchsia (prévia)",
-    "FUCHSIA_MART": "Poké Mart de Fuchsia (prévia)",
-    "FUCHSIA_GYM": "Ginásio de Fuchsia — sem Koga (prévia)",
+    "FUCHSIA_CITY": "Fuchsia City",
+    "FUCHSIA_CENTER": "Centro Pokémon de Fuchsia",
+    "FUCHSIA_MART": "Poké Mart de Fuchsia",
+    "FUCHSIA_GYM": "Ginásio de Fuchsia — Koga",
     "FUCHSIA_WARDEN_HOUSE": "Casa do Warden (prévia)",
-    "FUCHSIA_SAFARI_GATE": "Portão da Safari Zone (prévia)",
+    "FUCHSIA_SAFARI_GATE": "Portão da Safari Zone — entrada de captura indisponível",
     "SAFARI_SOUTH": "Safari Zone — setor sul (prévia)",
     "SAFARI_REST_SOUTH": "Safari Zone — casa de descanso sul (prévia)",
     "SAFARI_EAST": "Safari Zone — setor leste (prévia)",
@@ -182,6 +182,15 @@ TRAINER_LOCATIONS.update({
     ("BEAUTY", "Lori"): ("CELADON_GYM", "Beauty"),
     ("LASS", "Lisa"): ("CELADON_GYM", "Treinadora"),
     ("COOLTRAINER_F", "Mary"): ("CELADON_GYM", "Treinadora experiente"),
+})
+
+
+TRAINER_LOCATIONS.update({
+    ("LEADER_KOGA", "Koga"): ("FUCHSIA_GYM", "Líder de ginásio"),
+    **{("JUGGLER", name): ("FUCHSIA_GYM", "Malabarista")
+       for name in ("Nate", "Kayden", "Kirk", "Shawn")},
+    **{("TAMER", name): ("FUCHSIA_GYM", "Domador")
+       for name in ("Edgar", "Phil")},
 })
 
 
