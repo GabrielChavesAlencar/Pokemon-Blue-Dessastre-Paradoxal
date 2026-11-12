@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "68b7c3a527f0784764f575a2994de9556dafa087",
+      "date": "2026-11-12T20:35:29-03:00",
+      "title": "feat(johto): prepara fase 07 Ilex, Goldenrod, quiz, Whitney e Plain Badge isoladas",
+      "category": "Novidades"
+    },
+    {
       "sha": "faff9fe9661146aa80affc1543002b09583e9d78",
       "date": "2026-11-12T20:31:12-03:00",
       "title": "docs(johto): sincroniza plano de 16 etapas com Bugsy parcial",
