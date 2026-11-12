@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "378ac2ba3a310e1dbeaceebc201876da87d04e38",
+      "date": "2026-11-12T06:35:28-03:00",
+      "title": "test(kanto): proteger download hash, extração FRLG e Python portátil do EXE",
+      "category": "Testes"
+    },
+    {
       "sha": "10383299a0c6a10e34b2930d6382cf7f69e6e800",
       "date": "2026-11-12T06:34:28-03:00",
       "title": "fix(kanto): aceitar pasta do Python portatil com espacos no Windows",
