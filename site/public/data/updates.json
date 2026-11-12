@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "93fa13b959cb9f54f093d4b0fa70caf36c129906",
+      "date": "2026-11-11T21:59:53-03:00",
+      "title": "test(kanto): suportar prova de nova partida apenas em ambiente CI descartavel",
+      "category": "Novidades"
+    },
+    {
       "sha": "8932cd78b79c03dc1a2643cc26033e401a726539",
       "date": "2026-11-11T21:59:33-03:00",
       "title": "test(kanto): prova nativa da regiao inicial e save no jogo-mestre descartavel",
