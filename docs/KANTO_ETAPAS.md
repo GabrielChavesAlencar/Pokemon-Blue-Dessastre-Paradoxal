@@ -45,6 +45,21 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 
 **Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto permanece 8/16 de desenvolvimento e 1/16 de aceite**. Este registro é documental: nenhum script ou evento novo foi instalado.
 
+## Roadmap de diálogos FireRed — inglês e português (EN/PT-BR)
+
+**Estudo localizado no GitHub:** [Guia_Dialogos_Pokemon_FireRed_EN_PT.md](Guia_Dialogos_Pokemon_FireRed_EN_PT.md) + [FIRERED_DIALOGOS_PASSO_A_PASSO.md](FIRERED_DIALOGOS_PASSO_A_PASSO.md). **Plano de execução e aceitação:** [KANTO_ROADMAP_DIALOGOS_EN_PT.md](KANTO_ROADMAP_DIALOGOS_EN_PT.md).
+
+Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referências opcionais SEV-001–SEV-014** e um [extrator local de texto](../scripts/localization/extrair_traduzir_dialogos_firered.py). **Esses números são resumos temáticos de cenas, não quantidades de falas EN/PT extraídas ou revisadas.** O corpus integral e a tradução final ainda não foram gerados/validados neste processo. A documentação **não** adiciona falas ao jogo.
+
+- [ ] **DIA-01/03 — Fonte e contexto:** congelar SHA de `pret/pokefirered`, inventariar literais em fonte local, registrar total real, cruzar `text.inc`/ `scripts.inc`, flags e cada *uso de fala* com o MapID/EventID do Blue (AUD-01/04, MAN-01 e MAN-02).
+- [ ] **DIA-04/06 — Tradução/arquitetura:** tradução inicial com revisão humana pt-BR; glossário, nomes e controles; IDs autorais `kanto.<area>.<npc>.<situacao>`; preservar `{PLAYER}`, `{RIVAL}`, escolhas; distinguir rótulos GBA das chaves reais de `data/pt-br.json`.
+- [ ] **DIA-07 — Integração posterior:** associar falas aprovadas aos eventos já autorizados. Em mapas `preview_only` de Celadon, Fuchsia e Saffron, **não criar eventos ou falas ainda**. Não atualizar o catálogo público com traduções integrais de terceiros sem direitos de publicação.
+- [ ] **DIA-08/10 — Testes:** primeiro diálogo/repetição, vitória/derrota/fuga, itens/quest, alterações de insígnias, save/reload; alternância English/Português; caracteres/caixas e Windows/JoiPlay; evidência por MapID/EventID/estado.
+
+**Distribuição pelas 16 fases:** `KAN-001–010` (02–04), `KAN-011–022` (03 e 07–08), `KAN-023–033` (08, Lavender e acessos), `KAN-034–046` (09 e 11), `KAN-047–052` (10), `KAN-053–057` (12–13), `KAN-058–067` (14–16). `SEV-001–014` é escopo opcional de pós-jogo, sem aumentar automaticamente o denominador 16.
+
+**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras de Kanto inalteradas: desenvolvimento 8/16 (50%); aceitação 1/16 (6,25%).**
+
 ## 16 etapas de fechamento
 
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
@@ -67,6 +82,9 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — Guia EN/PT-BR analisado e vinculado:** [roadmap específico de diálogos](KANTO_ROADMAP_DIALOGOS_EN_PT.md) registra 67 referências de Kanto, 14 opcionais de Sevii, 10 tarefas DIA-01–10, integração com a trilha de eventos e QA bilíngue. **Não foram extraídas, traduzidas nem instaladas novas falas nesta alteração; mapas e saves intactos.** Barras 8/16 e 1/16.
+
 
 - **12/11/2026 — Fase 11 (Saffron) iniciada:** adicionados **30 mapas** da fonte FRLG pinada como terreno sem eventos (101 mapas no piloto, 61 em `preview_only`), incluindo Silph Co. 1F–11F, ginásio e Dojo; **41 atalhos experimentais**. A ordem dos 71 mapas anteriores e dos primeiros 29 de Saffron foi congelada para evitar deslocamento de IDs. [Checklist fase 11](KANTO_FASE_11.md). **Barras inalteradas: 8/16 desenvolvimento, 1/16 aceite**, pois não há história nem Sabrina implementadas.
 
