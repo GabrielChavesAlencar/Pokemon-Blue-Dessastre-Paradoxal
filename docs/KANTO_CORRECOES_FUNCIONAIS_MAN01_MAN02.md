@@ -1,6 +1,6 @@
 # Kanto — Correções funcionais MAN-01 e MAN-02
 
-**Início da implementação:** 12/11/2026. **Escopo:** piloto isolado de Kanto, sem alterações diretas nos saves Decades nem nos 61 mapas `preview_only` de Celadon/Fuchsia/Saffron.
+**Implementação e CI aprovadas:** 12/11/2026. **Escopo:** piloto isolado de Kanto, sem alterações diretas nos saves Decades nem nos 61 mapas `preview_only` de Celadon/Fuchsia/Saffron.
 
 Este documento registra trabalho de **gameplay**, não somente expansão de geometria. A aceitação final depende do relatório Windows e de testes manuais em sessão.
 
@@ -57,7 +57,9 @@ Os testes da CI compilam a engine e inspecionam estados, mas **não substituem**
 
 ## 4. Critérios de conclusão e métricas
 
-- [ ] CI de mapas, eventos, PBS, compilação nativa, script de testes e portal aprovada na revisão publicada.
+- [x] [CI Kanto 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042) **aprovada**: 109 mapas, 61 sem eventos, 8 conexões de interiores bidirecionais, 50 gatilhos de visão, compilação e execução nativa com save/reload; cópia descartável Decades preservada.
+- [x] [Regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) **aprovada**: testes unitários, RUN.bat no Windows e navegação Chromium.
+- [x] [Site checks 43219637630](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637630) **aprovados** com 109 localizações no portal.
 - [ ] Os **8 interiores** passam no verificador bidirecional e no teste manual de entrada/saída.
 - [ ] Os **50 treinadores de visão** passam na validação da engine e em amostra manual nos mapas do jogador.
 - [ ] QA de batalha real/derrota/repetição/save/reload e importação em cópia descartável Decades.
