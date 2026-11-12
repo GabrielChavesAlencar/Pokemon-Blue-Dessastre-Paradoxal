@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "09721e46e7b59f0f5839ccb5732c13b82f098d38",
+      "date": "2026-11-12T10:34:31-03:00",
+      "title": "Roadmap eventos: 8º núcleo Celadon/Erika com 58 previews e história Rocket pendente",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b96072f23e0ef8a9ba13ef3616b3f4ffdb805a5a",
       "date": "2026-11-12T10:33:51-03:00",
       "title": "Kanto: refletir 8º núcleo Erika e 58 previews no roadmap operacional",
