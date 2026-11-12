@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "383cbb2a5f7e6e9b5dc2a5706510be91b2b589bb",
+      "date": "2026-11-12T10:22:14-03:00",
+      "title": "Diagnóstico temporário: inspecionar eventos ativos da saída do Centro de Celadon na engine",
+      "category": "Melhorias"
+    },
+    {
       "sha": "847e0e58a46bc7f06d54a283e19719e1d8cf02b0",
       "date": "2026-11-12T10:21:15-03:00",
       "title": "Kanto 8º núcleo: documentar Erika/Celadon, dados FRLG, 58 previews e QA obrigatório",
