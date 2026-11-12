@@ -37,7 +37,7 @@ module KantoNativeCheck
     # Supply the choice and battle results so the compiler can run without a user.
     Object.send(:define_method, :pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     battle_calls = []
-    losses_remaining = { "Doug" => 1, "Erika" => 1 }
+    losses_remaining = { "Doug" => 1, "Erika" => 1, "Koga" => 1 }
     TrainerBattle.define_singleton_method(:start) do |type, name, version = 0|
       data = GameData::Trainer.get(type, name, version)
       battle_calls << [type, name, version]
@@ -265,19 +265,78 @@ module KantoNativeCheck
     require!(battle_calls.count { |row| row[1] == "Erika" } == 2,
              "Erika was challenged again after winning the Rainbow Badge")
 
-    # Fuchsia/Safari phase 10: proof of map loading and absence of imported
-    # NPCs, trainers, Safari counters, items and gym scripts.
-    stage10 = ["Fuchsia City", "Koga", "Fuchsia Centro", "Casa Warden",
-               "Safari Zone Portao", "Safari Zone Sul", "Safari Zone Norte",
-               "Safari Zone Oeste", "Rota 15"]
-    stage10.each do |label|
-      stop = BlueKantoPilot.experimental_stops.find { |entry| entry[0].include?(label) }
-      require!(stop, "Phase 10 preview destination missing: #{label}")
-      $map_factory.setup(stop[1][0])
-      require!($game_map.events.empty?, "Phase 10 imported events before review: #{label}")
+    # Phase 10 Fuchsia/Koga: limited City/Center/Mart/Gym/Safari-Gate
+    # core while all Safari capture sectors and Warden remain preview-only.
+    ["Casa Warden", "Safari Zone Sul", "Safari Zone Norte",
+     "Safari Zone Oeste", "Rota 15"].each do |label|
+      location = map_for.call(label)
+      $map_factory.setup(location)
+      require!($game_map.events.empty?, "Protected Fuchsia preview imported foreign events: #{label}")
     end
+    fuchsia_city = map_for.call("Fuchsia City")
+    fuchsia_center = map_for.call("Fuchsia Centro")
+    fuchsia_mart = map_for.call("Fuchsia Mart")
+    fuchsia_gym = map_for.call("Ginasio Fuchsia Koga")
+    safari_gate = map_for.call("Safari Zone Portao")
+    safari_south = map_for.call("Safari Zone Sul")
+    $map_factory.setup(fuchsia_city)
+    require!($game_map.events.keys.sort == [5, 17, 18, 24],
+             "Unreviewed Fuchsia city events leaked into core")
+    [[5, fuchsia_gym], [17, fuchsia_center],
+     [18, fuchsia_mart], [24, safari_gate]].each do |event_id, target_id|
+      ev = $game_map.events[event_id]
+      require!(ev.trigger == 1 && ev.list.any? { |op| op.code == 201 && op.parameters[1] == target_id },
+               "Fuchsia city has broken entry #{event_id}")
+    end
+    [[fuchsia_center, [1, 2]], [fuchsia_mart, [1, 2]],
+     [fuchsia_gym, [3, 4, 5, 6, 7, 8, 9, 11]],
+     [safari_gate, [1, 2, 5]]].each do |mid, required|
+      $map_factory.setup(mid)
+      actual = $game_map.events.keys
+      optional_center_pc = mid == fuchsia_center ? [3] : []
+      require!((required - actual).empty? &&
+               (actual - required - optional_center_pc).empty?,
+               "Fuchsia interior #{mid} contains unexpected/missing events #{actual.inspect}")
+      exit_id = mid == fuchsia_gym ? 9 : (mid == safari_gate ? 2 : 1)
+      require!($game_map.events[exit_id].list.any? { |op|
+        op.code == 201 && op.parameters[1] == fuchsia_city
+      }, "Fuchsia interior #{mid} has no exit to the city")
+    end
+    $map_factory.setup(safari_gate)
+    require!($game_map.events[1].trigger == 0 &&
+             !$game_map.events[1].list.any? { |row| row.code == 201 &&
+               row.parameters[1] == safari_south },
+             "Safari access started without tickets/balls/steps implementation")
+    before_safari_money = $player.money
+    BlueKantoPilot.safari_preview
+    require!($player.money == before_safari_money,
+             "Safari informational gate charged money without starting a native session")
+    $map_factory.setup(fuchsia_gym)
+    require!($game_map.events[3].trigger == 2 && $game_map.events[11].trigger == 0,
+             "Koga/Tamers have incorrect trigger modes")
+    koga = GameData::Trainer.get(:BLUE_KANTO_LEADER_KOGA, "Koga")
+    require!(koga.pokemon.map { |pkmn| [pkmn[:species], pkmn[:level]] } ==
+             [[:KOFFING,37],[:MUK,39],[:KOFFING,37],[:WEEZING,43]],
+             "Koga's four pinned FRLG Pokemon/levels changed")
     require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("SOUL"),
-             "Soul Badge was awarded before Koga battle was implemented")
+             "Soul Badge granted before Koga")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_KOGA, "Koga", "KANTO_147_011")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("SOUL") &&
+             !BlueKantoPilot.progress["pilot_wins"].include?("KANTO_147_011"),
+             "Koga loss granted a badge or victory flag")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_KOGA, "Koga", "KANTO_147_011")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") ==
+             ["BOULDER", "CASCADE", "THUNDER", "RAINBOW", "SOUL"],
+             "Koga victory did not grant one Soul Badge")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_147_011", "Koga", 11),
+             "Koga victory flag not linked to his source event")
+    $game_map.refresh
+    require!($game_self_switches[[fuchsia_gym, 11, "A"]] &&
+             $game_map.events[11].trigger == 0,
+             "Koga kept his encounter active after winning")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_KOGA, "Koga", "KANTO_147_011")
+    require!(battle_calls.count { |row| row[1] == "Koga" } == 2,
+             "Koga battle repeated or grant awarded twice")
 
     # Phase 11 Saffron: isolated terrain previews, no teleporter scripts,
     # Silph Rocket boss, Sabrina battles or Marsh Badge may be installed.
@@ -303,18 +362,20 @@ module KantoNativeCheck
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW"],
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW","SOUL"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_124_001"),
              "Erika victory did not persist through save/reload")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_147_011"),
+             "Koga victory did not persist through save/reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 109 maps: four badges incl Erika, Celadon City/Center/Gym core, 57 trainer sights, save/reload verified (battles simulated)")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 109 maps: five badges incl Koga, 63 sight trainers, Fuchsia gym/Centre/Mart/Safari Gate, no Safari entry, save/reload verified (battles simulated)")
   end
 end
