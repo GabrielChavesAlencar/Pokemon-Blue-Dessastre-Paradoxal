@@ -75,7 +75,7 @@ TYPES = {
     "PICNICKER": "PICNICKER", "LEADER_MISTY": "LEADER_Misty",
     "SAILOR": "SAILOR", "ENGINEER": "ENGINEER",
     "GENTLEMAN": "GENTLEMAN", "FISHERMAN": "FISHERMAN",
-    "LEADER_SURGE": "LEADER_LtSurge",
+    "LEADER_SURGE": "ENGINEER",  # Provisional electric-themed battle portrait; original FRLG trainer art not redistributed.
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
