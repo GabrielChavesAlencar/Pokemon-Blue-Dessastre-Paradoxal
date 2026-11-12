@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a9ba51789ced474153475eb74652ce0882dcb672",
+      "date": "2026-11-11T22:27:58-03:00",
+      "title": "test(regions): usar especie nomeada compatível com Marshal no simulador",
+      "category": "Testes"
+    },
+    {
       "sha": "744b2f8f40f52090c48dda8749e3953a0f105743",
       "date": "2026-11-11T22:27:18-03:00",
       "title": "feat(regions): permitir viagem pelo circuito quando destino seguro esta desbloqueado",
