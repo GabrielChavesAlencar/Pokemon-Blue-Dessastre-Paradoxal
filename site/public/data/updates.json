@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3bc062c8267e63f0280cff01da5ec61da6675625",
+      "date": "2026-11-12T07:16:24-03:00",
+      "title": "Kanto: marcar desenvolvimento da fase 08 como 8/16 após CI nativa aprovada",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c25943ee49f828935997b8629a2ad005caecca39",
       "date": "2026-11-12T07:14:28-03:00",
       "title": "Fase 08: ampliar guia de teste Windows para 40 mapas, navio e 17 destinos",
