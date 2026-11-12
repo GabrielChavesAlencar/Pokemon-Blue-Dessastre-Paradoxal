@@ -11,7 +11,7 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Player Home events missing")
     require!([$game_player.x, $game_player.y] == [25, 7], "Kanto did not start upstairs")
     home = $game_map.map_id
-    # Phase 02: actual mkxp-z Game_Player passable? and move_straight
+    # Phase 02: actual mkxp-z Game_Player passable? and directional move_ methods
     # in a throwaway CI run, not simulated keyboard/graphical acceptance.
     load "Data/blue-kanto-walk-check.rb"
     walk_rows = KantoWalkCheck.run(home,25,7)
