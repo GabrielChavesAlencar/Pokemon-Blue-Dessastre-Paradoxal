@@ -52,7 +52,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 6. [ ] Revisar em documento os lotes **A–I**: Pallet, Pewter/Mt. Moon, Cerulean, Vermilion, Celadon/Lavender/Saffron, Fuchsia/Snorlax, Cinnabar/Viridian, Liga e pós-jogo/Sevii opcional.
 7. [ ] Definir a matriz de QA por evento: fonte/MapID/EventID, trigger, páginas, estado, teste estrutural, teste real Windows/JoiPlay, rollback. Somente após autorização implementar e retirar mapas de `preview_only`.
 
-**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
+**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos adicionais de Celadon (Rocket/Game Corner), correções MAN-01/02/03 e QA interativo **continuam pendentes**; Erika/Rainbow já têm um núcleo experimental testado; o estudo publicado não habilita mudanças automáticas.
 
 ## Correção funcional prioritária — interiores e treinadores de Pallet a Pewter
 
@@ -74,7 +74,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [x] Estudo documental analisado: **67 cenas KAN-001–KAN-067** (Pallet → Liga/pós-jogo) e **14 referências opcionais SEV-001–SEV-014** (Sevii). São resumos de cenas, **não** catálogo completo com falas originais e traduções revisadas.
 - [ ] **DIA-01–03:** SHA de origem; extrator `scripts/localization/extrair_traduzir_dialogos_firered.py` numa cópia local autorizada; contagem de textos e rastreamento `text.inc` → script/branch → Blue MapID/EventID.
 - [ ] **DIA-04–06:** revisão humana de português, glossário, tokens e IDs de falas, separando `locale/en`, `locale/pt-BR` e a tabela de chaves reais `data/pt-br.json`.
-- [ ] **DIA-07:** inserir apenas falas autorais/permitidas em eventos que já estejam implementados e autorizados. **Não ativar** as 61 prévias `preview_only`.
+- [ ] **DIA-07:** inserir apenas falas autorais/permitidas em eventos que já estejam implementados e autorizados. **Não ativar** as 58 áreas restantes em `preview_only` sem revisão específica.
 - [ ] **DIA-08–10:** validar English ↔ Português, estados de NPC, itens, insígnias, batalhas, escolhas, save/reload, corte de texto, Windows e JoiPlay; registrar cobertura por **uso de fala**, não só por texto único.
 
 **Prioridades de roteiro:** diálogos de Oak/Parcel/rival e Brock nos mapas existentes; Misty/Bill/S.S. Anne/Lt. Surge; depois Celadon/Erika, Fuchsia/Koga, Saffron/Sabrina; por fim Cinnabar, Viridian, Liga e pós-jogo opcional. A ordem está vinculada às 16 fases no documento próprio. Não marcar a tradução como concluída antes do inventário e dos testes.
@@ -83,7 +83,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 ## Fase 11 — Saffron/Sabrina/Silph Co. (terreno apenas)
 
-Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG (Saffron, quatro portarias, Rota 8, Dojo, Fan Club, Silph Co. 1F–11F e elevador) adicionados como `preview_only`, preservando os IDs históricos do piloto. **Total: 101 mapas, 61 prévias sem eventos, 41 destinos experimentais.**
+Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG (Saffron, quatro portarias, Rota 8, Dojo, Fan Club, Silph Co. 1F–11F e elevador) adicionados como `preview_only`, preservando os IDs históricos do piloto. **Na entrega original da fase 11 eram 101 mapas e 61 prévias; agora são 109 mapas, 58 em `preview_only` e 41 destinos experimentais.**
 
 - [x] Auditar IDs, mapas e coordenadas com a referência SHA-256 fixada; importar apenas geometria, nunca scripts estrangeiros.
 - [x] Fixar a sequência dos 71 mapas anteriores e dos 29 primeiros de Saffron para evitar deslocamentos de MapID.
