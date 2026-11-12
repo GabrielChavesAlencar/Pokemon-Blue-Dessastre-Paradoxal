@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bdfc61d5330e45e35c5ddb95d31585a8b6688db4",
+      "date": "2026-11-12T06:59:16-03:00",
+      "title": "Fase 08: incluir equipes FRLG de Lt. Surge, rotas e S.S. Anne no PBS auditado",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0dd4ea7747bfcd5c3c6bce5a8fcaa67dbef3460b",
       "date": "2026-11-12T06:58:54-03:00",
       "title": "Fase 08: catálogo de 40 mapas e localizações de treinadores Vermilion/S.S. Anne",
