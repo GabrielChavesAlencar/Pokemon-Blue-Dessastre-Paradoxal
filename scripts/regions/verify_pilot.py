@@ -355,7 +355,7 @@ def inspect(game: Path) -> dict:
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
                       "ROUTE7", "CELADON", "ERIKA", "CEL_CENTER", "CEL_STORE",
-                      "FUCHSIA", "KOGA", "FUCH_CENTER", "FUCH_WARDEN",
+                      "FUCHSIA", "KOGA", "FUCH_CENTER", "FUCH_MART", "FUCH_WARDEN",
                       "SAF_GATE", "SAF_SOUTH", "SAF_NORTH", "SAF_WEST", "ROUTE15",
                       "ROUTE8", "SAFF_WEST", "SAFFRON", "SABRINA", "SAFF_DOJO",
                       "SAFF_CENTER", "SILPH_1F", "SILPH_5F", "SILPH_11F", "SILPH_LIFT"}
