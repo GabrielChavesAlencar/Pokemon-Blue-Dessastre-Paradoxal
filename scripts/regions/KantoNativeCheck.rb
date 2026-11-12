@@ -11,8 +11,10 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Pallet events missing")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 9 && labels.any? { |row| row.include?("Misty") },
-             "Experimental Mt Moon/Cerulean destinations unavailable")
+    require!(labels.length == 17 && labels.any? { |row| row.include?("Misty") } &&
+             labels.any? { |row| row.include?("Surge") } &&
+             labels.any? { |row| row.include?("Captain") },
+             "Experimental Mt Moon/Cerulean/Vermilion destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
              "Pilot pointed at Decades save directory")
 
@@ -100,18 +102,34 @@ module KantoNativeCheck
              "Misty repeated after victory")
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 4,
              "Two Kanto milestones were double-counted or omitted")
+    # Phase 08: the S.S. Ticket bridge is available only after Cascade,
+    # and Lt. Surge grants exactly one Thunder Badge for a genuine victory.
+    BlueKantoPilot.ticketmaster
+    require!($bag.has?(:SSTICKET), "Vermilion S.S. Ticket was not granted after Cascade")
+    BlueKantoPilot.ticketmaster
+    surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
+    require!(surge.pokemon.length >= 2, "Lt. Surge original FRLG roster missing")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress,"KANTO") ==
+             ["BOULDER","CASCADE","THUNDER"], "Thunder Badge was not awarded uniquely")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge", "KANTO_067_005")
+    require!(battle_calls.count { |row| row[1] == "Lt. Surge" } == 1,
+             "Surge battle repeated after victory")
+    require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 5,
+             "Three Kanto milestones were double-counted or omitted")
 
     slot = "Kanto Native Verification"
     require!(Game.save(slot), "Pilot save failed")
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE"],
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
-    File.write("Data/blue-kanto-proof.txt", "Pallet, Oak, rival, Route 1, Brock, Mt Moon/Cerulean trainers, Misty, Cascade, save and load verified")
+    require!($bag.has?(:SSTICKET), "S.S. Ticket did not survive reload")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 40 maps: Pallet/Mt Moon/Cerulean/Vermilion, ticket, Surge, three badges and save/reload verified (battles simulated)")
   end
 end
