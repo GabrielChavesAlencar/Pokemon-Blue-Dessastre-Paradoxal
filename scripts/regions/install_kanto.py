@@ -77,6 +77,9 @@ def manifest(pilot, game):
     for name in PBS_NAMES:
         file = Path("PBS") / name
         files[file] = pilot / file
+    # Generated-only regional audio manifest: MapIDs come from the pilot.
+    music_file = Path("Data/blue-kanto-music.txt")
+    files[music_file] = pilot / music_file
     for path in (pilot / PLUGIN).rglob("*"):
         if path.is_file():
             files[PLUGIN / path.relative_to(pilot / PLUGIN)] = path
