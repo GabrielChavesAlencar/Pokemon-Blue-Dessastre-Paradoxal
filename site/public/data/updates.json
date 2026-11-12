@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "847e0e58a46bc7f06d54a283e19719e1d8cf02b0",
+      "date": "2026-11-12T10:21:15-03:00",
+      "title": "Kanto 8º núcleo: documentar Erika/Celadon, dados FRLG, 58 previews e QA obrigatório",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f2856d90c3379ed7d1c0a5a5b8df3c0433ea2694",
       "date": "2026-11-12T10:19:52-03:00",
       "title": "Corrigir regression: apenas 8 mapas de Celadon continuam em preview_only",
