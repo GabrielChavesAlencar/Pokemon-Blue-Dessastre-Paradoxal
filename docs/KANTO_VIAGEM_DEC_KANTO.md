@@ -1,6 +1,6 @@
 # Etapa 05 — Viagem Decades ↔ Kanto no mesmo save
 
-**Estado:** serviço de viagem implementado; testes de regras Ruby aprovados; aceitação gráfica Windows e teste completo de transferência nativa em validação.  
+**Estado:** serviço de viagem, testes Ruby e verificação na engine integrada **aprovados**; aceitação visual no Windows e posicionamento do NPC físico pós-Liga **pendentes**.  
 **Especificação:** [Plano de regiões v2](PLANO_REGIOES_DESSASTRE_V2.md), seções 10, 17 e 18.  
 **Barras:** desenvolvimento **05/16 (31,25%)**; etapas plenamente aceitas **01/16 (6,25%)**, **15 pendentes**.
 
@@ -57,8 +57,8 @@ O serviço usa o cálculo de regras de `BlueRegions.transfer_plan`:
 - [x] Serviço central de ida/volta publicado e integrado ao plugin Blue.
 - [x] Bloqueios de Liga/mapa e cálculo preventivo de slots e equipe.
 - [x] Testes Ruby de rollback e preservação do estado do save.
-- [ ] Prova nativa da viagem física Kanto↔Decades aprovada no GitHub Actions.
+- [x] [Prova nativa do transporte e PC real](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43136257273): ida/volta entre mapas, depósito de Mewtwo em Box, preservação dos outros Pokémon, itens, dinheiro, Pokédex e save/reload. **Para a prova headless**, a rotina de sprites do Scene_Map foi substituída apenas no teste pelo carregamento real do mapa; a transferência visual ainda precisa de teste humano.
 - [ ] Teste interativo Windows: posição, telas, equipe, PC, salvamento e retorno.
 - [ ] NPC físico em local pós-Liga auditado, com script chamando o serviço central, sem interferir no encerramento.
 
-**Até os três últimos itens serem concluídos, a fase 05 permanece em validação e não altera a barra de 1/16 etapas aceitas.**
+**Até os dois itens manuais restantes serem concluídos, a fase 05 permanece em validação e não altera a barra de 1/16 etapas aceitas.**
