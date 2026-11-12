@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0e0017c4fd9cfb0e7dc1dcc9c5d9126056d08faf",
+      "date": "2026-11-11T22:39:13-03:00",
+      "title": "test(regions): nao expor agente no inicio precoce de Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "c9f2da19cbf3479ca13e96a8d1622fb0fb105099",
       "date": "2026-11-11T22:38:44-03:00",
       "title": "fix(regions): nao mostrar agente em Kanto antes da Liga ou de visita anterior",
