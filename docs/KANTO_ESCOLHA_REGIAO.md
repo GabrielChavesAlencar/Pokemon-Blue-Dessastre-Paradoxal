@@ -1,6 +1,6 @@
 # Etapa 04 — Escolha da região inicial no jogo-mestre
 
-**Status:** implementação instalada no código-fonte e submetida a testes automáticos; **a aceitação em sessão gráfica de um jogador continua pendente**.  
+**Status:** implementação e teste nativo integrado **aprovados no GitHub Actions**; **a aceitação do menu e da jogabilidade por um jogador continua pendente**.  
 **Regras:** [Plano regional v2](PLANO_REGIOES_DESSASTRE_V2.md).  
 **Contadores:** etapa de desenvolvimento **04/16 (25%)**; etapas integralmente aceitas **01/16 (6,25%)**.
 
@@ -54,6 +54,6 @@ O passo seguinte é abrir **`ABRIR_JOGO.bat`**, que prepara a campanha, e aguard
 
 Kanto ainda é um **piloto Pallet → Pewter**, não uma região completa. A viagem Decades ↔ Kanto, desbloqueio pelas Ligas, regras de HMs locais e depósitos de especiais pertencem às próximas etapas. A tela está preparada para crescer, mas **não inventa** spawns das regiões restantes. O piloto Kanto usa os iniciais tradicionais nesta primeira integração; modos de iniciais alternativos exigem adaptação adicional ao roteiro original.
 
-A instalação no seu PC é **opt-in**. O GitHub Actions instala e testa numa **cópia Windows descartável**, não altera os arquivos `game/` no seu computador nem distribui automaticamente conteúdo de terceiros. O resultado do teste de inicialização/salvamento nativo deve ser consultado no workflow [Piloto de Kanto](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/kanto-pilot-check.yml).
+A instalação no seu PC é **opt-in**. O GitHub Actions instala e testa numa **cópia Windows descartável**, não altera os arquivos `game/` no seu computador nem distribui automaticamente conteúdo de terceiros. A [execução 43132795847 do GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43132795847) comprovou que o jogo integrado iniciou na Pallet Town, preservou o ponto original Decades em `System.rxdata` e salvou/recarregou o estado de Kanto. A seleção foi automatizada no teste para não exigir clique; a interface visível, eventos Decades e a jornada até Brock ainda precisam de teste manual.
 
 **Etapa 04 não pode ser marcada como totalmente concluída antes de validar visualmente o menu e salvar/recarregar as duas origens no Windows.**
