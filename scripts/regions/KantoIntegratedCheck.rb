@@ -14,6 +14,14 @@ module KantoIntegratedCheck
     SaveData.initialize_bootup_values
     spawn = BlueRegionStart.kanto_spawn
     require!(spawn && spawn.length == 3, "Integrated Kanto marker/map missing")
+    stage("main_title_kanto")
+    require!(defined?(BlueKantoTitle), "Testar Kanto title menu plugin not loaded")
+    require!(PokemonLoad_Scene.ancestors.include?(BlueKantoTitle::Scene),
+             "Native main load scene does not include Kanto third option")
+    commands = [" <- Decades Save -> ", _INTL("New Game"), _INTL("Options"), _INTL("Quit Game")]
+    indices = BlueKantoTitle.command_order(commands, true)
+    require!(indices == [0, 1, :blue_test_kanto, 2, 3],
+             "Third title option changed Continue/New Game or Auto Multi Save indexes")
     original = [$data_system.start_map_id, $data_system.start_x, $data_system.start_y]
 
     # Select Kanto without opening a graphical choice menu in headless CI.
