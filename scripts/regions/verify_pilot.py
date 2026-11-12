@@ -108,7 +108,7 @@ def inspect(game: Path) -> dict:
             pages = event.attrs["@pages"]
             if len(pages) != 2:
                 raise ValueError(f"Trainer {original}/{event_id} missing win-state page")
-            sight = bool(re.search(r"(?i)(?:trainer|sight)\\(\\d+\\)",
+            sight = bool(re.search(r"(?i)(?:trainer|sight)\((\d+)\)",
                                    text(event.attrs["@name"])))
             expected_trigger = 2 if sight else 0
             if pages[0].attrs["@trigger"] != expected_trigger:
