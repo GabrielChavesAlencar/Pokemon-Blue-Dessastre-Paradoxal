@@ -199,6 +199,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 05/16 — Rotas 29–31, Cherrygrove, Violet City e Falkner
 
+**Parcial implementada no GitHub:** [JOHTO_FASE_05_VIOLET_FALKNER.md](JOHTO_FASE_05_VIOLET_FALKNER.md). `JohtoViolet.rb` prepara diálogos, Torre Sprout, batalha de Falkner, prêmio ZEPHYR idempotente via `BlueRegions.award` e consulta da permissão local de Rock Smash. `data/regions/johto-phase05.json` descreve o corredor simbólico, sem IDs não verificados. Os testes Ruby/Python verificam conquistas, saves e isolamento. **Não há mapas reais instalados, equipes PBS compiladas, piloto jogável nem aceitação manual**; os botões de teste e novo jogo continuam bloqueados até existir fonte validada.
+
+
 **Implementar:** ligar New Bark → Route 29 → Cherrygrove → Route 30 → Route 31 → Violet, com cavernas/portarias relevantes, casas, Centro Pokémon, Mart, Sprout Tower e ginásio de Falkner. Encontros de habitat HG/SS e exclusividades unificadas, diálogos/eventos de avanço e treinadores com visão de batalha. Implementar a insígnia ZEPHYR sem prêmio duplo.
 
 **Teste/aceite:** atravessar o trecho inteiro ida/volta, entrar/sair dos interiores, vencer Falkner, obter exatamente uma insígnia/esmeralda, salvar e repetir tentativa sem recompensa dupla.
