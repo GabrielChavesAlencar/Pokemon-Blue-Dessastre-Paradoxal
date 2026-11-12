@@ -34,16 +34,24 @@ module KantoWalkCheck
       require!(!required, "No passable adjacent tile at #{label} (#{map}:#{x},#{y})")
       return [label, map, x, y, "blocked_at_arrival", 0]
     end
-    direction,target_x,target_y=available.first
-    $game_player.public_send(MOVE_METHODS.fetch(direction))
-    unless [$game_player.x,$game_player.y] == [target_x,target_y]
-      # Some early/headless scenes may have additional movement guards. Do
-      # not claim success or misdiagnose physical input as broken. Required
-      # Pallet cases are strict; all other locations become manual QA cases.
+    # Test all legal directions, not just the first. The game may impose
+    # special map/step restrictions even where tile passable? is true.
+    # Do not count a passable? query alone as successful player movement.
+    selected = nil
+    available.each do |direction,target_x,target_y|
+      $game_player.moveto(x,y)
+      $game_player.public_send(MOVE_METHODS.fetch(direction))
+      if [$game_player.x,$game_player.y] == [target_x,target_y]
+        selected = [direction,target_x,target_y]
+        break
+      end
+    end
+    unless selected
       require!(!required,
-               "Player could not step into passable tile #{label} (#{map}:#{x},#{y})")
+               "Player could not step into any passable tile #{label} (#{map}:#{x},#{y})")
       return [label,map,x,y,"headless_step_mismatch_requires_manual_test",0]
     end
+    direction,target_x,target_y = selected
     opposite = {2=>8,4=>6,6=>4,8=>2}.fetch(direction)
     # Test a return step only when the engine reports the reverse direction
     # passable. No map events are executed or story switches committed here.
