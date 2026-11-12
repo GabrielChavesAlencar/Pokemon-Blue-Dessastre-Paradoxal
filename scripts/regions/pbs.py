@@ -282,7 +282,7 @@ def build_drafts(source, game, plan):
     # 15,16,17,19..) that cannot be collapsed to min/max without creating
     # encounter levels not present in the source. Keep Fuchsia core entirely
     # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209)}
+    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209), 16, 17, *range(209, 222)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
                if row["source_id"] not in no_gameplay
                and row["source_id"] not in review_encounters}
