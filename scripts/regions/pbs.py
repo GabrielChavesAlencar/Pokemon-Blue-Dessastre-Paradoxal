@@ -1,9 +1,16 @@
 """Prepare reviewable Kanto PBS fragments from the FRLG kit, never the live PBS."""
 import re
+from math import lcm
 from pathlib import Path
 
 HEADER = re.compile(r"^\[([^]]+)]\s*(?:#.*)?$")
 # Extended Gen 9/Essentials encounter variants used inside Mt. Moon.
+# Route 23 source map209 repeats a LandDay method inside the same table.
+# Its intended relative weighting/version behavior is ambiguous. Rather than
+# silently merge two conflicting methods, leave ONLY this map's wild tables
+# disabled until the source is disambiguated (story/maps remain functional).
+ENCOUNTER_REVIEW_SOURCE_IDS = frozenset({209})
+
 ENCOUNTER_TYPES = {
     "Land", "LandMorning", "LandDay", "LandAfternoon", "LandEvening", "LandNight",
     "Cave", "CaveMorning", "CaveDay", "CaveAfternoon", "CaveEvening", "CaveNight",
@@ -209,24 +216,55 @@ def normalize_encounters(source, rows, species):
             fields = [s.strip() for s in line.split("#", 1)[0].strip().split(",")]
             if not fields[0].isdigit():
                 method = fields[0]
-                if method not in ENCOUNTER_TYPES or method in methods or len(fields) > 2:
-                    raise ValueError(f"Unsupported encounter method {fields[0]}")
+                if method not in ENCOUNTER_TYPES or len(fields) > 2:
+                    raise ValueError(f"Unsupported encounter method {fields[0]} in source map [{key}]")
+                if method in methods:
+                    raise ValueError(f"Duplicate method {method} in source map [{key}]; cannot silently merge relative weights")
                 methods[method] = (fields, [])
             else:
                 if method is None or len(fields) < 3 or fields[1] not in species:
                     raise ValueError(f"Invalid encounter {line} in map {key}")
                 weight = int(fields[0])
-                levels = list(map(int, fields[2:]))
-                if not 0 < weight <= 100 or not all(1 <= n <= 100 for n in levels):
-                    raise ValueError(f"Invalid encounter weight or level in map {key}")
-                # Essentials stores an inclusive min/max range. Do not fill gaps
-                # in a source encounter's levels without an explicit decision.
+                # This particular source kit lists EVERY possible level:
+                # "45,SPEAROW,3,5" means levels {3,5}, not a min/max pair.
+                # Long explicit lists (e.g. 5..40) are common in its PBS.
+                levels = [int(v) for v in fields[2:]]
+                if (not 0 < weight <= 100 or not levels or
+                    not all(1 <= n <= 100 for n in levels)):
+                    raise ValueError(f"Invalid source encounter in map {key}: {line}")
+                # Keep the authored order and even repeated levels, since
+                # repetitions change the source's relative level probabilities.
+                methods[method][1].append([weight, fields[1], levels])
+        for encounter_method, (_, original_slots) in methods.items():
+            if sum(row[0] for row in original_slots) != 100:
+                raise ValueError(f"Encounter weights must total 100: {key}/{encounter_method}")
+            # Expand only discontinuous level lists into single-level slots.
+            # Relative probabilities are preserved EXACTLY with integer
+            # scaling by the LCM of their level counts; vanilla Essentials
+            # has no syntax for an arbitrary discrete set in one slot.
+            scale = 1
+            for chance, ident, levels in original_slots:
                 if levels != list(range(levels[0], levels[-1] + 1)):
-                    raise ValueError(f"Non-contiguous encounter range in pilot map {key}: {line}")
-                methods[method][1].append([weight, fields[1], levels[0], levels[-1]])
-        for method, (_, entries) in methods.items():
-            if sum(row[0] for row in entries) != 100:
-                raise ValueError(f"Encounter weights must total 100: {key}/{method}")
+                    scale = lcm(scale, len(levels))
+            converted = []
+            for chance, ident, levels in original_slots:
+                consecutive = levels == list(range(levels[0], levels[-1] + 1))
+                targets = [(levels[0], levels[-1], chance * scale)] if consecutive else [
+                    (level, level, chance * scale // len(levels)) for level in levels
+                ]
+                for low, high, units in targets:
+                    # Each generated PBS chance must fit an Essentials entry
+                    # (1–100). Duplicate the SAME range to represent >100,
+                    # never round the probability or create new level values.
+                    while units:
+                        weight = min(units, 100)
+                        converted.append([weight, ident, low, high])
+                        units -= weight
+                    if len(converted) > 4096:
+                        raise ValueError(
+                            f"Exact source level distribution needs too many slots: {key}/{encounter_method}"
+                        )
+            methods[encounter_method] = (methods[encounter_method][0], converted)
         tables[dst_id, version] = methods
     out = []
     for (map_id, version), methods in sorted(tables.items()):
@@ -274,22 +312,20 @@ def trainer_draft(path, species, moves, items):
 def build_drafts(source, game, plan):
     species, moves, items = (catalogue(game, "pokemon"), catalogue(game, "moves"),
                              catalogue(game, "items"))
-    # Remaining terrain previews (Celadon store, Fuchsia, Saffron) must not activate foreign trainers,
-    # encounter tables or story scripts before event review.
+    # Enable source-derived wild tables only on functional maps; ALL 45
+    # geometry-only previews remain protected. Route 22/23, Victory Road,
+    # Fuchsia, Cinnabar, Saffron, etc. can now retain their actual FRLG
+    # inclusive level ranges instead of being rejected as "non-contiguous".
+    # This does not grant access to maps/events still gated by story/HMs.
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
-    # Fuchsia City's source has a non-contiguous fishing range (e.g. levels
-    # 15,16,17,19..) that cannot be collapsed to min/max without creating
-    # encounter levels not present in the source. Keep Fuchsia core entirely
-    # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209), 16, 17, *range(209, 222)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
                if row["source_id"] not in no_gameplay
-               and row["source_id"] not in review_encounters}
+               and row["source_id"] not in ENCOUNTER_REVIEW_SOURCE_IDS}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
-                      "source_policy": "Essentials FRLG merged tables; independent official verification pending"}
+                      "source_policy": "Essentials FRLG 1.1 explicitly listed levels; exact integer-weight conversion; map209 LandDay ambiguous; independent official exclusivities pending"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
     return {Path("drafts", "encounters.txt"): (warning + encounters).encode("utf-8"),
             Path("drafts", "trainers.txt"): (warning + trainers).encode("utf-8")}
