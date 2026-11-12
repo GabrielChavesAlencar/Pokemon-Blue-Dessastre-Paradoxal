@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c7ad9eec780aecf44ca564d0af59115fc35309e",
+      "date": "2026-11-12T20:46:14-03:00",
+      "title": "feat(johto): etapa 08 Ecruteak Burned Tower Morty FOG e Surf isolados",
+      "category": "Novidades"
+    },
+    {
       "sha": "16e7e21d3914a30e3a5d142b04c3382e494d355e",
       "date": "2026-11-12T20:39:51-03:00",
       "title": "docs(johto): sincroniza plano de 16 fases com Ilex Goldenrod Whitney",
