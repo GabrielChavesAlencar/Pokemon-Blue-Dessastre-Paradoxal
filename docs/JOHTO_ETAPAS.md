@@ -37,6 +37,11 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] [Estudo do núcleo New Bark + entrada segura do ZIP](JOHTO_FASE_04_EVENTOS_NEW_BARK.md).
 - [ ] Fazer o vínculo real dos eventos em New Bark e do rival aos mapas e treinadores PBS da cópia isolada, somente após auditoria do mapa original.
 - [ ] Criar New Bark, casa, laboratório de Elm, rival e inicial **realmente jogáveis** após auditar a fonte; não escrever em Decades/Kanto.
+- [x] **Etapa 05 iniciada:** `scripts/regions/JohtoViolet.rb` implementa introdução a Violet, batalha do ancião Li e Falkner com Zephyr registrada pela API regional; não carrega no jogo mestre.
+- [x] Testes `tests/johto_violet_runtime.rb` e `tests/test_johto_violet_runtime.py` criados para derrota/vitória, insígnia única, esmeraldas, Rock Smash e save/reload.
+- [x] `data/regions/johto-phase05.json` define caminho New Bark → Route 29 → Cherrygrove → Routes 30–31 → Violet e interiores sem alegar MapIDs reais, com `tests/test_johto_phase05_contract.py` validando o contrato.
+- [x] [MD de Violet City/Falkner e critérios de aceite](JOHTO_FASE_05_VIOLET_FALKNER.md).
+- [ ] Montar mapas reais, PBS dos treinadores, transições e jogar o trecho completo no Game.exe isolado; somente então finalizar Etapa 05.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -48,7 +53,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 02 | Auditoria RXDATA e dependências | **PARCIAL**: scanner/testes criados; fonte real e validação pendentes |
 | 03 | Importador isolado e prévia | **PARCIAL**: código e testes sintéticos; pacote, IDs e prévia reais pendentes |
 | 04 | New Bark, casa, Elm e inicial | **PARCIAL**: início condicionado, roteiro de Elm/mãe/iniciais/rival e testes Ruby; eventos ainda sem mapas reais e sem piloto jogável |
-| 05 | Violet e Falkner | PENDENTE |
+| 05 | Violet e Falkner | **PARCIAL**: lógica de ginásio/Torre Sprout, insígnia e rota simbólica prontas; faltam mapas reais, PBS e gameplay |
 | 06 | Azalea e Bugsy | PENDENTE |
 | 07 | Goldenrod e Whitney | PENDENTE |
 | 08 | Ecruteak e Morty | PENDENTE |
