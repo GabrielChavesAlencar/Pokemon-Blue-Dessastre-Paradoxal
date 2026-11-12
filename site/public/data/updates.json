@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e12a26667c4b30d03e02c1f13b4ecb2f4cf827f7",
+      "date": "2026-11-12T10:14:07-03:00",
+      "title": "Kanto Erika: atualizar portal/Dex com oito treinadoras da academia em Celadon",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a0fb281c7db90558dc91d500177e218246a6dc4e",
       "date": "2026-11-12T10:13:26-03:00",
       "title": "Kanto Erika: adicionar oito equipes do PBS FRLG auditadas sem alterar moves ou levels",
