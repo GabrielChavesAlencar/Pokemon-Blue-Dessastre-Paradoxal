@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c79d921ccd85debbb97ec98082a36a3bc39d651e",
+      "date": "2026-11-11T22:26:36-03:00",
+      "title": "test(regions): rodar transporte no Ruby real da regressao",
+      "category": "Testes"
+    },
+    {
+      "sha": "65e8365cb5c517edeb4bb09b0ea6bbc3b3326691",
+      "date": "2026-11-11T22:26:22-03:00",
+      "title": "test(regions): simular ida/volta, PC, save unico, rollback e bloqueio da Liga",
+      "category": "Testes"
+    },
+    {
       "sha": "42d6ede94c5a49ca492b1600ef730539f651f971",
       "date": "2026-11-11T22:24:12-03:00",
       "title": "feat(regions): carregar serviço de viagem com o plugin principal",
