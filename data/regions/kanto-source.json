@@ -114,7 +114,24 @@
     "186": "SILPH_9F",
     "187": "SILPH_10F",
     "188": "SILPH_11F",
-    "189": "SILPH_ELEVATOR"
+    "189": "SILPH_ELEVATOR",
+    "190": "ROUTE_19",
+    "191": "ROUTE_20",
+    "193": "SEAFOAM_1F",
+    "194": "SEAFOAM_B1F",
+    "195": "SEAFOAM_B2F",
+    "196": "SEAFOAM_B3F",
+    "197": "SEAFOAM_B4F",
+    "198": "ROUTE_21",
+    "199": "CINNABAR_ISLAND",
+    "200": "CINNABAR_CENTER",
+    "201": "CINNABAR_MART",
+    "202": "CINNABAR_GYM",
+    "203": "CINNABAR_LAB",
+    "205": "MANSION_1F",
+    "206": "MANSION_2F",
+    "207": "MANSION_3F",
+    "208": "MANSION_B1F"
   },
   "preview_only": [
     57,
@@ -152,7 +169,15 @@
     174,
     175,
     176,
-    177
+    177,
+    190,
+    191,
+    193,
+    194,
+    195,
+    196,
+    197,
+    198
   ],
-  "preview_policy": "Celadon 114/115/124, Fuchsia 144/145/146/147/153 e Saffron 168-172/178-189 possuem somente eventos e batalhas whitelisted no piloto isolado. As 36 areas restantes, inclusive portarias sem guardas, Safari Zone, Warden e casas de Saffron, permanecem geometria sem eventos, encontros, itens ou scripts estrangeiros."
+  "preview_policy": "Celadon 114/115/124, Fuchsia 144/145/146/147/153 e Saffron 168-172/178-189 e Cinnabar 199-203/205-208 possuem somente eventos e batalhas whitelisted no piloto isolado. As 44 areas restantes, inclusive portarias sem guardas, Safari Zone, Warden, casas de Saffron, rotas aquaticas 19/20/21 e Seafoam, permanecem geometria sem eventos, encontros, itens ou scripts estrangeiros. Cinnabar ativa somente eventos adaptados com whitelist local; nenhuma captura de lendarios ou scripts estrangeiros."
 }
