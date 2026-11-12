@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "046d17b36eab55ac3e435505b4d84245357e56f0",
+      "date": "2026-11-12T10:37:27-03:00",
+      "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
+      "category": "Documentação"
+    },
+    {
       "sha": "a0126e0a641bd2f77d41ff4d8797a5fef301372d",
       "date": "2026-11-12T10:37:24-03:00",
       "title": "docs: sincronizar estado atual Kanto 8/16, 58 previews e eventos pendentes",
