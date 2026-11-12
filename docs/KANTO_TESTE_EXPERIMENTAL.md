@@ -1,6 +1,8 @@
 # Kanto — jogar e testar fases 07 a 11 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **11 prévias sem eventos em Celadon**, **20 prévias sem eventos em Fuchsia/Safari** e **30 prévias sem eventos em Saffron/Silph Co.** (101 no catálogo). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **8 interiores adicionais com transferência de ida e volta**, **11 prévias sem eventos em Celadon**, **20 prévias sem eventos em Fuchsia/Safari** e **30 prévias sem eventos em Saffron/Silph Co.** (**109 no catálogo**). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+
+**Progresso atual reavaliado:** [6/16 núcleos implementados — 10 restantes; 1/16 aceito — 15 restantes](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). A reavaliação não significa novos testes manuais concluídos.
 
 ## Opção diretamente no Game.exe principal
 
