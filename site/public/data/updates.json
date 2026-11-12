@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5334e523207b03d9a65b0d7e102b5eeae385db5a",
+      "date": "2026-11-12T07:27:29-03:00",
+      "title": "docs(kanto): ligar feedback ao codigo que descarta portas e eventos de visao",
+      "category": "Documentação"
+    },
+    {
       "sha": "22facafa838b0bfa1f96e3b955d9e4dd88979612",
       "date": "2026-11-12T07:26:46-03:00",
       "title": "docs(roadmap): priorizar interiores, treinadores e telas de insignias de Kanto",
