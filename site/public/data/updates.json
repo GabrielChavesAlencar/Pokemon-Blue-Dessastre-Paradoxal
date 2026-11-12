@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "81b77b54761105f4a204a0dce01ebd630aab6abc",
+      "date": "2026-11-12T11:01:35-03:00",
+      "title": "Kanto docs: registrar 9º núcleo Koga, 53 previews e QA Safari pendente",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "511c017d2146245919bd46840a24034e1779162e",
+      "date": "2026-11-12T11:01:31-03:00",
+      "title": "Kanto docs: registrar 9º núcleo Koga, 53 previews e QA Safari pendente",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "25b8dea8b0704c9b6d9c1ac638d79da8338c470d",
+      "date": "2026-11-12T11:01:28-03:00",
+      "title": "Kanto docs: registrar 9º núcleo Koga, 53 previews e QA Safari pendente",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e02cfe953a4cc4ab79803ee4f7b59e260e98177e",
+      "date": "2026-11-12T11:01:26-03:00",
+      "title": "Kanto docs: registrar 9º núcleo Koga, 53 previews e QA Safari pendente",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e5392e678f092f94cfc5378cffce1e0ab1b6ae1e",
       "date": "2026-11-12T11:00:22-03:00",
       "title": "Kanto teste Windows: documentar quinto núcleo Fuchsia, 42 atalhos, Koga e Safari protegida",
