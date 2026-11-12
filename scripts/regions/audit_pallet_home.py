@@ -12,6 +12,19 @@ def safe(value):
     value=text(value) if isinstance(value,bytes) else str(value)
     return value.replace("|","/").replace("\r"," ").replace("\n"," ")[:120]
 def main():
+    # Native Decades starting area: read-only diagnostic for the regional agent.
+    native=ROOT/"game/Data"
+    if (native/"System.rxdata").is_file():
+        dec_sys=load(native/"System.rxdata").attrs
+        dec_infos=load(native/"MapInfos.rxdata")
+        print(f"DECADES_AUDIT_START:{dec_sys['@start_map_id']}|{dec_sys['@start_x']}|{dec_sys['@start_y']}")
+        if dec_sys["@start_map_id"] in dec_infos:
+            entry=dec_infos[dec_sys["@start_map_id"]].attrs
+            print(f"DECADES_AUDIT_START_NAME:{safe(entry['@name'])}")
+        for mid, info in sorted(dec_infos.items()):
+            name=safe(info.attrs["@name"])
+            if mid<=35 or any(x in name.lower() for x in ("town","city","village","vila","cidade")):
+                print(f"DECADES_AUDIT_PLACE:{mid}|{name}|parent={info.attrs.get('@parent_id')}")
     system=load(SOURCE/"Data/System.rxdata").attrs
     print(f"PALLET_SOURCE_START:{system['@start_map_id']}|{system['@start_x']}|{system['@start_y']}")
     for original in MAPS:
