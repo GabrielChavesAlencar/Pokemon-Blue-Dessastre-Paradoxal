@@ -149,8 +149,20 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(len(fgym["trainers"]), 7)
         self.assertTrue(all(x in {t["id"] for t in data["trainers"]}
                             for x in fgym["trainers"]))
-        for slug in ("kanto-fuchsia-city", "kanto-fuchsia-center",
-                     "kanto-fuchsia-mart", "kanto-fuchsia-safari-gate"):
+        # Phase 15 restores source-verified Water/fishing encounters in
+        # Fuchsia City. The Center/Mart/Safari gate do not gain fake spawns.
+        city = next(x for x in data["locations"] if x["id"] == "kanto-fuchsia-city")
+        self.assertEqual(city["trainers"], [])
+        self.assertEqual({m["id"] for m in city["methods"]},
+                         {"Water","OldRod","GoodRod","SuperRod"})
+        superrod = next(m for m in city["methods"] if m["id"] == "SuperRod")
+        self.assertGreater(superrod["weightTotal"], 100)
+        # The authored Slowpoke SuperRod slot skips 18; do not fill that gap.
+        slowpoke = [s for s in superrod["slots"] if s["species"] == "SLOWPOKE"]
+        self.assertTrue(slowpoke)
+        self.assertFalse(any(s["min"] <= 18 <= s["max"] for s in slowpoke))
+        for slug in ("kanto-fuchsia-center", "kanto-fuchsia-mart",
+                     "kanto-fuchsia-safari-gate"):
             row = next(x for x in data["locations"] if x["id"] == slug)
             self.assertEqual(row["methods"], [])
             self.assertEqual(row["trainers"], [])
@@ -160,6 +172,31 @@ class KantoPilotAuditTests(unittest.TestCase):
             preview_row = next(x for x in data["locations"] if x["id"] == slug)
             self.assertFalse(preview_row["methods"])
             self.assertFalse(preview_row["trainers"])
+
+        # Exact species-level source probabilities are carried as raw
+        # integer weights, with percentages normalized solely for the portal.
+        locations_with_wild = [x for x in data["locations"] if x["methods"]]
+        self.assertEqual(len(locations_with_wild),22)
+        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),64)
+        wild_species={slot["species"] for loc in locations_with_wild
+                      for method in loc["methods"] for slot in method["slots"]}
+        self.assertEqual(len(wild_species),52)
+        for location in locations_with_wild:
+            for method in location["methods"]:
+                self.assertEqual(method["weightTotal"],
+                                 sum(s["weight"] for s in method["slots"]))
+                self.assertAlmostEqual(sum(s["chance"] for s in method["slots"]),100,places=6)
+                for slot in method["slots"]:
+                    self.assertGreater(slot["weight"],0)
+                    self.assertTrue(1 <= slot["min"] <= slot["max"] <= 100)
+        route22 = next(x for x in data["locations"] if x["id"] == "kanto-route-22")
+        self.assertTrue(any(m["id"] == "LandDay" for m in route22["methods"]))
+        route23 = next(x for x in data["locations"] if x["id"] == "kanto-route-23")
+        self.assertEqual(route23["methods"], [], "Ambiguous double LandDay must remain off")
+        road = next(x for x in data["locations"] if x["id"] == "kanto-victory-road-1f")
+        self.assertEqual({m["id"] for m in road["methods"]},{"CaveDay","CaveNight"})
+        mansion = next(x for x in data["locations"] if x["id"] == "kanto-mansion-1f")
+        self.assertEqual({m["id"] for m in mansion["methods"]},{"CaveDay","CaveNight"})
 
         for slug in ("kanto-celadon-city", "kanto-celadon-center"):
             city = next(x for x in data["locations"] if x["id"] == slug)
