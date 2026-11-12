@@ -25,7 +25,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 ## Roadmap de eventos FireRed — análise consolidada
 
-**Documento operacional:** [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md). Lido junto ao [estudo de 50 famílias de eventos](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md), ao [guia de implementação](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) e ao **Plano de regiões v2** (que prevalece para as regras do Blue). A análise considera **425 mapas catalogados na decompilação GBA**, não 425 conversões concluídas; a fonte dos **101 MapIDs do piloto Essentials** é distinta (40 mapas anteriormente integrados, 11 prévias de Celadon, 20 de Fuchsia/Safari e 30 de Saffron/Silph).
+**Documento operacional:** [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md). Lido junto ao [estudo de 50 famílias de eventos](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md), ao [guia de implementação](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) e ao **Plano de regiões v2** (que prevalece para as regras do Blue). A análise considera **425 mapas catalogados na decompilação GBA**, não 425 conversões concluídas; a fonte dos **109 MapIDs do piloto Essentials** é distinta (40 mapas anteriormente integrados, 8 interiores funcionais novos, 11 prévias de Celadon, 20 de Fuchsia/Safari e 30 de Saffron/Silph).
 
 **Trabalho de análise autorizado agora, sem instalar eventos:**
 
@@ -38,6 +38,19 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 7. [ ] Definir a matriz de QA por evento: fonte/MapID/EventID, trigger, páginas, estado, teste estrutural, teste real Windows/JoiPlay, rollback. Somente após autorização implementar e retirar mapas de `preview_only`.
 
 **Duas contagens de trabalho diferentes:** Kanto (desenvolvimento **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
+
+## Correção funcional prioritária — interiores e treinadores de Pallet a Pewter
+
+**Código já desenvolvido (MAN-01 e MAN-02, parcialmente):** [KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md).
+
+- [x] Auditoria de fonte FRLG: **10 interiores ausentes**, dos quais **8** têm par de entrada/saída seguro e foram importados com eventos de transferência. Portas condicionais de Giovanni e Diglett's Cave completa continuam protegidas.
+- [x] Auditoria de **56 treinadores** da fonte: 50 com linha de visão `Sight(n)` e 6 originais de interação manual; restaurar `Event Touch` e abordagem nativa nos 50, sem importar scripts de terceiros.
+- [x] Implementar página de pós-vitória com `self-switch A` local e chave estável de evento. Derrota não deve registrar vitória; treinadores opcionais não viram barreiras artificiais.
+- [ ] Conferir **compilação nativa e regressão** da revisão publicada no GitHub Actions.
+- [ ] **TESTE MANUAL:** Pallet → casa do rival → Viridian (2 casas) → Rota 2 (portaria/casa escondida) → Pewter (Museu/2 casas) com retorno; abordagem de Rick, derrota, vitória, repetição e save/reload na Forest.
+- [ ] Completar demais interiores, visão/travas de história e UI de insígnias (MAN-03), eventos canônicos e traduções EN/PT-BR.
+
+**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + **8 interiores funcionais novos** + 61 mapas de terreno sem eventos (fases 09–11). Os IDs anteriores foram congelados. **As barras permanecem 8/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
 
 ## Diálogos EN/PT-BR — estudo FireRed integrado ao roadmap
 
@@ -66,7 +79,7 @@ Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG
 
 ## Fase 10 — Fuchsia/Safari preparada sem eventos
 
-[Documentação técnica de Fuchsia e Koga](KANTO_FASE_10.md). Foram adicionados **20 mapas** auditados da fonte FRLG (cidade, Centro, Mart, ginásio, casa do Warden, portão, quatro setores Safari com casas de descanso/Secret House e Rotas 15/18). O projeto mantém **101 mapas no catálogo, dos quais 61 em `preview_only` sem NPCs, scripts, encontros ou prêmios**, e 41 destinos de teste na cópia isolada, após a expansão de Saffron.
+[Documentação técnica de Fuchsia e Koga](KANTO_FASE_10.md). Foram adicionados **20 mapas** auditados da fonte FRLG (cidade, Centro, Mart, ginásio, casa do Warden, portão, quatro setores Safari com casas de descanso/Secret House e Rotas 15/18). O projeto mantém **109 mapas no catálogo, dos quais 61 em `preview_only` sem NPCs, scripts, encontros ou prêmios**, e 41 destinos de teste na cópia isolada, após a expansão de Saffron.
 
 - [x] Fonte/IDs do mapa auditados e 20 terrenos importados ao piloto.
 - [x] Exportação do portal com as 20 localidades da Fase 10 vazias de treinadores e encontros.
