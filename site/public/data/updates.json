@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3a258336a32fb015246f0354e7638d4ef471ab1a",
+      "date": "2026-11-12T06:37:37-03:00",
+      "title": "docs(site): explicar Testar Kanto no menu do Modo Historia baixado",
+      "category": "Documentação"
+    },
+    {
       "sha": "b73b88d9b93e9cdaef607cd02c6d40e1091df098",
       "date": "2026-11-12T06:37:22-03:00",
       "title": "test(kanto): verificar suporte a spawn e localizacao do launcher no Game.exe Windows",
