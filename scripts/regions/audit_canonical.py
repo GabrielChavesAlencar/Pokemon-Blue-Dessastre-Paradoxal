@@ -16,7 +16,7 @@ from fractions import Fraction
 from pathlib import Path
 
 from audit import ROOT, KANTO, json_file
-from pbs import ENCOUNTER_TYPES, TRAINERS, read_blocks
+from pbs import ENCOUNTER_TYPES, TRAINERS, ENCOUNTER_REVIEW_SOURCE_IDS, read_blocks
 
 
 def read_slot(raw, section, method, source_explicit):
@@ -85,7 +85,8 @@ def audit(source:Path,pilot:Path):
     preview=set(manifest.get("preview_only",[]))
     info=json_file(pilot/"Kanto pilot.json")
     mapping={int(key):value for key,value in info["maps"].items()}
-    active={key:value for key,value in mapping.items() if key not in preview}
+    active={key:value for key,value in mapping.items()
+            if key not in preview and key not in ENCOUNTER_REVIEW_SOURCE_IDS}
 
     original_file=source/"encounters.txt"
     compiled_file=installed/"encounters_kanto.txt"
@@ -178,6 +179,7 @@ def audit(source:Path,pilot:Path):
         "source_non_100_relative_weight_tables":source_non_100,
         "trainer_source_rosters_verified_exactly":len(expected_trainers),
         "preview_maps_kept_without_encounters":len(preview),
+        "source_maps_with_ambiguous_encounters_kept_disabled":sorted(ENCOUNTER_REVIEW_SOURCE_IDS),
         "audited_source_map_tables":dict(sorted(map_counts.items(),key=lambda p:int(p[0]))),
         "independent_gba_red_green_exclusivity_check":"PENDING",
         "independent_sprites_sounds_rights_check":"PENDING",
