@@ -13,7 +13,7 @@ from audit import ROOT, inventory, load
 from pilot import TRAINERS
 from server.ruby_marshal import text
 
-SIGHT = re.compile(r"(?i)(?:trainer|sight)\(\d+\)")
+SIGHT = re.compile(r"(?i)(?:trainer|sight)\((\d+)\)")
 
 
 def inspect_source(source: Path) -> dict:
