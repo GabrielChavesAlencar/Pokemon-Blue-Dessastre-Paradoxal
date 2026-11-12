@@ -1,6 +1,6 @@
 # Kanto — 8º núcleo funcional (etapa 09): Celadon City e Erika
 
-**Data:** 12/11/2026. **Status de desenvolvimento:** código implementado na branch `main`; **a aprovação do teste completo é pré-requisito para elevar a Barra 1 de 7/16 a 8/16**. Não confundir o **8º núcleo global** com a antiga etapa 08 — Vermilion/Lt. Surge, que já está contada. A tarefa atual é a **etapa 09 — Celadon/Erika**.
+**Data:** 12/11/2026. **Status de desenvolvimento:** **8º núcleo funcional aprovado na [CI Windows 43227499299](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão 43227499314](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314)**. Barra 1 avançou de **7/16 para 8/16 (50%, faltam 8)**. A Barra 2 permanece **1/16** porque não houve validação manual. Este é o **8º núcleo global**, ligado à **etapa 09 — Celadon/Erika**, não uma repetição da etapa 08 — Vermilion/Lt. Surge.
 
 ## 1. Escopo implementado no piloto isolado
 
@@ -69,9 +69,9 @@ Abra `Game.exe → Testar Kanto` e escolha seu inicial; no menu de pausa da cóp
 - [x] Script de Erika/Rainbow, cura e persistência locais implementados; sete NPCs com visão e equipes próprias.
 - [x] Verificador estrutural protege 58 mapas sem eventos e valida as portas e a enfermeira.
 - [x] Catálogo web com 62 treinadores, incluindo Erika e as sete treinadoras.
-- [ ] **CI Windows nativa final:** compilação, teste de derrota/vitória/Rainbow única, save/reload e cópia Decades descartável — registrar execução aprovada.
-- [ ] **Regressão padrão e site checks:** passar testes Python, PBS, Windows e navegador.
+- [x] **[CI Windows 43227499299](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299):** compilação, derrota simulada, vitória/Rainbow única, save/reload, abertura da janela e cópia Decades descartável preservada.
+- [x] **[Regressão 43227499314](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314):** testes Python/PBS, RUN.bat no Windows e Chromium aprovados.
 - [ ] **QA humano:** movimentação, passabilidade, Cut trees, encontros, NPCs, portais, visual e save.
 - [ ] **Gameplay completo da etapa 09:** Rocket Hideout, Game Corner, loja de departamentos/andar/elevador, interiores, recompensas, eventos e traduções EN/PT-BR revisadas, sem antecipar Lavender/Saffron.
 
-**Regra das barras:** após CI e regressão aprovadas, **Barra 1 = 8/16 (50%, faltam 8 núcleos)**; **Barra 2 = 1/16 (6,25%, faltam 15 aceites)**. Antes do fechamento da CI, manter **7/16 e 1/16**. Etapa 09 permanece aberta para aceitação integral.
+**Barras atuais após as duas CIs aprovadas:** **Barra 1 = 8/16 (50%, faltam 8 núcleos)**, contando 01/03/04/05/06/07/08/09; **Barra 2 = 1/16 (6,25%, faltam 15 aceites)**. O teste nativo simula as batalhas; a etapa 09 permanece aberta para aceite manual e eventos de história restantes.
