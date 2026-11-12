@@ -10,15 +10,15 @@
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
 
-**Barra 1 — Desenvolvimento funcional (12/11/2026): 08/16 (50%) — faltam 8 passos.** O **8º núcleo** é a [etapa 09 — Celadon City e Erika](KANTO_AVANCO_FUNCIONAL_08.md), aprovada na [CI Windows 43227499299](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão 43227499314](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314). Contam 01, 03, 04, 05, 06, 07, 08 e **09**. As etapas 02/15/16 continuam parciais, 10/11 são apenas cenário, 12/13/14 não possuem núcleo.
+**Barra 1 — Núcleos funcionais aprovados (12/11/2026): 09/16 (56,25%) — faltam 7 passos.** O nono núcleo pertence à **etapa 10 — Fuchsia City, Koga e Safari Gate**, [documentada aqui](KANTO_AVANCO_FUNCIONAL_09.md) e aprovada na [CI Windows 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342). Contam **01, 03, 04, 05, 06, 07, 08, 09 e 10**. Faltam núcleos para 02, 11, 12, 13, 14, 15 e 16.
 
-**Barra 2 — Etapas integralmente aceitas: 01/16 (6,25%) — faltam 15 passos.** Somente a auditoria estrutural 01 está integralmente aceita; Erika, Rainbow, portas, movimento, colisões, encontros e saves reais ainda precisam de QA manual. Testes nativos na CI simulam as batalhas.
+**Barra 2 — Etapas integralmente aceitas: 01/16 (6,25%) — faltam 15 passos.** Somente a etapa 01 de auditoria está integralmente aceita; Koga, Safari, portas/colisões e gameplay de todas as áreas ainda precisam de QA manual real. A CI simula batalhas e não substitui jogar.
 
 **Marco inicial:** Pallet → Pewter com 13 mapas. **Fase 07:** 25 mapas até Cerulean e Misty. **Fase 08:** 40 mapas até Vermilion e S.S. Anne, 54 perfis de treinadores no portal e testes nativos automatizados. As batalhas foram simuladas na CI; a validação visual/manual permanece necessária.
 
 **Visual das duas barras (16 passos cada):**
 
-`Barra 1  ████████░░░░░░░░   8/16 · 8 restantes`
+`Barra 1  █████████░░░░░░░   9/16 · 7 restantes`
 
 `Barra 2  █░░░░░░░░░░░░░░░   1/16 · 15 restantes`
 
@@ -44,12 +44,12 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **MAN-03 — painéis de insígnias** (etapa 06/16): oito insígnias Kanto e visão de conquistas regionais; consultar `BlueRegions`, não criar badges nem recompensas pela UI.
 - [ ] **SAVE-01 — estado e versionamento:** separar progresso regional, flags locais de evento e estado temporário, migrar saves e evitar colisões com Decades; completar integração `RegionalPolicy`/HMs locais.
 - [ ] **HIST-01 — lotes A–D** (fases 03/07/08): Oak/Parcel, Brock, fósseis Mt. Moon, Bill e S.S. Ticket, Misty, navio, Cut, Surge; revisar eventos hoje provisórios de Bill/Capitão sem adulterar saves.
-- [ ] **HIST-02 — lote E** (fase 09 e 11): Celadon/Lavender/Saffron, Rocket Hideout, Silph Scope, Marowak/Poké Flute, Silph Co., Erika, Sabrina — **109 mapas no catálogo; 58 `preview_only` sem eventos, e três mapas de Celadon com gameplay parcial (Erika/Rainbow)**.
+- [ ] **HIST-02 — lote E** (fase 09 e 11): Celadon/Lavender/Saffron, Rocket Hideout, Silph Scope, Marowak/Poké Flute, Silph Co., Erika, Sabrina — **109 mapas no catálogo; 53 `preview_only` sem eventos, três mapas de Celadon e cinco de Fuchsia com gameplay experimental limitado**.
 - [ ] **HIST-03 — lotes F–H** (fases 10/12/13/14): Safari/Snorlax/Surf/Strength/Koga; Seafoam/Cinnabar/Viridian; oito bloqueios de badges e Hall of Fame; sequência canônica sem softlock.
 - [ ] **POST-01 — lote I** (fases 15/16 se aprovado): pós-jogo, National Dex, Sevii/Celio/Ruby/Sapphire, Warehouse/Cerulean Cave e eventos especiais — **escopo opcional, não somar automaticamente às 16 etapas**.
 - [ ] **QA-EVENTOS:** aceitar cada evento somente com testes por estado (primeira execução, repetição, vitória/derrota/fuga, bag/PC cheios, saída/retorno, reload, Game.exe Windows, depois JoiPlay e rollback).
 
-**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto está atualmente em 8/16 núcleos e 1/16 aceite** (ver [análise das barras](KANTO_REAVALIACAO_BARRAS_2026-11-12.md)). Este registro é documental: nenhum script ou evento novo foi instalado.
+**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto está atualmente em 9/16 núcleos e 1/16 aceite** (ver [análise das barras](KANTO_REAVALIACAO_BARRAS_2026-11-12.md)). Este registro é documental: nenhum script ou evento novo foi instalado.
 
 ## Roadmap de diálogos FireRed — inglês e português (EN/PT-BR)
 
@@ -64,7 +64,7 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 
 **Distribuição pelas 16 fases:** `KAN-001–010` (02–04), `KAN-011–022` (03 e 07–08), `KAN-023–033` (08, Lavender e acessos), `KAN-034–046` (09 e 11), `KAN-047–052` (10), `KAN-053–057` (12–13), `KAN-058–067` (14–16). `SEV-001–014` é escopo opcional de pós-jogo, sem aumentar automaticamente o denominador 16.
 
-**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras atuais: núcleos funcionais 8/16 (50%); aceitação integral 1/16 (6,25%).**
+**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras atuais: núcleos funcionais 9/16 (56,25%); aceitação integral 1/16 (6,25%).**
 
 ## Correções funcionais do primeiro percurso — MAN-01 e MAN-02
 
@@ -75,11 +75,11 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 - [x] **CI de compilação e regressão aprovada:** [teste nativo 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042), [regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) e [site checks](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637630).
 - [ ] **QA manual Windows e JoiPlay:** a prova automatizada não substitui caminhada/colisão, abordagem e batalha real; nenhum aceite total ainda.
 
-**Barras atuais:** núcleos funcionais **8/16 (50%), faltam 8**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 58 mapas atualmente `preview_only` sem eventos.
+**Barras atuais:** núcleos funcionais **9/16 (56,25%), faltam 7**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 58 mapas atualmente `preview_only` sem eventos.
 
 ## 16 etapas de fechamento
 
-**Classificação atual:** **8 núcleos entregues (01, 03, 04, 05, 06, 07, 08 e 09), 3 parciais (02, 15, 16), 2 somente cenário (10, 11) e 3 sem núcleo (12, 13, 14)**. A lista de etapas abaixo usa `[ ]` para **pendências de aceite integral**, mesmo quando o núcleo da Barra 1 já foi implementado.
+**Classificação atual:** **9 núcleos aprovados (01, 03, 04, 05, 06, 07, 08, 09, 10), 3 parciais (02, 15, 16), 1 somente cenário (11) e 3 sem núcleo (12, 13, 14)**. A etapa 10 possui **núcleo limitado**: a Safari Zone completa continua pendente. Os marcadores `[ ]` abaixo significam ausência de **aceite integral**, mesmo para núcleos aprovados em CI. A lista de etapas abaixo usa `[ ]` para **pendências de aceite integral**, mesmo quando o núcleo da Barra 1 já foi implementado.
 
 
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
@@ -91,7 +91,7 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 - [ ] **07 — Cerulean e Misty.** **Implementada em versão experimental:** [25 mapas, Rota 3/4, Mt. Moon, Cerulean, 28 treinadores distintos, Misty e Cascade](KANTO_FASE_07.md); [teste automático do Game.exe](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43143559422) passou, com equipes e save/reload, mas batalhas simuladas. [Jogar pelo terceiro botão “Testar Kanto” do Game.exe principal ou pelo BAT experimental](KANTO_TESTE_EXPERIMENTAL.md), com teletransporte e relatório local. **Pendente:** confirmação manual de colisões, batalhas e HMs, eventos complexos da história e atualização segura da instalação principal antiga.
 - [ ] **08 — Vermilion e Lt. Surge.** **Implementação experimental publicada e teste nativo aprovado** ([fase 08](KANTO_FASE_08.md), [CI](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43198430978)): Rotas 5/6, passagem subterrânea, Vermilion, porto, S.S. Anne, capitão, 26 perfis adicionais de treinadores e Lt. Surge; Thunder Badge persistida uma vez; 17 destinos de teste. **Pendente:** validação manual, ajuste dos eventos canônicos de Bill/navio, integração definitiva e QA visual de HMs.
 - [ ] **09 — Celadon e Erika.** **NÚCLEO FUNCIONAL APROVADO NA [CI nativa](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299):** [8º avanço funcional](KANTO_AVANCO_FUNCIONAL_08.md) habilita **3 mapas** (Celadon City, Centro Pokémon, Ginásio), duas conexões com retorno, cura, sete treinadoras `Sight(n)`, Erika com Victreebel/Tangela/Vileplume e Rainbow Badge somente por vitória. **58 mapas continuam `preview_only`**, incluindo a Dept. Store, Fuchsia e Saffron. **Pendente para aceitar a etapa:** QA manual Windows/JoiPlay, Cut trees, Rocket/Game Corner, loja, demais interiores, itens, diálogos EN/PT-BR e progressão canônica.
-- [ ] **10 — Fuchsia e Koga.** **Prévia de geometria integrada e aprovada na [CI Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43208948705)**, [20 mapas de Fuchsia, Safari Zone e Rotas 15/18](KANTO_FASE_10.md), com 9 novos atalhos (31 no total), fonte FRLG auditada e **zero eventos/treinadores/encontros** nessas 20 áreas. **Pendente para completar:** paredes do ginásio e Koga/Soul Badge, Safari Balls/passos, HM Surf/Secret House, Gold Teeth/Warden/Strength, portas, treinadores e QA humano. A análise [FireRed](KANTO_ROADMAP_EVENTOS_FIRERED.md) orienta o lote; preservar o progresso **8/16 e 1/16** até a integração real.
+- [ ] **10 — Fuchsia e Koga.** **NÚCLEO FUNCIONAL APROVADO** em [CI Windows 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342): [9º avanço funcional](KANTO_AVANCO_FUNCIONAL_09.md) habilitou **5 mapas** (cidade, Center, Mart, ginásio, portão Safari informativo), **4 portas com retorno**, **6 treinadores `Sight(n)`** e **Koga** com a equipe oficial do PBS e Soul Badge concedida uma única vez. **53 mapas `preview_only` continuam sem eventos** e o guichê Safari não concede ingresso. **Pendente para aceite integral:** Safari Balls, contador de passos/captura, encontros reais, Warden/Gold Teeth/Strength, Secret House/Surf, rota por história e QA manual de portas, batalhas e saves.
 - [ ] **11 — Saffron e Sabrina.** **Prévia de terreno integrada e [CI Windows aprovada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43213494522):** [30 mapas auditados de Saffron City, quatro portarias, Rota 8, Fighting Dojo, Fan Club, 11 andares de Silph Co. e elevador](KANTO_FASE_11.md), com 10 novos destinos (41 no total) e IDs antigos preservados. **Eventos da história, teletransportadores, Rocket, Giovanni, Sabrina e Marsh Badge ainda não instalados.** Este marco permanece aberto até integração e validação funcional.
 - [ ] **12 — Cinnabar e Blaine.** Integrar rotas aquáticas, ilha, Pokémon Mansion, progressão do ginásio e Volcano Badge.
 - [ ] **13 — Viridian e Giovanni.** Abrir o ginásio sob as condições corretas, validar chefe, Earth Badge e retorno às rotas necessárias.
@@ -102,6 +102,9 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — 9º núcleo funcional aprovado:** [Fuchsia/Koga etapa 10](KANTO_AVANCO_FUNCIONAL_09.md), cinco mapas com whitelist, quatro pares de portas e retorno, seis treinadores `Sight(n)`, Koga/Soul única e portão Safari que não cobra ingresso nem dá acesso à captura. **109 mapas / 53 `preview_only` / 69 treinadores no site / 42 atalhos**. [CI Windows 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342) aprovadas. **Barra 1 9/16 (faltam 7); Barra 2 1/16 (faltam 15)**.
+
 
 - **12/11/2026 — 8º núcleo funcional aprovado:** [Celadon/Erika etapa 09](KANTO_AVANCO_FUNCIONAL_08.md) com city ⇄ center/gym, nurse, oito perfis (Erika + sete treinadoras), Rainbow Badge única, rollback/reload local e 58 mapas com eventos desativados. [CI Windows 43227499299](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão 43227499314](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314) aprovadas. **Barra 1 8/16 (faltam 8); Barra 2 1/16 (faltam 15).**
 
