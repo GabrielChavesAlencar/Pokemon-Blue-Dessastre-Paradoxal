@@ -4,7 +4,18 @@
 
 **Referências de eventos e diálogos:** [estudo técnico dos 425 mapas](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md) · [passo a passo detalhado de aplicação em RPG Maker XP/Essentials](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) · [extrator de eventos da decompilação](../scripts/regions/extrair_eventos_firered.py). Documentação e ferramentas **não instalam eventos ou diálogos**: manter os **61 mapas `preview_only` das fases 09–11** sem NPCs, portas, gatilhos ou falas até implantação aprovada. Priorizar MAN-01/02/03 e preservar as duas barras de progresso. O contador é atualizado somente com testes concluídos.
 
-**Desenvolvimento atual: etapa 08/16 (50%). Conclusão validada: 01/16 (6,25%).** O piloto experimental já integra 40 mapas até Vermilion/S.S. Anne, com teste nativo automatizado; a caminhada, as portas internas, os eventos de treinadores e as batalhas reais ainda precisam ser validados. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md) · [feedback manual de 12/11](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md).
+**Barras reavaliadas em 12/11/2026:** **núcleos de desenvolvimento implementados 06/16 (37,5%; faltam 10 passos)**; **etapas integralmente aceitas 01/16 (6,25%; faltam 15 passos)**. [Análise de todas as 16 etapas](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). A contagem anterior 08/16 confundia fase alcançada com núcleo concluído. O piloto experimental já integra 40 mapas até Vermilion/S.S. Anne, com teste nativo automatizado; a caminhada, as portas internas, os eventos de treinadores e as batalhas reais ainda precisam ser validados. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md) · [feedback manual de 12/11](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md).
+
+## Reavaliação das duas barras — referência atual
+
+**Barra 1: 6/16 (37,5%), faltam 10. Barra 2: 1/16 (6,25%), faltam 15.** Evidências e classificação por fase: [KANTO_REAVALIACAO_BARRAS_2026-11-12.md](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+
+- **6 núcleos funcionais comprovados:** 01, 04, 05, 06, 07 e 08.
+- **4 fases parciais:** 02 (caminhada no Windows), 03 (portas e treinadores), 15 (conferência canônica), 16 (QA/publicação).
+- **3 fases apenas com mapas:** 09 (Celadon), 10 (Fuchsia), 11 (Saffron), ainda sem eventos de história.
+- **3 fases sem núcleo entregue:** 12 (Cinnabar), 13 (Giovanni), 14 (Liga).
+
+Os números 8/16 em trechos históricos/documentos das fases anteriores **não descrevem o progresso funcional atual**. Não avançar nenhuma barra por adicionar um mapa, documento, diálogo de planejamento ou CI isolada sem cumprir o critério específico de sua etapa.
 
 ## Especificações de referência — regras já definidas
 
