@@ -2,7 +2,7 @@
 
 **Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).** O contador é atualizado somente com testes concluídos.
 
-**Desenvolvimento atual: etapa 06/16 (37,5%). Conclusão validada: 01/16 (6,25%).** O piloto de Kanto já compila, abre no runner Windows e recarrega um save simulado; a caminhada e as batalhas em sessão interativa ainda precisam de validação. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md).
+**Desenvolvimento atual: etapa 07/16 (43,75%). Conclusão validada: 01/16 (6,25%).** O piloto de Kanto já compila, abre no runner Windows e recarrega um save simulado; a caminhada e as batalhas em sessão interativa ainda precisam de validação. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md).
 
 ## Especificações de referência — regras já definidas
 
@@ -16,7 +16,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 ## Ponto de partida
 
 - [x] Decades é a campanha principal. O menu **Circuito de Regiões** reconhece o encerramento de Decades em saves existentes. As regras de progresso regional, viagem e pós-jogo já têm uma base em [`Regions.rb`](../scripts/battle_polish/Regions.rb).
-- [x] Kanto tem um piloto separado de **Pallet Town a Pewter City**. São 13 locais, sete treinadores e Brock, com três equipes para o rival Blue. A fonte, os créditos e a preparação estão no [guia do circuito](CIRCUITO_REGIONAL.md).
+- [x] O piloto começou em **Pallet → Pewter (13 locais)** e foi expandido experimentalmente para **25 mapas até Cerulean, com Mt. Moon e Misty**. O [guia da fase 07](KANTO_FASE_07.md) documenta os 12 mapas adicionais, os treinadores e os testes; a [jogabilidade no Windows](KANTO_TESTE_EXPERIMENTAL.md) ainda precisa de confirmação manual. A fonte e os créditos estão no [guia do circuito](CIRCUITO_REGIONAL.md).
 - [x] O portal publica as fichas do piloto. [Localizações](https://pokemondessastreparadosal.vercel.app/localizacoes?regiao=kanto) · [Treinadores](https://pokemondessastreparadosal.vercel.app/treinadores?regiao=kanto) · [Brock](https://pokemondessastreparadosal.vercel.app/chefes/kanto-brock).
 - [x] O teste nativo compilou o conteúdo, carregou Pallet e o laboratório, consultou encontros e equipes, registrou a Boulder Badge e recarregou o save. As vitórias de batalha foram simuladas pelo teste. [Execução no GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43123226204).
 - [ ] Jogar o percurso manualmente. Na última tentativa de abrir a cópia local por automação, o motor falhou ao inicializar o sistema de arquivos (PhysFS). A abertura em uma sessão normal do Windows ainda precisa ser confirmada.
