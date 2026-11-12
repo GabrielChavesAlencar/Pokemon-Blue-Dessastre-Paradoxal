@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c9f2da19cbf3479ca13e96a8d1622fb0fb105099",
+      "date": "2026-11-11T22:38:44-03:00",
+      "title": "fix(regions): nao mostrar agente em Kanto antes da Liga ou de visita anterior",
+      "category": "Correções"
+    },
+    {
       "sha": "e09a7aff7f1a6b70fae0dad4239120c322d13f2b",
       "date": "2026-11-11T22:37:36-03:00",
       "title": "test(kanto): usar mapa real sem sprites no teste headless da viagem",
