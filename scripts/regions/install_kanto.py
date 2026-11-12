@@ -13,7 +13,7 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from audit import ROOT
-from pilot import OUTPUT, SOURCE, PILOT_META, build, pilot_is_current, revised_path
+from pilot import OUTPUT, SOURCE, PILOT_META, TYPES, build, pilot_is_current, revised_path
 from verify_pilot import inspect
 
 PBS_NAMES = ("encounters_kanto.txt", "trainers_kanto.txt", "trainer_types_kanto.txt",
@@ -21,6 +21,20 @@ PBS_NAMES = ("encounters_kanto.txt", "trainers_kanto.txt", "trainer_types_kanto.
 DATA_NAMES = ("MapInfos.rxdata", "Tilesets.rxdata")
 PLUGIN = Path("Plugins/ZZZZZ Blue Kanto Pilot")
 MARKER = Path("Data/blue-kanto-start.txt")
+PORTRAITS = tuple(f"BLUE_KANTO_{kind}.png" for kind in TYPES)
+
+
+def trainer_portraits(pilot):
+    """The four trainer types copied by pilot.install_pbs must follow maps."""
+    folder = pilot / "Graphics" / "Trainers"
+    result = {}
+    for name in PORTRAITS:
+        source = folder / name
+        if not source.is_file() or not source.read_bytes().startswith(b"\\x89PNG\\r\\n\\x1a\\n"):
+            raise ValueError(f"Missing or invalid Kanto trainer portrait: {name}")
+        result[Path("Graphics") / "Trainers" / name] = source
+    return result
+
 
 
 def digest(path):
@@ -70,6 +84,9 @@ def manifest(pilot, game):
         for path in folder.glob("*.png"):
             if path.name.startswith(("FRLG_Pilot_", "FRLG_Preview_")):
                 files[Path("Graphics") / name / path.name] = path
+    # Previously omitted: the four trainer portraits referenced by the
+    # BLUE_KANTO_* PBS types. Import only these explicit names, never all art.
+    files.update(trainer_portraits(pilot))
     for relative, source in files.items():
         if not source.is_file():
             raise ValueError("Arquivo de origem ausente: " + str(relative))
