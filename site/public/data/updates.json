@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e76ed349531332d924e44a3dc8f9a4405e9c4c14",
+      "date": "2026-11-12T07:35:33-03:00",
+      "title": "Kanto 09: catalogar 11 mapas reais de Celadon como geometria somente, sem eventos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5c931cb458c6ed84699aa60872648f431513cb7d",
       "date": "2026-11-12T07:32:02-03:00",
       "title": "Kanto fase 09: publicar na CI a origem real dos mapas de Celadon",
