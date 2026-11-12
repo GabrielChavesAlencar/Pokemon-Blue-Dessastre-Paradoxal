@@ -403,7 +403,7 @@ def install_runtime(target, mapping, game):
         ("CEL_STORE", "Celadon Loja 1F (cenario)", 117, 2, 14),
         # Phase 10: incoming FRLG warp coordinates, geometry-only.
         ("FUCHSIA", "Fuchsia City (cenario, sem eventos)", 144, 25, 36),
-        ("KOGA", "Ginasio Fuchsia (sem batalha)", 147, 7, 21),
+        ("KOGA", "Ginasio Fuchsia Koga (sem batalha)", 147, 7, 21),
         ("FUCH_CENTER", "Fuchsia Centro Pokemon (cenario)", 145, 7, 8),
         ("FUCH_WARDEN", "Casa Warden (cenario)", 152, 6, 9),
         ("SAF_GATE", "Safari Zone Portao (cenario)", 153, 4, 7),
