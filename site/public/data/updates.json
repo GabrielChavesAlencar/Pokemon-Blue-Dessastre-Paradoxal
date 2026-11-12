@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "febfb80262478130bd04d9bc30b58df7912afefa",
+      "date": "2026-11-12T08:46:00-03:00",
+      "title": "CI Kanto: auditar Saffron e Silph Co sem integrar eventos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "10da18dde2dee47488fbeae4d977cdb3ab3b9da9",
       "date": "2026-11-12T08:45:44-03:00",
       "title": "Kanto fase 11: inventariar mapas reais de Saffron/Silph sem eventos",
