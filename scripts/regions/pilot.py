@@ -218,7 +218,7 @@ def install_pbs(preview, target, mapping):
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
 
 
-def install_runtime(target, mapping):
+def install_runtime(target, mapping, game):
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
     plugin.mkdir()
     shutil.copyfile(ROOT / "scripts/regions/KantoPilot.rb", plugin / "KantoPilot.rb")
@@ -254,6 +254,10 @@ def install_runtime(target, mapping):
     (target / PILOT_META).write_text(json.dumps({
         "save_app": SAVE_APP, "save_org": SAVE_ORG,
         "maps": mapping, "build_signature": build_signature(),
+        "base_data_sha256": {
+            name: hashlib.sha256((game / "Data" / name).read_bytes()).hexdigest()
+            for name in ("MapInfos.rxdata", "Tilesets.rxdata")
+        },
     }), encoding="utf8")
 
 
@@ -279,7 +283,7 @@ def build(source, game, output):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         install_events(source, target, mapping)
         install_pbs(preview, target, mapping)
-        install_runtime(target, mapping)
+        install_runtime(target, mapping, game)
         if output.exists():
             raise ValueError("Another pilot already exists at the output path.")
         target.rename(output)
