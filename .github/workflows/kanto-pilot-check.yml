@@ -98,7 +98,7 @@ jobs:
           if((Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash -ne $originalConfig){throw 'Native save directory was changed'}
           python scripts/regions/install_kanto.py --apply --game game
           if($LASTEXITCODE -ne 0){throw 'Idempotent install check failed'}
-      - name: Verificar Kanto e Decades como origens da mesma campanha
+      - name: Verificar origem Kanto e preservacao do ponto inicial Decades
         shell: powershell
         run: |
           Copy-Item '.blue-work/kanto-pilot/opengl32.dll' 'game/opengl32.dll' -Force
@@ -110,7 +110,7 @@ jobs:
             $handle=$process.Handle
             if(-not $process.WaitForExit(110000)){
               Stop-Process -Id $process.Id -ErrorAction SilentlyContinue
-              Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/errorlog.txt","$game/Data/blue-kanto-integrated-proof.txt" -ErrorAction SilentlyContinue | Select-Object -Last 160
+              Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/Data/blue-kanto-integrated-stage.txt","$game/errorlog.txt","$game/Data/blue-kanto-integrated-proof.txt" -ErrorAction SilentlyContinue | Select-Object -Last 160
               Get-ChildItem "$game/Data" -Filter "blue-kanto-*" -ErrorAction SilentlyContinue | Select-Object Name,Length
               throw 'Integrated Kanto proof timed out; diagnostics above'
             }
@@ -120,5 +120,5 @@ jobs:
             }
             if(Test-Path "$game/Data/blue-kanto-integrated-error.txt"){break}
           }
-          Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
-          throw 'Integrated Kanto / Decades new game proof missing'
+          Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/Data/blue-kanto-integrated-stage.txt","$game/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+          throw 'Integrated Kanto new game/save proof missing'
