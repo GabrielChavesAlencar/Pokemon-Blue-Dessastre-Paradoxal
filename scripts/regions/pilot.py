@@ -31,6 +31,8 @@ PILOT_INPUTS = (
     "scripts/regions/pbs.py",
     "scripts/regions/export_kanto.py",
     "scripts/regions/KantoPilot.rb",
+    "scripts/battle_polish/RegionStart.rb",
+    "scripts/battle_polish/Story.rb",
     "data/regions/kanto-source.json",
 )
 
