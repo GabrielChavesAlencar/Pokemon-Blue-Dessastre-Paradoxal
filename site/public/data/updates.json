@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d2dff6c81783c833808f11403c3d1e0a97ab989f",
+      "date": "2026-11-12T20:29:17-03:00",
+      "title": "docs(johto): adiciona grafo simbólico Route32 Union Cave Azalea e Slowpoke Well",
+      "category": "Novidades"
+    },
+    {
       "sha": "0b1a1681bff1faf21a1ddc9098ec7327bd989e67",
       "date": "2026-11-12T20:28:45-03:00",
       "title": "test(johto): integra testes Ruby de Azalea na suite Python do Blue Studio",
