@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0d062f90070896a5883d0825191f938d8d1e72c0",
+      "date": "2026-11-12T09:01:33-03:00",
+      "title": "Kanto fase 11: registrar CI nativa e site aprovados sem ativar eventos",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "84c4cdcb795ae8497395a4128cb827a75572d858",
+      "date": "2026-11-12T09:01:30-03:00",
+      "title": "Kanto fase 11: registrar CI nativa e site aprovados sem ativar eventos",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a5ddedd991f945f45d8d2c4b24ee487e9e1d2efa",
+      "date": "2026-11-12T09:01:27-03:00",
+      "title": "Kanto fase 11: registrar CI nativa e site aprovados sem ativar eventos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "673480ced54e7328d778c53a44b9011be736e3d4",
       "date": "2026-11-12T09:00:16-03:00",
       "title": "Kanto fase 11: publicar 30 localizações Saffron/Silph sem gameplay no site",
