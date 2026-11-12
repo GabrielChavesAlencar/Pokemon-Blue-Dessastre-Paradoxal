@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ba5e9fcedb24d7ec7aab53f6684bf49bcc66a38",
+      "date": "2026-11-11T22:11:48-03:00",
+      "title": "ci(kanto): igualar filtro x64 do runtime integrado ao piloto aprovado",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3c903dec83a9bf3337d8bb28e44734f512f92625",
       "date": "2026-11-11T22:11:26-03:00",
       "title": "ci(kanto): copiar todas as dependencias Mesa OpenGL no jogo integrado do runner",
