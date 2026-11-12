@@ -18,6 +18,18 @@
     "20": "FOREST_GATE_NORTH",
     "24": "VIRIDIAN_FOREST",
     "25": "PEWTER_CITY",
-    "28": "PEWTER_GYM"
+    "26": "PEWTER_CENTER",
+    "27": "PEWTER_MART",
+    "28": "PEWTER_GYM",
+    "32": "ROUTE_3",
+    "33": "ROUTE_4",
+    "34": "MT_MOON_CENTER",
+    "36": "MT_MOON_1F",
+    "37": "MT_MOON_B1F",
+    "38": "MT_MOON_B2F",
+    "39": "CERULEAN_CITY",
+    "40": "CERULEAN_CENTER",
+    "41": "CERULEAN_MART",
+    "42": "CERULEAN_GYM"
   }
 }
