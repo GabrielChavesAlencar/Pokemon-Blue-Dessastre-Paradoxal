@@ -52,10 +52,13 @@ module BlueKantoPilot
     end
   end
 
-  def self.battle(type, name)
+  def self.battle(type, name, event_key = nil)
     return unless starter
     wins = (progress["pilot_wins"] ||= [])
-    if wins.include?(name)
+    # New events persist stable region/map/event keys. Accept old name-only
+    # entries from pilot saves built before this fix without replaying battles.
+    key = event_key || "#{type}:#{name}"
+    if wins.include?(key) || wins.include?(name)
       pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
       return
     end
@@ -65,7 +68,7 @@ module BlueKantoPilot
       $player.heal_party
       return
     end
-    wins << name
+    wins << key
     return unless type == :BLUE_KANTO_LEADER
     if BlueRegions.award(progress, "KANTO", "BOULDER")
       pbMessage(_INTL("Brock: A Boulder Badge é sua. Você concluiu o piloto de Kanto!"))
