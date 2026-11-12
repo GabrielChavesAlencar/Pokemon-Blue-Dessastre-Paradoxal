@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cf6283cd61cdc28ba82c6815e480a3f9a73ff025",
+      "date": "2026-11-11T21:43:10-03:00",
+      "title": "fix(kanto): remover promessa de batalha do rival ainda ausente em Pewter",
+      "category": "Correções"
+    },
+    {
       "sha": "419297e41bf95f052abc4c8f0129fa444bcc807b",
       "date": "2026-11-11T21:42:02-03:00",
       "title": "docs(kanto): explicar reconstrucao automatica de pilotos obsoletos",
