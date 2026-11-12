@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "38788ff9eb6b2817e5a74921796838a4fa7d3ab4",
+      "date": "2026-11-12T10:17:34-03:00",
+      "title": "Kanto Celadon: publicar Erika e 7 treinadoras com equipes FRLG auditadas no site",
+      "category": "Melhorias"
+    },
+    {
       "sha": "72416e88f15ad7844ceea88d58bf65455275b297",
       "date": "2026-11-12T10:16:08-03:00",
       "title": "Kanto Erika: prova nativa portas/cura, derrota, Rainbow única, pós-vitória e save/reload",
