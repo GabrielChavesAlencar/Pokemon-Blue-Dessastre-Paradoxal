@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "850c75a5a6cfce5ef6266adb11bc466f69ee1d4a",
+      "date": "2026-11-12T10:31:59-03:00",
+      "title": "Kanto 8º núcleo: registrar aprovação final CI 43227499299 e regressão 43227499314",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a93be4b95d7429d5479a813adca573dc87b47321",
       "date": "2026-11-12T10:27:38-03:00",
       "title": "Teste nativo Celadon: aceitar PC dinâmico de Essentials sem permitir source events indevidos",
