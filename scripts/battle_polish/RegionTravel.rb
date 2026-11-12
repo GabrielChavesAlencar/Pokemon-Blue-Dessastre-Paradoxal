@@ -44,12 +44,28 @@ module BlueRegionTravel
     source_valid?(state) && %w[DECADES KANTO].include?(state["current"])
   end
 
+  # A new adventure begins upstairs at home, but returning from another
+  # region should arrive in Pallet Town beside the agent, not in the bedroom.
+  # Map 5 and tile (18,8) are source-proven FRLG house-door coordinates.
+  def self.kanto_town_point
+    path = "Data/blue-kanto-install.json"
+    return nil unless File.file?(path)
+    text = File.read(path)
+    map_match = text.match(/"5"\s*:\s*(\d+)/)
+    return nil unless map_match
+    map_id = map_match[1].to_i
+    return nil unless map_id > 0 && pbRgssExists?(sprintf("Data/Map%03d.rxdata", map_id))
+    [map_id, 18, 8, 2]
+  rescue IOError, SystemCallError
+    nil
+  end
+
   def self.destination(state, key)
     return nil unless state && BlueRegions.unlocked(state).include?(key)
     return nil if key == state["current"]
     if key == "KANTO"
       return nil unless installed?
-      BlueRegionStart.kanto_spawn + [2]
+      kanto_town_point || (BlueRegionStart.kanto_spawn + [2])
     elsif key == "DECADES"
       position = state["decades_return"]
       return nil unless position.is_a?(Array) && position.length == 4
