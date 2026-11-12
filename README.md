@@ -39,7 +39,7 @@ A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor 
 
 ## Pacote de músicas de Kanto
 
-O [inventário das 64 faixas de Kanto e instruções de publicação](docs/KANTO_MUSICAS_PACOTE.md) contém checksum do ZIP recebido, validação de formato e o atalho `SUBIR_MUSICAS_KANTO.bat`. O repositório é **público**; arquivos originais de trilha sonora só devem ser disponibilizados se houver autorização para redistribuí-los. **O ZIP não foi enviado automaticamente por esta alteração.** Para adicionar músicas à cópia local do jogo sem distribuí-las, use o [editor de músicas](docs/EDITOR_MUSICAS.md).
+O upload manual foi confirmado: as **64 músicas de Kanto** estão organizadas em `assets/music/kanto/BGM/` (50) e `assets/music/kanto/ME/` (14), sem MP3s soltos na raiz. Confira o [mapeamento de cada faixa](docs/KANTO_MUSICAS_MAPEAMENTO.md), [inventário e hashes](docs/KANTO_MUSICAS_PACOTE.md) e use `INSTALAR_MUSICAS_KANTO.bat` para copiá-las com segurança para `game/Audio` na sua instalação local. **Os mapas não recebem automaticamente essas músicas; escolha-as no [editor de músicas](docs/EDITOR_MUSICAS.md).** O repositório é público: confirme a autorização para redistribuir trilhas de terceiros.
 
 ## Diálogos FireRed e tradução de Kanto
 
