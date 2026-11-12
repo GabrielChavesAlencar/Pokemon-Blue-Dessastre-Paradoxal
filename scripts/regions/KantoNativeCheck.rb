@@ -37,7 +37,7 @@ module KantoNativeCheck
     # Supply the choice and battle results so the compiler can run without a user.
     Object.send(:define_method, :pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     battle_calls = []
-    losses_remaining = { "Doug" => 1 }
+    losses_remaining = { "Doug" => 1, "Erika" => 1 }
     TrainerBattle.define_singleton_method(:start) do |type, name, version = 0|
       data = GameData::Trainer.get(type, name, version)
       battle_calls << [type, name, version]
@@ -113,6 +113,8 @@ module KantoNativeCheck
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER"],
              "Badge was not awarded exactly once")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_124_001"),
+             "Erika victory did not persist through save/reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Stable Brock trainer key not persisted")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
@@ -198,17 +200,67 @@ module KantoNativeCheck
              $game_map.events[16].trigger == 0,
              "Trainer must stop auto-challenging after victory")
 
-    # Phase 09: inspect scenery in the native engine without executing or
-    # pretending that Celadon trainers, Erika, doors or quests exist yet.
-    stage09 = ["Rota 7", "Celadon City", "Erika", "Celadon Center", "Celadon Loja"]
-    stage09.each do |label|
-      stop = BlueKantoPilot.experimental_stops.find { |entry| entry[0].include?(label) }
-      require!(stop, "Phase 09 preview stop missing: #{label}")
+    # Phase 09 core: City/Center/Gym now have only whitelisted gameplay
+    # events. Route 7 and the entire department store remain geometry-only.
+    ["Rota 7", "Celadon Loja"].each do |label|
+      stop = BlueKantoPilot.experimental_stops.find { |row| row[0].include?(label) }
+      require!(stop, "Celadon scenery preview stop missing: #{label}")
       $map_factory.setup(stop[1][0])
-      require!($game_map.events.empty?, "Phase 09 imported events before audit: #{label}")
+      require!($game_map.events.empty?, "Unreviewed preview events in #{label}")
     end
+    map_for = proc do |label|
+      stop = BlueKantoPilot.experimental_stops.find { |row| row[0].include?(label) }
+      require!(stop, "Celadon core stop missing: #{label}")
+      stop[1][0]
+    end
+    celadon_city = map_for.call("Celadon City")
+    celadon_center = map_for.call("Celadon Center")
+    celadon_gym = map_for.call("Erika")
+    $map_factory.setup(celadon_city)
+    require!($game_map.events.keys.sort == [3, 20] &&
+             $game_map.events[3].trigger == 1 &&
+             $game_map.events[20].trigger == 1,
+             "Celadon city must contain only two walk-through core doors")
+    require!($game_map.events[3].list.any? { |row|
+      row.code == 201 && row.parameters[1] == celadon_gym
+    } && $game_map.events[20].list.any? { |row|
+      row.code == 201 && row.parameters[1] == celadon_center
+    }, "Celadon city doors do not reach the audited destinations")
+    $map_factory.setup(celadon_center)
+    require!($game_map.events.keys.sort == [1, 2] &&
+             $game_map.events[1].list.any? { |row|
+               row.code == 201 && row.parameters[1] == celadon_city
+             }, "Celadon Pokemon Center lacks its return exit")
+    $map_factory.setup(celadon_gym)
+    require!($game_map.events.keys.sort == [1, 5, 7, 42, 43, 44, 45, 46, 47],
+             "Celadon Gym imported non-whitelisted events")
+    require!($game_map.events[5].list.any? { |row|
+      row.code == 201 && row.parameters[1] == celadon_city
+    }, "Celadon gym has no return to the city")
+    require!($game_map.events[7].trigger == 2 && $game_map.events[1].trigger == 0,
+             "Erika and the trainers have wrong trigger modes")
+    erika = GameData::Trainer.get(:BLUE_KANTO_LEADER_ERIKA, "Erika")
+    require!(erika.pokemon.map { |pkmn| [pkmn[:species], pkmn[:level]] } ==
+             [[:VICTREEBEL,29],[:TANGELA,24],[:VILEPLUME,29]],
+             "Erika's pinned FRLG team was not preserved")
     require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("RAINBOW"),
-             "Rainbow badge was granted without an Erika event")
+             "Rainbow was awarded without defeating Erika")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_ERIKA, "Erika", "KANTO_124_001")
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("RAINBOW"),
+             "A loss against Erika incorrectly awarded Rainbow")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_ERIKA, "Erika", "KANTO_124_001")
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") ==
+             ["BOULDER", "CASCADE", "THUNDER", "RAINBOW"],
+             "Erika victory did not award the unique Rainbow Badge")
+    require!(BlueKantoPilot.sync_trainer_event("KANTO_124_001", "Erika", 1),
+             "Erika did not persist her defeated event state")
+    $game_map.refresh
+    require!($game_self_switches[[celadon_gym, 1, "A"]] &&
+             $game_map.events[1].trigger == 0,
+             "Erika remained a battle trigger after a registered victory")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER_ERIKA, "Erika", "KANTO_124_001")
+    require!(battle_calls.count { |row| row[1] == "Erika" } == 2,
+             "Erika was challenged again after winning the Rainbow Badge")
 
     # Fuchsia/Safari phase 10: proof of map loading and absence of imported
     # NPCs, trainers, Safari counters, items and gym scripts.
@@ -248,7 +300,7 @@ module KantoNativeCheck
     save_file = SaveData.get_full_path(slot)
     saved = SaveData.read_from_file(save_file)
     Game.load(saved)
-    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER"],
+    require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER","CASCADE","THUNDER","RAINBOW"],
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
@@ -258,6 +310,6 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 40 maps: Pallet/Mt Moon/Cerulean/Vermilion, ticket, Surge, three badges and save/reload verified (battles simulated)")
+    File.write("Data/blue-kanto-proof.txt", "Kanto 109 maps: four badges incl Erika, Celadon City/Center/Gym core, 57 trainer sights, save/reload verified (battles simulated)")
   end
 end
