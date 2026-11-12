@@ -2,6 +2,8 @@ name: Piloto de Kanto - verificação nativa
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
     paths: ['scripts/regions/**', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
   workflow_dispatch:
 permissions:
