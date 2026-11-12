@@ -113,8 +113,6 @@ module KantoNativeCheck
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER"],
              "Badge was not awarded exactly once")
-    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_124_001"),
-             "Erika victory did not persist through save/reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Stable Brock trainer key not persisted")
     BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
@@ -304,6 +302,8 @@ module KantoNativeCheck
              "Pilot badges did not survive reload")
     require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
              "Trainer victory keys did not survive reload")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_124_001"),
+             "Erika victory did not persist through save/reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
