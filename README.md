@@ -37,6 +37,10 @@ A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor 
 
 **Campanha Traditional Starters:** progressão Inicial (0–1 esmeralda, BST até 350), Intermediária (2–3, até 450) e Avançada (4+, equipes originais), com revanches por estágio sem repetir drops. Entradas de batalha inspiradas no FireRed, EXP suave e mouse nos menus da campanha. [Regras, controles e validação](docs/PROGRESSAO_E_ANIMACOES.md).
 
+## Continuidade do projeto
+
+[Próximos passos do jogo, de Kanto e do portal](docs/PROXIMOS_PASSOS.md)
+
 ## Portal do projeto
 
 O site fica em **`site/`** no mesmo repositório: Pokédex, formas, golpes, localizações, guias e diário automático de commits. [Executar o site](site/README.md) · [Deploy na Vercel e rotina de atualizações](docs/SITE_E_VERCEL.md).
