@@ -54,10 +54,19 @@ KANTO_PHASE11_EARLY_SOURCE_IDS = (
 KANTO_PHASE11_LATE_SOURCE_IDS = (8, 14, 15, 21, 22, 29, 30, 31)
 
 
+# Freeze the 17 stage-12 source IDs before appending the lower-numbered
+# Viridian Gym (source Map013). A sorted append would corrupt prior saves.
+KANTO_PHASE12_SOURCE_IDS = (
+    190, 191, 193, 194, 195, 196, 197, 198, 199,
+    200, 201, 202, 203, 205, 206, 207, 208,
+)
+
+
 def stable_source_order(wanted):
     chosen = set(wanted)
     stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
-              *KANTO_PHASE11_LATE_SOURCE_IDS)
+              *KANTO_PHASE11_LATE_SOURCE_IDS,
+              *KANTO_PHASE12_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result
