@@ -242,10 +242,18 @@ module BlueRegionTravel
   end
 
   def self.restricted?(pkmn)
-    return false unless pkmn && BlueRegions.active?
+    return false unless pkmn && BlueRegions.active? && installed?
+    # A legacy Decades save without regional travel must retain its original
+    # PC rules, even if Blue/Kanto was installed after the save was created.
+    stored = $PokemonGlobal && $PokemonGlobal.blue_regions
+    return false unless stored.is_a?(Hash) && stored["version"] == 1
+    if stored["current"] == "DECADES"
+      history = stored["travel_history"]
+      return false unless history.is_a?(Array) && !history.empty?
+    end
     state = BlueRegions.snapshot
     return false unless state && BlueRegions.known?(state["current"])
-    !BlueRegions.allow_specials?(state,state["current"],$player.badges) && special?(pkmn)
+    !BlueRegions.allow_specials?(state, state["current"], $player.badges) && special?(pkmn)
   end
 
   def self.install
