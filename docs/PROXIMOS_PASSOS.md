@@ -4,18 +4,20 @@
 
 **Referências de eventos e diálogos:** [estudo técnico dos 425 mapas](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md) · [passo a passo detalhado de aplicação em RPG Maker XP/Essentials](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) · [extrator de eventos da decompilação](../scripts/regions/extrair_eventos_firered.py). Documentação e ferramentas **não instalam eventos ou diálogos**: manter os **61 mapas `preview_only` das fases 09–11** sem NPCs, portas, gatilhos ou falas até implantação aprovada. Priorizar MAN-01/02/03 e preservar as duas barras de progresso. O contador é atualizado somente com testes concluídos.
 
-**Barras reavaliadas em 12/11/2026:** **núcleos de desenvolvimento implementados 06/16 (37,5%; faltam 10 passos)**; **etapas integralmente aceitas 01/16 (6,25%; faltam 15 passos)**. [Análise de todas as 16 etapas](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). A contagem anterior 08/16 confundia fase alcançada com núcleo concluído. O piloto experimental já integra 40 mapas até Vermilion/S.S. Anne, com teste nativo automatizado; a caminhada, as portas internas, os eventos de treinadores e as batalhas reais ainda precisam ser validados. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md) · [feedback manual de 12/11](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md).
+**Progresso funcional atual (12/11/2026): 07/16 (43,75%), faltam 9 passos. Aceite integral: 01/16 (6,25%), faltam 15 passos.** O [sétimo núcleo](KANTO_AVANCO_FUNCIONAL_07.md) corresponde à **etapa 03 — Pallet → Pewter** e foi aprovado na [CI Windows 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441), com [regressão 43222828560](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828560).
 
-## Reavaliação das duas barras — referência atual
+## Duas barras de Kanto — contagem atual
 
-**Barra 1: 6/16 (37,5%), faltam 10. Barra 2: 1/16 (6,25%), faltam 15.** Evidências e classificação por fase: [KANTO_REAVALIACAO_BARRAS_2026-11-12.md](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+`Barra 1  ███████░░░░░░░░░  7/16 núcleos · 9 faltando`
 
-- **6 núcleos funcionais comprovados:** 01, 04, 05, 06, 07 e 08.
-- **4 fases parciais:** 02 (caminhada no Windows), 03 (portas e treinadores), 15 (conferência canônica), 16 (QA/publicação).
-- **3 fases apenas com mapas:** 09 (Celadon), 10 (Fuchsia), 11 (Saffron), ainda sem eventos de história.
-- **3 fases sem núcleo entregue:** 12 (Cinnabar), 13 (Giovanni), 14 (Liga).
+`Barra 2  █░░░░░░░░░░░░░░░  1/16 aceito  · 15 faltando`
 
-Os números 8/16 em trechos históricos/documentos das fases anteriores **não descrevem o progresso funcional atual**. Não avançar nenhuma barra por adicionar um mapa, documento, diálogo de planejamento ou CI isolada sem cumprir o critério específico de sua etapa.
+- **7 núcleos com integração mínima e CI:** 01, 03, 04, 05, 06, 07, 08.
+- **3 etapas parciais:** 02 (jogabilidade manual), 15 (auditoria canônica global), 16 (QA/publicação).
+- **3 etapas somente cenário:** 09, 10, 11 — Celadon, Fuchsia e Saffron.
+- **3 sem núcleo:** 12, 13, 14 — Cinnabar, Viridian final e Liga.
+
+**Próxima prioridade:** fazer a validação manual de 02/03, concluir os interiores e eventos restantes, e integrar os núcleos de Celadon/Erika, Fuchsia/Koga e Saffron/Sabrina. A [reavaliação anterior 6/16](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) é um registro histórico, não o progresso atual.
 
 ## Especificações de referência — regras já definidas
 
@@ -48,7 +50,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 6. [ ] Revisar em documento os lotes **A–I**: Pallet, Pewter/Mt. Moon, Cerulean, Vermilion, Celadon/Lavender/Saffron, Fuchsia/Snorlax, Cinnabar/Viridian, Liga e pós-jogo/Sevii opcional.
 7. [ ] Definir a matriz de QA por evento: fonte/MapID/EventID, trigger, páginas, estado, teste estrutural, teste real Windows/JoiPlay, rollback. Somente após autorização implementar e retirar mapas de `preview_only`.
 
-**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **6/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
+**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **7/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
 
 ## Correção funcional prioritária — interiores e treinadores de Pallet a Pewter
 
@@ -75,7 +77,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 **Prioridades de roteiro:** diálogos de Oak/Parcel/rival e Brock nos mapas existentes; Misty/Bill/S.S. Anne/Lt. Surge; depois Celadon/Erika, Fuchsia/Koga, Saffron/Sabrina; por fim Cinnabar, Viridian, Liga e pós-jogo opcional. A ordem está vinculada às 16 fases no documento próprio. Não marcar a tradução como concluída antes do inventário e dos testes.
 
-**Progresso de localização não aferido.** A reavaliação geral marca desenvolvimento Kanto **6/16** e aceite **1/16**; receber um MD não altera essas barras.
+**Progresso de localização não aferido.** A reavaliação geral marca desenvolvimento Kanto **7/16** e aceite **1/16**; receber um MD não altera essas barras.
 
 ## Fase 11 — Saffron/Sabrina/Silph Co. (terreno apenas)
 
@@ -97,13 +99,13 @@ Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG
 - [ ] **Eventos depois da revisão:** Koga e Soul Badge, mecanismo de paredes do ginásio, captura Safari e limite de passos, Gold Teeth, Warden/Strength, Secret House/Surf, transições de portas e treinadores.
 - [ ] Testar passabilidade visual, save/reload, menus e rota canônica completa do Windows (depois JoiPlay).
 
-A fase 10 é **prévia**, não conclusão funcional. Não conceder Soul Badge nem aumentar as barras de desenvolvimento (**8/16**) ou aceite (**1/16**) por adicionar terreno.
+A fase 10 é **prévia**, não conclusão funcional. Não conceder Soul Badge nem aumentar as barras de desenvolvimento (**7/16**) ou aceite (**1/16**) por adicionar terreno.
 
 ## Fase 09 — autorização limitada a cenários
 
 Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tileset das áreas selecionadas, sem eventos de qualquer tipo no lote novo. **Manter MAN-01 (interiores), MAN-02 (treinadores) e eventos de Erika/Team Rocket em espera pela análise do usuário.** Não apagar as pendências nem criar atalhos que concedam insígnias.
 
-**Estado de Kanto (contagem reavaliada):** etapa 09 tem só cenário; desenvolvimento com núcleo **6/16 (37,5%)**, aceitação **1/16 (6,25%)**, porque a fase 09 ainda não tem progressão nem batalha.
+**Estado de Kanto (contagem reavaliada):** etapa 09 tem só cenário; desenvolvimento com núcleo **7/16 (43,75%)**, aceitação **1/16 (6,25%)**, porque a fase 09 ainda não tem progressão nem batalha.
 
 ## 0. Correções prioritárias identificadas pelo usuário (12/11/2026)
 
@@ -116,7 +118,7 @@ Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tilese
 - [ ] **Prioridade 3 — Duas telas de insígnias (MAN-03).** Tela local de Kanto com oito posições, líder e estado; tela geral por região/geração com o progresso de todas as regiões, sem inventar insígnias em Alola, Hisui ou Decades. Atualizar a UI a partir do mesmo estado regional persistido.
 - [ ] Executar regressão de caminhada real e registrar evidências por mapa/evento **antes de aceitar** as etapas 02, 03 e 07. O TXT não afirma ter testado Vermilion/Surge (fase 08).
 
-**Não alterar as barras somente por receber feedback:** desenvolvimento reavaliado **6/16**; aceitação total **1/16**. Corrigir esses itens em paralelo à próxima expansão, sem considerá-los concluídos antecipadamente.
+**Não alterar as barras somente por receber feedback:** desenvolvimento reavaliado **7/16**; aceitação total **1/16**. Corrigir esses itens em paralelo à próxima expansão, sem considerá-los concluídos antecipadamente.
 
 ## 1. Validar o piloto de Kanto
 
