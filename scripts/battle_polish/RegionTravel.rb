@@ -131,7 +131,9 @@ module BlueRegionTravel
       reservations.each do |pkmn, pos|
         raise "Vaga do PC foi ocupada durante a confirmação" unless $PokemonStorage[pos[0],pos[1]].nil?
         $PokemonStorage[pos[0],pos[1]] = pkmn
-        $player.party.delete_at($player.party.index(pkmn))
+        party_index = $player.party.index { |item| item.equal?(pkmn) }
+        raise "Pokémon reservado não está mais na party" unless party_index
+        $player.party.delete_at(party_index)
       end
       $PokemonGlobal.blue_regions = next_state
       pbFadeOutIn { move_to(point) }
