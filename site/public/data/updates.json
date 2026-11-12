@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "99c7bedcb003b6f5693151af26ed5148cc60eb03",
+      "date": "2026-11-12T14:05:40-03:00",
+      "title": "feat(kanto): auditoria FRLG de encontros e equipes — núcleo 14/16",
+      "category": "Novidades"
+    },
+    {
       "sha": "699fde4d597afe7c1a57013dfa419503e919b7dc",
       "date": "2026-11-12T13:42:09-03:00",
       "title": "feat(kanto): Victory Road e Liga — núcleo 13/16",
