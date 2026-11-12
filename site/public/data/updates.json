@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "87aaee4b51014be3a6e4a7048591975d5b95802a",
+      "date": "2026-11-11T23:16:18-03:00",
+      "title": "test(regions): conferir assinatura real de pbPlace/pbWithdraw no PC",
+      "category": "Testes"
+    },
+    {
       "sha": "41550815a4f1b0b13dc0f3fb858b5f99c8b7b9af",
       "date": "2026-11-11T23:15:56-03:00",
       "title": "fix(regions): preservar assinatura nativa pbPlace do Essentials no PC",
