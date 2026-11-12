@@ -50,6 +50,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto Celadon core event audit failed'}
           python scripts/regions/audit_fuchsia.py --output .blue-work/kanto-phase-10-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 10 source audit failed'}
+          python scripts/regions/audit_fuchsia_core.py
+          if($LASTEXITCODE -ne 0){throw 'Fuchsia core event and team audit failed'}
           python scripts/regions/audit_saffron.py --output .blue-work/kanto-phase-11-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 11 source audit failed'}
           python scripts/regions/audit_trainer_interactions.py
