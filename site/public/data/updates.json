@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a365dd23512c343aa7c810cb92e79a47764475ea",
+      "date": "2026-11-12T20:02:43-03:00",
+      "title": "docs(johto): referencia etapa 03 parcial e controles de mapa/tileset",
+      "category": "Documentação"
+    },
+    {
       "sha": "4bc98bb84a7fefefac0c8be1c79d6a9b28f723d7",
       "date": "2026-11-12T20:01:38-03:00",
       "title": "docs(johto): registra Etapa 03 parcial e proteção dos mapas anteriores",
