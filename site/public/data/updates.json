@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3829634bf4366797112ecf2a08de33b1d416efee",
+      "date": "2026-11-12T07:56:06-03:00",
+      "title": "docs(kanto): registrar estudo de times oficiais de líderes, Elite Four e campeões",
+      "category": "Documentação"
+    },
+    {
       "sha": "19e44ce270b688e8ac91f2223e3df2abaab83a48",
       "date": "2026-11-12T07:53:06-03:00",
       "title": "docs(kanto): indexar estudo e procedimento de eventos FireRed",
