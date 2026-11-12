@@ -80,10 +80,10 @@ def manifest(pilot, game):
     # Generated-only regional audio manifest: MapIDs come from the pilot.
     music_file = Path("Data/blue-kanto-music.txt")
     files[music_file] = pilot / music_file
-    # Import only the F2 BGM tracks. Already-identical user-installed MP3s are
+    # Import only approved regional BGM tracks. Already-identical user MP3s are
     # untouched; conflicting files abort before any map is installed.
-    from scripts.music.compile_kanto_music import phase2_track_numbers
-    selected = phase2_track_numbers(ROOT)
+    from scripts.music.compile_kanto_music import approved_track_numbers
+    selected = approved_track_numbers(ROOT)
     catalog = json_file(ROOT / "data/kanto-music.json")
     for item in catalog["files"]:
         if item["number"] not in selected:
