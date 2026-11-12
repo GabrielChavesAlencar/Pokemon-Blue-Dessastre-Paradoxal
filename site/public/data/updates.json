@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "faff9fe9661146aa80affc1543002b09583e9d78",
+      "date": "2026-11-12T20:31:12-03:00",
+      "title": "docs(johto): sincroniza plano de 16 etapas com Bugsy parcial",
+      "category": "Documentação"
+    },
+    {
+      "sha": "304cc19aac801f6bf24d5a2f4ec957f98dbc662b",
+      "date": "2026-11-12T20:31:00-03:00",
+      "title": "docs(johto): registra fase 06 parcial com testes e critérios de aceitação",
+      "category": "Documentação"
+    },
+    {
       "sha": "cbd574efbb9cf6cf1e22bc857f5bf1da4379cda2",
       "date": "2026-11-12T20:30:34-03:00",
       "title": "docs(johto): detalha Etapa 06 Azalea Union Cave Rocket Bugsy e aceite",
