@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "706674a3a9531325c02a807bf2e9717846f6febf",
+      "date": "2026-11-11T23:46:12-03:00",
+      "title": "docs(kanto): instrucoes para jogar 25 mapas, teleporte de teste e relatorio local",
+      "category": "Documentação"
+    },
+    {
       "sha": "52bccedbb8a25f580ad2817b88842406edb25be6",
       "date": "2026-11-11T23:45:12-03:00",
       "title": "test(kanto): confirmar menu e destinos experimentais na engine",
