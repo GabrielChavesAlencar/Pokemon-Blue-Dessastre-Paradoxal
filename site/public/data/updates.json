@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9686805351554048bbc35b86f2da71cb9f0cdaa2",
+      "date": "2026-11-11T23:17:56-03:00",
+      "title": "docs(kanto): incluir provas nativas e testes automatizados da fase 06",
+      "category": "Documentação"
+    },
+    {
       "sha": "87aaee4b51014be3a6e4a7048591975d5b95802a",
       "date": "2026-11-11T23:16:18-03:00",
       "title": "test(regions): conferir assinatura real de pbPlace/pbWithdraw no PC",
