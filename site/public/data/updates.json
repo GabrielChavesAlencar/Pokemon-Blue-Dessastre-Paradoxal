@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e950290449f3eb68d0e85ef3c2d52a909ee1c659",
+      "date": "2026-11-11T21:20:40-03:00",
+      "title": "ci(kanto): exigir integridade de mapa e eventos antes do teste nativo",
+      "category": "Melhorias"
+    },
+    {
       "sha": "100d32ae053d78108312b21974f0bc5b53969b51",
       "date": "2026-11-11T21:20:23-03:00",
       "title": "test(kanto): validar integridade dos mapas e eventos do piloto",
