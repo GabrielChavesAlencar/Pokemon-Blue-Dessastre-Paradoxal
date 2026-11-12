@@ -290,6 +290,23 @@ def install_runtime(target, mapping, game):
     (data / "blue-kanto-start.txt").write_text(
         f"BLUE_KANTO_START_V1,KANTO,{mapping[5]},28,14\n", encoding="ascii"
     )
+    # Experimental shortcuts are available ONLY in this isolated pilot;
+    # install_kanto.py never imports this file into the main campaign.
+    stops = [
+        ("PALLET", "Pallet Town (Oak)", 5, 28, 14),
+        ("PEWTER", "Pewter City (Gym)", 25, 19, 21),
+        ("ROUTE4", "Route 4 (Mt Moon exit)", 33, 92, 21),
+        ("MOON_CENTER", "Mt Moon Pokemon Center", 34, 7, 8),
+        ("MOON_1F", "Mt Moon - 1F", 36, 24, 41),
+        ("MOON_B1F", "Mt Moon - B1F", 37, 25, 8),
+        ("MOON_B2F", "Mt Moon - B2F", 38, 31, 24),
+        ("CERULEAN", "Cerulean City (Center)", 39, 22, 20),
+        ("MISTY", "Cerulean Gym (Misty)", 42, 8, 18),
+    ]
+    (data / "blue-kanto-experimental-stops.txt").write_text(
+        "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\\n"
+                for code, title, old, x, y in stops), encoding="utf-8"
+    )
     # Force compiler to consume new PBS, but keep a real release-mode title after the first boot.
     (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
     (data / "PluginScripts.rxdata").unlink(missing_ok=True)
