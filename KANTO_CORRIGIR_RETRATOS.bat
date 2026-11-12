@@ -4,7 +4,7 @@ cd /d "%~dp0"
 title Kanto - corrigir retratos dos treinadores
 echo.
 echo === REPARAR RETRATOS DE KANTO ===
-echo [INFO] Corrige somente quatro PNGs ausentes em Graphics\Trainers.
+echo [INFO] Corrige somente retratos Kanto ausentes em Graphics\Trainers.
 echo [INFO] Nao modifica saves, mapas, PBS, equipes, itens nem o PC.
 echo.
 if not exist "game\Data\blue-kanto-start.txt" (
