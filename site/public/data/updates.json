@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a32c3aaccfebcd82840ff62b0c9025bf97f216e5",
+      "date": "2026-11-12T07:36:28-03:00",
+      "title": "Kanto fase 09: preparar cenarios de Celadon sem NPCs, scripts ou batalhas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5b1d69b34e4e4dcd431e0e35f2501a602f1028aa",
+      "date": "2026-11-12T07:36:22-03:00",
+      "title": "Kanto fase 09: preparar cenarios de Celadon sem NPCs, scripts ou batalhas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "6472dd2eabe75b260b098ca0c574dca4ebfc74db",
+      "date": "2026-11-12T07:36:20-03:00",
+      "title": "Kanto fase 09: preparar cenarios de Celadon sem NPCs, scripts ou batalhas",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e76ed349531332d924e44a3dc8f9a4405e9c4c14",
       "date": "2026-11-12T07:35:33-03:00",
       "title": "Kanto 09: catalogar 11 mapas reais de Celadon como geometria somente, sem eventos",
