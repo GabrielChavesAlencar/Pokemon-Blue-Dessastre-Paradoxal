@@ -54,7 +54,7 @@ def inspect(game: Path) -> dict:
     # NPCs, warps or trainer events may slip into these compiled RPG maps.
     for source in preview_only:
         if maps[mapping[source]].attrs["@events"]:
-            raise ValueError(f"Phase 09/10 preview must not import events into {expected[source]}")
+            raise ValueError(f"Phase 09-11 preview must not import events into {expected[source]}")
     system = load(game / "Data/System.rxdata").attrs
     if system["@start_map_id"] != mapping[5]:
         raise ValueError("New game does not start at Kanto's Pallet Town")
@@ -185,7 +185,9 @@ def inspect(game: Path) -> dict:
                       "SSANNE", "SSCAPTAIN", "SSDECK",
                       "ROUTE7", "CELADON", "ERIKA", "CEL_CENTER", "CEL_STORE",
                       "FUCHSIA", "KOGA", "FUCH_CENTER", "FUCH_WARDEN",
-                      "SAF_GATE", "SAF_SOUTH", "SAF_NORTH", "SAF_WEST", "ROUTE15"}
+                      "SAF_GATE", "SAF_SOUTH", "SAF_NORTH", "SAF_WEST", "ROUTE15",
+                      "ROUTE8", "SAFF_WEST", "SAFFRON", "SABRINA", "SAFF_DOJO",
+                      "SAFF_CENTER", "SILPH_1F", "SILPH_5F", "SILPH_11F", "SILPH_LIFT"}
     seen_stops = set()
     for raw in stops_file.read_text(encoding="utf-8").splitlines():
         parts = raw.split("|")
@@ -206,7 +208,8 @@ def inspect(game: Path) -> dict:
         "maps": len(maps),
         "preview_geometry_only": len(preview_only),
         "phase09_geometry_only": len(preview_only & {111,114,115,117,118,119,120,121,122,123,124}),
-        "phase10_geometry_only": len(preview_only - {111,114,115,117,118,119,120,121,122,123,124}),
+        "phase10_geometry_only": len(preview_only & {141,142,143,144,145,146,147,152,153,155,156,157,158,159,160,161,162,163,164,165}),
+        "phase11_geometry_only": len(preview_only & {57,62,107,108,109,110,112,113,168,169,170,171,172,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189}),
         "preview_event_count": sum(len(maps[mapping[source]].attrs["@events"])
                                    for source in preview_only),
         "active_maps": len(active_ids),
@@ -216,7 +219,7 @@ def inspect(game: Path) -> dict:
         "required_events": len(found),
         "experimental_stops": len(seen_stops),
         "route": [expected[source] for source in route],
-        "limitations": "Phase 09/10 maps are scenery previews WITHOUT events, encounters, trainers, Erika/Rainbow, Koga/Soul or Safari gameplay. All controls, collisions and prior gameplay still require manual testing.",
+        "limitations": "Phase 09-11 maps are scenery previews WITHOUT events, encounters, trainers, Erika/Rainbow, Koga/Soul, Sabrina/Marsh, Safari or Silph gameplay. All controls, collisions and prior gameplay still require manual testing.",
     }
 
 
