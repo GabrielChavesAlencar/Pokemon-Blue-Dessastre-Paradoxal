@@ -71,7 +71,8 @@ def fixture(root: Path):
     archive.write_bytes(b"synthetic original Johto archive")
     manifest = {"schema": 1, "region": "JOHTO",
                 "mapping_verified": True, "import_enabled": False,
-                "source": {"archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest()},
+                "source": {"name": "Synthetic Johto RMXP fixture",
+                           "archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest()},
                 "maps": {"3": "JOHTO_NEW_BARK_TOWN"}}
     manifest_path = work / "johto-manifest.json"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
