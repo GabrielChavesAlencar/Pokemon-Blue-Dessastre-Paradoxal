@@ -46,6 +46,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Kanto structural verification failed'}
+          python scripts/regions/export_kanto.py --preview .blue-work/kanto-pilot --output .blue-work/kanto-site-preview.json --print-preview-chunks
+          if($LASTEXITCODE -ne 0){throw 'Kanto portal export proof failed'}
           Copy-Item .blue-work/kanto-pilot/Data/Scripts.rxdata .blue-work/kanto-clean-main.rxdata
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
