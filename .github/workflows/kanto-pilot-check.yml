@@ -108,7 +108,12 @@ jobs:
           for($attempt=1;$attempt -le 2;$attempt++){
             $process=Start-Process -FilePath "$game/Game.exe" -WorkingDirectory $game -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-main-out.txt" -RedirectStandardError ".blue-work/kanto-main-err.txt"
             $handle=$process.Handle
-            if(-not $process.WaitForExit(150000)){Stop-Process -Id $process.Id;throw 'Integrated Kanto test timed out'}
+            if(-not $process.WaitForExit(110000)){
+              Stop-Process -Id $process.Id -ErrorAction SilentlyContinue
+              Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/errorlog.txt","$game/Data/blue-kanto-integrated-proof.txt" -ErrorAction SilentlyContinue | Select-Object -Last 160
+              Get-ChildItem "$game/Data" -Filter "blue-kanto-*" -ErrorAction SilentlyContinue | Select-Object Name,Length
+              throw 'Integrated Kanto proof timed out; diagnostics above'
+            }
             if(Test-Path "$game/Data/blue-kanto-integrated-proof.txt"){
               Get-Content "$game/Data/blue-kanto-integrated-proof.txt"
               exit 0
