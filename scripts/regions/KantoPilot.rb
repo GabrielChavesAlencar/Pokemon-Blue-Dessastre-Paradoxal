@@ -23,7 +23,9 @@ module BlueKantoPilot
         # creating an unknown FRLG quest item in the Decades item catalogue.
         progress["pilot_oak_parcel_delivered"] = true
         $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
-        pbMessage(_INTL("Oak: O pacote chegou de Viridian! Sua Pokédex está pronta. Obrigado!"))
+        BlueMusic.with_kanto_scene("oak_talk") do
+          pbMessage(_INTL("Oak: O pacote chegou de Viridian! Sua Pokédex está pronta. Obrigado!"))
+        end
       else
         pbMessage(_INTL("Oak: Cuide bem do seu {1}.", GameData::Species.get(starter).name))
       end
@@ -69,6 +71,9 @@ module BlueKantoPilot
     if rival_done?
       pbMessage(_INTL("Blue: Continue treinando. Nossa revanche fica para a próxima etapa!"))
       return
+    end
+    BlueMusic.with_kanto_scene("rival_appears") do
+      pbMessage(_INTL("Blue: Agora que você escolheu seu Pokémon, vamos batalhar!"))
     end
     setBattleRule("canLose")
     result = TrainerBattle.start(:BLUE_KANTO_RIVAL, "Blue", RIVAL_VERSIONS.fetch(starter))
@@ -142,6 +147,11 @@ module BlueKantoPilot
     if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
       return
+    end
+    if type == :BLUE_KANTO_RIVAL_SILPH && name == "Blue"
+      BlueMusic.with_kanto_scene("rival_appears") do
+        pbMessage(_INTL("Blue: Vamos ver como você ficou mais forte desde Pallet!"))
+      end
     end
     setBattleRule("canLose")
     won = TrainerBattle.start(type, name, version)
@@ -652,6 +662,11 @@ module BlueKantoPilot
       return false
     end
     version = (stage == "CHAMPION") ? LEAGUE_CHAMPION_VERSIONS.fetch(starter) : 0
+    if stage == "CHAMPION" && type == :BLUE_KANTO_CHAMPION_BLUE && name == "Blue"
+      BlueMusic.with_kanto_scene("rival_appears") do
+        pbMessage(_INTL("Blue: Você venceu a Elite! Nossa batalha final começa agora."))
+      end
+    end
     setBattleRule("canLose")
     won = TrainerBattle.start(type, name, version)
     unless won
@@ -689,7 +704,9 @@ module BlueKantoPilot
     return false unless BlueRegions.complete_league(progress, "KANTO")
     progress["pilot_league_active"] = false
     progress["pilot_hall_of_fame"] = true
-    pbMessage(_INTL("Hall of Fame: Kanto concluída! Decades e Johto foram liberadas no circuito regional."))
+    BlueMusic.with_kanto_scene("hall_of_fame") do
+      pbMessage(_INTL("Hall of Fame: Kanto concluída! Decades e Johto foram liberadas no circuito regional."))
+    end
     pbFadeOutIn { BlueRegionTravel.move_to([pallet_map, 18, 8, 2]) }
     true
   end
