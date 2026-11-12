@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "adc9aac2928e89f16cb5f488fb9b25583446364f",
+      "date": "2026-11-12T09:58:22-03:00",
+      "title": "Kanto etapa 03: testar na engine pacote de Oak, Mart repetível, Pokédex e save/reload",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5be1ed03d550968eb18290ff224f687286ab7b31",
       "date": "2026-11-12T09:58:01-03:00",
       "title": "Kanto etapa 03: auditar 11 entradas com retorno e loja de pacote de Oak",
