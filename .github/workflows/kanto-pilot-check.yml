@@ -40,6 +40,8 @@ jobs:
           [IO.File]::WriteAllLines($list,[string[]]$entries,(New-Object System.Text.UTF8Encoding($false)))
           tar -xf $archive -C $source.FullName -T $list
           if($LASTEXITCODE -ne 0){throw 'FRLG extraction failed'}
+          python scripts/regions/audit_next_segment.py
+          if($LASTEXITCODE -ne 0){throw 'Kanto phase 07 source audit failed'}
           python scripts/regions/pilot.py
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
