@@ -73,7 +73,13 @@ module BlueMusic
   def self.kanto_region?
     return false unless defined?(BlueRegionalPolicy) && BlueRegionalPolicy.respond_to?(:state)
     state=BlueRegionalPolicy.state
-    state.is_a?(Hash) && state['current']=='KANTO'
+    return true if state.is_a?(Hash) && state['current']=='KANTO'
+    # The disposable standalone pilot has Kanto pilot.json, but deliberately
+    # has no Data/blue-kanto-install.json (required by RegionalPolicy.state).
+    # Only permit this fallback inside that isolated pilot with a real Kanto save.
+    return false unless File.file?('Kanto pilot.json') && defined?(BlueRegions) && BlueRegions.active?
+    stored=$PokemonGlobal && $PokemonGlobal.blue_regions
+    stored.is_a?(Hash) && stored['version']==1 && stored['current']=='KANTO'
   rescue StandardError
     false
   end
