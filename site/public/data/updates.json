@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dc2eccfb87f4c175480442ce16f9ef1ca2f32cdc",
+      "date": "2026-11-11T22:04:24-03:00",
+      "title": "test(regions): resetar valores em memoria ao simular outra nova partida e load",
+      "category": "Novidades"
+    },
+    {
       "sha": "645529a474c9f277c058870cacda343a85e98dea",
       "date": "2026-11-11T22:03:26-03:00",
       "title": "docs(kanto): explicar instalacao opcional e teste da selecao regional na campanha",
