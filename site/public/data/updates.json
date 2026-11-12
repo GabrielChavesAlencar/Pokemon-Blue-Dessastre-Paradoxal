@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c174dfdb071e1ad6eaa015fd0101c707aa03fd84",
+      "date": "2026-11-11T23:38:44-03:00",
+      "title": "feat(kanto): menu de teletransporte de teste em Pallet, Mt Moon e Cerulean no piloto isolado",
+      "category": "Novidades"
+    },
+    {
       "sha": "f811a491330b639c643383ad9ec8d28c4db52a3c",
       "date": "2026-11-11T23:38:03-03:00",
       "title": "fix(kanto): separar corretamente os destinos experimentais em linhas",
