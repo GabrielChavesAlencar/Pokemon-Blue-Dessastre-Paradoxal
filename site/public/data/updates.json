@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb76fdac5511f7864e59e31a476be0a8b1748f17",
+      "date": "2026-11-12T20:14:42-03:00",
+      "title": "fix(test johto): prepara Data no diretório temporário do teste Ruby",
+      "category": "Correções"
+    },
+    {
       "sha": "c08e33f90fc718ef24fcd5a7ef74f8448928346b",
       "date": "2026-11-12T20:14:02-03:00",
       "title": "test(johto): cobre extração local segura, ZIP traversal, symlink e preservação do jogo",
