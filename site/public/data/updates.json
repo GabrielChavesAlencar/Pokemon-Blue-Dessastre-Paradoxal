@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "26b9bf51847b90b129ed496a0ce1e8be723decf8",
+      "date": "2026-11-12T20:49:29-03:00",
+      "title": "docs(johto): detalha fase 08 Ecruteak Morty FOG Surf e pendencias reais",
+      "category": "Documentação"
+    },
+    {
       "sha": "e97a0aa8f75ea1df43730c3a9a885dc40f620f58",
       "date": "2026-11-12T20:48:23-03:00",
       "title": "test(johto): valida Ecruteak Route 35-37 e bloqueios de FOG Surf e mapas",
