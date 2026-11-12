@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1abf14503303924bdab972f23c0d9b64fc702cab",
+      "date": "2026-11-12T06:52:58-03:00",
+      "title": "Publicar artefato de auditoria da fase 08 no GitHub Actions",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c24b1cb499bf1c7bc35c92e7e3612ba41efab716",
+      "date": "2026-11-12T06:52:48-03:00",
+      "title": "Salvar inventário verificável de Vermilion para implementação fase 08",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5943b441b7e4b53c2878bffccdd8200e0e110d55",
       "date": "2026-11-12T06:52:07-03:00",
       "title": "Executar auditoria da fase 08 na CI Windows com fonte FRLG verificada",
