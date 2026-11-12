@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bcd153e31f689440559a73f645ec6db5c708189",
+      "date": "2026-11-12T20:17:47-03:00",
+      "title": "docs(johto): sincroniza plano com eventos Elm e preparo de fonte ZIP",
+      "category": "Documentação"
+    },
+    {
       "sha": "689c3ec688e88eea25ffacff39533507f97cbd00",
       "date": "2026-11-12T20:17:12-03:00",
       "title": "docs(johto): registra roteiro de New Bark, testes e importação segura ZIP sem subir as barras",
