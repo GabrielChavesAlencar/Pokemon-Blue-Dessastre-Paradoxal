@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "226151bd207d3e48698ff540ea31702e3e57b61a",
+      "date": "2026-11-11T21:52:02-03:00",
+      "title": "fix(kanto): gravar quebra de linha correta no marcador de origem",
+      "category": "Correções"
+    },
+    {
       "sha": "19595e4bb619ce81e3a42322fe4bffdf706ffb4f",
       "date": "2026-11-11T21:51:43-03:00",
       "title": "feat(regions): conectar seletor de origem ao fluxo de nova partida",
