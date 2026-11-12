@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eff15d3e8772e16c38f07d0818fe1ece2d671ba7",
+      "date": "2026-11-11T22:57:43-03:00",
+      "title": "fix(regions): preservar PC em saves Decades sem integracao regional",
+      "category": "Correções"
+    },
+    {
       "sha": "7e7044e1c2f2443f2d98a0c39566df72bcd5182a",
       "date": "2026-11-11T22:45:31-03:00",
       "title": "docs(kanto): registrar teste de viagem, PC e save nativo aprovado",
