@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a6f2246647eebc7e82aa8a9dd7a3c6520aaca845",
+      "date": "2026-11-11T21:22:54-03:00",
+      "title": "docs(kanto): vincular contador de etapas ao roteiro principal",
+      "category": "Documentação"
+    },
+    {
+      "sha": "b8e30522128d9b74c168e95ce82ddd677858e68d",
+      "date": "2026-11-11T21:22:43-03:00",
+      "title": "docs(kanto): contar 16 etapas com critérios de conclusão verificáveis",
+      "category": "Documentação"
+    },
+    {
       "sha": "4560700c14b8ad1374f9c1fb82c413d1b0f219a0",
       "date": "2026-11-11T21:21:11-03:00",
       "title": "test(kanto): cobrir detecção de mapas desconectados",
