@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "278f855c4d9ab44721bb4e050e3641d9a34907da",
+      "date": "2026-11-12T19:59:51-03:00",
+      "title": "test(johto): cobre verificador contra eventos estrangeiros e alterações nativas",
+      "category": "Testes"
+    },
+    {
       "sha": "2c28867a922e9c0eed18fb23f163d873141d41ac",
       "date": "2026-11-12T19:59:34-03:00",
       "title": "test(johto): adiciona verificador estrutural de preview e invariantes Decades/Kanto",
