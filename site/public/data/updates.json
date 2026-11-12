@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8f7e7b661eb62f5ce82a0cd1f27f76c94d7ccc6b",
+      "date": "2026-11-12T08:28:34-03:00",
+      "title": "Kanto 10: registrar sucesso da CI nativa e testes de portal Fuchsia",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f6d353792c5adcb2b0c17f574f4d7167213c83fc",
+      "date": "2026-11-12T08:28:32-03:00",
+      "title": "Kanto 10: registrar sucesso da CI nativa e testes de portal Fuchsia",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7c0d4151bc9ec611f9386ba2148d5e77bc14ecd5",
       "date": "2026-11-12T08:26:55-03:00",
       "title": "Kanto 10: atualizar roadmaps para Fuchsia/Safari sem eventos e manter progresso 8/16",
