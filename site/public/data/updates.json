@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "93792cad0dea8239be3a4bc45b22d970c9122fc1",
+      "date": "2026-11-11T21:32:55-03:00",
+      "title": "docs(kanto): disponibilizar atalho do teste de janela no roteiro",
+      "category": "Documentação"
+    },
+    {
       "sha": "34891103c10426c1f473aa78eaf6b3f447b0c97a",
       "date": "2026-11-11T21:32:40-03:00",
       "title": "docs(kanto): registrar janela grafica detectada sem concluir etapa 02",
