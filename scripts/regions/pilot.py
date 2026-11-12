@@ -73,6 +73,9 @@ TYPES = {
     "SUPERNERD": "SUPERNERD", "HIKER": "HIKER",
     "ROCKET": "TEAMROCKET_M", "SWIMMER": "SWIMMER2_M",
     "PICNICKER": "PICNICKER", "LEADER_MISTY": "LEADER_Misty",
+    "SAILOR": "SAILOR", "ENGINEER": "ENGINEER",
+    "GENTLEMAN": "GENTLEMAN", "FISHERMAN": "FISHERMAN",
+    "LEADER_SURGE": "LEADER_LtSurge",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -101,6 +104,34 @@ TRAINERS.update({
     42: {
         1: ("LEADER_MISTY", "Misty"), 11: ("SWIMMER", "Luis"),
         16: ("PICNICKER", "Diana"),
+    },
+})
+
+TRAINERS.update({
+    61: {
+        8: ("BUGCATCHER", "Keigo"), 9: ("PICNICKER", "Nancy"),
+        10: ("CAMPER", "Ricky"), 12: ("BUGCATCHER", "Elijah"),
+        13: ("PICNICKER", "Isabelle"), 14: ("CAMPER", "Jeff"),
+    },
+    67: {
+        1: ("SAILOR", "Dwayne"), 2: ("ENGINEER", "Bailey"),
+        3: ("GENTLEMAN", "Tucker"), 5: ("LEADER_SURGE", "Lt. Surge"),
+    },
+    74: {
+        30: ("LASS", "Ann"), 31: ("YOUNGSTER", "Tyler"),
+        38: ("GENTLEMAN", "Thomas"), 49: ("GENTLEMAN", "Arthur"),
+    },
+    75: {
+        39: ("GENTLEMAN", "Brooks"), 40: ("FISHERMAN", "Dale"),
+        44: ("GENTLEMAN", "Lamar"), 46: ("LASS", "Dawn"),
+    },
+    77: {
+        18: ("FISHERMAN", "Barny"), 19: ("SAILOR", "Phillip"),
+        21: ("SAILOR", "Huey"), 23: ("SAILOR", "Dylan"),
+        24: ("SAILOR", "Duncan"), 25: ("SAILOR", "Leonard"),
+    },
+    78: {
+        9: ("SAILOR", "Trevor"), 10: ("SAILOR", "Edmond"),
     },
 })
 
@@ -185,10 +216,20 @@ def install_events(source, target, mapping):
                          26: {2: "BlueKantoPilot.heal"},
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
-                         36: {18: 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018")'}}
+                         36: {18: 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018")'},
+                         65: {2: "BlueKantoPilot.heal"},
+                         64: {7: "BlueKantoPilot.ticketmaster"},
+                         76: {2: "BlueKantoPilot.captain"}}
         scripts = dict(script_events.get(original, {}))
-        if original in (12, 27, 41):
+        if original in (12, 27, 41, 66):
             scripts[find_shopkeeper(events)] = MART
+        if original == 64:
+            for event_id in (9, 29, 30):
+                if event_id not in events:
+                    raise ValueError(f"Missing Vermilion harbor gate {event_id}")
+                scripts[event_id] = (
+                    f"BlueKantoPilot.harbor_gate({mapping[72]}, 9, 7)"
+                )
         for event_id, spec in TRAINERS.get(original, {}).items():
             kind, name, *versions = spec
             version = versions[0] if versions else 0
@@ -202,7 +243,11 @@ def install_events(source, target, mapping):
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
             if event_id in scripts:
-                selected[event_id] = new_event(event, [command(355, scripts[event_id].encode())], 0, actor(event))
+                floor_trigger = original == 64 and event_id in (9, 29, 30)
+                selected[event_id] = new_event(
+                    event, [command(355, scripts[event_id].encode())],
+                    1 if floor_trigger else 0,
+                    b"" if floor_trigger else actor(event))
                 continue
             if original == 5 and event_id in (11, 13):
                 # Professor Oak's original path anchors span the two exit tiles.
@@ -254,7 +299,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
@@ -302,6 +347,14 @@ def install_runtime(target, mapping, game):
         ("MOON_B2F", "Mt Moon - B2F", 38, 31, 24),
         ("CERULEAN", "Cerulean City (Center)", 39, 22, 20),
         ("MISTY", "Cerulean Gym (Misty)", 42, 8, 18),
+        ("ROUTE5", "Route 5 (Underground)", 56, 31, 32),
+        ("ROUTE6", "Route 6 (Underground)", 61, 35, 13),
+        ("VERMILION", "Vermilion City (Center)", 64, 19, 7),
+        ("SURGE", "Vermilion Gym (Lt. Surge)", 67, 5, 19),
+        ("HARBOR", "Vermilion Harbor", 72, 9, 7),
+        ("SSANNE", "S.S. Anne (1F)", 74, 20, 2),
+        ("SSCAPTAIN", "S.S. Anne (Captain)", 76, 4, 8),
+        ("SSDECK", "S.S. Anne (Deck)", 78, 58, 3),
     ]
     (data / "blue-kanto-experimental-stops.txt").write_text(
         "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\n"
