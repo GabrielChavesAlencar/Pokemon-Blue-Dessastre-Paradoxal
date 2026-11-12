@@ -51,8 +51,9 @@ def inspect(game: Path) -> dict:
             0 <= system["@start_y"] < maps[mapping[5]].attrs["@height"]):
         raise ValueError("New-game start position is outside Pallet Town")
 
-    # A topology audit is undirected: manual gameplay still needs to verify
-    # that warps, doors and route transitions actually work both ways.
+    # Route connections are bidirectional, but transfer events are directed.
+    # Check reachability both from and back to Pallet to avoid accepting
+    # one-way maps as if their exit events were reciprocal.
     edges = {map_id: set() for map_id in ids}
     connections = game / "PBS/map_connections_kanto.txt"
     if not connections.is_file():
@@ -76,13 +77,13 @@ def inspect(game: Path) -> dict:
         (6, 15): "BlueKantoPilot.choose_starter",
         (6, 14): "BlueKantoPilot.rival",
         (11, 2): "BlueKantoPilot.heal",
-        (28, 6): 'BlueKantoPilot.battle(:BLUE_KANTO_CAMPER, "Liam")',
-        (28, 7): 'BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock")',
-        (24, 16): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick")',
-        (24, 17): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Doug")',
-        (24, 18): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Anthony")',
-        (24, 19): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Charlie")',
-        (24, 20): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Sammy")',
+        (28, 6): 'BlueKantoPilot.battle(:BLUE_KANTO_CAMPER, "Liam", "KANTO_028_006")',
+        (28, 7): 'BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")',
+        (24, 16): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_024_016")',
+        (24, 17): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Doug", "KANTO_024_017")',
+        (24, 18): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Anthony", "KANTO_024_018")',
+        (24, 19): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Charlie", "KANTO_024_019")',
+        (24, 20): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Sammy", "KANTO_024_020")',
     }
     found = set()
     warps = 0
@@ -101,7 +102,6 @@ def inspect(game: Path) -> dict:
                         if not (0 <= x < target_map["@width"] and 0 <= y < target_map["@height"]):
                             raise ValueError(f"Out-of-bounds transfer: {source}/{event_id} -> {target} ({x},{y})")
                         edges[dest].add(target)
-                        edges[target].add(dest)
                         warps += 1
                     if code in (355, 655) and params:
                         script = params[0].decode("utf-8") if isinstance(params[0], bytes) else str(params[0])
@@ -116,7 +116,15 @@ def inspect(game: Path) -> dict:
     seen = reachable(edges, mapping[5])
     if seen != ids:
         missing = [expected[source] for source, dest in mapping.items() if dest not in seen]
-        raise ValueError(f"Maps unreachable in the combined transfer/connection graph: {missing}")
+        raise ValueError(f"Maps unreachable FROM Pallet by real transfer direction: {missing}")
+    backwards = {map_id: set() for map_id in ids}
+    for origin, destinations in edges.items():
+        for destination in destinations:
+            backwards[destination].add(origin)
+    returnable = reachable(backwards, mapping[5])
+    if returnable != ids:
+        trapped = [expected[source] for source, dest in mapping.items() if dest not in returnable]
+        raise ValueError(f"Maps without a directed route BACK to Pallet: {trapped}")
     route = [5, 9, 10, 18, 19, 24, 20, 25, 28]
     for source in route:
         if mapping[source] not in seen:
@@ -126,6 +134,7 @@ def inspect(game: Path) -> dict:
         "maps": len(maps),
         "connections": count_connections,
         "mapped_transfers": warps,
+        "returnable_maps": len(returnable),
         "required_events": len(found),
         "route": [expected[source] for source in route],
         "limitations": "Topology and data only; physical walkability, player controls, real battles and saves still need testing.",
