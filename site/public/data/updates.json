@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "539cfbf24b56fcfd759eb37270aa1322e6489f66",
+      "date": "2026-11-11T23:41:11-03:00",
+      "title": "feat(kanto): permitir exportar a Pokédex/portal diretamente do piloto compilado",
+      "category": "Novidades"
+    },
+    {
       "sha": "5143a81e9ec22f552949caea727e836ecfe182d1",
       "date": "2026-11-11T23:40:12-03:00",
       "title": "fix(kanto): preservar IDs dos 13 mapas antigos ao adicionar Mt Moon e Cerulean",
