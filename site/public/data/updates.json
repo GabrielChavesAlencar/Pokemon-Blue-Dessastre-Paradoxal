@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "470f8d468bbfe9a9d18f8582ed2a5561d73115f6",
+      "date": "2026-11-11T21:54:50-03:00",
+      "title": "feat(kanto): instalar mapas isolados na campanha com backup, dry-run e rollback",
+      "category": "Novidades"
+    },
+    {
       "sha": "d6a1a429cc8529ab92896c203c0c4c7a60758ec4",
       "date": "2026-11-11T21:52:47-03:00",
       "title": "feat(kanto): registrar hashes da base antes de integrar mapas na campanha",
