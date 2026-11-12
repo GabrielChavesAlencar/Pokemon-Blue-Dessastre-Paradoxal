@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7764681696cf32c9fdb8e97a34ac1f2277889c9c",
+      "date": "2026-11-12T19:54:43-03:00",
+      "title": "fix(johto): inclui MapInfos registrados na proteção de IDs do jogo mestre",
+      "category": "Correções"
+    },
+    {
+      "sha": "a39c8435f4dadb9a2c016c4baf3a07037b27cd84",
+      "date": "2026-11-12T19:54:28-03:00",
+      "title": "test(johto): audita remapeamento congelado e colisões com Kanto/Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "b88f091f3dda4bc91078749d4f269a42cb5e0193",
       "date": "2026-11-12T19:53:57-03:00",
       "title": "feat(johto): planeja MapIDs estáveis e isolados sem instalar mapas",
