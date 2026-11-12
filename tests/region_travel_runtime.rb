@@ -73,9 +73,9 @@ module BlueRegionStart
 end
 class PokemonStorageScreen
   def initialize(storage); @storage=storage; end
-  def pbWithdraw(*); :withdrawn; end
-  def pbPlace(*); :placed; end
-  def pbSwap(*); :swapped; end
+  def pbWithdraw(selected, heldpoke); :withdrawn; end
+  def pbPlace(selected); :placed; end
+  def pbSwap(selected); :swapped; end
   def pbDisplay(*); end
 end
 module MenuHandlers
@@ -134,6 +134,8 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(BlueRegionTravel.restricted?(special), "Special can be withdrawn before 8 local badges")
     check(PokemonStorageScreen.new($PokemonStorage).pbWithdraw([0,0],nil) == false,
           "Storage withdrawal restriction bypassed")
+    check(PokemonStorageScreen.new($PokemonStorage).pbPlace([0,1]) == :placed,
+          "Native PC pbPlace signature changed")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Initial region overwritten")
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Current region not updated")
     check($PokemonGlobal.blue_regions["decades_return"] == [1,5,8,2], "Return coords lost")
