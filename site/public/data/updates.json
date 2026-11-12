@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b3074a63148fad4841144b1ebc111ae31c5e519e",
+      "date": "2026-11-11T22:36:14-03:00",
+      "title": "docs(kanto): registrar desenvolvimento 05/16 e manter conclusao 01/16",
+      "category": "Documentação"
+    },
+    {
       "sha": "459d3ed6c99de57f0b24a388f5bea5dacaacd212",
       "date": "2026-11-11T22:35:52-03:00",
       "title": "docs(kanto): explicar viagem, save unico, testes e pendencias da fase 05",
