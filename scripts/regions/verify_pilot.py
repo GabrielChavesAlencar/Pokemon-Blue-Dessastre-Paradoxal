@@ -12,7 +12,9 @@ from collections import deque
 from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, load
-from pilot import PILOT_META, TRAINERS
+from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
+                   CINNABAR_GYM_QUIZZES, CINNABAR_GYM_TRAINER_GROUPS,
+                   MANSION_DOORS, MANSION_STATUES)
 from server.ruby_marshal import text
 
 
@@ -300,7 +302,70 @@ def inspect(game: Path) -> dict:
             if e.attrs["@pages"][0].attrs["@trigger"] == 2]) != 7:
         raise ValueError("Sabrina gym must have seven sight trainers")
 
-    # MAN-02: the source-proven 94 line-of-sight trainers require Event Touch,
+    # Phase 12: strictly local Cinnabar core. The original foreign switches
+    # and quizzes must NOT be copied into Decades.
+    for origin, expected_ids in CINNABAR_EVENTS.items():
+        actual = set(maps[mapping[origin]].attrs["@events"])
+        if actual != set(expected_ids):
+            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ set(expected_ids)}")
+    cinnabar_pairs = (
+        (199, 1, 201, 1), (199, 2, 200, 1),
+        (199, 3, 205, 1), (199, 5, 203, 1),
+    )
+    for city, entry, interior, leave in cinnabar_pairs:
+        if mapping[interior] not in event_transfers(city, entry):
+            raise ValueError(f"Cinnabar city {city}/{entry} missing entrance to {interior}")
+        if mapping[city] not in event_transfers(interior, leave):
+            raise ValueError(f"Cinnabar interior {interior}/{leave} cannot return")
+        if maps[mapping[city]].attrs["@events"][entry].attrs["@pages"][0].attrs["@trigger"] != 1:
+            raise ValueError(f"Cinnabar city entrance {city}/{entry} must be Player Touch")
+    if mapping[199] not in event_transfers(202, 3):
+        raise ValueError("Cinnabar gym is missing the exit back to the city")
+    if mapping[199] not in event_transfers(205, 2):
+        raise ValueError("Cinnabar Mansion lacks its second emergency exit")
+
+    def first_scripts(original, event_id):
+        event = maps[mapping[original]].attrs["@events"][event_id]
+        return [text(row.attrs["@parameters"][0])
+                for row in event.attrs["@pages"][0].attrs["@list"]
+                if row.attrs["@code"] in (355, 655) and row.attrs["@parameters"]]
+
+    required = (
+        (199, 4, "BlueKantoPilot.cinnabar_gym_gate("),
+        (200, 2, "BlueKantoPilot.heal"),
+        (201, 2, "pbPokemonMart("),
+        (208, 8, "BlueKantoPilot.mansion_secret_key"),
+    )
+    for source, eid, callback in required:
+        if len(first_scripts(source, eid)) != 1 or callback not in first_scripts(source, eid)[0]:
+            raise ValueError(f"Cinnabar {source}/{eid}: unsafe or absent local callback")
+    for eid, group in CINNABAR_GYM_QUIZZES.items():
+        if first_scripts(202, eid) != [f"BlueKantoPilot.cinnabar_quiz({group})"]:
+            raise ValueError(f"Cinnabar gym quiz {eid} has not been adapted")
+    for group, ids_group in CINNABAR_GYM_DOORS.items():
+        for eid in ids_group:
+            event = maps[mapping[202]].attrs["@events"][eid]
+            if first_scripts(202, eid) != [f"BlueKantoPilot.cinnabar_door({group})"]:
+                raise ValueError(f"Cinnabar gym door {eid} is not locally gated")
+            if len(event.attrs["@pages"]) != 2:
+                raise ValueError(f"Cinnabar door {eid} has no open state")
+            cond = event.attrs["@pages"][1].attrs["@condition"].attrs
+            if not cond["@self_switch_valid"] or cond["@self_switch_ch"] != b"A":
+                raise ValueError(f"Cinnabar door {eid} uses a foreign switch")
+    for floor, door_ids in MANSION_DOORS.items():
+        for eid in door_ids:
+            event = maps[mapping[floor]].attrs["@events"][eid]
+            if not first_scripts(floor, eid) or "BlueKantoPilot.mansion_door" not in first_scripts(floor, eid)[0]:
+                raise ValueError(f"Mansion {floor}/{eid}: original switch leaked")
+            if len(event.attrs["@pages"]) != 2:
+                raise ValueError(f"Mansion {floor}/{eid}: missing open-state page")
+        for eid in MANSION_STATUES[floor]:
+            if not first_scripts(floor, eid) or "BlueKantoPilot.mansion_switch" not in first_scripts(floor, eid)[0]:
+                raise ValueError(f"Mansion {floor}/{eid}: statue not adapted")
+    if len(TRAINERS[202]) != 8 or any(eid not in maps[mapping[202]].attrs["@events"] for eid in TRAINERS[202]):
+        raise ValueError("Blaine and seven Cinnabar trainers must be present")
+
+    # MAN-02: the source-proven 101 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -328,14 +393,15 @@ def inspect(game: Path) -> dict:
             script = "\\n".join(value.decode("utf-8") if isinstance(value, bytes)
                                   else str(value) for value in commands)
             key = f"KANTO_{original:03d}_{event_id:03d}"
-            if ("BlueKantoPilot.battle(" not in script or
+            if (not ("BlueKantoPilot.battle(" in script or
+                     "BlueKantoPilot.cinnabar_trainer(" in script) or
                 f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
                 raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
             if sight:
                 sight_count += 1
                 if "pbNoticePlayer(get_self)" not in script:
                     raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 94:
+    if sight_count != 101:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -386,6 +452,12 @@ def inspect(game: Path) -> dict:
             anchors[(source_id, event_id)] = (
                 f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}"'
             )
+    for event_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
+        kind, name, *_ = TRAINERS[202][event_id]
+        key = f"KANTO_202_{event_id:03d}"
+        anchors[(202, event_id)] = (
+            f'BlueKantoPilot.cinnabar_trainer(:BLUE_KANTO_{kind}, "{name}", "{key}", {group})'
+        )
     for entry in (9, 29, 30):
         anchors[(64, entry)] = "BlueKantoPilot.harbor_gate"
     for entry in (4, 10, *range(22, 35)):
@@ -419,6 +491,13 @@ def inspect(game: Path) -> dict:
                         # transfer, not an RPG::EventCommand 201. Admit it into
                         # the topology only if the whitelisted destination
                         # agrees with the pinned FRLG harbor exit.
+                        # Phase 12: the only scripted Cinnabar map transfer
+                        # is gated by the unique Mansion Secret Key. Check the
+                        # exact local callback/landing before adding this edge.
+                        if source == 199 and event_id == 4:
+                            guarded = f"BlueKantoPilot.cinnabar_gym_gate({mapping[202]}, 25, 23)"
+                            if script == guarded:
+                                edges[dest].add(mapping[202])
                         if source == 64 and event_id in (9, 29, 30):
                             allowed = f"BlueKantoPilot.harbor_gate({mapping[72]}, 9, 7)"
                             if script == allowed:
@@ -468,7 +547,9 @@ def inspect(game: Path) -> dict:
                       "FUCHSIA", "KOGA", "FUCH_CENTER", "FUCH_MART", "FUCH_WARDEN",
                       "SAF_GATE", "SAF_SOUTH", "SAF_NORTH", "SAF_WEST", "ROUTE15",
                       "ROUTE8", "SAFF_WEST", "SAFFRON", "SABRINA", "SAFF_DOJO",
-                      "SAFF_CENTER", "SILPH_1F", "SILPH_5F", "SILPH_11F", "SILPH_LIFT"}
+                      "SAFF_CENTER", "SILPH_1F", "SILPH_5F", "SILPH_11F", "SILPH_LIFT",
+                       "ROUTE19", "ROUTE20", "SEAFOAM", "CINNABAR", "CIN_CENTER",
+                       "CIN_GYM", "CIN_LAB", "MANSION", "MANSION_B1F"}
     seen_stops = set()
     for raw in stops_file.read_text(encoding="utf-8").splitlines():
         parts = raw.split("|")
@@ -488,6 +569,9 @@ def inspect(game: Path) -> dict:
         "result": "structural_check_passed",
         "maps": len(maps),
         "preview_geometry_only": len(preview_only),
+        "phase12_cinnabar_functional_maps": len(CINNABAR_EVENTS),
+        "phase12_preview_only": len(preview_only & {190,191,193,194,195,196,197,198}),
+        "phase12_mansion_floors": len(MANSION_DOORS),
         "phase09_geometry_only": len(preview_only & {111,114,115,117,118,119,120,121,122,123,124}),
         "phase09_functional_maps": len(set(core_events) - preview_only),
         "celadon_verified_return_pairs": 2,

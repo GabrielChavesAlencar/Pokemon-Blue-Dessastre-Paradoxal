@@ -88,6 +88,9 @@ TYPES = {
     "RIVAL_SILPH": "RIVAL2",
     "ROCKETBOSS": "ROCKETBOSS",
     "TAMER": "TAMER",
+    # Temporary Decades portraits until separately licensed FRLG trainer art is reviewed.
+    "BURGLAR": "SUPERNERD", "SCIENTIST": "SUPERNERD",
+    "LEADER_BLAINE": "SUPERNERD",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -199,6 +202,53 @@ for source_id, versions in SILPH_ROCKET_EVENTS.items():
                            for eid, version in versions.items()}
 TRAINERS[188][10] = ("ROCKETBOSS", "Giovanni", 2)
 
+# Phase 12: IDs, coordinates and trainer names verified against the pinned
+# FRLG Map199-208 source by audit_cinnabar.py. No source event scripts run.
+TRAINERS[202] = {
+    4: ("BURGLAR", "Quinn"), 5: ("SUPERNERD", "Erik"),
+    6: ("SUPERNERD", "Avery"), 7: ("BURGLAR", "Ramon"),
+    8: ("SUPERNERD", "Derek"), 9: ("BURGLAR", "Dusty"),
+    10: ("SUPERNERD", "Zac"), 16: ("LEADER_BLAINE", "Blaine"),
+}
+TRAINERS[205] = {3: ("YOUNGSTER", "Johnson"), 9: ("SCIENTIST", "Ted")}
+TRAINERS[206] = {5: ("BURGLAR", "Arnie")}
+TRAINERS[207] = {4: ("BURGLAR", "Simon"), 5: ("SCIENTIST", "Braydon")}
+TRAINERS[208] = {4: ("BURGLAR", "Lewis"), 5: ("SCIENTIST", "Ivan")}
+
+CINNABAR_GYM_DOORS = {
+    1: (20, 21, 22, 23), 2: (1, 25, 26, 27),
+    3: (2, 18, 19, 29), 4: (13, 31, 32),
+    5: (34, 35, 36, 37), 6: (39, 40, 41, 42),
+}
+CINNABAR_GYM_QUIZZES = {24: 1, 28: 2, 30: 3, 33: 4, 38: 5, 43: 6}
+CINNABAR_GYM_TRAINER_GROUPS = {4: 1, 6: 2, 7: 3, 8: 4, 9: 5, 10: 6}
+CINNABAR_DOOR_TO_GROUP = {
+    event: group for group, events in CINNABAR_GYM_DOORS.items() for event in events
+}
+MANSION_DOORS = {
+    205: (14, *range(16, 39)),
+    206: (*range(9, 14), *range(16, 27)),
+    207: tuple(range(10, 21)),
+    208: tuple(range(12, 34)),
+}
+MANSION_STATUES = {205: (4,), 206: (15,), 207: (9,), 208: (10, 11)}
+MANSION_WARPS = {
+    205: (1, 2, 5, 6), 206: (1, 2, 3, 4),
+    207: (1, 2, 3, 21, 22, 23, 24, 25), 208: (1,),
+}
+CINNABAR_EVENTS = {
+    199: {1, 2, 3, 4, 5},
+    200: {1, 2}, 201: {1, 2}, 203: {1, 2, 3, 4, 5, 6, 7},
+    202: ({3} | set(TRAINERS[202]) | set(CINNABAR_GYM_QUIZZES)
+          | set(CINNABAR_DOOR_TO_GROUP)),
+}
+for _map_id in MANSION_DOORS:
+    CINNABAR_EVENTS[_map_id] = (set(MANSION_WARPS[_map_id]) |
+                                 set(MANSION_STATUES[_map_id]) |
+                                 set(MANSION_DOORS[_map_id]) |
+                                 set(TRAINERS[_map_id]) |
+                                 ({8} if _map_id == 208 else set()))
+
 SAFFRON_STATIC_EVENTS = {
     168: {6, 10, 12, 13, 14},             # City <-> gym, Silph, Mart, Center, Dojo
     169: {1, 2},                         # Center exit + nurse
@@ -216,6 +266,12 @@ SILPH_FLOOR_LANDINGS = {
     184: (23, 5), 185: (22, 5), 186: (24, 5),
     187: (13, 5), 188: (13, 5),
 }
+
+def cinnabar_event_allowed(source_id, event_id):
+    if source_id in CINNABAR_EVENTS:
+        return event_id in CINNABAR_EVENTS[source_id]
+    return True
+
 
 def saffron_event_allowed(source_id, event_id, event):
     if source_id in SAFFRON_STATIC_EVENTS:
@@ -352,6 +408,10 @@ def install_events(source, target, mapping):
                           188: {18: "BlueKantoPilot.silph_president"},
                           189: {1: "BlueKantoPilot.silph_elevator",
                                 2: "BlueKantoPilot.silph_elevator"},
+                          199: {4: f"BlueKantoPilot.cinnabar_gym_gate({mapping[202]}, 25, 23)"},
+                          200: {2: "BlueKantoPilot.heal"},
+                          201: {2: MART},
+                          208: {8: "BlueKantoPilot.mansion_secret_key"},
                          146: {2: MART},
                          153: {1: "BlueKantoPilot.safari_preview", 5: "BlueKantoPilot.safari_preview"},
                          26: {2: "BlueKantoPilot.heal"},
@@ -380,10 +440,74 @@ def install_events(source, target, mapping):
             arguments = f':BLUE_KANTO_{kind}, "{name}", "{key}"'
             arguments += f", {version}" if version else ""
             scripts[event_id] = f"BlueKantoPilot.battle({arguments})"
+        if original == 202:
+            for gym_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
+                kind, name, *_ = TRAINERS[202][gym_id]
+                key = f"KANTO_202_{gym_id:03d}"
+                scripts[gym_id] = (
+                    f'BlueKantoPilot.cinnabar_trainer(:BLUE_KANTO_{kind}, "{name}", '
+                    f'"{key}", {group})'
+                )
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
             if not saffron_event_allowed(original, event_id, event):
+                continue
+            if not cinnabar_event_allowed(original, event_id):
+                continue
+            if original == 202 and event_id in CINNABAR_DOOR_TO_GROUP:
+                group = CINNABAR_DOOR_TO_GROUP[event_id]
+                locked = new_event(event, [
+                    command(355, f"BlueKantoPilot.cinnabar_door({group})".encode())
+                ], 0, b"")
+                locked.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                opened = copy.deepcopy(locked.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@through"] = True
+                opened.attrs["@graphic"].attrs["@tile_id"] = 0
+                opened.attrs["@graphic"].attrs["@character_name"] = b""
+                opened.attrs["@list"] = [command(0)]
+                locked.attrs["@pages"].append(opened)
+                selected[event_id] = locked
+                continue
+            if original == 202 and event_id in CINNABAR_GYM_QUIZZES:
+                group = CINNABAR_GYM_QUIZZES[event_id]
+                quiz = new_event(event, [
+                    command(355, f"BlueKantoPilot.cinnabar_quiz({group})".encode())
+                ], 0, b"")
+                quiz.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                selected[event_id] = quiz
+                continue
+            if original in MANSION_DOORS and event_id in MANSION_DOORS[original]:
+                door_list = list(MANSION_DOORS[original])
+                door = new_event(event, [
+                    command(355, f"BlueKantoPilot.mansion_door({original}, {door_list})".encode())
+                ], 0, b"")
+                door.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                opened = copy.deepcopy(door.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@graphic"].attrs["@tile_id"] = 0
+                opened.attrs["@graphic"].attrs["@character_name"] = b""
+                opened.attrs["@through"] = True
+                opened.attrs["@list"] = [command(0)]
+                door.attrs["@pages"].append(opened)
+                selected[event_id] = door
+                continue
+            if original in MANSION_STATUES and event_id in MANSION_STATUES[original]:
+                door_list = list(MANSION_DOORS[original])
+                statue = new_event(event, [
+                    command(355, f"BlueKantoPilot.mansion_switch({original}, {door_list})".encode())
+                ], 0, b"")
+                statue.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                selected[event_id] = statue
                 continue
             # Phase 09 selective import: only audited doors, healing, and
             # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
@@ -447,7 +571,8 @@ def install_events(source, target, mapping):
                 continue
             if event_id in scripts:
                 floor_trigger = ((original == 64 and event_id in (9, 29, 30)) or
-                                 (original == 189 and event_id == 1))
+                                 (original == 189 and event_id == 1) or
+                                 (original == 199 and event_id == 4))
                 if event_id in TRAINERS.get(original, {}):
                     kind, trainer_name, *_ = TRAINERS[original][event_id]
                     key = f"KANTO_{original:03d}_{event_id:03d}"
@@ -492,7 +617,7 @@ def install_events(source, target, mapping):
                         b"" if (floor_trigger or
                                 not event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"])
                         else actor(event))
-                    if (original, event_id) in {(182, 9), (172, 1), (172, 2)}:
+                    if (original, event_id) in {(182, 9), (172, 1), (172, 2), (208, 8)}:
                         # A one-time Card Key/Dojo prize no longer appears
                         # after the region-local reward has been recorded.
                         collected = copy.deepcopy(scripted.attrs["@pages"][0])
@@ -528,7 +653,8 @@ def install_events(source, target, mapping):
                 auto_entry = (original == 5 and event_id in (1, 2, 3)) or (
                     original == 114 and event_id in (3, 20)) or (
                     original == 144 and event_id in (5, 17, 18, 24)) or (
-                    original == 168 and event_id in (6, 10, 12, 13, 14))
+                    original == 168 and event_id in (6, 10, 12, 13, 14)) or (
+                    original == 199 and event_id in (1, 2, 3, 5))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
                 selected[event_id] = new_event(event, [warp], trigger, character)
         map_data.attrs["@events"] = selected
@@ -566,7 +692,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
@@ -651,6 +777,16 @@ def install_runtime(target, mapping, game):
         ("SILPH_5F", "Silph Co. 5F (Card Key)", 182, 28, 2),
         ("SILPH_11F", "Silph Co. 11F (Giovanni)", 188, 7, 2),
         ("SILPH_LIFT", "Silph Co. Elevador (local)", 189, 2, 5),
+        # Phase 12: source-proven incoming coordinates, isolated pilot only.
+        ("ROUTE19", "Rota 19 (cenario aquático)", 190, 11, 24),
+        ("ROUTE20", "Rota 20 (cenario aquático)", 191, 72, 55),
+        ("SEAFOAM", "Seafoam 1F (cenario, puzzles pendentes)", 193, 11, 24),
+        ("CINNABAR", "Cinnabar Island (Centro, Mart e Mansion)", 199, 26, 12),
+        ("CIN_CENTER", "Cinnabar Centro Pokémon (cura)", 200, 7, 8),
+        ("CIN_GYM", "Ginasio Cinnabar Blaine (Secret Key)", 202, 25, 23),
+        ("CIN_LAB", "Laboratorio Cinnabar (sem revival)", 203, 4, 9),
+        ("MANSION", "Pokémon Mansion 1F (estátuas)", 205, 8, 33),
+        ("MANSION_B1F", "Pokémon Mansion B1F (Secret Key)", 208, 6, 7),
     ]
     (data / "blue-kanto-experimental-stops.txt").write_text(
         "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\n"

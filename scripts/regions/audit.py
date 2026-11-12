@@ -49,9 +49,15 @@ KANTO_PHASE11_EARLY_SOURCE_IDS = (
 )
 
 
+# Eight interiors appended after the Saffron preview. Preserve every one of
+# the 109 source-to-destination slots allocated before phase 12.
+KANTO_PHASE11_LATE_SOURCE_IDS = (8, 14, 15, 21, 22, 29, 30, 31)
+
+
 def stable_source_order(wanted):
     chosen = set(wanted)
-    stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS)
+    stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
+              *KANTO_PHASE11_LATE_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result

@@ -82,6 +82,10 @@ module BlueKantoPilot
       pbMessage(_INTL("Sabrina está aguardando a libertação da Silph Co. Derrote Giovanni primeiro."))
       return
     end
+    if type == :BLUE_KANTO_LEADER_BLAINE && !progress["pilot_cinnabar_secret_key"]
+      pbMessage(_INTL("Blaine: Encontre a Secret Key na Pokémon Mansion antes do desafio!"))
+      return
+    end
     if type == :BLUE_KANTO_LEADER_SURGE && !progress["pilot_surge_unlocked"]
       pbMessage(_INTL("Lt. Surge aguarda atrás das trancas elétricas. Resolva o enigma das lixeiras primeiro."))
       return
@@ -116,6 +120,9 @@ module BlueKantoPilot
       pbMessage(_INTL("Giovanni foi derrotado! A Silph Co. está livre."))
     elsif type == :BLUE_KANTO_LEADER_SABRINA && BlueRegions.award(progress, "KANTO", "MARSH")
       pbMessage(_INTL("Sabrina: Você conquistou a Marsh Badge!"))
+    elsif type == :BLUE_KANTO_LEADER_BLAINE && BlueRegions.award(progress, "KANTO", "VOLCANO")
+      pbMessage(_INTL("Blaine: A Volcano Badge é sua!"))
+
     end
   end
 
@@ -362,6 +369,108 @@ module BlueKantoPilot
                        floors.map { |row| _INTL("Andar {1}F", row[0]) } + [_INTL("Voltar")], -1)
     return unless choice && choice.between?(0, floors.length - 1)
     pbFadeOutIn { BlueRegionTravel.move_to(floors[choice][1]) }
+  end
+
+  # Phase 12 uses only Kanto-local progress. The FRLG source contains
+  # foreign switches, quiz scripts and rewards; none are executed by Blue.
+  CINNABAR_QUIZZES = [
+    [_INTL("Caterpie evolui para Metapod?"), true],
+    [_INTL("Existem nove insígnias oficiais de Kanto?"), false],
+    [_INTL("Poliwag possui três evoluções consecutivas?"), false],
+    [_INTL("Golpes elétricos são supereficazes contra Pokémon Terrestres?"), false],
+    [_INTL("Dois Pokémon da mesma espécie e nível podem ter atributos diferentes?"), true],
+    [_INTL("O TM28 contém o golpe Tombstony?"), false]
+  ].freeze
+  CINNABAR_GYM_DOORS = {
+    1 => [20,21,22,23], 2 => [1,25,26,27],
+    3 => [2,18,19,29], 4 => [13,31,32],
+    5 => [34,35,36,37], 6 => [39,40,41,42]
+  }.freeze
+
+  def self.cinnabar_gym_gate(map_id, x, y)
+    unless progress["pilot_cinnabar_secret_key"]
+      pbMessage(_INTL("O ginásio de Cinnabar está trancado. A Secret Key está na Pokémon Mansion."))
+      return
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+  end
+
+  def self.cinnabar_unlock(group)
+    return false unless CINNABAR_GYM_DOORS.key?(group)
+    unlocked = (progress["pilot_cinnabar_doors"] ||= [])
+    unlocked << group unless unlocked.include?(group)
+    CINNABAR_GYM_DOORS[group].each do |event_id|
+      next unless $game_map.events[event_id]
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    true
+  end
+
+  def self.cinnabar_quiz(group)
+    return unless group.between?(1, CINNABAR_QUIZZES.length)
+    if progress.fetch("pilot_cinnabar_doors", []).include?(group)
+      pbMessage(_INTL("Essa sala do ginásio já está liberada."))
+      return
+    end
+    question, answer = CINNABAR_QUIZZES[group - 1]
+    choice = pbMessage(question, [_INTL("Sim"), _INTL("Não"), _INTL("Voltar")], -1)
+    return unless choice == 0 || choice == 1
+    if (choice == 0) == answer
+      cinnabar_unlock(group)
+      pbMessage(_INTL("Resposta correta! A porta se abriu."))
+    else
+      pbMessage(_INTL("Resposta incorreta. Você pode tentar de novo ou enfrentar o treinador da sala."))
+    end
+  end
+
+  def self.cinnabar_trainer(type, name, key, group)
+    battle(type, name, key)
+    cinnabar_unlock(group) if progress.fetch("pilot_wins", []).include?(key)
+  end
+
+  def self.cinnabar_door(group)
+    if progress.fetch("pilot_cinnabar_doors", []).include?(group)
+      cinnabar_unlock(group)
+    else
+      pbMessage(_INTL("A porta está trancada. Responda ao quiz ou vença o treinador da sala."))
+    end
+  end
+
+  # Mansion's multiple doors are attached to a locally persisted floor
+  # switch. Only the matching current map is affected, never native Decades.
+  def self.mansion_switch(source_map, door_ids)
+    used = (progress["pilot_mansion_switches"] ||= [])
+    used << source_map unless used.include?(source_map)
+    door_ids.each do |event_id|
+      next unless $game_map.events[event_id]
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(_INTL("Uma passagem da Pokémon Mansion foi aberta!"))
+  end
+
+  def self.mansion_door(source_map, door_ids)
+    if progress.fetch("pilot_mansion_switches", []).include?(source_map)
+      door_ids.each do |event_id|
+        next unless $game_map.events[event_id]
+        $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+      end
+      $game_map.need_refresh = true
+    else
+      pbMessage(_INTL("Esta passagem depende de uma estátua próxima."))
+    end
+  end
+
+  def self.mansion_secret_key
+    if progress["pilot_cinnabar_secret_key"]
+      pbMessage(_INTL("Você já encontrou a Secret Key da Pokémon Mansion."))
+      return
+    end
+    progress["pilot_cinnabar_secret_key"] = true
+    $game_self_switches[[$game_map.map_id, 8, "A"]] = true
+    $game_map.need_refresh = true
+    pbMessage(_INTL("Você encontrou a Secret Key! O ginásio de Cinnabar foi destrancado."))
   end
 
   # Travel shortcuts exist only in the standalone pilot, NEVER in the

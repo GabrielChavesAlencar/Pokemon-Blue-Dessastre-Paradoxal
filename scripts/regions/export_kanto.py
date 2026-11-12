@@ -117,6 +117,23 @@ LOCATION_NAMES = {
     "SILPH_9F": "Silph Co. — 9F",
     "SILPH_10F": "Silph Co. — 10F",
     "SILPH_11F": "Silph Co. — 11F",
+    "ROUTE_19": "Rota 19 (prévia aquática)",
+    "ROUTE_20": "Rota 20 (prévia aquática)",
+    "SEAFOAM_1F": "Seafoam Islands — 1F (prévia)",
+    "SEAFOAM_B1F": "Seafoam Islands — B1F (prévia)",
+    "SEAFOAM_B2F": "Seafoam Islands — B2F (prévia)",
+    "SEAFOAM_B3F": "Seafoam Islands — B3F (prévia)",
+    "SEAFOAM_B4F": "Seafoam Islands — B4F (prévia)",
+    "ROUTE_21": "Rota 21 (prévia aquática)",
+    "CINNABAR_ISLAND": "Cinnabar Island",
+    "CINNABAR_CENTER": "Centro Pokémon de Cinnabar",
+    "CINNABAR_MART": "Poké Mart de Cinnabar",
+    "CINNABAR_GYM": "Ginásio de Cinnabar — Blaine",
+    "CINNABAR_LAB": "Laboratório de Cinnabar (prévia de salas)",
+    "MANSION_1F": "Pokémon Mansion — 1F",
+    "MANSION_2F": "Pokémon Mansion — 2F",
+    "MANSION_3F": "Pokémon Mansion — 3F",
+    "MANSION_B1F": "Pokémon Mansion — B1F",
 }
 TRAINER_LOCATIONS = {
     "RIVAL": ("OAK_LAB", "Rival"),
@@ -205,6 +222,22 @@ TRAINER_LOCATIONS.update({
     ("ROCKETBOSS", "Giovanni"): ("SILPH_11F", "Chefe da Equipe Rocket"),
     ("RIVAL_SILPH", "Blue"): ("SILPH_7F", "Rival"),
 })
+
+TRAINER_LOCATIONS.update({
+    ("LEADER_BLAINE", "Blaine"): ("CINNABAR_GYM", "Líder de ginásio"),
+    **{("BURGLAR", name): ("CINNABAR_GYM", "Ladrão")
+       for name in ("Quinn", "Ramon", "Dusty")},
+    **{("SUPERNERD", name): ("CINNABAR_GYM", "Super Nerd")
+       for name in ("Erik", "Avery", "Derek", "Zac")},
+    ("YOUNGSTER", "Johnson"): ("MANSION_1F", "Jovem treinador"),
+    ("SCIENTIST", "Ted"): ("MANSION_1F", "Cientista"),
+    ("BURGLAR", "Arnie"): ("MANSION_2F", "Ladrão"),
+    ("BURGLAR", "Simon"): ("MANSION_3F", "Ladrão"),
+    ("SCIENTIST", "Braydon"): ("MANSION_3F", "Cientista"),
+    ("BURGLAR", "Lewis"): ("MANSION_B1F", "Ladrão"),
+    ("SCIENTIST", "Ivan"): ("MANSION_B1F", "Cientista"),
+})
+
 
 SILPH_GRUNT_FLOORS = {
     21: "SILPH_2F", 22: "SILPH_2F", 23: "SILPH_3F",
