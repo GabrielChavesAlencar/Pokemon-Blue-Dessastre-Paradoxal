@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "507d55e08bf2fea96541fad27c79a4432ea15c01",
+      "date": "2026-11-12T09:31:23-03:00",
+      "title": "Testar os 8 interiores novos preservando os 101 MapIDs antigos",
+      "category": "Novidades"
+    },
+    {
       "sha": "1a425a7c1815008bad3be82b857963e80923c1fb",
       "date": "2026-11-12T09:30:45-03:00",
       "title": "Verificador: decodificar nomes Ruby de eventos de forma compatível",
