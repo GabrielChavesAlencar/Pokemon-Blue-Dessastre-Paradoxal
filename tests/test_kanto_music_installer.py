@@ -29,7 +29,7 @@ class KantoMusicInstallerTests(unittest.TestCase):
         kinds = {1,9,14,22,23,29,31,42,43,44,49,51,54,58}
         self.payload_bytes = 0
         for n in [*range(1,61),70,71,72,73]:
-            name = f"1-{n:02d}. Example.mp3"
+            name = f"1-{n:02d}. Silph Co..mp3" if n == 47 else f"1-{n:02d}. Example.mp3"
             kind = "ME" if n in kinds else "BGM"
             raw = f"ID3-synthetic-audio-{n}".encode("ascii")
             path = self.root / "assets" / "music" / "kanto" / kind / name
