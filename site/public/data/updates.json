@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e49d61b9f291e1d3b1a7577bffec1b5a35b23b64",
+      "date": "2026-11-12T09:49:26-03:00",
+      "title": "docs: uniformizar barras atuais 6/16 e 1/16 e passos restantes nos guias Kanto",
+      "category": "Documentação"
+    },
+    {
+      "sha": "761c1fc53d087468e4fa313c6a03075e121d5043",
+      "date": "2026-11-12T09:49:23-03:00",
+      "title": "docs: uniformizar barras atuais 6/16 e 1/16 e passos restantes nos guias Kanto",
+      "category": "Documentação"
+    },
+    {
+      "sha": "949b07e169ab7cedd165f67c5e98c0ddfe5afab2",
+      "date": "2026-11-12T09:49:21-03:00",
+      "title": "docs: uniformizar barras atuais 6/16 e 1/16 e passos restantes nos guias Kanto",
+      "category": "Documentação"
+    },
+    {
+      "sha": "646090b685e7e5fbde5a4c4028cd3bc14c828aa4",
+      "date": "2026-11-12T09:49:17-03:00",
+      "title": "docs: uniformizar barras atuais 6/16 e 1/16 e passos restantes nos guias Kanto",
+      "category": "Documentação"
+    },
+    {
+      "sha": "c3b5bdbe93c16be6fd1b1c7672a0aeab806b7f88",
+      "date": "2026-11-12T09:49:14-03:00",
+      "title": "docs: uniformizar barras atuais 6/16 e 1/16 e passos restantes nos guias Kanto",
+      "category": "Documentação"
+    },
+    {
       "sha": "801b48e9f0b8914fb6165b5ddd386393a3242b31",
       "date": "2026-11-12T09:47:56-03:00",
       "title": "docs(kanto): atualizar duas barras reavaliadas (6/16 dev, 1/16 aceite) com etapas faltantes",
