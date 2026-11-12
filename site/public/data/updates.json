@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b3723506181694c1dd07947818afd40dff3b5961",
+      "date": "2026-11-12T09:19:55-03:00",
+      "title": "Kanto: registrar metadados reais de alcance e gatilhos de treinadores na CI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "53ae3314eb2d6084ed9e7c8b1f46e99bf0c0d463",
       "date": "2026-11-12T09:19:32-03:00",
       "title": "Kanto: auditoria de gatilhos e visão dos treinadores FRLG antes da correção",
