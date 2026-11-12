@@ -78,6 +78,64 @@ module BlueKantoPilot
     end
   end
 
+  SURGE_CANS = ([4, 10] + (22..34).to_a).freeze
+  SURGE_LOCKS = ([8] + (11..19).to_a).freeze
+
+  # The original gym used source-project global switches. The pilot uses only
+  # its own Kanto state and gym-event self switches, so Decades remains safe.
+  def self.surge_pairs
+    cans = SURGE_CANS.filter_map do |id|
+      event = $game_map.events[id]
+      [id, event.x, event.y] if event
+    end
+    return [] if cans.length < 2
+    horizontal_or_vertical = cans.combination(2).filter_map do |a, b|
+      next unless a[1] == b[1] || a[2] == b[2]
+      [[a[0], b[0]], (a[1]-b[1]).abs + (a[2]-b[2]).abs]
+    end
+    return [] if horizontal_or_vertical.empty?
+    closest = horizontal_or_vertical.map(&:last).min
+    horizontal_or_vertical.select { |_pair, distance| distance == closest }.map(&:first)
+  end
+
+  def self.surge_can(event_id)
+    if progress["pilot_surge_unlocked"]
+      pbMessage(_INTL("As duas trancas elétricas já foram desativadas."))
+      return
+    end
+    possible = surge_pairs
+    if possible.empty?
+      pbMessage(_INTL("O mecanismo não está pronto nesta cópia do ginásio."))
+      return
+    end
+    progress["pilot_surge_solution"] ||= possible.sample
+    target = progress["pilot_surge_solution"]
+    if !progress["pilot_surge_first"]
+      if event_id == target[0]
+        progress["pilot_surge_first"] = true
+        pbMessage(_INTL("Você encontrou a primeira chave! Procure outra lixeira próxima."))
+      else
+        pbMessage(_INTL("Não há chave nesta lixeira."))
+      end
+    elsif event_id == target[1]
+      progress["pilot_surge_unlocked"] = true
+      progress["pilot_surge_first"] = false
+      SURGE_LOCKS.each do |id|
+        $game_self_switches[[$game_map.map_id, id, "A"]] = true
+      end
+      $game_map.need_refresh = true
+      pbMessage(_INTL("As duas trancas foram desativadas! Lt. Surge está acessível."))
+    else
+      progress["pilot_surge_first"] = false
+      progress.delete("pilot_surge_solution")
+      pbMessage(_INTL("Chave errada! O sistema reiniciou a sequência de lixeiras."))
+    end
+  end
+
+  def self.surge_gate
+    pbMessage(_INTL("A trava elétrica está ativa. Encontre duas chaves nas lixeiras."))
+  end
+
   # TEMPORARY phase 08 story bridge: Bill's canonical S.S. Ticket event is
   # outside the installed route until the Cerulean north passage is audited.
   # Only players with Cascade may claim a ticket; never award it more than once.
