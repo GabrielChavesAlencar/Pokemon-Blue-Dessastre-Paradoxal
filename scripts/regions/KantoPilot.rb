@@ -2,6 +2,7 @@
 module BlueKantoPilot
   STARTERS = [:BULBASAUR, :CHARMANDER, :SQUIRTLE].freeze
   RIVAL_VERSIONS = {BULBASAUR: 11, CHARMANDER: 12, SQUIRTLE: 13}.freeze
+  VIRIDIAN_MART_STOCK = [:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL].freeze
 
   def self.progress
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
@@ -13,7 +14,15 @@ module BlueKantoPilot
 
   def self.choose_starter
     if starter
-      pbMessage(_INTL("Oak: Cuide bem do seu {1}.", GameData::Species.get(starter).name))
+      if progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
+        # Record the parcel's delivery in the region-specific save instead of
+        # creating an unknown FRLG quest item in the Decades item catalogue.
+        progress["pilot_oak_parcel_delivered"] = true
+        $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
+        pbMessage(_INTL("Oak: O pacote chegou de Viridian! Sua Pokédex está pronta. Obrigado!"))
+      else
+        pbMessage(_INTL("Oak: Cuide bem do seu {1}.", GameData::Species.get(starter).name))
+      end
       return
     end
     names = STARTERS.map { |id| GameData::Species.get(id).name }
@@ -26,6 +35,21 @@ module BlueKantoPilot
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
     pbMessage(_INTL("Oak: {1} escolheu você! Pegue estas Poké Bolas e fale com Blue.", names[choice]))
+  end
+
+  # A safe, local story step for the first Pallet -> Viridian -> Pallet
+  # loop. The source item need not exist in Decades; state is saved only in
+  # the active Kanto campaign. Existing Boulder+ saves skip the new quest.
+  def self.viridian_mart
+    completed = progress["pilot_oak_parcel_delivered"]
+    advanced = BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+    if starter && !completed && !progress["pilot_oak_parcel_received"] && !advanced
+      progress["pilot_oak_parcel_received"] = true
+      pbMessage(_INTL("Funcionário: Oak pediu que você leve este pacote até seu laboratório em Pallet."))
+    elsif progress["pilot_oak_parcel_received"] && !completed
+      pbMessage(_INTL("Funcionário: O pacote é para o professor Oak, em Pallet."))
+    end
+    pbPokemonMart(VIRIDIAN_MART_STOCK)
   end
 
   def self.rival_done?
