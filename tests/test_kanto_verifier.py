@@ -16,13 +16,13 @@ finally:
 
 
 class KantoPilotAuditTests(unittest.TestCase):
-    def test_phase11_preserves_all_previous_71_map_slots(self):
+    def test_functional_interiors_append_without_shifting_previous_101_map_slots(self):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 101)
+        self.assertEqual(len(order), 109)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 101)
+        self.assertEqual(len(set(order)), 109)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
@@ -31,7 +31,8 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[71:100], [57,62,107,108,109,110,112,113,168,169,170,171,
                                      172,174,175,176,177,178,179,180,181,182,183,
                                      184,185,186,187,188,189])
-        self.assertEqual(order[100:], [173])
+        self.assertEqual(order[100:101], [173])
+        self.assertEqual(order[101:], [8,14,15,21,22,29,30,31])
         self.assertEqual(manifest["preview_only"], sorted([
             111,114,115,117,118,119,120,121,122,123,124,
             141,142,143,144,145,146,147,152,153,155,156,157,158,159,
@@ -43,8 +44,14 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 101)
+        self.assertEqual(len(data["locations"]), 109)
         self.assertGreaterEqual(len(data["trainers"]), 54)
+        for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
+                     "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
+                     "kanto-route2-hidden-house", "kanto-pewter-museum",
+                     "kanto-pewter-house-north", "kanto-pewter-house-south"):
+            self.assertTrue(any(row["id"] == slug for row in data["locations"]),
+                            "Missing functional interior in portal: " + slug)
         misty = next(t for t in data["trainers"] if t["id"] == "kanto-misty")
         self.assertTrue(misty["leader"])
         self.assertEqual(misty["location"], "kanto-cerulean-gym")
