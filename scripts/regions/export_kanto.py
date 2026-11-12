@@ -113,7 +113,7 @@ def export(preview: Path):
         trainer_id = slug(name)
         if trainer_id not in trainers:
             trainers[trainer_id] = {"id": trainer_id, "name": name, "role": role,
-                                    "location": slug(key), "leader": kind == "LEADER",
+                                    "location": slug(key), "leader": kind.startswith("LEADER"),
                                     "variants": []}
             locations[key]["trainers"].append(trainer_id)
         roster = []
