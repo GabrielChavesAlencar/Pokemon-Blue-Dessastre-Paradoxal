@@ -38,10 +38,21 @@ KANTO_PHASE10_SOURCE_IDS = (
 )
 
 
+# Preserve the order of the first 29 Saffron preview maps too. The Club
+# House (source 173) was discovered after the initial preview was published;
+# append it rather than shifting the existing 174-189 slots.
+KANTO_PHASE11_EARLY_SOURCE_IDS = (
+    57, 62, 107, 108, 109, 110, 112, 113, 168, 169,
+    170, 171, 172, 174, 175, 176, 177, 178, 179, 180,
+    181, 182, 183, 184, 185, 186, 187, 188, 189,
+)
+
+
 def stable_source_order(wanted):
     chosen = set(wanted)
-    result = [source for source in KANTO_PHASE10_SOURCE_IDS if source in chosen]
-    result.extend(sorted(chosen - set(KANTO_PHASE10_SOURCE_IDS)))
+    stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS)
+    result = [source for source in stable if source in chosen]
+    result.extend(sorted(chosen - set(stable)))
     return result
 
 
