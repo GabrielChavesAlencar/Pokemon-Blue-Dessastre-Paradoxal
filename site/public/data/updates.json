@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bff6f7ab340c4e253742a2d0fbc244b1050c0d64",
+      "date": "2026-11-12T10:02:13-03:00",
+      "title": "docs(kanto): confirmar 7º núcleo após CI Windows e regressão aprovadas",
+      "category": "Documentação"
+    },
+    {
       "sha": "01ccb5c6c3e4316b3456400cb55e5041e13a4415",
       "date": "2026-11-12T10:00:27-03:00",
       "title": "docs(kanto): plano e critérios do sétimo núcleo funcional, pacote de Oak e portas",
