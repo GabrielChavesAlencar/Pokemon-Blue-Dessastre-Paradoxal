@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bf995db7a815de019464fffc4568fd3ae5aab075",
+      "date": "2026-11-11T22:15:17-03:00",
+      "title": "docs(kanto): registrar CI nativa integrada aprovada e manter aceite manual pendente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "a194c307d48a73d60ec4371fdd195c70f6c9e202",
+      "date": "2026-11-11T22:15:14-03:00",
+      "title": "docs(kanto): registrar CI nativa integrada aprovada e manter aceite manual pendente",
+      "category": "Documentação"
+    },
+    {
       "sha": "fd7e0786c21eeb74c29b83bfddf0762459e31285",
       "date": "2026-11-11T22:14:11-03:00",
       "title": "docs(kanto): relacionar piloto isolado ao seletor e importador opt-in",
