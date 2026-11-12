@@ -1,7 +1,7 @@
 """Compile symbolic Kanto music rules against the *installed* pilot MapIDs.
 
-F3 preserves F2 ambience and introduces verified Kanto battle classes and
-source-default Decades pool signatures. No native/global audio is overwritten.
+F4 keeps F2/F3 regional music and compiles only six confirmed Kanto ME triggers
+from the catalog of fourteen. No native/global audio or saves are overwritten.
 """
 from __future__ import annotations
 
@@ -16,6 +16,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT = Path("Data/blue-kanto-music.txt")
 MAGIC = "BLUE_KANTO_MUSIC_V1"
+ME_ENABLED_PHASE4 = frozenset({"obtained_pokemon", "obtained_item", "healed",
+                               "badge_awarded", "evolved", "caught"})
+ME_NUMBERS = frozenset({1,9,14,22,23,29,31,42,43,44,49,51,54,58})
 BATTLE_KEYS = frozenset({
     "wild", "trainer", "gym", "legendary", "champion",
     "wildVictory", "trainerVictory", "gymVictory",
@@ -68,7 +71,7 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     source = load_json(project / "data/regions/kanto-source.json")
     manifest = load_json(project / "data/kanto-music.json")
     if (rules.get("schema"), rules.get("region"),
-        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2, 3):
+        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2, 3, 4):
         raise ValueError("Invalid Kanto rules/version")
     if source.get("region") != "KANTO" or manifest.get("region") != "KANTO":
         raise ValueError("Not a Kanto source or soundtrack catalog")
@@ -131,6 +134,7 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
               "staged_transport": 0, "active_transport_bindings": 0,
               "active_map_bindings": 0, "active_battle_bindings": 0,
               "default_global_pool_signatures": 0,
+              "active_me_bindings": 0, "pending_me_events": [],
               "missing_audio": [], "preview_skipped": [],
               "native_playback_tested": False}
     seen = set()
@@ -205,17 +209,51 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
         lines.append(f"TRANSPORT\t{mode}\t{track}\t{vol}\t{pitch}")
         report["active_transport_bindings"] += 1
 
-    for field, kind in (("events", "ME"), ("scenes", "BGM")):
-        seen.clear()
-        for row in rules.get(field, []):
-            key = row.get("event" if field == "events" else "scene")
-            if not isinstance(key, str) or not key or not key.replace("_", "").isalnum() or key in seen:
-                raise ValueError(f"Invalid Kanto {field} name")
-            seen.add(key)
-            _track(catalog, row.get("track"), kind)
-            report["staged_" + field] += 1
-            if _enabled(row):
-                raise ValueError(f"{field} playback requires event-specific hooks in a later phase")
+    # All 14 ME are inventoried, but only events with audited native or
+    # Kanto-specific completion callbacks may be enabled. Never bind by
+    # guesswork, menu open, or an unfinished Pokémon Center/printer minigame.
+    seen.clear()
+    event_numbers=set()
+    for row in rules.get("events", []):
+        key = row.get("event")
+        if (not isinstance(key, str) or not key or
+                not key.replace("_", "").isalnum() or key in seen):
+            raise ValueError("Invalid or duplicate Kanto ME event")
+        seen.add(key)
+        number = row.get("track")
+        track = _track(catalog, number, "ME")
+        if number in event_numbers:
+            raise ValueError("Duplicate Kanto ME track")
+        event_numbers.add(number)
+        report["staged_events"] += 1
+        if not _enabled(row):
+            report["pending_me_events"].append(key)
+            continue
+        if rules["phase"] < 4 or key not in ME_ENABLED_PHASE4:
+            raise ValueError(f"Unverified Kanto ME event cannot be enabled: {key}")
+        if not (game / "Audio/ME" / track).is_file():
+            report["missing_audio"].append("ME/" + track)
+            continue
+        vol, pitch = _settings(row)
+        lines.append(f"ME\t{key}\t{track}\t{vol}\t{pitch}")
+        report["active_me_bindings"] += 1
+    if rules["phase"] >= 4:
+        if event_numbers != ME_NUMBERS or len(seen) != 14:
+            raise ValueError("Phase 4 requires the full 14-ME inventory")
+        if {row["event"] for row in rules["events"] if row["enabled"]} != ME_ENABLED_PHASE4:
+            raise ValueError("Only the six proven Phase 4 ME hooks may be active")
+
+    seen.clear()
+    for row in rules.get("scenes", []):
+        key = row.get("scene")
+        if (not isinstance(key, str) or not key or
+                not key.replace("_", "").isalnum() or key in seen):
+            raise ValueError("Invalid Kanto scene name")
+        seen.add(key)
+        _track(catalog, row.get("track"), "BGM")
+        report["staged_scenes"] += 1
+        if _enabled(row):
+            raise ValueError("Scene playback requires a verified Phase 5 hook")
     report["lines"] = len(lines)
     return ("\n".join(lines) + "\n").encode("utf-8"), report
 
@@ -243,6 +281,24 @@ def phase3_track_numbers(project: Path) -> set[int]:
         if _enabled(row):
             numbers.add(row["track"])
     return numbers
+
+
+def phase4_track_numbers(project: Path) -> set[int]:
+    """Only proven Kanto ME events, never unmatched menu/scene fanfares."""
+    rules, _, catalog = _rules(project)
+    numbers: set[int] = set()
+    for row in rules.get("events", []):
+        _track(catalog, row["track"], "ME")
+        if _enabled(row):
+            if row["event"] not in ME_ENABLED_PHASE4 or rules["phase"] < 4:
+                raise ValueError("Unverified Kanto ME cannot be installed")
+            numbers.add(row["track"])
+    return numbers
+
+
+def approved_audio_track_numbers(project: Path) -> set[int]:
+    """All approved Kanto MP3s, both looping BGM and triggered ME."""
+    return approved_track_numbers(project) | phase4_track_numbers(project)
 
 
 def approved_track_numbers(project: Path) -> set[int]:
