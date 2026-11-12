@@ -1,0 +1,248 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "08/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "requires_completed_phase": "07/16",
+  "notes": "Symbolic topology: no source or destination MapIDs, coordinates, encounters, warps, cave connections, Pokemon event sprites, PBS teams or rights verified. Do not use as an installer.",
+  "entrance": "JOHTO_GOLDENROD_CITY",
+  "corridor": [
+    {
+      "key": "JOHTO_GOLDENROD_CITY",
+      "label": "Goldenrod City"
+    },
+    {
+      "key": "JOHTO_ROUTE_35",
+      "label": "Route 35"
+    },
+    {
+      "key": "JOHTO_ROUTE_36",
+      "label": "Route 36, Sudowoodo"
+    },
+    {
+      "key": "JOHTO_ROUTE_37",
+      "label": "Route 37"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_CITY",
+      "label": "Ecruteak City"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_NATIONAL_PARK",
+      "label": "National Park",
+      "feature": "Visit only; Bug Catching Contest requires separate audited gameplay"
+    },
+    {
+      "key": "JOHTO_NATIONAL_PARK_GATE_SOUTH",
+      "label": "National Park South Gate"
+    },
+    {
+      "key": "JOHTO_NATIONAL_PARK_GATE_EAST",
+      "label": "National Park East Gate"
+    },
+    {
+      "key": "JOHTO_ROUTE_36_SUDOWOODO",
+      "label": "Sudowoodo obstacle and encounter"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_POKEMON_CENTER",
+      "label": "Ecruteak Pokemon Center"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_MART",
+      "label": "Ecruteak Poke Mart"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_BURNED_TOWER_1F",
+      "label": "Burned Tower 1F"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_BURNED_TOWER_B1F",
+      "label": "Burned Tower B1F"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_GYM",
+      "label": "Ecruteak Gym"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_DANCE_THEATER",
+      "label": "Dance Theater, Kimono Girls"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_BELL_TOWER_GATE",
+      "label": "Bell Tower Gate, legendary postgame not yet enabled"
+    },
+    {
+      "key": "JOHTO_ROUTE_38_GATE",
+      "label": "Route 38 west exit for phase 09"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_ROUTE_35",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_35",
+      "to": "JOHTO_ROUTE_36",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_36",
+      "to": "JOHTO_ROUTE_37",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_37",
+      "to": "JOHTO_ECRUTEAK_CITY",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_35",
+      "to": "JOHTO_NATIONAL_PARK_GATE_SOUTH",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_NATIONAL_PARK_GATE_SOUTH",
+      "to": "JOHTO_NATIONAL_PARK",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_NATIONAL_PARK",
+      "to": "JOHTO_NATIONAL_PARK_GATE_EAST",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_NATIONAL_PARK_GATE_EAST",
+      "to": "JOHTO_ROUTE_36",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_36",
+      "to": "JOHTO_ROUTE_36_SUDOWOODO",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_POKEMON_CENTER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_MART",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_BURNED_TOWER_1F",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_BURNED_TOWER_1F",
+      "to": "JOHTO_ECRUTEAK_BURNED_TOWER_B1F",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_GYM",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_DANCE_THEATER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_BELL_TOWER_GATE",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ROUTE_38_GATE",
+      "two_way": true
+    }
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_BURNED_TOWER_RIVAL",
+      "name": "Rival",
+      "versions": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_DANCE_ROCKET",
+      "name": "Rocket",
+      "versions": [
+        0
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_MORTY",
+      "name": "Morty",
+      "versions": [
+        0
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ECRUTEAK_GYM_TRAINER",
+      "name": "Ecruteak Gym trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "implemented": false
+    }
+  ],
+  "story_requirements": [
+    "Plain Badge of Johto and Ilex passage needed for Route 35",
+    "National Park tour is only introductory; Bug Catching Contest is NOT implemented",
+    "Route 36 requires SquirtBottle given and Sudowoodo encounter explicitly cleared",
+    "Route 37 and Ecruteak arrival gated on Route 36 cleared",
+    "Burned Tower rival battles require compiled version corresponding to Johto starter",
+    "Legendary awakening must follow Burned Tower rival victory; not a capture or special unlock",
+    "Dance Theater Rocket battle is one time and independent of Morty gym",
+    "HM Surf item cannot be granted without reviewed pilot-only item key and reward marker",
+    "Morty challenge requires Burned Tower legendary event and verified compiled PBS",
+    "FOG awarded once after actual Morty victory through BlueRegions.award",
+    "Surf requires Johto FOG badge plus actual field item/ability; Kanto badges and global emeralds do not bypass",
+    "Optional Ruins of Alph and Mt Mortar are explicitly postponed and must not be reported complete"
+  ],
+  "badge": {
+    "key": "FOG",
+    "region": "JOHTO",
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": "SURF"
+  },
+  "optional_not_implemented": [
+    "BUG_CATCHING_CONTEST",
+    "RUINS_OF_ALPH",
+    "MT_MORTAR",
+    "BELL_TOWER_LEGENDARY_EVENTS"
+  ],
+  "validation": {
+    "real_source_archive_audited": false,
+    "asset_license_verified": false,
+    "physical_warps_and_collision_verified": false,
+    "route36_sudowoodo_encounter_verified": false,
+    "national_park_contest_verified": false,
+    "tower_b1f_and_beast_positions_verified": false,
+    "tower_rival_pbs_compiled": false,
+    "dance_rocket_pbs_compiled": false,
+    "morty_pbs_and_gym_trainers_compiled": false,
+    "surf_item_key_and_reward_verified": false,
+    "fog_surf_in_game_verified": false,
+    "save_reload_and_previous_regions_verified": false,
+    "windows_gameplay_verified": false,
+    "joi_play_gameplay_verified": false
+  },
+  "integrated": false
+}
