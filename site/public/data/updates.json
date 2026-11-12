@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e3584b5372e2398b483081e9e8cf26eb649f763b",
+      "date": "2026-11-11T23:42:07-03:00",
+      "title": "ci(kanto): exportar locais e elencos reais para sincronizar portal da fase 07",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2279fe7587aa4b58f9db23ed83ee5e8cdb0c70d2",
+      "date": "2026-11-11T23:41:54-03:00",
+      "title": "feat(kanto): publicar prévia auditável de 25 locais e equipes no log da CI",
+      "category": "Novidades"
+    },
+    {
       "sha": "c77c35866c8e47fadae905a8f37d1ee3d53788ee",
       "date": "2026-11-11T23:41:29-03:00",
       "title": "feat(kanto): validar catálogo de 25 mapas a partir da cópia experimental",
