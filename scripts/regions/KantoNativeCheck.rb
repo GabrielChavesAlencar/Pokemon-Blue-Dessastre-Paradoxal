@@ -105,7 +105,7 @@ module KantoNativeCheck
     # Phase 08: the S.S. Ticket bridge is available only after Cascade,
     # and Lt. Surge grants exactly one Thunder Badge for a genuine victory.
     BlueKantoPilot.ticketmaster
-    require!($bag.has?(:SSTICKET), "Vermilion S.S. Ticket was not granted after Cascade")
+    require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "Vermilion S.S. Ticket permit was not granted after Cascade")
     BlueKantoPilot.ticketmaster
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
     require!(surge.pokemon.length >= 2, "Lt. Surge original FRLG roster missing")
@@ -129,7 +129,7 @@ module KantoNativeCheck
              "Trainer victory keys did not survive reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
-    require!($bag.has?(:SSTICKET), "S.S. Ticket did not survive reload")
+    require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "S.S. Ticket permit did not survive reload")
     File.write("Data/blue-kanto-proof.txt", "Kanto 40 maps: Pallet/Mt Moon/Cerulean/Vermilion, ticket, Surge, three badges and save/reload verified (battles simulated)")
   end
 end
