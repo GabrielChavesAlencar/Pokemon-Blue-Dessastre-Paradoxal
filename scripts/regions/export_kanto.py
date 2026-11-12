@@ -269,7 +269,7 @@ def export(preview: Path):
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
         else:
             key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
-            trainer_id = slug("Blue Silph") if kind == "RIVAL_SILPH" else slug(name)
+            trainer_id = slug("blue_silph") if kind == "RIVAL_SILPH" else slug(name)
             shown_name = "Blue (Silph)" if kind == "RIVAL_SILPH" else name
         if key is None:
             raise ValueError(f"Trainer location has not been audited: {header}")
