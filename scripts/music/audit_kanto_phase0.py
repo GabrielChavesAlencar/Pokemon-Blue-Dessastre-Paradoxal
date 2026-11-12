@@ -110,7 +110,8 @@ def inspect_runtime(plugin_text: str) -> dict:
             else "not_implemented"
         ),
         "global_battle_config": (
-            "present_static" if "entry('global',key)" in plugin_text
+            "present_static" if ("entry('global',key)" in plugin_text or
+                                 "entry('global',pool_key)" in plugin_text)
             else "not_detected"
         ),
         "native_audio_decoder_tested": False,

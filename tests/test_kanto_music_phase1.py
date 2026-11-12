@@ -10,7 +10,7 @@ from scripts.music import compile_kanto_music as compiler
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ("data/regions/kanto-source.json", "data/kanto-music.json",
-         "data/kanto-music-rules.json")
+         "data/kanto-music-rules.json", "data/shared-music.json")
 
 
 class KantoMusicPhaseOneTests(unittest.TestCase):

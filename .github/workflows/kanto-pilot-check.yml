@@ -84,12 +84,12 @@ jobs:
           $vehicleRows=@(Get-Content $scope | Where-Object { $_ -match '^TRANSPORT[\t]' })
           if($mapRows.Count -ne 49){throw "Fase 2: expected 49 verified map BGMs, got $($mapRows.Count)"}
           if($vehicleRows.Count -ne 2){throw "Fase 2: expected bicycle and surf, got $($vehicleRows.Count)"}
-          if(@(Get-Content $scope | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 0){throw 'Battle tracks must remain Fase 3'}
+          if(@(Get-Content $scope | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Fase 3: expected 8 regional battle/victory bindings'}
           $actualTracks=@(Get-ChildItem '.blue-work/kanto-pilot/Audio/BGM/Kanto' -Filter '*.mp3' -File)
-          if($actualTracks.Count -lt 17){throw 'Fase 2: 17 distinct BGM MP3s missing'}
-          python scripts/music/install_kanto_music.py --game .blue-work/kanto-pilot --phase2
+          if($actualTracks.Count -lt 25){throw 'Fase 3: 25 distinct approved BGM MP3s missing'}
+          python scripts/music/install_kanto_music.py --game .blue-work/kanto-pilot --approved
           if($LASTEXITCODE -ne 0){throw 'Fase 2 MP3 integrity failed'}
-          Write-Host 'Fase 2 Kanto: 49 map BGMs + 2 vehicle BGMs compiled with actual IDs, no battle/ME rules.'
+          Write-Host 'Kanto F3: 49 maps, 2 vehicles, 8 battle/victory themes, 25 installed BGM; ME remains disabled.'
           python scripts/regions/audit_canonical.py --output .blue-work/kanto-phase-15-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 canonical PBS audit failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
@@ -219,7 +219,9 @@ jobs:
           $integrated='game/Data/blue-kanto-music.txt'
           if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 49){throw '49 Kanto environment bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^TRANSPORT[\t]' }).Count -ne 2){throw 'Bicycle/Surf bindings lost in integrated game'}
-          python scripts/music/install_kanto_music.py --game game --phase2
+          if(@(Get-Content $integrated | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Kanto 8 battle/victory themes missing from installed game'}
+          if(@(Get-Content $integrated | Where-Object { $_ -match '^BASEPOOL[\t]' }).Count -ne 3){throw 'Decades baseline pool fingerprints missing'}
+          python scripts/music/install_kanto_music.py --game game --approved
           if($LASTEXITCODE -ne 0){throw 'Integrated game phase2 BGM integrity failed'}
           if(-not (Test-Path 'game/Data/blue-kanto-start.txt')){throw 'Kanto marker missing'}
           foreach($kind in @('RIVAL','BUGCATCHER','CAMPER','LEADER','LASS','YOUNGSTER','SUPERNERD','HIKER','ROCKET','SWIMMER','PICNICKER','LEADER_MISTY')){

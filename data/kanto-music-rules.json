@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "region": "KANTO",
-  "phase": 2,
+  "phase": 3,
   "default_enabled": false,
-  "notes": "Fase 2: ambient BGM on non-preview compiled Kanto maps only. Route 4 deferred until transition segment is verified; Silph Lobby stays preview. No battle/ME/scene music is enabled. Transport follows real bicycle/surf state; Decades/global preferences are untouched.",
+  "notes": "Fase 3: oito classes de batalha/vitoria ativas somente em Kanto com MapIDs compilados. Legendary: apenas species.flags 'Legendary'; Gym: tipos reais BLUE_KANTO_LEADER*; champion: BLUE_KANTO_CHAMPION_BLUE na sala CHAMPION_HALL durante Liga ativa. Blue rival comum nunca e Champion. Introducoes 20/33/46 e musica 26 aguardam eventos provados, sem autoacionamento. Decades/custom/random e musica fixa por evento preservados.",
   "maps": [
     {
       "map": "CELADON_CENTER",
@@ -267,42 +267,42 @@
     {
       "category": "wild",
       "track": 18,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "trainer",
       "track": 11,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "gym",
       "track": 27,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "legendary",
       "track": 53,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "champion",
       "track": 70,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "wildVictory",
       "track": 19,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "trainerVictory",
       "track": 12,
-      "enabled": false
+      "enabled": true
     },
     {
       "category": "gymVictory",
       "track": 28,
-      "enabled": false
+      "enabled": true
     }
   ],
   "events": [

@@ -1,6 +1,6 @@
 # Kanto — Plano para aplicar as 64 músicas por este chat
 
-> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf, com 17 arquivos distintos copiados pelo instalador. Batalhas, ME e cenas permanecem pendentes; Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
+> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. As vinhetas ME e cenas continuam pendentes; Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
 
 ## Objetivo e como trabalharemos aqui no ChatGPT
 
@@ -85,6 +85,8 @@ Aplicar BGM por **chaves de mapas**. Onde houver vários andares, conferir quais
 **Verificações:** mudança entre exterior/interior, reentrada, interrupção por combate, bicicleta, Surf, troca de região, mapa de prévia e fallback por arquivo ausente. Publicar commit/PR com lista de MapIDs realmente associados.
 
 ## Fase 3 — Batalhas, adversários especiais e vitórias (12 faixas)
+
+**Fase 3 implementada:** ver [código, prioridades e evidências](KANTO_MUSICAS_FASE_3.md). Oito BGM de combate/vitória foram ativadas com guardas de classe real de adversário e espécie Legendary, distinção de Blue Campeão, assinatura dos sorteios padrão de Decades e respeito a músicas de eventos e personalizadas. As introduções 1-20/1-33/1-46 e a cena 1-26 aguardam gatilho auditado; não são tocadas automaticamente. Nenhum ME foi ativado.
 
 | Contexto (somente Kanto) | Introdução ou batalha | Vitória |
 |---|---|---|

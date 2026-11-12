@@ -1,8 +1,7 @@
 """Compile symbolic Kanto music rules against the *installed* pilot MapIDs.
 
-F2 enables only audited Kanto ambient maps and vehicle state themes. The
-output remains an isolated BlueMusic manifest; Decades global preferences and
-FRLG source IDs never become runtime map assignments.
+F3 preserves F2 ambience and introduces verified Kanto battle classes and
+source-default Decades pool signatures. No native/global audio is overwritten.
 """
 from __future__ import annotations
 
@@ -69,7 +68,7 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     source = load_json(project / "data/regions/kanto-source.json")
     manifest = load_json(project / "data/kanto-music.json")
     if (rules.get("schema"), rules.get("region"),
-        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2):
+        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2, 3):
         raise ValueError("Invalid Kanto rules/version")
     if source.get("region") != "KANTO" or manifest.get("region") != "KANTO":
         raise ValueError("Not a Kanto source or soundtrack catalog")
@@ -131,6 +130,7 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
               "staged_events": 0, "staged_scenes": 0,
               "staged_transport": 0, "active_transport_bindings": 0,
               "active_map_bindings": 0, "active_battle_bindings": 0,
+              "default_global_pool_signatures": 0,
               "missing_audio": [], "preview_skipped": [],
               "native_playback_tested": False}
     seen = set()
@@ -153,6 +153,21 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
         vol, pitch = _settings(row)
         lines.append(f"MAP\t{dest}\t{track}\t{vol}\t{pitch}")
         report["active_map_bindings"] += 1
+    # Only unchanged Decades factory pools may yield to Kanto defaults.
+    # Explicitly edited random lists, custom/mute or volume/pitch stay primary.
+    if rules["phase"] >= 3:
+        shared = load_json(project / "data/shared-music.json")["config"]["global"]
+        for pool_key in ("wild", "trainer", "gym"):
+            preset = shared.get(pool_key, {})
+            if (preset.get("mode") != "random" or
+                    not isinstance(preset.get("tracks"), list) or
+                    not all(isinstance(name, str) for name in preset["tracks"])):
+                raise ValueError("Invalid Decades baseline pool " + pool_key)
+            payload = [str(preset.get("volume", 100)),
+                       str(preset.get("pitch", 100)), *preset["tracks"]]
+            signature = hashlib.sha256("\n".join(payload).encode("utf-8")).hexdigest()
+            lines.append(f"BASEPOOL\t{pool_key}\t{signature}")
+            report["default_global_pool_signatures"] += 1
     seen.clear()
     for row in rules.get("battles", []):
         key = row.get("category")
@@ -217,6 +232,22 @@ def _settings(row: dict) -> tuple[int, int]:
             type(pitch) is not int or not 50 <= pitch <= 150):
         raise ValueError("Invalid regional volume/pitch")
     return volume, pitch
+
+
+def phase3_track_numbers(project: Path) -> set[int]:
+    """Eight BGM assets used exclusively by Kanto battle/victory hooks."""
+    rules, _, catalog = _rules(project)
+    numbers: set[int] = set()
+    for row in rules.get("battles", []):
+        _track(catalog, row["track"], "BGM")
+        if _enabled(row):
+            numbers.add(row["track"])
+    return numbers
+
+
+def approved_track_numbers(project: Path) -> set[int]:
+    """Minimal BGM payload for all approved Kanto phases."""
+    return phase2_track_numbers(project) | phase3_track_numbers(project)
 
 
 def phase2_track_numbers(project: Path) -> set[int]:
