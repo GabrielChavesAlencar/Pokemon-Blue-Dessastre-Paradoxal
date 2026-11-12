@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8af1930cb1180fe1081f2d7b55d5d924324ef18f",
+      "date": "2026-11-11T23:02:44-03:00",
+      "title": "test(kanto): garantir quatro retratos e reparo idempotente sem sobrescrever saves",
+      "category": "Testes"
+    },
+    {
       "sha": "243458d8e062b9cb3bedd3400c427dbe21a56452",
       "date": "2026-11-11T22:59:50-03:00",
       "title": "fix(kanto): direcionar instalacao existente ao reparo seguro dos retratos",
