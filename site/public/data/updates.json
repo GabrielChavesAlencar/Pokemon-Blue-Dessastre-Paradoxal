@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "80f56c84bcbd22912629c7862cb40c7e596d733c",
+      "date": "2026-11-12T08:55:46-03:00",
+      "title": "Kanto 11: incluir clube de treinadores 173 com ID auditado, sem eventos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "be63029a6ff7cd4348ca612b41063162441cff88",
       "date": "2026-11-12T08:53:49-03:00",
       "title": "Auditoria Saffron: inspecionar também interior 173 ligado diretamente à cidade",
