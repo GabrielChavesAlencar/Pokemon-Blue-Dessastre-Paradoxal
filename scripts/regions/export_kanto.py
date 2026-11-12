@@ -33,6 +33,21 @@ LOCATION_NAMES = {
     "CERULEAN_CENTER": "Centro Pokémon de Cerulean",
     "CERULEAN_MART": "Poké Mart de Cerulean",
     "CERULEAN_GYM": "Ginásio de Cerulean",
+    "ROUTE_5": "Rota 5",
+    "UNDERGROUND_NORTH": "Passagem Subterrânea — entrada norte",
+    "UNDERGROUND_TUNNEL": "Passagem Subterrânea — túnel",
+    "ROUTE_6": "Rota 6",
+    "UNDERGROUND_SOUTH": "Passagem Subterrânea — entrada sul",
+    "VERMILION_CITY": "Vermilion City",
+    "VERMILION_CENTER": "Centro Pokémon de Vermilion",
+    "VERMILION_MART": "Poké Mart de Vermilion",
+    "VERMILION_GYM": "Ginásio de Vermilion",
+    "VERMILION_HARBOR": "Porto de Vermilion",
+    "SS_ANNE_1F": "S.S. Anne — 1F",
+    "SS_ANNE_2F": "S.S. Anne — 2F",
+    "SS_ANNE_CAPTAIN": "S.S. Anne — cabine do capitão",
+    "SS_ANNE_B1F": "S.S. Anne — B1F",
+    "SS_ANNE_DECK": "S.S. Anne — convés",
 }
 TRAINER_LOCATIONS = {
     "RIVAL": ("OAK_LAB", "Rival"),
@@ -60,6 +75,34 @@ TRAINER_LOCATIONS.update({
     ("PICNICKER", "Diana"): ("CERULEAN_GYM", "Piqueniqueira"),
     ("LEADER_MISTY", "Misty"): ("CERULEAN_GYM", "Líder de ginásio"),
 })
+
+
+TRAINER_LOCATIONS.update({
+    **{("BUGCATCHER", name): ("ROUTE_6", "Caçador de insetos")
+       for name in ("Keigo", "Elijah")},
+    **{("PICNICKER", name): ("ROUTE_6", "Piqueniqueira")
+       for name in ("Nancy", "Isabelle")},
+    **{("CAMPER", name): ("ROUTE_6", "Campista")
+       for name in ("Ricky", "Jeff")},
+    ("SAILOR", "Dwayne"): ("VERMILION_GYM", "Marinheiro"),
+    ("ENGINEER", "Bailey"): ("VERMILION_GYM", "Engenheiro"),
+    ("GENTLEMAN", "Tucker"): ("VERMILION_GYM", "Cavalheiro"),
+    ("LEADER_SURGE", "Lt. Surge"): ("VERMILION_GYM", "Líder de ginásio"),
+    **{("GENTLEMAN", name): ("SS_ANNE_1F", "Cavalheiro")
+       for name in ("Thomas", "Arthur")},
+    ("LASS", "Ann"): ("SS_ANNE_1F", "Treinadora"),
+    ("YOUNGSTER", "Tyler"): ("SS_ANNE_1F", "Jovem treinador"),
+    ("GENTLEMAN", "Brooks"): ("SS_ANNE_2F", "Cavalheiro"),
+    ("GENTLEMAN", "Lamar"): ("SS_ANNE_2F", "Cavalheiro"),
+    ("FISHERMAN", "Dale"): ("SS_ANNE_2F", "Pescador"),
+    ("LASS", "Dawn"): ("SS_ANNE_2F", "Treinadora"),
+    ("FISHERMAN", "Barny"): ("SS_ANNE_B1F", "Pescador"),
+    **{("SAILOR", name): ("SS_ANNE_B1F", "Marinheiro")
+       for name in ("Phillip", "Huey", "Dylan", "Duncan", "Leonard")},
+    **{("SAILOR", name): ("SS_ANNE_DECK", "Marinheiro")
+       for name in ("Trevor", "Edmond")},
+})
+
 
 STARTERS = {11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE"}
 
