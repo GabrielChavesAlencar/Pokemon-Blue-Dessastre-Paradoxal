@@ -11,6 +11,14 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Player Home events missing")
     require!([$game_player.x, $game_player.y] == [25, 7], "Kanto did not start upstairs")
     home = $game_map.map_id
+    # Phase 02: actual mkxp-z Game_Player passable? and move_straight
+    # in a throwaway CI run, not simulated keyboard/graphical acceptance.
+    load "Data/blue-kanto-walk-check.rb"
+    walk_rows = KantoWalkCheck.run(home,25,7)
+    require!(walk_rows.count { |row| row[4] == "native_step_verified" } >= 2,
+             "Stage 02 native step probe recorded no actual movement")
+    require!($game_map.map_id == home && [$game_player.x,$game_player.y] == [25,7],
+             "Walking probe did not restore the original upstairs Pallet spawn")
     home_exit = $game_map.events[1]
     home_return = home_exit.list.find { |row| row.code == 201 }
     require!(home_return, "Player Home has no return door")
