@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0dd4ea7747bfcd5c3c6bce5a8fcaa67dbef3460b",
+      "date": "2026-11-12T06:58:54-03:00",
+      "title": "Fase 08: catálogo de 40 mapas e localizações de treinadores Vermilion/S.S. Anne",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9020ccb4fab04386cf6b4ff8f29c8db0e3da8f07",
       "date": "2026-11-12T06:58:24-03:00",
       "title": "Fase 08: incluir 15 mapas auditados de Vermilion e S.S. Anne preservando slots anteriores",
