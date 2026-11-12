@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f7b2ecf14f37213f01a372288e7972ae4c26aa9f",
+      "date": "2026-11-12T09:56:36-03:00",
+      "title": "Kanto etapa 03: conectar o Poké Mart de Viridian ao pacote virtual de Oak, mantendo comércio",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e49d61b9f291e1d3b1a7577bffec1b5a35b23b64",
       "date": "2026-11-12T09:49:26-03:00",
       "title": "docs: uniformizar barras atuais 6/16 e 1/16 e passos restantes nos guias Kanto",
