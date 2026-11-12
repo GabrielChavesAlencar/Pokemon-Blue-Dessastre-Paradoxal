@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e51ca31d211f0ba319f2a8687a7d0490f30d72f1",
+      "date": "2026-11-12T15:27:50-03:00",
+      "title": "adicionando musicas de kanto p5",
+      "category": "Novidades"
+    },
+    {
       "sha": "3abd3eecdb3aa20e9d8c028234521769feac9d0f",
       "date": "2026-11-12T15:27:04-03:00",
       "title": "adicionando musicas de kanto p4",
