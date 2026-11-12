@@ -217,6 +217,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 07/16 — Ilex Forest, Route 34, Goldenrod e Whitney
 
+**Implementação parcial publicada:** [JOHTO_FASE_07_ILEX_GOLDENROD_WHITNEY.md](JOHTO_FASE_07_ILEX_GOLDENROD_WHITNEY.md). `JohtoGoldenrod.rb` prepara lenhador/Farfetch'd, recompensa Cut dependente de item real, Day Care introdutório, quiz da Rádio, batalha de Whitney com PLAIN só após conversa posterior, Floricultura e Sudowoodo futuro bloqueado. `data/regions/johto-phase07.json` define o caminho simbólico sem IDs inventados. Testes Ruby/Python validam a sequência, derrotas, recompensas únicas, insígnias/esmeraldas, campo e save/reload. **Faltam mapas verdadeiros, interiores, NPCs vinculados, equipes PBS e gameplay em Game.exe. Essa fase permanece PARCIAL e não pode habilitar um Testar Johto fictício.**
+
+
 **Implementar:** Ilex Forest com puzzle do Farfetch'd e HM/evento de Cut, Day Care, Route 34, Goldenrod, rádio, lojas, Underground, National Park quando conectado e ginásio de Whitney; Sudowoodo como evento real e não decoração inacessível.
 
 **Teste/aceite:** puzzle e uso de Cut com credenciais locais, portas/andares/lojas corretos, Whitney + PLAIN Badge, reentrada e saves persistentes.
