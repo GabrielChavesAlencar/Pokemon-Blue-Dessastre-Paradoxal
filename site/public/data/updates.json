@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "45bbe6e9971f907ccbf26344fa9087edb97af557",
+      "date": "2026-11-12T16:17:39-03:00",
+      "title": "feat(kanto-music): Fase 0 auditada com 64 MP3 íntegros e baseline regional",
+      "category": "Novidades"
+    },
+    {
       "sha": "be5e5b4f2e6ec82b0db2e1e6d970ecde863ec3d0",
       "date": "2026-11-12T16:03:33-03:00",
       "title": "docs(kanto): plano das 64 músicas para aplicação em fases pelo ChatGPT",
