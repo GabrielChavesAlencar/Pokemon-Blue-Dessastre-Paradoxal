@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "01ccb5c6c3e4316b3456400cb55e5041e13a4415",
+      "date": "2026-11-12T10:00:27-03:00",
+      "title": "docs(kanto): plano e critérios do sétimo núcleo funcional, pacote de Oak e portas",
+      "category": "Documentação"
+    },
+    {
       "sha": "adc9aac2928e89f16cb5f488fb9b25583446364f",
       "date": "2026-11-12T09:58:22-03:00",
       "title": "Kanto etapa 03: testar na engine pacote de Oak, Mart repetível, Pokédex e save/reload",
