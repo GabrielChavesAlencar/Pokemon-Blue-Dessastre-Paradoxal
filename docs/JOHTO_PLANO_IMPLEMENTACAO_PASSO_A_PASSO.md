@@ -208,6 +208,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 06/16 — Route 32, Union Cave, Azalea, Slowpoke Well e Bugsy
 
+**Implementação parcial publicada:** [JOHTO_FASE_06_AZALEA_BUGSY.md](JOHTO_FASE_06_AZALEA_BUGSY.md). `JohtoAzalea.rb` possui eventos regionais isolados para Kurt, Slowpoke Well, dois Rocket Grunts, Proton, Bugsy e rival, com HIVE dada somente pela API `BlueRegions.award` após vitória e autorização de Cut ligada à insígnia + ferramenta. O mapa simbólico está em `data/regions/johto-phase06.json`; testes Ruby/Python cobrem vitórias, derrotas, transições de estado, persistência e proteção Kanto/Decades. **Não há mapas reais nem treinadores PBS instalados, e esta etapa não está jogável; proibir passagem para status concluída por testes sintéticos.**
+
+
 **Implementar:** percurso desde Violet, Union Cave com andares e encontros, Azalea Town, Kurt, Slowpoke Well e Team Rocket, Ginásio Bugsy, evento da Hive Badge, rival e fluxo de Cut quando autorizado.
 
 **Teste/aceite:** caverna com transições reais, poço/Equipe Rocket funcionais, Bugsy completo, eventos únicos e HIVE contabilizada uma única vez.
