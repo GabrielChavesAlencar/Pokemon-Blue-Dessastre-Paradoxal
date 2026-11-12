@@ -84,6 +84,8 @@ O estudo de FireRed indica dependências para uma futura implementação:
 
 ## Progresso
 
+**Atualização após a auditoria de 12/11/2026:** [Barra de núcleos funcionais 6/16 (10 faltando) e Barra de aceite 1/16 (15 faltando)](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). A contagem 8/16 no registro de construção abaixo é histórica, não a nova medição.
+
 **Barra 1 — Desenvolvimento funcional:** 8/16 (50%). **Barra 2 — Aceitação completa:** 1/16 (6,25%). As fases 09, 10 e 11 são novas áreas de cenário, ainda não completas funcionalmente. **Trilha de eventos FireRed:** 12 marcos próprios ainda sem medição quantitativa confiável.
 
 **Próximo trabalho de mapa, sem eventos:** preparar Fase 12 — Cinnabar/Blaine em cópia isolada. Antes de liberar as fases 09–11 como histórias jogáveis, integrar as dependências de roteiro na ordem adequada e aceitar o checklist manual.
