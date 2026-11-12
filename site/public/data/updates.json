@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "744cdc3b7fd9d2f891d61f99004c19f40339cb59",
+      "date": "2026-11-12T20:46:58-03:00",
+      "title": "test(johto): prova Rotas 35-37, Morty, FOG, Surf, save e isolamento",
+      "category": "Testes"
+    },
+    {
       "sha": "6c7ad9eec780aecf44ca564d0af59115fc35309e",
       "date": "2026-11-12T20:46:14-03:00",
       "title": "feat(johto): etapa 08 Ecruteak Burned Tower Morty FOG e Surf isolados",
