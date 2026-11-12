@@ -17,7 +17,7 @@
 
 ## 1. Duas barras gerais e uma trilha de auditoria independente
 
-- **Barra de desenvolvimento reavaliada (núcleos funcionais):** **6/16 = 37,5%; faltam 10 etapas**. Contam 01/04/05/06/07/08 por núcleo executável e CI; 09–11 só possuem terrenos, e 02/03/15/16 são parciais. [Análise das 16 etapas](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+- **Barra 1 — Desenvolvimento funcional atual:** **7/16 = 43,75%, faltam 9 etapas**. Núcleos com CI: 01, 03, 04, 05, 06, 07, 08. A etapa 03 ganhou pacote de Oak, 11 verificações de portas e 50 gatilhos de treinador; [entrega 07/16](KANTO_AVANCO_FUNCIONAL_07.md) e [CI 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441).
 - **Barra de aceitação integral:** **1/16 = 6,25%; faltam 15 etapas**. Só 01 está aceita (escopo estrutural); CI simulada não substitui caminhada, colisões e batalhas reais no Windows.
 - **Trilha de eventos FireRed:** **12 marcos de auditoria e adaptação**, definidos no estudo e listados abaixo; **progresso numérico ainda não aferido**. O total de eventos em escopo precisa vir da execução real do extrator e da triagem das salas opcionais, não de um percentual estimado.
 
@@ -41,6 +41,8 @@ O extrator não gera RXDATA, não interpreta todo script global, não define equ
 A [correção funcional de Pallet a Pewter](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md) está implementada em código e aprovada na [CI nativa 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042): **8 interiores com ida/volta**, **50 treinadores com `Sight(n)`/Event Touch** e página 2 persistente pós-vitória; os outros 6 treinadores mantêm interação manual conforme a fonte. A **regressão de projeto** também foi aprovada. O mapa fonte 13 (Ginásio Viridian) e o 23 (Diglett's Cave) continuam fora do lote de portas por dependerem de progressão e de outros mapas.
 
 **Estado:** MAN-01 e MAN-02 estão **parcialmente implementados**, **não concluídos**. Os interiores de outros trechos, guardas/quest, bloqueios obrigatórios, diálogos finais, validação manual e MAN-03 ainda faltam. Esta entrega não alterou os 61 mapas `preview_only` das fases 09–11, não contou como conclusão de uma nova etapa; barras reavaliadas em [6/16 e 1/16](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) e não distribuiu textos originais de FireRed.
+
+**Atualização após estudo (12/11/2026):** o [sétimo núcleo de desenvolvimento](KANTO_AVANCO_FUNCIONAL_07.md) entrega o pacote regional de Oak no Mart de Viridian, valida 11 pares de portas e mantém 50 eventos `Sight(n)`. **MAN-01 e MAN-02 ainda não têm aceite integral**: interiores secundários, barreiras de história, textos e gameplay manual permanecem pendentes.
 
 ## 3. Sequência prioritária de correções — conforme teste do jogador
 
@@ -137,4 +139,4 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 - **Portões de aceite por evento:** fala EN e PT-BR revisada, renderização sem corte, branches e escolhas corretos, tokens intactos, nenhuma recompensa duplicada, teste Windows e depois JoiPlay.
 - **Fases 09–11:** manter os 61 mapas `preview_only` sem eventos/diálogos até implementação autorizada, com fontes originais restritas a pasta local e direitos respeitados.
 
-As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores reavaliados 6/16 ou 1/16.
+As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores atuais 7/16 ou 1/16.
