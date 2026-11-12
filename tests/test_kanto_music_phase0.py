@@ -64,7 +64,8 @@ class PhaseZeroMusicTests(unittest.TestCase):
         self.assertEqual(result["trainer_battle_bgm_hook"], "present_static")
         self.assertEqual(result["trainer_victory_bgm_hook"], "present_static")
         self.assertEqual(result["me_event_playback_hook"], "not_implemented")
-        self.assertEqual(result["kanto_region_guard"], "not_implemented")
+        # Fase 0 remains a historical baseline, but F1 now adds the guard.
+        self.assertEqual(result["kanto_region_guard"], "present_static")
         self.assertEqual(result["gym_victory_separate_hook"], "not_implemented")
         self.assertEqual(result["global_battle_config"], "present_static")
         self.assertFalse(result["native_audio_decoder_tested"])
