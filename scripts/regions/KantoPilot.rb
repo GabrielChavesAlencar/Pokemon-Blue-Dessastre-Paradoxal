@@ -35,6 +35,7 @@ module BlueKantoPilot
     species = STARTERS[choice]
     return unless pbAddPokemonSilent(species, 5)
     progress["pilot_starter"] = species.to_s
+    BlueMusic.kanto_me_play("obtained_pokemon")
     $bag.add(:POKEBALL, 5)
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
@@ -150,23 +151,31 @@ module BlueKantoPilot
     end
     wins << key
     if type == :BLUE_KANTO_LEADER && BlueRegions.award(progress, "KANTO", "BOULDER")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Brock: A Boulder Badge é sua. O caminho para Cerulean está aberto!"))
     elsif type == :BLUE_KANTO_LEADER_MISTY && BlueRegions.award(progress, "KANTO", "CASCADE")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Misty: Você conquistou a Cascade Badge! Siga ao sul para Vermilion!"))
     elsif type == :BLUE_KANTO_LEADER_SURGE && BlueRegions.award(progress, "KANTO", "THUNDER")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Lt. Surge: A Thunder Badge é sua! Agora você pode usar Fly em Kanto."))
     elsif type == :BLUE_KANTO_LEADER_ERIKA && BlueRegions.award(progress, "KANTO", "RAINBOW")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Erika: Você conquistou a Rainbow Badge!"))
     elsif type == :BLUE_KANTO_LEADER_KOGA && BlueRegions.award(progress, "KANTO", "SOUL")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Koga: A Soul Badge agora é sua!"))
     elsif type == :BLUE_KANTO_ROCKETBOSS && name == "Giovanni"
       progress["pilot_silph_rescued"] = true
       pbMessage(_INTL("Giovanni foi derrotado! A Silph Co. está livre."))
     elsif type == :BLUE_KANTO_LEADER_SABRINA && BlueRegions.award(progress, "KANTO", "MARSH")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Sabrina: Você conquistou a Marsh Badge!"))
     elsif type == :BLUE_KANTO_LEADER_BLAINE && BlueRegions.award(progress, "KANTO", "VOLCANO")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Blaine: A Volcano Badge é sua!"))
     elsif type == :BLUE_KANTO_LEADER_GIOVANNI && BlueRegions.award(progress, "KANTO", "EARTH")
+      BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(_INTL("Giovanni: Você conquistou a Earth Badge! O desafio da Liga está adiante."))
 
 
@@ -268,6 +277,7 @@ module BlueKantoPilot
       pbMessage(_INTL("Acesso experimental: a passagem digital para o S.S. Anne está liberada."))
     elsif $bag.add(:SSTICKET, 1)
       progress["pilot_ss_ticket"] = true
+      BlueMusic.kanto_me_play("obtained_item")
       pbMessage(_INTL("Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
     else
       pbMessage(_INTL("Você precisa liberar espaço na Bolsa para receber o S.S. Ticket."))
@@ -300,6 +310,7 @@ module BlueKantoPilot
       return
     end
     events << "SS_ANNE_CAPTAIN"
+    BlueMusic.kanto_me_play("obtained_item")
     pbMessage(_INTL("O Capitão entregou o HM Cut! A Cascade Badge permite usá-lo em Kanto."))
   end
 
@@ -311,6 +322,7 @@ module BlueKantoPilot
     end
     if $bag.add(item, 1)
       collected << key
+      BlueMusic.kanto_me_play("obtained_item")
       pbMessage(_INTL("Encontrou {1}!", GameData::Item.get(item).name))
     else
       pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
@@ -369,6 +381,7 @@ module BlueKantoPilot
       return
     end
     progress["pilot_silph_master_ball"] = true
+    BlueMusic.kanto_me_play("obtained_item")
     pbMessage(_INTL("Recebeu a Master Ball pela libertação da Silph Co.!"))
   end
 
@@ -389,6 +402,7 @@ module BlueKantoPilot
     return unless pbConfirmMessage(_INTL("Escolher {1} como prêmio único do dojo?", GameData::Species.get(species).name))
     return unless pbAddPokemonSilent(species, 25)
     progress["pilot_dojo_prize"] = species.to_s
+    BlueMusic.kanto_me_play("obtained_pokemon")
     [1, 2].each { |eid| $game_self_switches[[$game_map.map_id, eid, "A"]] = true }
     $game_map.need_refresh = true
     pbMessage(_INTL("Prêmio do Fighting Dojo recebido!"))
@@ -767,6 +781,7 @@ module BlueKantoPilot
   def self.mom
     if $player && $player.party.any? { |pkmn| !pkmn.egg? }
       $player.heal_party
+      BlueMusic.kanto_me_play("healed")
       pbMessage(_INTL("Mãe: Descanse um pouco antes de continuar sua aventura por Kanto."))
     else
       pbMessage(_INTL("Mãe: Seu quarto fica no andar de cima. Depois visite Oak no laboratório."))
