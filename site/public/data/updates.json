@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "40d1d7ebed0bdb1a6c671d41e0c8b41fd77745f4",
+      "date": "2026-11-12T10:44:29-03:00",
+      "title": "Kanto núcleo 9: ativar 5 mapas auditados de Fuchsia/Koga e portão Safari informativo",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1369003277645b1dd7e4af2d2166607d832db2a7",
       "date": "2026-11-12T10:41:16-03:00",
       "title": "CI Kanto: auditar IDs e times de Koga/Fuchsia/Safari antes de ativar gameplay",
