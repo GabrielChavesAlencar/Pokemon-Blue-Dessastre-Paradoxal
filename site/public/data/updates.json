@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "13fe1480242460df9385dde5f6418c94a31f5431",
+      "date": "2026-11-12T06:38:21-03:00",
+      "title": "test(site): confirmar instrucoes de Testar Kanto na pagina de downloads",
+      "category": "Testes"
+    },
+    {
       "sha": "3a258336a32fb015246f0354e7638d4ef471ab1a",
       "date": "2026-11-12T06:37:37-03:00",
       "title": "docs(site): explicar Testar Kanto no menu do Modo Historia baixado",
