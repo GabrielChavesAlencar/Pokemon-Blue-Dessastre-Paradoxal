@@ -20,9 +20,9 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 127)
+        self.assertEqual(len(order), 142)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 127)
+        self.assertEqual(len(set(order)), 142)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
@@ -35,25 +35,28 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[101:109], [8,14,15,21,22,29,30,31])
         self.assertEqual(order[109:126], [190,191,193,194,195,196,197,198,
                                         199,200,201,202,203,205,206,207,208])
-        self.assertEqual(order[126:], [13])
+        self.assertEqual(order[126:127], [13])
+        self.assertEqual(order[127:], [16,17,*range(209,222)])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
             141,142,143,152,155,156,157,158,159,
             160,161,162,163,164,165,
             57,62,107,108,109,110,112,113,
             173,174,175,176,177,
-            190,191,193,194,195,196,197,198]))
+            190,191,193,194,195,196,197,198,210]))
         self.assertIn(42, order[13:])
-        self.assertEqual(len(manifest["preview_only"]), 44)
+        self.assertEqual(len(manifest["preview_only"]), 45)
         self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,
                          168,169,170,171,172,*range(178,190),
-                         199,200,201,202,203,205,206,207,208,13}.isdisjoint(manifest["preview_only"]))
+                         199,200,201,202,203,205,206,207,208,13,
+                         16,17,209,211,212,213,214,215,216,217,218,219,220,221
+                         }.isdisjoint(manifest["preview_only"]))
 
     def test_portal_matches_audited_kanto_rosters(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 127)
-        self.assertEqual(len(data["trainers"]), 127)
+        self.assertEqual(len(data["locations"]), 142)
+        self.assertEqual(len(data["trainers"]), 144)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)
         self.assertIn("Giovanni", leaders)
@@ -63,7 +66,7 @@ class KantoPilotAuditTests(unittest.TestCase):
         )
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
-        self.assertEqual(len(data["trainers"]), 127)
+        self.assertEqual(len(data["trainers"]), 144)
         giovanni_leader = leaders["Giovanni"]
         self.assertEqual(giovanni_leader["id"], "kanto-giovanni-viridian")
         self.assertEqual(giovanni_leader["location"], "kanto-viridian-gym")
@@ -86,6 +89,27 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(jason["location"], "kanto-viridian-gym")
         self.assertEqual([p["species"] for p in jason["variants"][0]["team"]], ["RHYHORN"])
         self.assertEqual([p["species"] for p in cole["variants"][0]["team"]], ["ARBOK", "TAUROS"])
+        for name, room in (
+            ("Lorelei","kanto-elite-lorelei-room"),
+            ("Bruno","kanto-elite-bruno-room"),
+            ("Agatha","kanto-elite-agatha-room"),
+            ("Lance","kanto-elite-lance-room"),
+        ):
+            trainer = next(t for t in data["trainers"] if t["name"] == name)
+            self.assertEqual(trainer["role"], "Elite Four")
+            self.assertEqual(trainer["location"], room)
+            self.assertGreaterEqual(len(trainer["variants"][0]["team"]), 4)
+        champion = next(t for t in data["trainers"] if t["id"]=="kanto-blue-champion")
+        self.assertEqual(champion["location"],"kanto-champion-hall")
+        self.assertEqual(len(champion["variants"]),3)
+        self.assertEqual(
+            {row["starter"] for row in champion["variants"]},
+            {"BULBASAUR","CHARMANDER","SQUIRTLE"},
+        )
+        self.assertTrue(all(len(row["team"]) >= 6 for row in champion["variants"]))
+        pair = next(t for t in data["trainers"] if t["id"]=="kanto-ray-tyra")
+        self.assertEqual(pair["location"],"kanto-victory-road-3f")
+        self.assertEqual(pair["role"],"Dupla")
         for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
                      "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
                      "kanto-route2-hidden-house", "kanto-pewter-museum",
