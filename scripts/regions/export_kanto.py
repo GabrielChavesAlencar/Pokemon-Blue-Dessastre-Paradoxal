@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from audit import KANTO, ROOT, json_file
+from pilot_catalog import prepared_plan
 from pbs import read_blocks
 
 LOCATION_NAMES = {
@@ -68,8 +69,17 @@ def slug(key):
 
 
 def export(preview: Path):
-    plan = json_file(preview / "plan.json")
     manifest = json_file(KANTO)
+    if (preview / "plan.json").is_file():
+        plan = json_file(preview / "plan.json")
+        encounter_file = preview / "drafts/encounters.txt"
+        trainer_file = preview / "drafts/trainers.txt"
+    else:
+        # The CI cleans the intermediate source staging directory. Export only
+        # audited, compiled PBS from the final isolated Kanto pilot instead.
+        plan = prepared_plan(preview, manifest)
+        encounter_file = preview / "PBS/encounters_kanto.txt"
+        trainer_file = preview / "PBS/trainers_kanto.txt"
     if plan["package_sha256"] != manifest["sha256"] or plan["region"] != manifest["region"]:
         raise ValueError("Kanto preview source does not match the project manifest.")
     keys_by_id = {row["proposed_id"]: row["key"].removeprefix("KANTO_") for row in plan["maps"]}
@@ -79,7 +89,7 @@ def export(preview: Path):
         key: {"id": slug(key), "name": name, "methods": [], "trainers": []}
         for key, name in LOCATION_NAMES.items()
     }
-    for header, lines in read_blocks(preview / "drafts/encounters.txt").items():
+    for header, lines in read_blocks(encounter_file).items():
         key = keys_by_id[int(header)]
         methods = locations[key]["methods"]
         for line in lines:
@@ -94,7 +104,7 @@ def export(preview: Path):
             raise ValueError(f"Invalid encounter chances in {header}")
 
     trainers = {}
-    for header, lines in read_blocks(preview / "drafts/trainers.txt").items():
+    for header, lines in read_blocks(trainer_file).items():
         trainer_type, name, version = header.split(",")
         kind = trainer_type.removeprefix("BLUE_KANTO_")
         key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
