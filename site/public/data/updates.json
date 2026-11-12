@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2aa895eb3fa08f17d345dbd6d15c4b69917f7797",
+      "date": "2026-11-12T10:46:05-03:00",
+      "title": "Kanto Fuchsia: importar sete equipes Koga/Juggler/Tamer auditadas no PBS da fonte",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ccfacd12a52ab3fc8dc6b306bb6f52cd1d47187e",
       "date": "2026-11-12T10:45:47-03:00",
       "title": "Kanto Koga: conceder Soul Badge uma vez por vitória e guardar Safari Zone sem sessão falsa",
