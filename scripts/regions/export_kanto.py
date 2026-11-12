@@ -5,7 +5,7 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, json_file
 from pilot_catalog import prepared_plan
-from pbs import read_blocks
+from pbs import read_blocks, ENCOUNTER_REVIEW_SOURCE_IDS
 
 LOCATION_NAMES = {
     "PALLET_TOWN": "Pallet Town",
@@ -324,8 +324,20 @@ def export(preview: Path):
     keys_by_id = {row["proposed_id"]: row["key"].removeprefix("KANTO_") for row in plan["maps"]}
     if set(keys_by_id.values()) != set(LOCATION_NAMES) or len(keys_by_id) != len(LOCATION_NAMES):
         raise ValueError("Kanto map catalog differs from the audited preview.")
+    # Release/UI flags are derived from the audited source manifest, never
+    # from whether a preview happens to have visible encounters or trainers.
+    preview_source_ids = set(manifest.get("preview_only", []))
+    keys_by_source = {row["source_id"]: row["key"].removeprefix("KANTO_")
+                      for row in plan["maps"]}
+    status_by_key = {
+        key: ("preview" if source in preview_source_ids else
+              "encounter_review" if source in ENCOUNTER_REVIEW_SOURCE_IDS else
+              "experimental")
+        for source, key in keys_by_source.items()
+    }
     locations = {
-        key: {"id": slug(key), "name": name, "methods": [], "trainers": []}
+        key: {"id": slug(key), "name": name, "status": status_by_key[key],
+              "methods": [], "trainers": []}
         for key, name in LOCATION_NAMES.items()
     }
     for header, lines in read_blocks(encounter_file).items():

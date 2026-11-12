@@ -23,6 +23,18 @@ def prepare(game, integrated=False):
             raise ValueError("The CI game has no installed Kanto marker")
     elif not game.is_relative_to((ROOT / ".blue-work").resolve()) or not (game / PILOT_META).is_file():
         raise ValueError("Native proof requires a dedicated Kanto build under .blue-work.")
+    if not integrated:
+        # Stage-16 preflight runs on the exact compiled, disposable Kanto pilot
+        # in CI, not against an ordinary player's save or Game.exe.
+        from release_gate import inspect as release_inspect
+        report = release_inspect(ROOT, game)
+        if not report["ci_preflight_passed"] or report["declared_playable"]:
+            raise ValueError("Kanto release gate did not confirm prototype safety")
+        out = ROOT / ".blue-work/kanto-phase-16-release-gate.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        import json
+        out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print("KANTO_RELEASE_GATE:" + json.dumps(report, ensure_ascii=True), flush=True)
     scripts = game / "Data/Scripts.rxdata"
     rows = Marshal(scripts.read_bytes()).read()
     for row in rows:
