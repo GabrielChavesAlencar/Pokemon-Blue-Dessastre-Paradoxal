@@ -1,6 +1,6 @@
-# Kanto — jogar e testar as fases 07 e 08 no Windows (experimental)
+# Kanto — jogar e testar fases 07 a 10 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com **40 mapas jogáveis/anteriormente integrados** e **11 mapas de cenário sem eventos** na prévia de Celadon (51 no catálogo). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **11 prévias sem eventos em Celadon** e **20 prévias sem eventos em Fuchsia/Safari** (71 no catálogo). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
 
 ## Opção diretamente no Game.exe principal
 
@@ -66,6 +66,18 @@ A [prévia da fase 09](KANTO_FASE_09.md) adiciona **11 mapas** (total **51**) pa
 - [ ] Verificar tilesets, coordenadas e limites do ginásio, Centro Pokémon e loja 1F.
 - [ ] Confirmar que as cenas novas estão vazias e não alteram saves, equipe, insígnias ou os 40 mapas anteriores.
 - [ ] Registrar pontos com colisão/passabilidade ruim para retomar junto à análise de eventos.
+
+## Fase 10 — Fuchsia, Koga e Safari Zone (prévia sem eventos)
+
+O [guia da fase 10](KANTO_FASE_10.md) lista 20 mapas FRLG importados como terreno e **nove atalhos novos** no menu de pausa do piloto (31 no total). Eles levam a Fuchsia City, ginásio de Koga, Centro Pokémon, casa do Warden, portão da Safari, setores sul/norte/oeste e Rota 15.
+
+**ATENÇÃO:** nesta prévia não existe batalha contra Koga, Soul Badge, ingressos, passos, Safari Balls, capturas de Safari, Gold Teeth, HM Strength/Surf, portas funcionais novas ou eventos de treinadores. Entrar por atalho de teste não deve completar história ou conceder nada.
+
+- [ ] Inspecionar tilesets, passabilidade e ponto de chegada em Fuchsia e Rotas 15/18.
+- [ ] Inspecionar cenário do ginásio sem evento de Koga.
+- [ ] Inspecionar os quatro setores Safari e casas de descanso sem ativar mecânicas.
+- [ ] Verificar que o save de Decades permanece isolado e a Soul Badge não é liberada.
+- [ ] Registrar falhas de mapa/colisão para a futura etapa de eventos e gameplay.
 
 ## 3. O que testar nas fases 07 e 08
 
