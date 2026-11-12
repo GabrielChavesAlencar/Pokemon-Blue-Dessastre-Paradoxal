@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cc303ec982074415045521e8339118c9251f3aa9",
+      "date": "2026-11-11T21:57:16-03:00",
+      "title": "test(regions): executar regressao Ruby do seletor inicial na CI",
+      "category": "Testes"
+    },
+    {
       "sha": "14f4b602b187f64b529593b719cead15e22a6173",
       "date": "2026-11-11T21:56:46-03:00",
       "title": "test(regions): verificar nova partida Kanto, Decades, bloqueios e saves legados",
