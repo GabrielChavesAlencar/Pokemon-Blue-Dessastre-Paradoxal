@@ -99,6 +99,10 @@ Vinhetas musicais curtas, prêmios, efeitos de interface e fanfarras pontuais. N
 | 54 | Caught a Pokémon! | Vinheta ao capturar um Pokémon |
 | 58 | Professor Oak's Evaluation | Vinheta de avaliação da Pokédex pelo Professor Oak |
 
+## Aplicação automática por fases neste chat
+
+Existe agora um [plano detalhado para aplicar as 64 faixas aos mapas, batalhas, eventos e cenas via ChatGPT](KANTO_PLANO_APLICAR_MUSICAS.md), com **Fases 0–6**, arquivos a modificar, critérios de aceite, cuidados de Kanto versus Decades e mensagens prontas para pedir a próxima fase. O plano ainda não representa os hooks de música implementados.
+
 ## Como importar para a instalação local do jogo
 
 Após atualizar o projeto (`git pull`), execute na raiz:

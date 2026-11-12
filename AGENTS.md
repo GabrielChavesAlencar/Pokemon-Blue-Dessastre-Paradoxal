@@ -8,3 +8,5 @@
 - Os sprites autorais de Dessastre Paradoxal podem ser publicados em `site/assets/`; o pacote contém apenas arte do autor normalizada, sem arquivos originais do fangame.
 
 - Para tarefas de teste, aceitação ou correção de jogabilidade de Kanto, seguir `docs/KANTO_CODEX_TESTES_E2E.md` e `docs/KANTO_ETAPAS.md`. Testes estruturais/headless não comprovam gameplay E2E; sem sessão Windows gráfica ou Android disponível, registrar o bloqueio e não elevar a Barra 2 sem evidências reais.
+
+- Para implementar trilhas de Kanto solicitadas por chat, seguir `docs/KANTO_PLANO_APLICAR_MUSICAS.md` por fases; conferir `data/kanto-music.json`, preservar IDs do piloto e preferências de Decades. Não confundir plano/publicação de MP3 com áudio aplicado/testado no `Game.exe`.
