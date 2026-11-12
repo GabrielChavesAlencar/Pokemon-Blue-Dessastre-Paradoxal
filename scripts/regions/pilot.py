@@ -507,6 +507,7 @@ def install_runtime(target, mapping, game):
         ("FUCHSIA", "Fuchsia City (Centro e Ginásio ativos)", 144, 25, 36),
         ("KOGA", "Ginasio Fuchsia Koga (batalha experimental)", 147, 7, 21),
         ("FUCH_CENTER", "Fuchsia Centro Pokemon (cura)", 145, 7, 8),
+        ("FUCH_MART", "Fuchsia Mart (loja)", 146, 4, 7),
         ("FUCH_WARDEN", "Casa Warden (cenario)", 152, 6, 9),
         ("SAF_GATE", "Safari Zone Portao (entrada bloqueada)", 153, 4, 7),
         ("SAF_SOUTH", "Safari Zone Sul (cenario)", 155, 26, 31),
