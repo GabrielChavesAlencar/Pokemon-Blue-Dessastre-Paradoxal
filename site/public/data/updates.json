@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7aa357d82b5e8022226876a384944613f797eabc",
+      "date": "2026-11-11T22:43:48-03:00",
+      "title": "fix(regions): depositar identidade exata do Pokemon reservado",
+      "category": "Correções"
+    },
+    {
       "sha": "208a873bd578c8997d576e04d3449a2fdd0ebe86",
       "date": "2026-11-11T22:41:39-03:00",
       "title": "test(regions): provar deposito do lendario no PC real e save unico",
