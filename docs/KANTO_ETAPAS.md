@@ -32,7 +32,7 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **MAN-02 — Gatilhos de treinadores:** iniciar confrontos na aproximação/linha de visão; exigir batalha nos pontos de bloqueio obrigatórios sem tornar todos os NPCs opcionais barreiras artificiais. Persistir vitórias, derrotas e estado após save/reload; prioridade alta.
 - [ ] **MAN-03 — Interfaces de insígnias:** criar layout das oito insígnias de Kanto e painel de conquistas de todas as regiões/gerações, com indicadores próprios para Alola, Decades e Hisui, ligados ao mesmo progresso regional do save; prioridade média.
 
-**Impacto do feedback original (registro histórico):** etapas 02 e 03 permaneceram abertas, assim como o aceite gráfico do trecho de Mt. Moon (07). A fase 08 não havia sido testada manualmente segundo o TXT. **A contagem histórica era 8/16 e 1/16; a reavaliação atual é 6/16 e 1/16**, conforme o documento de barras.
+**Impacto do feedback original (registro histórico):** etapas 02 e 03 permaneceram abertas, assim como o aceite gráfico do trecho de Mt. Moon (07). A fase 08 não havia sido testada manualmente segundo o TXT. **A contagem histórica era 8/16 e 1/16; depois foi recalibrada em 6/16 e 1/16, e agora está em 7/16 e 1/16**, conforme o documento de barras.
 
 ## Roadmap de eventos FireRed — análise recebida em 12/11/2026
 
