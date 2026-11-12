@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fcf326bb6c46c1e7ee4acad9c9350008cd4f4a18",
+      "date": "2026-11-11T23:49:34-03:00",
+      "title": "ci(kanto): exigir os 12 retratos regionais da fase Misty",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f0e62bec8ae5479e132449275090ddf24c996178",
       "date": "2026-11-11T23:49:21-03:00",
       "title": "docs(kanto): ajustar atalhos e importador para 25 mapas e retratos da fase 07",
