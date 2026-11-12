@@ -1,7 +1,7 @@
 # Roadmap de eventos FireRed para o Pokémon Blue: Dessastre Paradoxal
 
 **Base consultada em:** 12/11/2026. **Status:** análise consolidada, implementação e testes dos novos eventos **pendentes**. **Escopo:** Kanto, com trilha opcional separada para Ilhas Sevii e pós-jogo.
-**Estado atual:** a expansão de **terreno** Fuchsia da fase 10 foi autorizada e preparada em cópia isolada; não houve autorização específica para ativar os eventos de Koga/Safari, nem alteração de scripts, itens, insígnias ou progresso de história do Game.exe principal.
+**Estado atual (12/11/2026):** [9º núcleo funcional](KANTO_AVANCO_FUNCIONAL_09.md) aprovado: **Koga/Soul**, seis treinadores, quatro portas e portão Safari informativo implementados no piloto isolado. **Capturas Safari, Safari Balls, limite de passos, Warden/Strength, Secret House/Surf e demais eventos continuam pendentes**. [CI 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254), [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342).
 
 ## 0. Fontes, limites e precedência
 
@@ -17,11 +17,11 @@
 
 ## 1. Duas barras gerais e uma trilha de auditoria independente
 
-- **Barra 1 — Desenvolvimento funcional atual:** **8/16 = 50%, faltam 8 etapas**. Os núcleos comprovados são 01/03/04/05/06/07/08/**09**; a [CI de Erika/Celadon](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314) aprovaram portas, cura, oito treinadores, Rainbow Badge única e save/reload simulado.
+- **Barra 1 — Desenvolvimento funcional atual:** **9/16 = 56,25%, faltam 7 etapas**. Núcleos: 01/03/04/05/06/07/08/09/**10**. A [CI Koga/Soul](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342) aprovam apenas o **núcleo parcial** de Fuchsia, não toda a Safari.
 - **Barra de aceitação integral:** **1/16 = 6,25%; faltam 15 etapas**. Só 01 está aceita (escopo estrutural); CI simulada não substitui caminhada, colisões e batalhas reais no Windows.
 - **Trilha de eventos FireRed:** **12 marcos de auditoria e adaptação**, definidos no estudo e listados abaixo; **progresso numérico ainda não aferido**. O total de eventos em escopo precisa vir da execução real do extrator e da triagem das salas opcionais, não de um percentual estimado.
 
-**Proteção vigente:** os **8 IDs de terreno restantes em Celadon** (111,117,118,119,120,121,122,123), os **20 IDs de Fuchsia/Safari** e os **30 IDs de Saffron/Silph** permanecem `preview_only`, **total de 58 mapas sem eventos**. **Somente 114/115/124** foram ativados com whitelist por EventID na [etapa 09](KANTO_AVANCO_FUNCIONAL_08.md); não inferir autorização para Rocket/Game Corner, Dept Store, eventos dos outros mapas ou diálogos originais.
+**Proteção vigente:** permanecem `preview_only` **8 mapas de Celadon** (111,117–123), **15 de Fuchsia/Safari** (incluindo Safari South/East/North/West, Warden e Secret House) e **30 de Saffron/Silph**, totalizando **53 mapas sem eventos**. Cinco mapas de Fuchsia (144/145/146/147/153) possuem whitelist auditada; o Safari Gate não leva à área de captura.
 
 ## 2. Preparação / auditoria sem alterar gameplay
 
@@ -67,7 +67,7 @@ A [correção funcional de Pallet a Pewter](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN
 | **C** | Cerulean/Rotas 24/25/Bill: rival, Nugget Bridge, Rocket, Misty, Bill, S.S. Ticket e guarda da Cave | 07, 08, 15 | Não substituir a quest de Bill por concessão automática baseada apenas na Cascade |
 | **D** | Rotas 5/6/11/Vermilion/S.S. Anne: guardas, ticket, embarque, rival, capitão/Cut, lata dupla, Surge/Thunder | 06, 08, 15 | Implementação experimental parcial; falta sequência canônica e testes reais |
 | **E** | Celadon/Lavender/Saffron: Rocket/Game Corner, Lift Key/Silph Scope, Pokémon Tower/Marowak/Mr. Fuji/Poké Flute, chá/guardas, Silph Co./Card Key/portais, Erika e Sabrina | 09, 11, 15 | **Celadon parcialmente funcional (Erika/Rainbow); Rocket/Game Corner e Saffron seguem pendentes de gameplay/QA** |
-| **F** | Fuchsia/Snorlax/Rotas 12–18/Safari: Poké Flute, dois Snorlax independentes, Cycling Road, Gold Teeth, Surf/Strength, Koga | 06, 10, 15 | **20 mapas Fuchsia/Safari preparados sem eventos; gameplay pendente** |
+| **F** | Fuchsia/Snorlax/Rotas 12–18/Safari: Poké Flute, dois Snorlax independentes, Cycling Road, Gold Teeth, Surf/Strength, Koga | 06, 10, 15 | **5 mapas Fuchsia com núcleo Koga/Soul e portão seguro; 15 mapas Safari/rotas ainda sem eventos, gameplay completo pendente** |
 | **G** | Seafoam/Cinnabar/Viridian final: pedras e correnteza, Mansion/Secret Key, Blaine/Volcano, Giovanni/Earth, arcos Sevii 1–3 quando aprovados | 12, 13, 15 | Pendente |
 | **H** | Rotas 22/23, oito portões, Victory Road, Elite Four, campeão, Hall of Fame e liberação Decades/Johto somente após Liga | 14, 15, 16 | Pendente |
 | **I** | Pós-jogo/Sevii 4–7: National Dex, Ruby/Sapphire, Celio, Icefall, Warehouse, Network Machine, Cerulean Cave, lendários e eventos especiais | Escopo opcional separado / 15, 16 se incluído | Pendente de decisão de escopo |
@@ -139,6 +139,6 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 - Auditar referência `text.inc` → `scripts.inc`/flag → MapID/EventID **por uso**, incluindo diálogos pré/pós-batalha, escolha, repetição, itens e save/reload. Não confundir rótulos GBA com chaves de mensagens inglesas compiladas da engine.
 - Integrar pt-BR com `scripts/localization/catalog.py`, `scripts/localization/review.py`, `data/pt-br.json`, preservando `{PLAYER}`, `{RIVAL}`, outros controles e a opção English.
 - **Portões de aceite por evento:** fala EN e PT-BR revisada, renderização sem corte, branches e escolhas corretos, tokens intactos, nenhuma recompensa duplicada, teste Windows e depois JoiPlay.
-- **Mapas ainda pendentes em 09–11:** manter os 58 `preview_only` sem eventos/diálogos até implementação autorizada, com fontes originais restritas a pasta local e direitos respeitados.
+- **Mapas ainda pendentes em 09–11:** manter os 53 `preview_only` sem eventos/diálogos até implementação autorizada, com fontes originais restritas a pasta local e direitos respeitados.
 
-As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores atuais 8/16 ou 1/16.
+As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores atuais 9/16 ou 1/16.
