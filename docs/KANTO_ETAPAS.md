@@ -60,6 +60,16 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 
 **Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras de Kanto inalteradas: desenvolvimento 8/16 (50%); aceitação 1/16 (6,25%).**
 
+## Correções funcionais do primeiro percurso — MAN-01 e MAN-02
+
+**Implementação publicada para validação:** [8 interiores com ida/volta e 50 treinadores com visão real](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md). A fonte FRLG foi auditada em [audit_early_interiors.py](../scripts/regions/audit_early_interiors.py) e [audit_trainer_interactions.py](../scripts/regions/audit_trainer_interactions.py). A auditoria identificou 56 treinadores (50 `Sight(n)` + 6 manuais) e dez destinos internos ausentes; **oito interiores seguros** foram incluídos. O ginásio de Giovanni (mapa fonte 13) e a Diglett's Cave (23) seguem protegidos por dependências.
+
+- [ ] **MAN-01 parcial:** as portas da casa do rival, duas casas de Viridian, portaria/casa escondida da Rota 2, Museu de Pewter e duas casas de Pewter agora possuem transferências de ida e volta. Ainda faltam todos os demais interiores/portas condicionais, NPCs internos e testes interativos.
+- [ ] **MAN-02 parcial:** 50 eventos `Sight(n)` usam agora `Event Touch`, alerta e batalha, com `self-switch A` pós-vitória; 6 NPCs originalmente manuais continuam Action Button. Faltam testes de caminhada real e barreiras obrigatórias específicas por evento.
+- [ ] **QA:** confirmar a compilação/regressão da revisão atual e testar em Windows; **nenhuma etapa de aceite pode ser fechada apenas por prova nativa simulada**.
+
+**Barras inalteradas:** desenvolvimento funcional **8/16 (50%)** e aceitação **1/16 (6,25%)**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
+
 ## 16 etapas de fechamento
 
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
@@ -82,6 +92,9 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — Correções funcionais MAN-01 e MAN-02:** [especificação, código e QA](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md) para oito interiores do percurso testado e 50 eventos de treinador com visão automática `Sight(n)`, persistência de vitória em self-switch e revisão de bloqueio canônico. O código foi enviado ao GitHub, e a verificação da revisão atual deve ser conferida antes de registrar aceite manual. **Barras preservadas.**
+
 
 - **12/11/2026 — Guia EN/PT-BR analisado e vinculado:** [roadmap específico de diálogos](KANTO_ROADMAP_DIALOGOS_EN_PT.md) registra 67 referências de Kanto, 14 opcionais de Sevii, 10 tarefas DIA-01–10, integração com a trilha de eventos e QA bilíngue. **Não foram extraídas, traduzidas nem instaladas novas falas nesta alteração; mapas e saves intactos.** Barras 8/16 e 1/16.
 
