@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cbabb1ae853f730bb250f67e35b4683a92c339d8",
+      "date": "2026-11-11T23:18:17-03:00",
+      "title": "docs(kanto): registrar CI da 6a etapa e manter apenas 1 concluida",
+      "category": "Documentação"
+    },
+    {
       "sha": "9686805351554048bbc35b86f2da71cb9f0cdaa2",
       "date": "2026-11-11T23:17:56-03:00",
       "title": "docs(kanto): incluir provas nativas e testes automatizados da fase 06",
