@@ -139,6 +139,7 @@ SURGE_CANS = {4, 10, *range(22, 35)}
 SURGE_LOCKS = {8, *range(11, 20)}
 
 MART = 'pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])'
+VIRIDIAN_MART = "BlueKantoPilot.viridian_mart"
 
 
 def write_map(path, obj, classes=()):
@@ -236,7 +237,7 @@ def install_events(source, target, mapping):
                          76: {2: "BlueKantoPilot.captain"}}
         scripts = dict(script_events.get(original, {}))
         if original in (12, 27, 41, 66):
-            scripts[find_shopkeeper(events)] = MART
+            scripts[find_shopkeeper(events)] = VIRIDIAN_MART if original == 12 else MART
         if original == 64:
             for event_id in (9, 29, 30):
                 if event_id not in events:
