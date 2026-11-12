@@ -252,15 +252,14 @@ module BlueMusic
     pbMEPlay(audio)
     true
   end
-  # Essentials v21.1 plays "Pkmn get" only after capacity was checked and
-  # "Evolution success" only after the evolution could no longer be canceled.
-  # Replacing that one original ME avoids double playback from extra hooks.
+  # Essentials v21.1 plays "Evolution success" only after evolution really
+  # completed. "Pkmn get" can precede the actual storage commit, so only the
+  # verified KantoPilot silent-gift paths use the regional gift ME.
   module NativeME
     private
     def pbMEPlay(param, volume=nil, pitch=nil)
       event=if param.is_a?(String) && volume.nil? && pitch.nil?
               case param
-              when 'Pkmn get' then 'obtained_pokemon'
               when 'Evolution success' then 'evolved'
               end
             end
