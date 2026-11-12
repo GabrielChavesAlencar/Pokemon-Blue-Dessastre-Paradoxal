@@ -30,7 +30,7 @@ def trainer_portraits(pilot):
     result = {}
     for name in PORTRAITS:
         source = folder / name
-        if not source.is_file() or not source.read_bytes().startswith(b"\\x89PNG\\r\\n\\x1a\\n"):
+        if not source.is_file() or not source.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
             raise ValueError(f"Missing or invalid Kanto trainer portrait: {name}")
         result[Path("Graphics") / "Trainers" / name] = source
     return result
