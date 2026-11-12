@@ -30,6 +30,21 @@
     "39": "CERULEAN_CITY",
     "40": "CERULEAN_CENTER",
     "41": "CERULEAN_MART",
-    "42": "CERULEAN_GYM"
+    "42": "CERULEAN_GYM",
+    "56": "ROUTE_5",
+    "59": "UNDERGROUND_NORTH",
+    "60": "UNDERGROUND_TUNNEL",
+    "61": "ROUTE_6",
+    "63": "UNDERGROUND_SOUTH",
+    "64": "VERMILION_CITY",
+    "65": "VERMILION_CENTER",
+    "66": "VERMILION_MART",
+    "67": "VERMILION_GYM",
+    "72": "VERMILION_HARBOR",
+    "74": "SS_ANNE_1F",
+    "75": "SS_ANNE_2F",
+    "76": "SS_ANNE_CAPTAIN",
+    "77": "SS_ANNE_B1F",
+    "78": "SS_ANNE_DECK"
   }
 }
