@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5e29f9f7bd501d635c976f3c27ae6d51ed306aa4",
+      "date": "2026-11-11T23:23:40-03:00",
+      "title": "ci(kanto): mostrar IDs e ancoras originais da fase Cerulean antes de importar",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cb0715c21c9e4e2d26a7364770051a7b96a9b54f",
+      "date": "2026-11-11T23:23:29-03:00",
+      "title": "test(kanto): auditar IDs, eventos e conexoes reais de Mt Moon e Cerulean",
+      "category": "Testes"
+    },
+    {
       "sha": "9221f33860197047b85a8ba5b19fa7a1158b6e61",
       "date": "2026-11-11T23:18:53-03:00",
       "title": "docs(regions): atualizar roteiro para fase 06 e duas barras de progresso",
