@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "07/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "requires_completed_phase": "06/16",
+  "notes": "Symbolic graph and story gates only: no real RMXP MapIDs, coordinates, events, compiled trainers, sprites, licenses or gameplay verification.",
+  "entrance": "JOHTO_AZALEA_TOWN",
+  "corridor": [
+    {
+      "key": "JOHTO_AZALEA_TOWN",
+      "label": "Azalea Town"
+    },
+    {
+      "key": "JOHTO_ILEX_FOREST_GATE",
+      "label": "Ilex Forest Gate"
+    },
+    {
+      "key": "JOHTO_ILEX_FOREST",
+      "label": "Ilex Forest"
+    },
+    {
+      "key": "JOHTO_ROUTE_34",
+      "label": "Route 34"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_CITY",
+      "label": "Goldenrod City"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_ILEX_FOREST_SHRINE",
+      "label": "Ilex Forest Shrine"
+    },
+    {
+      "key": "JOHTO_ROUTE_34_DAY_CARE",
+      "label": "Route 34 Day Care"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_GYM",
+      "label": "Goldenrod Gym"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_RADIO_TOWER",
+      "label": "Radio Tower"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_DEPARTMENT_STORE",
+      "label": "Goldenrod Department Store"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_POKEMON_CENTER",
+      "label": "Goldenrod Pokemon Center"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_BIKE_SHOP",
+      "label": "Goldenrod Bike Shop"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_UNDERGROUND_NORTH",
+      "label": "Goldenrod Underground North"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_UNDERGROUND_SOUTH",
+      "label": "Goldenrod Underground South"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_FLOWER_SHOP",
+      "label": "Goldenrod Flower Shop"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_ILEX_FOREST_GATE",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ILEX_FOREST_GATE",
+      "to": "JOHTO_ILEX_FOREST",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ILEX_FOREST",
+      "to": "JOHTO_ROUTE_34",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_34",
+      "to": "JOHTO_GOLDENROD_CITY",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ILEX_FOREST",
+      "to": "JOHTO_ILEX_FOREST_SHRINE",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_34",
+      "to": "JOHTO_ROUTE_34_DAY_CARE",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_GYM",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_RADIO_TOWER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_DEPARTMENT_STORE",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_POKEMON_CENTER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_BIKE_SHOP",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_UNDERGROUND_NORTH",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_UNDERGROUND_SOUTH",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_FLOWER_SHOP",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_GOLDENROD_UNDERGROUND_NORTH",
+      "to": "JOHTO_GOLDENROD_UNDERGROUND_SOUTH",
+      "two_way": true
+    }
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_WHITNEY",
+      "name": "Whitney",
+      "versions": [
+        0
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ROUTE34",
+      "name": "Route 34 trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "implemented": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_GOLDENROD_GYM_TRAINER",
+      "name": "Goldenrod Gym trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "implemented": false
+    }
+  ],
+  "story_requirements": [
+    "HIVE local and defeated Azalea rival",
+    "Talk to woodcutter in Ilex Forest",
+    "Return two Farfetch'd in order using distinct NPC events and verified collision",
+    "Grant verified Cut item once and require Hive + actual tool to leave Ilex",
+    "Route 34 Day Care introductory dialogue; breeding service not wired",
+    "Goldenrod radio quiz recorded once; no fake radio reward",
+    "Whitney trainer PBS compilation required; loss grants nothing",
+    "After Whitney victory, follow-up grants one PLAIN badge through BlueRegions.award",
+    "Strength requires both Johto PLAIN and native tool",
+    "Flower Shop SquirtBottle only if actual item exists and pilot marker is verified",
+    "Sudowoodo Route 36 is a blocked placeholder until phase 08 physical map, wild battle and item rights are audited"
+  ],
+  "badge": {
+    "key": "PLAIN",
+    "region": "JOHTO",
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": "STRENGTH"
+  },
+  "validation": {
+    "source_map_ids_verified": false,
+    "source_asset_rights_verified": false,
+    "ilex_farfetchd_collision_verified": false,
+    "ilex_cut_item_and_hm_verified": false,
+    "bidirectional_warps_verified": false,
+    "goldenrod_interiors_multi_floors_verified": false,
+    "daycare_breeding_verified": false,
+    "radio_tower_quest_playable": false,
+    "whitney_and_trainers_compiled": false,
+    "whitney_reward_in_game_verified": false,
+    "sudowoodo_physical_route36_verified": false,
+    "save_reload_with_kanto_decades_verified": false,
+    "windows_gameplay_verified": false,
+    "joi_play_gameplay_verified": false
+  },
+  "integrated": false
+}
