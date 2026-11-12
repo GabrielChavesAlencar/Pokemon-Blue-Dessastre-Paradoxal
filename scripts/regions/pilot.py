@@ -340,6 +340,15 @@ def install_events(source, target, mapping):
                          11: {2: "BlueKantoPilot.heal"},
                          115: {2: "BlueKantoPilot.heal"},
                          145: {2: "BlueKantoPilot.heal"},
+                          169: {2: "BlueKantoPilot.heal"},
+                          170: {2: MART},
+                          172: {1: "BlueKantoPilot.dojo_prize(:HITMONLEE, 1)",
+                                2: "BlueKantoPilot.dojo_prize(:HITMONCHAN, 2)"},
+                          182: {9: "BlueKantoPilot.silph_card_key"},
+                          184: {43: "BlueKantoPilot.silph_rival"},
+                          188: {18: "BlueKantoPilot.silph_president"},
+                          189: {1: "BlueKantoPilot.silph_elevator",
+                                2: "BlueKantoPilot.silph_elevator"},
                          146: {2: MART},
                          153: {1: "BlueKantoPilot.safari_preview", 5: "BlueKantoPilot.safari_preview"},
                          26: {2: "BlueKantoPilot.heal"},
@@ -371,6 +380,8 @@ def install_events(source, target, mapping):
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            if not saffron_event_allowed(original, event_id, event):
+                continue
             # Phase 09 selective import: only audited doors, healing, and
             # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
             # Cut trees, elevators or untranslated foreign story events.
@@ -391,6 +402,19 @@ def install_events(source, target, mapping):
             if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11):
                 continue
             if original == 153 and event_id not in (1, 2, 5):
+                continue
+            if 179 <= original <= 188 and text(event.attrs["@name"]) == "Locked Door":
+                peers = silph_locked_group(events, event_id)
+                expr = f"BlueKantoPilot.silph_door({peers})"
+                door = new_event(event, [command(355, expr.encode())], 0, b"")
+                opened = copy.deepcopy(door.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@through"] = True
+                opened.attrs["@list"] = [command(0)]
+                door.attrs["@pages"].append(opened)
+                selected[event_id] = door
                 continue
             if original == 67 and event_id in (SURGE_CANS | SURGE_LOCKS):
                 # The foreign gym's puzzle depends on game-wide switches.
@@ -419,7 +443,8 @@ def install_events(source, target, mapping):
                 selected[event_id] = replacement
                 continue
             if event_id in scripts:
-                floor_trigger = original == 64 and event_id in (9, 29, 30)
+                floor_trigger = ((original == 64 and event_id in (9, 29, 30)) or
+                                 (original == 189 and event_id == 1))
                 if event_id in TRAINERS.get(original, {}):
                     kind, trainer_name, *_ = TRAINERS[original][event_id]
                     key = f"KANTO_{original:03d}_{event_id:03d}"
@@ -461,7 +486,9 @@ def install_events(source, target, mapping):
                     selected[event_id] = new_event(
                         event, [command(355, scripts[event_id].encode())],
                         1 if floor_trigger else 0,
-                        b"" if floor_trigger else actor(event))
+                        b"" if (floor_trigger or
+                                not event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"])
+                        else actor(event))
                 continue
             if original == 5 and event_id in (11, 13):
                 # Professor Oak's original path anchors span the two exit tiles.
@@ -480,7 +507,8 @@ def install_events(source, target, mapping):
                 # For the audited Celadon entrance doors, keep the original
                 # Player Touch semantics rather than requiring an action key.
                 auto_entry = (original == 114 and event_id in (3, 20)) or (
-                    original == 144 and event_id in (5, 17, 18, 24))
+                    original == 144 and event_id in (5, 17, 18, 24)) or (
+                    original == 168 and event_id in (6, 10, 12, 13, 14))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
                 selected[event_id] = new_event(event, [warp], trigger, character)
         map_data.attrs["@events"] = selected
@@ -594,18 +622,23 @@ def install_runtime(target, mapping, game):
         # Phase 11: only audited incoming-warp coordinates, geometry only.
         ("ROUTE8", "Rota 8 (cenario)", 107, 3, 25),
         ("SAFF_WEST", "Portaria Oeste Saffron (cenario)", 112, 11, 5),
-        ("SAFFRON", "Saffron City (cenario)", 168, 28, 4),
-        ("SABRINA", "Ginasio Sabrina (sem batalha)", 171, 15, 23),
-        ("SAFF_DOJO", "Fighting Dojo (cenario)", 172, 5, 13),
-        ("SAFF_CENTER", "Saffron Centro Pokemon (cenario)", 169, 7, 8),
-        ("SILPH_1F", "Silph Co. 1F (cenario)", 178, 8, 20),
-        ("SILPH_5F", "Silph Co. 5F (cenario)", 182, 28, 2),
-        ("SILPH_11F", "Silph Co. 11F (cenario)", 188, 7, 2),
-        ("SILPH_LIFT", "Silph Co. Elevador (cenario)", 189, 2, 5),
+        ("SAFFRON", "Saffron City (Centro, Ginasio e Silph)", 168, 28, 4),
+        ("SABRINA", "Ginasio Sabrina (Marsh apos Silph)", 171, 15, 23),
+        ("SAFF_DOJO", "Fighting Dojo (batalhas)", 172, 5, 13),
+        ("SAFF_CENTER", "Saffron Centro Pokemon (cura)", 169, 7, 8),
+        ("SILPH_1F", "Silph Co. 1F (escadas)", 178, 8, 20),
+        ("SILPH_5F", "Silph Co. 5F (Card Key)", 182, 28, 2),
+        ("SILPH_11F", "Silph Co. 11F (Giovanni)", 188, 7, 2),
+        ("SILPH_LIFT", "Silph Co. Elevador (local)", 189, 2, 5),
     ]
     (data / "blue-kanto-experimental-stops.txt").write_text(
         "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\n"
                 for code, title, old, x, y in stops), encoding="utf-8"
+    )
+    (data / "blue-kanto-silph-floors.txt").write_text(
+        "".join(f"{floor}|{mapping[source]}|{x}|{y}|2\n"
+                for floor, (source, (x, y)) in enumerate(SILPH_FLOOR_LANDINGS.items(), 1)),
+        encoding="ascii",
     )
     # Force compiler to consume new PBS, but keep a real release-mode title after the first boot.
     (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
