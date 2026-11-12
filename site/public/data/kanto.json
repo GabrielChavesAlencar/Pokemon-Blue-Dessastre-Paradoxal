@@ -1619,6 +1619,54 @@
       "trainers": []
     },
     {
+      "id": "kanto-rivals-house",
+      "name": "Casa do rival em Pallet",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-viridian-house-north",
+      "name": "Casa de Viridian — entrada norte",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-viridian-house-south",
+      "name": "Casa de Viridian — entrada sul",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route2-secret-gatehouse",
+      "name": "Portaria secreta da Rota 2",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route2-hidden-house",
+      "name": "Casa escondida da Rota 2",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pewter-museum",
+      "name": "Museu de Pewter",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pewter-house-north",
+      "name": "Casa de Pewter — entrada norte",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pewter-house-south",
+      "name": "Casa de Pewter — entrada sul",
+      "methods": [],
+      "trainers": []
+    },
+    {
       "id": "kanto-silph-lobby",
       "name": "Silph Co. — recepção (prévia)",
       "methods": [],
