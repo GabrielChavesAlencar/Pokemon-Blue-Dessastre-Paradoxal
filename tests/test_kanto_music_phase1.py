@@ -90,9 +90,17 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.write_rules()
         self.add_music(candidate["track"])
         content, report = self.compile()
-        self.assertEqual(report["active_map_bindings"],0)
+        # The same Silph soundtrack is shared by eleven non-preview floors.
+        # Those floors may be active; only the preview lobby must be blocked.
+        approved = {row["map"] for row in self.rules["maps"]
+                    if row["enabled"] and row["track"] == candidate["track"]
+                    and row["map"] not in preview}
+        self.assertEqual(report["active_map_bindings"],len(approved))
         self.assertIn(candidate["map"], report["preview_skipped"])
-        self.assertNotIn("\nMAP\t", content.decode())
+        preview_id = next(sid for sid, key in self.source["maps"].items()
+                          if key == candidate["map"])
+        self.assertFalse(any(row.startswith(f"MAP\t{self.mapping[preview_id]}\t")
+                             for row in content.decode().splitlines()))
 
     def test_uses_no_original_source_id_or_wrong_map_number(self):
         broken = dict(self.mapping)

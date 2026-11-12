@@ -96,11 +96,17 @@ def audit(manifest_path: Path = MANIFEST, base: Path = ROOT) -> dict:
 
 
 def install(game: Path, *, apply: bool = False,
-            manifest_path: Path = MANIFEST, base: Path = ROOT) -> dict:
+            manifest_path: Path = MANIFEST, base: Path = ROOT,
+            numbers: set[int] | None = None) -> dict:
     info = audit(manifest_path, base)
     game = safe_target_game(game)
     plan = []
+    if numbers is not None and (not numbers or not numbers.issubset(
+        {x["number"] for x in info["manifest"]["files"]})): 
+        raise ValueError("Invalid subset of Kanto music numbers")
     for track in info["manifest"]["files"]:
+        if numbers is not None and track["number"] not in numbers:
+            continue
         source = base / track["repo_path"]
         destination = game / track["game_path"]
         if not destination.resolve().is_relative_to(game):
@@ -163,11 +169,22 @@ def main() -> int:
                         help="game/ local ou piloto isolado em .blue-work/")
     parser.add_argument("--apply", action="store_true",
                         help="Copiar sem sobrescrever Audio/BGM e Audio/ME")
+    parser.add_argument("--phase2", action="store_true",
+                        help="Instalar somente as BGM ambientais e de transporte habilitadas")
     args = parser.parse_args()
     try:
         if args.audit and args.apply:
             parser.error("--audit e --apply nao podem ser combinados")
-        result = (audit() if args.audit else install(args.game, apply=args.apply))
+        if args.audit and args.phase2:
+            parser.error("--audit e --phase2 nao podem ser combinados")
+        numbers = None
+        if args.phase2:
+            try:
+                from scripts.music.compile_kanto_music import phase2_track_numbers
+            except ModuleNotFoundError:
+                from compile_kanto_music import phase2_track_numbers
+            numbers = phase2_track_numbers(ROOT)
+        result = (audit() if args.audit else install(args.game, apply=args.apply, numbers=numbers))
         if args.audit:
             result = {k:v for k,v in result.items() if k not in ("manifest","base")}
             result["status"]="audited_only"

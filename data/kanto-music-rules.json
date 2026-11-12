@@ -1,264 +1,266 @@
 {
   "schema": 1,
   "region": "KANTO",
-  "phase": 1,
+  "phase": 2,
   "default_enabled": false,
-  "notes": "All candidate bindings are staged and disabled in F1. F2-F5 enable only audited events/maps; previews remain inactive until approved. Source IDs never reach the runtime.",
+  "notes": "Fase 2: ambient BGM on non-preview compiled Kanto maps only. Route 4 deferred until transition segment is verified; Silph Lobby stays preview. No battle/ME/scene music is enabled. Transport follows real bicycle/surf state; Decades/global preferences are untouched.",
   "maps": [
     {
       "map": "CELADON_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CELADON_CITY",
       "track": 40,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CELADON_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CERULEAN_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CERULEAN_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CINNABAR_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CINNABAR_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "CINNABAR_ISLAND",
       "track": 55,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "FUCHSIA_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "FUCHSIA_CITY",
       "track": 50,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "FUCHSIA_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MANSION_1F",
       "track": 56,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MANSION_2F",
       "track": 56,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MANSION_3F",
       "track": 56,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MANSION_B1F",
       "track": 56,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MT_MOON_1F",
       "track": 34,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MT_MOON_B1F",
       "track": 34,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MT_MOON_B2F",
       "track": 34,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "MT_MOON_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "OAK_LAB",
       "track": 8,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "PALLET_TOWN",
       "track": 6,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "PEWTER_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "PEWTER_CITY",
       "track": 15,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "PEWTER_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "ROUTE_1",
       "track": 13,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "ROUTE_4",
       "track": 32,
-      "enabled": false
+      "enabled": false,
+      "pending_reason": "ROUTE_4_SEGMENT_UNVERIFIED"
     },
     {
       "map": "SAFFRON_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SAFFRON_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_10F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_11F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_1F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_2F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_3F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_4F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_5F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_6F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_7F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_8F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_9F",
       "track": 47,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SILPH_LOBBY",
       "track": 47,
-      "enabled": false
+      "enabled": false,
+      "pending_reason": "PREVIEW_ONLY"
     },
     {
       "map": "SS_ANNE_1F",
       "track": 36,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SS_ANNE_2F",
       "track": 36,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SS_ANNE_B1F",
       "track": 36,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SS_ANNE_CAPTAIN",
       "track": 36,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "SS_ANNE_DECK",
       "track": 36,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "VERMILION_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "VERMILION_CITY",
       "track": 35,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "VERMILION_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "VIRIDIAN_CENTER",
       "track": 21,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "VIRIDIAN_FOREST",
       "track": 17,
-      "enabled": false
+      "enabled": true
     },
     {
       "map": "VIRIDIAN_GYM",
       "track": 25,
-      "enabled": false
+      "enabled": true
     }
   ],
   "battles": [
@@ -365,6 +367,22 @@
       "scene": "credits",
       "track": 73,
       "enabled": false
+    }
+  ],
+  "transport": [
+    {
+      "mode": "bicycle",
+      "track": 37,
+      "enabled": true,
+      "volume": 100,
+      "pitch": 100
+    },
+    {
+      "mode": "surf",
+      "track": 52,
+      "enabled": true,
+      "volume": 100,
+      "pitch": 100
     }
   ]
 }

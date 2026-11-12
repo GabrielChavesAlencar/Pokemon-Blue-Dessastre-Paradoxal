@@ -1,8 +1,8 @@
 """Compile symbolic Kanto music rules against the *installed* pilot MapIDs.
 
-F1 deliberately stages rules without enabling any soundtrack. The output is a
-separate text manifest for the BlueMusic Ruby adapter, never a global preference
-file. No FRLG source ID is written as a runtime map ID.
+F2 enables only audited Kanto ambient maps and vehicle state themes. The
+output remains an isolated BlueMusic manifest; Decades global preferences and
+FRLG source IDs never become runtime map assignments.
 """
 from __future__ import annotations
 
@@ -68,9 +68,9 @@ def _rules(project: Path) -> tuple[dict, dict, dict]:
     rules = load_json(rules_path)
     source = load_json(project / "data/regions/kanto-source.json")
     manifest = load_json(project / "data/kanto-music.json")
-    if (rules.get("schema"), rules.get("region"), rules.get("phase"),
-        rules.get("default_enabled")) != (1, "KANTO", 1, False):
-        raise ValueError("Invalid F1 Kanto rules/version")
+    if (rules.get("schema"), rules.get("region"),
+        rules.get("default_enabled")) != (1, "KANTO", False) or rules.get("phase") not in (1, 2):
+        raise ValueError("Invalid Kanto rules/version")
     if source.get("region") != "KANTO" or manifest.get("region") != "KANTO":
         raise ValueError("Not a Kanto source or soundtrack catalog")
     files = manifest.get("files")
@@ -129,6 +129,7 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
                   key: dest for key, (_, dest) in sorted(symbols.items())
               }, "staged_map_rules": 0, "staged_battles": 0,
               "staged_events": 0, "staged_scenes": 0,
+              "staged_transport": 0, "active_transport_bindings": 0,
               "active_map_bindings": 0, "active_battle_bindings": 0,
               "missing_audio": [], "preview_skipped": [],
               "native_playback_tested": False}
@@ -169,6 +170,26 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
         lines.append(f"BATTLE\t{key}\t{track}\t{vol}\t{pitch}")
         report["active_battle_bindings"] += 1
 
+    seen.clear()
+    transports = rules.get("transport", [])
+    if not isinstance(transports, list):
+        raise ValueError("Kanto transport rules must be a list")
+    for row in transports:
+        mode = row.get("mode")
+        if mode not in ("bicycle", "surf") or mode in seen:
+            raise ValueError(f"Invalid or duplicated Kanto transport mode: {mode}")
+        seen.add(mode)
+        track = _track(catalog, row.get("track"), "BGM")
+        report["staged_transport"] += 1
+        if not _enabled(row):
+            continue
+        if not (game / "Audio/BGM" / track).is_file():
+            report["missing_audio"].append(track)
+            continue
+        vol, pitch = _settings(row)
+        lines.append(f"TRANSPORT\t{mode}\t{track}\t{vol}\t{pitch}")
+        report["active_transport_bindings"] += 1
+
     for field, kind in (("events", "ME"), ("scenes", "BGM")):
         seen.clear()
         for row in rules.get(field, []):
@@ -196,6 +217,27 @@ def _settings(row: dict) -> tuple[int, int]:
             type(pitch) is not int or not 50 <= pitch <= 150):
         raise ValueError("Invalid regional volume/pitch")
     return volume, pitch
+
+
+def phase2_track_numbers(project: Path) -> set[int]:
+    """Audio assets required by enabled non-preview Kanto maps and vehicles."""
+    rules, source, catalog = _rules(project)
+    source_keys = {label: int(sid) for sid, label in source["maps"].items()}
+    preview = set(source["preview_only"])
+    numbers: set[int] = set()
+    for row in rules.get("maps", []):
+        key = row["map"]
+        if key not in source_keys:
+            raise ValueError("Unknown Kanto map in phase 2 assets")
+        number = row["track"]
+        _track(catalog, number, "BGM")
+        if _enabled(row) and source_keys[key] not in preview:
+            numbers.add(number)
+    for row in rules.get("transport", []):
+        _track(catalog, row["track"], "BGM")
+        if _enabled(row):
+            numbers.add(row["track"])
+    return numbers
 
 
 def plan_installed(project: Path, game: Path) -> dict[Path, bytes]:

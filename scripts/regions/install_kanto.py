@@ -80,6 +80,29 @@ def manifest(pilot, game):
     # Generated-only regional audio manifest: MapIDs come from the pilot.
     music_file = Path("Data/blue-kanto-music.txt")
     files[music_file] = pilot / music_file
+    # Import only the F2 BGM tracks. Already-identical user-installed MP3s are
+    # untouched; conflicting files abort before any map is installed.
+    from scripts.music.compile_kanto_music import phase2_track_numbers
+    selected = phase2_track_numbers(ROOT)
+    catalog = json_file(ROOT / "data/kanto-music.json")
+    for item in catalog["files"]:
+        if item["number"] not in selected:
+            continue
+        relative = Path(item["game_path"])
+        source_audio = pilot / relative
+        if (source_audio.is_symlink() or not source_audio.is_file() or
+                not source_audio.resolve().is_relative_to(pilot.resolve())):
+            raise ValueError("Musica de Kanto nao preparada: " + str(relative))
+        if digest(source_audio) != digest(ROOT / item["repo_path"]):
+            raise ValueError("Musica de Kanto divergente: " + str(relative))
+        destination_audio = game / relative
+        if not destination_audio.resolve().is_relative_to(game.resolve()):
+            raise ValueError("Destino de audio inseguro: " + str(relative))
+        if destination_audio.exists():
+            if not destination_audio.is_file() or digest(destination_audio) != digest(source_audio):
+                raise ValueError("Audio existente diferente, recusar sobrescrita: " + str(relative))
+            continue
+        files[relative] = source_audio
     for path in (pilot / PLUGIN).rglob("*"):
         if path.is_file():
             files[PLUGIN / path.relative_to(pilot / PLUGIN)] = path
