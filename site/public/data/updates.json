@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "72416e88f15ad7844ceea88d58bf65455275b297",
+      "date": "2026-11-12T10:16:08-03:00",
+      "title": "Kanto Erika: prova nativa portas/cura, derrota, Rainbow única, pós-vitória e save/reload",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0d9b39b3391c0d5d452da2f006d26d4e8ec7f906",
       "date": "2026-11-12T10:15:10-03:00",
       "title": "Kanto etapa 09: validar whitelist exata de Celadon, cura, 2 portas e 57 Sight(n)",
