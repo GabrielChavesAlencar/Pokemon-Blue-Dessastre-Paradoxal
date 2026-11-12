@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c25943ee49f828935997b8629a2ad005caecca39",
+      "date": "2026-11-12T07:14:28-03:00",
+      "title": "Fase 08: ampliar guia de teste Windows para 40 mapas, navio e 17 destinos",
+      "category": "Documentação"
+    },
+    {
       "sha": "c7e6e8781b98b4e7aa62c4bfad153f4b48fcdb17",
       "date": "2026-11-12T07:13:23-03:00",
       "title": "Provar no motor o puzzle de lixeiras, cancelamento pré-tranca e time real de Surge",
