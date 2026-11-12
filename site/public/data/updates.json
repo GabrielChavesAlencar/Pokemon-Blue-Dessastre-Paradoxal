@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d6a1a429cc8529ab92896c203c0c4c7a60758ec4",
+      "date": "2026-11-11T21:52:47-03:00",
+      "title": "feat(kanto): registrar hashes da base antes de integrar mapas na campanha",
+      "category": "Novidades"
+    },
+    {
       "sha": "226151bd207d3e48698ff540ea31702e3e57b61a",
       "date": "2026-11-11T21:52:02-03:00",
       "title": "fix(kanto): gravar quebra de linha correta no marcador de origem",
