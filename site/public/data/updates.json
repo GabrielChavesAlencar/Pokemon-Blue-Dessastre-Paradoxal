@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e05dedb3b2e08339003184ccb5b7ba53bb8504bd",
+      "date": "2026-11-12T06:41:06-03:00",
+      "title": "test(kanto): provar spawn real de BAT com espacos pelo Game.exe no Windows",
+      "category": "Testes"
+    },
+    {
       "sha": "d3e915e08042c20715c74d1e15a737cf92e5b416",
       "date": "2026-11-12T06:39:44-03:00",
       "title": "docs(kanto): registrar terceira opcao Testar Kanto no Modo Historia sem alterar contagem",
