@@ -48,7 +48,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 6. [ ] Revisar em documento os lotes **A–I**: Pallet, Pewter/Mt. Moon, Cerulean, Vermilion, Celadon/Lavender/Saffron, Fuchsia/Snorlax, Cinnabar/Viridian, Liga e pós-jogo/Sevii opcional.
 7. [ ] Definir a matriz de QA por evento: fonte/MapID/EventID, trigger, páginas, estado, teste estrutural, teste real Windows/JoiPlay, rollback. Somente após autorização implementar e retirar mapas de `preview_only`.
 
-**Duas contagens de trabalho diferentes:** Kanto (desenvolvimento **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
+**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **6/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
 
 ## Correção funcional prioritária — interiores e treinadores de Pallet a Pewter
 
@@ -61,7 +61,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [ ] **TESTE MANUAL:** Pallet → casa do rival → Viridian (2 casas) → Rota 2 (portaria/casa escondida) → Pewter (Museu/2 casas) com retorno; abordagem de Rick, derrota, vitória, repetição e save/reload na Forest.
 - [ ] Completar demais interiores, visão/travas de história e UI de insígnias (MAN-03), eventos canônicos e traduções EN/PT-BR.
 
-**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + **8 interiores funcionais novos** + 61 mapas de terreno sem eventos (fases 09–11). Os IDs anteriores foram congelados. **As barras permanecem 8/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
+**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + **8 interiores funcionais novos** + 61 mapas de terreno sem eventos (fases 09–11). Os IDs anteriores foram congelados. **Contagem atual reavaliada: 6/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
 
 ## Diálogos EN/PT-BR — estudo FireRed integrado ao roadmap
 
@@ -75,7 +75,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 **Prioridades de roteiro:** diálogos de Oak/Parcel/rival e Brock nos mapas existentes; Misty/Bill/S.S. Anne/Lt. Surge; depois Celadon/Erika, Fuchsia/Koga, Saffron/Sabrina; por fim Cinnabar, Viridian, Liga e pós-jogo opcional. A ordem está vinculada às 16 fases no documento próprio. Não marcar a tradução como concluída antes do inventário e dos testes.
 
-**Progresso de localização não aferido.** Esta atualização é apenas de planejamento; desenvolvimento Kanto **8/16** e aceite **1/16** permanecem iguais.
+**Progresso de localização não aferido.** A reavaliação geral marca desenvolvimento Kanto **6/16** e aceite **1/16**; receber um MD não altera essas barras.
 
 ## Fase 11 — Saffron/Sabrina/Silph Co. (terreno apenas)
 
@@ -86,7 +86,7 @@ Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG
 - [ ] Integrar portarias, Fighting Dojo, Sabrina, Marsh Badge, teletransportadores e campanha Silph Co. **somente após revisão de eventos e testes de regressão**.
 - [ ] Validar manualmente tilesets, passabilidade, entrada/saída e compatibilidade de saves; manter os 54 perfis existentes sem inventar treinadores novos.
 
-**As barras funcionais continuam 8/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
+**As barras funcionais reavaliadas estão em 6/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
 
 ## Fase 10 — Fuchsia/Safari preparada sem eventos
 
@@ -103,7 +103,7 @@ A fase 10 é **prévia**, não conclusão funcional. Não conceder Soul Badge ne
 
 Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tileset das áreas selecionadas, sem eventos de qualquer tipo no lote novo. **Manter MAN-01 (interiores), MAN-02 (treinadores) e eventos de Erika/Team Rocket em espera pela análise do usuário.** Não apagar as pendências nem criar atalhos que concedam insígnias.
 
-**Estado de Kanto:** etapa 09 iniciada (cenário), mas desenvolvimento funcional **8/16 (50%)**, aceitação **1/16 (6,25%)**, porque a fase 09 ainda não tem progressão nem batalha.
+**Estado de Kanto (contagem reavaliada):** etapa 09 tem só cenário; desenvolvimento com núcleo **6/16 (37,5%)**, aceitação **1/16 (6,25%)**, porque a fase 09 ainda não tem progressão nem batalha.
 
 ## 0. Correções prioritárias identificadas pelo usuário (12/11/2026)
 
@@ -116,7 +116,7 @@ Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tilese
 - [ ] **Prioridade 3 — Duas telas de insígnias (MAN-03).** Tela local de Kanto com oito posições, líder e estado; tela geral por região/geração com o progresso de todas as regiões, sem inventar insígnias em Alola, Hisui ou Decades. Atualizar a UI a partir do mesmo estado regional persistido.
 - [ ] Executar regressão de caminhada real e registrar evidências por mapa/evento **antes de aceitar** as etapas 02, 03 e 07. O TXT não afirma ter testado Vermilion/Surge (fase 08).
 
-**Não alterar as barras por receber feedback:** desenvolvimento **8/16**; aceitação total **1/16**. Corrigir esses itens em paralelo à próxima expansão, sem considerá-los concluídos antecipadamente.
+**Não alterar as barras somente por receber feedback:** desenvolvimento reavaliado **6/16**; aceitação total **1/16**. Corrigir esses itens em paralelo à próxima expansão, sem considerá-los concluídos antecipadamente.
 
 ## 1. Validar o piloto de Kanto
 
