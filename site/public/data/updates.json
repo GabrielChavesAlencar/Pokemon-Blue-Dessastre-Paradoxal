@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0c762d953f5d1ddea2faff6a9a1d77adc1f6bbd1",
+      "date": "2026-11-12T09:09:04-03:00",
+      "title": "docs(kanto): adicionar guia FireRed EN/PT e passo a passo de integração",
+      "category": "Novidades"
+    },
+    {
       "sha": "7b2e5f76c159bc8a188acc2ae7243a6b34661027",
       "date": "2026-11-12T09:02:27-03:00",
       "title": "Kanto 11: documentar regressão completa aprovada para Silph e Saffron",
