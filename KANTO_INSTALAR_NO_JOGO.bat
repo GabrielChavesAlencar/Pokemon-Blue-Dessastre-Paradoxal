@@ -28,7 +28,7 @@ where py >nul 2>&1
 if not errorlevel 1 (
   py -3 -X utf8 "scripts\regions\install_kanto.py"
   if errorlevel 1 goto :error
-  choice /C SN /N /M "Aplicar os 13 mapas de Kanto no jogo principal? [S/N] "
+  choice /C SN /N /M "Aplicar os 25 mapas de Kanto no jogo principal? [S/N] "
   if errorlevel 2 goto :cancel
   py -3 -X utf8 "scripts\regions\install_kanto.py" --apply
   if errorlevel 1 goto :error
@@ -41,7 +41,7 @@ if errorlevel 1 (
 )
 python -X utf8 "scripts\regions\install_kanto.py"
 if errorlevel 1 goto :error
-choice /C SN /N /M "Aplicar os 13 mapas de Kanto no jogo principal? [S/N] "
+choice /C SN /N /M "Aplicar os 25 mapas de Kanto no jogo principal? [S/N] "
 if errorlevel 2 goto :cancel
 python -X utf8 "scripts\regions\install_kanto.py" --apply
 if errorlevel 1 goto :error
