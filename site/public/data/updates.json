@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "26c17a00b66ded1e1bfdee938e9f61ad09edb1b8",
+      "date": "2026-11-11T21:31:02-03:00",
+      "title": "fix(kanto): distinguir encerramento deliberado de crash no teste de janela",
+      "category": "Correções"
+    },
+    {
       "sha": "7d59fa3e38dadc01a2b4081714e5e658ce259b47",
       "date": "2026-11-11T21:30:33-03:00",
       "title": "docs(kanto): documentar reproduçao PhysFS e checklist manual de jogabilidade",
