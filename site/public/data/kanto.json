@@ -9,6 +9,7 @@
     {
       "id": "kanto-pallet-town",
       "name": "Pallet Town",
+      "status": "experimental",
       "methods": [
         {
           "id": "Water",
@@ -131,6 +132,7 @@
     {
       "id": "kanto-oak-lab",
       "name": "Laboratório do Professor Oak",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-blue"
@@ -139,12 +141,14 @@
     {
       "id": "kanto-player-home",
       "name": "Casa do jogador",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-1",
       "name": "Rota 1",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -192,6 +196,7 @@
     {
       "id": "kanto-viridian-city",
       "name": "Viridian City",
+      "status": "experimental",
       "methods": [
         {
           "id": "Water",
@@ -300,6 +305,7 @@
     {
       "id": "kanto-viridian-gym",
       "name": "Ginásio de Viridian — Giovanni",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-giovanni-viridian",
@@ -316,18 +322,21 @@
     {
       "id": "kanto-viridian-center",
       "name": "Centro Pokémon de Viridian",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-viridian-mart",
       "name": "Poké Mart de Viridian",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-2",
       "name": "Rota 2",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -403,18 +412,21 @@
     {
       "id": "kanto-forest-gate-south",
       "name": "Portaria sul da Floresta de Viridian",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-forest-gate-north",
       "name": "Portaria norte da Floresta de Viridian",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-viridian-forest",
       "name": "Floresta de Viridian",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -510,12 +522,14 @@
     {
       "id": "kanto-pewter-city",
       "name": "Pewter City",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-pewter-gym",
       "name": "Ginásio de Pewter",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-liam",
@@ -525,18 +539,21 @@
     {
       "id": "kanto-pewter-center",
       "name": "Centro Pokémon de Pewter",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-pewter-mart",
       "name": "Poké Mart de Pewter",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-3",
       "name": "Rota 3",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -649,6 +666,7 @@
     {
       "id": "kanto-route-4",
       "name": "Rota 4",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -832,12 +850,14 @@
     {
       "id": "kanto-mt-moon-center",
       "name": "Centro Pokémon de Mt. Moon",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-mt-moon-1f",
       "name": "Mt. Moon — 1F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -921,6 +941,7 @@
     {
       "id": "kanto-mt-moon-b1f",
       "name": "Mt. Moon — B1F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -954,6 +975,7 @@
     {
       "id": "kanto-mt-moon-b2f",
       "name": "Mt. Moon — B2F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -1032,24 +1054,28 @@
     {
       "id": "kanto-cerulean-city",
       "name": "Cerulean City",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cerulean-center",
       "name": "Centro Pokémon de Cerulean",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cerulean-mart",
       "name": "Poké Mart de Cerulean",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cerulean-gym",
       "name": "Ginásio de Cerulean",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-misty",
@@ -1060,6 +1086,7 @@
     {
       "id": "kanto-route-5",
       "name": "Rota 5",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -1135,18 +1162,21 @@
     {
       "id": "kanto-underground-north",
       "name": "Passagem Subterrânea — entrada norte",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-underground-tunnel",
       "name": "Passagem Subterrânea — túnel",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-6",
       "name": "Rota 6",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -1330,12 +1360,14 @@
     {
       "id": "kanto-underground-south",
       "name": "Passagem Subterrânea — entrada sul",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-vermilion-city",
       "name": "Vermilion City",
+      "status": "experimental",
       "methods": [
         {
           "id": "Water",
@@ -1444,18 +1476,21 @@
     {
       "id": "kanto-vermilion-center",
       "name": "Centro Pokémon de Vermilion",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-vermilion-mart",
       "name": "Poké Mart de Vermilion",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-vermilion-gym",
       "name": "Ginásio de Vermilion",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-dwayne",
@@ -1467,12 +1502,14 @@
     {
       "id": "kanto-vermilion-harbor",
       "name": "Porto de Vermilion",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-ss-anne-1f",
       "name": "S.S. Anne — 1F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-thomas",
@@ -1484,6 +1521,7 @@
     {
       "id": "kanto-ss-anne-2f",
       "name": "S.S. Anne — 2F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-brooks",
@@ -1495,12 +1533,14 @@
     {
       "id": "kanto-ss-anne-captain",
       "name": "S.S. Anne — cabine do capitão",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-ss-anne-b1f",
       "name": "S.S. Anne — B1F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-phillip",
@@ -1514,6 +1554,7 @@
     {
       "id": "kanto-ss-anne-deck",
       "name": "S.S. Anne — convés",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-trevor",
@@ -1523,66 +1564,77 @@
     {
       "id": "kanto-route-7",
       "name": "Rota 7",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-city",
       "name": "Celadon City",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-center",
       "name": "Centro Pokémon de Celadon",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-1f",
       "name": "Loja de Celadon — 1F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-2f",
       "name": "Loja de Celadon — 2F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-3f",
       "name": "Loja de Celadon — 3F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-4f",
       "name": "Loja de Celadon — 4F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-5f",
       "name": "Loja de Celadon — 5F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-roof",
       "name": "Loja de Celadon — terraço (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-dept-elevator",
       "name": "Loja de Celadon — elevador (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-gym",
       "name": "Ginásio de Celadon — Erika",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-erika",
@@ -1598,24 +1650,28 @@
     {
       "id": "kanto-route-18-fuchsia",
       "name": "Rota 18 — trecho Fuchsia (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-18-gate",
       "name": "Portaria da Rota 18 (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-18-cycling",
       "name": "Rota 18 — trecho Cycling Road (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-city",
       "name": "Fuchsia City",
+      "status": "experimental",
       "methods": [
         {
           "id": "Water",
@@ -1962,18 +2018,21 @@
     {
       "id": "kanto-fuchsia-center",
       "name": "Centro Pokémon de Fuchsia",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-mart",
       "name": "Poké Mart de Fuchsia",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-gym",
       "name": "Ginásio de Fuchsia — Koga",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-koga",
@@ -1988,150 +2047,175 @@
     {
       "id": "kanto-fuchsia-warden-house",
       "name": "Casa do Warden (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-safari-gate",
       "name": "Portão da Safari Zone — entrada de captura indisponível",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-south",
       "name": "Safari Zone — setor sul (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-south",
       "name": "Safari Zone — casa de descanso sul (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-east",
       "name": "Safari Zone — setor leste (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-east",
       "name": "Safari Zone — casa de descanso leste (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-north",
       "name": "Safari Zone — setor norte (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-north",
       "name": "Safari Zone — casa de descanso norte (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-west",
       "name": "Safari Zone — setor oeste (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-west",
       "name": "Safari Zone — casa de descanso oeste (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-secret-house",
       "name": "Safari Zone — Secret House (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-15",
       "name": "Rota 15 (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-15-gate",
       "name": "Portaria da Rota 15 (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-gate-north",
       "name": "Portaria norte de Saffron (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-gate-south",
       "name": "Portaria sul de Saffron (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-8",
       "name": "Rota 8 (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-gate-east",
       "name": "Portaria leste de Saffron (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-underground-route8-east",
       "name": "Passagem Subterrânea leste — entrada (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-underground-route8-tunnel",
       "name": "Passagem Subterrânea leste — túnel (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-gate-west",
       "name": "Portaria oeste de Saffron (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-underground-route7-west",
       "name": "Passagem Subterrânea oeste — entrada (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-city",
       "name": "Saffron City",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-center",
       "name": "Centro Pokémon de Saffron",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-mart",
       "name": "Poké Mart de Saffron",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-gym",
       "name": "Ginásio de Saffron — Sabrina",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-sabrina",
@@ -2147,6 +2231,7 @@
     {
       "id": "kanto-saffron-dojo",
       "name": "Fighting Dojo",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-hideki",
@@ -2159,96 +2244,112 @@
     {
       "id": "kanto-saffron-house-a",
       "name": "Casa de Saffron A (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-house-b",
       "name": "Casa de Saffron B (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-house-c",
       "name": "Casa de Saffron C (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-saffron-trainer-fan-club",
       "name": "Clube de Treinadores Pokémon de Saffron (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-rivals-house",
       "name": "Casa do rival em Pallet",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-viridian-house-north",
       "name": "Casa de Viridian — entrada norte",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-viridian-house-south",
       "name": "Casa de Viridian — entrada sul",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route2-secret-gatehouse",
       "name": "Portaria secreta da Rota 2",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route2-hidden-house",
       "name": "Casa escondida da Rota 2",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-pewter-museum",
       "name": "Museu de Pewter",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-pewter-house-north",
       "name": "Casa de Pewter — entrada norte",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-pewter-house-south",
       "name": "Casa de Pewter — entrada sul",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-silph-lobby",
       "name": "Silph Co. — recepção (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-silph-elevator",
       "name": "Silph Co. — elevador",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-silph-1f",
       "name": "Silph Co. — 1F",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-silph-2f",
       "name": "Silph Co. — 2F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-21",
@@ -2258,6 +2359,7 @@
     {
       "id": "kanto-silph-3f",
       "name": "Silph Co. — 3F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-23"
@@ -2266,6 +2368,7 @@
     {
       "id": "kanto-silph-4f",
       "name": "Silph Co. — 4F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-24",
@@ -2275,6 +2378,7 @@
     {
       "id": "kanto-silph-5f",
       "name": "Silph Co. — 5F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-26",
@@ -2284,6 +2388,7 @@
     {
       "id": "kanto-silph-6f",
       "name": "Silph Co. — 6F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-28",
@@ -2293,6 +2398,7 @@
     {
       "id": "kanto-silph-7f",
       "name": "Silph Co. — 7F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-30",
@@ -2304,6 +2410,7 @@
     {
       "id": "kanto-silph-8f",
       "name": "Silph Co. — 8F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-33",
@@ -2313,6 +2420,7 @@
     {
       "id": "kanto-silph-9f",
       "name": "Silph Co. — 9F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-35",
@@ -2322,6 +2430,7 @@
     {
       "id": "kanto-silph-10f",
       "name": "Silph Co. — 10F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-37"
@@ -2330,6 +2439,7 @@
     {
       "id": "kanto-silph-11f",
       "name": "Silph Co. — 11F",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-grunt-silph-38",
@@ -2340,72 +2450,84 @@
     {
       "id": "kanto-route-19",
       "name": "Rota 19 (prévia aquática)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-20",
       "name": "Rota 20 (prévia aquática)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-seafoam-1f",
       "name": "Seafoam Islands — 1F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-seafoam-b1f",
       "name": "Seafoam Islands — B1F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-seafoam-b2f",
       "name": "Seafoam Islands — B2F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-seafoam-b3f",
       "name": "Seafoam Islands — B3F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-seafoam-b4f",
       "name": "Seafoam Islands — B4F (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-21",
       "name": "Rota 21 (prévia aquática)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cinnabar-island",
       "name": "Cinnabar Island",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cinnabar-center",
       "name": "Centro Pokémon de Cinnabar",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cinnabar-mart",
       "name": "Poké Mart de Cinnabar",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-cinnabar-gym",
       "name": "Ginásio de Cinnabar — Blaine",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-blaine",
@@ -2421,12 +2543,14 @@
     {
       "id": "kanto-cinnabar-lab",
       "name": "Laboratório de Cinnabar (prévia de salas)",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-mansion-1f",
       "name": "Pokémon Mansion — 1F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -2645,6 +2769,7 @@
     {
       "id": "kanto-mansion-2f",
       "name": "Pokémon Mansion — 2F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -2862,6 +2987,7 @@
     {
       "id": "kanto-mansion-3f",
       "name": "Pokémon Mansion — 3F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -3080,6 +3206,7 @@
     {
       "id": "kanto-mansion-b1f",
       "name": "Pokémon Mansion — B1F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -3298,6 +3425,7 @@
     {
       "id": "kanto-route-22",
       "name": "Rota 22 — acesso ao Plateau",
+      "status": "experimental",
       "methods": [
         {
           "id": "LandDay",
@@ -3474,24 +3602,28 @@
     {
       "id": "kanto-indigo-gate",
       "name": "Portaria da Liga Pokémon",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-route-23",
       "name": "Rota 23 — oito postos de insígnias",
+      "status": "encounter_review",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-victory-road-hub",
       "name": "Victory Road — hub vazio (prévia)",
+      "status": "preview",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-victory-road-1f",
       "name": "Victory Road — 1F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -3724,6 +3856,7 @@
     {
       "id": "kanto-victory-road-2f",
       "name": "Victory Road — 2F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -3931,6 +4064,7 @@
     {
       "id": "kanto-victory-road-3f",
       "name": "Victory Road — 3F",
+      "status": "experimental",
       "methods": [
         {
           "id": "CaveDay",
@@ -4166,18 +4300,21 @@
     {
       "id": "kanto-indigo-plateau",
       "name": "Indigo Plateau",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-indigo-lobby",
       "name": "Indigo Plateau — Saguão da Liga",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-elite-lorelei-room",
       "name": "Elite Four — sala de Lorelei",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-lorelei"
@@ -4186,6 +4323,7 @@
     {
       "id": "kanto-elite-bruno-room",
       "name": "Elite Four — sala de Bruno",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-bruno"
@@ -4194,6 +4332,7 @@
     {
       "id": "kanto-elite-agatha-room",
       "name": "Elite Four — sala de Agatha",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-agatha"
@@ -4202,6 +4341,7 @@
     {
       "id": "kanto-elite-lance-room",
       "name": "Elite Four — sala de Lance",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-lance"
@@ -4210,6 +4350,7 @@
     {
       "id": "kanto-champion-hall",
       "name": "Sala do Campeão Blue",
+      "status": "experimental",
       "methods": [],
       "trainers": [
         "kanto-blue-champion"
@@ -4218,6 +4359,7 @@
     {
       "id": "kanto-hall-of-fame",
       "name": "Hall of Fame — Kanto",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     }
