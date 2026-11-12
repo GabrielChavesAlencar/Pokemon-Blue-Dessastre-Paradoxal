@@ -16,27 +16,33 @@ finally:
 
 
 class KantoPilotAuditTests(unittest.TestCase):
-    def test_phase10_preserves_all_previous_51_map_slots(self):
+    def test_phase11_preserves_all_previous_71_map_slots(self):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 71)
+        self.assertEqual(len(order), 100)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 71)
+        self.assertEqual(len(set(order)), 100)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
-        self.assertEqual(order[51:], [141,142,143,144,145,146,147,152,153,155,
+        self.assertEqual(order[51:71], [141,142,143,144,145,146,147,152,153,155,
                                       156,157,158,159,160,161,162,163,164,165])
-        self.assertEqual(manifest["preview_only"], [111,114,115,117,118,119,120,121,122,123,124,
-                                                   141,142,143,144,145,146,147,152,153,155,
-                                                   156,157,158,159,160,161,162,163,164,165])
+        self.assertEqual(order[71:], [57,62,107,108,109,110,112,113,168,169,170,171,
+                                     172,174,175,176,177,178,179,180,181,182,183,
+                                     184,185,186,187,188,189])
+        self.assertEqual(manifest["preview_only"], sorted([
+            111,114,115,117,118,119,120,121,122,123,124,
+            141,142,143,144,145,146,147,152,153,155,156,157,158,159,
+            160,161,162,163,164,165,
+            57,62,107,108,109,110,112,113,168,169,170,171,172,
+            174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189]))
         self.assertIn(42, order[13:])
 
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 71)
+        self.assertEqual(len(data["locations"]), 100)
         self.assertGreaterEqual(len(data["trainers"]), 54)
         misty = next(t for t in data["trainers"] if t["id"] == "kanto-misty")
         self.assertTrue(misty["leader"])
@@ -56,6 +62,12 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(len(phase10), 20)
         self.assertTrue(all(not x["methods"] and not x["trainers"] for x in phase10))
         self.assertFalse(any("Koga" in trainer["name"] for trainer in data["trainers"]))
+        phase11 = [x for x in data["locations"] if x["id"].startswith(
+            ("kanto-saffron-", "kanto-silph-", "kanto-route-8",
+             "kanto-underground-route"))]
+        self.assertEqual(len(phase11), 29)
+        self.assertTrue(all(not x["methods"] and not x["trainers"] for x in phase11))
+        self.assertFalse(any("Sabrina" in trainer["name"] for trainer in data["trainers"]))
         surge = next(t for t in data["trainers"] if t["id"] == "kanto-lt. surge")
         self.assertTrue(surge["leader"])
         self.assertEqual(surge["location"], "kanto-vermilion-gym")
