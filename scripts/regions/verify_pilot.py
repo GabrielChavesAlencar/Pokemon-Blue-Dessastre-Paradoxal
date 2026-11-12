@@ -71,9 +71,12 @@ def inspect(game: Path) -> dict:
         (5, 2, 8, 1),          # Pallet rival house
         (10, 2, 14, 4),        # Viridian houses
         (10, 3, 15, 3),
-        (18, 8, 21, 4),        # Route 2 gatehouse
+        (18, 8, 21, 4),        # Route 2 gatehouse — main entry
+        (18, 9, 21, 5),        # Gatehouse rear door 1
+        (18, 11, 21, 5),       # Gatehouse rear door 2
         (18, 2, 22, 4),        # Route 2 hidden house
-        (25, 1, 29, 1),        # Pewter Museum
+        (25, 1, 29, 1),        # Pewter Museum front door
+        (25, 2, 29, 2),        # Museum secondary entrance
         (25, 3, 30, 1),        # Pewter homes
         (25, 7, 31, 1),
     )
@@ -98,6 +101,27 @@ def inspect(game: Path) -> dict:
             raise ValueError(f"Interior {inside}: missing return to {outer}/{entry}")
     if 13 in mapping or 23 in mapping:
         raise ValueError("Viridian Gym or Diglett Cave unlocked before story audit")
+
+    # A unique Viridian Mart shopkeeper now anchors the Pallet <-> Viridian
+    # story loop, without executing foreign source event scripts or forcing a
+    # nonexistent quest item into the Decades item catalogue.
+    parcel_mart = []
+    for event_id, event in maps[mapping[12]].attrs["@events"].items():
+        scripts = [
+            op.attrs["@parameters"][0]
+            for page in event.attrs["@pages"]
+            for op in page.attrs["@list"]
+            if op.attrs["@code"] in (355, 655) and op.attrs["@parameters"]
+        ]
+        if any("BlueKantoPilot.viridian_mart" in
+               (raw.decode("utf-8") if isinstance(raw, bytes) else str(raw))
+               for raw in scripts):
+            if event.attrs["@pages"][0].attrs["@trigger"] != 0:
+                raise ValueError("Viridian parcel/Mart event must use Action Button")
+            parcel_mart.append(event_id)
+    if len(parcel_mart) != 1:
+        raise ValueError(f"Expected one Viridian parcel shopkeeper: {parcel_mart}")
+
 
     # MAN-02: the source-proven 50 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
@@ -289,6 +313,7 @@ def inspect(game: Path) -> dict:
                                    for source in preview_only),
         "active_maps": len(active_ids),
         "audited_interiors_bidirectional": len(safe_interior_pairs),
+        "viridian_oak_parcel_shopkeeper": parcel_mart[0],
         "trainers_with_line_of_sight": sight_count,
         "connections": count_connections,
         "mapped_transfers": warps,
