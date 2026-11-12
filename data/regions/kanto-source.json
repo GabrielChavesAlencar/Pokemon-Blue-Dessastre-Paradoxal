@@ -136,12 +136,7 @@
     141,
     142,
     143,
-    144,
-    145,
-    146,
-    147,
     152,
-    153,
     155,
     156,
     157,
@@ -176,5 +171,5 @@
     188,
     189
   ],
-  "preview_policy": "Fase 09: Celadon City (114), Center (115) e Gym (124) sao gameplay experimental auditado (portas, cura e Erika/Rainbow, sem importacao de scripts de terceiros). Route 7 (111), Dept Store 117-123, Fuchsia e Saffron permanecem preview_only sem NPCs, encontros, eventos, itens, portais ou insígnias ate revisao."
+  "preview_policy": "Celadon 114/115/124 e Fuchsia 144/145/146/147/153 possuem nucleo experimental auditado de portas, cura, Mart, batalha Koga/Soul e Safari Gate informativo; as 53 areas restantes (inclusive Safari setores, Secret House, Warden, Fuchsia rotas e Saffron) ficam SOMENTE geometria preview_only, sem encontros, scripts, NPCs ou itens ate implementacao de regras nativas e testes."
 }
