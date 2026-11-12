@@ -43,7 +43,7 @@ O projeto possui um [guia de catálogo e tradução dos diálogos FireRed](docs/
 
 ## Continuidade do projeto
 
-[Próximos passos do jogo, de Kanto e do portal](docs/PROXIMOS_PASSOS.md)
+[Próximos passos do jogo, de Kanto e do portal](docs/PROXIMOS_PASSOS.md) · [Plano Codex de testes reais para a Barra 2](docs/KANTO_CODEX_TESTES_E2E.md) · [Prompt pronto para Codex](docs/KANTO_CODEX_PROMPT.md)
 
 ## Portal do projeto
 
