@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0e61e6fc3565efd695930a5e4a856bb7a67ab73e",
+      "date": "2026-11-11T22:02:21-03:00",
+      "title": "feat(kanto): atalho confirmado para instalar Kanto no jogo principal com backup",
+      "category": "Novidades"
+    },
+    {
       "sha": "784c83a65286381724f301a8e481cad0bc7db144",
       "date": "2026-11-11T22:00:19-03:00",
       "title": "ci(kanto): testar Kanto vs Decades no Game.exe real apos importar mapas",
