@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "19e44ce270b688e8ac91f2223e3df2abaab83a48",
+      "date": "2026-11-12T07:53:06-03:00",
+      "title": "docs(kanto): indexar estudo e procedimento de eventos FireRed",
+      "category": "Documentação"
+    },
+    {
+      "sha": "6896ee76f95e85fafe1258b46b3c79f60ef37dd6",
+      "date": "2026-11-12T07:52:52-03:00",
+      "title": "docs(kanto): detalhar passo a passo de importacao de eventos FireRed no Blue",
+      "category": "Documentação"
+    },
+    {
       "sha": "9eab054a5893032af930ba134f7d3c6466747c3f",
       "date": "2026-11-12T07:50:39-03:00",
       "title": "tools(kanto): adicionar extrator de eventos de mapas FireRed",
