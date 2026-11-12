@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c0905d2111348350a6f02c01d9f7e60d6e02e5d5",
+      "date": "2026-11-12T07:01:15-03:00",
+      "title": "Corrigir auditoria: filtrar PBS antes da leitura para ignorar duplicatas fora do escopo",
+      "category": "Correções"
+    },
+    {
       "sha": "21f882d1cd07eb001bc391187ef60527b2500c37",
       "date": "2026-11-12T07:00:46-03:00",
       "title": "Fase 08: ticket experimental, capitão Cut e Thunder Badge única após Lt. Surge",
