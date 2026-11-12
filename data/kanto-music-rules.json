@@ -1,0 +1,370 @@
+{
+  "schema": 1,
+  "region": "KANTO",
+  "phase": 1,
+  "default_enabled": false,
+  "notes": "All candidate bindings are staged and disabled in F1. F2-F5 enable only audited events/maps; previews remain inactive until approved. Source IDs never reach the runtime.",
+  "maps": [
+    {
+      "map": "CELADON_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "CELADON_CITY",
+      "track": 40,
+      "enabled": false
+    },
+    {
+      "map": "CELADON_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "CERULEAN_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "CERULEAN_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "CINNABAR_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "CINNABAR_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "CINNABAR_ISLAND",
+      "track": 55,
+      "enabled": false
+    },
+    {
+      "map": "FUCHSIA_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "FUCHSIA_CITY",
+      "track": 50,
+      "enabled": false
+    },
+    {
+      "map": "FUCHSIA_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "MANSION_1F",
+      "track": 56,
+      "enabled": false
+    },
+    {
+      "map": "MANSION_2F",
+      "track": 56,
+      "enabled": false
+    },
+    {
+      "map": "MANSION_3F",
+      "track": 56,
+      "enabled": false
+    },
+    {
+      "map": "MANSION_B1F",
+      "track": 56,
+      "enabled": false
+    },
+    {
+      "map": "MT_MOON_1F",
+      "track": 34,
+      "enabled": false
+    },
+    {
+      "map": "MT_MOON_B1F",
+      "track": 34,
+      "enabled": false
+    },
+    {
+      "map": "MT_MOON_B2F",
+      "track": 34,
+      "enabled": false
+    },
+    {
+      "map": "MT_MOON_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "OAK_LAB",
+      "track": 8,
+      "enabled": false
+    },
+    {
+      "map": "PALLET_TOWN",
+      "track": 6,
+      "enabled": false
+    },
+    {
+      "map": "PEWTER_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "PEWTER_CITY",
+      "track": 15,
+      "enabled": false
+    },
+    {
+      "map": "PEWTER_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "ROUTE_1",
+      "track": 13,
+      "enabled": false
+    },
+    {
+      "map": "ROUTE_4",
+      "track": 32,
+      "enabled": false
+    },
+    {
+      "map": "SAFFRON_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "SAFFRON_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_10F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_11F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_1F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_2F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_3F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_4F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_5F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_6F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_7F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_8F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_9F",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SILPH_LOBBY",
+      "track": 47,
+      "enabled": false
+    },
+    {
+      "map": "SS_ANNE_1F",
+      "track": 36,
+      "enabled": false
+    },
+    {
+      "map": "SS_ANNE_2F",
+      "track": 36,
+      "enabled": false
+    },
+    {
+      "map": "SS_ANNE_B1F",
+      "track": 36,
+      "enabled": false
+    },
+    {
+      "map": "SS_ANNE_CAPTAIN",
+      "track": 36,
+      "enabled": false
+    },
+    {
+      "map": "SS_ANNE_DECK",
+      "track": 36,
+      "enabled": false
+    },
+    {
+      "map": "VERMILION_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "VERMILION_CITY",
+      "track": 35,
+      "enabled": false
+    },
+    {
+      "map": "VERMILION_GYM",
+      "track": 25,
+      "enabled": false
+    },
+    {
+      "map": "VIRIDIAN_CENTER",
+      "track": 21,
+      "enabled": false
+    },
+    {
+      "map": "VIRIDIAN_FOREST",
+      "track": 17,
+      "enabled": false
+    },
+    {
+      "map": "VIRIDIAN_GYM",
+      "track": 25,
+      "enabled": false
+    }
+  ],
+  "battles": [
+    {
+      "category": "wild",
+      "track": 18,
+      "enabled": false
+    },
+    {
+      "category": "trainer",
+      "track": 11,
+      "enabled": false
+    },
+    {
+      "category": "gym",
+      "track": 27,
+      "enabled": false
+    },
+    {
+      "category": "legendary",
+      "track": 53,
+      "enabled": false
+    },
+    {
+      "category": "champion",
+      "track": 70,
+      "enabled": false
+    },
+    {
+      "category": "wildVictory",
+      "track": 19,
+      "enabled": false
+    },
+    {
+      "category": "trainerVictory",
+      "track": 12,
+      "enabled": false
+    },
+    {
+      "category": "gymVictory",
+      "track": 28,
+      "enabled": false
+    }
+  ],
+  "events": [
+    {
+      "event": "obtained_pokemon",
+      "track": 9,
+      "enabled": false
+    },
+    {
+      "event": "obtained_item",
+      "track": 14,
+      "enabled": false
+    },
+    {
+      "event": "healed",
+      "track": 23,
+      "enabled": false
+    },
+    {
+      "event": "badge_awarded",
+      "track": 29,
+      "enabled": false
+    },
+    {
+      "event": "evolved",
+      "track": 31,
+      "enabled": false
+    },
+    {
+      "event": "caught",
+      "track": 54,
+      "enabled": false
+    },
+    {
+      "event": "oak_evaluation",
+      "track": 58,
+      "enabled": false
+    }
+  ],
+  "scenes": [
+    {
+      "scene": "oak_intro",
+      "track": 5,
+      "enabled": false
+    },
+    {
+      "scene": "rival_appears",
+      "track": 10,
+      "enabled": false
+    },
+    {
+      "scene": "evolution",
+      "track": 30,
+      "enabled": false
+    },
+    {
+      "scene": "hall_of_fame",
+      "track": 72,
+      "enabled": false
+    },
+    {
+      "scene": "credits",
+      "track": 73,
+      "enabled": false
+    }
+  ]
+}
