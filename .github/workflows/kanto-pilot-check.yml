@@ -42,6 +42,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'FRLG extraction failed'}
           python scripts/regions/pilot.py
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
+          python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
+          if($LASTEXITCODE -ne 0){throw 'Kanto structural verification failed'}
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
       - name: Compilar e testar Kanto na engine
