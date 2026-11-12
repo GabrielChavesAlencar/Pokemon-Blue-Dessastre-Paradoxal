@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ff9e3fc20bb83aed23738b49b1b3888c1c3e2cb2",
+      "date": "2026-11-12T10:10:17-03:00",
+      "title": "Kanto Celadon audit: filtrar apenas os oito treinadores da academia evitando duplicatas Rocket",
+      "category": "Melhorias"
+    },
+    {
       "sha": "23d01ecc02c9b1629b77bffe5f79d42bae08d25e",
       "date": "2026-11-12T10:08:20-03:00",
       "title": "Kanto 8º núcleo: executar auditoria de IDs de Erika na CI Windows antes do gameplay",
