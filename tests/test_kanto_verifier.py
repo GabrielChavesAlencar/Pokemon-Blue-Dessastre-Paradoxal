@@ -1,5 +1,7 @@
 """Pure graph and guard tests for the read-only Kanto pilot audit."""
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -7,6 +9,7 @@ REGIONS = Path(__file__).resolve().parents[1] / "scripts" / "regions"
 sys.path.insert(0, str(REGIONS))
 try:
     from verify_pilot import reachable
+    from pilot import PILOT_META, build_signature, pilot_is_current
 finally:
     sys.path.remove(str(REGIONS))
 
@@ -30,6 +33,16 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_explicit_return_transfer_restores_bidirectional_access(self):
         graph = {300: {301}, 301: {302}, 302: {300}}
         self.assertEqual(reachable(graph, 302), {300, 301, 302})
+
+    def test_pilot_signature_detects_obsolete_build_without_deleting_it(self):
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp)
+            marker = folder / PILOT_META
+            self.assertFalse(pilot_is_current(folder))
+            marker.write_text(json.dumps({"build_signature": build_signature()}), encoding="utf-8")
+            self.assertTrue(pilot_is_current(folder))
+            marker.write_text(json.dumps({"build_signature": "old-release"}), encoding="utf-8")
+            self.assertFalse(pilot_is_current(folder))
 
 
 if __name__ == "__main__":
