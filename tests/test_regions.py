@@ -51,6 +51,21 @@ class RegionsTest(unittest.TestCase):
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
     @unittest.skipUnless(shutil.which("ruby"), "Ruby command not available")
+    def test_regional_policy_legacy_pc_field_moves_and_badge_progression(self):
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp)
+            files = plan(ROOT, target, target)
+            data, contents = next(iter(files.items()))
+            data.write_bytes(contents.replace(b"DECADES_VERIFIED = false", b"DECADES_VERIFIED = true"))
+            proc = subprocess.run(
+                ["ruby", str(ROOT / "tests/region_policy_runtime.rb"), str(data),
+                 str(ROOT / "scripts/battle_polish/Regions.rb"),
+                 str(ROOT / "scripts/battle_polish/RegionTravel.rb"),
+                 str(ROOT / "scripts/battle_polish/RegionalPolicy.rb")],
+                capture_output=True, text=True, encoding="utf-8", timeout=25)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    @unittest.skipUnless(shutil.which("ruby"), "Ruby command not available")
     def test_new_game_region_selection_and_legacy_save_safety(self):
         result = subprocess.run(
             ["ruby", str(ROOT / "tests/region_start_runtime.rb"),
