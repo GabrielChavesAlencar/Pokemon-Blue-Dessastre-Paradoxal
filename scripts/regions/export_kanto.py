@@ -135,6 +135,21 @@ LOCATION_NAMES = {
     "MANSION_2F": "Pokémon Mansion — 2F",
     "MANSION_3F": "Pokémon Mansion — 3F",
     "MANSION_B1F": "Pokémon Mansion — B1F",
+    "ROUTE_22": "Rota 22 — acesso ao Plateau",
+    "INDIGO_GATE": "Portaria da Liga Pokémon",
+    "ROUTE_23": "Rota 23 — oito postos de insígnias",
+    "VICTORY_ROAD_HUB": "Victory Road — hub vazio (prévia)",
+    "VICTORY_ROAD_1F": "Victory Road — 1F",
+    "VICTORY_ROAD_2F": "Victory Road — 2F",
+    "VICTORY_ROAD_3F": "Victory Road — 3F",
+    "INDIGO_PLATEAU": "Indigo Plateau",
+    "INDIGO_LOBBY": "Indigo Plateau — Saguão da Liga",
+    "ELITE_LORELEI_ROOM": "Elite Four — sala de Lorelei",
+    "ELITE_BRUNO_ROOM": "Elite Four — sala de Bruno",
+    "ELITE_AGATHA_ROOM": "Elite Four — sala de Agatha",
+    "ELITE_LANCE_ROOM": "Elite Four — sala de Lance",
+    "CHAMPION_HALL": "Sala do Campeão Blue",
+    "HALL_OF_FAME": "Hall of Fame — Kanto",
 }
 TRAINER_LOCATIONS = {
     "RIVAL": ("OAK_LAB", "Rival"),
@@ -249,6 +264,28 @@ TRAINER_LOCATIONS.update({
        for name in ("Cole", "Jason")},
 })
 
+TRAINER_LOCATIONS.update({
+    **{("COOLTRAINER_F", name): (area, "Treinadora experiente")
+       for area, names in (("VICTORY_ROAD_1F",("Naomi",)),
+                           ("VICTORY_ROAD_3F",("Alexa","Caroline")))
+       for name in names},
+    **{("COOLTRAINER_M", name): (area, "Treinador experiente")
+       for area, names in (("VICTORY_ROAD_1F",("Rolando",)),
+                           ("VICTORY_ROAD_3F",("George","Colby")))
+       for name in names},
+    ("BLACKBELT","Daisuke"): ("VICTORY_ROAD_2F","Lutador"),
+    ("TAMER","Vincent"): ("VICTORY_ROAD_2F","Domador"),
+    ("JUGGLER","Nelson"): ("VICTORY_ROAD_2F","Malabarista"),
+    ("JUGGLER","Gregory"): ("VICTORY_ROAD_2F","Malabarista"),
+    ("POKEMANIAC","Dawson"): ("VICTORY_ROAD_2F","Pokémaníaco"),
+    ("COOLCOUPLE","Ray & Tyra"): ("VICTORY_ROAD_3F","Dupla"),
+    ("ELITE_LORELEI","Lorelei"): ("ELITE_LORELEI_ROOM","Elite Four"),
+    ("ELITE_BRUNO","Bruno"): ("ELITE_BRUNO_ROOM","Elite Four"),
+    ("ELITE_AGATHA","Agatha"): ("ELITE_AGATHA_ROOM","Elite Four"),
+    ("ELITE_LANCE","Lance"): ("ELITE_LANCE_ROOM","Elite Four"),
+    ("CHAMPION_BLUE","Blue"): ("CHAMPION_HALL","Campeão"),
+})
+
 
 SILPH_GRUNT_FLOORS = {
     21: "SILPH_2F", 22: "SILPH_2F", 23: "SILPH_3F",
@@ -261,7 +298,8 @@ SILPH_GRUNT_FLOORS = {
 }
 
 
-STARTERS = {11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE",
+STARTERS = {1: "BULBASAUR", 2: "CHARMANDER", 3: "SQUIRTLE",
+            11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE",
             51: "BULBASAUR", 52: "CHARMANDER", 53: "SQUIRTLE"}
 
 
@@ -313,7 +351,9 @@ def export(preview: Path):
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
         else:
             key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
-            trainer_id = (slug("giovanni_viridian") if kind == "LEADER_GIOVANNI"
+            trainer_id = (slug("blue_champion") if kind == "CHAMPION_BLUE"
+                           else slug("ray-tyra") if kind == "COOLCOUPLE"
+                           else slug("giovanni_viridian") if kind == "LEADER_GIOVANNI"
                           else slug("blue_silph") if kind == "RIVAL_SILPH"
                           else slug(name))
             shown_name = "Blue (Silph)" if kind == "RIVAL_SILPH" else name
