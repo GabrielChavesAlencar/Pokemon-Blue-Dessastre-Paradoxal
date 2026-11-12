@@ -75,8 +75,8 @@ O estudo de FireRed indica dependências para uma futura implementação:
 - [x] Mapeamento no manifesto e preparação de geometria dos 30 mapas com `preview_only`.
 - [x] Proteção da ordem dos IDs já usados no piloto.
 - [x] Atalhos experimentais definidos sem recompensas nem história.
-- [ ] **CI Windows** da compilação e smoke test de 101 mapas / 61 sem eventos / 41 atalhos, com abertura do ginásio e andares Silph, Marsh não concedida.
-- [ ] Publicar portal com 101 localidades e manter os métodos/treinadores de Saffron vazios.
+- [x] **[CI Windows 43213494522](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43213494522) aprovada:** 101 mapas, 61 sem eventos, 41 atalhos, abertura nativa da Silph Co. e ginásio, Marsh não concedida e save/reload da campanha anterior.
+- [x] **[Site checks 43213985203](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43213985203) aprovados:** 101 localidades publicadas, 54 perfis de treinadores anteriores preservados; 30 novas localidades de Saffron/Silph sem métodos de encontro ou treinadores.
 - [ ] Testar manualmente tiles, prioridade, movimento, colisões, coordenadas e saves no Windows.
 - [ ] Implementar portas, guardas, Silph Co., Dojo, Sabrina, Marsh Badge e progressão após autorização dos eventos; testar também JoiPlay.
 - [ ] Não marcar Saffron como `playable` até a jornada e os eventos estarem integrados.
