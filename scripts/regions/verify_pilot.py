@@ -34,7 +34,13 @@ def inspect(game: Path) -> dict:
     if not meta_path.is_file():
         raise ValueError("Not a prepared Kanto pilot")
     mapping = {int(source): int(dest) for source, dest in json_file(meta_path)["maps"].items()}
-    expected = {int(source): name for source, name in json_file(KANTO)["maps"].items()}
+    manifest = json_file(KANTO)
+    expected = {int(source): name for source, name in manifest["maps"].items()}
+    preview_only = set(manifest.get("preview_only", []))
+    if preview_only - expected.keys():
+        raise ValueError("Preview map IDs do not exist in the Kanto manifest")
+    if preview_only & set(TRAINERS):
+        raise ValueError("No trainer scripts can be installed on preview-only maps")
     if set(mapping) != set(expected) or len(set(mapping.values())) != len(expected):
         raise ValueError("Pilot map manifest is missing locations or contains duplicate destination IDs")
     ids = set(mapping.values())
@@ -44,6 +50,11 @@ def inspect(game: Path) -> dict:
         if not file.is_file():
             raise ValueError(f"Missing {expected[source]} map: {file.name}")
         maps[dest] = load(file)
+    # Celadon phase 09 is map-terrain only. Not even source self-switches,
+    # NPCs, warps or trainer events may slip into these compiled RPG maps.
+    for source in preview_only:
+        if maps[mapping[source]].attrs["@events"]:
+            raise ValueError(f"Phase 09 must not import events into {expected[source]}")
     system = load(game / "Data/System.rxdata").attrs
     if system["@start_map_id"] != mapping[5]:
         raise ValueError("New game does not start at Kanto's Pallet Town")
@@ -142,16 +153,19 @@ def inspect(game: Path) -> dict:
         raise ValueError(f"Required Kanto event scripts are missing: {missing}")
 
     seen = reachable(edges, mapping[5])
-    if seen != ids:
-        missing = [expected[source] for source, dest in mapping.items() if dest not in seen]
+    active_ids = {dest for source, dest in mapping.items() if source not in preview_only}
+    if not active_ids.issubset(seen):
+        missing = [expected[source] for source, dest in mapping.items()
+                   if source not in preview_only and dest not in seen]
         raise ValueError(f"Maps unreachable FROM Pallet by real transfer direction: {missing}")
     backwards = {map_id: set() for map_id in ids}
     for origin, destinations in edges.items():
         for destination in destinations:
             backwards[destination].add(origin)
     returnable = reachable(backwards, mapping[5])
-    if returnable != ids:
-        trapped = [expected[source] for source, dest in mapping.items() if dest not in returnable]
+    if not active_ids.issubset(returnable):
+        trapped = [expected[source] for source, dest in mapping.items()
+                   if source not in preview_only and dest not in returnable]
         raise ValueError(f"Maps without a directed route BACK to Pallet: {trapped}")
     route = [5, 9, 10, 18, 19, 24, 20, 25, 28, 32, 33, 34,
              36, 37, 38, 39, 40, 41, 42,
@@ -168,7 +182,8 @@ def inspect(game: Path) -> dict:
     required_stops = {"PALLET", "PEWTER", "ROUTE4", "MOON_CENTER",
                       "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
-                      "SSANNE", "SSCAPTAIN", "SSDECK"}
+                      "SSANNE", "SSCAPTAIN", "SSDECK",
+                      "ROUTE7", "CELADON", "ERIKA", "CEL_CENTER", "CEL_STORE"}
     seen_stops = set()
     for raw in stops_file.read_text(encoding="utf-8").splitlines():
         parts = raw.split("|")
@@ -187,13 +202,17 @@ def inspect(game: Path) -> dict:
     return {
         "result": "structural_check_passed",
         "maps": len(maps),
+        "phase09_geometry_only": len(preview_only),
+        "phase09_event_count": sum(len(maps[mapping[source]].attrs["@events"])
+                                   for source in preview_only),
+        "active_maps": len(active_ids),
         "connections": count_connections,
         "mapped_transfers": warps,
         "returnable_maps": len(returnable),
         "required_events": len(found),
         "experimental_stops": len(seen_stops),
         "route": [expected[source] for source in route],
-        "limitations": "Topology and data only; physical walkability, player controls, real battles and saves still need testing.",
+        "limitations": "Phase 09 maps are scenery previews WITHOUT events, encounters, trainers or Erika badge. All controls, collisions and prior gameplay still require manual testing.",
     }
 
 
