@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9221f33860197047b85a8ba5b19fa7a1158b6e61",
+      "date": "2026-11-11T23:18:53-03:00",
+      "title": "docs(regions): atualizar roteiro para fase 06 e duas barras de progresso",
+      "category": "Documentação"
+    },
+    {
       "sha": "cbabb1ae853f730bb250f67e35b4683a92c339d8",
       "date": "2026-11-11T23:18:17-03:00",
       "title": "docs(kanto): registrar CI da 6a etapa e manter apenas 1 concluida",
