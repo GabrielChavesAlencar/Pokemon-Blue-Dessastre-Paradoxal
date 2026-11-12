@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4847eaa9062e54bde6cebc5ab0cf1c564c34f5e3",
+      "date": "2026-11-12T09:35:24-03:00",
+      "title": "docs(kanto): registrar correção funcional de 8 interiores e 50 treinadores Sight(n)",
+      "category": "Correções"
+    },
+    {
       "sha": "23f6d0f3742ccb8f75689331ea3895e359695dbc",
       "date": "2026-11-12T09:33:18-03:00",
       "title": "Corrigir regex Sight(n) para habilitar 50 treinadores com visão real",
