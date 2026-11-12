@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a44d272d305c2a82852e593bbf27c442e376b5a5",
+      "date": "2026-11-11T23:35:34-03:00",
+      "title": "test(kanto): verificar time Misty, Cascade uma vez e save na engine",
+      "category": "Testes"
+    },
+    {
       "sha": "5031213782d125f4e252faef88dfc36cbfc5ef25",
       "date": "2026-11-11T23:34:36-03:00",
       "title": "fix(kanto): aceitar encontros CaveDay/Night de Mt Moon na importacao PBS",
