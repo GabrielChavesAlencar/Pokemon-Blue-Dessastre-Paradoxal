@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "deaaa6ee6b0620c609f8384ff936e48fb367e284",
+      "date": "2026-11-12T10:54:26-03:00",
+      "title": "Kanto núcleo 9: publicar 69 treinadores no site, Koga e equipe auditada FRLG",
+      "category": "Melhorias"
+    },
+    {
       "sha": "25fda473cc95991531de45819931c5487be3a6b7",
       "date": "2026-11-12T10:52:41-03:00",
       "title": "Kanto 9º núcleo: documentar gameplay seguro Fuchsia/Koga, Soul e fronteira Safari",
