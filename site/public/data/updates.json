@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "98b13751064063b9485f9c581f7c9775b3d68c5d",
+      "date": "2026-11-12T08:24:51-03:00",
+      "title": "Kanto fase 10: corrigir identificacao do atalho Koga no teste nativo",
+      "category": "Correções"
+    },
+    {
       "sha": "bb5626ddadffc662e4c054252c45806980907368",
       "date": "2026-11-12T08:23:54-03:00",
       "title": "Kanto fase 10: documentar 20 mapas Fuchsia/Safari, 9 atalhos e eventos pendentes",
