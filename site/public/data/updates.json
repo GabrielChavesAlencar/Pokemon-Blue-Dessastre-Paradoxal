@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1a041b7cdfef716ff4d327c6bd6c10bcbbff761c",
+      "date": "2026-11-12T10:58:22-03:00",
+      "title": "docs Kanto núcleo 9: registrar CI nativa e regressão aprovadas e barras 9/16 e 1/16",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bab811980aad2cfda59749a5bef663b465f1b6ee",
       "date": "2026-11-12T10:56:01-03:00",
       "title": "Testes Kanto: manter 15 prévias Fuchsia sem eventos e aceitar Koga único no catálogo",
