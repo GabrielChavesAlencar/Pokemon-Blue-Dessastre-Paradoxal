@@ -250,7 +250,7 @@ module Compiler
     def main
       blue_presentation_original_main
       BluePresentation.install;BlueStory.install
-      BlueCampaign.install;BlueRegions.install;BlueRegionStart.install;BlueRegionTravel.install
+      BlueCampaign.install;BlueRegions.install;BlueRegionStart.install;BlueRegionTravel.install;BlueRegionalPolicy.install
       BlueJourney.install
       BlueBattleUI.install;BlueLocale.install
       BlueAdventure.install;BlueReadouts.install
