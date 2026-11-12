@@ -115,7 +115,10 @@ def install_events(source, target, mapping):
         if original == 12:
             scripts[find_shopkeeper(events)] = MART
         for event_id, (kind, name) in TRAINERS.get(original, {}).items():
-            scripts[event_id] = f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}")'
+            # Map/event identity prevents two NPCs with the same display name
+            # from sharing their victory flag. Never key trainer progress by name.
+            key = f"KANTO_{original:03d}_{event_id:03d}"
+            scripts[event_id] = f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}")'
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
