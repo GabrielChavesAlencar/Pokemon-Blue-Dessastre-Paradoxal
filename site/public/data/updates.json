@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "689c3ec688e88eea25ffacff39533507f97cbd00",
+      "date": "2026-11-12T20:17:12-03:00",
+      "title": "docs(johto): registra roteiro de New Bark, testes e importação segura ZIP sem subir as barras",
+      "category": "Documentação"
+    },
+    {
       "sha": "163e2250976609a08c106bd0d6e6a8d859ee2973",
       "date": "2026-11-12T20:16:07-03:00",
       "title": "docs(johto): registra eventos Elm e importação local segura como parte da etapa 04",
