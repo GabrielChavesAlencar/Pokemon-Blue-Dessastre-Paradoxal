@@ -27,6 +27,10 @@ class Object
     $bgm_calls << file.name
     $game_system.playing_bgm=file
   end
+  def pbBGMStop(*args)
+    $bgm_calls << ':STOP'
+    $game_system.playing_bgm=nil
+  end
 end
 class FakeTitle
   attr_reader :native_calls
@@ -88,6 +92,40 @@ Dir.mktmpdir('kanto-f5-') do |folder|
     check('Exact previous BGM volume/pitch restored',
           $bgm_calls.last(2)==['Kanto/oak.mp3','original/route.mp3'] &&
           $game_system.playing_bgm.equal?(before))
+    # Proven F6 defect fix: a silent native map must play a dialogue cue and
+    # become silent again, even if there was no old music to restore.
+    $bgm_calls.clear
+    $game_system.playing_bgm=nil
+    BlueMusic.with_kanto_scene('oak_talk') do
+      check('Silent map still receives its scene', $game_system.playing_bgm.name=='Kanto/oak.mp3')
+    end
+    check('After scene, a previously silent map is silent again',
+          $bgm_calls==['Kanto/oak.mp3', ':STOP'] && $game_system.playing_bgm.nil?)
+    # The ensure block must restore audio even when a scene raises; no
+    # permanently stuck Oak/rival music is allowed.
+    previous=RPG::AudioFile.new('custom/previous.mp3',37,114)
+    $game_system.playing_bgm=previous
+    $bgm_calls.clear
+    begin
+      BlueMusic.with_kanto_scene('oak_talk') { raise 'synthetic story failure' }
+    rescue RuntimeError => error
+      check('Story error is propagated',error.message=='synthetic story failure')
+    end
+    check('Previous BGM volume/pitch restored after story error',
+          $game_system.playing_bgm.equal?(previous) &&
+          $bgm_calls==['Kanto/oak.mp3','custom/previous.mp3'])
+    # Nested scenes restore their immediate predecessor, then original route.
+    $bgm_calls.clear
+    BlueMusic.with_kanto_scene('oak_talk') do
+      BlueMusic.with_kanto_scene('rival_appears') do
+        check('Nested scene starts rival track',
+              $game_system.playing_bgm.name=='Kanto/rival.mp3')
+      end
+      check('Nested scene returns to Oak', $game_system.playing_bgm.name=='Kanto/oak.mp3')
+    end
+    check('Outer scene restores original after nested cue',
+          $game_system.playing_bgm.equal?(previous) &&
+          $bgm_calls==['Kanto/oak.mp3','Kanto/rival.mp3','Kanto/oak.mp3','custom/previous.mp3'])
     $bgm_calls.clear
     BlueMusic.with_kanto_scene('rival_appears') do
       # A battle changing map before the hook exits must not resurrect old BGM.

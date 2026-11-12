@@ -63,6 +63,8 @@ module KantoIntegratedCheck
     house_map = $game_map.map_id
     town_map = $game_map.events[1].list.find { |op| op.code == 201 }.parameters[1]
     $map_factory.setup(town_map)
+    load "Data/blue-kanto-music-native-probe.rb"
+    KantoMusicNativeProbe.run("integrated")
     require!($game_map.events[1]&.trigger == 1 &&
              $game_map.events[1].list.any? { |op|
                op.code == 201 && op.parameters[1] == house_map
