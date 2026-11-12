@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb7c96fbfbb648357f14cfdb28804c05aa926740",
+      "date": "2026-11-12T14:27:32-03:00",
+      "title": "feat(kanto): prontidão da publicação, guia correto e QA completo — núcleo 15/16",
+      "category": "Novidades"
+    },
+    {
       "sha": "99c7bedcb003b6f5693151af26ed5148cc60eb03",
       "date": "2026-11-12T14:05:40-03:00",
       "title": "feat(kanto): auditoria FRLG de encontros e equipes — núcleo 14/16",
