@@ -445,6 +445,477 @@
         "kanto-liam",
         "kanto-brock"
       ]
+    },
+    {
+      "id": "kanto-pewter-center",
+      "name": "Centro Pokémon de Pewter",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-pewter-mart",
+      "name": "Poké Mart de Pewter",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-3",
+      "name": "Rota 3",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "PIDGEY",
+              "chance": 30,
+              "min": 6,
+              "max": 7
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30,
+              "min": 6,
+              "max": 8
+            },
+            {
+              "species": "JIGGLYPUFF",
+              "chance": 10,
+              "min": 3,
+              "max": 7
+            },
+            {
+              "species": "MANKEY",
+              "chance": 10,
+              "min": 7,
+              "max": 7
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10,
+              "min": 6,
+              "max": 7
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10,
+              "min": 6,
+              "max": 7
+            }
+          ]
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "PIDGEY",
+              "chance": 30,
+              "min": 6,
+              "max": 7
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30,
+              "min": 6,
+              "max": 8
+            },
+            {
+              "species": "JIGGLYPUFF",
+              "chance": 10,
+              "min": 3,
+              "max": 7
+            },
+            {
+              "species": "MANKEY",
+              "chance": 10,
+              "min": 7,
+              "max": 7
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10,
+              "min": 6,
+              "max": 7
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10,
+              "min": 6,
+              "max": 7
+            }
+          ]
+        }
+      ],
+      "trainers": [
+        "kanto-janice",
+        "kanto-colton",
+        "kanto-ben",
+        "kanto-sally",
+        "kanto-greg",
+        "kanto-james",
+        "kanto-calvin",
+        "kanto-robin"
+      ]
+    },
+    {
+      "id": "kanto-route-4",
+      "name": "Rota 4",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "RATTATA",
+              "chance": 30,
+              "min": 8,
+              "max": 12
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30,
+              "min": 8,
+              "max": 12
+            },
+            {
+              "species": "EKANS",
+              "chance": 15,
+              "min": 6,
+              "max": 12
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 15,
+              "min": 6,
+              "max": 12
+            },
+            {
+              "species": "MANKEY",
+              "chance": 10,
+              "min": 10,
+              "max": 12
+            }
+          ]
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "RATTATA",
+              "chance": 30,
+              "min": 8,
+              "max": 12
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 30,
+              "min": 8,
+              "max": 12
+            },
+            {
+              "species": "EKANS",
+              "chance": 15,
+              "min": 6,
+              "max": 12
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 15,
+              "min": 6,
+              "max": 12
+            },
+            {
+              "species": "MANKEY",
+              "chance": 10,
+              "min": 10,
+              "max": 12
+            }
+          ]
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "TENTACOOL",
+              "chance": 100,
+              "min": 5,
+              "max": 40
+            }
+          ]
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100,
+              "min": 5,
+              "max": 5
+            }
+          ]
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 40,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "KRABBY",
+              "chance": 40,
+              "min": 5,
+              "max": 15
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20,
+              "min": 5,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 44,
+              "min": 15,
+              "max": 35
+            },
+            {
+              "species": "KRABBY",
+              "chance": 44,
+              "min": 15,
+              "max": 35
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 10,
+              "min": 15,
+              "max": 25
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 1,
+              "min": 25,
+              "max": 35
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 1,
+              "min": 25,
+              "max": 35
+            }
+          ]
+        }
+      ],
+      "trainers": []
+    },
+    {
+      "id": "kanto-mt-moon-center",
+      "name": "Centro Pokémon de Mt. Moon",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-mt-moon-1f",
+      "name": "Mt. Moon — 1F",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "ZUBAT",
+              "chance": 69,
+              "min": 7,
+              "max": 10
+            },
+            {
+              "species": "GEODUDE",
+              "chance": 25,
+              "min": 7,
+              "max": 9
+            },
+            {
+              "species": "PARAS",
+              "chance": 5,
+              "min": 8,
+              "max": 8
+            },
+            {
+              "species": "CLEFAIRY",
+              "chance": 1,
+              "min": 8,
+              "max": 8
+            }
+          ]
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "ZUBAT",
+              "chance": 69,
+              "min": 7,
+              "max": 10
+            },
+            {
+              "species": "GEODUDE",
+              "chance": 25,
+              "min": 7,
+              "max": 9
+            },
+            {
+              "species": "PARAS",
+              "chance": 5,
+              "min": 8,
+              "max": 8
+            },
+            {
+              "species": "CLEFAIRY",
+              "chance": 1,
+              "min": 8,
+              "max": 8
+            }
+          ]
+        }
+      ],
+      "trainers": [
+        "kanto-iris",
+        "kanto-kent",
+        "kanto-robby",
+        "kanto-jovan",
+        "kanto-miriam",
+        "kanto-josh",
+        "kanto-marcos"
+      ]
+    },
+    {
+      "id": "kanto-mt-moon-b1f",
+      "name": "Mt. Moon — B1F",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "PARAS",
+              "chance": 100,
+              "min": 5,
+              "max": 10
+            }
+          ]
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "PARAS",
+              "chance": 100,
+              "min": 5,
+              "max": 10
+            }
+          ]
+        }
+      ],
+      "trainers": []
+    },
+    {
+      "id": "kanto-mt-moon-b2f",
+      "name": "Mt. Moon — B2F",
+      "methods": [
+        {
+          "id": "CaveDay",
+          "slots": [
+            {
+              "species": "ZUBAT",
+              "chance": 49,
+              "min": 8,
+              "max": 11
+            },
+            {
+              "species": "GEODUDE",
+              "chance": 30,
+              "min": 9,
+              "max": 10
+            },
+            {
+              "species": "PARAS",
+              "chance": 15,
+              "min": 10,
+              "max": 12
+            },
+            {
+              "species": "CLEFAIRY",
+              "chance": 6,
+              "min": 10,
+              "max": 12
+            }
+          ]
+        },
+        {
+          "id": "CaveNight",
+          "slots": [
+            {
+              "species": "ZUBAT",
+              "chance": 49,
+              "min": 8,
+              "max": 11
+            },
+            {
+              "species": "GEODUDE",
+              "chance": 30,
+              "min": 9,
+              "max": 10
+            },
+            {
+              "species": "PARAS",
+              "chance": 15,
+              "min": 10,
+              "max": 12
+            },
+            {
+              "species": "CLEFAIRY",
+              "chance": 6,
+              "min": 10,
+              "max": 12
+            }
+          ]
+        }
+      ],
+      "trainers": [
+        "kanto-grunt",
+        "kanto-miguel"
+      ]
+    },
+    {
+      "id": "kanto-cerulean-city",
+      "name": "Cerulean City",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-center",
+      "name": "Centro Pokémon de Cerulean",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-mart",
+      "name": "Poké Mart de Cerulean",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-cerulean-gym",
+      "name": "Ginásio de Cerulean",
+      "methods": [],
+      "trainers": [
+        "kanto-misty",
+        "kanto-luis",
+        "kanto-diana"
+      ]
     }
   ],
   "trainers": [
@@ -658,6 +1129,513 @@
                 "ROCKTOMB",
                 "BIND"
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-janice",
+      "name": "Janice",
+      "role": "Treinadora",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEY",
+              "level": 9
+            },
+            {
+              "species": "PIDGEY",
+              "level": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-colton",
+      "name": "Colton",
+      "role": "Caçador de insetos",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 10
+            },
+            {
+              "species": "WEEDLE",
+              "level": 10
+            },
+            {
+              "species": "CATERPIE",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ben",
+      "name": "Ben",
+      "role": "Jovem treinador",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 11
+            },
+            {
+              "species": "EKANS",
+              "level": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-sally",
+      "name": "Sally",
+      "role": "Treinadora",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 10
+            },
+            {
+              "species": "NIDORANfE",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-greg",
+      "name": "Greg",
+      "role": "Caçador de insetos",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "WEEDLE",
+              "level": 9
+            },
+            {
+              "species": "CATERPIE",
+              "level": 9
+            },
+            {
+              "species": "KAKUNA",
+              "level": 9
+            },
+            {
+              "species": "METAPOD",
+              "level": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-james",
+      "name": "James",
+      "role": "Caçador de insetos",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 11
+            },
+            {
+              "species": "METAPOD",
+              "level": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-calvin",
+      "name": "Calvin",
+      "role": "Jovem treinador",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SPEAROW",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-robin",
+      "name": "Robin",
+      "role": "Treinadora",
+      "location": "kanto-route-3",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "JIGGLYPUFF",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-iris",
+      "name": "Iris",
+      "role": "Treinadora",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CLEFAIRY",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-kent",
+      "name": "Kent",
+      "role": "Caçador de insetos",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "WEEDLE",
+              "level": 11
+            },
+            {
+              "species": "KAKUNA",
+              "level": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-robby",
+      "name": "Robby",
+      "role": "Caçador de insetos",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 10
+            },
+            {
+              "species": "METAPOD",
+              "level": 10
+            },
+            {
+              "species": "CATERPIE",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-jovan",
+      "name": "Jovan",
+      "role": "Super Nerd",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAGNEMITE",
+              "level": 11
+            },
+            {
+              "species": "VOLTORB",
+              "level": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-miriam",
+      "name": "Miriam",
+      "role": "Treinadora",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ODDISH",
+              "level": 11
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-josh",
+      "name": "Josh",
+      "role": "Jovem treinador",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 10
+            },
+            {
+              "species": "RATTATA",
+              "level": 10
+            },
+            {
+              "species": "ZUBAT",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-marcos",
+      "name": "Marcos",
+      "role": "Montanhista",
+      "location": "kanto-mt-moon-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 10
+            },
+            {
+              "species": "GEODUDE",
+              "level": 10
+            },
+            {
+              "species": "ONIX",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-grunt",
+      "name": "Grunt",
+      "role": "Equipe Rocket",
+      "location": "kanto-mt-moon-b2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSHREW",
+              "level": 11
+            },
+            {
+              "species": "RATTATA",
+              "level": 11
+            },
+            {
+              "species": "ZUBAT",
+              "level": 11
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ZUBAT",
+              "level": 11
+            },
+            {
+              "species": "EKANS",
+              "level": 11
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 13
+            },
+            {
+              "species": "SANDSHREW",
+              "level": 13
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 13
+            },
+            {
+              "species": "ZUBAT",
+              "level": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-miguel",
+      "name": "Miguel",
+      "role": "Super Nerd",
+      "location": "kanto-mt-moon-b2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GRIMER",
+              "level": 12
+            },
+            {
+              "species": "VOLTORB",
+              "level": 12
+            },
+            {
+              "species": "KOFFING",
+              "level": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-misty",
+      "name": "Misty",
+      "role": "Líder de ginásio",
+      "location": "kanto-cerulean-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "STARYU",
+              "level": 18,
+              "moves": [
+                "WATERPULSE",
+                "TACKLE",
+                "HARDEN",
+                "RECOVER"
+              ]
+            },
+            {
+              "species": "STARMIE",
+              "level": 21,
+              "moves": [
+                "WATERPULSE",
+                "SWIFT",
+                "RAPIDSPIN",
+                "RECOVER"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-luis",
+      "name": "Luis",
+      "role": "Nadador",
+      "location": "kanto-cerulean-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HORSEA",
+              "level": 16
+            },
+            {
+              "species": "SHELLDER",
+              "level": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-diana",
+      "name": "Diana",
+      "role": "Piqueniqueira",
+      "location": "kanto-cerulean-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GOLDEEN",
+              "level": 19
             }
           ]
         }
