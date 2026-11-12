@@ -121,6 +121,14 @@ Conforme o estudo de FireRed, **posse do HM** e **permissão local de uso** são
 
 **Agora:** somente consolidar especificação, crosswalk, fonte SHA, checklist e tarefas MAN-01/02/03. **Depois da autorização do usuário:** implementar MAN-01 primeiro, MAN-02 em seguida, salvar/flags e UI; avançar os lotes de história em cópia isolada. Nenhuma dessas pendências está declarada concluída neste roadmap.
 
-## Referência complementar — diálogos e tradução
+## Referência complementar — diálogos e tradução EN/PT-BR
 
-O [guia de inventário EN/PT-BR](Guia_Dialogos_Pokemon_FireRed_EN_PT.md) e o [passo a passo para integração dos diálogos no Blue](FIRERED_DIALOGOS_PASSO_A_PASSO.md) documentam extração, revisão, associação por NPC/flag e vínculo com `scripts/localization/catalog.py` e `data/pt-br.json`. O [extrator de falas](../scripts/localization/extrair_traduzir_dialogos_firered.py) é somente leitura da fonte FireRed local. **Nenhuma fala é ativada automaticamente** e a restrição preview_only segue vigente.
+**Rastreamento operacional:** [KANTO_ROADMAP_DIALOGOS_EN_PT.md](KANTO_ROADMAP_DIALOGOS_EN_PT.md) (DIA-01–DIA-10, correspondência por fala, lotes KAN/SEV, validação bilíngue). Fontes: [guia EN/PT-BR](Guia_Dialogos_Pokemon_FireRed_EN_PT.md), [passo a passo do Blue](FIRERED_DIALOGOS_PASSO_A_PASSO.md), [extrator local](../scripts/localization/extrair_traduzir_dialogos_firered.py).
+
+- **67 cenas KAN-001–KAN-067** e **14 referências SEV-001–SEV-014** são **resumos temáticos**, não falas EN/PT já extraídas, traduzidas ou instaladas. O corpus integral e o total real de falas ainda não foram comprovados por relatório de extração.
+- Auditar referência `text.inc` → `scripts.inc`/flag → MapID/EventID **por uso**, incluindo diálogos pré/pós-batalha, escolha, repetição, itens e save/reload. Não confundir rótulos GBA com chaves de mensagens inglesas compiladas da engine.
+- Integrar pt-BR com `scripts/localization/catalog.py`, `scripts/localization/review.py`, `data/pt-br.json`, preservando `{PLAYER}`, `{RIVAL}`, outros controles e a opção English.
+- **Portões de aceite por evento:** fala EN e PT-BR revisada, renderização sem corte, branches e escolhas corretos, tokens intactos, nenhuma recompensa duplicada, teste Windows e depois JoiPlay.
+- **Fases 09–11:** manter os 61 mapas `preview_only` sem eventos/diálogos até implementação autorizada, com fontes originais restritas a pasta local e direitos respeitados.
+
+As **10 tarefas DIA** são uma trilha documental adicional às **12 de eventos** e **16 de Kanto**. Nenhuma nova fala foi instalada com esta atualização; não alterar os contadores 8/16 ou 1/16.
