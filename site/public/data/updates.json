@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6aaf6679f211b9163f58848fe9666a4f4302368c",
+      "date": "2026-11-12T06:27:11-03:00",
+      "title": "test(kanto): executar prova Ruby do menu inicial com Auto Multi Save na CI",
+      "category": "Testes"
+    },
+    {
       "sha": "2b3de28f85f3539cf0c3f878641c5489c70d9deb",
       "date": "2026-11-12T06:26:47-03:00",
       "title": "test(kanto): validar terceira opcao sem alterar Continua, Novo Jogo e saves",
