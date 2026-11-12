@@ -11,12 +11,14 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Pallet events missing")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 22 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 31 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
-             labels.any? { |row| row.include?("Erika") },
-             "Experimental Mt Moon/Cerulean/Vermilion/Celadon destinations unavailable")
+             labels.any? { |row| row.include?("Erika") } &&
+             labels.any? { |row| row.include?("Koga") } &&
+             labels.any? { |row| row.include?("Safari Zone") },
+             "Experimental Kanto phase 10 Fuchsia/Safari destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
              "Pilot pointed at Decades save directory")
 
@@ -152,6 +154,20 @@ module KantoNativeCheck
     end
     require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("RAINBOW"),
              "Rainbow badge was granted without an Erika event")
+
+    # Fuchsia/Safari phase 10: proof of map loading and absence of imported
+    # NPCs, trainers, Safari counters, items and gym scripts.
+    stage10 = ["Fuchsia City", "Koga", "Fuchsia Centro", "Casa Warden",
+               "Safari Zone Portao", "Safari Zone Sul", "Safari Zone Norte",
+               "Safari Zone Oeste", "Rota 15"]
+    stage10.each do |label|
+      stop = BlueKantoPilot.experimental_stops.find { |entry| entry[0].include?(label) }
+      require!(stop, "Phase 10 preview destination missing: #{label}")
+      $map_factory.setup(stop[1][0])
+      require!($game_map.events.empty?, "Phase 10 imported events before review: #{label}")
+    end
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("SOUL"),
+             "Soul Badge was awarded before Koga battle was implemented")
 
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
