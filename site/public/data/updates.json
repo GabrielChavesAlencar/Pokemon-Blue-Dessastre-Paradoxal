@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5d98e687c1ed3752d69cc39977bb09bfab5c2a7d",
+      "date": "2026-11-11T21:37:13-03:00",
+      "title": "fix(kanto): persistir chave estavel do NPC e respeitar saves antigos",
+      "category": "Correções"
+    },
+    {
+      "sha": "d5376479bbd015820ac9720aba69943a19fb9d3c",
+      "date": "2026-11-11T21:37:01-03:00",
+      "title": "fix(kanto): identificar vitorias por mapa e evento do treinador",
+      "category": "Correções"
+    },
+    {
       "sha": "93792cad0dea8239be3a4bc45b22d970c9122fc1",
       "date": "2026-11-11T21:32:55-03:00",
       "title": "docs(kanto): disponibilizar atalho do teste de janela no roteiro",
