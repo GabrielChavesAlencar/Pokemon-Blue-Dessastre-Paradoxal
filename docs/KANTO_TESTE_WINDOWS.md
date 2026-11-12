@@ -15,7 +15,9 @@
 python scripts/regions/gui_diagnostics.py
 ```
 
-Se o piloto atual estiver desatualizado ou corrompido, faça **uma nova cópia sem apagar a anterior**:
+O atalho agora **detecta automaticamente quando os scripts do piloto foram alterados desde a última construção**. Nesse caso, monta uma nova pasta `kanto-pilot-revisao-...` sem apagar a cópia antiga. A execução não atualiza silenciosamente os arquivos dentro de um piloto já preparado.
+
+Se quiser forçar uma nova cópia para investigar um problema, mesmo sem mudanças no código, use:
 
 ```powershell
 python scripts/regions/gui_diagnostics.py --rebuild
