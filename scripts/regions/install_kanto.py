@@ -25,7 +25,7 @@ PORTRAITS = tuple(f"BLUE_KANTO_{kind}.png" for kind in TYPES)
 
 
 def trainer_portraits(pilot):
-    """The four trainer types copied by pilot.install_pbs must follow maps."""
+    """Every trainer type copied by pilot.install_pbs must follow maps."""
     folder = pilot / "Graphics" / "Trainers"
     result = {}
     for name in PORTRAITS:
@@ -85,7 +85,7 @@ def manifest(pilot, game):
         for path in folder.glob("*.png"):
             if path.name.startswith(("FRLG_Pilot_", "FRLG_Preview_")):
                 files[Path("Graphics") / name / path.name] = path
-    # Previously omitted: the four trainer portraits referenced by the
+    # Previously omitted: the trainer portraits referenced by the
     # BLUE_KANTO_* PBS types. Import only these explicit names, never all art.
     files.update(trainer_portraits(pilot))
     for relative, source in files.items():
@@ -100,7 +100,7 @@ def manifest(pilot, game):
 
 
 def repair_portraits(game, commit=False):
-    """Only add the missing four Kanto trainer images to an existing install.
+    """Only add missing Kanto trainer images to an existing install.
 
     Copies from original trainer type images already on the user's computer.
     Never rebuilds/imports maps, and never overwrites an unknown image.
