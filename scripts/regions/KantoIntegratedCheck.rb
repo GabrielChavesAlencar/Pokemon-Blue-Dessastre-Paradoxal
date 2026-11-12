@@ -28,6 +28,7 @@ module KantoIntegratedCheck
     saved = SaveData.read_from_file(SaveData.get_full_path(slot))
 
     BlueRegionStart.define_singleton_method(:choose_initial) { "DECADES" }
+    SaveData.mark_values_as_unloaded
     Game.start_new
     require!($game_map.map_id == original[0], "Decades no longer starts at its native map")
     require!($PokemonGlobal.blue_regions["initial"] == "DECADES", "Decades initial flag not preserved")
@@ -36,6 +37,7 @@ module KantoIntegratedCheck
              "Native System start was not restored")
 
     # A saved Kanto game reloads as Kanto, without choosing a region again.
+    SaveData.mark_values_as_unloaded
     Game.load(saved)
     require!($game_map.map_id == spawn[0], "Kanto save did not restore its map")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto save lost its origin")
