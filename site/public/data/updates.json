@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f0e62bec8ae5479e132449275090ddf24c996178",
+      "date": "2026-11-11T23:49:21-03:00",
+      "title": "docs(kanto): ajustar atalhos e importador para 25 mapas e retratos da fase 07",
+      "category": "Documentação"
+    },
+    {
+      "sha": "b4a3639ee1b4c6fed587e81fc04e69101000933f",
+      "date": "2026-11-11T23:49:17-03:00",
+      "title": "docs(kanto): ajustar atalhos e importador para 25 mapas e retratos da fase 07",
+      "category": "Documentação"
+    },
+    {
+      "sha": "eb69afee7ed1d6f95e5f16b665e5e31e4910d2aa",
+      "date": "2026-11-11T23:49:14-03:00",
+      "title": "docs(kanto): ajustar atalhos e importador para 25 mapas e retratos da fase 07",
+      "category": "Documentação"
+    },
+    {
       "sha": "d680517421a910daa09dbe806ff0cceafa50bb3d",
       "date": "2026-11-11T23:48:48-03:00",
       "title": "test(kanto): acompanhar 12 retratos de treinadores na fase Cerulean",
