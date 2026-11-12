@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c08e33f90fc718ef24fcd5a7ef74f8448928346b",
+      "date": "2026-11-12T20:14:02-03:00",
+      "title": "test(johto): cobre extração local segura, ZIP traversal, symlink e preservação do jogo",
+      "category": "Testes"
+    },
+    {
       "sha": "5d96bf77d0a2fdbd2e6fd0aacb8c24c0dba2affd",
       "date": "2026-11-12T20:13:22-03:00",
       "title": "feat(johto): extrai pacote RMXP ZIP somente de mapas e gráficos em workspace isolado",
