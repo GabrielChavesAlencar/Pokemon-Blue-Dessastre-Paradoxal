@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "48e8fb46d0741e854c01064cc89760f5c76663e6",
+      "date": "2026-11-11T23:52:09-03:00",
+      "title": "docs(kanto): atualizar roteiro geral para fase 07 e teste isolado",
+      "category": "Documentação"
+    },
+    {
       "sha": "3503a938e15c8ab4a92cfbf5021c23e1b6427c76",
       "date": "2026-11-11T23:51:53-03:00",
       "title": "docs(kanto): duas barras 07/16 e 01/16, piloto 25 mapas e teste experimental",
