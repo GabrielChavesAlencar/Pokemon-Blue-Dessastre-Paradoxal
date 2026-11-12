@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "52bccedbb8a25f580ad2817b88842406edb25be6",
+      "date": "2026-11-11T23:45:12-03:00",
+      "title": "test(kanto): confirmar menu e destinos experimentais na engine",
+      "category": "Testes"
+    },
+    {
       "sha": "63bf64267116309915bac0a7d67a698231f2fccd",
       "date": "2026-11-11T23:44:58-03:00",
       "title": "test(kanto): verificar 9 destinos experimentais dentro dos 25 mapas preparados",
