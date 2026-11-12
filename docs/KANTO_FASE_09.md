@@ -1,4 +1,10 @@
-# Kanto — Fase 09/16: Celadon e Erika (prévia do cenário)
+# Kanto — Etapa 09/16: Celadon e Erika
+
+> **Atualização de gameplay (12/11/2026):** a [entrega do 8º núcleo funcional](KANTO_AVANCO_FUNCIONAL_08.md) ativa **somente Celadon City, o Centro Pokémon e o ginásio de Erika**, com portas, enfermeira e oito treinadores. **A CI nativa da revisão atual ainda é requisito de aprovação.** Os outros oito mapas de Celadon continuam sem eventos. **Os dados e condições abaixo descrevem a antiga prévia de terreno** e são mantidos como histórico, não como proibição atual de implementar o núcleo autorizado.
+
+## Histórico da primeira entrega de cenário
+
+
 
 **Data:** 12/11/2026  
 **Estado:** prévia de terreno implementada e aprovada na CI nativa Windows (51 mapas, 11 sem eventos). **Eventos ainda adiados por pedido do usuário:** o estudo de eventos foi recebido e incorporado ao [roadmap específico](KANTO_ROADMAP_EVENTOS_FIRERED.md), mas esta tarefa não autoriza instalar eventos.  
