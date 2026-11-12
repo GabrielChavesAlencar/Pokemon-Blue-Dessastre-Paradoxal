@@ -74,6 +74,20 @@ TRAINERS.update({
 
 
 
+# Celadon Gym source identities and teams audited from the pinned FRLG
+# Map124 and PBS/trainers.txt. Individual Pokémon/moves/levels remain sourced.
+TRAINERS.update({
+    "LEADER_Erika,Erika": ("LEADER_ERIKA", "Erika", 0),
+    "PICNICKER,Tina": ("PICNICKER", "Tina", 0),
+    "LASS,Kay": ("LASS", "Kay", 0),
+    "BEAUTY,Bridget": ("BEAUTY", "Bridget", 0),
+    "BEAUTY,Tamia": ("BEAUTY", "Tamia", 0),
+    "BEAUTY,Lori": ("BEAUTY", "Lori", 0),
+    "LASS,Lisa": ("LASS", "Lisa", 0),
+    "COOLTRAINER_F,Mary": ("COOLTRAINER_F", "Mary", 0),
+})
+
+
 def read_blocks(path, selected=None):
     blocks = {}
     key = None
@@ -174,7 +188,7 @@ def trainer_draft(path, species, moves):
 
 def build_drafts(source, game, plan):
     species, moves = catalogue(game, "pokemon"), catalogue(game, "moves")
-    # The terrain previews (phases 09/10) must not activate foreign trainers,
+    # Remaining terrain previews (Celadon store, Fuchsia, Saffron) must not activate foreign trainers,
     # encounter tables or story scripts before event review.
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
