@@ -78,8 +78,8 @@ A **referência GBA** não pode virar `engine_english_key` por substituição de
 
 ## 7. Progresso e bloqueios
 
-- **Campanha Kanto, desenvolvimento:** **8/16 (50%)**. Fases 09–11 são prévias de geometria sem eventos.
-- **Campanha Kanto, aceitação completa:** **1/16 (6,25%)**. QA humano pendente.
+- **Campanha Kanto, núcleos funcionais comprovados:** **6/16 (37,5%); faltam 10 etapas**. Fases 09–11 são apenas geometrias. [Contagem revisada](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+- **Campanha Kanto, aceitação completa:** **1/16 (6,25%); faltam 15 etapas**. QA humano pendente.
 - **Auditoria de eventos FireRed:** 12 marcos; sem porcentagem aferida.
 - **Auditoria/localização de diálogos:** 10 tarefas DIA-01–DIA-10; **0 finalizadas nesta revisão documental**, execução ainda não registrada.
 - **Tradução Kanto EN/PT-BR:** percentual **não aferido**; 67 cenas são referência, não denominador de falas.
