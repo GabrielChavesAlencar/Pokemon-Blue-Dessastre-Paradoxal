@@ -7,11 +7,27 @@ module KantoNativeCheck
   def self.run
     SaveData.initialize_bootup_values
     Game.start_new
-    require!($data_system.start_map_id == $game_map.map_id, "Pallet did not load")
-    require!($game_map.events.size >= 4, "Pallet events missing")
+    require!($data_system.start_map_id == $game_map.map_id, "Player Home did not load")
+    require!($game_map.events.size >= 4, "Player Home events missing")
+    require!([$game_player.x, $game_player.y] == [25, 7], "Kanto did not start upstairs")
+    home = $game_map.map_id
+    home_exit = $game_map.events[1]
+    home_return = home_exit.list.find { |row| row.code == 201 }
+    require!(home_return, "Player Home has no return door")
+    pallet = home_return.parameters[1]
+    require!($game_map.events[3].list.any? { |row|
+      row.code == 201 && row.parameters[1] == home
+    }, "Home stairs do not connect both floors")
+    $map_factory.setup(pallet)
+    require!($game_map.events.size >= 5, "Pallet Town events missing")
+    require!([1, 2, 3].all? { |eid| $game_map.events[eid].trigger == 1 },
+      "Pallet house and laboratory doors are not Player Touch")
+    require!($game_map.events[1].list.any? { |op|
+      op.code == 201 && op.parameters[1] == home
+    }, "Player Home door cannot be entered from Pallet")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 42 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 43 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&

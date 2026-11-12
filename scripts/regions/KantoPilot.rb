@@ -423,6 +423,20 @@ module BlueKantoPilot
                     "Nenhum ingresso, dinheiro ou Safari Ball será consumido nesta versão."))
   end
 
+  # Local Pallet residents; never run the foreign FRLG quest scripts.
+  def self.mom
+    if $player && $player.party.any? { |pkmn| !pkmn.egg? }
+      $player.heal_party
+      pbMessage(_INTL("Mãe: Descanse um pouco antes de continuar sua aventura por Kanto."))
+    else
+      pbMessage(_INTL("Mãe: Seu quarto fica no andar de cima. Depois visite Oak no laboratório."))
+    end
+  end
+
+  def self.daisy
+    pbMessage(_INTL("Daisy: Bem-vindo à casa do Blue! O laboratório de Oak fica ao sul de Pallet."))
+  end
+
   def self.heal
     $player.heal_party
     pbSetPokemonCenter

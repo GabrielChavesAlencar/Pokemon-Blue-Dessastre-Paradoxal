@@ -54,6 +54,24 @@ module KantoIntegratedCheck
     stage("after_kanto_new_game")
     require!($game_map.map_id == spawn[0], "Kanto initial map did not load")
     require!([$game_player.x, $game_player.y] == spawn[1,2], "Kanto spawn is wrong")
+    # The canonical Kanto start is now the player's upstairs bedroom.
+    require!($game_map.events[1]&.list&.any? { |op| op.code == 201 },
+             "Kanto home has no Pallet exit")
+    require!($game_map.events[3]&.list&.any? { |op|
+      op.code == 201 && op.parameters[1] == spawn[0]
+    }, "Kanto home upstairs stairs have no return path")
+    house_map = $game_map.map_id
+    town_map = $game_map.events[1].list.find { |op| op.code == 201 }.parameters[1]
+    $map_factory.setup(town_map)
+    require!($game_map.events[1]&.trigger == 1 &&
+             $game_map.events[1].list.any? { |op|
+               op.code == 201 && op.parameters[1] == house_map
+             }, "Pallet player home cannot be entered by walking")
+    require!($game_map.events[9]&.list&.any? { |op|
+      op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
+    }, "Pallet starter town has no NPC for region travel")
+    $map_factory.setup(house_map)
+    $game_player.moveto(spawn[1],spawn[2])
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto initial region not saved")
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region not saved")
     require!($PokemonGlobal.blue_story_mode == :story, "Story mode was not selected")
@@ -124,6 +142,22 @@ module KantoIntegratedCheck
              "Kanto->Decades travel did not complete")
     require!($game_map.map_id == original[0], "Decades return map differs from original")
     require!($PokemonGlobal.blue_regions["current"] == "DECADES", "Travel state was not committed")
+    # Town NPC belongs in the first Decades city (Cherryhill Map077).
+    # Dynamic on-map insertion does not mutate native Map077.rxdata.
+    require!(BlueRegionTravel::DECADES_AGENT_MAP == 77,
+             "Decades starting city NPC moved to a non-audited map")
+    $map_factory.setup(BlueRegionTravel::DECADES_AGENT_MAP)
+    agents = $game_map.events.values.select { |event|
+      event.name == BlueRegionTravel::DECADES_AGENT_NAME
+    }
+    require!(agents.length == 1,
+             "Cherryhill City regional NPC missing or duplicated")
+    require!(agents[0].list.any? { |op|
+      op.code == 355 && op.parameters[0] == "BlueRegionTravel.agent(true)"
+    }, "Decades city NPC cannot open regional travel")
+    $map_factory.setup(original[0])
+    $game_player.moveto(original[1], original[2])
+
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Travel changed the initial region")
     require!($player.party.first.equal?(pokemon), "Travel replaced the party Pokémon")
 
@@ -143,7 +177,12 @@ module KantoIntegratedCheck
     stage("travel_decades_to_kanto")
     require!(BlueRegionTravel.perform(BlueRegions.snapshot, "KANTO"),
              "Decades->Kanto travel did not complete")
-    require!($game_map.map_id == spawn[0], "Kanto return map differs from original")
+    # Returning visitors arrive outdoors in Pallet beside the regional NPC;
+    # only a NEW GAME spawns in the player's upstairs bedroom.
+    pallet_point = BlueRegionTravel.kanto_town_point
+    require!(pallet_point && $game_map.map_id == pallet_point[0] &&
+             [$game_player.x, $game_player.y] == pallet_point[1, 2],
+             "Kanto return must arrive in Pallet Town, not inside the bedroom")
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Return state was not committed")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Return changed the starting region")
     require!($PokemonGlobal.blue_regions["travel_history"].length == 2, "Two-way history missing")
@@ -166,7 +205,8 @@ module KantoIntegratedCheck
     SaveData.mark_values_as_unloaded
     Game.load(saved)
     stage("after_kanto_reload")
-    require!($game_map.map_id == spawn[0], "Kanto save did not restore its map")
+    require!($game_map.map_id == BlueRegionTravel.kanto_town_point[0],
+             "Kanto save did not restore the Pallet arrival map")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto save lost its origin")
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region did not survive save")
     require!($PokemonGlobal.blue_regions["travel_history"].length == 2, "Travel history lost on save/reload")

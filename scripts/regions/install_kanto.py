@@ -168,7 +168,7 @@ def apply_install(game, pilot, commit=False):
         raise ValueError("Kanto ja instalado: recusar IDs duplicados.")
     files, mapping, original_hashes = manifest(pilot, game)
     plan = {"status": "dry_run", "maps": len(mapping), "files": len(files),
-            "start": [mapping[5], 28, 14], "map_ids": mapping}
+            "start": [mapping[7], 25, 7], "map_ids": mapping}
     if not commit:
         return plan
 
@@ -196,7 +196,7 @@ def apply_install(game, pilot, commit=False):
         atomic(game / "Data/blue-kanto-install.json",
                (json.dumps(info, indent=2) + "\n").encode("utf-8"))
         # The marker is deliberately committed LAST. No menu until ready.
-        start = "BLUE_KANTO_START_V1,KANTO,%d,28,14\n" % mapping[5]
+        start = "BLUE_KANTO_START_V1,KANTO,%d,25,7\n" % mapping[7]
         atomic(game / MARKER, start.encode("ascii"))
     except BaseException:
         for relative, old in reversed(list(originals.items())):

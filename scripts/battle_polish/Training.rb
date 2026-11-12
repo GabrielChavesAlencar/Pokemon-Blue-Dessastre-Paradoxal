@@ -48,7 +48,7 @@ module BlueTraining
       panel=@sprites['blueDifficulty'];panel.x=8;panel.y=350;panel.z=10
       b=panel.bitmap;b.clear;b.fill_rect(0,0,b.width,b.height,Color.new(15,43,66));pbSetSmallFont(b)
       pbDrawTextPositions(b,[[_INTL('Difficulty')+': '+BlueTraining.difficulty,10,0,:left,Color.new(240,248,255),Color.new(15,43,66)],
-        [_INTL('{1} crystals',$player.badge_count),b.width-10,0,:right,Color.new(161,210,243),Color.new(15,43,66)]])
+        [_INTL('{1} esmeraldas',BlueRegions.crystal_total(BlueRegions.snapshot || BlueRegions.new_state, $player.badge_count)),b.width-10,0,:right,Color.new(161,210,243),Color.new(15,43,66)]])
     end
   end
   def self.install

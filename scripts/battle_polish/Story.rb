@@ -265,6 +265,7 @@ module Compiler
       PBAnimationPlayerX.prepend(BlueFanBackFacing::Player) unless PBAnimationPlayerX.ancestors.include?(BlueFanBackFacing::Player)
       PokemonRegionMap_Scene.prepend(BlueRegionMapSafety) unless PokemonRegionMap_Scene.ancestors.include?(BlueRegionMapSafety)
       BlueTraining.install
+      BlueRegionalCards.install
       BlueTrainerAlbum.install
       BlueHabitatRewards.install
       PokemonSummary_Scene.prepend(BlueSummaryBackdrop) unless PokemonSummary_Scene.ancestors.include?(BlueSummaryBackdrop)

@@ -336,7 +336,10 @@ def install_events(source, target, mapping):
         dest_file = target / "Data" / f"Map{destination:03}.rxdata"
         map_data = load(dest_file)
         selected = {}
-        script_events = {6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
+        script_events = {5: {9: "BlueRegionTravel.agent(true)"},
+                          7: {13: "BlueKantoPilot.mom"},
+                          8: {8: "BlueKantoPilot.daisy"},
+                          6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
                          11: {2: "BlueKantoPilot.heal"},
                          115: {2: "BlueKantoPilot.heal"},
                          145: {2: "BlueKantoPilot.heal"},
@@ -502,6 +505,8 @@ def install_events(source, target, mapping):
                         collected.attrs["@through"] = True
                         collected.attrs["@list"] = [command(0)]
                         scripted.attrs["@pages"].append(collected)
+                    if original == 5 and event_id == 9:
+                        scripted.attrs["@name"] = b"Agente Regional"
                     selected[event_id] = scripted
                 continue
             if original == 5 and event_id in (11, 13):
@@ -520,7 +525,8 @@ def install_events(source, target, mapping):
                 is_door = "door" in name.lower() and bool(character)
                 # For the audited Celadon entrance doors, keep the original
                 # Player Touch semantics rather than requiring an action key.
-                auto_entry = (original == 114 and event_id in (3, 20)) or (
+                auto_entry = (original == 5 and event_id in (1, 2, 3)) or (
+                    original == 114 and event_id in (3, 20)) or (
                     original == 144 and event_id in (5, 17, 18, 24)) or (
                     original == 168 and event_id in (6, 10, 12, 13, 14))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
@@ -575,7 +581,7 @@ def install_runtime(target, mapping, game):
         "Requires = Blue Battle Presentation and Story\nScripts = KantoPilot.rb\n", encoding="utf8")
     data = target / "Data"
     system = load(data / "System.rxdata")
-    system.attrs.update({"@start_map_id": mapping[5], "@start_x": 28, "@start_y": 14})
+    system.attrs.update({"@start_map_id": mapping[7], "@start_x": 25, "@start_y": 7})
     write_map(data / "System.rxdata", system, SYSTEM_CLASSES)
     infos = load(data / "MapInfos.rxdata")
     for source_id, key in json_file(KANTO)["maps"].items():
@@ -594,12 +600,13 @@ def install_runtime(target, mapping, game):
     # The standalone pilot must always select Kanto automatically on a new
     # game. The main installation uses this marker only after explicit import.
     (data / "blue-kanto-start.txt").write_text(
-        f"BLUE_KANTO_START_V1,KANTO,{mapping[5]},28,14\n", encoding="ascii"
+        f"BLUE_KANTO_START_V1,KANTO,{mapping[7]},25,7\n", encoding="ascii"
     )
     # Experimental shortcuts are available ONLY in this isolated pilot;
     # install_kanto.py never imports this file into the main campaign.
     stops = [
         ("PALLET", "Pallet Town (Oak)", 5, 28, 14),
+        ("PLAYER_HOME", "Casa do jogador (inicio)", 7, 25, 7),
         ("PEWTER", "Pewter City (Gym)", 25, 19, 21),
         ("ROUTE4", "Route 4 (Mt Moon exit)", 33, 92, 21),
         ("MOON_CENTER", "Mt Moon Pokemon Center", 34, 7, 8),

@@ -11,7 +11,7 @@ module BlueRegionTravel
     return false unless BlueRegions.active? && $player && $game_map && $game_player && $scene
     return false unless $game_temp && !$game_temp.in_battle && !$game_temp.player_transferring
     return false if $game_temp.message_window_showing || $game_temp.transition_processing
-    return false if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    return false if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning? && !@npc_event_context
     return false unless $scene.respond_to?(:transfer_player)
     true
   end
@@ -44,12 +44,28 @@ module BlueRegionTravel
     source_valid?(state) && %w[DECADES KANTO].include?(state["current"])
   end
 
+  # A new adventure begins upstairs at home, but returning from another
+  # region should arrive in Pallet Town beside the agent, not in the bedroom.
+  # Map 5 and tile (18,8) are source-proven FRLG house-door coordinates.
+  def self.kanto_town_point
+    path = "Data/blue-kanto-install.json"
+    return nil unless File.file?(path)
+    text = File.read(path)
+    map_match = text.match(/"5"\s*:\s*(\d+)/)
+    return nil unless map_match
+    map_id = map_match[1].to_i
+    return nil unless map_id > 0 && pbRgssExists?(sprintf("Data/Map%03d.rxdata", map_id))
+    [map_id, 18, 8, 2]
+  rescue IOError, SystemCallError
+    nil
+  end
+
   def self.destination(state, key)
     return nil unless state && BlueRegions.unlocked(state).include?(key)
     return nil if key == state["current"]
     if key == "KANTO"
       return nil unless installed?
-      BlueRegionStart.kanto_spawn + [2]
+      kanto_town_point || (BlueRegionStart.kanto_spawn + [2])
     elsif key == "DECADES"
       position = state["decades_return"]
       return nil unless position.is_a?(Array) && position.length == 4
@@ -172,7 +188,9 @@ module BlueRegionTravel
     end
   end
 
-  def self.agent
+  def self.agent(from_npc = false)
+    previous_event_context = @npc_event_context
+    @npc_event_context = true if from_npc
     state = BlueRegions.snapshot
     unless available?(state)
       pbMessage(_INTL("O transporte regional será liberado após o encerramento da Liga e a instalação dos mapas."))
@@ -214,6 +232,8 @@ module BlueRegionTravel
         break
       end
     end
+  ensure
+    @npc_event_context = previous_event_context
   end
 
   module StorageRules
@@ -257,8 +277,55 @@ module BlueRegionTravel
     !BlueRegions.allow_specials?(state, state["current"], $player.badges) && special?(pkmn)
   end
 
+  # Cherryhill City (native Decades Map077) is the first city in the
+  # source map catalog. A generated event avoids writing native Map077.rxdata.
+  # Only installed, genuine regional campaigns get the NPC; arena and legacy
+  # saves without the Kanto installation retain their original maps.
+  DECADES_AGENT_MAP = 77
+  DECADES_AGENT_GRAPHIC = "NPC_POKENGINE_Gardener".freeze
+  DECADES_AGENT_NAME = "Agente Regional Blue".freeze
+
+  def self.attach_decades_agent(map)
+    return unless installed? && map && map.map_id == DECADES_AGENT_MAP
+    state = $PokemonGlobal && $PokemonGlobal.blue_regions
+    return unless state.is_a?(Hash) && state["version"] == 1 && state["current"] == "DECADES"
+    return unless map.events.is_a?(Hash)
+    return if map.events.values.any? { |event| event.name == DECADES_AGENT_NAME }
+    return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
+    # The existing Quest NPC uses this actor graphic on Map077; don't rely on
+    # a new asset or a third-party source graphic in the native Decades game.
+    occupied = map.events.values.map { |event| [event.x, event.y] }
+    positions = (18..31).flat_map { |y| (10..35).map { |x| [x,y] } }
+    positions.sort_by! { |x,y| [(x-24).abs+(y-24).abs,y,x] }
+    point = positions.find do |x,y|
+      !occupied.include?([x,y]) && (map.valid?(x,y) rescue false) &&
+        (map.passable?(x,y,2) rescue false)
+    end
+    return unless point
+    event = RPG::Event.new(point[0], point[1])
+    event.id = (map.events.keys.max || 0) + 1
+    event.name = DECADES_AGENT_NAME
+    page = event.pages.first
+    page.graphic.character_name = DECADES_AGENT_GRAPHIC
+    page.trigger = 0
+    page.list = [
+      RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
+      RPG::EventCommand.new(0,0,[])
+    ]
+    map.events[event.id] = Game_Event.new(map.map_id, event)
+  end
+
+  module DecadesTownAgent
+    def setup(*args)
+      result = super
+      BlueRegionTravel.attach_decades_agent(self)
+      result
+    end
+  end
+
   def self.install
     return if @installed
+    Game_Map.prepend(DecadesTownAgent) if defined?(Game_Map) && !Game_Map.ancestors.include?(DecadesTownAgent)
     PokemonStorageScreen.prepend(StorageRules)
     MenuHandlers.add(:pause_menu,:blue_region_transport,{
       "name"=>_INTL("Agente de Transporte Regional"),"order"=>68,
