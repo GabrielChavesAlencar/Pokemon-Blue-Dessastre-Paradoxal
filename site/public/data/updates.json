@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1a425a7c1815008bad3be82b857963e80923c1fb",
+      "date": "2026-11-12T09:30:45-03:00",
+      "title": "Verificador: decodificar nomes Ruby de eventos de forma compatível",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a2c0db0b8b38e3f2c403c5d279e44c239f8c9fdb",
       "date": "2026-11-12T09:30:27-03:00",
       "title": "MAN-01/02: verificar 8 interiores bidirecionais e 50 treinadores com Event Touch",
