@@ -63,7 +63,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [ ] **TESTE MANUAL:** Pallet → casa do rival → Viridian (2 casas) → Rota 2 (portaria/casa escondida) → Pewter (Museu/2 casas) com retorno; abordagem de Rick, derrota, vitória, repetição e save/reload na Forest.
 - [ ] Completar demais interiores, visão/travas de história e UI de insígnias (MAN-03), eventos canônicos e traduções EN/PT-BR.
 
-**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + **8 interiores funcionais novos** + 61 mapas de terreno sem eventos (fases 09–11). Os IDs anteriores foram congelados. **Contagem atual reavaliada: 6/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
+**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + **8 interiores funcionais novos** + 61 mapas de terreno sem eventos (fases 09–11). Os IDs anteriores foram congelados. **Contagem atual: 7/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
 
 ## Diálogos EN/PT-BR — estudo FireRed integrado ao roadmap
 
@@ -88,7 +88,7 @@ Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG
 - [ ] Integrar portarias, Fighting Dojo, Sabrina, Marsh Badge, teletransportadores e campanha Silph Co. **somente após revisão de eventos e testes de regressão**.
 - [ ] Validar manualmente tilesets, passabilidade, entrada/saída e compatibilidade de saves; manter os 54 perfis existentes sem inventar treinadores novos.
 
-**As barras funcionais reavaliadas estão em 6/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
+**As barras funcionais atuais estão em 7/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
 
 ## Fase 10 — Fuchsia/Safari preparada sem eventos
 
