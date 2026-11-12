@@ -11,10 +11,12 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Pallet events missing")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 17 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 22 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
-             labels.any? { |row| row.include?("Captain") },
-             "Experimental Mt Moon/Cerulean/Vermilion destinations unavailable")
+             labels.any? { |row| row.include?("Captain") } &&
+             labels.any? { |row| row.include?("Celadon City") } &&
+             labels.any? { |row| row.include?("Erika") },
+             "Experimental Mt Moon/Cerulean/Vermilion/Celadon destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
              "Pilot pointed at Decades save directory")
 
@@ -138,6 +140,18 @@ module KantoNativeCheck
              "Surge battle repeated after victory")
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 5,
              "Three Kanto milestones were double-counted or omitted")
+
+    # Phase 09: inspect scenery in the native engine without executing or
+    # pretending that Celadon trainers, Erika, doors or quests exist yet.
+    stage09 = ["Rota 7", "Celadon City", "Erika", "Celadon Center", "Celadon Loja"]
+    stage09.each do |label|
+      stop = BlueKantoPilot.experimental_stops.find { |entry| entry[0].include?(label) }
+      require!(stop, "Phase 09 preview stop missing: #{label}")
+      $map_factory.setup(stop[1][0])
+      require!($game_map.events.empty?, "Phase 09 imported events before audit: #{label}")
+    end
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("RAINBOW"),
+             "Rainbow badge was granted without an Erika event")
 
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
