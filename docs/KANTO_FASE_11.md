@@ -89,3 +89,11 @@ O estudo de FireRed indica dependências para uma futura implementação:
 **Barra 1 — Desenvolvimento funcional:** 9/16 (56,25%). **Barra 2 — Aceitação completa:** 1/16 (6,25%). As etapas 09 e 10 possuem núcleos jogáveis limitados; a etapa 11 (Saffron) permanece somente cenário, sem gameplay. **Trilha de eventos FireRed:** 12 marcos próprios ainda sem medição quantitativa confiável.
 
 **Próximo trabalho de mapa, sem eventos:** preparar Fase 12 — Cinnabar/Blaine em cópia isolada. Antes de liberar as fases 09–11 como histórias jogáveis, integrar as dependências de roteiro na ordem adequada e aceitar o checklist manual.
+
+---
+
+## Atualização posterior à auditoria: núcleo funcional concluído
+
+**12/11/2026 — A preparação de terreno descrita acima é histórica e NÃO representa mais o estado atual do código.** A etapa 11 evoluiu para núcleo funcional e passou na [CI Windows 43246545283](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43246545283). O piloto de Kanto já conta com Silph Co. (escadarias dos 11 andares, elevador local, Card Key e Giovanni), Fighting Dojo, ginásio de Sabrina com rede de teletransportes e Marsh Badge após vitória e resgate da Silph. As páginas de eventos e progresso ficam isoladas da campanha Decades.
+
+O roteiro de manutenção vigente é [KANTO_ETAPAS.md](KANTO_ETAPAS.md) e o próximo marco é [Cinnabar/Blaine — fase 12](KANTO_FASE_12.md). **Aprovação nativa automatizada não significa aceite integral**: faltam QA real Windows/JoiPlay, colisões e rotas canônicas da cidade, além das pendências de MAN-01/02/03. As métricas 9/16 e 101 mapas acima são o registro histórico da preparação, não os indicadores atuais.
