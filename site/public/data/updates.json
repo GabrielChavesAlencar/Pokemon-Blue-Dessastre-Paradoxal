@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "784c83a65286381724f301a8e481cad0bc7db144",
+      "date": "2026-11-11T22:00:19-03:00",
+      "title": "ci(kanto): testar Kanto vs Decades no Game.exe real apos importar mapas",
+      "category": "Melhorias"
+    },
+    {
       "sha": "93fa13b959cb9f54f093d4b0fa70caf36c129906",
       "date": "2026-11-11T21:59:53-03:00",
       "title": "test(kanto): suportar prova de nova partida apenas em ambiente CI descartavel",
