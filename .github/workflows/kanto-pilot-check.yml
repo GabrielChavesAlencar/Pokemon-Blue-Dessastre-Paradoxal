@@ -105,7 +105,7 @@ jobs:
           # opengl32.dll causes a misleading window-creation timeout.
           $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
           Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
-            Where-Object { $_.FullName -match '[\\\\/]x64[\\\\/]' } |
+            Where-Object { $_.FullName -match '[\\/]x64[\\/]' } |
             ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination 'game' -Force }
           if(-not (Test-Path 'game/opengl32.dll')){throw 'CI Mesa x64 OpenGL runtime missing'}
           python scripts/regions/native_check.py game --integrated
