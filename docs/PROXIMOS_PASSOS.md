@@ -1,5 +1,7 @@
 # Próximos passos — Pokémon Blue: Dessastre Paradoxal
 
+**Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).** O contador é atualizado somente com testes concluídos.
+
 **Comece pela etapa 1.** O piloto de Kanto já compila e recarrega um save no teste nativo, mas o percurso completo com os controles ainda precisa ser jogado. Esse teste decide se o piloto está pronto para servir de base às próximas regiões.
 
 ## Especificações de referência — regras já definidas
