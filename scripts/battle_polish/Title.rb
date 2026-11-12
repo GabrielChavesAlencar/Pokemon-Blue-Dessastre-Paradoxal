@@ -43,6 +43,16 @@ module BlueParadoxTitle
   end
   module Music
     def playBGM
+      # Kanto's separate pilot executable has a real title screen. Override
+      # only THERE, before BlueParadoxTitle's Decades title preference.
+      if defined?(BlueMusic) && BlueMusic.respond_to?(:kanto_pilot_title_audio)
+        regional=BlueMusic.kanto_pilot_title_audio
+        if regional
+          @totalFrames=nil
+          pbBGMPlay(regional)
+          return
+        end
+      end
       return super unless BlueParadoxTitle.available_track?
       @totalFrames=nil
       pbBGMPlay(RPG::AudioFile.new(BlueParadoxTitle::TRACK,100,100))
