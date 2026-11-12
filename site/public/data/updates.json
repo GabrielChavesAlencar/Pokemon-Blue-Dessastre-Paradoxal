@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "816336428738b18904f29815fa04eb96dbaaab5e",
+      "date": "2026-11-12T14:47:52-03:00",
+      "title": "feat(kanto): 16/16 núcleos técnicos com prova de caminhada; QA manual separado",
+      "category": "Novidades"
+    },
+    {
       "sha": "eb7c96fbfbb648357f14cfdb28804c05aa926740",
       "date": "2026-11-12T14:27:32-03:00",
       "title": "feat(kanto): prontidão da publicação, guia correto e QA completo — núcleo 15/16",
