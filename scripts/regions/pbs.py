@@ -120,6 +120,20 @@ TRAINERS.update({
 })
 
 
+# Phase 12: verified FRLG Map202 gym and Mansion Map205-208 trainers.
+# PBS supplies the original species, move sets and levels. Do not fake teams.
+TRAINERS.update({
+    "LEADER_Blaine,Blaine": ("LEADER_BLAINE", "Blaine", 0),
+    **{f"BURGLAR,{name}": ("BURGLAR", name, 0)
+       for name in ("Quinn", "Ramon", "Dusty", "Arnie", "Simon", "Lewis")},
+    **{f"SUPERNERD,{name}": ("SUPERNERD", name, 0)
+       for name in ("Erik", "Avery", "Derek", "Zac")},
+    **{f"SCIENTIST,{name}": ("SCIENTIST", name, 0)
+       for name in ("Ted", "Braydon", "Ivan")},
+    "YOUNGSTER,Johnson": ("YOUNGSTER", "Johnson", 0),
+})
+
+
 def read_blocks(path, selected=None):
     blocks = {}
     key = None
@@ -234,7 +248,7 @@ def build_drafts(source, game, plan):
     # 15,16,17,19..) that cannot be collapsed to min/max without creating
     # encounter levels not present in the source. Keep Fuchsia core entirely
     # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190)}
+    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
                if row["source_id"] not in no_gameplay
                and row["source_id"] not in review_encounters}
