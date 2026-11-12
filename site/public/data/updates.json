@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d5d0c10c0275cd77b4792d7f42da7f0e66ebe816",
+      "date": "2026-11-12T18:52:43-03:00",
+      "title": "feat(kanto-music): Fase 5 — cenas de Kanto com retorno seguro de BGM",
+      "category": "Novidades"
+    },
+    {
       "sha": "9f314b0eb8071f41b447325b5601b9c23d574c74",
       "date": "2026-11-12T17:45:05-03:00",
       "title": "feat(kanto-music): fase 4 ME por eventos comprovados preservando Decades",
