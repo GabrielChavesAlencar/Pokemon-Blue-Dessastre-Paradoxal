@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "55b1cc39e0ac556485a4e8dc2c43fe39c17fb1e3",
+      "date": "2026-11-12T10:47:26-03:00",
+      "title": "Kanto Fuchsia: verificar 4 retornos, 63 treinadores de visão, 7 batalhas e portão Safari seguro",
+      "category": "Melhorias"
+    },
+    {
       "sha": "595a120f3327d568008ced65d6a947f0e5c624fe",
       "date": "2026-11-12T10:46:34-03:00",
       "title": "Kanto núcleo 9: integrar Koga+6 treinadores ao guia Fuchsia e destacar portão Safari em preparação",
