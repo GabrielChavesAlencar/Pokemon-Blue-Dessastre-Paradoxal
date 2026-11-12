@@ -20,16 +20,30 @@ def normalize(contents):
 
 
 class KantoEncounterSourceTests(unittest.TestCase):
-    def test_essentials_level_range_3_5_is_inclusive_not_discrete(self):
+    def test_source_discrete_levels_3_and_5_do_not_add_4(self):
         result,count=normalize(
-            "[016]\nLand,21\n45,SPEAROW,3,5\n55,RATTATA,4,4\n"
+            "[016]\nLand,21\n45,SPEAROW,3,5\n55,RATTATA,4\n"
             "[209]\nLandMorning,18\n100,NIDORAN_M,7,9\n")
         self.assertEqual(count,2)
         self.assertIn("[427]",result)
-        self.assertIn("45,SPEAROW,3,5",result)
-        self.assertIn("55,RATTATA,4,4",result)
+        self.assertIn("45,SPEAROW,3,3",result)
+        self.assertIn("45,SPEAROW,5,5",result)
+        self.assertNotIn("SPEAROW,3,5",result)
+        self.assertIn("100,RATTATA,4,4",result)
+        self.assertIn("10,RATTATA,4,4",result)
         self.assertIn("[429]",result)
-        self.assertIn("100,NIDORAN_M,7,9",result)
+        self.assertIn("100,NIDORAN_M,7,7",result)
+        self.assertIn("100,NIDORAN_M,9,9",result)
+        # Original chance ratio: Spearow 45%, Rattata 55%.
+        lines=result.splitlines()
+        s_units=sum(int(line.strip().split(",")[0]) for line in lines if ",SPEAROW," in line)
+        r_units=sum(int(line.strip().split(",")[0]) for line in lines if ",RATTATA," in line)
+        self.assertEqual((s_units,r_units),(90,110))
+
+    def test_explicit_contiguous_source_list_collapses_without_probability_loss(self):
+        result,count=normalize("[016]\nLand\n100,SPEAROW,3,4,5,6,7\n")
+        self.assertEqual(count,1)
+        self.assertIn("100,SPEAROW,3,7",result)
 
     def test_single_level_keeps_min_equal_max(self):
         result,count=normalize("[016]\nLand,21\n100,SPEAROW,3\n")
@@ -60,9 +74,26 @@ class KantoEncounterSourceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     normalize("[016]\nLand\n100,SPEAROW,"+pair+"\n")
 
-    def test_extra_levels_rejected_instead_of_discarded(self):
-        with self.assertRaisesRegex(ValueError,"Invalid encounter"):
-            normalize("[016]\nLand\n100,SPEAROW,3,5,7\n")
+    def test_multiple_noncontiguous_levels_preserved(self):
+        result,count=normalize("[016]\nLand\n100,SPEAROW,3,5,7\n")
+        self.assertEqual(count,1)
+        self.assertIn("100,SPEAROW,3,3",result)
+        self.assertIn("100,SPEAROW,5,5",result)
+        self.assertIn("100,SPEAROW,7,7",result)
+        self.assertNotIn("SPEAROW,3,7",result)
+
+    def test_long_source_level_list_collapses_to_range(self):
+        levels=",".join(str(v) for v in range(5,41))
+        result,count=normalize("[016]\nWater\n100,SPEAROW,"+levels+"\n")
+        self.assertEqual(count,1)
+        self.assertIn("100,SPEAROW,5,40",result)
+
+    def test_repeated_level_proportion_preserved(self):
+        result,count=normalize("[016]\nLand\n100,SPEAROW,3,3,5\n")
+        self.assertEqual(count,1)
+        self.assertIn("100,SPEAROW,3,3",result)
+        self.assertIn("100,SPEAROW,5,5",result)
+        self.assertEqual(result.count("100,SPEAROW,3,3"),2)
 
     def test_unknown_species_rejected_instead_of_replaced(self):
         with self.assertRaisesRegex(ValueError,"Invalid encounter"):
