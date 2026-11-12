@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "51846747f0165f9ed31c6c4cce328c07d8cc08fe",
+      "date": "2026-11-12T19:38:27-03:00",
+      "title": "feat(johto): cria auditoria RMXP somente leitura e proteção de MapIDs",
+      "category": "Novidades"
+    },
+    {
       "sha": "df1c6ed69673043b45e9b4d2128c4e3252a67589",
       "date": "2026-11-12T19:37:20-03:00",
       "title": "feat(johto): registra fonte de mapas com importação bloqueada até auditoria",
