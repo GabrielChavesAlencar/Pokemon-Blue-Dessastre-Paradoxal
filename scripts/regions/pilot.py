@@ -289,11 +289,13 @@ def install_events(source, target, mapping):
                     key = f"KANTO_{original:03d}_{event_id:03d}"
                     # Essentials 21.1 only triggers a Trainer(n) line of sight
                     # when the active RPG Event page uses Event Touch (2).
-                    # Preserve sight range from the audited FRLG event name;
+                    # Preserve Trainer(n)/Sight(n) from the audited FRLG event name;
                     # gym leaders/NPCs without Trainer(n) stay Action Button.
                     source_name = text(event.attrs["@name"])
-                    sight = re.search(r"(?i)trainer\\(\\d+\\)", source_name)
-                    auto = bool(sight) and not kind.startswith("LEADER")
+                    sight = re.search(r"(?i)(?:trainer|sight)\\(\\d+\\)", source_name)
+                    auto = (bool(sight) and
+                            event.attrs["@pages"][0].attrs["@trigger"] == 2 and
+                            not kind.startswith("LEADER"))
                     ops = []
                     if auto:
                         ops.append(command(355, f"pbTrainerIntro(:BLUE_KANTO_{kind})".encode()))
