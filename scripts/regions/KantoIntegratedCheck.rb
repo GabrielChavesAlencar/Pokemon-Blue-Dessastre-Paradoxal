@@ -54,6 +54,24 @@ module KantoIntegratedCheck
     stage("after_kanto_new_game")
     require!($game_map.map_id == spawn[0], "Kanto initial map did not load")
     require!([$game_player.x, $game_player.y] == spawn[1,2], "Kanto spawn is wrong")
+    # The canonical Kanto start is now the player's upstairs bedroom.
+    require!($game_map.events[1]&.list&.any? { |op| op.code == 201 },
+             "Kanto home has no Pallet exit")
+    require!($game_map.events[3]&.list&.any? { |op|
+      op.code == 201 && op.parameters[1] == spawn[0]
+    }, "Kanto home upstairs stairs have no return path")
+    house_map = $game_map.map_id
+    town_map = $game_map.events[1].list.find { |op| op.code == 201 }.parameters[1]
+    $map_factory.setup(town_map)
+    require!($game_map.events[1]&.trigger == 1 &&
+             $game_map.events[1].list.any? { |op|
+               op.code == 201 && op.parameters[1] == house_map
+             }, "Pallet player home cannot be entered by walking")
+    require!($game_map.events[9]&.list&.any? { |op|
+      op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
+    }, "Pallet starter town has no NPC for region travel")
+    $map_factory.setup(house_map)
+    $game_player.moveto(spawn[1],spawn[2])
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto initial region not saved")
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region not saved")
     require!($PokemonGlobal.blue_story_mode == :story, "Story mode was not selected")
