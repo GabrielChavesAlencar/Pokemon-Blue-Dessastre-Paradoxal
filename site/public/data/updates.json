@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a09dee71c8a480200f0f3abf46aae3486ca18f49",
+      "date": "2026-11-12T20:23:21-03:00",
+      "title": "test(johto): valida percurso simbólico, badge Zephyr e bloqueios de liberação",
+      "category": "Testes"
+    },
+    {
       "sha": "beab251936c3ad1ce7276640b6738122be233ed7",
       "date": "2026-11-12T20:23:00-03:00",
       "title": "docs(johto): define itinerário simbólico da fase 05 sem inventar MapIDs ou conexões",
