@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b06ce19f6b76bcf292ac305c62576a5f84252ef2",
+      "date": "2026-11-12T10:32:57-03:00",
+      "title": "Kanto: atualizar roadmap para 8/16 núcleos (8 faltam), 1/16 aceites e Erika CI aprovada",
+      "category": "Melhorias"
+    },
+    {
       "sha": "850c75a5a6cfce5ef6266adb11bc466f69ee1d4a",
       "date": "2026-11-12T10:31:59-03:00",
       "title": "Kanto 8º núcleo: registrar aprovação final CI 43227499299 e regressão 43227499314",
