@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07fe7e52fde20866af54682516b6d9882ede2c13",
+      "date": "2026-11-11T21:12:58-03:00",
+      "title": "docs(regioes): versionar plano funcional completo v2",
+      "category": "Documentação"
+    },
+    {
+      "sha": "d1578ab602ad52967b409c3927664a2165438ded",
+      "date": "2026-11-11T21:12:56-03:00",
+      "title": "docs(regioes): guardar estudo técnico multirregional original",
+      "category": "Documentação"
+    },
+    {
       "sha": "ade19e6e91a522a7dcb7a8e5b4210a2c843566ff",
       "date": "2026-11-11T21:03:16-03:00",
       "title": "docs: registrar roteiro para retomar Kanto e o circuito regional",
