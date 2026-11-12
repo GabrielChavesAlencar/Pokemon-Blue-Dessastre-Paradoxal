@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e1896886e06a827270e380f4516da37f47a3c0ec",
+      "date": "2026-11-12T08:57:57-03:00",
+      "title": "Kanto 11: documentar 30 mapas de Saffron/Silph e eventos deixados para depois",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5672de519509b864868cbf78c5693c41b4f356ce",
       "date": "2026-11-12T08:56:46-03:00",
       "title": "Saffron: incluir Fan Club auditado sem eventos e atualizar regressão dos 101 mapas",
