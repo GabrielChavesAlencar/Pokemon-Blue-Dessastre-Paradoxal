@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "06/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "notes": "Map graph uses symbolic identifiers only. Real RMXP source IDs, entrances, physical coordinates, events, levels, licensing, and walkability are NOT verified.",
+  "requires_completed_phase": "05/16",
+  "entrance": "JOHTO_VIOLET_CITY",
+  "corridor": [
+    {
+      "key": "JOHTO_VIOLET_CITY",
+      "label": "Violet City"
+    },
+    {
+      "key": "JOHTO_ROUTE_32",
+      "label": "Route 32"
+    },
+    {
+      "key": "JOHTO_UNION_CAVE_1F",
+      "label": "Union Cave 1F"
+    },
+    {
+      "key": "JOHTO_ROUTE_33",
+      "label": "Route 33"
+    },
+    {
+      "key": "JOHTO_AZALEA_TOWN",
+      "label": "Azalea Town"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_ROUTE_32_POKEMON_CENTER",
+      "label": "Route 32 Pokemon Center"
+    },
+    {
+      "key": "JOHTO_UNION_CAVE_B1F",
+      "label": "Union Cave B1F"
+    },
+    {
+      "key": "JOHTO_AZALEA_SLOWPOKE_WELL",
+      "label": "Slowpoke Well"
+    },
+    {
+      "key": "JOHTO_AZALEA_SLOWPOKE_WELL_B1F",
+      "label": "Slowpoke Well B1F"
+    },
+    {
+      "key": "JOHTO_AZALEA_KURT_HOUSE",
+      "label": "Kurt's House"
+    },
+    {
+      "key": "JOHTO_AZALEA_GYM",
+      "label": "Azalea Gym"
+    },
+    {
+      "key": "JOHTO_AZALEA_POKEMON_CENTER",
+      "label": "Azalea Pokemon Center"
+    },
+    {
+      "key": "JOHTO_AZALEA_MART",
+      "label": "Azalea Poke Mart"
+    },
+    {
+      "key": "JOHTO_ILEX_FOREST_GATE",
+      "label": "Ilex Forest Gate (future phase 07)"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_VIOLET_CITY",
+      "to": "JOHTO_ROUTE_32",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_32",
+      "to": "JOHTO_UNION_CAVE_1F",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_UNION_CAVE_1F",
+      "to": "JOHTO_ROUTE_33",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_33",
+      "to": "JOHTO_AZALEA_TOWN",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_32",
+      "to": "JOHTO_ROUTE_32_POKEMON_CENTER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_UNION_CAVE_1F",
+      "to": "JOHTO_UNION_CAVE_B1F",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_AZALEA_SLOWPOKE_WELL",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_SLOWPOKE_WELL",
+      "to": "JOHTO_AZALEA_SLOWPOKE_WELL_B1F",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_AZALEA_KURT_HOUSE",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_AZALEA_GYM",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_AZALEA_POKEMON_CENTER",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_AZALEA_MART",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_AZALEA_TOWN",
+      "to": "JOHTO_ILEX_FOREST_GATE",
+      "two_way": true
+    }
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_ROCKET_GRUNT",
+      "name": "Rocket",
+      "versions": [
+        0,
+        1
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ROCKET_PROTON",
+      "name": "Proton",
+      "versions": [
+        0
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_BUGSY",
+      "name": "Bugsy",
+      "versions": [
+        0
+      ]
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_AZALEA_RIVAL",
+      "name": "Rival",
+      "versions": [
+        0,
+        1,
+        2
+      ]
+    }
+  ],
+  "story_requirements": [
+    "ZEPHYR prior to Azalea",
+    "Talk with Kurt",
+    "Enter Slowpoke Well",
+    "Rocket grunt 0 victory",
+    "Rocket grunt 1 victory",
+    "Proton victory",
+    "Bugsy victory awards HIVE once",
+    "Ilex gate rival becomes available only after HIVE",
+    "Cut obeys both HIVE and tool readiness"
+  ],
+  "badge": {
+    "key": "HIVE",
+    "region": "JOHTO",
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": "CUT"
+  },
+  "validation": {
+    "source_map_ids_verified": false,
+    "source_license_checked": false,
+    "physical_entrances_and_return_warps_verified": false,
+    "cave_floors_collision_verified": false,
+    "encounters_and_npcs_compiled": false,
+    "rocket_trainers_compiled": false,
+    "bugsy_rival_trainers_compiled": false,
+    "windows_gameplay_verified": false,
+    "joi_play_gameplay_verified": false,
+    "save_reload_and_kanto_regression_accepted": false
+  },
+  "integrated": false
+}
