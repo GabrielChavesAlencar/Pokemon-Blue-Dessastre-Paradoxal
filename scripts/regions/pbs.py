@@ -1,5 +1,6 @@
 """Prepare reviewable Kanto PBS fragments from the FRLG kit, never the live PBS."""
 import re
+from math import lcm
 from pathlib import Path
 
 HEADER = re.compile(r"^\[([^]]+)]\s*(?:#.*)?$")
@@ -213,23 +214,49 @@ def normalize_encounters(source, rows, species):
                     raise ValueError(f"Unsupported encounter method {fields[0]}")
                 methods[method] = (fields, [])
             else:
-                if method is None or len(fields) not in (3, 4) or fields[1] not in species:
+                if method is None or len(fields) < 3 or fields[1] not in species:
                     raise ValueError(f"Invalid encounter {line} in map {key}")
                 weight = int(fields[0])
-                # Essentials v21.1 PBS slot syntax: chance,species,min[,max].
-                # Two levels mean an INCLUSIVE range, not a discrete list.
-                # The previous "contiguous levels" check incorrectly rejected
-                # all min/max pairs wider than 1 (e.g. SPEAROW,3,5).
-                low = int(fields[2])
-                high = int(fields[3]) if len(fields) == 4 else low
-                if not 0 < weight <= 100 or not 1 <= low <= high <= 100:
-                    raise ValueError(f"Invalid encounter weight or level in map {key}: {line}")
-                # Preserve exact source weight, species and range; the engine
-                # selects a random integer within [min,max] inclusive.
-                methods[method][1].append([weight, fields[1], low, high])
-        for method, (_, entries) in methods.items():
-            if sum(row[0] for row in entries) != 100:
-                raise ValueError(f"Encounter weights must total 100: {key}/{method}")
+                # This particular source kit lists EVERY possible level:
+                # "45,SPEAROW,3,5" means levels {3,5}, not a min/max pair.
+                # Long explicit lists (e.g. 5..40) are common in its PBS.
+                levels = [int(v) for v in fields[2:]]
+                if (not 0 < weight <= 100 or not levels or
+                    not all(1 <= n <= 100 for n in levels)):
+                    raise ValueError(f"Invalid source encounter in map {key}: {line}")
+                # Keep the authored order and even repeated levels, since
+                # repetitions change the source's relative level probabilities.
+                methods[method][1].append([weight, fields[1], levels])
+        for encounter_method, (_, original_slots) in methods.items():
+            if sum(row[0] for row in original_slots) != 100:
+                raise ValueError(f"Encounter weights must total 100: {key}/{encounter_method}")
+            # Expand only discontinuous level lists into single-level slots.
+            # Relative probabilities are preserved EXACTLY with integer
+            # scaling by the LCM of their level counts; vanilla Essentials
+            # has no syntax for an arbitrary discrete set in one slot.
+            scale = 1
+            for chance, ident, levels in original_slots:
+                if levels != list(range(levels[0], levels[-1] + 1)):
+                    scale = lcm(scale, len(levels))
+            converted = []
+            for chance, ident, levels in original_slots:
+                consecutive = levels == list(range(levels[0], levels[-1] + 1))
+                targets = [(levels[0], levels[-1], chance * scale)] if consecutive else [
+                    (level, level, chance * scale // len(levels)) for level in levels
+                ]
+                for low, high, units in targets:
+                    # Each generated PBS chance must fit an Essentials entry
+                    # (1–100). Duplicate the SAME range to represent >100,
+                    # never round the probability or create new level values.
+                    while units:
+                        weight = min(units, 100)
+                        converted.append([weight, ident, low, high])
+                        units -= weight
+                    if len(converted) > 4096:
+                        raise ValueError(
+                            f"Exact source level distribution needs too many slots: {key}/{encounter_method}"
+                        )
+            methods[encounter_method] = (methods[encounter_method][0], converted)
         tables[dst_id, version] = methods
     out = []
     for (map_id, version), methods in sorted(tables.items()):
