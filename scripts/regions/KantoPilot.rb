@@ -54,6 +54,10 @@ module BlueKantoPilot
 
   def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
+    if type == :BLUE_KANTO_LEADER_SURGE && !progress["pilot_surge_unlocked"]
+      pbMessage(_INTL("Lt. Surge aguarda atrás das trancas elétricas. Resolva o enigma das lixeiras primeiro."))
+      return
+    end
     wins = (progress["pilot_wins"] ||= [])
     # New events persist stable region/map/event keys. Accept old name-only
     # entries from pilot saves built before this fix without replaying battles.
