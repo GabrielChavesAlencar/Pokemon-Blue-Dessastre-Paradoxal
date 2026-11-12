@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d3e915e08042c20715c74d1e15a737cf92e5b416",
+      "date": "2026-11-12T06:39:44-03:00",
+      "title": "docs(kanto): registrar terceira opcao Testar Kanto no Modo Historia sem alterar contagem",
+      "category": "Documentação"
+    },
+    {
       "sha": "3542d9206ba24a178deb82cf2f2ecd73c867db5e",
       "date": "2026-11-12T06:38:58-03:00",
       "title": "docs(instalacao): ensinar Testar Kanto pelo EXE do site com saves isolados",
