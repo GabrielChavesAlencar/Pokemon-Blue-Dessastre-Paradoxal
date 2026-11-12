@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e56fb757ffeba2bedb691f98a55046317984c82e",
+      "date": "2026-11-12T09:40:26-03:00",
+      "title": "docs(kanto): registrar CI e regressão aprovadas das correções MAN-01/02",
+      "category": "Correções"
+    },
+    {
+      "sha": "633ca97f81e3c71bb91522814290c8b027f706b4",
+      "date": "2026-11-12T09:40:24-03:00",
+      "title": "docs(kanto): registrar CI e regressão aprovadas das correções MAN-01/02",
+      "category": "Correções"
+    },
+    {
+      "sha": "66b2a2130ac83c4cbc5f7ce3cc9d15d0cae86082",
+      "date": "2026-11-12T09:40:22-03:00",
+      "title": "docs(kanto): registrar CI e regressão aprovadas das correções MAN-01/02",
+      "category": "Correções"
+    },
+    {
+      "sha": "4e338beb15c8f45d35c7d841ea02d8181a80decd",
+      "date": "2026-11-12T09:40:18-03:00",
+      "title": "docs(kanto): registrar CI e regressão aprovadas das correções MAN-01/02",
+      "category": "Correções"
+    },
+    {
       "sha": "b5972b9431891ff4145a93e55c3fcbfe2ae9d63b",
       "date": "2026-11-12T09:37:39-03:00",
       "title": "Kanto MAN-01: publicar 8 novos interiores e preservar 54 treinadores no portal",
