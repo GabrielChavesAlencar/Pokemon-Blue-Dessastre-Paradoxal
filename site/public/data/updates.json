@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "caf168dc7417492b2e0d6b2627b4011538dfa540",
+      "date": "2026-11-11T23:43:41-03:00",
+      "title": "feat(kanto): abrir jogo experimental sem depender do monitor de janela",
+      "category": "Novidades"
+    },
+    {
       "sha": "392437310c7ae8d342f797291e1ec2f509367d0a",
       "date": "2026-11-11T23:43:27-03:00",
       "title": "fix(kanto): permitir jogabilidade experimental sem detecção Win32 sujeita a WinError 0",
