@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6bcf2726d93761bb4d0f867ec8ef91e08d877d6e",
+      "date": "2026-11-12T07:02:14-03:00",
+      "title": "Fase 08: prova nativa de Lt. Surge, S.S. Ticket, insígnias únicas e save/reload",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4778bdcae66ca80b888ae1451ce6cf90bff76de0",
       "date": "2026-11-12T07:01:36-03:00",
       "title": "Fase 08: checar 40 mapas, atalhos, bilhete, capitão e Lt. Surge no verificador",
