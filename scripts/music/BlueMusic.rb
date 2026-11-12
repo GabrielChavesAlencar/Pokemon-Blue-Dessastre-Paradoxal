@@ -84,13 +84,13 @@ module BlueMusic
     false
   end
   def self.kanto_data
-    return [{},{},{}] unless File.file?(KANTO_PATH)
+    return [{},{},{},{}] unless File.file?(KANTO_PATH)
     stamp=[File.mtime(KANTO_PATH).to_f,File.size(KANTO_PATH)]
     return @kanto_data if @kanto_stamp==stamp && @kanto_data
     lines=File.readlines(KANTO_PATH)
     header=lines.shift.to_s.chomp.split("\t")
     raise 'Invalid Kanto music version' unless header.length==3 && header[0]=='BLUE_KANTO_MUSIC_V1' && header[1]=='KANTO' && header[2].match?(/\A[0-9a-f]{64}\z/)
-    scope={};maps={};battles={}
+    scope={};maps={};battles={};transports={}
     lines.each do |line|
       parts=line.chomp.split("\t")
       case parts[0]
@@ -99,16 +99,19 @@ module BlueMusic
         id=parts[1].to_i
         raise 'Duplicate Kanto map scope' if scope.key?(id)
         scope[id]=[parts[2],parts[3]=='1']
-      when 'MAP','BATTLE'
+      when 'MAP','BATTLE','TRANSPORT'
         raise 'Invalid Kanto BGM binding' unless parts.length==5 && parts[2].start_with?('Kanto/') && parts[3].match?(/\A\d+\z/) && parts[4].match?(/\A\d+\z/)
         id=parts[1]
         if parts[0]=='MAP'
           raise 'Invalid Kanto map binding' unless id.match?(/\A[1-9]\d*\z/) && scope.key?(id.to_i) && !scope[id.to_i][1]
           id=id.to_i
           dest=maps
-        else
+        elsif parts[0]=='BATTLE'
           raise 'Invalid Kanto battle binding' unless ['wild','trainer','gym','legendary','champion','wildVictory','trainerVictory','gymVictory'].include?(id)
           dest=battles
+        else
+          raise 'Invalid Kanto transport mode' unless ['bicycle','surf'].include?(id)
+          dest=transports
         end
         raise 'Duplicate Kanto binding' if dest.key?(id)
         volume=parts[3].to_i; pitch=parts[4].to_i
@@ -118,20 +121,35 @@ module BlueMusic
         raise 'Unknown Kanto music binding'
       end
     end
-    @kanto_data=[scope,maps,battles]
+    @kanto_data=[scope,maps,battles,transports]
     @kanto_stamp=stamp
     @kanto_data
   rescue StandardError
-    [{},{},{}]
+    [{},{},{},{}]
   end
   def self.kanto_audio_for(kind,key)
     return nil unless kanto_region?
-    scope,maps,battles=kanto_data
+    scope,maps,battles,transports=kanto_data
     map_id=(kind=='map' ? key : ($game_map && $game_map.map_id))
     return nil unless map_id && scope.key?(map_id.to_i)
-    row=(kind=='map' ? maps[map_id.to_i] : battles[key.to_s])
+    return nil if scope[map_id.to_i][1] && kind=='transport'
+    row=case kind
+        when 'map' then maps[map_id.to_i]
+        when 'transport' then transports[key.to_s]
+        else battles[key.to_s]
+        end
     return nil unless row && valid_track?(row[0])
     RPG::AudioFile.new(row[0],row[1],row[2])
+  end
+  def self.kanto_vehicle_audio
+    return nil unless $PokemonGlobal && $game_map
+    return nil if defined?($game_temp) && $game_temp && $game_temp.in_battle
+    mode=if $PokemonGlobal.surfing
+           'surf'
+         elsif $PokemonGlobal.bicycle
+           'bicycle'
+         end
+    mode ? kanto_audio_for('transport',mode) : nil
   end
   def self.entry(scope,key)
     rows=config[scope=='map' ? 2 : 1]
@@ -231,6 +249,27 @@ module BlueMusic
       audio
     end
   end
+  # Essentials uses these entry points when changing maps/loading while mounted;
+  # the native dismount/surf-stop already calls map autoplay, restoring its BGM.
+  module VehicleAudio
+    private
+    def pbAutoplayOnTransition(*args)
+      audio=BlueMusic.kanto_vehicle_audio
+      return super(*args) unless audio
+      pbBGMPlay(audio)
+    end
+    def pbAutoplayOnSave(*args)
+      audio=BlueMusic.kanto_vehicle_audio
+      return super(*args) unless audio
+      pbBGMPlay(audio)
+    end
+    def pbMountBike(*args)
+      result=super(*args)
+      audio=BlueMusic.kanto_vehicle_audio
+      pbCueBGM(audio,0.4) if audio
+      result
+    end
+  end
   module EntryScope
     def start_core(*args)
       BlueMusic.with_battle { super(*args) }
@@ -251,6 +290,7 @@ module BlueMusic
   def self.install
     Game_Map.prepend(MapAudio) unless Game_Map.ancestors.include?(MapAudio)
     Object.prepend(BattleAudio) unless Object.ancestors.include?(BattleAudio)
+    Object.prepend(VehicleAudio) unless Object.ancestors.include?(VehicleAudio)
     [WildBattle,TrainerBattle].each { |k| k.singleton_class.prepend(EntryScope) unless k.singleton_class.ancestors.include?(EntryScope) }
     BattleCreationHelperMethods.singleton_class.prepend(PrepareMusic) unless BattleCreationHelperMethods.singleton_class.ancestors.include?(PrepareMusic)
     if defined?(BlueBattleLab) && BlueBattleLab.respond_to?(:battle)
