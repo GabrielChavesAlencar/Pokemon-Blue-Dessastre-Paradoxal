@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bdc393359e7bdd7dad4fed1e5602244741fb8ba",
+      "date": "2026-11-11T22:23:34-03:00",
+      "title": "feat(regions): viagem Decades Kanto transacional com return point e PC protegido",
+      "category": "Novidades"
+    },
+    {
       "sha": "bf995db7a815de019464fffc4568fd3ae5aab075",
       "date": "2026-11-11T22:15:17-03:00",
       "title": "docs(kanto): registrar CI nativa integrada aprovada e manter aceite manual pendente",
