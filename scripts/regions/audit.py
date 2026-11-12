@@ -18,6 +18,17 @@ KANTO = ROOT / "data/regions/kanto-source.json"
 MAP_NAME = re.compile(r"Map(\d+)\.rxdata", re.I)
 BADGE = re.compile(r"^\$player\.badges\[(\d+)\]\s*=\s*true$")
 DIRECTION = {"North": "South", "South": "North", "West": "East", "East": "West"}
+# The original 13-map pilot used these source IDs in this order. Keep their
+# destination slots stable when adding Mt. Moon/Cerulean, so old Kanto save
+# coordinates continue to refer to the same area in future integrations.
+PILOT_V1_SOURCE_IDS = (5, 6, 7, 9, 10, 11, 12, 18, 19, 20, 24, 25, 28)
+
+
+def stable_source_order(wanted):
+    result = [source for source in PILOT_V1_SOURCE_IDS if source in wanted]
+    result.extend(sorted(set(wanted) - set(PILOT_V1_SOURCE_IDS)))
+    return result
+
 
 
 def load(path):
@@ -119,7 +130,7 @@ def map_plan(source, game, manifest):
         raise ValueError("Source is missing one or more pilot maps.")
     # Three digits is the supported project tooling range, not a claimed engine maximum.
     free = iter(n for n in range(max(300, max(dest_infos.keys() | dest_files.keys(), default=0) + 1), 1000) if n not in dest_infos and n not in dest_files)
-    ids = {n: next(free, None) for n in sorted(wanted)}
+    ids = {n: next(free, None) for n in stable_source_order(wanted)}
     if None in ids.values():
         raise ValueError("No free map IDs in the supported 1–999 range.")
     tilesets = load(source / "Data/Tilesets.rxdata")
