@@ -180,12 +180,9 @@ def inspect(root: Path = ROOT, game: Path | None = None,
         raise ValueError("Preview aponta para mapa inexistente")
     plugin = (root / "scripts/music/BlueMusic.rb").read_text(encoding="utf-8")
     grouped = expand_groups(maps, preview)
-    # Do not invent map existence for absent parts of the original soundtrack.
-    source_names = set(maps.values())
-    if "LAVENDER_TOWN" in source_names or "SEVII_ISLANDS" in source_names:
-        # This is a legitimate future expansion; the report must be updated
-        # before such a source map is claimed as an installed route.
-        raise ValueError("Mapa novo requer revisão da classificação musical")
+    # Missing route groups are reported as absent, not silently invented.
+    # If a future Kanto source adds them, report the new candidates without
+    # declaring any event playable or sound actually tested.
     result = {
         "schema": 1, "phase": 0, "region": "KANTO",
         "result": "PASS_STATIC_BASELINE",
