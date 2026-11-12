@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fbbd8ab0ed8651675deb9119eece7e47808935ec",
+      "date": "2026-11-12T10:36:07-03:00",
+      "title": "Kanto Celadon: substituir status pendente por CI nativa aprovada e registrar duas barras",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5af0ff9cd98f6311f79e2846840bb8b0e6017e5c",
+      "date": "2026-11-12T10:35:41-03:00",
+      "title": "docs Kanto: consolidar 8º núcleo Erika e barras 8/16 e 1/16, manter histórico",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d5cde78bb014bfa85b8533ab0a64b13bad789b54",
+      "date": "2026-11-12T10:35:38-03:00",
+      "title": "docs Kanto: consolidar 8º núcleo Erika e barras 8/16 e 1/16, manter histórico",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e67a09c29e4449f3ff66621f194fa53379f36abd",
+      "date": "2026-11-12T10:35:35-03:00",
+      "title": "docs Kanto: consolidar 8º núcleo Erika e barras 8/16 e 1/16, manter histórico",
+      "category": "Melhorias"
+    },
+    {
       "sha": "09721e46e7b59f0f5839ccb5732c13b82f098d38",
       "date": "2026-11-12T10:34:31-03:00",
       "title": "Roadmap eventos: 8º núcleo Celadon/Erika com 58 previews e história Rocket pendente",
