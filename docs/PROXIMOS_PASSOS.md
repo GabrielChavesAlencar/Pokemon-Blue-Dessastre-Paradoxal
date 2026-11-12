@@ -2,22 +2,24 @@
 
 **Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).**
 
-**Referências de eventos e diálogos:** [estudo técnico dos 425 mapas](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md) · [passo a passo detalhado de aplicação em RPG Maker XP/Essentials](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) · [extrator de eventos da decompilação](../scripts/regions/extrair_eventos_firered.py). Documentação e ferramentas **não instalam eventos ou diálogos**: manter os **61 mapas `preview_only` das fases 09–11** sem NPCs, portas, gatilhos ou falas até implantação aprovada. Priorizar MAN-01/02/03 e preservar as duas barras de progresso. O contador é atualizado somente com testes concluídos.
+**Referências de eventos e diálogos:** [estudo técnico dos 425 mapas](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md) · [passo a passo detalhado de aplicação em RPG Maker XP/Essentials](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) · [extrator de eventos da decompilação](../scripts/regions/extrair_eventos_firered.py). Documentação e ferramentas **não instalam eventos ou diálogos**: manter os **58 mapas `preview_only` restantes** sem NPCs, portas, gatilhos ou falas até implantação aprovada. Priorizar MAN-01/02/03 e preservar as duas barras de progresso. O contador é atualizado somente com testes concluídos.
 
-**Progresso funcional atual (12/11/2026): 07/16 (43,75%), faltam 9 passos. Aceite integral: 01/16 (6,25%), faltam 15 passos.** O [sétimo núcleo](KANTO_AVANCO_FUNCIONAL_07.md) corresponde à **etapa 03 — Pallet → Pewter** e foi aprovado na [CI Windows 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441), com [regressão 43222828560](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828560).
+**Barras atuais (12/11/2026): desenvolvimento funcional 08/16 (50%; faltam 8 núcleos) e aceitação integral 01/16 (6,25%; faltam 15 etapas).** O [8º núcleo é a etapa 09 — Celadon/Erika](KANTO_AVANCO_FUNCIONAL_08.md), validada na [CI Windows 43227499299](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão 43227499314](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314). A caminhada, batalha, colisão e permanência dos saves reais ainda exigem testes manuais.
 
-## Duas barras de Kanto — contagem atual
+## Duas barras de Kanto — estado atual
 
-`Barra 1  ███████░░░░░░░░░  7/16 núcleos · 9 faltando`
+`Barra 1  ████████░░░░░░░░  8/16 núcleos · 8 faltando`
 
 `Barra 2  █░░░░░░░░░░░░░░░  1/16 aceito  · 15 faltando`
 
-- **7 núcleos com integração mínima e CI:** 01, 03, 04, 05, 06, 07, 08.
-- **3 etapas parciais:** 02 (jogabilidade manual), 15 (auditoria canônica global), 16 (QA/publicação).
-- **3 etapas somente cenário:** 09, 10, 11 — Celadon, Fuchsia e Saffron.
-- **3 sem núcleo:** 12, 13, 14 — Cinnabar, Viridian final e Liga.
+- **8 núcleos com código e CI:** 01, 03, 04, 05, 06, 07, 08 e **09** (Celadon/Erika experimental).
+- **3 etapas parciais:** 02 (movimento e testes no Windows), 15 (auditoria canônica global), 16 (QA/publicação).
+- **2 etapas somente cenário:** 10 (Fuchsia/Koga) e 11 (Saffron/Sabrina), sem eventos.
+- **3 etapas sem núcleo:** 12 (Cinnabar/Blaine), 13 (Viridian/Giovanni), 14 (Liga/Elite Four).
 
-**Próxima prioridade:** fazer a validação manual de 02/03, concluir os interiores e eventos restantes, e integrar os núcleos de Celadon/Erika, Fuchsia/Koga e Saffron/Sabrina. A [reavaliação anterior 6/16](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) é um registro histórico, não o progresso atual.
+**Catálogo atual:** **109 mapas**, sendo **51 ativos no piloto** e **58 `preview_only` sem eventos**. Em Celadon, apenas City (114), Center (115) e Gym (124) receberam eventos locais auditados; Rocket Hideout, Game Corner, loja de departamentos e interiores ainda estão pendentes.
+
+**Próximo passo funcional:** completar QA humano de 02/03 e eventos restantes de Celadon; na trilha de núcleos, Fuchsia/Koga (etapa 10) está preparada apenas como terreno. A [reavaliação 6/16](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) e o [avanço 7/16](KANTO_AVANCO_FUNCIONAL_07.md) permanecem históricos.
 
 ## Especificações de referência — regras já definidas
 
@@ -50,7 +52,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 6. [ ] Revisar em documento os lotes **A–I**: Pallet, Pewter/Mt. Moon, Cerulean, Vermilion, Celadon/Lavender/Saffron, Fuchsia/Snorlax, Cinnabar/Viridian, Liga e pós-jogo/Sevii opcional.
 7. [ ] Definir a matriz de QA por evento: fonte/MapID/EventID, trigger, páginas, estado, teste estrutural, teste real Windows/JoiPlay, rollback. Somente após autorização implementar e retirar mapas de `preview_only`.
 
-**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **7/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
+**Duas contagens de trabalho diferentes:** Kanto (núcleos entregues **8/16**, aceite **1/16**) e trilha de **12 marcos de auditoria de eventos ainda sem progresso aferido**. Os eventos de Celadon, o desbloqueio Rainbow e as correções MAN-01/02/03 **continuam pendentes de implementação**; o estudo publicado não habilita mudanças automáticas.
 
 ## Correção funcional prioritária — interiores e treinadores de Pallet a Pewter
 
@@ -63,7 +65,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 - [ ] **TESTE MANUAL:** Pallet → casa do rival → Viridian (2 casas) → Rota 2 (portaria/casa escondida) → Pewter (Museu/2 casas) com retorno; abordagem de Rick, derrota, vitória, repetição e save/reload na Forest.
 - [ ] Completar demais interiores, visão/travas de história e UI de insígnias (MAN-03), eventos canônicos e traduções EN/PT-BR.
 
-**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + **8 interiores funcionais novos** + 61 mapas de terreno sem eventos (fases 09–11). Os IDs anteriores foram congelados. **Contagem atual: 7/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
+**Catálogo experimental:** **109 mapas** = 40 mapas previamente integrados + 8 interiores funcionais + 3 novos mapas com gameplay Celadon + 58 cenários sem eventos. IDs anteriores preservados. **Contagem atual: 8/16 e 1/16**, pois a validação manual e o fechamento das etapas ainda faltam.
 
 ## Diálogos EN/PT-BR — estudo FireRed integrado ao roadmap
 
@@ -77,7 +79,7 @@ Se houver diferença entre uma sugestão exploratória do estudo e uma decisão 
 
 **Prioridades de roteiro:** diálogos de Oak/Parcel/rival e Brock nos mapas existentes; Misty/Bill/S.S. Anne/Lt. Surge; depois Celadon/Erika, Fuchsia/Koga, Saffron/Sabrina; por fim Cinnabar, Viridian, Liga e pós-jogo opcional. A ordem está vinculada às 16 fases no documento próprio. Não marcar a tradução como concluída antes do inventário e dos testes.
 
-**Progresso de localização não aferido.** A reavaliação geral marca desenvolvimento Kanto **7/16** e aceite **1/16**; receber um MD não altera essas barras.
+**Progresso de localização não aferido.** O avanço funcional marca desenvolvimento Kanto **8/16** e aceite **1/16**; receber um MD não altera essas barras.
 
 ## Fase 11 — Saffron/Sabrina/Silph Co. (terreno apenas)
 
@@ -88,11 +90,11 @@ Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG
 - [ ] Integrar portarias, Fighting Dojo, Sabrina, Marsh Badge, teletransportadores e campanha Silph Co. **somente após revisão de eventos e testes de regressão**.
 - [ ] Validar manualmente tilesets, passabilidade, entrada/saída e compatibilidade de saves; manter os 54 perfis existentes sem inventar treinadores novos.
 
-**As barras funcionais atuais estão em 7/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
+**As barras funcionais atuais estão em 8/16 e 1/16.** Construir um mapa não equivale a concluir a história ou uma fase.
 
 ## Fase 10 — Fuchsia/Safari preparada sem eventos
 
-[Documentação técnica de Fuchsia e Koga](KANTO_FASE_10.md). Foram adicionados **20 mapas** auditados da fonte FRLG (cidade, Centro, Mart, ginásio, casa do Warden, portão, quatro setores Safari com casas de descanso/Secret House e Rotas 15/18). O projeto mantém **109 mapas no catálogo, dos quais 61 em `preview_only` sem NPCs, scripts, encontros ou prêmios**, e 41 destinos de teste na cópia isolada, após a expansão de Saffron.
+[Documentação técnica de Fuchsia e Koga](KANTO_FASE_10.md). Foram adicionados **20 mapas** auditados da fonte FRLG (cidade, Centro, Mart, ginásio, casa do Warden, portão, quatro setores Safari com casas de descanso/Secret House e Rotas 15/18). O projeto mantém **109 mapas no catálogo, dos quais 58 em `preview_only` sem NPCs, scripts, encontros ou prêmios**, e 41 destinos de teste na cópia isolada, após a expansão de Saffron.
 
 - [x] Fonte/IDs do mapa auditados e 20 terrenos importados ao piloto.
 - [x] Exportação do portal com as 20 localidades da Fase 10 vazias de treinadores e encontros.
@@ -101,11 +103,9 @@ Foi criada a [prévia da fase 11](KANTO_FASE_11.md), com **30 novos mapas** FRLG
 
 A fase 10 é **prévia**, não conclusão funcional. Não conceder Soul Badge nem aumentar as barras de desenvolvimento (**7/16**) ou aceite (**1/16**) por adicionar terreno.
 
-## Fase 09 — autorização limitada a cenários
+## Fase 09 — Celadon City e Erika: núcleo funcional integrado
 
-Foi iniciada uma [prévia de Celadon e Erika](KANTO_FASE_09.md): cenário/tileset das áreas selecionadas, sem eventos de qualquer tipo no lote novo. **Manter MAN-01 (interiores), MAN-02 (treinadores) e eventos de Erika/Team Rocket em espera pela análise do usuário.** Não apagar as pendências nem criar atalhos que concedam insígnias.
-
-**Estado de Kanto (contagem reavaliada):** etapa 09 tem só cenário; desenvolvimento com núcleo **7/16 (43,75%)**, aceitação **1/16 (6,25%)**, porque a fase 09 ainda não tem progressão nem batalha.
+**[Entrega do 8º núcleo funcional](KANTO_AVANCO_FUNCIONAL_08.md):** City (114), Centro (115) e Gym (124) têm portas, enfermeira, Erika/Rainbow e sete treinadoras com equipes auditadas. [CI nativa](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) e [regressão](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499314) aprovadas. **Faltam:** Game Corner, Rocket Hideout, Dept Store, Cut trees, recompensas e diálogos revisados; não liberar esses eventos sem uma adaptação específica e testes de história. **8/16 desenvolvimento; 1/16 aceite.**
 
 ## 0. Correções prioritárias identificadas pelo usuário (12/11/2026)
 
