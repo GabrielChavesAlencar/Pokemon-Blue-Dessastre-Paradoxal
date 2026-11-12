@@ -1425,27 +1425,35 @@
     },
     {
       "id": "kanto-fuchsia-city",
-      "name": "Fuchsia City — prévia sem eventos",
+      "name": "Fuchsia City",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-center",
-      "name": "Centro Pokémon de Fuchsia (prévia)",
+      "name": "Centro Pokémon de Fuchsia",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-mart",
-      "name": "Poké Mart de Fuchsia (prévia)",
+      "name": "Poké Mart de Fuchsia",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-gym",
-      "name": "Ginásio de Fuchsia — sem Koga (prévia)",
+      "name": "Ginásio de Fuchsia — Koga",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-koga",
+        "kanto-nate",
+        "kanto-kayden",
+        "kanto-kirk",
+        "kanto-shawn",
+        "kanto-edgar",
+        "kanto-phil"
+      ]
     },
     {
       "id": "kanto-fuchsia-warden-house",
@@ -1455,7 +1463,7 @@
     },
     {
       "id": "kanto-fuchsia-safari-gate",
-      "name": "Portão da Safari Zone (prévia)",
+      "name": "Portão da Safari Zone — entrada de captura indisponível",
       "methods": [],
       "trainers": []
     },
@@ -3276,6 +3284,200 @@
             {
               "species": "IVYSAUR",
               "level": 22
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-koga",
+      "name": "Koga",
+      "role": "Líder de ginásio",
+      "location": "kanto-fuchsia-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "KOFFING",
+              "level": 37,
+              "moves": [
+                "SLUDGE",
+                "SMOKESCREEN",
+                "TOXIC",
+                "SELFDESTRUCT"
+              ]
+            },
+            {
+              "species": "MUK",
+              "level": 39,
+              "moves": [
+                "SLUDGE",
+                "TOXIC",
+                "MINIMIZE",
+                "ACIDARMOR"
+              ]
+            },
+            {
+              "species": "KOFFING",
+              "level": 37,
+              "moves": [
+                "SLUDGE",
+                "SMOKESCREEN",
+                "TOXIC",
+                "SELFDESTRUCT"
+              ]
+            },
+            {
+              "species": "WEEZING",
+              "level": 43,
+              "moves": [
+                "SLUDGE",
+                "TACKLE",
+                "TOXIC",
+                "SMOKESCREEN"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-nate",
+      "name": "Nate",
+      "role": "Malabarista",
+      "location": "kanto-fuchsia-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DROWZEE",
+              "level": 34
+            },
+            {
+              "species": "KADABRA",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-kayden",
+      "name": "Kayden",
+      "role": "Malabarista",
+      "location": "kanto-fuchsia-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HYPNO",
+              "level": 38
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-kirk",
+      "name": "Kirk",
+      "role": "Malabarista",
+      "location": "kanto-fuchsia-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DROWZEE",
+              "level": 31
+            },
+            {
+              "species": "DROWZEE",
+              "level": 31
+            },
+            {
+              "species": "DROWZEE",
+              "level": 31
+            },
+            {
+              "species": "KADABRA",
+              "level": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-shawn",
+      "name": "Shawn",
+      "role": "Malabarista",
+      "location": "kanto-fuchsia-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DROWZEE",
+              "level": 34
+            },
+            {
+              "species": "HYPNO",
+              "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-edgar",
+      "name": "Edgar",
+      "role": "Domador",
+      "location": "kanto-fuchsia-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ARBOK",
+              "level": 33
+            },
+            {
+              "species": "ARBOK",
+              "level": 33
+            },
+            {
+              "species": "SANDSLASH",
+              "level": 33
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-phil",
+      "name": "Phil",
+      "role": "Domador",
+      "location": "kanto-fuchsia-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSLASH",
+              "level": 34
+            },
+            {
+              "species": "ARBOK",
+              "level": 34
             }
           ]
         }
