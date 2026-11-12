@@ -13,6 +13,7 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, load
 from pilot import PILOT_META, TRAINERS
+from server.ruby_marshal import text
 
 
 def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
@@ -108,7 +109,7 @@ def inspect(game: Path) -> dict:
             if len(pages) != 2:
                 raise ValueError(f"Trainer {original}/{event_id} missing win-state page")
             sight = bool(re.search(r"(?i)(?:trainer|sight)\\(\\d+\\)",
-                                   event.attrs["@name"].decode("utf-8", errors="replace")))
+                                   text(event.attrs["@name"])))
             expected_trigger = 2 if sight else 0
             if pages[0].attrs["@trigger"] != expected_trigger:
                 raise ValueError(f"Trainer {original}/{event_id} has wrong sight trigger")
