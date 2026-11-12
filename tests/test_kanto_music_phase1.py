@@ -58,7 +58,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.assertEqual(report["staged_map_rules"], 51)
         self.assertEqual(report["staged_battles"], 8)
         self.assertEqual(report["staged_events"], 14)
-        self.assertEqual(report["staged_scenes"], 5)
+        self.assertEqual(report["staged_scenes"], 13)
         self.assertEqual(report["active_map_bindings"], 0)
         self.assertEqual(report["active_battle_bindings"], 0)
         self.assertEqual(len([line for line in lines if line.startswith("SCOPE\t")]), 142)
