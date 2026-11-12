@@ -284,10 +284,46 @@ def install_events(source, target, mapping):
                 continue
             if event_id in scripts:
                 floor_trigger = original == 64 and event_id in (9, 29, 30)
-                selected[event_id] = new_event(
-                    event, [command(355, scripts[event_id].encode())],
-                    1 if floor_trigger else 0,
-                    b"" if floor_trigger else actor(event))
+                if event_id in TRAINERS.get(original, {}):
+                    kind, trainer_name, *_ = TRAINERS[original][event_id]
+                    key = f"KANTO_{original:03d}_{event_id:03d}"
+                    # Essentials 21.1 only triggers a Trainer(n) line of sight
+                    # when the active RPG Event page uses Event Touch (2).
+                    # Preserve sight range from the audited FRLG event name;
+                    # gym leaders/NPCs without Trainer(n) stay Action Button.
+                    source_name = text(event.attrs["@name"])
+                    sight = re.search(r"(?i)trainer\\(\\d+\\)", source_name)
+                    auto = bool(sight) and not kind.startswith("LEADER")
+                    ops = []
+                    if auto:
+                        ops.append(command(355, f"pbTrainerIntro(:BLUE_KANTO_{kind})".encode()))
+                        ops.append(command(355, b"pbNoticePlayer(get_self)"))
+                    ops.append(command(355, scripts[event_id].encode()))
+                    ops.append(command(355,
+                        f'BlueKantoPilot.sync_trainer_event("{key}", "{trainer_name}", {event_id})'.encode()))
+                    if auto:
+                        ops.append(command(355, b"pbTrainerEnd"))
+                    trainer = new_event(event, ops, 2 if auto else 0, actor(event))
+                    # Self Switch A is set ONLY after a true battle victory or
+                    # recognition of the old pre-ID save flag. The second page
+                    # keeps the trainer visible but disables the sight trigger.
+                    after_win = copy.deepcopy(trainer.attrs["@pages"][0])
+                    condition = after_win.attrs["@condition"].attrs
+                    condition["@self_switch_valid"] = True
+                    condition["@self_switch_ch"] = b"A"
+                    after_win.attrs["@trigger"] = 0
+                    after_win.attrs["@through"] = False
+                    after_win.attrs["@direction_fix"] = False
+                    after_win.attrs["@list"] = [
+                        command(355, f'BlueKantoPilot.trainer_repeat("{trainer_name}")'.encode()),
+                        command(0)]
+                    trainer.attrs["@pages"].append(after_win)
+                    selected[event_id] = trainer
+                else:
+                    selected[event_id] = new_event(
+                        event, [command(355, scripts[event_id].encode())],
+                        1 if floor_trigger else 0,
+                        b"" if floor_trigger else actor(event))
                 continue
             if original == 5 and event_id in (11, 13):
                 # Professor Oak's original path anchors span the two exit tiles.
