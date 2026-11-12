@@ -78,6 +78,10 @@ module BlueKantoPilot
 
   def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
+    if type == :BLUE_KANTO_LEADER_SABRINA && !progress["pilot_silph_rescued"]
+      pbMessage(_INTL("Sabrina está aguardando a libertação da Silph Co. Derrote Giovanni primeiro."))
+      return
+    end
     if type == :BLUE_KANTO_LEADER_SURGE && !progress["pilot_surge_unlocked"]
       pbMessage(_INTL("Lt. Surge aguarda atrás das trancas elétricas. Resolva o enigma das lixeiras primeiro."))
       return
@@ -107,6 +111,11 @@ module BlueKantoPilot
       pbMessage(_INTL("Erika: Você conquistou a Rainbow Badge!"))
     elsif type == :BLUE_KANTO_LEADER_KOGA && BlueRegions.award(progress, "KANTO", "SOUL")
       pbMessage(_INTL("Koga: A Soul Badge agora é sua!"))
+    elsif type == :BLUE_KANTO_ROCKETBOSS && name == "Giovanni"
+      progress["pilot_silph_rescued"] = true
+      pbMessage(_INTL("Giovanni foi derrotado! A Silph Co. está livre."))
+    elsif type == :BLUE_KANTO_LEADER_SABRINA && BlueRegions.award(progress, "KANTO", "MARSH")
+      pbMessage(_INTL("Sabrina: Você conquistou a Marsh Badge!"))
     end
   end
 
@@ -252,6 +261,107 @@ module BlueKantoPilot
     else
       pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
     end
+  end
+
+
+  # Silph Card Key: persist locally, never import a foreign item into Decades.
+  def self.silph_card_key
+    if progress["pilot_silph_card_key"]
+      pbMessage(_INTL("Você já encontrou a Card Key da Silph Co."))
+      return
+    end
+    progress["pilot_silph_card_key"] = true
+    $game_self_switches[[$game_map.map_id, 9, "A"]] = true
+    $game_map.need_refresh = true
+    pbMessage(_INTL("Encontrou a Card Key! Agora pode abrir as portas da Silph Co."))
+  end
+
+  # Adjacent source map event tiles form a single original locked door.
+  def self.silph_door(event_ids)
+    unless progress["pilot_silph_card_key"]
+      pbMessage(_INTL("Uma trava de segurança. Encontre a Card Key no 5º andar."))
+      return
+    end
+    event_ids.each do |eid|
+      next unless $game_map.events[eid]
+      $game_self_switches[[$game_map.map_id, eid, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(_INTL("A Card Key abriu a porta!"))
+  end
+
+  def self.silph_rival
+    return unless starter
+    versions = { BULBASAUR: 51, CHARMANDER: 52, SQUIRTLE: 53 }
+    key = "KANTO_184_043"
+    battle(:BLUE_KANTO_RIVAL_SILPH, "Blue", key, versions.fetch(starter))
+  end
+
+  def self.silph_president
+    unless progress["pilot_silph_rescued"]
+      pbMessage(_INTL("Presidente: Giovanni ainda controla o último andar!"))
+      return
+    end
+    if progress["pilot_silph_master_ball"]
+      pbMessage(_INTL("Presidente: Obrigado por libertar a Silph Co.!"))
+      return
+    end
+    unless GameData::Item.exists?(:MASTERBALL)
+      pbMessage(_INTL("A Master Ball ainda não está cadastrada nesta versão do Blue."))
+      return
+    end
+    unless $bag.add(:MASTERBALL, 1)
+      pbMessage(_INTL("Presidente: Abra espaço na Bolsa para receber a Master Ball."))
+      return
+    end
+    progress["pilot_silph_master_ball"] = true
+    pbMessage(_INTL("Recebeu a Master Ball pela libertação da Silph Co.!"))
+  end
+
+  def self.dojo_prize(species, event_id)
+    unless progress.fetch("pilot_wins", []).include?("KANTO_172_012")
+      pbMessage(_INTL("Vença primeiro o mestre Koichi para escolher um Pokémon."))
+      return
+    end
+    if progress["pilot_dojo_prize"]
+      pbMessage(_INTL("Você já escolheu seu Pokémon no Fighting Dojo."))
+      return
+    end
+    if $player.party.length >= 6
+      pbMessage(_INTL("Sua equipe está cheia. Deixe uma vaga para o Pokémon do dojo."))
+      return
+    end
+    return unless GameData::Species.exists?(species)
+    return unless pbConfirmMessage(_INTL("Escolher {1} como prêmio único do dojo?", GameData::Species.get(species).name))
+    return unless pbAddPokemonSilent(species, 25)
+    progress["pilot_dojo_prize"] = species.to_s
+    [1, 2].each { |eid| $game_self_switches[[$game_map.map_id, eid, "A"]] = true }
+    $game_map.need_refresh = true
+    pbMessage(_INTL("Prêmio do Fighting Dojo recebido!"))
+  end
+
+  def self.silph_elevator
+    filename = "Data/blue-kanto-silph-floors.txt"
+    unless experimental? && File.file?(filename)
+      pbMessage(_INTL("Os controles do elevador não estão disponíveis fora do piloto."))
+      return
+    end
+    floors = File.readlines(filename, encoding: "UTF-8").filter_map do |raw|
+      parts = raw.strip.split("|")
+      next unless parts.length == 5
+      coords = parts.map { |part| Integer(part, 10) rescue nil }
+      next unless coords.all? { |value| value.is_a?(Integer) }
+      floor, map_id, x, y, direction = coords
+      next unless floor.between?(1, 11) && map_id > 0 && x >= 0 && y >= 0
+      next unless [2, 4, 6, 8].include?(direction)
+      next unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", map_id))
+      [floor, [map_id, x, y, direction]]
+    end
+    return if floors.empty?
+    choice = pbMessage(_INTL("Silph Co. — escolher andar"),
+                       floors.map { |row| _INTL("Andar {1}F", row[0]) } + [_INTL("Voltar")], -1)
+    return unless choice && choice.between?(0, floors.length - 1)
+    pbFadeOutIn { BlueRegionTravel.move_to(floors[choice][1]) }
   end
 
   # Travel shortcuts exist only in the standalone pilot, NEVER in the
