@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "54519c1a68523dd59c588a94a0447a21f586258e",
+      "date": "2026-11-11T21:31:45-03:00",
+      "title": "docs(kanto): registrar inicio da etapa 02 e checklist Windows sem marcar aprovacao",
+      "category": "Documentação"
+    },
+    {
       "sha": "0a234791b51e99853865c989388017f6e23bfdb7",
       "date": "2026-11-11T21:31:19-03:00",
       "title": "test(kanto): cobrir classificacao PhysFS, crash e janela detectada",
