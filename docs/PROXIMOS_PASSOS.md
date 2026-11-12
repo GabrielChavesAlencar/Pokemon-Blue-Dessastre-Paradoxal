@@ -2,7 +2,7 @@
 
 **Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).** O contador é atualizado somente com testes concluídos.
 
-**Desenvolvimento atual: etapa 04/16. Conclusão validada: 01/16.** O piloto de Kanto já compila, abre no runner Windows e recarrega um save simulado; a caminhada e as batalhas em sessão interativa ainda precisam de validação. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md).
+**Desenvolvimento atual: etapa 05/16. Conclusão validada: 01/16.** O piloto de Kanto já compila, abre no runner Windows e recarrega um save simulado; a caminhada e as batalhas em sessão interativa ainda precisam de validação. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md).
 
 ## Especificações de referência — regras já definidas
 
@@ -41,6 +41,8 @@ O comando usa `.blue-work/kanto-pilot` e o perfil de save **Kanto Piloto**. Se p
 - [ ] Testar o piloto no Android depois de validar no Windows, seguindo o [guia de JoiPlay](ANDROID_JOIPLAY.md).
 
 ## 2. Integrar uma viagem de ida e volta
+
+**Implementação do serviço de ida/volta:** [guia da fase 05](KANTO_VIAGEM_DEC_KANTO.md). O transporte aparece no menu de pausa após a Liga comprovada e os mapas instalados. A inserção física do NPC no pós-Liga e a validação gráfica continuam pendentes.
 
 - [ ] Colocar o agente de transporte depois do encerramento real de Decades. A confirmação deve usar os marcos auditados da Esmeralda Stellar e do Hall da Fama, descritos no [guia do circuito](CIRCUITO_REGIONAL.md).
 - [ ] Ligar o agente a um ponto de chegada confirmado em Kanto e a um ponto de retorno acessível. Mostrar destinos jogáveis, condições de bloqueio e opção de cancelar. Validar em uma cópia antes de abrir a viagem na campanha.
