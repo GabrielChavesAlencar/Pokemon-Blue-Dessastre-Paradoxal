@@ -5,6 +5,12 @@ from pathlib import Path
 
 HEADER = re.compile(r"^\[([^]]+)]\s*(?:#.*)?$")
 # Extended Gen 9/Essentials encounter variants used inside Mt. Moon.
+# Route 23 source map209 repeats a LandDay method inside the same table.
+# Its intended relative weighting/version behavior is ambiguous. Rather than
+# silently merge two conflicting methods, leave ONLY this map's wild tables
+# disabled until the source is disambiguated (story/maps remain functional).
+ENCOUNTER_REVIEW_SOURCE_IDS = frozenset({209})
+
 ENCOUNTER_TYPES = {
     "Land", "LandMorning", "LandDay", "LandAfternoon", "LandEvening", "LandNight",
     "Cave", "CaveMorning", "CaveDay", "CaveAfternoon", "CaveEvening", "CaveNight",
@@ -314,11 +320,12 @@ def build_drafts(source, game, plan):
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
-               if row["source_id"] not in no_gameplay}
+               if row["source_id"] not in no_gameplay
+               and row["source_id"] not in ENCOUNTER_REVIEW_SOURCE_IDS}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
-                      "source_policy": "Essentials FRLG 1.1 tables; inclusive min/max and exact source weights; official FireRed/LeafGreen version exclusivities not independently verified"}
+                      "source_policy": "Essentials FRLG 1.1 explicitly listed levels; exact integer-weight conversion; map209 LandDay ambiguous; independent official exclusivities pending"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
     return {Path("drafts", "encounters.txt"): (warning + encounters).encode("utf-8"),
             Path("drafts", "trainers.txt"): (warning + trainers).encode("utf-8")}
