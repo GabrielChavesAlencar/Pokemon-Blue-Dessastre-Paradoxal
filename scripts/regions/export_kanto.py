@@ -339,8 +339,22 @@ def export(preview: Path):
                                              "min": int(lower), "max": int(upper)})
             else:
                 methods.append({"id": fields[0], "slots": []})
-        if any(sum(slot["chance"] for slot in method["slots"]) != 100 for method in methods):
-            raise ValueError(f"Invalid encounter chances in {header}")
+        for method in methods:
+            # The source FRLG kit uses explicit allowed-level lists. A slot
+            # with gaps is expanded losslessly by integer weight scaling
+            # before the game compiles PBS; totals then may be >100 (e.g.
+            # 200 for an exact 45% / 55% encounter). The UI "chance" is
+            # ALWAYS a normalized percentage, never the raw engine weight.
+            total = sum(slot["chance"] for slot in method["slots"])
+            if not total or any(slot["chance"] < 1 for slot in method["slots"]):
+                raise ValueError(f"Invalid relative encounter weights in {header}")
+            method["weightTotal"] = total
+            for slot in method["slots"]:
+                weight = slot["chance"]
+                slot["weight"] = weight
+                slot["chance"] = round(weight * 100 / total, 12)
+            if abs(sum(slot["chance"] for slot in method["slots"]) - 100) > 1e-7:
+                raise ValueError(f"Encounter percentage normalization drift: {header}")
 
     trainers = {}
     for header, lines in read_blocks(trainer_file).items():
