@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "10da18dde2dee47488fbeae4d977cdb3ab3b9da9",
+      "date": "2026-11-12T08:45:44-03:00",
+      "title": "Kanto fase 11: inventariar mapas reais de Saffron/Silph sem eventos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3219948a696ed5d17b5d4cb6c55e85bfd9fb85f6",
       "date": "2026-11-12T08:29:13-03:00",
       "title": "Kanto 10: registrar regressao completa aprovada para mapas e portal",
