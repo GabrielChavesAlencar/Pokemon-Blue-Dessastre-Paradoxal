@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b442c81be2b791cb479afc647c80e07be0ce8660",
+      "date": "2026-11-11T23:04:52-03:00",
+      "title": "feat(kanto): considerar insígnias regionais únicas no estágio global Blue",
+      "category": "Novidades"
+    },
+    {
       "sha": "8af1930cb1180fe1081f2d7b55d5d924324ef18f",
       "date": "2026-11-11T23:02:44-03:00",
       "title": "test(kanto): garantir quatro retratos e reparo idempotente sem sobrescrever saves",
