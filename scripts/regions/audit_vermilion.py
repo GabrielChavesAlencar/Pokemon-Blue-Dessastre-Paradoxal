@@ -63,7 +63,12 @@ def describe(source: Path) -> dict:
                                "x": event.attrs["@x"], "y": event.attrs["@y"],
                                "warps": warps[:6], "scripts": scripts[:10],
                                "conditions": conditions[:3]})
-        result.append({"id": map_id, "name": name,
+        all_names = (
+            [{"id": event_id, "name": text(event.attrs["@name"])}
+             for event_id, event in sorted(map_data["@events"].items())]
+            if map_id in (64, 67, 72, 76) else []
+        )
+        result.append({"id": map_id, "name": name, "all_event_names": all_names,
                        "size": [map_data["@width"], map_data["@height"]],
                        "events": events[:100], "event_count": len(events)})
     pbs = (source / "PBS/map_connections.txt").read_text("utf-8-sig")
@@ -77,7 +82,19 @@ def describe(source: Path) -> dict:
         if len(parts) == 6 and parts[0].strip().isdigit() and parts[3].strip().isdigit():
             if int(parts[0]) in selected or int(parts[3]) in selected:
                 links.append(row)
-    return {"phase": "08", "matched": len(identified),
+    from pbs import read_blocks
+    roster = read_blocks(source / "PBS/trainers.txt")
+    desired = {"Keigo","Nancy","Ricky","Elijah","Isabelle","Jeff",
+               "Dwayne","Bailey","Tucker","Lt. Surge","Ann","Tyler",
+               "Thomas","Arthur","Brooks","Dale","Lamar","Dawn",
+               "Barny","Phillip","Huey","Dylan","Duncan","Leonard",
+               "Trevor","Edmond","Blue"}
+    relevant = {k: v for k, v in roster.items()
+                if len(k.split(",")) >= 2 and k.split(",")[1] in desired
+                and (k.split(",")[1] != "Blue"
+                     or (len(k.split(",")) >= 3 and k.split(",")[-1] in
+                         {"41", "42", "43"}))}
+    return {"trainer_profiles": relevant, "phase": "08", "matched": len(identified),
             "maps": result, "connections": links}
 
 
