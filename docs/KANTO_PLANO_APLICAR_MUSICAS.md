@@ -1,6 +1,6 @@
 # Kanto — Plano para aplicar as 64 músicas por este chat
 
-> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. A [Fase 4](KANTO_MUSICAS_FASE_4.md) catalogou as 14 ME e ativou apenas 6 com gatilhos reais de sucesso (8 seguem PENDENTE_EVENTO). Cenas da Fase 5 continuam pendentes; Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
+> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. A [Fase 4](KANTO_MUSICAS_FASE_4.md) catalogou as 14 ME e ativou apenas 6 com gatilhos reais de sucesso (8 seguem PENDENTE_EVENTO). A [Fase 5](KANTO_MUSICAS_FASE_5.md) adicionou cinco cenas comprovadas (título do piloto, Oak, rival, evolução e Hall of Fame), e oito cenas permanecem PENDENTE_EVENTO, incluindo abertura cinematográfica e créditos. Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
 
 ## Objetivo e como trabalharemos aqui no ChatGPT
 
@@ -124,6 +124,8 @@ Aplicar BGM por **chaves de mapas**. Onde houver vários andares, conferir quais
 Implementar hook ME com `Audio/ME/Kanto/` na engine e respeitar prioridade, volume, fade/reentrada da música ambiente e controles cancelados. Não tocar na abertura da tela ou na simples visita ao NPC sem completar a ação.
 
 ## Fase 5 — Abertura, cenas especiais e pós-jogo (13 faixas)
+
+**Fase 5 implementada, com escopo auditado:** [relatório e eventos comprovados](KANTO_MUSICAS_FASE_5.md). Cinco faixas foram ativadas: 1-03 (título exclusivo do piloto), 1-07 (Oak após entrega de pacote), 1-10 (rival antes de três lutas reais), 1-30 (animação de evolução) e 1-72 (Hall de Kanto após Liga completa). **Oito continuam PENDENTE_EVENTO**: 1-02, 1-04, 1-05, 1-16, 1-24, 1-60, 1-71 e 1-73; em especial NÃO tocar créditos sem sequência de créditos real. Sem mudança no título de Decades.
 
 | Número | Cena/uso |
 |---|---|
