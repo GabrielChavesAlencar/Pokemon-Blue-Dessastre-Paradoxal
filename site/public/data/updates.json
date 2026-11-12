@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "33c1695cdd5b8245776334016106dd1f91ab1bba",
+      "date": "2026-11-12T06:29:08-03:00",
+      "title": "docs(kanto): ensinar a usar Testar Kanto no menu inicial do Game.exe",
+      "category": "Documentação"
+    },
+    {
       "sha": "44142742c8ddeafde4379037975c8db46b7c1467",
       "date": "2026-11-12T06:27:46-03:00",
       "title": "test(kanto): provar na engine que Testar Kanto e a terceira opcao do EXE",
