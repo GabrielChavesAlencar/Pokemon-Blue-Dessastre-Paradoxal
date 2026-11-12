@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from audit import ROOT
-from pilot import OUTPUT, PILOT_META, SOURCE, build
+from pilot import OUTPUT, PILOT_META, SOURCE, build, pilot_is_current, revised_path
 from verify_pilot import inspect
 
 LOG_NAMES = ("errorlog.txt", "mkxp.log", "mkxp.txt", "stderr.txt", "stdout.txt")
@@ -187,8 +187,15 @@ def main() -> int:
     if output == workspace or not output.is_relative_to(workspace):
         parser.error("O piloto deve ficar numa subpasta de .blue-work")
     if args.rebuild:
-        output = workspace / ("kanto-pilot-revisao-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
+        output = revised_path(output)
     try:
+        if output.exists() and not pilot_is_current(output):
+            if args.no_build:
+                raise ValueError("A copia existente esta desatualizada. Execute sem --no-build ou use --rebuild.")
+            replacement = revised_path(output)
+            print(f"[INFO] Copia antiga preservada em {output}", flush=True)
+            print(f"[INFO] Recriando piloto atualizado em {replacement}", flush=True)
+            output = replacement
         if not (output / PILOT_META).is_file():
             if args.no_build:
                 raise ValueError("Piloto inexistente; rode sem --no-build para preparar uma copia.")
