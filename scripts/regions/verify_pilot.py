@@ -577,7 +577,7 @@ def inspect(game: Path) -> dict:
     stops_file = game / "Data/blue-kanto-experimental-stops.txt"
     if not stops_file.is_file():
         raise ValueError("Experimental Kanto destinations were not generated")
-    required_stops = {"PALLET", "PLAYER_HOME", "PEWTER", "ROUTE4", "MOON_CENTER",
+    required_stops = {"PALLET", "PLAYER_HOME", "VIRIDIAN", "PEWTER", "ROUTE4", "MOON_CENTER",
                       "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
