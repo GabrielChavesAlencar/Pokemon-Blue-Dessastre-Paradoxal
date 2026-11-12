@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a809a8064d29146729fc147f4a32c96c416c171b",
+      "date": "2026-11-12T07:04:47-03:00",
+      "title": "Corrigir classe de Lt. Surge indisponível em Decades com retrato temporário de engenheiro",
+      "category": "Correções"
+    },
+    {
       "sha": "6bcf2726d93761bb4d0f867ec8ef91e08d877d6e",
       "date": "2026-11-12T07:02:14-03:00",
       "title": "Fase 08: prova nativa de Lt. Surge, S.S. Ticket, insígnias únicas e save/reload",
