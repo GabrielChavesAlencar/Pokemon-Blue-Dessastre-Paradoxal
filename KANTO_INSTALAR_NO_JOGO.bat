@@ -10,6 +10,12 @@ echo [INFO] Os mapas sao preparados numa copia antes da instalacao.
 echo [INFO] Backup automatico em .blue-backups\kanto-...
 echo.
 
+if exist "game\Data\blue-kanto-start.txt" (
+  echo [OK] Kanto ja esta integrado na instalacao principal.
+  echo [INFO] Use ABRIR_JOGO.bat para iniciar a campanha.
+  pause
+  exit /b 0
+)
 if not exist "game\Game.exe" (
   echo [ERRO] Jogo principal nao encontrado. Execute INSTALAR_JOGO.bat.
   goto :error
