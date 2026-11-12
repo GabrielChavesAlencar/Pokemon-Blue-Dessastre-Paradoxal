@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "42eeef76a09a417d5d2fd411adcab9c90676a68f",
+      "date": "2026-11-12T10:49:14-03:00",
+      "title": "Kanto Fuchsia: validar 42 atalhos incluindo Mart experimental",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "8557d700455e6227f4f3f3515490699cb8e9770d",
+      "date": "2026-11-12T10:49:11-03:00",
+      "title": "Kanto Fuchsia: validar 42 atalhos incluindo Mart experimental",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8c4992fcb346e61a022240d2b3952f7aa7dbd9ba",
       "date": "2026-11-12T10:48:55-03:00",
       "title": "Kanto Fuchsia: adicionar atalho experimental para Poké Mart sem mudar Game.exe base",
