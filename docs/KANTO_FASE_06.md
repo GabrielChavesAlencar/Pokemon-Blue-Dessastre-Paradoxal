@@ -1,6 +1,6 @@
 # Kanto — Fase de desenvolvimento 06/16
 
-**Estado:** implementação em andamento; aceitação manual **pendente**.  
+**Estado:** implementação e testes nativos/unitários **aprovados** na CI; aceitação de jogabilidade e cobertura de fluxos alternativos **pendente**.  
 **Barra de desenvolvimento:** **06/16 = 37,5%**.  
 **Barra de aceitação concluída:** **01/16 = 6,25%**, **15 pendentes**.  
 **Plano de referência:** [PLANO_REGIOES_DESSASTRE_V2.md](PLANO_REGIOES_DESSASTRE_V2.md), seções 17, 19 e 20.
@@ -54,8 +54,8 @@ O diagnóstico relatou dois problemas reproduzíveis que precedem a fase 06:
 - [test_regions.py](../tests/test_regions.py) executa as regras Ruby de Kanto, Decades, PC, presentes, oito badges locais e HM.
 - [test_kanto_installer.py](../tests/test_kanto_installer.py) comprova que os quatro retratos são exigidos, o reparo é idempotente, os saves são preservados e imagens personalizadas não são sobrescritas.
 - [KantoIntegratedCheck.rb](../scripts/regions/KantoIntegratedCheck.rb) valida a política dentro do `Game.exe` em uma cópia descartável da instalação; a CI também verifica os quatro retratos na instalação integrada.
-- [GitHub Actions — Kanto](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/kanto-pilot-check.yml)
-- [GitHub Actions — testes gerais](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/blue-studio-tests.yml)
+- [GitHub Actions — Kanto: teste nativo aprovado, incluindo 4 retratos, PC, presente especial, insígnia e HM](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43139789644)
+- [GitHub Actions — regressões Ruby/Python aprovadas](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43139468440)
 
 ## 6. Pendente para a aceitação final
 
