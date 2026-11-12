@@ -57,7 +57,7 @@
 
 ## Regra permanente de atualização das duas barras
 
-1. **Barra 1:** +1 somente quando a etapa possuir **núcleo executável**, integração mínima real e **CI verde**; se não houver evento/história jogável (só mapa, MD ou script de auditoria), não contar. Não contar a mera numeração da fase; usar uma linha de evidência por etapa.
+1. **Barra 1:** +1 somente quando a etapa possuir **núcleo executável**, integração mínima real e **CI verde**; para etapas de gameplay, se não houver evento/história jogável (só mapa, MD ou script de auditoria), não contar. **Exceção: a etapa 01 é definida exclusivamente como auditoria estrutural, portanto sua CI verde conclui seu núcleo**. Não contar a mera numeração da fase; usar uma linha de evidência por etapa.
 2. **Barra 2:** +1 somente com o checklist de aceite integral da etapa e prova adequada. A etapa 01 é uma auditoria estrutural; as etapas de gameplay exigem sessão de jogo real, estados/saves e ausência de regressão.
 3. **Barras independentes e monotônicas por evidência**, exceto correção expressa de classificação, como esta. Registrar as revisões, preservando as contagens históricas como histórico e identificando-as como **obsoletas** para o estado atual.
 4. **Não usar percentuais subjetivos de implementação interna das etapas**; registrar claramente o que está parcial sem criar frações inventadas de fase.
