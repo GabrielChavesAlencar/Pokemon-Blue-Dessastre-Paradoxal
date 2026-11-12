@@ -1,6 +1,6 @@
 # Kanto — etapas restantes até a conclusão
 
-**Atualizado em:** 11/11/2026 (horário de Brasília)  
+**Atualizado em:** 12/11/2026 (horário de Brasília)  
 **Escopo:** campanha Kanto completa, de Pallet até a Liga, integrada ao jogo-mestre Decades.  
 **Referências obrigatórias:** [Plano v2](PLANO_REGIOES_DESSASTRE_V2.md) (regras de gameplay), [estudo de fontes](ESTUDO_FANGAME_TODAS_AS_REGIOES_POKEMON.md) (importação e créditos) e [roteiro geral](PROXIMOS_PASSOS.md).
 
@@ -28,6 +28,23 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 
 **Impacto:** etapas 02 e 03 **continuam abertas**, assim como o aceite gráfico do trecho de Mt. Moon (07). A fase 08 não foi testada manualmente segundo o TXT. **Barra 1 permanece 8/16 (50%) e Barra 2 permanece 1/16 (6,25%).**
 
+## Roadmap de eventos FireRed — análise recebida em 12/11/2026
+
+**Fontes consultadas:** [estudo de eventos FireRed](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md), [guia de adaptação ao Blue](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) e [extrator de registros](../scripts/regions/extrair_eventos_firered.py). **Plano operacional consolidado:** [KANTO_ROADMAP_EVENTOS_FIRERED.md](KANTO_ROADMAP_EVENTOS_FIRERED.md).
+
+- [ ] **AUD-01/05 — preparar auditoria reproduzível:** fixar commit da decompilação GBA, executar e registrar extrator (425 mapas **catalogados**, não 425 mapas já semanticamente revisados), mapear cada GBA Map/Warp para IDs da fonte FRLG e do piloto, e triagem de scripts, flags e categorias. Separar obrigatórios, opcionais, pós-jogo e protótipos.
+- [ ] **MAN-01 — interiores e portas** (etapas 02/03/07/08): cruzar `warp_events` com `Transfer Player` da fonte RPG Maker, importar apenas destinos realmente previstos, resolver ida/volta, limites de coordenada, passabilidade e save/reload.
+- [ ] **MAN-02 — treinador por visão** (etapas 02/03/07/08): ativar aproximação com `Trainer(n)`/`Event Touch` quando a fonte exigir; não tratar todos os treinadores opcionais como barreiras; respeitar paredes, derrota/fuga, prêmio único e chave `KANTO_mapa_evento`.
+- [ ] **MAN-03 — painéis de insígnias** (etapa 06/16): oito insígnias Kanto e visão de conquistas regionais; consultar `BlueRegions`, não criar badges nem recompensas pela UI.
+- [ ] **SAVE-01 — estado e versionamento:** separar progresso regional, flags locais de evento e estado temporário, migrar saves e evitar colisões com Decades; completar integração `RegionalPolicy`/HMs locais.
+- [ ] **HIST-01 — lotes A–D** (fases 03/07/08): Oak/Parcel, Brock, fósseis Mt. Moon, Bill e S.S. Ticket, Misty, navio, Cut, Surge; revisar eventos hoje provisórios de Bill/Capitão sem adulterar saves.
+- [ ] **HIST-02 — lote E** (fase 09 e 11): Celadon/Lavender/Saffron, Rocket Hideout, Silph Scope, Marowak/Poké Flute, Silph Co., Erika, Sabrina — **apenas planejamento; 11 mapas `preview_only` continuam sem eventos até autorização explícita**.
+- [ ] **HIST-03 — lotes F–H** (fases 10/12/13/14): Safari/Snorlax/Surf/Strength/Koga; Seafoam/Cinnabar/Viridian; oito bloqueios de badges e Hall of Fame; sequência canônica sem softlock.
+- [ ] **POST-01 — lote I** (fases 15/16 se aprovado): pós-jogo, National Dex, Sevii/Celio/Ruby/Sapphire, Warehouse/Cerulean Cave e eventos especiais — **escopo opcional, não somar automaticamente às 16 etapas**.
+- [ ] **QA-EVENTOS:** aceitar cada evento somente com testes por estado (primeira execução, repetição, vitória/derrota/fuga, bag/PC cheios, saída/retorno, reload, Game.exe Windows, depois JoiPlay e rollback).
+
+**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto permanece 8/16 de desenvolvimento e 1/16 de aceite**. Este registro é documental: nenhum script ou evento novo foi instalado.
+
 ## 16 etapas de fechamento
 
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
@@ -38,7 +55,7 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **06 — Insígnias, esmeraldas, HMs e Pokémon especiais.** **Em validação:** o [guia da fase 06](KANTO_FASE_06.md) documenta a correção do PC legado de Decades, os quatro retratos e o reparo de instalações existentes. O balanceamento soma conquistas locais únicas ao total Blue nativo; [RegionalPolicy.rb](../scripts/battle_polish/RegionalPolicy.rb) verifica HMs e bloqueia especiais no PC, presentes e capturas. [Teste nativo integrado aprovado](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43139789644), com quatro retratos, presente especial depositado, Boulder sem duplicação e permissão local de Flash; [regressão Ruby/Python aprovada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43139468440). **Pendente:** validar visualmente PC cheio, capturas, scripts externos e ações de campo, e completar a cobertura por todos os caminhos de entrada.
 - [ ] **07 — Cerulean e Misty.** **Implementada em versão experimental:** [25 mapas, Rota 3/4, Mt. Moon, Cerulean, 28 treinadores distintos, Misty e Cascade](KANTO_FASE_07.md); [teste automático do Game.exe](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43143559422) passou, com equipes e save/reload, mas batalhas simuladas. [Jogar pelo terceiro botão “Testar Kanto” do Game.exe principal ou pelo BAT experimental](KANTO_TESTE_EXPERIMENTAL.md), com teletransporte e relatório local. **Pendente:** confirmação manual de colisões, batalhas e HMs, eventos complexos da história e atualização segura da instalação principal antiga.
 - [ ] **08 — Vermilion e Lt. Surge.** **Implementação experimental publicada e teste nativo aprovado** ([fase 08](KANTO_FASE_08.md), [CI](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43198430978)): Rotas 5/6, passagem subterrânea, Vermilion, porto, S.S. Anne, capitão, 26 perfis adicionais de treinadores e Lt. Surge; Thunder Badge persistida uma vez; 17 destinos de teste. **Pendente:** validação manual, ajuste dos eventos canônicos de Bill/navio, integração definitiva e QA visual de HMs.
-- [ ] **09 — Celadon e Erika.** **Prévia de terreno implementada e aprovada na [CI Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43202005222), sem eventos por solicitação do usuário:** [11 mapas da fase 09](KANTO_FASE_09.md), incluindo Rota 7, cidade, Centro Pokémon, andares da loja de departamentos e ginásio. Os mapas novos contêm **zero eventos de NPC, batalha, porta, item e história**, nenhum encontro e nenhuma Rainbow Badge. A análise do usuário determinará como os eventos serão adaptados. **Não aumentar a Barra 1 até a fase estar implementada funcionalmente**; as fases anteriores e a Barra 2 permanecem como estavam.
+- [ ] **09 — Celadon e Erika.** **Prévia de terreno implementada e aprovada na [CI Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43202005222), sem eventos por solicitação do usuário:** [11 mapas da fase 09](KANTO_FASE_09.md), incluindo Rota 7, cidade, Centro Pokémon, andares da loja de departamentos e ginásio. Os mapas novos contêm **zero eventos de NPC, batalha, porta, item e história**, nenhum encontro e nenhuma Rainbow Badge. A análise foi recebida e convertida em [tarefas rastreáveis](KANTO_ROADMAP_EVENTOS_FIRERED.md), mas **a implementação dos eventos continua aguardando autorização explícita**. **Não aumentar a Barra 1 até a fase estar implementada funcionalmente**; as fases anteriores e a Barra 2 permanecem como estavam.
 - [ ] **10 — Fuchsia e Koga.** Integrar rotas, Safari Zone e eventos relevantes, ginásio e Soul Badge.
 - [ ] **11 — Saffron e Sabrina.** Integrar acessos, Silph Co., progressão da cidade, ginásio e Marsh Badge.
 - [ ] **12 — Cinnabar e Blaine.** Integrar rotas aquáticas, ilha, Pokémon Mansion, progressão do ginásio e Volcano Badge.
@@ -50,6 +67,9 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — Análise dos eventos do FireRed incorporada ao roadmap:** referências de `pret/pokefirered`, **50 famílias EVT-01–EVT-50**, [12 marcos próprios de auditoria e adaptação](KANTO_ROADMAP_EVENTOS_FIRERED.md), lotes A–I e testes MAN-01/02/03 vinculados às etapas de Kanto. **Sem alterações no Game.exe ou nos 11 cenários `preview_only`**. Contadores 8/16 e 1/16 preservados.
+
 
 - **12/11/2026 — Prévia da fase 09 compilada na CI:** criada [prévia de 11 mapas de Celadon](KANTO_FASE_09.md) (51 mapas no catálogo experimental, preservando os 40 anteriores). Eventos totalmente suspensos nos novos mapas até a análise do usuário. É uma prévia de terreno, não uma nova fase concluída; **Barra 1: 8/16, Barra 2: 1/16**.
 
