@@ -14,6 +14,7 @@ try:
     import audit_johto
     from plan_johto import plan
     from stage_johto import stage
+    from verify_johto import inspect
     from stage import serialize
     from server.ruby_marshal import RubyObject, loads
 finally:
@@ -113,6 +114,9 @@ class JohtoStageTests(unittest.TestCase):
             self.assertTrue((preview / "Graphics/Tilesets/BLUE_JOHTO_PREVIEW_JohtoTerrain.png").exists())
             self.assertFalse((preview / "Game.exe").exists())
             self.assertFalse((preview / "Data/Scripts.rxdata").exists())
+            proof = inspect(preview, kwargs["game"], root=kwargs["root"])
+            self.assertEqual(proof["status"], "STRUCTURAL_PREVIEW_VALIDATED_NOT_PLAYABLE")
+            self.assertEqual(proof["events_imported"], 0)
             self.assertEqual((kwargs["source"] / "Data/Map003.rxdata").read_bytes(), original_source)
             for name, before in protected.items():
                 self.assertEqual((native / name).read_bytes(), before, name)
@@ -149,6 +153,25 @@ class JohtoStageTests(unittest.TestCase):
             kwargs["manifest_path"].write_text(json.dumps(m))
             with self.assertRaisesRegex(ValueError, "mapping must be confirmed"):
                 stage(**kwargs)
+
+    def test_verifier_blocks_foreign_event_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            kwargs = fixture(Path(tmp))
+            stage(**kwargs)
+            target = kwargs["output"] / "Data/Map601.rxdata"
+            obj = loads(target.read_bytes())
+            obj.attrs["@events"] = {8: RubyObject("RPG::Event", {"@pages": []})}
+            target.write_bytes(serialize(obj, ("RPG::Event",)))
+            with self.assertRaisesRegex(ValueError, "Foreign events"):
+                inspect(kwargs["output"], kwargs["game"], root=kwargs["root"])
+
+    def test_verifier_rejects_modifications_to_native_kanto(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            kwargs = fixture(Path(tmp))
+            stage(**kwargs)
+            (kwargs["game"] / "Data/MapInfos.rxdata").write_bytes(b"tampered")
+            with self.assertRaisesRegex(ValueError, "Native MapInfos changed"):
+                inspect(kwargs["output"], kwargs["game"], root=kwargs["root"])
 
     def test_external_output_forbidden(self):
         with tempfile.TemporaryDirectory() as tmp:
