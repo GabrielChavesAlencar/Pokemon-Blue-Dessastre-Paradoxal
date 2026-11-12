@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ab238a8ac98367491c7c3f18b291fd5818996e4e",
+      "date": "2026-11-12T12:11:23-03:00",
+      "title": "feat(kanto): unificar balanceamento, Pallet Home e cartões regionais",
+      "category": "Novidades"
+    },
+    {
       "sha": "f1b4eb64e340221890c2b84e289a823c56812218",
       "date": "2026-11-12T11:36:52-03:00",
       "title": "feat(kanto): núcleo funcional 10/16 — Saffron, Sabrina e Silph Co.",
