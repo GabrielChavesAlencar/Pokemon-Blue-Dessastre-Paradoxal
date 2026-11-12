@@ -10,17 +10,17 @@
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
 
-**Barra 1 — Núcleos de desenvolvimento implementados (reavaliada em 12/11/2026): 06/16 (37,5%) — faltam 10 passos.** Contam somente os marcos 01, 04, 05, 06, 07 e 08 com núcleo executável e CI; 02, 03, 15 e 16 estão parciais; 09–11 têm apenas terreno; 12–14 não têm núcleo entregue. [Metodologia e 16 avaliações](KANTO_REAVALIACAO_BARRAS_2026-11-12.md). O antigo 08/16 indicava a última fase com núcleo inicial, **não oito etapas funcionalmente completas**.
- 
-**Barra 2 — Etapas integralmente aceitas (reavaliada em 12/11/2026): 01/16 (6,25%) — faltam 15 passos.** A única aceitação registrada é a auditoria estrutural 01. As outras 15 etapas continuam aguardando seus critérios de aceite, especialmente gameplay manual. [Critérios e cálculo](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+**Barra 1 — Núcleos funcionais implementados (atualizado em 12/11/2026): 07/16 (43,75%) — faltam 9 passos.** A etapa **03 — Pallet → Pewter** ganhou núcleo jogável com pacote de Oak, 11 pares de portas auditados e 50 treinadores `Sight(n)`, aprovado na [CI Windows 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441). Contam **01, 03, 04, 05, 06, 07 e 08**; as etapas 02, 15 e 16 são parciais, 09–11 só possuem cenário e 12–14 não possuem núcleo implementado. [Entrega funcional 07/16](KANTO_AVANCO_FUNCIONAL_07.md).
+
+**Barra 2 — Etapas integralmente aceitas: 01/16 (6,25%) — faltam 15 passos.** Só a auditoria 01 foi aceita por completo. O pacote, as portas e as batalhas da etapa 03 ainda precisam de teste manual no `Game.exe`, incluindo entrada/saída, derrota e save/reload.
 
 **Marco inicial:** Pallet → Pewter com 13 mapas. **Fase 07:** 25 mapas até Cerulean e Misty. **Fase 08:** 40 mapas até Vermilion e S.S. Anne, 54 perfis de treinadores no portal e testes nativos automatizados. As batalhas foram simuladas na CI; a validação visual/manual permanece necessária.
 
 **Visual das duas barras (16 passos cada):**
 
-`Barra 1  ██████░░░░░░░░░░   6/16 feitos · 10 faltando`
+`Barra 1  ███████░░░░░░░░░   7/16 · 9 restantes`
 
-`Barra 2  █░░░░░░░░░░░░░░░   1/16 aceito · 15 faltando`
+`Barra 2  █░░░░░░░░░░░░░░░   1/16 · 15 restantes`
 
 ## Feedback manual de mapas — 12/11/2026
 
@@ -49,7 +49,7 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **POST-01 — lote I** (fases 15/16 se aprovado): pós-jogo, National Dex, Sevii/Celio/Ruby/Sapphire, Warehouse/Cerulean Cave e eventos especiais — **escopo opcional, não somar automaticamente às 16 etapas**.
 - [ ] **QA-EVENTOS:** aceitar cada evento somente com testes por estado (primeira execução, repetição, vitória/derrota/fuga, bag/PC cheios, saída/retorno, reload, Game.exe Windows, depois JoiPlay e rollback).
 
-**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto está reavaliado em 6/16 núcleos e 1/16 aceite** (ver [análise das barras](KANTO_REAVALIACAO_BARRAS_2026-11-12.md)). Este registro é documental: nenhum script ou evento novo foi instalado.
+**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto está atualmente em 7/16 núcleos e 1/16 aceite** (ver [análise das barras](KANTO_REAVALIACAO_BARRAS_2026-11-12.md)). Este registro é documental: nenhum script ou evento novo foi instalado.
 
 ## Roadmap de diálogos FireRed — inglês e português (EN/PT-BR)
 
@@ -64,7 +64,7 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 
 **Distribuição pelas 16 fases:** `KAN-001–010` (02–04), `KAN-011–022` (03 e 07–08), `KAN-023–033` (08, Lavender e acessos), `KAN-034–046` (09 e 11), `KAN-047–052` (10), `KAN-053–057` (12–13), `KAN-058–067` (14–16). `SEV-001–014` é escopo opcional de pós-jogo, sem aumentar automaticamente o denominador 16.
 
-**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras atuais, após reavaliação: núcleos funcionais 6/16 (37,5%); aceitação integral 1/16 (6,25%).**
+**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras atuais: núcleos funcionais 7/16 (43,75%); aceitação integral 1/16 (6,25%).**
 
 ## Correções funcionais do primeiro percurso — MAN-01 e MAN-02
 
@@ -75,17 +75,16 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 - [x] **CI de compilação e regressão aprovada:** [teste nativo 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042), [regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) e [site checks](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637630).
 - [ ] **QA manual Windows e JoiPlay:** a prova automatizada não substitui caminhada/colisão, abordagem e batalha real; nenhum aceite total ainda.
 
-**Barras reavaliadas:** núcleos funcionais **6/16 (37,5%), faltam 10**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
+**Barras atuais:** núcleos funcionais **7/16 (43,75%), faltam 9**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
 
 ## 16 etapas de fechamento
 
-**Classificação nova por evidências, independente do número mais alto já iniciado:** **6 núcleos entregues (01,04,05,06,07,08); 4 parciais (02,03,15,16); 3 somente cenário (09,10,11); 3 ainda não implementadas (12,13,14)**. O marcador `[ ]` abaixo significa **não aceita integralmente**, mesmo nas 5 etapas com núcleo funcional experimental e na infraestrutura parcial. **Barra 1: 6/16, faltam 10; Barra 2: 1/16, faltam 15.** [Detalhamento](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
-
+**Classificação atual após o avanço:** **7 núcleos entregues (01, 03, 04, 05, 06, 07 e 08), 3 parciais (02, 15, 16), 3 somente cenário (09, 10, 11) e 3 sem núcleo (12, 13, 14)**. A lista de etapas abaixo usa `[ ]` para **pendências de aceite integral**, mesmo quando o núcleo da Barra 1 já foi implementado.
 
 
 - [x] **01 — Auditoria estrutural do piloto.** Validar os 13 arquivos de mapa, conexões, limites de transferências, saída de Pallet, eventos de Oak/Blue/treinadores/Brock e execução do teste nativo na CI. O verificador está em [verify_pilot.py](../scripts/regions/verify_pilot.py) e foi aprovado no [GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43126592145).
 - [ ] **02 — Abrir o piloto e caminhar no Windows.** **Em validação:** disponível o [atalho de teste gráfico](../KANTO_TESTAR_WINDOWS.bat), o [diagnóstico com logs](../scripts/regions/gui_diagnostics.py) e o [checklist detalhado](KANTO_TESTE_WINDOWS.md). A verificação de janela na CI não substitui caminhada real. Falta conferir colisões, portas, transições, todos os iniciais, batalhas reais, cura, captura, derrota e save/reload numa sessão interativa.
-- [ ] **03 — Fechar os erros do trecho Pallet → Pewter.** **Correções automatizadas aprovadas:** vitórias dos treinadores usam chaves estáveis `KANTO_mapa_evento` (com leitura de saves antigos), e a auditoria verifica transferências por direção e caminho de retorno; o teste nativo cobre nomes iguais, derrota/repetição e salvamento. [CI nativa](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43128730834). O piloto detecta builds antigos e prepara cópia nova sem apagar a anterior, [validado na CI](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43129122399). Falta repetir o roteiro manual, incluindo colisões, portas e respawn.
+- [ ] **03 — Fechar os erros do trecho Pallet → Pewter.** **NÚCLEO FUNCIONAL IMPLEMENTADO E [APROVADO NA CI](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441)**: [entrega 07/16](KANTO_AVANCO_FUNCIONAL_07.md), ciclo do pacote de Oak no Poké Mart de Viridian, retorno ao laboratório e Pokédex, 11 pares de portas com retorno verificado e 50 treinadores com visão automática/página pós-vitória. **Pendente para aceite:** jogar fisicamente no Windows, validar colisões, NPCs/portas canônicas restantes, derrotas, saves existentes e JoiPlay. A implementação conta **+1 na Barra 1**, não na Barra 2.
 - [ ] **04 — Escolha real de Kanto como região inicial.** **Em validação:** implementado o [seletor no início de nova partida](../scripts/battle_polish/RegionStart.rb) e um [importador opcional de mapas](../scripts/regions/install_kanto.py) com backup/rollback. Kanto é oferecida somente quando instalada; Decades e os saves antigos preservam seus fluxos. A integração de 13 mapas na cópia Windows CI passou; [guia de instalação e checklist](KANTO_ESCOLHA_REGIAO.md). A [prova nativa no Game.exe integrado](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43132795847) aprovou o início em Kanto, persistência de região e save/reload, preservando o ponto original de Decades. **A etapa continua aberta até validar o seletor e a jogabilidade manualmente no Windows.**
 - [ ] **05 — Viagem Decades ⇄ Kanto com um único save.** **Implementação em validação:** [serviço de transporte](../scripts/battle_polish/RegionTravel.rb) ligado ao [menu do circuito](../scripts/battle_polish/Regions.rb), saída Decades condicionada ao Hall da Fama + Stellar Emerald auditados, retorno com coordenadas anteriores, depósito preventivo de especiais e rollback da equipe/PC/estado. [Guia e checklist](KANTO_VIAGEM_DEC_KANTO.md). **Aprovado em CI:** [ida/volta com mapas reais, depósito nativo de Mewtwo no PC e save/reload](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43136257273). **Pendente:** transferência visual em sessão gráfica e NPC físico pós-Liga. A política completa de especiais pelos outros caminhos é a etapa 06.
 - [ ] **06 — Insígnias, esmeraldas, HMs e Pokémon especiais.** **Em validação:** o [guia da fase 06](KANTO_FASE_06.md) documenta a correção do PC legado de Decades, os quatro retratos e o reparo de instalações existentes. O balanceamento soma conquistas locais únicas ao total Blue nativo; [RegionalPolicy.rb](../scripts/battle_polish/RegionalPolicy.rb) verifica HMs e bloqueia especiais no PC, presentes e capturas. [Teste nativo integrado aprovado](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43139789644), com quatro retratos, presente especial depositado, Boulder sem duplicação e permissão local de Flash; [regressão Ruby/Python aprovada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43139468440). **Pendente:** validar visualmente PC cheio, capturas, scripts externos e ações de campo, e completar a cobertura por todos os caminhos de entrada.
@@ -103,6 +102,9 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 **Critério de Kanto finalizada:** 16/16 itens concluídos, uma campanha acessível de início a fim, oito insígnias únicas, Liga concluída, viagem e save íntegros, dados e portal sincronizados. **Sevii Islands** são conteúdo adicional opcional e devem ser tratadas como escopo separado se forem incluídas.
 
 ## Registro de execução
+
+- **12/11/2026 — Avanço para 07/16 de desenvolvimento funcional:** núcleo da etapa 03 concluído em código e CI: missão do pacote de Oak, 11 entradas/saídas verificadas, 50 eventos `Sight(n)` e save/regressão testados ([CI 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441), [regressão 43222828560](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828560)). **Barra 1 7/16, faltam 9; Barra 2 1/16, faltam 15**. A revisão [6/16](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) permanece disponível como histórico.
+
 
 - **12/11/2026 — Reavaliação dos contadores:** [auditoria das 16 etapas](KANTO_REAVALIACAO_BARRAS_2026-11-12.md) reconciliou implementações, 109 mapas (61 somente cenário), 8 interiores, 50 eventos de visão e CI. **Barra 1 passou de 8/16 para 6/16** porque só seis etapas possuem núcleo implementado e evidência; **Barra 2 permanece 1/16**. Faltam 10 passos para núcleos funcionais e 15 para aceites integrais. Os valores antigos listados abaixo são **registros históricos**, não a medição atual.
 
