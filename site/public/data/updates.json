@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e00a916ad7dd8dad43ba3f3626ffaece7d0d2d05",
+      "date": "2026-11-11T22:10:04-03:00",
+      "title": "test(kanto): isolar prova headless de Kanto e registrar fase antes de diálogos Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "4168186a4c9d30c997dbb8be8c6cfe17ac0d71a3",
       "date": "2026-11-11T22:08:06-03:00",
       "title": "test(kanto): garantir dry-run, preservacao dos saves e rollback transacional",
