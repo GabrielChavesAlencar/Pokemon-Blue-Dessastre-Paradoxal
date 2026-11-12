@@ -174,7 +174,12 @@ def trainer_draft(path, species, moves):
 
 def build_drafts(source, game, plan):
     species, moves = catalogue(game, "pokemon"), catalogue(game, "moves")
-    mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]}
+    # The phase 09 terrain preview must not activate foreign trainers,
+    # encounter tables or story scripts before event review.
+    from audit import KANTO, json_file
+    no_gameplay = set(json_file(KANTO).get("preview_only", []))
+    mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
+               if row["source_id"] not in no_gameplay}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
