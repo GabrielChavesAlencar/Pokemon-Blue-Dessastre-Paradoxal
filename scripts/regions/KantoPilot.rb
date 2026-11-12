@@ -3,6 +3,7 @@ module BlueKantoPilot
   STARTERS = [:BULBASAUR, :CHARMANDER, :SQUIRTLE].freeze
   RIVAL_VERSIONS = {BULBASAUR: 11, CHARMANDER: 12, SQUIRTLE: 13}.freeze
   VIRIDIAN_MART_STOCK = [:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL].freeze
+  VIRIDIAN_REQUIRED_BADGES = %w[BOULDER CASCADE THUNDER RAINBOW SOUL MARSH VOLCANO].freeze
 
   def self.progress
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
@@ -76,10 +77,48 @@ module BlueKantoPilot
     end
   end
 
+  # The gate uses local Kanto badges, not the global crystal total. A
+  # completed Decades/Johto region cannot prematurely unlock Giovanni.
+  def self.viridian_access?
+    earned = BlueRegions.local_achievements(progress, "KANTO")
+    VIRIDIAN_REQUIRED_BADGES.all? { |badge| earned.include?(badge) } &&
+      progress["pilot_silph_rescued"] == true
+  end
+
+  def self.viridian_gym_gate(map_id, x, y)
+    unless viridian_access?
+      missing = VIRIDIAN_REQUIRED_BADGES.reject do |badge|
+        BlueRegions.local_achievements(progress, "KANTO").include?(badge)
+      end
+      if missing.any?
+        pbMessage(_INTL("O Ginásio de Viridian está fechado. Conquiste as sete primeiras insígnias de Kanto (faltam {1}).", missing.length))
+      else
+        pbMessage(_INTL("O Ginásio só abre após a libertação da Silph Co."))
+      end
+      return false
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+    true
+  end
+
+  def self.viridian_gym_guide
+    if !viridian_access?
+      pbMessage(_INTL("Guia: Giovanni retorna ao ginásio somente após as sete insígnias e a libertação da Silph Co."))
+    elsif BlueRegions.local_achievements(progress, "KANTO").include?("EARTH")
+      pbMessage(_INTL("Guia: A Earth Badge é sua! Siga para a Liga Pokémon quando o caminho estiver disponível."))
+    else
+      pbMessage(_INTL("Guia: Giovanni é especialista em Pokémon do tipo Terra. Vença para receber a Earth Badge!"))
+    end
+  end
+
   def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
     if type == :BLUE_KANTO_LEADER_SABRINA && !progress["pilot_silph_rescued"]
       pbMessage(_INTL("Sabrina está aguardando a libertação da Silph Co. Derrote Giovanni primeiro."))
+      return
+    end
+    if type == :BLUE_KANTO_LEADER_GIOVANNI && !viridian_access?
+      pbMessage(_INTL("Giovanni ainda não aceita seu desafio. Conquiste as sete primeiras insígnias e liberte a Silph Co."))
       return
     end
     if type == :BLUE_KANTO_LEADER_BLAINE && !progress["pilot_cinnabar_secret_key"]
@@ -94,7 +133,9 @@ module BlueKantoPilot
     # New events persist stable region/map/event keys. Accept old name-only
     # entries from pilot saves built before this fix without replaying battles.
     key = event_key || "#{type}:#{name}"
-    if wins.include?(key) || wins.include?(name)
+    # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
+    # Silph name-only victory must never mark the *gym* Giovanni as beaten.
+    if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
       return
     end
@@ -122,6 +163,9 @@ module BlueKantoPilot
       pbMessage(_INTL("Sabrina: Você conquistou a Marsh Badge!"))
     elsif type == :BLUE_KANTO_LEADER_BLAINE && BlueRegions.award(progress, "KANTO", "VOLCANO")
       pbMessage(_INTL("Blaine: A Volcano Badge é sua!"))
+    elsif type == :BLUE_KANTO_LEADER_GIOVANNI && BlueRegions.award(progress, "KANTO", "EARTH")
+      pbMessage(_INTL("Giovanni: Você conquistou a Earth Badge! O desafio da Liga está adiante."))
+
 
     end
   end
