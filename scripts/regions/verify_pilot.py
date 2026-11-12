@@ -395,7 +395,8 @@ def inspect(game: Path) -> dict:
             raise ValueError(f"Viridian trainer {eid} absent")
     if not first_scripts(13, 4) or "BLUE_KANTO_LEADER_GIOVANNI" not in first_scripts(13, 4)[0]:
         raise ValueError("Viridian Giovanni not bound to independent gym leader type")
-    if "Jason" not in first_scripts(13, 8)[0] or "Cole" in first_scripts(13, 8)[0]:
+    battle_scripts = [line for line in first_scripts(13, 8) if "BlueKantoPilot.battle(" in line]
+    if len(battle_scripts) != 1 or '"Jason"' not in battle_scripts[0] or '"Cole"' in battle_scripts[0]:
         raise ValueError("FRLG source typo Tamer Jason -> Cole has leaked into Blue")
 
     # MAN-02: the source-proven 109 line-of-sight trainers require Event Touch,
