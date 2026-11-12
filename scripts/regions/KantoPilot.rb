@@ -38,7 +38,7 @@ module BlueKantoPilot
       return
     end
     if rival_done?
-      pbMessage(_INTL("Blue: A próxima batalha é em Pewter. Nos vemos na Rota 1!"))
+      pbMessage(_INTL("Blue: Continue treinando. Nossa revanche fica para a próxima etapa!"))
       return
     end
     setBattleRule("canLose")
