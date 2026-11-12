@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ba322d0285812d324b74e7409b904191119f206b",
+      "date": "2026-11-11T21:13:40-03:00",
+      "title": "docs(regioes): referenciar especificações originais no roteiro principal",
+      "category": "Documentação"
+    },
+    {
       "sha": "07fe7e52fde20866af54682516b6d9882ede2c13",
       "date": "2026-11-11T21:12:58-03:00",
       "title": "docs(regioes): versionar plano funcional completo v2",
