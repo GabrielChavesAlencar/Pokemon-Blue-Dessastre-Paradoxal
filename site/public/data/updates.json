@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "927f52dec68cb7fda02f6390b1abca4d245b1309",
+      "date": "2026-11-12T10:45:25-03:00",
+      "title": "Kanto Fuchsia: ativar portas cidade/centro/mart/ginásio, Koga+6 treinadores e Safari gate seguro",
+      "category": "Melhorias"
+    },
+    {
       "sha": "40d1d7ebed0bdb1a6c671d41e0c8b41fd77745f4",
       "date": "2026-11-12T10:44:29-03:00",
       "title": "Kanto núcleo 9: ativar 5 mapas auditados de Fuchsia/Koga e portão Safari informativo",
