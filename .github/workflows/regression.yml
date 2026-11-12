@@ -22,6 +22,8 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Validar integridade dos 64 MP3 de Kanto
         run: python scripts/music/install_kanto_music.py --audit
+      - name: Gerar baseline fase 0 Kanto (sem alterar game ou saves)
+        run: python scripts/music/audit_kanto_phase0.py
       - name: Validar sintaxe JavaScript
         run: |
           node --check web/app.js
