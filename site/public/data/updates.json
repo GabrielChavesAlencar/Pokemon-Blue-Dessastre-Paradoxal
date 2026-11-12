@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ce0afac49d81288d87defe43522bf4de418c0703",
+      "date": "2026-11-12T10:19:00-03:00",
+      "title": "Kanto Erika: corrigir asserção de persistência para depois do reload, não antes do combate",
+      "category": "Correções"
+    },
+    {
       "sha": "e4c59d52d012f6748f21e523f57d0ea4d69c29a6",
       "date": "2026-11-12T10:18:06-03:00",
       "title": "Testar site com 62 treinadores, Erika e Celadon sem NPCs não auditados",
