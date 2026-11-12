@@ -82,3 +82,19 @@ jobs:
           Remove-Item "$pilot/Data/blue-kanto-proof.rb" -ErrorAction SilentlyContinue
           python scripts/regions/gui_diagnostics.py --output .blue-work/kanto-pilot --no-build --probe --seconds 25
           if($LASTEXITCODE -ne 0){throw 'O ambiente de CI nao confirmou janela visivel; usar o diagnostico local no Windows'}
+      - name: Auditar e importar Kanto no Blue descartavel da CI
+        shell: powershell
+        run: |
+          $originalSystem=(Get-FileHash 'game/Data/System.rxdata' -Algorithm SHA256).Hash
+          $originalIni=(Get-FileHash 'game/Game.ini' -Algorithm SHA256).Hash
+          $originalConfig=(Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash
+          python scripts/regions/install_kanto.py --game game --pilot .blue-work/kanto-pilot
+          if($LASTEXITCODE -ne 0){throw 'Kanto import dry-run failed'}
+          python scripts/regions/install_kanto.py --apply --game game --pilot .blue-work/kanto-pilot
+          if($LASTEXITCODE -ne 0){throw 'Kanto transaction failed'}
+          if(-not (Test-Path 'game/Data/blue-kanto-start.txt')){throw 'Kanto marker missing'}
+          if((Get-FileHash 'game/Data/System.rxdata' -Algorithm SHA256).Hash -ne $originalSystem){throw 'Native start was overwritten'}
+          if((Get-FileHash 'game/Game.ini' -Algorithm SHA256).Hash -ne $originalIni){throw 'Native game title was overwritten'}
+          if((Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash -ne $originalConfig){throw 'Native save directory was changed'}
+          python scripts/regions/install_kanto.py --apply --game game
+          if($LASTEXITCODE -ne 0){throw 'Idempotent install check failed'}
