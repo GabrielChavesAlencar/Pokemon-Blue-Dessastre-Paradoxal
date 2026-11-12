@@ -153,7 +153,8 @@ module BlueMusic
     end
     return nil if $PokemonGlobal.nextBattleBGM
     return nil if row && row[1]=='random'
-    audio_for('global',key) || kanto_audio_for('battle',key)
+    return audio_for('global',key) if row
+    kanto_audio_for('battle',key)
   end
   def self.apply_map(game_map)
     map=game_map.instance_variable_get(:@map)
@@ -163,7 +164,8 @@ module BlueMusic
       original=[map.autoplay_bgm,map.bgm.clone]
       game_map.instance_variable_set(:@blue_music_original,original)
     end
-    audio=audio_for('map',game_map.map_id) || kanto_audio_for('map',game_map.map_id)
+    row=entry('map',game_map.map_id)
+    audio=row ? audio_for('map',game_map.map_id) : kanto_audio_for('map',game_map.map_id)
     if audio
       map.autoplay_bgm=true;map.bgm=audio
     else
@@ -208,14 +210,16 @@ module BlueMusic
     end
     def pbGetWildVictoryBGM(*args)
       return super if $PokemonGlobal.nextBattleVictoryBGM
-      audio=BlueMusic.audio_for('global','wildVictory') || BlueMusic.kanto_audio_for('battle','wildVictory')
+      row=BlueMusic.entry('global','wildVictory')
+      audio=row ? BlueMusic.audio_for('global','wildVictory') : BlueMusic.kanto_audio_for('battle','wildVictory')
       return super unless audio
       audio.name='../../Audio/BGM/'+audio.name unless audio.name.empty?
       audio
     end
     def pbGetTrainerVictoryBGM(*args)
       return super if $PokemonGlobal.nextBattleVictoryBGM
-      audio=BlueMusic.audio_for('global','trainerVictory') || BlueMusic.kanto_audio_for('battle','trainerVictory')
+      row=BlueMusic.entry('global','trainerVictory')
+      audio=row ? BlueMusic.audio_for('global','trainerVictory') : BlueMusic.kanto_audio_for('battle','trainerVictory')
       return super unless audio
       audio.name='../../Audio/BGM/'+audio.name unless audio.name.empty?
       audio
