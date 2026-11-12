@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "PENDING_LOCAL_SOURCE_AUDIT",
+  "source": {
+    "name": "Remastered Kanto and Johto Overworld and Caves Map Pack",
+    "author": "AenaonDogsky (AenaonDusky)",
+    "url": "https://www.eeveeexpo.com/resources/828/",
+    "release": "v.3 / atualização de 2024-02-16",
+    "archive_sha256": null,
+    "local_path": ".blue-work/johto-source",
+    "content_scope": "Johto overworld and caves; Mt. Silver not included",
+    "rights": "Creator describes editable RMXP mapping resource; verify separate rights of every tileset, graphics and third-party asset before distribution",
+    "credits_required": [
+      "AenaonDusky / AenaonDogsky",
+      "Earthescape / Orbitender (Johto caves)",
+      "JohtoBlaziken (Kanto source component)",
+      "Pokémon The First Journey",
+      "Red's Journey West",
+      "tile artists identified in source credits"
+    ],
+    "distribution_approved": false
+  },
+  "import_enabled": false,
+  "mapping_verified": false,
+  "maps": {},
+  "missing_required": [
+    "NEW_BARK_PLAYER_HOME_INTERIOR",
+    "MT_SILVER"
+  ],
+  "mandatory_protections": [
+    "Never copy foreign MapInfos.rxdata into game/Data",
+    "Never overwrite existing MapXXX.rxdata/IDs",
+    "Never replace Tilesets.rxdata or Scripts.rxdata from source",
+    "Keep Johto source under ignored .blue-work",
+    "Only enable JOHTO when verified local pilot exists",
+    "Preserve Kanto, Decades, saves, PC, music and Blue Studio"
+  ],
+  "notes": "No original archive, map ID mapping or archive hash has been supplied/audited. Never guess source IDs. Preflight and audit tools are read-only."
+}
