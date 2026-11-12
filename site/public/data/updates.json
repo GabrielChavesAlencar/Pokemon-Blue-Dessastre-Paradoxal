@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "820d392b4052002c298a87ad352af7423a99dd88",
+      "date": "2026-11-11T23:33:32-03:00",
+      "title": "test(kanto): exigir alcance recíproco e eventos Misty/Mt Moon nos 25 mapas",
+      "category": "Testes"
+    },
+    {
       "sha": "d49af8f0849c36504c762564f2df4cf3924e0995",
       "date": "2026-11-11T23:32:35-03:00",
       "title": "feat(kanto): registrar Cascade Badge uma vez e eventos seguros de Mt Moon",
