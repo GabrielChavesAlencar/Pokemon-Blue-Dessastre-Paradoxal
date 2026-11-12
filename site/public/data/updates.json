@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7fb72607aaf970ca19cea5eef75efd414d8ad99e",
+      "date": "2026-11-12T20:50:04-03:00",
+      "title": "docs(johto): sincroniza plano mestre com fase 08 Ecruteak e Morty parcial",
+      "category": "Documentação"
+    },
+    {
+      "sha": "83182d13cf8646c2aab4ded9348bdf9f8a71faeb",
+      "date": "2026-11-12T20:49:53-03:00",
+      "title": "docs(johto): registra Etapa 08 parcial, testes e integração real pendente",
+      "category": "Documentação"
+    },
+    {
       "sha": "26b9bf51847b90b129ed496a0ce1e8be723decf8",
       "date": "2026-11-12T20:49:29-03:00",
       "title": "docs(johto): detalha fase 08 Ecruteak Morty FOG Surf e pendencias reais",
