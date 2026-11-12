@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3877e23064d3c109ef6630cec7e0a153d341cb38",
+      "date": "2026-11-12T18:55:47-03:00",
+      "title": "docs(johto): adiciona plano de implementação em 16 etapas com QA e segurança",
+      "category": "Novidades"
+    },
+    {
       "sha": "d5d0c10c0275cd77b4792d7f42da7f0e66ebe816",
       "date": "2026-11-12T18:52:43-03:00",
       "title": "feat(kanto-music): Fase 5 — cenas de Kanto com retorno seguro de BGM",
