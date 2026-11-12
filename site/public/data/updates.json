@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "41550815a4f1b0b13dc0f3fb858b5f99c8b7b9af",
+      "date": "2026-11-11T23:15:56-03:00",
+      "title": "fix(regions): preservar assinatura nativa pbPlace do Essentials no PC",
+      "category": "Correções"
+    },
+    {
       "sha": "6e5b1ca72f81d7b8ec7d3f6ffd4c7bfd58644d5a",
       "date": "2026-11-11T23:15:09-03:00",
       "title": "docs(kanto): atualizar barras 06/16 e 01/16 com evidencias Codex",
