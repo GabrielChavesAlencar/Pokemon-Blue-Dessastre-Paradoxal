@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6222a238c869fcda457251c0d0ae404587a9df59",
+      "date": "2026-11-12T06:51:55-03:00",
+      "title": "Ajustar regex da auditoria de Vermilion ao padrão Python",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "683413a4b771c51a0ca9261916edcf37ed6f082a",
+      "date": "2026-11-12T06:51:36-03:00",
+      "title": "Corrigir padrões de identificação dos mapas de Vermilion",
+      "category": "Correções"
+    },
+    {
       "sha": "bd7433cde7f5ebacc76766cacc75ad99bccbb507",
       "date": "2026-11-12T06:51:23-03:00",
       "title": "Kanto fase 08: auditoria segura da fonte Vermilion e S.S. Anne",
