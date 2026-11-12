@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f20fe58e5af193de11230255fa1c3413c7813e62",
+      "date": "2026-11-12T20:39:22-03:00",
+      "title": "docs(johto): detalha fase 07 Ilex Cut Goldenrod Whitney e criterios de aceite",
+      "category": "Documentação"
+    },
+    {
       "sha": "cbd75b0a59849ddef2e272d353004727fbe92a3b",
       "date": "2026-11-12T20:38:19-03:00",
       "title": "test(johto): cobre grafo Ilex Goldenrod e guardas de fase 07 ainda nao instalada",
