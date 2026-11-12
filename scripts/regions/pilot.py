@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import os
 import re
 import shutil
 import subprocess
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, load
@@ -22,6 +24,41 @@ SAVE_APP = "Kanto Piloto"
 OUTPUT = ROOT / ".blue-work/kanto-pilot"
 SOURCE = ROOT / ".blue-work/frlg-source/Essentials FRLG"
 PILOT_META = "Kanto pilot.json"
+# Changes to any of these inputs require a new isolated pilot build.
+PILOT_INPUTS = (
+    "scripts/regions/pilot.py",
+    "scripts/regions/stage.py",
+    "scripts/regions/pbs.py",
+    "scripts/regions/export_kanto.py",
+    "scripts/regions/KantoPilot.rb",
+    "data/regions/kanto-source.json",
+)
+
+
+def build_signature():
+    digest = hashlib.sha256()
+    for relative in PILOT_INPUTS:
+        path = ROOT / relative
+        digest.update(relative.encode("utf-8") + b"\0")
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
+
+
+def pilot_is_current(output):
+    marker = output / PILOT_META
+    if not marker.is_file():
+        return False
+    try:
+        return json.loads(marker.read_text(encoding="utf-8"))["build_signature"] == build_signature()
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
+def revised_path(output):
+    suffix = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    return output.parent / f"{output.name}-revisao-{suffix}"
+
+
 EVENT_CLASSES = {
     "RPG::Event", "RPG::Event::Page", "RPG::Event::Page::Condition", "RPG::Event::Page::Graphic",
     "RPG::MoveRoute", "RPG::MoveCommand", "RPG::EventCommand",
@@ -209,8 +246,10 @@ def install_runtime(target, mapping):
     # Force compiler to consume new PBS, but keep a real release-mode title after the first boot.
     (data / "blue-compile-request.txt").write_text("compile", encoding="ascii")
     (data / "PluginScripts.rxdata").unlink(missing_ok=True)
-    (target / PILOT_META).write_text(json.dumps({"save_app": SAVE_APP, "save_org": SAVE_ORG, "maps": mapping}),
-                                    encoding="utf8")
+    (target / PILOT_META).write_text(json.dumps({
+        "save_app": SAVE_APP, "save_org": SAVE_ORG,
+        "maps": mapping, "build_signature": build_signature(),
+    }), encoding="utf8")
 
 
 def build(source, game, output):
@@ -256,6 +295,11 @@ def main():
     parser.add_argument("--launch", action="store_true")
     args = parser.parse_args()
     output = args.output.resolve()
+    if args.launch and output.exists() and not pilot_is_current(output):
+        replacement = revised_path(output)
+        print(f"[INFO] Piloto antigo detectado; preservando {output}", flush=True)
+        print(f"[INFO] Preparando nova copia: {replacement}", flush=True)
+        output = replacement
     if not args.launch or not output.exists():
         build(args.source.resolve(), args.game.resolve(), output)
         print(f"Piloto de Kanto preparado em {output}")
