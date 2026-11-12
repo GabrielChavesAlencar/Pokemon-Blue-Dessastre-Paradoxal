@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e5392e678f092f94cfc5378cffce1e0ab1b6ae1e",
+      "date": "2026-11-12T11:00:22-03:00",
+      "title": "Kanto teste Windows: documentar quinto núcleo Fuchsia, 42 atalhos, Koga e Safari protegida",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3ef84bcd0e2558df7d9e0f0594a9e9380dac9974",
       "date": "2026-11-12T10:59:44-03:00",
       "title": "Roadmap operacional: Fuchsia/Koga aprovado, 9/16, 53 previews e próximas dependências Safari",
