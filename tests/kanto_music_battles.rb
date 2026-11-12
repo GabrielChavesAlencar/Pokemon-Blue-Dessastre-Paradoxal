@@ -173,8 +173,10 @@ Dir.mktmpdir('kanto-battle-music-') do |folder|
                    '../../Audio/BGM/Kanto/gym-win.mp3')
     end
     BlueRegionalPolicy.region='DECADES'
+    # In this synthetic fixture TrainerType.real_name has no gym label, so
+    # native Decades classification keeps the trainer pool, not Kanto's gym.
     assert_music('Returning to Decades restores trainer random',
-                 bgm(:pbGetTrainerBattleBGM,[leader]),'BlueRandom/gym.mp3')
+                 bgm(:pbGetTrainerBattleBGM,[leader]),'BlueRandom/trainer.mp3')
     puts 'KANTO_MUSIC_BATTLE_PHASE_3=PASS_STATIC_RUNTIME'
   end
 end
