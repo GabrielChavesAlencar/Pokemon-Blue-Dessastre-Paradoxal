@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "34891103c10426c1f473aa78eaf6b3f447b0c97a",
+      "date": "2026-11-11T21:32:40-03:00",
+      "title": "docs(kanto): registrar janela grafica detectada sem concluir etapa 02",
+      "category": "Documentação"
+    },
+    {
       "sha": "54519c1a68523dd59c588a94a0447a21f586258e",
       "date": "2026-11-11T21:31:45-03:00",
       "title": "docs(kanto): registrar inicio da etapa 02 e checklist Windows sem marcar aprovacao",
