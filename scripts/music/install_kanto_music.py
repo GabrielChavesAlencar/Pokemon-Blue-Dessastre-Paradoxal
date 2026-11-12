@@ -176,16 +176,18 @@ def main() -> int:
                       help="Somente temas de batalha/vitoria da Fase 3")
     mode.add_argument("--phase4", action="store_true",
                       help="Somente as seis ME aprovadas da Fase 4")
+    mode.add_argument("--phase5", action="store_true",
+                      help="Somente trilhas de cenas confirmadas na Fase 5")
     mode.add_argument("--approved", action="store_true",
-                      help="Todas as BGM e ME aprovadas de Kanto (Fases 2 a 4)")
+                      help="BGM e ME aprovadas de Kanto (Fases 2 a 5)")
     args = parser.parse_args()
     try:
         if args.audit and args.apply:
             parser.error("--audit e --apply nao podem ser combinados")
-        if args.audit and (args.phase2 or args.phase3 or args.phase4 or args.approved):
+        if args.audit and (args.phase2 or args.phase3 or args.phase4 or args.phase5 or args.approved):
             parser.error("--audit nao pode ser combinado com subconjunto regional")
         numbers = None
-        if args.phase2 or args.phase3 or args.phase4 or args.approved:
+        if args.phase2 or args.phase3 or args.phase4 or args.phase5 or args.approved:
             try:
                 from scripts.music import compile_kanto_music as music_rules
             except ModuleNotFoundError:
@@ -196,6 +198,8 @@ def main() -> int:
                 numbers = music_rules.phase3_track_numbers(ROOT)
             elif args.phase4:
                 numbers = music_rules.phase4_track_numbers(ROOT)
+            elif args.phase5:
+                numbers = music_rules.phase5_track_numbers(ROOT)
             else:
                 numbers = music_rules.approved_audio_track_numbers(ROOT)
         result = (audit() if args.audit else install(args.game, apply=args.apply, numbers=numbers))
