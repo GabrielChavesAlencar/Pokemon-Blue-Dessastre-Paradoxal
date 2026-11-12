@@ -210,8 +210,10 @@ def normalize_encounters(source, rows, species):
             fields = [s.strip() for s in line.split("#", 1)[0].strip().split(",")]
             if not fields[0].isdigit():
                 method = fields[0]
-                if method not in ENCOUNTER_TYPES or method in methods or len(fields) > 2:
-                    raise ValueError(f"Unsupported encounter method {fields[0]}")
+                if method not in ENCOUNTER_TYPES or len(fields) > 2:
+                    raise ValueError(f"Unsupported encounter method {fields[0]} in source map [{key}]")
+                if method in methods:
+                    raise ValueError(f"Duplicate method {method} in source map [{key}]; cannot silently merge relative weights")
                 methods[method] = (fields, [])
             else:
                 if method is None or len(fields) < 3 or fields[1] not in species:
