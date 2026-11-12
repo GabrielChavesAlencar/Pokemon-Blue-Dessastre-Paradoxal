@@ -41,6 +41,8 @@ python scripts/regions/gui_diagnostics.py --probe --seconds 25 --no-build
 
 O modo `--probe` encerra o processo de teste após o tempo definido, grava relatório e **não disputa o controle do mouse nem do teclado**. O workflow [kanto-pilot-check.yml](../.github/workflows/kanto-pilot-check.yml) executa essa sondagem depois da compilação e do teste nativo, restaurando o script de início normal; falhas de janela ficam registradas sem invalidar a verificação estrutural.
 
+**Fase 16:** o relatório manual agora possui cinco grupos (início, ginásios, Liga, integração e Android/JoiPlay). Para quem executa `KANTO_JOGAR_EXPERIMENTAL.bat` pelo menu do jogo, o programa pergunta a seção na saída e grava `.md` + `.json` localmente. Para gerar modelo de todas as fases sem inventar testes: `python scripts/regions/kanto_feedback.py --no-prompt --scope all`. Ver [KANTO_FASE_16.md](KANTO_FASE_16.md). **CI confirma execução/estrutura, não batalha visual/captura real.**
+
 ## 3. Checklist de jogabilidade (executar em janela de desktop real)
 
 Executar uma nova partida do piloto e marcar os itens **somente após observar de verdade**:
