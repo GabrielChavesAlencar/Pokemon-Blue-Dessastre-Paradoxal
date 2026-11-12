@@ -25,10 +25,16 @@ module KantoNativeCheck
     # Supply the choice and battle results so the compiler can run without a user.
     Object.send(:define_method, :pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
     battle_calls = []
+    losses_remaining = { "Doug" => 1 }
     TrainerBattle.define_singleton_method(:start) do |type, name, version = 0|
       data = GameData::Trainer.get(type, name, version)
       battle_calls << [type, name, version]
-      !!data
+      if losses_remaining.fetch(name, 0) > 0
+        losses_remaining[name] -= 1
+        false
+      else
+        !!data
+      end
     end
     BlueKantoPilot.choose_starter
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
@@ -48,10 +54,33 @@ module KantoNativeCheck
              "Route 1 wild table missing")
     brock = GameData::Trainer.get(:BLUE_KANTO_LEADER, "Brock")
     require!(brock.pokemon.map { |pokemon| pokemon[:species] } == [:GEODUDE, :ONIX], "Brock roster differs")
-    BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock")
+    # Two NPC events may have the same on-screen name; their win flags must
+    # remain independent. A lost battle may be retried, but not counted as a win.
+    BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_024_016")
+    BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_TEST_SECOND_RICK")
+    BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_024_016")
+    require!(battle_calls.count { |row| row[1] == "Rick" } == 2,
+             "Trainers with duplicate names share their victory flag")
+
+    BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Doug", "KANTO_024_017")
+    require!(!BlueKantoPilot.progress["pilot_wins"].include?("KANTO_024_017"),
+             "Defeat incorrectly marked as a win")
+    BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Doug", "KANTO_024_017")
+    require!(battle_calls.count { |row| row[1] == "Doug" } == 2 &&
+             BlueKantoPilot.progress["pilot_wins"].include?("KANTO_024_017"),
+             "Trainer retry after defeat failed")
+
+    # Pilot saves created before stable keys saved the trainer's name.
+    BlueKantoPilot.progress["pilot_wins"] << "Sammy"
+    BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Sammy", "KANTO_024_020")
+    require!(battle_calls.none? { |row| row[1] == "Sammy" }, "Legacy trainer win replayed")
+
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER"],
              "Badge was not awarded exactly once")
-    BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
+             "Stable Brock trainer key not persisted")
+    BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")
     require!(battle_calls.count { |row| row[1] == "Brock" } == 1, "Brock battle repeated after victory")
 
     slot = "Kanto Native Verification"
@@ -61,6 +90,8 @@ module KantoNativeCheck
     Game.load(saved)
     require!(BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO") == ["BOULDER"],
              "Pilot badge did not survive reload")
+    require!(BlueKantoPilot.progress["pilot_wins"].include?("KANTO_028_007"),
+             "Trainer victory keys did not survive reload")
     require!($player.party.first&.species == :BULBASAUR, "Pilot team did not survive reload")
     require!($game_map.map_id == lab, "Pilot did not reload its map")
     File.write("Data/blue-kanto-proof.txt", "Pallet, Oak, rival, Route 1, Brock, save and load verified")
