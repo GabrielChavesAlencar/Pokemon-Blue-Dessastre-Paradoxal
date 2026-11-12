@@ -101,7 +101,13 @@ jobs:
       - name: Verificar origem Kanto e preservacao do ponto inicial Decades
         shell: powershell
         run: |
-          Copy-Item '.blue-work/kanto-pilot/opengl32.dll' 'game/opengl32.dll' -Force
+          # The Mesa OpenGL shim depends on additional x64 DLLs; copying only
+          # opengl32.dll causes a misleading window-creation timeout.
+          $mesaFolder=Join-Path $env:RUNNER_TEMP 'blue-mesa'
+          Get-ChildItem -LiteralPath $mesaFolder -Recurse -File -Filter '*.dll' |
+            Where-Object { $_.FullName -match '[\\\\/]x64[\\\\/]' } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination 'game' -Force }
+          if(-not (Test-Path 'game/opengl32.dll')){throw 'CI Mesa x64 OpenGL runtime missing'}
           python scripts/regions/native_check.py game --integrated
           if($LASTEXITCODE -ne 0){throw 'Kanto integrated proof preparation failed'}
           $game=(Resolve-Path game).Path
