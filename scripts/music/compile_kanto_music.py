@@ -206,6 +206,12 @@ def plan_installed(project: Path, game: Path) -> dict[Path, bytes]:
         return {}
     if not marker.read_text(encoding="ascii").startswith("BLUE_KANTO_START_V1,KANTO,"):
         raise ValueError("Unknown Kanto integration marker")
+    # Do not break RUN.bat on an older Kanto install that has fewer maps;
+    # the source/region installer must migrate that mapping first.
+    mapped = load_json(installed).get("maps", {})
+    pinned = load_json(project / "data/regions/kanto-source.json")["maps"]
+    if not isinstance(mapped, dict) or set(mapped) != set(pinned):
+        return {}
     content, _ = compile_bytes(project, game, load_mapping(game))
     return {game / OUTPUT: content}
 
