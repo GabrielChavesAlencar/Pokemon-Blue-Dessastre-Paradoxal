@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "be5e5b4f2e6ec82b0db2e1e6d970ecde863ec3d0",
+      "date": "2026-11-12T16:03:33-03:00",
+      "title": "docs(kanto): plano das 64 músicas para aplicação em fases pelo ChatGPT",
+      "category": "Documentação"
+    },
+    {
       "sha": "187786bb10a74f9976cd1f2ab6d9a2d7fa99168d",
       "date": "2026-11-12T15:48:11-03:00",
       "title": "feat(kanto-music): organizar 64 MP3 por função e instalar BGM/ME com segurança",
