@@ -22,6 +22,11 @@ module KantoIntegratedCheck
     indices = BlueKantoTitle.command_order(commands, true)
     require!(indices == [0, 1, :blue_test_kanto, 2, 3],
              "Third title option changed Continue/New Game or Auto Multi Save indexes")
+    require!(BlueKantoTitle.windows?, "Windows-native executable did not detect Windows")
+    require!(Process.respond_to?(:spawn), "Native Ruby runtime cannot spawn Kanto launcher")
+    launcher = BlueKantoTitle.launcher
+    require!(launcher && launcher[0].end_with?("KANTO_JOGAR_EXPERIMENTAL.bat"),
+             "Main Game.exe cannot locate the project-owned Kanto launcher")
     original = [$data_system.start_map_id, $data_system.start_x, $data_system.start_y]
 
     # Select Kanto without opening a graphical choice menu in headless CI.
