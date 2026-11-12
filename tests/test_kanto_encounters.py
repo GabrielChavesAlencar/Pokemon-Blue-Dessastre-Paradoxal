@@ -56,7 +56,8 @@ class KantoEncounterSourceTests(unittest.TestCase):
             "[016,1]\nLand\n100,RATTATA,6,10\n")
         self.assertEqual(count,2)
         self.assertIn("[427,1]",result)
-        self.assertIn("100,RATTATA,6,10",result)
+        self.assertIn("100,RATTATA,6,6",result)
+        self.assertIn("100,RATTATA,10,10",result)
 
     def test_preview_and_unsupported_map_cannot_be_imported(self):
         result,count=normalize("[016]\nLand\n100,SPEAROW,3,5\n"
@@ -64,9 +65,11 @@ class KantoEncounterSourceTests(unittest.TestCase):
         self.assertEqual(count,1)
         self.assertNotIn("[100]",result)
 
-    def test_invalid_min_greater_than_max_rejected(self):
-        with self.assertRaisesRegex(ValueError,"Invalid encounter weight or level"):
-            normalize("[016]\nLand\n100,SPEAROW,6,3\n")
+    def test_source_level_order_is_a_list_not_min_max(self):
+        result,count=normalize("[016]\nLand\n100,SPEAROW,6,3\n")
+        self.assertEqual(count,1)
+        self.assertIn("100,SPEAROW,6,6",result)
+        self.assertIn("100,SPEAROW,3,3",result)
 
     def test_invalid_level_0_and_over_100_rejected(self):
         for pair in ["0,3","1,101"]:
@@ -104,7 +107,7 @@ class KantoEncounterSourceTests(unittest.TestCase):
             normalize("[016]\nLand\n45,SPEAROW,3,5\n50,RATTATA,4,6\n")
 
     def test_duplicate_method_rejected(self):
-        with self.assertRaisesRegex(ValueError,"Unsupported encounter method"):
+        with self.assertRaisesRegex(ValueError,"Duplicate method"):
             normalize("[016]\nLand\n100,SPEAROW,3,5\nLand\n100,RATTATA,4,6\n")
 
 
