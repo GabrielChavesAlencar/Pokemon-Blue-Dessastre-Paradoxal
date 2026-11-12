@@ -101,6 +101,25 @@ TRAINERS.update({
 })
 
 
+
+# Saffron gym, Fighting Dojo and Silph Co. PBS identities audited from
+# the pinned FRLG 1.1 source. Preserve real versions, levels and moves.
+TRAINERS.update({
+    "LEADER_Sabrina,Sabrina": ("LEADER_SABRINA", "Sabrina", 0),
+    **{f"PSYCHIC_M,{name}": ("PSYCHIC", name, 0)
+       for name in ("Cameron", "Preston", "Johan", "Tyron")},
+    **{f"CHANNELER,{name}": ("CHANNELER", name, 0)
+       for name in ("Tasha", "Stacy", "Amanda")},
+    **{f"BLACKBELT,{name}": ("BLACKBELT", name, 0)
+       for name in ("Hideki", "Hitoshi", "Aaron", "Mike", "Koichi")},
+    **{f"TEAMROCKET_M,Grunt,{version}": ("ROCKET", "Grunt", version)
+       for version in range(21, 40)},
+    "ROCKETBOSS,Giovanni,2": ("ROCKETBOSS", "Giovanni", 2),
+    **{f"RIVAL2,Blue,{version}": ("RIVAL_SILPH", "Blue", version)
+       for version in (51, 52, 53)},
+})
+
+
 def read_blocks(path, selected=None):
     blocks = {}
     key = None
@@ -209,7 +228,7 @@ def build_drafts(source, game, plan):
     # 15,16,17,19..) that cannot be collapsed to min/max without creating
     # encounter levels not present in the source. Keep Fuchsia core entirely
     # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153}
+    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
                if row["source_id"] not in no_gameplay
                and row["source_id"] not in review_encounters}
