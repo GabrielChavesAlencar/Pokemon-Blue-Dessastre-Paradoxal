@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9eab054a5893032af930ba134f7d3c6466747c3f",
+      "date": "2026-11-12T07:50:39-03:00",
+      "title": "tools(kanto): adicionar extrator de eventos de mapas FireRed",
+      "category": "Novidades"
+    },
+    {
       "sha": "8e248e81835c8b13fdc7c765ddd9c283878be3f0",
       "date": "2026-11-12T07:47:35-03:00",
       "title": "docs(kanto): adicionar estudo detalhado dos eventos FireRed para RPG Maker XP",
