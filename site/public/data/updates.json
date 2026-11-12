@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2ed02a0830a30950afbdaad3d7579867e0548a06",
+      "date": "2026-11-12T06:34:07-03:00",
+      "title": "feat(kanto): abrir via Blue-Story.exe com Python portatil e baixar fonte FRLG validada",
+      "category": "Novidades"
+    },
+    {
       "sha": "79985da068aade0084598591e932bc4c06f14741",
       "date": "2026-11-12T06:33:25-03:00",
       "title": "feat(kanto): preparar fonte FRLG do autor com hash fixado sem sobrescrever saves",
