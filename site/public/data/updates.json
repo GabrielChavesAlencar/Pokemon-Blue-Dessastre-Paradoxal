@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "29b636772a29ec26cc596bc92bdb45cd718ecb4c",
+      "date": "2026-11-12T07:08:51-03:00",
+      "title": "Fase 08: reconhecer transferência condicional por bilhete até o porto na auditoria de rotas",
+      "category": "Melhorias"
+    },
+    {
       "sha": "db05f3646169bba82ada032ba391d66bd22ec0b7",
       "date": "2026-11-12T07:06:11-03:00",
       "title": "Fase 08: exigir todos os eventos de lixeiras, portões e quebra-cabeça no verificador",
