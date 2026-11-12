@@ -43,6 +43,19 @@ São 17 atalhos: Pallet, Pewter, Rota 4, Centro e três andares de Mt. Moon, Cer
 
 **Importante:** o menu usa somente mapas da cópia experimental e **não libera Liga, não concede insígnias, não altera a campanha principal e não existe no jogo Decades instalado**. Os pontos de chegada foram derivados de entradas/saídas da fonte FRLG, mas ainda precisam de validação visual de colisão no Windows.
 
+## Teste manual relatado em 12/11/2026
+
+[Registro e análise do TXT enviado](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md): o jogador visitou **Pallet Town, Rota 1, Rota 2, Viridian City, Viridian Forest, Pewter City, lado esquerdo da Rota 4 e Mt. Moon**.
+
+**Observações pendentes detectadas pelo jogador:**
+
+- [ ] Verificar cada porta de residência, laboratório, Centro Pokémon, Poké Mart e demais estabelecimentos: entrada real no interior e retorno, sem falha de warp.
+- [ ] Aproximar-se dos treinadores e verificar se o evento de batalha inicia automaticamente quando previsto na fonte; não permitir ultrapassar encontros obrigatórios antes da batalha.
+- [ ] Exibir painel das oito insígnias de Kanto e painel de insígnias/conquistas de todas as regiões.
+- [ ] Repetir os testes nos mapas visitados depois das correções e registrar resultado *por mapa e evento*.
+
+A lista de visitação **não comprova** aprovação manual dos testes de combate, colisão, portas, save/reload ou todos os andares de Mt. Moon; o progresso de aceite permanece **1/16**.
+
 ## 3. O que testar nas fases 07 e 08
 
 - [ ] Partida nova em Pallet, Oak e escolha de inicial; saída e retorno de Pewter
