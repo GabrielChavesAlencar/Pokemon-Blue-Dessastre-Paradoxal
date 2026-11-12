@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "42d6ede94c5a49ca492b1600ef730539f651f971",
+      "date": "2026-11-11T22:24:12-03:00",
+      "title": "feat(regions): carregar serviço de viagem com o plugin principal",
+      "category": "Novidades"
+    },
+    {
+      "sha": "db2b86519a387a3881f1cc49e1f569cb1e858061",
+      "date": "2026-11-11T22:24:09-03:00",
+      "title": "feat(regions): carregar serviço de viagem com o plugin principal",
+      "category": "Novidades"
+    },
+    {
+      "sha": "18b5a6e898eaf32eb84f3f9f5e22a7fb9492c1fd",
+      "date": "2026-11-11T22:24:07-03:00",
+      "title": "feat(regions): carregar serviço de viagem com o plugin principal",
+      "category": "Novidades"
+    },
+    {
       "sha": "7bdc393359e7bdd7dad4fed1e5602244741fb8ba",
       "date": "2026-11-11T22:23:34-03:00",
       "title": "feat(regions): viagem Decades Kanto transacional com return point e PC protegido",
