@@ -95,6 +95,7 @@ LOCATION_NAMES = {
     "SAFFRON_HOUSE_A": "Casa de Saffron A (prévia)",
     "SAFFRON_HOUSE_B": "Casa de Saffron B (prévia)",
     "SAFFRON_HOUSE_C": "Casa de Saffron C (prévia)",
+    "SAFFRON_TRAINER_FAN_CLUB": "Clube de Treinadores Pokémon de Saffron (prévia)",
     "SILPH_LOBBY": "Silph Co. — recepção (prévia)",
     "SILPH_ELEVATOR": "Silph Co. — elevador (prévia)",
     "SILPH_1F": "Silph Co. — 1F (prévia)",
