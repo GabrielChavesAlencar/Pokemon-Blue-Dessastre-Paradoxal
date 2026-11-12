@@ -27,6 +27,7 @@ module KantoNativeCheck
     }, "Player Home door cannot be entered from Pallet")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
+    puts "KANTO_NATIVE_STOPS:#{labels.length}|#{labels.grep(/Route|Elite|Hall|Lance|Champ|Kanto|Indigo/).join(";")}"
     require!(labels.length == 64 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
