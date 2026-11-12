@@ -225,8 +225,9 @@ module BlueRegionTravel
       end
       super
     end
-    def pbPlace(selected, heldpoke = nil)
-      if selected && selected[0] == -1 && BlueRegionTravel.restricted?(heldpoke || @heldpkmn)
+    def pbPlace(selected)
+      # Essentials v21.1 accepts only the selected slot here.
+      if selected && selected[0] == -1 && BlueRegionTravel.restricted?(@heldpkmn)
         pbDisplay(_INTL("Esse Pokémon especial só pode entrar na party após oito conquistas locais."))
         return false
       end
