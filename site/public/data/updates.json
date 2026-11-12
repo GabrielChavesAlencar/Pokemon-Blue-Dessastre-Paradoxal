@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "10b1439c2d503b42986dcca3c458e4dfd055b3c5",
+      "date": "2026-11-12T20:22:12-03:00",
+      "title": "test(johto): inclui Violet e Falkner nas regressões automáticas do Blue Studio",
+      "category": "Testes"
+    },
+    {
+      "sha": "4d008cc822712fd4d745cc30979dbe7d85fc1329",
+      "date": "2026-11-12T20:21:57-03:00",
+      "title": "test(johto): cobre ginásio Falkner, Zephyr única, Torre Sprout e saves sem regressões",
+      "category": "Testes"
+    },
+    {
       "sha": "999a0e8da0820394cdd4a41b0034b112a3ba3179",
       "date": "2026-11-12T20:21:21-03:00",
       "title": "feat(johto): prepara Violet, Torre Sprout e Falkner com Zephyr Badge regional e guardas",
