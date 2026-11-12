@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import deque
 from pathlib import Path
 
@@ -61,6 +62,79 @@ def inspect(game: Path) -> dict:
     if not (0 <= system["@start_x"] < maps[mapping[5]].attrs["@width"] and
             0 <= system["@start_y"] < maps[mapping[5]].attrs["@height"]):
         raise ValueError("New-game start position is outside Pallet Town")
+
+    # MAN-01: only audited pairs of original exterior/interior door events.
+    # Both directions must be present after remapping to Blue map IDs; an
+    # accessible house with no exit is a softlock, not a successful import.
+    safe_interior_pairs = (
+        (5, 2, 8, 1),          # Pallet rival house
+        (10, 2, 14, 4),        # Viridian houses
+        (10, 3, 15, 3),
+        (18, 8, 21, 4),        # Route 2 gatehouse
+        (18, 2, 22, 4),        # Route 2 hidden house
+        (25, 1, 29, 1),        # Pewter Museum
+        (25, 3, 30, 1),        # Pewter homes
+        (25, 7, 31, 1),
+    )
+
+    def event_transfers(source_id: int, event_id: int) -> set[int]:
+        source_events = maps[mapping[source_id]].attrs["@events"]
+        if event_id not in source_events:
+            raise ValueError(f"Missing interior door event {source_id}/{event_id}")
+        results = set()
+        for page in source_events[event_id].attrs["@pages"]:
+            for opcode in page.attrs["@list"]:
+                code = opcode.attrs
+                args = code["@parameters"]
+                if code["@code"] == 201 and len(args) >= 4 and args[0] == 0:
+                    results.add(args[1])
+        return results
+
+    for outer, entry, inside, exit_id in safe_interior_pairs:
+        if mapping[inside] not in event_transfers(outer, entry):
+            raise ValueError(f"Interior {inside}: missing entry from {outer}/{entry}")
+        if mapping[outer] not in event_transfers(inside, exit_id):
+            raise ValueError(f"Interior {inside}: missing return to {outer}/{entry}")
+    if 13 in mapping or 23 in mapping:
+        raise ValueError("Viridian Gym or Diglett Cave unlocked before story audit")
+
+    # MAN-02: the source-proven 50 line-of-sight trainers require Event Touch,
+    # with a non-triggering second page selected by self-switch A after victory.
+    sight_count = 0
+    for original, profiles in TRAINERS.items():
+        for event_id, spec in profiles.items():
+            event = maps[mapping[original]].attrs["@events"][event_id]
+            pages = event.attrs["@pages"]
+            if len(pages) != 2:
+                raise ValueError(f"Trainer {original}/{event_id} missing win-state page")
+            sight = bool(re.search(r"(?i)(?:trainer|sight)\\(\\d+\\)",
+                                   event.attrs["@name"].decode("utf-8", errors="replace")))
+            expected_trigger = 2 if sight else 0
+            if pages[0].attrs["@trigger"] != expected_trigger:
+                raise ValueError(f"Trainer {original}/{event_id} has wrong sight trigger")
+            post = pages[1].attrs
+            condition = post["@condition"].attrs
+            if (post["@trigger"] != 0 or
+                condition["@self_switch_valid"] is not True or
+                condition["@self_switch_ch"] != b"A"):
+                raise ValueError(f"Trainer {original}/{event_id} has unsafe repeat behavior")
+            commands = [
+                opcode.attrs["@parameters"][0]
+                for opcode in pages[0].attrs["@list"]
+                if opcode.attrs["@code"] in (355, 655) and opcode.attrs["@parameters"]
+            ]
+            script = "\\n".join(value.decode("utf-8") if isinstance(value, bytes)
+                                  else str(value) for value in commands)
+            key = f"KANTO_{original:03d}_{event_id:03d}"
+            if ("BlueKantoPilot.battle(" not in script or
+                f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
+                raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
+            if sight:
+                sight_count += 1
+                if "pbNoticePlayer(get_self)" not in script:
+                    raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
+    if sight_count != 50:
+        raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
     # Check reachability both from and back to Pallet to avoid accepting
@@ -213,6 +287,8 @@ def inspect(game: Path) -> dict:
         "preview_event_count": sum(len(maps[mapping[source]].attrs["@events"])
                                    for source in preview_only),
         "active_maps": len(active_ids),
+        "audited_interiors_bidirectional": len(safe_interior_pairs),
+        "trainers_with_line_of_sight": sight_count,
         "connections": count_connections,
         "mapped_transfers": warps,
         "returnable_maps": len(returnable),
