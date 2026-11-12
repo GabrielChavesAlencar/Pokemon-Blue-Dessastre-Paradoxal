@@ -21,6 +21,16 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(reachable(graph, 300), {300, 301})
         self.assertNotEqual(reachable(graph, 300), set(graph))
 
+    def test_one_way_transfer_does_not_create_a_fictitious_return_route(self):
+        graph = {300: {301}, 301: {302}, 302: set()}
+        self.assertEqual(reachable(graph, 300), {300, 301, 302})
+        # The reverse direction is not automatically available:
+        self.assertEqual(reachable(graph, 302), {302})
+
+    def test_explicit_return_transfer_restores_bidirectional_access(self):
+        graph = {300: {301}, 301: {302}, 302: {300}}
+        self.assertEqual(reachable(graph, 302), {300, 301, 302})
+
 
 if __name__ == "__main__":
     unittest.main()
