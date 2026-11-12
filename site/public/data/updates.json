@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "902242e6a44e3ff710ee80687c2af10000bd048e",
+      "date": "2026-11-11T23:25:42-03:00",
+      "title": "feat(kanto): registrar checklist manual experimental local sem mexer nos saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "5e29f9f7bd501d635c976f3c27ae6d51ed306aa4",
       "date": "2026-11-11T23:23:40-03:00",
       "title": "ci(kanto): mostrar IDs e ancoras originais da fase Cerulean antes de importar",
