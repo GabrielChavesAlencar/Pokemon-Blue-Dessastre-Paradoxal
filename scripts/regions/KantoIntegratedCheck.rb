@@ -17,11 +17,14 @@ module KantoIntegratedCheck
     stage("main_title_kanto")
     require!(defined?(BlueKantoTitle), "Testar Kanto title menu plugin not loaded")
     require!(PokemonLoad_Scene.ancestors.include?(BlueKantoTitle::Scene),
-             "Native main load scene does not include Kanto third option")
+             "Native main load scene does not include Kanto and Johto test options")
     commands = [" <- Decades Save -> ", _INTL("New Game"), _INTL("Options"), _INTL("Quit Game")]
     indices = BlueKantoTitle.command_order(commands, true)
-    require!(indices == [0, 1, :blue_test_kanto, 2, 3],
-             "Third title option changed Continue/New Game or Auto Multi Save indexes")
+    require!(indices == [0, 1, :blue_test_kanto, :blue_test_johto, 2, 3],
+             "Regional test options changed Continue/New Game or Auto Multi Save indexes")
+    require!(BlueKantoTitle::LABEL == "Testar Kanto" &&
+             BlueKantoTitle::JOHTO_LABEL == "Testar Johto",
+             "Both regional labels must be available on the native title")
     require!(BlueKantoTitle.windows?, "Windows-native executable did not detect Windows")
     require!(Process.respond_to?(:spawn), "Native Ruby runtime cannot spawn Kanto launcher")
     launcher = BlueKantoTitle.launcher
