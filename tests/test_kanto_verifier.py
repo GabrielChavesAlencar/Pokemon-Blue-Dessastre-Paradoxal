@@ -51,7 +51,14 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertGreaterEqual(len(data["locations"]), 109)  # portal sync follows native QA
+        self.assertEqual(len(data["locations"]), 126)
+        self.assertEqual(len(data["trainers"]), 118)
+        leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
+        self.assertIn("Blaine", leaders)
+        self.assertEqual(
+            [(pkmn["species"], pkmn["level"]) for pkmn in leaders["Blaine"]["variants"][0]["team"]],
+            [("GROWLITHE", 42), ("PONYTA", 40), ("RAPIDASH", 42), ("ARCANINE", 47)],
+        )
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
         self.assertIn(len(data["trainers"]), (69, 103))
