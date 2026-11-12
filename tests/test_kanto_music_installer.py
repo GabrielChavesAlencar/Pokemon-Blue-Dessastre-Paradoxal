@@ -98,6 +98,39 @@ class KantoMusicInstallerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"ausente"):
             music.audit(self.manifest,self.root)
 
+    def test_phase2_subset_copies_only_approved_bgm_without_editing_decades(self):
+        selected={6,37,52}
+        config=self.game/"Data/blue-music.json"
+        config.parent.mkdir(parents=True,exist_ok=True)
+        config.write_bytes(b"user-specific Decades music settings")
+        old=config.read_bytes()
+        preview=music.install(self.game,apply=False,numbers=selected,
+                              manifest_path=self.manifest,base=self.root)
+        self.assertEqual(preview["total"],3)
+        self.assertEqual(preview["new"],3)
+        self.assertFalse(preview["writes"])
+        first=music.install(self.game,apply=True,numbers=selected,
+                            manifest_path=self.manifest,base=self.root)
+        self.assertEqual(first["new"],3)
+        self.assertEqual(len(list((self.game/"Audio/BGM/Kanto").glob("*.mp3"))),3)
+        self.assertFalse((self.game/"Audio/ME/Kanto").exists())
+        again=music.install(self.game,apply=True,numbers=selected,
+                            manifest_path=self.manifest,base=self.root)
+        self.assertEqual(again["new"],0)
+        self.assertEqual(again["unchanged"],3)
+        self.assertEqual(config.read_bytes(),old)
+
+    def test_phase2_conflict_aborts_without_installing_other_subset(self):
+        selected={6,37,52}
+        target=self.game/self.entries[5]["game_path"]  # Number 6
+        target.parent.mkdir(parents=True,exist_ok=True)
+        target.write_bytes(b"custom user file, do not overwrite")
+        with self.assertRaisesRegex(ValueError,"Conflito"):
+            music.install(self.game,apply=True,numbers=selected,
+                          manifest_path=self.manifest,base=self.root)
+        self.assertEqual(target.read_bytes(),b"custom user file, do not overwrite")
+        self.assertEqual(len(list((self.game/"Audio/BGM/Kanto").glob("*.mp3"))),1)
+
     def test_bad_manifest_paths_cannot_escape_assets(self):
         rows=json.loads(self.manifest.read_text("utf-8"))
         rows["files"][0]["repo_path"]="../../outside.mp3"
