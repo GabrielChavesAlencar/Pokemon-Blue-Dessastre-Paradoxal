@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9668055b19cd50d430453e828855d5dce31d2d60",
+      "date": "2026-11-12T20:37:12-03:00",
+      "title": "test(johto): roda Goldenrod e Whitney no CI do Blue Studio",
+      "category": "Testes"
+    },
+    {
       "sha": "d9f3f97694afa1c895802e239b879dd98664aa67",
       "date": "2026-11-12T20:36:58-03:00",
       "title": "test(johto): cobre Farfetch'd, Cut, radio, Whitney, Plain, Sudowoodo e saves",
