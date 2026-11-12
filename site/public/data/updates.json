@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c32a896fc8ccf25d403a3aec909619d6a1eb89ca",
+      "date": "2026-11-11T23:30:49-03:00",
+      "title": "feat(kanto): catalogar as 25 localizacoes e treinadores de Mt Moon/Cerulean",
+      "category": "Novidades"
+    },
+    {
       "sha": "409fecb36807828fa9035b71a8d9674de712d066",
       "date": "2026-11-11T23:29:54-03:00",
       "title": "feat(kanto): expandir mapa de origem para 25 locais ate Cerulean e Misty",
