@@ -602,6 +602,21 @@ module KantoNativeCheck
              !BlueKantoPilot.progress["leagues"].include?("KANTO"),
              "Eight badges completed League prematurely or duplicated progress")
 
+    # The CI runs inside mkxp before Scene_Map has created its spriteset.
+    # Tamas's DexNav invokes playersprite during transfer_player and would
+    # crash in this headless proof despite compiling and running normally.
+    # Only this disposable test replaces the transfer with native map setup;
+    # production BlueRegionTravel.move_to remains unmodified.
+    league_ci_transfers = []
+    BlueRegionTravel.define_singleton_method(:move_to) do |point|
+      raise "Invalid proof map point" unless point.is_a?(Array) && point.length == 4 &&
+        pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0]))
+      $map_factory.setup(point[0])
+      $game_player.moveto(point[1], point[2])
+      league_ci_transfers << point
+      true
+    end
+
     # Phase 14 native proof. Battle outcomes are simulated, but the
     # source maps, PBS identities, event triggers and regional state are real.
     route22 = map_for.call("Route 22 (Plateau Gate)")
@@ -687,6 +702,8 @@ module KantoNativeCheck
              BlueRegions.unlocked(BlueKantoPilot.progress).include?("DECADES") &&
              BlueRegions.unlocked(BlueKantoPilot.progress).include?("JOHTO"),
              "Kanto clear did not unlock exactly the eligible adjacent regions")
+    require!(league_ci_transfers.last == [pallet,18,8,2],
+             "Hall of Fame did not return to Pallet Town")
     require!(!BlueRegions.unlocked(BlueKantoPilot.progress).include?("HOENN") &&
              !BlueKantoPilot.league_finalize(pallet),
              "Hall of Fame duplicated completion or unlocked extra regions")
