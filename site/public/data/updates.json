@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fa3ffe0e985b30bb53a16c375f5ea38f415f5325",
+      "date": "2026-11-11T23:12:07-03:00",
+      "title": "test(kanto): validar insígnias, PC legado, presente especial e HM na engine integrada",
+      "category": "Testes"
+    },
+    {
       "sha": "eef99c9ee5669bd67ce2fe1986c1984b709ab941",
       "date": "2026-11-11T23:09:49-03:00",
       "title": "test(regions): incluir 6a etapa nos testes Ruby executados pela CI",
