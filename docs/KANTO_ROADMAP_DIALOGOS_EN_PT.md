@@ -40,7 +40,7 @@ As referências abaixo são **IDs de resumos temáticos** do guia, não IDs inst
 | **DLG-A** | `KAN-001`–`KAN-010` | Pallet/Oak, iniciais, rival, entrega, Viridian e Forest | 02, 03, 04 e início do roteiro | Alta; revisar evento/portas MAN-01 e rival |
 | **DLG-B** | `KAN-011`–`KAN-022` | Pewter/Brock, Mt. Moon/fósseis, Cerulean/Misty, Nugget Bridge e Bill | 03, 07, 08 | Alta; escolhas, treinadores, fóssil, ticket e flags |
 | **DLG-C** | `KAN-023`–`KAN-033` | Vermilion/S.S. Anne/Surge, Diglett's Cave, Rock Tunnel, Lavender/Pokémon Tower/Fuji | 08, 09, 11 e lacunas de acesso | Alta no trecho já implementado; Lavender pendente |
-| **DLG-D** | `KAN-034`–`KAN-046` | Celadon/loja/Rocket/Game Corner/Erika, Saffron/Dojo/Silph/Sabrina | 09 e 11 | **Somente análise:** 41 mapas Celadon/Saffron em `preview_only`, sem eventos |
+| **DLG-D** | `KAN-034`–`KAN-046` | Celadon/loja/Rocket/Game Corner/Erika, Saffron/Dojo/Silph/Sabrina | 09 e 11 | **Erika/Celadon já possui núcleo experimental (3 mapas); 8 mapas Celadon + 30 Saffron continuam `preview_only`, sem eventos/diálogos integrados** |
 | **DLG-E** | `KAN-047`–`KAN-052` | Fuchsia/Safari/Secret House/Warden/Koga e Snorlax das rotas 12/16 | 10 e pré-requisitos de Lavender | **Somente análise:** 20 mapas Fuchsia em `preview_only`, sem eventos |
 | **DLG-F** | `KAN-053`–`KAN-057` | Cinnabar/Mansion/Blaine, Viridian final/Giovanni e pesquisa de Oak | 12–13 | Planejado; fase ainda não implementada |
 | **DLG-G** | `KAN-058`–`KAN-067` | Verificação de badges, Victory Road, Elite Four, rival campeão, Hall of Fame, Oak e Cerulean Cave | 14–16 | Planejado; separar Liga do pós-jogo |
