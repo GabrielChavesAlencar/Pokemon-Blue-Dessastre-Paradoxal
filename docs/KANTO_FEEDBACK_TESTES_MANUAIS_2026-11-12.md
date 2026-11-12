@@ -56,6 +56,12 @@ A inspeção de [pilot.py](../scripts/regions/pilot.py) e [kanto-source.json](..
 
 **Conclusão técnica:** os problemas MAN-01 e MAN-02 têm explicações plausíveis na implementação atual. Ainda faltam testes em sessão gráfica para demonstrar cada falha/solução em coordenadas concretas. Esta análise **não muda código de gameplay nem declara os defeitos corrigidos**.
 
+## Atualização técnica após o feedback
+
+O [lote funcional MAN-01/MAN-02](KANTO_CORRECOES_FUNCIONAIS_MAN01_MAN02.md) corrigiu **parte** das causas aqui identificadas: oito interiores com transferências de ida/volta aprovadas pela auditoria da fonte e restaurou **50 gatilhos `Sight(n)` dos treinadores** sem transformar 6 treinadores de ação manual em obstáculos. O código preserva vitória por EventID e segunda página pós-vitória. A restrição `preview_only` continua vigente em Celadon/Fuchsia/Saffron.
+
+**Ainda pendente:** testar visualmente as portas, passabilidade, animações e abordagem; confirmar o uso real de save/reload, corrigir entradas de outras áreas, eventos de história e layouts de insígnias. A análise anterior do importador descreve o estado *antes* dessas alterações e não deve ser interpretada como comportamento atual depois do patch.
+
 ## 3. Relação com as 16 etapas
 
 - **02 — Caminhada real:** recebeu **evidência parcial de percurso**; segue aberta até teste real dos elementos internos e os demais cenários do checklist.
