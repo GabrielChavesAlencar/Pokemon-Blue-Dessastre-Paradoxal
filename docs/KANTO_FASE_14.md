@@ -1,6 +1,6 @@
 # Kanto — Etapa 14/16: Victory Road, Elite Four, Campeão e Hall of Fame
 
-**Data:** 12/11/2026. **Estado:** núcleo funcional experimental; testes automatizados Windows exigidos para aprovação. **Aceite integral ainda não realizado.**
+**Data:** 12/11/2026. **Estado:** núcleo funcional aprovado pela [CI nativa Windows 43260317898](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43260317898), com [regressão Blue Studio 43260317908](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43260317908) e [portal 43260318030](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43260318030). **Aceite manual integral não realizado.**
 
 ## Origem, mapa e segurança
 
@@ -53,4 +53,4 @@ O pipeline Windows deve garantir: ausência de eventos estrangeiros; catálogo e
 - Revanches das equipes mais fortes de cada líder/Elite/Campeão **somente após concluir todas as regiões**, conforme plano v2. Não confundir esta primeira conquista da Liga com uma nova vitória por revanche.
 - UI de conquistas da região e do circuito (MAN-03), viagem de fato para JOHTO após instalar sua região, save único no jogo principal e QA Android.
 
-**Critério da Barra 1:** após CI Windows nativa e regressão passarem, este núcleo soma **13/16**; **Barra 2 permanece 1/16**, pois testes automáticos não substituem QA real.
+**Barras atuais após aprovação nativa:** **Barra 1 13/16 (81,25%) — faltam 3 núcleos (02, 15, 16)**; **Barra 2 1/16 (6,25%) — faltam 15 etapas de aceite integral**. O teste nativo roda a engine `Game.exe` e simula resultados de batalha. Também simula apenas no teste headless as transferências, porque o spriteset de um plugin gráfico não está inicializado antes de entrar no mapa. **O serviço de viagem real do jogo não foi alterado por essa simulação**. Ainda é obrigatório validar transferências e colisões manualmente no Windows/JoiPlay.
