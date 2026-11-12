@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3ef84bcd0e2558df7d9e0f0594a9e9380dac9974",
+      "date": "2026-11-12T10:59:44-03:00",
+      "title": "Roadmap operacional: Fuchsia/Koga aprovado, 9/16, 53 previews e próximas dependências Safari",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2da7b30e08edaaa2e2f960853df7a5003a0bcd56",
       "date": "2026-11-12T10:59:05-03:00",
       "title": "Kanto roadmap: avançar 9/16 núcleos CI, 1/16 aceite, Fuchsia/Koga e Safari pendente",
