@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b32e0d7ad8be482343945bbeb787182d0222273d",
+      "date": "2026-11-12T06:53:42-03:00",
+      "title": "Documentar escopo, auditoria e critérios reais de aceite da fase 08",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1abf14503303924bdab972f23c0d9b64fc702cab",
       "date": "2026-11-12T06:52:58-03:00",
       "title": "Publicar artefato de auditoria da fase 08 no GitHub Actions",
