@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "22facafa838b0bfa1f96e3b955d9e4dd88979612",
+      "date": "2026-11-12T07:26:46-03:00",
+      "title": "docs(roadmap): priorizar interiores, treinadores e telas de insignias de Kanto",
+      "category": "Documentação"
+    },
+    {
       "sha": "c7754bbb3400d9df632f58340f1185dc434d0a2d",
       "date": "2026-11-12T07:26:12-03:00",
       "title": "docs(kanto): registrar cobertura manual e bloqueadores na lista 16 etapas",
