@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0b1a1681bff1faf21a1ddc9098ec7327bd989e67",
+      "date": "2026-11-12T20:28:45-03:00",
+      "title": "test(johto): integra testes Ruby de Azalea na suite Python do Blue Studio",
+      "category": "Testes"
+    },
+    {
+      "sha": "fe3b516195b662f5a1197db8a6f70d0bc853426e",
+      "date": "2026-11-12T20:28:36-03:00",
+      "title": "test(johto): prova Rocket, Slowpoke Well, Kurt, Bugsy, Hive, Cut e saves isolados",
+      "category": "Testes"
+    },
+    {
       "sha": "d347cf1606324051258c1d4e2ed16128224a63f6",
       "date": "2026-11-12T20:27:43-03:00",
       "title": "feat(johto): fase 06 Azalea, Poco Slowpoke, Rocket, Kurt, Bugsy e Hive protegidos",
