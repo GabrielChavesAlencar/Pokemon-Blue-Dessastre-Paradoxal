@@ -11,14 +11,16 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Pallet events missing")
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
-    require!(labels.length == 31 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 41 && labels.any? { |row| row.include?("Misty") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
              labels.any? { |row| row.include?("Erika") } &&
              labels.any? { |row| row.include?("Koga") } &&
-             labels.any? { |row| row.include?("Safari Zone") },
-             "Experimental Kanto phase 10 Fuchsia/Safari destinations unavailable")
+             labels.any? { |row| row.include?("Safari Zone") } &&
+             labels.any? { |row| row.include?("Sabrina") } &&
+             labels.any? { |row| row.include?("Silph Co.") },
+             "Experimental Kanto phase 11 Saffron/Silph destinations unavailable")
     require!(!File.expand_path(SaveData::SAVE_DIR).include?("Pokemon Blue Dessastre Paradoxal"),
              "Pilot pointed at Decades save directory")
 
@@ -168,6 +170,21 @@ module KantoNativeCheck
     end
     require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("SOUL"),
              "Soul Badge was awarded before Koga battle was implemented")
+
+    # Phase 11 Saffron: isolated terrain previews, no teleporter scripts,
+    # Silph Rocket boss, Sabrina battles or Marsh Badge may be installed.
+    stage11 = ["Rota 8", "Portaria Oeste Saffron", "Saffron City",
+               "Sabrina", "Fighting Dojo", "Saffron Centro Pokemon",
+               "Silph Co. 1F", "Silph Co. 5F", "Silph Co. 11F",
+               "Silph Co. Elevador"]
+    stage11.each do |label|
+      stop = BlueKantoPilot.experimental_stops.find { |entry| entry[0].include?(label) }
+      require!(stop, "Phase 11 preview destination missing: #{label}")
+      $map_factory.setup(stop[1][0])
+      require!($game_map.events.empty?, "Phase 11 unexpectedly imported an event: #{label}")
+    end
+    require!(!BlueRegions.local_achievements(BlueKantoPilot.progress, "KANTO").include?("MARSH"),
+             "Marsh Badge awarded before Sabrina battle was implemented")
 
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
