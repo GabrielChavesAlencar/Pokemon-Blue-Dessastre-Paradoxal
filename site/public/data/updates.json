@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e61dd29acd8bc48ef04e09311bd4f24622838a79",
+      "date": "2026-11-12T10:04:02-03:00",
+      "title": "Kanto: registrar 7/16 núcleos funcionais (9 faltando) e 1/16 aceite após pacote de Oak",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "735fcfc98712428a7d579c9a40a64db75fafdfa3",
+      "date": "2026-11-12T10:03:59-03:00",
+      "title": "Kanto: registrar 7/16 núcleos funcionais (9 faltando) e 1/16 aceite após pacote de Oak",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5b1f5159f1a430d387018089caa60bdcc2d2c9d0",
+      "date": "2026-11-12T10:03:56-03:00",
+      "title": "Kanto: registrar 7/16 núcleos funcionais (9 faltando) e 1/16 aceite após pacote de Oak",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0ccc50cd1e2ec85ef772d993b593b4a63a9b9afa",
+      "date": "2026-11-12T10:03:54-03:00",
+      "title": "Kanto: registrar 7/16 núcleos funcionais (9 faltando) e 1/16 aceite após pacote de Oak",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a975c41a777dc69b3cd0a68472b0795403ec8007",
+      "date": "2026-11-12T10:03:50-03:00",
+      "title": "Kanto: registrar 7/16 núcleos funcionais (9 faltando) e 1/16 aceite após pacote de Oak",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bff6f7ab340c4e253742a2d0fbc244b1050c0d64",
       "date": "2026-11-12T10:02:13-03:00",
       "title": "docs(kanto): confirmar 7º núcleo após CI Windows e regressão aprovadas",
