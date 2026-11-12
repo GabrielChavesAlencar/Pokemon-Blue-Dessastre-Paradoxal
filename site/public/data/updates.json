@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "30d8c5c27870595d9ac5e3609387264f87edd32d",
+      "date": "2026-11-12T06:36:34-03:00",
+      "title": "docs(kanto): fluxo Testar Kanto no Blue-Story.exe baixado e Python portatil",
+      "category": "Documentação"
+    },
+    {
       "sha": "66f6367a0587246dd8fa2b54610c7b82801217d0",
       "date": "2026-11-12T06:36:18-03:00",
       "title": "Ajusta sprites de Dessastre Paradoxal para 1,5x",
