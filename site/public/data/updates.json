@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8baee3bba1c146351a9a644ea71ff92ea29854e6",
+      "date": "2026-11-12T07:00:20-03:00",
+      "title": "Fase 08: integrar mapas e eventos revisados de Vermilion, navio e Lt. Surge no piloto isolado",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bdfc61d5330e45e35c5ddb95d31585a8b6688db4",
       "date": "2026-11-12T06:59:16-03:00",
       "title": "Fase 08: incluir equipes FRLG de Lt. Surge, rotas e S.S. Anne no PBS auditado",
