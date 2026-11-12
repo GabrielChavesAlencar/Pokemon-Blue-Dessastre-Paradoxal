@@ -50,6 +50,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 10 source audit failed'}
           python scripts/regions/audit_saffron.py --output .blue-work/kanto-phase-11-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 11 source audit failed'}
+          python scripts/regions/audit_trainer_interactions.py
+          if($LASTEXITCODE -ne 0){throw 'Kanto trainer interaction audit failed'}
           python scripts/regions/pilot.py
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
