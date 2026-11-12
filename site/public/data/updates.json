@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6e5b1ca72f81d7b8ec7d3f6ffd4c7bfd58644d5a",
+      "date": "2026-11-11T23:15:09-03:00",
+      "title": "docs(kanto): atualizar barras 06/16 e 01/16 com evidencias Codex",
+      "category": "Documentação"
+    },
+    {
       "sha": "5f321f6c4ad5d6e815840ffe6c8a2ae071e788c1",
       "date": "2026-11-11T23:14:32-03:00",
       "title": "docs(kanto): fase 06, bugs do Codex, regras regionais e criterios pendentes",
