@@ -1,6 +1,6 @@
 # Kanto — 9º núcleo funcional (etapa 10): Fuchsia City, Koga e Safari Gate seguro
 
-**Data:** 12/11/2026. **Situação:** código funcional em `main`, condicionado à aprovação final da CI Windows e regressão para subir a Barra 1. O número **9** se refere ao **nono núcleo entregue** nas duas barras, enquanto a etapa do roteiro original é **10 — Fuchsia/Koga/Safari**. Fases 09 (Erika) e 08 (Surge) já estavam contadas.
+**Data:** 12/11/2026. **Situação:** **9º núcleo funcional aprovado na [CI Windows 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342)**, com 109 mapas, 53 áreas protegidas, 42 atalhos e catálogo de 69 treinadores. **Barra 1 = 9/16 (56,25%, faltam 7 núcleos)**; **Barra 2 = 1/16 (6,25%, faltam 15 aceites)**. O nono núcleo corresponde à **etapa 10 — Fuchsia/Koga** do roadmap de 16 etapas.
 
 ## 1. Escopo de gameplay por MapID real da fonte FRLG 1.1
 
@@ -54,9 +54,9 @@ As equipes dos seis outros treinadores usam os Pokémon e níveis reais dos bloc
 
 ## 4. Testes automáticos exigidos para contar o 9º núcleo
 
-- [ ] `verify_pilot.py`: 109 mapas, 53 protegidos sem eventos, cinco core, quatro pares bidirecionais, 7 batalhas, 63 eventos `Sight(n)` e 42 atalhos de teste, com bloqueio de entrada Safari sem sessão completa.
-- [ ] `KantoNativeCheck.rb`: inicialização, gráfica/portas, eventos por aproximação e Koga, Soul apenas após vitória, ausência de cobro do portão, self-switch A, save/reload e preservação da base Decades.
-- [ ] Regressão Python/PBS/Windows/Chromium aprovada, 109 localizações e 69 treinadores confirmados na saída do site.
+- [x] [CI Windows 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254): `verify_pilot.py` aprovou 109 mapas, 53 protegidos, cinco core, quatro pares, sete batalhas, 63 eventos `Sight(n)` e 42 atalhos, sem admissão Safari.
+- [x] A mesma CI executou `KantoNativeCheck.rb` com inicialização, portas, equipe de Koga, derrota/vitória simuladas, Soul única, portão sem cobrança, self-switch, save/reload e cópia descartável de Decades preservada.
+- [x] [Regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342): Python/PBS, RUN.bat Windows e Chromium aprovados. O site foi atualizado com 109 localidades e 69 treinadores, incluindo Koga.
 
 ## 5. QA manual ainda pendente (Barra 2)
 
@@ -71,4 +71,4 @@ As equipes dos seis outros treinadores usam os Pokémon e níveis reais dos bloc
 
 Ainda pendentes: Safari com sessão nativa completa, encontro especial e Safari Balls, limite de passos, Gold Teeth/Strength, Secret House/Surf, conexões de Rotas 12–18/Snorlax, pós-ginásio e diálogos EN/PT-BR. Não alterar Pokémon de Koga para time competitivo de pós-jogo antes da conclusão de todas as regiões.
 
-**Ao aprovar CI + regressão:** **Barra 1 = 9/16 (56,25%, faltam 7 passos)**. **Barra 2 = 1/16 (6,25%, faltam 15 aceites)** até concluir checklist humano da etapa inteira. Se uma dessas verificações falhar, manter o contador **8/16 e 1/16** e registrar falha antes de chamar de implementado.
+**Barras após aprovação de ambas CIs:** **Barra 1 = 9/16 (56,25%, faltam 7 núcleos)**, contando as etapas 01/03/04/05/06/07/08/09/10; **Barra 2 = 1/16 (6,25%, faltam 15 aceites)** até testes manuais integrais. Não contar Safari Zone como concluída: apenas seu portão informativo está ativado.
