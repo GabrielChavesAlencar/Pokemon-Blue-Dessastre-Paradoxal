@@ -35,19 +35,19 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[101:], [8,14,15,21,22,29,30,31])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
-            141,142,143,144,145,146,147,152,153,155,156,157,158,159,
+            141,142,143,152,155,156,157,158,159,
             160,161,162,163,164,165,
             57,62,107,108,109,110,112,113,168,169,170,171,172,
             173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189]))
         self.assertIn(42, order[13:])
-        self.assertEqual(len(manifest["preview_only"]), 58)
-        self.assertTrue({114, 115, 124}.isdisjoint(manifest["preview_only"]))
+        self.assertEqual(len(manifest["preview_only"]), 53)
+        self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153}.isdisjoint(manifest["preview_only"]))
 
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
         self.assertEqual(len(data["locations"]), 109)
-        self.assertEqual(len(data["trainers"]), 62)
+        self.assertEqual(len(data["trainers"]), 69)
         for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
                      "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
                      "kanto-route2-hidden-house", "kanto-pewter-museum",
@@ -76,6 +76,29 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(len(gym["trainers"]), 8)
         self.assertTrue(all(x in {t["id"] for t in data["trainers"]}
                             for x in gym["trainers"]))
+        # Koga + six gym trainers must appear only in Fuchsia Gym.
+        koga = next(t for t in data["trainers"] if t["id"] == "kanto-koga")
+        self.assertTrue(koga["leader"])
+        self.assertEqual(koga["location"], "kanto-fuchsia-gym")
+        self.assertEqual(
+            [(p["species"], p["level"]) for p in koga["variants"][0]["team"]],
+            [("KOFFING", 37), ("MUK", 39), ("KOFFING", 37), ("WEEZING", 43)])
+        fgym = next(x for x in data["locations"] if x["id"] == "kanto-fuchsia-gym")
+        self.assertEqual(len(fgym["trainers"]), 7)
+        self.assertTrue(all(x in {t["id"] for t in data["trainers"]}
+                            for x in fgym["trainers"]))
+        for slug in ("kanto-fuchsia-city", "kanto-fuchsia-center",
+                     "kanto-fuchsia-mart", "kanto-fuchsia-safari-gate"):
+            row = next(x for x in data["locations"] if x["id"] == slug)
+            self.assertEqual(row["methods"], [])
+            self.assertEqual(row["trainers"], [])
+        for slug in ("kanto-fuchsia-warden-house", "kanto-safari-south",
+                     "kanto-safari-north", "kanto-safari-west",
+                     "kanto-safari-secret-house"):
+            preview_row = next(x for x in data["locations"] if x["id"] == slug)
+            self.assertFalse(preview_row["methods"])
+            self.assertFalse(preview_row["trainers"])
+
         for slug in ("kanto-celadon-city", "kanto-celadon-center"):
             city = next(x for x in data["locations"] if x["id"] == slug)
             self.assertEqual(city["methods"], [])
