@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5be1ed03d550968eb18290ff224f687286ab7b31",
+      "date": "2026-11-12T09:58:01-03:00",
+      "title": "Kanto etapa 03: auditar 11 entradas com retorno e loja de pacote de Oak",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7303f8a152b541d5fc9908050c8c3e5a6b079298",
       "date": "2026-11-12T09:56:58-03:00",
       "title": "Kanto etapa 03: implementar missão persistente do pacote de Oak com Pokédex e sem itens inválidos",
