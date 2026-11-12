@@ -34,7 +34,7 @@ module KantoIntegratedCheck
     probe_bat = File.join(probe_dir, "test launch.cmd")
     probe_marker = File.join(probe_dir, "child-ok.txt")
     begin
-      File.write(probe_bat, "@echo off\r\n>\\"#{probe_marker}\\" echo ok\r\n")
+      File.write(probe_bat, "@echo off\r\n>\"#{probe_marker}\" echo ok\r\n")
       child = Process.spawn("cmd.exe", "/d", "/c", probe_bat, :chdir => launcher[1])
       Process.wait(child)
       require!(File.file?(probe_marker) && File.read(probe_marker).strip == "ok",
