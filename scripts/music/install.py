@@ -49,7 +49,7 @@ def install(project,game):
         if isinstance(current,dict) and set(current)==set(expected):
             audio_spec=importlib.util.spec_from_file_location('blue_kanto_music_audio',source/'install_kanto_music.py')
             kanto_audio=importlib.util.module_from_spec(audio_spec);audio_spec.loader.exec_module(kanto_audio)
-            tracks=regional.phase2_track_numbers(project)
+            tracks=regional.approved_track_numbers(project)
             if tracks:
                 kanto_audio.install(game,apply=True,numbers=tracks,
                     manifest_path=project/'data/kanto-music.json',base=project)
