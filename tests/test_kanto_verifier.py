@@ -20,9 +20,9 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 109)
+        self.assertEqual(len(order), 126)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 109)
+        self.assertEqual(len(set(order)), 126)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
@@ -32,22 +32,26 @@ class KantoPilotAuditTests(unittest.TestCase):
                                      172,174,175,176,177,178,179,180,181,182,183,
                                      184,185,186,187,188,189])
         self.assertEqual(order[100:101], [173])
-        self.assertEqual(order[101:], [8,14,15,21,22,29,30,31])
+        self.assertEqual(order[101:109], [8,14,15,21,22,29,30,31])
+        self.assertEqual(order[109:], [190,191,193,194,195,196,197,198,
+                                        199,200,201,202,203,205,206,207,208])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
             141,142,143,152,155,156,157,158,159,
             160,161,162,163,164,165,
             57,62,107,108,109,110,112,113,
-            173,174,175,176,177]))
+            173,174,175,176,177,
+            190,191,193,194,195,196,197,198]))
         self.assertIn(42, order[13:])
-        self.assertEqual(len(manifest["preview_only"]), 36)
+        self.assertEqual(len(manifest["preview_only"]), 44)
         self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,
-                         168,169,170,171,172,*range(178,190)}.isdisjoint(manifest["preview_only"]))
+                         168,169,170,171,172,*range(178,190),
+                         199,200,201,202,203,205,206,207,208}.isdisjoint(manifest["preview_only"]))
 
     def test_portal_matches_audited_cerulean_roster(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 109)
+        self.assertGreaterEqual(len(data["locations"]), 109)  # portal sync follows native QA
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
         self.assertIn(len(data["trainers"]), (69, 103))
