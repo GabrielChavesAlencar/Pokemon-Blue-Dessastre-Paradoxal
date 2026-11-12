@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7c0d4151bc9ec611f9386ba2148d5e77bc14ecd5",
+      "date": "2026-11-12T08:26:55-03:00",
+      "title": "Kanto 10: atualizar roadmaps para Fuchsia/Safari sem eventos e manter progresso 8/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "630913b78aca21d903f7bfc76f2c788fd6ce93b0",
+      "date": "2026-11-12T08:26:53-03:00",
+      "title": "Kanto 10: atualizar roadmaps para Fuchsia/Safari sem eventos e manter progresso 8/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c59e805b723b185121151754d86fd847d64c0d71",
+      "date": "2026-11-12T08:26:51-03:00",
+      "title": "Kanto 10: atualizar roadmaps para Fuchsia/Safari sem eventos e manter progresso 8/16",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9f7c9a092699e69431f9a45a0be86ea5046a550a",
+      "date": "2026-11-12T08:26:48-03:00",
+      "title": "Kanto 10: atualizar roadmaps para Fuchsia/Safari sem eventos e manter progresso 8/16",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b4aa7fc1faa90b5b2d87ab1a1e1092763f39aac8",
       "date": "2026-11-12T08:25:21-03:00",
       "title": "Kanto 10: publicar 20 localizacoes Fuchsia/Safari sem encontros ou treinadores",
