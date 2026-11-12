@@ -41,6 +41,8 @@ A **IA Blue Radical** adapta princípios públicos do CFRU e do estudo do autor 
 
 O upload manual foi confirmado: as **64 músicas de Kanto** estão organizadas em `assets/music/kanto/BGM/` (50) e `assets/music/kanto/ME/` (14), sem MP3s soltos na raiz. Confira o [mapeamento de cada faixa](docs/KANTO_MUSICAS_MAPEAMENTO.md), [inventário e hashes](docs/KANTO_MUSICAS_PACOTE.md) e use `INSTALAR_MUSICAS_KANTO.bat` para copiá-las com segurança para `game/Audio` na sua instalação local. **Os mapas não recebem automaticamente essas músicas; escolha-as no [editor de músicas](docs/EDITOR_MUSICAS.md).** O repositório é público: confirme a autorização para redistribuir trilhas de terceiros.
 
+Para aplicar essas faixas **automaticamente por etapas aqui no ChatGPT**, veja o [plano de 7 fases com as 64 associações e os prompts prontos](docs/KANTO_PLANO_APLICAR_MUSICAS.md). Ele prevê integração por scripts, sem configurar cada música manualmente nem afetar Decades. O plano é documentação: as músicas ainda não foram vinculadas aos mapas.
+
 ## Diálogos FireRed e tradução de Kanto
 
 O projeto possui um [guia de catálogo e tradução dos diálogos FireRed](docs/Guia_Dialogos_Pokemon_FireRed_EN_PT.md), o [passo a passo de adaptação para o Dessastre Paradoxal](docs/FIRERED_DIALOGOS_PASSO_A_PASSO.md) e um [extrator local EN/PT-BR](scripts/localization/extrair_traduzir_dialogos_firered.py). O extrator funciona sobre uma fonte de referência local e não inclui o roteiro original. **Esta documentação não instala diálogos nem altera eventos**; novas cenas exigem autorização e testes no piloto isolado de Kanto.
