@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ade19e6e91a522a7dcb7a8e5b4210a2c843566ff",
+      "date": "2026-11-11T21:03:16-03:00",
+      "title": "docs: registrar roteiro para retomar Kanto e o circuito regional",
+      "category": "Documentação"
+    },
+    {
       "sha": "9e7d2df035c04cb777b86d29f40a3cd8fd7410e0",
       "date": "2026-11-11T20:53:25-03:00",
       "title": "test(kanto): consultar conexões com o iterador do mapa da engine",
