@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b88f091f3dda4bc91078749d4f269a42cb5e0193",
+      "date": "2026-11-12T19:53:57-03:00",
+      "title": "feat(johto): planeja MapIDs estáveis e isolados sem instalar mapas",
+      "category": "Novidades"
+    },
+    {
       "sha": "19897ecffd8aba4f1d577eb3d7eb2a7bc7c278a8",
       "date": "2026-11-12T19:43:09-03:00",
       "title": "docs(johto): sincroniza plano mestre com início das etapas 01 e 02",
