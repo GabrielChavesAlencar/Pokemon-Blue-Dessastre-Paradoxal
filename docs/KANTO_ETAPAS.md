@@ -16,6 +16,12 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 
 **Marco inicial:** Pallet → Pewter com 13 mapas. **Fase 07:** 25 mapas até Cerulean e Misty. **Fase 08:** 40 mapas até Vermilion e S.S. Anne, 54 perfis de treinadores no portal e testes nativos automatizados. As batalhas foram simuladas na CI; a validação visual/manual permanece necessária.
 
+**Visual das duas barras (16 passos cada):**
+
+`Barra 1  ██████░░░░░░░░░░   6/16 feitos · 10 faltando`
+
+`Barra 2  █░░░░░░░░░░░░░░░   1/16 aceito · 15 faltando`
+
 ## Feedback manual de mapas — 12/11/2026
 
 **Registro do jogador:** [TXT de testes e pendências detalhadas](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md). Foram informados testes em **Pallet Town, Rotas 1 e 2, Viridian City, Viridian Forest, Pewter City, lado esquerdo da Rota 4 e Mt. Moon**. São **8 áreas visitadas**, não oito mapas aprovados integralmente; o TXT não detalha todas as batalhas, portas, interiores ou andares.
@@ -43,7 +49,7 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **POST-01 — lote I** (fases 15/16 se aprovado): pós-jogo, National Dex, Sevii/Celio/Ruby/Sapphire, Warehouse/Cerulean Cave e eventos especiais — **escopo opcional, não somar automaticamente às 16 etapas**.
 - [ ] **QA-EVENTOS:** aceitar cada evento somente com testes por estado (primeira execução, repetição, vitória/derrota/fuga, bag/PC cheios, saída/retorno, reload, Game.exe Windows, depois JoiPlay e rollback).
 
-**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto permanece 8/16 de desenvolvimento e 1/16 de aceite**. Este registro é documental: nenhum script ou evento novo foi instalado.
+**Controle separado:** estudo propõe **12 marcos de auditoria de eventos**, distintos das 16 etapas do jogo. O progresso desses 12 marcos está **não aferido** até extrair o inventário e medir os eventos em escopo. **Kanto está reavaliado em 6/16 núcleos e 1/16 aceite** (ver [análise das barras](KANTO_REAVALIACAO_BARRAS_2026-11-12.md)). Este registro é documental: nenhum script ou evento novo foi instalado.
 
 ## Roadmap de diálogos FireRed — inglês e português (EN/PT-BR)
 
@@ -58,7 +64,7 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 
 **Distribuição pelas 16 fases:** `KAN-001–010` (02–04), `KAN-011–022` (03 e 07–08), `KAN-023–033` (08, Lavender e acessos), `KAN-034–046` (09 e 11), `KAN-047–052` (10), `KAN-053–057` (12–13), `KAN-058–067` (14–16). `SEV-001–014` é escopo opcional de pós-jogo, sem aumentar automaticamente o denominador 16.
 
-**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras de Kanto inalteradas: desenvolvimento 8/16 (50%); aceitação 1/16 (6,25%).**
+**Medição própria:** plano de **10 tarefas DIA-01–DIA-10**, nenhuma concluída nesta rodada de análise; nº de falas extraídas, traduzidas, aprovadas e testadas **ainda não aferido**. **Barras atuais, após reavaliação: núcleos funcionais 6/16 (37,5%); aceitação integral 1/16 (6,25%).**
 
 ## Correções funcionais do primeiro percurso — MAN-01 e MAN-02
 
@@ -69,7 +75,7 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 - [x] **CI de compilação e regressão aprovada:** [teste nativo 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042), [regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) e [site checks](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637630).
 - [ ] **QA manual Windows e JoiPlay:** a prova automatizada não substitui caminhada/colisão, abordagem e batalha real; nenhum aceite total ainda.
 
-**Barras inalteradas:** desenvolvimento funcional **8/16 (50%)** e aceitação **1/16 (6,25%)**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
+**Barras reavaliadas:** núcleos funcionais **6/16 (37,5%), faltam 10**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
 
 ## 16 etapas de fechamento
 
