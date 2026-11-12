@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2a36a0d0635b1f8d802116e70b280c5279ef592f",
+      "date": "2026-11-12T20:01:20-03:00",
+      "title": "docs(johto): detalha fase 03 de staging isolado e bloqueios de fonte",
+      "category": "Documentação"
+    },
+    {
       "sha": "9d1fb5cc956aa8b36727abe9ad51b3e9f9c4d680",
       "date": "2026-11-12T20:00:25-03:00",
       "title": "fix(test johto): adiciona nome do pacote exigido pela auditoria",
