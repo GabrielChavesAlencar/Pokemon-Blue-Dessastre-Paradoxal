@@ -44,6 +44,7 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
           python scripts/regions/verify_pilot.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Kanto structural verification failed'}
+          Copy-Item .blue-work/kanto-pilot/Data/Scripts.rxdata .blue-work/kanto-clean-main.rxdata
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
       - name: Compilar e testar Kanto na engine
@@ -71,3 +72,13 @@ jobs:
           }
           Get-Content .blue-work/kanto-native-out.txt,.blue-work/kanto-native-err.txt,"$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
           throw 'Kanto native proof missing'
+      - name: Verificar abertura real da janela (diagnostico, sem jogar)
+        if: success()
+        continue-on-error: true
+        shell: powershell
+        run: |
+          $pilot=(Resolve-Path .blue-work/kanto-pilot).Path
+          Copy-Item .blue-work/kanto-clean-main.rxdata "$pilot/Data/Scripts.rxdata" -Force
+          Remove-Item "$pilot/Data/blue-kanto-proof.rb" -ErrorAction SilentlyContinue
+          python scripts/regions/gui_diagnostics.py --output .blue-work/kanto-pilot --no-build --probe --seconds 25
+          if($LASTEXITCODE -ne 0){throw 'O ambiente de CI nao confirmou janela visivel; usar o diagnostico local no Windows'}
