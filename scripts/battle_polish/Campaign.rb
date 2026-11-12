@@ -179,11 +179,21 @@ module BlueCampaign
       super
     end
   end
-  module BackSprites
+  module FanSpriteScale
+    SCALE = 1.5
+
+    def front_sprite_scale
+      dessastre_sprite? ? SCALE : super
+    end
+
     def back_sprite_scale
-      size=super
-      data=GameData::Species.get_species_form(species,form)
-      data.flags.include?('DessastreParadoxal') && size==1 ? 1.5 : size
+      dessastre_sprite? ? SCALE : super
+    end
+
+    private
+
+    def dessastre_sprite?
+      GameData::Species.get_species_form(species, form).flags.include?("DessastreParadoxal")
     end
   end
   module LoadedMap
@@ -197,7 +207,7 @@ module BlueCampaign
     return if @installed
     Battle.prepend(Teams);NPCTrainer.prepend(TrainerMoney)
     BattleCreationHelperMethods.singleton_class.prepend(Preparation)
-    Object.prepend(Setup);GameData::SpeciesMetrics.prepend(BackSprites)
+    Object.prepend(Setup);GameData::SpeciesMetrics.prepend(FanSpriteScale)
     Game_Map.prepend(Maps)
     Game.singleton_class.prepend(LoadedMap)
     PokemonMartAdapter.prepend(Prices)

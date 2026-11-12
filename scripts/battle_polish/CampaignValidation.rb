@@ -157,8 +157,31 @@ module BlueCampaignValidation
     BattleCreationHelperMethods.prepare_battle(battle)
     before=$player.money;battle.pbGainMoney
     check($player.money-before==7*trainer.base_money && battle.moneyGain,'Common trainer victory pays exactly native level times class reward')
-    metrics=GameData::SpeciesMetrics.get_species_form(:CAVEFANG,0)
-    check(metrics.back_sprite_scale==2 && metrics.front_sprite_scale==2,'128px author sprites render at 2x on both battle sides')
+    fan_forms = []
+    GameData::Species.each { |data| fan_forms << data if data.flags.include?("DessastreParadoxal") }
+    check(!fan_forms.empty?, "Authored species and forms are loaded")
+    fan_forms.each do |data|
+      metrics = GameData::SpeciesMetrics.get_species_form(data.species, data.form)
+      check(metrics.front_sprite_scale == 1.5 && metrics.back_sprite_scale == 1.5,
+            "#{data.id} uses 1.5x on both battle sides")
+    end
+    [:front_sprite_bitmap, :back_sprite_bitmap].each do |loader|
+      [false, true].each do |shiny|
+        sprite = GameData::Species.public_send(loader, :CAVEFANG, 0, 0, shiny)
+        begin
+          bitmap = sprite&.bitmap
+          check(bitmap && bitmap.width == 192 && bitmap.height == 192,
+                "Cave Fang renders at 192x192 (#{loader}, shiny=#{shiny})")
+        ensure
+          sprite&.dispose
+        end
+      end
+    end
+    official = GameData::SpeciesMetrics.get_species_form(:CHARIZARD, 0)
+    native_front = official.method(:front_sprite_scale).super_method.call
+    native_back = official.method(:back_sprite_scale).super_method.call
+    check(official.front_sprite_scale == native_front && official.back_sprite_scale == native_back,
+          "Official species retain their own sprite scales")
     BlueCampaign::Shop.new.open do |shop|
       shot=Graphics.snap_to_bitmap;shot.to_file('Data/blue-campaign-shop-smoke.png');shot.dispose
       shop.instance_variable_set(:@tab,2);shop.refresh

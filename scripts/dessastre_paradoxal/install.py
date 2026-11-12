@@ -190,12 +190,9 @@ def make_plan(project,game):
         plans[target]=data.encode('utf8') if isinstance(data,str) else data
     for mega,name in [(False,'pokemon_dessastre_paradoxal.txt'),(True,'pokemon_forms_dessastre_paradoxal.txt')]:
         put('PBS/'+name,'# Geracao especial autoral. Descricoes pendentes: ????\n#-------------------------------\n'+'#-------------------------------\n'.join(pbs_entry(p,ready) for p in ready if bool(p.get('base'))==mega))
-    metrics='# Metricas de batalha da geracao autoral; frente 2x e costas 2x.\n'
-    # All 64 authored battle forms have 128x128 sprites (audited: front and back).
-    # Decades uses 2x front and 3x back for smaller ~38-98px original frames.
-    # Author art is already ~100-112px wide; 2x both sides avoids tiny backs
-    # without enlarging their 128px canvases to an excessive 384px.
-    # Leave normal/shiny source pixels and frame geometry unchanged.
+    metrics='# Metricas da geracao autoral. O plugin aplica escala 1.5x em tempo de jogo.\n'
+    # Animated Pokemon System requires integer scales in PBS. Keep the integer
+    # fallback and let FanSpriteScale supply the fractional scale at runtime.
     for p in ready:metrics+=f"#-------------------------------\n[{p['id']}]\nFrontSprite = 0,0,2\nBackSprite = 0,0,2\nShadowSprite = 0,0,2\n"
     future=future_module()
     future_manifest=future.load_manifest(project)

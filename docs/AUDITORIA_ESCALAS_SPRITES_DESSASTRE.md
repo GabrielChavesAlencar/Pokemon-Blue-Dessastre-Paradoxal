@@ -1,51 +1,44 @@
-# Auditoria de escala: sprites Dessastre Paradoxal
+# Auditoria de escala dos sprites Dessastre Paradoxal
 
-## Base analisada
+Os Pokémon autorais usam **1,5× na frente e nas costas**. A escala é
+aplicada pelo plugin Blue às espécies e formas com a marca
+`DessastreParadoxal`, incluindo as 12 Mega Evoluções e as nove formas
+regionais da família de Eevee. Normal e shiny usam a mesma métrica.
 
-A auditoria lê **todos os sprites realmente fornecidos no pacote**
-`site/assets/fan-pokemon.tar.gz` e valida seus hashes com o manifesto
-`data/dessastre-paradoxal.json`, sem substituir arte ou alterar saves.
+| Conteúdo | Entradas | Imagens de batalha |
+| --- | ---: | ---: |
+| Espécies autorais prontas | 52 | 208 |
+| Mega Evoluções autorais | 12 | 48 |
+| Formas regionais da família de Eevee | 9 | 36 |
+| Total | **73** | **292** |
 
-- **64 espécies/formas já compiláveis**: 52 espécies e 12 Mega Evoluções.
-- **256 imagens de batalha auditadas**: frente e costas, normais e shiny.
-- Os 128 sprites de frente/costas **normais** medidos têm **128×128 pixels** e um quadro; seus desenhos usam tipicamente 100–112 pixels de largura e são centralizados.
-- Casos com silhueta mais baixa, como Primaltropical, Razorcarapace e Ravenouscrest, mantêm sua altura e proporção autorais, sem alongamento.
-- Os sete cadastros pendentes não receberam dados inventados nem foram liberados à força.
+Os quadros de batalha têm **128×128 px** e são carregados em **192×192 px**
+a 1,5×. A área visível varia conforme a silhueta da espécie. Os sete
+cadastros pendentes continuam fora da lista jogável.
 
-### Referência da engine Decades
+## Como a escala funciona
 
-A base do Pokémon Decades usa o plugin **[DBK] Animated Pokémon System**, que define os valores-padrão:
+O Animated Pokémon System aceita números inteiros nos campos
+`FrontSprite` e `BackSprite` do PBS. Por isso os valores inteiros ficam
+como padrão de compatibilidade e
+[`Campaign.rb`](../scripts/battle_polish/Campaign.rb) aplica 1,5× quando
+a engine carrega o sprite autoral. O mesmo carregador lê as versões
+normais e shiny. O ajuste mantém as proporções e os pixels dos PNGs.
 
-| Papel | Padrão da engine | Resolução dos sprites autorais | Valor escolhido |
-|---|---:|---:|---:|
-| Frente | 2× | 128×128 | **2×** |
-| Costas | 3× | 128×128 | **2×** |
-
-O 3× original das costas é apropriado para sprites menores. A conferência da base Decades encontrou, por exemplo, os sprites de Charizard com 91×91 pixels na frente e 98×98 atrás, de Gengar com 79×79 na frente e 73×73 atrás, e de Walrein com 78×78 e 75×75. São **tamanhos por quadro**, não a dimensão total das tiras animadas.
-
-Usar 3× nos sprites autorais de 128 pixels levaria a uma imagem-base de 384×384, grande demais para vários enquadramentos. A escala 1× utilizada anteriormente nas costas apresentava os desenhos com apenas cerca de 100–110 pixels aparentes, muito pequenos em comparação ao jogo. **2×** produz cerca de 200–224 pixels visíveis para os maiores desenhos, dentro da faixa visual de Pokémon grandes na base.
-
-## Mudança aplicada
-
-As entradas de `PBS/pokemon_metrics_dessastre_paradoxal.txt` agora usam:
-
-```ini
-FrontSprite = 0,0,2
-BackSprite = 0,0,2
-ShadowSprite = 0,0,2
-```
-
-A regra vale individualmente para todas as **64 entradas jogáveis**, inclusive 12 Mega Evoluções, e para as **nove formas regionais de Eevee** (forma 50) instaladas pelo mesmo importador. A mesma métrica se aplica automaticamente às variantes shiny. A escala da frente não mudou porque já correspondia ao perfil de 128 pixels; a das costas passou de 1× para 2×.
-
-O instalador mantém os PNGs de origem e os PNGs instalados **idênticos byte a byte**. Isso preserva nitidez, animação procedural, shiny e compatibilidade com a seleção de qualidade de sprites. O cálculo de posição e pivô continua sob controle da engine.
+A validação nativa do Hub confere a escala em todas as formas autorais
+carregadas e as dimensões resultantes de Cave Fang nos quatro casos de
+frente, costas, normal e shiny. Também confere as métricas de Charizard
+como referência para espécies oficiais.
 
 ## Auditoria reproduzível
 
 ```bat
 python scripts/dessastre_paradoxal/sprite_size_audit.py
 python -m unittest discover -s tests -p test_sprite_size_audit.py -v
+python -m unittest discover -s tests -p test_future_eevee_game.py -v
 ```
 
-O primeiro comando lista largura, altura, ocupação real do PNG, origem visível e quadros de cada sprite de frente/costas. O teste verifica os 64 cadastros jogáveis, os 128 pares normal/shiny e a consistência de todas as dimensões.
-
-Para aplicar: atualize a `main`, execute `INSTALAR_JOGO.bat` (ou `IMPORTAR_DESSASTRE_PARADOXAL.bat`) e permita a recompilação do PBS. O jogo instalado e os saves continuam fora do repositório; a verificação visual final do Game.exe deve ser feita no computador que possui a base.
+A auditoria do pacote autoral verifica os hashes, as dimensões e a área
+visível de cada imagem. Os testes de Eevee conferem os gráficos gerados
+do atlas regional. Para aplicar a escala em outra instalação, atualize a
+`main` e abra o jogo pelo atalho normal para recompilar o plugin.
