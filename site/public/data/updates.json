@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "81f3183e7912af5887ffd95d8d62e3469be7a82a",
+      "date": "2026-11-11T23:36:11-03:00",
+      "title": "test(kanto): relatório experimental registra apenas validação manual e não grava fora do workspace",
+      "category": "Documentação"
+    },
+    {
       "sha": "a44d272d305c2a82852e593bbf27c442e376b5a5",
       "date": "2026-11-11T23:35:34-03:00",
       "title": "test(kanto): verificar time Misty, Cascade uma vez e save na engine",
