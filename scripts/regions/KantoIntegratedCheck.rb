@@ -45,7 +45,8 @@ module KantoIntegratedCheck
     original_pc = Marshal.dump($PokemonStorage)
     original_dex = Marshal.dump($player.pokedex)
     stage("travel_kanto_to_decades")
-    require!(BlueRegionTravel.travel("DECADES", true), "Kanto->Decades travel did not complete")
+    require!(BlueRegionTravel.perform(BlueRegions.snapshot, "DECADES"),
+             "Kanto->Decades travel did not complete")
     require!($game_map.map_id == original[0], "Decades return map differs from original")
     require!($PokemonGlobal.blue_regions["current"] == "DECADES", "Travel state was not committed")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Travel changed the initial region")
@@ -57,7 +58,8 @@ module KantoIntegratedCheck
     $player.badges[league["badge"]] = true
     $game_switches[league["switch"]] = true
     stage("travel_decades_to_kanto")
-    require!(BlueRegionTravel.travel("KANTO", true), "Decades->Kanto travel did not complete")
+    require!(BlueRegionTravel.perform(BlueRegions.snapshot, "KANTO"),
+             "Decades->Kanto travel did not complete")
     require!($game_map.map_id == spawn[0], "Kanto return map differs from original")
     require!($PokemonGlobal.blue_regions["current"] == "KANTO", "Return state was not committed")
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Return changed the starting region")
