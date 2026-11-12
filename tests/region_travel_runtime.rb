@@ -82,7 +82,7 @@ module MenuHandlers
   def self.add(*); end
 end
 def pbRgssExists?(path); File.file?(path); end
-def pbMapInterpreterRunning?; false; end
+def pbMapInterpreterRunning?; $interpreter_running == true; end
 def pbFadeOutIn; yield; end
 def pbMessage(*); nil; end
 def pbConfirmMessage(*); true; end
@@ -126,6 +126,13 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(state["leagues"] == ["DECADES"], "Audited Decades finale was not recognized")
     check($PokemonGlobal.blue_regions.nil?, "Snapshot mutated old save")
     check(BlueRegionTravel.available?(state), "Transport not available after proven ending")
+    # The static NPC in Pallet/Decades invokes travel during a map event.
+    # Trusted event context may call the menu; arbitrary interpreter code may not.
+    $interpreter_running = true
+    check(!BlueRegionTravel.available?(state), "Untrusted map interpreter bypassed travel")
+    BlueRegionTravel.agent(true)
+    check(!BlueRegionTravel.available?(state), "Trusted NPC context leaked after menu closure")
+    $interpreter_running = false
     check(BlueRegionTravel.preview(state,"KANTO")[0] == :ok, "Travel preview failed")
     check(BlueRegionTravel.travel("KANTO",true), "Could not arrive in Kanto")
     check($game_map.map_id == 300 && $game_player.x == 28, "Wrong Kanto arrival")
