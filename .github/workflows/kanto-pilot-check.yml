@@ -70,6 +70,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto trainer interaction audit failed'}
           python scripts/regions/audit_early_interiors.py
           if($LASTEXITCODE -ne 0){throw 'Kanto early interior audit failed'}
+          python scripts/regions/audit_source_encounters.py --output .blue-work/kanto-phase-15-source-audit.json
+          if($LASTEXITCODE -ne 0){throw 'Kanto phase 15 source PBS inventory failed'}
           python scripts/regions/pilot.py
           if($LASTEXITCODE -ne 0){throw 'Pilot build failed'}
           python scripts/regions/audit_canonical.py --output .blue-work/kanto-phase-15-audit.json
@@ -81,6 +83,14 @@ jobs:
           Copy-Item .blue-work/kanto-pilot/Data/Scripts.rxdata .blue-work/kanto-clean-main.rxdata
           python scripts/regions/native_check.py .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Native check preparation failed'}
+      - name: Preservar inventario da fonte FRLG fase 15
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-fase-15-fonte
+          path: .blue-work/kanto-phase-15-source-audit.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Preservar auditoria FRLG fase 15
         if: always()
         uses: actions/upload-artifact@v4
