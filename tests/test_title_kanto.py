@@ -32,7 +32,7 @@ class TitleKantoTests(unittest.TestCase):
         assert "BlueKantoTitle.install" in setup, "Plugin was not activated"
         assert "ensure_source.py" in launcher, "Kanto launcher can't bootstrap source maps"
         assert "--launch-only" in launcher, "Experimental launch needs no Win32 window probe"
-        self.assertNotIn("game\\Data", launcher.lower(), "The pilot BAT must not overwrite main game saves")
+        self.assertNotIn("game\\data", launcher.lower(), "The pilot BAT must not overwrite main game saves")
 
 
 if __name__ == "__main__":
