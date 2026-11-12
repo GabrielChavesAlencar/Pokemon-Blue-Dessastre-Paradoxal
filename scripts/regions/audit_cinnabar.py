@@ -14,17 +14,17 @@ from audit import ROOT, inventory, load
 from server.ruby_marshal import text
 
 NAMES = re.compile(r"(?i)(cinnabar|seafoam|pokemon mansion|pok[eé]mon mansion|"
-                   r"mansion|blaine|route\\s*(?:19|20|21)\\b|fossil lab|research lab)")
+                   r"mansion|blaine|route\s*(?:19|20|21)\b|fossil lab|research lab)")
 SCRIPTS = re.compile(r"(?i)(trainer|battle|leader|blaine|switch|door|key|secret|"
                      r"fossil|quiz|teleport|surf|strength)")
-CALL = re.compile(r"(?i)(TrainerBattle\\.start|pbTrainerBattle|pbMessage|pbSetSelfSwitch|"
+CALL = re.compile(r"(?i)(TrainerBattle\.start|pbTrainerBattle|pbMessage|pbSetSelfSwitch|"
                   r"pbReceiveItem|pbItemBall|pbPokemonMart)")
 
 
 def clean(value):
     if isinstance(value, bytes):
         value = text(value)
-    return str(value).replace("\\r", " ").replace("\\n", " ")[:190]
+    return str(value).replace("\r", " ").replace("\n", " ")[:190]
 
 
 def audit(source: Path):
