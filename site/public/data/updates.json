@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6abaa824c61e73883658d77e486ff534ee4efdac",
+      "date": "2026-11-12T20:47:19-03:00",
+      "title": "test(johto): executa Ecruteak e Morty na regressao Python do Blue Studio",
+      "category": "Testes"
+    },
+    {
       "sha": "744cdc3b7fd9d2f891d61f99004c19f40339cb59",
       "date": "2026-11-12T20:46:58-03:00",
       "title": "test(johto): prova Rotas 35-37, Morty, FOG, Surf, save e isolamento",
