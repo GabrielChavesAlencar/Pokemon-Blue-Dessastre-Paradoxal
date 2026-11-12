@@ -1,9 +1,10 @@
 # Phase 02: native headless walkability probe on the verified Kanto pilot.
-# Uses REAL Game_Player#passable? and #move_straight in mkxp-z; it never
+# Uses REAL Game_Player#passable? and RPG Maker XP #move_{down,up,left,right} in mkxp-z; it never
 # injects keyboard input, opens the GUI, or claims manual acceptance.
 # Installed only by CI's one-shot native_check.py inside .blue-work.
 module KantoWalkCheck
   DIRECTIONS = {2=>[0,1], 4=>[-1,0], 6=>[1,0], 8=>[0,-1]}.freeze
+  MOVE_METHODS = {2=>:move_down, 4=>:move_left, 6=>:move_right, 8=>:move_up}.freeze
   REQUIRED = [
     ["Casa do jogador", "PLAYER_HOME"],
     ["Pallet Town", "PALLET"]
@@ -34,7 +35,7 @@ module KantoWalkCheck
       return [label, map, x, y, "blocked_at_arrival", 0]
     end
     direction,target_x,target_y=available.first
-    $game_player.move_straight(direction)
+    $game_player.public_send(MOVE_METHODS.fetch(direction))
     require!([$game_player.x,$game_player.y] == [target_x,target_y],
              "Player could not step into passable tile #{label} (#{map}:#{x},#{y})")
     opposite = {2=>8,4=>6,6=>4,8=>2}.fetch(direction)
@@ -42,7 +43,7 @@ module KantoWalkCheck
     # passable. No map events are executed or story switches committed here.
     return_ok = $game_player.passable?(target_x,target_y,opposite)
     if return_ok
-      $game_player.move_straight(opposite)
+      $game_player.public_send(MOVE_METHODS.fetch(opposite))
       require!([$game_player.x,$game_player.y] == [x,y],
                "Player could not return from #{label}")
     end
