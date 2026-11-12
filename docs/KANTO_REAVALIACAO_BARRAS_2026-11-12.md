@@ -1,6 +1,6 @@
 # Reavaliação das duas barras de Kanto — 12/11/2026
 
-**Revisão das 16 etapas com base no código e nas evidências de GitHub Actions, não somente no número da última fase iniciada.** Esta é a referência **atual** dos contadores; números anteriores de 8/16 e 1/16 no histórico dos outros documentos representam o critério usado nas publicações anteriores.
+**Registro histórico da reavaliação:** esta análise documenta a passagem de 8/16 para 6/16 com base nas evidências disponíveis naquele instante. **O progresso mais recente foi atualizado para 7/16 (43,75%; faltam 9 passos) e 1/16 (6,25%; faltam 15 passos)** após a [entrega funcional do pacote de Oak e testes de portas](KANTO_AVANCO_FUNCIONAL_07.md) e [CI Windows 43222828441](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43222828441). As tabelas de 6/16 abaixo permanecem preservadas **como fotografia anterior, não como status vigente**.
 
 ## Barras reavaliadas
 
