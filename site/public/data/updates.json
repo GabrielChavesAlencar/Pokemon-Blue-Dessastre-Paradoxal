@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5f321f6c4ad5d6e815840ffe6c8a2ae071e788c1",
+      "date": "2026-11-11T23:14:32-03:00",
+      "title": "docs(kanto): fase 06, bugs do Codex, regras regionais e criterios pendentes",
+      "category": "Documentação"
+    },
+    {
       "sha": "eb422caaefde803c65905868b8d4a91763898930",
       "date": "2026-11-11T23:12:34-03:00",
       "title": "ci(kanto): exigir quatro retratos no jogo integrado antes de executar a engine",
