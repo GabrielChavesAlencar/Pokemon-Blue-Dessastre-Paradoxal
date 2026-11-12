@@ -1,6 +1,6 @@
-# Kanto — jogar e testar a fase 07 no Windows (experimental)
+# Kanto — jogar e testar as fases 07 e 08 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com 25 mapas de Pallet a Cerulean. A CI valida mapas, NPCs, equipes, Misty e salvamento com resultados de batalha simulados. **A jogabilidade interativa ainda depende do seu teste.**
+**Status:** disponível como **cópia isolada**, com 40 mapas de Pallet a Vermilion, incluindo S.S. Anne. A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
 
 ## Opção diretamente no Game.exe principal
 
@@ -37,13 +37,13 @@ O perfil de saves **Kanto Piloto** pode ser compartilhado pelas cópias do pilot
 
 ## 2. Menu de teletransporte exclusivo do piloto
 
-Após escolher o inicial com Oak, abra o **menu de pausa → Testes Kanto (experimental)**. Confirme o destino para visitar o trecho da fase 07 sem precisar repetir toda a campanha anterior.
+Após escolher o inicial com Oak, abra o **menu de pausa → Testes Kanto (experimental)**. Confirme o destino para visitar os trechos das fases 07 e 08 sem precisar repetir toda a campanha anterior.
 
-Os atalhos disponíveis são Pallet, Pewter, saída de Mt. Moon na Rota 4, Centro Pokémon de Mt. Moon, Mt. Moon 1F, B1F e B2F, Cerulean City e ginásio de Misty. O acesso à **Rota 3** é caminhando para leste a partir de Pewter; assim você também poderá testar os treinadores e as conexões originais.
+São 17 atalhos: Pallet, Pewter, Rota 4, Centro e três andares de Mt. Moon, Cerulean, Misty, Rota 5, Rota 6, Vermilion, Lt. Surge, porto, S.S. Anne 1F, cabine do capitão e convés. O acesso à **Rota 3** é caminhando para leste a partir de Pewter; assim você também poderá testar os treinadores e as conexões originais.
 
 **Importante:** o menu usa somente mapas da cópia experimental e **não libera Liga, não concede insígnias, não altera a campanha principal e não existe no jogo Decades instalado**. Os pontos de chegada foram derivados de entradas/saídas da fonte FRLG, mas ainda precisam de validação visual de colisão no Windows.
 
-## 3. O que testar na fase 07
+## 3. O que testar nas fases 07 e 08
 
 - [ ] Partida nova em Pallet, Oak e escolha de inicial; saída e retorno de Pewter
 - [ ] Rota 3: oito treinadores, batalhas reais, encontros e ligação para Rota 4
@@ -54,9 +54,17 @@ Os atalhos disponíveis são Pallet, Pewter, saída de Mt. Moon na Rota 4, Centr
 - [ ] Misty: batalhas reais com Luis e Diana, equipe Staryu/Starmie e vitória/derrota
 - [ ] Cascade Badge: concedida uma única vez, registrada separadamente da Boulder e contada corretamente no balanceamento
 - [ ] Save/reload: equipe, Box, mapa, dinheiro, inventário, vitórias e duas insígnias persistem
+- [ ] Rota 5 → passagem subterrânea → Rota 6 → Vermilion, com retorno sem teleportes
+- [ ] Vermilion: Centro Pokémon, Poké Mart, bloqueio do porto e acesso após obter a Cascade
+- [ ] S.S. Anne: embarque, desembarque, cabines, 1F, 2F, B1F, convés e capitão
+- [ ] Capitão: receber HM Cut apenas uma vez, ou registrar a ausência do item na versão Decades
+- [ ] Ginásio de Lt. Surge: 15 lixeiras, duas chaves adjacentes, travas e reset ao errar
+- [ ] Surge: time FRLG com Voltorb 21, Pikachu 18 e Raichu 24
+- [ ] Thunder Badge: obtenção única; permissões de Fly e evolução do balanceamento
+- [ ] S.S. Ticket experimental persistido por save; não depender de item ausente no Decades
 - [ ] Instalação original Decades e saves preexistentes continuam intactos
 
-**Limitação:** ainda não foram adaptados todos os scripts complexos da história original (fósseis, cutscenes e NPCs secundários). Os eventos novos importam apenas batalhas, saídas, centros, marts e um item auditado. Não confunda a presença dos mapas com a conclusão integral da campanha de Kanto.
+**Limitação:** ainda não foram adaptados todos os scripts complexos da história original (fósseis, cutscenes e NPCs secundários). A passagem de navio é experimental; a visita canônica a Bill e a saída cinematográfica do S.S. Anne continuam pendentes. Os eventos novos importam apenas batalhas, saídas, centros, marts e um item auditado. Não confunda a presença dos mapas com a conclusão integral da campanha de Kanto.
 
 ## 4. Se a janela ou os controles falharem
 
