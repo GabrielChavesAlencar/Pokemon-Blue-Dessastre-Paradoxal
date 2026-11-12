@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "71746a2b318a2d6dc51680193cc15333c82ad63c",
+      "date": "2026-11-12T19:30:10-03:00",
+      "title": "docs(johto): incorpora estudo com regras antirregressão e Testar Johto",
+      "category": "Documentação"
+    },
+    {
       "sha": "5c7904d86c2fc33bdb1d27c85b14c14eda761a62",
       "date": "2026-11-12T19:28:13-03:00",
       "title": "test(johto): ajusta contrato do menu inicial para dois testes regionais",
