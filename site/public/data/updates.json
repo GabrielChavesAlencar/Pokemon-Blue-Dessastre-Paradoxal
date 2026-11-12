@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8e248e81835c8b13fdc7c765ddd9c283878be3f0",
+      "date": "2026-11-12T07:47:35-03:00",
+      "title": "docs(kanto): adicionar estudo detalhado dos eventos FireRed para RPG Maker XP",
+      "category": "Novidades"
+    },
+    {
       "sha": "ca87c3afa1c8a712cfb554d5829610a5c8a44c15",
       "date": "2026-11-12T07:42:48-03:00",
       "title": "Registrar CI Windows aprovada da fase 09 sem eventos e com 51 mapas",
