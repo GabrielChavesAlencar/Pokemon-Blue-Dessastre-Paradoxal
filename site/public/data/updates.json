@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "66f6367a0587246dd8fa2b54610c7b82801217d0",
+      "date": "2026-11-12T06:36:18-03:00",
+      "title": "Ajusta sprites de Dessastre Paradoxal para 1,5x",
+      "category": "Melhorias"
+    },
+    {
       "sha": "378ac2ba3a310e1dbeaceebc201876da87d04e38",
       "date": "2026-11-12T06:35:28-03:00",
       "title": "test(kanto): proteger download hash, extração FRLG e Python portátil do EXE",
