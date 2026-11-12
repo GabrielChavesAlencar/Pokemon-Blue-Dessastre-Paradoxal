@@ -98,6 +98,70 @@ def manifest(pilot, game):
     return files, mapping, expected
 
 
+def repair_portraits(game, commit=False):
+    """Only add the missing four Kanto trainer images to an existing install.
+
+    Copies from original trainer type images already on the user's computer.
+    Never rebuilds/imports maps, and never overwrites an unknown image.
+    """
+    if not (game / MARKER).is_file():
+        raise ValueError("Kanto must already be installed before portrait repair")
+    manifest_path = game / "Data/blue-kanto-install.json"
+    if not manifest_path.is_file():
+        raise ValueError("Kanto installation manifest missing; refusing repair")
+    old_bytes = manifest_path.read_bytes()
+    info = json.loads(old_bytes.decode("utf-8"))
+    if info.get("schema") != 1:
+        raise ValueError("Unknown Kanto install manifest version")
+
+    pending = {}
+    for kind, base in TYPES.items():
+        relative = Path("Graphics/Trainers") / f"BLUE_KANTO_{kind}.png"
+        target = game / relative
+        source = game / "Graphics/Trainers" / f"{base}.png"
+        if not source.is_file() or not source.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
+            raise ValueError(f"Original trainer portrait not found: {base}.png")
+        if target.exists():
+            if digest(target) != digest(source):
+                raise ValueError(f"Existing portrait differs; refusing to overwrite: {relative}")
+        else:
+            pending[relative] = source
+    plan = {"status": "repair_preview", "missing_portraits": [str(k) for k in pending],
+            "total_expected": len(PORTRAITS)}
+    if not commit or not pending:
+        if not pending:
+            plan["status"] = "already_correct"
+        return plan
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    backup = ROOT / ".blue-backups" / ("kanto-portraits-" + stamp)
+    backup.mkdir(parents=True, exist_ok=False)
+    atomic(backup / "Data/blue-kanto-install.json", old_bytes)
+    written = []
+    try:
+        for relative, source in pending.items():
+            target = game / relative
+            # Recheck just before writing; refuse a concurrent external edit.
+            if target.exists():
+                raise ValueError(f"Portrait appeared during repair: {relative}")
+            atomic(target, source.read_bytes())
+            written.append(target)
+            if digest(target) != digest(source):
+                raise IOError(f"Portrait checksum mismatch: {relative}")
+        checksums = info.setdefault("installed_sha256", {})
+        for kind in TYPES:
+            relative = Path("Graphics/Trainers") / f"BLUE_KANTO_{kind}.png"
+            checksums[str(relative)] = digest(game / relative)
+        atomic(manifest_path, (json.dumps(info, indent=2) + "\n").encode("utf-8"))
+    except BaseException:
+        for target in reversed(written):
+            target.unlink(missing_ok=True)
+        atomic(manifest_path, old_bytes)
+        raise
+    plan.update(status="repaired", backup=str(backup))
+    return plan
+
+
 def apply_install(game, pilot, commit=False):
     if (game / MARKER).exists():
         raise ValueError("Kanto ja instalado: recusar IDs duplicados.")
@@ -149,6 +213,8 @@ def apply_install(game, pilot, commit=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--repair-portraits", action="store_true",
+                        help="Only repair missing Kanto trainer images in an already installed game")
     parser.add_argument("--game", type=Path, default=ROOT / "game")
     parser.add_argument("--pilot", type=Path, default=OUTPUT)
     parser.add_argument("--source", type=Path, default=SOURCE)
@@ -159,8 +225,11 @@ def main():
         parser.error("Destino fora de game/ e .blue-work")
     if not pilot.is_relative_to(work):
         parser.error("Piloto fora de .blue-work")
+    if args.repair_portraits:
+        print(json.dumps(repair_portraits(game, args.apply), indent=2))
+        return
     if (game / MARKER).exists():
-        print("Kanto ja instalado. Nenhuma alteracao feita.")
+        print("Kanto ja instalado. Para corrigir retratos, use --repair-portraits.")
         return
     fresh = False
     try:
