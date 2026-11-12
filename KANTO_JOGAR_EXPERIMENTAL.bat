@@ -19,19 +19,20 @@ if not errorlevel 1 goto :run_python
 echo [ERRO] Python 3.10+ nao encontrado; consulte docs\KANTO_TESTE_EXPERIMENTAL.md.
 goto :error
 :run_py
-py -3 -X utf8 "scripts\regions\gui_diagnostics.py" %*
+py -3 -X utf8 "scripts\regions\gui_diagnostics.py" --launch-only %*
 set "GAME_EXIT=%errorlevel%"
 py -3 -X utf8 "scripts\regions\kanto_feedback.py"
 goto :result
 :run_python
-python -X utf8 "scripts\regions\gui_diagnostics.py" %*
+python -X utf8 "scripts\regions\gui_diagnostics.py" --launch-only %*
 set "GAME_EXIT=%errorlevel%"
 python -X utf8 "scripts\regions\kanto_feedback.py"
 goto :result
 :result
 echo.
 if "%GAME_EXIT%"=="0" (
-  echo [OK] O jogo foi iniciado ou uma janela de teste foi observada.
+  echo [OK] Game.exe foi encerrado sem erro detectado pelo lancador.
+  echo [IMPORTANTE] Isso NAO comprova a jogabilidade: veja o checklist que voce preencheu.
 ) else (
   echo [AVISO] O monitor nao confirmou a inicializacao grafica.
   echo [DICA] Consulte os logs locais em .blue-work\kanto-gui-reports.
