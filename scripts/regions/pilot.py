@@ -336,7 +336,7 @@ def install_events(source, target, mapping):
         dest_file = target / "Data" / f"Map{destination:03}.rxdata"
         map_data = load(dest_file)
         selected = {}
-        script_events = {5: {9: "BlueRegionTravel.agent"},
+        script_events = {5: {9: "BlueRegionTravel.agent(true)"},
                           7: {13: "BlueKantoPilot.mom"},
                           8: {8: "BlueKantoPilot.daisy"},
                           6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
