@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "93edd1a48483d5b0742272d9d4618d6bf9aa3879",
+      "date": "2026-11-12T09:28:05-03:00",
+      "title": "MAN-01: fixar slot do Fan Club e adicionar interiores sem deslocar MapIDs",
+      "category": "Novidades"
+    },
+    {
+      "sha": "3330559ac05a53b3e29b5e8c4d08a0e92277889a",
+      "date": "2026-11-12T09:27:53-03:00",
+      "title": "MAN-01: integrar 8 interiores com portas de ida e volta confirmadas entre Pallet e Pewter",
+      "category": "Melhorias"
+    },
+    {
       "sha": "d11debe527c06e7165c64f7352a2584a91195c7f",
       "date": "2026-11-12T09:27:19-03:00",
       "title": "MAN-02: detectar nome Sight(n) real da fonte e exigir Event Touch 2",
