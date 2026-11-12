@@ -269,6 +269,7 @@ module Compiler
       BlueHabitatRewards.install
       PokemonSummary_Scene.prepend(BlueSummaryBackdrop) unless PokemonSummary_Scene.ancestors.include?(BlueSummaryBackdrop)
       BlueParadoxTitle.install if defined?(BlueParadoxTitle)
+      BlueKantoTitle.install if defined?(BlueKantoTitle)
     end
   end
 end
