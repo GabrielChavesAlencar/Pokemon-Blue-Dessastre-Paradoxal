@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "42993a05f61293727efdc3c23c9bfea8b4599c3f",
+      "date": "2026-11-12T08:49:39-03:00",
+      "title": "Kanto: congelar IDs existentes dos 71 mapas antes de acrescentar Saffron",
+      "category": "Melhorias"
+    },
+    {
       "sha": "febfb80262478130bd04d9bc30b58df7912afefa",
       "date": "2026-11-12T08:46:00-03:00",
       "title": "CI Kanto: auditar Saffron e Silph Co sem integrar eventos",
