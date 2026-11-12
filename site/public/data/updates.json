@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "16e7e21d3914a30e3a5d142b04c3382e494d355e",
+      "date": "2026-11-12T20:39:51-03:00",
+      "title": "docs(johto): sincroniza plano de 16 fases com Ilex Goldenrod Whitney",
+      "category": "Documentação"
+    },
+    {
+      "sha": "4245c6bc8eac8c036082714a0b2efca836afb156",
+      "date": "2026-11-12T20:39:40-03:00",
+      "title": "docs(johto): atualiza duas barras e registra entrega parcial da fase 07",
+      "category": "Documentação"
+    },
+    {
       "sha": "f20fe58e5af193de11230255fa1c3413c7813e62",
       "date": "2026-11-12T20:39:22-03:00",
       "title": "docs(johto): detalha fase 07 Ilex Cut Goldenrod Whitney e criterios de aceite",
