@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fa60acaaf9722fa0590ff32388513d62215327fc",
+      "date": "2026-11-12T07:25:47-03:00",
+      "title": "docs(kanto): registrar feedback real do teste de mapas e tres pendencias",
+      "category": "Documentação"
+    },
+    {
       "sha": "45c43d3c63e9c1b05033111ab17e512ff44b5dd9",
       "date": "2026-11-12T07:17:33-03:00",
       "title": "Registrar implementação da fase 08, CI nativa e checklist de aceite manual",
