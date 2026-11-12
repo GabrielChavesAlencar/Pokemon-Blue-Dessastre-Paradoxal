@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d347cf1606324051258c1d4e2ed16128224a63f6",
+      "date": "2026-11-12T20:27:43-03:00",
+      "title": "feat(johto): fase 06 Azalea, Poco Slowpoke, Rocket, Kurt, Bugsy e Hive protegidos",
+      "category": "Novidades"
+    },
+    {
       "sha": "db9c77432db6668698520b1eec7a5570354f9abb",
       "date": "2026-11-12T20:24:40-03:00",
       "title": "docs(johto): sincroniza plano mestre com Violet e Falkner parciais",
