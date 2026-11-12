@@ -168,6 +168,10 @@ def main() -> int:
                           encoding="utf-8")
         print(json.dumps({k: v for k, v in result.items() if k != "tracks"},
                          indent=2, ensure_ascii=False))
+        for row in result["tracks"]:
+            print(f"TRACK_{row['number']:02d}\t{row['kind']}\t{row['status']}\t"
+                  f"{row['codec_probe']}\t{row['decoder_duration_seconds']}\t"
+                  f"{row['filename']}")
         print("TRACK_MATRIX=" + str(output))
         return 0 if result["status"] != "FAIL" and (
             args.decoder != "required" or result["status"] == "PASS") else 2
