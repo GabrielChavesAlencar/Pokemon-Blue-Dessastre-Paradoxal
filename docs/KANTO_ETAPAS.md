@@ -44,7 +44,7 @@ Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = penden
 - [ ] **MAN-03 — painéis de insígnias** (etapa 06/16): oito insígnias Kanto e visão de conquistas regionais; consultar `BlueRegions`, não criar badges nem recompensas pela UI.
 - [ ] **SAVE-01 — estado e versionamento:** separar progresso regional, flags locais de evento e estado temporário, migrar saves e evitar colisões com Decades; completar integração `RegionalPolicy`/HMs locais.
 - [ ] **HIST-01 — lotes A–D** (fases 03/07/08): Oak/Parcel, Brock, fósseis Mt. Moon, Bill e S.S. Ticket, Misty, navio, Cut, Surge; revisar eventos hoje provisórios de Bill/Capitão sem adulterar saves.
-- [ ] **HIST-02 — lote E** (fase 09 e 11): Celadon/Lavender/Saffron, Rocket Hideout, Silph Scope, Marowak/Poké Flute, Silph Co., Erika, Sabrina — **101 mapas no catálogo; 61 `preview_only` sem eventos nas fases 09–11, aguardando integração de gameplay separada**.
+- [ ] **HIST-02 — lote E** (fase 09 e 11): Celadon/Lavender/Saffron, Rocket Hideout, Silph Scope, Marowak/Poké Flute, Silph Co., Erika, Sabrina — **109 mapas no catálogo; 58 `preview_only` sem eventos, e três mapas de Celadon com gameplay parcial (Erika/Rainbow)**.
 - [ ] **HIST-03 — lotes F–H** (fases 10/12/13/14): Safari/Snorlax/Surf/Strength/Koga; Seafoam/Cinnabar/Viridian; oito bloqueios de badges e Hall of Fame; sequência canônica sem softlock.
 - [ ] **POST-01 — lote I** (fases 15/16 se aprovado): pós-jogo, National Dex, Sevii/Celio/Ruby/Sapphire, Warehouse/Cerulean Cave e eventos especiais — **escopo opcional, não somar automaticamente às 16 etapas**.
 - [ ] **QA-EVENTOS:** aceitar cada evento somente com testes por estado (primeira execução, repetição, vitória/derrota/fuga, bag/PC cheios, saída/retorno, reload, Game.exe Windows, depois JoiPlay e rollback).
@@ -75,7 +75,7 @@ Os guias trazem **67 referências de cenas KAN-001–KAN-067**, **14 referência
 - [x] **CI de compilação e regressão aprovada:** [teste nativo 43218959042](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43218959042), [regressão 43219637690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637690) e [site checks](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43219637630).
 - [ ] **QA manual Windows e JoiPlay:** a prova automatizada não substitui caminhada/colisão, abordagem e batalha real; nenhum aceite total ainda.
 
-**Barras atuais:** núcleos funcionais **8/16 (50%), faltam 8**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 61 mapas `preview_only` sem eventos.
+**Barras atuais:** núcleos funcionais **8/16 (50%), faltam 8**, e aceitação **1/16 (6,25%), faltam 15**. Os oito interiores são acrescentados ao final do catálogo (101 → **109 MapIDs**), preservando os IDs históricos e os 58 mapas atualmente `preview_only` sem eventos.
 
 ## 16 etapas de fechamento
 
