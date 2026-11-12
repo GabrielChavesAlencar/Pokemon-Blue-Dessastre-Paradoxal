@@ -87,11 +87,11 @@ LOCATION_NAMES = {
     "UNDERGROUND_ROUTE8_TUNNEL": "Passagem Subterrânea leste — túnel (prévia)",
     "SAFFRON_GATE_WEST": "Portaria oeste de Saffron (prévia)",
     "UNDERGROUND_ROUTE7_WEST": "Passagem Subterrânea oeste — entrada (prévia)",
-    "SAFFRON_CITY": "Saffron City (prévia)",
-    "SAFFRON_CENTER": "Centro Pokémon de Saffron (prévia)",
-    "SAFFRON_MART": "Poké Mart de Saffron (prévia)",
-    "SAFFRON_GYM": "Ginásio de Saffron — Sabrina não ativa (prévia)",
-    "SAFFRON_DOJO": "Fighting Dojo (prévia)",
+    "SAFFRON_CITY": "Saffron City",
+    "SAFFRON_CENTER": "Centro Pokémon de Saffron",
+    "SAFFRON_MART": "Poké Mart de Saffron",
+    "SAFFRON_GYM": "Ginásio de Saffron — Sabrina",
+    "SAFFRON_DOJO": "Fighting Dojo",
     "SAFFRON_HOUSE_A": "Casa de Saffron A (prévia)",
     "SAFFRON_HOUSE_B": "Casa de Saffron B (prévia)",
     "SAFFRON_HOUSE_C": "Casa de Saffron C (prévia)",
@@ -105,18 +105,18 @@ LOCATION_NAMES = {
     "PEWTER_HOUSE_NORTH": "Casa de Pewter — entrada norte",
     "PEWTER_HOUSE_SOUTH": "Casa de Pewter — entrada sul",
     "SILPH_LOBBY": "Silph Co. — recepção (prévia)",
-    "SILPH_ELEVATOR": "Silph Co. — elevador (prévia)",
-    "SILPH_1F": "Silph Co. — 1F (prévia)",
-    "SILPH_2F": "Silph Co. — 2F (prévia)",
-    "SILPH_3F": "Silph Co. — 3F (prévia)",
-    "SILPH_4F": "Silph Co. — 4F (prévia)",
-    "SILPH_5F": "Silph Co. — 5F (prévia)",
-    "SILPH_6F": "Silph Co. — 6F (prévia)",
-    "SILPH_7F": "Silph Co. — 7F (prévia)",
-    "SILPH_8F": "Silph Co. — 8F (prévia)",
-    "SILPH_9F": "Silph Co. — 9F (prévia)",
-    "SILPH_10F": "Silph Co. — 10F (prévia)",
-    "SILPH_11F": "Silph Co. — 11F (prévia)",
+    "SILPH_ELEVATOR": "Silph Co. — elevador",
+    "SILPH_1F": "Silph Co. — 1F",
+    "SILPH_2F": "Silph Co. — 2F",
+    "SILPH_3F": "Silph Co. — 3F",
+    "SILPH_4F": "Silph Co. — 4F",
+    "SILPH_5F": "Silph Co. — 5F",
+    "SILPH_6F": "Silph Co. — 6F",
+    "SILPH_7F": "Silph Co. — 7F",
+    "SILPH_8F": "Silph Co. — 8F",
+    "SILPH_9F": "Silph Co. — 9F",
+    "SILPH_10F": "Silph Co. — 10F",
+    "SILPH_11F": "Silph Co. — 11F",
 }
 TRAINER_LOCATIONS = {
     "RIVAL": ("OAK_LAB", "Rival"),
@@ -194,7 +194,31 @@ TRAINER_LOCATIONS.update({
 })
 
 
-STARTERS = {11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE"}
+TRAINER_LOCATIONS.update({
+    ("LEADER_SABRINA", "Sabrina"): ("SAFFRON_GYM", "Líder de ginásio"),
+    **{("PSYCHIC", name): ("SAFFRON_GYM", "Psíquico")
+       for name in ("Cameron", "Preston", "Johan", "Tyron")},
+    **{("CHANNELER", name): ("SAFFRON_GYM", "Médium")
+       for name in ("Tasha", "Stacy", "Amanda")},
+    **{("BLACKBELT", name): ("SAFFRON_DOJO", "Lutador")
+       for name in ("Hideki", "Hitoshi", "Aaron", "Mike", "Koichi")},
+    ("ROCKETBOSS", "Giovanni"): ("SILPH_11F", "Chefe da Equipe Rocket"),
+    ("RIVAL_SILPH", "Blue"): ("SILPH_7F", "Rival"),
+})
+
+SILPH_GRUNT_FLOORS = {
+    21: "SILPH_2F", 22: "SILPH_2F", 23: "SILPH_3F",
+    24: "SILPH_4F", 25: "SILPH_4F", 26: "SILPH_5F",
+    27: "SILPH_5F", 28: "SILPH_6F", 29: "SILPH_6F",
+    30: "SILPH_7F", 31: "SILPH_7F", 32: "SILPH_7F",
+    33: "SILPH_8F", 34: "SILPH_8F", 35: "SILPH_9F",
+    36: "SILPH_9F", 37: "SILPH_10F",
+    38: "SILPH_11F", 39: "SILPH_11F",
+}
+
+
+STARTERS = {11: "BULBASAUR", 12: "CHARMANDER", 13: "SQUIRTLE",
+            51: "BULBASAUR", 52: "CHARMANDER", 53: "SQUIRTLE"}
 
 
 def slug(key):
@@ -240,12 +264,17 @@ def export(preview: Path):
     for header, lines in read_blocks(trainer_file).items():
         trainer_type, name, version = header.split(",")
         kind = trainer_type.removeprefix("BLUE_KANTO_")
-        key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
+        if kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
+            key, role = SILPH_GRUNT_FLOORS[int(version)], "Equipe Rocket"
+            trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
+        else:
+            key, role = TRAINER_LOCATIONS.get((kind, name), TRAINER_LOCATIONS.get(kind, (None, None)))
+            trainer_id = slug("Blue Silph") if kind == "RIVAL_SILPH" else slug(name)
+            shown_name = "Blue (Silph)" if kind == "RIVAL_SILPH" else name
         if key is None:
             raise ValueError(f"Trainer location has not been audited: {header}")
-        trainer_id = slug(name)
         if trainer_id not in trainers:
-            trainers[trainer_id] = {"id": trainer_id, "name": name, "role": role,
+            trainers[trainer_id] = {"id": trainer_id, "name": shown_name, "role": role,
                                     "location": slug(key), "leader": kind.startswith("LEADER"),
                                     "variants": []}
             locations[key]["trainers"].append(trainer_id)
