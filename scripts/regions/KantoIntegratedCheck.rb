@@ -27,6 +27,23 @@ module KantoIntegratedCheck
     launcher = BlueKantoTitle.launcher
     require!(launcher && launcher[0].end_with?("KANTO_JOGAR_EXPERIMENTAL.bat"),
              "Main Game.exe cannot locate the project-owned Kanto launcher")
+    # Check actual Windows process creation, including BAT names with spaces.
+    # This disposable CI-only BAT writes one marker and NEVER opens the pilot.
+    probe_dir = File.join(launcher[1], ".blue-work", "kanto title spawn proof")
+    Dir.mkdir(probe_dir) unless Dir.exist?(probe_dir)
+    probe_bat = File.join(probe_dir, "test launch.cmd")
+    probe_marker = File.join(probe_dir, "child-ok.txt")
+    begin
+      File.write(probe_bat, "@echo off\r\n>\\"#{probe_marker}\\" echo ok\r\n")
+      child = Process.spawn("cmd.exe", "/d", "/c", probe_bat, :chdir => launcher[1])
+      Process.wait(child)
+      require!(File.file?(probe_marker) && File.read(probe_marker).strip == "ok",
+               "Native Game.exe could not launch a Windows BAT through cmd.exe")
+    ensure
+      File.delete(probe_bat) if File.file?(probe_bat)
+      File.delete(probe_marker) if File.file?(probe_marker)
+      Dir.rmdir(probe_dir) if Dir.exist?(probe_dir)
+    end
     original = [$data_system.start_map_id, $data_system.start_x, $data_system.start_y]
 
     # Select Kanto without opening a graphical choice menu in headless CI.
