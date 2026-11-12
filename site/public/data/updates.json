@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a88057e545d86353eac781e58329be7263c02948",
+      "date": "2026-11-12T17:24:26-03:00",
+      "title": "feat(kanto-music): Fase 3 — batalhas, vitórias e preservação de Decades",
+      "category": "Novidades"
+    },
+    {
       "sha": "b550893546aadfb4b547b718257e36326c095a58",
       "date": "2026-11-12T17:02:21-03:00",
       "title": "feat(kanto-music): fase 2 ambientes e transporte com MapIDs reais",
