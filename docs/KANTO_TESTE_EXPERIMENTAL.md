@@ -1,8 +1,8 @@
 # Kanto — jogar e testar fases 07 a 11 no Windows (experimental)
 
-**Status:** disponível como **cópia isolada**, com **40 mapas integrados anteriormente**, **8 interiores adicionais**, **3 mapas funcionais em Celadon**, **8 prévias restantes de Celadon**, **20 prévias Fuchsia/Safari** e **30 prévias Saffron/Silph Co.** (**109 no catálogo**). A CI verifica topologia, eventos, equipes, Misty, Lt. Surge e salvamento com resultados de batalha simulados; conferência manual pendente. **A jogabilidade interativa ainda depende do seu teste.**
+**Status atual:** piloto **isolado** com 109 mapas: 40 previamente integrados, 8 interiores adicionais, **3 mapas funcionais em Celadon**, **5 em Fuchsia**, 8 prévias restantes de Celadon, 15 prévias de Fuchsia/Safari e 30 prévias de Saffron/Silph. **53 mapas seguem sem eventos**. A engine foi testada com vitórias/derrotas simuladas; controles, caminho e batalhas reais ainda precisam ser testados por você.
 
-**Progresso atual:** [8/16 núcleos funcionais — faltam 8; 1/16 aceito integralmente — faltam 15](KANTO_AVANCO_FUNCIONAL_08.md). A [CI de Celadon/Erika](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43227499299) passou; o aceite ainda depende de caminhar, batalhar e salvar manualmente.
+**Progresso:** [9/16 núcleos com CI — faltam 7; 1/16 aceito integralmente — faltam 15](KANTO_AVANCO_FUNCIONAL_09.md). [CI nativa de Koga 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342) aprovadas.
 
 ## Opção diretamente no Game.exe principal
 
@@ -112,17 +112,20 @@ Os [30 novos cenários](KANTO_FASE_11.md) incluem Saffron e portarias, Rota 8, D
 - [ ] Registrar visualmente a passabilidade dos andares da Silph e os limites de seus teletransportadores (ainda inativos).
 - [ ] Adiar os eventos até revisão específica e testar cada um por ida/volta, batalha, reload e derrota.
 
-## Fase 10 — Fuchsia, Koga e Safari Zone (prévia sem eventos)
+## Fase 10 — Fuchsia/Koga jogáveis; Safari ainda não habilitada
 
-O [guia da fase 10](KANTO_FASE_10.md) lista 20 mapas FRLG importados como terreno e **nove atalhos novos** no menu de pausa do piloto (31 no total). Eles levam a Fuchsia City, ginásio de Koga, Centro Pokémon, casa do Warden, portão da Safari, setores sul/norte/oeste e Rota 15.
+[Documentação e checklist da implementação](KANTO_AVANCO_FUNCIONAL_09.md). O núcleo tem **cinco mapas** ativos em Fuchsia: City (144), Centro (145), Mart (146), Ginásio (147) e portão Safari (153). Os outros **15 mapas da fase 10** são cenários sem eventos. O piloto oferece **42 atalhos** de teste, incluindo um novo para o Poké Mart de Fuchsia.
 
-**ATENÇÃO:** nesta prévia não existe batalha contra Koga, Soul Badge, ingressos, passos, Safari Balls, capturas de Safari, Gold Teeth, HM Strength/Surf, portas funcionais novas ou eventos de treinadores. Entrar por atalho de teste não deve completar história ou conceder nada.
+- [ ] No `Game.exe → Testar Kanto`, iniciar no save isolado e viajar para **Fuchsia City** pelo menu experimental.
+- [ ] Caminhar pelas quatro entradas da cidade (ginásio, Centro, Mart, Safari Gate) e testar o retorno por cada saída.
+- [ ] Conversar com enfermeira, curar equipe e verificar compras no Mart; confirmar sprites/colisões.
+- [ ] Enfrentar seis treinadores por aproximação (`Sight(n)`), testar derrota, vitória, self-switch e repetição sem novo combate.
+- [ ] **Koga:** perder uma vez sem Soul Badge; vencer com equipe FRLG (Koffing 37, Muk 39, Koffing 37, Weezing 43), obter Soul **somente uma vez**, salvar/recarregar.
+- [ ] **Portão Safari:** falar com o atendente e o guia; confirmar que não há cobrança, Safari Balls, captura ou acesso à área antes da implementação da sessão nativa completa.
+- [ ] Usar atalhos para inspecionar Safari Sul/Norte/Oeste, Warden e Rota 15 somente como cenários; não contar como progresso de história.
+- [ ] Não alterar saves nem arquivos da instalação principal Decades; depois testar Android/JoiPlay.
 
-- [ ] Inspecionar tilesets, passabilidade e ponto de chegada em Fuchsia e Rotas 15/18.
-- [ ] Inspecionar cenário do ginásio sem evento de Koga.
-- [ ] Inspecionar os quatro setores Safari e casas de descanso sem ativar mecânicas.
-- [ ] Verificar que o save de Decades permanece isolado e a Soul Badge não é liberada.
-- [ ] Registrar falhas de mapa/colisão para a futura etapa de eventos e gameplay.
+**Pendências explícitas:** sistemas de Safari Balls, encontros, passos/tempo, ingresso e restauração; Gold Teeth/Strength, Secret House/Surf, conexão canônica de rotas e diálogos EN/PT-BR. **Barra 1 9/16; Barra 2 1/16.**
 
 ## 3. O que testar nas fases 07 e 08
 
