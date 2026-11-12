@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e4c59d52d012f6748f21e523f57d0ea4d69c29a6",
+      "date": "2026-11-12T10:18:06-03:00",
+      "title": "Testar site com 62 treinadores, Erika e Celadon sem NPCs não auditados",
+      "category": "Melhorias"
+    },
+    {
       "sha": "38788ff9eb6b2817e5a74921796838a4fa7d3ab4",
       "date": "2026-11-12T10:17:34-03:00",
       "title": "Kanto Celadon: publicar Erika e 7 treinadoras com equipes FRLG auditadas no site",
