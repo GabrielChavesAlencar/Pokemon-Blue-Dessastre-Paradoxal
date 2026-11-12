@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "53ae3314eb2d6084ed9e7c8b1f46e99bf0c0d463",
+      "date": "2026-11-12T09:19:32-03:00",
+      "title": "Kanto: auditoria de gatilhos e visão dos treinadores FRLG antes da correção",
+      "category": "Correções"
+    },
+    {
       "sha": "e64ea31011cbe5c41b291788e52c1cdd1f1b5043",
       "date": "2026-11-12T09:15:04-03:00",
       "title": "docs(kanto): vincular guia de dialogos EN/PT ao roadmap de fases e eventos",
