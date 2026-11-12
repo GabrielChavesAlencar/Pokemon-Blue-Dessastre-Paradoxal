@@ -174,7 +174,7 @@ def trainer_draft(path, species, moves):
 
 def build_drafts(source, game, plan):
     species, moves = catalogue(game, "pokemon"), catalogue(game, "moves")
-    # The phase 09 terrain preview must not activate foreign trainers,
+    # The terrain previews (phases 09/10) must not activate foreign trainers,
     # encounter tables or story scripts before event review.
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
