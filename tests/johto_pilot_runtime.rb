@@ -64,6 +64,7 @@ end
 require ARGV.fetch(0)
 Dir.mktmpdir("johto-pilot-test-") do |dir|
   Dir.chdir(dir) do
+    Dir.mkdir("Data") # Isolated pilot marker folder; never the actual game/Data.
     $PokemonGlobal = PokemonGlobalMetadata.new
     $PokemonGlobal.blue_regions = {"version"=>1, "current"=>"DECADES"}
     $player = JohtoDummyPlayer.new
