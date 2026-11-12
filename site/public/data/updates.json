@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d680517421a910daa09dbe806ff0cceafa50bb3d",
+      "date": "2026-11-11T23:48:48-03:00",
+      "title": "test(kanto): acompanhar 12 retratos de treinadores na fase Cerulean",
+      "category": "Testes"
+    },
+    {
       "sha": "49c0218fa7b3dd0f280c65660fa55dc2af4e55f1",
       "date": "2026-11-11T23:47:29-03:00",
       "title": "feat(site): adicionar 25 locais e 28 perfis de Kanto até Misty via fonte auditada",
