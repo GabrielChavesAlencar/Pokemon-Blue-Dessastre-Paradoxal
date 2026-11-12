@@ -101,6 +101,10 @@ def inspect(game: Path) -> dict:
             )
     for entry in (9, 29, 30):
         anchors[(64, entry)] = "BlueKantoPilot.harbor_gate"
+    for entry in (4, 10, *range(22, 35)):
+        anchors[(67, entry)] = "BlueKantoPilot.surge_can"
+    for entry in (8, *range(11, 20)):
+        anchors[(67, entry)] = "BlueKantoPilot.surge_gate"
     found = set()
     warps = 0
     for source, dest in mapping.items():
