@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "714117ee03fee50003425ada174c5d73890f4ffc",
+      "date": "2026-11-12T09:25:59-03:00",
+      "title": "MAN-02: persistir página pós-vitória por self-switch sem repetir batalhas",
+      "category": "Melhorias"
+    },
+    {
       "sha": "d11346fac965cb92a6544572da9320dea24b8928",
       "date": "2026-11-12T09:25:40-03:00",
       "title": "MAN-02: restaurar visão Trainer(n), Event Touch e página pós-vitória dos treinadores",
