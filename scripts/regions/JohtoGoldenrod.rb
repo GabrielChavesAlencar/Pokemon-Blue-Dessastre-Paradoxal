@@ -77,6 +77,18 @@ module BlueJohtoGoldenrod
     true
   end
 
+  def self.woodcutter
+    flags = progress
+    return false unless flags && intro_complete? && flags["ilex_entered"]
+    if flags["ilex_woodcutter_met"]
+      pbMessage(_INTL("Lenhador: procure meus dois Farfetch'd na floresta."))
+      return false
+    end
+    flags["ilex_woodcutter_met"] = true
+    pbMessage(_INTL("Lenhador: dois Farfetch'd escaparam. Pode me ajudar a trazê-los de volta?"))
+    true
+  end
+
   def self.farfetchd_captured?(number)
     flags = progress
     flags && flags["ilex_farfetchd"].is_a?(Array) &&
@@ -88,7 +100,7 @@ module BlueJohtoGoldenrod
   def self.farfetchd(number)
     flags = progress
     return false unless flags && FARFETCHD_IDS.include?(number)
-    unless intro_complete? && flags["ilex_entered"]
+    unless intro_complete? && flags["ilex_entered"] && flags["ilex_woodcutter_met"]
       pbMessage(_INTL("Fale primeiro com o lenhador e entre em Ilex Forest."))
       return false
     end
