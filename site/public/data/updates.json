@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d11346fac965cb92a6544572da9320dea24b8928",
+      "date": "2026-11-12T09:25:40-03:00",
+      "title": "MAN-02: restaurar visão Trainer(n), Event Touch e página pós-vitória dos treinadores",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7a92aefb02d7d6090b0573d215b6c7cedb2ad6e1",
       "date": "2026-11-12T09:22:49-03:00",
       "title": "Fix: capture FRLG trainer sight range in audit regex",
