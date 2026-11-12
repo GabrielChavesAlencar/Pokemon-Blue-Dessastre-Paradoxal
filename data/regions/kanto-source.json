@@ -45,6 +45,31 @@
     "75": "SS_ANNE_2F",
     "76": "SS_ANNE_CAPTAIN",
     "77": "SS_ANNE_B1F",
-    "78": "SS_ANNE_DECK"
-  }
+    "78": "SS_ANNE_DECK",
+    "111": "ROUTE_7",
+    "114": "CELADON_CITY",
+    "115": "CELADON_CENTER",
+    "117": "CELADON_DEPT_1F",
+    "118": "CELADON_DEPT_2F",
+    "119": "CELADON_DEPT_3F",
+    "120": "CELADON_DEPT_4F",
+    "121": "CELADON_DEPT_5F",
+    "122": "CELADON_DEPT_ROOF",
+    "123": "CELADON_DEPT_ELEVATOR",
+    "124": "CELADON_GYM"
+  },
+  "preview_only": [
+    111,
+    114,
+    115,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124
+  ],
+  "preview_policy": "Fase 09: importar somente a geometria e as conexoes da fonte. Nao copiar eventos/NPCs/gatilhos nem encontros ou treinadores dos mapas preview_only ate conclusao da analise manual."
 }
