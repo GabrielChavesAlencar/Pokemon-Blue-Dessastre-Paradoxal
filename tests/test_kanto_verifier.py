@@ -47,22 +47,45 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(len(manifest["preview_only"]), 44)
         self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,
                          168,169,170,171,172,*range(178,190),
-                         199,200,201,202,203,205,206,207,208}.isdisjoint(manifest["preview_only"]))
+                         199,200,201,202,203,205,206,207,208,13}.isdisjoint(manifest["preview_only"]))
 
-    def test_portal_matches_audited_cerulean_roster(self):
+    def test_portal_matches_audited_kanto_rosters(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 126)
-        self.assertEqual(len(data["trainers"]), 118)
+        self.assertEqual(len(data["locations"]), 127)
+        self.assertEqual(len(data["trainers"]), 127)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)
+        self.assertIn("Giovanni", leaders)
         self.assertEqual(
             [(pkmn["species"], pkmn["level"]) for pkmn in leaders["Blaine"]["variants"][0]["team"]],
             [("GROWLITHE", 42), ("PONYTA", 40), ("RAPIDASH", 42), ("ARCANINE", 47)],
         )
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
-        self.assertEqual(len(data["trainers"]), 118)
+        self.assertEqual(len(data["trainers"]), 127)
+        giovanni_leader = leaders["Giovanni"]
+        self.assertEqual(giovanni_leader["id"], "kanto-giovanni-viridian")
+        self.assertEqual(giovanni_leader["location"], "kanto-viridian-gym")
+        self.assertEqual(
+            [(p["species"], p["level"]) for p in giovanni_leader["variants"][0]["team"]],
+            [("RHYHORN", 45), ("NIDOKING", 45), ("DUGTRIO", 42),
+             ("RHYHORN", 50), ("NIDOQUEEN", 44)],
+        )
+        # Silph Giovanni is a distinct non-leader trainer with different PBS data.
+        silph_giovanni = next(t for t in data["trainers"] if t["id"] == "kanto-giovanni")
+        self.assertEqual(silph_giovanni["location"], "kanto-silph-11f")
+        self.assertFalse(silph_giovanni["leader"])
+        self.assertEqual(
+            [(p["species"], p["level"]) for p in silph_giovanni["variants"][0]["team"]],
+            [("NIDORINO", 37), ("RHYHORN", 37),
+             ("KANGASKHAN", 35), ("NIDOQUEEN", 41)],
+        )
+        jason = next(t for t in data["trainers"] if t["id"] == "kanto-jason")
+        cole = next(t for t in data["trainers"] if t["id"] == "kanto-cole")
+        self.assertEqual(jason["location"], "kanto-viridian-gym")
+        self.assertEqual([p["species"] for p in jason["variants"][0]["team"]], ["RHYHORN"])
+        self.assertEqual([p["species"] for p in cole["variants"][0]["team"]], ["ARBOK", "TAUROS"])
         for slug in ("kanto-rivals-house", "kanto-viridian-house-north",
                      "kanto-viridian-house-south", "kanto-route2-secret-gatehouse",
                      "kanto-route2-hidden-house", "kanto-pewter-museum",
