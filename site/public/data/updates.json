@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "392437310c7ae8d342f797291e1ec2f509367d0a",
+      "date": "2026-11-11T23:43:27-03:00",
+      "title": "fix(kanto): permitir jogabilidade experimental sem detecção Win32 sujeita a WinError 0",
+      "category": "Correções"
+    },
+    {
       "sha": "e3584b5372e2398b483081e9e8cf26eb649f763b",
       "date": "2026-11-11T23:42:07-03:00",
       "title": "ci(kanto): exportar locais e elencos reais para sincronizar portal da fase 07",
