@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "beab251936c3ad1ce7276640b6738122be233ed7",
+      "date": "2026-11-12T20:23:00-03:00",
+      "title": "docs(johto): define itinerário simbólico da fase 05 sem inventar MapIDs ou conexões",
+      "category": "Documentação"
+    },
+    {
       "sha": "10b1439c2d503b42986dcca3c458e4dfd055b3c5",
       "date": "2026-11-12T20:22:12-03:00",
       "title": "test(johto): inclui Violet e Falkner nas regressões automáticas do Blue Studio",
