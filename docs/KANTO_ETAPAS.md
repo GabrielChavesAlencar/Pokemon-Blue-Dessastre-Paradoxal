@@ -10,7 +10,7 @@
 
 Uma etapa só é marcada `[x]` após evidência de funcionamento. `[ ]` = pendente, mesmo que o código já tenha sido enviado e o teste esteja em execução. Não tratar um teste estrutural ou simulado como teste real de controles, batalhas ou caminhada.
 
-**Barra 1 — Núcleos funcionais aprovados (12/11/2026): 11/16 (68,75%) — faltam 5 passos.** Com Saffron e Cinnabar, contam os núcleos **01, 03, 04, 05, 06, 07, 08, 09, 10, 11 e 12**. Saffron/Silph passou na [CI Windows 43246545283](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43246545283), e Cinnabar/Blaine passou na [CI Windows 43250888468](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43250888468). Faltam os núcleos 02, 13, 14, 15 e 16.**
+**Barra 1 — Núcleos funcionais aprovados (12/11/2026): 11/16 (68,75%) — faltam 5 passos.** Com Saffron e Cinnabar, contam os núcleos **01, 03, 04, 05, 06, 07, 08, 09, 10, 11 e 12**. Saffron/Silph passou na [CI Windows 43246545283](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43246545283), e Cinnabar/Blaine passou na [CI Windows 43250888468](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43250888468). Faltam os núcleos 02, 13, 14, 15 e 16.
 
 **Barra 2 — Etapas integralmente aceitas: 01/16 (6,25%) — faltam 15 passos.** Somente a etapa 01 de auditoria está integralmente aceita; Koga, Safari, portas/colisões e gameplay de todas as áreas ainda precisam de QA manual real. A CI simula batalhas e não substitui jogar.
 
