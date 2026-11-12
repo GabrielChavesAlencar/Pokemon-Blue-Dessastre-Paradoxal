@@ -63,7 +63,7 @@ A **referência GBA** não pode virar `engine_english_key` por substituição de
 3. Opcionalmente usar `--traduzir --limite 50` para pequeno lote de revisão, sem concluir que o tradutor gerou pt-BR aprovado.
 4. Confrontar com a saída privada de `scripts/regions/extrair_eventos_firered.py`; registrar o roteiro de `text.inc` / `scripts.inc` e condições de fala, sem executar código de terceiros.
 5. Aplicar QA de preservação de tokens e revisão de localização segundo `scripts/localization/catalog.py`, `scripts/localization/review.py`, `docs/PORTUGUES_E_UI.md`.
-6. **Não modificar os 61 mapas `preview_only` nem liberar diálogos antes da autorização dos eventos**. O teste `Testar Kanto` é uma cópia com save isolado.
+6. **Não modificar os 58 mapas ainda em `preview_only` nem liberar seus diálogos antes da autorização dos eventos**. O teste `Testar Kanto` é uma cópia com save isolado.
 
 ## 6. Critérios de aceite do diálogo em cada evento
 
@@ -78,7 +78,7 @@ A **referência GBA** não pode virar `engine_english_key` por substituição de
 
 ## 7. Progresso e bloqueios
 
-- **Campanha Kanto, núcleos funcionais comprovados:** **7/16 (43,75%); faltam 9 etapas**. O [passo funcional 07/16](KANTO_AVANCO_FUNCIONAL_07.md) implementou o pacote de Oak com textos autorais provisórios em português; a revisão sistemática EN/PT-BR continua pendente. Fases 09–11 são apenas geometrias.
+- **Campanha Kanto, núcleos funcionais comprovados:** **8/16 (50%); faltam 8 etapas**. A [entrega do 8º núcleo](KANTO_AVANCO_FUNCIONAL_08.md) tem Erika/Rainbow e diálogos autorais provisórios; revisão sistemática EN/PT-BR do FireRed ainda pendente. Celadon City/Center/Gym possuem eventos locais; os demais 58 mapas continuam sem eventos.
 - **Campanha Kanto, aceitação completa:** **1/16 (6,25%); faltam 15 etapas**. QA humano pendente.
 - **Auditoria de eventos FireRed:** 12 marcos; sem porcentagem aferida.
 - **Auditoria/localização de diálogos:** 10 tarefas DIA-01–DIA-10; **0 finalizadas nesta revisão documental**, execução ainda não registrada.
