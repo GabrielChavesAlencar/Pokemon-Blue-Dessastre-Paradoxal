@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4045d15d6e5c638befb7a61ae3684fc1d7ed2a5e",
+      "date": "2026-11-12T08:22:00-03:00",
+      "title": "Kanto fase 10: integrar preview de Fuchsia, Safari, 31 atalhos e nenhum evento",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a337cde4c2d6f51c4fb3150a9df146d3121b10a5",
+      "date": "2026-11-12T08:21:57-03:00",
+      "title": "Kanto fase 10: integrar preview de Fuchsia, Safari, 31 atalhos e nenhum evento",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "84c087d642b5a0823da4a0cc5dcc9ea30d5816b2",
+      "date": "2026-11-12T08:21:55-03:00",
+      "title": "Kanto fase 10: integrar preview de Fuchsia, Safari, 31 atalhos e nenhum evento",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1980972afd73384bfa27499bf3feb867ae8a953d",
+      "date": "2026-11-12T08:21:53-03:00",
+      "title": "Kanto fase 10: integrar preview de Fuchsia, Safari, 31 atalhos e nenhum evento",
+      "category": "Melhorias"
+    },
+    {
       "sha": "162416146f4052fc25b9b9f3b5c299c7a3bc9bb0",
       "date": "2026-11-12T08:21:10-03:00",
       "title": "Kanto fase 10: adicionar 20 mapas FRLG auditados de Fuchsia/Safari/rotas como preview_only",
