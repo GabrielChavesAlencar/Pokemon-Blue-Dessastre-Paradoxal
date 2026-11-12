@@ -27,7 +27,10 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] Verificador `scripts/regions/verify_johto.py` e testes sintéticos `tests/test_johto_map_plan.py` e `tests/test_johto_stage.py`.
 - [x] [Documento detalhado da Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md) com comandos, critérios e limites.
 - [ ] Gerar cópia isolada a partir dos **mapas reais de Johto**; sem a fonte externa validada o staging real permanece bloqueado.
-- [ ] Criar New Bark, casa, laboratório de Elm e inicial jogável após validar a fonte, sem escrever em Decades/Kanto.
+- [x] Base de seleção de início Johto em `scripts/battle_polish/RegionStart.rb`, com guardas por marcador regional, instalação e mapa existente, sem liberar a região antes da instalação real.
+- [x] Regressões Ruby ampliadas em `tests/region_start_runtime.rb` para início sintético Johto, segurança de Kanto/Decades e saves.
+- [x] [Documento da Etapa 04 parcial](JOHTO_FASE_04_BASE_DO_INICIO.md).
+- [ ] Criar New Bark, casa, laboratório de Elm, rival e inicial **realmente jogáveis** após auditar a fonte; não escrever em Decades/Kanto.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -38,7 +41,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 01 | Fonte, direitos e baseline | **PARCIAL**: manifesto criado; fonte real, hash e direitos pendentes |
 | 02 | Auditoria RXDATA e dependências | **PARCIAL**: scanner/testes criados; fonte real e validação pendentes |
 | 03 | Importador isolado e prévia | **PARCIAL**: código e testes sintéticos; pacote, IDs e prévia reais pendentes |
-| 04 | New Bark, casa, Elm e inicial | PENDENTE |
+| 04 | New Bark, casa, Elm e inicial | **PARCIAL**: guarda de início/teste Ruby; mapas, eventos e jogabilidade pendentes |
 | 05 | Violet e Falkner | PENDENTE |
 | 06 | Azalea e Bugsy | PENDENTE |
 | 07 | Goldenrod e Whitney | PENDENTE |
