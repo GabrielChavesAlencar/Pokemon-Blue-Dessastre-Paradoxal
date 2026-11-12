@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "034d2fb479a157265ef5ab1049107d9750980c05",
+      "date": "2026-11-12T09:46:32-03:00",
+      "title": "docs(kanto): recalibrar barras por evidencia — 6/16 nucleos, 1/16 aceites e passos restantes",
+      "category": "Documentação"
+    },
+    {
       "sha": "e56fb757ffeba2bedb691f98a55046317984c82e",
       "date": "2026-11-12T09:40:26-03:00",
       "title": "docs(kanto): registrar CI e regressão aprovadas das correções MAN-01/02",
