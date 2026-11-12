@@ -1,4 +1,4 @@
-"""Install the original music adapter without touching maps or music assets."""
+"""Install BlueMusic, preserving Decades preferences and syncing Kanto-only BGM."""
 from pathlib import Path
 from datetime import datetime,timezone
 import os,tempfile,shutil,json,hashlib,sys
@@ -38,6 +38,21 @@ def install(project,game):
     import importlib.util
     spec=importlib.util.spec_from_file_location('blue_kanto_music_compile',source/'compile_kanto_music.py')
     regional=importlib.util.module_from_spec(spec);spec.loader.exec_module(regional)
+    # For previously integrated Kanto saves, copy the approved regional tracks
+    # first, then rebuild only Data/blue-kanto-music.txt. Never touch native
+    # Audio/BGM or the user's Data/blue-music.* preferences.
+    installed=game/'Data/blue-kanto-install.json'
+    marker=game/'Data/blue-kanto-start.txt'
+    if installed.is_file() and marker.is_file():
+        current=json.loads(installed.read_text(encoding='utf-8')).get('maps',{})
+        expected=json.loads((project/'data/regions/kanto-source.json').read_text(encoding='utf-8'))['maps']
+        if isinstance(current,dict) and set(current)==set(expected):
+            audio_spec=importlib.util.spec_from_file_location('blue_kanto_music_audio',source/'install_kanto_music.py')
+            kanto_audio=importlib.util.module_from_spec(audio_spec);audio_spec.loader.exec_module(kanto_audio)
+            tracks=regional.phase2_track_numbers(project)
+            if tracks:
+                kanto_audio.install(game,apply=True,numbers=tracks,
+                    manifest_path=project/'data/kanto-music.json',base=project)
     plan.update(regional.plan_installed(project,game))
     changed={p:b for p,b in plan.items() if not p.is_file() or p.read_bytes()!=b}
     backup=project/'.blue-backups'/('music-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
