@@ -17,6 +17,20 @@ module RPG
     end
   end
 end
+# Minimal native engine functions to prove the regional vehicle hooks chain
+# safely into super when Decades or a save without a Kanto region is active.
+class Object
+  private
+  def pbAutoplayOnTransition(*args); $vehicle_calls << [:native_transition]; :native; end
+  def pbAutoplayOnSave(*args); $vehicle_calls << [:native_save]; :native; end
+  def pbMountBike(*args)
+    $PokemonGlobal.bicycle=true
+    $vehicle_calls << [:native_mount]
+    :mounted
+  end
+  def pbBGMPlay(audio); $vehicle_calls << [:play,audio.name]; end
+  def pbCueBGM(audio,fade); $vehicle_calls << [:cue,audio.name,fade]; end
+end
 module BlueRegions
   def self.active?; true; end
 end
@@ -51,7 +65,7 @@ Dir.mktmpdir('blue-kanto-music-runtime-') do |folder|
                "MAP\t701\tKanto/sample.mp3\t72\t101\n"+
                "BATTLE\twild\tKanto/sample.mp3\t91\t99\n")
     $game_map=Struct.new(:map_id).new(701)
-    $PokemonGlobal=Struct.new(:nextBattleBGM,:blue_regions).new(nil,nil)
+    $PokemonGlobal=Struct.new(:nextBattleBGM,:blue_regions,:bicycle,:surfing).new(nil,nil,false,false)
     BlueMusic.instance_variable_set(:@testing,[1,[],[]])
     BlueRegionalPolicy.region=nil
     MusicAssert.check('Legacy save without region never switches sound',
@@ -109,6 +123,51 @@ Dir.mktmpdir('blue-kanto-music-runtime-') do |folder|
     MusicAssert.check('Returning to Decades restores native map music',
                       native_map.bgm.name=='original decades-style' &&
                       native_map.bgm.volume==43 && !native_map.autoplay_bgm)
+    # Vehicle themes only when explicitly mounted in Kanto, and after the
+    # original Essentials commands have established the vehicle state.
+    File.write('Audio/BGM/Kanto/cycling.mp3','synthetic')
+    File.write('Audio/BGM/Kanto/surfing.mp3','synthetic')
+    File.write('Data/blue-kanto-music.txt',File.read('Data/blue-kanto-music.txt')+
+               "TRANSPORT\tbicycle\tKanto/cycling.mp3\t80\t100\n"+
+               "TRANSPORT\tsurf\tKanto/surfing.mp3\t75\t100\n")
+    $vehicle_calls=[]
+    Object.prepend(BlueMusic::VehicleAudio)
+    BlueRegionalPolicy.region='DECADES'
+    $PokemonGlobal.bicycle=false
+    send(:pbMountBike)
+    MusicAssert.check('Native Decades bicycle theme preserved',
+                      $vehicle_calls==[[:native_mount]])
+    BlueRegionalPolicy.region='KANTO'
+    $PokemonGlobal.bicycle=false
+    $vehicle_calls=[]
+    send(:pbMountBike)
+    MusicAssert.check('Kanto bicycle only while mounted',
+                      $vehicle_calls==[[:native_mount],[:cue,'Kanto/cycling.mp3',0.4]])
+    $PokemonGlobal.bicycle=false
+    $PokemonGlobal.surfing=true
+    $vehicle_calls=[]
+    send(:pbAutoplayOnSave)
+    MusicAssert.check('Kanto Surf theme on save load',
+                      $vehicle_calls==[[:play,'Kanto/surfing.mp3']])
+    $game_map.map_id=703
+    $vehicle_calls=[]
+    send(:pbAutoplayOnTransition)
+    MusicAssert.check('Preview map cannot use Kanto transport theme',
+                      $vehicle_calls==[[:native_transition]])
+    $game_map.map_id=701
+    BlueRegionalPolicy.region='DECADES'
+    $vehicle_calls=[]
+    send(:pbAutoplayOnTransition)
+    MusicAssert.check('Region transfer restores Decades vehicle audio',
+                      $vehicle_calls==[[:native_transition]])
+    BlueRegionalPolicy.region='KANTO'
+    $PokemonGlobal.surfing=false
+    $vehicle_calls=[]
+    send(:pbAutoplayOnSave)
+    MusicAssert.check('Surf stop restores native map autoplay',
+                      $vehicle_calls==[[:native_save]])
+    $PokemonGlobal.bicycle=false
+    $PokemonGlobal.surfing=false
     File.delete('Audio/BGM/Kanto/sample.mp3')
     BlueRegionalPolicy.region='KANTO'
     MusicAssert.check('Absent MP3 gives safe fallback',
