@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e94f1d523f5282970cb7cf2f5635bab8a98bd484",
+      "date": "2026-11-11T22:59:12-03:00",
+      "title": "feat(kanto): reparar quatro retratos de instalacoes existentes sem tocar mapas ou saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "f53ae8a9577093e97d79e41c98b957ae957e091e",
       "date": "2026-11-11T22:58:21-03:00",
       "title": "fix(kanto): validar assinatura PNG correta dos retratos importados",
