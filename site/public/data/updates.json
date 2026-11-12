@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aaeff6045e397701565cbdb041994e323635f0e0",
+      "date": "2026-11-12T09:22:09-03:00",
+      "title": "Kanto: auditar automaticamente entradas e saídas de interiores de Pallet a Pewter",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cc81dd83dbc035ece5404862446b1ed6b627fd71",
+      "date": "2026-11-12T09:21:57-03:00",
+      "title": "Kanto: auditar interiores e retornos ausentes no trecho Pallet–Pewter",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b3723506181694c1dd07947818afd40dff3b5961",
       "date": "2026-11-12T09:19:55-03:00",
       "title": "Kanto: registrar metadados reais de alcance e gatilhos de treinadores na CI",
