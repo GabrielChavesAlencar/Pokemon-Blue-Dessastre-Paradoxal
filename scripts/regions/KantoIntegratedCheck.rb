@@ -142,6 +142,22 @@ module KantoIntegratedCheck
              "Kanto->Decades travel did not complete")
     require!($game_map.map_id == original[0], "Decades return map differs from original")
     require!($PokemonGlobal.blue_regions["current"] == "DECADES", "Travel state was not committed")
+    # Town NPC belongs in the first Decades city (Cherryhill Map077).
+    # Dynamic on-map insertion does not mutate native Map077.rxdata.
+    require!(BlueRegionTravel::DECADES_AGENT_MAP == 77,
+             "Decades starting city NPC moved to a non-audited map")
+    $map_factory.setup(BlueRegionTravel::DECADES_AGENT_MAP)
+    agents = $game_map.events.values.select { |event|
+      event.name == BlueRegionTravel::DECADES_AGENT_NAME
+    }
+    require!(agents.length == 1,
+             "Cherryhill City regional NPC missing or duplicated")
+    require!(agents[0].list.any? { |op|
+      op.code == 355 && op.parameters[0] == "BlueRegionTravel.agent(true)"
+    }, "Decades city NPC cannot open regional travel")
+    $map_factory.setup(original[0])
+    $game_player.moveto(original[1], original[2])
+
     require!($PokemonGlobal.blue_regions["initial"] == "KANTO", "Travel changed the initial region")
     require!($player.party.first.equal?(pokemon), "Travel replaced the party Pokémon")
 
