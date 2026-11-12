@@ -260,6 +260,22 @@
       "trainers": []
     },
     {
+      "id": "kanto-viridian-gym",
+      "name": "Ginásio de Viridian — Giovanni",
+      "methods": [],
+      "trainers": [
+        "kanto-giovanni-viridian",
+        "kanto-takashi",
+        "kanto-kiyo",
+        "kanto-atsushi",
+        "kanto-samuel",
+        "kanto-yuji",
+        "kanto-warren",
+        "kanto-cole",
+        "kanto-jason"
+      ]
+    },
+    {
       "id": "kanto-viridian-center",
       "name": "Centro Pokémon de Viridian",
       "methods": [],
@@ -5048,6 +5064,278 @@
             {
               "species": "RATICATE",
               "level": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-giovanni-viridian",
+      "name": "Giovanni",
+      "role": "Líder de ginásio",
+      "location": "kanto-viridian-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RHYHORN",
+              "level": 45,
+              "moves": [
+                "ROCKBLAST",
+                "EARTHQUAKE",
+                "TAKEDOWN",
+                "SCARYFACE"
+              ]
+            },
+            {
+              "species": "NIDOKING",
+              "level": 45,
+              "moves": [
+                "EARTHQUAKE",
+                "POISONSTING",
+                "DOUBLEKICK",
+                "THRASH"
+              ]
+            },
+            {
+              "species": "DUGTRIO",
+              "level": 42,
+              "moves": [
+                "EARTHQUAKE",
+                "SANDTOMB",
+                "MUDSLAP",
+                "SLASH"
+              ]
+            },
+            {
+              "species": "RHYHORN",
+              "level": 50,
+              "moves": [
+                "ROCKBLAST",
+                "EARTHQUAKE",
+                "TAKEDOWN",
+                "SCARYFACE"
+              ]
+            },
+            {
+              "species": "NIDOQUEEN",
+              "level": 44,
+              "moves": [
+                "EARTHQUAKE",
+                "POISONSTING",
+                "BODYSLAM",
+                "DOUBLEKICK"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-takashi",
+      "name": "Takashi",
+      "role": "Lutador",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOKE",
+              "level": 38
+            },
+            {
+              "species": "MACHOP",
+              "level": 38
+            },
+            {
+              "species": "MACHOKE",
+              "level": 38
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-kiyo",
+      "name": "Kiyo",
+      "role": "Lutador",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOKE",
+              "level": 43
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-atsushi",
+      "name": "Atsushi",
+      "role": "Lutador",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 40
+            },
+            {
+              "species": "MACHOKE",
+              "level": 40
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-samuel",
+      "name": "Samuel",
+      "role": "Treinador experiente",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSLASH",
+              "level": 37
+            },
+            {
+              "species": "NIDORINO",
+              "level": 39
+            },
+            {
+              "species": "SANDSLASH",
+              "level": 37
+            },
+            {
+              "species": "RHYHORN",
+              "level": 38
+            },
+            {
+              "species": "NIDOKING",
+              "level": 39
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-yuji",
+      "name": "Yuji",
+      "role": "Treinador experiente",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSLASH",
+              "level": 38
+            },
+            {
+              "species": "GRAVELER",
+              "level": 38
+            },
+            {
+              "species": "GRAVELER",
+              "level": 38
+            },
+            {
+              "species": "ONIX",
+              "level": 38
+            },
+            {
+              "species": "MAROWAK",
+              "level": 38
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-warren",
+      "name": "Warren",
+      "role": "Treinador experiente",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAROWAK",
+              "level": 37
+            },
+            {
+              "species": "NIDORINO",
+              "level": 39
+            },
+            {
+              "species": "NIDOQUEEN",
+              "level": 39
+            },
+            {
+              "species": "RHYHORN",
+              "level": 38
+            },
+            {
+              "species": "MAROWAK",
+              "level": 37
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-cole",
+      "name": "Cole",
+      "role": "Domador",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ARBOK",
+              "level": 39
+            },
+            {
+              "species": "TAUROS",
+              "level": 39
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-jason",
+      "name": "Jason",
+      "role": "Domador",
+      "location": "kanto-viridian-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RHYHORN",
+              "level": 43
             }
           ]
         }
