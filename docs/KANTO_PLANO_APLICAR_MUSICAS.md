@@ -32,6 +32,9 @@ Referências existentes:
 
 ## Fase 0 — Auditoria e linha de base (sem trocar músicas do jogo)
 
+**Resultado técnico implementado:** [auditoria e baseline da Fase 0](KANTO_MUSICAS_FASE_0.md), com script `scripts/music/audit_kanto_phase0.py` e verificações da CI. Foram confirmadas **64 faixas (50 BGM/14 ME)**, **142 mapas/45 prévias** e os hooks existentes/pendentes. **Nenhum áudio foi ativado ou testado tocando no Game.exe**; a Fase 1 é o próximo passo.
+
+
 **Ação:** conferir os 64 MP3 e confirmar que o jogo local ou a cópia piloto tem suporte a BGM/ME. Executar:
 ```powershell
 python scripts/music/install_kanto_music.py --audit
