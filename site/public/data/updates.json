@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0f3459a4b93d129538d2c6588b34c856e52fa84a",
+      "date": "2026-11-12T20:29:41-03:00",
+      "title": "test(johto): valida caminho 06, Hive/Cut e bloqueios de mapas reais",
+      "category": "Testes"
+    },
+    {
       "sha": "d2dff6c81783c833808f11403c3d1e0a97ab989f",
       "date": "2026-11-12T20:29:17-03:00",
       "title": "docs(johto): adiciona grafo simbólico Route32 Union Cave Azalea e Slowpoke Well",
