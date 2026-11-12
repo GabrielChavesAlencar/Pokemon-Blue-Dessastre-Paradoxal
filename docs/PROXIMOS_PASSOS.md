@@ -1,6 +1,8 @@
 # Próximos passos — Pokémon Blue: Dessastre Paradoxal
 
-**Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).** O contador é atualizado somente com testes concluídos.
+**Acompanhe as [16 etapas de conclusão de Kanto](KANTO_ETAPAS.md).**
+
+**Referência nova — eventos FireRed:** [estudo técnico dos 425 mapas](ESTUDO_EVENTOS_MAPA_POKEMON_FIRERED_RPG_MAKER_XP.md) · [passo a passo detalhado de aplicação em RPG Maker XP/Essentials](FIRERED_EVENTOS_COMO_APLICAR_NO_BLUE.md) · [extrator de eventos da decompilação](../scripts/regions/extrair_eventos_firered.py). Documentação e ferramenta **não instalam eventos**: manter os 11 mapas de prévia da Fase 09 sem NPCs, portas ou gatilhos enquanto não houver liberação explícita. Priorizar MAN-01/02/03 e preservar as duas barras de progresso. O contador é atualizado somente com testes concluídos.
 
 **Desenvolvimento atual: etapa 08/16 (50%). Conclusão validada: 01/16 (6,25%).** O piloto experimental já integra 40 mapas até Vermilion/S.S. Anne, com teste nativo automatizado; a caminhada, as portas internas, os eventos de treinadores e as batalhas reais ainda precisam ser validados. [Instalação opcional no jogo principal e seletor de região](KANTO_ESCOLHA_REGIAO.md) · [feedback manual de 12/11](KANTO_FEEDBACK_TESTES_MANUAIS_2026-11-12.md).
 
