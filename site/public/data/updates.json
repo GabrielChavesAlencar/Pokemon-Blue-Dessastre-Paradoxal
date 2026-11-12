@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "65beec4c5a0192ecc20b5be9f706a5bd820dead2",
+      "date": "2026-11-12T06:44:45-03:00",
+      "title": "test(kanto): tornar sensivel a checagem de caminhos do BAT experimental",
+      "category": "Testes"
+    },
+    {
       "sha": "c7f52639995f72cddbdcde58d13ef03e1e2d8cb0",
       "date": "2026-11-12T06:43:04-03:00",
       "title": "test(kanto): executar contrato Ruby do terceiro menu e verificar integracao no EXE",
