@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "abe139593bb0948c91f114822755eff20cce4b78",
+      "date": "2026-11-11T23:08:59-03:00",
+      "title": "test(regions): cobrir PC Decades, presentes, 8 insígnias e HMs locais",
+      "category": "Testes"
+    },
+    {
       "sha": "2963054fed2113a396387d5e18e53d905ee74dcf",
       "date": "2026-11-11T23:07:10-03:00",
       "title": "feat(regions): ativar politica regional no plugin Blue com integracao opcional",
