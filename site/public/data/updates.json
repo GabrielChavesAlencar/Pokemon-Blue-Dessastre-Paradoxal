@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e29b1278c3c95902737149705b0ad743a6b7c1d1",
+      "date": "2026-11-12T19:56:28-03:00",
+      "title": "feat(johto): gera preview isolada de terreno com IDs remapeados e sem eventos",
+      "category": "Novidades"
+    },
+    {
       "sha": "7764681696cf32c9fdb8e97a34ac1f2277889c9c",
       "date": "2026-11-12T19:54:43-03:00",
       "title": "fix(johto): inclui MapInfos registrados na proteção de IDs do jogo mestre",
