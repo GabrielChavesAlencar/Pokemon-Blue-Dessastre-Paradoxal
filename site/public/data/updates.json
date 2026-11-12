@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "44142742c8ddeafde4379037975c8db46b7c1467",
+      "date": "2026-11-12T06:27:46-03:00",
+      "title": "test(kanto): provar na engine que Testar Kanto e a terceira opcao do EXE",
+      "category": "Testes"
+    },
+    {
       "sha": "6aaf6679f211b9163f58848fe9666a4f4302368c",
       "date": "2026-11-12T06:27:11-03:00",
       "title": "test(kanto): executar prova Ruby do menu inicial com Auto Multi Save na CI",
