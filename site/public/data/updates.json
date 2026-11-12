@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7e7044e1c2f2443f2d98a0c39566df72bcd5182a",
+      "date": "2026-11-11T22:45:31-03:00",
+      "title": "docs(kanto): registrar teste de viagem, PC e save nativo aprovado",
+      "category": "Documentação"
+    },
+    {
       "sha": "73057caffc944bb03655b74213de6b4ea529fcf5",
       "date": "2026-11-11T22:45:01-03:00",
       "title": "docs(kanto): registrar prova de viagem e depósito nativo aprovada",
