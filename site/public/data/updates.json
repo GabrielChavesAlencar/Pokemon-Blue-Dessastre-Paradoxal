@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "801b48e9f0b8914fb6165b5ddd386393a3242b31",
+      "date": "2026-11-12T09:47:56-03:00",
+      "title": "docs(kanto): atualizar duas barras reavaliadas (6/16 dev, 1/16 aceite) com etapas faltantes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "19ada1cd57c2ef7787c2bf4420f572f189d328fc",
+      "date": "2026-11-12T09:47:53-03:00",
+      "title": "docs(kanto): atualizar duas barras reavaliadas (6/16 dev, 1/16 aceite) com etapas faltantes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "15d549c2263d27396ac2fdbfecf1e4faa6e7cec1",
+      "date": "2026-11-12T09:47:51-03:00",
+      "title": "docs(kanto): atualizar duas barras reavaliadas (6/16 dev, 1/16 aceite) com etapas faltantes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "5cb218ef115661ec5ce09db21540c3cf2b87d841",
+      "date": "2026-11-12T09:47:49-03:00",
+      "title": "docs(kanto): atualizar duas barras reavaliadas (6/16 dev, 1/16 aceite) com etapas faltantes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "6857fdee5d1732eead0577b8515ac15f53d6d1eb",
+      "date": "2026-11-12T09:47:46-03:00",
+      "title": "docs(kanto): atualizar duas barras reavaliadas (6/16 dev, 1/16 aceite) com etapas faltantes",
+      "category": "Documentação"
+    },
+    {
       "sha": "034d2fb479a157265ef5ab1049107d9750980c05",
       "date": "2026-11-12T09:46:32-03:00",
       "title": "docs(kanto): recalibrar barras por evidencia — 6/16 nucleos, 1/16 aceites e passos restantes",
