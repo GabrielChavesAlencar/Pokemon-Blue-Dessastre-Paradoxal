@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e09a7aff7f1a6b70fae0dad4239120c322d13f2b",
+      "date": "2026-11-11T22:37:36-03:00",
+      "title": "test(kanto): usar mapa real sem sprites no teste headless da viagem",
+      "category": "Testes"
+    },
+    {
       "sha": "f2eebc757499b950535560cb3d8c7649128639a3",
       "date": "2026-11-11T22:36:43-03:00",
       "title": "docs(regions): ligar fase 05 ao roteiro e dois indicadores distintos",
