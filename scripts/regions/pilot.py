@@ -292,7 +292,7 @@ def install_events(source, target, mapping):
                     # Preserve Trainer(n)/Sight(n) from the audited FRLG event name;
                     # gym leaders/NPCs without Trainer(n) stay Action Button.
                     source_name = text(event.attrs["@name"])
-                    sight = re.search(r"(?i)(?:trainer|sight)\\(\\d+\\)", source_name)
+                    sight = re.search(r"(?i)(?:trainer|sight)\((\d+)\)", source_name)
                     auto = (bool(sight) and
                             event.attrs["@pages"][0].attrs["@trigger"] == 2 and
                             not kind.startswith("LEADER"))
