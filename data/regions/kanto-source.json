@@ -14,8 +14,11 @@
     "10": "VIRIDIAN_CITY",
     "11": "VIRIDIAN_CENTER",
     "12": "VIRIDIAN_MART",
+    "13": "VIRIDIAN_GYM",
     "14": "VIRIDIAN_HOUSE_NORTH",
     "15": "VIRIDIAN_HOUSE_SOUTH",
+    "16": "ROUTE_22",
+    "17": "INDIGO_GATE",
     "18": "ROUTE_2",
     "19": "FOREST_GATE_SOUTH",
     "20": "FOREST_GATE_NORTH",
@@ -132,7 +135,19 @@
     "206": "MANSION_2F",
     "207": "MANSION_3F",
     "208": "MANSION_B1F",
-    "13": "VIRIDIAN_GYM"
+    "209": "ROUTE_23",
+    "210": "VICTORY_ROAD_HUB",
+    "211": "VICTORY_ROAD_1F",
+    "212": "VICTORY_ROAD_2F",
+    "213": "VICTORY_ROAD_3F",
+    "214": "INDIGO_PLATEAU",
+    "215": "INDIGO_LOBBY",
+    "216": "ELITE_LORELEI_ROOM",
+    "217": "ELITE_BRUNO_ROOM",
+    "218": "ELITE_AGATHA_ROOM",
+    "219": "ELITE_LANCE_ROOM",
+    "220": "CHAMPION_HALL",
+    "221": "HALL_OF_FAME"
   },
   "preview_only": [
     57,
@@ -178,7 +193,8 @@
     195,
     196,
     197,
-    198
+    198,
+    210
   ],
-  "preview_policy": "Celadon 114/115/124, Fuchsia 144/145/146/147/153 e Saffron 168-172/178-189 e Cinnabar 199-203/205-208 possuem somente eventos e batalhas whitelisted no piloto isolado. As 44 areas restantes, inclusive portarias sem guardas, Safari Zone, Warden, casas de Saffron, rotas aquaticas 19/20/21 e Seafoam, permanecem geometria sem eventos, encontros, itens ou scripts estrangeiros. Cinnabar ativa somente eventos adaptados com whitelist local; nenhuma captura de lendarios ou scripts estrangeiros."
+  "preview_policy": "Núcleos ativos anteriores preservados; a fase 14 adapta somente os eventos whitelisted de Route 22/23, Indigo Gate/Plateau, Victory Road 1F-3F, Lobby, Elite Four, Champion e Hall of Fame. Map210 (hub sem eventos) e 44 prévias anteriores permanecem somente geometria. Scripts e switches estrangeiros nunca são executados; o encerramento da Liga é registrado apenas pelo callback seguro após cinco vitórias em sequência."
 }

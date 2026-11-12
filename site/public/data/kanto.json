@@ -1944,6 +1944,121 @@
         "kanto-lewis",
         "kanto-ivan"
       ]
+    },
+    {
+      "id": "kanto-route-22",
+      "name": "Rota 22 — acesso ao Plateau",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-indigo-gate",
+      "name": "Portaria da Liga Pokémon",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-route-23",
+      "name": "Rota 23 — oito postos de insígnias",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-victory-road-hub",
+      "name": "Victory Road — hub vazio (prévia)",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-victory-road-1f",
+      "name": "Victory Road — 1F",
+      "methods": [],
+      "trainers": [
+        "kanto-naomi",
+        "kanto-rolando"
+      ]
+    },
+    {
+      "id": "kanto-victory-road-2f",
+      "name": "Victory Road — 2F",
+      "methods": [],
+      "trainers": [
+        "kanto-nelson",
+        "kanto-gregory",
+        "kanto-daisuke",
+        "kanto-vincent",
+        "kanto-dawson"
+      ]
+    },
+    {
+      "id": "kanto-victory-road-3f",
+      "name": "Victory Road — 3F",
+      "methods": [],
+      "trainers": [
+        "kanto-alexa",
+        "kanto-caroline",
+        "kanto-george",
+        "kanto-colby",
+        "kanto-ray-tyra"
+      ]
+    },
+    {
+      "id": "kanto-indigo-plateau",
+      "name": "Indigo Plateau",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-indigo-lobby",
+      "name": "Indigo Plateau — Saguão da Liga",
+      "methods": [],
+      "trainers": []
+    },
+    {
+      "id": "kanto-elite-lorelei-room",
+      "name": "Elite Four — sala de Lorelei",
+      "methods": [],
+      "trainers": [
+        "kanto-lorelei"
+      ]
+    },
+    {
+      "id": "kanto-elite-bruno-room",
+      "name": "Elite Four — sala de Bruno",
+      "methods": [],
+      "trainers": [
+        "kanto-bruno"
+      ]
+    },
+    {
+      "id": "kanto-elite-agatha-room",
+      "name": "Elite Four — sala de Agatha",
+      "methods": [],
+      "trainers": [
+        "kanto-agatha"
+      ]
+    },
+    {
+      "id": "kanto-elite-lance-room",
+      "name": "Elite Four — sala de Lance",
+      "methods": [],
+      "trainers": [
+        "kanto-lance"
+      ]
+    },
+    {
+      "id": "kanto-champion-hall",
+      "name": "Sala do Campeão Blue",
+      "methods": [],
+      "trainers": [
+        "kanto-blue-champion"
+      ]
+    },
+    {
+      "id": "kanto-hall-of-fame",
+      "name": "Hall of Fame — Kanto",
+      "methods": [],
+      "trainers": []
     }
   ],
   "trainers": [
@@ -2512,7 +2627,7 @@
       "leader": false,
       "variants": [
         {
-          "starter": null,
+          "starter": "BULBASAUR",
           "team": [
             {
               "species": "SANDSHREW",
@@ -2529,7 +2644,7 @@
           ]
         },
         {
-          "starter": null,
+          "starter": "CHARMANDER",
           "team": [
             {
               "species": "ZUBAT",
@@ -2542,7 +2657,7 @@
           ]
         },
         {
-          "starter": null,
+          "starter": "SQUIRTLE",
           "team": [
             {
               "species": "RATTATA",
@@ -4479,7 +4594,7 @@
       "leader": false,
       "variants": [
         {
-          "starter": null,
+          "starter": "CHARMANDER",
           "team": [
             {
               "species": "NIDORINO",
@@ -5336,6 +5451,814 @@
             {
               "species": "RHYHORN",
               "level": 43
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lorelei",
+      "name": "Lorelei",
+      "role": "Elite Four",
+      "location": "kanto-elite-lorelei-room",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DEWGONG",
+              "level": 52,
+              "moves": [
+                "SURF",
+                "ICEBEAM",
+                "SAFEGUARD",
+                "HAIL"
+              ]
+            },
+            {
+              "species": "CLOYSTER",
+              "level": 52,
+              "moves": [
+                "DIVE",
+                "SPIKES",
+                "HAIL",
+                "PROTECT"
+              ]
+            },
+            {
+              "species": "JYNX",
+              "level": 54,
+              "moves": [
+                "ICEPUNCH",
+                "DOUBLESLAP",
+                "LOVELYKISS",
+                "ATTRACT"
+              ]
+            },
+            {
+              "species": "SLOWBRO",
+              "level": 52,
+              "moves": [
+                "SURF",
+                "ICEBEAM",
+                "YAWN",
+                "AMNESIA"
+              ]
+            },
+            {
+              "species": "LAPRAS",
+              "level": 54,
+              "moves": [
+                "SURF",
+                "ICEBEAM",
+                "BODYSLAM",
+                "CONFUSERAY"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-bruno",
+      "name": "Bruno",
+      "role": "Elite Four",
+      "location": "kanto-elite-bruno-room",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ONIX",
+              "level": 51,
+              "moves": [
+                "EARTHQUAKE",
+                "ROCKTOMB",
+                "IRONTAIL",
+                "ROAR"
+              ]
+            },
+            {
+              "species": "HITMONCHAN",
+              "level": 53,
+              "moves": [
+                "MACHPUNCH",
+                "SKYUPPERCUT",
+                "COUNTER",
+                "ROCKTOMB"
+              ]
+            },
+            {
+              "species": "HITMONLEE",
+              "level": 53,
+              "moves": [
+                "BRICKBREAK",
+                "MEGAKICK",
+                "FACADE",
+                "FORESIGHT"
+              ]
+            },
+            {
+              "species": "ONIX",
+              "level": 54,
+              "moves": [
+                "EARTHQUAKE",
+                "SANDTOMB",
+                "IRONTAIL",
+                "DOUBLEEDGE"
+              ]
+            },
+            {
+              "species": "MACHAMP",
+              "level": 56,
+              "moves": [
+                "CROSSCHOP",
+                "ROCKTOMB",
+                "SCARYFACE",
+                "BULKUP"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-agatha",
+      "name": "Agatha",
+      "role": "Elite Four",
+      "location": "kanto-elite-agatha-room",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GENGAR",
+              "level": 54,
+              "moves": [
+                "SHADOWPUNCH",
+                "TOXIC",
+                "CONFUSERAY",
+                "DOUBLETEAM"
+              ]
+            },
+            {
+              "species": "GOLBAT",
+              "level": 54,
+              "moves": [
+                "AIRCUTTER",
+                "POISONFANG",
+                "BITE",
+                "CONFUSERAY"
+              ]
+            },
+            {
+              "species": "HAUNTER",
+              "level": 53,
+              "moves": [
+                "DREAMEATER",
+                "HYPNOSIS",
+                "MEANLOOK",
+                "CURSE"
+              ]
+            },
+            {
+              "species": "ARBOK",
+              "level": 56,
+              "moves": [
+                "SLUDGEBOMB",
+                "BITE",
+                "IRONTAIL",
+                "SCREECH"
+              ]
+            },
+            {
+              "species": "GENGAR",
+              "level": 58,
+              "moves": [
+                "SHADOWBALL",
+                "SLUDGEBOMB",
+                "NIGHTMARE",
+                "HYPNOSIS"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lance",
+      "name": "Lance",
+      "role": "Elite Four",
+      "location": "kanto-elite-lance-room",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GYARADOS",
+              "level": 56,
+              "moves": [
+                "HYPERBEAM",
+                "DRAGONRAGE",
+                "TWISTER",
+                "BITE"
+              ]
+            },
+            {
+              "species": "DRAGONAIR",
+              "level": 54,
+              "moves": [
+                "OUTRAGE",
+                "HYPERBEAM",
+                "DRAGONRAGE",
+                "SAFEGUARD"
+              ]
+            },
+            {
+              "species": "DRAGONAIR",
+              "level": 54,
+              "moves": [
+                "OUTRAGE",
+                "HYPERBEAM",
+                "THUNDERWAVE",
+                "SAFEGUARD"
+              ]
+            },
+            {
+              "species": "AERODACTYL",
+              "level": 58,
+              "moves": [
+                "WINGATTACK",
+                "ANCIENTPOWER",
+                "HYPERBEAM",
+                "SCARYFACE"
+              ]
+            },
+            {
+              "species": "DRAGONITE",
+              "level": 60,
+              "moves": [
+                "WINGATTACK",
+                "OUTRAGE",
+                "HYPERBEAM",
+                "SAFEGUARD"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-champion",
+      "name": "Blue",
+      "role": "Campeão",
+      "location": "kanto-champion-hall",
+      "leader": false,
+      "variants": [
+        {
+          "starter": "BULBASAUR",
+          "team": [
+            {
+              "species": "PIDGEOT",
+              "level": 59,
+              "moves": [
+                "AERIALACE",
+                "SANDATTACK",
+                "FEATHERDANCE",
+                "WHIRLWIND"
+              ]
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 57,
+              "moves": [
+                "PSYCHIC",
+                "FUTURESIGHT",
+                "RECOVER",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "RHYDON",
+              "level": 59,
+              "moves": [
+                "EARTHQUAKE",
+                "ROCKTOMB",
+                "TAKEDOWN",
+                "SCARYFACE"
+              ]
+            },
+            {
+              "species": "EXEGGUTOR",
+              "level": 59,
+              "moves": [
+                "GIGADRAIN",
+                "EGGBOMB",
+                "SLEEPPOWDER",
+                "LIGHTSCREEN"
+              ]
+            },
+            {
+              "species": "GYARADOS",
+              "level": 61,
+              "moves": [
+                "HYDROPUMP",
+                "DRAGONRAGE",
+                "BITE",
+                "THRASH"
+              ]
+            },
+            {
+              "species": "CHARIZARD",
+              "level": 63,
+              "moves": [
+                "FIREBLAST",
+                "AERIALACE",
+                "FIRESPIN",
+                "SLASH"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "CHARMANDER",
+          "team": [
+            {
+              "species": "PIDGEOT",
+              "level": 59,
+              "moves": [
+                "AERIALACE",
+                "SANDATTACK",
+                "FEATHERDANCE",
+                "WHIRLWIND"
+              ]
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 57,
+              "moves": [
+                "PSYCHIC",
+                "FUTURESIGHT",
+                "RECOVER",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "RHYDON",
+              "level": 59,
+              "moves": [
+                "EARTHQUAKE",
+                "ROCKTOMB",
+                "TAKEDOWN",
+                "SCARYFACE"
+              ]
+            },
+            {
+              "species": "EXEGGUTOR",
+              "level": 61,
+              "moves": [
+                "GIGADRAIN",
+                "EGGBOMB",
+                "SLEEPPOWDER",
+                "LIGHTSCREEN"
+              ]
+            },
+            {
+              "species": "ARCANINE",
+              "level": 59,
+              "moves": [
+                "FLAMETHROWER",
+                "EXTREMESPEED",
+                "BITE",
+                "ROAR"
+              ]
+            },
+            {
+              "species": "BLASTOISE",
+              "level": 63,
+              "moves": [
+                "HYDROPUMP",
+                "SKULLBASH",
+                "BITE",
+                "RAINDANCE"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": "SQUIRTLE",
+          "team": [
+            {
+              "species": "PIDGEOT",
+              "level": 59,
+              "moves": [
+                "AERIALACE",
+                "SANDATTACK",
+                "FEATHERDANCE",
+                "WHIRLWIND"
+              ]
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 57,
+              "moves": [
+                "PSYCHIC",
+                "FUTURESIGHT",
+                "RECOVER",
+                "REFLECT"
+              ]
+            },
+            {
+              "species": "RHYDON",
+              "level": 59,
+              "moves": [
+                "EARTHQUAKE",
+                "ROCKTOMB",
+                "TAKEDOWN",
+                "SCARYFACE"
+              ]
+            },
+            {
+              "species": "ARCANINE",
+              "level": 59,
+              "moves": [
+                "FLAMETHROWER",
+                "EXTREMESPEED",
+                "BITE",
+                "ROAR"
+              ]
+            },
+            {
+              "species": "GYARADOS",
+              "level": 61,
+              "moves": [
+                "HYDROPUMP",
+                "DRAGONRAGE",
+                "BITE",
+                "THRASH"
+              ]
+            },
+            {
+              "species": "VENUSAUR",
+              "level": 63,
+              "moves": [
+                "SOLARBEAM",
+                "GROWTH",
+                "SYNTHESIS",
+                "SUNNYDAY"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-naomi",
+      "name": "Naomi",
+      "role": "Treinadora experiente",
+      "location": "kanto-victory-road-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PERSIAN",
+              "level": 42
+            },
+            {
+              "species": "PONYTA",
+              "level": 42
+            },
+            {
+              "species": "RAPIDASH",
+              "level": 42
+            },
+            {
+              "species": "VULPIX",
+              "level": 42
+            },
+            {
+              "species": "NINETALES",
+              "level": 42
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-alexa",
+      "name": "Alexa",
+      "role": "Treinadora experiente",
+      "location": "kanto-victory-road-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CLEFAIRY",
+              "level": 42
+            },
+            {
+              "species": "JIGGLYPUFF",
+              "level": 42
+            },
+            {
+              "species": "PERSIAN",
+              "level": 42
+            },
+            {
+              "species": "DEWGONG",
+              "level": 42
+            },
+            {
+              "species": "CHANSEY",
+              "level": 42
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-caroline",
+      "name": "Caroline",
+      "role": "Treinadora experiente",
+      "location": "kanto-victory-road-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BELLSPROUT",
+              "level": 42
+            },
+            {
+              "species": "WEEPINBELL",
+              "level": 42
+            },
+            {
+              "species": "VICTREEBEL",
+              "level": 42
+            },
+            {
+              "species": "PARAS",
+              "level": 42
+            },
+            {
+              "species": "PARASECT",
+              "level": 42
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rolando",
+      "name": "Rolando",
+      "role": "Treinador experiente",
+      "location": "kanto-victory-road-1f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATICATE",
+              "level": 42
+            },
+            {
+              "species": "WARTORTLE",
+              "level": 42
+            },
+            {
+              "species": "IVYSAUR",
+              "level": 42
+            },
+            {
+              "species": "CHARMELEON",
+              "level": 42
+            },
+            {
+              "species": "CHARIZARD",
+              "level": 42
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-george",
+      "name": "George",
+      "role": "Treinador experiente",
+      "location": "kanto-victory-road-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EXEGGUTOR",
+              "level": 42
+            },
+            {
+              "species": "SANDSLASH",
+              "level": 42
+            },
+            {
+              "species": "CLOYSTER",
+              "level": 42
+            },
+            {
+              "species": "ELECTRODE",
+              "level": 42
+            },
+            {
+              "species": "ARCANINE",
+              "level": 42
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-colby",
+      "name": "Colby",
+      "role": "Treinador experiente",
+      "location": "kanto-victory-road-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "KINGLER",
+              "level": 42
+            },
+            {
+              "species": "POLIWHIRL",
+              "level": 42
+            },
+            {
+              "species": "TENTACRUEL",
+              "level": 42
+            },
+            {
+              "species": "SEADRA",
+              "level": 42
+            },
+            {
+              "species": "BLASTOISE",
+              "level": 43
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-nelson",
+      "name": "Nelson",
+      "role": "Malabarista",
+      "location": "kanto-victory-road-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DROWZEE",
+              "level": 41
+            },
+            {
+              "species": "HYPNO",
+              "level": 41
+            },
+            {
+              "species": "KADABRA",
+              "level": 41
+            },
+            {
+              "species": "KADABRA",
+              "level": 41
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-gregory",
+      "name": "Gregory",
+      "role": "Malabarista",
+      "location": "kanto-victory-road-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MRMIME",
+              "level": 48
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-daisuke",
+      "name": "Daisuke",
+      "role": "Lutador",
+      "location": "kanto-victory-road-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOKE",
+              "level": 43
+            },
+            {
+              "species": "MACHOP",
+              "level": 43
+            },
+            {
+              "species": "MACHOKE",
+              "level": 43
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-vincent",
+      "name": "Vincent",
+      "role": "Domador",
+      "location": "kanto-victory-road-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PERSIAN",
+              "level": 44
+            },
+            {
+              "species": "GOLDUCK",
+              "level": 44
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-dawson",
+      "name": "Dawson",
+      "role": "Pokémaníaco",
+      "location": "kanto-victory-road-2f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CHARMELEON",
+              "level": 40
+            },
+            {
+              "species": "LAPRAS",
+              "level": 40
+            },
+            {
+              "species": "LICKITUNG",
+              "level": 40
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ray-tyra",
+      "name": "Ray & Tyra",
+      "role": "Dupla",
+      "location": "kanto-victory-road-3f",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "NIDOQUEEN",
+              "level": 45
+            },
+            {
+              "species": "NIDOKING",
+              "level": 45
             }
           ]
         }

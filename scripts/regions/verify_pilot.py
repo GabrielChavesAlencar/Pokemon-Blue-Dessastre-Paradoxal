@@ -14,7 +14,11 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, load
 from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    CINNABAR_GYM_QUIZZES, CINNABAR_GYM_TRAINER_GROUPS,
-                   MANSION_DOORS, MANSION_STATUES, VIRIDIAN_GYM_EVENTS)
+                   MANSION_DOORS, MANSION_STATUES, VIRIDIAN_GYM_EVENTS,
+                   LEAGUE_BADGE_GATES, LEAGUE_BARRIER_GATES,
+                   VICTORY_ROAD_BARRIERS, VICTORY_ROAD_BOULDERS,
+                   LEAGUE_EVENT_WHITELIST, LEAGUE_NEXT_ROOMS,
+                   LEAGUE_TRAINER_SPECS)
 from server.ruby_marshal import text
 
 
@@ -399,7 +403,63 @@ def inspect(game: Path) -> dict:
     if len(battle_scripts) != 1 or '"Jason"' not in battle_scripts[0] or '"Cole"' in battle_scripts[0]:
         raise ValueError("FRLG source typo Tamer Jason -> Cole has leaked into Blue")
 
-    # MAN-02: the source-proven 109 line-of-sight trainers require Event Touch,
+    # Stage 14: the League must use only audited local events and the
+    # eight badges of Kanto. No raw source story switches, credits or
+    # completion flags may be executed in the Decades installation.
+    for original, allowed in LEAGUE_EVENT_WHITELIST.items():
+        actual = set(maps[mapping[original]].attrs["@events"])
+        if actual != allowed:
+            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed}")
+    if maps[mapping[210]].attrs["@events"]:
+        raise ValueError("Empty Victory Road Map210 unexpectedly contains source events")
+    for original, entries in LEAGUE_BADGE_GATES.items():
+        for guard_id, (required, barrier_id) in entries.items():
+            expected_callback = f"BlueKantoPilot.league_badge_check({required}, {guard_id}, {barrier_id})"
+            for eid in (guard_id, barrier_id):
+                event = maps[mapping[original]].attrs["@events"][eid]
+                if first_scripts(original, eid) != [expected_callback]:
+                    raise ValueError(f"League badge gate {original}/{eid} is not locally guarded")
+                pages = event.attrs["@pages"]
+                cond = pages[1].attrs["@condition"].attrs if len(pages) == 2 else {}
+                if cond.get("@self_switch_valid") is not True or cond.get("@self_switch_ch") != b"A":
+                    raise ValueError(f"League gate {original}/{eid} has no safe local open page")
+    for original, eid, callback in (
+            (17,3,"BlueKantoPilot.league_route_gate"),
+            (209,2,"BlueKantoPilot.league_route_gate"),
+            (209,4,"BlueKantoPilot.league_route_gate"),
+            (214,1,"BlueKantoPilot.league_route_gate"),
+            (215,3,"BlueKantoPilot.league_begin"),
+            (215,4,"BlueKantoPilot.heal"),
+            (215,14,"BlueKantoPilot.league_guide"),
+            (220,1,"BlueKantoPilot.league_champion_npc"),
+            (221,1,"BlueKantoPilot.league_finalize"),
+            (221,2,"BlueKantoPilot.league_oak")):
+        if len(first_scripts(original,eid)) != 1 or not first_scripts(original,eid)[0].startswith(callback):
+            raise ValueError(f"Missing safe League script in {original}/{eid}")
+    for original, door in LEAGUE_NEXT_ROOMS.items():
+        eid, target, x, y = door
+        script = first_scripts(original,eid)
+        if len(script) != 1 or not script[0].startswith("BlueKantoPilot.league_advance("):
+            raise ValueError(f"League door {original}/{eid} is not victory-gated")
+        if event_transfers(original,eid):
+            raise ValueError(f"League door {original}/{eid} bypasses the winner gate")
+    for original, (eid, kind, name, _, _) in LEAGUE_TRAINER_SPECS.items():
+        script = first_scripts(original,eid)
+        if len(script) != 1 or not script[0].startswith("BlueKantoPilot.league_battle(") or (
+            f':BLUE_KANTO_{kind}, "{name}"' not in script[0]):
+            raise ValueError(f"Elite/Champion {original}/{eid} does not use the audited roster")
+    if event_transfers(215,3) or event_transfers(221,1):
+        raise ValueError("League completion has an unguarded source warp")
+    for floor, barrier_ids in VICTORY_ROAD_BARRIERS.items():
+        for eid in (*barrier_ids, *VICTORY_ROAD_BOULDERS[floor]):
+            if not first_scripts(floor,eid) or not first_scripts(floor,eid)[0].startswith("BlueKantoPilot.victory_strength("):
+                raise ValueError(f"Victory Road {floor}/{eid} retains unsafe strength scripts")
+    if (first_scripts(213,15)[:1] != ["pbTrainerIntro(:BLUE_KANTO_COOLCOUPLE)"] or
+        "BlueKantoPilot.victory_couple" not in first_scripts(213,15) or
+        "BlueKantoPilot.victory_couple" not in first_scripts(213,16)):
+        raise ValueError("Victory Road's Ray/Tyra double battle was split or discarded")
+
+    # MAN-02: the source-proven 122 line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -428,14 +488,15 @@ def inspect(game: Path) -> dict:
                                   else str(value) for value in commands)
             key = f"KANTO_{original:03d}_{event_id:03d}"
             if (not ("BlueKantoPilot.battle(" in script or
-                     "BlueKantoPilot.cinnabar_trainer(" in script) or
+                     "BlueKantoPilot.cinnabar_trainer(" in script or
+                     "BlueKantoPilot.victory_couple" in script) or
                 f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
                 raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
             if sight:
                 sight_count += 1
                 if "pbNoticePlayer(get_self)" not in script:
                     raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 109:
+    if sight_count != 122:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -494,12 +555,45 @@ def inspect(game: Path) -> dict:
         anchors[(202, event_id)] = (
             f'BlueKantoPilot.cinnabar_trainer(:BLUE_KANTO_{kind}, "{name}", "{key}", {group})'
         )
+    for eid in (15,16):
+        anchors[(213,eid)] = "BlueKantoPilot.victory_couple"
+    for original, (eid,kind,name,stage,_) in LEAGUE_TRAINER_SPECS.items():
+        anchors[(original,eid)] = "BlueKantoPilot.league_battle"
+    for original, (eid,_,x,y) in LEAGUE_NEXT_ROOMS.items():
+        anchors[(original,eid)] = "BlueKantoPilot.league_advance"
     for entry in (9, 29, 30):
         anchors[(64, entry)] = "BlueKantoPilot.harbor_gate"
     for entry in (4, 10, *range(22, 35)):
         anchors[(67, entry)] = "BlueKantoPilot.surge_can"
     for entry in (8, *range(11, 20)):
         anchors[(67, entry)] = "BlueKantoPilot.surge_gate"
+    # Only exact whitelisted script strings are admitted as transfer edges
+    # in the directed graph. They remain guarded at runtime.
+    league_scripted_transfers = {
+        (17,3):(209,14,153,1),
+        (209,2):(211,18,25,8),
+        (209,4):(212,55,17,8),
+        (214,1):(215,11,16,8),
+        (215,3):(216,6,12,8),
+        (216,1):(217,6,12,8),
+        (217,3):(218,6,12,8),
+        (218,3):(219,23,10,8),
+        (219,3):(220,7,19,8),
+        (220,2):(221,5,12,8),
+        (221,1):(5,18,8,8),
+    }
+    def league_expected_callback(source,event_id,target,x,y,required):
+        if source == 17:
+            return f"BlueKantoPilot.league_route_gate({mapping[target]}, {x}, {y}, 1)"
+        if source in (209,214):
+            return f"BlueKantoPilot.league_route_gate({mapping[target]}, {x}, {y}, 8)"
+        if source == 215:
+            return f"BlueKantoPilot.league_begin({mapping[target]}, {x}, {y})"
+        if source == 221:
+            return f"BlueKantoPilot.league_finalize({mapping[target]})"
+        name = {216:"LORELEI",217:"BRUNO",218:"AGATHA",219:"LANCE",220:"CHAMPION"}[source]
+        return f'BlueKantoPilot.league_advance("{name}", {mapping[target]}, {x}, {y})'
+
     found = set()
     warps = 0
     for source, dest in mapping.items():
@@ -530,6 +624,11 @@ def inspect(game: Path) -> dict:
                         # Phase 12: the only scripted Cinnabar map transfer
                         # is gated by the unique Mansion Secret Key. Check the
                         # exact local callback/landing before adding this edge.
+                        if (source,event_id) in league_scripted_transfers:
+                            target, x, y, required = league_scripted_transfers[(source,event_id)]
+                            expected_local = league_expected_callback(source,event_id,target,x,y,required)
+                            if script == expected_local:
+                                edges[dest].add(mapping[target])
                         if source == 10 and event_id == 1:
                             if script == f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)":
                                 edges[dest].add(mapping[13])
@@ -588,7 +687,9 @@ def inspect(game: Path) -> dict:
                       "ROUTE8", "SAFF_WEST", "SAFFRON", "SABRINA", "SAFF_DOJO",
                       "SAFF_CENTER", "SILPH_1F", "SILPH_5F", "SILPH_11F", "SILPH_LIFT",
                        "ROUTE19", "ROUTE20", "SEAFOAM", "CINNABAR", "CIN_CENTER",
-                       "CIN_GYM", "CIN_LAB", "MANSION", "MANSION_B1F", "VIR_GYM"}
+                       "CIN_GYM", "CIN_LAB", "MANSION", "MANSION_B1F", "VIR_GYM",
+                       "ROUTE22", "ROUTE23", "ROAD_1F", "ROAD_2F", "INDIGO",
+                       "LEAGUE", "LORELEI", "LANCE", "CHAMPION", "HALL"}
     seen_stops = set()
     for raw in stops_file.read_text(encoding="utf-8").splitlines():
         parts = raw.split("|")
@@ -612,6 +713,9 @@ def inspect(game: Path) -> dict:
         "phase12_preview_only": len(preview_only & {190,191,193,194,195,196,197,198}),
         "phase12_mansion_floors": len(MANSION_DOORS),
         "phase13_viridian_gym_trainers": len(TRAINERS[13]),
+        "phase14_league_rooms": len(LEAGUE_TRAINER_SPECS),
+        "phase14_victory_road_trainer_events": sum(len(TRAINERS[n]) for n in (211,212,213)),
+        "phase14_protected_badge_checkpoints": 8,
         "phase13_viridian_gym_gate_required_badges": 7,
         "phase09_geometry_only": len(preview_only & {111,114,115,117,118,119,120,121,122,123,124}),
         "phase09_functional_maps": len(set(core_events) - preview_only),

@@ -4,6 +4,9 @@ module BlueKantoPilot
   RIVAL_VERSIONS = {BULBASAUR: 11, CHARMANDER: 12, SQUIRTLE: 13}.freeze
   VIRIDIAN_MART_STOCK = [:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL].freeze
   VIRIDIAN_REQUIRED_BADGES = %w[BOULDER CASCADE THUNDER RAINBOW SOUL MARSH VOLCANO].freeze
+  LEAGUE_REQUIRED_BADGES = (VIRIDIAN_REQUIRED_BADGES + ["EARTH"]).freeze
+  LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
+  LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
 
   def self.progress
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
@@ -515,6 +518,190 @@ module BlueKantoPilot
     $game_self_switches[[$game_map.map_id, 8, "A"]] = true
     $game_map.need_refresh = true
     pbMessage(_INTL("Você encontrou a Secret Key! O ginásio de Cinnabar foi destrancado."))
+  end
+
+  # Phase 14: use ONLY Kanto-local badges for the league checks. The
+  # global Decades crystal total still controls levels, not story access.
+  def self.league_badges?
+    earned = BlueRegions.local_achievements(progress, "KANTO")
+    LEAGUE_REQUIRED_BADGES.all? { |badge| earned.include?(badge) }
+  end
+
+  def self.league_badge_check(required, guard_id, barrier_id)
+    unless required.between?(1, LEAGUE_REQUIRED_BADGES.length)
+      return false
+    end
+    needed = LEAGUE_REQUIRED_BADGES.first(required)
+    earned = BlueRegions.local_achievements(progress, "KANTO")
+    missing = needed.reject { |badge| earned.include?(badge) }
+    if missing.any?
+      pbMessage(_INTL("Guarda: Você precisa da insígnia {1} de Kanto para seguir.", missing.first))
+      return false
+    end
+    [guard_id, barrier_id].each do |event_id|
+      next unless $game_map.events[event_id]
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(_INTL("Guarda: Insígnias verificadas. Pode passar!"))
+    true
+  end
+
+  def self.league_route_gate(map_id, x, y, required = 8)
+    required = 8 unless required.between?(1, 8)
+    earned = BlueRegions.local_achievements(progress, "KANTO")
+    missing = LEAGUE_REQUIRED_BADGES.first(required).reject { |badge| earned.include?(badge) }
+    if missing.any?
+      pbMessage(_INTL("O acesso à Liga está bloqueado. Falta a insígnia {1} de Kanto.", missing.first))
+      return false
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+    true
+  end
+
+  # Adapted passage for Victory Road's Strength mechanisms, keeping source
+  # event sprites and simplifying the boulder position puzzle in the pilot.
+  # The native Strength HM acquisition and exact tile puzzle require manual QA.
+  def self.victory_strength(barrier_ids)
+    unless BlueRegions.local_achievements(progress, "KANTO").include?("RAINBOW")
+      pbMessage(_INTL("O mecanismo da Victory Road requer a Rainbow Badge de Kanto."))
+      return false
+    end
+    barrier_ids.each do |event_id|
+      next unless $game_map.events[event_id]
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    pbMessage(_INTL("O mecanismo de pedras da Victory Road foi ativado (modo experimental)."))
+    true
+  end
+
+  def self.victory_couple
+    key = "KANTO_213_PAIR"
+    wins = (progress["pilot_wins"] ||= [])
+    if wins.include?(key)
+      pbMessage(_INTL("Ray e Tyra: Já batalhamos. Boa sorte na Liga!"))
+      return true
+    end
+    return false unless starter
+    setBattleRule("canLose")
+    setBattleRule("double")
+    won = TrainerBattle.start(:BLUE_KANTO_COOLCOUPLE, "Ray & Tyra")
+    unless won
+      $player.heal_party
+      return false
+    end
+    wins << key
+    [15, 16].each do |event_id|
+      ekey = sprintf("KANTO_213_%03d", event_id)
+      wins << ekey unless wins.include?(ekey)
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    true
+  end
+
+  def self.league_active?
+    progress["pilot_league_active"] == true && league_badges? &&
+      !progress.fetch("leagues", []).include?("KANTO")
+  end
+
+  def self.league_begin(map_id, x, y)
+    unless league_badges?
+      pbMessage(_INTL("A Liga exige as oito insígnias de Kanto, inclusive a Earth Badge."))
+      return false
+    end
+    if progress.fetch("leagues", []).include?("KANTO")
+      pbMessage(_INTL("Seu título de Campeão de Kanto já está registrado. Revanches completas virão depois."))
+      return false
+    end
+    progress["pilot_league_active"] = true
+    progress["pilot_league_wins"] = []
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+    true
+  end
+
+  def self.league_battle(stage, type, name, lobby_map)
+    return false unless LEAGUE_ORDER.include?(stage)
+    unless league_active? && starter
+      pbMessage(_INTL("Conquiste as oito insígnias e entre pela porta da Liga para iniciar o desafio."))
+      return false
+    end
+    wins = (progress["pilot_league_wins"] ||= [])
+    index = LEAGUE_ORDER.index(stage)
+    if wins.include?(stage)
+      pbMessage(_INTL("{1}: Já fui derrotado nesta tentativa.", name))
+      return true
+    end
+    unless wins.length == index && LEAGUE_ORDER[0,index] == wins
+      pbMessage(_INTL("Você precisa superar a Elite Four na ordem correta."))
+      return false
+    end
+    version = (stage == "CHAMPION") ? LEAGUE_CHAMPION_VERSIONS.fetch(starter) : 0
+    setBattleRule("canLose")
+    won = TrainerBattle.start(type, name, version)
+    unless won
+      $player.heal_party
+      progress["pilot_league_active"] = false
+      progress["pilot_league_wins"] = []
+      pbMessage(_INTL("Você perdeu esta tentativa da Liga. Volte ao saguão para tentar novamente."))
+      pbFadeOutIn { BlueRegionTravel.move_to([lobby_map, 11, 16, 2]) }
+      return false
+    end
+    wins << stage
+    pbMessage(_INTL("Vitória contra {1}! Progresso da Liga: {2}/5.", name, wins.length))
+    true
+  end
+
+  def self.league_advance(stage, map_id, x, y)
+    wins = progress.fetch("pilot_league_wins", [])
+    if !league_active? || !wins.include?(stage)
+      pbMessage(_INTL("A passagem só abre depois de vencer o adversário desta sala."))
+      return false
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
+    true
+  end
+
+  def self.league_finalize(pallet_map)
+    if progress.fetch("leagues", []).include?("KANTO")
+      pbMessage(_INTL("Sua conquista da Liga de Kanto já está registrada."))
+      return false
+    end
+    unless league_active? && progress.fetch("pilot_league_wins", []) == LEAGUE_ORDER
+      pbMessage(_INTL("Hall of Fame bloqueado: faltam vitórias na Elite Four ou no Campeão."))
+      return false
+    end
+    return false unless BlueRegions.complete_league(progress, "KANTO")
+    progress["pilot_league_active"] = false
+    progress["pilot_hall_of_fame"] = true
+    pbMessage(_INTL("Hall of Fame: Kanto concluída! Decades e Johto foram liberadas no circuito regional."))
+    pbFadeOutIn { BlueRegionTravel.move_to([pallet_map, 18, 8, 2]) }
+    true
+  end
+
+  # The regional transport NPC already exists in starter-town Pallet. The
+  # Lobby's guide is an additional after-League point and uses the same
+  # single-save travel service (only destinations with maps can be visited).
+  def self.league_champion_npc
+    pbMessage(_INTL("Blue: Vencer a Elite foi só o começo! Quero ver se você supera o Campeão."))
+  end
+
+  def self.league_oak
+    if progress.fetch("leagues", []).include?("KANTO")
+      pbMessage(_INTL("Oak: Seu nome entrou para o Hall of Fame de Kanto!"))
+    else
+      pbMessage(_INTL("Oak: Primeiro derrote Blue e conclua a jornada no Hall of Fame."))
+    end
+  end
+
+  def self.league_guide
+    if progress.fetch("leagues", []).include?("KANTO")
+      pbMessage(_INTL("Guia da Liga: Parabéns, Campeão! Consulte o agente regional aqui ou em Pallet."))
+      BlueRegionTravel.agent(true)
+    else
+      pbMessage(_INTL("Guia da Liga: Vença Lorelei, Bruno, Agatha, Lance e Blue em sequência."))
+    end
   end
 
   # Travel shortcuts exist only in the standalone pilot, NEVER in the

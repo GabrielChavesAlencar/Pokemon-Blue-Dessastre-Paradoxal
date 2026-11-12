@@ -93,6 +93,13 @@ TYPES = {
     "LEADER_BLAINE": "SUPERNERD",
     "COOLTRAINER_M": "COOLTRAINER_F",  # Provisional battle portrait; authentic male overworld sprites.
     "LEADER_GIOVANNI": "ROCKETBOSS",  # Local fallback battle portrait pending art licensing.
+    "POKEMANIAC": "SUPERNERD",
+    "COOLCOUPLE": "COOLTRAINER_F",
+    "ELITE_LORELEI": "LEADER_Erika",
+    "ELITE_BRUNO": "LEADER_Brock",
+    "ELITE_AGATHA": "LEADER_Sabrina",
+    "ELITE_LANCE": "ROCKETBOSS",
+    "CHAMPION_BLUE": "RIVAL1",
 }
 TRAINERS = {
     24: {16: ("BUGCATCHER", "Rick"), 17: ("BUGCATCHER", "Doug"), 18: ("BUGCATCHER", "Anthony"),
@@ -222,6 +229,62 @@ TRAINERS[13] = {
 }
 VIRIDIAN_GYM_EVENTS = set(TRAINERS[13]) | {11, 16}
 
+# Phase 14 / Victory Road source IDs. Trainer events 15 and 16 on 3F
+# are the same original double battle, with one shared victory key.
+TRAINERS[211] = {7: ("COOLTRAINER_F", "Naomi"),
+                 11: ("COOLTRAINER_M", "Rolando")}
+TRAINERS[212] = {9: ("BLACKBELT", "Daisuke"), 11: ("TAMER", "Vincent"),
+                 13: ("JUGGLER", "Nelson"), 14: ("JUGGLER", "Gregory"),
+                 16: ("POKEMANIAC", "Dawson")}
+TRAINERS[213] = {10: ("COOLTRAINER_M", "George"),
+                 12: ("COOLTRAINER_F", "Alexa"),
+                 13: ("COOLTRAINER_F", "Caroline"),
+                 14: ("COOLTRAINER_M", "Colby"),
+                 15: ("COOLCOUPLE", "Ray & Tyra"),
+                 16: ("COOLCOUPLE", "Ray & Tyra")}
+
+# Only reviewed events may enter the pilot; source global switches,
+# rival commands, wall/boulder position checks, credits and story flags
+# must never be copied from the FRLG project.
+LEAGUE_BADGE_GATES = {17: {4: (1, 5)}, 209: {
+    7: (2, 6), 9: (3, 8), 11: (4, 10), 13: (5, 12),
+    15: (6, 14), 17: (7, 16), 19: (8, 18),
+}}
+LEAGUE_BARRIER_GATES = {17: {5: 1}, 209: {
+    6: 2, 8: 3, 10: 4, 12: 5, 14: 6, 16: 7, 18: 8,
+}}
+VICTORY_ROAD_BARRIERS = {211: (14, 15), 212: (21, 22, 24, 25),
+                         213: (17, 18)}
+VICTORY_ROAD_BOULDERS = {211: (3, 5, 16), 212: (7, 26, 27),
+                         213: (6, 7, 8, 19)}
+LEAGUE_EVENT_WHITELIST = {
+    16: {1},
+    17: {1, 3, 4, 5},
+    209: {1, 2, 4, *range(6,20)},
+    211: {1, 2, 3, 5, 7, 11, 14, 15, 16},
+    212: {1,2,3,4,5,6,7,9,11,13,14,16,21,22,24,25,26,27},
+    213: {1,2,3,4,5,6,7,8,10,12,13,14,15,16,17,18,19},
+    214: {1},
+    215: {1,3,4,6,14},
+    216: {1,3},
+    217: {1,3},
+    218: {1,3},
+    219: {1,3},
+    220: {1,2,6},
+    221: {1,2},
+}
+LEAGUE_NEXT_ROOMS = {
+    216: (1,217,6,12), 217:(3,218,6,12), 218:(3,219,23,10),
+    219:(3,220,7,19), 220:(2,221,5,12),
+}
+LEAGUE_TRAINER_SPECS = {
+    216:(3,"ELITE_LORELEI","Lorelei",0,0),
+    217:(1,"ELITE_BRUNO","Bruno",1,0),
+    218:(1,"ELITE_AGATHA","Agatha",2,0),
+    219:(1,"ELITE_LANCE","Lance",3,0),
+    220:(6,"CHAMPION_BLUE","Blue",4,-1),
+}
+
 TRAINERS[202] = {
     4: ("BURGLAR", "Quinn"), 5: ("SUPERNERD", "Erik"),
     6: ("SUPERNERD", "Avery"), 7: ("BURGLAR", "Ramon"),
@@ -284,6 +347,12 @@ SILPH_FLOOR_LANDINGS = {
     184: (23, 5), 185: (22, 5), 186: (24, 5),
     187: (13, 5), 188: (13, 5),
 }
+
+def league_event_allowed(source_id, event_id):
+    return source_id not in LEAGUE_EVENT_WHITELIST or (
+        event_id in LEAGUE_EVENT_WHITELIST[source_id]
+    )
+
 
 def viridian_event_allowed(source_id, event_id):
     # Do not leak FRLG Gym plaques, global script page conditions, or its
@@ -417,6 +486,19 @@ def install_events(source, target, mapping):
         map_data = load(dest_file)
         selected = {}
         script_events = {5: {9: "BlueRegionTravel.agent(true)"},
+                          17: {3: f"BlueKantoPilot.league_route_gate({mapping[209]}, 14, 153, 1)"},
+                          209: {
+                              2: f"BlueKantoPilot.league_route_gate({mapping[211]}, 18, 25, 8)",
+                              4: f"BlueKantoPilot.league_route_gate({mapping[212]}, 55, 17, 8)",
+                          },
+                          214: {1: f"BlueKantoPilot.league_route_gate({mapping[215]}, 11, 16, 8)"},
+                          215: {1: MART,
+                                3: f"BlueKantoPilot.league_begin({mapping[216]}, 6, 12)",
+                                4: "BlueKantoPilot.heal",
+                                14: "BlueKantoPilot.league_guide"},
+                          220: {1: "BlueKantoPilot.league_champion_npc"},
+                          221: {1: f"BlueKantoPilot.league_finalize({mapping[5]})",
+                                2: "BlueKantoPilot.league_oak"},
                          10: {1: f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)"},
                          13: {16: "BlueKantoPilot.viridian_gym_guide"},
                           7: {13: "BlueKantoPilot.mom"},
@@ -466,6 +548,24 @@ def install_events(source, target, mapping):
             arguments = f':BLUE_KANTO_{kind}, "{name}", "{key}"'
             arguments += f", {version}" if version else ""
             scripts[event_id] = f"BlueKantoPilot.battle({arguments})"
+        for event_id, required in LEAGUE_BARRIER_GATES.get(original, {}).items():
+            guard = (4 if original == 17 else event_id + 1)
+            scripts[event_id] = f"BlueKantoPilot.league_badge_check({required}, {guard}, {event_id})"
+        for guard_id, (required, barrier_id) in LEAGUE_BADGE_GATES.get(original, {}).items():
+            scripts[guard_id] = f"BlueKantoPilot.league_badge_check({required}, {guard_id}, {barrier_id})"
+        for floor, (eid, next_map, x, y) in LEAGUE_NEXT_ROOMS.items():
+            if original == floor:
+                stage = ("CHAMPION" if floor == 220 else
+                         {216:"LORELEI",217:"BRUNO",218:"AGATHA",219:"LANCE"}[floor])
+                scripts[eid] = f'BlueKantoPilot.league_advance("{stage}", {mapping[next_map]}, {x}, {y})'
+        if original in LEAGUE_TRAINER_SPECS:
+            eid, kind, name, stage, _ = LEAGUE_TRAINER_SPECS[original]
+            script = (f'BlueKantoPilot.league_battle("{["LORELEI","BRUNO","AGATHA","LANCE","CHAMPION"][stage]}", '
+                      f':BLUE_KANTO_{kind}, "{name}", {mapping[215]})')
+            scripts[eid] = script
+        if original == 213:
+            scripts[15] = "BlueKantoPilot.victory_couple"
+            scripts[16] = "BlueKantoPilot.victory_couple"
         if original == 202:
             for gym_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
                 kind, name, *_ = TRAINERS[202][gym_id]
@@ -483,6 +583,73 @@ def install_events(source, target, mapping):
                 continue
             if not viridian_event_allowed(original, event_id):
                 continue
+            if not league_event_allowed(original, event_id):
+                continue
+            if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
+                required = LEAGUE_BARRIER_GATES[original][event_id]
+                guard = 4 if original == 17 else event_id + 1
+                e = new_event(event, [
+                    command(355, f"BlueKantoPilot.league_badge_check({required}, {guard}, {event_id})".encode())
+                ], 2, b"")
+                e.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                opened = copy.deepcopy(e.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@trigger"] = 0
+                opened.attrs["@through"] = True
+                opened.attrs["@graphic"].attrs["@tile_id"] = 0
+                opened.attrs["@graphic"].attrs["@character_name"] = b""
+                opened.attrs["@list"] = [command(0)]
+                e.attrs["@pages"].append(opened)
+                selected[event_id] = e
+                continue
+            if original in LEAGUE_BADGE_GATES and event_id in LEAGUE_BADGE_GATES[original]:
+                required, barrier = LEAGUE_BADGE_GATES[original][event_id]
+                e = new_event(event, [
+                    command(355, f"BlueKantoPilot.league_badge_check({required}, {event_id}, {barrier})".encode())
+                ], 0, actor(event))
+                opened = copy.deepcopy(e.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@trigger"] = 0
+                opened.attrs["@through"] = True
+                opened.attrs["@list"] = [command(0)]
+                e.attrs["@pages"].append(opened)
+                selected[event_id] = e
+                continue
+            if original in VICTORY_ROAD_BARRIERS and event_id in VICTORY_ROAD_BARRIERS[original]:
+                barrier_ids = list(VICTORY_ROAD_BARRIERS[original])
+                e = new_event(event, [
+                    command(355, f"BlueKantoPilot.victory_strength({barrier_ids})".encode())
+                ], 0, b"")
+                e.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(
+                    event.attrs["@pages"][0].attrs["@graphic"])
+                opened = copy.deepcopy(e.attrs["@pages"][0])
+                cond = opened.attrs["@condition"].attrs
+                cond["@self_switch_valid"] = True
+                cond["@self_switch_ch"] = b"A"
+                opened.attrs["@trigger"] = 0
+                opened.attrs["@through"] = True
+                opened.attrs["@graphic"].attrs["@tile_id"] = 0
+                opened.attrs["@graphic"].attrs["@character_name"] = b""
+                opened.attrs["@list"] = [command(0)]
+                e.attrs["@pages"].append(opened)
+                selected[event_id] = e
+                continue
+            if original in VICTORY_ROAD_BOULDERS and event_id in VICTORY_ROAD_BOULDERS[original]:
+                barrier_ids = list(VICTORY_ROAD_BARRIERS[original])
+                base = event.attrs["@pages"][0].attrs["@graphic"]
+                ch = base.attrs["@character_name"]
+                e = new_event(event, [
+                    command(355, f"BlueKantoPilot.victory_strength({barrier_ids})".encode())
+                ], 0, actor(event) if ch else b"")
+                e.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(base)
+                selected[event_id] = e
+                continue
+
             if original == 202 and event_id in CINNABAR_DOOR_TO_GROUP:
                 group = CINNABAR_DOOR_TO_GROUP[event_id]
                 locked = new_event(event, [
@@ -600,7 +767,15 @@ def install_events(source, target, mapping):
             if event_id in scripts:
                 floor_trigger = ((original == 64 and event_id in (9, 29, 30)) or
                                  (original == 189 and event_id == 1) or
-                                 (original == 199 and event_id == 4))
+                                 (original == 199 and event_id == 4) or
+                                 (original == 17 and event_id == 3) or
+                                 (original == 209 and event_id in (2,4)) or
+                                 (original == 214 and event_id == 1) or
+                                 (original == 215 and event_id == 3) or
+                                 (original in LEAGUE_NEXT_ROOMS and
+                                  event_id == LEAGUE_NEXT_ROOMS[original][0]) or
+                                 (original == 220 and event_id == 6) or
+                                 (original == 221 and event_id == 1))
                 if event_id in TRAINERS.get(original, {}):
                     kind, trainer_name, *_ = TRAINERS[original][event_id]
                     key = f"KANTO_{original:03d}_{event_id:03d}"
@@ -660,6 +835,8 @@ def install_events(source, target, mapping):
                         scripted.attrs["@pages"].append(collected)
                     if original == 5 and event_id == 9:
                         scripted.attrs["@name"] = b"Agente Regional"
+                    if original == 17 and event_id == 3:
+                        scripted.attrs["@pages"][0].attrs["@trigger"] = 1
                     if original == 10 and event_id == 1:
                         # FRLG Map010/1 has a foreign global-switch second
                         # page. Replace that gate with our guarded transfer,
@@ -728,7 +905,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
@@ -825,6 +1002,18 @@ def install_runtime(target, mapping, game):
         ("CIN_LAB", "Laboratorio Cinnabar (sem revival)", 203, 4, 9),
         ("MANSION", "Pokémon Mansion 1F (estátuas)", 205, 8, 33),
         ("MANSION_B1F", "Pokémon Mansion B1F (Secret Key)", 208, 6, 7),
+        # Phase 14: source-proven indoor arrival tiles. These test shortcuts
+        # never bypass the actual in-room League progress guards.
+        ("ROUTE22", "Route 22 (Plateau Gate)", 16, 14, 10),
+        ("ROUTE23", "Route 23 (oito guardas)", 209, 14, 153),
+        ("ROAD_1F", "Victory Road 1F (mecanismos)", 211, 18, 25),
+        ("ROAD_2F", "Victory Road 2F (treinadores)", 212, 8, 14),
+        ("INDIGO", "Indigo Plateau", 214, 17, 7),
+        ("LEAGUE", "Indigo Lobby (Elite Four)", 215, 11, 16),
+        ("LORELEI", "Elite Four Lorelei (primeira sala)", 216, 6, 12),
+        ("LANCE", "Elite Four Lance (quarta sala)", 219, 23, 10),
+        ("CHAMPION", "Campeao Blue (final)", 220, 7, 19),
+        ("HALL", "Hall of Fame Kanto (conclusao)", 221, 5, 12),
     ]
     (data / "blue-kanto-experimental-stops.txt").write_text(
         "".join(f"{code}|{title}|{mapping[old]}|{x}|{y}|2\n"

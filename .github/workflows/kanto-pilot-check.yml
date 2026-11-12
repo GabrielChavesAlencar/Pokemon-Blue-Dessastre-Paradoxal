@@ -54,6 +54,8 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 10 source audit failed'}
           python scripts/regions/audit_fuchsia_core.py
           if($LASTEXITCODE -ne 0){throw 'Fuchsia core event and team audit failed'}
+          python scripts/regions/audit_league.py --output .blue-work/kanto-phase-14-audit.json
+          if($LASTEXITCODE -ne 0){throw 'Kanto phase 14 source audit failed'}
           python scripts/regions/audit_viridian_gym.py --output .blue-work/kanto-phase-13-audit.json
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 13 source audit failed'}
           python scripts/regions/audit_cinnabar.py --output .blue-work/kanto-phase-12-audit.json
@@ -101,6 +103,13 @@ jobs:
           path: .blue-work/kanto-phase-10-audit.json
           if-no-files-found: warn
           retention-days: 14
+      - name: Preservar inventario Liga fase 14
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-fase-14-auditoria
+          path: .blue-work/kanto-phase-14-audit.json
+          if-no-files-found: ignore
       - name: Preservar inventario Viridian fase 13
         if: always()
         uses: actions/upload-artifact@v4

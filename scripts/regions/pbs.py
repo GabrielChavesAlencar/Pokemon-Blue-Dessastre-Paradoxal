@@ -147,6 +147,27 @@ TRAINERS.update({
 })
 
 
+# Phase 14 source PBS teams. Elite Four and Champion retain exact FRLG
+# species/levels/moves, including all three Champion starter variants.
+TRAINERS.update({
+    "ELITEFOUR_Lorelei,Lorelei": ("ELITE_LORELEI","Lorelei",0),
+    "ELITEFOUR_Bruno,Bruno": ("ELITE_BRUNO","Bruno",0),
+    "ELITEFOUR_Agatha,Agatha": ("ELITE_AGATHA","Agatha",0),
+    "ELITEFOUR_Lance,Lance": ("ELITE_LANCE","Lance",0),
+    **{f"CHAMPION,Blue,{version}": ("CHAMPION_BLUE","Blue",version)
+       for version in (1,2,3)},
+    **{f"COOLTRAINER_F,{name}": ("COOLTRAINER_F", name, 0)
+       for name in ("Naomi","Alexa","Caroline")},
+    **{f"COOLTRAINER_M,{name}": ("COOLTRAINER_M", name, 0)
+       for name in ("Rolando","George","Colby")},
+    **{f"JUGGLER,{name}": ("JUGGLER", name, 0)
+       for name in ("Nelson","Gregory")},
+    "BLACKBELT,Daisuke": ("BLACKBELT","Daisuke",0),
+    "TAMER,Vincent": ("TAMER","Vincent",0),
+    "POKEMANIAC,Dawson": ("POKEMANIAC","Dawson",0),
+    "COOLCOUPLE,Ray & Tyra": ("COOLCOUPLE","Ray & Tyra",0),
+})
+
 def read_blocks(path, selected=None):
     blocks = {}
     key = None
@@ -261,7 +282,7 @@ def build_drafts(source, game, plan):
     # 15,16,17,19..) that cannot be collapsed to min/max without creating
     # encounter levels not present in the source. Keep Fuchsia core entirely
     # free of wild encounters until an exact slot-preserving migration exists.
-    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209)}
+    review_encounters = {144, 145, 146, 147, 153, *range(168, 173), *range(178, 190), *range(199, 209), 16, 17, *range(209, 222)}
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
                if row["source_id"] not in no_gameplay
                and row["source_id"] not in review_encounters}

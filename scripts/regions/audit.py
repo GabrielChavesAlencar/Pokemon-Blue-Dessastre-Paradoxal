@@ -62,11 +62,17 @@ KANTO_PHASE12_SOURCE_IDS = (
 )
 
 
+# Freeze the already shipped phase 13 map (Map013) before adding the
+# lower-numbered Route 22 / Indigo Gate and high-numbered League rooms.
+# Old destination IDs must remain stable even when these are appended.
+KANTO_PHASE13_SOURCE_IDS = (13,)
+
+
 def stable_source_order(wanted):
     chosen = set(wanted)
     stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
               *KANTO_PHASE11_LATE_SOURCE_IDS,
-              *KANTO_PHASE12_SOURCE_IDS)
+              *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result
