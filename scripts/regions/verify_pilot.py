@@ -11,7 +11,7 @@ from collections import deque
 from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, load
-from pilot import PILOT_META
+from pilot import PILOT_META, TRAINERS
 
 
 def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
@@ -77,6 +77,10 @@ def inspect(game: Path) -> dict:
         (6, 15): "BlueKantoPilot.choose_starter",
         (6, 14): "BlueKantoPilot.rival",
         (11, 2): "BlueKantoPilot.heal",
+        (26, 2): "BlueKantoPilot.heal",
+        (34, 2): "BlueKantoPilot.heal",
+        (40, 2): "BlueKantoPilot.heal",
+        (36, 18): 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018")',
         (28, 6): 'BlueKantoPilot.battle(:BLUE_KANTO_CAMPER, "Liam", "KANTO_028_006")',
         (28, 7): 'BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")',
         (24, 16): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_024_016")',
@@ -85,6 +89,13 @@ def inspect(game: Path) -> dict:
         (24, 19): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Charlie", "KANTO_024_019")',
         (24, 20): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Sammy", "KANTO_024_020")',
     }
+    for source_id, entries in TRAINERS.items():
+        for event_id, spec in entries.items():
+            kind, name = spec[:2]
+            key = f"KANTO_{source_id:03d}_{event_id:03d}"
+            anchors[(source_id, event_id)] = (
+                f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}"'
+            )
     found = set()
     warps = 0
     for source, dest in mapping.items():
@@ -125,7 +136,8 @@ def inspect(game: Path) -> dict:
     if returnable != ids:
         trapped = [expected[source] for source, dest in mapping.items() if dest not in returnable]
         raise ValueError(f"Maps without a directed route BACK to Pallet: {trapped}")
-    route = [5, 9, 10, 18, 19, 24, 20, 25, 28]
+    route = [5, 9, 10, 18, 19, 24, 20, 25, 28, 32, 33, 34,
+             36, 37, 38, 39, 40, 41, 42]
     for source in route:
         if mapping[source] not in seen:
             raise ValueError(f"Story route is not connected to Pallet: {expected[source]}")
