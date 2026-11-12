@@ -11,7 +11,7 @@ module BlueRegionTravel
     return false unless BlueRegions.active? && $player && $game_map && $game_player && $scene
     return false unless $game_temp && !$game_temp.in_battle && !$game_temp.player_transferring
     return false if $game_temp.message_window_showing || $game_temp.transition_processing
-    return false if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning?
+    return false if defined?(pbMapInterpreterRunning?) && pbMapInterpreterRunning? && !@npc_event_context
     return false unless $scene.respond_to?(:transfer_player)
     true
   end
@@ -172,7 +172,9 @@ module BlueRegionTravel
     end
   end
 
-  def self.agent
+  def self.agent(from_npc = false)
+    previous_event_context = @npc_event_context
+    @npc_event_context = true if from_npc
     state = BlueRegions.snapshot
     unless available?(state)
       pbMessage(_INTL("O transporte regional será liberado após o encerramento da Liga e a instalação dos mapas."))
@@ -214,6 +216,8 @@ module BlueRegionTravel
         break
       end
     end
+  ensure
+    @npc_event_context = previous_event_context
   end
 
   module StorageRules
