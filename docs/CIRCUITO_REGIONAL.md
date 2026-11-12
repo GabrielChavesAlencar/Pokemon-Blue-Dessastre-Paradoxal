@@ -107,3 +107,12 @@ a partir dos mesmos rascunhos de encontros e equipes usados na cópia.
 A verificação nativa compila a cópia, carrega Pallet e o laboratório,
 confere encontros e equipes e verifica save e recarga. A verificação
 automatiza a escolha do inicial e fornece os resultados das batalhas.
+
+
+## 4. Integrar o piloto de Kanto à nova partida (opt-in)
+
+A [etapa 04](KANTO_ESCOLHA_REGIAO.md) acrescentou o seletor regional ao início de **Nova partida** e um importador de conteúdo para a instalação local do jogo-mestre. O seletor preserva a introdução do Decades e **só oferece Kanto quando seus mapas foram instalados**. As demais regiões aparecem como em preparação.
+
+Para integrar o piloto no jogo principal, com o jogo fechado e a fonte FRLG extraída, execute `KANTO_INSTALAR_NO_JOGO.bat`. O atalho mostra a prévia e solicita confirmação; [`install_kanto.py`](../scripts/regions/install_kanto.py) usa cópia separada, hashes da base, backups e rollback. Após a importação, use `ABRIR_JOGO.bat` para compilar o conteúdo e selecionar Decades ou Kanto numa nova partida. Saves já existentes não passam pela seleção.
+
+**Importante:** o conteúdo integrado cobre apenas **Pallet Town a Pewter City e Brock**; a viagem entre regiões, as oito insígnias e a Liga ainda não estão completos. Não distribuir a cópia local de mapas e gráficos de terceiros a partir deste repositório. A validação final de interface, movimentação e batalhas reais depende do checklist Windows. O [contador de Kanto](KANTO_ETAPAS.md) distingue etapa em desenvolvimento de etapas plenamente aprovadas.
