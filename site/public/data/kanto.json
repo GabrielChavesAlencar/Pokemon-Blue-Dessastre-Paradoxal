@@ -1338,13 +1338,13 @@
     },
     {
       "id": "kanto-celadon-city",
-      "name": "Celadon City — prévia sem eventos",
+      "name": "Celadon City",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-celadon-center",
-      "name": "Centro Pokémon de Celadon — prévia",
+      "name": "Centro Pokémon de Celadon",
       "methods": [],
       "trainers": []
     },
@@ -1392,9 +1392,18 @@
     },
     {
       "id": "kanto-celadon-gym",
-      "name": "Ginásio de Celadon — prévia sem Erika",
+      "name": "Ginásio de Celadon — Erika",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-erika",
+        "kanto-tina",
+        "kanto-kay",
+        "kanto-bridget",
+        "kanto-tamia",
+        "kanto-lori",
+        "kanto-lisa",
+        "kanto-mary"
+      ]
     },
     {
       "id": "kanto-route-18-fuchsia",
@@ -3053,6 +3062,220 @@
                 "THUNDERWAVE",
                 "DOUBLETEAM"
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-erika",
+      "name": "Erika",
+      "role": "Líder de ginásio",
+      "location": "kanto-celadon-gym",
+      "leader": true,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "VICTREEBEL",
+              "level": 29,
+              "moves": [
+                "GIGADRAIN",
+                "ACID",
+                "STUNSPORE",
+                "POISONPOWDER"
+              ]
+            },
+            {
+              "species": "TANGELA",
+              "level": 24,
+              "moves": [
+                "GIGADRAIN",
+                "CONSTRICT",
+                "POISONPOWDER",
+                "INGRAIN"
+              ]
+            },
+            {
+              "species": "VILEPLUME",
+              "level": 29,
+              "moves": [
+                "GIGADRAIN",
+                "ACID",
+                "STUNSPORE",
+                "SLEEPPOWDER"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-tina",
+      "name": "Tina",
+      "role": "Piqueniqueira",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BULBASAUR",
+              "level": 24
+            },
+            {
+              "species": "IVYSAUR",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-kay",
+      "name": "Kay",
+      "role": "Treinadora",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BELLSPROUT",
+              "level": 23
+            },
+            {
+              "species": "WEEPINBELL",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-bridget",
+      "name": "Bridget",
+      "role": "Beauty",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ODDISH",
+              "level": 21
+            },
+            {
+              "species": "ODDISH",
+              "level": 21
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 21
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-tamia",
+      "name": "Tamia",
+      "role": "Beauty",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BELLSPROUT",
+              "level": 24
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lori",
+      "name": "Lori",
+      "role": "Beauty",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EXEGGCUTE",
+              "level": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lisa",
+      "name": "Lisa",
+      "role": "Treinadora",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ODDISH",
+              "level": 23
+            },
+            {
+              "species": "GLOOM",
+              "level": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-mary",
+      "name": "Mary",
+      "role": "Treinadora experiente",
+      "location": "kanto-celadon-gym",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "BELLSPROUT",
+              "level": 22
+            },
+            {
+              "species": "ODDISH",
+              "level": 22
+            },
+            {
+              "species": "WEEPINBELL",
+              "level": 22
+            },
+            {
+              "species": "GLOOM",
+              "level": 22
+            },
+            {
+              "species": "IVYSAUR",
+              "level": 22
             }
           ]
         }
