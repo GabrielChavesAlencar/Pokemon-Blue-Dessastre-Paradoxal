@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6e16c03594ac75406b50247296aff1a0bc904d6e",
+      "date": "2026-11-11T22:29:50-03:00",
+      "title": "test(regions): validar ida e volta real na engine e preservar party, PC e save",
+      "category": "Testes"
+    },
+    {
       "sha": "a9ba51789ced474153475eb74652ce0882dcb672",
       "date": "2026-11-11T22:27:58-03:00",
       "title": "test(regions): usar especie nomeada compatível com Marshal no simulador",
