@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eef99c9ee5669bd67ce2fe1986c1984b709ab941",
+      "date": "2026-11-11T23:09:49-03:00",
+      "title": "test(regions): incluir 6a etapa nos testes Ruby executados pela CI",
+      "category": "Testes"
+    },
+    {
+      "sha": "3decdb51f12e027006748967309b383cda32d276",
+      "date": "2026-11-11T23:09:33-03:00",
+      "title": "test(regions): carregar adapter de viagem real no teste da política",
+      "category": "Testes"
+    },
+    {
       "sha": "abe139593bb0948c91f114822755eff20cce4b78",
       "date": "2026-11-11T23:08:59-03:00",
       "title": "test(regions): cobrir PC Decades, presentes, 8 insígnias e HMs locais",
