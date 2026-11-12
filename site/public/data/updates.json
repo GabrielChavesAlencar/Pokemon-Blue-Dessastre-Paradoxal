@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb422caaefde803c65905868b8d4a91763898930",
+      "date": "2026-11-11T23:12:34-03:00",
+      "title": "ci(kanto): exigir quatro retratos no jogo integrado antes de executar a engine",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fa3ffe0e985b30bb53a16c375f5ea38f415f5325",
       "date": "2026-11-11T23:12:07-03:00",
       "title": "test(kanto): validar insígnias, PC legado, presente especial e HM na engine integrada",
