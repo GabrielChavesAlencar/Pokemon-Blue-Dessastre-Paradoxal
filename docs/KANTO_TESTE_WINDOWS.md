@@ -43,6 +43,12 @@ O modo `--probe` encerra o processo de teste após o tempo definido, grava relat
 
 **Fase 16:** o relatório manual agora possui cinco grupos (início, ginásios, Liga, integração e Android/JoiPlay). Para quem executa `KANTO_JOGAR_EXPERIMENTAL.bat` pelo menu do jogo, o programa pergunta a seção na saída e grava `.md` + `.json` localmente. Para gerar modelo de todas as fases sem inventar testes: `python scripts/regions/kanto_feedback.py --no-prompt --scope all`. Ver [KANTO_FASE_16.md](KANTO_FASE_16.md). **CI confirma execução/estrutura, não batalha visual/captura real.**
 
+### Atalho específico — última etapa de núcleo (02/16)
+
+Para testar somente **caminhada, portas e passabilidade do caminho Pallet → Cerulean**, abra **`KANTO_VALIDAR_CAMINHADA.bat`** na raiz do repositório (ou inicie `Game.exe → Testar Kanto` e escolha a seção **caminhada** ao sair). O atalho usa o mesmo piloto e saves separados e oferece **13 testes manuais S/F/N** com relatório local `.md` e `.json`. Confira o [guia completo da fase 02](KANTO_FASE_02_MOVIMENTO.md).
+
+O teste nativo usa `Game_Player` em 16 destinos e verifica possíveis rotas até portas, mas não injeta teclas nem simula o resultado do jogador. **Não marca a Barra 2 por conta própria.**
+
 ## 3. Checklist de jogabilidade (executar em janela de desktop real)
 
 Executar uma nova partida do piloto e marcar os itens **somente após observar de verdade**:

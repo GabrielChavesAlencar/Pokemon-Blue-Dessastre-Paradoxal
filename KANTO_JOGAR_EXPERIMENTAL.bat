@@ -50,7 +50,11 @@ if errorlevel 1 (
 
 "%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\gui_diagnostics.py" --launch-only %*
 set "GAME_EXIT=%errorlevel%"
-"%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\kanto_feedback.py"
+if defined KANTO_FEEDBACK_SCOPE (
+  "%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\kanto_feedback.py" --scope "%KANTO_FEEDBACK_SCOPE%"
+) else (
+  "%PYTHON_EXE%" %PYTHON_EXTRA% -X utf8 "scripts\regions\kanto_feedback.py"
+)
 echo.
 if "%GAME_EXIT%"=="0" (
   echo [OK] Game.exe do piloto foi encerrado sem erro detectado.

@@ -11,6 +11,14 @@ module KantoNativeCheck
     require!($game_map.events.size >= 4, "Player Home events missing")
     require!([$game_player.x, $game_player.y] == [25, 7], "Kanto did not start upstairs")
     home = $game_map.map_id
+    # Phase 02: actual mkxp-z Game_Player passable? and directional move_ methods
+    # in a throwaway CI run, not simulated keyboard/graphical acceptance.
+    load "Data/blue-kanto-walk-check.rb"
+    walk_rows = KantoWalkCheck.run(home,25,7)
+    require!(walk_rows.count { |row| row[4] == "native_step_verified" } >= 2,
+             "Stage 02 native step probe recorded no actual movement")
+    require!($game_map.map_id == home && [$game_player.x,$game_player.y] == [25,7],
+             "Walking probe did not restore the original upstairs Pallet spawn")
     home_exit = $game_map.events[1]
     home_return = home_exit.list.find { |row| row.code == 201 }
     require!(home_return, "Player Home has no return door")
@@ -746,6 +754,9 @@ module KantoNativeCheck
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak parcel quest flags did not persist through save/reload")
-    File.write("Data/blue-kanto-proof.txt", "Kanto 142 maps: Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated)")
+    walk_verified = walk_rows.count { |row| row[4] == "native_step_verified" }
+    File.write("Data/blue-kanto-proof.txt",
+               "Kanto 142 maps: Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +
+               "native tile-step probe #{walk_verified}/#{walk_rows.length} destinations (NOT manual keyboard/visual QA)")
   end
 end

@@ -65,6 +65,11 @@ def prepare(game, integrated=False):
         (ROOT / "scripts/regions/KantoIntegratedCheck.rb" if integrated
          else ROOT / "scripts/regions/KantoNativeCheck.rb").read_bytes()
     )
+    if not integrated:
+        # One-shot native test only; not distributed as a gameplay plugin.
+        (game / "Data/blue-kanto-walk-check.rb").write_bytes(
+            (ROOT / "scripts/regions/KantoWalkCheck.rb").read_bytes()
+        )
 
 
 if __name__ == "__main__":
