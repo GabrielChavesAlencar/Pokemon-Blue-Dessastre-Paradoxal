@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "67e77f3dfeb37647564851cae8087f739c9440de",
+      "date": "2026-11-12T08:00:48-03:00",
+      "title": "docs(kanto): consolidar roteiro de eventos FireRed e ligar 12 marcos as 16 etapas",
+      "category": "Documentação"
+    },
+    {
       "sha": "b54cf4816e4ce873571ff9df284db217a50e88ec",
       "date": "2026-11-12T08:00:22-03:00",
       "title": "docs(kanto): indexar estudo e guia de revanches sem alterar progresso",
