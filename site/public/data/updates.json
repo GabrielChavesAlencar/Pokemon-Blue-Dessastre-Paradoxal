@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9144507da54144761866e45f9967f234aefaad97",
+      "date": "2026-11-12T19:57:34-03:00",
+      "title": "test(johto): prova preview isolada sem eventos e preservação de Decades/Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "e29b1278c3c95902737149705b0ad743a6b7c1d1",
       "date": "2026-11-12T19:56:28-03:00",
       "title": "feat(johto): gera preview isolada de terreno com IDs remapeados e sem eventos",
