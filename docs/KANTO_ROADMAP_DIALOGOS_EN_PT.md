@@ -78,7 +78,7 @@ A **referência GBA** não pode virar `engine_english_key` por substituição de
 
 ## 7. Progresso e bloqueios
 
-- **Campanha Kanto, núcleos funcionais comprovados:** **6/16 (37,5%); faltam 10 etapas**. Fases 09–11 são apenas geometrias. [Contagem revisada](KANTO_REAVALIACAO_BARRAS_2026-11-12.md).
+- **Campanha Kanto, núcleos funcionais comprovados:** **7/16 (43,75%); faltam 9 etapas**. O [passo funcional 07/16](KANTO_AVANCO_FUNCIONAL_07.md) implementou o pacote de Oak com textos autorais provisórios em português; a revisão sistemática EN/PT-BR continua pendente. Fases 09–11 são apenas geometrias.
 - **Campanha Kanto, aceitação completa:** **1/16 (6,25%); faltam 15 etapas**. QA humano pendente.
 - **Auditoria de eventos FireRed:** 12 marcos; sem porcentagem aferida.
 - **Auditoria/localização de diálogos:** 10 tarefas DIA-01–DIA-10; **0 finalizadas nesta revisão documental**, execução ainda não registrada.
