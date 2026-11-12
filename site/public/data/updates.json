@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a4ad76b20337e31319d12fbd1c7d6b45427dbc39",
+      "date": "2026-11-12T07:11:56-03:00",
+      "title": "Kanto fase 08: publicar 40 localizações e 54 treinadores auditados no portal",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1ae1a7b5deabfc0bfafd253820fb3c88e22496ca",
       "date": "2026-11-12T07:11:41-03:00",
       "title": "Kanto: teste nativo da permissão persistente do navio, sem exigir item ausente",
