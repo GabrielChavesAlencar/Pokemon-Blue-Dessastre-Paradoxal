@@ -20,9 +20,9 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 126)
+        self.assertEqual(len(order), 127)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 126)
+        self.assertEqual(len(set(order)), 127)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
@@ -33,8 +33,9 @@ class KantoPilotAuditTests(unittest.TestCase):
                                      184,185,186,187,188,189])
         self.assertEqual(order[100:101], [173])
         self.assertEqual(order[101:109], [8,14,15,21,22,29,30,31])
-        self.assertEqual(order[109:], [190,191,193,194,195,196,197,198,
+        self.assertEqual(order[109:126], [190,191,193,194,195,196,197,198,
                                         199,200,201,202,203,205,206,207,208])
+        self.assertEqual(order[126:], [13])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
             141,142,143,152,155,156,157,158,159,
