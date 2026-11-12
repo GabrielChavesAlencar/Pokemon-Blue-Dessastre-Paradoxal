@@ -4,6 +4,8 @@
 
 **Atualização posterior (8º núcleo funcional):** [etapa 09 — Celadon/Erika](KANTO_AVANCO_FUNCIONAL_08.md) aprovada na CI 43227499299 e regressão 43227499314. O progresso **vigente** passou a **8/16 (50%, faltam 8 núcleos)**, mantendo **1/16 (6,25%, faltam 15 aceites)**; as tabelas 6/16 deste documento permanecem como registro histórico e **não descrevem o estado atual**.
 
+**Atualização posterior (9º núcleo funcional, referência vigente):** [Fuchsia/Koga etapa 10](KANTO_AVANCO_FUNCIONAL_09.md) aprovada na [CI 43231117254](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43231117254) e [regressão 43232052342](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43232052342). **Barra 1 = 9/16 (56,25%, faltam 7); Barra 2 = 1/16 (6,25%, faltam 15)**. Esta análise preserva os percentuais 6/16 e 7/16 como histórico, não como contagem atual.
+
 ## Barras reavaliadas
 
 **Barra 1 — Desenvolvimento funcional com núcleo comprovado:** **6/16 (37,5%) — faltam 10 etapas** para alcançar 16/16 com núcleo implementado.
