@@ -1,6 +1,6 @@
 # Kanto — Plano para aplicar as 64 músicas por este chat
 
-> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. As vinhetas ME e cenas continuam pendentes; Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
+> **Plano por fases, não aceite final de jogabilidade.** Estado de 12/11/2026: 64 MP3 publicados (**50 BGM / 14 ME**, 135.768.381 bytes). A [Fase 1](KANTO_MUSICAS_FASE_1.md) isolou região/MapIDs; a [Fase 2](KANTO_MUSICAS_FASE_2.md) habilitou BGM de ambientes em 49 mapas não-preview e bicicleta/Surf; a [Fase 3](KANTO_MUSICAS_FASE_3.md) acrescentou oito temas de batalhas/vitórias por identidade comprovada, totalizando 25 BGM selecionadas. A [Fase 4](KANTO_MUSICAS_FASE_4.md) catalogou as 14 ME e ativou apenas 6 com gatilhos reais de sucesso (8 seguem PENDENTE_EVENTO). Cenas da Fase 5 continuam pendentes; Kanto continua como `prototype`. Reprodução interativa de áudio no Game.exe ainda não foi comprovada.
 
 ## Objetivo e como trabalharemos aqui no ChatGPT
 
@@ -101,6 +101,8 @@ Aplicar BGM por **chaves de mapas**. Onde houver vários andares, conferir quais
 **Pendência técnica conhecida:** o plugin atual implementa `wildVictory` e `trainerVictory`, não vitória específica de ginásio. Criar essa distinção para Kanto, com testes por oponente real, sem afetar a configuração global. Em batalhas duplas, Master e revanche, evitar trocar o tema no meio da luta; respeitar escolha de eventos especiais e restauração ao derrotar/fugir.
 
 ## Fase 4 — As 14 vinhetas ME disparadas por eventos
+
+**Fase 4 implementada parcialmente por disponibilidade real de eventos:** o [relatório auditável](KANTO_MUSICAS_FASE_4.md) confirma seis vinhetas ativas (Pokémon, item, cura na casa da mãe, insígnia, evolução e captura), com oito vinhetas catalogadas mas explicitamente pendentes de um evento real. O instalador importa apenas seis MP3 ME, sem tocar em Decades. **Não interpretar 14 faixas catalogadas como 14 eventos já implementados.**
 
 | Número | Quando usar — nunca tocar antes da condição |
 |---|---|

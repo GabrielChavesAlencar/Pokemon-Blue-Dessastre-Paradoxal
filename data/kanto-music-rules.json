@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "region": "KANTO",
-  "phase": 3,
+  "phase": 4,
   "default_enabled": false,
-  "notes": "Fase 3: oito classes de batalha/vitoria ativas somente em Kanto com MapIDs compilados. Legendary: apenas species.flags 'Legendary'; Gym: tipos reais BLUE_KANTO_LEADER*; champion: BLUE_KANTO_CHAMPION_BLUE na sala CHAMPION_HALL durante Liga ativa. Blue rival comum nunca e Champion. Introducoes 20/33/46 e musica 26 aguardam eventos provados, sem autoacionamento. Decades/custom/random e musica fixa por evento preservados.",
+  "notes": "Fase 4: 14 ME catalogadas; 6 ativadas SOMENTE por eventos comprovados. Game Freak logo/Jigglypuff/minigame/jackpot/printer/flute/move deletion/Oak evaluation aguardam hooks e cenas reais. Native audio engine pauses/resumes BGM; never duplicate native cue or affect Decades. Fases 2/3 unchanged.",
   "maps": [
     {
       "map": "CELADON_CENTER",
@@ -307,39 +307,88 @@
   ],
   "events": [
     {
+      "event": "game_freak_logo",
+      "track": 1,
+      "enabled": false,
+      "pending_reason": "PENDENTE_EVENTO_LOGO"
+    },
+    {
       "event": "obtained_pokemon",
       "track": 9,
-      "enabled": false
+      "enabled": true,
+      "trigger": "KANTO_PILOT_GIFT_OR_NATIVE_RECEIVE"
     },
     {
       "event": "obtained_item",
       "track": 14,
-      "enabled": false
+      "enabled": true,
+      "trigger": "KANTO_PILOT_BAG_COMMIT"
+    },
+    {
+      "event": "jigglypuff_song",
+      "track": 22,
+      "enabled": false,
+      "pending_reason": "PENDENTE_EVENTO_JIGGLYPUFF"
     },
     {
       "event": "healed",
       "track": 23,
-      "enabled": false
+      "enabled": true,
+      "trigger": "KANTO_PILOT_MOM_AFTER_HEAL"
     },
     {
       "event": "badge_awarded",
       "track": 29,
-      "enabled": false
+      "enabled": true,
+      "trigger": "KANTO_PILOT_BADGE_AFTER_WIN"
     },
     {
       "event": "evolved",
       "track": 31,
-      "enabled": false
+      "enabled": true,
+      "trigger": "NATIVE_EVOLUTION_SUCCESS_ME"
+    },
+    {
+      "event": "minigame_won",
+      "track": 42,
+      "enabled": false,
+      "pending_reason": "PENDENTE_MINIGAME"
+    },
+    {
+      "event": "jackpot",
+      "track": 43,
+      "enabled": false,
+      "pending_reason": "PENDENTE_JACKPOT"
+    },
+    {
+      "event": "pokemon_printer",
+      "track": 44,
+      "enabled": false,
+      "pending_reason": "PENDENTE_PRINTER"
+    },
+    {
+      "event": "poke_flute_used",
+      "track": 49,
+      "enabled": false,
+      "pending_reason": "PENDENTE_POKE_FLUTE"
+    },
+    {
+      "event": "move_deleted",
+      "track": 51,
+      "enabled": false,
+      "pending_reason": "PENDENTE_CONFIRMED_DELETE_HOOK"
     },
     {
       "event": "caught",
       "track": 54,
-      "enabled": false
+      "enabled": true,
+      "trigger": "NATIVE_CAPTURE_RECORDED_AND_STORED"
     },
     {
       "event": "oak_evaluation",
       "track": 58,
-      "enabled": false
+      "enabled": false,
+      "pending_reason": "PENDENTE_OAK_EVALUATION"
     }
   ],
   "scenes": [

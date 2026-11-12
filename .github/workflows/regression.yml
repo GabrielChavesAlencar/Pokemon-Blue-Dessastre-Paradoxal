@@ -29,6 +29,7 @@ jobs:
           ruby -c scripts/music/BlueMusic.rb
           ruby tests/kanto_music_runtime.rb
           ruby tests/kanto_music_battles.rb
+          ruby tests/kanto_music_me.rb
       - name: Validar sintaxe JavaScript
         run: |
           node --check web/app.js

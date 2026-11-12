@@ -57,7 +57,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.assertEqual(report["preview_maps"], 45)
         self.assertEqual(report["staged_map_rules"], 51)
         self.assertEqual(report["staged_battles"], 8)
-        self.assertEqual(report["staged_events"], 7)
+        self.assertEqual(report["staged_events"], 14)
         self.assertEqual(report["staged_scenes"], 5)
         self.assertEqual(report["active_map_bindings"], 0)
         self.assertEqual(report["active_battle_bindings"], 0)
@@ -129,7 +129,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.rules = copy.deepcopy(original)
         self.rules["events"][0]["enabled"] = True
         self.write_rules()
-        with self.assertRaisesRegex(ValueError, "later phase"):
+        with self.assertRaisesRegex(ValueError, "Unverified Kanto ME"):
             self.compile()
 
     def test_apply_is_idempotent_backed_up_and_does_not_touch_decades(self):

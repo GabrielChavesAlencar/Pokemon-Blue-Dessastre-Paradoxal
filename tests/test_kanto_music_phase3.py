@@ -9,7 +9,7 @@ from scripts.music import compile_kanto_music as compiler
 class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
     def test_eight_battle_victory_rules_require_exact_mp3s(self):
         enabled = [x for x in self.rules["battles"] if x["enabled"]]
-        self.assertEqual(self.rules["phase"], 3)
+        self.assertGreaterEqual(self.rules["phase"], 3)
         self.assertEqual(len(enabled),8)
         self.assertEqual({x["category"] for x in enabled},
                          {"wild","trainer","gym","legendary","champion",
@@ -18,7 +18,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
                          {11,12,18,19,27,28,53,70})
         self.assertEqual(len(compiler.phase2_track_numbers(self.project)),17)
         self.assertEqual(len(compiler.approved_track_numbers(self.project)),25)
-        self.assertFalse(any(x["enabled"] for x in self.rules["events"]))
+        self.assertEqual(sum(x["enabled"] for x in self.rules["events"]),6)
         self.assertFalse(any(x["enabled"] for x in self.rules["scenes"]))
 
     def test_all_25_assets_activate_eight_battles_and_keep_phase2(self):
@@ -30,7 +30,9 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
         self.assertEqual(report["active_transport_bindings"],2)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["default_global_pool_signatures"],3)
-        self.assertEqual(report["missing_audio"],[])
+        # This fixture installs only the 25 BGM; six verified ME are absent.
+        self.assertEqual(len(report["missing_audio"]),6)
+        self.assertTrue(all(x.startswith("ME/Kanto/") for x in report["missing_audio"]))
         self.assertEqual(len([x for x in lines if x.startswith("BATTLE\t")]),8)
         self.assertEqual(len([x for x in lines if x.startswith("BASEPOOL\t")]),3)
         self.assertFalse(any(x.startswith("ME\t") for x in lines))

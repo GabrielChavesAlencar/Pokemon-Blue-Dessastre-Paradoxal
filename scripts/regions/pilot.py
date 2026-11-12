@@ -1068,11 +1068,11 @@ def build(source, game, output):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         install_events(source, target, mapping)
         install_pbs(preview, target, mapping)
-        # Install only approved F2+F3 Kanto BGM assets in this disposable copy.
+        # Copy approved F2/F3 BGM and six confirmed F4 ME in this isolated pilot.
         # Hash verification and exclusive copy protect the original game audio.
-        from scripts.music.compile_kanto_music import approved_track_numbers
+        from scripts.music.compile_kanto_music import approved_audio_track_numbers
         from scripts.music.install_kanto_music import install as install_kanto_audio
-        install_kanto_audio(target, apply=True, numbers=approved_track_numbers(ROOT))
+        install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
         install_runtime(target, mapping, game)
         if output.exists():
             raise ValueError("Another pilot already exists at the output path.")
