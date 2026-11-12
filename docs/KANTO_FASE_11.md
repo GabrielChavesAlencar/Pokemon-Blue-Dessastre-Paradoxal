@@ -84,8 +84,8 @@ O estudo de FireRed indica dependências para uma futura implementação:
 
 ## Progresso
 
-**Status geral atualizado:** [Barra de núcleos 8/16 (50%, faltam 8 passos) e Barra de aceite 1/16 (6,25%, faltam 15 passos)](KANTO_AVANCO_FUNCIONAL_08.md). Os 8/16 e 6/16 dos registros anteriores são históricos; a fase 11 continua apenas cenário, sem Sabrina ou Silph jogáveis.
+**Status geral atualizado:** [Barra de núcleos 9/16 (56,25%, faltam 7 passos) e Barra de aceite 1/16 (6,25%, faltam 15 passos)](KANTO_AVANCO_FUNCIONAL_09.md). Os 8/16 e 6/16 dos registros anteriores são históricos; a fase 11 continua apenas cenário, sem Sabrina ou Silph jogáveis.
 
-**Barra 1 — Desenvolvimento funcional:** 8/16 (50%). **Barra 2 — Aceitação completa:** 1/16 (6,25%). As fases 09, 10 e 11 são novas áreas de cenário, ainda não completas funcionalmente. **Trilha de eventos FireRed:** 12 marcos próprios ainda sem medição quantitativa confiável.
+**Barra 1 — Desenvolvimento funcional:** 9/16 (56,25%). **Barra 2 — Aceitação completa:** 1/16 (6,25%). As etapas 09 e 10 possuem núcleos jogáveis limitados; a etapa 11 (Saffron) permanece somente cenário, sem gameplay. **Trilha de eventos FireRed:** 12 marcos próprios ainda sem medição quantitativa confiável.
 
 **Próximo trabalho de mapa, sem eventos:** preparar Fase 12 — Cinnabar/Blaine em cópia isolada. Antes de liberar as fases 09–11 como histórias jogáveis, integrar as dependências de roteiro na ordem adequada e aceitar o checklist manual.
