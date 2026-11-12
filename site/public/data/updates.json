@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "19b4a8295cb68ea6ef79b7bf244a775cd67404ec",
+      "date": "2026-11-12T19:32:43-03:00",
+      "title": "test(johto): atualiza prova nativa de Kanto para novo menu de quatro opções",
+      "category": "Novidades"
+    },
+    {
       "sha": "0844734d6d536a342b9acd9928ebfa92c4491ebc",
       "date": "2026-11-12T19:31:13-03:00",
       "title": "docs(kanto): documenta Testar Johto como quarta opção sem mexer no piloto Kanto",
