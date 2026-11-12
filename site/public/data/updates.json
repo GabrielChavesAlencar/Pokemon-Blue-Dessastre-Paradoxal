@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d49af8f0849c36504c762564f2df4cf3924e0995",
+      "date": "2026-11-11T23:32:35-03:00",
+      "title": "feat(kanto): registrar Cascade Badge uma vez e eventos seguros de Mt Moon",
+      "category": "Novidades"
+    },
+    {
       "sha": "0c41739bc3d3497a405e367f2c32d11076153ccc",
       "date": "2026-11-11T23:32:11-03:00",
       "title": "feat(kanto): ligar 25 mapas, treinadores de Mt Moon, curas e Misty ao piloto",
