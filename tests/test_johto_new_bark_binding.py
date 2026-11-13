@@ -109,6 +109,17 @@ class JohtoNewBarkBindingTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 bind(preview, game, spec, root=root)
 
+    def test_windows_workflow_never_installs_game_or_guesses_mapids(self):
+        bat = (ROOT / "JOHTO_PREPARAR_NEW_BARK.bat").read_text("utf-8")
+        self.assertIn("audit_johto_native_rooms.py", bat)
+        self.assertIn("build_johto_interiors.py", bat)
+        self.assertIn("bind_johto_new_bark.py", bat)
+        self.assertIn("if errorlevel 1 exit /b 2", bat)
+        self.assertIn(".blue-work", bat)
+        self.assertNotIn("install_johto.py", bat)
+        self.assertNotIn("pilot_johto.py", bat)
+        self.assertNotIn("Game.exe /B", bat)
+
     def test_refuses_approved_coordinates_or_uncontrolled_output(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
