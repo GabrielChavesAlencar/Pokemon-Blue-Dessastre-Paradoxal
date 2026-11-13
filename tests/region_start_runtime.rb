@@ -139,7 +139,35 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check(BlueRegionStart.johto_spawn.nil?, "Johto start without install proof was accepted")
 
     File.write("Data/blue-johto-install.json", "{}")
-    check(BlueRegionStart.playable?("JOHTO"), "Valid Johto markers should enable region")
+    check(!BlueRegionStart.playable?("JOHTO"),
+          "Empty Johto install manifest spoofed playable maps")
+    File.binwrite("Data/MapInfos.rxdata", "base map infos")
+    File.binwrite("Data/Tilesets.rxdata", "base tilesets")
+    File.binwrite("Data/Map713.rxdata", "audited Johto town map")
+    hashes = %w[Data/MapInfos.rxdata Data/Tilesets.rxdata
+                Data/Map712.rxdata Data/Map713.rxdata].map do |name|
+      [name, Digest::SHA256.file(name).hexdigest]
+    end.to_h
+    proof = {
+      "schema"=>1, "region"=>"JOHTO", "status"=>"VERIFIED_PLAYABLE",
+      "source_archive_sha256"=>"a" * 64,
+      "checks"=>BlueRegionStart::JOHTO_PROOFS.map { |key| [key, true] }.to_h,
+      "start"=>[712,9,6,2], "travel_point"=>[713,10,11,2],
+      "file_hashes"=>hashes
+    }
+    File.write("Data/blue-johto-install.json", JSON.generate(proof))
+    check(BlueRegionStart.playable?("JOHTO"), "Approved synthetic Johto pilot was blocked")
+    check(BlueRegionStart.johto_town_point == [713,10,11,2],
+          "Approved Johto town travel point is wrong")
+    proof["checks"]["trainers_pbs"] = false
+    File.write("Data/blue-johto-install.json", JSON.generate(proof))
+    check(!BlueRegionStart.playable?("JOHTO"), "Uncompiled PBS enabled Johto")
+    proof["checks"]["trainers_pbs"] = true
+    proof["file_hashes"]["Data/Map713.rxdata"] = "0" * 64
+    File.write("Data/blue-johto-install.json", JSON.generate(proof))
+    check(!BlueRegionStart.playable?("JOHTO"), "Modified Johto town map passed hash check")
+    proof["file_hashes"] = hashes
+    File.write("Data/blue-johto-install.json", JSON.generate(proof))
     Game.start_new
     $choices = [2]
     check(BlueRegionStart.story_spawn == ["JOHTO", [712,9,6]], "Johto story destination is wrong")
