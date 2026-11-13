@@ -49,7 +49,7 @@
         "Fonte sem eventos confirmada"
       ],
       "blockers": [
-        "Passabilidade e pontos de chegada ainda não certificados no motor",
+        "Passabilidade e pontos de chegada ainda não certificados no Game.exe nativo",
         "Conexões faltantes e dependências de interiores ainda pendentes"
       ]
     },
