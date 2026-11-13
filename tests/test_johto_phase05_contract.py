@@ -55,9 +55,11 @@ class JohtoPhase05ContractTests(unittest.TestCase):
         self.assertFalse(self.data["integrated"])
         self.assertEqual(set(self.data["validation"].values()), {False})
         self.assertFalse(self.source["import_enabled"])
-        self.assertFalse(self.source["mapping_verified"])
-        self.assertEqual(self.source["maps"], {})
-
+        self.assertTrue(self.source["mapping_verified"])
+        self.assertEqual(len(self.source["maps"]), 74)
+        self.assertEqual(self.source["maps"]["79"], "JOHTO_NEW_BARK_TOWN")
+        self.assertEqual(self.source["maps"]["104"], "JOHTO_ROUTE_29")
+        self.assertFalse(self.source["source"]["distribution_approved"])
 
 if __name__ == "__main__":
     unittest.main()
