@@ -366,6 +366,38 @@ def audit(stage:Path,rival:Path,connections:Path,game:Path,
     conns,cinfo=merge_connections(connections)
     graphics={}
     missing=[]
+    # Every used tileset/autotile must be present in the private archive,
+    # even when stage11 relied on Blue's own installed Inside.png resources.
+    used_tilesets=set()
+    for mid in sorted(MAP_IDS):
+        room=read_map_data(stage/"Data"/f"Map{mid:03d}.rxdata")
+        used_tilesets.add(room.attrs.get("@tileset_id"))
+    tile_graphics={}
+    tile_missing=[]
+    graphic_label=re.compile(r"^[A-Za-z0-9_ ().\\-]{1,130}$")
+    for tid in sorted(used_tilesets):
+        if type(tid) is not int or not 0<tid<len(tiles):
+            fail("Tileset inválido referenciado por Johto: "+str(tid))
+        sheet=tiles[tid]
+        if not isinstance(sheet,RubyObject) or sheet.name!="RPG::Tileset":
+            fail("RPG::Tileset ausente: "+str(tid))
+        names=[("Tilesets",text(sheet.attrs.get("@tileset_name")))]
+        names += [("Autotiles",text(name)) for name in
+                  sheet.attrs.get("@autotile_names",[]) if text(name)]
+        for folder,name in names:
+            if not name:continue
+            if not graphic_label.fullmatch(name):
+                fail("Nome de recurso de tileset perigoso: "+name)
+            relative=f"Graphics/{folder}/{name}.png"
+            if relative in tile_graphics:continue
+            file=stage/relative
+            if not file.is_file():file=game/relative
+            if not file.is_file() or file.is_symlink() or file.read_bytes()[:8]!=PNG:
+                tile_missing.append(relative)
+            else:
+                tile_graphics[relative]=file.read_bytes()
+    if tile_missing:
+        fail("Tilesets/autotiles exigidos ausentes: "+", ".join(sorted(tile_missing)))
     for name in sorted(graphic_names):
         target=f"Graphics/Characters/{name}.png"
         path=stage/target
@@ -403,6 +435,8 @@ def audit(stage:Path,rival:Path,connections:Path,game:Path,
         "story_and_trainer_events":len(actions),
         "sprite_name_corrections":source,
         "referenced_character_graphics":len(graphic_names),
+        "referenced_tilesets":len(used_tilesets),
+        "tile_and_autotile_graphics":len(tile_graphics),
         "character_sprites_missing":missing,
         "pbs":pbs,"connections":cinfo,
         "source_archive_sha256":manifest["source_archive_sha256"],
@@ -410,7 +444,7 @@ def audit(stage:Path,rival:Path,connections:Path,game:Path,
         "install_blockers":blockers,
     }
     return report,{"map_fixes":changes,"sprites":graphics,
-                   "pbs":payloads,"connections":conns}
+                   "tile_resources":tile_graphics,"pbs":payloads,"connections":conns}
 
 
 def pack(stage:Path,rival:Path,connections:Path,game:Path,output:Path,
@@ -432,6 +466,8 @@ def pack(stage:Path,rival:Path,connections:Path,game:Path,output:Path,
     for mid,blob in extra["map_fixes"].items():
         safe[f"stage/Data/Map{mid:03d}.rxdata"]=blob
     for rel,data in extra["sprites"].items():
+        safe["stage/"+rel]=data
+    for rel,data in extra["tile_resources"].items():
         safe["stage/"+rel]=data
     for name,data in extra["pbs"].items():
         safe["stage/PBS/"+name]=data
