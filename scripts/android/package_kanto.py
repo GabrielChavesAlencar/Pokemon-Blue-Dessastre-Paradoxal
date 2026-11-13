@@ -51,6 +51,25 @@ DOC = (
     "A compatibilidade final depende de testes em aparelho Android real.\n"
 )
 
+def _kanto_save_profile(text: str) -> bool:
+    """mkxp.json is JSON-with-comments in Decades, not strict JSON."""
+    expected = {
+        "dataPathApp": "Kanto Piloto",
+        "dataPathOrg": "Dessastre Paradoxal Kanto Testes",
+    }
+    for key, value in expected.items():
+        matches = re.findall(r'(?m)^[ \t]*"' + key + r'"\s*:\s*"((?:[^"\\]|\\.)*)"',
+                             text)
+        if len(matches) != 1:
+            return False
+        try:
+            parsed = json.loads('"' + matches[0] + '"')
+        except json.JSONDecodeError:
+            return False
+        if parsed != value:
+            return False
+    return True
+
 def _metadata(game: Path) -> dict:
     marker = game / "Kanto pilot.json"
     if not marker.is_file() or marker.is_symlink():
@@ -68,9 +87,8 @@ def _metadata(game: Path) -> dict:
     ini = (game / "Game.ini").read_text(encoding="utf-8-sig")
     if not re.search(r"(?m)^Title=Kanto Piloto\s*$", ini):
         raise ValueError("Kanto title missing in Game.ini.")
-    config = json.loads((game / "mkxp.json").read_text(encoding="utf-8-sig"))
-    if (config.get("dataPathApp") != metadata["save_app"]
-            or config.get("dataPathOrg") != metadata["save_org"]):
+    config_text = (game / "mkxp.json").read_text(encoding="utf-8-sig")
+    if not _kanto_save_profile(config_text):
         raise ValueError("JoiPlay save paths are not isolated from Decades.")
     start = (game / REGIONAL_FILES[0]).read_text(encoding="ascii").strip().split(",")
     if (len(start) != 5 or start[:2] != ["BLUE_KANTO_START_V1", "KANTO"]
@@ -200,8 +218,8 @@ def verify_archive(zip_path: Path, revision: str) -> dict:
                        archive.read(FOLDER + KANTO_PLUGIN))
         if "Mobile-SHA256: " + mobile + "\n" not in info:
             raise ValueError("JoiPlay adapter in ZIP differs from the compiled source.")
-        config = json.loads(archive.read(FOLDER + "mkxp.json"))
-        if config.get("dataPathApp") != "Kanto Piloto" or config.get("dataPathOrg") != "Dessastre Paradoxal Kanto Testes":
+        config = archive.read(FOLDER + "mkxp.json").decode("utf-8-sig")
+        if not _kanto_save_profile(config):
             raise ValueError("Archived Kanto saves would overlap with Decades.")
         return {"region": "KANTO", "revision": revision, "maps": len(mapping), "mobile_sha256": mobile}
 
