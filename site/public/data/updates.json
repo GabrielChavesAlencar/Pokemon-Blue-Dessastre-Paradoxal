@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e23d60ed768fc138ff4ae6f16b3ebc28e357b394",
+      "date": "2026-11-13T07:28:53-03:00",
+      "title": "feat(johto): cria catalogo de 53 cues musicais planejadas sem arquivos ou direitos presumidos",
+      "category": "Novidades"
+    },
+    {
       "sha": "4eeb837fcaf715d33784f9ffcdbad8c57976eeea",
       "date": "2026-11-13T07:18:03-03:00",
       "title": "test(johto): valida fallbacks contra flags de Ruins of Alph corrompidas",
