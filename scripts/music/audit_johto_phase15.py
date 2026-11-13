@@ -32,8 +32,12 @@ def audit(root: Path = ROOT) -> dict:
         raise ValueError("Johto audio rights cannot be presumed")
     if manifest.get("recordings") != [] or manifest.get("verified_tracks") != 0:
         raise ValueError("Unverified Johto audio was declared available")
-    if source.get("import_enabled") is not False or source.get("mapping_verified") is not False or source.get("maps") != {}:
-        raise ValueError("Johto source must remain uninstalled")
+    # v1 real source geometry can be SHA/MapID-verified without being
+    # installed. Never confuse source metadata with Game.exe integration or
+    # permission to autoplay/distribute Johto music.
+    if (source.get("import_enabled") is not False or
+            source.get("source", {}).get("distribution_approved") is not False):
+        raise ValueError("Johto source must remain uninstalled and unlicensed")
     if rules.get("default_enabled") is not False or rules.get("status") != "PREVIEW_ONLY_NO_ACTIVE_AUDIO":
         raise ValueError("Johto audio cannot be enabled by default")
     guards = rules.get("guardrails", {})
