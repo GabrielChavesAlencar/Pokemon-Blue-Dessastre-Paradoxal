@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ee610e53c1f2fde151099fa96d35db960fa7378",
+      "date": "2026-11-13T10:52:31-03:00",
+      "title": "feat(johto): separar barras de fases jogaveis e testes de gameplay",
+      "category": "Novidades"
+    },
+    {
       "sha": "18115039f4905f03eba59ee2a04f99b12527a870",
       "date": "2026-11-13T10:43:30-03:00",
       "title": "docs(johto): acompanhar inventario real separado de fases tecnicas e gameplay aprovados",
