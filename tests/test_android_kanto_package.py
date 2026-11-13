@@ -2,6 +2,9 @@
 import hashlib
 import json
 import tempfile
+import zlib
+from scripts.official_rules.prepare_restore import RubyString, dump
+from scripts.android.early_input import EARLY_BOOTSTRAP
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -33,6 +36,10 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
                 self.write(file, "stub")
         for mid in self.mapping.values():
             self.write(f"Data/Map{mid:03d}.rxdata", "map")
+        # The actual JoiPlay ZIP carries an RGSS Input script, not a stub.
+        scripts = [[1, RubyString(b"Input"),
+                    RubyString(zlib.compress((EARLY_BOOTSTRAP + "module Input; end\n").encode("utf8")))]]
+        (self.game / "Data/Scripts.rxdata").write_bytes(b"\x04\x08" + dump(scripts))
         self.write("Data/blue-android-compiled.txt", "expected")
         self.write("Data/blue-kanto-proof.txt", "CI diagnostic must not be shipped")
         self.write("Data/blue-kanto-failure.log", "CI diagnostic must not be shipped")
