@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "10/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "notes": "Only a symbolic review contract. NO true RMXP source/destination IDs, physical warps, sprites, trainer PBS, item keys, cave flows or in-game test evidence; do not install or unlock this map graph.",
+  "requires_completed_phase": "09/16",
+  "entrance": "JOHTO_OLIVINE_CITY",
+  "return_corridor": [
+    {
+      "key": "JOHTO_CIANWOOD_CITY",
+      "label": "Cianwood with medicine from pharmacy"
+    },
+    {
+      "key": "JOHTO_ROUTE_41",
+      "label": "Route 41 sea passage"
+    },
+    {
+      "key": "JOHTO_ROUTE_40",
+      "label": "Route 40 sea passage"
+    },
+    {
+      "key": "JOHTO_OLIVINE_CITY",
+      "label": "Olivine City"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_1F",
+      "label": "Olivine Lighthouse 1F"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_6F",
+      "label": "Olivine Lighthouse 6F Jasmine and Ampharos"
+    },
+    {
+      "key": "JOHTO_OLIVINE_GYM",
+      "label": "Olivine Gym Jasmine"
+    }
+  ],
+  "symbolic_links": [
+    {
+      "from": "JOHTO_CIANWOOD_CITY",
+      "to": "JOHTO_ROUTE_41",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_ROUTE_40",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_ROUTE_40",
+      "to": "JOHTO_OLIVINE_CITY",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_1F",
+      "two_way": true
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_GYM",
+      "two_way": true
+    }
+  ],
+  "notes_on_lighthouse": "The actual 1F-6F stairs/elevator and warp coordinates are phase 09 unverified; the 1F-to-6F relation is NOT encoded as a physical warp.",
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_JASMINE",
+      "name": "Jasmine",
+      "versions": [
+        0
+      ],
+      "implemented": "RUBY_STORY_GATE_ONLY_PBS_NOT_COMPILED"
+    }
+  ],
+  "item_consumption": {
+    "item_key": "SECRETPOTION",
+    "status": "CANDIDATE_UNVERIFIED",
+    "depends_on_phase": "09/16",
+    "bag_api_requires": [
+      "quantity(item)",
+      "remove(item, 1) returns true and decrements quantity by exactly 1"
+    ],
+    "preconditions": [
+      "olivine_medicine_requested",
+      "cianwood_medicine_received",
+      "olivine_returned_with_medicine",
+      "olivine_lighthouse_floor==6"
+    ],
+    "cure_ready_marker": "Data/blue-johto-ampharos-cure-ready.txt",
+    "cure_ready_token": "BLUE_JOHTO_AMPHAROS_CURE_V1_READY",
+    "verify_before_marker": "Manually inspect native PokemonBag item/remove semantics, RXDATA event graphics and proof of medicine from Cianwood; missing/bad adapter leaves flags unchanged.",
+    "success_flags": [
+      "olivine_medicine_delivered",
+      "olivine_ampharos_healed"
+    ],
+    "failure_behavior": "Never mark healed, never unlock Jasmine or award a badge"
+  },
+  "jasmine": {
+    "gym_ready_marker": "Data/blue-johto-jasmine-ready.txt",
+    "gym_ready_token": "BLUE_JOHTO_JASMINE_V1_READY",
+    "conditions": [
+      "Ampharos healed after actual medicine removal",
+      "STORM from Johto earned",
+      "Olivine Gym visited",
+      "Jasmine PBS type BLUE_JOHTO_JASMINE version 0 compiled and audited"
+    ],
+    "on_win": "BlueRegions.award(state, JOHTO, MINERAL) exactly once; no manual emerald increment",
+    "on_loss": "No badge, no emerald, no defeated flag"
+  },
+  "badge": {
+    "key": "MINERAL",
+    "region": "JOHTO",
+    "ordinal": 6,
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": null
+  },
+  "whirl_islands": {
+    "status": "NOT_ENTERABLE_UNTIL_TRUE_MAP_AUDIT",
+    "route41_portal": "JOHTO_WHIRL_ISLANDS_GATE",
+    "candidate_entrances": [
+      "JOHTO_WHIRL_ISLANDS_NW_ENTRANCE",
+      "JOHTO_WHIRL_ISLANDS_NE_ENTRANCE",
+      "JOHTO_WHIRL_ISLANDS_SW_ENTRANCE",
+      "JOHTO_WHIRL_ISLANDS_SE_ENTRANCE"
+    ],
+    "candidate_interiors": [
+      "JOHTO_WHIRL_ISLANDS_1F",
+      "JOHTO_WHIRL_ISLANDS_B1F",
+      "JOHTO_WHIRL_ISLANDS_B2F",
+      "JOHTO_WHIRL_ISLANDS_LUGIA_CHAMBER"
+    ],
+    "entrance_warps": [],
+    "exit_warps": [],
+    "all_entrances_verified": false,
+    "safe_return_verified": false,
+    "whirlpool_rule": "JOHTO:GLACIER plus actual field tool; MINERAL does not bypass",
+    "legendary_capture_enabled": false
+  },
+  "future_not_implemented": [
+    "WHIRL_ISLANDS_EXPLORATION",
+    "LUGIA_ENCOUNTER",
+    "CAVE_CURRENT_COLLISION",
+    "REAL_OLIVINE_LIGHTHOUSE_WARPS",
+    "JASMINE_PBS_TEAMS"
+  ],
+  "validation": {
+    "source_archive_sha_and_rights_verified": false,
+    "native_bag_remove_quantity_semantics_verified": false,
+    "medicine_catalog_id_verified": false,
+    "ampharos_map_sprite_and_animation_verified": false,
+    "jasmine_trainer_pbs_compiled": false,
+    "mineral_award_in_game_verified": false,
+    "ocean_traversal_and_backtracking_verified": false,
+    "whirl_islands_map_ids_verified": false,
+    "whirl_islands_all_entrances_exits_verified": false,
+    "whirlpool_field_access_in_game_verified": false,
+    "native_save_reload_and_box_verified": false,
+    "decades_kanto_regressions_accepted": false,
+    "windows_gameplay_verified": false,
+    "joiplay_gameplay_verified": false
+  },
+  "integrated": false
+}
