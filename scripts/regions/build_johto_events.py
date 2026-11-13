@@ -42,8 +42,8 @@ def fail(msg: str):
     raise ValueError("[JOHTO] " + msg)
 
 
-def ruby(name: str, **fields):
-    return RubyObject(name, {"@" + key: val for key, val in fields.items()})
+def ruby(class_name: str, **fields):
+    return RubyObject(class_name, {"@" + key: val for key, val in fields.items()})
 
 
 def command(code: int, *parameters):
