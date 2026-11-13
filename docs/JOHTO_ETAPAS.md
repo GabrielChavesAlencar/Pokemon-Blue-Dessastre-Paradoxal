@@ -59,6 +59,11 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `tests/test_johto_phase08_contract.py` protege o contrato de FOG/SURF e o estado não integrado, mantendo competições/lendários como pendências explícitas.
 - [x] [MD da Etapa 08 e critérios de aceitação](JOHTO_FASE_08_ECRUTEAK_MORTY.md).
 - [ ] Implantar mapas originais validados, rotas físicas, National Park, Burned Tower, treinadores PBS, prêmio Surf real e testar Morty no piloto executável isolado.
+- [x] **Etapa 09 iniciada:** `scripts/regions/JohtoOlivineCianwood.rb` prepara Ecruteak → Rotas 38/39 → Olivine, farol (6 andares), pedido de medicina por Jasmine, Surf nas Rotas 40/41, farmácia de Cianwood, Chuck/STORM, Fly e retorno com medicina.
+- [x] `tests/johto_olivine_cianwood_runtime.rb` e `tests/test_johto_olivine_cianwood_runtime.py` validam travas, vitória/derrota, itens únicos, FOG/STORM, Fly, save/reload, cura não antecipada e isolamento Kanto/Decades.
+- [x] `data/regions/johto-phase09.json` define percurso e interiores simbólicos, sem fingir MapIDs reais; `tests/test_johto_phase09_contract.py` valida o contrato e bloqueia declaração prematura de etapa jogável.
+- [x] [MD da Etapa 09 com requisitos de entrada, equipe PBS, Lighthouse, medicina e transição para Jasmine](JOHTO_FASE_09_OLIVINE_CIANWOOD_CHUCK.md).
+- [ ] Conectar mapas e eventos reais Olivine/Lighthouse/Cianwood, compilar PBS, auditar SecretPotion e HM Fly e testar Chuck/STORM/Surf no Game.exe, sem curar Ampharos na fase 09.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -74,7 +79,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 06 | Azalea e Bugsy | **PARCIAL**: arco Kurt/Rocket, Bugsy/HIVE, Cut e rota simbólica com testes; faltam fonte, mapas reais, PBS e gameplay |
 | 07 | Goldenrod e Whitney | **PARCIAL**: Ilex/Farfetch'd, Cut, Rádio, Whitney/PLAIN e mapa simbólico programados; faltam mapas reais, PBS e gameplay |
 | 08 | Ecruteak e Morty | **PARCIAL**: eventos das rotas, Burned Tower, rival, Rocket, FOG/Surf e topologia simbólica; faltam fonte, mapas, PBS e gameplay |
-| 09 | Cianwood e Chuck | PENDENTE |
+| 09 | Cianwood e Chuck | **PARCIAL**: rotas Olivine/Cianwood, farol, medicina, Chuck/STORM, Surf/Fly e contrato simbólico; faltam mapas, PBS e gameplay |
 | 10 | Olivine e Jasmine | PENDENTE |
 | 11 | Mahogany, Rocket e Pryce | PENDENTE |
 | 12 | Blackthorn e Clair | PENDENTE |
