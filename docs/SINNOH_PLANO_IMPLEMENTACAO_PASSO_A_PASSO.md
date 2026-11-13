@@ -25,6 +25,8 @@ Antes de cada fase, ler:
 - A existência do botão **não** altera a região inicial da campanha, **não** cria mapas e **não** comprova jogabilidade.
 - A pasta `The Pokémon World Project - Sinnoh/Data`, conferida em 13/11/2026, tinha só `Map001.rxdata` e `Map002.rxdata`, sem uma Sinnoh completa. **Não usar Hoenn como fonte substituta**, não inventar mapas nem confundir a existência de um diretório com mapa real.
 
+**Divisão de responsabilidade em vigor:** [SINNOH_CODEX_PENDENCIAS.md](SINNOH_CODEX_PENDENCIAS.md) registra todas as tarefas que dependem da instalação local, dos mapas de origem e de testes gráficos. [SINNOH_FASE_00_AUDITORIA_REPOSITORIO.md](SINNOH_FASE_00_AUDITORIA_REPOSITORIO.md) registra o que já foi conferido pelo GitHub. A ferramenta de preparação apenas de leitura está em [scripts/regions/audit_sinnoh_source.py](../scripts/regions/audit_sinnoh_source.py), com testes em [tests/test_sinnoh_source_preflight.py](../tests/test_sinnoh_source_preflight.py). A CI executa o preflight para detectar regressões de contrato. Nenhum desses artefatos substitui um piloto com mapas reais.
+
 ## 1. Regra máxima: implementar SEM quebrar tudo que já existe
 
 **Toda alteração deve ser aditiva, isolada, reversível e testada antes de mudar o jogo principal.** Proteger obrigatoriamente **Decades, Kanto, Johto, Hoenn em preparação, Blue Studio, Pokédex, Habitat Dex, álbum, site, BlueMusic, balanceamento, multiplayer, saves e lançadores Windows/Android**.
