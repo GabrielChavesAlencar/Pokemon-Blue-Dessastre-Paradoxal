@@ -25,7 +25,7 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
         self.write("Kanto pilot.json", json.dumps(self.meta))
         self.write("Game.exe", "exe")
         self.write("Game.ini", "Title=Kanto Piloto\n")
-        self.write("mkxp.json", '// mkxp-z aceita comentários na configuração\n{\n  // não confundir com esta linha:\n  // "dataPathApp": "Decades",\n  "dataPathApp": "Kanto Piloto",\n  "dataPathOrg": "Dessastre Paradoxal Kanto Testes"\n}\n')
+        self.write("mkxp.json", '// mkxp-z aceita comentários na configuração\n{\n  // não confundir com esta linha:\n  // "dataPathApp": "Decades",\n  "dataPathApp": "Kanto Piloto", "dataPathOrg": "Dessastre Paradoxal Kanto Testes"\n}\n')
         self.write("Data/blue-kanto-start.txt", "BLUE_KANTO_START_V1,KANTO," + str(self.mapping["7"]) + ",25,7\n")
         for file in k.CORE_FILES:
             if file not in {"Kanto pilot.json", "Game.exe", "Game.ini", "mkxp.json",
