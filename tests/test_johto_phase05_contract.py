@@ -48,7 +48,14 @@ class JohtoPhase05ContractTests(unittest.TestCase):
             self.assertIn(":" + item["trainer_type"], code)
             self.assertEqual(item["version"], 0)
         self.assertIn('BlueRegions.award(state, REGION, BADGE)', code)
-        self.assertIn('TrainerBattle.start(FALKNER_TYPE, FALKNER_NAME, 0)', code)
+        # The original 05/16 symbolic contract describes the BASE version 0.
+        # Offline 11/12 also prepares PBS version 1 with four Pokémon in Master.
+        # Preserve version 0 at normal stages while requiring the shared stage
+        # selector instead of a hardcoded base version in every battle.
+        self.assertIn("def self.trainer_version", code)
+        self.assertIn("BlueStory.stage == 3", code)
+        self.assertIn('TrainerBattle.start(FALKNER_TYPE, FALKNER_NAME, trainer_version)', code)
+        self.assertIn('TrainerBattle.start(ELDER_TYPE, ELDER_NAME, trainer_version)', code)
 
     def test_prevent_premature_release_without_real_maps_and_qa(self):
         self.assertEqual(self.data["status"], "SPECIFICATION_ONLY_NOT_INSTALLED")
