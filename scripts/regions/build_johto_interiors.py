@@ -230,7 +230,11 @@ def build(preview: Path, game: Path, output: Path, layouts: dict,
 
     extra[Path("Data/MapInfos.rxdata")] = serialize(infos)
     extra[Path("Data/Tilesets.rxdata")] = serialize(tiles)
-    result["warnings"].append(
+    warnings = result.get("warnings", [])
+    if not isinstance(warnings, list):
+        raise ValueError("Avisos da prévia de Johto inválidos")
+    result["warnings"] = warnings
+    warnings.append(
         "Three native room GEOMETRY DRAFTS. Not faithful HGSS interiors; "
         "must author tiles, collisions, NPC events, audio and verify in Game.exe.")
     result["status"] = "GEOMETRY_PREVIEW_ONLY"
