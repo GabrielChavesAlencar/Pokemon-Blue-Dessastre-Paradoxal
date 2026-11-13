@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "19832f6be7ebb8ca4b93e9ac1aa70dc4b6f6cbd3",
+      "date": "2026-11-13T07:58:48-03:00",
+      "title": "docs(johto): sincroniza plano de 16 etapas com gate final e impedimentos reais",
+      "category": "Documentação"
+    },
+    {
       "sha": "a191ae3401f02946b7c416093db27467c75b5b8a",
       "date": "2026-11-13T07:58:29-03:00",
       "title": "docs(johto): registra fase 16 parcial, gate de release, viagem guardada e bloqueadores",
