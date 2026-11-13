@@ -381,3 +381,7 @@ Com os RXDATA reais do staging privado, o verificador localizou dois corredores 
 A terceira barra é **independente** das barras **1) Jogáveis 0/13** e **2) Testadas 0/13**. Ela usa `data/regions/johto-progress.json → offline_development`. Foram contabilizados apenas: **1) auditoria dos dados nativos e fonte; 2) staging de 74 mapas mais três salas provisórias; 3) auditoria de duas bordas faltantes**. Essas entregas não significam mapas com eventos jogáveis.
 
 Próximo: **04/12, desenhar o quarto do jogador 2F**. Depois, casa 1F (05), laboratório de Elm (06), portas e spawn (07), eventos (08), PBS de iniciais/rival (09), encontros e treinadores (10), Violet/Sprout/Falkner (11) e auditoria de integração offline (12). Ver [barra e critérios detalhados](JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md). **Não executar Game.exe** para completar nenhum dos 12 marcos; isso será avaliado apenas nas barras originais, mais tarde.
+
+### Barra OFFLINE 4/12 — quarto 2F de New Bark concluído
+
+Gerador `scripts/regions/build_johto_bedroom_v1.py`: layout próprio 14×11 no Map674, com cama, escrivaninha, guarda-roupa, janela e escada visual, sem importar eventos; serialização Ruby Marshal testada, 5 cenários automatizados e prévia privada comparada preservando os outros 76 mapas. O quarto ainda não contém warp para 1F, e o spawn é apenas candidato estático. Consulte [fase 04 offline](JOHTO_OFFLINE_FASE_04_QUARTO_2F.md). **OFFLINE: 4/12. JOGÁVEIS: 0/13. TESTADOS: 0/13.**
