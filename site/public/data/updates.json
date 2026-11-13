@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f9a1dc9fbcf872bc066f6648e59404ac67849f98",
+      "date": "2026-11-13T20:41:50-03:00",
+      "title": "test(sinnoh): dry-run, staging, rollback and symlink safety never modify game/",
+      "category": "Testes"
+    },
+    {
       "sha": "3113c1f4ae730dead44647adccf19a4f3bb045e0",
       "date": "2026-11-13T20:41:16-03:00",
       "title": "feat(sinnoh): add atomic dry-run staging and verified rollback confined to ignored local workspace",
