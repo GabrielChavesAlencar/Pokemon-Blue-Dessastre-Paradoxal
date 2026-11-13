@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "733d437b5c045a3025ddc5043a9ae50b676bdeb9",
+      "date": "2026-11-12T22:49:14-03:00",
+      "title": "docs(johto): detalha fase 11 Lake of Rage Rocket HQ Pryce Radio Tower e aceite",
+      "category": "Documentação"
+    },
+    {
       "sha": "7e688f21d8af2387d8af7d01c9ad1e2164094196",
       "date": "2026-11-12T22:47:36-03:00",
       "title": "test(johto): protege roteiro Mahogany Rocket Pryce e status nao jogavel",
