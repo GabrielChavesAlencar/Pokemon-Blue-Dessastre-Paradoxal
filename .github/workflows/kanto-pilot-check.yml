@@ -320,6 +320,20 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Kanto mobile archive build failed'}
           python scripts/android/package_kanto.py --verify --revision '${{ github.sha }}'
           if($LASTEXITCODE -ne 0){throw 'Kanto mobile archive verification failed'}
+      - name: Gerar manifesto e atualização incremental de Kanto
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force '.blue-work/previous-kanto' | Out-Null
+          $previous=gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" --jq '.[] | select(.tag_name | startswith("kanto-android-")) | .tag_name' 2>$null | Select-Object -First 1
+          if($previous){
+            gh release download "$previous" --pattern 'Blue-Android-Kanto-Piloto.update.json' --dir '.blue-work/previous-kanto'
+            if($LASTEXITCODE -ne 0){Write-Output "Previous Kanto has no update manifest: first incremental baseline."}
+          }
+          python scripts/android/publish_updates.py --channel kanto --full-zip dist/Blue-Android-Kanto-Piloto.zip --previous-manifest .blue-work/previous-kanto/Blue-Android-Kanto-Piloto.update.json
+          if($LASTEXITCODE -ne 0){throw 'Kanto update manifest validation failed'}
       - name: Guardar ZIP de testes de Kanto
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
         uses: actions/upload-artifact@v4
@@ -328,6 +342,8 @@ jobs:
           path: |
             dist/Blue-Android-Kanto-Piloto.zip
             dist/Blue-Android-Kanto-Piloto.zip.sha256
+            dist/Blue-Android-Kanto-Piloto.update.json
+            dist/Blue-Android-Kanto-Piloto.patch.zip
           compression-level: 0
           retention-days: 14
           if-no-files-found: error
@@ -340,7 +356,9 @@ jobs:
           set -euo pipefail
           short=$(echo "$GITHUB_SHA" | cut -c 1-7)
           tag="kanto-android-$GITHUB_RUN_NUMBER-$short"
-          gh release create "$tag" dist/Blue-Android-Kanto-Piloto.zip dist/Blue-Android-Kanto-Piloto.zip.sha256 --target "$GITHUB_SHA" --title "Pokémon Blue — Kanto Android experimental ($GITHUB_RUN_NUMBER)" --notes-file docs/ANDROID_PILOTOS_KANTO_JOHTO.md --prerelease --latest=false
+          assets=(dist/Blue-Android-Kanto-Piloto.zip dist/Blue-Android-Kanto-Piloto.zip.sha256 dist/Blue-Android-Kanto-Piloto.update.json)
+          if [[ -f dist/Blue-Android-Kanto-Piloto.patch.zip ]]; then assets+=(dist/Blue-Android-Kanto-Piloto.patch.zip); fi
+          gh release create "$tag" "${assets[@]}" --target "$GITHUB_SHA" --title "Pokémon Blue — Kanto Android experimental ($GITHUB_RUN_NUMBER)" --notes-file docs/ANDROID_PILOTOS_KANTO_JOHTO.md --prerelease --latest=false
       - name: Preservar diagnóstico de falha nativa Kanto
         if: failure()
         uses: actions/upload-artifact@v4
