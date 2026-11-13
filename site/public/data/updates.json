@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f9fe603231ee14f280f6c0d2e2818f5d67fe661c",
+      "date": "2026-11-13T07:46:52-03:00",
+      "title": "fix(regions): corrige ancoras regex SHA256 do manifesto Johto",
+      "category": "Correções"
+    },
+    {
       "sha": "d2f55d4e30a73f2c0d9589f124b30b149497cf6d",
       "date": "2026-11-13T07:46:24-03:00",
       "title": "fix(regions): exige manifesto Johto com hashes e aceite real antes de habilitar Novo Jogo",
