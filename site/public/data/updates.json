@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dcdd438ebf332ebaa39debd0566f5b0119582c68",
+      "date": "2026-11-12T22:59:09-03:00",
+      "title": "docs(johto): adiciona mapa simbolico Ice Path Blackthorn Dragon Den e Rising",
+      "category": "Novidades"
+    },
+    {
       "sha": "42c0b2c092cb9e9855abb88e7a8bbf1e53eafa13",
       "date": "2026-11-12T22:57:56-03:00",
       "title": "test(johto): integra Blackthorn e Clair na regressão Python Blue Studio",
