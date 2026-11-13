@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f70a27e0210a8122311faa00f048091b9060cf20",
+      "date": "2026-11-13T16:00:11-03:00",
+      "title": "feat(site): mostrar equipes documentadas de elites, campeões e líderes sem níveis fixos",
+      "category": "Novidades"
+    },
+    {
       "sha": "1bc469d889c9142e14530eae2fe01903b226056d",
       "date": "2026-11-13T15:43:15-03:00",
       "title": "Merge Johto offline 10/12: Route29-31 wild/trainer PBS and 5 NPCs (#43)",
