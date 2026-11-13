@@ -173,7 +173,7 @@ Use `--game` para indicar outra base Decades em modo de leitura e `--bundle` par
 
 Quando a montagem real passar, a **primeira abertura** do Game.exe isolado solicita compilação nativa e encerra depois de registrar `Data/blue-johto-qa-compiled.txt` (conteúdo: SHA-256 do pacote) ou `Data/blue-johto-qa-compile-error.txt`. Um erro retém a solicitação para uma nova tentativa. Este registro é para diagnóstico; o instalador não cria marcadores de batalha pronta ou liberação e não habilita `Testar Johto` na campanha.
 
-**Evidência e bloqueio atual:** o contrato de instalação e rollback foi exercitado com fixtures. O ZIP privado da etapa 12 não está no ambiente. O download da entrada 1.0 no [catálogo do autor](https://eeveeexpo.com/resources/828/history) retornou um 7z de `60s Kanto v2`, sem Map079 e com SHA-256 diferente do ZIP v1 auditado, portanto foi descartado como fonte de Johto. Compilação real, portas/bordas, eventos, batalhas, saves e direitos continuam pendentes. **Jogáveis: 0/13. Testadas no Game.exe: 0/13.**
+**Evidência e bloqueio atual:** o ZIP privado original da etapa 12 foi recuperado e conferido pelo SHA-256 publicado. O instalador reconhece o formato original e montou uma cópia separada usando a base Decades compatível anterior à integração de Kanto. A conferência dos arquivos aprovou 82 mapas, 32 eventos, 44 conexões e 21 equipes. A execução automatizada do Game.exe encontrou `Error initializing PhysFS` e não gerou o comprovante de compilação. A compilação nativa e os testes de portas, batalhas e saves seguem pendentes. **Jogáveis: 0/13. Testadas no Game.exe: 0/13.**
 
 ### Documentos que devem continuar sendo a referência
 
