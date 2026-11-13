@@ -18,22 +18,28 @@ if not errorlevel 1 (
   )
   set "PY=python"
 )
-if not exist "%ARCHIVE%" (
-  echo [JOHTO][BLOQUEADO] Arquivo original nao encontrado: %ARCHIVE%
-  echo Obtenha legitimamente o Map Pack e guarde-o nesse caminho.
-  echo Nao sera feito download automatico nem modificacao do jogo.
-  exit /b 2
-)
 if not exist "game\Data\MapInfos.rxdata" (
   echo [JOHTO][BLOQUEADO] Instalacao game/Data local nao encontrada.
   echo Instale/prepara a base original por seus scripts oficiais e tente novamente.
   exit /b 2
 )
 if not exist "%PROJECT%\Data\MapInfos.rxdata" (
+  if not exist "%ARCHIVE%" (
+    echo [JOHTO][BLOQUEADO] Nao existe ZIP nem projeto RMXP extraido.
+    echo Para RAR: extraia manualmente e com seguranca em %PROJECT%.
+    echo Para ZIP: coloque em %ARCHIVE%. Nenhum download automatico.
+    exit /b 2
+  )
   %PY% scripts\regions\prepare_johto_source.py --archive "%ARCHIVE%" --output "%PROJECT%"
   if errorlevel 1 exit /b 2
 )
-%PY% scripts\regions\audit_johto.py --source "%SOURCE%" --archive "%ARCHIVE%" --game "game" --output "%AUDIT%"
+if exist "%ARCHIVE%" (
+  %PY% scripts\regions\audit_johto.py --source "%SOURCE%" --archive "%ARCHIVE%" --game "game" --output "%AUDIT%"
+) else if exist ".blue-work\johto-source\original.rar" (
+  %PY% scripts\regions\audit_johto.py --source "%SOURCE%" --archive ".blue-work\johto-source\original.rar" --game "game" --output "%AUDIT%"
+) else (
+  %PY% scripts\regions\audit_johto.py --source "%SOURCE%" --game "game" --output "%AUDIT%"
+)
 if errorlevel 1 exit /b 2
 %PY% scripts\regions\inventory_johto.py --source "%SOURCE%" --audit "%AUDIT%" --output "%INVENTORY%"
 if errorlevel 1 exit /b 2
