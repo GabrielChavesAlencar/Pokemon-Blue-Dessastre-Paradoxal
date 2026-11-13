@@ -2,6 +2,48 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1ab57e4a35d41c202cc0dfaa614e80059ff51ecb",
+      "date": "2026-11-13T14:08:50-03:00",
+      "title": "Merge Johto offline phase 05: New Bark 1F house and progress 5/12 (#38)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5c9bbc66f49a21fbb2c9b91995b4764aa3372c53",
+      "date": "2026-11-13T14:07:11-03:00",
+      "title": "docs(johto): evidenciar 5/12 e dependencia de integracao do Blue-Story.exe",
+      "category": "Documentação"
+    },
+    {
+      "sha": "0202869145acedd3dc983dce7d5f5be898c7792d",
+      "date": "2026-11-13T14:07:09-03:00",
+      "title": "docs(johto): atualizar terceira barra 5/12 e proximo laboratorio 6/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "32f3a065b5ace393b20e531719b4e3bee4c21a1c",
+      "date": "2026-11-13T14:07:07-03:00",
+      "title": "data(johto): etapa offline 5/12 casa 1F validada, instalador ainda pendente",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c679c35f8f6e7f7eb0f7721d99923d4a94e1664a",
+      "date": "2026-11-13T14:06:14-03:00",
+      "title": "docs(johto): evidenciar etapa 5/12 casa 1F, dados nativos, instalador pendente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "e91976b4f9d95a59e26f0eced45c1cda4a87bdd1",
+      "date": "2026-11-13T14:05:22-03:00",
+      "title": "test(johto): seis provas offline de geometria casa 1F, sem eventos e sem EXE",
+      "category": "Testes"
+    },
+    {
+      "sha": "9793e696ca4d3b16dc371b2a7044f3d5bf991aac",
+      "date": "2026-11-13T14:04:53-03:00",
+      "title": "feat(johto): criar casa original New Bark 1F 16x13 em stage isolado",
+      "category": "Novidades"
+    },
+    {
       "sha": "9ef66197ef79afc98401629f1fc519aecf1fe15d",
       "date": "2026-11-13T13:52:52-03:00",
       "title": "Merge Johto offline progress 4/12 and New Bark bedroom (PR #36)",
