@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "42ea876dbfff86f3644d0d2efa6771e1940f41ab",
+      "date": "2026-11-13T19:30:14-03:00",
+      "title": "feat: add isolated Testar Sinnoh option to main game title",
+      "category": "Novidades"
+    },
+    {
       "sha": "405cf7e792ecde795173028e91e9dda782dfbc77",
       "date": "2026-11-13T19:25:40-03:00",
       "title": "docs: comparar fontes de mapas e músicas de Sinnoh",
