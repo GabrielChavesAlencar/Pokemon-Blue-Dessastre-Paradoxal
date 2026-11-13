@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "290f030a12bd1ca4343c2245eba0eea38ff5a969",
+      "date": "2026-11-13T17:23:30-03:00",
+      "title": "test(android): reject incomplete patches and incompatible immutable profiles",
+      "category": "Testes"
+    },
+    {
       "sha": "c0f3ee2265335a343174445292c4e2242098093b",
       "date": "2026-11-13T17:23:03-03:00",
       "title": "fix(android): preserve immutable inventory and verify full delta with streaming checks",
