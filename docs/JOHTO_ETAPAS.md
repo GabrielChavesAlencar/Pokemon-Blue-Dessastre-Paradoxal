@@ -13,14 +13,34 @@ O [registro estruturado de progresso](../data/regions/johto-progress.json) separ
 |---|---:|---|
 | Mapas reais identificados no ZIP | **74/74 (100%)** | IDs e nomes da fonte v1 catalogados, não instalados |
 | Linhas de conexão do ZIP registradas | **42/42 (100%)** | Total **existente na fonte**, não todas as transições necessárias |
-| **Barra 1 — Núcleos técnicos totalmente aprovados** | **0/16 (0%)** | Critérios por fase ainda incompletos, inclusive baseline `game/` |
-| **Barra 2 — Fases totalmente aprovadas com gameplay real** | **0/16 (0%)** | Nenhuma fase testada em `Game.exe` real; Windows/JoiPlay pendentes |
+| Núcleos técnicos totalmente aprovados | **0/16 (0%)** | Critérios técnicos ainda incompletos, inclusive baseline `game/` |
+| Testes automatizados de código/contratos disponíveis | **16/16 (100%)** | Há testes de código por fase, **não são testes de gameplay** |
 
-**Por que a segunda barra não avançou com o ZIP?** A fonte não contém eventos, NPCs, Pokémon, interiores do começo ou os testes no motor de jogo. A primeira etapa ainda requer verificação de direitos e arquivos nativos; a segunda ainda requer revisão de passabilidade e conexões físicas. Etapas 03–16 exigem integração e verificações específicas. Publicar os 74 MapIDs ou passar testes sintéticos **não equivale a fase 100% aprovada**.
+### As duas barras de gameplay — separadas para não confundir
+
+**1. Fases JOGÁVEIS (fases 04–16)** — **0/13 (0%)**
+
+```text
+[░░░░░░░░░░░░░]  0 / 13
+```
+
+Conta a fase quando existe uma **versão real no Game.exe isolado** em que seja possível começar, percorrer mapas e executar seu fluxo principal, com eventos/portas funcionais. O marco pode ser jogável **antes** de completar todos os testes de regressão; não basta ter mapas no ZIP, scripts Ruby ou testes sintéticos.
+
+**2. Fases TESTADAS no jogo (fases 04–16)** — **0/13 (0%)**
+
+```text
+[░░░░░░░░░░░░░]  0 / 13
+```
+
+Conta somente fases já jogáveis que tenham **QA nativo concluído**, com testes observáveis das portas, NPCs, batalhas, estados de vitória/derrota, salvamento/carregamento e regressões Windows/JoiPlay quando aplicável. **Passar na CI de Python/Ruby não aumenta essa barra.**
+
+As fases **01–03** são auditoria e infraestrutura, portanto não são consideradas fases de campanha jogável; as duas barras usam **13 etapas (04–16)**. O indicador de infraestrutura continua 0/16 separadamente. Cada fase possui campos distintos `gameplay_playable` e `gameplay_tested` em [johto-progress.json](../data/regions/johto-progress.json), e um vínculo ao teste de código automatizado. Uma fase pode estar **jogável** sem ter **QA aprovado**, mas não pode ter QA de gameplay aprovado sem estar jogável.
+
+**Por que as barras de gameplay ainda não avançaram com o ZIP?** A fonte não contém eventos, NPCs, Pokémon, interiores do começo ou os testes no motor de jogo. A primeira etapa ainda requer verificação de direitos e arquivos nativos; a segunda ainda requer revisão de passabilidade e conexões físicas. Etapas 03–16 exigem integração e verificações específicas. Publicar os 74 MapIDs ou passar testes sintéticos **não equivale a fase 100% aprovada**.
 
 **Próximo desbloqueio:** fornecer `game/Data`, `game/Graphics/Tilesets`, `game/Graphics/Autotiles` e `game/PBS` (sem saves nem Game.exe) para planejar remapeamento sem colisão e gerar prévia real em cópia isolada.
 
-Nenhum teste sintético, checklist ou documento autoriza subir a Barra 2 sem gameplay comprovado.
+Nenhum teste sintético, checklist ou documento autoriza subir a barra de fases jogáveis sem jogo executável comprovado ou a barra de fases testadas sem QA nativo comprovado.
 
 ## Trabalho inicial de Johto entregue ao GitHub
 
@@ -288,4 +308,4 @@ O usuário forneceu `Remastered Kanto Johto Map Packv1.zip`, que foi efetivament
 - **Map079 = New Bark Town**, **Map104 = Route 29** (origem), **Map102/103 = Mt. Silver/Mt. Silver Peak**, não presentes no jogo instalado ainda.
 - O ZIP contém **0 eventos nos 74 mapas de Johto**. `Map001` ausente é índice Intro não selecionado; `R49Water` ausente e comprovadamente **sem tiles de referência** nesta seleção. O stage permite limpar somente autotile realmente sem uso e rejeita os usados.
 - Falta ainda a **instalação local `game/`** para plano de IDs de destino, prévia RMXP com assets, interiores, conversão segura de 42 conexões e testes reais de Game.exe, batalha, save e troca de região.
-- **Subtarefas da fonte auditadas:** 74/74 MapIDs identificados e 42/42 linhas de conexões capturadas; esses não são 74 mapas jogáveis. **Barras oficiais conservadas:** 0/16 núcleos totalmente aprovados por testes de integração real e 0/16 com gameplay real.
+- **Subtarefas da fonte auditadas:** 74/74 MapIDs identificados e 42/42 linhas de conexões capturadas; esses não são 74 mapas jogáveis. **Barras de gameplay separadas:** 0/13 fases jogáveis (04–16), 0/13 com QA real aprovado. Indicador técnico histórico: 0/16 plenamente aceitas. Testes de código/contratos presentes: 16/16 (não comprovam gameplay).
