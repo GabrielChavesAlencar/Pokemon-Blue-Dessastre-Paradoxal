@@ -8,6 +8,7 @@ real map/event/PC/Hall-of-Fame evidence has been implemented and reviewed.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -47,6 +48,84 @@ def read_json(path: Path) -> dict:
     if not isinstance(result, dict):
         raise ValueError(f"Expected JSON object: {path}")
     return result
+
+
+def verify_pilot_package(root: Path, pilot: Path) -> list[str]:
+    """Read-only integrity check; synthetic data can NEVER prove gameplay QA."""
+    issues: list[str] = []
+    manifest = pilot / "Data/blue-johto-install.json"
+    marker = pilot / "Data/blue-johto-start.txt"
+    if pilot.is_symlink() or (pilot / "Data").is_symlink():
+        return ["Piloto Johto: links simbólicos para dados executáveis recusados"]
+    if not manifest.is_file() or manifest.is_symlink():
+        return ["Piloto isolado sem manifesto de Johto com gameplay e hashes verificados"]
+    try:
+        proof = read_json(manifest)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return ["Piloto Johto: manifesto ilegível ou inválido"]
+    checks = proof.get("checks")
+    if (proof.get("schema") != 1 or proof.get("region") != "JOHTO" or
+            proof.get("status") != "VERIFIED_PLAYABLE" or
+            not isinstance(checks, dict) or set(checks) != set(RELEASE_PROOFS) or
+            not all(checks.get(key) is True for key in RELEASE_PROOFS)):
+        issues.append("Piloto Johto: 13 comprovantes de release incompletos")
+    source = read_json(root / "data/regions/johto-source.json")
+    claimed_hash = proof.get("source_archive_sha256")
+    source_hash = source.get("source", {}).get("archive_sha256")
+    if (not isinstance(source_hash, str) or
+            not re.fullmatch(r"[a-f0-9]{64}", source_hash) or
+            claimed_hash != source_hash):
+        issues.append("Piloto Johto: fonte do release diverge do SHA-256 auditado")
+
+    points: dict[str, list[int]] = {}
+    for name in ("start", "travel_point", "npc_point"):
+        point = proof.get(name)
+        if (not isinstance(point, list) or len(point) != 4 or
+                any(type(v) is not int for v in point) or
+                not 600 <= point[0] <= 999 or min(point[1:3]) < 0 or
+                point[3] not in (2, 4, 6, 8)):
+            issues.append(f"Piloto Johto: {name} sem coordenadas seguras")
+        else:
+            points[name] = point
+    if len(points) == 3:
+        start, town, npc = (points[name] for name in
+                            ("start", "travel_point", "npc_point"))
+        if (start[0] == town[0] or town[0] != npc[0] or
+                town[1:3] == npc[1:3] or
+                abs(town[1] - npc[1]) + abs(town[2] - npc[2]) > 3):
+            issues.append("Piloto Johto: casa, chegada e NPC não são pontos seguros distintos")
+        expected_marker = f"BLUE_JOHTO_START_V1,JOHTO,{start[0]},{start[1]},{start[2]}"
+        if (not marker.is_file() or marker.is_symlink() or
+                marker.read_text(encoding="utf-8").strip() != expected_marker):
+            issues.append("Piloto Johto: marcador de início não coincide com os hashes")
+    file_hashes = proof.get("file_hashes")
+    if not isinstance(file_hashes, dict):
+        return issues + ["Piloto Johto: lista de hashes ausente"]
+    required = {"Data/MapInfos.rxdata", "Data/Tilesets.rxdata"}
+    required.update(f"Data/Map{pos[0]:03}.rxdata" for pos in points.values())
+    if not required.issubset(file_hashes):
+        issues.append("Piloto Johto: MapInfos, Tilesets ou MapIDs sem hash obrigatório")
+    for name, recorded in file_hashes.items():
+        if (not isinstance(name, str) or
+                not re.fullmatch(r"Data/(?:MapInfos|Tilesets|Map[0-9]{3})\.rxdata", name)):
+            issues.append("Piloto Johto: caminho de hash inválido")
+            continue
+        if name.startswith("Data/Map") and name != "Data/MapInfos.rxdata":
+            map_id = int(name[8:11])
+            if not 600 <= map_id <= 999:
+                issues.append(f"Piloto Johto: MapID {map_id} pode sobrescrever outra região")
+                continue
+        if not isinstance(recorded, str) or not re.fullmatch(r"[a-f0-9]{64}", recorded):
+            issues.append(f"Piloto Johto: hash malformado de {name}")
+            continue
+        file = pilot / name
+        if not file.is_file() or file.is_symlink() or file.stat().st_size == 0:
+            issues.append(f"Piloto Johto: {name} ausente, vazio ou symlink")
+            continue
+        digest = hashlib.sha256(file.read_bytes()).hexdigest()
+        if digest != recorded:
+            issues.append(f"Piloto Johto: {name} modificado desde a auditoria")
+    return issues
 
 
 def audit(root: Path = ROOT) -> dict:
@@ -101,18 +180,8 @@ def audit(root: Path = ROOT) -> dict:
     if not game.is_dir() or not (game / "Data/MapInfos.rxdata").is_file():
         blockers.append("Instalação local game/Data/MapInfos.rxdata indisponível para comparar hashes")
     pilot = root / ".blue-work/johto-pilot"
-    verified_manifest = pilot / "Data/blue-johto-install.json"
-    # Never use a staged geometry-only report or an unrelated Kanto manifest.
-    if not verified_manifest.is_file():
-        blockers.append("Piloto isolado sem manifesto de Johto com gameplay e hashes verificados")
-    else:
-        proof = read_json(verified_manifest)
-        checks = proof.get("checks")
-        if (proof.get("status") != "VERIFIED_PLAYABLE" or
-                proof.get("schema") != 1 or proof.get("region") != "JOHTO" or
-                not isinstance(checks, dict) or
-                not all(checks.get(key) is True for key in RELEASE_PROOFS)):
-            blockers.append("Manifesto de piloto não satisfaz provas mínimas da liberação")
+    # Never trust boolean attestations without checking actual files/coords.
+    blockers.extend(verify_pilot_package(root, pilot))
     return {
         "schema": 1,
         "region": "JOHTO",
