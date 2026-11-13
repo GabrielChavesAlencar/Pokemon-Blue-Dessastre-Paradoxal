@@ -39,6 +39,12 @@
       "verified": 16,
       "total": 16,
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
+    },
+    "offline_development_milestones": {
+      "verified": 3,
+      "total": 12,
+      "percent": 25,
+      "meaning": "Conta apenas entregas técnicas offline (arquivos e testes/inspeções), independentemente das fases jogáveis ou testadas em Game.exe. 3/12 significa: base auditada, estágio geométrico criado, duas bordas propostas; NÃO significa campanha pronta."
     }
   },
   "phases": [
@@ -298,12 +304,118 @@
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
     "code": "Cobertura de testes automatizados de código",
-    "technical": "Fases técnicas integralmente aprovadas"
+    "technical": "Fases técnicas integralmente aprovadas",
+    "offline": "Desenvolvimento de Johto SEM Game.exe"
   },
   "counting_rules": {
     "playable": "gameplay_playable === true somente com build piloto real, instalação isolada e caminho funcional comprovado",
     "tested": "gameplay_tested === true somente após gameplay_playable === true e evidências QA nativas aprovadas",
     "automated": "automated_code_test aponta para teste existente executado na suíte; não substitui testes em Game.exe",
-    "exclusions": "Fases 01–03 são infraestrutura, não fases de gameplay; por isso as duas barras de gameplay usam 13 etapas (04–16)."
+    "exclusions": "Fases 01–03 são infraestrutura, não fases de gameplay; por isso as duas barras de gameplay usam 13 etapas (04–16).",
+    "offline": "Avance somente quando um marco do offline_development.milestones ficar COMPLETE com evidencias de artefatos e verificacao offline. Nunca marque Game.exe jogavel/testado por isso."
+  },
+  "offline_development": {
+    "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
+    "total": 12,
+    "completed": 3,
+    "percent": 25,
+    "not_gameplay_proof": true,
+    "never_execute_game_exe": true,
+    "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
+    "milestones": [
+      {
+        "number": 1,
+        "title": "Auditoria da base Blue/Decades e da fonte Johto",
+        "status": "COMPLETE",
+        "acceptance": "ZIP privado validado por hash; 207 mapas nativos, 95 PBS e 74 mapas da fonte inventariados; sprites essenciais identificados",
+        "evidence": [
+          "docs/JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md",
+          "docs/JOHTO_FASE_04_ENTRADAS_REAIS_V1.md"
+        ]
+      },
+      {
+        "number": 2,
+        "title": "Prévia isolada de mapas e tilesets",
+        "status": "COMPLETE",
+        "acceptance": "74 mapas Johto em IDs 600–673, três interiores geométricos provisórios em 674–676, 42 conexões PBS remapeadas; integridade dos dados originais comparada",
+        "evidence": [
+          "docs/JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md"
+        ]
+      },
+      {
+        "number": 3,
+        "title": "Descoberta offline das conexões faltantes",
+        "status": "COMPLETE",
+        "acceptance": "Candidatas Route29 ↔ Cherrygrove e Route31 ↔ Violet derivadas de bordas e passagem estática; sem gravar na campanha; verificadores/testes versionados",
+        "evidence": [
+          "docs/JOHTO_FASE05_CONEXOES_OFFLINE_ATE_VIOLET.md",
+          "scripts/regions/johto_route29_cherrygrove.py",
+          "scripts/regions/johto_route31_violet.py"
+        ]
+      },
+      {
+        "number": 4,
+        "title": "Construir quarto definitivo do jogador (New Bark 2F)",
+        "status": "PENDING",
+        "acceptance": "RXDATA próprio de quarto 2F em prévia privada, visualização, tileset adequado, cama, escada, piso e proposta de spawn; verificação estática",
+        "evidence": []
+      },
+      {
+        "number": 5,
+        "title": "Construir casa definitiva do jogador (New Bark 1F)",
+        "status": "PENDING",
+        "acceptance": "RXDATA próprio de casa 1F, escada 2F, porta exterior, espaço da mãe, propostas de chegada e prévia de passabilidade",
+        "evidence": []
+      },
+      {
+        "number": 6,
+        "title": "Construir laboratório definitivo de Elm",
+        "status": "PENDING",
+        "acceptance": "RXDATA de laboratório próprio, mesa com três Poké Bolas físicas, lugar de Elm, porta, caminhos internos e verificação estática",
+        "evidence": []
+      },
+      {
+        "number": 7,
+        "title": "Ligar portas, escadas e spawn entre mapas",
+        "status": "PENDING",
+        "acceptance": "12 pontos/eventos com MapIDs e coordenadas derivados dos layouts, transições reversíveis e checagens de limites/ocupação; aprovação de colisão real permanece separada",
+        "evidence": []
+      },
+      {
+        "number": 8,
+        "title": "Inserir eventos de história de New Bark nos mapas",
+        "status": "PENDING",
+        "acceptance": "Eventos próprios para mãe, Elm, três Poké Bolas e rival ligados em RXDATA de cópia isolada; flags únicas, handlers auditados e testes sintéticos sem duplicar iniciais",
+        "evidence": []
+      },
+      {
+        "number": 9,
+        "title": "Preparar PBS do rival e três iniciais",
+        "status": "PENDING",
+        "acceptance": "Três equipes rival condicionadas ao inicial escolhido, validação offline de species/trainer types e scripts, sem criar marcador falso de PBS compilado",
+        "evidence": []
+      },
+      {
+        "number": 10,
+        "title": "Preparar encontros e treinadores das Rotas 29–31",
+        "status": "PENDING",
+        "acceptance": "Tabelas de encontros e times na cópia isolada, níveis ajustados às regras Blue, nomes/referências conferidos com PBS, testes de consistência",
+        "evidence": []
+      },
+      {
+        "number": 11,
+        "title": "Preparar Violet City, Sprout Tower e Falkner",
+        "status": "PENDING",
+        "acceptance": "Integração offline de mapa/entradas/interiores propostos, eventos de Falkner e Torre Sprout, contratos PBS e insígnia Zephyr sem recompensa duplicada",
+        "evidence": []
+      },
+      {
+        "number": 12,
+        "title": "Auditoria e empacotamento offline da fase inicial",
+        "status": "PENDING",
+        "acceptance": "Todas as saídas da prévia verificadas, suíte offline passando, SHA/IDs e proteção de Kanto/Decades/saves confirmados; relatório pronto para futura QA nativa sem alegar jogo funcional",
+        "evidence": []
+      }
+    ]
   }
 }
