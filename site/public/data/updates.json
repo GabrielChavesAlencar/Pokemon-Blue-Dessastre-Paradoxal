@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "42c0b2c092cb9e9855abb88e7a8bbf1e53eafa13",
+      "date": "2026-11-12T22:57:56-03:00",
+      "title": "test(johto): integra Blackthorn e Clair na regressão Python Blue Studio",
+      "category": "Testes"
+    },
+    {
+      "sha": "9585d36270617ede7c14581af3e4216862e0a0f8",
+      "date": "2026-11-12T22:57:42-03:00",
+      "title": "test(johto): fase 12 cobre Ice Path Clair Dragon Master Rising Waterfall e saves",
+      "category": "Testes"
+    },
+    {
       "sha": "006da736f2b9454aab7629da6a8f55d7bfddf301",
       "date": "2026-11-12T22:56:10-03:00",
       "title": "feat(johto): fase 12 Ice Path Blackthorn Clair Dragon Master e Rising Badge isolados",
