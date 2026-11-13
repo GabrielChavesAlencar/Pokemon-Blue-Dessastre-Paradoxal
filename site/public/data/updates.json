@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "31d785b5f61aef21319acb49ff5122409dc85c21",
+      "date": "2026-11-13T07:13:27-03:00",
+      "title": "docs(johto): fase 14 Bell Tower Lugia Ho-Oh roamers Suicune Ruins e pos-jogo protegido",
+      "category": "Documentação"
+    },
+    {
       "sha": "d937180bca46c3b40eeea90b37bee686e36717a2",
       "date": "2026-11-13T07:10:37-03:00",
       "title": "test(johto): contrato fase 14 HGSS Crystal, Bell Tower, Whirl, roamers, ruinas e sem mapas",
