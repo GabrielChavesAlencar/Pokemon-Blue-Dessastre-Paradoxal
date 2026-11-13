@@ -32,6 +32,25 @@
 
 **Checklist estruturado disponível:** [data/regions/sinnoh-coverage.json](../data/regions/sinnoh-coverage.json) lista **91 áreas simbólicas e 51 marcos de evento**, distribuídos nas fases 03–10, com IDs de origem/destino vazios e todas as verificações em `false`. O Codex deve usar esse inventário como **mínimo de cobertura**, ampliar com interiores, NPCs, itens e passagens reais descobertos na fonte autorizada, e **não preencher MapIDs sem auditoria**. [tests/test_sinnoh_coverage.py](../tests/test_sinnoh_coverage.py) impede marcar a checklist como importada antes das provas.
 
+### Complemento já implementado diretamente no GitHub — não refazer no Codex
+
+- [Auditoria profunda de RXDATA](../scripts/regions/audit_sinnoh_rxdata.py): lê a fonte local **ZIP ou pasta RMXP** em modo totalmente inerte, sem extração. Identifica arquivos `Map*.rxdata` reais, `MapInfos`, `Tilesets`, hashes, dimensões, eventos, scripts não executados, transferências estáticas/variáveis, gráficos ausentes, mapas órfãos, referências inválidas e colisões físicas de IDs.
+- [Testes da auditoria profunda](../tests/test_sinnoh_rxdata_audit.py): fixtures próprias de Ruby Marshal, ZIP não extraído, grafo de transferências, gráficos, scripts, corrupção e tileset ausente.
+- [Estudo conservador de capacidade de MapIDs](../scripts/regions/plan_sinnoh_capacity.py): usa auditoria RXDATA real + instalação local para contar **somente** espaços provisoriamente desocupados. Protege explicitamente **Johto 600–999**, **não presume suporte a IDs ≥1000**, não ocupa espaço que pode estar reservado a Hoenn e **não gera mapping**.
+- [Testes do estudo de capacidade](../tests/test_sinnoh_capacity.py): verifica que mapeamento continua vazio, que 600–999 permanecem intocados, que não há reserva de IDs sem `game/Data` e que insuficiência de espaço é reportada, não contornada.
+- **Essas ferramentas já estão codificadas. O Codex deve executá-las com a fonte e o `game/` reais; não reimplementá-las.** A aceitação de C00 e C01 exige arquivos locais, proveniência e testes nativos quando aplicável.
+
+**Comandos adicionais para C00/C01, após obter a fonte legítima:**
+
+```powershell
+python scripts/regions/audit_sinnoh_rxdata.py --source "C:\CAMINHO\FONTE_SINNOH_AUTORIZADA.zip" --game-data game/Data > .blue-work/sinnoh/rxdata-report.json
+python scripts/regions/plan_sinnoh_capacity.py --source "C:\CAMINHO\FONTE_SINNOH_AUTORIZADA.zip" --game-data game/Data > .blue-work/sinnoh/capacity.json
+python -m unittest discover -s tests -p "test_sinnoh_rxdata_audit.py" -v
+python -m unittest discover -s tests -p "test_sinnoh_capacity.py" -v
+```
+
+**Leitura obrigatória:** `capacity.json` é uma fotografia de capacidade, não mapa de IDs autorizados. O Codex deverá conferir também reservas de Hoenn e Johto que não estejam fisicamente instaladas e demonstrar compatibilidade de IDs ≥1000 antes de atribuir IDs persistentes. O auditor RXDATA não valida permissões de redistribuição, scripts dinâmicos/conditional calls nem prova caminhabilidade ou gameplay.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
