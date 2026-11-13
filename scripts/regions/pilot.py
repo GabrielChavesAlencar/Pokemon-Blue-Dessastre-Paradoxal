@@ -33,6 +33,7 @@ PILOT_INPUTS = (
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
     "scripts/battle_polish/Story.rb",
+    "scripts/battle_polish/RegionalWild.rb",
     "data/regions/kanto-source.json",
     "data/kanto-music-rules.json",
     "data/kanto-music.json",
