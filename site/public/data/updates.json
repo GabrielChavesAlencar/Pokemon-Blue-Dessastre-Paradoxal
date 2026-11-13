@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "acd12e490047b6eb031b677bd74cd0e3ab05d7ec",
+      "date": "2026-11-13T07:55:25-03:00",
+      "title": "docs(johto): schema de prova verificavel de Game.exe para habilitar inicio e agente New Bark",
+      "category": "Documentação"
+    },
+    {
       "sha": "2125f5c26227b42474b1ab2bf1553ded0b6f108b",
       "date": "2026-11-13T07:54:32-03:00",
       "title": "test(johto): fase 16 prova bloqueios reais dry-run e proteções de Kanto/Box/saves",
