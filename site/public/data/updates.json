@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5a79dd77acf515cc2e8502aee753cdf6f4fc3e3e",
+      "date": "2026-11-13T07:06:08-03:00",
+      "title": "feat(johto): fase 14 variantes HG SS Crystal, lendarios, roamers, ruinas e pós-jogo isolados",
+      "category": "Novidades"
+    },
+    {
       "sha": "ec5c063284548d2773006264027aa0fbe369e099",
       "date": "2026-11-13T06:58:15-03:00",
       "title": "docs(johto): sincroniza plano mestre com Elite Four Lance e Hall of Fame protegido",
