@@ -180,3 +180,20 @@ python -m unittest discover -s tests -p "test_johto_content_inventory.py" -v
 ~~~
 
 Os eventos de origem são **metadados de auditoria**, não prova de uma campanha completa. A fonte, a instalação local `game/`, as músicas e os PBS reais continuam ausentes neste repositório. Portanto, as barras de aceitação **permanecem 0/16 em ambas** e `install_johto.py --apply` continua bloqueado.
+
+## Etapa física 04 — compilador seguro dos primeiros eventos (13/11/2026)
+
+**Novo código publicado na branch de implementação:**
+
+- [scripts/regions/build_johto_events.py](../scripts/regions/build_johto_events.py): cria `RPG::Event` e `RPG::Event::Page` **autorais** (mother, Elm, escolha de inicial, rival e teletransportes); grava somente mapas derivados em nova pasta de `.blue-work/`, sem alterar a instalação. Scripts de evento limitados a `BlueJohtoPilot.mother`, `elm`, `choose_starter` e `rival`. Não importa código, flags ou áudio de terceiros.
+- [data/regions/johto-new-bark-events.json](../data/regions/johto-new-bark-events.json): **cinco mapas simbólicos** (quarto 2F, casa 1F, cidade, laboratório e Route 29) e **12 eventos planejados**. Todos os `map_id`, SHA, `x/y`, posições de chegada e sprites ainda necessitam auditoria real. **Nenhuma posição fictícia foi gravada**.
+- [tests/test_johto_event_build.py](../tests/test_johto_event_build.py): testes de serialização de eventos e warps, handler allowlist, proteção anti-overwrite, bytes idênticos de cenário, integridade de hash e recusa de publicação em `game/`.
+
+**Fluxo futuro quando `johto-staging-v1` for obtido com mapas verdadeiros e aprovados:**
+
+1. Conferir em janela de mapa o quarto, 1F, laboratório, rua e Route 29; identificar IDs correspondentes. **Interiores eventualmente ausentes do Map Pack terão de ser criados e auditados antes**.
+2. Preencher `map_id`, `map_sha256` e as posições verificadas no JSON, com sprites realmente disponíveis na instalação. Para cada warp, verificar que o ponto de chegada não colide com parede/NPC.
+3. Rodar `python scripts/regions/build_johto_events.py --preview ".blue-work/johto-staging-v1" --spec "data/regions/johto-new-bark-events.json" --output ".blue-work/johto-new-bark-events"`; o destino deve ser **novo**.
+4. O resultado `AUTHORED_EVENT_MAPS_NOT_PLAYABLE` ainda depende dos PBS reais do rival, sprites, integração no piloto, eventos de saída/entrada, compilação Essentials, saves, QA Windows/JoiPlay e direitos de redistribuição. **Não executar `install_johto.py --apply`**.
+
+**Status oficial:** fases 01–04 continuam **PARCIAIS**, barras **0/16 aprovadas**. O compilador valida somente serialização/contratos em sintéticos; a batalha continua sendo a de Decades/Blue e os scripts `JohtoPilot.rb` ainda não foram montados em um Game.exe de Johto.
