@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a0c5e1f253a366935577ed5d76924f30181f46c7",
+      "date": "2026-11-13T16:33:04-03:00",
+      "title": "test(site): restringir busca de link Johto ao atributo href",
+      "category": "Testes"
+    },
+    {
       "sha": "90dd4b070a72909a976655b2efc95631516f67df",
       "date": "2026-11-13T16:32:25-03:00",
       "title": "ci(android): pipeline segura para compilar e distribuir piloto Kanto JoiPlay",
