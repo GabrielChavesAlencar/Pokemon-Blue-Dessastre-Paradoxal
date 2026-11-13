@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "504184ba25bef29679156b5b2c5383d88ee6c83c",
+      "date": "2026-11-13T17:57:47-03:00",
+      "title": "test(android): reject Kanto ZIP without enabling Mobile.rb marker",
+      "category": "Testes"
+    },
+    {
+      "sha": "0b1dc5434731dee995350deb23032ba37d9ee363",
+      "date": "2026-11-13T17:57:32-03:00",
+      "title": "fix(android): enable compiled Mobile.rb in Kanto ZIP and guard missing marker",
+      "category": "Correções"
+    },
+    {
       "sha": "d07c4dd41f3479d24b414acc1349a1db9c977c8d",
       "date": "2026-11-13T17:56:53-03:00",
       "title": "test(site): validate on-page Android update steps and separate Kanto/Decades paths",
