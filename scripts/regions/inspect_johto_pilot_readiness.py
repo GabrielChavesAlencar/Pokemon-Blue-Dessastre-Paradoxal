@@ -30,6 +30,20 @@ EXPECTED_KEYS = {
     "JH_NPC_ELM", "JH_ELM_STARTER_DISPLAY", "JH_LAB_TO_TOWN",
     "JH_ROUTE29_NPC_RIVAL", "JH_ROUTE29_TO_NEW_BARK",
 }
+EXPECTED_TOPOLOGY = {
+    "JH_HOME2F_TO_1F": ("JOHTO_NEW_BARK_PLAYER_HOME_2F", "warp", "JOHTO_NEW_BARK_PLAYER_HOME_1F"),
+    "JH_NPC_MOTHER": ("JOHTO_NEW_BARK_PLAYER_HOME_1F", "handler", "mother"),
+    "JH_HOME1F_TO_2F": ("JOHTO_NEW_BARK_PLAYER_HOME_1F", "warp", "JOHTO_NEW_BARK_PLAYER_HOME_2F"),
+    "JH_HOME1F_TO_TOWN": ("JOHTO_NEW_BARK_PLAYER_HOME_1F", "warp", "JOHTO_NEW_BARK_TOWN"),
+    "JH_TOWN_TO_HOME1F": ("JOHTO_NEW_BARK_TOWN", "warp", "JOHTO_NEW_BARK_PLAYER_HOME_1F"),
+    "JH_TOWN_TO_ELM_LAB": ("JOHTO_NEW_BARK_TOWN", "warp", "JOHTO_NEW_BARK_ELM_LAB"),
+    "JH_TOWN_TO_ROUTE29": ("JOHTO_NEW_BARK_TOWN", "warp", "JOHTO_ROUTE_29"),
+    "JH_NPC_ELM": ("JOHTO_NEW_BARK_ELM_LAB", "handler", "elm"),
+    "JH_ELM_STARTER_DISPLAY": ("JOHTO_NEW_BARK_ELM_LAB", "handler", "starter"),
+    "JH_LAB_TO_TOWN": ("JOHTO_NEW_BARK_ELM_LAB", "warp", "JOHTO_NEW_BARK_TOWN"),
+    "JH_ROUTE29_NPC_RIVAL": ("JOHTO_ROUTE_29", "handler", "rival"),
+    "JH_ROUTE29_TO_NEW_BARK": ("JOHTO_ROUTE_29", "warp", "JOHTO_NEW_BARK_TOWN"),
+}
 SHA = re.compile(r"[a-f0-9]{64}\Z")
 SPRITE = re.compile(r"[A-Za-z0-9_ -]{1,100}\Z")
 CONNECTION = re.compile(r"(\d+),(North|South|East|West),(\d+),(\d+),(North|South|East|West),(\d+)\Z")
@@ -77,6 +91,10 @@ def assess(stage: dict, spec: dict, dimensions: dict, sprite_names: set[str],
             key = event.get("key")
             if key not in EXPECTED_KEYS or key in all_keys:
                 raise ValueError("Evento faltante, duplicado ou desconhecido: " + str(key))
+            owner, kind, target = EXPECTED_TOPOLOGY[key]
+            if (symbol != owner or event.get("kind") != kind
+                    or event.get("destination" if kind == "warp" else "handler") != target):
+                raise ValueError("Topologia de evento/handler alterada: " + key)
             all_keys.add(key)
     if set(by_symbol) != REQUIRED or all_keys != EXPECTED_KEYS:
         raise ValueError("Devem existir exatamente cinco mapas e doze eventos New Bark")
