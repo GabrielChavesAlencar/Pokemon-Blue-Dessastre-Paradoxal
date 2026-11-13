@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from audit_johto import ROOT, audit, checksum, write_report
+from audit_johto import ROOT, audit, checksum
 from compile_johto_connections import build as build_connections, write_preview
 from plan_johto import plan, read_json
 from prepare_johto_source import prepare as unpack
@@ -20,6 +20,17 @@ from verify_johto import inspect
 
 SOURCE = "data/regions/johto-source.json"
 GRAPH = "data/regions/johto-v1-map-connections.json"
+
+
+def write_record(path: Path, data: dict, *, root: Path) -> None:
+    allowed = (root.resolve() / ".blue-work").resolve()
+    path = path.absolute()
+    if (path.is_symlink() or path.exists() or path.resolve() == allowed
+            or not path.resolve().is_relative_to(allowed)):
+        raise ValueError("So criar arquivo NOVO em .blue-work/")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as output:
+        output.write(json.dumps(data, ensure_ascii=False, indent=2) + "\\n")
 
 
 def run(*, root: Path = ROOT) -> dict:
@@ -63,13 +74,13 @@ def run(*, root: Path = ROOT) -> dict:
     result = audit(source, root / SOURCE, game=game, archive=archive)
     if not result.get("archive_hash_pinned_and_verified"):
         raise ValueError("Arquivo-fonte nao auditado")
-    write_report(auditor, result)
+    write_record(auditor, result, root=root)
     graph = read_json(root / GRAPH)
     proposed = plan(manifest, result)
     if proposed.get("status") != "READY_FOR_GEOMETRY_PREVIEW":
         raise ValueError("MapIDs da previa bloqueados: " +
                          ", ".join(proposed.get("blocking_reasons", [])))
-    write_report(allocation, proposed)
+    write_record(allocation, proposed, root=root)
     staged = stage(root=root, source=source, game=game, archive=archive,
                    output=preview, manifest_path=root / SOURCE,
                    audit_path=auditor, plan_path=allocation)
@@ -103,7 +114,7 @@ def run(*, root: Path = ROOT) -> dict:
             "connections": str(connections.relative_to(root))
         }
     }
-    write_report(readiness, status)
+    write_record(readiness, status, root=root)
     return status
 
 
