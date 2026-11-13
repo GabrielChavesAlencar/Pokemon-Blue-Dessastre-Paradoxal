@@ -41,6 +41,26 @@ Contam somente os núcleos que possam ser realmente abertos e percorridos no `Ga
 
 Contam somente fases com QA real comprovado no Windows e, quando distribuída para JoiPlay/Android, no celular. CI Python/Ruby não se confunde com teste manual do jogo.
 
+## Quadro por fase — sequência principal
+
+| Fase | Núcleo | Preparação atual | Implementado e testado no jogo |
+|---|---|---|---|
+| 00 | Auditoria de fontes, direitos e baseline | Ferramentas criadas; fonte local pendente | Não |
+| 01 | Importador e remapeamento de mapas | Grafo e staging seguros; remapeamento real pendente | Não |
+| 02 | Piloto de Sinnoh no menu | Botão no código; faltam piloto e mapas reais | Não |
+| 03 | Twinleaf, Rowan, Barry, Sandgem | Inventário simbólico | Não |
+| 04 | Jubilife, Oreburgh e Roark | Inventário simbólico | Não |
+| 05 | Floaroma, Eterna e Gardenia | Inventário simbólico | Não |
+| 06 | Hearthome, Veilstone e Pastoria | Inventário simbólico | Não |
+| 07 | Canalave, Iron Island e Snowpoint | Inventário simbólico | Não |
+| 08 | Galactic HQ, Mt. Coronet e Giratina | Inventário simbólico | Não |
+| 09 | Sunyshore, Elite Four e Cynthia | Inventário simbólico | Não |
+| 10 | Battle Zone e pós-jogo | Inventário simbólico | Não |
+| 11 | Músicas, treinadores, encontros e site | Catálogo musical conceitual | Não |
+| 12 | Integração final e regressões | Plano de validação existente | Não |
+
+Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluído. As barras B, C e D permanecem em **0/13** até que as fontes, as equipes e os testes necessários estejam realmente disponíveis.
+
 ## Entregas concretas da Barra A
 
 | Situação | ID | Entregável | Arquivo / evidência |
