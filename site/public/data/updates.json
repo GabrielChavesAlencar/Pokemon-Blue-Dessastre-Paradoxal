@@ -2,6 +2,78 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1bc469d889c9142e14530eae2fe01903b226056d",
+      "date": "2026-11-13T15:43:15-03:00",
+      "title": "Merge Johto offline 10/12: Route29-31 wild/trainer PBS and 5 NPCs (#43)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "aed332feb25a5477a45a52f230c023b8bd40d6fe",
+      "date": "2026-11-13T15:41:13-03:00",
+      "title": "docs(johto): registrar preparação offline das Rotas 29-31 e Master",
+      "category": "Documentação"
+    },
+    {
+      "sha": "feaa069ed403d2473ff7e37a1d23494687e4a3f1",
+      "date": "2026-11-13T15:41:11-03:00",
+      "title": "docs(johto): atualizar barra offline a 10/12 e apontar Violet 11/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "c91df6aaed191a4dc21a31811939c643598672eb",
+      "date": "2026-11-13T15:41:08-03:00",
+      "title": "data(johto): registrar 10/12 offline - 3 rotas, 5 treinadores e PBS dia/noite sem Game.exe",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e65c9280ebdcb193f7cb0adacba0c54b19c7113c",
+      "date": "2026-11-13T15:40:22-03:00",
+      "title": "docs(johto): documentar 6 encontros, 5 treinadores, 10 PBS, hashes reais e Master/QA pendente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "673fde69e54d77edf943a0e3db3c21e463bf70d7",
+      "date": "2026-11-13T15:36:49-03:00",
+      "title": "test(johto): integrar teste Ruby sintético de 5 treinadores nas rotas Johto",
+      "category": "Testes"
+    },
+    {
+      "sha": "1f11537fdda7e382be82d21e987bf1b2a03dc775",
+      "date": "2026-11-13T15:36:47-03:00",
+      "title": "test(johto): checar 5 treinadores Master, bloqueios por região e save em Ruby puro",
+      "category": "Testes"
+    },
+    {
+      "sha": "36e0167c5b83c6c839b8b6da000e13e6c9f9b0a7",
+      "date": "2026-11-13T15:36:10-03:00",
+      "title": "test(johto): 10 testes PBS, probabilidades, equipes Master, stage isolado e preservação de Silver",
+      "category": "Testes"
+    },
+    {
+      "sha": "36c418eff585168af7f9520b08bc924e8577312f",
+      "date": "2026-11-13T15:34:19-03:00",
+      "title": "feat(johto): gate de batalhas dos 5 treinadores por PBS QA e versão Master nativa",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ded43977c1727160bfe4a6d0c8f46f6edad10d31",
+      "date": "2026-11-13T15:33:42-03:00",
+      "title": "feat(johto): compilar 3 rotas, PBS encontros dia/noite, 5 treinadores e Master em stage isolado",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ede85d631b202fb99ada3dd93151cb1c1c373def",
+      "date": "2026-11-13T15:31:51-03:00",
+      "title": "fix(johto): mover Bug Catcher Wade para componente caminhável de Route31",
+      "category": "Correções"
+    },
+    {
+      "sha": "1bdbf070de469339f0786250f3aaf970af457e23",
+      "date": "2026-11-13T15:30:36-03:00",
+      "title": "data(johto): definir encontros dia/noite rotas 29-31 e 5 treinadores normais/master propostos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "8a76353be653bef2d15f11dd801cd0e666b3e3c3",
       "date": "2026-11-13T15:24:07-03:00",
       "title": "Merge Johto offline 9/12: native Silver rival PBS moves and 3 versions (#42)",
