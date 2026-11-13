@@ -49,40 +49,52 @@
       "key": "JH_STARTER_CHIKORITA",
       "symbol": "JOHTO_NEW_BARK_ELM_LAB",
       "x": 7,
-      "y": 6,
+      "y": 7,
       "sprite": "Object_Ball",
       "species": "CHIKORITA",
       "static_tile_id": 5328,
       "handler": "choose_starter_from_ball",
-      "engine_verified": false
+      "engine_verified": false,
+      "static_tile_x": 7,
+      "static_tile_y": 6,
+      "interact_from_x": 7,
+      "interact_from_y": 8
     },
     {
       "key": "JH_STARTER_CYNDAQUIL",
       "symbol": "JOHTO_NEW_BARK_ELM_LAB",
       "x": 10,
-      "y": 6,
+      "y": 7,
       "sprite": "Object_Ball",
       "species": "CYNDAQUIL",
       "static_tile_id": 5329,
       "handler": "choose_starter_from_ball",
-      "engine_verified": false
+      "engine_verified": false,
+      "static_tile_x": 10,
+      "static_tile_y": 6,
+      "interact_from_x": 10,
+      "interact_from_y": 8
     },
     {
       "key": "JH_STARTER_TOTODILE",
       "symbol": "JOHTO_NEW_BARK_ELM_LAB",
       "x": 13,
-      "y": 6,
+      "y": 7,
       "sprite": "Object_Ball",
       "species": "TOTODILE",
       "static_tile_id": 5330,
       "handler": "choose_starter_from_ball",
-      "engine_verified": false
+      "engine_verified": false,
+      "static_tile_x": 13,
+      "static_tile_y": 6,
+      "interact_from_x": 13,
+      "interact_from_y": 8
     }
   ],
   "assumptions": [
     "Elm dialogue sets elm_intro before selecting a ball",
     "Silver position x71 y17 near Route29 east side, not proven in engine",
-    "ball event sprites replace static z=2 tile; their pedestal remains on z=1, to prevent visible duplicates"
+    "Each ball graphic/event moves one tile forward onto front edge of pedestal (y7) so the player can interact from y8; the original static ball tile at y6 is removed to avoid duplication"
   ],
   "approval": {
     "can_install": false,
