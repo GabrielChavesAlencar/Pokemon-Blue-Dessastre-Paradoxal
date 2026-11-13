@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "33c2197348e16ef4228b7b36ca428546354e2196",
+      "date": "2026-11-13T16:42:09-03:00",
+      "title": "fix(runtime): carregar json/digest somente ao validar Johto; Kanto inicia sem stdlib",
+      "category": "Correções"
+    },
+    {
       "sha": "3da9038cb0c89b24d3f6a4f087b4428a87a738d1",
       "date": "2026-11-13T16:36:02-03:00",
       "title": "docs(android): executar a tentativa experimental de Kanto [android-kanto-release]",
