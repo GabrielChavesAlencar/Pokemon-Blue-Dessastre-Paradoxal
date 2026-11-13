@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d937180bca46c3b40eeea90b37bee686e36717a2",
+      "date": "2026-11-13T07:10:37-03:00",
+      "title": "test(johto): contrato fase 14 HGSS Crystal, Bell Tower, Whirl, roamers, ruinas e sem mapas",
+      "category": "Testes"
+    },
+    {
       "sha": "b12405082e5f1fdcc163d468694ec987bcd51333",
       "date": "2026-11-13T07:09:53-03:00",
       "title": "docs(johto): fase 14 contrato HGSS Crystal, lendarios, Bell Tower, Whirl, Ruins e bloqueios",
