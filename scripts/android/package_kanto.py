@@ -57,9 +57,13 @@ def _kanto_save_profile(text: str) -> bool:
         "dataPathApp": "Kanto Piloto",
         "dataPathOrg": "Dessastre Paradoxal Kanto Testes",
     }
+    # Existing Kanto pilot.py writes both settings on a *single* JSONC line.
+    # Drop full-line comments first; never let a commented old value count.
+    active = "\n".join(line for line in text.splitlines()
+                       if not line.lstrip().startswith("//"))
     for key, value in expected.items():
-        matches = re.findall(r'(?m)^[ \t]*"' + key + r'"\s*:\s*"((?:[^"\\]|\\.)*)"',
-                             text)
+        matches = re.findall(r'"' + key + r'"\s*:\s*"((?:[^"\\]|\\.)*)"',
+                             active)
         if len(matches) != 1:
             return False
         try:
