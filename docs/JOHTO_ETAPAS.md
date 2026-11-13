@@ -80,6 +80,11 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `data/regions/johto-phase12.json` define mapa simbólico de Ice Path/Blackthorn/Dragon's Den, Rota 45/46 e Dark Cave bloqueada, sem MapIDs; `tests/test_johto_phase12_contract.py` verifica a integridade.
 - [x] [MD da Etapa 12 — Ice Path, Clair, Dragon Master e Rising](JOHTO_FASE_12_ICE_PATH_BLACKTHORN_CLAIR.md).
 - [ ] Integrar mapas e puzzles físicos, compilar PBS de Clair, validar Waterfall real, entrega pós-Master de RISING e acesso à Liga em Game.exe antes de concluir a etapa.
+- [x] **Etapa 13 iniciada:** `scripts/regions/JohtoLeague.rb` prepara New Bark → Route 27 → Tohjo Falls → Route 26 → Victory Road e rival → Indigo Plateau, Elite Will/Koga/Bruno/Karen/Lance e Hall of Fame condicionado à confirmação real.
+- [x] `tests/johto_league_runtime.rb` e `tests/test_johto_league_runtime.py` verificam insígnias, Surf/Waterfall, ordem e reinício da Elite após derrota, Lance, Hall of Fame falho/cancelado, conclusão única, save/reload e preservação da Liga Kanto.
+- [x] `data/regions/johto-phase13.json` relaciona mapas/salas simbólicos e a separação do Indigo Plateau geográfico das campanhas de Johto/Kanto; `tests/test_johto_phase13_contract.py` valida o contrato.
+- [x] [MD da Etapa 13 — Liga de Johto, Elite Four, Lance e Hall of Fame](JOHTO_FASE_13_LIGA_ELITE_FOUR_LANCE.md), com desbloqueio de Kanto/Hoenn apenas no estado e não como viagem.
+- [ ] Integrar mapas e corredores reais, compilar PBS da Elite/Rival, confirmar gravação verdadeira de Hall of Fame, criar NPC pós-Liga em New Bark e validar Box/viagem antes do aceite 13/16.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -99,7 +104,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 10 | Olivine e Jasmine | **PARCIAL**: cura segura de Ampharos, Jasmine/MINERAL, inventário e Whirl Islands bloqueadas com testes; faltam Map Pack, PBS e jogo real |
 | 11 | Mahogany, Rocket e Pryce | **PARCIAL**: Lake of Rage, Rocket HQ, Pryce/GLACIER, Whirlpool e Radio Tower preparados; faltam mapas, PBS e gameplay |
 | 12 | Blackthorn e Clair | **PARCIAL**: Ice Path/Strength/Waterfall, Clair, Dragon Master/RISING e preparação da Liga em testes isolados; faltam mapas, PBS e gameplay |
-| 13 | Liga Johto e Lance | PENDENTE |
+| 13 | Liga Johto e Lance | **PARCIAL**: Tohjo, Victory Road, Elite Four/Lance, Hall of Fame protegido e unlock Kanto/Hoenn no save em código/testes; mapas e gameplay pendentes |
 | 14 | Lendários e pós-jogo | PENDENTE |
 | 15 | Música, treinadores e portal | PENDENTE |
 | 16 | Instalação, viagem e aceite final | PENDENTE |
