@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "17de58a74ce4245091d7faa54a7e61a7a15cda80",
+      "date": "2026-11-13T07:57:56-03:00",
+      "title": "docs(johto): fase 16 implementada parcialmente com gate release, viagem e bloqueadores verdadeiros",
+      "category": "Documentação"
+    },
+    {
       "sha": "d83ec79b624576bea43405bfec3e7938e4035407",
       "date": "2026-11-13T07:56:44-03:00",
       "title": "docs(johto): matriz E2E real, dry-run, critérios de release, backup e rollback de Johto",
