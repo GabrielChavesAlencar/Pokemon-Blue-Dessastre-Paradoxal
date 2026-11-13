@@ -64,6 +64,11 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `data/regions/johto-phase09.json` define percurso e interiores simbólicos, sem fingir MapIDs reais; `tests/test_johto_phase09_contract.py` valida o contrato e bloqueia declaração prematura de etapa jogável.
 - [x] [MD da Etapa 09 com requisitos de entrada, equipe PBS, Lighthouse, medicina e transição para Jasmine](JOHTO_FASE_09_OLIVINE_CIANWOOD_CHUCK.md).
 - [ ] Conectar mapas e eventos reais Olivine/Lighthouse/Cianwood, compilar PBS, auditar SecretPotion e HM Fly e testar Chuck/STORM/Surf no Game.exe, sem curar Ampharos na fase 09.
+- [x] **Etapa 10 iniciada:** `scripts/regions/JohtoJasmine.rb` prepara consumo único da SecretPotion por Jasmine, cura lógica de Ampharos, ginásio, MINERAL como 6ª insígnia e bloqueio das Whirl Islands sem mapas.
+- [x] `tests/johto_jasmine_runtime.rb` e `tests/test_johto_jasmine_runtime.py` verificam requisitos do pedido/retorno, inventário com remoção confirmada, cura única, PBS/derrota/vitória de Jasmine, badge/esmeraldas, save/reload e isolamento Decades/Kanto.
+- [x] `data/regions/johto-phase10.json` delimita mapas simbólicos, estados das quatro entradas das Whirl Islands, tokens de prontidão e aceite pendente; `tests/test_johto_phase10_contract.py` protege o contrato.
+- [x] [MD da Etapa 10 — Jasmine, Ampharos, MINERAL e Whirl Islands](JOHTO_FASE_10_JASMINE_AMPHAROS_MINERAL.md).
+- [ ] Verificar item/bag de Essentials real, integrar física e NPCs de Olivine, PBS de Jasmine, mapas das ilhas e testar no Game.exe antes de concluir a Etapa 10.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -80,7 +85,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 07 | Goldenrod e Whitney | **PARCIAL**: Ilex/Farfetch'd, Cut, Rádio, Whitney/PLAIN e mapa simbólico programados; faltam mapas reais, PBS e gameplay |
 | 08 | Ecruteak e Morty | **PARCIAL**: eventos das rotas, Burned Tower, rival, Rocket, FOG/Surf e topologia simbólica; faltam fonte, mapas, PBS e gameplay |
 | 09 | Cianwood e Chuck | **PARCIAL**: rotas Olivine/Cianwood, farol, medicina, Chuck/STORM, Surf/Fly e contrato simbólico; faltam mapas, PBS e gameplay |
-| 10 | Olivine e Jasmine | PENDENTE |
+| 10 | Olivine e Jasmine | **PARCIAL**: cura segura de Ampharos, Jasmine/MINERAL, inventário e Whirl Islands bloqueadas com testes; faltam Map Pack, PBS e jogo real |
 | 11 | Mahogany, Rocket e Pryce | PENDENTE |
 | 12 | Blackthorn e Clair | PENDENTE |
 | 13 | Liga Johto e Lance | PENDENTE |
