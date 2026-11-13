@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e74cd4e2e75a8c8c65951f919ac37dbc15e86b7e",
+      "date": "2026-11-12T21:21:52-03:00",
+      "title": "docs(johto): planeja mapa 10, consumo seguro de SecretPotion, Jasmine e ilhas fechadas",
+      "category": "Documentação"
+    },
+    {
       "sha": "7071519cd9e25d94b2533e05729a0932d3df147c",
       "date": "2026-11-12T21:21:05-03:00",
       "title": "test(johto): integra Jasmine e consumo da SecretPotion na regressão Python",
