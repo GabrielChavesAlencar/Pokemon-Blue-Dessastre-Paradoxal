@@ -23,8 +23,8 @@ finally:
     sys.path.pop(0)
 
 
-def rmxp(name, **kwargs):
-    return RubyObject(name, {"@" + k: v for k, v in kwargs.items()})
+def rmxp(class_name, **kwargs):
+    return RubyObject(class_name, {"@" + k: v for k, v in kwargs.items()})
 
 
 def make_game(root):
