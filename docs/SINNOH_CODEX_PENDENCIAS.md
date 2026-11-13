@@ -30,6 +30,8 @@
 
 **Estado atual honesto:** **Barra 1 — 0/13 fases técnicas completamente aprovadas; Barra 2 — 0/13 fases de gameplay integralmente aprovadas.** A etapa 00 ganhou ferramentas, mas depende da fonte e do `game/` locais; a etapa 02 ganhou o botão, mas **não** o piloto com mapas reais.
 
+**Checklist estruturado disponível:** [data/regions/sinnoh-coverage.json](../data/regions/sinnoh-coverage.json) lista **91 áreas simbólicas e 51 marcos de evento**, distribuídos nas fases 03–10, com IDs de origem/destino vazios e todas as verificações em `false`. O Codex deve usar esse inventário como **mínimo de cobertura**, ampliar com interiores, NPCs, itens e passagens reais descobertos na fonte autorizada, e **não preencher MapIDs sem auditoria**. [tests/test_sinnoh_coverage.py](../tests/test_sinnoh_coverage.py) impede marcar a checklist como importada antes das provas.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
