@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2b56b699e4985a93c9efbb4bc10195cf18e79fa1",
+      "date": "2026-11-13T16:47:30-03:00",
+      "title": "fix(kanto): verificação nativa ignora eventos sem página ativa",
+      "category": "Correções"
+    },
+    {
       "sha": "52a78ab374f24ddefefd946c640f818572111895",
       "date": "2026-11-13T16:45:10-03:00",
       "title": "docs(android): retestar Kanto com boot corrigido [android-kanto-release]",
