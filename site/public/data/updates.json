@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "581e606877da7a0b9d184514718307be20635881",
+      "date": "2026-11-13T06:57:56-03:00",
+      "title": "docs(johto): registra fase 13 parcial e pendencias do Hall of Fame real",
+      "category": "Documentação"
+    },
+    {
       "sha": "4a4e5e772b35e71c38570b9783fcb56069945c03",
       "date": "2026-11-13T06:57:25-03:00",
       "title": "docs(johto): fase 13 Liga Elite Four Lance Hall of Fame e unlock regional seguro",
