@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4a81bfdf033d0c8382ac46eeb2bafa9739bfc99f",
+      "date": "2026-11-13T16:30:41-03:00",
+      "title": "test(site): reconhecer release separada do piloto Android Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "1114263119356e677147e5ecb0362adf1c2dc215",
       "date": "2026-11-13T16:30:24-03:00",
       "title": "feat(site): procurar piloto Android Kanto em release experimental separada",
