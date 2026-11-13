@@ -84,6 +84,42 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"USER EDIT")
         self.assertEqual(read_installed(game)["revision"], self.a)
 
+    def test_incompatible_save_profile_requires_full_zip(self):
+        old, old_marker = self.build_zip(self.a, b"OLD")
+        old_marker["immutable"] = {"mkxp.json": {"sha256": "0" * 64, "size": 8}}
+        new, _ = self.build_zip(self.b, b"NEW")
+        previous = self.root / "old.json"
+        previous.write_text(json.dumps(old_marker))
+        target = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(target)
+        result = publish(target, "kanto", previous)
+        self.assertIsNone(result["patch"])
+        self.assertFalse((self.root / "Blue-Android-Kanto-Piloto.patch.zip").exists())
+
+    def test_corrupt_patch_manifest_is_refused(self):
+        old, old_marker = self.build_zip(self.a, b"OLD")
+        new, _ = self.build_zip(self.b, b"NEW")
+        previous = self.root / "old.json"
+        previous.write_text(json.dumps(old_marker))
+        target = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(target)
+        publish(target, "kanto", previous)
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        patch = self.root / manifest["patch"]["asset"]
+        # A patch whose file table omits a changed file must not advance the marker.
+        invalid = self.root / "invalid.zip"
+        with zipfile.ZipFile(invalid, "w") as archive:
+            archive.writestr("patch.json", json.dumps({
+                "schema": 1, "channel": "kanto", "from_revision": self.a,
+                "to_revision": self.b, "changed": {}, "removed": []}))
+        game = self.root / "installed"
+        (game / "Data").mkdir(parents=True)
+        (game / "Data/Map001.rxdata").write_bytes(b"OLD")
+        (game / "Data/blue-update.json").write_text(json.dumps(old_marker))
+        with self.assertRaisesRegex(ValueError, "complete delta"):
+            apply_patch(game, read_installed(game), manifest, invalid)
+        self.assertEqual(read_installed(game)["revision"], self.a)
+
     def test_no_previous_manifest_means_full_install_baseline_only(self):
         new, _ = self.build_zip(self.b, b"NEW")
         new_zip = self.root / "Blue-Android-Kanto-Piloto.zip"
