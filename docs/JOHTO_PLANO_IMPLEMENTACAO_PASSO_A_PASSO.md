@@ -253,6 +253,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 11/16 — Mahogany, Lake of Rage, Rocket Hideout e Pryce
 
+**Implementação parcial publicada:** [JOHTO_FASE_11_MAHOGANY_ROCKET_PRYCE.md](JOHTO_FASE_11_MAHOGANY_ROCKET_PRYCE.md). O módulo `scripts/regions/JohtoMahogany.rb` prepara os eventos das Rotas 42/43, Lake of Rage, Red Gyarados, Lance, Rocket HQ com grunts/senhas, Electrode e desativação do sinal, Pryce com GLACIER única, HM Whirlpool condicionado a item real, Radio Tower após Pryce e sinalização da Route 44. `data/regions/johto-phase11.json` descreve mapas simbólicos; os testes Ruby/Python verificam fugas, derrotas, premiações únicas, save/reload e ausência de impacto em Kanto/Decades. **Map Pack, callbacks reais, níveis/equipes PBS, puzzles físicos, Rádio e gameplay não foram instalados. A etapa permanece PARCIAL, sem ativação de Johto no Game.exe.**
+
+
 **Implementar:** Routes 42/43/44, Mahogany, Lake of Rage, encontro com Red Gyarados e Lance, Rocket Hideout com puzzles/portas, Radio Tower takeover/Goldenrod conforme encadeamento de HGSS e ginásio de Pryce/GLACIER. Auditar nível de acesso ao WhirlPool por insígnia local.
 
 **Teste/aceite:** eventos Rocket na ordem correta, estados persistentes, batalha contra Pryce, insígnia sem duplicação e mapas sem bloqueio permanente por switches de outra região.
