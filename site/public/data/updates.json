@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b96a365d8be7a5cdc70a82a85fbc3f782f52ae7a",
+      "date": "2026-11-13T17:52:53-03:00",
+      "title": "fix(android): add pre-plugin Input.mouse_in_window compatibility shim for JoiPlay",
+      "category": "Correções"
+    },
+    {
       "sha": "b2c2aebd4cadcadc8baf435ed252d74052eaa700",
       "date": "2026-11-13T17:37:51-03:00",
       "title": "release(android): finalize patchable Kanto/Decades inventories and publish fresh channel baselines [android-kanto-release]",
