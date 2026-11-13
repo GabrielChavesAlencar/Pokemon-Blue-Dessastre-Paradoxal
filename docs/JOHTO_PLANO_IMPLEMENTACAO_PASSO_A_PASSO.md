@@ -271,6 +271,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 13/16 — Tohjo Falls, Victory Road, Elite Four e Lance
 
+**Implementação parcial publicada:** [JOHTO_FASE_13_LIGA_ELITE_FOUR_LANCE.md](JOHTO_FASE_13_LIGA_ELITE_FOUR_LANCE.md). O módulo `JohtoLeague.rb` prepara a volta a New Bark, o percurso Route 27 → Tohjo Falls (Surf/Waterfall) → Route 26 → Victory Road → Indigo Plateau (Johto isolado de Kanto), rival, Elite Will/Koga/Bruno/Karen e campeão Lance. Derrota reinicia o desafio na Elite; vitória de Lance **não conclui a Liga**. Somente um adaptador de Hall of Fame nativo auditado e resultado `:recorded` permitem chamar `BlueRegions.complete_league(state, "JOHTO")` uma única vez, sem mexer na Liga Kanto. Kanto e Hoenn ficam desbloqueados **no save**, mas o adaptador atual não permite viajar a partir de Johto, e Hoenn continua sem mapas. `travel_agent_intro` prepara NPC posterior na cidade inicial New Bark sem instalar NPC/teleporte. `data/regions/johto-phase13.json` é topologia simbólica; Ruby/Python verificam ordem, perdas, HoF falho, save/reload, desbloqueio lógico e isolamento. **Não há mapas/PBS/HoF nativo nem gameplay; etapa permanece PARCIAL.**
+
+
 **Implementar:** acesso da região de Johto ao corredor da Liga por New Bark → Route 27/26 → Tohjo Falls → Victory Road → Indigo Plateau. Considerar que **Indigo Plateau é geograficamente compartilhado com Kanto**, mas a campanha, estados, treinadores e conclusão de Johto não podem sobrescrever nem premiar a Liga Kanto. Adaptar Elite Four **Will, Koga, Bruno, Karen** e campeão **Lance**, Hall of Fame, retorno ao jogo, save e flag de conclusão verificada.
 
 **Teste/aceite:** oito badges locais exigidas, quatro membros + Lance vencidos em ordem, derrota não libera destinos, vitória repetida não concede prêmio duplicado; desbloquear Kanto + Hoenn na estrutura de save, mas **não** permitir transporte para Hoenn enquanto seus mapas não existirem.
