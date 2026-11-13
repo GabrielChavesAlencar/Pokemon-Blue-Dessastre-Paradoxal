@@ -34,3 +34,13 @@ A [CI nativa original](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dess
 Evidências locais em `.blue-work/kanto-codex-e2e/20261112-b35a084e/`: `resultado.md`, `resultado.json`, `t2-probe.json`, `t3-windows-ui.json`, `interactive-stderr.log`, `verify_pilot.json`, `audit_canonical.json` e `release_gate.json`.
 
 Retomar pelo boot na etapa 02. Após observar o menu, iniciar um novo save isolado, provar movimento/colisão/escada e percorrer Pallet–Cerulean com as teclas reais. Os casos de Android/JoiPlay permanecem bloqueados até haver dispositivo ou emulador acessível.
+
+## Continuação na revisão 083b98a
+
+O piloto em uma pasta curta compilou e abriu a tela de título. Um Enter físico abriu o menu, confirmado por um quadro capturado do próprio Game.exe. Enter e seta para baixo enviados pelo controle automatizado deixaram New Game selecionado. As capturas de antes e depois e o registro de teclas estão no relatório local. Movimento em Pallet, batalhas, viagens e save/reload continuam sem execução gráfica. A Barra 2 permanece em 1/16.
+
+A Rota 23 voltou a ter encontros no PBS e no portal no [PR #26](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/26). O método LandDay aparecia duas vezes com conteúdo idêntico. A importação mantém uma cópia com os pesos relativos originais. A auditoria comparou 23 áreas, 69 métodos, 53 espécies e 153 registros de equipes com a fonte verificada. Passaram 171 testes de Kanto, 61 testes do portal e o build. Falta exercitar os encontros da Rota 23 pela interface.
+
+O [PR #25](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/25) voltou a passar na regressão geral. A [CI nativa](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43343135584) recebeu uma página HTML de 2.040 bytes, compatível com a cota de download do Google Drive observada localmente. A solicitação local com URL nova baixou o RAR com o SHA-256 correto. O runner recusou o arquivo inválido e interrompeu a compilação.
+
+Evidências locais em `.blue-work/kanto-codex-e2e/20261112-b35a084e/`: `resultado-seguimento.md`, `resultado-seguimento.json`, `followup-title.png`, `kanto02-009-menu-after.png`, capturas de `kanto02-010-new-game` e `kanto02-011-menu-down`, `followup-actions.jsonl` e `followup-canonical.json`.
