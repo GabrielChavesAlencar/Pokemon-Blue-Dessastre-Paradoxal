@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d07c4dd41f3479d24b414acc1349a1db9c977c8d",
+      "date": "2026-11-13T17:56:53-03:00",
+      "title": "test(site): validate on-page Android update steps and separate Kanto/Decades paths",
+      "category": "Testes"
+    },
+    {
+      "sha": "19cb24fcc7e8d3fcb7880412517343e3b1914004",
+      "date": "2026-11-13T17:56:40-03:00",
+      "title": "test(android): reproduce early Input bootstrap in native ZIP packaging fixture",
+      "category": "Testes"
+    },
+    {
       "sha": "01c020bb2cbca16eb3640684154821b8e0ebcb17",
       "date": "2026-11-13T17:55:53-03:00",
       "title": "style(site): make Android update walkthrough legible on narrow mobile screens",
