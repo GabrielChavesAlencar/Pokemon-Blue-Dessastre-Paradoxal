@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a2d568e87fdb9d3614957f6417a315bd3eff7a37",
+      "date": "2026-11-13T20:48:19-03:00",
+      "title": "feat(sinnoh): add explicitly pinned collision-safe map remap preview without changing game",
+      "category": "Novidades"
+    },
+    {
       "sha": "4bc1c5cc242fe30a576d395ff4fc8ef7ee0fd72d",
       "date": "2026-11-13T20:44:08-03:00",
       "title": "docs(sinnoh): link permanent progress bars and stage tools in the 13-phase implementation plan",
