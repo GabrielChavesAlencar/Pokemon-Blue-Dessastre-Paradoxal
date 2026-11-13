@@ -18,7 +18,7 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.a = "a" * 40
         self.b = "b" * 40
 
-    def build_zip(self, revision, content):
+    def build_zip(self, revision, content, kanto_data=None):
         folder = self.root / revision
         folder.mkdir()
         file = folder / "Data/Map001.rxdata"
@@ -26,9 +26,13 @@ class AndroidUpdatesTest(unittest.TestCase):
         file.write_bytes(content)
         game = self.root / (revision + ".zip")
         files = {"Data/Map001.rxdata": file}
+        if kanto_data is not None:
+            files["Kanto pilot.json"] = kanto_data
         marker = installed_manifest("kanto", revision, files)
         with zipfile.ZipFile(game, "w") as z:
             z.writestr("Pokemon-Blue-Kanto-Android/Data/Map001.rxdata", content)
+            if kanto_data is not None:
+                z.writestr("Pokemon-Blue-Kanto-Android/Kanto pilot.json", kanto_data)
             z.writestr("Pokemon-Blue-Kanto-Android/Data/blue-update.json", marker)
             z.writestr("Pokemon-Blue-Kanto-Android/ATUALIZAR-ANDROID.py", "# helper\n")
         return game, json.loads(marker)
@@ -40,6 +44,7 @@ class AndroidUpdatesTest(unittest.TestCase):
                      "Graphics/../../saves", r"Data\Map001.rxdata"):
             self.assertFalse(safe_path(name), name)
         self.assertTrue(safe_path("Data/Map001.rxdata"))
+        self.assertTrue(safe_path("Kanto pilot.json"))
 
     def test_incremental_update_and_backup(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
@@ -83,6 +88,19 @@ class AndroidUpdatesTest(unittest.TestCase):
                         self.root / "Blue-Android-Kanto-Piloto.patch.zip")
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"USER EDIT")
         self.assertEqual(read_installed(game)["revision"], self.a)
+
+    def test_kanto_source_metadata_is_updated_with_maps(self):
+        old, old_marker = self.build_zip(self.a, b"OLD", b'{"maps":{"1":1}}')
+        new, _ = self.build_zip(self.b, b"NEW", b'{"maps":{"1":1,"2":2}}')
+        previous = self.root / "old.json"
+        previous.write_text(json.dumps(old_marker))
+        target = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(target)
+        result = publish(target, "kanto", previous)
+        self.assertIsNotNone(result["patch"])
+        patch = self.root / "Blue-Android-Kanto-Piloto.patch.zip"
+        with zipfile.ZipFile(patch) as archive:
+            self.assertEqual(archive.read("files/Kanto pilot.json"), b'{"maps":{"1":1,"2":2}}')
 
     def test_incompatible_save_profile_requires_full_zip(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
