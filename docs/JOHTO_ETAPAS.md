@@ -354,3 +354,9 @@ limites com fixtures sintéticas, sem assets externos.
 três interiores auditados, identificar a casa do jogador, confirmar tiles de
 porta/spawn, compilar eventos/PBS e testar Game.exe isolado. Barras
 **Jogáveis 0/13, Testadas 0/13** até validação nativa.
+
+### Novo gate de aceitação isolada para o primeiro piloto
+
+Adicionados `scripts/regions/inspect_johto_pilot_readiness.py`, `scripts/regions/assemble_johto_first_playable.py` e dois atalhos Windows. A verificação audita os **12 eventos** do início, sua topologia/handlers, spawn, sprites, posições e conexões PBS. O relatório inclui todos os bloqueios, sem aprovar posição por heurística. A montagem só permite uma **cópia experimental em `.blue-work`** quando o próprio estado do mapa e dos eventos confirma pré-requisitos. Nenhum marcador `VERIFIED_PLAYABLE` é produzido.
+
+Próximo bloqueio factual: dados nativos `game/` disponíveis **no Windows do usuário**, seleção auditada de 3 interiores, posições de entrada/chegada e execução real do Game.exe. **Fases JOGÁVEIS 0/13; Fases TESTADAS 0/13.**
