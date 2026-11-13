@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c06da3b2b2c1cef70a6589959f6fbf5af970f814",
+      "date": "2026-11-13T20:29:15-03:00",
+      "title": "test(sinnoh): ensure map capacity report cannot allocate or reuse protected IDs",
+      "category": "Testes"
+    },
+    {
       "sha": "de77e6d48df4c5ab1f60e74e6429842837b1dc14",
       "date": "2026-11-13T20:28:57-03:00",
       "title": "feat(sinnoh): analyze map-ID capacity without touching Johto reservations or allocating slots",
