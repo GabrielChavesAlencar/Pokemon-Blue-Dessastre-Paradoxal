@@ -29,19 +29,8 @@ jobs:
         run: |
           python scripts/install_game.py --apply
           if($LASTEXITCODE -ne 0){throw 'Blue installation failed'}
-          $ProgressPreference='SilentlyContinue'
-          $source=New-Item -ItemType Directory -Force '.blue-work/frlg-source'
-          $archive=Join-Path $source.FullName 'FRLG.rar'
-          $url='https://drive.usercontent.google.com/download?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t'
-          Invoke-WebRequest -UseBasicParsing $url -OutFile $archive
-          $manifest=Get-Content data/regions/kanto-source.json -Raw | ConvertFrom-Json
-          if((Get-FileHash $archive -Algorithm SHA256).Hash.ToLower() -ne $manifest.sha256){throw 'FRLG archive hash differs'}
-          $list=Join-Path $source.FullName 'files.txt'
-          $entries=@(tar -tf $archive | Where-Object { $_ -match '^Essentials FRLG/(Data/(Map[0-9]+|MapInfos|Tilesets|System)\.rxdata|PBS/(encounters|trainers|map_connections|map_metadata)\.txt|Graphics/(Characters|Tilesets|Autotiles)/[^/]+\.png)$' })
-          if($LASTEXITCODE -ne 0 -or $entries.Count -lt 200){throw 'FRLG archive listing failed'}
-          [IO.File]::WriteAllLines($list,[string[]]$entries,(New-Object System.Text.UTF8Encoding($false)))
-          tar -xf $archive -C $source.FullName -T $list
-          if($LASTEXITCODE -ne 0){throw 'FRLG extraction failed'}
+          python scripts/regions/ensure_source.py
+          if($LASTEXITCODE -ne 0){throw 'Pinned FRLG source preparation failed'}
           python scripts/regions/audit_next_segment.py
           if($LASTEXITCODE -ne 0){throw 'Kanto phase 07 source audit failed'}
           python scripts/regions/audit_vermilion.py --output .blue-work/kanto-phase-08-audit.json
