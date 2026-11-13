@@ -376,7 +376,7 @@ Com os RXDATA reais do staging privado, o verificador localizou dois corredores 
 
 ## Barra 3 — Desenvolvimento OFFLINE (sem Game.exe)
 
-**3/12 marcos técnicos concluídos (25%) — `[###---------]`**
+**5/12 marcos técnicos concluídos (41,7%) — `[###---------]`**
 
 A terceira barra é **independente** das barras **1) Jogáveis 0/13** e **2) Testadas 0/13**. Ela usa `data/regions/johto-progress.json → offline_development`. Foram contabilizados apenas: **1) auditoria dos dados nativos e fonte; 2) staging de 74 mapas mais três salas provisórias; 3) auditoria de duas bordas faltantes**. Essas entregas não significam mapas com eventos jogáveis.
 
@@ -385,3 +385,7 @@ Próximo: **04/12, desenhar o quarto do jogador 2F**. Depois, casa 1F (05), labo
 ### Barra OFFLINE 4/12 — quarto 2F de New Bark concluído
 
 Gerador `scripts/regions/build_johto_bedroom_v1.py`: layout próprio 14×11 no Map674, com cama, escrivaninha, guarda-roupa, janela e escada visual, sem importar eventos; serialização Ruby Marshal testada, 5 cenários automatizados e prévia privada comparada preservando os outros 76 mapas. O quarto ainda não contém warp para 1F, e o spawn é apenas candidato estático. Consulte [fase 04 offline](JOHTO_OFFLINE_FASE_04_QUARTO_2F.md). **OFFLINE: 4/12. JOGÁVEIS: 0/13. TESTADOS: 0/13.**
+
+### Etapa 05/12 OFFLINE — Casa 1F de New Bark construída e auditada
+
+`Map675.rxdata` recriado com 16×13 tiles próprios sobre a base `Inside.png`: cozinha, jantar, área de estar, escada visual, porta e posições candidatas de mãe/chegadas. Os testes offline confirmaram acesso entre cinco posições por 106 tiles estaticamente conectados; 6 testes sintéticos passaram. A prévia Ruby Marshal alterou **somente** Map675 de 77; MapInfos/Tilesets e os outros 76 mapas foram preservados. **Os warps e o NPC ainda não existem** — sem prova jogável ou instalação automática do site. [Ver relatório](JOHTO_OFFLINE_FASE_05_CASA_1F.md). **OFFLINE 5/12 (41,7%). JOGÁVEIS 0/13. TESTADOS NO EXE 0/13.**
