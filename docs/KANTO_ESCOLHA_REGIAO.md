@@ -4,14 +4,11 @@
 **Regras:** [Plano regional v2](PLANO_REGIOES_DESSASTRE_V2.md).  
 **Contadores:** etapa de desenvolvimento **04/16 (25%)**; etapas integralmente aceitas **01/16 (6,25%)**.
 
-## O que foi implementado
+## Como começar
 
-- O plugin [RegionStart.rb](../scripts/battle_polish/RegionStart.rb) integra-se ao início de **Nova partida**, depois de o Essentials inicializar os valores de um save novo e antes de criar o mapa inicial. **Continue/Carregar save não é interceptado.**
-- O menu lista as dez regiões do circuito e Hisui. Decades conserva seu ponto inicial/introdução original; regiões sem mapas integrados aparecem como **em preparação** e não podem ser selecionadas.
-- **Kanto só é selecionável se existir um marcador instalado após validação**, apontando para um mapa real. Nesse caso, o save começa em Pallet Town, com estado de progresso local Kanto e Story Mode/Traditional Starters. Oak, Blue e as primeiras rotas usam os eventos próprios do piloto.
-- No piloto isolado `.blue-work/kanto-pilot`, Kanto continua iniciando automaticamente, em saves próprios; no jogo principal, a escolha entre Decades e Kanto é apresentada apenas depois de uma instalação autorizada dos mapas.
-- Se Kanto não estiver instalado, a Nova partida segue automaticamente o fluxo Decades; não aparece um menu com destinos impossíveis.
-- Nenhum ID dos mapas Decades é sobrescrito; não são alterados `Data/System.rxdata`, `Game.ini`, `mkxp.json` nem os saves existentes.
+No jogo principal, abra **Nova partida**, escolha o personagem e o nome, e selecione **Modo História**. O seletor mostra **Decades** e as regiões instaladas. Com Kanto integrado, selecione **Kanto** para começar no quarto da casa de Pallet. O Modo Batalha mantém seu fluxo próprio.
+
+O piloto isolado começa em Kanto. A seleção de personagem e nome abre na primeira partida, antes de o jogador controlar o personagem. Na primeira descida da escada, a mãe se aproxima. Ao tentar sair de Pallet sem inicial, Oak vem buscar o jogador e o conduz ao laboratório. Gary desafia o jogador na porta do laboratório após a escolha do inicial.
 
 ## 1. Preparar a instalação principal
 
@@ -36,23 +33,23 @@ python scripts/regions/install_kanto.py --apply
 
 O primeiro comando é um **dry-run** e não modifica a instalação. O segundo aplica os arquivos após auditoria, com cópias de segurança em `.blue-backups/kanto-...` e rollback em erro de gravação. Se o piloto estiver desatualizado, uma nova cópia é preparada sem eliminar a anterior. A segunda execução não duplica mapas.
 
-**O que é integrado:** 13 mapas, tilesets/autotiles, personagens adaptados, PBS de encontros/treinadores/metadados/conexões, plugin de eventos de Kanto e marcador de origem. O importador **não copia** `System.rxdata`, `Scripts.rxdata`, `Game.ini`, `mkxp.json`, o executável nem diretórios de saves.
+**O que é integrado:** 142 mapas, tilesets/autotiles, personagens adaptados, PBS de encontros/treinadores/metadados/conexões, plugin de eventos de Kanto e marcador de origem. O importador **não copia** `System.rxdata`, `Scripts.rxdata`, `Game.ini`, `mkxp.json`, o executável nem diretórios de saves.
 
-O passo seguinte é abrir **`ABRIR_JOGO.bat`**, que prepara a campanha, e aguardar a compilação nativa do Essentials. A tela **Nova partida** exibirá Decades e Kanto como destinos disponíveis, além das regiões ainda não jogáveis.
+O passo seguinte é abrir **`ABRIR_JOGO.bat`**, que prepara a campanha, e aguardar a compilação nativa do Essentials. Em **Nova partida → Modo História**, escolha **Decades** ou **Kanto**.
 
 ## 2. O que testar ao iniciar
 
-- [ ] Com Kanto instalado, selecionar **Nova partida → Decades** e conferir a introdução e o sistema de iniciais originais.
+- [ ] Com Kanto instalado, selecionar **Nova partida → Modo História → Decades** e conferir a introdução e o sistema de iniciais originais.
 - [ ] Começar uma nova partida Kanto e conferir o surgimento em Pallet Town.
-- [ ] Escolher o inicial regional (Bulbasaur, Charmander ou Squirtle), enfrentar Blue e verificar o modo história.
+- [ ] Escolher o inicial regional (Bulbasaur, Charmander ou Squirtle), enfrentar Gary e verificar o modo história.
 - [ ] Salvar a partida Kanto, sair, carregar e conferir região, posição, Pokémon e itens.
 - [ ] Abrir um save **antigo de Decades** e conferir que a região inicial, eventos, PC, Pokédex, dinheiro e missões continuam intactos.
-- [ ] Verificar que uma região sem mapas instalados **não pode** ser selecionada.
+- [ ] Conferir que o seletor lista somente as regiões instaladas.
 - [ ] Verificar janela/controles, portas e batalhas reais até Pewter — isso também fecha as pendências manuais das etapas 02 e 03.
 
 ## 3. Limites nesta entrega
 
-Kanto ainda é um **piloto Pallet → Pewter**, não uma região completa. A viagem Decades ↔ Kanto, desbloqueio pelas Ligas, regras de HMs locais e depósitos de especiais pertencem às próximas etapas. A tela está preparada para crescer, mas **não inventa** spawns das regiões restantes. O piloto Kanto usa os iniciais tradicionais nesta primeira integração; modos de iniciais alternativos exigem adaptação adicional ao roteiro original.
+Kanto continua em versão experimental. A validação visual do seletor, das cenas de Pallet e da jornada permanece no roteiro manual.
 
 A instalação no seu PC é **opt-in**. O GitHub Actions instala e testa numa **cópia Windows descartável**, não altera os arquivos `game/` no seu computador nem distribui automaticamente conteúdo de terceiros. A [execução 43132795847 do GitHub Actions](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43132795847) comprovou que o jogo integrado iniciou na Pallet Town, preservou o ponto original Decades em `System.rxdata` e salvou/recarregou o estado de Kanto. A seleção foi automatizada no teste para não exigir clique; a interface visível, eventos Decades e a jornada até Brock ainda precisam de teste manual.
 

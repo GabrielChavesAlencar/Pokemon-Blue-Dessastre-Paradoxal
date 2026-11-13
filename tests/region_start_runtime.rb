@@ -43,6 +43,9 @@ module BlueRegions
   def self.new_state(region)
     {"initial" => region, "current" => region, "leagues" => []}
   end
+  def self.snapshot
+    $PokemonGlobal.blue_regions
+  end
 end
 
 module BlueStory
@@ -63,8 +66,21 @@ end
 
 $choices = []
 $messages = 0
+$last_options = nil
+class FakePlayer
+  attr_accessor :character_id, :transparent
+  attr_reader :visible
+  def refresh_charset
+    @visible = character_id == 1 && !transparent
+  end
+end
+
+def pbChangePlayer(id)
+  $game_player.character_id = id
+end
 def pbMessage(message, choices=nil, default=nil)
   $messages += 1
+  $last_options = choices if choices
   choices ? $choices.shift : nil
 end
 
@@ -87,6 +103,9 @@ Dir.mktmpdir("blue-region-start-") do |folder|
   Dir.chdir(folder) do
     Dir.mkdir("Data")
     $data_system = FakeSystem.new
+    $game_map = Struct.new(:map_id).new(4)
+    $game_temp = Struct.new(:begun_new_game).new(true)
+    $game_player = FakePlayer.new
 
     # Without a completed install, new game stays in native Decades.
     Game.start_new
@@ -94,23 +113,23 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Decades default missing")
     check($messages == 0, "Empty Kanto must not prompt or hang")
 
-    # The marker enables Kanto without changing the global starting map.
+    # The regional choice opens after Story Mode and never on Game.start_new.
     File.binwrite("Data/Map321.rxdata", "pilot")
     File.write("Data/blue-kanto-start.txt", "BLUE_KANTO_START_V1,KANTO,321,28,14\n")
-    $choices = [1]
     Game.start_new
-    check(Game.seen == [321,28,14], "Kanto was not selected before map setup")
-    check([$data_system.start_map_id,$data_system.start_x,$data_system.start_y] == [4,7,8], "System map not restored")
+    check(Game.seen == [4,7,8] && $messages == 0, "Integrated start bypassed the mode choice")
+    $choices = [0, 1]
+    check(BlueRegionStart.story_spawn.nil?, "Decades must use the original story")
+    check($last_options == ["Decades", "Kanto"], "Wrong installed story options")
+    check(BlueRegionStart.story_spawn == ["KANTO", [321,28,14]], "Kanto story destination is wrong")
+    $game_temp.begun_new_game = false
+    check(BlueRegionStart.story_spawn.nil?, "Loaded save unexpectedly showed a region menu")
+    $game_temp.begun_new_game = true
+    BlueRegionStart.prepare_regional_story("KANTO")
     check($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto was not persisted")
     check($PokemonGlobal.blue_story_mode == :story, "Kanto did not use Story Mode")
     check($PokemonGlobal.blue_traditional_starters == true, "Traditional starters not enabled")
     check($PokemonGlobal.blue_campaign_departure == false, "Kanto starter bag would be cleared")
-
-    # Locked regions are displayed, but can't create an invalid spawn.
-    $choices = [2,0]
-    Game.start_new
-    check(Game.seen == [4,7,8], "Locked Johto was incorrectly selected")
-    check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Decades fallback missing")
 
     # A Johto map alone is not enough; only a verified local install/pilot
     # will write the dedicated Johto start and installation markers.
@@ -121,12 +140,10 @@ Dir.mktmpdir("blue-region-start-") do |folder|
 
     File.write("Data/blue-johto-install.json", "{}")
     check(BlueRegionStart.playable?("JOHTO"), "Valid Johto markers should enable region")
-    $choices = [2]
     Game.start_new
-    check(Game.seen == [712,9,6], "Johto home spawn is wrong")
-    check($PokemonGlobal.blue_regions["initial"] == "JOHTO", "Johto initial region not saved")
-    check($PokemonGlobal.blue_story_mode == :story, "Johto regional start lost story mode")
-    check($PokemonGlobal.blue_campaign_departure == false, "Johto starter event would lose items")
+    $choices = [2]
+    check(BlueRegionStart.story_spawn == ["JOHTO", [712,9,6]], "Johto story destination is wrong")
+    check($last_options == ["Decades", "Kanto", "Johto"], "Installed Johto was dropped")
     check([$data_system.start_map_id,$data_system.start_x,$data_system.start_y] == [4,7,8],
           "Johto changed the native Decades start coordinates")
 
@@ -157,6 +174,8 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     Game.start_new
     check(Game.seen == [321,28,14], "Standalone pilot no longer starts in Kanto")
     check($messages == 0, "Pilot should bypass region picker")
+    check($game_player.visible, "Pilot character invisible before the first step")
+    check($PokemonGlobal.blue_regions["pilot_profile_pending"], "Pilot profile event not requested")
   end
 end
 puts "Blue regional new-game selection OK"

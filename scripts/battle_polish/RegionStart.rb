@@ -44,30 +44,44 @@ module BlueRegionStart
   end
 
   def self.choose_initial
-    return "DECADES" unless $PokemonGlobal
-    # Existing installations without Kanto maps must keep their native new
-    # game flow. The temporary standalone pilot always starts in Kanto.
-    return "DECADES" unless kanto_spawn || johto_spawn
     return "KANTO" if File.file?("Kanto pilot.json") && kanto_spawn
     return "JOHTO" if File.file?("Johto pilot.json") && johto_spawn
-    keys = BlueRegions.circuit + ["HISUI"]
-    labels = keys.map do |key|
-      label = BlueRegions.info(key)["name"]
-      playable?(key) ? _INTL("{1} - pronta para começar", label) : _INTL("{1} - em preparação", label)
-    end
-    loop do
-      selection = pbMessage(
-        _INTL("Escolha a região inicial. Esta decisão será salva na nova partida."),
-        labels + [_INTL("Iniciar em Decades")], -1
-      )
-      return "DECADES" if selection.nil? || selection < 0 || selection >= keys.length
-      region = keys[selection]
-      unless playable?(region)
-        pbMessage(_INTL("Ainda não existem mapas instalados e validados para começar em {1}.", BlueRegions.info(region)["name"]))
-        next
-      end
-      next unless pbConfirmMessage(_INTL("Começar sua jornada em {1}?", BlueRegions.info(region)["name"]))
-      return region
+    "DECADES"
+  end
+
+  def self.story_spawn
+    return nil unless $game_temp&.begun_new_game && $game_map.map_id == $data_system.start_map_id
+    return nil unless BlueRegions.snapshot&.fetch("initial", nil) == "DECADES"
+
+    destinations = {"Decades" => nil}
+    kanto = kanto_spawn
+    johto = johto_spawn
+    destinations["Kanto"] = ["KANTO", kanto] if kanto
+    destinations["Johto"] = ["JOHTO", johto] if johto
+    return nil if destinations.length == 1
+
+    choice = pbMessage(_INTL("Em qual região você quer começar o Modo História?"),
+                       destinations.keys, 1)
+    return nil unless choice && choice >= 0
+    destinations.values[choice]
+  end
+
+  def self.prepare_regional_story(region)
+    $PokemonGlobal.blue_regions = BlueRegions.new_state(region)
+    BlueStory.choose_mode(:story)
+    BlueCampaign.begin_journey(false)
+    $PokemonGlobal.blue_traditional_starters = true
+    $PokemonGlobal.blue_campaign_departure = false
+  end
+
+  def self.enter_story_region(region, spawn)
+    prepare_regional_story(region)
+    pbFadeOutIn do
+      $game_screen.pictures[1].erase
+      pbToneChangeAll(Tone.new(0, 0, 0, 0), 0)
+      $game_player.transparent = false
+      $game_player.refresh_charset
+      BlueRegionTravel.move_to([*spawn, 2])
     end
   end
 
@@ -81,17 +95,17 @@ module BlueRegionStart
             when "JOHTO" then johto_spawn
             end
     region = "DECADES" unless region == "DECADES" || spawn
-    $PokemonGlobal.blue_regions = BlueRegions.new_state(region)
-    return if region == "DECADES"
+    if region == "DECADES"
+      $PokemonGlobal.blue_regions = BlueRegions.new_state(region)
+      return
+    end
 
-    # Preserve Blue's battle rules for regional starts. Decades' original
-    # Story/Battle choices and flags must not run on a Kanto/Johto start.
-    BlueStory.choose_mode(:story)
-    BlueCampaign.begin_journey(false)
-    $PokemonGlobal.blue_traditional_starters = true
-    # The Decades departure handler clears the bag on the first non-map-1
-    # transition; regional starter events must award their own items.
-    $PokemonGlobal.blue_campaign_departure = false
+    prepare_regional_story(region)
+    if region == "KANTO" && File.file?("Kanto pilot.json")
+      pbChangePlayer(1)
+      $game_player.refresh_charset
+      $PokemonGlobal.blue_regions["pilot_profile_pending"] = true
+    end
     $data_system.start_map_id, $data_system.start_x, $data_system.start_y = spawn
   end
 

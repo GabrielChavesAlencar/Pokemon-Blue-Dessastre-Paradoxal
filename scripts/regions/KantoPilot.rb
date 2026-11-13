@@ -12,6 +12,37 @@ module BlueKantoPilot
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
   end
 
+  def self.choose_profile
+    return unless progress["pilot_profile_pending"]
+    pbCharacterSelect
+    $game_player.transparent = false
+    $game_player.refresh_charset
+    progress.delete("pilot_profile_pending")
+  end
+
+  def self.met_mom?
+    progress["pilot_met_mom"] || starter
+  end
+
+  def self.meet_mom
+    pbMessage(_INTL("Mãe: {1}, o professor Oak estava procurando por você. Passe no laboratório antes de sair de Pallet.", $player.name))
+    progress["pilot_met_mom"] = true
+  end
+
+  def self.oak_warning
+    pbMessage(_INTL("Oak: Ei! Espere um pouco!"))
+  end
+
+  def self.show_approaching_oak(visible)
+    key = [$game_map.map_id, 12, "A"]
+    $game_self_switches[key] = visible
+    $game_map.events[12].refresh
+  end
+
+  def self.oak_invitation
+    pbMessage(_INTL("Oak: É perigoso entrar na grama alta sem um Pokémon. Venha comigo ao laboratório!"))
+  end
+
   def self.starter
     progress["pilot_starter"]&.to_sym
   end
@@ -41,7 +72,7 @@ module BlueKantoPilot
     $bag.add(:POKEBALL, 5)
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
-    pbMessage(_INTL("Oak: {1} escolheu você! Pegue estas Poké Bolas e fale com Blue.", names[choice]))
+    pbMessage(_INTL("Oak: {1} escolheu você! Leve estas Poké Bolas com você.", names[choice]))
   end
 
   # A safe, local story step for the first Pallet -> Viridian -> Pallet
@@ -63,26 +94,31 @@ module BlueKantoPilot
     progress["pilot_rival"] == true
   end
 
+  def self.rival_pending?
+    starter && !rival_done? && $player.able_pokemon_count > 0
+  end
+
   def self.rival
     if !starter
-      pbMessage(_INTL("Blue: Escolha o seu Pokémon primeiro."))
+      pbMessage(_INTL("Gary: Escolha o seu Pokémon primeiro."))
       return
     end
     if rival_done?
-      pbMessage(_INTL("Blue: Continue treinando. Nossa revanche fica para a próxima etapa!"))
+      pbMessage(_INTL("Gary: Continue treinando. Nossa revanche fica para depois!"))
       return
     end
+    return unless rival_pending?
     BlueMusic.with_kanto_scene("rival_appears") do
-      pbMessage(_INTL("Blue: Agora que você escolheu seu Pokémon, vamos batalhar!"))
+      pbMessage(_INTL("Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
     end
     setBattleRule("canLose")
     result = TrainerBattle.start(:BLUE_KANTO_RIVAL, "Blue", RIVAL_VERSIONS.fetch(starter))
     $player.heal_party
     progress["pilot_rival"] = true
     if result
-      pbMessage(_INTL("Blue: Você venceu. Vou treinar para a revanche!"))
+      pbMessage(_INTL("Gary: Você venceu. Vou treinar para a revanche!"))
     else
-      pbMessage(_INTL("Blue: Essa foi minha. Vá treinar na Rota 1."))
+      pbMessage(_INTL("Gary: Essa foi minha. Vá treinar na Rota 1."))
     end
   end
 
@@ -806,7 +842,7 @@ module BlueKantoPilot
   end
 
   def self.daisy
-    pbMessage(_INTL("Daisy: Bem-vindo à casa do Blue! O laboratório de Oak fica ao sul de Pallet."))
+    pbMessage(_INTL("Daisy: Bem-vindo à casa do Gary! O laboratório de Oak fica ao sul de Pallet."))
   end
 
   def self.heal

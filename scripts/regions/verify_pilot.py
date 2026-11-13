@@ -106,6 +106,16 @@ def inspect(game: Path) -> dict:
         pallet_event = maps[mapping[5]].attrs["@events"][eid]
         if pallet_event.attrs["@pages"][0].attrs["@trigger"] != 1:
             raise ValueError(f"Pallet residence/lab door {eid} must trigger on touch")
+    for source, event_id, actor_id in ((5, 11, 12), (5, 13, 12), (6, 1, 14), (7, 4, 13)):
+        event = maps[mapping[source]].attrs["@events"][event_id]
+        page = event.attrs["@pages"][0].attrs
+        codes = [op.attrs for op in page["@list"]]
+        actor = maps[mapping[source]].attrs["@events"][actor_id]
+        if (page["@trigger"] != 1 or
+                not actor.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] or
+                not any(op["@code"] == 209 and op["@parameters"][0] == actor_id for op in codes) or
+                not any(op["@code"] == 210 for op in codes)):
+            raise ValueError(f"Pallet scene {source}/{event_id} must walk actor {actor_id} on touch")
     agent = maps[mapping[5]].attrs["@events"][9]
     agent_scripts = [text(op.attrs["@parameters"][0])
                      for page in agent.attrs["@pages"] for op in page.attrs["@list"]
@@ -522,6 +532,11 @@ def inspect(game: Path) -> dict:
         count_connections += 1
 
     anchors = {
+        (5, 11): "BlueKantoPilot.oak_invitation",
+        (5, 13): "BlueKantoPilot.oak_invitation",
+        (6, 1): "BlueKantoPilot.rival",
+        (7, 4): "BlueKantoPilot.meet_mom",
+        (7, 14): "BlueKantoPilot.choose_profile",
         (6, 15): "BlueKantoPilot.choose_starter",
         (10, 1): "BlueKantoPilot.viridian_gym_gate",
         (13, 16): "BlueKantoPilot.viridian_gym_guide",

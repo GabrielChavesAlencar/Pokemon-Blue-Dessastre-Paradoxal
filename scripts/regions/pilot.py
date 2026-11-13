@@ -447,6 +447,38 @@ def new_event(event, ops, trigger, character):
     return clone
 
 
+def move_actor(event_id, *steps):
+    # Through only for the duration of the authored cutscene.
+    route = RubyObject("RPG::MoveRoute", {
+        "@repeat": False, "@skippable": True,
+        "@list": [RubyObject("RPG::MoveCommand", {"@code": step, "@parameters": []})
+                  for step in (37, *steps, 38, 0)],
+    })
+    return command(209, event_id, route, indent=1)
+
+
+def if_scene(condition, actions):
+    return [command(111, 12, condition), *actions, command(0, indent=1), command(412)]
+
+
+def oak_escort(event_id, lab):
+    # Both northbound lanes use the same source path, with a one-tile offset.
+    right = 1 if event_id == 11 else 2
+    return if_scene(b"!BlueKantoPilot.starter", [
+        command(355, b"BlueKantoPilot.oak_warning", indent=1),
+        move_actor(-1, 16),
+        command(355, b'BlueKantoPilot.show_approaching_oak(true)', indent=1),
+        move_actor(12, *([4] * 5), *([3] * right), 4, 16),
+        command(210, indent=1),
+        command(355, b"BlueKantoPilot.oak_invitation", indent=1),
+        move_actor(12, 1, *([2] * right), *([1] * 11), *([3] * 5), 19),
+        move_actor(-1, 1, 1, *([2] * right), *([1] * 12), *([3] * 5), 19),
+        command(210, indent=1),
+        command(355, b'BlueKantoPilot.show_approaching_oak(false)', indent=1),
+        command(201, 0, lab, 6, 12, 8, 0, indent=1),
+    ])
+
+
 def find_shopkeeper(events):
     for event_id, event in events.items():
         for page in event.attrs["@pages"]:
@@ -853,10 +885,41 @@ def install_events(source, target, mapping):
                     selected[event_id] = scripted
                 continue
             if original == 5 and event_id in (11, 13):
-                # Professor Oak's original path anchors span the two exit tiles.
-                guard = command(111, 12, b"!BlueKantoPilot.rival_done?")
-                warp = command(201, 0, mapping[6], 6, 12, 8, 1, indent=1)
-                selected[event_id] = new_event(event, [guard, warp, command(0, indent=1), command(412)], 1, b"")
+                selected[event_id] = new_event(event, oak_escort(event_id, mapping[6]), 1, b"")
+                continue
+            if original == 5 and event_id == 12:
+                oak = new_event(event, [], 0, actor(event))
+                condition = oak.attrs["@pages"][0].attrs["@condition"].attrs
+                condition["@self_switch_valid"] = True
+                condition["@self_switch_ch"] = b"A"
+                selected[event_id] = oak
+                continue
+            if original == 6 and event_id == 1:
+                warp = extract_warps(event, mapping)
+                if warp is None:
+                    raise ValueError("Missing Oak laboratory exit")
+                challenge = if_scene(b"BlueKantoPilot.rival_pending?", [
+                    move_actor(-1, 19),
+                    move_actor(14, 3, *([1] * 8), 16),
+                    command(210, indent=1),
+                    command(355, b"BlueKantoPilot.rival", indent=1),
+                    move_actor(14, *([4] * 8), 2, 16),
+                    command(210, indent=1),
+                ])
+                selected[event_id] = new_event(event, [*challenge, warp], 1, b"")
+                continue
+            if original == 7 and event_id == 4:
+                warp = extract_warps(event, mapping)
+                if warp is None:
+                    raise ValueError("Missing Pallet bedroom staircase")
+                arrival = if_scene(b"!BlueKantoPilot.met_mom?", [
+                    move_actor(13, 3, 4, 4, 18),
+                    command(210, indent=1),
+                    command(355, b"BlueKantoPilot.meet_mom", indent=1),
+                    move_actor(13, 1, 1, 2, 17),
+                    command(210, indent=1),
+                ])
+                selected[event_id] = new_event(event, [warp, *arrival], 1, b"")
                 continue
             warp = extract_warps(event, mapping)
             if warp:
@@ -875,6 +938,19 @@ def install_events(source, target, mapping):
                     original == 199 and event_id in (1, 2, 3, 5))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
                 selected[event_id] = new_event(event, [warp], trigger, character)
+        if original == 7:
+            profile = new_event(events[4], [
+                command(355, b"BlueKantoPilot.choose_profile"),
+                command(123, b"A", 0),
+            ], 3, b"")
+            profile_id = max(events) + 1
+            profile.attrs.update({"@id": profile_id, "@name": b"Kanto Player Profile"})
+            closed = copy.deepcopy(profile.attrs["@pages"][0])
+            closed.attrs["@condition"].attrs.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+            closed.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
+            profile.attrs["@pages"][0].attrs["@through"] = True
+            profile.attrs["@pages"].append(closed)
+            selected[profile_id] = profile
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
 
@@ -917,6 +993,9 @@ def install_pbs(preview, target, mapping):
 
 
 def install_runtime(target, mapping, game):
+    presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
+    for name in ("RegionStart.rb", "Story.rb"):
+        shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
     plugin.mkdir()
     shutil.copyfile(ROOT / "scripts/regions/KantoPilot.rb", plugin / "KantoPilot.rb")

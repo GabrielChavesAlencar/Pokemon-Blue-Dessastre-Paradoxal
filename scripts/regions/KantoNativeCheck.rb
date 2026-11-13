@@ -10,6 +10,9 @@ module KantoNativeCheck
     require!($data_system.start_map_id == $game_map.map_id, "Player Home did not load")
     require!($game_map.events.size >= 4, "Player Home events missing")
     require!([$game_player.x, $game_player.y] == [25, 7], "Kanto did not start upstairs")
+    require!($player.character_ID == 1 && !$game_player.character_name.empty? &&
+             !$game_player.transparent, "Kanto sprite is not visible before the first step")
+    require!(BlueKantoPilot.progress["pilot_profile_pending"], "Pilot missed character and name selection")
     home = $game_map.map_id
     # Phase 02: actual mkxp-z Game_Player passable? and directional move_ methods
     # in a throwaway CI run, not simulated keyboard/graphical acceptance.

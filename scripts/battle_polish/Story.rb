@@ -53,6 +53,13 @@ module BlueStory
       if @branch[@list[@index].indent]==@parameters[0]
         label=@parameters[1]
         if label=='Story Mode'
+          if !(defined?(BlueBattleLab) && BlueBattleLab::ACTIVE) &&
+             (destination = BlueRegionStart.story_spawn)
+            # End the Decades event before moving out of its map.
+            command_115
+            BlueRegionStart.enter_story_region(*destination)
+            return true
+          end
           BlueStory.choose_mode(:story)
           BlueCampaign.begin_journey unless defined?(BlueBattleLab) && BlueBattleLab::ACTIVE
         end
