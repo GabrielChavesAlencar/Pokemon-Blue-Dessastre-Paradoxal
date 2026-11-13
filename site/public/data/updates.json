@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "88d1912c6af95e1f520b7566d3610fddda3db94b",
+      "date": "2026-11-13T17:15:53-03:00",
+      "title": "feat(android): publish isolated Kanto incremental updates with prereleases",
+      "category": "Novidades"
+    },
+    {
+      "sha": "fd2649d8ee8222463696a21e83ff92306e0ff1c0",
+      "date": "2026-11-13T17:15:49-03:00",
+      "title": "feat(android): release Decades channel update manifest and incremental delta",
+      "category": "Novidades"
+    },
+    {
       "sha": "c5fd1f7972303c17a8603574cefd35a3654267e2",
       "date": "2026-11-13T17:15:17-03:00",
       "title": "fix(android): resolve publisher modules when run as script in CI",
