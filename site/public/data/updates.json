@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5252d9703d8f9ffa20bedc9dee094838962beec6",
+      "date": "2026-11-13T17:25:16-03:00",
+      "title": "release(android): establish independent Decades and Kanto update baselines [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e2cd3d4ad637605f5c5a706d17339d772457312d",
       "date": "2026-11-13T17:24:29-03:00",
       "title": "docs(android): record live Kanto pilot release and update-channel roadmap",
