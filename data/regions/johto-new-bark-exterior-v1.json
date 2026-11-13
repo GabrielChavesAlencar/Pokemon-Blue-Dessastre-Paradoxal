@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "REAL_SOURCE_ENTRANCE_CANDIDATES_NEED_GAMEPLAY_REVIEW",
+  "source_archive_sha256": "5d5697e9c3bf5db6ca7039d4af65697dd8b231f4b1305f14731e35ac324b6715",
+  "map": {
+    "source_id": 79,
+    "source_sha256": "e5ffa3a8831101eca319b2567ebc3f6cff22ac673072776a31bf69fceaefc9c9",
+    "width": 22,
+    "height": 48,
+    "tileset_id": 23
+  },
+  "tilesets_source_sha256": "45a7b0b7af849fdc07a7984d702a0eebeb52c4faf7a759166b6afb7b23ff4afd",
+  "coordinate_system": "RPG::Map @data; 0-based (x,y); 3 camadas, tiles RGSS XP",
+  "source": "Visualizacao local do Map079.rxdata original e leitura inerte da Table e Tilesets.rxdata do ZIP v1",
+  "can_install": false,
+  "can_use_for_warps": false,
+  "all_door_identifications_verified": false,
+  "entrances": [
+    {
+      "id": "LAB_NORTHWEST",
+      "x": 5,
+      "y": 21,
+      "street_y": 23,
+      "expected_door_tiles": [
+        396,
+        0,
+        0
+      ],
+      "expected_south_tile": [
+        116,
+        0,
+        1126
+      ],
+      "building_role": "elm_lab_candidate",
+      "verified_position": false,
+      "review_notes": "Edificio grande a noroeste; verificar porta, evento, coordenada de chegada e sprite no Game.exe"
+    },
+    {
+      "id": "HOUSE_NORTHEAST",
+      "x": 14,
+      "y": 23,
+      "street_y": 25,
+      "expected_door_tiles": [
+        396,
+        0,
+        0
+      ],
+      "expected_south_tile": [
+        116,
+        0,
+        1126
+      ],
+      "building_role": "house_candidate",
+      "verified_position": false,
+      "review_notes": "Casa ao nordeste; jogador ou vizinho ainda nao confirmados"
+    },
+    {
+      "id": "HOUSE_SOUTHWEST",
+      "x": 4,
+      "y": 31,
+      "street_y": 33,
+      "expected_door_tiles": [
+        394,
+        0,
+        0
+      ],
+      "expected_south_tile": [
+        396,
+        0,
+        1126
+      ],
+      "building_role": "house_candidate",
+      "verified_position": false,
+      "review_notes": "Casa menor ao sudoeste; verificar se a fachada usa a mesma regra de entrada"
+    },
+    {
+      "id": "HOUSE_SOUTHEAST",
+      "x": 13,
+      "y": 33,
+      "street_y": 35,
+      "expected_door_tiles": [
+        396,
+        0,
+        0
+      ],
+      "expected_south_tile": [
+        116,
+        0,
+        1126
+      ],
+      "building_role": "player_house_candidate",
+      "verified_position": false,
+      "review_notes": "Casa ao sudeste e principal candidata a casa do jogador, NAO certificada; validar contra HGSS e no Game.exe"
+    }
+  ],
+  "travel_note": "New Bark/Route29 e conexao de BORDAS via PBS, nao criar eventos RPG::Event para essa aresta quando --with-connections",
+  "limitations": [
+    "Entradas sao candidatas baseadas na fachada grafica real, nao confirma qual casa e do jogador",
+    "Atributos de passagem @passages sao indícios de colisao, nao teste de movimento do Essentials",
+    "Faltam mapas internos do player 1F/2F e Elm lab, sprites e spawn real",
+    "Faltam game/Data/MapInfos.rxdata e Tilesets.rxdata nativos para ids de destino e testes Game.exe"
+  ]
+}

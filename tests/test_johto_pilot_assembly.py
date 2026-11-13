@@ -14,8 +14,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 try:
-    from pilot_johto import assemble, plan, SAVE_APP, SAVE_ORG
-    from audit_johto import checksum
+    from pilot_johto import (assemble, plan, without_duplicate_border_warps,
+                            SAVE_APP, SAVE_ORG)
+    from audit_johto import checksum, read_map_data
     from stage import serialize
     from server.ruby_marshal import RubyObject
     from test_johto_event_build import make_fixture
@@ -199,6 +200,17 @@ class JohtoPilotAssemblyTests(unittest.TestCase):
                                with_connections=True)
             compiled = (dest / "PBS/map_connections.txt").read_text("utf-8")
             self.assertIn("603,West,13,605,East,0", compiled)
+            # These 2 teleports are redundant when the real border is active.
+            def names(mid):
+                world = read_map_data(dest / f"Data/Map{mid:03d}.rxdata")
+                return {e.attrs["@name"] for e in world.attrs["@events"].values()}
+            self.assertNotIn(b"JH_TOWN_TO_ROUTE29", names(603))
+            self.assertNotIn(b"JH_ROUTE29_TO_NEW_BARK", names(605))
+            self.assertIn(b"JH_TOWN_TO_HOME1F", names(603))
+            self.assertIn(b"JH_ROUTE29_NPC_RIVAL", names(605))
+            # Source templates remain immutable.
+            self.assertTrue(any(ev["key"] == "JH_TOWN_TO_ROUTE29"
+                                for row in spec["maps"] for ev in row["events"]))
             self.assertIn("1,East,0,2,West,0", compiled)
             self.assertEqual(checksum(native_pbs), original_hash)
             self.assertEqual(outcome["source_connections_compiled"], 1)
@@ -209,6 +221,34 @@ class JohtoPilotAssemblyTests(unittest.TestCase):
             self.assertFalse(proof["gameplay_verified"])
             self.assertEqual(proof["file_hashes"]["PBS/map_connections.txt"],
                              checksum(dest / "PBS/map_connections.txt"))
+
+    def test_reject_duplicate_border_removal_when_pbs_or_spec_is_unverified(self):
+        import copy
+        original = json.loads((ROOT / "data/regions/johto-new-bark-events.json")
+                              .read_text("utf-8"))
+        for row in original["maps"]:
+            if row["symbol"] == "JOHTO_NEW_BARK_TOWN":
+                row["map_id"] = 603
+            if row["symbol"] == "JOHTO_ROUTE_29":
+                row["map_id"] = 605
+        before = copy.deepcopy(original)
+        result = without_duplicate_border_warps(
+            original, "603,West,13,605,East,0\\n")
+        self.assertEqual(original, before)
+        self.assertEqual(sum(len(r["events"]) for r in result["maps"]), 10)
+        self.assertEqual(sum(len(r["events"]) for r in original["maps"]), 12)
+        with self.assertRaisesRegex(ValueError, "PBS nao prova borda"):
+            without_duplicate_border_warps(original, "600,West,13,625,East,0\\n")
+        corrupt = copy.deepcopy(original)
+        bad = next(e for row in corrupt["maps"] for e in row["events"]
+                   if e["key"] == "JH_ROUTE29_TO_NEW_BARK")
+        bad["destination"] = "KANTO_PALLET"
+        with self.assertRaisesRegex(ValueError, "alterado"):
+            without_duplicate_border_warps(corrupt, "603,West,13,605,East,0\\n")
+        corrupt = copy.deepcopy(original)
+        corrupt["maps"][2]["events"].pop()
+        with self.assertRaisesRegex(ValueError, "incompletos"):
+            without_duplicate_border_warps(corrupt, "603,West,13,605,East,0\\n")
 
     def test_ruby_guard_only_accepts_signed_local_pilot(self):
         if not shutil.which("ruby"):

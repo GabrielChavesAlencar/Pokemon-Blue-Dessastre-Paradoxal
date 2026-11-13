@@ -97,13 +97,16 @@
       "evidence": [
         "Código de NPCs, eventos e montagem isolada parcialmente desenvolvido",
         "Pipeline local de preflight do ZIP v1 -> 74 mapas em previa + 42 conexoes remapeadas para IDs livres, sujeito a game/ real",
-        "Piloto experimental pode mesclar PBS Johto em copia isolada via --with-connections (nao liberado automaticamente)"
+        "Piloto experimental pode mesclar PBS Johto em copia isolada via --with-connections (nao liberado automaticamente)",
+        "Map079 real (22x48) inspecionado: 4 fachadas candidatas com coordenadas e snapshots de tiles SHA-256, sem alegar porta validada",
+        "No piloto com --with-connections, os dois warps redundantes para Route29 sao removidos da copia em memoria e substituidos pela borda PBS real"
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe",
-        "A instalacao nativa game/ nao foi fornecida nesta conversa; Fase 04 ainda nao pode ser executada e verificada no Game.exe"
+        "A instalacao nativa game/ nao foi fornecida nesta conversa; Fase 04 ainda nao pode ser executada e verificada no Game.exe",
+        "Falta confirmar qual das fachadas e a casa do jogador e validar os destinos no Game.exe; candidatos nao equivalem a portas jogaveis"
       ],
-      "automated_code_test": "tests/test_johto_pilot_assembly.py",
+      "automated_code_test": "tests/test_johto_new_bark_exterior_audit.py",
       "gameplay_playable": false,
       "gameplay_tested": false
     },
@@ -279,7 +282,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Zip de game/Data, Graphics/Tilesets, Graphics/Autotiles, PBS e sprites necessarios para iniciar New Bark em copia isolada (sem saves nem Game.exe no GitHub)",
+  "next_required_input": "Instalacao nativa game/Data (MapInfos.rxdata, Tilesets.rxdata e MapNNN.rxdata), game/Graphics (Tilesets/Autotiles/Characters) e game/PBS, sem saves. Nao subir assets de terceiros ao GitHub sem autorizacao.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
