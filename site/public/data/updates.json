@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c78aa455c1650ff0672d630d0e19617266dcf23",
+      "date": "2026-11-13T18:00:19-03:00",
+      "title": "release(android): publish corrected JoiPlay Input bootstrap and Kanto mobile marker [android-kanto-release]",
+      "category": "Correções"
+    },
+    {
       "sha": "aaaacce6b6961de9c709cac4a8cbba971b1b703c",
       "date": "2026-11-13T17:59:34-03:00",
       "title": "docs(android): explain real JoiPlay Input error, Kanto marker root cause and safe update",
