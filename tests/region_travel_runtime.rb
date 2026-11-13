@@ -198,6 +198,9 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     BlueRegionStart.disable_johto
     state = BlueRegions.snapshot
     state["leagues"] << "KANTO"
+    # snapshot is deliberately a copy: persist simulated Kanto League completion
+    # before travel() reloads the save for its independent safety checks.
+    $PokemonGlobal.blue_regions = state
     check(BlueRegionTravel.destination(state, "JOHTO").nil?,
           "Uninstalled Johto unexpectedly opened from Kanto")
     check(!BlueRegionTravel.johto_installed?,
