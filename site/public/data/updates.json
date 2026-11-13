@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1ddf84de31cfb50f75e057145d1d909f9380ad87",
+      "date": "2026-11-13T16:51:37-03:00",
+      "title": "docs(johto): corrigir blocos de código Markdown no roteiro pós-offline",
+      "category": "Correções"
+    },
+    {
+      "sha": "31373c588315ab4d26a57821fe0478abcc1f5b47",
+      "date": "2026-11-13T16:51:23-03:00",
+      "title": "fix(android): validar perfil de saves em mkxp.json com comentários",
+      "category": "Correções"
+    },
+    {
       "sha": "cbaf260eb6d7c7e10f0b4dac7e7d425df474bf5c",
       "date": "2026-11-13T16:50:54-03:00",
       "title": "docs(johto): registrar pendencias apos offline 12/12, etapas 04-16, instalação e criterios QA",
