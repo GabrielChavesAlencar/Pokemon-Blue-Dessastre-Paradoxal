@@ -9,6 +9,8 @@ import hashlib
 import json
 from pathlib import Path
 import zipfile
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.android.update_client import MARKER, CHANNELS, safe_path, sha256_file, sha256_bytes
 
