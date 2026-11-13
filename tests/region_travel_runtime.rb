@@ -70,6 +70,11 @@ module BlueBattleOptions
 end
 module BlueRegionStart
   def self.kanto_spawn; [300,28,14]; end
+  def self.johto_spawn; @johto_ready ? [712,9,6] : nil; end
+  def self.johto_town_point; @johto_ready ? [713,10,11,2] : nil; end
+  def self.johto_agent_point; @johto_ready ? [713,11,11,4] : nil; end
+  def self.enable_johto; @johto_ready = true; end
+  def self.disable_johto; @johto_ready = false; end
 end
 class PokemonStorageScreen
   def initialize(storage); @storage=storage; end
@@ -182,6 +187,63 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     # Even if someone forges a snapshot, unverified Hall of Fame is not access.
     $game_switches[122]=false
     check(!BlueRegionTravel.available?(BlueRegions.snapshot), "Travel before ending was allowed")
+
+    # Phase 16: Kanto/Decades transfer semantics stay unchanged; only a
+    # trustworthy, audited installation may add a Johto destination.
+    $game_switches[122] = true
+    $player.party = [normal]
+    $PokemonStorage = FakeStorage.new
+    File.write("Data/Map712.rxdata", "synthetic Johto bedroom")
+    File.write("Data/Map713.rxdata", "synthetic New Bark arrival beside NPC")
+    BlueRegionStart.disable_johto
+    state = BlueRegions.snapshot
+    state["leagues"] << "KANTO"
+    check(BlueRegionTravel.destination(state, "JOHTO").nil?,
+          "Uninstalled Johto unexpectedly opened from Kanto")
+    check(!BlueRegionTravel.johto_installed?,
+          "Johto was called installed without a release proof")
+    BlueRegionStart.enable_johto
+    check(BlueRegionTravel.johto_installed?,
+          "Mock approved Johto release was not recognized")
+    check(BlueRegionTravel.destination(state, "JOHTO") == [713,10,11,2],
+          "Johto destination must be an audited New Bark tile, not a bedroom")
+    check(BlueRegionTravel.travel("KANTO", true),
+          "Cannot return to Kanto for the Johto travel test")
+    check($PokemonGlobal.blue_regions["current"] == "KANTO",
+          "Kanto travel did not persist")
+    check(BlueRegionTravel.travel("JOHTO", true),
+          "Travel from Kanto to installed Johto failed")
+    check($game_map.map_id == 713 && $game_player.x == 10,
+          "Johto travel reached the wrong town/coordinate")
+    check(!BlueRegionTravel.available?($PokemonGlobal.blue_regions),
+          "Johto transport agent available before first League victory")
+    check(!BlueRegionTravel.travel("KANTO", true),
+          "Johto -> Kanto was unlocked before its League")
+    check($PokemonGlobal.blue_regions["current"] == "JOHTO",
+          "Denied Johto departure modified region")
+    $PokemonGlobal.blue_regions["leagues"] << "JOHTO"
+    check(BlueRegionTravel.available?($PokemonGlobal.blue_regions),
+          "Johto post-League travel agent is blocked")
+    check(BlueRegionTravel.destination($PokemonGlobal.blue_regions, "HOENN").nil?,
+          "Uninstalled Hoenn was given a fabricated destination")
+    before_johto = Marshal.dump($PokemonGlobal.blue_regions)
+    $scene.fail_once = true
+    check(!BlueRegionTravel.travel("KANTO", true),
+          "Johto failed transfer incorrectly succeeded")
+    check($game_map.map_id == 713 && $game_player.x == 10,
+          "Failed travel stranded player away from New Bark")
+    check(Marshal.dump($PokemonGlobal.blue_regions) == before_johto,
+          "Failed Johto departure damaged original save")
+    check(BlueRegionTravel.travel("KANTO", true), "Johto -> Kanto travel failed")
+    check(BlueRegionTravel.travel("JOHTO", true), "Kanto -> Johto return failed")
+    check($PokemonGlobal.blue_regions["travel_history"].last[1] == "JOHTO",
+          "Return to Johto omitted travel history")
+    BlueRegionStart.disable_johto
+    check(!BlueRegionTravel.available?($PokemonGlobal.blue_regions),
+          "Johto agent remained active after pilot proof was revoked")
+    check(!BlueRegionTravel.travel("KANTO", true),
+          "Unverified Johto origin allowed travel")
+    check($game_map.map_id == 713, "Denied travel after revoked proof moved player")
   end
 end
 puts "Regional travel, restricted PC, rollback, single save and return OK"
