@@ -118,7 +118,20 @@ def plan(manifest: dict, report: dict, *, previous: dict | None = None) -> dict:
         missing.append("SOURCE_MAPS_NOT_CONFIRMED")
     if report.get("missing_tileset_ids"):
         missing.append("MISSING_TILESETS")
-    if report.get("orphan_map_files") or report.get("missing_map_files"):
+    # The uploaded v1 resource has a MapInfo container for Intro (ID 1)
+    # without Map001.rxdata. Only explicitly audited, unselected metadata
+    # entries may be omitted; all other missing/orphan files block staging.
+    accepted_missing = manifest.get("source", {}).get("accepted_missing_mapinfo_ids", [])
+    if (not isinstance(accepted_missing, list) or
+            any(type(i) is not int or i <= 0 or i in wanted
+                for i in accepted_missing) or
+            len(set(accepted_missing)) != len(accepted_missing)):
+        raise ValueError("Invalid selected/duplicate missing MapInfos exception")
+    reported_missing = report.get("missing_map_files", [])
+    if (not isinstance(reported_missing, list) or
+            any(type(i) is not int or i <= 0 for i in reported_missing)):
+        raise ValueError("Invalid source missing MapInfos report")
+    if report.get("orphan_map_files") or set(reported_missing) - set(accepted_missing):
         missing.append("MAPINFOS_MISMATCH")
 
     # This is a PREVIEW plan, not a license or installer approval.
