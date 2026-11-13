@@ -229,3 +229,20 @@ python scripts/regions/pilot_johto.py --game "game" --preview ".blue-work/johto-
 O comando cria uma **cópia nova** e não substitui saída anterior. Somente se a auditoria real, os direitos locais, as posições e o estado do motor confirmarem as pré-condições poderá gerar uma pasta executável para testar manualmente `.blue-work/johto-pilot/Game.exe`.
 
 **Bloqueios honestos:** não existe pacote de mapas HGSS confirmado no repositório, interiores ausentes (quarto/casa/lab), sprites e coordenadas não foram auditados, `TrainerBattle` de rival ainda não recebeu teste nativo, nem saves Johto verificados. Não criar `blue-johto-rival-ready.txt` nem publicar `JOHTO_JOGAR_EXPERIMENTAL.bat` enquanto o piloto real não iniciar corretamente — o atalho do menu principal não deve fechar a partida do usuário se o build falhar. **Barras oficiais ainda 0/16 e 0/16.**
+
+## Continuação da Fase 03–04 — interiores físicos de New Bark com templates nativos (13/11/2026)
+
+Entregue um gerador **de geometria real RMXP, ainda em prévia**, para as salas que o Map Pack HGSS provavelmente não contém. O gerador não inventa posição de porta nem declara fidelidade visual HGSS:
+
+- [build_johto_interiors.py](../scripts/regions/build_johto_interiors.py): a partir de uma `johto-stage.json` válida e do jogo original, clona três mapas **nativos e previamente revisados** para quarto 2F, casa 1F e laboratório de Elm. Preserva camadas `RPG::Map/@data` (RMXP Table tridimensional), tilesets, autotiles e formatos de colisão da própria base; remapeia IDs/tileset de forma isolada e limpa todos os eventos, encontros e BGM/BGS antigos. Gera apenas **nova prévia**, não `Game.exe`.
+- [johto-interior-templates.json](../data/regions/johto-interior-templates.json): três fontes nativas, MapIDs/destinos e SHA-256 **nulos** até localizar os layouts verdadeiros e confirmar sua geometria. Impede sobrescrever mapas já presentes no pack ou base. Quarto tem como parent a casa 1F, demais interiores têm como parent New Bark.
+- [test_johto_interior_authoring.py](../tests/test_johto_interior_authoring.py): testes de clone e roundtrip RMXP Table, ausência de eventos/músicas, integridade do game/base Kanto e da prévia de origem, SHA, autotiles, colisões de IDs e rollback.
+  
+### Execução local condicionada à origem real
+
+1. Concluir `JOHTO_PREPARAR_MAPAS.bat` e `stage_johto.py` com pack/pasta originais autorizados e SHA-256 fixado em `data/regions/johto-source.json`. A etapa de interiores **não substitui** auditoria de mapas externos.
+2. Procurar no `game/Data` três **mapas nativos de interiores realmente existentes**, documentar `native_map_id`, SHA-256 do `MapNNN.rxdata`, `destination_id` único (600–999), `native_template_reviewed=true` e `room_geometry_reviewed=true` **apenas após verificação visual de cada sala**.
+3. Executar `python scripts/regions/build_johto_interiors.py --preview ".blue-work/johto-staging" --game "game" --layouts "data/regions/johto-interior-templates.json" --output ".blue-work/johto-staging-interiors"`; a pasta de saída deve ser nova. A ferramenta reexecuta a verificação estrutural `verify_johto.py` no resultado.
+4. **Redesenhar a geometria das salas segundo HGSS/Johto quando necessário**. Examinar porta, escada, caminhos andáveis, spawn e ponto de chegada; conferir sprites. Somente então preencher `johto-new-bark-events.json` com ID/hash `MapXXX`, NPCs, eventos, XY e `verified_position=true`. O piloto só pode ser montado depois disso.
+
+**Limitação:** clonagem de interiores Decades **não é fidelidade a HeartGold/SoulSilver**; apenas desbloqueia a preparação técnica de um mapa editável. Não declara músicas, itens, eventos, nem um início jogável confirmado. **Barras oficiais permanecem 0/16 + 0/16**, sem alterar o balanceamento ou o motor de batalha.
