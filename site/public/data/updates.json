@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3b535871dcef3460409b98aa7a174128e45f3487",
+      "date": "2026-11-13T20:29:46-03:00",
+      "title": "docs(sinnoh): remove duplicate Codex work for new RXDATA and ID-capacity tools",
+      "category": "Documentação"
+    },
+    {
       "sha": "c06da3b2b2c1cef70a6589959f6fbf5af970f814",
       "date": "2026-11-13T20:29:15-03:00",
       "title": "test(sinnoh): ensure map capacity report cannot allocate or reuse protected IDs",
