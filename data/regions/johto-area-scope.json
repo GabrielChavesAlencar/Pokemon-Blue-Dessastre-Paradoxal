@@ -1,0 +1,583 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "version": "HGSS_WITH_CRYSTAL_VARIANTS",
+  "description": "Conjunto minimo de areas que exige inventario real de mapas, interiores, NPCs, itens, eventos, musica, batalhas e testes. Aliases sao apenas filtros candidatos de fonte RMXP, nunca prova de local completo.",
+  "area_count": 80,
+  "areas": [
+    {
+      "key": "JOHTO_NEW_BARK_TOWN",
+      "aliases": [
+        "New Bark Town"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_PLAYER_HOME",
+      "aliases": [
+        "Player's House",
+        "Player Home",
+        "New Bark Player"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ELM_LAB",
+      "aliases": [
+        "Elm's Lab",
+        "Elm Lab"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_29",
+      "aliases": [
+        "Route 29"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_CHERRYGROVE",
+      "aliases": [
+        "Cherrygrove"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_30",
+      "aliases": [
+        "Route 30"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_31",
+      "aliases": [
+        "Route 31"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_DARK_CAVE",
+      "aliases": [
+        "Dark Cave"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_VIOLET",
+      "aliases": [
+        "Violet City"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_SPROUT_TOWER",
+      "aliases": [
+        "Sprout Tower"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_RUINS_OF_ALPH",
+      "aliases": [
+        "Ruins of Alph"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_32",
+      "aliases": [
+        "Route 32"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_UNION_CAVE",
+      "aliases": [
+        "Union Cave"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_33",
+      "aliases": [
+        "Route 33"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_AZALEA",
+      "aliases": [
+        "Azalea"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_SLOWPOKE_WELL",
+      "aliases": [
+        "Slowpoke Well"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ILEX_FOREST",
+      "aliases": [
+        "Ilex Forest"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_34",
+      "aliases": [
+        "Route 34"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_GOLDENROD",
+      "aliases": [
+        "Goldenrod City"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_RADIO_TOWER",
+      "aliases": [
+        "Radio Tower"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_GOLDENROD_UNDERGROUND",
+      "aliases": [
+        "Goldenrod Underground",
+        "Underground Warehouse"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_35",
+      "aliases": [
+        "Route 35"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_NATIONAL_PARK",
+      "aliases": [
+        "National Park"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_POKEATHLON_DOME",
+      "aliases": [
+        "Pokéathlon",
+        "Pokeathlon"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_36",
+      "aliases": [
+        "Route 36"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_37",
+      "aliases": [
+        "Route 37"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ECRUTEAK",
+      "aliases": [
+        "Ecruteak City"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_BURNED_TOWER",
+      "aliases": [
+        "Burned Tower"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_BELL_TOWER",
+      "aliases": [
+        "Bell Tower",
+        "Tin Tower"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_38",
+      "aliases": [
+        "Route 38"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_39",
+      "aliases": [
+        "Route 39"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_MOOMOO_FARM",
+      "aliases": [
+        "Moomoo Farm"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_OLIVINE",
+      "aliases": [
+        "Olivine City"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_LIGHTHOUSE",
+      "aliases": [
+        "Olivine Lighthouse",
+        "Glitter Lighthouse"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_OLIVINE_PORT",
+      "aliases": [
+        "Olivine Port",
+        "Olivine Harbor"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_40",
+      "aliases": [
+        "Route 40"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_41",
+      "aliases": [
+        "Route 41"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_WHIRL_ISLANDS",
+      "aliases": [
+        "Whirl Islands"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_CIANWOOD",
+      "aliases": [
+        "Cianwood City"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_CLIFF_EDGE_GATE",
+      "aliases": [
+        "Cliff Edge Gate"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_47",
+      "aliases": [
+        "Route 47"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_CLIFF_CAVE",
+      "aliases": [
+        "Cliff Cave"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_48",
+      "aliases": [
+        "Route 48"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_SAFARI_ZONE",
+      "aliases": [
+        "Safari Zone"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_SAFARI_ZONE_GATE",
+      "aliases": [
+        "Safari Zone Gate"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_EMBEDDED_TOWER",
+      "aliases": [
+        "Embedded Tower"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_42",
+      "aliases": [
+        "Route 42"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_MT_MORTAR",
+      "aliases": [
+        "Mt. Mortar",
+        "Mount Mortar"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_MAHOGANY",
+      "aliases": [
+        "Mahogany Town"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_43",
+      "aliases": [
+        "Route 43"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_LAKE_OF_RAGE",
+      "aliases": [
+        "Lake of Rage"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROCKET_HQ",
+      "aliases": [
+        "Team Rocket HQ",
+        "Rocket Hideout"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_44",
+      "aliases": [
+        "Route 44"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ICE_PATH",
+      "aliases": [
+        "Ice Path"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_BLACKTHORN",
+      "aliases": [
+        "Blackthorn City"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_DRAGONS_DEN",
+      "aliases": [
+        "Dragon's Den",
+        "Dragons Den"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_45",
+      "aliases": [
+        "Route 45"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_46",
+      "aliases": [
+        "Route 46"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_27",
+      "aliases": [
+        "Route 27"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_TOHJO_FALLS",
+      "aliases": [
+        "Tohjo Falls"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_26",
+      "aliases": [
+        "Route 26"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_VICTORY_ROAD",
+      "aliases": [
+        "Victory Road"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_INDIGO_PLATEAU",
+      "aliases": [
+        "Indigo Plateau"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ROUTE_28",
+      "aliases": [
+        "Route 28"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_MT_SILVER",
+      "aliases": [
+        "Mt. Silver",
+        "Mt Silver",
+        "Mount Silver"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_SS_AQUA",
+      "aliases": [
+        "S.S. Aqua",
+        "SS Aqua"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_FRONTIER_ACCESS",
+      "aliases": [
+        "Frontier Access"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_BATTLE_FRONTIER",
+      "aliases": [
+        "Battle Frontier"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_GOLDENROD_MAGNET_TRAIN",
+      "aliases": [
+        "Magnet Train Station"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_GOLDENROD_DEPARTMENT_STORE",
+      "aliases": [
+        "Goldenrod Department Store"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_GOLDENROD_GAME_CORNER",
+      "aliases": [
+        "Goldenrod Game Corner"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_CIANWOOD_PHARMACY",
+      "aliases": [
+        "Cianwood Pharmacy"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_OLIVINE_GYM",
+      "aliases": [
+        "Olivine Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_VIOLET_GYM",
+      "aliases": [
+        "Violet Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_AZALEA_GYM",
+      "aliases": [
+        "Azalea Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_GOLDENROD_GYM",
+      "aliases": [
+        "Goldenrod Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_GYM",
+      "aliases": [
+        "Ecruteak Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_CIANWOOD_GYM",
+      "aliases": [
+        "Cianwood Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_MAHOGANY_GYM",
+      "aliases": [
+        "Mahogany Gym"
+      ],
+      "required": true
+    },
+    {
+      "key": "JOHTO_BLACKTHORN_GYM",
+      "aliases": [
+        "Blackthorn Gym"
+      ],
+      "required": true
+    }
+  ]
+}
