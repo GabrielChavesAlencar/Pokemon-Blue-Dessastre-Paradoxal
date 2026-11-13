@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "STATIC_WARP_COORDINATES_PROPOSED_NOT_ENGINE_VERIFIED",
+  "notes": "Coordinates audited against private 77-map Johto geometry and original New Bark facade preview; entrance identities and engine collision still require gameplay QA. No events or external assets included.",
+  "spawn": {
+    "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+    "x": 6,
+    "y": 7,
+    "verified_in_engine": false
+  },
+  "border_connection": {
+    "a": "JOHTO_NEW_BARK_TOWN",
+    "b": "JOHTO_ROUTE_29",
+    "format": "{a},West,13,{b},East,0",
+    "method": "PBS_MAP_CONNECTION_NOT_EVENT",
+    "verified_in_engine": false
+  },
+  "warps": [
+    {
+      "key": "JH_HOME2F_TO_1F",
+      "source": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+      "x": 9,
+      "y": 8,
+      "target": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "arrival_x": 11,
+      "arrival_y": 8,
+      "reverse_key": "JH_HOME1F_TO_2F",
+      "verified_in_engine": false
+    },
+    {
+      "key": "JH_HOME1F_TO_2F",
+      "source": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "x": 11,
+      "y": 9,
+      "target": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+      "arrival_x": 9,
+      "arrival_y": 7,
+      "reverse_key": "JH_HOME2F_TO_1F",
+      "verified_in_engine": false
+    },
+    {
+      "key": "JH_HOME1F_TO_TOWN",
+      "source": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "x": 7,
+      "y": 9,
+      "target": "JOHTO_NEW_BARK_TOWN",
+      "arrival_x": 13,
+      "arrival_y": 34,
+      "reverse_key": "JH_TOWN_TO_HOME1F",
+      "verified_in_engine": false
+    },
+    {
+      "key": "JH_TOWN_TO_HOME1F",
+      "source": "JOHTO_NEW_BARK_TOWN",
+      "x": 13,
+      "y": 33,
+      "target": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "arrival_x": 7,
+      "arrival_y": 8,
+      "reverse_key": "JH_HOME1F_TO_TOWN",
+      "verified_in_engine": false
+    },
+    {
+      "key": "JH_TOWN_TO_ELM_LAB",
+      "source": "JOHTO_NEW_BARK_TOWN",
+      "x": 5,
+      "y": 21,
+      "target": "JOHTO_NEW_BARK_ELM_LAB",
+      "arrival_x": 10,
+      "arrival_y": 11,
+      "reverse_key": "JH_LAB_TO_TOWN",
+      "verified_in_engine": false
+    },
+    {
+      "key": "JH_LAB_TO_TOWN",
+      "source": "JOHTO_NEW_BARK_ELM_LAB",
+      "x": 9,
+      "y": 12,
+      "target": "JOHTO_NEW_BARK_TOWN",
+      "arrival_x": 5,
+      "arrival_y": 22,
+      "reverse_key": "JH_TOWN_TO_ELM_LAB",
+      "verified_in_engine": false
+    }
+  ],
+  "other_facades_not_wired": [
+    {
+      "x": 14,
+      "y": 23,
+      "reason": "unidentified second house facade"
+    },
+    {
+      "x": 4,
+      "y": 31,
+      "reason": "unidentified third house facade"
+    }
+  ],
+  "status_policy": {
+    "can_install": false,
+    "gameplay_playable": false,
+    "tested_in_game": false,
+    "npc_events_installed": false
+  }
+}
