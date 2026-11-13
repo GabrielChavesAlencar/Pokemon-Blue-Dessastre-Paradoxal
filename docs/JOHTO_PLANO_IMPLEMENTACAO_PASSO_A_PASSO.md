@@ -308,6 +308,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 16/16 — Instalação no jogo principal, regressões e aceite completo
 
+**Fase 16 PARCIAL publicada:** [JOHTO_FASE_16_INTEGRACAO_E_ACEITE.md](JOHTO_FASE_16_INTEGRACAO_E_ACEITE.md) e [JOHTO_TESTES_E2E.md](JOHTO_TESTES_E2E.md). `scripts/regions/install_johto.py` implementa **dry-run padrão**, matriz das 16 etapas, auditoria de fonte/hashes/licenças/PBS/áudio e bloqueio explícito de `--apply` (não existe instalador transacional seguro sem um pacote de jogo verificado). `RegionStart.rb` não aceita mais manifesto vazio para habilitar Johto: exige 13 provas, SHA-256 de MapInfos/Tilesets/mapas e coordenadas reais separadas de casa/chegada/NPC. `RegionTravel.rb` prepara Kanto↔Johto somente com instalação validada, Hall of Fame local no save e proteção da party/PC/rollback, NPC em New Bark sem alterar RXDATA. Hoenn permanece sem destino. Testes Ruby/Python do release, viagem e início regional criados/atualizados. O [schema de release](../data/regions/johto-release-proof.schema.json) define a prova futura; **não foi criado nenhum release manifesto, nem alterado o Game.exe**. **Fontes/mapas/PBS/áudios reais faltam; sem teste de gameplay aprovado, barras 0/16.**
+
+
 **Implementar:** instalador transacional de Johto com **dry-run por padrão**, proteção dos hashes Decades/Kanto, plano de sobrescritas, backups e rollback; marcadores regionais genéricos e agente físico em New Bark Town; ampliar RegionTravel para Johto, incluindo Kanto↔Johto e Johto→Hoenn apenas se Johto concluída + destinos instalados. O plugin não pode depender de blue-kanto-install.json como prova genérica de todas as regiões.
 
 **Entregar:** importação reproduzível em game/ local, estado de instalação por região, scripts/regions/verify_johto.py, testes Python/Ruby/Windows/JoiPlay, docs/JOHTO_TESTES_E2E.md, relatório final por mapa/evento e estado atualizado no catálogo somente após evidência.
