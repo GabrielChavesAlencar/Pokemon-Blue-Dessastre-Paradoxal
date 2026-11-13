@@ -148,7 +148,7 @@ class JohtoPilotAssemblyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Spawn real"):
                 plan(preview, game, wrong, root=root)
             (preview / "Data/Map601.rxdata").write_bytes(b"tampered")
-            with self.assertRaisesRegex(ValueError, "RPG::Map|map|RMXP|Source|preview|Cannot|staged"):
+            with self.assertRaisesRegex(ValueError, "RPG Maker|RPG::Map|map|RMXP|Source|preview|Cannot|staged"):
                 plan(preview, game, spec, root=root)
 
     def test_block_nonisolated_output_and_reuse_of_main_saves(self):
