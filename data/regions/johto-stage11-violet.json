@@ -1,0 +1,383 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "stage": "OFFLINE_11_VIOLET_SPROUT_FALKNER",
+  "status": "PROPOSED_PRIVATE_GEOMETRY_AND_PBS_NOT_GAMEPLAY_VERIFIED",
+  "requires_previous_stage": "BLUE_ROUTE10_PREVIEW_ONLY_NOT_PLAYABLE",
+  "source_violet_id": 602,
+  "rights_status": "Map pack provides Violet exterior only. Interior layouts are original offline previews using the installed native Inside tileset. No original HGSS layouts claimed.",
+  "interiors": [
+    {
+      "symbol": "JOHTO_VIOLET_GYM",
+      "id": 677,
+      "parent_id": 602,
+      "name": "Johto Violet Gym — PREVIEW",
+      "kind": "gym",
+      "width": 20,
+      "height": 16
+    },
+    {
+      "symbol": "JOHTO_SPROUT_TOWER",
+      "id": 678,
+      "parent_id": 602,
+      "name": "Johto Sprout Tower 1F — PREVIEW",
+      "kind": "tower",
+      "width": 20,
+      "height": 16
+    },
+    {
+      "symbol": "JOHTO_SPROUT_TOWER_2F",
+      "id": 679,
+      "parent_id": 678,
+      "name": "Johto Sprout Tower 2F — PREVIEW",
+      "kind": "tower",
+      "width": 20,
+      "height": 16
+    },
+    {
+      "symbol": "JOHTO_SPROUT_TOWER_3F",
+      "id": 680,
+      "parent_id": 679,
+      "name": "Johto Sprout Tower 3F — PREVIEW",
+      "kind": "tower",
+      "width": 20,
+      "height": 16
+    },
+    {
+      "symbol": "JOHTO_VIOLET_POKEMON_CENTER",
+      "id": 681,
+      "parent_id": 602,
+      "name": "Johto Violet Pokemon Center — PREVIEW",
+      "kind": "center",
+      "width": 20,
+      "height": 16
+    }
+  ],
+  "warps": [
+    {
+      "key": "JH_VIOLET_TOWN_TO_TOWER",
+      "source": "JOHTO_VIOLET_CITY",
+      "x": 37,
+      "y": 21,
+      "target": "JOHTO_SPROUT_TOWER",
+      "arrival": [
+        9,
+        12
+      ],
+      "reverse": "JH_TOWER_TO_VIOLET"
+    },
+    {
+      "key": "JH_TOWER_TO_VIOLET",
+      "source": "JOHTO_SPROUT_TOWER",
+      "x": 9,
+      "y": 13,
+      "target": "JOHTO_VIOLET_CITY",
+      "arrival": [
+        37,
+        22
+      ],
+      "reverse": "JH_VIOLET_TOWN_TO_TOWER"
+    },
+    {
+      "key": "JH_VIOLET_TOWN_TO_GYM",
+      "source": "JOHTO_VIOLET_CITY",
+      "x": 43,
+      "y": 30,
+      "target": "JOHTO_VIOLET_GYM",
+      "arrival": [
+        9,
+        12
+      ],
+      "reverse": "JH_GYM_TO_VIOLET"
+    },
+    {
+      "key": "JH_GYM_TO_VIOLET",
+      "source": "JOHTO_VIOLET_GYM",
+      "x": 9,
+      "y": 13,
+      "target": "JOHTO_VIOLET_CITY",
+      "arrival": [
+        43,
+        31
+      ],
+      "reverse": "JH_VIOLET_TOWN_TO_GYM"
+    },
+    {
+      "key": "JH_VIOLET_TOWN_TO_CENTER",
+      "source": "JOHTO_VIOLET_CITY",
+      "x": 32,
+      "y": 30,
+      "target": "JOHTO_VIOLET_POKEMON_CENTER",
+      "arrival": [
+        9,
+        12
+      ],
+      "reverse": "JH_CENTER_TO_VIOLET"
+    },
+    {
+      "key": "JH_CENTER_TO_VIOLET",
+      "source": "JOHTO_VIOLET_POKEMON_CENTER",
+      "x": 9,
+      "y": 13,
+      "target": "JOHTO_VIOLET_CITY",
+      "arrival": [
+        32,
+        31
+      ],
+      "reverse": "JH_VIOLET_TOWN_TO_CENTER"
+    },
+    {
+      "key": "JH_TOWER1_TO_2",
+      "source": "JOHTO_SPROUT_TOWER",
+      "x": 14,
+      "y": 5,
+      "target": "JOHTO_SPROUT_TOWER_2F",
+      "arrival": [
+        5,
+        9
+      ],
+      "reverse": "JH_TOWER2_TO_1"
+    },
+    {
+      "key": "JH_TOWER2_TO_1",
+      "source": "JOHTO_SPROUT_TOWER_2F",
+      "x": 5,
+      "y": 10,
+      "target": "JOHTO_SPROUT_TOWER",
+      "arrival": [
+        14,
+        6
+      ],
+      "reverse": "JH_TOWER1_TO_2"
+    },
+    {
+      "key": "JH_TOWER2_TO_3",
+      "source": "JOHTO_SPROUT_TOWER_2F",
+      "x": 14,
+      "y": 5,
+      "target": "JOHTO_SPROUT_TOWER_3F",
+      "arrival": [
+        5,
+        9
+      ],
+      "reverse": "JH_TOWER3_TO_2"
+    },
+    {
+      "key": "JH_TOWER3_TO_2",
+      "source": "JOHTO_SPROUT_TOWER_3F",
+      "x": 5,
+      "y": 10,
+      "target": "JOHTO_SPROUT_TOWER_2F",
+      "arrival": [
+        14,
+        6
+      ],
+      "reverse": "JH_TOWER2_TO_3"
+    }
+  ],
+  "npcs": [
+    {
+      "key": "JH_VIOLET_FALKNER",
+      "source": "JOHTO_VIOLET_GYM",
+      "x": 10,
+      "y": 5,
+      "handler": "BlueJohtoViolet.falkner",
+      "sprite": "NPC_HGSS_Falkner",
+      "role": "gym_leader"
+    },
+    {
+      "key": "JH_SPROUT_ELDER_LI",
+      "source": "JOHTO_SPROUT_TOWER_3F",
+      "x": 10,
+      "y": 5,
+      "handler": "BlueJohtoViolet.sprout_elder",
+      "sprite": "NPC_HGSS_Elder_Li",
+      "role": "elder"
+    },
+    {
+      "key": "JH_SPROUT_SAGE_NICO",
+      "source": "JOHTO_SPROUT_TOWER",
+      "x": 7,
+      "y": 7,
+      "handler": "BlueJohtoViolet.sprout_sage(:JH_SPROUT_SAGE_NICO)",
+      "sprite": "NPC_HGSS_Sage",
+      "role": "sage"
+    },
+    {
+      "key": "JH_SPROUT_SAGE_TROY",
+      "source": "JOHTO_SPROUT_TOWER_2F",
+      "x": 10,
+      "y": 7,
+      "handler": "BlueJohtoViolet.sprout_sage(:JH_SPROUT_SAGE_TROY)",
+      "sprite": "NPC_HGSS_Sage",
+      "role": "sage"
+    },
+    {
+      "key": "JH_VIOLET_CENTER_CLERK",
+      "source": "JOHTO_VIOLET_POKEMON_CENTER",
+      "x": 10,
+      "y": 5,
+      "handler": "BlueJohtoViolet.center_clerk",
+      "sprite": "NPC_HGSS_Nurse",
+      "role": "center_preview_only"
+    }
+  ],
+  "trainers": [
+    {
+      "type": "BLUE_JOHTO_FALKNER",
+      "base_type": "BIRDKEEPER",
+      "name": "Falkner",
+      "normal": [
+        [
+          "PIDGEY",
+          9
+        ],
+        [
+          "PIDGEOTTO",
+          11
+        ]
+      ],
+      "master": [
+        [
+          "PIDGEY",
+          11
+        ],
+        [
+          "PIDGEOTTO",
+          11
+        ],
+        [
+          "HOOTHOOT",
+          11
+        ],
+        [
+          "SPEAROW",
+          11
+        ]
+      ]
+    },
+    {
+      "type": "BLUE_JOHTO_ELDER",
+      "base_type": "GENTLEMAN",
+      "name": "Li",
+      "normal": [
+        [
+          "BELLSPROUT",
+          8
+        ],
+        [
+          "HOOTHOOT",
+          10
+        ]
+      ],
+      "master": [
+        [
+          "BELLSPROUT",
+          10
+        ],
+        [
+          "HOOTHOOT",
+          10
+        ],
+        [
+          "HOPPIP",
+          10
+        ],
+        [
+          "SPEAROW",
+          10
+        ]
+      ]
+    },
+    {
+      "type": "BLUE_JOHTO_SAGE",
+      "base_type": "GENTLEMAN",
+      "name": "Nico",
+      "normal": [
+        [
+          "BELLSPROUT",
+          7
+        ],
+        [
+          "HOOTHOOT",
+          7
+        ]
+      ],
+      "master": [
+        [
+          "BELLSPROUT",
+          7
+        ],
+        [
+          "HOOTHOOT",
+          7
+        ],
+        [
+          "RATTATA",
+          7
+        ],
+        [
+          "HOPPIP",
+          7
+        ]
+      ]
+    },
+    {
+      "type": "BLUE_JOHTO_SAGE",
+      "base_type": "GENTLEMAN",
+      "name": "Troy",
+      "normal": [
+        [
+          "BELLSPROUT",
+          8
+        ],
+        [
+          "HOPPIP",
+          8
+        ]
+      ],
+      "master": [
+        [
+          "BELLSPROUT",
+          8
+        ],
+        [
+          "HOPPIP",
+          8
+        ],
+        [
+          "HOOTHOOT",
+          8
+        ],
+        [
+          "PIDGEY",
+          8
+        ]
+      ]
+    }
+  ],
+  "rules": {
+    "badge": "ZEPHYR",
+    "source": "BlueRegions.award",
+    "region": "JOHTO",
+    "max_awards_per_save": 1,
+    "master_team_size": 4,
+    "normal_team_size": 2,
+    "normal_level_ratio": 0.7,
+    "master_level_ratio": 0.9,
+    "wild_level_ratio": 0.45,
+    "badge_in_sprout_elder": false,
+    "gameplay_playable": false,
+    "tested_in_engine": false,
+    "pbs_compiled": false,
+    "installer_integrated": false,
+    "trainer_sprites_audited": false
+  },
+  "missing_before_gameplay": [
+    "Sprites de Falkner, Sage, Li e enfermeira não confirmados no export nativo",
+    "Mapas internos são protótipos de layout, não layouts HGSS",
+    "Transições em engine, PBS compilado e balanceamento global não testados",
+    "Centro Pokémon não implementa cura nesta etapa",
+    "Instalação automática Blue-Story.exe ainda não implementada"
+  ]
+}

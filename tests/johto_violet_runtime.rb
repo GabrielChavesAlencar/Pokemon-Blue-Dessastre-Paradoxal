@@ -29,6 +29,12 @@ module BlueRegions
   end
 end
 
+module BlueStory
+  class << self
+    attr_accessor :stage
+  end
+end
+
 module TrainerBattle
   class << self
     attr_accessor :result
@@ -101,10 +107,25 @@ Dir.mktmpdir("blue-johto-violet-") do |folder|
     check(BlueRegions.crystal_total(initial, 3) == 3, "Loss created global emerald")
 
     TrainerBattle.result = true
+    BlueStory.stage = 3
+    check(BlueJohtoViolet.trainer_version == 1, "Master must select four-Pokémon PBS v1")
+    check(BlueJohtoViolet.sprout_sage(:JH_SPROUT_SAGE_NICO), "First Sprout sage not prepared")
+    check(TrainerBattle.history.last == [:BLUE_JOHTO_SAGE, "Nico", 1],
+          "Master Sprout sage used wrong PBS team")
+    check(!BlueJohtoViolet.sprout_sage(:JH_SPROUT_SAGE_NICO),
+          "Sprout sage can battle twice on the same save")
+    check(BlueJohtoViolet.sprout_sage(:JH_SPROUT_SAGE_TROY), "Second Sprout sage missing")
+    check(!BlueJohtoViolet.badge_earned?, "Sages incorrectly awarded Zephyr")
+    check(!BlueJohtoViolet.center_clerk, "Unfinished Center should not claim healing")
+    BlueStory.stage = 0
     check(BlueJohtoViolet.sprout_elder, "Elder win not recorded")
     check(!BlueJohtoViolet.sprout_elder, "Elder battle repeated")
     check(!BlueJohtoViolet.badge_earned?, "Elder win awarded gym badge")
+    BlueStory.stage = 3
     check(BlueJohtoViolet.falkner, "Falkner victory not recorded")
+    check(TrainerBattle.history.last == [:BLUE_JOHTO_FALKNER, "Falkner", 1],
+          "Falkner did not use Master four-Pokémon PBS v1")
+    BlueStory.stage = 0
     check(BlueJohtoViolet.badge_earned?, "Zephyr badge not awarded")
     check(BlueRegions.crystal_total(initial, 3) == 4, "Zephyr changed emeralds incorrectly")
     check(BlueJohtoViolet.rock_smash_allowed?, "Zephyr did not enable local Rock Smash")

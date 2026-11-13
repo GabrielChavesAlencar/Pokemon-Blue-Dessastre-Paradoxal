@@ -14,6 +14,11 @@ module BlueJohtoViolet
   ELDER_TYPE = :BLUE_JOHTO_ELDER
   FALKNER_NAME = "Falkner".freeze
   ELDER_NAME = "Li".freeze
+  SAGE_TYPE = :BLUE_JOHTO_SAGE
+  SAGES = {
+    :JH_SPROUT_SAGE_NICO => "Nico",
+    :JH_SPROUT_SAGE_TROY => "Troy"
+  }.freeze
 
   def self.record
     return nil unless defined?(BlueJohtoPilot)
@@ -38,7 +43,7 @@ module BlueJohtoViolet
   end
 
   def self.trainers_ready?
-    File.file?(READY_FILE) &&
+    File.file?(READY_FILE) && !File.symlink?(READY_FILE) &&
       File.read(READY_FILE).strip == READY_VALUE &&
       defined?(TrainerBattle) &&
       TrainerBattle.respond_to?(:start)
@@ -59,6 +64,44 @@ module BlueJohtoViolet
     BlueRegions.local_achievements(state, REGION).include?(BADGE)
   end
 
+  # Keep the existing BlueCampaign/BlueStory level hooks authoritative.
+  # PBS version 1 is solely the four-Pokémon Master roster.
+  def self.trainer_version
+    return 1 if defined?(BlueStory) && BlueStory.respond_to?(:stage) &&
+                BlueStory.stage == 3
+    0
+  end
+
+  # This is intentionally just a conversation until healer behavior is
+  # installed and tested in a private Game.exe. Never claim to heal a party.
+  def self.center_clerk
+    return false unless progress
+    pbMessage(_INTL("Centro Pokémon de Violet: atendimento ainda em preparação no piloto."))
+    false
+  end
+
+  def self.sprout_sage(key)
+    flags = progress
+    return false unless flags
+    key = key.to_sym if key.is_a?(String)
+    name = SAGES[key]
+    return false unless name
+    unless can_challenge?
+      pbMessage(_INTL("Sábio: Primeiro converse com Elm e encontre seu rival."))
+      return false
+    end
+    return false if (flags["violet_sages"] || {})[key.to_s]
+    unless trainers_ready?
+      pbMessage(_INTL("Os treinadores da Torre Sprout ainda não foram compilados."))
+      return false
+    end
+    won = TrainerBattle.start(SAGE_TYPE, name, trainer_version)
+    return false unless won == true
+    flags["violet_sages"] ||= {}
+    flags["violet_sages"][key.to_s] = true
+    true
+  end
+
   def self.sprout_elder
     flags = progress
     return false unless flags
@@ -74,7 +117,7 @@ module BlueJohtoViolet
       pbMessage(_INTL("O desafio da Torre Sprout ainda nao esta instalado no piloto de Johto."))
       return false
     end
-    won = TrainerBattle.start(ELDER_TYPE, ELDER_NAME, 0)
+    won = TrainerBattle.start(ELDER_TYPE, ELDER_NAME, trainer_version)
     return false unless won == true
     flags["violet_elder_defeated"] = true
     pbMessage(_INTL("Anciao Li: Boa batalha. Continue seu treinamento em Johto!"))
@@ -99,7 +142,7 @@ module BlueJohtoViolet
     end
     # Existing Decades/Blue battle-balancing hooks own actual levels/difficulty.
     # Never award a badge because a marker exists or because the battle began.
-    won = TrainerBattle.start(FALKNER_TYPE, FALKNER_NAME, 0)
+    won = TrainerBattle.start(FALKNER_TYPE, FALKNER_NAME, trainer_version)
     return false unless won == true
     unless defined?(BlueRegions) && BlueRegions.award(state, REGION, BADGE) == true
       pbMessage(_INTL("A insígnia de Violet nao pôde ser registrada. Revise o progresso regional."))

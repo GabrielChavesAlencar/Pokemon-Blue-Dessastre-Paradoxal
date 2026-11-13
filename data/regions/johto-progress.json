@@ -41,10 +41,10 @@
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     },
     "offline_development_milestones": {
-      "verified": 10,
+      "verified": 11,
       "total": 12,
-      "percent": 83.3,
-      "meaning": "10/12: três rotas 29-31 com 6 tabelas selvagens e 5 NPCs, 10 PBS normal/master preparados. Pokémon/golpes referenciados pela base Blue; mapa de fonte não possui encontros oficiais. Sem Game.exe, sem PBS compilado no Essentials, sem integração Blue-Story.exe."
+      "percent": 91.7,
+      "meaning": "11/12: Violet exterior+cinco interiores inéditos 677–681 (layouts provisórios) com 10 portas/escadas de ida e volta, 5 NPCs e 8 times PBS, Zephyr somente após vitória. Stage privado 82 mapas, não jogável; faltam gráficos específicos, centro com cura, instação Blue-Story.exe e QA nativo."
     }
   },
   "phases": [
@@ -301,7 +301,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Etapa 11/12: preparar Violet, Sprout Tower e Falkner em stage isolado, com insígnia Zephyr única e QA de entidades; etapa 12 integrar auditoria de instalação. Não requer execução do EXE agora.",
+  "next_required_input": "Etapa 12/12: auditoria geral da cadeia de estágios + contrato de montagem automática pelo Blue-Story.exe; recuperação/fornecimento lícito de sprites específicos, integrações e testes nativos ainda pendentes. Não requer Game.exe agora.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
@@ -319,8 +319,8 @@
   "offline_development": {
     "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
     "total": 12,
-    "completed": 10,
-    "percent": 83.3,
+    "completed": 11,
+    "percent": 91.7,
     "not_gameplay_proof": true,
     "never_execute_game_exe": true,
     "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
@@ -452,9 +452,18 @@
       {
         "number": 11,
         "title": "Preparar Violet City, Sprout Tower e Falkner",
-        "status": "PENDING",
-        "acceptance": "Integração offline de mapa/entradas/interiores propostos, eventos de Falkner e Torre Sprout, contratos PBS e insígnia Zephyr sem recompensa duplicada",
-        "evidence": []
+        "status": "COMPLETE",
+        "acceptance": "Violet exterior Map602 vinculado a ginásio Map677, Torre Sprout 1F/2F/3F Map678-680 e Centro Map681, cinco layouts próprios provisórios, dez warps bidirecionais, 5 NPCs (Falkner/Li/Nico/Troy/atendente), 8 versões PBS validadas no Blue. Os 76 mapas anteriores e todos tilesets preservados; 5 MapInfos acrescentados, Zephyr exclusiva após vitória e verificação Master Ruby. Engine, sprites específicos, Centro/instalador ainda pendentes.",
+        "evidence": [
+          "data/regions/johto-stage11-violet.json — 5 mapas inéditos, 10 warps, 5 NPCs, 4 PBS normal/Master",
+          "scripts/regions/build_johto_violet_stage11.py — gerador da cópia privada, não altera game/",
+          "scripts/regions/JohtoViolet.rb — Master v1, dois Sage, Centro não-curativo e Zephyr sem prêmio duplicado",
+          "tests/test_johto_violet_stage11.py — 10 verificações offline sintéticas",
+          "tests/johto_violet_runtime.rb — regressão de Sage/Master, vitória, badge e save",
+          "docs/JOHTO_OFFLINE_FASE_11_VIOLET_SPROUT_FALKNER.md",
+          "Prévia privada real Ruby Marshal Map602 alterado, Map677-681 novos, 76 antigos preservados; cinco MapInfos adicionados, 33 tilesets preservados",
+          "PBS privado trainer_types_johto_violet.txt SHA256 37958eceade434036f4abca1e58365218b2111bed13ca6cc21237fef2b742da0, trainers_johto_violet.txt SHA256 6f18f727350db1ec2e59ed097b63da075d789082b8e08ea556d056b7fd031a18"
+        ]
       },
       {
         "number": 12,
