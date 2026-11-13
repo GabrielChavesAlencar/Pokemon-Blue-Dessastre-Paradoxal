@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4a4e5e772b35e71c38570b9783fcb56069945c03",
+      "date": "2026-11-13T06:57:25-03:00",
+      "title": "docs(johto): fase 13 Liga Elite Four Lance Hall of Fame e unlock regional seguro",
+      "category": "Documentação"
+    },
+    {
       "sha": "468fd6e1f99f337fc8da1bd4f0e6a271cedcb1f5",
       "date": "2026-11-13T06:56:01-03:00",
       "title": "test(johto): contrato da Liga 13, Elite, Hall of Fame, Kanto/Hoenn sem teleporte",
