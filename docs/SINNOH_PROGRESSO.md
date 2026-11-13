@@ -17,6 +17,16 @@
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
 - **Restam 24 para a barra de desenvolvimento** (inclui parciais).
 
+## Subetapas do S07 — remapeamento seguro (parcial)
+
+```text
+████████████████░░░░░░░░  6/9 (67% das subetapas de preparação)
+```
+
+A ferramenta de remapeamento já verifica IDs reais de origem, símbolos, hashes, colisões, planos anteriores e produz **propostas** de transferência entre os IDs candidatos. Veja [plan_sinnoh_remap.py](../scripts/regions/plan_sinnoh_remap.py), [testes](../tests/test_sinnoh_remap.py) e o [relatório da Fase 01](SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md).
+
+As **três subetapas restantes** exigem baseline/reservas de todas as regiões, conversão dos dados reais da fonte autorizada e teste nativo isolado. Por isso **S07 continua parcial**, a Barra A permanece em **8/32** e nenhuma das barras de jogabilidade sobe. Os detalhes R01–R09 estão em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
@@ -46,7 +56,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 | Fase | Núcleo | Preparação atual | Implementado e testado no jogo |
 |---|---|---|---|
 | 00 | Auditoria de fontes, direitos e baseline | Ferramentas criadas; fonte local pendente | Não |
-| 01 | Importador e remapeamento de mapas | Grafo e staging seguros; remapeamento real pendente | Não |
+| 01 | Importador e remapeamento de mapas | Grafo, staging e prévia de remapeamento prontos; conversão real pendente | Não |
 | 02 | Piloto de Sinnoh no menu | Botão no código; faltam piloto e mapas reais | Não |
 | 03 | Twinleaf, Rowan, Barry, Sandgem | Inventário simbólico | Não |
 | 04 | Jubilife, Oreburgh e Roark | Inventário simbólico | Não |
@@ -71,7 +81,7 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Concluído | S04 | Proveniência e direitos pendentes | [manifesto](../data/regions/sinnoh-source.json) |
 | Concluído | S05 | 91 áreas e 51 eventos simbólicos | [cobertura](../data/regions/sinnoh-coverage.json) |
 | Concluído | S06 | Grafo de conexões e referências ausentes | [grafo](../scripts/regions/graph_sinnoh_maps.py), [testes](../tests/test_sinnoh_graph.py) |
-| Parcial | S07 | Transação segura: dry-run, staging e rollback só em `.blue-work` | [transação](../scripts/regions/sinnoh_staging_transaction.py), [testes](../tests/test_sinnoh_staging_transaction.py) |
+| Parcial | S07 | Dry-run, staging, rollback e proposta segura de remapeamento (6/9 subetapas) | [transação](../scripts/regions/sinnoh_staging_transaction.py), [remapeamento](../scripts/regions/plan_sinnoh_remap.py), [testes](../tests/test_sinnoh_remap.py) |
 | Parcial | S08 | Integridade de recursos gráficos e mapas | [auditoria RXDATA](../scripts/regions/audit_sinnoh_rxdata.py) |
 | Concluído | S09 | Botão Testar Sinnoh sem quebrar saves | [menu](../scripts/battle_polish/TitleKanto.rb) |
 | Parcial | S24 | Catálogo musical planejado | [estudo](SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md) |
