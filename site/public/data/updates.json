@@ -2,6 +2,60 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8a76353be653bef2d15f11dd801cd0e666b3e3c3",
+      "date": "2026-11-13T15:24:07-03:00",
+      "title": "Merge Johto offline 9/12: native Silver rival PBS moves and 3 versions (#42)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "53ebd8c58d06d14206e4d4a297e29e3b941a67e2",
+      "date": "2026-11-13T15:22:03-03:00",
+      "title": "docs(johto): registrar 9/12 PBS Silver e próximo 10/12 rotas 29-31",
+      "category": "Documentação"
+    },
+    {
+      "sha": "bdc513f8605ae4ae02189f9063236893aaca5ccb",
+      "date": "2026-11-13T15:22:01-03:00",
+      "title": "docs(johto): terceira barra offline 9/12 e comprovação do PBS do rival",
+      "category": "Documentação"
+    },
+    {
+      "sha": "f5c843ed6bb6e212f8a3bd3fe0e316d748154289",
+      "date": "2026-11-13T15:21:58-03:00",
+      "title": "data(johto): etapa offline 9/12 concluída com PBS nativo Silver e batalhas ainda bloqueadas",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b3853dd7424d268076de756eaa620298bf6fb81d",
+      "date": "2026-11-13T15:21:04-03:00",
+      "title": "docs(johto): registrar equipes Silver nativas lvl5, movesets, hashes e QA pendente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "a2cf38960cbd742bf41132c754513649940c06e0",
+      "date": "2026-11-13T15:19:17-03:00",
+      "title": "test(johto): integrar a suíte Python com verificação Ruby das três versões de Silver",
+      "category": "Testes"
+    },
+    {
+      "sha": "9464262fe5b2a6410336bbfb9da0502b2f16534c",
+      "date": "2026-11-13T15:19:06-03:00",
+      "title": "test(johto): validar versões 0/1/2 de Silver, idempotência e save em Ruby isolado",
+      "category": "Testes"
+    },
+    {
+      "sha": "1230c6a21aab3a30e0a1ef27e809922e0ef926dc",
+      "date": "2026-11-13T15:18:37-03:00",
+      "title": "test(johto): 10 provas offline de golpes nativos, 3 equipes Silver, colisões PBS e isolamento",
+      "category": "Testes"
+    },
+    {
+      "sha": "a9cc6ccee5434c84781e1140917480ea9389d718",
+      "date": "2026-11-13T15:17:56-03:00",
+      "title": "feat(johto): preparar PBS Silver 3 versões com golpes nível 5 auditados na base Blue sem Game.exe",
+      "category": "Novidades"
+    },
+    {
       "sha": "1f851beb8f4b484088c806824a1c8727b1b44129",
       "date": "2026-11-13T15:07:13-03:00",
       "title": "Merge Johto offline 8/12: Elm, mother, 3 starter balls and Silver (#41)",
