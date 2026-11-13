@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fd1e5d277e6ad291d70167c3410ea7f5c7ba570e",
+      "date": "2026-11-12T22:59:50-03:00",
+      "title": "test(johto): verifica contrato Ice Path Clair Rising e entrada da Liga bloqueada",
+      "category": "Testes"
+    },
+    {
       "sha": "dcdd438ebf332ebaa39debd0566f5b0119582c68",
       "date": "2026-11-12T22:59:09-03:00",
       "title": "docs(johto): adiciona mapa simbolico Ice Path Blackthorn Dragon Den e Rising",
