@@ -9,3 +9,24 @@
 .android-release{width:100%;padding:14px 16px;border:1px solid #294760;border-radius:8px;margin:0 0 20px;background:#0b1624}.android-release p{font-size:12px;margin:0;line-height:1.8;overflow-wrap:anywhere}.android-release p+p{margin-top:10px}.android-release a{color:#a5d5ff;text-decoration:underline}.android-release .android-release-warning{color:#ffd48b}
 
 .android-pilot-section{width:100%;margin:16px 0 26px}.android-pilot-section h3{font-size:21px;margin-bottom:10px}.android-pilot-section>p{font-size:13px;line-height:1.7;margin:0 0 14px;color:var(--muted)}.android-pilot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.android-pilot-card{padding:18px;border:1px solid #294760;border-radius:10px;background:#0a1726;display:flex;flex-direction:column;gap:10px;align-items:flex-start}.android-pilot-card h4{font-size:19px}.android-pilot-card p{font-size:12px;line-height:1.6;margin:0;flex:1}.android-pilot-card small{font-size:11px;line-height:1.6;color:var(--muted)}.android-pilot-card .button{font-size:12px;padding:10px 12px}.android-pilot-disabled{opacity:.55;cursor:not-allowed;pointer-events:none}@media(max-width:680px){.android-pilot-grid{grid-template-columns:1fr}}
+
+/* Android updater guide: readable and horizontally scrollable commands on small phones. */
+.android-update-guide{width:100%;margin:26px 0;border-top:1px solid #30455f;padding-top:24px;scroll-margin-top:110px}
+.android-update-guide h3{font-size:25px;line-height:1.25;margin:8px 0 13px}
+.android-update-guide>p{font-size:13px!important;margin:8px 0 17px!important;line-height:1.75!important;flex:none!important}
+.android-update-guide a{color:#a9d4ff;text-decoration:underline;text-underline-offset:3px}
+.android-update-steps{margin:16px 0 22px;padding-left:23px;list-style:decimal}
+.android-update-steps>li{margin:0 0 21px;padding-left:5px;font-size:13px;line-height:1.7}
+.android-update-steps>li::marker{color:#9ac6f8;font-weight:700}
+.android-update-steps>li>strong{color:#e4efff;font-size:14px}
+.android-update-steps li p{font-size:12px!important;line-height:1.75!important;margin:5px 0 10px!important;flex:none!important}
+.android-update-guide pre{max-width:100%;overflow-x:auto;white-space:pre;margin:10px 0 12px;padding:13px;border:1px solid #294660;border-radius:7px;background:#081322}
+.android-update-guide pre code{display:block;white-space:pre;overflow-wrap:normal;font:12px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;color:#b3d9ff}
+.android-update-paths{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+.android-update-paths>div{min-width:0;border:1px solid #294660;background:#0a1826;border-radius:8px;padding:12px}
+.android-update-paths>div>strong{font-size:12px}
+.android-update-paths pre{padding:9px;margin-bottom:0}
+.android-update-note{padding:15px 16px;border-left:3px solid #d7a965;background:#251f1b;border-radius:0 8px 8px 0}
+.android-update-note strong{font-size:13px;color:#f0ce93}
+.android-update-note p{margin:7px 0 0!important;font-size:12px!important;line-height:1.7!important}
+@media(max-width:680px){.android-update-paths{grid-template-columns:1fr}.android-update-guide h3{font-size:22px}}
