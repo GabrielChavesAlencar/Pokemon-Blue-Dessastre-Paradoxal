@@ -6,6 +6,7 @@ sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/'scripts/official_rules'))
 from prepare_restore import Marshal,RubyString,dump
 from server.ruby_marshal import loads
+from scripts.android.build_manifest import installed_manifest, verify_manifest
 
 MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 
@@ -26,6 +27,7 @@ def verify_archive(output,revision,source_sha=None):
         actual=compiled_mobile(archive.read(base+'Data/PluginScripts.rxdata'),source)
         if info.get('Mobile-SHA256')!=actual or (source_sha and source_sha!=actual):raise ValueError('Android ZIP compatibility source checksum mismatch.')
         if 'Revision: '+revision+'\n' not in archive.read(base+'LEIA-ME-ANDROID.txt').decode('utf8'):raise ValueError('Android README revision mismatch.')
+    verify_manifest(archive,base,'decades',revision)
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
@@ -89,6 +91,17 @@ def build(game,output,revision):
             'Adicione Game.exe ao JoiPlay. Escolha Historia ou Hub offline na abertura.\n'
             'Use Times prontos para importar as equipes sem Python. Multiplayer e download de links requerem Windows.\n'
             'Ainda requer validacao em aparelhos Android reais.\nRevision: '+revision+'\n')
+        # Inventory is checked by the release publisher and the Android updater.
+        extras={
+            'Data/blue-mobile.txt': b'experimental-v1\n',
+            'Data/blue-mobile-build.txt': (
+                'Compatibility: 2\nRevision: '+revision+'\nMobile-SHA256: '+mobile_sha+
+                '\nPlugins-SHA256: '+fingerprint(game)+'\n').encode('utf8')
+        }
+        archive.writestr('Pokemon-Blue-Android/Data/blue-update.json',
+                         installed_manifest('decades',revision,{**plans,**extras}))
+        archive.writestr('Pokemon-Blue-Android/ATUALIZAR-ANDROID.py',
+                         (ROOT/'scripts/android/update_client.py').read_bytes())
     verify_archive(output,revision,mobile_sha)
     with output.open('rb') as stream:digest=hashlib.file_digest(stream,'sha256').hexdigest()
     output.with_suffix('.zip.sha256').write_text(digest+'  '+output.name+'\n','ascii')
