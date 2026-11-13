@@ -65,3 +65,9 @@ Checklist de release: testes Python e Ruby aprovados, compilação nativa e revi
 O **Kanto piloto** foi publicado na prerelease [kanto-android-670-20089a5](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/kanto-android-670-20089a5), com `Blue-Android-Kanto-Piloto.zip` e `Blue-Android-Kanto-Piloto.update.json`. Trata-se da primeira base do canal, por isso **ainda não há patch incremental desta versão antiga para ela**. A próxima publicação compatível poderá usar essa revisão como origem.
 
 O workflow da versão principal Decades deve publicar `Blue-Android-JoiPlay.zip` e o manifesto `Blue-Android-JoiPlay.update.json` juntos. Se o token GitHub recusar a publicação de uma execução antiga por divergência nos arquivos do workflow, rode uma build da `main` atual. **Nunca ajuste `target_commitish` para outra versão do código só para contornar o bloqueio:** a revisão publicada deve corresponder ao ZIP gerado.
+
+### Notas da compatibilidade incremental
+
+As instruções `LEIA-ME-ANDROID*.txt` e, apenas no canal Kanto, `Kanto pilot.json` são dados **atualizáveis**. Seus hashes devem constar na lista `files`, porque a revisão muda a cada compilação; não são configurações de saves. O atualizador, `mkxp.json`, `Game.exe` e outros binários permanecem protegidos. A primeira migração entre inventários de formatos diferentes poderá exigir ZIP completo; isso deve ser informado ao usuário, nunca mascarado com patch de canal errado.
+
+A verificação do Android Decades compilado teve sucesso na CI; uma tentativa antiga de publicação no GitHub foi recusada com HTTP 403 depois de mudanças posteriores em workflows. A publicação deve seguir a revisão atual da `main`, sem alterar indevidamente os hashes ou apontar `target_commitish` para outra revisão. Disponibilidade dos ZIPs deve ser confirmada na release pública.
