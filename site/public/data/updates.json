@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ddd2cdd77d1c266c542acb135b39286d131a7094",
+      "date": "2026-11-12T21:20:49-03:00",
+      "title": "test(johto): valida cura, consumo real da medicina, Jasmine, MINERAL, saves e Whirlpool",
+      "category": "Testes"
+    },
+    {
       "sha": "a56aec12e027b18d0357b35a0733697a4106e470",
       "date": "2026-11-12T21:20:09-03:00",
       "title": "feat(johto): prepara cura de Ampharos, Jasmine e MINERAL com Whirl Islands bloqueadas",
