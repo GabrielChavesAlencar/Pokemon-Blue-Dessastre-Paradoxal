@@ -32,7 +32,7 @@ original = [" <- My Save -> ", "New Game", "Options", "Quit Game"]
 scene = PokemonLoad_Scene.new
 scene.queue = [1]
 scene.pbStartScene(original, true, nil, nil, 0)
-require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Options", "Quit Game"],
+require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Testar Sinnoh", "Options", "Quit Game"],
               "Kanto/Johto test options have wrong positions after Continue")
 require_check(scene.pbChoose(original, 0) == 1, "New Game index changed")
 require_check(scene.last_continue == 0, "Continue slot arrows were remapped")
@@ -48,10 +48,10 @@ require_check(scene.pbChoose(original, 0) == -2, "Next save-slot arrow changed")
 # slot and the ORIGINAL handler index must be preserved.
 gift = [" <- Save 2 -> ", "Mystery Gift", "New Game", "Options", "Quit Game"]
 scene2 = PokemonLoad_Scene.new
-scene2.queue = [1, 4]
+scene2.queue = [1, 5]
 scene2.pbStartScene(gift, true, nil, nil, 0)
 require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto", "Testar Johto",
-                                   "Mystery Gift", "Options", "Quit Game"],
+                                   "Testar Sinnoh", "Mystery Gift", "Options", "Quit Game"],
               "Mystery Gift broke title menu order")
 require_check(scene2.pbChoose(gift, 0) == 2, "New Game handler no longer maps to original")
 require_check(scene2.pbChoose(gift, 0) == 1, "Mystery Gift handler no longer maps to original")
@@ -61,7 +61,7 @@ fresh = ["New Game", "Options", "Quit Game"]
 scene3 = PokemonLoad_Scene.new
 scene3.queue = [0]
 scene3.pbStartScene(fresh, false, nil, nil, 0)
-require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Options", "Quit Game"],
+require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Testar Sinnoh", "Options", "Quit Game"],
               "No-save title order is invalid")
 require_check(scene3.pbChoose(fresh, -1) == 0, "No-save New Game changed")
 
@@ -82,6 +82,14 @@ BlueKantoTitle.define_singleton_method(:launch_johto) { false }
 scene.queue = [3, 1]
 require_check(scene.pbChoose(original, 0) == 1, "Johto unavailable must return to normal title")
 
+# Sinnoh is the fifth option and must keep the original Quit/New Game indices.
+BlueKantoTitle.define_singleton_method(:launch_sinnoh) { true }
+scene.queue = [4]
+require_check(scene.pbChoose(original, 0) == 3, "Sinnoh pilot success did not cleanly quit main game")
+BlueKantoTitle.define_singleton_method(:launch_sinnoh) { false }
+scene.queue = [4, 1]
+require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return to title")
+
 # Isolated pilot cannot spawn itself recursively from its own Game.exe.
 Dir.mktmpdir("blue-title-") do |folder|
   Dir.chdir(folder) do
@@ -93,6 +101,7 @@ Dir.mktmpdir("blue-title-") do |folder|
     require_check(isolated.pbChoose(original, 0) == 1, "Pilot New Game no longer works")
     require_check(BlueKantoTitle.launcher.nil?, "Pilot may recursively launch another pilot")
     require_check(BlueKantoTitle.johto_launcher.nil?, "Kanto pilot may launch Johto recursively")
+    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Kanto pilot may launch Sinnoh recursively")
   end
 end
 
@@ -110,10 +119,19 @@ Dir.mktmpdir("blue-title-root-") do |root|
     require_check(files == [File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), root],
                   "Pilot launcher escaped the project root")
     require_check(BlueKantoTitle.johto_launcher.nil?, "Johto must not reuse Kanto launcher")
+    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh must not reuse Kanto launcher")
     File.write(File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
     File.write(File.join(root, "scripts/regions/pilot_johto.py"), "# isolated Johto pilot")
     require_check(BlueKantoTitle.johto_launcher == [File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), root],
                   "Johto launcher must use only its own project-owned pilot")
+    File.write(File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), "@echo off")
+    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh needs its own Python pilot, not only a BAT")
+    File.write(File.join(root, "scripts/regions/pilot_sinnoh.py"), "# isolated Sinnoh pilot")
+    require_check(BlueKantoTitle.sinnoh_launcher == [File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), root],
+                  "Sinnoh launcher must use only its project-owned pilot")
+    File.write("Sinnoh pilot.json", "{}")
+    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh pilot may launch itself recursively")
+    File.delete("Sinnoh pilot.json")
   end
 end
-puts "Third and fourth title options, save slots, Mystery Gift, pilot isolation and launcher paths OK"
+puts "Third, fourth and fifth title options, save slots, Mystery Gift, pilot isolation and launcher paths OK"
