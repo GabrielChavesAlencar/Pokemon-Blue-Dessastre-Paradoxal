@@ -41,10 +41,10 @@
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     },
     "offline_development_milestones": {
-      "verified": 11,
+      "verified": 12,
       "total": 12,
-      "percent": 91.7,
-      "meaning": "11/12: Violet exterior+cinco interiores inéditos 677–681 (layouts provisórios) com 10 portas/escadas de ida e volta, 5 NPCs e 8 times PBS, Zephyr somente após vitória. Stage privado 82 mapas, não jogável; faltam gráficos específicos, centro com cura, instação Blue-Story.exe e QA nativo."
+      "percent": 100,
+      "meaning": "Checklist de PREPARAÇÃO OFFLINE 12/12 concluído: 82 RXDATA + 32 eventos + 44 conexões + 21 PBS e recursos gráficos conferidos em pacote privado. Nenhum arquivo é automaticamente instalado no Blue-Story.exe; direitos, compilação, sprites de batalha, cure, level cap e QA no Game.exe pendentes; jogáveis/testadas 0/13."
     }
   },
   "phases": [
@@ -301,7 +301,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Etapa 12/12: auditoria geral da cadeia de estágios + contrato de montagem automática pelo Blue-Story.exe; recuperação/fornecimento lícito de sprites específicos, integrações e testes nativos ainda pendentes. Não requer Game.exe agora.",
+  "next_required_input": "Próximo ciclo (fora das 12 etapas offline): instalar em cópia de teste isolada com backups/rollback e recursos licenciados, compilar PBS e testar Game.exe; somente após QA aprovada liberar a instalação automática Blue-Story.exe. Usuário pode adiar execução do EXE.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
@@ -319,8 +319,8 @@
   "offline_development": {
     "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
     "total": 12,
-    "completed": 11,
-    "percent": 91.7,
+    "completed": 12,
+    "percent": 100,
     "not_gameplay_proof": true,
     "never_execute_game_exe": true,
     "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
@@ -468,9 +468,16 @@
       {
         "number": 12,
         "title": "Auditoria e empacotamento offline da fase inicial",
-        "status": "PENDING",
-        "acceptance": "Todas as saídas da prévia verificadas, suíte offline passando, SHA/IDs e proteção de Kanto/Decades/saves confirmados; relatório pronto para futura QA nativa sem alegar jogo funcional",
-        "evidence": []
+        "status": "COMPLETE",
+        "acceptance": "Auditoria de integração com 82 RXDATA Map600–681, 16 warps e 16 ações verificadas via Ruby Marshal, 21 equipes PBS/4 trainer types, 6 tabelas dia/noite, 42 conexões nativas mais 2 propostas, sprites nativos usados completados incluindo Inside e 3 autotiles; dois nomes de sprite de Violet corrigidos em cópia de Map680/681, 80 MapNNN preservados, MapInfos/Tilesets intactos. ZIP privado CRC e SHA validados, nenhum EXE, save ou game/ alterado; instalador/gameplay bloqueado.",
+        "evidence": [
+          "scripts/regions/package_johto_offline12.py (auditoria integral e montagem de ZIP privado com fail-closed)",
+          "tests/test_johto_offline12.py (13 testes sintéticos de conexões, PBS, paths e gates)",
+          "data/regions/johto-stage12-package-contract.json (manifesto de release bloqueado)",
+          "data/regions/johto-stage11-violet.json e build_johto_violet_stage11.py (sprites Elder/Nurse corrigidos na base Blue)",
+          "docs/JOHTO_OFFLINE_FASE_12_AUDITORIA_INTEGRACAO.md",
+          "Auditoria RXDATA real: 82 mapas, 289 MapInfos, 16 code201+16 code355, ZIP privado com SHA-256 74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49 e CRC aprovado, preservando 80/82 mapas após corrigir sprites"
+        ]
       }
     ],
     "installer_integration": "REQUIRED_BEFORE_GAMEPLAY; not installed yet: requires rights-safe map acquisition, staged generation of Map674/675/676, event compilation, backup and idempotent update via Blue-Story.exe"
