@@ -158,7 +158,9 @@ class SinnohRemapTests(unittest.TestCase):
         self.assertEqual(original_report, old_report)
         self.assertEqual(original_request, old_request)
         self.assertNotIn("Data/Map007.rxdata", json.dumps(result))
-        self.assertTrue(result["map_ids_allocated"] if "map_ids_allocated" in result else not result["can_install"])
+        self.assertFalse(result["can_install"])
+        self.assertFalse(result["may_stage_real_map_data"])
+        self.assertFalse(result["game_or_saves_modified"])
 
     def test_rejects_invalid_symbols_and_unverified_report(self):
         bad = request()
