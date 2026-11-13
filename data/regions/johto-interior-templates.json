@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "NATIVE_INTERIOR_TEMPLATES_REQUIRE_REAL_REVIEW",
+  "purpose": "Criar previews de interiores Johto usando geometria e tilesets de 3 mapas locais de interiores do Blue/Decades. Nao se presume fidelidade HGSS; confirmar projeto real, passabilidade, layout e MapIDs antes de preencher. Nunca instalar em game/.",
+  "interiors": [
+    {
+      "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+      "display_name": "New Bark - Quarto do jogador",
+      "parent_symbol": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "native_map_id": null,
+      "native_map_sha256": null,
+      "destination_id": null,
+      "native_template_reviewed": false,
+      "room_geometry_reviewed": false
+    },
+    {
+      "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "display_name": "New Bark - Casa do jogador 1F",
+      "parent_symbol": "JOHTO_NEW_BARK_TOWN",
+      "native_map_id": null,
+      "native_map_sha256": null,
+      "destination_id": null,
+      "native_template_reviewed": false,
+      "room_geometry_reviewed": false
+    },
+    {
+      "symbol": "JOHTO_NEW_BARK_ELM_LAB",
+      "display_name": "New Bark - Laboratorio de Elm",
+      "parent_symbol": "JOHTO_NEW_BARK_TOWN",
+      "native_map_id": null,
+      "native_map_sha256": null,
+      "destination_id": null,
+      "native_template_reviewed": false,
+      "room_geometry_reviewed": false
+    }
+  ]
+}
