@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6788edf49d7bc4e70193ca933c579585a0ca7f0e",
+      "date": "2026-11-13T07:16:09-03:00",
+      "title": "docs(johto): registra etapa 14 parcial, versões e bloqueios de pós-jogo",
+      "category": "Documentação"
+    },
+    {
       "sha": "fba323e44ef900ef1c260d86cdb741eacf44e1fa",
       "date": "2026-11-13T07:15:33-03:00",
       "title": "test(johto): verifica saida segura Whirl Islands e reentrada sem duplicar Lugia",
