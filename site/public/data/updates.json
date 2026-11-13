@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7a8601387a8861c5c146d480238a862c87bdbc4f",
+      "date": "2026-11-13T08:14:46-03:00",
+      "title": "chore(vercel): bloquear deploy automático também na raiz do repositório",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "69a76e102103f0d47f33f35b26b743ef6280d15e",
+      "date": "2026-11-13T08:14:34-03:00",
+      "title": "chore(vercel): desativar deploys automáticos do portal",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4534529e0a2c9d591fd50b69957c6e1120c36283",
       "date": "2026-11-13T08:05:24-03:00",
       "title": "docs(johto): detalha validação de hashes, bloqueio symlink e recusa total de --apply",
