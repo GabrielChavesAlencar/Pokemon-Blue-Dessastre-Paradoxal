@@ -434,9 +434,14 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
             raise ValueError(f"Sprite de batalha inválido: {source}")
 
     app = f"Johto QA {uuid.uuid4().hex[:12]}"
-    config = (base / "mkxp.json").read_text("utf-8-sig")
-    config = json.loads(re.sub(r'"(?:[^"\\]|\\.)*"|//[^\r\n]*',
-                               lambda m: "" if m[0].startswith("//") else m[0], config))
+    config_text = (base / "mkxp.json").read_text("utf-8-sig")
+    # mkxp accepts JSON comments and trailing commas. Match string literals
+    # first so URLs and punctuation inside strings are preserved.
+    config_text = re.sub(r'"(?:[^"\\]|\\.)*"|//[^\r\n]*',
+                         lambda match: "" if match[0].startswith("//") else match[0], config_text)
+    config_text = re.sub(r'"(?:[^"\\]|\\.)*"|,(?=\s*[}\]])',
+                         lambda match: "" if match[0] == "," else match[0], config_text)
+    config = json.loads(config_text)
     config.update(dataPathApp=app, dataPathOrg=SAVE_ORG, windowTitle="Pokémon Blue — Johto QA")
     files["mkxp.json"] = json_bytes(config)
     ini, count = re.subn(r"(?m)^Title=[^\r\n]*", f"Title={app}", (base / "Game.ini").read_text("utf-8-sig"))

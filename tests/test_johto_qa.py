@@ -44,7 +44,7 @@ class JohtoQATests(unittest.TestCase):
             "Fonts/f.txt": b"font",
             "Game.exe": b"fixture only",
             "Game.ini": b"[Game]\nTitle=Decades\n",
-            "mkxp.json": b'{\n // comment\n "iconPath": "https://example.invalid/"\n}\n',
+            "mkxp.json": b'{\n // comment\n "iconPath": "https://example.invalid/",\n}\n',
             "PBS/trainer_types.txt": b"[YOUNGSTER]\nName = Youngster\n",
             "PBS/map_connections.txt": b"# existing\n",
             f"{qa.STORY}/RegionStart.rb": b"# base\n",
