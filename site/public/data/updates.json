@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "de77e6d48df4c5ab1f60e74e6429842837b1dc14",
+      "date": "2026-11-13T20:28:57-03:00",
+      "title": "feat(sinnoh): analyze map-ID capacity without touching Johto reservations or allocating slots",
+      "category": "Novidades"
+    },
+    {
       "sha": "a8302f931834cdb335042e795075b2405cd8cfd2",
       "date": "2026-11-13T20:27:14-03:00",
       "title": "test(sinnoh): verify inert RXDATA audit finds warps scripts missing graphics and collisions",
