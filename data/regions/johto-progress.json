@@ -66,7 +66,8 @@
       "evidence": [
         "MapIDs 79–152 e nomes simbólicos",
         "42 conexões externas do ZIP catalogadas",
-        "Fonte sem eventos confirmada"
+        "Fonte sem eventos confirmada",
+        "Duas conexoes ausentes da fonte derivadas por matching real de borda, janela 3x4 de passagem: Route29-Cherrygrove e Route31-Violet"
       ],
       "blockers": [
         "Passabilidade e pontos de chegada ainda não certificados no Game.exe nativo",
@@ -81,10 +82,11 @@
       "name": "Prévia isolada da geometria",
       "state": "PARTIAL",
       "evidence": [
-        "Importador e testes de dados RMXP sintéticos"
+        "Importador e testes de dados RMXP sintéticos",
+        "Staging privado real de 74 mapas Johto remapeados + 3 interiores provisórios, MapInfos e Tilesets originais preservados"
       ],
       "blockers": [
-        "Prévia com assets reais e game/ nativo não foi criada/validada"
+        "Interiores provisórios ainda não reproduzem casas/laboratório e a verificação estática não substitui testes Game.exe"
       ],
       "automated_code_test": "tests/test_johto_stage.py",
       "gameplay_playable": null,
@@ -122,10 +124,12 @@
       "name": "Fase da campanha 5",
       "state": "PARTIAL",
       "evidence": [
-        "Contratos e lógica parcial no repositório"
+        "Contratos e lógica parcial no repositório",
+        "Corredor New Bark -> Route29 -> Cherrygrove -> Route30 -> Route31 -> Violet proposto offline; 2 bordas ausentes deduzidas a partir de tiles RMXP e passagem estática (nove testes unitários locais), sem copiar/sobrescrever dados do jogo"
       ],
       "blockers": [
-        "Integração no Game.exe e aprovação de gameplay pendentes"
+        "Integração no Game.exe e aprovação de gameplay pendentes",
+        "As duas novas conexoes estao apenas no relatório de proposta, nao instaladas nem comprovadas na engine; interiores, NPCs, Falkner, encontros e save/reload ainda pendentes"
       ],
       "automated_code_test": "tests/test_johto_phase05_contract.py",
       "gameplay_playable": false,
@@ -289,7 +293,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Nao reenviar ZIP: pacote nativo 2460 arquivos ja auditado em conversa privada. Proxima exigencia e construir tres interiores proprios, aprovar posicoes com passabilidade e executar o Game.exe isolado no Windows com plugins e saves separados. Nunca subir dados nativos privados ao GitHub.",
+  "next_required_input": "NENHUM novo ZIP necessário neste momento. Próximos trabalhos offline: desenhar interiores definitivos New Bark e vínculos de eventos, preparar PBS treinadores e encontros; depois QA real Windows na cópia isolada para elevar as duas barras.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
