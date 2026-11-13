@@ -29,6 +29,11 @@ def from_archive(path: Path, channel: str):
         actual = {n[len(root):] for n in names if safe_path(n[len(root):])}
         if actual != set(marker["files"]):
             raise ValueError("Game archive and installed update manifest differ.")
+        for name, meta in marker.get("immutable", {}).items():
+            if (name not in {entry[len(root):] for entry in names} or
+                    meta != {"sha256": sha256_bytes(archive.read(root + name)),
+                             "size": archive.getinfo(root + name).file_size}):
+                raise ValueError("Unpatchable root file differs from manifest: " + name)
         for name, meta in marker["files"].items():
             if (not safe_path(name) or
                     meta != {"sha256": sha256_bytes(archive.read(root + name)),
@@ -58,7 +63,7 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None)
     revision = current["revision"]
     result = {
         "schema": 1, "channel": channel, "revision": revision,
-        "files": current["files"], "patch": None,
+        "files": current["files"], "immutable": current.get("immutable", {}), "patch": None,
         "full": {
             "asset": archive_path.name,
             "size": archive_path.stat().st_size,
@@ -67,7 +72,8 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None)
     }
     previous = verified_previous(previous_path, channel) if previous_path else None
     patch_file = archive_path.parent / (archive_path.stem + ".patch.zip")
-    if previous and previous["revision"] != revision:
+    if (previous and previous["revision"] != revision and
+            previous.get("immutable", {}) == current.get("immutable", {})):
         old, new = previous["files"], current["files"]
         changed = {name: meta for name, meta in new.items() if old.get(name) != meta}
         removed = sorted(set(old) - set(new))
