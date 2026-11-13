@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "476ce588e8629e5936fe4fb0f12805bbf9c64266",
+      "date": "2026-11-13T11:05:18-03:00",
+      "title": "feat(hoenn): add safe local ZIP resource inspector and staging",
+      "category": "Novidades"
+    },
+    {
       "sha": "4ee610e53c1f2fde151099fa96d35db960fa7378",
       "date": "2026-11-13T10:52:31-03:00",
       "title": "feat(johto): separar barras de fases jogaveis e testes de gameplay",
