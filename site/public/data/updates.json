@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "04002c1583e1b4cc313afa84b160b561086b5a99",
+      "date": "2026-11-13T16:55:59-03:00",
+      "title": "test(android): validar mkxp.json real com campos na mesma linha",
+      "category": "Testes"
+    },
+    {
       "sha": "f229ff28e54f55bc575882c6f59f586c4f296061",
       "date": "2026-11-13T16:55:37-03:00",
       "title": "fix(android): reconhecer os dois caminhos de save na mesma linha do mkxp-z",
