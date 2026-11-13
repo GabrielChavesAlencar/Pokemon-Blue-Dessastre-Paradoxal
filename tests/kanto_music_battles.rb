@@ -56,6 +56,28 @@ def bgm(method,*args);Object.new.send(method,*args).name;end
 source=File.expand_path('../scripts/music/BlueMusic.rb',__dir__)
 load source
 Object.prepend(BlueMusic::BattleAudio)
+# Essentials v21.1 offers Battle#pbParty(idxBattler), never Battle#party2.
+# A wild encounter reaches prepare_battle before the music/scene starts.
+module BattleCreationHelperMethods
+  def self.prepare_battle(battle)
+    battle.instance_variable_set(:@blue_native_prepared,true)
+    :native_prepared
+  end
+end
+BattleCreationHelperMethods.singleton_class.prepend(BlueMusic::PrepareMusic)
+class Battle
+  attr_reader :opponent
+  def initialize(wild,other)
+    @wild=wild
+    @opponent=wild ? nil : other
+    @party2=wild ? Array(other) : []
+  end
+  def wildBattle?; @wild; end
+  def pbParty(idxBattler)
+    raise "Opponent side must be passed as battler index 1" unless idxBattler==1
+    @party2
+  end
+end
 Dir.mktmpdir('kanto-battle-music-') do |folder|
   Dir.chdir(folder) do
     FileUtils.mkdir_p('Data')
@@ -177,6 +199,38 @@ Dir.mktmpdir('kanto-battle-music-') do |folder|
     # native Decades classification keeps the trainer pool, not Kanto's gym.
     assert_music('Returning to Decades restores trainer random',
                  bgm(:pbGetTrainerBattleBGM,[leader]),'BlueRandom/trainer.mp3')
+    # Reproduce the real JoiPlay failure: Battle has pbParty, not party2.
+    BlueRegionalPolicy.region='KANTO'
+    $game_map.map_id=701
+    raise 'Fixture accidentally exposes removed party2 API' if Battle.new(true,[:PIKACHU]).respond_to?(:party2)
+    BlueMusic.with_battle do
+      battle=Battle.new(true,[:PIKACHU])
+      assert_music('Normal wild encounter prepares without calling party2',
+                   BattleCreationHelperMethods.prepare_battle(battle),:native_prepared)
+      context=BlueMusic.instance_variable_get(:@battle_context)
+      assert_music('Kanto wild BGM retains its normal category',context[:category],'wild')
+      assert_music('Kanto wild BGM stays region eligible',context[:kanto_eligible],true)
+      assert_music('Native preparation still runs',battle.instance_variable_get(:@blue_native_prepared),true)
+    end
+    BlueMusic.with_battle do
+      battle=Battle.new(true,[:PIKACHU,:MEWTWO])
+      BattleCreationHelperMethods.prepare_battle(battle)
+      assert_music('Kanto double wild with Legendary selects its regional category',
+                   BlueMusic.instance_variable_get(:@battle_context)[:category],'legendary')
+    end
+    BlueMusic.with_battle do
+      battle=Battle.new(false,[leader])
+      BattleCreationHelperMethods.prepare_battle(battle)
+      assert_music('Trainer preparation keeps Kanto leader music',
+                   BlueMusic.instance_variable_get(:@battle_context)[:category],'gym')
+    end
+    BlueRegionalPolicy.region='DECADES'
+    BlueMusic.with_battle do
+      battle=Battle.new(true,[:PIKACHU])
+      BattleCreationHelperMethods.prepare_battle(battle)
+      assert_music('Decades wild preparation does not use Kanto music',
+                   BlueMusic.instance_variable_get(:@battle_context)[:kanto_eligible],false)
+    end
     puts 'KANTO_MUSIC_BATTLE_PHASE_3=PASS_STATIC_RUNTIME'
   end
 end
