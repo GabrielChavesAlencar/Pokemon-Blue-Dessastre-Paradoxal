@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db80f9ed0ca8b101729d8eea4e94e57a6fa25dde",
+      "date": "2026-11-13T20:26:30-03:00",
+      "title": "feat(sinnoh): audit inert RMXP events maps tilesets graphics and transfer graph from ZIP or directory",
+      "category": "Novidades"
+    },
+    {
       "sha": "8ad81feccf3a0b6afdd5d4ace6b6da4315ca347b",
       "date": "2026-11-13T20:19:01-03:00",
       "title": "feat(hoenn): open the isolated pilot from the title menu",
