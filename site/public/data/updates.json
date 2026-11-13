@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3113c1f4ae730dead44647adccf19a4f3bb045e0",
+      "date": "2026-11-13T20:41:16-03:00",
+      "title": "feat(sinnoh): add atomic dry-run staging and verified rollback confined to ignored local workspace",
+      "category": "Novidades"
+    },
+    {
       "sha": "d42553d8b6a9262320caf8511a127345bd0c4b36",
       "date": "2026-11-13T20:39:30-03:00",
       "title": "test(sinnoh): validate 32-task progress bars and separate real gameplay acceptance",
