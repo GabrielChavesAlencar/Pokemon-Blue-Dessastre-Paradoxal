@@ -174,6 +174,9 @@ raise 'missing event script' unless log.include?("Full script:\\nchoose starters
             with self.assertRaises(ValueError):android.build(game,output,'test')
             for name in ['Game.exe','Game.ini','Data/Map001.rxdata','Data/blue-hub-presets.dat','Data/blue-pt-br.dat','Game.rxdata','Data/Game.rxdata','Data/blue-hub-python.txt','BlueHub/private-team.txt']:
                 p=game/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'synthetic data')
+            # The native compiler is preceded by the RGSS Input bootstrap.
+            # The distribution must never publish an Android ZIP without it.
+            android.install_early_input(game)
             (game/'Data/blue-android-compiled.txt').write_text(android.fingerprint(game))
             android.build(game,output,'test')
             with zipfile.ZipFile(output) as z:
