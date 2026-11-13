@@ -337,3 +337,20 @@ O ZIP enviado pelo usuário já permitiu **renderizar o New Bark exterior real e
 O piloto isolado com `--with-connections` foi corrigido para **não duplicar teletransportes** na conexão de borda New Bark–Route29 já fornecida no `map_connections.txt`. Os dois eventos redundantes são removidos **apenas da cópia dos eventos em memória**, preservando origem, Kanto, Decades e o rival. Há testes sintéticos de montagem do piloto com verificações de eventos de borda ausentes e NPCs preservados.
 
 **Não transformar essa auditoria em aprovação de gameplay:** os papéis exatos das casas, o quarto 2F/1F, Elm Lab interior, passabilidade em Game.exe, sprites e saves ainda não foram testados. A fonte fornecida não traz os interiores e o `game/` original ainda não foi entregue. **Barra Jogáveis: 0/13. Barra Testadas: 0/13.** Próximo: obter os dados nativos do motor, validar a casa do jogador, preparar 3 interiores e montar/testar o piloto real.
+
+## Fase 04 — exportador privado de insumos para primeiro piloto (13/11/2026)
+
+Criados [JOHTO_EXPORTAR_BASE_PILOTO.bat](../JOHTO_EXPORTAR_BASE_PILOTO.bat),
+[export_johto_pilot_inputs.py](../scripts/regions/export_johto_pilot_inputs.py) e
+[guia de envio](JOHTO_FASE_04_ENVIAR_BASE_NATIVA.md). Quando o Blue/Decades estiver instalado
+em game/, o usuário poderá gerar somente localmente um ZIP com MapInfos,
+Tilesets, System, MapNNN, PBS e gráficos de tiles; modo sprites acrescenta
+Characters/Trainers. O ZIP fica ignorado pelo Git e só deve ser compartilhado
+em conversa privada. Saves, Game.exe, plugins, scripts e segredos
+não são exportados. tests/test_johto_export_pilot_inputs.py verifica esses
+limites com fixtures sintéticas, sem assets externos.
+
+**Isso não monta os interiores nem prova a jogabilidade.** Ainda faltam
+três interiores auditados, identificar a casa do jogador, confirmar tiles de
+porta/spawn, compilar eventos/PBS e testar Game.exe isolado. Barras
+**Jogáveis 0/13, Testadas 0/13** até validação nativa.
