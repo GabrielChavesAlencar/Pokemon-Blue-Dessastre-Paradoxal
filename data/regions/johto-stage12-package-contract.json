@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "milestone": "OFFLINE_12_OF_12",
+  "status": "PRIVATE_INTEGRATION_AUDIT_COMPLETE_NOT_INSTALLABLE",
+  "input_stage11": "BLUE_VIOLET_STAGE11_PREVIEW_ONLY_NOT_PLAYABLE",
+  "maps": {
+    "min_id": 600,
+    "max_id": 681,
+    "total": 82,
+    "violet_exterior": 602,
+    "new_interiors": [
+      677,
+      678,
+      679,
+      680,
+      681
+    ]
+  },
+  "events": {
+    "total": 32,
+    "warps": 16,
+    "actions": 16,
+    "third_party_events_imported": 0
+  },
+  "connections": {
+    "original": 42,
+    "inferred": 2,
+    "total": 44,
+    "inferred_engine_verified": false
+  },
+  "pbs": {
+    "files": 6,
+    "trainer_types_custom": 4,
+    "trainer_teams": 21,
+    "wild_tables": 6,
+    "compiled_in_engine": false
+  },
+  "required_runtime_modules": [
+    "JohtoPilot.rb",
+    "JohtoRouteTrainers.rb",
+    "JohtoViolet.rb"
+  ],
+  "sprites_corrected_from_native_export": [
+    {
+      "event": "JH_SPROUT_ELDER_LI",
+      "map_id": 680,
+      "old": "NPC_HGSS_Elder_Li",
+      "new": "NPC_HGSS_Elder",
+      "source": "johto-pilot-inputs.zip"
+    },
+    {
+      "event": "JH_VIOLET_CENTER_CLERK",
+      "map_id": 681,
+      "old": "NPC_HGSS_Nurse",
+      "new": "NPC_DPP_PokeCenter_Nurse",
+      "source": "johto-pilot-inputs.zip"
+    }
+  ],
+  "native_assets_expected": {
+    "referenced_tilesets": 5,
+    "referenced_autotiles": 14,
+    "character_sprites": 10
+  },
+  "safety": {
+    "never_execute_game_exe": true,
+    "can_install": false,
+    "gameplay_playable": false,
+    "tested_in_game": false,
+    "ready_marker_created": false,
+    "write_game": false,
+    "write_saves": false,
+    "write_main_executable": false,
+    "only_new_private_zip": true
+  },
+  "release_blockers": [
+    "Blue-Story.exe install routine, safe backup/rollback and compiled Essentials PBS not implemented",
+    "Trainer battle graphics for custom Johto types not certified in engine",
+    "Violet Pokémon Center healing not implemented; Violet interiors remain original provisional layouts",
+    "Map border inferred connections require engine gameplay checks",
+    "Global badge/emerald level cap, Master scaling and HM travel not engine-verified",
+    "Source asset and music distribution permissions not approved",
+    "Windows and JoiPlay real Game.exe, saved progress and Decades/Kanto regression not tested"
+  ],
+  "next_phase": "AFTER_OFFLINE_12: isolated engine compilation, asset provenance, gameplay tests, then safe Blue-Story.exe integration — must not be counted as a playable/tested 13-phase milestone until real QA."
+}

@@ -191,7 +191,7 @@
       "x": 10,
       "y": 5,
       "handler": "BlueJohtoViolet.sprout_elder",
-      "sprite": "NPC_HGSS_Elder_Li",
+      "sprite": "NPC_HGSS_Elder",
       "role": "elder"
     },
     {
@@ -218,7 +218,7 @@
       "x": 10,
       "y": 5,
       "handler": "BlueJohtoViolet.center_clerk",
-      "sprite": "NPC_HGSS_Nurse",
+      "sprite": "NPC_DPP_PokeCenter_Nurse",
       "role": "center_preview_only"
     }
   ],
@@ -374,7 +374,7 @@
     "trainer_sprites_audited": false
   },
   "missing_before_gameplay": [
-    "Sprites de Falkner, Sage, Li e enfermeira não confirmados no export nativo",
+    "Sprites de NPC auditados no pacote Blue: Falkner, Sage, Elder HGSS e enfermeira DPP; aparência não oficial HGSS de Li/atendente, gráficos de treinador de batalha ainda pendentes",
     "Mapas internos são protótipos de layout, não layouts HGSS",
     "Transições em engine, PBS compilado e balanceamento global não testados",
     "Centro Pokémon não implementa cura nesta etapa",
