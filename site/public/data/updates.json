@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b12405082e5f1fdcc163d468694ec987bcd51333",
+      "date": "2026-11-13T07:09:53-03:00",
+      "title": "docs(johto): fase 14 contrato HGSS Crystal, lendarios, Bell Tower, Whirl, Ruins e bloqueios",
+      "category": "Documentação"
+    },
+    {
       "sha": "951ee3e563e06a6d83aa9f21a77060bf9ac5e8a5",
       "date": "2026-11-13T07:08:38-03:00",
       "title": "test(johto): executa as regras de lendários de Johto na regressão do Blue Studio",
