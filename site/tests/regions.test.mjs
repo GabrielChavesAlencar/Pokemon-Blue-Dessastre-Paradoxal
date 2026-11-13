@@ -13,3 +13,11 @@ test('the regional guide separates live areas from the Kanto preview', async () 
   assert.match(page,/Expedição sem Liga/);
   assert.match(page,/href="\/localizacoes">Ver mapa e encontros/);
 });
+
+test('Hoenn and Johto remain documented as not yet playable while sharing future scaling rules',async()=>{
+  const registry=JSON.parse(await readFile(new URL('../public/data/regions.json',import.meta.url),'utf8'));
+  const page=regionsPage(registry);
+  assert.match(page,/Hoenn ainda aguarda mapas e encontros autorizados/);
+  assert.match(page,/Johto continua em preparação/);
+  assert.match(page,/35% da vaga da forma base/);
+});
