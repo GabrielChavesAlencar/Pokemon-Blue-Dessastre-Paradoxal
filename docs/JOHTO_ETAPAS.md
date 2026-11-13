@@ -91,6 +91,11 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `tests/test_johto_phase14_contract.py` verifica os estados bloqueados, versões, itens e a divergência canônica HGSS (mascote antes da Liga) a corrigir antes da integração final.
 - [x] [MD da Etapa 14 — lendários e pós-jogo](JOHTO_FASE_14_LENDARIOS_POS_JOGO.md).
 - [ ] Integrar mapas licenciados/MapIDs verificados, callbacks de captura, roamers reais, Suicune/Eusine por versão, cinco PBS Kimono, Unown e recurso legal de Mt. Silver/Red; testar tudo no Game.exe.
+- [x] **Etapa 15 iniciada (M0–M6):** `data/johto-music.json` cataloga 42 BGM + 11 ME planejados e `data/johto-music-rules.json` descreve 35 áreas, 10 batalhas, 11 ME e 7 cenas; **todas desativadas**, sem arquivo ou licença presumidos.
+- [x] `scripts/music/audit_johto_phase15.py` impede habilitação de áudio sem origem, direitos, MapIDs, região e fallback; `tests/test_johto_phase15_contract.py` verifica integridade e isolamento Kanto/Decades.
+- [x] Portal: `site/public/data/johto-preview.json` reúne 148 locais simbólicos e 36 tipos de treinadores, incluindo oito líderes, sem teams PBS inventados; `site/src/assets/johto.js`, `app.js`, `regions.js` e `styles.css` expõem os filtros `?regiao=johto` como prévia explícita.
+- [x] [MD da Etapa 15 — Músicas, treinadores e portal](JOHTO_FASE_15_MUSICAS_TREINADORES_PORTAL.md), com checklist M0–M6, entregas e provas de aceite.
+- [ ] Receber áudio com licença e SHA-256, compilar mapas e PBS reais e completar o sistema de BGM/ME, equipes normal/Master e habitats no Game.exe antes de declarar a etapa concluída.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -112,7 +117,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 12 | Blackthorn e Clair | **PARCIAL**: Ice Path/Strength/Waterfall, Clair, Dragon Master/RISING e preparação da Liga em testes isolados; faltam mapas, PBS e gameplay |
 | 13 | Liga Johto e Lance | **PARCIAL**: Tohjo, Victory Road, Elite Four/Lance, Hall of Fame protegido e unlock Kanto/Hoenn no save em código/testes; mapas e gameplay pendentes |
 | 14 | Lendários e pós-jogo | **PARCIAL**: versões HG/SS/Crystal, Raikou/Entei, Kimono, Ho-Oh/Lugia e Ruins com lógica/testes; Suicune, mapas, Mt. Silver e gameplay pendentes |
-| 15 | Música, treinadores e portal | PENDENTE |
+| 15 | Música, treinadores e portal | **PARCIAL**: 53 cues sem áudio, regras M0–M6 desativadas, auditor, prévia de 148 mapas simbólicos/36 treinadores e UI Johto; faltam MapIDs, arquivos licenciados, PBS e gameplay |
 | 16 | Instalação, viagem e aceite final | PENDENTE |
 
 ## Regras obrigatórias antes de importar qualquer mapa
