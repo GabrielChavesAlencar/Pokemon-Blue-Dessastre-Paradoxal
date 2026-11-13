@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "source_zip_sha256": null,
+  "source_mapinfos_sha256": null,
+  "source_tilesets_sha256": null,
+  "source_map_hashes": {},
+  "mapping": {},
+  "symbols": {},
+  "template_only": true,
+  "note": "Preencher exclusivamente com MapIDs, SHA-256 e símbolos SINNOH_... confirmados em audit_sinnoh_rxdata.py. A template é intencionalmente inválida até preencher TODOS os mapas reais da fonte autorizada. Não usar faixas Johto 600..999, IDs ocupados ou IDs >=1000 sem QA nativo; plano produzido nunca permite instalar."
+}
