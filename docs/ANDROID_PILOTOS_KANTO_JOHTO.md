@@ -68,3 +68,7 @@ A execução 43495139107 avançou após corrigir o carregamento da biblioteca JS
 ## Ajuste do configurador mkxp-z para o pacote Android Kanto
 
 Na execução 43495547842, toda a verificação nativa Kanto, inclusive a integração segura no Decades, concluiu com êxito. A etapa de empacotamento Android falhou antes da compilação porque o validador usava json.loads sobre mkxp.json. Esse arquivo no Pokémon Decades usa comentários // aceitos pelo mkxp-z. O empacotador agora extrai e valida estritamente somente as propriedades ativas dataPathApp e dataPathOrg, exige um único valor correto para cada uma e rejeita configurações sobrepostas, sem alterar o mkxp.json. Testes unitários adicionais cobrem comentários e duplicidade. Este commit dispara uma nova tentativa experimental.
+
+## Terceira rodada de empacotamento
+
+Na execução 43496189183, os testes nativos Kanto e a regressão de integração no Decades passaram, mas o validador do pacote recusou os saves. A causa foi o formato real do mkxp.json gerado por scripts/regions/pilot.py: dataPathApp e dataPathOrg aparecem na mesma linha, apesar dos comentários do JSONC original. Agora a validação remove linhas inteiramente comentadas, aceita as duas propriedades na mesma linha, exige ocorrência única e compara os dois perfis de save exatos. Testes reproduzem a configuração escrita pelo gerador. O ZIP continua bloqueado se falhar qualquer verificação.
