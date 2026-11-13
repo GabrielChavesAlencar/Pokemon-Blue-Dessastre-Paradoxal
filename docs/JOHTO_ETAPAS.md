@@ -75,6 +75,11 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `tests/test_johto_phase11_contract.py` verifica treinadores PBS, itens, encontros e bloqueios de liberação.
 - [x] [MD da Etapa 11 — Mahogany, Equipe Rocket, Pryce e GLACIER](JOHTO_FASE_11_MAHOGANY_ROCKET_PRYCE.md).
 - [ ] Integrar mapas e eventos reais, compilar PBS, validar Gyarados/Electrode, HQ, Pryce, Whirlpool e Radio Tower no Game.exe antes de concluir 11/16.
+- [x] **Etapa 12 iniciada:** `scripts/regions/JohtoBlackthorn.rb` prepara Rota 44, Ice Path com slide e quatro rochas, Waterfall condicionado ao item real, Blackthorn, puzzle de Clair, Dragon's Den/Master e RISING como oitava insígnia.
+- [x] `tests/johto_blackthorn_runtime.rb` e `tests/test_johto_blackthorn_runtime.py` cobrem ferramentas Strength/Whirlpool/Waterfall, derrotas, vitórias, teste do Dragon Master, RISING única, 8 insígnias e saves isolados de Decades/Kanto.
+- [x] `data/regions/johto-phase12.json` define mapa simbólico de Ice Path/Blackthorn/Dragon's Den, Rota 45/46 e Dark Cave bloqueada, sem MapIDs; `tests/test_johto_phase12_contract.py` verifica a integridade.
+- [x] [MD da Etapa 12 — Ice Path, Clair, Dragon Master e Rising](JOHTO_FASE_12_ICE_PATH_BLACKTHORN_CLAIR.md).
+- [ ] Integrar mapas e puzzles físicos, compilar PBS de Clair, validar Waterfall real, entrega pós-Master de RISING e acesso à Liga em Game.exe antes de concluir a etapa.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -93,7 +98,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 09 | Cianwood e Chuck | **PARCIAL**: rotas Olivine/Cianwood, farol, medicina, Chuck/STORM, Surf/Fly e contrato simbólico; faltam mapas, PBS e gameplay |
 | 10 | Olivine e Jasmine | **PARCIAL**: cura segura de Ampharos, Jasmine/MINERAL, inventário e Whirl Islands bloqueadas com testes; faltam Map Pack, PBS e jogo real |
 | 11 | Mahogany, Rocket e Pryce | **PARCIAL**: Lake of Rage, Rocket HQ, Pryce/GLACIER, Whirlpool e Radio Tower preparados; faltam mapas, PBS e gameplay |
-| 12 | Blackthorn e Clair | PENDENTE |
+| 12 | Blackthorn e Clair | **PARCIAL**: Ice Path/Strength/Waterfall, Clair, Dragon Master/RISING e preparação da Liga em testes isolados; faltam mapas, PBS e gameplay |
 | 13 | Liga Johto e Lance | PENDENTE |
 | 14 | Lendários e pós-jogo | PENDENTE |
 | 15 | Música, treinadores e portal | PENDENTE |
