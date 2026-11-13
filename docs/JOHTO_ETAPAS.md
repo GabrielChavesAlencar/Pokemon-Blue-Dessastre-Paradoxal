@@ -210,3 +210,22 @@ python -m unittest discover -s tests -p "test_johto_rival_pbs_draft.py" -v
 ~~~
 
 **Critério de aceite ainda aberto:** conferir trainer graphic e áudio, compilar as três versões na **cópia isolada**, executar uma luta por versão, salvar e recarregar e só depois ativar o marcador `blue-johto-rival-ready.txt` **no piloto**. Nenhum desses testes reais ocorreu nesta fase.
+
+## Continuação da Etapa 04 — montagem de piloto isolado em New Bark (13/11/2026)
+
+Nova base de **cópia experimental compilável**, sem aprovar Johto nem alterar Kanto/Decades:
+
+- [scripts/regions/pilot_johto.py](../scripts/regions/pilot_johto.py) cria **somente** `.blue-work/johto-pilot/` a partir de `game/` + prévia geométrica auditada + eventos próprios; mescla MapInfos/Tilesets, instala 3 versões PBS do rival, duplica retrato nativo de rival e copia os handlers `BlueJohtoPilot` em plugin experimental. Se qualquer validação falhar, não publica a pasta final.
+- [scripts/regions/JohtoPilotStart.rb](../scripts/regions/JohtoPilotStart.rb) é inserido **somente na cópia do piloto**, junto aos handlers. Permite teste de início no quarto com manifesto `EXPERIMENTAL_UNTESTED`, hash dos mapas, System e PBS e save isolado. Não cria nem afrouxa `VERIFIED_PLAYABLE` ou os 13 gates de release do jogo principal.
+- [data/regions/johto-new-bark-events.json](../data/regions/johto-new-bark-events.json) exige campo `start` dentro do quarto com `verified_position` e `passability_verified`. **Continuam explicitamente pendentes** até inspeção da fonte verdadeira.
+- [tests/test_johto_pilot_assembly.py](../tests/test_johto_pilot_assembly.py) verifica integralidade dos dados, hashes, retorno de cada warp, separação de save, rollback em falha e início Ruby com prova local; os mapas dos testes são **artificiais**.
+
+**Comando após concluir a importação real de New Bark, casa e laboratório:**
+
+~~~powershell
+python scripts/regions/pilot_johto.py --game "game" --preview ".blue-work/johto-staging-v1" --spec "data/regions/johto-new-bark-events.json" --output ".blue-work/johto-pilot"
+~~~
+
+O comando cria uma **cópia nova** e não substitui saída anterior. Somente se a auditoria real, os direitos locais, as posições e o estado do motor confirmarem as pré-condições poderá gerar uma pasta executável para testar manualmente `.blue-work/johto-pilot/Game.exe`.
+
+**Bloqueios honestos:** não existe pacote de mapas HGSS confirmado no repositório, interiores ausentes (quarto/casa/lab), sprites e coordenadas não foram auditados, `TrainerBattle` de rival ainda não recebeu teste nativo, nem saves Johto verificados. Não criar `blue-johto-rival-ready.txt` nem publicar `JOHTO_JOGAR_EXPERIMENTAL.bat` enquanto o piloto real não iniciar corretamente — o atalho do menu principal não deve fechar a partida do usuário se o build falhar. **Barras oficiais ainda 0/16 e 0/16.**
