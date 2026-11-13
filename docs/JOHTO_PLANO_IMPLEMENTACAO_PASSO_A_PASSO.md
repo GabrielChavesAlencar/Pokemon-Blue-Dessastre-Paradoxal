@@ -244,6 +244,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 10/16 — Jasmine, Olivine e áreas oceânicas
 
+**Implementação parcial publicada:** [JOHTO_FASE_10_JASMINE_AMPHAROS_MINERAL.md](JOHTO_FASE_10_JASMINE_AMPHAROS_MINERAL.md). O módulo `JohtoJasmine.rb` valida a medicina recebida da Etapa 09, o retorno de Cianwood, o 6º andar do Lighthouse, a existência da SecretPotion e uma remoção real e única pela Bag antes de marcar Ampharos recuperado. Jasmine só pode ser desafiada após cura, STORM local, entrada no ginásio e equipe PBS auditada; MINERAL é a 6ª insígnia e só é concedida uma vez pela API regional. `data/regions/johto-phase10.json` planeja o retorno e as Whirl Islands com **entradas/saídas ainda sem warps reais**; Whirlpool exige GLACIER e ferramenta, e a entrada permanece bloqueada mesmo com elas. Os testes Ruby/Python cobrem itens, vitórias, derrotas, saves e isolamento. **Sem mapas originais, sem PBS, sem confirmação de PokemonBag no Game.exe, sem teste de jogabilidade. Esta etapa continua PARCIAL.**
+
+
 **Implementar:** concluir a recuperação de Ampharos, liberar a batalha de Jasmine e MINERAL Badge. Auditar Whirl Islands como áreas de caverna, mas manter a captura lendária bloqueada até seu evento canônico. Consertar entrada de cada andar, conexão marítima, marés/correntes se aplicável e rota de retorno.
 
 **Teste/aceite:** Jasmine só batalha após pré-requisitos corretos; sexto marco local só é concedido uma vez; nenhuma ilha deixa jogador preso.
