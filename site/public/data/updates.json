@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0b15160887756d6e3c6ad92d856c5331ad6200b1",
+      "date": "2026-11-13T07:37:55-03:00",
+      "title": "docs(johto): sincroniza fase 15 M0-M6 portal de prévia e treinadores pendentes",
+      "category": "Documentação"
+    },
+    {
       "sha": "6d1e899c0d5d0f9c909eba27dbc1f352fa84e5c7",
       "date": "2026-11-13T07:37:36-03:00",
       "title": "docs(johto): contabiliza etapa 15 parcial e mantém duas barras sem aceite falso",
