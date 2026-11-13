@@ -7,6 +7,7 @@ ativa Johto na campanha principal ou emite VERIFIED_PLAYABLE.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import re
@@ -163,6 +164,58 @@ def plan(preview: Path, game: Path, spec: dict, *, root: Path = ROOT) -> tuple[d
     )
 
 
+BORDER_EVENTS = {
+    "JH_TOWN_TO_ROUTE29": ("JOHTO_NEW_BARK_TOWN", "JOHTO_ROUTE_29"),
+    "JH_ROUTE29_TO_NEW_BARK": ("JOHTO_ROUTE_29", "JOHTO_NEW_BARK_TOWN"),
+}
+
+
+def without_duplicate_border_warps(spec: dict, connections: str) -> dict:
+    """Replace the real New Bark/Route29 border with PBS only in a PILOT.
+
+    Keep the source event template untouched; reject if either explicit warp
+    is missing/mutated. PBS must have both real source maps connected.
+    """
+    if not isinstance(spec, dict) or not isinstance(spec.get("maps"), list):
+        raise ValueError("Mapa de eventos New Bark invalido")
+    result = copy.deepcopy(spec)
+    expected_keys = set(BORDER_EVENTS)
+    removed = set()
+    map_symbols = {row.get("symbol") for row in result["maps"]}
+    if len(map_symbols) != len(result["maps"]):
+        raise ValueError("Mapas duplicados na especificacao do piloto")
+    for row in result["maps"]:
+        original_events = row.get("events")
+        if not isinstance(original_events, list):
+            raise ValueError("Eventos de New Bark invalidos")
+        filtered = []
+        for event in original_events:
+            name = event.get("key")
+            if name in expected_keys:
+                origin, destination = BORDER_EVENTS[name]
+                if (name in removed or row.get("symbol") != origin
+                        or event.get("kind") != "warp"
+                        or event.get("destination") != destination):
+                    raise ValueError("Warp de borda New Bark/Route29 foi alterado")
+                removed.add(name)
+                continue
+            filtered.append(event)
+        if not filtered:
+            raise ValueError("Nao remover todos os eventos de um mapa de New Bark")
+        row["events"] = filtered
+    if removed != expected_keys:
+        raise ValueError("Warps da borda New Bark/Route29 incompletos")
+    lines = [line.split(",") for line in connections.splitlines() if line.strip()]
+    if not all(len(line) == 6 for line in lines):
+        raise ValueError("PBS de borda malformado")
+    ids = {row["symbol"]: row.get("map_id") for row in result["maps"]}
+    a, b = ids.get("JOHTO_NEW_BARK_TOWN"), ids.get("JOHTO_ROUTE_29")
+    if (type(a) is not int or type(b) is not int or a == b or
+            not any({int(line[0]), int(line[3])} == {a, b} for line in lines)):
+        raise ValueError("PBS nao prova borda entre MapIDs de New Bark e Rota 29")
+    return result
+
+
 def assemble(preview: Path, game: Path, output: Path, spec: dict,
              *, root: Path = ROOT, with_connections: bool = False) -> dict:
     root = root.resolve()
@@ -170,13 +223,16 @@ def assemble(preview: Path, game: Path, output: Path, spec: dict,
     allowed_workspace(root, output, must_be_new=True)
     if output.resolve() == preview.resolve() or output.resolve().is_relative_to(preview.resolve()):
         raise ValueError("Destino dentro da prévia")
-    report, events, pbs, pbs_report = plan(preview, game, spec, root=root)
     connection_text, connection_report = None, None
+    event_spec = spec
     if with_connections:
         graph = read_json(root / "data/regions/johto-v1-map-connections.json")
         source_manifest = read_json(root / "data/regions/johto-source.json")
         connection_text, connection_report = build_connections(
             preview, game, graph, source_manifest, root=root)
+        # Do not install 2 explicit teleports on top of the real PBS border.
+        event_spec = without_duplicate_border_warps(spec, connection_text)
+    report, events, pbs, pbs_report = plan(preview, game, event_spec, root=root)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent, prefix=".johto-pilot-build-") as temp:
         target = Path(temp) / "game"
