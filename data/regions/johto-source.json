@@ -27,6 +27,9 @@
       "Map001.rxdata ausente (Intro ID 1 é metadado de grupo fora dos mapas selecionados)",
       "2 autotiles JPEG são de tileset Kanto 21, não incluído no mapeamento Johto",
       "15 BGM .ogg no pacote começam KM_ (Kanto), não são trilha de Johto"
+    ],
+    "accepted_missing_mapinfo_ids": [
+      1
     ]
   },
   "import_enabled": false,
