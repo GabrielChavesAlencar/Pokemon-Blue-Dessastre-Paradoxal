@@ -235,6 +235,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 09/16 — Olivine, Lighthouse, Cianwood e Chuck
 
+**Implementação parcial publicada:** [JOHTO_FASE_09_OLIVINE_CIANWOOD_CHUCK.md](JOHTO_FASE_09_OLIVINE_CIANWOOD_CHUCK.md). O módulo `JohtoOlivineCianwood.rb` prepara Route 38–41, Olivine, checkpoints dos 6 andares do Lighthouse, pedido de SecretPotion por Jasmine, travessia via FOG/Surf, farmácia de Cianwood, cascata e batalha de Chuck com STORM única, Fly com ferramenta e retorno com medicina, **sem curar Ampharos nem liberar Jasmine antes da Etapa 10**. A topologia não instalada está em `data/regions/johto-phase09.json`; testes Ruby/Python verificam recompensas idempotentes, derrotas, save/reload e separação entre regiões. **Faltam Map Pack, escadas/elevador, PBS compilado, eventos RMXP, verificação de itens, encounters e teste no Game.exe. Não declarar a fase concluída por simulação.**
+
+
 **Implementar:** Routes 38–41, Olivine e Lighthouse, travessia oceânica, Cianwood, farmácia, ginásio Chuck, STORM Badge, Fly sujeito à regra regional. Garantir encontros Land/Water/Fishing e interior do farol, escadas e elevadores funcionais.
 
 **Teste/aceite:** alcançar Cianwood, resolver o arco da medicina sem gastar recompensas duplicadas, vencer Chuck, voar somente quando permitido e voltar a Olivine.
