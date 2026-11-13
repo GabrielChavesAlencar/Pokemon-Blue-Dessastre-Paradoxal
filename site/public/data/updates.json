@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "df718c206ec044572bf26c3047351696cae201e9",
+      "date": "2026-11-13T17:14:57-03:00",
+      "title": "feat(android): ship Kanto updater and isolated installed manifest",
+      "category": "Novidades"
+    },
+    {
+      "sha": "16c3fccaceaab5ec7aa6681b293a923a28868d51",
+      "date": "2026-11-13T17:14:54-03:00",
+      "title": "feat(android): ship Decades updater and verified installed manifest",
+      "category": "Novidades"
+    },
+    {
+      "sha": "3f7d8b5b03fa752a676b8d2a75431c29397803b4",
+      "date": "2026-11-13T17:14:30-03:00",
+      "title": "feat(android): embed safe per-file inventories in each JoiPlay installation",
+      "category": "Novidades"
+    },
+    {
       "sha": "884fe2ba3897cfe2dcf09b6d0414838db167146a",
       "date": "2026-11-13T17:14:02-03:00",
       "title": "feat(android): generate per-channel release manifests and verified incremental patches",
