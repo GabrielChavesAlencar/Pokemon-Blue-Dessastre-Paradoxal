@@ -462,7 +462,7 @@ def if_scene(condition, actions):
     return [command(111, 12, condition), *actions, command(0, indent=1), command(412)]
 
 
-def oak_escort(event_id, lab):
+def oak_escort(event_id, lab, scene_id):
     # Both northbound lanes use the same source path, with a one-tile offset.
     right = 1 if event_id == 11 else 2
     return if_scene(b"!BlueKantoPilot.starter", [
@@ -476,9 +476,114 @@ def oak_escort(event_id, lab):
         move_actor(-1, 1, 1, *([2] * right), *([1] * 12), *([3] * 5), 19),
         command(210, indent=1),
         command(355, b'BlueKantoPilot.show_approaching_oak(false)', indent=1),
+        command(355, f"BlueKantoPilot.prepare_lab_escort({lab}, {scene_id})".encode(), indent=1),
         command(201, 0, lab, 6, 12, 8, 0, indent=1),
     ])
 
+
+
+def lab_starter_balls(events):
+    """Use only the three visible starter-ball objects from the pinned source."""
+    matches = []
+    for event_id, event in events.items():
+        name = text(event.attrs["@name"])
+        graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs
+        visible = bool(graphic["@character_name"]) or graphic["@tile_id"] > 0
+        if visible and re.search(r"pok[eé]\\s*ball|pok[eé]bola|starter|bulbasaur|charmander|squirtle", name, re.I):
+            matches.append((event_id, event))
+    if len(matches) != 3:
+        raise ValueError(
+            "Map006: the three visible source Poké Balls were not identified. "
+            "Audit original event names/graphics before importing.")
+    matches.sort(key=lambda row: (row[1].attrs["@x"], row[1].attrs["@y"]))
+    return [event_id for event_id, _ in matches]
+
+
+def walk_from_to(x, y, target_x, target_y):
+    """Safe, temporarily-through-enabled authored movement for cutscenes."""
+    return ([4] * max(y - target_y, 0) +
+            [1] * max(target_y - y, 0) +
+            [2] * max(x - target_x, 0) +
+            [3] * max(target_x - x, 0) +
+            [16])
+
+
+def gary_challenge(gary, at_x, at_y):
+    x, y = gary.attrs["@x"], gary.attrs["@y"]
+    target_x = at_x + (1 if at_x <= x else -1)
+    approach = walk_from_to(x, y, target_x, at_y)
+    retreat = walk_from_to(target_x, at_y, x, y)
+    return if_scene(b"BlueKantoPilot.rival_pending?", [
+        move_actor(-1, 19),
+        move_actor(14, *approach),
+        command(210, indent=1),
+        command(355, b"BlueKantoPilot.rival", indent=1),
+        move_actor(14, *retreat),
+        command(210, indent=1),
+    ])
+
+
+def lab_arrival_scene(events, event_id):
+    """One-shot autorun armed ONLY by Oak's exterior Pallet escort."""
+    oak, gary = events[15], events[14]
+    entry_x, entry_y = 6, 12
+    oak_x, oak_y = oak.attrs["@x"], oak.attrs["@y"]
+    gary_x, gary_y = gary.attrs["@x"], gary.attrs["@y"]
+    side_x = gary_x + (-1 if gary_x >= entry_x else 1)
+    if not (0 <= side_x and 0 <= gary_y < 1000):
+        raise ValueError("Invalid Gary lab escort target")
+    blank = new_event(oak, [], 0, b"")
+    blank.attrs.update({"@id": event_id, "@name": b"Blue Oak Laboratory Escort",
+                        "@x": entry_x, "@y": entry_y})
+    base = blank.attrs["@pages"][0].attrs
+    base["@through"] = True
+    base["@list"] = [command(0)]
+    active = copy.deepcopy(blank.attrs["@pages"][0])
+    page = active.attrs
+    page["@condition"].attrs.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+    page["@trigger"] = 3
+    page["@through"] = True
+    page["@list"] = [
+        command(355, b"BlueKantoPilot.lab_escort_started"),
+        command(203, 15, 0, entry_x, entry_y - 1, 8),
+        move_actor(15, *walk_from_to(entry_x, entry_y - 1, oak_x, oak_y)),
+        move_actor(-1, *walk_from_to(entry_x, entry_y, side_x, gary_y)),
+        command(210),
+        command(355, b"BlueKantoPilot.oak_lab_briefing"),
+        command(123, b"A", 1),
+        command(0),
+    ]
+    blank.attrs["@pages"].append(active)
+    return blank
+
+
+def starter_ball(event, species):
+    graphic = event.attrs["@pages"][0].attrs["@graphic"]
+    result = new_event(event, [
+        command(355, f"BlueKantoPilot.pick_starter(:{species}, {event.attrs['@id']})".encode()),
+    ], 0, graphic.attrs["@character_name"])
+    result.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(graphic)
+    result.attrs["@pages"][0].attrs["@direction_fix"] = True
+    taken = copy.deepcopy(result.attrs["@pages"][0])
+    condition = taken.attrs["@condition"].attrs
+    condition.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+    taken.attrs["@through"] = True
+    taken.attrs["@graphic"].attrs.update({"@character_name": b"", "@tile_id": 0})
+    taken.attrs["@list"] = [command(0)]
+    result.attrs["@pages"].append(taken)
+    return result
+
+
+def rival_counter_trigger(events, event_id):
+    exit_event, gary = events[1], events[14]
+    y = min(exit_event.attrs["@y"] - 2, gary.attrs["@y"] + 4)
+    if not (gary.attrs["@y"] < y < exit_event.attrs["@y"]):
+        raise ValueError("Map006: no corridor past the counter before the exit")
+    x = exit_event.attrs["@x"]
+    marker = new_event(exit_event, gary_challenge(gary, x, y), 1, b"")
+    marker.attrs.update({"@id": event_id, "@name": b"Blue Gary Counter Battle",
+                         "@x": x, "@y": y})
+    return marker
 
 def find_shopkeeper(events):
     for event_id, event in events.items():
@@ -505,6 +610,13 @@ def install_events(source, target, mapping):
         shutil.copyfile(src, dest_graphics / (new_name + ".png"))
         return new_name.encode("utf8")
 
+    lab_source_events = load(source / "Data/Map006.rxdata").attrs["@events"]
+    for required in (1, 14, 15):
+        if required not in lab_source_events:
+            raise ValueError(f"Oak lab missing audited event {required}")
+    starter_balls = lab_starter_balls(lab_source_events)
+    lab_scene_id = max(lab_source_events) + 1
+    rival_counter_id = lab_scene_id + 1
     preview_only = set(json_file(KANTO).get("preview_only", []))
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
@@ -541,7 +653,7 @@ def install_events(source, target, mapping):
                          13: {16: "BlueKantoPilot.viridian_gym_guide"},
                           7: {13: "BlueKantoPilot.mom"},
                           8: {8: "BlueKantoPilot.daisy"},
-                          6: {15: "BlueKantoPilot.choose_starter", 14: "BlueKantoPilot.rival"},
+                          6: {15: "BlueKantoPilot.talk_to_oak", 14: "BlueKantoPilot.gary_talk"},
                          11: {2: "BlueKantoPilot.heal"},
                          115: {2: "BlueKantoPilot.heal"},
                          145: {2: "BlueKantoPilot.heal"},
@@ -615,6 +727,11 @@ def install_events(source, target, mapping):
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            if original == 6 and event_id in starter_balls:
+                # Left to right: Bulbasaur, Charmander, Squirtle (FRLG).
+                species = ("BULBASAUR", "CHARMANDER", "SQUIRTLE")[starter_balls.index(event_id)]
+                selected[event_id] = starter_ball(event, species)
+                continue
             if not saffron_event_allowed(original, event_id, event):
                 continue
             if not cinnabar_event_allowed(original, event_id):
@@ -886,7 +1003,7 @@ def install_events(source, target, mapping):
                     selected[event_id] = scripted
                 continue
             if original == 5 and event_id in (11, 13):
-                selected[event_id] = new_event(event, oak_escort(event_id, mapping[6]), 1, b"")
+                selected[event_id] = new_event(event, oak_escort(event_id, mapping[6], lab_scene_id), 1, b"")
                 continue
             if original == 5 and event_id == 12:
                 oak = new_event(event, [], 0, actor(event))
@@ -899,14 +1016,7 @@ def install_events(source, target, mapping):
                 warp = extract_warps(event, mapping)
                 if warp is None:
                     raise ValueError("Missing Oak laboratory exit")
-                challenge = if_scene(b"BlueKantoPilot.rival_pending?", [
-                    move_actor(-1, 19),
-                    move_actor(14, 3, *([1] * 8), 16),
-                    command(210, indent=1),
-                    command(355, b"BlueKantoPilot.rival", indent=1),
-                    move_actor(14, *([4] * 8), 2, 16),
-                    command(210, indent=1),
-                ])
+                challenge = gary_challenge(events[14], event.attrs["@x"], event.attrs["@y"] - 1)
                 selected[event_id] = new_event(event, [*challenge, warp], 1, b"")
                 continue
             if original == 7 and event_id == 4:
@@ -939,6 +1049,9 @@ def install_events(source, target, mapping):
                     original == 199 and event_id in (1, 2, 3, 5))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
                 selected[event_id] = new_event(event, [warp], trigger, character)
+        if original == 6:
+            selected[lab_scene_id] = lab_arrival_scene(events, lab_scene_id)
+            selected[rival_counter_id] = rival_counter_trigger(events, rival_counter_id)
         if original == 7:
             profile = new_event(events[4], [
                 command(355, b"BlueKantoPilot.choose_profile"),
