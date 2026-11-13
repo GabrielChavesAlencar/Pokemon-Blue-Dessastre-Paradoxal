@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b6e14e480db8aeaca0911b92795d1dd2a8f9a67c",
+      "date": "2026-11-13T20:11:15-03:00",
+      "title": "docs: split Sinnoh work into direct GitHub tasks and Codex local blockers",
+      "category": "Documentação"
+    },
+    {
       "sha": "7eee5e7a00e522ba08c78f7883c656d89586fdc5",
       "date": "2026-11-13T20:09:30-03:00",
       "title": "data: record Sinnoh source provenance and blocked installation gates",
