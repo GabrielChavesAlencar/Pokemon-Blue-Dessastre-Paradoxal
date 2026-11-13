@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "52a78ab374f24ddefefd946c640f818572111895",
+      "date": "2026-11-13T16:45:10-03:00",
+      "title": "docs(android): retestar Kanto com boot corrigido [android-kanto-release]",
+      "category": "Correções"
+    },
+    {
+      "sha": "2b9dda254f83b39a05b2a742e8dcb94d1c716262",
+      "date": "2026-11-13T16:44:54-03:00",
+      "title": "test(android): manter entrada Kanto independente de JSON e Digest",
+      "category": "Testes"
+    },
+    {
       "sha": "8fb72fdff0320923fbde095212ff70bffb6ef0a7",
       "date": "2026-11-13T16:43:25-03:00",
       "title": "Merge Johto offline 12/12: integrity audit, native sprites and safe private preview (#45)",
