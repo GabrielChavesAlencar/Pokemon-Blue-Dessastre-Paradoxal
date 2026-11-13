@@ -6,11 +6,11 @@
 
 | Indicador | Progresso | Interpretação |
 |---|---:|---|
-| **Desenvolvimento OFFLINE** | **3/12 (25%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
+| **Desenvolvimento OFFLINE** | **4/12 (33,3%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
 | **Fases JOGÁVEIS** | **0/13 (0%)** | Depende de jogo real e caminho completo funcional |
 | **Fases TESTADAS NO EXE** | **0/13 (0%)** | Depende de QA de gameplay real aprovado |
 
-**Progress bar OFFLINE:** `[###---------] 3/12 = 25%`
+**Progress bar OFFLINE:** `[####--------] 4/12 = 33,3%`
 
 ## Checklist das 12 etapas
 
@@ -19,7 +19,7 @@
 | 01 | **CONCLUÍDO** | Auditoria da base Blue/Decades e da fonte Johto | ZIP privado validado por hash; 207 mapas nativos, 95 PBS e 74 mapas da fonte inventariados; sprites essenciais identificados |
 | 02 | **CONCLUÍDO** | Prévia isolada de mapas e tilesets | 74 mapas Johto em IDs 600–673, três interiores geométricos provisórios em 674–676, 42 conexões PBS remapeadas; integridade dos dados originais comparada |
 | 03 | **CONCLUÍDO** | Descoberta offline das conexões faltantes | Candidatas Route29 ↔ Cherrygrove e Route31 ↔ Violet derivadas de bordas e passagem estática; sem gravar na campanha; verificadores/testes versionados |
-| 04 | PENDENTE | Construir quarto definitivo do jogador (New Bark 2F) | RXDATA próprio de quarto 2F em prévia privada, visualização, tileset adequado, cama, escada, piso e proposta de spawn; verificação estática |
+| 04 | **CONCLUÍDO** | Construir quarto definitivo do jogador (New Bark 2F) | RXDATA próprio de quarto 2F em prévia privada, visualização, tileset adequado, cama, escada, piso e proposta de spawn; verificação estática |
 | 05 | PENDENTE | Construir casa definitiva do jogador (New Bark 1F) | RXDATA próprio de casa 1F, escada 2F, porta exterior, espaço da mãe, propostas de chegada e prévia de passabilidade |
 | 06 | PENDENTE | Construir laboratório definitivo de Elm | RXDATA de laboratório próprio, mesa com três Poké Bolas físicas, lugar de Elm, porta, caminhos internos e verificação estática |
 | 07 | PENDENTE | Ligar portas, escadas e spawn entre mapas | 12 pontos/eventos com MapIDs e coordenadas derivados dos layouts, transições reversíveis e checagens de limites/ocupação; aprovação de colisão real permanece separada |
@@ -31,7 +31,7 @@
 
 ## Ordem e evidência
 
-A **próxima etapa é 04/12 — quarto 2F do jogador**. Depois seguem casa 1F (05), laboratório (06), portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
+A **etapa 04/12 — quarto 2F do jogador foi concluída em preview privado**. A próxima é **05/12 — casa 1F**. Depois seguem casa 1F (05), laboratório (06), portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
 
 - 01: `docs/JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md`, `docs/JOHTO_FASE_04_ENTRADAS_REAIS_V1.md`
 - 02: `docs/JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md`
@@ -54,3 +54,7 @@ A **próxima etapa é 04/12 — quarto 2F do jogador**. Depois seguem casa 1F (0
 - O PR #36 ainda não foi integrado à `main`; conferir estado da CI antes do merge. Falha/timeout de Kanto não deve ser contornada para aumentar progresso.
 
 **Fonte dos números:** `data/regions/johto-progress.json` → `offline_development` e `progress.offline_development_milestones`. Atualizar sempre o estado das etapas e o contador juntos.
+
+### Etapa 04/12 concluída (13/11/2026)
+
+O script `scripts/regions/build_johto_bedroom_v1.py` constrói quarto próprio de 14×11 tiles em prévia isolada Map674, com cinco peças principais, spawn (6,7) e aproximação da escada (9,8) **apenas propostos**. O RXDATA privado real foi reaberto em Ruby Marshal e não alterou os outros 76 mapas; 5 testes offline passaram. [Detalhes](JOHTO_OFFLINE_FASE_04_QUARTO_2F.md). **Offline 4/12 (33,3%) · Jogáveis 0/13 · Testadas no EXE 0/13.**
