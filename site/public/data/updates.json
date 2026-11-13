@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5eda49e806d0c002f555073a6ccc8bfb6907d188",
+      "date": "2026-11-13T19:14:20-03:00",
+      "title": "release(android): rebuild Kanto pilot with wild battle music fix [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
       "sha": "eee4a4852676f0c07b33e2efff393db860a214c8",
       "date": "2026-11-13T19:13:05-03:00",
       "title": "docs(android): diagnose wild encounter BlueMusic party2 crash and fix across Kanto/Decades",
