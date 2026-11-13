@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1e8e5effe7b355b3fb86ad83ae0934337df8b792",
+      "date": "2026-11-13T16:51:57-03:00",
+      "title": "ci(android): retestar Kanto com mkxp.json comentado [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "465ba8764c166a225a62574cabad01c677630c24",
+      "date": "2026-11-13T16:51:43-03:00",
+      "title": "test(android): mkxp.json comentado e save próprio de Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "1ddf84de31cfb50f75e057145d1d909f9380ad87",
       "date": "2026-11-13T16:51:37-03:00",
       "title": "docs(johto): corrigir blocos de código Markdown no roteiro pós-offline",
