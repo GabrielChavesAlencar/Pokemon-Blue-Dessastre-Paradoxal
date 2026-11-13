@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2a26619a1d7bcd22a8797544c474a87fce178828",
+      "date": "2026-11-13T17:54:10-03:00",
+      "title": "test(android): require early Input shim in Kanto mobile archive fixtures",
+      "category": "Testes"
+    },
+    {
       "sha": "b80cb2e7a7c75105d65166d2879c19366d05c871",
       "date": "2026-11-13T17:53:58-03:00",
       "title": "test(android): reproduce JoiPlay Input line 28 crash before Mobile plugin loads",
