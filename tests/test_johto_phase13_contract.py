@@ -102,7 +102,9 @@ class JohtoPhase13ContractTests(unittest.TestCase):
         self.assertFalse(completion["travel_adapter_supports_johto_currently"])
         self.assertTrue('when "KANTO"' in self.travel_runtime)
         self.assertTrue('when "DECADES"' in self.travel_runtime)
-        self.assertIn('source_valid?(state) && %w[DECADES KANTO]', self.travel_runtime)
+        self.assertIn('source_valid?(state) && %w[DECADES KANTO JOHTO]', self.travel_runtime)
+        self.assertIn('johto_installed?', self.travel_runtime)
+        self.assertIn('state["leagues"].include?("JOHTO")', self.travel_runtime)
         self.assertIn('BlueRegions.unlocked(state) & ["KANTO", "HOENN"]',
                       self.script)
 
