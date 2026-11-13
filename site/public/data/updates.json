@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3b8e73604bcea1b68b8a81080b55e4ada7ee7cdc",
+      "date": "2026-11-13T06:51:55-03:00",
+      "title": "feat(johto): fase 13 Tohjo Falls Elite Four Lance e Hall of Fame regional protegido",
+      "category": "Novidades"
+    },
+    {
       "sha": "3ebb3b5ec340da88210381b6a73677fa4ec36f3c",
       "date": "2026-11-13T06:43:53-03:00",
       "title": "Adiciona o início em Kanto ao Modo História e restaura cenas de Pallet",
