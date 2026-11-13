@@ -2,9 +2,57 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8fb72fdff0320923fbde095212ff70bffb6ef0a7",
+      "date": "2026-11-13T16:43:25-03:00",
+      "title": "Merge Johto offline 12/12: integrity audit, native sprites and safe private preview (#45)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "33c2197348e16ef4228b7b36ca428546354e2196",
       "date": "2026-11-13T16:42:09-03:00",
       "title": "fix(runtime): carregar json/digest somente ao validar Johto; Kanto inicia sem stdlib",
+      "category": "Correções"
+    },
+    {
+      "sha": "e377d5e453e9564cfc0ffc042fb619c429c0f1fa",
+      "date": "2026-11-13T16:41:18-03:00",
+      "title": "fix(johto): usar codec UTF-8-SIG válido no parser PBS da etapa 12",
+      "category": "Correções"
+    },
+    {
+      "sha": "cac55d113ab03310176497cf1f24c2ec6a5a3a20",
+      "date": "2026-11-13T16:39:21-03:00",
+      "title": "docs(johto): separar fim 12/12 offline de build e QA reais do jogo",
+      "category": "Documentação"
+    },
+    {
+      "sha": "b43834c8868108122b464386845865aa325eb806",
+      "date": "2026-11-13T16:39:19-03:00",
+      "title": "docs(johto): barra offline 12/12 concluída com 0/13 gameplay e install bloqueado",
+      "category": "Documentação"
+    },
+    {
+      "sha": "3d2008a07dea83255ee3bdf21bd0033cbc44c71a",
+      "date": "2026-11-13T16:39:16-03:00",
+      "title": "data(johto): fechar 12/12 offline, manter sem jogabilidade nem instalação até testes nativos",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "31341426ca262d7927dfad2db95b54b04dd8a81f",
+      "date": "2026-11-13T16:38:17-03:00",
+      "title": "docs(johto): fase offline 12/12, corrigir sprites, auditar 82 mapas/44 conexões e detalhar bloqueios do instalador",
+      "category": "Correções"
+    },
+    {
+      "sha": "c52eb1b5a4b778d0ad38f2d70e351d95ffa61dd7",
+      "date": "2026-11-13T16:37:10-03:00",
+      "title": "data(johto): contrato 12/12 — 82 mapas, 32 eventos, 21 PBS, imagens nativas e bloqueios de instalacao",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0c06065f5d53e9ee2819061554e1b3183c4abc8a",
+      "date": "2026-11-13T16:36:28-03:00",
+      "title": "fix(johto): empacotar todos tilesets/autotiles realmente usados, incluindo Inside e três recursos nativos",
       "category": "Correções"
     },
     {
@@ -38,6 +86,12 @@
       "category": "Melhorias"
     },
     {
+      "sha": "e6cfb3b9f9c38d91b64b15226b5c16966a56d5bd",
+      "date": "2026-11-13T16:31:39-03:00",
+      "title": "test(johto): 13 verificações de pacote 82 mapas, 21 times PBS, conexões e bloqueio de instalação",
+      "category": "Testes"
+    },
+    {
       "sha": "4a81bfdf033d0c8382ac46eeb2bafa9739bfc99f",
       "date": "2026-11-13T16:30:41-03:00",
       "title": "test(site): reconhecer release separada do piloto Android Kanto",
@@ -47,6 +101,12 @@
       "sha": "1114263119356e677147e5ecb0362adf1c2dc215",
       "date": "2026-11-13T16:30:24-03:00",
       "title": "feat(site): procurar piloto Android Kanto em release experimental separada",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0ea8d99c32410c27abeefba8fa09c1a004df555e",
+      "date": "2026-11-13T16:29:46-03:00",
+      "title": "feat(johto): auditoria integral 82 MapNNN, 32 eventos, 6 PBS e 44 conexões; ZIP privado não instalável",
       "category": "Novidades"
     },
     {
@@ -60,6 +120,18 @@
       "date": "2026-11-13T16:29:20-03:00",
       "title": "feat(android): empacotador isolado e verificável do piloto Kanto",
       "category": "Novidades"
+    },
+    {
+      "sha": "6a295b6b7d0d6653d453b5f2943fea2052a2b217",
+      "date": "2026-11-13T16:25:56-03:00",
+      "title": "fix(johto): validar nomes exatos dos sprites nativos de Violet, incluindo Nurse DPP",
+      "category": "Correções"
+    },
+    {
+      "sha": "566665720c9b4ed92c5354a85c597df63c9da059",
+      "date": "2026-11-13T16:25:35-03:00",
+      "title": "fix(johto): referenciar sprites nativos existentes de Elder Li e enfermeira em Violet",
+      "category": "Correções"
     },
     {
       "sha": "7bc27489b5c957e6aca4f87ac0f7a85a804c2fc4",
