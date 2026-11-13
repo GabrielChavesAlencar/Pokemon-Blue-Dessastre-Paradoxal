@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "de4969c9d0eed8cbe581c4935a6681d3d693100b",
+      "date": "2026-11-13T06:54:12-03:00",
+      "title": "test(johto): integra verificacao isolada da Liga Johto na CI Blue Studio",
+      "category": "Testes"
+    },
+    {
+      "sha": "f63e6994b4f32cc702455807b1207f4a12bc9dc8",
+      "date": "2026-11-13T06:53:56-03:00",
+      "title": "test(johto): cobre Liga Will Koga Bruno Karen Lance Hall of Fame e desbloqueios seguros",
+      "category": "Testes"
+    },
+    {
       "sha": "05f3eb4814051cd16d2aa66710ed5046e1b6bcaa",
       "date": "2026-11-13T06:52:17-03:00",
       "title": "fix(johto): permite repetir Hall of Fame falho sem liberar Liga ou repetir batalhas",
