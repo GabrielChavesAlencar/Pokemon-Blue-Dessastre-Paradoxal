@@ -90,6 +90,10 @@ def build(game,output,revision):
             'Instale os aplicativos de https://www.joiplay.net/ e extraia este ZIP por completo.\n'
             'Adicione Game.exe ao JoiPlay. Escolha Historia ou Hub offline na abertura.\n'
             'Use Times prontos para importar as equipes sem Python. Multiplayer e download de links requerem Windows.\n'
+            'Atualizacoes: feche o JoiPlay e execute ATUALIZAR-ANDROID.py no Termux com Python.\n'
+            'Verifique primeiro com: python ATUALIZAR-ANDROID.py\n'
+            'Para baixar e instalar: python ATUALIZAR-ANDROID.py --update\n'
+            'Guia: docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md no GitHub.\n'
             'Ainda requer validacao em aparelhos Android reais.\nRevision: '+revision+'\n')
         # Inventory is checked by the release publisher and the Android updater.
         extras={
