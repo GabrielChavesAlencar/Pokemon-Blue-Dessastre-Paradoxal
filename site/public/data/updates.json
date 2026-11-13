@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1f9235eb0502cdf5014b098ea9f96b4202a0348e",
+      "date": "2026-11-13T20:51:23-03:00",
+      "title": "docs(sinnoh): document phase-01 explicit collision-safe remap preview, limits and Codex steps",
+      "category": "Documentação"
+    },
+    {
       "sha": "e397958962768ff35ae868469ec13c6521a92afe",
       "date": "2026-11-13T20:50:13-03:00",
       "title": "data(sinnoh): add deliberately unfilled audited remap request template",
