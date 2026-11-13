@@ -193,7 +193,8 @@ def build(game: Path, output: Path, revision: str) -> dict:
                              installed_manifest("kanto", revision, {
                                  **files, "Data/blue-kanto-android-build.txt": build_info.encode("utf8"),
                                  "ATUALIZAR-ANDROID.py":
-                                     (ROOT / "scripts/android/update_client.py").read_bytes()
+                                     (ROOT / "scripts/android/update_client.py").read_bytes(),
+                                 "LEIA-ME-ANDROID-KANTO.txt": text.encode("utf8")
                              }))
             archive.writestr(FOLDER + "ATUALIZAR-ANDROID.py",
                              (ROOT / "scripts/android/update_client.py").read_bytes())
