@@ -159,6 +159,12 @@ class JohtoStoryEventsOfflineTests(unittest.TestCase):
         obj.attrs["@data"].data=struct.pack("<5I",3,*shape,len(change))+struct.pack(
             f"<{len(change)}H",*change)
         (self.preview/"Data/Map676.rxdata").write_bytes(serialize(obj,EVENT_CLASSES))
+        # Refresh the declared baseline SHA to specifically exercise static-ball
+        # validation rather than the earlier, independent integrity gate.
+        p=self.preview/"johto-warp-preview.json"
+        proof=json.loads(p.read_text("utf-8"))
+        proof["warped_map_sha256"]["676"]=checksum(self.preview/"Data/Map676.rxdata")
+        p.write_text(json.dumps(proof),encoding="utf-8")
         with self.assertRaisesRegex(ValueError,"estática"):
             compile_story(STORY_SPEC,self.preview,self.sprites)
 
