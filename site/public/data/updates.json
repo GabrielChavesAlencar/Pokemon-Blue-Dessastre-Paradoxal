@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aaaacce6b6961de9c709cac4a8cbba971b1b703c",
+      "date": "2026-11-13T17:59:34-03:00",
+      "title": "docs(android): explain real JoiPlay Input error, Kanto marker root cause and safe update",
+      "category": "Documentação"
+    },
+    {
       "sha": "504184ba25bef29679156b5b2c5383d88ee6c83c",
       "date": "2026-11-13T17:57:47-03:00",
       "title": "test(android): reject Kanto ZIP without enabling Mobile.rb marker",
