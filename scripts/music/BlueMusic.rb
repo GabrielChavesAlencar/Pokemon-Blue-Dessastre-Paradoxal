@@ -514,7 +514,9 @@ module BlueMusic
       context=BlueMusic.instance_variable_get(:@battle_context)
       if context
         if battle.wildBattle?
-          regional=BlueMusic.kanto_wild_kind(battle.party2)
+          # Essentials v21.1 exposes the opposing side via pbParty(1), not party2.
+          # This runs before the first wild encounter transitions to battle.
+          regional=BlueMusic.kanto_wild_kind(battle.pbParty(1))
           context[:category]=regional || 'wild'
           context[:kanto_eligible]=!!regional
         else
