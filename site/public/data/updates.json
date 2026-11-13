@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "41a80d003730f5d018ad6ad9b50aef5a033e56b4",
+      "date": "2026-11-13T16:58:37-03:00",
+      "title": "test(android): garantir teste real de caminhos de save duplicados",
+      "category": "Testes"
+    },
+    {
       "sha": "d4899b46b231c1ace8c37001f7c083272e90c53c",
       "date": "2026-11-13T16:56:22-03:00",
       "title": "ci(android): build Kanto com perfil real de saves [android-kanto-release]",
