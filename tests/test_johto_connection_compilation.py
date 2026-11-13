@@ -66,7 +66,8 @@ class JohtoConnectionCompilationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "SHA-256 mismatch"):
             compile_connections(graph, source, corrupted)
         corrupted = copy.deepcopy(stage)
-        corrupted["maps"].pop()
+        corrupted["maps"] = [row for row in corrupted["maps"]
+                              if row["source_id"] != 104]
         with self.assertRaisesRegex(ValueError, "absent/non-Johto"):
             compile_connections(graph, source, corrupted)
         corrupted = copy.deepcopy(stage)
