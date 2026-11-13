@@ -1,0 +1,291 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "updated_at": "2026-11-13",
+  "meaning": "Acompanhamento de entregáveis de código/documentação. Não é porcentagem de Sinnoh jogável.",
+  "statuses": {
+    "done": "Entregável em código/documento publicado, sujeito a CI; não prova execução Game.exe",
+    "partial": "Há preparação, mas faltam verificações, integração ou alcance anunciado",
+    "pending": "Sem entrega correspondente"
+  },
+  "development": {
+    "total": 32,
+    "done": 8,
+    "partial": 4,
+    "pending": 20,
+    "percent_complete": 25,
+    "percent_with_partial_not_counted": 25,
+    "groups": [
+      {
+        "key": "foundation",
+        "label": "Infraestrutura e segurança",
+        "tasks": [
+          "S01",
+          "S02",
+          "S03",
+          "S04",
+          "S05",
+          "S06",
+          "S07",
+          "S08"
+        ]
+      },
+      {
+        "key": "pilot",
+        "label": "Menu e piloto",
+        "tasks": [
+          "S09",
+          "S10",
+          "S11",
+          "S12"
+        ]
+      },
+      {
+        "key": "gameplay",
+        "label": "Eventos e jogabilidade",
+        "tasks": [
+          "S13",
+          "S14",
+          "S15",
+          "S16",
+          "S17",
+          "S18",
+          "S19",
+          "S20",
+          "S21",
+          "S22",
+          "S23"
+        ]
+      },
+      {
+        "key": "portal",
+        "label": "Músicas e site",
+        "tasks": [
+          "S24",
+          "S25",
+          "S26",
+          "S27",
+          "S28",
+          "S29"
+        ]
+      },
+      {
+        "key": "quality",
+        "label": "Testes e documentação",
+        "tasks": [
+          "S30",
+          "S31",
+          "S32"
+        ]
+      }
+    ]
+  },
+  "phase_gates": {
+    "total": 13,
+    "technically_approved": 0,
+    "playable_in_game_executable": 0,
+    "fully_tested_native": 0,
+    "interpretation": "As 13 fases requerem fonte real e, quando pertinente, validação Game.exe/JoiPlay; 0/13 permanece apesar da preparação."
+  },
+  "primary_blockers": [
+    "Pacote real editável e direitos dos mapas de Sinnoh",
+    "Instalação local game/Data com IDs e saves em segurança",
+    "Piloto separado em mapa real de Twinleaf",
+    "Testes nativos no Windows e Android"
+  ],
+  "next": "S07 - importador transacional em cópia isolada; nunca alterar game/ nem saves",
+  "tasks": [
+    {
+      "id": "S01",
+      "title": "Auditor básico de fonte Sinnoh",
+      "status": "done",
+      "evidence_path": "scripts/regions/audit_sinnoh_source.py"
+    },
+    {
+      "id": "S02",
+      "title": "Auditoria interna RXDATA",
+      "status": "done",
+      "evidence_path": "scripts/regions/audit_sinnoh_rxdata.py"
+    },
+    {
+      "id": "S03",
+      "title": "Análise de capacidade de MapIDs",
+      "status": "done",
+      "evidence_path": "scripts/regions/plan_sinnoh_capacity.py"
+    },
+    {
+      "id": "S04",
+      "title": "Manifesto de fonte, licença e bloqueios",
+      "status": "done",
+      "evidence_path": "data/regions/sinnoh-source.json"
+    },
+    {
+      "id": "S05",
+      "title": "Inventário simbólico de áreas e eventos",
+      "status": "done",
+      "evidence_path": "data/regions/sinnoh-coverage.json"
+    },
+    {
+      "id": "S06",
+      "title": "Grafo dirigido de conexões e referências quebradas",
+      "status": "done",
+      "evidence_path": "scripts/regions/graph_sinnoh_maps.py"
+    },
+    {
+      "id": "S07",
+      "title": "Importador transacional dry-run e rollback",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S08",
+      "title": "Validador de integridade de todos os recursos",
+      "status": "partial",
+      "evidence_path": "scripts/regions/audit_sinnoh_rxdata.py"
+    },
+    {
+      "id": "S09",
+      "title": "Testar Sinnoh no menu principal",
+      "status": "done",
+      "evidence_path": "scripts/battle_polish/TitleKanto.rb"
+    },
+    {
+      "id": "S10",
+      "title": "Lançador próprio SINNOH_JOGAR_EXPERIMENTAL.bat",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S11",
+      "title": "Piloto Sinnoh com saves isolados",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S12",
+      "title": "Instalador isolado do piloto",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S13",
+      "title": "Introdução, Rowan e Barry",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S14",
+      "title": "Três iniciais de Sinnoh",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S15",
+      "title": "Oito ginásios e insígnias",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S16",
+      "title": "HMs com insígnias locais",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S17",
+      "title": "Treinadores com balanceamento dinâmico",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S18",
+      "title": "Encontros e evoluções por level cap",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S19",
+      "title": "Eventos da Team Galactic",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S20",
+      "title": "Cyrus, Spear Pillar e Giratina",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S21",
+      "title": "Elite Four e Cynthia",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S22",
+      "title": "Viagem e desbloqueio Hoenn/Unova",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S23",
+      "title": "Pós-jogo e revanches",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S24",
+      "title": "Catálogo de músicas por cenário",
+      "status": "partial",
+      "evidence_path": "docs/SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md"
+    },
+    {
+      "id": "S25",
+      "title": "Integração com BlueMusic",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S26",
+      "title": "Testes de fallback, prioridade, fade e loop",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S27",
+      "title": "Guias de Sinnoh no site",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S28",
+      "title": "Catálogo de times de treinadores e Liga",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S29",
+      "title": "Exibição sem níveis fixos no site",
+      "status": "pending",
+      "evidence_path": null
+    },
+    {
+      "id": "S30",
+      "title": "Suíte automatizada de testes",
+      "status": "partial",
+      "evidence_path": "tests/test_sinnoh_graph.py"
+    },
+    {
+      "id": "S31",
+      "title": "Aceitação Windows e Android",
+      "status": "partial",
+      "evidence_path": "docs/SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md"
+    },
+    {
+      "id": "S32",
+      "title": "Documentos e fila de pendências do Codex",
+      "status": "done",
+      "evidence_path": "docs/SINNOH_CODEX_PENDENCIAS.md"
+    }
+  ]
+}
