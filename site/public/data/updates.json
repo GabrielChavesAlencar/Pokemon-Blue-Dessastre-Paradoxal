@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3db574fec7bc45f854c9d61b9eb5e1b00feb6ef6",
+      "date": "2026-11-13T17:12:55-03:00",
+      "title": "feat(android): add standalone safe JoiPlay incremental update client",
+      "category": "Novidades"
+    },
+    {
       "sha": "41a80d003730f5d018ad6ad9b50aef5a033e56b4",
       "date": "2026-11-13T16:58:37-03:00",
       "title": "test(android): garantir teste real de caminhos de save duplicados",
