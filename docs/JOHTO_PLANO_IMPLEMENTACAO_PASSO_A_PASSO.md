@@ -280,6 +280,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 14/16 — Lendários, pós-jogo e opcionais de Johto
 
+**Implementação parcial publicada:** [JOHTO_FASE_14_LENDARIOS_POS_JOGO.md](JOHTO_FASE_14_LENDARIOS_POS_JOGO.md). `scripts/regions/JohtoLegendaries.rb` separa HeartGold, SoulSilver e Crystal, incluindo escolha única da versão, roamers Raikou/Entei com resultado auditado, cinco Kimono Girls, Wings/Bells sem duplicação, Bell Tower/Ho-Oh e Whirl Islands/Lugia com quatro entradas e retorno seguro, reinício de lendário derrotado só após rematch confirmado e quatro checkpoints de Ruins of Alph/Unown. Suicune HGSS (Route 25 de Kanto) e Crystal (Eusine/Tin Tower), Pokéathlon, Bug Contest, Red e Mt. Silver **não foram liberados** por falta de mapas, scripts e provas. O contrato `data/regions/johto-phase14.json` documenta a topologia simbólica, marcadores não instalados e a divergência canônica HGSS que precisa de mascote antes da Liga; a Etapa 13 não foi alterada sem auditá-la. Testes Ruby/Python verificam variantes, fugas/derrotas, capturas, itens, save/reload e isolamento Decades/Kanto. **Sem Map Pack, sem PBS, sem callbacks nativos, sem jogo real: fase 14 permanece PARCIAL.**
+
+
 **Implementar:** Bell Tower/Tin Tower, Whirl Islands/Lugia, Ho-Oh, Entei/Raikou/Suicune, Ruins of Alph, áreas alternativas HG/SS/Crystal, Pokéathlon ou Bug-Catching Contest quando viável. Mt. Silver é **mapa ausente no Map Pack**: só criar com fonte autorizada ou desenho próprio e registrar origem. Não sobrepor evento canônico do Crystal ao HGSS sem especificar versão/timing. Red e pós-Liga são capítulos próprios, não pré-requisitos inventados para a Liga Johto.
 
 **Teste/aceite:** cada lendário/evento só dispara onde previsto, sem duplicatas após save/reload; conteúdo pendente permanece fora de seleção jogável, e restrições da party não são burladas.
