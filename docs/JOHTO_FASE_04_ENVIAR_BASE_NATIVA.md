@@ -26,3 +26,15 @@ O exportador copia somente `Data/MapInfos.rxdata`, `Data/Tilesets.rxdata`, `Data
 - Só alterar **Jogáveis para 1/13** com prova de fluxo real no `Game.exe`; **Testadas para 1/13** requer QA nativo completo. Testes automatizados de código, ZIP produzido ou geometria em preview não contam como gameplay.
 
 **Nota:** o ZIP gerado é apenas insumo de auditoria; não carrega o executável e não permite executar Windows/Essentials num ambiente sem o próprio jogo. Direitos dos recursos e autorização de distribuição continuam pendentes.
+
+## Portas, eventos e montagem do primeiro piloto (novo)
+
+Após preparar a geometria em `.blue-work/johto-staging` com `JOHTO_PREPARAR_PRIMEIRA_FASE.bat`, execute `JOHTO_PREPARAR_NEW_BARK.bat auditar`. O relatório recomenda **três templates de interiores**, mas não os aprova automaticamente. Revise em `.blue-work/johto-interior-templates-review.json` os três mapas-base distintos, dimensões, tilesets, IDs livres e hashes. Depois execute `JOHTO_PREPARAR_NEW_BARK.bat montar` para gerar `.blue-work/johto-staging-interiors` e o template de eventos ligado aos MapIDs reais.
+
+Agora existe o comando **`JOHTO_VERIFICAR_PRIMEIRO_PILOTO.bat`**. Ele valida os **12 eventos** (`mother`, `elm`, `starter`, `rival`, escadas e portas), **o spawn do quarto 2F**, sprites, coordenadas de chegada e conexão de borda New Bark–Rota 29 em PBS. Seu relatório `.blue-work/johto-phase04-acceptance.json` lista cada problema com o nome do evento. Mesmo com PBS correto, **as portas não são presumidas passáveis**: coordenadas/chegadas e sprites internos precisam de revisão. O modo de conexão real dispensa os 2 warps artificiais de borda, que são eliminados na cópia pelo montador existente.
+
+Quando o arquivo `.blue-work/johto-new-bark-bound.json` estiver com as posições dos eventos confirmadas e o relatório não apontar pendências, execute **`JOHTO_MONTAR_PRIMEIRO_PILOTO.bat`**. A nova rotina repete a verificação (independe de uma declaração de sucesso editada) e chama `pilot_johto.py` para criar apenas `.blue-work/johto-pilot/`. O jogo original, os saves e o menu principal permanecem intactos. **Não iniciar no original:** testar exclusivamente `.blue-work/johto-pilot/Game.exe`.
+
+**Critério para 1/13:** iniciar no quarto 2F, descer, conversar com a mãe, entrar/sair do laboratório, falar com Elm, escolher Chikorita/Cyndaquil/Totodile, testar rival/PBS quando liberado, atravessar New Bark–Rota 29, voltar, salvar e recarregar no Game.exe da cópia. Sem essa prova, as barras ficam em **Jogáveis 0/13** e **Testadas 0/13**, mesmo que o relatório retorne `READY_FOR_ISOLATED_ASSEMBLY_NOT_PLAYABLE`.
+
+Testes de regressão sem assets externos: `python -m unittest discover -s tests -p 'test_johto_first_playable_readiness.py' -v`. Testar uma rotina em dados sintéticos não certifica game nativo.
