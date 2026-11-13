@@ -53,7 +53,11 @@
     "deep_rxdata_auditor": "scripts/regions/audit_sinnoh_rxdata.py",
     "map_id_capacity_study": "scripts/regions/plan_sinnoh_capacity.py",
     "deep_rxdata_tests": "tests/test_sinnoh_rxdata_audit.py",
-    "capacity_tests": "tests/test_sinnoh_capacity.py"
+    "capacity_tests": "tests/test_sinnoh_capacity.py",
+    "explicit_map_remap_planner": "scripts/regions/plan_sinnoh_remap.py",
+    "map_remap_tests": "tests/test_sinnoh_remap.py",
+    "remap_request_template": "data/regions/sinnoh-remap-request.template.json",
+    "remap_implementation_guide": "docs/SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -73,13 +77,19 @@
     "map_manifest": {},
     "actual_source_rxdata_scanned": false,
     "source_static_transfers_audited": false,
-    "map_id_capacity_studied_with_real_game": false
+    "map_id_capacity_studied_with_real_game": false,
+    "id_remap_preview_implemented": true,
+    "id_remap_applied_to_game": false,
+    "actual_source_map_id_plan_created": false,
+    "gameplay_sinnoh_installed": false
   },
   "progress": {
     "total_phases": 13,
     "technical_approved": 0,
     "native_playable_approved": 0,
-    "phase_00_status": "PARTIAL_REPOSITORY_ONLY"
+    "phase_00_status": "PARTIAL_REPOSITORY_ONLY",
+    "remap_substeps_prepared": 6,
+    "remap_substeps_total": 9
   },
   "blockers": [
     "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
