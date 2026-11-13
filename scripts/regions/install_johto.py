@@ -131,17 +131,25 @@ def audit(root: Path = ROOT) -> dict:
 
 
 def save_report(report: dict, target: Path, root: Path = ROOT) -> None:
-    work = (root.resolve() / ".blue-work").resolve()
-    if work.is_symlink():
+    raw_work = root.resolve() / ".blue-work"
+    # Resolving first would hide a malicious link from .blue-work to game/.
+    if raw_work.is_symlink():
         raise ValueError("Workspace .blue-work symlink recusado")
+    work = raw_work.resolve()
     destination = target.absolute()
     if (not destination.resolve().is_relative_to(work) or
             destination.exists() or destination.is_symlink() or
             destination.resolve() == work):
         raise ValueError("Relatório deve ser novo e estar dentro de .blue-work")
+    parent = destination.parent
+    while parent != raw_work and parent != parent.parent:
+        if parent.is_symlink():
+            raise ValueError("Diretório simbólico no relatório recusado")
+        parent = parent.parent
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-                           encoding="utf-8")
+    # Exclusive create: protect against late-created files and replacements.
+    with destination.open("x", encoding="utf-8") as output:
+        output.write(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -157,13 +165,14 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         report = audit(args.root)
-        if args.report:
-            save_report(report, args.report, args.root)
         print(json.dumps(report, ensure_ascii=False, indent=2))
         if args.apply:
+            # Even --report must not create files when --apply is denied.
             print("[JOHTO][BLOQUEADO] Aplicação transacional indisponível; nenhum jogo modificado.",
                   file=sys.stderr)
             return 2
+        if args.report:
+            save_report(report, args.report, args.root)
         return 2 if args.strict and report["blockers"] else 0
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print("[JOHTO][BLOQUEADO] " + str(error), file=sys.stderr)
