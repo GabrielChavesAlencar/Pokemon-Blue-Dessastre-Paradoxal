@@ -173,6 +173,28 @@ class JohtoQATests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "divergem dos hashes"):
             self.plan()
 
+    def test_original_layout_requires_the_pinned_archive_hash(self):
+        original = {}
+        prefix = qa.ORIGINAL_BUNDLE_PREFIX
+        for name, blob in self.members.items():
+            if name.startswith("stage/"):
+                original[prefix + name.removeprefix("stage/")] = blob
+        note = prefix + "NAO_INSTALAR_NA_PASTA_GAME.txt"
+        original[note] = b"private preview"
+        hashes = {name.removeprefix(prefix): qa.hash_bytes(blob)
+                  for name, blob in original.items() if name != note}
+        original[prefix + "johto-offline12-audit.json"] = qa.json_bytes({
+            "stage": "OFFLINE_12_OF_12", "can_install": False, "gameplay_playable": False,
+            "included_file_hashes": hashes,
+        })
+        self.members = original
+        self.write_bundle()
+        with self.assertRaisesRegex(ValueError, "Arquivo inesperado"):
+            self.plan()
+        with patch.object(qa, "ORIGINAL_BUNDLE_SHA256", qa.checksum(self.bundle)):
+            _, _, report = self.plan()
+        self.assertEqual(report["status"], "QA_COPY_PLANNED")
+
     def test_zip_traversal_is_rejected(self):
         self.members["stage/../Game.exe"] = b"must not extract"
         self.write_bundle()

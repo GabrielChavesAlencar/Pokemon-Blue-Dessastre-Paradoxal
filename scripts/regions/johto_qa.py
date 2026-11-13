@@ -33,6 +33,8 @@ DATA = {f"Data/Map{i:03}.rxdata" for i in MAP_IDS} | {
     "Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
 }
 PBS = {f"PBS/{name}" for name in (*RIVAL_PBS, *STAGE_PBS)}
+ORIGINAL_BUNDLE_SHA256 = "74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49"
+ORIGINAL_BUNDLE_PREFIX = "Johto_Offline_Fase12/"
 CONNECTIONS = "PBS/map_connections_johto_offline12.txt"
 TRAINER_SPRITES = {
     "BLUE_JOHTO_RIVAL": "RIVAL1",
@@ -40,7 +42,7 @@ TRAINER_SPRITES = {
     "BLUE_JOHTO_ELDER": "JOHTOIAN_HGSS_ELDER",
     "BLUE_JOHTO_SAGE": "JOHTOIAN_HGSS_SAGE",
 }
-GRAPHIC = re.compile(r"Graphics/(?:Tilesets|Autotiles|Characters)/[A-Za-z0-9_ -]{1,90}\.png")
+GRAPHIC = re.compile(r"Graphics/(?:Tilesets|Autotiles|Characters)/[A-Za-z0-9_ ()-]{1,90}\.png")
 PNG = b"\x89PNG\r\n\x1a\n"
 MAP = re.compile(r"Map(\d+)\.rxdata", re.I)
 SAVE = re.compile(r"(?:File [A-H]|Auto [1-3]|Game|Save[0-9]*)\.rxdata(?:\.bak)?", re.I)
@@ -84,6 +86,9 @@ def regular(path: Path) -> Path:
 
 def archive_payload(bundle: Path, pinned: str) -> tuple[dict[str, bytes], dict, str]:
     bundle_hash = checksum(regular(bundle))
+    original = bundle_hash == ORIGINAL_BUNDLE_SHA256
+    prefix = ORIGINAL_BUNDLE_PREFIX if original else "stage/"
+    audit_path = (prefix if original else "") + "johto-offline12-audit.json"
     files = {}
     with zipfile.ZipFile(bundle) as archive:
         members = archive.infolist()
@@ -109,12 +114,17 @@ def archive_payload(bundle: Path, pinned: str) -> tuple[dict[str, bytes], dict, 
                 }:
                     raise ValueError(f"Pasta inesperada no ZIP: {name}")
                 continue
-            rel = name.removeprefix("stage/")
-            if name.startswith("stage/") and (
+            rel = name.removeprefix(prefix)
+            if name.startswith(prefix) and (
                     rel in DATA | PBS | {CONNECTIONS, "johto-stage.json"} or GRAPHIC.fullmatch(rel)):
                 files[rel] = archive.read(item)
-            elif name == "johto-offline12-audit.json":
-                files[name] = archive.read(item)
+            elif name == audit_path:
+                files["johto-offline12-audit.json"] = archive.read(item)
+            elif original and name.startswith(prefix) and (
+                    re.fullmatch(r"johto-[a-z0-9_-]+\.json", rel)
+                    or rel in {"LEIA-ME.txt", "LEIA_ME_FASE10.txt", "LEIA_ME_FASE11.txt",
+                               "NAO_INSTALAR_NA_PASTA_GAME.txt"}):
+                continue
             elif name in {"OFFLINE_ONLY_NOT_INSTALLABLE.txt", *(
                 f"review_only/Ruby/{n}" for n in RUNTIME
             )} or re.fullmatch(r"stage/johto-[a-z0-9_-]+\.json", name):
@@ -128,11 +138,21 @@ def archive_payload(bundle: Path, pinned: str) -> tuple[dict[str, bytes], dict, 
     audit = json.loads(files.pop("johto-offline12-audit.json"))
     if (stage.get("status") != "BLUE_OFFLINE12_PREVIEW_ONLY_NOT_INSTALLABLE"
             or stage.get("can_install") is not False or stage.get("not_playable") is not True
-            or audit.get("milestone") != "OFFLINE_12_OF_12"
+            or audit.get("stage" if original else "milestone") != "OFFLINE_12_OF_12"
             or audit.get("gameplay_playable") is not False or audit.get("can_install") is not False
             or not isinstance(pinned, str) or not re.fullmatch("[a-f0-9]{64}", pinned)
-            or any(d.get("source_archive_sha256") != pinned for d in (audit, stage))):
+            or stage.get("source_archive_sha256") != pinned
+            or not original and audit.get("source_archive_sha256") != pinned):
         raise ValueError("Pacote não corresponde à prévia OFFLINE 12 e à fonte Johto fixada")
+    if original:
+        # The original private export uses a separate layout. Its audited whole
+        # archive digest is required before trusting the legacy file inventory.
+        hashes = audit["included_file_hashes"]
+        payload = DATA | PBS | {CONNECTIONS} | {name for name in files if GRAPHIC.fullmatch(name)}
+        if not payload.issubset(hashes) or any(hash_bytes(files[name]) != hashes[name] for name in payload):
+            raise ValueError("Arquivos do ZIP original divergem da auditoria")
+        return files, stage, bundle_hash
+
     hashes = {f"Data/Map{i:03}.rxdata": audit["packaged_map_sha256"].get(str(i)) for i in MAP_IDS}
     hashes.update({f"PBS/{name}": sha for name, sha in audit["pbs"]["sha256"].items()})
     hashes.update({f"Data/{name}.rxdata": audit[key] for name, key in (
