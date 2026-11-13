@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "75483be66a66bb5e38bf467ad4a7c132a78ce2c6",
+      "date": "2026-11-13T11:07:33-03:00",
+      "title": "test(hoenn): verify safe ZIP filtering, paths, rights and idempotence",
+      "category": "Testes"
+    },
+    {
       "sha": "476ce588e8629e5936fe4fb0f12805bbf9c64266",
       "date": "2026-11-13T11:05:18-03:00",
       "title": "feat(hoenn): add safe local ZIP resource inspector and staging",
