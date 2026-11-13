@@ -95,3 +95,17 @@ Os arquivos dos tilesets/autotiles citados por esses cinco mapas aparecem no inv
 Use [audit_hoenn_baseline.py](../scripts/regions/audit_hoenn_baseline.py) com a resposta completa de `git/trees/<SHA da subárvore Hoenn>?recursive=1`, adicionando o campo `revision` com o SHA do commit público. Em `--source-data`, forneça as cópias locais de MapInfos, Tilesets e Map007/008/011/012/101 da revisão; em `--game-data`, indique o Data do Blue. Passe `--archive` somente se tiver o ZIP privado. O resultado da fonte pública está em [hoenn-source.json](../data/regions/hoenn-source.json).
 
 **Fase 01: parcial.** O ZIP privado original continua sem SHA-256 confirmado e a autorização de redistribuição continua pendente. Nenhum mapa foi instalado; nenhuma fase foi aprovada por gameplay.
+
+## Piloto local para Windows
+
+O [montador do piloto](../scripts/regions/pilot_hoenn.py) usa a revisão pública auditada. Ele acrescenta seis mapas em uma cópia do Blue com perfil de save próprio. Os MapIDs escolhidos na instalação usada para o teste foram 700–705. O quarto da casa de Littleroot é o ponto de partida. Fale com Birch antes de escolher Treecko, Torchic ou Mudkip. O primeiro parceiro vem com cinco Poké Bolas. A grama da Rota 101 usa a tabela de Zigzagoon, Poochyena e Wurmple. A enfermeira do Centro Pokémon de Oldale cura a equipe.
+
+Para reconstruir, use o inventário completo da subárvore Hoenn já descrito acima. Baixe os mapas Map007, 008, 011, 012, 013 e 101, Tilesets.rxdata e PBS/map_connections.txt da mesma revisão. Use os quatro PNG de tileset citados pelos mapas (RSE_Outside, RSE_Playerhouse interior, RSE_Lab e RSE_Poke Center interior) e os sete autotiles de RSE_Outside registrados em hoenn-source.json. Mantenha os caminhos Data, PBS e Graphics da fonte. O montador confere o hash Git de cada arquivo usado.
+
+~~~powershell
+python scripts/regions/pilot_hoenn.py --game game --source .blue-work/hoenn-source --inventory .blue-work/hoenn-tree.json --output .blue-work/hoenn-pilot
+~~~
+
+Abra Game.exe dentro da cópia com ela como diretório de trabalho. Na primeira execução o jogo recompila os dados e encerra. Abra novamente para jogar. Os registros blue-hoenn-compiled.txt e blue-hoenn-compile-error.txt na pasta Data indicam o resultado da primeira execução.
+
+A prova automatizada no Game.exe verificou a compilação, o quarto de início, o sprite, o primeiro passo, a escolha de um único inicial, as cinco Poké Bolas, a cura, as travessias Littleroot → Rota 101 → Oldale e o save/reload. A interface, as batalhas selvagens e a captura ainda aguardam teste manual. O trecho inicial do roteiro de Hoenn segue como piloto separado.
