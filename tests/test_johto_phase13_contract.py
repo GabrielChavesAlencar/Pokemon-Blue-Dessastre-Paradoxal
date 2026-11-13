@@ -117,16 +117,19 @@ class JohtoPhase13ContractTests(unittest.TestCase):
                             self.phase["readiness_markers"]))
         for m in self.phase["readiness_markers"]:
             self.assertIn(m["token"], self.script)
-        self.assertEqual(self.source["maps"], {})
-        self.assertFalse(self.source["mapping_verified"])
+
+        self.assertTrue(self.source["mapping_verified"])
+        self.assertEqual(len(self.source["maps"]), 74)
+        self.assertEqual(self.source["maps"]["79"], "JOHTO_NEW_BARK_TOWN")
+        self.assertEqual(self.source["maps"]["104"], "JOHTO_ROUTE_29")
+        self.assertFalse(self.source["source"]["distribution_approved"])
         self.assertFalse(self.source["import_enabled"])
-        self.assertIsNone(self.source["source"]["archive_sha256"])
+        self.assertRegex(self.source["source"]["archive_sha256"], r"^[a-f0-9]{64}$")
         self.assertTrue({
             "JOHTO_NATIVE_HOF_ANIMATION_AND_SAVE",
             "JOHTO_POST_LEAGUE_NEW_BARK_NPC",
             "HOENN_MAPS_AND_TRAVEL",
         }.issubset(set(self.phase["future_not_implemented"])))
-
 
 if __name__ == "__main__":
     unittest.main()
