@@ -85,6 +85,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `data/regions/johto-phase13.json` relaciona mapas/salas simbólicos e a separação do Indigo Plateau geográfico das campanhas de Johto/Kanto; `tests/test_johto_phase13_contract.py` valida o contrato.
 - [x] [MD da Etapa 13 — Liga de Johto, Elite Four, Lance e Hall of Fame](JOHTO_FASE_13_LIGA_ELITE_FOUR_LANCE.md), com desbloqueio de Kanto/Hoenn apenas no estado e não como viagem.
 - [ ] Integrar mapas e corredores reais, compilar PBS da Elite/Rival, confirmar gravação verdadeira de Hall of Fame, criar NPC pós-Liga em New Bark e validar Box/viagem antes do aceite 13/16.
+- [x] **Etapa 14 iniciada:** `scripts/regions/JohtoLegendaries.rb` prepara escolha HG/SS/Crystal, Raikou/Entei com confirmação de roamer, Kimono Girls, Bell Tower/Ho-Oh, Whirl Islands/Lugia e Ruins of Alph sem encontros fictícios.
+- [x] `tests/johto_legendaries_runtime.rb` e `tests/test_johto_legendaries_runtime.py` simulam capturas, fugas, derrotas, retorno de lendários por Hall of Fame comprovado, Wings/Bells únicos, versões independentes, save/reload e isolamento Decades/Kanto.
+- [x] `data/regions/johto-phase14.json` mapeia topologia simbólica de torres, quatro entradas de Whirl Islands com saídas seguras, Ruins of Alph, Mt. Silver indisponível e diferenças de história HGSS/Crystal.
+- [x] `tests/test_johto_phase14_contract.py` verifica os estados bloqueados, versões, itens e a divergência canônica HGSS (mascote antes da Liga) a corrigir antes da integração final.
+- [x] [MD da Etapa 14 — lendários e pós-jogo](JOHTO_FASE_14_LENDARIOS_POS_JOGO.md).
+- [ ] Integrar mapas licenciados/MapIDs verificados, callbacks de captura, roamers reais, Suicune/Eusine por versão, cinco PBS Kimono, Unown e recurso legal de Mt. Silver/Red; testar tudo no Game.exe.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -105,7 +111,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 11 | Mahogany, Rocket e Pryce | **PARCIAL**: Lake of Rage, Rocket HQ, Pryce/GLACIER, Whirlpool e Radio Tower preparados; faltam mapas, PBS e gameplay |
 | 12 | Blackthorn e Clair | **PARCIAL**: Ice Path/Strength/Waterfall, Clair, Dragon Master/RISING e preparação da Liga em testes isolados; faltam mapas, PBS e gameplay |
 | 13 | Liga Johto e Lance | **PARCIAL**: Tohjo, Victory Road, Elite Four/Lance, Hall of Fame protegido e unlock Kanto/Hoenn no save em código/testes; mapas e gameplay pendentes |
-| 14 | Lendários e pós-jogo | PENDENTE |
+| 14 | Lendários e pós-jogo | **PARCIAL**: versões HG/SS/Crystal, Raikou/Entei, Kimono, Ho-Oh/Lugia e Ruins com lógica/testes; Suicune, mapas, Mt. Silver e gameplay pendentes |
 | 15 | Música, treinadores e portal | PENDENTE |
 | 16 | Instalação, viagem e aceite final | PENDENTE |
 
