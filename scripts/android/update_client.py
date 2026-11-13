@@ -32,6 +32,10 @@ def safe_path(name):
     path = PurePosixPath(name)
     if path.is_absolute() or any(p in (".", "..", "") for p in name.split("/")):
         return False
+    # Kanto's map/event inventory changes whenever its source is updated.
+    # It is game data (not the JoiPlay save profile) and must be patchable.
+    if name == "Kanto pilot.json":
+        return True
     if name in FORBIDDEN or len(path.parts) < 2 or path.parts[0] not in ALLOWED_ROOTS:
         return False
     if any(p.lower() in ("saves", "save", "backup", "__pycache__") for p in path.parts):
