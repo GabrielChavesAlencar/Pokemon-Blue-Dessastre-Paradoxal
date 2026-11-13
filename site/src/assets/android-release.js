@@ -21,6 +21,28 @@ export async function androidReleaseStatus(fetcher=fetch){
       johto:!!release.assets?.some(x=>x.name==='Blue-Android-Johto-Piloto.zip'&&x.state==='uploaded'&&x.size>0)
     }};
 }
+
+export async function regionalAndroidReleases(fetcher=fetch){
+  let releases;
+  try{
+    const response=await fetcher(api+'/releases?per_page=30');
+    if(!response.ok)throw new Error('releases');
+    releases=await response.json();
+  }catch{return {kanto:null,johto:null};}
+  if(!Array.isArray(releases))return {kanto:null,johto:null};
+  const find=(kind,file)=>{
+    for(const release of releases){
+      if(typeof release.tag_name!=='string'||!release.tag_name.startsWith(kind+'-android-')
+          ||!/^[a-f0-9]{40}$/.test(release.target_commitish??''))continue;
+      const asset=release.assets?.find(a=>a.name===file&&a.state==='uploaded'&&a.size>0);
+      if(asset)return {tag:release.tag_name,revision:release.target_commitish,bytes:asset.size};
+    }
+    return null;
+  };
+  return {kanto:find('kanto','Blue-Android-Kanto-Piloto.zip'),
+          johto:find('johto','Blue-Android-Johto-Piloto.zip')};
+}
+
 export function androidReleaseHtml(status){
   if(status.state==='unavailable')return '<p>Não foi possível consultar a revisão agora. Confira a linha <code>Revision:</code> no arquivo <code>LEIA-ME-ANDROID.txt</code> do ZIP.</p>';
   const warning=status.state==='outdated'?'Download desatualizado: a publicação da revisão mais recente não terminou. O botão ainda baixa o pacote abaixo.':status.state==='building'?'Uma nova revisão está sendo preparada. O botão ainda baixa o pacote publicado abaixo.':'';
@@ -34,13 +56,16 @@ const androidPilots=[
 ];
 export function androidPilotsHtml(status){
   return androidPilots.map(p=>{
-    const enabled=status.state!=='unavailable'&&status.pilots?.[p.id]===true&&typeof status.tag==='string'&&status.tag.length>0;
-    const href=enabled?'https://github.com/'+repo+'/releases/download/'+encodeURIComponent(status.tag)+'/'+p.asset:'';
+    const regional=status.regional?.[p.id];
+    const regular=status.state!=='unavailable'&&status.pilots?.[p.id]===true&&typeof status.tag==='string'&&status.tag.length>0;
+    const enabled=!!regional||regular;
+    const tag=regional?.tag||status.tag;
+    const href=enabled?'https://github.com/'+repo+'/releases/download/'+encodeURIComponent(tag)+'/'+p.asset:'';
     return '<article class="android-pilot-card"><span class="eyebrow">PILOTO '+esc(p.region.toUpperCase())+'</span>'+
       '<h4>'+esc(p.region)+'</h4><p>'+esc(p.note)+'</p>'+
       (enabled?'<a class="button button-secondary" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">Baixar piloto '+esc(p.region)+' · .zip</a>':
       '<span class="button button-secondary android-pilot-disabled" aria-disabled="true">Piloto '+esc(p.region)+' · indisponível</span>')+
-      '<small>'+(enabled?'Arquivo independente publicado na release '+esc(status.tag)+'. Adicione Game.exe desta pasta ao JoiPlay.':
+      '<small>'+(enabled?'Arquivo independente publicado na release '+esc(tag)+'. Adicione Game.exe desta pasta ao JoiPlay.':
         'Ainda não existe ZIP regional publicado e verificado. O ZIP geral não substitui este piloto.')+'</small></article>';
   }).join('');
 }
@@ -49,8 +74,9 @@ export async function bindAndroidRelease(container){
   const target=container.querySelector('[data-android-release]');
   const pilots=container.querySelector('[data-android-pilots]');
   if(!target&&!pilots)return;
-  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:androidReleaseStatus()};
-  const status=await cached.promise;
+  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:Promise.all([androidReleaseStatus(),regionalAndroidReleases()])};
+  const [status,regional]=await cached.promise;
+  status.regional=regional;
   if(target?.isConnected)target.innerHTML=androidReleaseHtml(status);
   if(pilots?.isConnected)pilots.innerHTML=androidPilotsHtml(status);
 }
