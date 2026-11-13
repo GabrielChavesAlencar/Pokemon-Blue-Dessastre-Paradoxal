@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e90f11243cf529c03695238a3b76f6f0acbb9587",
+      "date": "2026-11-13T16:29:22-03:00",
+      "title": "test(android): proteger metadados, mapas e saves do Kanto JoiPlay",
+      "category": "Testes"
+    },
+    {
+      "sha": "d254db4b8f73136e992073003fa0b8ac4d1e0edb",
+      "date": "2026-11-13T16:29:20-03:00",
+      "title": "feat(android): empacotador isolado e verificável do piloto Kanto",
+      "category": "Novidades"
+    },
+    {
       "sha": "7bc27489b5c957e6aca4f87ac0f7a85a804c2fc4",
       "date": "2026-11-13T16:08:36-03:00",
       "title": "Merge Johto offline 11/12: Violet, Sprout Tower, Falkner and Zephyr (#44)",
