@@ -46,7 +46,7 @@ def audit(root: Path = ROOT) -> dict:
         raise ValueError("Johto music could affect Kanto/Decades")
     if guards.get("on_missing_audio") != "KEEP_EXISTING_BGM" or (
         guards.get("on_me_finish") != "RESTORE_PREVIOUS_BGM"
-    ):
+    ) or guards.get("never_autoplay") is not True:
         raise ValueError("Unsafe audio fallback")
     for kind in KINDS:
         expected = f"Audio/{kind}/Johto"
