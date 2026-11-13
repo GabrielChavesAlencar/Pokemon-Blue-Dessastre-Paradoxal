@@ -102,13 +102,16 @@
         "No piloto com --with-connections, os dois warps redundantes para Route29 sao removidos da copia em memoria e substituidos pela borda PBS real",
         "Exportador local de insumos nativos com allowlist e SHA-256 criado; somente game/ local, sem executavel/saves/plugins e sem ZIP publico; testes sinteticos do exportador",
         "Validador de 12 eventos e spawn com comprovacao por SHA/MapID/PNG, aceita borda PBS sem dois warps duplicados; montador privado isolado bloqueia coordenadas nao conferidas",
-        "ZIP nativo de 2460 arquivos validado com SHA-256 por entrada, contendo 207 mapas RMXP, 95 PBS, sprites de Elm/mae/Silver/Poke Bola e tres especies iniciais"
+        "ZIP nativo de 2460 arquivos validado com SHA-256 por entrada, contendo 207 mapas RMXP, 95 PBS, sprites de Elm/mae/Silver/Poke Bola e tres especies iniciais",
+        "Staging PRIVADO materializado de 74 mapas terreno Johto (IDs 600-673) + 3 interiores geométricos provisórios (674-676); 42 conexões PBS remapeadas, templates 12 eventos vinculados a MapID e SHA; verificacao de serialização RMXP e integridade nativa"
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe",
         "A instalacao nativa game/ nao foi fornecida nesta conversa; Fase 04 ainda nao pode ser executada e verificada no Game.exe",
         "Falta confirmar qual das fachadas e a casa do jogador e validar os destinos no Game.exe; candidatos nao equivalem a portas jogaveis",
-        "Dados nativos disponiveis para auditoria no chat, mas nao instalados na CI; falta autoria de quarto/casa/laboratorio, eventos com coordenadas, compilacao nativa e gameplay Game.exe"
+        "Dados nativos disponiveis para auditoria no chat, mas nao instalados na CI; falta autoria de quarto/casa/laboratorio, eventos com coordenadas, compilacao nativa e gameplay Game.exe",
+        "Interiores copiados de cabine, centro e ginasio nao reproduzem quarto/casa/lab de Johto; precisam ser redesenhados antes de 1/13",
+        "12 eventos e spawn com XY/passabilidade nao aprovados, batalha PBS nao comprovada e Game.exe/Plugins ausentes do upload para QA em Windows"
       ],
       "automated_code_test": "tests/test_johto_new_bark_exterior_audit.py",
       "gameplay_playable": false,
