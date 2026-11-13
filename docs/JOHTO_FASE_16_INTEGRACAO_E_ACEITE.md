@@ -17,6 +17,20 @@
 | [tests/test_johto_phase16_release.py](../tests/test_johto_phase16_release.py) | Testa auditor, código de retorno, impossibilidade de `--apply`, relatório isolado, proofs e preservação de dados das fases anteriores |
 | [docs/JOHTO_TESTES_E2E.md](JOHTO_TESTES_E2E.md) | Matriz real de E2E, planos de backup/rollback e comandos seguros |
 
+## Reforço de segurança da verificação (Etapa 16)
+
+O preflight de `install_johto.py` foi reforçado para verificar a **integridade do piloto isolado**, além dos 13 campos de confirmação. A função `verify_pilot_package` compara o SHA-256 da fonte declarado no release com o manifesto de origem e os **bytes reais** de `MapInfos.rxdata`, `Tilesets.rxdata` e de cada mapa do início/chegada/NPC. Ela recusa:
+
+- Um manifesto sem os 13 campos exatamente verdadeiros, com mapa ausente/vazio, hash alterado, marcador de início divergente ou arquivo simbólico;
+- MapIDs fora da faixa reservada 600–999 (inclusive um `Map005.rxdata` que ameaçaria a área de Kanto), coordenadas incorretas, spawn residencial no mesmo mapa da chegada ou NPC sobreposto;
+- Fonte declarada com hash diferente do hash auditado no manifesto de Johto;
+- Relatórios desviados de `.blue-work` por links simbólicos e tentativas de sobrescrever um relatório anterior. A escrita usa criação exclusiva;
+- Uso de `--apply --report`: o modo de instalação continua recusado e **não grava nem o relatório**.
+
+Os novos testes sintéticos cobrem hashes trocados, flags falsas, marcadores, MapIDs proibidos, links simbólicos e proibição de escrita na recusa da instalação.
+
+**Limite da prova:** um conjunto de arquivos fabricados em testes pode satisfazer requisitos *estruturais*, mas **não prova** direitos, gameplay, saves ou que o Hall of Fame funcionou realmente. O verificador nunca marca Johto jogável por conta própria, nunca gera a prova assinada e nunca modifica `game/`. A revisão humana e os testes E2E nativos continuam indispensáveis.
+
 ## Como o novo início de Johto está protegido
 
 `BlueRegionStart.johto_spawn` requer simultaneamente:
