@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a6253d93abc08ffcc0df3ffce489dac8528dfa4d",
+      "date": "2026-11-13T20:15:22-03:00",
+      "title": "docs: assign structured Sinnoh area/event checklist to Codex source audit",
+      "category": "Documentação"
+    },
+    {
+      "sha": "a1e20761eae1de0ff57c863a9d266705da4b54b2",
+      "date": "2026-11-13T20:15:12-03:00",
+      "title": "test: validate Sinnoh coverage checklist cannot masquerade as playable data",
+      "category": "Testes"
+    },
+    {
+      "sha": "778dab38e1fb1ade598708ee4abdae865a19e8d0",
+      "date": "2026-11-13T20:14:54-03:00",
+      "title": "data: add Sinnoh coverage checklist without fictitious map IDs",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2d5d3bc3c4b94d103807fe2afdf76aa0be77ab32",
       "date": "2026-11-13T20:13:18-03:00",
       "title": "docs: link Sinnoh Codex backlog and executed repository phase-00 audit",
