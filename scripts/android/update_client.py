@@ -34,7 +34,8 @@ def safe_path(name):
         return False
     # Kanto's map/event inventory changes whenever its source is updated.
     # It is game data (not the JoiPlay save profile) and must be patchable.
-    if name == "Kanto pilot.json":
+    if name in ("Kanto pilot.json", "LEIA-ME-ANDROID.txt",
+                "LEIA-ME-ANDROID-KANTO.txt"):
         return True
     if name in FORBIDDEN or len(path.parts) < 2 or path.parts[0] not in ALLOWED_ROOTS:
         return False
