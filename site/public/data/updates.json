@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "069a7dca1c8cfe5e91ffc81742f85422d230b7d1",
+      "date": "2026-11-13T20:08:24-03:00",
+      "title": "feat: add safe read-only Sinnoh source and game baseline auditor",
+      "category": "Novidades"
+    },
+    {
       "sha": "a5ef0727cc19e1df0cde669fdc0e39047204fbed",
       "date": "2026-11-13T19:57:55-03:00",
       "title": "feat(hoenn): build an isolated Littleroot to Oldale pilot",
