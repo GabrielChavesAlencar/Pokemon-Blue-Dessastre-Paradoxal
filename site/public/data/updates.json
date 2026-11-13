@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "808c03ca773ff3e5b5284ed9bff19d758c38b728",
+      "date": "2026-11-13T19:05:25-03:00",
+      "title": "feat(regions): stage isolated Johto QA and audit Hoenn baseline",
+      "category": "Novidades"
+    },
+    {
       "sha": "6c78aa455c1650ff0672d630d0e19617266dcf23",
       "date": "2026-11-13T18:00:19-03:00",
       "title": "release(android): publish corrected JoiPlay Input bootstrap and Kanto mobile marker [android-kanto-release]",
