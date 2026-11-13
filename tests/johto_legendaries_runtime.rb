@@ -263,6 +263,14 @@ Dir.mktmpdir("blue-johto-phase14-") do |dir|
     check(BlueJohtoLegendaries.legendary_result(:LUGIA, :caught),
           "Postgame Lugia catch not recorded")
     check(!BlueJohtoLegendaries.legendary_begin(:LUGIA), "Lugia duplicated")
+    check(BlueJohtoLegendaries.whirl_exit, "Island exit did not clear travel checkpoint")
+    check(!BlueJohtoLegendaries.whirl_exit, "Island exit repeated without entrance")
+    check(BlueJohtoLegendaries.whirl_entrance("SW", true, true),
+          "Safe return did not permit another island entrance")
+    check(BlueJohtoLegendaries.whirl_chamber,
+          "Alternate island entrance could not reach audited chamber")
+    check(!BlueJohtoLegendaries.legendary_begin(:LUGIA),
+          "Captured Lugia reappeared after returning through another island")
     check(!BlueJohtoLegendaries.hgss_suicune_route25,
           "Uninstalled Kanto Route25 Suicune event allowed")
 
