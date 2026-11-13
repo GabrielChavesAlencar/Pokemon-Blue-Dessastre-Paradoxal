@@ -39,7 +39,7 @@ module BlueRegionStart
                       data["region"] == "JOHTO" &&
                       data["status"] == "VERIFIED_PLAYABLE" &&
                       data["source_archive_sha256"].is_a?(String) &&
-                      data["source_archive_sha256"].match?(/\\A[a-f0-9]{64}\\z/)
+                      data["source_archive_sha256"].match?(/\A[a-f0-9]{64}\z/)
     checks = data["checks"]
     return nil unless checks.is_a?(Hash) &&
                       JOHTO_PROOFS.all? { |key| checks[key] == true }
@@ -58,7 +58,7 @@ module BlueRegionStart
     return nil unless files.is_a?(Hash) &&
                       required.all? { |name|
                         hash = files[name]
-                        hash.is_a?(String) && hash.match?(/\\A[a-f0-9]{64}\\z/) &&
+                        hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/) &&
                           File.file?(name) && !File.symlink?(name) &&
                           Digest::SHA256.file(name).hexdigest == hash
                       }
