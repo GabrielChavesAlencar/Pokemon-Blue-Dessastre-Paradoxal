@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d42553d8b6a9262320caf8511a127345bd0c4b36",
+      "date": "2026-11-13T20:39:30-03:00",
+      "title": "test(sinnoh): validate 32-task progress bars and separate real gameplay acceptance",
+      "category": "Testes"
+    },
+    {
       "sha": "759598a718587531e78386d10ea777d45c77dea1",
       "date": "2026-11-13T20:39:09-03:00",
       "title": "docs(sinnoh): publish persistent four-bar progress dashboard with explicit code vs gameplay gates",
