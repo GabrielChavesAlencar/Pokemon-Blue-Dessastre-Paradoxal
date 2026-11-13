@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c627abd1aceeb6bdc54aab62842d305b49e95d6a",
+      "date": "2026-11-13T11:29:23-03:00",
+      "title": "feat(johto): auditar fachadas reais New Bark e eliminar warps duplicados para Route29",
+      "category": "Novidades"
+    },
+    {
       "sha": "d727c0b0a6656dee242275e7c9640ae645a2debf",
       "date": "2026-11-13T11:10:14-03:00",
       "title": "docs(hoenn): record ZIP selection, rights and private staging procedure",
