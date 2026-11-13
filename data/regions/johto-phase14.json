@@ -1,0 +1,389 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "14/16",
+  "requires_completed_phase": "13/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "notes": "All nodes are planning symbols. No physical MapIDs, warps, collision maps, cave exits, wild encounter algorithms, item catalogs or PBS trainers have been verified or installed.",
+  "version_selection": {
+    "field": "johto_pilot.johto_campaign_version",
+    "locked_after_choice": true,
+    "requires_manual_new_game_configuration": true,
+    "versions": [
+      "HEARTGOLD",
+      "SOULSILVER",
+      "CRYSTAL"
+    ],
+    "heartgold": {
+      "primary": "HOOH",
+      "primary_items": [
+        "RAINBOWWING",
+        "CLEARBELL"
+      ],
+      "secondary": "LUGIA",
+      "secondary_after_verified_league": true,
+      "secondary_item": "SILVERWING"
+    },
+    "soulsilver": {
+      "primary": "LUGIA",
+      "primary_items": [
+        "SILVERWING",
+        "TIDALBELL"
+      ],
+      "secondary": "HOOH",
+      "secondary_after_verified_league": true,
+      "secondary_item": "RAINBOWWING"
+    },
+    "crystal": {
+      "status": "SEPARATE_VARIANT_NOT_IMPLEMENTED",
+      "suicune": "TIN_TOWER",
+      "hgss_kimono_flow": false,
+      "requires_extra_eusine_events": true
+    },
+    "canonical_note": "In original HGSS, the main mascot encounter precedes access to the Pokemon League. Existing isolated phase 13 allows League handoff without it. Before enabling a faithful HGSS pilot, add and test a version-scoped preleague mascot gate; do NOT retroactively change existing Kanto/Decades game saves."
+  },
+  "corridor": [
+    {
+      "key": "JOHTO_ECRUTEAK_CITY",
+      "label": "Ecruteak City"
+    },
+    {
+      "key": "JOHTO_ECRUTEAK_DANCE_THEATER",
+      "label": "Dance Theater Kimono Girls"
+    },
+    {
+      "key": "JOHTO_BELL_TOWER_ENTRANCE",
+      "label": "Bell Tower / Tin Tower entry"
+    },
+    {
+      "key": "JOHTO_BELL_TOWER_FLOORS",
+      "label": "Bell Tower interior (floors to audit)"
+    },
+    {
+      "key": "JOHTO_BELL_TOWER_ROOF",
+      "label": "Bell Tower Ho-Oh encounter"
+    },
+    {
+      "key": "JOHTO_ROUTE_41",
+      "label": "Route 41 sea"
+    },
+    {
+      "key": "JOHTO_WHIRL_NW",
+      "label": "Whirl Islands NW entrance"
+    },
+    {
+      "key": "JOHTO_WHIRL_NE",
+      "label": "Whirl Islands NE entrance"
+    },
+    {
+      "key": "JOHTO_WHIRL_SW",
+      "label": "Whirl Islands SW entrance"
+    },
+    {
+      "key": "JOHTO_WHIRL_SE",
+      "label": "Whirl Islands SE entrance"
+    },
+    {
+      "key": "JOHTO_WHIRL_FLOORS",
+      "label": "Whirl Islands shared cavern system"
+    },
+    {
+      "key": "JOHTO_WHIRL_LUGIA_CHAMBER",
+      "label": "Whirl Islands Lugia chamber"
+    },
+    {
+      "key": "JOHTO_BURNED_TOWER_B1F",
+      "label": "Burned Tower beast release"
+    },
+    {
+      "key": "JOHTO_ROAMING_ROUTE_GROUP",
+      "label": "Raikou Entei roaming Johto routes, no encounter table"
+    },
+    {
+      "key": "JOHTO_KANTO_ROUTE25_SUICUNE",
+      "label": "HGSS Suicune, Kanto Route 25; unavailable"
+    },
+    {
+      "key": "JOHTO_CRYSTAL_TIN_TOWER_SUICUNE",
+      "label": "Crystal Suicune encounter; unavailable"
+    },
+    {
+      "key": "JOHTO_RUINS_OF_ALPH_ENTRANCE",
+      "label": "Ruins of Alph entrance"
+    },
+    {
+      "key": "JOHTO_RUINS_OF_ALPH_CHAMBERS",
+      "label": "Four symbolic Unown puzzle chambers"
+    },
+    {
+      "key": "JOHTO_MT_SILVER_UNAVAILABLE",
+      "label": "Mt Silver absent from Map Pack"
+    },
+    {
+      "key": "JOHTO_RED_UNAVAILABLE",
+      "label": "Red challenge not installed"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ECRUTEAK_DANCE_THEATER",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_BELL_TOWER_ENTRANCE",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_BELL_TOWER_ENTRANCE",
+      "to": "JOHTO_BELL_TOWER_FLOORS",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_BELL_TOWER_FLOORS",
+      "to": "JOHTO_BELL_TOWER_ROOF",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_WHIRL_NW",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_WHIRL_NE",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_WHIRL_SW",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_WHIRL_SE",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_WHIRL_NW",
+      "to": "JOHTO_WHIRL_FLOORS",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_WHIRL_NE",
+      "to": "JOHTO_WHIRL_FLOORS",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_WHIRL_SW",
+      "to": "JOHTO_WHIRL_FLOORS",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_WHIRL_SE",
+      "to": "JOHTO_WHIRL_FLOORS",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_WHIRL_FLOORS",
+      "to": "JOHTO_WHIRL_LUGIA_CHAMBER",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_BURNED_TOWER_B1F",
+      "to": "JOHTO_ROAMING_ROUTE_GROUP",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    },
+    {
+      "from": "JOHTO_RUINS_OF_ALPH_ENTRANCE",
+      "to": "JOHTO_RUINS_OF_ALPH_CHAMBERS",
+      "kind": "symbolic_only_no_warp",
+      "physically_installed": false
+    }
+  ],
+  "legendary_contract": {
+    "roamers": [
+      "RAIKOU",
+      "ENTEI"
+    ],
+    "starts_after": "burned_tower_beasts_awakened",
+    "adapter_register_result": ":registered",
+    "battle_results": [
+      ":caught",
+      ":defeated",
+      ":fled",
+      ":lost"
+    ],
+    "defeated_rematch_requires": ":rematch_recorded",
+    "capture_does_not_duplicate": true,
+    "suicune_hgss": {
+      "where": "KANTO_ROUTE_25",
+      "accessible": false,
+      "reason": "Kanto Suicune story/route 25 and return travel not installed"
+    },
+    "suicune_crystal": {
+      "where": "CRYSTAL_TIN_TOWER",
+      "accessible": false,
+      "reason": "Eusine/Clear Bell/Tin Tower event unavailable"
+    },
+    "mascot_battle_adapter": "External verified callback only; module does not call pbWildBattle or add Pokemon to the party",
+    "opposite_mascot_requires_verified_johto_league": true,
+    "defeated_not_captured": "awaiting_verified_rematch",
+    "legendary_captured_cannot_respawn": true
+  },
+  "kimono_girls": {
+    "count": 5,
+    "trainer_type": "BLUE_JOHTO_KIMONO_GIRL",
+    "pbs_versions": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "compiled": false,
+    "required_johto_badges": 8
+  },
+  "ruins_of_alph": {
+    "puzzle_count": 4,
+    "unown_encounters_installed": false,
+    "unown_forms_installed": false,
+    "radio_installed": false
+  },
+  "optional_postgame": {
+    "bug_catching_contest": {
+      "installed": false
+    },
+    "pokeathlon": {
+      "installed": false
+    },
+    "mt_silver": {
+      "installed": false,
+      "missing_from_source_manifest": true
+    },
+    "red_battle": {
+      "installed": false
+    },
+    "world_champion_rematches": {
+      "installed": false
+    }
+  },
+  "readiness_markers": [
+    {
+      "constant": "VERSION_READY",
+      "path": "Data/blue-johto-version-ready.txt",
+      "token": "BLUE_JOHTO_VERSION_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "ROAMER_READY",
+      "path": "Data/blue-johto-roaming-ready.txt",
+      "token": "BLUE_JOHTO_ROAMING_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "BELL_READY",
+      "path": "Data/blue-johto-bell-tower-ready.txt",
+      "token": "BLUE_JOHTO_BELL_TOWER_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "WHIRL_READY",
+      "path": "Data/blue-johto-whirl-islands-ready.txt",
+      "token": "BLUE_JOHTO_WHIRL_ISLANDS_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "SAFE_EXIT_READY",
+      "path": "Data/blue-johto-legendary-exits-ready.txt",
+      "token": "BLUE_JOHTO_LEGENDARY_EXITS_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "KIMONO_READY",
+      "path": "Data/blue-johto-kimono-ready.txt",
+      "token": "BLUE_JOHTO_KIMONO_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "ITEM_READY",
+      "path": "Data/blue-johto-legendary-items-ready.txt",
+      "token": "BLUE_JOHTO_LEGENDARY_ITEMS_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "ENCOUNTER_READY",
+      "path": "Data/blue-johto-legendary-battles-ready.txt",
+      "token": "BLUE_JOHTO_LEGENDARY_BATTLES_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "RUINS_READY",
+      "path": "Data/blue-johto-ruins-ready.txt",
+      "token": "BLUE_JOHTO_RUINS_V1_READY",
+      "installed": false
+    },
+    {
+      "constant": "EUSINE_READY",
+      "path": "Data/blue-johto-eusine-ready.txt",
+      "token": "BLUE_JOHTO_EUSINE_V1_READY",
+      "installed": false
+    }
+  ],
+  "future_not_installed": [
+    "ALL_LEGENDARY_CAVE_MAPS",
+    "LUGIA_ENCOUNTER",
+    "HOOH_ENCOUNTER",
+    "RAIKOU_ENTEI_WILD_ROAMING",
+    "SUICUNE_HGSS_ROUTE25",
+    "SUICUNE_CRYSTAL_TIN_TOWER",
+    "UNOWN_REAL_SPAWNS",
+    "BELL_TOWER_ROOF",
+    "MT_SILVER_AND_RED",
+    "POKEATHLON",
+    "BUG_CATCHING_CONTEST",
+    "HGSS_PRELEAGUE_MASCOT_GATE",
+    "WORLD_CHAMPION_REMATCH_TEAMS"
+  ],
+  "validation": {
+    "source_archive_sha_verified": false,
+    "source_tilesets_assets_rights_verified": false,
+    "version_selection_new_game_verified": false,
+    "kimono_girls_pbs_compiled": false,
+    "wing_bell_item_ids_verified": false,
+    "main_mascot_battle_callback_verified": false,
+    "opposite_mascot_postleague_verified": false,
+    "bell_tower_floors_roof_and_exits_verified": false,
+    "whirl_islands_four_entrances_and_safe_exits_verified": false,
+    "beast_roamer_route_tables_and_persistence_verified": false,
+    "roamer_revival_native_hof_verified": false,
+    "eusine_suicune_route25_kanto_verified": false,
+    "crystal_suicune_tin_tower_story_verified": false,
+    "ruins_of_alph_four_chambers_and_unown_verified": false,
+    "bug_catching_contest_verified": false,
+    "pokeathlon_verified": false,
+    "mt_silver_map_legally_sourced_verified": false,
+    "red_trainer_and_postgame_verified": false,
+    "master_mode_and_global_world_champion_rematches_verified": false,
+    "cross_region_party_box_safeguards_verified": false,
+    "save_reload_and_item_uniqueness_verified": false,
+    "windows_gameplay_verified": false,
+    "joiplay_gameplay_verified": false
+  },
+  "integrated": false
+}
