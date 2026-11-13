@@ -59,3 +59,9 @@ Nenhuma publicação deve ser considerada pronta antes de o workflow corresponde
 A primeira release com inventário é a **linha de base** de atualizações. Os ZIPs Android antigos não possuem `Data/blue-update.json` e exigem instalação completa separada. A geração de patch começa a partir da **segunda** release compatível do mesmo canal. O código nunca promove ZIP antigo do Kanto como se fosse Decades ou vice-versa.
 
 Checklist de release: testes Python e Ruby aprovados, compilação nativa e revisão `Revision` validadas, checksum do ZIP conferido, manifesto `.update.json` publicado na release certa, teste em aparelho Android real e verificação de reabertura do save (o último item é manual e pode permanecer pendente). A presença dos arquivos no GitHub não significa que houve teste manual em dispositivo.
+
+## Primeira release verificada com atualizador
+
+O **Kanto piloto** foi publicado na prerelease [kanto-android-670-20089a5](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/kanto-android-670-20089a5), com `Blue-Android-Kanto-Piloto.zip` e `Blue-Android-Kanto-Piloto.update.json`. Trata-se da primeira base do canal, por isso **ainda não há patch incremental desta versão antiga para ela**. A próxima publicação compatível poderá usar essa revisão como origem.
+
+O workflow da versão principal Decades deve publicar `Blue-Android-JoiPlay.zip` e o manifesto `Blue-Android-JoiPlay.update.json` juntos. Se o token GitHub recusar a publicação de uma execução antiga por divergência nos arquivos do workflow, rode uma build da `main` atual. **Nunca ajuste `target_commitish` para outra versão do código só para contornar o bloqueio:** a revisão publicada deve corresponder ao ZIP gerado.
