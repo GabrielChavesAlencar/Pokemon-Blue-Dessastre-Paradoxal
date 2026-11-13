@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b6aaa324274c70ad00c891f6257e5acbf9f00ae5",
+      "date": "2026-11-13T20:43:08-03:00",
+      "title": "docs(sinnoh): track graph, isolated staging, progress board and remaining Codex native tasks",
+      "category": "Documentação"
+    },
+    {
       "sha": "c1240b06ec022610acfeef6a4f70e633cad71956",
       "date": "2026-11-13T20:42:35-03:00",
       "title": "docs(sinnoh): sync 25% code progress and partial safe staging transaction",
