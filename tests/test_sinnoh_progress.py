@@ -49,6 +49,26 @@ class SinnohProgressTests(unittest.TestCase):
                 self.assertRegex(md, rf'\b{re.escape(t["id"])}\b')
         self.assertGreaterEqual(md.count("0/13 (0%)"), 3)
 
+    def test_remap_substeps_do_not_inflate_main_or_playable_bars(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        work = record["remap_workstream"]
+        substeps = work["substeps"]
+        self.assertEqual(work["task_id"], "S07")
+        self.assertEqual(work["status"], "PARTIAL_NOT_INSTALLABLE")
+        self.assertEqual(work["total"], len(substeps))
+        self.assertEqual(work["complete"], sum(row["complete"] for row in substeps))
+        self.assertEqual(work["complete"], 6)
+        self.assertEqual(work["total"], 9)
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["percent_complete"], 25)
+        self.assertEqual(next(t["status"] for t in record["tasks"]
+                              if t["id"] == "S07"), "partial")
+        self.assertTrue(all(not row["complete"] or
+                            (row["evidence"] and (ROOT / row["evidence"]).is_file())
+                            for row in substeps))
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("6/9", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
