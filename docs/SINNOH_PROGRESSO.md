@@ -12,8 +12,8 @@
 ```
 
 - **Concluídas:** 8 entregas de preparação verificáveis no repositório.
-- **Parciais:** 4 (não contam como concluídas até atingirem o próprio critério).
-- **Pendentes:** 20.
+- **Parciais:** 5 (não contam como concluídas até atingirem o próprio critério).
+- **Pendentes:** 19.
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
 - **Restam 24 para a barra de desenvolvimento** (inclui parciais).
 
@@ -51,6 +51,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 | Concluído | S04 | Proveniência e direitos pendentes | [manifesto](../data/regions/sinnoh-source.json) |
 | Concluído | S05 | 91 áreas e 51 eventos simbólicos | [cobertura](../data/regions/sinnoh-coverage.json) |
 | Concluído | S06 | Grafo de conexões e referências ausentes | [grafo](../scripts/regions/graph_sinnoh_maps.py), [testes](../tests/test_sinnoh_graph.py) |
+| Parcial | S07 | Transação segura: dry-run, staging e rollback só em `.blue-work` | [transação](../scripts/regions/sinnoh_staging_transaction.py), [testes](../tests/test_sinnoh_staging_transaction.py) |
 | Parcial | S08 | Integridade de recursos gráficos e mapas | [auditoria RXDATA](../scripts/regions/audit_sinnoh_rxdata.py) |
 | Concluído | S09 | Botão Testar Sinnoh sem quebrar saves | [menu](../scripts/battle_polish/TitleKanto.rb) |
 | Parcial | S24 | Catálogo musical planejado | [estudo](SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md) |
@@ -58,7 +59,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 | Parcial | S31 | Plano de aceitação Windows/JoiPlay | [plano](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) |
 | Concluído | S32 | Fila de pendências Codex | [backlog](SINNOH_CODEX_PENDENCIAS.md) |
 
-**Todas as outras entregas S07 e S10–S29 não listadas acima seguem pendentes**; veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.
+**As demais entregas de S10–S29 não listadas acima seguem pendentes**; veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.
 
 ## O que foi feito nesta etapa
 
@@ -70,7 +71,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 
 ## Próximo passo
 
-Preparar o **S07** com `dry-run`, backups e rollback em cópia isolada, **sem permitir que um plano preliminar escreva no `game/`**. Para testar contra a Sinnoh verdadeira, o Codex precisará de fonte RMXP autorizada, `game/Data` e MapID inicial auditado.
+Concluir o **S07**: o dry-run e o estágio atômico com rollback já estão implementados **exclusivamente em `.blue-work`**. Ainda falta integrar um remapeador com os MapIDs reais e verificar os direitos das fontes antes de sequer considerar uma instalação na cópia de teste. Nenhum código atual toca em `game/`. Para testar contra a Sinnoh verdadeira, o Codex precisará de fonte RMXP autorizada, `game/Data` e MapID inicial auditado.
 
 ```powershell
 python scripts/regions/graph_sinnoh_maps.py --source "C:\CAMINHO\SINNOH_AUTORIZADA.zip" --game-data game/Data > .blue-work/sinnoh/map-graph.json
