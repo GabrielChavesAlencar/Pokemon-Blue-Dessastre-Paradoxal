@@ -18,7 +18,7 @@
     "on_missing_audio": "KEEP_EXISTING_BGM",
     "on_map_exit": "RESTORE_PREVIOUS_BGM",
     "on_me_finish": "RESTORE_PREVIOUS_BGM",
-    "never_autoplay": false
+    "never_autoplay": true
   },
   "maps": [
     {
