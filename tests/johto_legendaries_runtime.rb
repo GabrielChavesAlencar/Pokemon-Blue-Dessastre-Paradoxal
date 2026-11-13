@@ -281,6 +281,14 @@ Dir.mktmpdir("blue-johto-phase14-") do |dir|
     check(!BlueJohtoLegendaries.unown_research_ready?,
           "Unown research ready without puzzle")
     check(!BlueJohtoLegendaries.ruins_puzzle(5), "Unknown Unown puzzle allowed")
+    check(!BlueJohtoLegendaries.ruins_puzzle(1.0),
+          "Non-integer puzzle number accepted")
+    flags["johto_ruins_puzzles"] = "corrupted"
+    check(!BlueJohtoLegendaries.unown_research_ready?,
+          "Corrupted save incorrectly enabled Unown research")
+    check(!BlueJohtoLegendaries.ruins_puzzle(0),
+          "Corrupted save allowed ruins mutation")
+    flags.delete("johto_ruins_puzzles")
     [2, 0, 3, 1].each do |i|
       check(BlueJohtoLegendaries.ruins_puzzle(i), "Ruins puzzle #{i} failed")
       check(!BlueJohtoLegendaries.ruins_puzzle(i), "Ruins puzzle #{i} repeated")
