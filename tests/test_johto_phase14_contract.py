@@ -108,13 +108,14 @@ class JohtoPhase14ContractTests(unittest.TestCase):
         self.assertIn('BlueRegions.allow_specials?(state, REGION)', self.script)
         self.assertIn('BlueRegions.field_access(state, REGION, action, tool_ready)',
                       self.script)
-        for name in ("bug_catching_contest", "pokeathlon",
-                     "mt_silver", "red_battle"):
-            self.assertIn(f"def self.{name}", self.script)
-            self.assertFalse(self.phase["optional_postgame"][
-                "bug_catching_contest" if name == "bug_catching_contest"
-                else name.replace("red_battle", "red_battle")
-            ]["installed"])
+        for resource, method in (
+            ("bug_catching_contest", "bug_contest"),
+            ("pokeathlon", "pokeathlon"),
+            ("mt_silver", "mt_silver"),
+            ("red_battle", "red_battle"),
+        ):
+            self.assertIn(f"def self.{method}", self.script)
+            self.assertFalse(self.phase["optional_postgame"][resource]["installed"])
 
     def test_unverified_maps_stay_non_playable(self):
         self.assertEqual(self.phase["region"], "JOHTO")
