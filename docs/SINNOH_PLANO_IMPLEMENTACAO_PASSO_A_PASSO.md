@@ -27,6 +27,8 @@ Antes de cada fase, ler:
 
 **Divisão de responsabilidade em vigor:** [SINNOH_CODEX_PENDENCIAS.md](SINNOH_CODEX_PENDENCIAS.md) registra todas as tarefas que dependem da instalação local, dos mapas de origem e de testes gráficos. [SINNOH_FASE_00_AUDITORIA_REPOSITORIO.md](SINNOH_FASE_00_AUDITORIA_REPOSITORIO.md) registra o que já foi conferido pelo GitHub. A ferramenta de preparação apenas de leitura está em [scripts/regions/audit_sinnoh_source.py](../scripts/regions/audit_sinnoh_source.py), com testes em [tests/test_sinnoh_source_preflight.py](../tests/test_sinnoh_source_preflight.py). A CI executa o preflight para detectar regressões de contrato. Nenhum desses artefatos substitui um piloto com mapas reais.
 
+**Acompanhamento permanente:** [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md) — uma barra de preparação (32 entregáveis) e três barras de aceite (13 fases técnicas, Game.exe e QA Windows/Android), com evidências separadas para evitar declarar Sinnoh pronta antes dos testes. O grafo [graph_sinnoh_maps.py](../scripts/regions/graph_sinnoh_maps.py) e o estágio atômico [sinnoh_staging_transaction.py](../scripts/regions/sinnoh_staging_transaction.py) são ferramentas, não mapas jogáveis.
+
 ## 1. Regra máxima: implementar SEM quebrar tudo que já existe
 
 **Toda alteração deve ser aditiva, isolada, reversível e testada antes de mudar o jogo principal.** Proteger obrigatoriamente **Decades, Kanto, Johto, Hoenn em preparação, Blue Studio, Pokédex, Habitat Dex, álbum, site, BlueMusic, balanceamento, multiplayer, saves e lançadores Windows/Android**.
