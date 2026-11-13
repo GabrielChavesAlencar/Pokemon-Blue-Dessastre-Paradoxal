@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "05f3eb4814051cd16d2aa66710ed5046e1b6bcaa",
+      "date": "2026-11-13T06:52:17-03:00",
+      "title": "fix(johto): permite repetir Hall of Fame falho sem liberar Liga ou repetir batalhas",
+      "category": "Correções"
+    },
+    {
       "sha": "3b8e73604bcea1b68b8a81080b55e4ada7ee7cdc",
       "date": "2026-11-13T06:51:55-03:00",
       "title": "feat(johto): fase 13 Tohjo Falls Elite Four Lance e Hall of Fame regional protegido",
