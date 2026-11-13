@@ -66,7 +66,7 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
     def test_build_and_verify_with_mock_native_compilation(self):
         def checked(game):
             return ("expected", "mobile-sha")
-        with patch.object(k, "_metadata", return_value=self.meta), patch.object(k, "_compiled", side_effect=checked), patch.object(k, "compiled_mobile", return_value="mobile-sha"):
+        with patch.object(k, "_metadata", return_value=self.meta), patch.object(k, "_compiled", side_effect=checked), patch.object(k, "compiled_mobile", return_value="mobile-sha"), patch.object(k, "compiled_kanto", return_value="kanto-sha"):
             result = k.build(self.game, self.output, SHA)
             self.assertEqual(result["revision"], SHA)
             self.assertEqual(k.verify_archive(self.output, SHA)["maps"], len(self.mapping))
@@ -74,7 +74,7 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Existing"):
             with patch.object(k, "_metadata", return_value=self.meta), patch.object(k, "_compiled", side_effect=checked):
                 k.build(self.game, self.output, SHA)
-        with patch.object(k, "compiled_mobile", return_value="mobile-sha"):
+        with patch.object(k, "compiled_mobile", return_value="mobile-sha"), patch.object(k, "compiled_kanto", return_value="kanto-sha"):
             with self.assertRaisesRegex(ValueError, "revision"):
                 k.verify_archive(self.output, "b" * 40)
 
