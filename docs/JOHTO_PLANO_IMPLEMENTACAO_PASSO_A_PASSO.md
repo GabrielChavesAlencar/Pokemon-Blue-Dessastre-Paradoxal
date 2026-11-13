@@ -289,6 +289,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 15/16 — Música, sons, catálogo de treinadores e portal
 
+**Implementação parcial publicada:** [JOHTO_FASE_15_MUSICAS_TREINADORES_PORTAL.md](JOHTO_FASE_15_MUSICAS_TREINADORES_PORTAL.md). `data/johto-music.json` contém **53 cues planejados (42 BGM, 11 ME)** sem arquivo, direitos, hash, loop ou MapID supostos. `data/johto-music-rules.json` define 35 áreas simbólicas, 10 categorias de batalha, 11 ME e 7 cenas, todas com `enabled:false`, região JOHTO, fallback e restauração BGM; `scripts/music/audit_johto_phase15.py` impede habilitar áudio sem fonte/instalação. O portal publica `johto-preview.json` com **148 nós de mapa simbólico e 36 tipos de treinadores (8 líderes)** sem equipes inventadas, com rotas `/localizacoes?regiao=johto`, `/treinadores?regiao=johto` e `/chefes?regiao=johto`. A página mostra explicitamente **prévia, 0 mapas instalados e 0 PBS compilados**. Testes Python/CI verificam contratos, licenças, versões e preservação de Kanto/Decades. **A integração efetiva M2–M6, áudio licenciado, equipe PBS, MapIDs, habitats, jogabilidade Game.exe e JoiPlay permanecem pendentes; fase 15 PARCIAL.**
+
+
 **Implementar música em subfases M0–M6**, com catálogo auditado, usando o sistema de Kanto apenas como padrão técnico:
 
 - **M0:** inventário de fontes legais, direitos e hashes; nenhum MP3 inventado/automaticamente baixado.
