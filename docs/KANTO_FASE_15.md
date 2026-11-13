@@ -39,9 +39,9 @@ O portal exibe **144 treinadores** agrupados por identidade/localização, além
 
 ## Inconsistência da fonte: Route 23 / Map209
 
-A auditoria `scripts/regions/audit_source_encounters.py` identificou **um método `LandDay` duplicado dentro da mesma seção `[209]`** do arquivo de origem. Fundir os blocos automaticamente poderia mudar as proporções, e tratar a segunda ocorrência como variante seria especulação.
+O mapa fonte 209 contém duas cópias idênticas de LandDay. O importador mantém uma cópia e rejeita uma repetição que altere a taxa ou os Pokémon e níveis. A distribuição do bloco original usa pesos relativos que somam 110. O portal calcula as porcentagens sobre essa soma.
 
-**Decisão conservadora:** somente encontros selvagens do mapa fonte 209 ficam suspensos em `ENCOUNTER_REVIEW_SOURCE_IDS`. **O mapa, as oito verificações de insígnias, os guardas, as batalhas e a passagem para a Liga seguem ativos**, sem impacto no save. A resolução do método duplicado dependerá de uma fonte ou decisão confirmada.
+A auditoria confrontou as distribuições de grama diurna, surfe e três varas com o PBS gerado. São 23 áreas, 69 métodos e 53 espécies no total. Falta verificar encontros pela interface e comparar independentemente as exclusividades oficiais de FireRed e LeafGreen.
 
 ## Regiões/áreas que passaram a ter encontros reais na tabela do piloto
 
@@ -59,7 +59,7 @@ Entre os 22 mapas com tabelas autenticadas estão Pallet/água (fonte 005), Viri
 ## Pendências de **aceite integral** (continuam abertas)
 
 - Comparação **independente com as tabelas oficiais de FireRed e LeafGreen** (incluindo exclusividades como Oddish/Bellsprout, Growlithe/Vulpix, Elekid/Magby quando aplicáveis), confrontando habitat, método e horário em cada versão. A fonte usada aqui **mescla** conteúdo e não prova equivalência oficial.
-- Resolver em segurança a duplicidade de `LandDay` do mapa 209, sem alterar os dados-base.
+- Verificar encontros da Rota 23 pela interface.
 - Confirmar que todos os métodos, rodadas dia/noite, pesca, Surf, taxas, nível e legendários funcionam **jogando** no Windows/JoiPlay, incluindo Save/Reload, repelentes e HM.
 - Auditar todos os itens de chão/TMs/Key Items e sequências de eventos canônicos que ainda estão excluídos por whitelist (Safari, Silph Scope, Rocket, Bill, fósseis e afins). **Importar tabelas não significa liberar esses eventos.**
 - Validar autorização individual de sprites, músicas, efeitos e créditos para eventual distribuição pública.
