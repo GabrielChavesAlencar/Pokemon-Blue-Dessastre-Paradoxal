@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a468c80c7aabff2b3d7d2a2a1a7aa50ccf6be760",
+      "date": "2026-11-12T22:50:00-03:00",
+      "title": "docs(johto): acompanha fase 11 parcial e pendencias de mapas e PBS",
+      "category": "Documentação"
+    },
+    {
       "sha": "733d437b5c045a3025ddc5043a9ae50b676bdeb9",
       "date": "2026-11-12T22:49:14-03:00",
       "title": "docs(johto): detalha fase 11 Lake of Rage Rocket HQ Pryce Radio Tower e aceite",
