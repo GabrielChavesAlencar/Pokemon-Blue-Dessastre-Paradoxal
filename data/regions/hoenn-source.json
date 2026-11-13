@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "region": "HOENN",
+  "status": "PENDING_LOCAL_ZIP_AUDIT",
+  "source": {
+    "name": "The Pokémon World Project - Hoenn",
+    "author": "SocomSeal and credited project contributors",
+    "repository_url": "https://github.com/SocomSeal/The-PMon-World-Project",
+    "source_project_directory": "The Pokémon World Project - Hoenn",
+    "local_archive_filename": "The Pokémon World Project - Hoenn.zip",
+    "archive_sha256": null,
+    "checked_engine": "Pokémon Essentials v21.1",
+    "public_repository_has_explicit_license": false,
+    "public_redistribution_approved": false,
+    "source_usage_intent": "Author offers as fangame base; verify rights/credits for redistribution of individual files",
+    "credits_status": "PENDING_PER_ASSET_REVIEW"
+  },
+  "extraction": {
+    "script": "scripts/regions/prepare_hoenn_source.py",
+    "staging_directory": ".blue-work/hoenn-source/<archive_sha256_prefix>/",
+    "selected_map_data": [
+      "Data/MapNNN.rxdata",
+      "Data/MapInfos.rxdata",
+      "Data/Tilesets.rxdata",
+      "Data/CommonEvents.rxdata",
+      "Data/Animations.rxdata"
+    ],
+    "graphics": "Graphics/* image files, local staging only",
+    "metadata": "PBS/* text/json/csv, for cross-reference only",
+    "optional_audio": "Audio/*, local only and explicitly opt-in",
+    "excluded_direct_install": [
+      "Game.exe",
+      "Game.rxproj",
+      "Game.ini",
+      "Data/Scripts.rxdata",
+      "Plugins/*",
+      "Data/System.rxdata"
+    ],
+    "install_into_game": false,
+    "copy_into_public_git": false
+  },
+  "import_enabled": false,
+  "mapping_verified": false,
+  "audio_rights_verified": false,
+  "installation_verified": false,
+  "maps": {},
+  "missing_required": [
+    "Read actual uploaded ZIP contents and SHA256 in local runtime",
+    "MapInfos/MapID/warps/tilesets audit against live game/",
+    "Asset and audio redistribution permissions",
+    "Game.exe map conversion and safe isolated playable pilot",
+    "Native E2E and Kanto/Johto/Decades regression"
+  ],
+  "notes": "This manifest documents prepared tooling, NOT a verified import or an authorization to upload map/graphics/audio binaries to main."
+}
