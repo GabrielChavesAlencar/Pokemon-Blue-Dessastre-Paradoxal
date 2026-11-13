@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b6a1c4a20cf7c24787b14922738d917ebc95c186",
+      "date": "2026-11-13T17:18:57-03:00",
+      "title": "fix(android): guard Kanto pilot metadata and updater compatibility",
+      "category": "Correções"
+    },
+    {
+      "sha": "b4defa6129b6ae3fd07d12bf96e1db9697fab639",
+      "date": "2026-11-13T17:18:54-03:00",
+      "title": "fix(android): make updater/bootstrap assets explicit in manifest",
+      "category": "Correções"
+    },
+    {
+      "sha": "3d90053fd8eb7fb58854f4879b2b5b90f1c72bb8",
+      "date": "2026-11-13T17:18:52-03:00",
+      "title": "feat(android): record critical unpatchable root assets in manifests",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0949e620ae97c7eeed112569743079f772319e4b",
+      "date": "2026-11-13T17:18:49-03:00",
+      "title": "fix(android): parse embedded revision correctly without JSON dependency",
+      "category": "Correções"
+    },
+    {
       "sha": "cadd48dc685355795e7a32ccda9761514cc497d4",
       "date": "2026-11-13T17:17:18-03:00",
       "title": "test(android): exercise incremental updates, save protection and mismatch guards",
