@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "last_audit_date": "2026-11-13",
+  "progress": {
+    "map_pack_source_maps": {
+      "verified": 74,
+      "total": 74,
+      "meaning": "MapIDs do ZIP v1 identificados e hashes da fonte registrados; não significa que foram instalados."
+    },
+    "map_pack_connection_rows": {
+      "verified": 42,
+      "total": 42,
+      "meaning": "Todas as linhas de conexão que existiam no ZIP v1 foram registradas; não significa cobertura de todos os caminhos."
+    },
+    "technical_phases_fully_approved": {
+      "verified": 0,
+      "total": 16,
+      "meaning": "Requer todos os critérios técnicos da fase (fonte, permissões, dependências, game/ e CI conforme etapa)."
+    },
+    "gameplay_phases_fully_approved": {
+      "verified": 0,
+      "total": 16,
+      "meaning": "Requer execução em Game.exe e testes reais de mapas, warps, eventos, batalhas e saves; nenhuma fase passou."
+    }
+  },
+  "phases": [
+    {
+      "id": 1,
+      "name": "Fonte, direitos e baseline de Kanto/Decades",
+      "state": "PARTIAL",
+      "evidence": [
+        "ZIP real v1 com SHA-256 fixado",
+        "74 mapas identificados"
+      ],
+      "blockers": [
+        "game/Data nativo ainda ausente no repositório e nos anexos",
+        "Permissões e créditos por asset não aprovados",
+        "Baseline da instalação e hashes de Kanto/Decades não comparados"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Inventário de mapas e dependências",
+      "state": "PARTIAL",
+      "evidence": [
+        "MapIDs 79–152 e nomes simbólicos",
+        "42 conexões externas do ZIP catalogadas",
+        "Fonte sem eventos confirmada"
+      ],
+      "blockers": [
+        "Passabilidade e pontos de chegada ainda não certificados no Game.exe nativo",
+        "Conexões faltantes e dependências de interiores ainda pendentes"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Prévia isolada da geometria",
+      "state": "PARTIAL",
+      "evidence": [
+        "Importador e testes de dados RMXP sintéticos"
+      ],
+      "blockers": [
+        "Prévia com assets reais e game/ nativo não foi criada/validada"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "New Bark jogável",
+      "state": "PARTIAL",
+      "evidence": [
+        "Código de NPCs, eventos e montagem isolada parcialmente desenvolvido"
+      ],
+      "blockers": [
+        "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Fase da campanha 5",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Fase da campanha 6",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Fase da campanha 7",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Fase da campanha 8",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Fase da campanha 9",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Fase da campanha 10",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Fase da campanha 11",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Fase da campanha 12",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Fase da campanha 13",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Fase da campanha 14",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Fase da campanha 15",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Fase da campanha 16",
+      "state": "PARTIAL",
+      "evidence": [
+        "Contratos e lógica parcial no repositório"
+      ],
+      "blockers": [
+        "Integração no Game.exe e aprovação de gameplay pendentes"
+      ]
+    }
+  ],
+  "source_manifest": "data/regions/johto-source.json",
+  "connections_manifest": "data/regions/johto-v1-map-connections.json",
+  "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
+  "next_required_input": "Arquivos locais game/Data, game/Graphics/Tilesets, game/Graphics/Autotiles e PBS; sem saves pessoais e sem executáveis"
+}
