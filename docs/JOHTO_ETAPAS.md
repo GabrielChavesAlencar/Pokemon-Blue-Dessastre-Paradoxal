@@ -197,3 +197,16 @@ Os eventos de origem são **metadados de auditoria**, não prova de uma campanha
 4. O resultado `AUTHORED_EVENT_MAPS_NOT_PLAYABLE` ainda depende dos PBS reais do rival, sprites, integração no piloto, eventos de saída/entrada, compilação Essentials, saves, QA Windows/JoiPlay e direitos de redistribuição. **Não executar `install_johto.py --apply`**.
 
 **Status oficial:** fases 01–04 continuam **PARCIAIS**, barras **0/16 aprovadas**. O compilador valida somente serialização/contratos em sintéticos; a batalha continua sendo a de Decades/Blue e os scripts `JohtoPilot.rb` ainda não foram montados em um Game.exe de Johto.
+
+## Batalha inicial — três versões do rival (implementação preparatória)
+
+- [scripts/regions/draft_johto_rival_pbs.py](../scripts/regions/draft_johto_rival_pbs.py) gera `trainer_types_johto.txt` e `trainers_johto.txt` em `.blue-work/johto-rival-pbs/PBS/` **somente após ler a Pokédex e o tipo RIVAL1 verdadeiros do jogo local**.
+- Mapeamento seguro no nível 5: jogador Chikorita → rival Cyndaquil (v0); jogador Cyndaquil → rival Totodile (v1); jogador Totodile → rival Chikorita (v2). O script respeita `TrainerBattle.start(:BLUE_JOHTO_RIVAL, "Rival", version)` que já está em `JohtoPilot.rb`.
+- Testes: [test_johto_rival_pbs_draft.py](../tests/test_johto_rival_pbs_draft.py). São rascunhos compatíveis com o PBS do Blue, não batalhas efetivamente compiladas.
+
+~~~powershell
+python scripts/regions/draft_johto_rival_pbs.py --game "game" --output ".blue-work/johto-rival-pbs"
+python -m unittest discover -s tests -p "test_johto_rival_pbs_draft.py" -v
+~~~
+
+**Critério de aceite ainda aberto:** conferir trainer graphic e áudio, compilar as três versões na **cópia isolada**, executar uma luta por versão, salvar e recarregar e só depois ativar o marcador `blue-johto-rival-ready.txt` **no piloto**. Nenhum desses testes reais ocorreu nesta fase.
