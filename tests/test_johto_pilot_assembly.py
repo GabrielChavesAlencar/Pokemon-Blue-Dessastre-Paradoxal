@@ -44,6 +44,9 @@ def make_game(root):
                   {"RPG::System"}))
     (game / "Data/MapInfos.rxdata").write_bytes(
         serialize({1: rmxp("RPG::MapInfo", name=b"Decades")}))
+    (game / "Data/Map001.rxdata").write_bytes(
+        serialize(rmxp("RPG::Map", width=10, height=10,
+                       tileset_id=1, events={})))
     old_tiles = [None, rmxp("RPG::Tileset", id=1),
                  rmxp("RPG::Tileset", id=2)]
     (game / "Data/Tilesets.rxdata").write_bytes(serialize(old_tiles))
