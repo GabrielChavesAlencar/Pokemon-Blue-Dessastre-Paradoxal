@@ -30,6 +30,31 @@ module BlueMobile
     File.write('Data/blue-save-location.txt',directory+"\nFile A-H.rxdata | Auto 1-3.rxdata | Game.rxdata | *.bak\n") rescue nil
     BlueBattleLab.choose('Onde fica meu save?',lines)
   end
+  def self.show_updates
+    # The game must NOT replace loaded RGSS maps or scripts while running.
+    # ATUALIZAR-ANDROID.py performs a verified, backed-up update outside JoiPlay.
+    marker='Data/blue-update.json'
+    unless File.file?(marker)
+      BlueBattleLab.choose('Atualizacoes Android',['Pacote antigo: instale primeiro um ZIP com atualizador.','Voltar'])
+      return
+    end
+    region=File.file?('Kanto pilot.json') ? 'Kanto (piloto)' : 'Decades'
+    revision=File.read(marker)[/"revision"\\s*:\\s*"([a-f0-9]{40})"/,1] rescue nil
+    revision=revision ? revision[0,12] : 'nao identificada'
+    BlueBattleLab.choose('Atualizacoes Android',[
+      'Canal: '+region,
+      'Versao instalada: '+revision,
+      'Feche totalmente o JoiPlay para atualizar.',
+      'Use Python no Termux e abra a pasta do jogo.',
+      'python ATUALIZAR-ANDROID.py  (verificar)',
+      'python ATUALIZAR-ANDROID.py --update',
+      'O programa baixa somente o patch compativel.',
+      'Backup automatico; saves preservados.',
+      'Guia: github.com/'+ 'GabrielChavesAlencar',
+      'Pokemon-Blue-Dessastre-Paradoxal',
+      'Voltar'
+    ])
+  end
   def self.write_event_error(error,context)
     return if error.is_a?(SystemExit) || error.class.to_s=='Reset'
     interpreter=context[:interpreter]
@@ -100,10 +125,14 @@ module BlueMobile
       BlueMobile.install_input_compatibility
       BlueMobile.log_boot
       until BlueMobile.title_selected
-        choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',['Modo historia','Hub de batalha offline','Sair','Onde fica meu save?'])
+        choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',[
+          'Modo historia','Hub de batalha offline','Atualizacoes Android',
+          'Onde fica meu save?','Sair'
+        ])
+        if choice==2;BlueMobile.show_updates;next;end
         if choice==3;BlueMobile.show_save_location;next;end
         BlueMobile.title_selected=true
-        return nil if choice<0 || choice==2
+        return nil if choice<0 || choice==4
         if choice==1
           BlueBattleLab.send(:remove_const,:ACTIVE);BlueBattleLab.const_set(:ACTIVE,true)
           BlueBattleLab.install;return BlueBattleLab::Scene.new
@@ -117,3 +146,19 @@ BlueMobile.install_input_compatibility
 BlueMobile.install_event_diagnostics
 BlueMobile.log_boot
 Object.prepend(BlueMobile::Title)
+
+# Both Android installations can access the updater guide from the pause menu.
+# The item is hidden on Windows and on packages without the installed manifest.
+if defined?(MenuHandlers)
+  MenuHandlers.add(:pause_menu, :blue_android_updates, {
+    "name"=>_INTL("Atualizacoes Android"),
+    "order"=>72,
+    "condition"=>proc { |_menu| File.file?('Data/blue-update.json') && (BlueMobile.enabled? || File.file?('Kanto pilot.json')) },
+    "effect"=>proc do |menu|
+      menu.pbHideMenu
+      BlueMobile.show_updates
+      menu.pbShowMenu
+      false
+    end
+  })
+end
