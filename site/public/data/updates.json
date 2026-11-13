@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8f86e5b7a075aecf86ac7ba2c063b43578b6f900",
+      "date": "2026-11-13T07:48:05-03:00",
+      "title": "test(johto): adiciona coordenada do NPC New Bark ao manifesto de liberação simulado",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c50f3d39073a9efcdbd5a0bc0f221aece1351fb8",
+      "date": "2026-11-13T07:47:50-03:00",
+      "title": "feat(johto): valida ponto físico do agente New Bark separado do destino de viagem",
+      "category": "Novidades"
+    },
+    {
       "sha": "4e202459cada920baa36d30363ba89b475618349",
       "date": "2026-11-13T07:47:19-03:00",
       "title": "test(regions): Johto só inicia com manifest completo, hash de mapas e validações reais",
