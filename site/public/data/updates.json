@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f229ff28e54f55bc575882c6f59f586c4f296061",
+      "date": "2026-11-13T16:55:37-03:00",
+      "title": "fix(android): reconhecer os dois caminhos de save na mesma linha do mkxp-z",
+      "category": "Correções"
+    },
+    {
       "sha": "1e8e5effe7b355b3fb86ad83ae0934337df8b792",
       "date": "2026-11-13T16:51:57-03:00",
       "title": "ci(android): retestar Kanto com mkxp.json comentado [android-kanto-release]",
