@@ -7,6 +7,7 @@ sys.path.insert(0,str(ROOT/'scripts/official_rules'))
 from prepare_restore import Marshal,RubyString,dump
 from server.ruby_marshal import loads
 from scripts.android.build_manifest import installed_manifest, verify_manifest
+from scripts.android.early_input import install as install_early_input, verify as verify_early_input
 
 MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 
@@ -28,6 +29,7 @@ def verify_archive(output,revision,source_sha=None):
         if info.get('Mobile-SHA256')!=actual or (source_sha and source_sha!=actual):raise ValueError('Android ZIP compatibility source checksum mismatch.')
         if 'Revision: '+revision+'\n' not in archive.read(base+'LEIA-ME-ANDROID.txt').decode('utf8'):raise ValueError('Android README revision mismatch.')
         verify_manifest(archive,base,'decades',revision)
+        verify_early_input(archive.read(base+'Data/Scripts.rxdata'))
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
@@ -38,6 +40,9 @@ def fingerprint(game):
     return digest.hexdigest()
 
 def request_compile(game):
+    # Input is loaded before plugin Mobile.rb. Fix JoiPlay touch at its source
+    # instead of depending on a late plugin callback (Input line 28 crash).
+    install_early_input(game)
     path=game/'Data/Scripts.rxdata';rows=Marshal(path.read_bytes()).read();found=False
     for row in rows:
         if row[1]!=b'Main':continue
