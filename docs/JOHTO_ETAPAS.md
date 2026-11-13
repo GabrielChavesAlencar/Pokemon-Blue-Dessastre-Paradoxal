@@ -96,6 +96,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] Portal: `site/public/data/johto-preview.json` reúne 148 locais simbólicos e 36 tipos de treinadores, incluindo oito líderes, sem teams PBS inventados; `site/src/assets/johto.js`, `app.js`, `regions.js` e `styles.css` expõem os filtros `?regiao=johto` como prévia explícita.
 - [x] [MD da Etapa 15 — Músicas, treinadores e portal](JOHTO_FASE_15_MUSICAS_TREINADORES_PORTAL.md), com checklist M0–M6, entregas e provas de aceite.
 - [ ] Receber áudio com licença e SHA-256, compilar mapas e PBS reais e completar o sistema de BGM/ME, equipes normal/Master e habitats no Game.exe antes de declarar a etapa concluída.
+- [x] **Etapa 16 iniciada:** `scripts/regions/install_johto.py` audita as 16 fases em **dry-run**, identifica impedimentos materiais e recusa `--apply` sem instalador transacional revisado.
+- [x] `RegionStart.rb` exige 13 evidências, SHA-256 dos arquivos de mapa e posições separadas de casa, chegada e NPC antes de habilitar Johto; manifesto vazio `{}` não funciona.
+- [x] `RegionTravel.rb` suporta viagem Kanto↔Johto **somente com release comprovado** e após Liga da região de origem, NPC em New Bark e rollback/PC; Hoenn continua sem destino instalado.
+- [x] `tests/region_start_runtime.rb`, `tests/region_travel_runtime.rb` e `tests/test_johto_phase16_release.py` validam gates, variações de save, Box, rollback e relatório dos bloqueios.
+- [x] [Schema da prova de release](../data/regions/johto-release-proof.schema.json), [MD da Etapa 16](JOHTO_FASE_16_INTEGRACAO_E_ACEITE.md) e [matriz E2E](JOHTO_TESTES_E2E.md) publicados.
+- [ ] Criar instalador **transacional de verdade** com backups/rollback em cópia isolada, **após** obter Map Pack com direitos/hashes, eventos, PBS, músicas e prova Windows/JoiPlay; não emitir marcadores de aprovação antes disso.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -118,7 +124,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 13 | Liga Johto e Lance | **PARCIAL**: Tohjo, Victory Road, Elite Four/Lance, Hall of Fame protegido e unlock Kanto/Hoenn no save em código/testes; mapas e gameplay pendentes |
 | 14 | Lendários e pós-jogo | **PARCIAL**: versões HG/SS/Crystal, Raikou/Entei, Kimono, Ho-Oh/Lugia e Ruins com lógica/testes; Suicune, mapas, Mt. Silver e gameplay pendentes |
 | 15 | Música, treinadores e portal | **PARCIAL**: 53 cues sem áudio, regras M0–M6 desativadas, auditor, prévia de 148 mapas simbólicos/36 treinadores e UI Johto; faltam MapIDs, arquivos licenciados, PBS e gameplay |
-| 16 | Instalação, viagem e aceite final | PENDENTE |
+| 16 | Instalação, viagem e aceite final | **PARCIAL**: preflight dry-run e 13 provas, hashes, viagem Kanto↔Johto guardada, NPC New Bark e testes; falta instalação transacional real e gameplay |
 
 ## Regras obrigatórias antes de importar qualquer mapa
 
