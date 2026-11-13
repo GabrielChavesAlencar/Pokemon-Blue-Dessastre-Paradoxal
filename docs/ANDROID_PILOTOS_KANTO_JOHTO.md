@@ -1,15 +1,15 @@
 # Android — pilotos Kanto e Johto separados
 
-**13/11/2026 — estado:** há um pacote principal Android JoiPlay na release, mas ainda não existem os ZIPs regionais de Kanto e Johto. A interface do portal exibe as duas opções e só ativa cada link se o arquivo real estiver anexado à release.
+**13/11/2026 — estado atualizado:** o pacote principal Decades está publicado e o **piloto Android de Kanto foi publicado como prerelease independente**: [Piloto Kanto 638](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/kanto-android-638-d4899b4). **Johto ainda não tem ZIP regional aprovado**. Os próximos ZIPs podem incluir o atualizador incremental por canal, descrito em [ANDROID_ATUALIZACOES_INCREMENTAIS.md](ANDROID_ATUALIZACOES_INCREMENTAIS.md); sua publicação exige workflow aprovado.
 
 ## Arquivos esperados
 - Modo História / Decades: Blue-Android-JoiPlay.zip (já existe na release).
-- Piloto de Kanto: Blue-Android-Kanto-Piloto.zip (**pendente**).
+- Piloto de Kanto: Blue-Android-Kanto-Piloto.zip (**já publicado, prerelease separada**).
 - Piloto de Johto: Blue-Android-Johto-Piloto.zip (**pendente**).
 
 Os pilotos são ZIPs completos de RPG Maker XP para JoiPlay + RPG Maker Plugin, não APKs. Não reutilizar ou renomear o pacote geral como se fossem pilotos.
 
-## Por que ainda não estão publicados
+## Histórico de bloqueios anteriores à publicação de Kanto
 - O botão Testar Kanto do jogo principal usa o launcher Windows (cmd.exe). Não pode ser executado pelo JoiPlay. É necessária uma instalação já montada como piloto, em que Novo Jogo começa na casa do jogador em Kanto. A montagem isolada de Windows depende de scripts/regions/pilot.py, da fonte FRLG correta e do processo de compilação nativa.
 - Johto ainda depende da preparação dos interiores, eventos e arquivos nativos que ficam fora da main. A documentação docs/JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md afirma que a prévia não está jogável; data/regions/johto-source.json registra distribution_approved: false. Não publicar dados de terceiros sem autorização.
 - Cada piloto precisa de seu próprio diretório de save, compilação, trilha de teste e identificação de versão. Não deve modificar game/ nem sobrepor saves da história Decades ou do outro piloto.
