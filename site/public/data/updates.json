@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a5ef0727cc19e1df0cde669fdc0e39047204fbed",
+      "date": "2026-11-13T19:57:55-03:00",
+      "title": "feat(hoenn): build an isolated Littleroot to Oldale pilot",
+      "category": "Novidades"
+    },
+    {
       "sha": "da2d0cbf8037d9f342ed883383f6b554763be608",
       "date": "2026-11-13T19:37:07-03:00",
       "title": "docs(johto): record validated original archive and local QA staging",
