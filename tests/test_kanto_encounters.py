@@ -59,6 +59,17 @@ class KantoEncounterSourceTests(unittest.TestCase):
         self.assertIn("100,RATTATA,6,6",result)
         self.assertIn("100,RATTATA,10,10",result)
 
+    def test_route23_removes_only_identical_land_day_blocks(self):
+        grass = "LandDay,21\n60,SPEAROW,32\n50,RATTATA,34\n"
+        water = "Water,2\n100,RATTATA,20\n"
+        once, _ = normalize("[209]\n" + grass + water)
+        twice, _ = normalize("[209]\n" + grass + grass + water)
+        self.assertEqual(twice, once)
+        self.assertIn("LandDay,21", twice)
+        self.assertIn("Water,2", twice)
+        with self.assertRaisesRegex(ValueError, "Duplicate method LandDay"):
+            normalize("[209]\n" + grass + grass.replace("32", "33") + water)
+
     def test_preview_and_unsupported_map_cannot_be_imported(self):
         result,count=normalize("[016]\nLand\n100,SPEAROW,3,5\n"
                                "[100]\nLand\n100,RATTATA,3,5\n")
