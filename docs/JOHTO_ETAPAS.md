@@ -162,3 +162,51 @@ O auditor nunca instala conteúdo e grava apenas um JSON em .blue-work/. Se a sa
 - [ ] Testes automatizados concluídos sem regressão e evidências documentadas.
 
 **Próxima ação:** preparar o ZIP legítimo com `prepare_johto_source.py`, conferir SHA-256, credenciais de uso de artes e os IDs originais; então executar `audit_johto.py`, `plan_johto.py`, `stage_johto.py` e `verify_johto.py` sobre o pacote real e a instalação local, de acordo com [a Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md). Depois, ligar os eventos já preparados aos interiores de New Bark dentro de um piloto isolado. O botão de nova partida em Johto e o teste executável continuam bloqueados enquanto esses mapas reais não forem validados.
+
+## Implementação iniciada — inventário físico de conteúdo RMXP (13/11/2026)
+
+**Entrega em código, ainda sem Map Pack externo:** [inventory_johto.py](../scripts/regions/inventory_johto.py) é um scanner complementar a [audit_johto.py](../scripts/regions/audit_johto.py). Ele analisa **cada mapa e suas páginas de eventos**, incluindo coordenadas, triggers, contagens de diálogo, comandos de batalha, mudanças de itens, transferência, scripts de origem não confiáveis e avisos de MapIDs ausentes/XY inválidos. Nunca executa scripts externos e não copia diálogos, sprites ou eventos para o jogo.
+
+- [x] [johto-area-scope.json](../data/regions/johto-area-scope.json): 80 áreas/interiores obrigatórios de referência inicial (HGSS e variantes), incluindo ginásios, casas cruciais e Mt. Silver. **São aliases candidatos, não mapas confirmados.**
+- [x] [test_johto_content_inventory.py](../tests/test_johto_content_inventory.py): fixtures RMXP artificiais, teste de integridade SHA-256, comando Ruby não executado, itens/treinadores/warps e prova de que nenhum conteúdo é declarado jogável.
+- [ ] Executar o inventário com pacote **real** obtido e auditado localmente, e preencher manualmente o mapeamento Johto vs. mapas Kanto misturados na fonte.
+- [ ] Reconstruir integralmente os NPCs/itens/eventos HGSS por local e conectá-los ao motor Blue via Game.exe; o scanner não faz isso sozinho.
+
+No Windows, o novo atalho [JOHTO_PREPARAR_MAPAS.bat](../JOHTO_PREPARAR_MAPAS.bat) executa a extração ZIP, auditoria e inventário **somente em .blue-work/**, exigindo fonte e instalação local presentes. Ele não instala mapas. Alternativamente, após preparar o ZIP verdadeiro e rodar `audit_johto.py`, executar:
+
+~~~powershell
+python scripts/regions/inventory_johto.py --source ".blue-work/johto-source" --audit ".blue-work/johto-audit.json" --output ".blue-work/johto-content-inventory.json"
+python -m unittest discover -s tests -p "test_johto_content_inventory.py" -v
+~~~
+
+Os eventos de origem são **metadados de auditoria**, não prova de uma campanha completa. A fonte, a instalação local `game/`, as músicas e os PBS reais continuam ausentes neste repositório. Portanto, as barras de aceitação **permanecem 0/16 em ambas** e `install_johto.py --apply` continua bloqueado.
+
+## Etapa física 04 — compilador seguro dos primeiros eventos (13/11/2026)
+
+**Novo código publicado na branch de implementação:**
+
+- [scripts/regions/build_johto_events.py](../scripts/regions/build_johto_events.py): cria `RPG::Event` e `RPG::Event::Page` **autorais** (mother, Elm, escolha de inicial, rival e teletransportes); grava somente mapas derivados em nova pasta de `.blue-work/`, sem alterar a instalação. Scripts de evento limitados a `BlueJohtoPilot.mother`, `elm`, `choose_starter` e `rival`. Não importa código, flags ou áudio de terceiros.
+- [data/regions/johto-new-bark-events.json](../data/regions/johto-new-bark-events.json): **cinco mapas simbólicos** (quarto 2F, casa 1F, cidade, laboratório e Route 29) e **12 eventos planejados**. Todos os `map_id`, SHA, `x/y`, posições de chegada e sprites ainda necessitam auditoria real. **Nenhuma posição fictícia foi gravada**.
+- [tests/test_johto_event_build.py](../tests/test_johto_event_build.py): testes de serialização de eventos e warps, handler allowlist, proteção anti-overwrite, bytes idênticos de cenário, integridade de hash e recusa de publicação em `game/`.
+
+**Fluxo futuro quando `johto-staging-v1` for obtido com mapas verdadeiros e aprovados:**
+
+1. Conferir em janela de mapa o quarto, 1F, laboratório, rua e Route 29; identificar IDs correspondentes. **Interiores eventualmente ausentes do Map Pack terão de ser criados e auditados antes**.
+2. Preencher `map_id`, `map_sha256` e as posições verificadas no JSON, com sprites realmente disponíveis na instalação. Para cada warp, verificar que o ponto de chegada não colide com parede/NPC.
+3. Rodar `python scripts/regions/build_johto_events.py --preview ".blue-work/johto-staging-v1" --spec "data/regions/johto-new-bark-events.json" --output ".blue-work/johto-new-bark-events"`; o destino deve ser **novo**.
+4. O resultado `AUTHORED_EVENT_MAPS_NOT_PLAYABLE` ainda depende dos PBS reais do rival, sprites, integração no piloto, eventos de saída/entrada, compilação Essentials, saves, QA Windows/JoiPlay e direitos de redistribuição. **Não executar `install_johto.py --apply`**.
+
+**Status oficial:** fases 01–04 continuam **PARCIAIS**, barras **0/16 aprovadas**. O compilador valida somente serialização/contratos em sintéticos; a batalha continua sendo a de Decades/Blue e os scripts `JohtoPilot.rb` ainda não foram montados em um Game.exe de Johto.
+
+## Batalha inicial — três versões do rival (implementação preparatória)
+
+- [scripts/regions/draft_johto_rival_pbs.py](../scripts/regions/draft_johto_rival_pbs.py) gera `trainer_types_johto.txt` e `trainers_johto.txt` em `.blue-work/johto-rival-pbs/PBS/` **somente após ler a Pokédex e o tipo RIVAL1 verdadeiros do jogo local**.
+- Mapeamento seguro no nível 5: jogador Chikorita → rival Cyndaquil (v0); jogador Cyndaquil → rival Totodile (v1); jogador Totodile → rival Chikorita (v2). O script respeita `TrainerBattle.start(:BLUE_JOHTO_RIVAL, "Rival", version)` que já está em `JohtoPilot.rb`.
+- Testes: [test_johto_rival_pbs_draft.py](../tests/test_johto_rival_pbs_draft.py). São rascunhos compatíveis com o PBS do Blue, não batalhas efetivamente compiladas.
+
+~~~powershell
+python scripts/regions/draft_johto_rival_pbs.py --game "game" --output ".blue-work/johto-rival-pbs"
+python -m unittest discover -s tests -p "test_johto_rival_pbs_draft.py" -v
+~~~
+
+**Critério de aceite ainda aberto:** conferir trainer graphic e áudio, compilar as três versões na **cópia isolada**, executar uma luta por versão, salvar e recarregar e só depois ativar o marcador `blue-johto-rival-ready.txt` **no piloto**. Nenhum desses testes reais ocorreu nesta fase.

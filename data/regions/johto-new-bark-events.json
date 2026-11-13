@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "EVENT_COORDINATES_REQUIRE_REAL_AUDIT",
+  "note": "Modelos de eventos do piloto New Bark. Todos os MapIDs, SHA e coordenadas sao NULOS: preencher apenas apos importar e inspecionar mapas reais. Este arquivo NAO autoriza publicar um piloto.",
+  "maps": [
+    {
+      "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "JH_HOME2F_TO_1F",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+          "arrival_x": null,
+          "arrival_y": null
+        }
+      ]
+    },
+    {
+      "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "JH_NPC_MOTHER",
+          "kind": "handler",
+          "handler": "mother",
+          "sprite": null,
+          "x": null,
+          "y": null,
+          "verified_position": false
+        },
+        {
+          "key": "JH_HOME1F_TO_2F",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+          "arrival_x": null,
+          "arrival_y": null
+        },
+        {
+          "key": "JH_HOME1F_TO_TOWN",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_TOWN",
+          "arrival_x": null,
+          "arrival_y": null
+        }
+      ]
+    },
+    {
+      "symbol": "JOHTO_NEW_BARK_TOWN",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "JH_TOWN_TO_HOME1F",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+          "arrival_x": null,
+          "arrival_y": null
+        },
+        {
+          "key": "JH_TOWN_TO_ELM_LAB",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_ELM_LAB",
+          "arrival_x": null,
+          "arrival_y": null
+        },
+        {
+          "key": "JH_TOWN_TO_ROUTE29",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_ROUTE_29",
+          "arrival_x": null,
+          "arrival_y": null
+        }
+      ]
+    },
+    {
+      "symbol": "JOHTO_NEW_BARK_ELM_LAB",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "JH_NPC_ELM",
+          "kind": "handler",
+          "handler": "elm",
+          "sprite": null,
+          "x": null,
+          "y": null,
+          "verified_position": false
+        },
+        {
+          "key": "JH_ELM_STARTER_DISPLAY",
+          "kind": "handler",
+          "handler": "starter",
+          "sprite": null,
+          "x": null,
+          "y": null,
+          "verified_position": false
+        },
+        {
+          "key": "JH_LAB_TO_TOWN",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_TOWN",
+          "arrival_x": null,
+          "arrival_y": null
+        }
+      ]
+    },
+    {
+      "symbol": "JOHTO_ROUTE_29",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "JH_ROUTE29_NPC_RIVAL",
+          "kind": "handler",
+          "handler": "rival",
+          "sprite": null,
+          "x": null,
+          "y": null,
+          "verified_position": false
+        },
+        {
+          "key": "JH_ROUTE29_TO_NEW_BARK",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "JOHTO_NEW_BARK_TOWN",
+          "arrival_x": null,
+          "arrival_y": null
+        }
+      ]
+    }
+  ]
+}
