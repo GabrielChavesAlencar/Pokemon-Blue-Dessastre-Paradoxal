@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f53a2f8fb42e84eb4e39f2bec479b31aec4a6663",
+      "date": "2026-11-13T07:32:59-03:00",
+      "title": "test(johto): auditor read-only M0-M6 evita musicas sem licença ou regras ativas fora de Johto",
+      "category": "Testes"
+    },
+    {
       "sha": "bea1d1e67ab0bd383d272d51c259d060d680ed30",
       "date": "2026-11-13T07:32:07-03:00",
       "title": "feat(site): adiciona Johto como prévia explícita nos seletores regionais",
