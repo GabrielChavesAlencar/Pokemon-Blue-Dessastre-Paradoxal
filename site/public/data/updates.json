@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4db0be8362f318973d8a60eddaae893f0d73b460",
+      "date": "2026-11-13T07:16:29-03:00",
+      "title": "docs(johto): sincroniza plano mestre com fase 14 lendarios e posjogo parcial",
+      "category": "Documentação"
+    },
+    {
       "sha": "6788edf49d7bc4e70193ca933c579585a0ca7f0e",
       "date": "2026-11-13T07:16:09-03:00",
       "title": "docs(johto): registra etapa 14 parcial, versões e bloqueios de pós-jogo",
