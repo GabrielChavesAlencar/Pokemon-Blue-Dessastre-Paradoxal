@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d83ec79b624576bea43405bfec3e7938e4035407",
+      "date": "2026-11-13T07:56:44-03:00",
+      "title": "docs(johto): matriz E2E real, dry-run, critérios de release, backup e rollback de Johto",
+      "category": "Documentação"
+    },
+    {
       "sha": "acd12e490047b6eb031b677bd74cd0e3ab05d7ec",
       "date": "2026-11-13T07:55:25-03:00",
       "title": "docs(johto): schema de prova verificavel de Game.exe para habilitar inicio e agente New Bark",
