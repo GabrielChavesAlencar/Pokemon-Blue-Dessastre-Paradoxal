@@ -27,7 +27,7 @@ def verify_archive(output,revision,source_sha=None):
         actual=compiled_mobile(archive.read(base+'Data/PluginScripts.rxdata'),source)
         if info.get('Mobile-SHA256')!=actual or (source_sha and source_sha!=actual):raise ValueError('Android ZIP compatibility source checksum mismatch.')
         if 'Revision: '+revision+'\n' not in archive.read(base+'LEIA-ME-ANDROID.txt').decode('utf8'):raise ValueError('Android README revision mismatch.')
-    verify_manifest(archive,base,'decades',revision)
+        verify_manifest(archive,base,'decades',revision)
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
