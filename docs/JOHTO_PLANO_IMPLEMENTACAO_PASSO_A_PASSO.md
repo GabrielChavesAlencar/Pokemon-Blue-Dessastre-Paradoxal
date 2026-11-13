@@ -262,6 +262,9 @@ Cada etapa deve produzir: arquivos modificados, commit/PR, mapa-chave + ID de de
 
 ### Etapa 12/16 — Ice Path, Blackthorn, Clair e Dragon's Den
 
+**Implementação parcial publicada:** [JOHTO_FASE_12_ICE_PATH_BLACKTHORN_CLAIR.md](JOHTO_FASE_12_ICE_PATH_BLACKTHORN_CLAIR.md). `scripts/regions/JohtoBlackthorn.rb` prepara Rota 44 e Ice Path com checkpoints de gelo e quatro pedras, uso regional de Strength, HM Waterfall candidato e prêmio único, Blackthorn, puzzle do ginásio e batalha de Clair **sem RISING antecipada**, entrada na Dragon's Den e acesso ao Shrine com Whirlpool, três perguntas originais do Dragon Master e entrega posterior de **RISING (8ª insígnia)**. A autorização local de especiais consulta `BlueRegions.allow_specials?`; Route 45/46 são introdutórias, Dark Cave permanece fechada e a passagem para a Liga é **apenas uma flag futura**, sem teleporte. `data/regions/johto-phase12.json` contém mapa simbólico, recursos não instalados e requisitos; testes Ruby/Python cobrem derrotas, respostas erradas, recompensas únicas, save/reload e proteção de Decades/Kanto. **Não há mapas RXDATA auditados, puzzle físico ou PBS de Clair, nem Game.exe jogável. Etapa 12 PARCIAL.**
+
+
 **Implementar:** Ice Path com gelo/Strength, Blackthorn, ginásio Clair, Dragon's Den, prova do Dragon Master e RISING Badge na condição correta. Rotas 45/46 e Dark Cave recebem conexões auditadas quando integradas.
 
 **Teste/aceite:** puzzles concluíveis, Clair não concede insígnia precocemente, oitava insígnia concede +1 apenas uma vez, liberar HMs e uso de especiais somente pelo estado local correto.
