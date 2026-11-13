@@ -51,3 +51,12 @@ python scripts/android/package_kanto.py --verify --revision <sha-completo-de-40-
 ~~~
 
 O Android usa JoiPlay + RPG Maker Plugin e precisa ser validado em aparelho real. Não publicar recursos de terceiros sem os créditos e direitos necessários.
+
+
+## Diagnóstico de Kanto Android — tentativa de 13/11/2026
+
+A execução nativa do piloto em GitHub Actions (run 43493750021) montou a fonte FRLG e os mapas, mas não concluiu o teste do Game.exe. O log registrou LoadError de json em RegionStart.rb, além de LoadError de set em Illusion_Perception.rb do plugin Advanced AI importado da base, e terminou em timeout. Portanto, nenhum ZIP regional foi liberado nessa execução.
+
+A integração Blue foi corrigida em scripts/battle_polish/RegionStart.rb: json e digest deixam de ser requisitos para iniciar Decades/Kanto e só são carregados na validação da prova de Johto. Caso essas bibliotecas Ruby não estejam disponíveis, a prova de Johto continua bloqueada. Isso não ignora validação de Johto nem altera saves.
+
+Este commit dispara uma nova tentativa da CI Kanto. O ZIP Blue-Android-Kanto-Piloto.zip só poderá ser criado como prerelease separada depois de o teste nativo e o compilador JoiPlay finalizarem com êxito. Em caso de erro, a CI publica diagnósticos e mantém o botão do site indisponível.
