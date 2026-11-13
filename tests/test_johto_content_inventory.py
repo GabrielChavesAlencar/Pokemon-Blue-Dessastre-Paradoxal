@@ -20,8 +20,8 @@ finally:
     sys.path.pop(0)
 
 
-def obj(name, **props):
-    return RubyObject(name, {"@" + key: value for key, value in props.items()})
+def obj(class_name, **props):
+    return RubyObject(class_name, {"@" + key: value for key, value in props.items()})
 
 
 def make_source(base: Path, *, bad_warp=False):
