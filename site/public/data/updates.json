@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07c8cc4636daf3bb6de49cc372a6baf86ab42ff4",
+      "date": "2026-11-12T21:05:11-03:00",
+      "title": "docs(johto): define rota simbólica 09 Ecruteak-Olivine-Cianwood e marcos de STORM/Fly",
+      "category": "Documentação"
+    },
+    {
       "sha": "a15521204bcc3968e124b4313dcffc685b9bf42f",
       "date": "2026-11-12T21:04:24-03:00",
       "title": "test(johto): executa regras Ruby de Olivine Cianwood no CI Blue Studio",
