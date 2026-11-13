@@ -309,3 +309,21 @@ O usuário forneceu `Remastered Kanto Johto Map Packv1.zip`, que foi efetivament
 - O ZIP contém **0 eventos nos 74 mapas de Johto**. `Map001` ausente é índice Intro não selecionado; `R49Water` ausente e comprovadamente **sem tiles de referência** nesta seleção. O stage permite limpar somente autotile realmente sem uso e rejeita os usados.
 - Falta ainda a **instalação local `game/`** para plano de IDs de destino, prévia RMXP com assets, interiores, conversão segura de 42 conexões e testes reais de Game.exe, batalha, save e troca de região.
 - **Subtarefas da fonte auditadas:** 74/74 MapIDs identificados e 42/42 linhas de conexões capturadas; esses não são 74 mapas jogáveis. **Barras de gameplay separadas:** 0/13 fases jogáveis (04–16), 0/13 com QA real aprovado. Indicador técnico histórico: 0/16 plenamente aceitas. Testes de código/contratos presentes: 16/16 (não comprovam gameplay).
+
+## Primeira fase jogável — New Bark Town: pipeline de preparação (13/11/2026)
+
+**Objetivo concreto:** fase 04 começar dentro do quarto de New Bark, sair de casa, falar com mãe e Elm, escolher inicial e percorrer Rota 29. Até existir essa sequência no Game.exe, **fase jogável 0/13 e testada 0/13**.
+
+Adicionados recursos técnicos que aproximam do primeiro piloto real, sem alterar Kanto, Decades ou os saves:
+
+- [compile_johto_connections.py](../scripts/regions/compile_johto_connections.py) remapeia para IDs **livres da instalação local** as 42 conexões de borda vindas do ZIP v1 (`79,West,13,104,East,0` é New Bark ↔ Rota 29). O resultado é somente texto de PBS em prévia, não um `Game.exe`. O compilador exige hash do ZIP igual ao manifesto, regiões corretas e todos os destinos existentes, e rejeita referências ao Kanto, arestas duplicadas ou lados inválidos.
+- [pilot_johto.py](../scripts/regions/pilot_johto.py) agora aceita `--with-connections` **apenas na montagem experimental**. Mescla as conexões Johto com o `PBS/map_connections.txt` existente **somente na cópia piloto**, preservando as linhas de Kanto/Decades e adicionando hash ao relatório experimental. Isso **não prova** passabilidade, percurso nem spawn no motor.
+- [prepare_johto_first_playable.py](../scripts/regions/prepare_johto_first_playable.py) organiza extração segura do ZIP real, auditoria com `game/`, reserva 600–999 sem colisões, staging geométrico e verificação, e geração das 42 conexões. Relatório `.blue-work/johto-first-playable-readiness.json` termina em `GEOMETRY_READY_NEW_BARK_PLAYABILITY_PENDING`, com a lista explícita do que falta.
+- [JOHTO_PREPARAR_PRIMEIRA_FASE.bat](../JOHTO_PREPARAR_PRIMEIRA_FASE.bat) executa esse pipeline local no Windows; **nunca inicia Game.exe nem muda a instalação principal**.
+- [test_johto_connection_compilation.py](../tests/test_johto_connection_compilation.py) e [test_johto_first_playable_preflight.py](../tests/test_johto_first_playable_preflight.py) verificam importação sintética de 74 mapas, remapeamento de 42 conexões, seleção Johto e não modificação dos dados nativos.
+
+### Para executar com o ZIP real e a instalação Blue/Decades
+
+Colocar os **mesmos bytes** do ZIP v1 em `.blue-work/johto-source/original.zip` e manter a instalação local em `game/` sem modificar seus arquivos originais. Executar `JOHTO_PREPARAR_PRIMEIRA_FASE.bat`. O hash do ZIP é conferido com `johto-source.json`; não enviar binários/tiles sem direitos para o GitHub. A saída e os logs ficam apenas em `.blue-work/`. A extração não instala scripts de terceiros.
+
+**Ainda faltam antes de aumentar a barra JOGÁVEL:** auditar e desenhar os interiores da casa do jogador 2F/1F e laboratório de Elm, resolver sprites e coordenadas reais das portas/NPCs, compilar os handlers/PBS, corrigir a passagem Rota 29 ↔ Cherrygrove ausente da fonte e iniciar/testar Game.exe em **cópia isolada**, incluindo save/reload. Os arquivos `game/Data`, sprites e PBS nativos ainda não foram fornecidos nesta conversa. **Não marcar fase jogável por testes sintéticos.**
