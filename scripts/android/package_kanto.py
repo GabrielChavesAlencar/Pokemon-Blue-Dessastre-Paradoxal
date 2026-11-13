@@ -108,8 +108,23 @@ def _compiled(game: Path) -> tuple[str, str]:
     digest = fingerprint(game)
     if not marker.is_file() or marker.read_text(encoding="ascii") != digest:
         raise ValueError("Native Android compile is absent or stale.")
-    mobile = compiled_mobile((game / "Data/PluginScripts.rxdata").read_bytes(), (game / MOBILE).read_bytes())
+    cache = (game / "Data/PluginScripts.rxdata").read_bytes()
+    mobile = compiled_mobile(cache, (game / MOBILE).read_bytes())
+    compiled_kanto(cache, (game / KANTO_PLUGIN).read_bytes())
     return digest, mobile
+
+def compiled_kanto(cache: bytes, source: bytes) -> str:
+    """Prove regional event handlers were included in the native plugin compile."""
+    from server.ruby_marshal import loads
+    import zlib
+    expected = source.replace(b"\r\n", b"\n")
+    for plugin in loads(cache):
+        for name, compressed in plugin[2]:
+            if name == b"KantoPilot.rb":
+                actual = zlib.decompress(compressed).replace(b"\r\n", b"\n")
+                if actual == expected:
+                    return hashlib.sha256(expected).hexdigest()
+    raise ValueError("KantoPilot.rb was not compiled into the game plugin cache.")
 
 def select_files(game: Path) -> dict[str, Path]:
     selected = {f.relative_to(game).as_posix(): f for f in game.rglob("*")
@@ -181,6 +196,8 @@ def verify_archive(zip_path: Path, revision: str) -> dict:
             raise ValueError("Archive revision does not match the published commit.")
         mobile = compiled_mobile(archive.read(FOLDER + "Data/PluginScripts.rxdata"),
                                  archive.read(FOLDER + MOBILE))
+        compiled_kanto(archive.read(FOLDER + "Data/PluginScripts.rxdata"),
+                       archive.read(FOLDER + KANTO_PLUGIN))
         if "Mobile-SHA256: " + mobile + "\n" not in info:
             raise ValueError("JoiPlay adapter in ZIP differs from the compiled source.")
         config = json.loads(archive.read(FOLDER + "mkxp.json"))
