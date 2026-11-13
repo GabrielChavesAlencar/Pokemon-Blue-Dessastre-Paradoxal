@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "23f2f283cb0433d9cb898da89d7e66ca615fdb27",
+      "date": "2026-11-13T07:53:40-03:00",
+      "title": "fix(test): persiste conclusao simulada de Kanto antes da viagem Kanto para Johto",
+      "category": "Correções"
+    },
+    {
       "sha": "f607cc0296e399b6692353661eef2b654af4fb1e",
       "date": "2026-11-13T07:52:53-03:00",
       "title": "feat(johto): instala gate fase 16 dry-run, matriz de 16 etapas e aplicação bloqueada sem piloto auditado",
