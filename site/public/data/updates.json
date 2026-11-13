@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2014d8e5eb998340db87629e0d6cd61a01f65a9b",
+      "date": "2026-11-13T09:13:08-03:00",
+      "title": "feat(johto): ferramentas de mapas, eventos New Bark e PBS do rival",
+      "category": "Novidades"
+    },
+    {
       "sha": "e7d9d2d3e76fedc3dd5803ca75053028963bf59d",
       "date": "2026-11-13T08:28:18-03:00",
       "title": "docs(johto): plano definitivo de mapas eventos NPCs itens musica e batalha Blue",
