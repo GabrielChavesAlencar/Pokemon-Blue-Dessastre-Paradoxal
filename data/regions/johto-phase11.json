@@ -1,0 +1,372 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "11/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "requires_completed_phase": "10/16",
+  "notes": "All map identifiers are symbolic; physical map/event coordinates, trainer PBS, item IDs, source rights, encounters and exits have NOT been audited; this file is not an installer.",
+  "entrance": "JOHTO_ECRUTEAK_CITY",
+  "corridor": [
+    {
+      "key": "JOHTO_ECRUTEAK_CITY",
+      "label": "Ecruteak City"
+    },
+    {
+      "key": "JOHTO_ROUTE_42",
+      "label": "Route 42"
+    },
+    {
+      "key": "JOHTO_MAHOGANY_TOWN",
+      "label": "Mahogany Town"
+    },
+    {
+      "key": "JOHTO_ROUTE_43",
+      "label": "Route 43"
+    },
+    {
+      "key": "JOHTO_LAKE_OF_RAGE",
+      "label": "Lake of Rage"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_LAKE_RED_GYARADOS",
+      "label": "Red Gyarados map encounter and Red Scale"
+    },
+    {
+      "key": "JOHTO_MAHOGANY_ROCKET_SHOP",
+      "label": "Mahogany suspicious shop"
+    },
+    {
+      "key": "JOHTO_ROCKET_HQ_B1F",
+      "label": "Rocket Hideout B1F"
+    },
+    {
+      "key": "JOHTO_ROCKET_HQ_B2F",
+      "label": "Rocket Hideout B2F"
+    },
+    {
+      "key": "JOHTO_ROCKET_HQ_B3F",
+      "label": "Rocket Hideout B3F"
+    },
+    {
+      "key": "JOHTO_MAHOGANY_GYM",
+      "label": "Mahogany Gym ice puzzle and Pryce"
+    },
+    {
+      "key": "JOHTO_MAHOGANY_POKEMON_CENTER",
+      "label": "Mahogany Pokemon Center"
+    },
+    {
+      "key": "JOHTO_MAHOGANY_MART",
+      "label": "Mahogany Poke Mart"
+    },
+    {
+      "key": "JOHTO_ROUTE_44_GATE",
+      "label": "Route 44 east exit / Ice Path approach"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_CITY",
+      "label": "Goldenrod City return for Rocket takeover"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_RADIO_TOWER",
+      "label": "Goldenrod Radio Tower entrance"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_RADIO_TOWER_2F",
+      "label": "Radio Tower 2F"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_RADIO_TOWER_3F",
+      "label": "Radio Tower 3F"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_RADIO_TOWER_4F",
+      "label": "Radio Tower 4F"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_RADIO_TOWER_5F",
+      "label": "Radio Tower 5F"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_UNDERGROUND",
+      "label": "Goldenrod Underground passage"
+    },
+    {
+      "key": "JOHTO_GOLDENROD_UNDERGROUND_WAREHOUSE",
+      "label": "Underground Warehouse and real Director"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ROUTE_42",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_42",
+      "to": "JOHTO_MAHOGANY_TOWN",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_ROUTE_43",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_43",
+      "to": "JOHTO_LAKE_OF_RAGE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_LAKE_OF_RAGE",
+      "to": "JOHTO_LAKE_RED_GYARADOS",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_MAHOGANY_ROCKET_SHOP",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_ROCKET_SHOP",
+      "to": "JOHTO_ROCKET_HQ_B1F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROCKET_HQ_B1F",
+      "to": "JOHTO_ROCKET_HQ_B2F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROCKET_HQ_B2F",
+      "to": "JOHTO_ROCKET_HQ_B3F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_MAHOGANY_GYM",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_MAHOGANY_POKEMON_CENTER",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_MAHOGANY_MART",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_ROUTE_44_GATE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_RADIO_TOWER",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_RADIO_TOWER",
+      "to": "JOHTO_GOLDENROD_RADIO_TOWER_2F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_RADIO_TOWER_2F",
+      "to": "JOHTO_GOLDENROD_RADIO_TOWER_3F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_RADIO_TOWER_3F",
+      "to": "JOHTO_GOLDENROD_RADIO_TOWER_4F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_RADIO_TOWER_4F",
+      "to": "JOHTO_GOLDENROD_RADIO_TOWER_5F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_CITY",
+      "to": "JOHTO_GOLDENROD_UNDERGROUND",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_GOLDENROD_UNDERGROUND",
+      "to": "JOHTO_GOLDENROD_UNDERGROUND_WAREHOUSE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    }
+  ],
+  "story_requirements": [
+    "MINERAL (6th badge) and Ecruteak visited before Route 42 and Mahogany",
+    "Visit Route 43 and Lake of Rage; Red Gyarados fight must be initiated by audited map adapter",
+    "Red Gyarados outcome must be :caught or :defeated; fleeing or losing must NOT advance story",
+    "Red Scale needs real catalog item and successful one-time reward",
+    "Lance appears once after the lake event and opens a separate Rocket HQ quest",
+    "Rocket HQ grunts 0 then 1; security switch and door validated by actual map event",
+    "Petrel then Lance help then Ariana; three player Electrodes resolved, three Lance Electrodes event verified",
+    "No HQ completion while an Electrode remains; flee does not remove an Electrode",
+    "Whirlpool item reward only after HQ cleared, with catalog key HM06 and approved local pilot adapter",
+    "Gym ice puzzle requires audited local event; Pryce only after HQ cleared and previous MINERAL",
+    "Victory against Pryce grants JOHTO GLACIER once via BlueRegions.award, loss grants nothing",
+    "GLACIER plus tool is required for Whirlpool; Whirl Islands still blocked by phase 10 unverified portals",
+    "Goldenrod Radio Tower takeover begins only after GLACIER, not while visiting Lake of Rage",
+    "Radio Petrel then Underground Rival then door switch puzzle/Director then executives 0/1/2",
+    "Radio resolution is mandatory before Route 44 handoff to phase 12",
+    "Save/reload and travel between regions must never duplicate rewards or transfer Kanto switches",
+    "Do not enable in-game story based solely on simulated Ruby tests"
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_HQ_GRUNT",
+      "name": "Rocket Grunt",
+      "versions": [
+        0,
+        1
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_HQ_PETREL",
+      "name": "Petrel",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_HQ_ARIANA",
+      "name": "Ariana",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_PRYCE",
+      "name": "Pryce",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_RADIO_PETREL",
+      "name": "Petrel",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_RADIO_RIVAL",
+      "name": "Rival",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_RADIO_EXEC",
+      "name": "Proton/Ariana/Archer",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "compiled": false
+    }
+  ],
+  "species_events": [
+    {
+      "species": "GYARADOS",
+      "color": "shiny",
+      "count": 1,
+      "requires_audited_battle_result": true,
+      "level": null,
+      "resolved": false
+    },
+    {
+      "species": "ELECTRODE",
+      "count": 3,
+      "requires_audited_battle_result": true,
+      "level": null,
+      "resolved": false
+    }
+  ],
+  "items": [
+    {
+      "key": "REDSCALE",
+      "status": "CANDIDATE_UNVERIFIED",
+      "after": "lake_red_gyarados_resolved"
+    },
+    {
+      "key": "HM06",
+      "status": "CANDIDATE_UNVERIFIED",
+      "after": "rocket_hq_cleared"
+    }
+  ],
+  "badge": {
+    "key": "GLACIER",
+    "region": "JOHTO",
+    "ordinal": 7,
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": "WHIRLPOOL"
+  },
+  "future_not_installed": [
+    "ROUTE_44_WARPS",
+    "ICE_PATH",
+    "ROCKET_HQ_MAP_PUZZLES",
+    "RADIO_TOWER_MUSIC_AND_CUTSCENES",
+    "CARD_KEY_AND_BASEMENT_KEY_ITEMS",
+    "LAKE_OF_RAGE_SHINY_SPRITES",
+    "WHIRL_ISLANDS_AND_LUGIA"
+  ],
+  "validation": {
+    "source_map_pack_audited": false,
+    "licensed_tilesets_verified": false,
+    "mapids_warps_and_return_paths_verified": false,
+    "lake_battle_callback_result_verified": false,
+    "red_scale_item_and_reward_verified": false,
+    "rocket_hq_switches_passwords_and_npcs_verified": false,
+    "hq_trainer_pbs_compiled": false,
+    "electrode_encounters_catches_and_losses_verified": false,
+    "whirlpool_item_catalog_verified": false,
+    "pryce_ice_floor_collision_verified": false,
+    "pryce_pbs_and_master_mode_compiled": false,
+    "glacier_whirlpool_field_access_in_game_verified": false,
+    "goldenrod_radio_puzzles_and_real_keys_verified": false,
+    "radio_trainers_pbs_compiled": false,
+    "route44_block_until_radio_clear_verified": false,
+    "save_reload_kanto_decades_verified": false,
+    "windows_gameplay_verified": false,
+    "joiplay_gameplay_verified": false
+  },
+  "integrated": false
+}
