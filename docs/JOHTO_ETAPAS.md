@@ -364,3 +364,7 @@ Próximo bloqueio factual: dados nativos `game/` disponíveis **no Windows do us
 ### Auditoria dos insumos reais entregues em 13/11/2026
 
 Recebido e verificado em contexto privado o arquivo `johto-pilot-inputs.zip` (SHA-256 `f34b13b56fd42f089c6df525c54e11ad0f5b64acef9027911867efc4be89fee4`), com **2.460 arquivos sem erro de hash**, **207 mapas nativos**, **95 PBS**, gráficos/sprites de `NPC_GSC_Mom`, `NPC_HGSS_Professor_Elm`, `NPC_HGSS_Silver`, `Object_Ball`; `CHIKORITA`/`CYNDAQUIL`/`TOTODILE` e `RIVAL1` presentes. Consulte [auditoria detalhada](JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md). A dependência de insumos para **auditoria offline** está satisfeita; o arquivo não contém executável nem plugins e **não** resolve a criação de interiores fiéis, posições/colisões e QA Windows. Fases JOGÁVEIS **0/13**, TESTADAS **0/13**.
+
+### Geração privada de mapa real e geometria interior provisória
+
+Com os ZIPs auditados da fonte e instalação Blue/Decades, gerado **staging privado efetivo** de 74 MapNNN Johto remapeados para IDs 600–673, com 42 conexões PBS e 3 interiores provisórios IDs 674–676. Verificadas reabertura dos 77 RXDATA, integridade de 207 MapInfos e 28 tilesets nativos, zero eventos não-confiáveis importados, e cinco MapIDs/SHA reais vinculados ao template de 12 eventos. Os interiores (cabana, Centro Pokémon e ginásio) são **apenas geometria temporária, não fiéis a HGSS** e não foram testados no Game.exe. Ver [relatório](JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md). **JOGÁVEIS 0/13 · TESTADAS 0/13**.
