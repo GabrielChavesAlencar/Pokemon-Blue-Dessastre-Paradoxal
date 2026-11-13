@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eee4a4852676f0c07b33e2efff393db860a214c8",
+      "date": "2026-11-13T19:13:05-03:00",
+      "title": "docs(android): diagnose wild encounter BlueMusic party2 crash and fix across Kanto/Decades",
+      "category": "Documentação"
+    },
+    {
       "sha": "fb4572a3e0c1a5c42e3071f7787ab238d5069032",
       "date": "2026-11-13T19:11:52-03:00",
       "title": "test(android): exercise wild grass battle music regression using native Ruby fixture",
