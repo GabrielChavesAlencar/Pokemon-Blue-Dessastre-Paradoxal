@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dc15ce2fc1f7485da6e72c4fb262f8b344c8414f",
+      "date": "2026-11-12T21:03:00-03:00",
+      "title": "feat(johto): prepara Olivine, Lighthouse, Routes 38-41, farmacia, Chuck/STORM e Fly",
+      "category": "Novidades"
+    },
+    {
       "sha": "7fb72607aaf970ca19cea5eef75efd414d8ad99e",
       "date": "2026-11-12T20:50:04-03:00",
       "title": "docs(johto): sincroniza plano mestre com fase 08 Ecruteak e Morty parcial",
