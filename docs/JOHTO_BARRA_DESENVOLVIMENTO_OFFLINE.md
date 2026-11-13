@@ -6,11 +6,11 @@
 
 | Indicador | Progresso | Interpretação |
 |---|---:|---|
-| **Desenvolvimento OFFLINE** | **5/12 (41,7%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
+| **Desenvolvimento OFFLINE** | **6/12 (50%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
 | **Fases JOGÁVEIS** | **0/13 (0%)** | Depende de jogo real e caminho completo funcional |
 | **Fases TESTADAS NO EXE** | **0/13 (0%)** | Depende de QA de gameplay real aprovado |
 
-**Progress bar OFFLINE:** `[#####-------] 5/12 = 41,7%`
+**Progress bar OFFLINE:** `[######------] 6/12 = 50%`
 
 ## Checklist das 12 etapas
 
@@ -21,7 +21,7 @@
 | 03 | **CONCLUÍDO** | Descoberta offline das conexões faltantes | Candidatas Route29 ↔ Cherrygrove e Route31 ↔ Violet derivadas de bordas e passagem estática; sem gravar na campanha; verificadores/testes versionados |
 | 04 | **CONCLUÍDO** | Construir quarto definitivo do jogador (New Bark 2F) | RXDATA próprio de quarto 2F em prévia privada, visualização, tileset adequado, cama, escada, piso e proposta de spawn; verificação estática |
 | 05 | **CONCLUÍDO** | Construir casa definitiva do jogador (New Bark 1F) | RXDATA próprio de casa 1F, escada 2F, porta exterior, espaço da mãe, propostas de chegada e prévia de passabilidade |
-| 06 | PENDENTE | Construir laboratório definitivo de Elm | RXDATA de laboratório próprio, mesa com três Poké Bolas físicas, lugar de Elm, porta, caminhos internos e verificação estática |
+| 06 | **CONCLUÍDO** | Construir laboratório definitivo de Elm | RXDATA de laboratório próprio, mesa com três Poké Bolas físicas, lugar de Elm, porta, caminhos internos e verificação estática |
 | 07 | PENDENTE | Ligar portas, escadas e spawn entre mapas | 12 pontos/eventos com MapIDs e coordenadas derivados dos layouts, transições reversíveis e checagens de limites/ocupação; aprovação de colisão real permanece separada |
 | 08 | PENDENTE | Inserir eventos de história de New Bark nos mapas | Eventos próprios para mãe, Elm, três Poké Bolas e rival ligados em RXDATA de cópia isolada; flags únicas, handlers auditados e testes sintéticos sem duplicar iniciais |
 | 09 | PENDENTE | Preparar PBS do rival e três iniciais | Três equipes rival condicionadas ao inicial escolhido, validação offline de species/trainer types e scripts, sem criar marcador falso de PBS compilado |
@@ -31,7 +31,7 @@
 
 ## Ordem e evidência
 
-As etapas 04/12 (quarto 2F) e 05/12 (casa 1F) foram concluídas em previews privadas. **Próxima: 06/12 — laboratório de Elm**. Depois portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
+As etapas 04/12 (quarto 2F) e 05/12 (casa 1F) foram concluídas em previews privadas. **06/12 — laboratório de Elm concluído; próxima: 07/12 — portas/escadas/spawn**. Depois portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
 
 - 01: `docs/JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md`, `docs/JOHTO_FASE_04_ENTRADAS_REAIS_V1.md`
 - 02: `docs/JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md`
@@ -64,3 +64,7 @@ O script `scripts/regions/build_johto_bedroom_v1.py` constrói quarto próprio d
 ### Etapa 05/12 concluída — casa New Bark 1F
 
 `build_johto_home1f_v1.py`: gerou Map675 privado original 16×13 via tileset Inside, com cozinha, mesa, sofá, escada visual e porta; cinco pontos de entrada/saída/mãe propostos e conectados por 106 tiles estáticos. Ruby Marshal reabriu o RXDATA, outros 76 MapNNN + MapInfos/Tilesets intactos, 6 testes offline passaram. [Relatório técnico](JOHTO_OFFLINE_FASE_05_CASA_1F.md). **Barra offline 5/12 (41,7%) · Jogáveis 0/13 · EXE testados 0/13.**
+
+### Etapa 06/12 concluída — Laboratório de Elm
+
+Gerado **Map676 (20×16)** em prévia isolada com três Poké Bolas físicas em tiles individuais 5328/5329/5330, cada uma de Chikorita, Cyndaquil e Totodile. Computador, estante e equipamento de laboratório; Elm e porta possuem posições propostas. Um novo tileset privado (ID 32) adiciona os gráficos das bolas extraídos do sprite nativo `Object_Ball.png`. O mapa foi reaberto com Ruby Marshal; **76 mapas restantes, 207 MapInfos e as 32 definições de tileset anteriores preservados**. Caminho estático com **198 tiles**, **7 testes Python aprovados**. As Poké Bolas **ainda não possuem evento de interação**; substituir os tiles por eventos individuais na etapa 08. A instalação automática no `Blue-Story.exe` segue pendente. [Relatório detalhado](JOHTO_OFFLINE_FASE_06_LABORATORIO_ELM.md). **Offline 6/12 (50%) · Jogáveis 0/13 · Testadas no EXE 0/13.**

@@ -389,3 +389,7 @@ Gerador `scripts/regions/build_johto_bedroom_v1.py`: layout próprio 14×11 no M
 ### Etapa 05/12 OFFLINE — Casa 1F de New Bark construída e auditada
 
 `Map675.rxdata` recriado com 16×13 tiles próprios sobre a base `Inside.png`: cozinha, jantar, área de estar, escada visual, porta e posições candidatas de mãe/chegadas. Os testes offline confirmaram acesso entre cinco posições por 106 tiles estaticamente conectados; 6 testes sintéticos passaram. A prévia Ruby Marshal alterou **somente** Map675 de 77; MapInfos/Tilesets e os outros 76 mapas foram preservados. **Os warps e o NPC ainda não existem** — sem prova jogável ou instalação automática do site. [Ver relatório](JOHTO_OFFLINE_FASE_05_CASA_1F.md). **OFFLINE 5/12 (41,7%). JOGÁVEIS 0/13. TESTADOS NO EXE 0/13.**
+
+### Etapa 06/12 OFFLINE — Laboratório de Elm preparado
+
+O mapa `Map676.rxdata` foi substituído por geometria autoral 20×16 no staging privado: três Poké Bolas realmente visíveis nos tiles (7,6), (10,6), (13,6), bancada para cada inicial, pesquisa, estante, porta visual e proposta de Elm (10,4). Um tileset **privado** (ID 32) reaproveita gráficos nativos sem publicá-los no GitHub. **198 tiles** conectados em auditoria estática; 7 testes Python e roundtrip Ruby Marshal aprovados; apenas Map676 e o acréscimo do novo tileset na cópia privada. **Nenhum evento de escolha, conexão nem QA do Game.exe** ainda. Próximo: **07/12** para warps/portas/spawn; **08/12** para os três eventos das Poké Bolas. [Documentação](JOHTO_OFFLINE_FASE_06_LABORATORIO_ELM.md). **OFFLINE 6/12, JOGÁVEIS 0/13, TESTADAS 0/13.**
