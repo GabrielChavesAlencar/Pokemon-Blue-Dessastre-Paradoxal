@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3da9038cb0c89b24d3f6a4f087b4428a87a738d1",
+      "date": "2026-11-13T16:36:02-03:00",
+      "title": "docs(android): executar a tentativa experimental de Kanto [android-kanto-release]",
+      "category": "Documentação"
+    },
+    {
       "sha": "e0a730c4f891d67f10c155aaabdb8411e385f097",
       "date": "2026-11-13T16:34:38-03:00",
       "title": "test(android): verificar cache nativo do plugin Kanto",
