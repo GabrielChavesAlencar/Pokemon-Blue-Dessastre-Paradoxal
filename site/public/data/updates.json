@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d40dc777ecbca5e1fea6efc66fcc4ce481d69293",
+      "date": "2026-11-13T17:36:38-03:00",
+      "title": "fix(android): include Kanto release README in patchable SHA-256 inventory",
+      "category": "Correções"
+    },
+    {
       "sha": "f021438191fcfb4224d548deefaac004197d78cb",
       "date": "2026-11-13T17:36:21-03:00",
       "title": "fix(android): allow changing release README in delta updates",
