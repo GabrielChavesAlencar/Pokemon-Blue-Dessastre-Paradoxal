@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "41b96cc0b4084dc87830a3949ab8a37ad8cc04b1",
+      "date": "2026-11-13T07:31:48-03:00",
+      "title": "feat(site): integra Johto prévia nos filtros de locais treinadores e chefes",
+      "category": "Novidades"
+    },
+    {
+      "sha": "08eef159d95298cd33e4bb0dd382a7aa513387dd",
+      "date": "2026-11-13T07:31:32-03:00",
+      "title": "feat(site): renderiza prévia de Johto por fase sem equipes ou mapas fictícios",
+      "category": "Novidades"
+    },
+    {
       "sha": "fb4cd8ef34446632cd7c6e63b16a60caeb0b0897",
       "date": "2026-11-13T07:30:37-03:00",
       "title": "feat(site): expõe prévia honesta de Johto com mapas simbólicos e treinadores sem PBS",
