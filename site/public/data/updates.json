@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4eeb837fcaf715d33784f9ffcdbad8c57976eeea",
+      "date": "2026-11-13T07:18:03-03:00",
+      "title": "test(johto): valida fallbacks contra flags de Ruins of Alph corrompidas",
+      "category": "Testes"
+    },
+    {
+      "sha": "9117756da6732e96ec94acd66c6663c69667ca26",
+      "date": "2026-11-13T07:17:48-03:00",
+      "title": "fix(johto): falha fechada para inventario, resultado e puzzles de save invalidos",
+      "category": "Correções"
+    },
+    {
       "sha": "4db0be8362f318973d8a60eddaae893f0d73b460",
       "date": "2026-11-13T07:16:29-03:00",
       "title": "docs(johto): sincroniza plano mestre com fase 14 lendarios e posjogo parcial",
