@@ -51,6 +51,21 @@ python -m unittest discover -s tests -p "test_sinnoh_capacity.py" -v
 
 **Leitura obrigatória:** `capacity.json` é uma fotografia de capacidade, não mapa de IDs autorizados. O Codex deverá conferir também reservas de Hoenn e Johto que não estejam fisicamente instaladas e demonstrar compatibilidade de IDs ≥1000 antes de atribuir IDs persistentes. O auditor RXDATA não valida permissões de redistribuição, scripts dinâmicos/conditional calls nem prova caminhabilidade ou gameplay.
 
+### Progresso e ferramentas novas — primeira etapa
+
+- **Painel oficial:** [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md), gerado a partir dos 32 entregáveis enumerados em [data/regions/sinnoh-progress.json](../data/regions/sinnoh-progress.json). **Preparação 8/32 (25%); fase técnica 0/13; jogabilidade 0/13; aceite nativo 0/13.**
+- **Grafo de mapas S06 (implementado aqui):** [graph_sinnoh_maps.py](../scripts/regions/graph_sinnoh_maps.py), com [testes](../tests/test_sinnoh_graph.py). Aceita mapas reais já auditados em ZIP/pasta; a opção `--start-map` exige o MapID de Twinleaf (ou outro ponto escolhido) **realmente confirmado**. IDs não encontrados e componentes desconectados são achados de auditoria, não prova de impossibilidade de viagem; eventos comuns/scripts dinâmicos precisam de revisão separada.
+- **Staging transacional S07 (parcial):** [sinnoh_staging_transaction.py](../scripts/regions/sinnoh_staging_transaction.py) e [testes](../tests/test_sinnoh_staging_transaction.py). Disponibiliza operações Python `preview(project,label,files)`, `stage(project,label,files,expected_plan_sha256)` e `rollback(project,label,plan_sha256)`. O `stage` é **somente um diretório novo em `.blue-work/sinnoh-stage/`**; verifica SHA-256, não sobrescreve arquivos existentes, rejeita `Scripts.rxdata`/`System.rxdata`/`Plugins` e não grava em `game/`. **Não é importação para uma instalação jogável, nem faz remapeamento de IDs**. O Codex deve aproveitar esse módulo no futuro para artefatos **já convertidos/auditados**, sem tentar usar RXDATA original diretamente.
+- **Comando do grafo somente quando a fonte real existir:**
+
+```powershell
+python scripts/regions/graph_sinnoh_maps.py --source "C:\CAMINHO\FONTE_SINNOH_AUTORIZADA.zip" --game-data game/Data > .blue-work/sinnoh/map-graph.json
+python -m unittest discover -s tests -p "test_sinnoh_graph.py" -v
+python -m unittest discover -s tests -p "test_sinnoh_staging_transaction.py" -v
+```
+
+**O que continua exclusivo de Codex/local:** verificar MapInfos/tilesets reais, direitos e uso de assets, MapIDs globais ocupados/reservados, conversão dos mapas e referências de eventos, instalação do piloto em `Game.exe`, áudio, saves e QA Windows/Android. O painel de preparação não autoriza elevar as barras de gameplay.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
