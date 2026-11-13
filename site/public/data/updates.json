@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c0f3ee2265335a343174445292c4e2242098093b",
+      "date": "2026-11-13T17:23:03-03:00",
+      "title": "fix(android): preserve immutable inventory and verify full delta with streaming checks",
+      "category": "Correções"
+    },
+    {
       "sha": "e976f5e07e573b924e2b5e10d655bb23f05ee391",
       "date": "2026-11-13T17:22:12-03:00",
       "title": "fix(android): verify Decades update inventory before closing ZIP archive",
