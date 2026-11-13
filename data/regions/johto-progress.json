@@ -101,13 +101,14 @@
         "Map079 real (22x48) inspecionado: 4 fachadas candidatas com coordenadas e snapshots de tiles SHA-256, sem alegar porta validada",
         "No piloto com --with-connections, os dois warps redundantes para Route29 sao removidos da copia em memoria e substituidos pela borda PBS real",
         "Exportador local de insumos nativos com allowlist e SHA-256 criado; somente game/ local, sem executavel/saves/plugins e sem ZIP publico; testes sinteticos do exportador",
-        "Validador de 12 eventos e spawn com comprovacao por SHA/MapID/PNG, aceita borda PBS sem dois warps duplicados; montador privado isolado bloqueia coordenadas nao conferidas"
+        "Validador de 12 eventos e spawn com comprovacao por SHA/MapID/PNG, aceita borda PBS sem dois warps duplicados; montador privado isolado bloqueia coordenadas nao conferidas",
+        "ZIP nativo de 2460 arquivos validado com SHA-256 por entrada, contendo 207 mapas RMXP, 95 PBS, sprites de Elm/mae/Silver/Poke Bola e tres especies iniciais"
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe",
         "A instalacao nativa game/ nao foi fornecida nesta conversa; Fase 04 ainda nao pode ser executada e verificada no Game.exe",
         "Falta confirmar qual das fachadas e a casa do jogador e validar os destinos no Game.exe; candidatos nao equivalem a portas jogaveis",
-        "Ainda nao ha dados nativos game/ para executar com geometria real nem QA Windows, e interiores/posicoes continuaram pendentes"
+        "Dados nativos disponiveis para auditoria no chat, mas nao instalados na CI; falta autoria de quarto/casa/laboratorio, eventos com coordenadas, compilacao nativa e gameplay Game.exe"
       ],
       "automated_code_test": "tests/test_johto_new_bark_exterior_audit.py",
       "gameplay_playable": false,
@@ -285,7 +286,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Gerar .blue-work/johto-pilot-inputs.zip com JOHTO_EXPORTAR_BASE_PILOTO.bat sprites e compartilhar apenas em conversa privada, sem publicacao de assets no GitHub; ainda exige revisao de interiores/portas e gameplay em Game.exe",
+  "next_required_input": "Nao reenviar ZIP: pacote nativo 2460 arquivos ja auditado em conversa privada. Proxima exigencia e construir tres interiores proprios, aprovar posicoes com passabilidade e executar o Game.exe isolado no Windows com plugins e saves separados. Nunca subir dados nativos privados ao GitHub.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
