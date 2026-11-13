@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "887ec682dfb0a24dacc0822a27cd1fd67ec10e12",
+      "date": "2026-11-13T17:55:26-03:00",
+      "title": "feat(site): add six-step Android update tutorial for Decades and Kanto with troubleshooting",
+      "category": "Novidades"
+    },
+    {
       "sha": "2a26619a1d7bcd22a8797544c474a87fce178828",
       "date": "2026-11-13T17:54:10-03:00",
       "title": "test(android): require early Input shim in Kanto mobile archive fixtures",
