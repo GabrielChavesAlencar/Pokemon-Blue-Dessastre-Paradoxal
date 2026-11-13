@@ -35,7 +35,10 @@ class DistributionTests(unittest.TestCase):
         (game/'Plugins/Blue/main.rb').write_text('original own plugin')
         mobile=game/android.MOBILE;mobile.parent.mkdir(parents=True);mobile.write_bytes(b'module BlueMobile; end')
         (game/'Data/PluginScripts.rxdata').write_bytes(b'\x04\x08'+dump([[RubyString(b'Blue Battle Lab'),None,[[RubyString(b'Mobile.rb'),RubyString(zlib.compress(mobile.read_bytes()))]]]]))
-        rows=[[1,RubyString(b'Main'),RubyString(zlib.compress(b'    PluginManager.runPlugins\n    Compiler.main\n    Game.initialize'))]]
+        rows=[
+            [1,RubyString(b'Main'),RubyString(zlib.compress(b'    PluginManager.runPlugins\n    Compiler.main\n    Game.initialize'))],
+            [2,RubyString(b'Input'),RubyString(zlib.compress(b'module Input\n  def self.touch; Input.mouse_in_window; end\nend\n'))]
+        ]
         (game/'Data/Scripts.rxdata').write_bytes(b'\x04\x08'+dump(rows))
         return game
     def test_android_compiler_hook_is_opt_in_idempotent_and_does_not_touch_saves(self):
