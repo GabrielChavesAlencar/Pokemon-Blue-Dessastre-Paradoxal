@@ -25,3 +25,23 @@ Esses registros permitem investigar o caminho tradicional sem ignorar o evento n
 ## Verificação da distribuição
 
 O build exige a compilação nativa atual e compara o `Mobile.rb` compilado com seu fonte. O ZIP inclui `Data/blue-mobile-build.txt`, com a revisão e o hash do adaptador. A etapa de release verifica novamente essa revisão contra o commit do workflow antes de publicar. Saves, logs e caminhos do PC não entram no pacote.
+
+
+## Correção de toque no piloto Kanto — teste em celular (13/11/2026)
+
+A captura real enviada pelo usuário mostra este erro na tela inicial do JoiPlay:
+
+~~~text
+Script 'Input' line 28: NoMethodError occurred.
+undefined method 'mouse_in_window' for Input:Module
+~~~
+
+**Causa identificada no empacotamento:** o piloto Kanto distribuía o plugin compilado `Mobile.rb`, mas não incluía o marcador `Data/blue-mobile.txt` exigido por `BlueMobile.enabled?`. Portanto a correção de toque já existente ficava desativada. Além disso, o script original `Input` pode chamar a função antes do carregamento dos plugins.
+
+**Correção aplicada:** o pacote Kanto passa a incluir o marcador `Data/blue-mobile.txt` com o valor esperado, e a verificação do ZIP exige sua presença. Tanto Kanto quanto Decades também recebem uma proteção antecipada no início da entrada `Input` de `Data/Scripts.rxdata`, antes de qualquer chamada ao método. A proteção só é ativada no Android; o Windows não é alterado. Testes automatizados passam a bloquear pacotes sem esse ajuste.
+
+**Para instalar:** se seu ZIP anterior apresentou este erro, preserve seus saves e instale o novo ZIP corrigido após a publicação da release. Caso o atualizador ofereça um patch compatível, ele pode aplicar a alteração com o JoiPlay fechado. Caso contrário, extraia o ZIP completo em uma nova pasta e adicione o novo `Game.exe` ao JoiPlay, sem sobrepor a instalação antiga.
+
+O guia detalhado está na página `Downloads → Atualizações Android` do site e em [ANDROID_ATUALIZACOES_INCREMENTAIS.md](ANDROID_ATUALIZACOES_INCREMENTAIS.md).
+
+**Validação:** o teste de empacotamento e a simulação Ruby confirmam a correção no código. Isso não substitui novo teste físico no celular com JoiPlay.
