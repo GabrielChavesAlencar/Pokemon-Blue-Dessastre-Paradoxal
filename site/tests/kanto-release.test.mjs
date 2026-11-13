@@ -44,3 +44,11 @@ test('cavernas distinguem encontros diurnos e noturnos, nunca marcam Kanto como 
   assert.match(mansion,/QA manual Windows\/JoiPlay/);
   assert.doesNotMatch(mansion,/100% jogável/);
 });
+
+test('Kanto distinguishes source encounter chances from evolving wild slots',()=>{
+  const html=kantoLocation(model,kanto,loc('kanto-route-1'));
+  assert.match(html,/Encontros de origem \(antes do ajuste dinâmico\)/);
+  assert.match(html,/Raticate/);
+  assert.match(html,/35%/);
+  assert.match(html,/Rattata/);
+});

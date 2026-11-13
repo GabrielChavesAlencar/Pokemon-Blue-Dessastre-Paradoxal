@@ -116,6 +116,45 @@ def inspect(game: Path) -> dict:
                 not any(op["@code"] == 209 and op["@parameters"][0] == actor_id for op in codes) or
                 not any(op["@code"] == 210 for op in codes)):
             raise ValueError(f"Pallet scene {source}/{event_id} must walk actor {actor_id} on touch")
+    # Audit that the 3 source starter balls were retained as table events,
+    # and that the outside Oak escort uniquely arms the inside autorun.
+    from pilot import lab_starter_balls
+    lab_events = maps[mapping[6]].attrs["@events"]
+    starters = lab_starter_balls(lab_events)
+    choices = ("BULBASAUR", "CHARMANDER", "SQUIRTLE")
+    for pos, event_id in enumerate(starters):
+        obj = lab_events[event_id]
+        pages = obj.attrs["@pages"]
+        script = [text(op.attrs["@parameters"][0])
+                  for op in pages[0].attrs["@list"]
+                  if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
+        if not script or script[0] != f"BlueKantoPilot.pick_starter(:{choices[pos]}, {event_id})":
+            raise ValueError(f"Starter ball {event_id} not bound to its own species")
+        if (pages[0].attrs["@trigger"] != 0 or
+            pages[1].attrs["@condition"].attrs.get("@self_switch_ch") != b"A"):
+            raise ValueError(f"Starter ball {event_id} lacks action and self-switch")
+    lab_autoruns = [id for id, event in lab_events.items()
+                    if id not in starters and any(
+                        page.attrs["@trigger"] == 3 and any(
+                            op.attrs["@code"] == 355 and
+                            b"BlueKantoPilot.oak_lab_briefing" in op.attrs["@parameters"][0]
+                            for op in page.attrs["@list"]
+                            if op.attrs["@parameters"] and isinstance(op.attrs["@parameters"][0], bytes))
+                        for page in event.attrs["@pages"])]
+    if len(lab_autoruns) != 1:
+        raise ValueError("Oak inside-laboratory escort is absent or duplicated")
+    scene_id = lab_autoruns[0]
+    for lane in (11, 13):
+        scripts = [text(op.attrs["@parameters"][0])
+                   for op in maps[mapping[5]].attrs["@events"][lane].attrs["@pages"][0].attrs["@list"]
+                   if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
+        if f"BlueKantoPilot.prepare_lab_escort({mapping[6]}, {scene_id})" not in scripts:
+            raise ValueError(f"Pallet Oak lane {lane} did not arm lab autorun")
+    if not any(event.attrs["@name"] == b"Blue Gary Counter Battle" and
+               event.attrs["@pages"][0].attrs["@trigger"] == 1
+               for event in lab_events.values()):
+        raise ValueError("Gary's counter-crossing touch trigger missing")
+
     agent = maps[mapping[5]].attrs["@events"][9]
     agent_scripts = [text(op.attrs["@parameters"][0])
                      for page in agent.attrs["@pages"] for op in page.attrs["@list"]
@@ -537,10 +576,10 @@ def inspect(game: Path) -> dict:
         (6, 1): "BlueKantoPilot.rival",
         (7, 4): "BlueKantoPilot.meet_mom",
         (7, 14): "BlueKantoPilot.choose_profile",
-        (6, 15): "BlueKantoPilot.choose_starter",
+        (6, 15): "BlueKantoPilot.talk_to_oak",
         (10, 1): "BlueKantoPilot.viridian_gym_gate",
         (13, 16): "BlueKantoPilot.viridian_gym_guide",
-        (6, 14): "BlueKantoPilot.rival",
+        (6, 14): "BlueKantoPilot.gary_talk",
         (11, 2): "BlueKantoPilot.heal",
         (26, 2): "BlueKantoPilot.heal",
         (34, 2): "BlueKantoPilot.heal",

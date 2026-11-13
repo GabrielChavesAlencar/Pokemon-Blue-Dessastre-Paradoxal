@@ -18,6 +18,11 @@ export function regionsPage(registry){
     return '<article class="panel region-entry"><span class="eyebrow">'+labels[region.status]+
       '</span><h2>'+esc(region.name)+'</h2><p><strong>'+esc(region.base)+'</strong></p><p>'+esc(description)+'</p>'+
       (region.pilot?'<p>Trecho em preparação: '+region.pilot.map(esc).join(', ')+'.</p>':'')+
+      (['KANTO','JOHTO','HOENN'].includes(key)?
+        '<p class="data-note">Regra regional compartilhada: nível selvagem = 45% do maior nível da equipe; evoluções automáticas por nível podem ocupar 35% da vaga da forma base. '+
+        (key==='KANTO'?'Kanto exige instalação/reteste do piloto atualizado.':
+         key==='JOHTO'?'Johto continua em preparação, sem encontros jogáveis verificados.':
+         'Hoenn ainda aguarda mapas e encontros autorizados, compilados e testados.')+'</p>':'')+
       (key==='DECADES'?'<a class="text-link" href="/localizacoes">Ver mapa e encontros '+icon('arrow')+'</a>':'')+
       (key==='KANTO'?'<a class="text-link" href="/localizacoes?regiao=kanto">Explorar piloto '+icon('arrow')+'</a>':'')+
       (key==='JOHTO'?'<a class="text-link" href="/localizacoes?regiao=johto">Ver planejamento de Johto '+icon('arrow')+'</a>':'')+

@@ -84,7 +84,7 @@ module KantoNativeCheck
         !!data
       end
     end
-    BlueKantoPilot.choose_starter
+    BlueKantoPilot.choose_starter(:BULBASAUR)
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.

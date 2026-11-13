@@ -47,7 +47,67 @@ module BlueKantoPilot
     progress["pilot_starter"]&.to_sym
   end
 
-  def self.choose_starter
+  def self.prepare_lab_escort(lab_map, scene_event)
+    return if starter
+    # Region-local save flag and map-local self switch; no Decades/Johto flags.
+    progress["pilot_lab_escort_pending"] = true
+    $game_self_switches[[lab_map, scene_event, "A"]] = true
+  end
+
+  def self.lab_escort_started
+    progress["pilot_lab_escort_pending"] = true
+  end
+
+  def self.oak_lab_briefing
+    return if starter
+    progress["pilot_lab_escort_pending"] = false
+    progress["pilot_oak_lab_briefed"] = true
+    BlueMusic.with_kanto_scene("oak_talk") do
+      pbMessage(_INTL("Oak: Chegamos! Gary está esperando. Temos três Poké Bolas na mesa."))
+      pbMessage(_INTL("Oak: Vá até uma delas e escolha o Pokémon que vai acompanhar você!"))
+    end
+  end
+
+  def self.talk_to_oak
+    if !starter
+      if progress["pilot_oak_lab_briefed"]
+        pbMessage(_INTL("Oak: Escolha seu inicial em uma das três Poké Bolas da mesa."))
+      else
+        pbMessage(_INTL("Oak: As três Poké Bolas na mesa contêm Bulbasaur, Charmander e Squirtle."))
+      end
+      return
+    end
+    choose_starter
+  end
+
+  def self.gary_talk
+    if !starter
+      pbMessage(_INTL("Gary: Você ainda não escolheu seu Pokémon? Vá até a mesa!"))
+    elsif !rival_done?
+      progress["pilot_gary_warned"] = true
+      pbMessage(_INTL("Gary: Você já escolheu? Também tenho um Pokémon. Vamos ver quem é melhor!"))
+    else
+      pbMessage(_INTL("Gary: Vou treinar mais para nossa próxima batalha."))
+    end
+  end
+
+  def self.pick_starter(species, event_id)
+    if starter
+      pbMessage(_INTL("Você já escolheu seu Pokémon inicial."))
+      return
+    end
+    return unless STARTERS.include?(species)
+    name = GameData::Species.get(species).name
+    return unless pbConfirmMessage(_INTL("Escolher {1} desta Poké Bola?", name))
+    choose_starter(species)
+    return unless starter == species
+    # Only the chosen tabletop object disappears, without global switches.
+    $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    $game_map.events[event_id]&.refresh
+    gary_talk
+  end
+
+  def self.choose_starter(species = nil)
     if starter
       if progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
         # Record the parcel's delivery in the region-specific save instead of
@@ -62,17 +122,19 @@ module BlueKantoPilot
       end
       return
     end
-    names = STARTERS.map { |id| GameData::Species.get(id).name }
-    choice = pbMessage(_INTL("Oak: Qual Pokémon vai viajar com você?"), names + [_INTL("Voltar")], 4)
-    return unless choice && choice.between?(0, STARTERS.length - 1)
-    species = STARTERS[choice]
+    # The Oak dialogue is NOT a starter selection menu. A species can only
+    # be supplied by an audited tabletop Poké Ball callback.
+    unless STARTERS.include?(species)
+      pbMessage(_INTL("Oak: Escolha um Pokémon tocando uma das três Poké Bolas da mesa."))
+      return
+    end
     return unless pbAddPokemonSilent(species, 5)
     progress["pilot_starter"] = species.to_s
     BlueMusic.kanto_me_play("obtained_pokemon")
     $bag.add(:POKEBALL, 5)
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
-    pbMessage(_INTL("Oak: {1} escolheu você! Leve estas Poké Bolas com você.", names[choice]))
+    pbMessage(_INTL("Oak: {1} escolheu você! Leve estas Poké Bolas com você.", GameData::Species.get(species).name))
   end
 
   # A safe, local story step for the first Pallet -> Viridian -> Pallet
