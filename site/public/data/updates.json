@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6d1e899c0d5d0f9c909eba27dbc1f352fa84e5c7",
+      "date": "2026-11-13T07:37:36-03:00",
+      "title": "docs(johto): contabiliza etapa 15 parcial e mantém duas barras sem aceite falso",
+      "category": "Documentação"
+    },
+    {
       "sha": "9da906631140625355ecd890d192afa2a73d4577",
       "date": "2026-11-13T07:37:13-03:00",
       "title": "docs(johto): fase 15 M0-M6 musicas seguras, 36 treinadores, 148 locais e portal preview",
