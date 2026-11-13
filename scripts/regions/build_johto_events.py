@@ -29,10 +29,10 @@ HANDLERS = {
     "rival": "BlueJohtoPilot.rival",
 }
 NEEDED_HANDLERS = set(HANDLERS)
-SYMBOL = re.compile(r"JOHTO_[A-Z0-9_]{3,70}\\Z")
-KEY = re.compile(r"JH_[A-Z0-9_]{3,70}\\Z")
-HASH = re.compile(r"[a-f0-9]{64}\\Z")
-GRAPHIC = re.compile(r"[A-Za-z0-9_ -]{1,100}\\Z")
+SYMBOL = re.compile(r"JOHTO_[A-Z0-9_]{3,70}\Z")
+KEY = re.compile(r"JH_[A-Z0-9_]{3,70}\Z")
+HASH = re.compile(r"[a-f0-9]{64}\Z")
+GRAPHIC = re.compile(r"[A-Za-z0-9_ -]{1,100}\Z")
 EVENT_CLASSES = ("RPG::Event", "RPG::Event::Page",
                  "RPG::Event::Page::Condition", "RPG::Event::Page::Graphic",
                  "RPG::EventCommand", "RPG::MoveRoute", "RPG::MoveCommand")
