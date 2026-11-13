@@ -49,6 +49,10 @@ DOC = (
     "Os saves usam o perfil Kanto Piloto; nao sobrescreva os saves do Decades.\n"
     "Fonte dos mapas: Essentials FRLG 1.1, TheTinfoilTemplar, equipe Essentials.\n"
     "https://eeveeexpo.com/resources/1797/\n"
+    "Atualizacoes: feche o JoiPlay; no Termux use Python.\n"
+    "Verificar: python ATUALIZAR-ANDROID.py\n"
+    "Instalar patch: python ATUALIZAR-ANDROID.py --update\n"
+    "Guia no GitHub: docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md\n"
     "A compatibilidade final depende de testes em aparelho Android real.\n"
 )
 
