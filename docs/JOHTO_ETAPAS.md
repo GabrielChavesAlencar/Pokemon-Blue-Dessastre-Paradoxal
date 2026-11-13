@@ -337,3 +337,51 @@ O ZIP enviado pelo usuário já permitiu **renderizar o New Bark exterior real e
 O piloto isolado com `--with-connections` foi corrigido para **não duplicar teletransportes** na conexão de borda New Bark–Route29 já fornecida no `map_connections.txt`. Os dois eventos redundantes são removidos **apenas da cópia dos eventos em memória**, preservando origem, Kanto, Decades e o rival. Há testes sintéticos de montagem do piloto com verificações de eventos de borda ausentes e NPCs preservados.
 
 **Não transformar essa auditoria em aprovação de gameplay:** os papéis exatos das casas, o quarto 2F/1F, Elm Lab interior, passabilidade em Game.exe, sprites e saves ainda não foram testados. A fonte fornecida não traz os interiores e o `game/` original ainda não foi entregue. **Barra Jogáveis: 0/13. Barra Testadas: 0/13.** Próximo: obter os dados nativos do motor, validar a casa do jogador, preparar 3 interiores e montar/testar o piloto real.
+
+## Fase 04 — exportador privado de insumos para primeiro piloto (13/11/2026)
+
+Criados [JOHTO_EXPORTAR_BASE_PILOTO.bat](../JOHTO_EXPORTAR_BASE_PILOTO.bat),
+[export_johto_pilot_inputs.py](../scripts/regions/export_johto_pilot_inputs.py) e
+[guia de envio](JOHTO_FASE_04_ENVIAR_BASE_NATIVA.md). Quando o Blue/Decades estiver instalado
+em game/, o usuário poderá gerar somente localmente um ZIP com MapInfos,
+Tilesets, System, MapNNN, PBS e gráficos de tiles; modo sprites acrescenta
+Characters/Trainers. O ZIP fica ignorado pelo Git e só deve ser compartilhado
+em conversa privada. Saves, Game.exe, plugins, scripts e segredos
+não são exportados. tests/test_johto_export_pilot_inputs.py verifica esses
+limites com fixtures sintéticas, sem assets externos.
+
+**Isso não monta os interiores nem prova a jogabilidade.** Ainda faltam
+três interiores auditados, identificar a casa do jogador, confirmar tiles de
+porta/spawn, compilar eventos/PBS e testar Game.exe isolado. Barras
+**Jogáveis 0/13, Testadas 0/13** até validação nativa.
+
+### Novo gate de aceitação isolada para o primeiro piloto
+
+Adicionados `scripts/regions/inspect_johto_pilot_readiness.py`, `scripts/regions/assemble_johto_first_playable.py` e dois atalhos Windows. A verificação audita os **12 eventos** do início, sua topologia/handlers, spawn, sprites, posições e conexões PBS. O relatório inclui todos os bloqueios, sem aprovar posição por heurística. A montagem só permite uma **cópia experimental em `.blue-work`** quando o próprio estado do mapa e dos eventos confirma pré-requisitos. Nenhum marcador `VERIFIED_PLAYABLE` é produzido.
+
+Próximo bloqueio factual: dados nativos `game/` disponíveis **no Windows do usuário**, seleção auditada de 3 interiores, posições de entrada/chegada e execução real do Game.exe. **Fases JOGÁVEIS 0/13; Fases TESTADAS 0/13.**
+
+### Auditoria dos insumos reais entregues em 13/11/2026
+
+Recebido e verificado em contexto privado o arquivo `johto-pilot-inputs.zip` (SHA-256 `f34b13b56fd42f089c6df525c54e11ad0f5b64acef9027911867efc4be89fee4`), com **2.460 arquivos sem erro de hash**, **207 mapas nativos**, **95 PBS**, gráficos/sprites de `NPC_GSC_Mom`, `NPC_HGSS_Professor_Elm`, `NPC_HGSS_Silver`, `Object_Ball`; `CHIKORITA`/`CYNDAQUIL`/`TOTODILE` e `RIVAL1` presentes. Consulte [auditoria detalhada](JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md). A dependência de insumos para **auditoria offline** está satisfeita; o arquivo não contém executável nem plugins e **não** resolve a criação de interiores fiéis, posições/colisões e QA Windows. Fases JOGÁVEIS **0/13**, TESTADAS **0/13**.
+
+### Geração privada de mapa real e geometria interior provisória
+
+Com os ZIPs auditados da fonte e instalação Blue/Decades, gerado **staging privado efetivo** de 74 MapNNN Johto remapeados para IDs 600–673, com 42 conexões PBS e 3 interiores provisórios IDs 674–676. Verificadas reabertura dos 77 RXDATA, integridade de 207 MapInfos e 28 tilesets nativos, zero eventos não-confiáveis importados, e cinco MapIDs/SHA reais vinculados ao template de 12 eventos. Os interiores (cabana, Centro Pokémon e ginásio) são **apenas geometria temporária, não fiéis a HGSS** e não foram testados no Game.exe. Ver [relatório](JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md). **JOGÁVEIS 0/13 · TESTADAS 0/13**.
+
+### Etapa 05 — duas ligações derivadas offline do próprio terreno de Johto
+
+Com os RXDATA reais do staging privado, o verificador localizou dois corredores **unívocos**, cada um com a assinatura de estrada `[116,96,124]` e flags de direção livres por três linhas × quatro colunas em ambos os mapas: **Route29 (625) ↔ Cherrygrove (601)**, PBS candidato `601,East,12,625,West,0`, e **Route31 (627) ↔ Violet (602)**, PBS candidato `602,East,6,627,West,0`. Agora existe uma sequência topológica *proposta* New Bark → Rota 29 → Cherrygrove → Rota 30 → Rota 31 → Violet, pois as outras três conexões já constam no donor v1. Duas ferramentas Python e nove testes sintéticos validados, além de execução das rotinas de extração de tile dos quatro mapas reais. **Não instalar candidatos na campanha, nem marcar Game.exe jogável/testado.** Ver [documentação](JOHTO_FASE05_CONEXOES_OFFLINE_ATE_VIOLET.md).
+
+
+## Barra 3 — Desenvolvimento OFFLINE (sem Game.exe)
+
+**3/12 marcos técnicos concluídos (25%) — `[###---------]`**
+
+A terceira barra é **independente** das barras **1) Jogáveis 0/13** e **2) Testadas 0/13**. Ela usa `data/regions/johto-progress.json → offline_development`. Foram contabilizados apenas: **1) auditoria dos dados nativos e fonte; 2) staging de 74 mapas mais três salas provisórias; 3) auditoria de duas bordas faltantes**. Essas entregas não significam mapas com eventos jogáveis.
+
+Próximo: **04/12, desenhar o quarto do jogador 2F**. Depois, casa 1F (05), laboratório de Elm (06), portas e spawn (07), eventos (08), PBS de iniciais/rival (09), encontros e treinadores (10), Violet/Sprout/Falkner (11) e auditoria de integração offline (12). Ver [barra e critérios detalhados](JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md). **Não executar Game.exe** para completar nenhum dos 12 marcos; isso será avaliado apenas nas barras originais, mais tarde.
+
+### Barra OFFLINE 4/12 — quarto 2F de New Bark concluído
+
+Gerador `scripts/regions/build_johto_bedroom_v1.py`: layout próprio 14×11 no Map674, com cama, escrivaninha, guarda-roupa, janela e escada visual, sem importar eventos; serialização Ruby Marshal testada, 5 cenários automatizados e prévia privada comparada preservando os outros 76 mapas. O quarto ainda não contém warp para 1F, e o spawn é apenas candidato estático. Consulte [fase 04 offline](JOHTO_OFFLINE_FASE_04_QUARTO_2F.md). **OFFLINE: 4/12. JOGÁVEIS: 0/13. TESTADOS: 0/13.**
