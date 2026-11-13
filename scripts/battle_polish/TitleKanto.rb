@@ -5,11 +5,14 @@
 module BlueKantoTitle
   LABEL = "Testar Kanto".freeze
   JOHTO_LABEL = "Testar Johto".freeze
+  SINNOH_LABEL = "Testar Sinnoh".freeze
   LAUNCHER = "KANTO_JOGAR_EXPERIMENTAL.bat".freeze
   JOHTO_LAUNCHER = "JOHTO_JOGAR_EXPERIMENTAL.bat".freeze
+  SINNOH_LAUNCHER = "SINNOH_JOGAR_EXPERIMENTAL.bat".freeze
 
   def self.pilot?
-    File.file?("Kanto pilot.json") || File.file?("Johto pilot.json")
+    File.file?("Kanto pilot.json") || File.file?("Johto pilot.json") ||
+      File.file?("Sinnoh pilot.json")
   end
 
   def self.command_order(commands, show_continue)
@@ -20,6 +23,7 @@ module BlueKantoTitle
     ordered << new_game
     ordered << :blue_test_kanto
     ordered << :blue_test_johto
+    ordered << :blue_test_sinnoh
     ordered.concat(indices.reject { |idx| ordered.include?(idx) })
     ordered
   end
@@ -45,6 +49,18 @@ module BlueKantoTitle
     script = File.expand_path("../" + JOHTO_LAUNCHER, game_dir)
     root = File.dirname(script)
     return nil unless File.file?(script) && File.file?(File.join(root, "scripts/regions/pilot_johto.py"))
+    [script, root]
+  end
+
+  # Sinnoh must have an independent, project-owned pilot before it is launchable.
+  # Never fall back to Kanto/Johto or start the unmodified main game.
+  def self.sinnoh_launcher
+    game_dir = File.expand_path(Dir.pwd)
+    return nil unless File.file?(File.join(game_dir, "Game.exe"))
+    return nil if pilot?
+    script = File.expand_path("../" + SINNOH_LAUNCHER, game_dir)
+    root = File.dirname(script)
+    return nil unless File.file?(script) && File.file?(File.join(root, "scripts/regions/pilot_sinnoh.py"))
     [script, root]
   end
 
@@ -101,6 +117,28 @@ module BlueKantoTitle
     end
   end
 
+  def self.launch_sinnoh
+    unless windows?
+      pbMessage(_INTL("O teste de Sinnoh pelo menu inicial estará disponível no Windows."))
+      return false
+    end
+    target = sinnoh_launcher
+    unless target
+      pbMessage(_INTL("Sinnoh ainda está em preparação. Nenhum piloto de mapas reais foi instalado; Decades, Kanto e Johto não foram alterados."))
+      return false
+    end
+    return false unless pbConfirmMessage(_INTL("Abrir o Sinnoh experimental com saves separados? O menu principal será fechado."))
+    script, root = target
+    begin
+      pid = Process.spawn("cmd.exe", "/d", "/c", script, :chdir => root)
+      Process.detach(pid)
+      true
+    rescue SystemCallError, ArgumentError, NotImplementedError => error
+      pbMessage(_INTL("Não foi possível iniciar Sinnoh: {1}", error.message))
+      false
+    end
+  end
+
   module Scene
     def pbStartScene(commands, show_continue, trainer, stats, map_id)
       @blue_original_commands = commands
@@ -109,6 +147,7 @@ module BlueKantoTitle
         case item
         when :blue_test_kanto then _INTL(BlueKantoTitle::LABEL)
         when :blue_test_johto then _INTL(BlueKantoTitle::JOHTO_LABEL)
+        when :blue_test_sinnoh then _INTL(BlueKantoTitle::SINNOH_LABEL)
         else commands[item]
         end
       end
@@ -129,8 +168,12 @@ module BlueKantoTitle
                     end
         return selection if selection.nil? || selection < 0
         original = @blue_kanto_order[selection]
-        if original == :blue_test_kanto || original == :blue_test_johto
-          launched = original == :blue_test_kanto ? BlueKantoTitle.launch : BlueKantoTitle.launch_johto
+        if original == :blue_test_kanto || original == :blue_test_johto || original == :blue_test_sinnoh
+          launched = case original
+                     when :blue_test_kanto then BlueKantoTitle.launch
+                     when :blue_test_johto then BlueKantoTitle.launch_johto
+                     when :blue_test_sinnoh then BlueKantoTitle.launch_sinnoh
+                     end
           if launched
             # Allow the original load screen to dispose itself normally; its
             # Quit Game branch closes the main process after spawning pilot.
