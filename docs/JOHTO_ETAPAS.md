@@ -246,3 +246,26 @@ Entregue um gerador **de geometria real RMXP, ainda em prévia**, para as salas 
 4. **Redesenhar a geometria das salas segundo HGSS/Johto quando necessário**. Examinar porta, escada, caminhos andáveis, spawn e ponto de chegada; conferir sprites. Somente então preencher `johto-new-bark-events.json` com ID/hash `MapXXX`, NPCs, eventos, XY e `verified_position=true`. O piloto só pode ser montado depois disso.
 
 **Limitação:** clonagem de interiores Decades **não é fidelidade a HeartGold/SoulSilver**; apenas desbloqueia a preparação técnica de um mapa editável. Não declara músicas, itens, eventos, nem um início jogável confirmado. **Barras oficiais permanecem 0/16 + 0/16**, sem alterar o balanceamento ou o motor de batalha.
+
+## Continuação da Fase 03–04 — auditoria de interiores e vínculo automático de New Bark (13/11/2026)
+
+Implementados dois passos adicionais para reduzir trabalho manual **sem inventar coordenadas**:
+
+1. [audit_johto_native_rooms.py](../scripts/regions/audit_johto_native_rooms.py) lê **somente** o `game/Data/Map*.rxdata` real e uma prévia validada. Enumera os interiores compatíveis com a estrutura de tiles RMXP (três camadas), nomes, tamanhos, hashes SHA-256, tipos de tileset e transferências diretas (comando 201). Propõe ordenações por nome para quarto, casa e laboratório, mas todos os candidatos têm `template_reviewed=false` e dependem de inspeção visual; não executa scripts presentes nos eventos da origem. Salva `.blue-work/johto-native-room-candidates.json`.
+2. [bind_johto_new_bark.py](../scripts/regions/bind_johto_new_bark.py) só funciona **depois** de `build_johto_interiors.py`. Revalida o staging contra o `game/` original e preenche automaticamente `map_id` + `map_sha256` dos cinco mapas esperados (quarto 2F, casa 1F, cidade, laboratório e Route 29), em **cópia nova** `.blue-work/johto-new-bark-bound.json`. Mantém `x`, `y`, `arrival_x`, `arrival_y`, `sprite`, `verified_position`, `passability_verified` pendentes. Não gera `Game.exe`, saves, prova de release ou marca `VERIFIED_PLAYABLE`.
+3. [JOHTO_PREPARAR_NEW_BARK.bat](../JOHTO_PREPARAR_NEW_BARK.bat) divide o processo no Windows em **auditar** (gera relatório e uma cópia editável do manifesto de templates em `.blue-work/`) e **montar** (gera nova prévia dos interiores e vincula MapIDs/hashes; só se a revisão do template estiver marcada corretamente). Falhas interrompem o processo, sem substituir saídas existentes ou alterar `game/`.
+4. [test_johto_new_bark_binding.py](../tests/test_johto_new_bark_binding.py) valida a sequência sobre RMXP **sintético**, integridade dos 5 MapIDs, hashes, coords e scripts não certificados, template ausente, regressão de snapshots e o fluxo BAT.
+
+### Próxima execução local quando houver fonte real
+
+```bat
+JOHTO_PREPARAR_MAPAS.bat
+REM Após selecionar IDs/hash do Map Pack e executar plan_johto.py + stage_johto.py:
+JOHTO_PREPARAR_NEW_BARK.bat auditar
+REM Revisar .blue-work/johto-native-room-candidates.json e 3 salas-base.
+REM Preencher .blue-work/johto-interior-templates-review.json com IDs/hashes reais.
+JOHTO_PREPARAR_NEW_BARK.bat montar
+REM Inspecionar e preencher coordenadas e sprites no johto-new-bark-bound.json.
+```
+
+**As coordenadas não são descobertas automaticamente**: a saída vinculada permanece com o status `MAP_IDS_BOUND_EVENT_POSITIONS_PENDING`. A cópia experimental do `pilot_johto.py` continua bloqueada até que a geometria, as portas e os gatilhos sejam realmente validados. Os binários de `game/` e do Map Pack não estão versionados no GitHub; os testes sintéticos não substituem executar `Game.exe`. **Barras de aceite: 0/16 técnicas e 0/16 gameplay real.**
