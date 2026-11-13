@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2d215c744c9ccc40a9c025581fef3deaf4b41ef6",
+      "date": "2026-11-13T17:20:55-03:00",
+      "title": "fix(site): keep older Kanto prereleases discoverable alongside frequent Decades releases",
+      "category": "Correções"
+    },
+    {
+      "sha": "2224d08dd069cdcf430e931087b42c83877cce14",
+      "date": "2026-11-13T17:20:52-03:00",
+      "title": "feat(site): explain Decades/Kanto separate incremental Android updates",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ffd1d68e25a954d211c4d2977a65a6c90e8669e6",
+      "date": "2026-11-13T17:20:48-03:00",
+      "title": "docs(android): include incremental update usage inside Kanto ZIP",
+      "category": "Documentação"
+    },
+    {
+      "sha": "c8ad3b687652c9394fb51c80f915551624debd8b",
+      "date": "2026-11-13T17:20:45-03:00",
+      "title": "docs(android): include Termux updater steps in Decades ZIP",
+      "category": "Documentação"
+    },
+    {
       "sha": "2609c556ad575324128dc18882df441b5f6c2d78",
       "date": "2026-11-13T17:20:16-03:00",
       "title": "docs(android): document updates for independent Decades and Kanto JoiPlay channels",
