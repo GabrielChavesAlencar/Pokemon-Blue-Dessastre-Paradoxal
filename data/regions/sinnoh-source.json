@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "REPO_BASELINE_PREPARED_SOURCE_PENDING",
+  "reference_game": "Pokémon Platinum",
+  "alternate_references": [
+    "Diamond",
+    "Pearl",
+    "Brilliant Diamond",
+    "Shining Pearl"
+  ],
+  "candidate": {
+    "name": "Pokémon Ancient Platinum",
+    "author": "Phantombass",
+    "page": "https://eeveeexpo.com/threads/9085/",
+    "edition": "1.0.6",
+    "stated_engine": "Pokémon Essentials v21.1",
+    "candidate_for_audit_only": true,
+    "source_package_sha256": null,
+    "editable_project_verified": false,
+    "per_asset_permissions_checked": false
+  },
+  "fallback": {
+    "name": "The Pokémon World Project - Sinnoh",
+    "page": "https://github.com/SocomSeal/The-PMon-World-Project",
+    "status_as_checked_2026_11_13": "TEMPLATE_ONLY_TWO_MAP_FILES",
+    "confirmed_full_region": false,
+    "allow_as_map_source": false
+  },
+  "available_repository_contracts": {
+    "registry": "site/public/data/regions.json",
+    "state": "planned",
+    "circuit_neighbors_after_sinnoh_league": [
+      "HOENN",
+      "UNOVA"
+    ],
+    "local_badges": [
+      "COAL",
+      "FOREST",
+      "COBBLE",
+      "RELIC",
+      "FEN",
+      "MINE",
+      "ICICLE",
+      "BEACON"
+    ],
+    "battle_engine": "Blue/Decades only",
+    "menu": "scripts/battle_polish/TitleKanto.rb",
+    "menu_label": "Testar Sinnoh",
+    "menu_fallback": "Sinnoh ainda está em preparação",
+    "menu_runtime_test": "tests/title_kanto_runtime.rb",
+    "source_auditor": "scripts/regions/audit_sinnoh_source.py"
+  },
+  "paths_proposed_not_yet_created": {
+    "source": ".blue-work/sinnoh-source/",
+    "stage": ".blue-work/sinnoh-stage/",
+    "pilot": ".blue-work/sinnoh-pilot/",
+    "launcher": "SINNOH_JOGAR_EXPERIMENTAL.bat",
+    "pilot_script": "scripts/regions/pilot_sinnoh.py"
+  },
+  "import_control": {
+    "mode": "READ_ONLY",
+    "imports_enabled": false,
+    "map_id_mapping_approved": false,
+    "save_migration_tested": false,
+    "game_binary_touched": false,
+    "audio_redistribution_approved": false,
+    "public_assets_allowed": false,
+    "map_manifest": {}
+  },
+  "progress": {
+    "total_phases": 13,
+    "technical_approved": 0,
+    "native_playable_approved": 0,
+    "phase_00_status": "PARTIAL_REPOSITORY_ONLY"
+  },
+  "blockers": [
+    "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
+    "Auditar localmente game/Data e todos os IDs usados por Decades/Kanto/Johto/Hoenn",
+    "Identificar e verificar mapas, NPCs, dependências e spawn de Twinleaf em RMXP",
+    "Reservar/remapear IDs somente após teste do runtime para IDs 4+ dígitos",
+    "Criar piloto separado com perfil de save e mapa real de Sinnoh",
+    "Executar Game.exe Windows e teste em JoiPlay/Android com evidências"
+  ],
+  "reference_docs": [
+    "docs/SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md",
+    "docs/SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md",
+    "docs/SINNOH_CODEX_PENDENCIAS.md"
+  ],
+  "note": "A configuração declara bloqueios e fontes para inspeção. Não serve como autorização para importar assets ou indicador de uma região jogável."
+}
