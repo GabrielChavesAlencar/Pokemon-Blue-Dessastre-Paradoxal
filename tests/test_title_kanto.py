@@ -1,4 +1,4 @@
-"""Verify Game.exe displays and dispatches Testar Kanto and Testar Johto.
+"""Verify Game.exe dispatches Kanto, Johto and Sinnoh test options safely.
 
 The runtime fixture emulates Essentials and the Decades Auto Multi Save
 signature without touching the original saves or launching processes.
@@ -20,7 +20,7 @@ class TitleKantoTests(unittest.TestCase):
             capture_output=True, text=True, encoding="utf-8", timeout=25
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("Third and fourth title options", result.stdout)
+        self.assertIn("Third, fourth and fifth title options", result.stdout)
 
     def test_installer_and_compiler_include_main_game_title_option(self):
         importer = (ROOT / "scripts/battle_polish/install.py").read_text("utf-8")
@@ -30,6 +30,10 @@ class TitleKantoTests(unittest.TestCase):
         assert "'TitleKanto.rb'" in importer, "Blue installer omitted new title plugin"
         assert "TitleKanto.rb" in metadata, "Plugin compilation metadata omitted menu script"
         assert "BlueKantoTitle.install" in setup, "Plugin was not activated"
+        title = SOURCE.read_text("utf-8")
+        assert "SINNOH_LABEL" in title and "Testar Sinnoh" in title
+        assert "pilot_sinnoh.py" in title and "SINNOH_JOGAR_EXPERIMENTAL.bat" in title
+        assert "Sinnoh pilot.json" in title, "Isolated Sinnoh pilot must not show the menu again"
         assert "ensure_source.py" in launcher, "Kanto launcher can't bootstrap source maps"
         assert "--launch-only" in launcher, "Experimental launch needs no Win32 window probe"
         self.assertNotIn("game\\data", launcher.lower(), "The pilot BAT must not overwrite main game saves")
