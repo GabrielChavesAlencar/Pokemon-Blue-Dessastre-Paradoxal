@@ -45,6 +45,8 @@ class AndroidUpdatesTest(unittest.TestCase):
             self.assertFalse(safe_path(name), name)
         self.assertTrue(safe_path("Data/Map001.rxdata"))
         self.assertTrue(safe_path("Kanto pilot.json"))
+        self.assertTrue(safe_path("LEIA-ME-ANDROID.txt"))
+        self.assertTrue(safe_path("LEIA-ME-ANDROID-KANTO.txt"))
 
     def test_incremental_update_and_backup(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
