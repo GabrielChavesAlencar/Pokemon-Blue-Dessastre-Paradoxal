@@ -153,6 +153,7 @@ Dir.mktmpdir("blue-region-start-") do |folder|
       "source_archive_sha256"=>"a" * 64,
       "checks"=>BlueRegionStart::JOHTO_PROOFS.map { |key| [key, true] }.to_h,
       "start"=>[712,9,6,2], "travel_point"=>[713,10,11,2],
+      "npc_point"=>[713,11,11,4],
       "file_hashes"=>hashes
     }
     File.write("Data/blue-johto-install.json", JSON.generate(proof))
