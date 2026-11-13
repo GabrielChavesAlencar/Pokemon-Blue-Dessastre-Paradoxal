@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a38838a86c1e4428455fd7d1408269132e91a392",
+      "date": "2026-11-12T22:43:22-03:00",
+      "title": "feat(johto): fase 11 Mahogany Lake of Rage Rocket HQ Pryce GLACIER e Radio Tower isolados",
+      "category": "Novidades"
+    },
+    {
       "sha": "ccf569658e1ca0008e92e1ef68247ff466dab58a",
       "date": "2026-11-12T22:27:50-03:00",
       "title": "Registra abertura do piloto e reteste da Rota 23",
