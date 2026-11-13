@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b8aa6c1596a121ca501facd5d508713c0ffa4f41",
+      "date": "2026-11-13T11:08:33-03:00",
+      "title": "data(hoenn): track donor ZIP source, permissions and blocked import",
+      "category": "Melhorias"
+    },
+    {
       "sha": "76761a98b7f4565ff93bc8d04a99951919254e5d",
       "date": "2026-11-13T11:08:13-03:00",
       "title": "fix(hoenn): harden local staging inventory write and cleanup",
