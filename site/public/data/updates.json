@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "da2d0cbf8037d9f342ed883383f6b554763be608",
+      "date": "2026-11-13T19:37:07-03:00",
+      "title": "docs(johto): record validated original archive and local QA staging",
+      "category": "Documentação"
+    },
+    {
       "sha": "f6d572acf9fae8fcfc793520e0b733241d84b389",
       "date": "2026-11-13T19:35:35-03:00",
       "title": "docs: require Sinnoh zero-regression workflow and title pilot in source analysis",
