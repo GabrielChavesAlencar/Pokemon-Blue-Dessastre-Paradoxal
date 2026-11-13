@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "76761a98b7f4565ff93bc8d04a99951919254e5d",
+      "date": "2026-11-13T11:08:13-03:00",
+      "title": "fix(hoenn): harden local staging inventory write and cleanup",
+      "category": "Correções"
+    },
+    {
       "sha": "75483be66a66bb5e38bf467ad4a7c132a78ce2c6",
       "date": "2026-11-13T11:07:33-03:00",
       "title": "test(hoenn): verify safe ZIP filtering, paths, rights and idempotence",
