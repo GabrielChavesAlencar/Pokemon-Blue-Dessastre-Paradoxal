@@ -164,6 +164,8 @@ def _verify_paths(old, new, patch):
 def apply_patch(root, installed, manifest, patch_file):
     if manifest["channel"] != installed["channel"]:
         raise ValueError("Cannot mix Kanto and Decades.")
+    if manifest.get("immutable", {}) != installed.get("immutable", {}):
+        raise ValueError("Runtime/save configuration changed; a full ZIP is required.")
     with zipfile.ZipFile(patch_file) as archive:
         entries = archive.namelist()
         if len(entries) != len(set(entries)):
@@ -257,7 +259,9 @@ def main(argv=None):
     print("Versao disponivel:", manifest["revision"])
     patch = manifest.get("patch") or {}
     full = asset_url(release, CHANNELS[info["channel"]][0])
-    if patch.get("from_revision") != info["revision"] or not asset_url(release, patch.get("asset", "")):
+    if (patch.get("from_revision") != info["revision"] or
+            manifest.get("immutable", {}) != info.get("immutable", {}) or
+            not asset_url(release, patch.get("asset", ""))):
         print("Nao existe patch direto entre essas revisoes.")
         print("Baixe o pacote completo, numa pasta NOVA:", full or release["html_url"])
         return 2
