@@ -1,0 +1,341 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "13/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "requires_completed_phase": "12/16",
+  "notes": "Symbolic geography and League event order only; do NOT assume any real MapIDs, coordinates, Kanto map scripting, PBS teams, Hall of Fame callbacks or travel are installed.",
+  "entrance": "JOHTO_NEW_BARK_TOWN",
+  "corridor": [
+    {
+      "key": "JOHTO_NEW_BARK_TOWN",
+      "label": "New Bark Town, league departure"
+    },
+    {
+      "key": "JOHTO_ROUTE_27",
+      "label": "Route 27 / eastern Johto border"
+    },
+    {
+      "key": "JOHTO_TOHJO_FALLS_ENTRANCE",
+      "label": "Tohjo Falls entrance"
+    },
+    {
+      "key": "JOHTO_TOHJO_FALLS_INTERIOR",
+      "label": "Tohjo Falls and Waterfall crossing"
+    },
+    {
+      "key": "JOHTO_ROUTE_26",
+      "label": "Route 26 trainers and rest point"
+    },
+    {
+      "key": "JOHTO_VICTORY_ROAD_ENTRANCE",
+      "label": "Victory Road entrance / badges check"
+    },
+    {
+      "key": "JOHTO_VICTORY_ROAD",
+      "label": "Victory Road and rival"
+    },
+    {
+      "key": "JOHTO_INDIGO_PLATEAU",
+      "label": "Indigo Plateau shared geography, Johto campaign only"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_ROUTE_27_TOHJO_GATE",
+      "label": "Route 27 border gate"
+    },
+    {
+      "key": "JOHTO_ROUTE_26_REST_HOUSE",
+      "label": "Route 26 rest house"
+    },
+    {
+      "key": "JOHTO_VICTORY_ROAD_INTERIOR",
+      "label": "Victory Road cave interior"
+    },
+    {
+      "key": "JOHTO_INDIGO_POKEMON_CENTER",
+      "label": "Indigo Plateau healing and PC"
+    },
+    {
+      "key": "JOHTO_INDIGO_LEAGUE_DOOR",
+      "label": "Johto-specific League entrance"
+    },
+    {
+      "key": "JOHTO_ELITE_WILL_ROOM",
+      "label": "Elite Four Johto Will"
+    },
+    {
+      "key": "JOHTO_ELITE_KOGA_ROOM",
+      "label": "Elite Four Johto Koga"
+    },
+    {
+      "key": "JOHTO_ELITE_BRUNO_ROOM",
+      "label": "Elite Four Johto Bruno"
+    },
+    {
+      "key": "JOHTO_ELITE_KAREN_ROOM",
+      "label": "Elite Four Johto Karen"
+    },
+    {
+      "key": "JOHTO_CHAMPION_LANCE_ROOM",
+      "label": "Johto Champion Lance"
+    },
+    {
+      "key": "JOHTO_HALL_OF_FAME_ROOM",
+      "label": "Johto Hall of Fame event"
+    },
+    {
+      "key": "JOHTO_NEW_BARK_TRAVEL_NPC",
+      "label": "Future regional travel NPC in New Bark"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_NEW_BARK_TOWN",
+      "to": "JOHTO_ROUTE_27",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_27",
+      "to": "JOHTO_TOHJO_FALLS_ENTRANCE",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_TOHJO_FALLS_ENTRANCE",
+      "to": "JOHTO_TOHJO_FALLS_INTERIOR",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_TOHJO_FALLS_INTERIOR",
+      "to": "JOHTO_ROUTE_26",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_26",
+      "to": "JOHTO_VICTORY_ROAD_ENTRANCE",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_VICTORY_ROAD_ENTRANCE",
+      "to": "JOHTO_VICTORY_ROAD",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_VICTORY_ROAD",
+      "to": "JOHTO_INDIGO_PLATEAU",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_27",
+      "to": "JOHTO_ROUTE_27_TOHJO_GATE",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_26",
+      "to": "JOHTO_ROUTE_26_REST_HOUSE",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_VICTORY_ROAD_ENTRANCE",
+      "to": "JOHTO_VICTORY_ROAD_INTERIOR",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_INDIGO_PLATEAU",
+      "to": "JOHTO_INDIGO_POKEMON_CENTER",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_INDIGO_PLATEAU",
+      "to": "JOHTO_INDIGO_LEAGUE_DOOR",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_INDIGO_LEAGUE_DOOR",
+      "to": "JOHTO_ELITE_WILL_ROOM",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ELITE_WILL_ROOM",
+      "to": "JOHTO_ELITE_KOGA_ROOM",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ELITE_KOGA_ROOM",
+      "to": "JOHTO_ELITE_BRUNO_ROOM",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ELITE_BRUNO_ROOM",
+      "to": "JOHTO_ELITE_KAREN_ROOM",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ELITE_KAREN_ROOM",
+      "to": "JOHTO_CHAMPION_LANCE_ROOM",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_CHAMPION_LANCE_ROOM",
+      "to": "JOHTO_HALL_OF_FAME_ROOM",
+      "two_way": false,
+      "kind": "symbolic_only_no_warp"
+    }
+  ],
+  "story_requirements": [
+    "Require eight badges of JOHTO and phase 12 Dragon Master plus Johto league_handoff flag",
+    "Player returns to New Bark; never warp from a Kanto location",
+    "Route 27 requires FOG Surf, actual field tool and audited map marker",
+    "Tohjo Falls Waterfall requires RISING, tool and verified Waterfall HM reward from Ice Path",
+    "Route 26 and Victory Road must have verified two-way exits and badge checkpoints",
+    "Victory Road rival depends on audited Johto trainer PBS version matching the Elm starter",
+    "Indigo Plateau is geographically shared, but all five trainer types and League switches remain JOHTO-only",
+    "League start requires an audited Johto specific trainers-ready marker",
+    "Elite Four battle sequence is Will -> Koga -> Bruno -> Karen -> Lance, no skipping stages",
+    "Any loss resets league attempt to Will, without granting victory flags or unlocking regions",
+    "Beating Lance alone does not register a Hall of Fame or complete Johto",
+    "Only a verified successful Hall of Fame/save callback :recorded may call BlueRegions.complete_league(state, JOHTO)",
+    "Failed/cancelled Hall of Fame may retry without creating a League win",
+    "League completion persists once, adds no ninth badge, no duplicate emerald, and does not complete Kanto League",
+    "BlueRegions.unlocked after Johto first clear permits KANTO and HOENN in state; physical travel to Hoenn remains unavailable until installed",
+    "NPC after League must be placed in New Bark, without teleporting the player or modifying Box/party before safe travel adapter approval",
+    "Postgame rematch teams and Johto legendary events require separate later phases"
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_VICTORY_ROAD_RIVAL",
+      "name": "Rival",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ELITE_WILL",
+      "name": "Will",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ELITE_KOGA",
+      "name": "Koga",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ELITE_BRUNO",
+      "name": "Bruno",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ELITE_KAREN",
+      "name": "Karen",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_CHAMPION_LANCE",
+      "name": "Lance",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    }
+  ],
+  "regional_completion": {
+    "only_after": "verified_johto_hall_of_fame_recorded",
+    "method": "BlueRegions.complete_league(state, JOHTO)",
+    "completed_entry": "JOHTO",
+    "unlocks_in_state": [
+      "KANTO",
+      "HOENN"
+    ],
+    "native_kanto_league_switches_touched": false,
+    "native_badges_changed": false,
+    "new_badges_added": 0,
+    "playable_transport_hoenn": false,
+    "return_to_new_bark_implemented": false,
+    "future_npc_location": "JOHTO_NEW_BARK_TOWN",
+    "travel_adapter_supports_johto_currently": false,
+    "future_rematches_implemented": false
+  },
+  "readiness_markers": [
+    {
+      "path": "Data/blue-johto-league-route-ready.txt",
+      "token": "BLUE_JOHTO_LEAGUE_ROUTE_V1_READY",
+      "installed": false
+    },
+    {
+      "path": "Data/blue-johto-victory-rival-ready.txt",
+      "token": "BLUE_JOHTO_VICTORY_RIVAL_V1_READY",
+      "installed": false
+    },
+    {
+      "path": "Data/blue-johto-league-trainers-ready.txt",
+      "token": "BLUE_JOHTO_LEAGUE_TRAINERS_V1_READY",
+      "installed": false
+    },
+    {
+      "path": "Data/blue-johto-hall-of-fame-ready.txt",
+      "token": "BLUE_JOHTO_HALL_OF_FAME_V1_READY",
+      "installed": false
+    }
+  ],
+  "future_not_implemented": [
+    "JOHTO_NATIVE_HOF_ANIMATION_AND_SAVE",
+    "JOHTO_TOHJO_MAP_WARPS",
+    "JOHTO_VICTORY_ROAD_COLLISION",
+    "JOHTO_PBS_TRAINERS_NORMAL_MASTER",
+    "KANTO_INDIGO_MAP_EVENT_SEPARATION",
+    "JOHTO_POST_LEAGUE_NEW_BARK_NPC",
+    "HOENN_MAPS_AND_TRAVEL",
+    "JOHTO_POSTGAME_REMATCHES"
+  ],
+  "validation": {
+    "source_archive_sha_and_rights_verified": false,
+    "map_ids_and_bidirectional_warps_verified": false,
+    "tohjo_surf_waterfall_tools_in_game_verified": false,
+    "route26_27_badge_gate_and_encounters_verified": false,
+    "victory_road_rival_and_map_verified": false,
+    "indigo_kanto_campaign_events_isolated": false,
+    "johto_elite_pbs_and_master_mode_compiled": false,
+    "elite_order_and_blackouts_in_game_verified": false,
+    "lance_battle_and_hall_of_fame_recording_verified": false,
+    "actual_essentials_hof_save_adapter_verified": false,
+    "league_flag_and_kanto_hoenn_unlock_in_real_save_verified": false,
+    "new_bark_travel_npc_and_party_box_safety_verified": false,
+    "native_kanto_and_decades_regressions_accepted": false,
+    "windows_gameplay_verified": false,
+    "joiplay_gameplay_verified": false
+  },
+  "integrated": false
+}
