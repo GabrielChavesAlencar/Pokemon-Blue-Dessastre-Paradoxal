@@ -489,7 +489,7 @@ def lab_starter_balls(events):
         name = text(event.attrs["@name"])
         graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs
         visible = bool(graphic["@character_name"]) or graphic["@tile_id"] > 0
-        if visible and re.search(r"pok[eé]\\s*ball|pok[eé]bola|starter|bulbasaur|charmander|squirtle", name, re.I):
+        if visible and re.search(r"pok[eé]\s*ball|pok[eé]bola|starter|bulbasaur|charmander|squirtle", name, re.I):
             matches.append((event_id, event))
     if len(matches) != 3:
         raise ValueError(
