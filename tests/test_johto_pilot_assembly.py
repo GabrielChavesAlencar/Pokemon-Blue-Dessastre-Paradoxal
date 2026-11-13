@@ -162,6 +162,54 @@ class JohtoPilotAssemblyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "perfil de save"):
                 plan(preview, game, spec, root=root)
 
+    def test_merges_real_source_new_bark_route_29_edge_only_into_isolated_pilot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            game, preview, spec = make_prepared(root)
+            stage_file = preview / "johto-stage.json"
+            stage_data = json.loads(stage_file.read_text("utf-8"))
+            for row in stage_data["maps"]:
+                if row["symbol"] == "JOHTO_NEW_BARK_TOWN":
+                    row["source_id"] = 79
+                elif row["symbol"] == "JOHTO_ROUTE_29":
+                    row["source_id"] = 104
+                else:
+                    row["source_id"] = None
+            stage_file.write_text(json.dumps(stage_data), encoding="utf-8")
+            digest = stage_data["source_archive_sha256"]
+            specs = root / "data/regions"
+            specs.mkdir(parents=True)
+            (specs / "johto-source.json").write_text(json.dumps({
+                "source": {"archive_sha256": digest},
+                "maps": {"79": "JOHTO_NEW_BARK_TOWN",
+                         "104": "JOHTO_ROUTE_29"}
+            }), encoding="utf-8")
+            (specs / "johto-v1-map-connections.json").write_text(json.dumps({
+                "schema": 1, "region": "JOHTO", "can_install": False,
+                "source_archive_sha256": digest,
+                "connections": [{"from_id": 79, "from_edge": "West",
+                                 "from_offset": 13, "to_id": 104,
+                                 "to_edge": "East", "to_offset": 0}]
+            }), encoding="utf-8")
+            native_pbs = game / "PBS/map_connections.txt"
+            native_pbs.write_bytes(b"# Decades / Kanto originals\\n1,East,0,2,West,0\\n")
+            original_hash = checksum(native_pbs)
+            dest = root / ".blue-work/johto-connections-experiment"
+            outcome = assemble(preview, game, dest, spec, root=root,
+                               with_connections=True)
+            compiled = (dest / "PBS/map_connections.txt").read_text("utf-8")
+            self.assertIn("603,West,13,605,East,0", compiled)
+            self.assertIn("1,East,0,2,West,0", compiled)
+            self.assertEqual(checksum(native_pbs), original_hash)
+            self.assertEqual(outcome["source_connections_compiled"], 1)
+            proof = json.loads((dest / "Data/blue-johto-pilot-proof.json")
+                               .read_text("utf-8"))
+            self.assertEqual(proof["source_connections_compiled"], 1)
+            self.assertFalse(proof["connections_tested_in_game"])
+            self.assertFalse(proof["gameplay_verified"])
+            self.assertEqual(proof["file_hashes"]["PBS/map_connections.txt"],
+                             checksum(dest / "PBS/map_connections.txt"))
+
     def test_ruby_guard_only_accepts_signed_local_pilot(self):
         if not shutil.which("ruby"):
             self.skipTest("Ruby indisponível")
