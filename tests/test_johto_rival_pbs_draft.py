@@ -53,7 +53,6 @@ class JohtoRivalPBSTests(unittest.TestCase):
             (game / "PBS/pokemon.txt").write_text("[CHIKORITA]\n", "utf-8")
             with self.assertRaisesRegex(ValueError, "ausentes"):
                 build(game)
-            game = fixture(Path(t)) if False else game
             (game / "PBS/pokemon.txt").write_text(
                 "[CHIKORITA]\n[CYNDAQUIL]\n[TOTODILE]\n", "utf-8")
             (game / "PBS/trainer_types.txt").write_text("[YOUNGSTER]\nName = Kid\n", "utf-8")
@@ -61,7 +60,7 @@ class JohtoRivalPBSTests(unittest.TestCase):
                 build(game)
             (game / "PBS/trainer_types.txt").write_text(
                 "[RIVAL1]\nName = Rival\n[BLUE_JOHTO_RIVAL]\nName = Fake\n", "utf-8")
-            with self.assertRaisesRegex(ValueError, "já existe"):
+            with self.assertRaisesRegex(ValueError, "existe BLUE_JOHTO_RIVAL"):
                 build(game)
 
     def test_no_writes_to_game_or_ready_marker(self):
