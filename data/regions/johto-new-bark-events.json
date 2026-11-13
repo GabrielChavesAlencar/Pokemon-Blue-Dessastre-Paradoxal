@@ -155,5 +155,12 @@
         }
       ]
     }
-  ]
+  ],
+  "start": {
+    "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_2F",
+    "x": null,
+    "y": null,
+    "verified_position": false,
+    "passability_verified": false
+  }
 }
