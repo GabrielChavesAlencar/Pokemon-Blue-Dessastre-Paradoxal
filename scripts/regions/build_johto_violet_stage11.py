@@ -115,11 +115,18 @@ def validate_contract(spec: dict) -> None:
     }
     if {r.get("handler") for r in npcs} != allowed_handlers:
         fail("Handler Ruby de Violet desconhecido")
+    allowed_sprites = {
+        "JH_VIOLET_FALKNER": "NPC_HGSS_Falkner",
+        "JH_SPROUT_ELDER_LI": "NPC_HGSS_Elder",
+        "JH_SPROUT_SAGE_NICO": "NPC_HGSS_Sage",
+        "JH_SPROUT_SAGE_TROY": "NPC_HGSS_Sage",
+        "JH_VIOLET_CENTER_CLERK": "NPC_DPP_PokeCenter_Nurse",
+    }
     for r in npcs:
         if (r.get("source") not in all_symbols or
             type(r.get("x")) is not int or type(r.get("y")) is not int or
-            not isinstance(r.get("sprite"),str) or not r["sprite"].startswith("NPC_HGSS_")):
-            fail("NPC inválido/sem sprite simbólico")
+            r.get("sprite") != allowed_sprites.get(r.get("key"))):
+            fail("NPC inválido/sem sprite comprovado na exportação Blue")
     trainers=spec.get("trainers")
     if (not isinstance(trainers,list) or len(trainers)!=4 or
         {(t.get("type"),t.get("name")) for t in trainers} != EXPECTED_TRAINER_NAMES):
