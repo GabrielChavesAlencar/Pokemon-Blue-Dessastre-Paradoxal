@@ -1,0 +1,410 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "15/16",
+  "default_enabled": false,
+  "status": "PREVIEW_ONLY_NO_ACTIVE_AUDIO",
+  "asset_roots": {
+    "BGM": "Audio/BGM/Johto",
+    "ME": "Audio/ME/Johto"
+  },
+  "guardrails": {
+    "requires_current_region": "JOHTO",
+    "require_real_compiled_mapids": true,
+    "require_source_sha256": true,
+    "require_rights_clearance": true,
+    "require_compiled_event_hooks": true,
+    "deny_kanto_decades_maps": true,
+    "on_missing_audio": "KEEP_EXISTING_BGM",
+    "on_map_exit": "RESTORE_PREVIOUS_BGM",
+    "on_me_finish": "RESTORE_PREVIOUS_BGM",
+    "never_autoplay": false
+  },
+  "maps": [
+    {
+      "area": "NEW_BARK",
+      "cue": "town_new_bark",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "CHERRYGROVE",
+      "cue": "town_cherrygrove",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "VIOLET",
+      "cue": "town_violet",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "AZALEA",
+      "cue": "town_azalea",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "GOLDENROD",
+      "cue": "town_goldenrod",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ECRUTEAK",
+      "cue": "town_ecruteak",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "OLIVINE",
+      "cue": "town_olivine",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "CIANWOOD",
+      "cue": "town_cianwood",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "MAHOGANY",
+      "cue": "town_mahogany",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "BLACKTHORN",
+      "cue": "town_blackthorn",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_29_30_31",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTE_32",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_34_35_36",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_37_38_39",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_40_41",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_42_43",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTE_44",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_45_46",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROUTES_26_27",
+      "cue": "route",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ILEX_FOREST",
+      "cue": "forest",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "SPROUT_TOWER",
+      "cue": "tower_sprout",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "BURNED_TOWER",
+      "cue": "tower_burned",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "BELL_TOWER",
+      "cue": "tower_bell",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "UNION_CAVE",
+      "cue": "cave_union",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ICE_PATH",
+      "cue": "cave_ice_path",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "WHIRL_ISLANDS",
+      "cue": "cave_whirl",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "RUINS_OF_ALPH",
+      "cue": "ruins_alph",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "LIGHTHOUSE",
+      "cue": "lighthouse",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ROCKET_HQ",
+      "cue": "rocket_hq",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "RADIO_TOWER",
+      "cue": "radio_tower",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "POKEMON_CENTER",
+      "cue": "pokemon_center",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "POKEMON_MART",
+      "cue": "pokemon_mart",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "GYM",
+      "cue": "gym",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "JOHTO_INDIGO",
+      "cue": "league_indigo",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "area": "ELM_LAB",
+      "cue": "elm_lab",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    }
+  ],
+  "battles": [
+    {
+      "category": "wild",
+      "cue": "battle_wild",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "trainer",
+      "cue": "battle_trainer",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "rival",
+      "cue": "battle_rival",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "gym",
+      "cue": "battle_gym",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "rocket",
+      "cue": "battle_rocket",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "beasts",
+      "cue": "battle_beasts",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "hooh",
+      "cue": "battle_hooh",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "lugia",
+      "cue": "battle_lugia",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "elite",
+      "cue": "battle_elite",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "category": "champion",
+      "cue": "battle_lance",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    }
+  ],
+  "me": [
+    {
+      "event": "wildVictory",
+      "cue": "victory_wild",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "trainerVictory",
+      "cue": "victory_trainer",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "gymVictory",
+      "cue": "victory_gym",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "obtained_pokemon",
+      "cue": "obtained_pokemon",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "obtained_item",
+      "cue": "obtained_item",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "healed",
+      "cue": "healed",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "badge_awarded",
+      "cue": "badge_awarded",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "evolved",
+      "cue": "evolution",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "caught",
+      "cue": "caught",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "received_hm",
+      "cue": "received_hm",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "hall_of_fame",
+      "cue": "hall_of_fame_me",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    }
+  ],
+  "scenes": [
+    {
+      "event": "intro_elm",
+      "cue": "elm_lab",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "radio_takeover",
+      "cue": "radio_tower",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "kimono_ritual",
+      "cue": "kimono_girls",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "league_hall_of_fame",
+      "cue": "hall_of_fame",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "credits",
+      "cue": "credits",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "bicycle",
+      "cue": "bicycle",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    },
+    {
+      "event": "surf",
+      "cue": "surf",
+      "enabled": false,
+      "pending_reason": "NO_LICENSED_AUDIO_OR_VERIFIED_EVENT_AND_MAP"
+    }
+  ],
+  "notes": "All rules disabled. Symbolic areas are NOT MapIDs. Source assets must first be approved and compiled against an isolated Johto pilot. No global BGM/ME changes to Decades or Kanto."
+}
