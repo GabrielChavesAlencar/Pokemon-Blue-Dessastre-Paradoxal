@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {androidReleaseStatus,androidReleaseHtml,androidPilotsHtml} from '../src/assets/android-release.js';
+import {androidReleaseStatus,androidReleaseHtml,androidPilotsHtml,regionalAndroidReleases} from '../src/assets/android-release.js';
 const sha='a'.repeat(40),next='b'.repeat(40);
 const release={tag_name:'build-1',target_commitish:sha,assets:[{name:'Blue-Android-JoiPlay.zip',state:'uploaded',size:1200000000}]};
 const fetcher=(run,ok=true)=>async url=>({ok:url.includes('/releases/')?ok:true,json:async()=>url.includes('/releases/')?release:{workflow_runs:run?[run]:[]}});
@@ -34,4 +34,23 @@ test('pilotos só têm link quando os ZIPs regionais existem de verdade',async()
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Johto-Piloto\.zip/);
   assert.doesNotMatch(html,/indisponível/);
   assert.doesNotMatch(androidPilotsHtml({state:'unavailable'}),/href=/);
+});
+
+test('Kanto tem release experimental própria; download não depende do ZIP geral',async()=>{
+  const release={tag_name:'kanto-android-512-abc1234',target_commitish:sha,prerelease:true,assets:[
+    {name:'Blue-Android-Kanto-Piloto.zip',state:'uploaded',size:1500000000}
+  ]};
+  const api=async()=>({ok:true,json:async()=>[release]});
+  const regional=await regionalAndroidReleases(api);
+  assert.equal(regional.kanto.tag,release.tag_name);
+  assert.equal(regional.johto,null);
+  const html=androidPilotsHtml({state:'unavailable',regional});
+  assert.match(html,/releases\/download\/kanto-android-512-abc1234\/Blue-Android-Kanto-Piloto\.zip/);
+  assert.match(html,/Piloto Johto · indisponível/);
+  assert.doesNotMatch(html,/releases\/download\/.*Johto/);
+  const malformed=await regionalAndroidReleases(async()=>({ok:true,json:async()=>[
+    {...release,target_commitish:'not-sha'},
+    {...release,assets:[{name:'Blue-Android-Kanto-Piloto.zip',state:'starter',size:200}]}
+  ]}));
+  assert.equal(malformed.kanto,null);
 });
