@@ -42,13 +42,17 @@ module BlueRegionalWild
     return encounter unless $game_map && $game_temp && $game_temp.encounter_type
     # Only ordinary, table-backed map encounters. Never touch scripted gifts,
     # roaming legendaries or debug battles, even when a species matches.
-    data = GameData::Encounter.try_get($game_map.map_id, $PokemonGlobal.encounter_version)
+    data = GameData::Encounter.get($game_map.map_id, $PokemonGlobal.encounter_version || 0)
     return encounter unless data
     slots = data.types[$game_temp.encounter_type]
     return encounter unless slots && slots.any? { |slot| slot[1] == encounter[0] }
     level = BlueCampaign.wild_level
     encounter[1] = level
-    evolved = level_evolution(encounter[0], level)
+    # Eligibility tracks the player's progression cap; wild battles retain
+    # the existing 45% level scale. At a trainer cap of 30, Rattata can
+    # share its route slot with Raticate instead of waiting for wild level 20.
+    progression_level = $player.party.reject(&:egg?).map(&:level).max || 1
+    evolved = level_evolution(encounter[0], progression_level)
     chance = roll.nil? ? rand(100) : roll
     encounter[0] = evolved if evolved && chance < EVOLVED_SLOT_PERCENT
     encounter
