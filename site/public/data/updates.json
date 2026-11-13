@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "92c163d599163906a789bacf5a161d6ede592530",
+      "date": "2026-11-13T07:48:43-03:00",
+      "title": "feat(regions): viagem Johto pós Liga com ponto auditado, NPC New Bark e rollback existente",
+      "category": "Novidades"
+    },
+    {
       "sha": "8f86e5b7a075aecf86ac7ba2c063b43578b6f900",
       "date": "2026-11-13T07:48:05-03:00",
       "title": "test(johto): adiciona coordenada do NPC New Bark ao manifesto de liberação simulado",
