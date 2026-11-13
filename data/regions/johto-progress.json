@@ -41,10 +41,10 @@
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     },
     "offline_development_milestones": {
-      "verified": 7,
+      "verified": 8,
       "total": 12,
-      "percent": 58.3,
-      "meaning": "7/12: seis warps de New Bark preparados em preview isolada, retorno e chegada sem loop; conexão de Route 29 já existente no PBS. Somente auditoria de tiles/Marshal, sem gameplay, sem instalação automática no Blue-Story.exe."
+      "percent": 66.7,
+      "meaning": "8/12: adicionados 6 eventos narrativos (mãe, Elm, 3 bolas de inicial, Silver) mantendo 6 warps anteriores; 3 bolas estáticas removidas e viraram eventos de ação. Stage privado não é jogo jogável, Game.exe e Blue-Story.exe ainda pendentes."
     }
   },
   "phases": [
@@ -111,7 +111,8 @@
         "Exportador local de insumos nativos com allowlist e SHA-256 criado; somente game/ local, sem executavel/saves/plugins e sem ZIP publico; testes sinteticos do exportador",
         "Validador de 12 eventos e spawn com comprovacao por SHA/MapID/PNG, aceita borda PBS sem dois warps duplicados; montador privado isolado bloqueia coordenadas nao conferidas",
         "ZIP nativo de 2460 arquivos validado com SHA-256 por entrada, contendo 207 mapas RMXP, 95 PBS, sprites de Elm/mae/Silver/Poke Bola e tres especies iniciais",
-        "Staging PRIVADO materializado de 74 mapas terreno Johto (IDs 600-673) + 3 interiores geométricos provisórios (674-676); 42 conexões PBS remapeadas, templates 12 eventos vinculados a MapID e SHA; verificacao de serialização RMXP e integridade nativa"
+        "Staging PRIVADO materializado de 74 mapas terreno Johto (IDs 600-673) + 3 interiores geométricos provisórios (674-676); 42 conexões PBS remapeadas, templates 12 eventos vinculados a MapID e SHA; verificacao de serialização RMXP e integridade nativa",
+        "Etapa OFFLINE 08/12: 6 eventos próprios da história inseridos em prévia privada Map625/675/676 (mãe/Elm/3 bolas clicáveis/Silver), preservando 6 warps; sem prova de batalha/Game.exe"
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe",
@@ -299,7 +300,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Etapa 08: integrar eventos próprios da mãe, Elm, 3 Poké Bolas interativas e rival preservando os 6 warps já construídos. Nenhum novo ZIP ou execução do EXE é necessário agora. Instalação pelo site ainda pendente.",
+  "next_required_input": "Etapa 09: PBS das três versões de rival compatíveis com o inicial escolhido e validação dos registros/níveis com a base Blue. Nenhuma abertura do Game.exe é necessária agora; instalação automática e QA ainda pendentes.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
@@ -317,8 +318,8 @@
   "offline_development": {
     "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
     "total": 12,
-    "completed": 7,
-    "percent": 58.3,
+    "completed": 8,
+    "percent": 66.7,
     "not_gameplay_proof": true,
     "never_execute_game_exe": true,
     "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
@@ -405,9 +406,17 @@
       {
         "number": 8,
         "title": "Inserir eventos de história de New Bark nos mapas",
-        "status": "PENDING",
-        "acceptance": "Eventos próprios para mãe, Elm, três Poké Bolas e rival ligados em RXDATA de cópia isolada; flags únicas, handlers auditados e testes sintéticos sem duplicar iniciais",
-        "evidence": []
+        "status": "COMPLETE",
+        "acceptance": "Seis eventos autorais RMXP de história em 3 mapas: mãe, Elm, três Poké Bolas individuais CHIKORITA/CYNDAQUIL/TOTODILE, Silver; seis warps da etapa 07 preservados, três tiles estáticos de Poké Bola substituídos por eventos, 74 mapas e MapInfos/Tilesets inalterados no stage privado; runtime Ruby com bloqueio de segundo inicial e estado regional. Game.exe e batalha PBS ainda não testados.",
+        "evidence": [
+          "scripts/regions/build_johto_story_v1.py",
+          "data/regions/johto-stage08-story.json",
+          "scripts/regions/JohtoPilot.rb: choose_starter_from_ball(species), nenhum menu de seleção do Elm",
+          "tests/test_johto_story_v1.py (10 cenários sintéticos)",
+          "tests/johto_pilot_runtime.rb (estado regional, grant, duplicação e save/reload)",
+          "docs/JOHTO_OFFLINE_FASE_08_EVENTOS_NEW_BARK.md",
+          "Prévia privada com 77 RXDATA auditados em Ruby Marshal; alterados somente Map625/675/676; 6 warps preservados"
+        ]
       },
       {
         "number": 9,
