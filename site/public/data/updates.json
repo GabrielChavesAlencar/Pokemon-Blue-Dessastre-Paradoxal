@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cadd48dc685355795e7a32ccda9761514cc497d4",
+      "date": "2026-11-13T17:17:18-03:00",
+      "title": "test(android): exercise incremental updates, save protection and mismatch guards",
+      "category": "Testes"
+    },
+    {
       "sha": "1e01a58a1d3cfcf765f02182a78d6b4dfcc981a4",
       "date": "2026-11-13T17:16:42-03:00",
       "title": "feat(android): add update instructions to Decades title and both mobile pause menus",
