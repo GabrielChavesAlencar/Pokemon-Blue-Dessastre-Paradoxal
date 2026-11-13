@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2d5d3bc3c4b94d103807fe2afdf76aa0be77ab32",
+      "date": "2026-11-13T20:13:18-03:00",
+      "title": "docs: link Sinnoh Codex backlog and executed repository phase-00 audit",
+      "category": "Documentação"
+    },
+    {
+      "sha": "f2c5b58f14e6cf03b35baae5098efe398d5a11d5",
+      "date": "2026-11-13T20:13:06-03:00",
+      "title": "ci: run Sinnoh read-only preflight on regression workflow",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ea7a1f04d2ad7f3273a29d6a62957ce25d352300",
       "date": "2026-11-13T20:12:07-03:00",
       "title": "docs: record verified Sinnoh repository audit and remaining phase 00 gates",
