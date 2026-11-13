@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4e202459cada920baa36d30363ba89b475618349",
+      "date": "2026-11-13T07:47:19-03:00",
+      "title": "test(regions): Johto só inicia com manifest completo, hash de mapas e validações reais",
+      "category": "Testes"
+    },
+    {
       "sha": "f9fe603231ee14f280f6c0d2e2818f5d67fe661c",
       "date": "2026-11-13T07:46:52-03:00",
       "title": "fix(regions): corrige ancoras regex SHA256 do manifesto Johto",
