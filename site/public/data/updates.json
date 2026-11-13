@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7eee5e7a00e522ba08c78f7883c656d89586fdc5",
+      "date": "2026-11-13T20:09:30-03:00",
+      "title": "data: record Sinnoh source provenance and blocked installation gates",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6fbb1b07a44114536a577757e810ff2b70125c4e",
       "date": "2026-11-13T20:09:04-03:00",
       "title": "test: verify Sinnoh source preflight is read-only and rejects unsafe ZIPs",
