@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "18115039f4905f03eba59ee2a04f99b12527a870",
+      "date": "2026-11-13T10:43:30-03:00",
+      "title": "docs(johto): acompanhar inventario real separado de fases tecnicas e gameplay aprovados",
+      "category": "Documentação"
+    },
+    {
       "sha": "1a2961147124cc05b56d700b7f1befee026beafc",
       "date": "2026-11-13T10:38:06-03:00",
       "title": "docs: plano definitivo de implementacao de Hoenn em 16 fases",
