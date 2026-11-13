@@ -557,12 +557,14 @@ def lab_arrival_scene(events, event_id):
     return blank
 
 
-def starter_ball(event, species):
+def starter_ball(event, species, installed_character):
     graphic = event.attrs["@pages"][0].attrs["@graphic"]
     result = new_event(event, [
         command(355, f"BlueKantoPilot.pick_starter(:{species}, {event.attrs['@id']})".encode()),
-    ], 0, graphic.attrs["@character_name"])
+    ], 0, installed_character)
     result.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(graphic)
+    if graphic.attrs["@character_name"]:
+        result.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = installed_character
     result.attrs["@pages"][0].attrs["@direction_fix"] = True
     taken = copy.deepcopy(result.attrs["@pages"][0])
     condition = taken.attrs["@condition"].attrs
@@ -730,7 +732,9 @@ def install_events(source, target, mapping):
             if original == 6 and event_id in starter_balls:
                 # Left to right: Bulbasaur, Charmander, Squirtle (FRLG).
                 species = ("BULBASAUR", "CHARMANDER", "SQUIRTLE")[starter_balls.index(event_id)]
-                selected[event_id] = starter_ball(event, species)
+                graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs
+                installed_character = actor(event) if graphic["@character_name"] else b""
+                selected[event_id] = starter_ball(event, species, installed_character)
                 continue
             if not saffron_event_allowed(original, event_id, event):
                 continue
