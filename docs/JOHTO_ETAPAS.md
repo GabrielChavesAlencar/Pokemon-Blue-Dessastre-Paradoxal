@@ -162,3 +162,21 @@ O auditor nunca instala conteúdo e grava apenas um JSON em .blue-work/. Se a sa
 - [ ] Testes automatizados concluídos sem regressão e evidências documentadas.
 
 **Próxima ação:** preparar o ZIP legítimo com `prepare_johto_source.py`, conferir SHA-256, credenciais de uso de artes e os IDs originais; então executar `audit_johto.py`, `plan_johto.py`, `stage_johto.py` e `verify_johto.py` sobre o pacote real e a instalação local, de acordo com [a Etapa 03](JOHTO_FASE_03_PREVIA_SEGURA.md). Depois, ligar os eventos já preparados aos interiores de New Bark dentro de um piloto isolado. O botão de nova partida em Johto e o teste executável continuam bloqueados enquanto esses mapas reais não forem validados.
+
+## Implementação iniciada — inventário físico de conteúdo RMXP (13/11/2026)
+
+**Entrega em código, ainda sem Map Pack externo:** [inventory_johto.py](../scripts/regions/inventory_johto.py) é um scanner complementar a [audit_johto.py](../scripts/regions/audit_johto.py). Ele analisa **cada mapa e suas páginas de eventos**, incluindo coordenadas, triggers, contagens de diálogo, comandos de batalha, mudanças de itens, transferência, scripts de origem não confiáveis e avisos de MapIDs ausentes/XY inválidos. Nunca executa scripts externos e não copia diálogos, sprites ou eventos para o jogo.
+
+- [x] [johto-area-scope.json](../data/regions/johto-area-scope.json): 80 áreas/interiores obrigatórios de referência inicial (HGSS e variantes), incluindo ginásios, casas cruciais e Mt. Silver. **São aliases candidatos, não mapas confirmados.**
+- [x] [test_johto_content_inventory.py](../tests/test_johto_content_inventory.py): fixtures RMXP artificiais, teste de integridade SHA-256, comando Ruby não executado, itens/treinadores/warps e prova de que nenhum conteúdo é declarado jogável.
+- [ ] Executar o inventário com pacote **real** obtido e auditado localmente, e preencher manualmente o mapeamento Johto vs. mapas Kanto misturados na fonte.
+- [ ] Reconstruir integralmente os NPCs/itens/eventos HGSS por local e conectá-los ao motor Blue via Game.exe; o scanner não faz isso sozinho.
+
+Após preparar o ZIP verdadeiro e rodar `audit_johto.py`, executar:
+
+~~~powershell
+python scripts/regions/inventory_johto.py --source ".blue-work/johto-source" --audit ".blue-work/johto-audit.json" --output ".blue-work/johto-content-inventory.json"
+python -m unittest discover -s tests -p "test_johto_content_inventory.py" -v
+~~~
+
+Os eventos de origem são **metadados de auditoria**, não prova de uma campanha completa. A fonte, a instalação local `game/`, as músicas e os PBS reais continuam ausentes neste repositório. Portanto, as barras de aceitação **permanecem 0/16 em ambas** e `install_johto.py --apply` continua bloqueado.
