@@ -154,6 +154,9 @@ def _verify_paths(old, new, patch):
         raise ValueError("Patch files differ from the new manifest.")
     if any(p not in old or p in new for p in removed):
         raise ValueError("Patch removal list is not a tracked old file.")
+    if (set(changed) != {name for name, meta in new.items() if old.get(name) != meta}
+            or set(removed) != set(old) - set(new)):
+        raise ValueError("Patch is not a complete delta for this version.")
     for name, meta in changed.items():
         if (not isinstance(meta, dict) or not isinstance(meta.get("size"), int)
                 or meta["size"] < 0 or len(str(meta.get("sha256", ""))) != 64):
@@ -183,8 +186,18 @@ def apply_patch(root, installed, manifest, patch_file):
             meta = changed[name]
             if entry.file_size != meta["size"] or entry.file_size > MAX_PATCH_BYTES:
                 raise ValueError("Patch file size mismatch: " + name)
-            if sha256_bytes(archive.read(entry)) != meta["sha256"]:
+            digest = hashlib.sha256()
+            with archive.open(entry) as stream:
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            if digest.hexdigest() != meta["sha256"]:
                 raise ValueError("Patch file checksum mismatch: " + name)
+        # Immutable runtime and save profile must still match their baseline.
+        for name, meta in installed.get("immutable", {}).items():
+            critical = root / name
+            if (not critical.is_file() or critical.is_symlink()
+                    or sha256_file(critical) != meta["sha256"]):
+                raise ValueError("Critical runtime/configuration was modified: " + name)
         # Only touch files owned by the exact installed revision. Protect modifications.
         for name in sorted(set(changed) | set(removed)):
             current = root / name
@@ -213,8 +226,8 @@ def apply_patch(root, installed, manifest, patch_file):
                 target.parent.mkdir(parents=True, exist_ok=True)
                 fd, temp_path = tempfile.mkstemp(prefix=".blue-update-", dir=target.parent)
                 try:
-                    with os.fdopen(fd, "wb") as output:
-                        output.write(archive.read("files/" + name))
+                    with os.fdopen(fd, "wb") as output, archive.open("files/" + name) as source:
+                        shutil.copyfileobj(source, output, length=1024 * 1024)
                     os.replace(temp_path, target)
                 finally:
                     if os.path.exists(temp_path):
@@ -225,7 +238,8 @@ def apply_patch(root, installed, manifest, patch_file):
             temp_marker = marker.with_name(marker.name + ".tmp")
             temp_marker.write_text(json.dumps({
                 "schema": 1, "channel": manifest["channel"], "revision": manifest["revision"],
-                "files": manifest["files"]}, sort_keys=True), encoding="utf8")
+                "files": manifest["files"], "immutable": manifest.get("immutable", {})},
+                sort_keys=True), encoding="utf8")
             os.replace(temp_marker, marker)
             (backup / "BACKUP-INFO.txt").write_text(
                 "Previous revision: " + installed["revision"] + "\n"
