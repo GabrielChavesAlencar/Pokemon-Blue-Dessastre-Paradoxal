@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.android.package import allowed, compiled_mobile, fingerprint, request_compile
 from scripts.android.build_manifest import installed_manifest, verify_manifest
+from scripts.android.early_input import verify as verify_early_input
 
 ASSET = "Blue-Android-Kanto-Piloto.zip"
 FOLDER = "Pokemon-Blue-Kanto-Android/"
@@ -240,6 +241,7 @@ def verify_archive(zip_path: Path, revision: str) -> dict:
         if not _kanto_save_profile(config):
             raise ValueError("Archived Kanto saves would overlap with Decades.")
         verify_manifest(archive, FOLDER, "kanto", revision)
+        verify_early_input(archive.read(FOLDER + "Data/Scripts.rxdata"))
         return {"region": "KANTO", "revision": revision, "maps": len(mapping), "mobile_sha256": mobile}
 
 def main() -> None:
