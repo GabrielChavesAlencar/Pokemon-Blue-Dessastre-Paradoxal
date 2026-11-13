@@ -34,6 +34,8 @@ class JohtoProgressTests(unittest.TestCase):
             "verified": 0, "total": 16, "meaning": tracker["progress"]["technical_phases_fully_approved"]["meaning"]
         })
         self.assertEqual(tracker["progress"]["gameplay_phases_fully_approved"]["verified"], 0)
+        self.assertEqual(tracker["progress"]["playable_gameplay_phases"]["verified"], 0)
+        self.assertEqual(tracker["progress"]["tested_gameplay_phases"]["verified"], 0)
 
     def test_each_phase_has_evidence_and_blockers(self):
         tracker = load("data/regions/johto-progress.json")
@@ -46,6 +48,55 @@ class JohtoProgressTests(unittest.TestCase):
             self.assertTrue(phase["blockers"])
         self.assertIn("game/Data", " ".join(phases[0]["blockers"]))
         self.assertIn("Game.exe", " ".join(phases[1]["blockers"]))
+
+    def test_distinct_bars_playable_and_native_qa_have_independent_rules(self):
+        tracker = load("data/regions/johto-progress.json")
+        progress = tracker["progress"]
+        phases = tracker["phases"]
+        eligible = [p for p in phases if p["id"] >= 4]
+        infrastructure = [p for p in phases if p["id"] < 4]
+        self.assertEqual(len(eligible), 13)
+        self.assertEqual(len(infrastructure), 3)
+        self.assertEqual([p["id"] for p in eligible], list(range(4, 17)))
+        self.assertEqual(
+            progress["playable_gameplay_phases"]["total"], len(eligible))
+        self.assertEqual(
+            progress["tested_gameplay_phases"]["total"], len(eligible))
+        self.assertEqual(
+            progress["playable_gameplay_phases"]["verified"],
+            sum(p["gameplay_playable"] is True for p in eligible))
+        self.assertEqual(
+            progress["tested_gameplay_phases"]["verified"],
+            sum(p["gameplay_tested"] is True for p in eligible))
+        self.assertTrue(all(p["gameplay_tested"] is not True or
+                            p["gameplay_playable"] is True for p in eligible))
+        self.assertTrue(all(p["gameplay_playable"] is None and
+                            p["gameplay_tested"] is None for p in infrastructure))
+        self.assertTrue(all(p["gameplay_playable"] is False and
+                            p["gameplay_tested"] is False for p in eligible))
+        self.assertEqual(tracker["progress_labels"]["playable"],
+                         "Fases jogáveis no Game.exe")
+        self.assertIn("QA", tracker["progress_labels"]["tested"])
+
+    def test_technical_code_tests_have_full_coverage_but_are_not_native_gameplay(self):
+        tracker = load("data/regions/johto-progress.json")
+        phases = tracker["phases"]
+        paths = [p["automated_code_test"] for p in phases]
+        self.assertEqual(len(set(paths)), 16)
+        self.assertTrue(all((ROOT / path).is_file() for path in paths))
+        self.assertTrue(all(path.startswith("tests/test_") and
+                            path.endswith(".py") for path in paths))
+        coverage = tracker["progress"]["automated_code_test_coverage"]
+        self.assertEqual(coverage["verified"], len(paths))
+        self.assertEqual(coverage["total"], len(paths))
+        self.assertEqual(coverage["total"], 16)
+        self.assertEqual(tracker["progress"]["playable_gameplay_phases"]["verified"], 0)
+        self.assertEqual(tracker["progress"]["tested_gameplay_phases"]["verified"], 0)
+        document = (ROOT / "docs/JOHTO_ETAPAS.md").read_text("utf-8")
+        self.assertIn("Fases JOGÁVEIS", document)
+        self.assertIn("Fases TESTADAS", document)
+        self.assertIn("0/13", document)
+        self.assertIn("16/16", document)
 
     def test_no_bar_can_claim_acceptance_without_integrated_maps(self):
         tracker = load("data/regions/johto-progress.json")
