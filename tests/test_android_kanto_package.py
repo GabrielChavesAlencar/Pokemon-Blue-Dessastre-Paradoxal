@@ -46,7 +46,7 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
         config = (self.game / "mkxp.json").read_text(encoding="utf8")
         self.assertTrue(k._kanto_save_profile(config))
         self.assertFalse(k._kanto_save_profile(config.replace('"dataPathApp": "Kanto Piloto"', '"dataPathApp": "Decades"')))
-        self.assertFalse(k._kanto_save_profile(config.replace('  "dataPathOrg"', '  "dataPathApp": "Kanto Piloto",\n  "dataPathOrg"')))
+        self.assertFalse(k._kanto_save_profile(config.replace('"dataPathOrg"', '"dataPathApp": "Kanto Piloto", "dataPathOrg"')))
 
     def test_refuses_main_game_without_pilot_marker(self):
         (self.game / "Kanto pilot.json").unlink()
