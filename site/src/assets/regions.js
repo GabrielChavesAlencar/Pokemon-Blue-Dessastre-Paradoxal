@@ -20,6 +20,7 @@ export function regionsPage(registry){
       (region.pilot?'<p>Trecho em preparação: '+region.pilot.map(esc).join(', ')+'.</p>':'')+
       (key==='DECADES'?'<a class="text-link" href="/localizacoes">Ver mapa e encontros '+icon('arrow')+'</a>':'')+
       (key==='KANTO'?'<a class="text-link" href="/localizacoes?regiao=kanto">Explorar piloto '+icon('arrow')+'</a>':'')+
+      (key==='JOHTO'?'<a class="text-link" href="/localizacoes?regiao=johto">Ver planejamento de Johto '+icon('arrow')+'</a>':'')+
       '</article>';
   }).join('');
   return '<div class="container detail-container"><a class="back-link" href="/localizacoes">← Localizações</a>'+
@@ -29,7 +30,7 @@ export function regionsPage(registry){
 }
 
 export function regionPicker(page,region){
-  const choices=[['decades','Decades','/'+page],['kanto','Kanto','/'+page+'?regiao=kanto']];
+  const choices=[['decades','Decades','/'+page],['kanto','Kanto','/'+page+'?regiao=kanto'],['johto','Johto · prévia','/'+page+'?regiao=johto']];
   return '<nav class="region-picker" aria-label="Selecionar região">'+choices.map(([id,name,href])=>
     '<a class="filter-chip'+(id===region?' active':'')+'" href="'+href+'"'+
     (id===region?' aria-current="page"':'')+'>'+name+'</a>').join('')+'</nav>';
