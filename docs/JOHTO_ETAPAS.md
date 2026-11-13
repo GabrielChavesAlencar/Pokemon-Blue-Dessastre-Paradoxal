@@ -327,3 +327,13 @@ Adicionados recursos técnicos que aproximam do primeiro piloto real, sem altera
 Colocar os **mesmos bytes** do ZIP v1 em `.blue-work/johto-source/original.zip` e manter a instalação local em `game/` sem modificar seus arquivos originais. Executar `JOHTO_PREPARAR_PRIMEIRA_FASE.bat`. O hash do ZIP é conferido com `johto-source.json`; não enviar binários/tiles sem direitos para o GitHub. A saída e os logs ficam apenas em `.blue-work/`. A extração não instala scripts de terceiros.
 
 **Ainda faltam antes de aumentar a barra JOGÁVEL:** auditar e desenhar os interiores da casa do jogador 2F/1F e laboratório de Elm, resolver sprites e coordenadas reais das portas/NPCs, compilar os handlers/PBS, corrigir a passagem Rota 29 ↔ Cherrygrove ausente da fonte e iniciar/testar Game.exe em **cópia isolada**, incluindo save/reload. Os arquivos `game/Data`, sprites e PBS nativos ainda não foram fornecidos nesta conversa. **Não marcar fase jogável por testes sintéticos.**
+
+## Fase 04 — trabalho concreto sobre as portas do Map079 real (13/11/2026)
+
+**Referência:** [JOHTO_FASE_04_ENTRADAS_REAIS_V1.md](JOHTO_FASE_04_ENTRADAS_REAIS_V1.md).
+
+O ZIP enviado pelo usuário já permitiu **renderizar o New Bark exterior real e identificar quatro candidatos de entrada**, com tiles nas três camadas e hash do Map079: laboratório grande noroeste (5,21), casa nordeste (14,23), casa sudoeste (4,31), casa sudeste (13,33). A ferramenta [audit_johto_new_bark_exterior.py](../scripts/regions/audit_johto_new_bark_exterior.py) agora verifica diretamente os bytes de `Map079.rxdata` e `Tilesets.rxdata` dentro do ZIP e rejeita candidatos alterados/indevidamente aprovados. Comando Windows: [JOHTO_AUDITAR_ENTRADAS_NEW_BARK.bat](../JOHTO_AUDITAR_ENTRADAS_NEW_BARK.bat). O relatório fica em `.blue-work/johto-new-bark-exterior-audit.json`.
+
+O piloto isolado com `--with-connections` foi corrigido para **não duplicar teletransportes** na conexão de borda New Bark–Route29 já fornecida no `map_connections.txt`. Os dois eventos redundantes são removidos **apenas da cópia dos eventos em memória**, preservando origem, Kanto, Decades e o rival. Há testes sintéticos de montagem do piloto com verificações de eventos de borda ausentes e NPCs preservados.
+
+**Não transformar essa auditoria em aprovação de gameplay:** os papéis exatos das casas, o quarto 2F/1F, Elm Lab interior, passabilidade em Game.exe, sprites e saves ainda não foram testados. A fonte fornecida não traz os interiores e o `game/` original ainda não foi entregue. **Barra Jogáveis: 0/13. Barra Testadas: 0/13.** Próximo: obter os dados nativos do motor, validar a casa do jogador, preparar 3 interiores e montar/testar o piloto real.
