@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "76b4e36804805e01c2b69fee9512eb27b1b02854",
+      "date": "2026-11-13T19:10:51-03:00",
+      "title": "fix(music): use Essentials pbParty(1) for Kanto wild encounter BGM",
+      "category": "Correções"
+    },
+    {
       "sha": "808c03ca773ff3e5b5284ed9bff19d758c38b728",
       "date": "2026-11-13T19:05:25-03:00",
       "title": "feat(regions): stage isolated Johto QA and audit Hoenn baseline",
