@@ -53,3 +53,9 @@ O patch atual é **de uma revisão publicada para a próxima**, não um sincroni
 - `.github/workflows/kanto-pilot-check.yml`: publica Kanto como prerelease separada, após testes nativos e compilação; requer `[android-kanto-release]` no commit.
 
 Nenhuma publicação deve ser considerada pronta antes de o workflow correspondente terminar com sucesso e os assets aparecerem na release. Os testes automatizados de ZIP **não substituem** um teste real no Android, especialmente a concessão de acesso ao armazenamento pelo Termux e a retomada dos saves no JoiPlay.
+
+## Publicação inicial dos novos canais
+
+A primeira release com inventário é a **linha de base** de atualizações. Os ZIPs Android antigos não possuem `Data/blue-update.json` e exigem instalação completa separada. A geração de patch começa a partir da **segunda** release compatível do mesmo canal. O código nunca promove ZIP antigo do Kanto como se fosse Decades ou vice-versa.
+
+Checklist de release: testes Python e Ruby aprovados, compilação nativa e revisão `Revision` validadas, checksum do ZIP conferido, manifesto `.update.json` publicado na release certa, teste em aparelho Android real e verificação de reabertura do save (o último item é manual e pode permanecer pendente). A presença dos arquivos no GitHub não significa que houve teste manual em dispositivo.
