@@ -172,7 +172,7 @@ O auditor nunca instala conteúdo e grava apenas um JSON em .blue-work/. Se a sa
 - [ ] Executar o inventário com pacote **real** obtido e auditado localmente, e preencher manualmente o mapeamento Johto vs. mapas Kanto misturados na fonte.
 - [ ] Reconstruir integralmente os NPCs/itens/eventos HGSS por local e conectá-los ao motor Blue via Game.exe; o scanner não faz isso sozinho.
 
-Após preparar o ZIP verdadeiro e rodar `audit_johto.py`, executar:
+No Windows, o novo atalho [JOHTO_PREPARAR_MAPAS.bat](../JOHTO_PREPARAR_MAPAS.bat) executa a extração ZIP, auditoria e inventário **somente em .blue-work/**, exigindo fonte e instalação local presentes. Ele não instala mapas. Alternativamente, após preparar o ZIP verdadeiro e rodar `audit_johto.py`, executar:
 
 ~~~powershell
 python scripts/regions/inventory_johto.py --source ".blue-work/johto-source" --audit ".blue-work/johto-audit.json" --output ".blue-work/johto-content-inventory.json"
