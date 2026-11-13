@@ -60,3 +60,7 @@ A execução nativa do piloto em GitHub Actions (run 43493750021) montou a fonte
 A integração Blue foi corrigida em scripts/battle_polish/RegionStart.rb: json e digest deixam de ser requisitos para iniciar Decades/Kanto e só são carregados na validação da prova de Johto. Caso essas bibliotecas Ruby não estejam disponíveis, a prova de Johto continua bloqueada. Isso não ignora validação de Johto nem altera saves.
 
 Este commit dispara uma nova tentativa da CI Kanto. O ZIP Blue-Android-Kanto-Piloto.zip só poderá ser criado como prerelease separada depois de o teste nativo e o compilador JoiPlay finalizarem com êxito. Em caso de erro, a CI publica diagnósticos e mantém o botão do site indisponível.
+
+## Segunda rodada de diagnóstico do Kanto
+
+A execução 43495139107 avançou após corrigir o carregamento da biblioteca JSON. Em vez de timeout, o teste nativo revelou `NoMethodError` no verificador `KantoNativeCheck.rb`: alguns eventos do mapa não têm página ativa e `event.list` pode ser `nil`. O teste foi alterado para percorrer `Array(event.list)`, mantendo a verificação dos teletransportes sem tocar nos eventos originais. A próxima compilação continua bloqueada se qualquer teste nativo ou verificação de JoiPlay falhar.
