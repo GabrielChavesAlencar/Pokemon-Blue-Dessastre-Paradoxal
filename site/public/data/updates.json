@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bbe3d06a70e68d71b60b06a9a0a5b510e2f9e488",
+      "date": "2026-11-12T23:01:49-03:00",
+      "title": "docs(johto): sincroniza plano de 16 fases com Ice Path Clair e Rising",
+      "category": "Documentação"
+    },
+    {
+      "sha": "e94b257a323a3f260e3815c9b5408d101646ff20",
+      "date": "2026-11-12T23:01:33-03:00",
+      "title": "docs(johto): acompanha etapa 12 parcial mantendo duas barras sem aceite ficticio",
+      "category": "Documentação"
+    },
+    {
       "sha": "b668022877a66d125b747612fb33c5a83d82697b",
       "date": "2026-11-12T23:01:14-03:00",
       "title": "docs(johto): detalha fase 12 Ice Path Clair Master Rising e critérios reais",
