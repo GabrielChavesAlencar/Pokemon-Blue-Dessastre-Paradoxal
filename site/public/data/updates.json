@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a6fa433e2b51f3b99f68104c014c652faa41c7c2",
+      "date": "2026-11-13T19:19:46-03:00",
+      "title": "fix(johto): accept the audited original offline QA archive",
+      "category": "Correções"
+    },
+    {
       "sha": "5eda49e806d0c002f555073a6ccc8bfb6907d188",
       "date": "2026-11-13T19:14:20-03:00",
       "title": "release(android): rebuild Kanto pilot with wild battle music fix [android-kanto-release]",
