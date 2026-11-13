@@ -1,0 +1,345 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "12/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "requires_completed_phase": "11/16",
+  "entrance": "JOHTO_MAHOGANY_TOWN",
+  "notes": "Symbolic map/quest contract only. No real MapIDs, warps, sliding tiles, boulder placements, gym rotating platforms, species/movesets, trainer PBS, item keys, source license or Windows gameplay verified.",
+  "corridor": [
+    {
+      "key": "JOHTO_MAHOGANY_TOWN",
+      "label": "Mahogany Town"
+    },
+    {
+      "key": "JOHTO_ROUTE_44_GATE",
+      "label": "Route 44 entrance"
+    },
+    {
+      "key": "JOHTO_ROUTE_44",
+      "label": "Route 44"
+    },
+    {
+      "key": "JOHTO_ICE_PATH_1F_WEST",
+      "label": "Ice Path entrance / 1F west"
+    },
+    {
+      "key": "JOHTO_ICE_PATH_B1F",
+      "label": "Ice Path B1F"
+    },
+    {
+      "key": "JOHTO_ICE_PATH_B2F",
+      "label": "Ice Path B2F"
+    },
+    {
+      "key": "JOHTO_ICE_PATH_1F_EAST",
+      "label": "Ice Path 1F east exit"
+    },
+    {
+      "key": "JOHTO_BLACKTHORN_CITY",
+      "label": "Blackthorn City"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_BLACKTHORN_POKEMON_CENTER",
+      "label": "Blackthorn Pokemon Center"
+    },
+    {
+      "key": "JOHTO_BLACKTHORN_MART",
+      "label": "Blackthorn Poke Mart"
+    },
+    {
+      "key": "JOHTO_BLACKTHORN_GYM",
+      "label": "Blackthorn Gym (Clair)"
+    },
+    {
+      "key": "JOHTO_BLACKTHORN_GYM_PUZZLE",
+      "label": "Blackthorn moving floor puzzle"
+    },
+    {
+      "key": "JOHTO_DRAGONS_DEN_ENTRANCE",
+      "label": "Dragon's Den entrance"
+    },
+    {
+      "key": "JOHTO_DRAGONS_DEN_MAIN",
+      "label": "Dragon's Den lake"
+    },
+    {
+      "key": "JOHTO_DRAGON_SHRINE",
+      "label": "Dragon Shrine and Dragon Master"
+    },
+    {
+      "key": "JOHTO_ROUTE_45",
+      "label": "Route 45 south of Blackthorn"
+    },
+    {
+      "key": "JOHTO_ROUTE_46",
+      "label": "Route 46 south connection"
+    },
+    {
+      "key": "JOHTO_DARK_CAVE_ROUTE45_GATE",
+      "label": "Dark Cave access (unverified; blocked)"
+    },
+    {
+      "key": "JOHTO_DARK_CAVE_ROUTE46_GATE",
+      "label": "Dark Cave access (unverified; blocked)"
+    },
+    {
+      "key": "JOHTO_NEW_BARK_RETURN_MARKER",
+      "label": "Return toward New Bark (not a warp)"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_MAHOGANY_TOWN",
+      "to": "JOHTO_ROUTE_44_GATE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_44_GATE",
+      "to": "JOHTO_ROUTE_44",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_44",
+      "to": "JOHTO_ICE_PATH_1F_WEST",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ICE_PATH_1F_WEST",
+      "to": "JOHTO_ICE_PATH_B1F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ICE_PATH_B1F",
+      "to": "JOHTO_ICE_PATH_B2F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ICE_PATH_B2F",
+      "to": "JOHTO_ICE_PATH_1F_EAST",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ICE_PATH_1F_EAST",
+      "to": "JOHTO_BLACKTHORN_CITY",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_BLACKTHORN_CITY",
+      "to": "JOHTO_BLACKTHORN_POKEMON_CENTER",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_BLACKTHORN_CITY",
+      "to": "JOHTO_BLACKTHORN_MART",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_BLACKTHORN_CITY",
+      "to": "JOHTO_BLACKTHORN_GYM",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_BLACKTHORN_CITY",
+      "to": "JOHTO_DRAGONS_DEN_ENTRANCE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_BLACKTHORN_CITY",
+      "to": "JOHTO_ROUTE_45",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_BLACKTHORN_GYM",
+      "to": "JOHTO_BLACKTHORN_GYM_PUZZLE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_DRAGONS_DEN_ENTRANCE",
+      "to": "JOHTO_DRAGONS_DEN_MAIN",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_DRAGONS_DEN_MAIN",
+      "to": "JOHTO_DRAGON_SHRINE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_45",
+      "to": "JOHTO_ROUTE_46",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_45",
+      "to": "JOHTO_DARK_CAVE_ROUTE45_GATE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_46",
+      "to": "JOHTO_DARK_CAVE_ROUTE46_GATE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    }
+  ],
+  "story_requirements": [
+    "All first seven Johto badges, Goldenrod Radio Tower cleared and phase 11 route44_ready before Route 44",
+    "Ice Path may only be entered with verified map and marker; no actual map/collision is installed",
+    "Slide puzzle checkpoint and four distinct boulders bound to physical audited events",
+    "Strength requires Johto PLAIN badge and actual tool; must not use Kanto badges",
+    "HM Waterfall candidate :HM07 may be awarded once only with actual catalog and inventory adapter; use still locked until RISING",
+    "Ice Path exit requires slide puzzle, four boulders and valid map adapter; no invented warp or collision",
+    "Blackthorn arrival enables gym story but not Clair battle until separate gym puzzle",
+    "Clair team must be real compiled PBS; losing does not advance, winning alone does not award RISING",
+    "Dragon's Den entry requires Clair victory and real map marker; Dragon Shrine additionally requires GLACIER plus Whirlpool tool and received HM",
+    "Dragon Master's three original interview answers must be correct; wrong/cancel does not advance",
+    "RISING is awarded by Clair only after Master approval and separate interaction; exactly one award via BlueRegions.award",
+    "RISING is the eighth Johto badge and grants regional Waterfall with an actual tool",
+    "After eight local badges, BlueRegions.allow_specials? returns true for Johto only; do not change party/box or cross-region restrictions in this event",
+    "Route 45 and Route 46 introductory flags are not map connections; Dark Cave remains strictly blocked",
+    "League handoff requires all eight, Radio Tower cleared, Master approved and Clair badge granted; no League/Tohjo warp or completion flags"
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_CLAIR",
+      "name": "Clair",
+      "versions": [
+        0
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_BLACKTHORN_GYM_TRAINER",
+      "name": "Blackthorn Gym trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_DRAGONS_DEN_TRAINER",
+      "name": "Dragon's Den trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "compiled": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_ICE_PATH_TRAINER",
+      "name": "Ice Path trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "compiled": false
+    }
+  ],
+  "items": [
+    {
+      "key": "HM07",
+      "role": "Waterfall on Ice Path",
+      "status": "CANDIDATE_UNVERIFIED",
+      "marker": "Data/blue-johto-waterfall-item-ready.txt"
+    }
+  ],
+  "puzzle_resources": [
+    {
+      "key": "ICE_SLIDE",
+      "marker": "Data/blue-johto-ice-path-ready.txt",
+      "implemented": "RUBY_FLAG_ONLY_NO_TILE_PHYSICS"
+    },
+    {
+      "key": "ICE_BOULDERS",
+      "count": 4,
+      "marker": "Data/blue-johto-ice-boulders-ready.txt",
+      "implemented": "RUBY_FLAGS_ONLY_NO_PHYSICAL_PLACEMENTS"
+    },
+    {
+      "key": "BLACKTHORN_GYM",
+      "marker": "Data/blue-johto-blackthorn-puzzle-ready.txt",
+      "implemented": "RUBY_FLAG_ONLY_NO_ROTATING_PLATFORMS"
+    },
+    {
+      "key": "DRAGON_SHRINE",
+      "marker": "Data/blue-johto-dragon-master-ready.txt",
+      "implemented": "ORIGINAL_QUIZ_LOGIC_ONLY_NO_MAP"
+    }
+  ],
+  "badge": {
+    "key": "RISING",
+    "region": "JOHTO",
+    "ordinal": 8,
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": "WATERFALL"
+  },
+  "league_handoff": {
+    "status": "PREVIEW_ONLY_NOT_TRAVEL",
+    "requires": [
+      "ZEPHYR",
+      "HIVE",
+      "PLAIN",
+      "FOG",
+      "STORM",
+      "MINERAL",
+      "GLACIER",
+      "RISING"
+    ],
+    "flag": "johto_league_approach_ready",
+    "league_completed": false
+  },
+  "version_notes": "HGSS baseline: Clair victory -> Dragon's Den Master interview -> separate RISING handover. Crystal Dragon Fang/Clair variation pending independent design and audit.",
+  "future_not_implemented": [
+    "ICE_PATH_PHYSICAL_SLIDING",
+    "ICE_PATH_STRENGTH_BOULDER_COLLISION",
+    "BLACKTHORN_GYM_ROTATING_PLATFORMS",
+    "DRAGONS_DEN_REAL_WARPS",
+    "ROUTE45_46_REAL_WARPS",
+    "DARK_CAVE_ENTRANCE",
+    "TOHJO_FALLS_LEAGUE",
+    "CRYSTAL_DRAGON_FANG_VARIANT"
+  ],
+  "validation": {
+    "source_archive_sha_and_rights_verified": false,
+    "map_ids_warps_and_tile_collisions_verified": false,
+    "ice_slide_boulders_movement_verified": false,
+    "waterfall_item_catalog_verified": false,
+    "strength_field_move_verified": false,
+    "blackthorn_gym_platform_physics_verified": false,
+    "clair_trainers_pbs_and_master_mode_verified": false,
+    "clair_battle_result_in_game_verified": false,
+    "dragon_den_shrine_whirlpool_warps_verified": false,
+    "dragon_master_dialogue_event_verified": false,
+    "rising_badge_post_trial_in_game_verified": false,
+    "eight_badge_special_box_lock_verified": false,
+    "route45_46_dark_cave_real_connections_verified": false,
+    "league_access_not_premature_verified": false,
+    "save_reload_kanto_decades_verified": false,
+    "windows_gameplay_verified": false,
+    "joiplay_gameplay_verified": false
+  },
+  "integrated": false
+}
