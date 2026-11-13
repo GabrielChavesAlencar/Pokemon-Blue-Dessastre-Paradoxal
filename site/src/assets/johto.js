@@ -1,7 +1,7 @@
 import {esc,icon} from './utils.js';
 
 const phaseLabel=phase=>String(phase).padStart(2,'0')+'/16';
-const stateNote='Prévia de documentação. Os mapas de Johto não foram instalados no jogo; nenhuma equipe PBS ou localização de captura foi validada. O sistema compartilhado prevê evoluções selvagens por nível (35% da vaga base ao alcançar o nível necessário), mas não existe tabela de Johto validada para simular.';
+const stateNote='Prévia de documentação. Os mapas de Johto não foram instalados no jogo; nenhuma equipe PBS ou localização de captura foi validada. O sistema compartilhado prevê evoluções selvagens por nível (35% da vaga base quando o maior nível da equipe alcançar o requisito), mas não existe tabela de Johto validada para simular.';
 const classified=(trainers,route)=>route==='chefes'?
   trainers.filter(t=>['leader','elite'].includes(t.role)):
   trainers;
