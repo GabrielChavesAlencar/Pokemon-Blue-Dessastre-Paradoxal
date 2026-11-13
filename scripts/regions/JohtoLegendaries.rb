@@ -223,6 +223,19 @@ module BlueJohtoLegendaries
     true
   end
 
+  # The future map exit event must confirm a genuine, safe return before
+  # allowing another island entrance. This clears travel checkpoints only,
+  # never the Lugia outcome or any captured Pokemon.
+  def self.whirl_exit
+    flags = progress
+    return false unless flags && flags["johto_whirl_entrance"] &&
+                        marker?(WHIRL_READY, WHIRL_TOKEN) &&
+                        marker?(SAFE_EXIT_READY, SAFE_EXIT_TOKEN)
+    flags.delete("johto_whirl_entrance")
+    flags.delete("johto_whirl_chamber")
+    true
+  end
+
   def self.bell_tower_enter
     flags = progress
     return false unless flags && version &&
@@ -293,7 +306,9 @@ module BlueJohtoLegendaries
   def self.legendary_rematch_reset(species, outcome)
     flags = progress
     results = flags && flags["johto_legendary_results"]
-    return false unless results.is_a?(Hash) && league_cleared? &&
+    return false unless [:HOOH, :LUGIA].include?(species) &&
+                        PRIMARY.key?(version) &&
+                        results.is_a?(Hash) && league_cleared? &&
                         outcome == :rematch_recorded &&
                         results[species.to_s] == "awaiting_verified_rematch" &&
                         marker?(ENCOUNTER_READY, ENCOUNTER_TOKEN)
