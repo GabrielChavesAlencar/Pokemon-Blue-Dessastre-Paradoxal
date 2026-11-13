@@ -41,10 +41,10 @@
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     },
     "offline_development_milestones": {
-      "verified": 4,
+      "verified": 5,
       "total": 12,
-      "percent": 33,
-      "meaning": "Quatro entregas técnicas: auditoria nativa, preview com 77 mapas, duas bordas candidatas, quarto 2F autoria própria. Não equivale a Game.exe funcionando."
+      "percent": 41.7,
+      "meaning": "5 de 12 marcos offline: base auditada, staging inicial, conexoes candidatas, quarto 2F e casa 1F. Casa ainda nao tem warps/NPC; instalador Blue-Story.exe nao integra Johto ainda."
     }
   },
   "phases": [
@@ -299,7 +299,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "NENHUM novo ZIP necessário neste momento. Próximos trabalhos offline: desenhar interiores definitivos New Bark e vínculos de eventos, preparar PBS treinadores e encontros; depois QA real Windows na cópia isolada para elevar as duas barras.",
+  "next_required_input": "Nenhum novo ZIP nem teste EXE exigido agora; etapa 06 criar laboratório de Elm. Instalação automática pelo Blue-Story.exe e QA Windows continuam bloqueados até integração completa.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
@@ -317,8 +317,8 @@
   "offline_development": {
     "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
     "total": 12,
-    "completed": 4,
-    "percent": 33,
+    "completed": 5,
+    "percent": 41.7,
     "not_gameplay_proof": true,
     "never_execute_game_exe": true,
     "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
@@ -368,9 +368,14 @@
       {
         "number": 5,
         "title": "Construir casa definitiva do jogador (New Bark 1F)",
-        "status": "PENDING",
-        "acceptance": "RXDATA próprio de casa 1F, escada 2F, porta exterior, espaço da mãe, propostas de chegada e prévia de passabilidade",
-        "evidence": []
+        "status": "COMPLETE",
+        "acceptance": "Casa 1F autoral 16x13; 7 estruturas decorativas, propostas verificadas de escada/porta/mae e 106 tiles conectados por flags estaticas; RXDATA real validado em Ruby Marshal, 6 testes offline; ainda sem NPC, evento, warp ou Game.exe",
+        "evidence": [
+          "scripts/regions/build_johto_home1f_v1.py",
+          "tests/test_johto_home1f_v1.py (6 cenarios)",
+          "docs/JOHTO_OFFLINE_FASE_05_CASA_1F.md",
+          "Preview privada com Map675 refeito, outros 76 MapNNN e MapInfos/Tilesets idênticos"
+        ]
       },
       {
         "number": 6,
@@ -421,6 +426,7 @@
         "acceptance": "Todas as saídas da prévia verificadas, suíte offline passando, SHA/IDs e proteção de Kanto/Decades/saves confirmados; relatório pronto para futura QA nativa sem alegar jogo funcional",
         "evidence": []
       }
-    ]
+    ],
+    "installer_integration": "REQUIRED_BEFORE_GAMEPLAY; not installed yet: requires rights-safe map acquisition, staged generation of Map674/675/676, event compilation, backup and idempotent update via Blue-Story.exe"
   }
 }
