@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Johto final VERIFIED_PLAYABLE proof — only after all real checks",
+  "description": "Schema only. Do not write the proof inside game/Data or any pilot unless the listed real Game.exe tests, rights, hashes, NPC arrival and persistent saves have been verified. The geometry preview is insufficient.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "region",
+    "status",
+    "source_archive_sha256",
+    "checks",
+    "start",
+    "travel_point",
+    "npc_point",
+    "file_hashes"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "region": {
+      "const": "JOHTO"
+    },
+    "status": {
+      "const": "VERIFIED_PLAYABLE"
+    },
+    "source_archive_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_rights",
+        "maps_and_warps",
+        "sprites_and_tilesets",
+        "story_events",
+        "trainers_pbs",
+        "battles_and_encounters",
+        "native_save_reload",
+        "hms_and_badges",
+        "region_travel_and_box",
+        "audio_rights_and_playback",
+        "kanto_decades_regression",
+        "windows_gameplay",
+        "joiplay_gameplay"
+      ],
+      "properties": {
+        "source_rights": {
+          "const": true
+        },
+        "maps_and_warps": {
+          "const": true
+        },
+        "sprites_and_tilesets": {
+          "const": true
+        },
+        "story_events": {
+          "const": true
+        },
+        "trainers_pbs": {
+          "const": true
+        },
+        "battles_and_encounters": {
+          "const": true
+        },
+        "native_save_reload": {
+          "const": true
+        },
+        "hms_and_badges": {
+          "const": true
+        },
+        "region_travel_and_box": {
+          "const": true
+        },
+        "audio_rights_and_playback": {
+          "const": true
+        },
+        "kanto_decades_regression": {
+          "const": true
+        },
+        "windows_gameplay": {
+          "const": true
+        },
+        "joiplay_gameplay": {
+          "const": true
+        }
+      }
+    },
+    "start": {
+      "$ref": "#/$defs/position"
+    },
+    "travel_point": {
+      "$ref": "#/$defs/position"
+    },
+    "npc_point": {
+      "$ref": "#/$defs/position"
+    },
+    "file_hashes": {
+      "type": "object",
+      "minProperties": 4,
+      "required": [
+        "Data/MapInfos.rxdata",
+        "Data/Tilesets.rxdata"
+      ],
+      "propertyNames": {
+        "pattern": "^Data/(MapInfos|Tilesets|Map[0-9]{3})\\.rxdata$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  },
+  "$defs": {
+    "position": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 600,
+          "maximum": 999
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer",
+          "enum": [
+            2,
+            4,
+            6,
+            8
+          ]
+        }
+      ],
+      "items": false
+    }
+  }
+}
