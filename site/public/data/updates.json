@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "691a855657858a9ec3776dee1c0dc458b276586c",
+      "date": "2026-11-13T17:27:48-03:00",
+      "title": "test(android): require Kanto pilot metadata in incremental terrain updates",
+      "category": "Testes"
+    },
+    {
       "sha": "d52ed7dbff1d477882a60c7584beacf4e38db393",
       "date": "2026-11-13T17:27:23-03:00",
       "title": "fix(android): allow verified Kanto map metadata to update incrementally",
