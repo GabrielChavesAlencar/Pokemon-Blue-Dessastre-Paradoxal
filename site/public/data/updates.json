@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "468fd6e1f99f337fc8da1bd4f0e6a271cedcb1f5",
+      "date": "2026-11-13T06:56:01-03:00",
+      "title": "test(johto): contrato da Liga 13, Elite, Hall of Fame, Kanto/Hoenn sem teleporte",
+      "category": "Testes"
+    },
+    {
       "sha": "620b081af58c39480b1c76d96f01f9dec2864176",
       "date": "2026-11-13T06:55:19-03:00",
       "title": "docs(johto): contrato simbólico Tohjo Falls Victory Road Indigo e Elite Four Johto",
