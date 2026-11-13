@@ -18,6 +18,42 @@
 
 **Regra central:** de Sinnoh vêm somente **conteúdo regional autorizado** (mapas, arte, eventos reescritos, encontros, NPCs, equipes e faixas liberadas); **batalhas, IA, BST/nível escalonados, Pokémon/PBS globais, saves, PC, BlueMusic, pokédex, seleção e viagem entre regiões** continuam sendo os sistemas do Blue/Decades.
 
+### 1.1. Regra obrigatória: criar Sinnoh sem quebrar o que já existe
+
+**Prioridade absoluta:** todas as fases de Sinnoh são **aditivas, isoladas, reversíveis e acompanhadas de provas de não regressão**. O desenvolvimento **não pode quebrar Decades, Kanto, Johto, Hoenn em preparação, Blue Studio, Pokédex/Habitat Dex, site, BlueMusic, multiplayer, saves ou instaladores**.
+
+1. **Baseline real:** em cada fase, inventariar SHA da main, hashes de assets, MapIDs/tilesets, plugins, switches, variáveis, saves e testes anteriores. A ausência de arquivos do jogo no GitHub não autoriza presumir que IDs estão livres.
+2. **Trabalhar fora do jogo principal:** guardar fonte em \`.blue-work/sinnoh-source/\`, preparar \`.blue-work/sinnoh-pilot/\` com saves exclusivos. **Nunca despejar** \`Data/\`, \`MapInfos.rxdata\`, \`Tilesets.rxdata\`, \`Scripts.rxdata\`, \`System.rxdata\` ou \`PluginScripts.rxdata\` do doador por cima da instalação local Decades.
+3. **Remapear, não sobrescrever:** criar manifesto \`source_map_id -> destination_map_id\`, conferir referências de transferências, tilesets, eventos, PBS e músicas. Reservas de Johto e futuras de Hoenn precisam de respeito; **não pressupor que IDs 1000+ são suportados** sem testar.
+4. **Sistema único:** níveis, badges/esmeraldas, BST, IA, encontros, equipes, Saves, PC, Box de Pokémon especiais, viagem, HMs e BlueMusic sempre utilizam adaptadores atuais do Blue/Decades; **sem motor de batalha de Ancient Platinum** ou fórmulas de nível paralelas.
+5. **Transações e backup:** importar somente depois de \`dry-run\` e validação de licenças, com backups e rollback. Mudanças em registros de mapas, plugin ou save devem ser idempotentes e migráveis.
+6. **Estado não enganoso:** Sinnoh fica \`planned\` até obter mapas reais e piloto auditado. A presença do botão ou de documentação **não significa que Sinnoh já é jogável**. Nunca inventar mapas, NPCs, música, logs de teste ou sucesso no Windows/Android.
+7. **Prova obrigatória:** rodar testes automáticos e posteriormente execução gráfica no \`Game.exe\` Windows e teste específico no JoiPlay/Android. Sem prova nativa, não elevar a barra de **aceite integral**.
+
+**Documento operacional vinculado:** [SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) — contém o ciclo seguro de 13 fases, mapas, eventos, NPCs, itens, música, menu, checkpoints, regressões e rollback.
+
+### 1.2. Mesmo menu inicial: Testar Kanto, Testar Johto e Testar Sinnoh
+
+**A opção \`Testar Sinnoh\` já foi acrescentada ao código do menu principal** em [\`scripts/battle_polish/TitleKanto.rb\`](../scripts/battle_polish/TitleKanto.rb), depois de \`Testar Kanto\` e \`Testar Johto\`. A ordem esperada no \`Game.exe\` normal é:
+
+\`\`\`text
+Continuar (se houver save)
+Novo Jogo
+Testar Kanto
+Testar Johto
+Testar Sinnoh
+[demais comandos nativos: Mystery Gift, Opções, Sair, ...]
+\`\`\`
+
+- O plugin preserva **os índices originais** do Essentials/Auto Multi Save, os vários slots e as setas negativas do carregador, sem substituir sua lógica de \`Continue\` e \`New Game\`.
+- O terceiro piloto **não** reutiliza mapas, saves, BAT ou scripts de Kanto/Johto. Só abrirá quando existirem **ambos** \`SINNOH_JOGAR_EXPERIMENTAL.bat\` e \`scripts/regions/pilot_sinnoh.py\` próprios, com fonte real auditada e marcador \`Sinnoh pilot.json\` dentro da cópia experimental. **Esses dois arquivos ainda não existem**: são entregáveis da **Fase 02**.
+- Sem os arquivos, selecionar Sinnoh informa **"Sinnoh ainda está em preparação"**, retorna ao menu sem fechar o jogo principal e mantém as outras regiões intactas.
+- O comando não aparece dentro de um piloto, impedindo recursão. Em outra plataforma, não executar \`cmd.exe\`; piloto Windows ou pacote Android só após validação específica.
+- Os testes headless \`tests/title_kanto_runtime.rb\` e \`tests/test_title_kanto.py\` foram estendidos para conferir posição da opção, índices do jogo, Mystery Gift, perfis e isolamento. **Ainda não são prova de Game.exe/jogabilidade Sinnoh.**
+
+**Não elevar as barras só por incluir \`Testar Sinnoh\`:** a Fase 02 exige criar e executar **um piloto com mapas reais**, entrar na casa inicial em Twinleaf e salvar/carregar sem tocar nos saves principais. Os testes de contratos devem passar; a aceitação integral exige provas na janela real do jogo e nos ambientes prometidos.
+
+
 ## 2. Comparação dos cinco fangames da lista original
 
 | Candidato | Evidência publicada | Adequação à campanha canônica | Compatibilidade / lacunas | Decisão |
@@ -191,6 +227,8 @@ Conforme [`PLANO_REGIOES_DESSASTRE_V2.md`](PLANO_REGIOES_DESSASTRE_V2.md), `19.5
 
 ## 8. Fases e critérios objetivos de progresso
 
+**Plano de execução detalhado:** [SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md). Cada uma das 13 fases abaixo só avança com as evidências especificadas no plano, e o menu Testar Sinnoh já codificado não conta como piloto jogável.
+
 **Barra 1 — fases jogáveis: 0/13 (planejadas)**  
 **Barra 2 — fases com aceite integral: 0/13 (não auditadas)**
 
@@ -237,6 +275,8 @@ Fontes públicas consultadas em **13/11/2026**; são páginas de autores/projeto
 9. [Platinum — faixas adicionais](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Jukebox).
 
 ## 10. Próxima ação concreta
+
+**Executar a Fase 00 segundo [o plano de implementação](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md)**; depois construir o piloto próprio na Fase 02 somente quando a fonte editável estiver auditada e autorizada.
 
 **Fase 0:** obter um download **legítimo e permitido** da fonte candidata Ancient Platinum e **inspecionar os arquivos**, sem copiar para `game/`. Confirmar `.rxdata` reais, interiores, gráficos, PBS, compatibilidade de versões, autorização de cada classe de asset e mapa da campanha comparado a Platinum. Se a fonte estiver fechada ou o uso não for permitido, tratar Ancient Platinum apenas como referência visual e **buscar/construir uma base de mapas com permissão**, sem substituir por Hoenn ou por outro map pack.
 
