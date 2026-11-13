@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5fd1f7972303c17a8603574cefd35a3654267e2",
+      "date": "2026-11-13T17:15:17-03:00",
+      "title": "fix(android): resolve publisher modules when run as script in CI",
+      "category": "Correções"
+    },
+    {
       "sha": "df718c206ec044572bf26c3047351696cae201e9",
       "date": "2026-11-13T17:14:57-03:00",
       "title": "feat(android): ship Kanto updater and isolated installed manifest",
