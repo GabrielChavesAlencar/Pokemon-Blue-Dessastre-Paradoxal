@@ -2,6 +2,54 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "23aa1440d8013bc52a5f90f6a706b39cd21a7c63",
+      "date": "2026-11-13T14:46:58-03:00",
+      "title": "Merge Johto offline 7/12: New Bark doors, stairs and spawn (#40)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b2d0fdad802e6f75e9d339e6df5780fed1dba80c",
+      "date": "2026-11-13T14:45:54-03:00",
+      "title": "docs(johto): registrar topologia e six eventos isolados na fase 07",
+      "category": "Documentação"
+    },
+    {
+      "sha": "e68bad7f4ed74043b5eb010f18f4d76631928833",
+      "date": "2026-11-13T14:45:52-03:00",
+      "title": "docs(johto): barra offline 7/12 com seis warps e sem QA da engine",
+      "category": "Documentação"
+    },
+    {
+      "sha": "ad4e5ca81e0ae664444dba891ff01bf7e85a66ca",
+      "date": "2026-11-13T14:45:50-03:00",
+      "title": "data(johto): etapa offline 07/12 seis warps New Bark compilados e auditados",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7402263ccf3a660c4308056766db8e0214cec238",
+      "date": "2026-11-13T14:44:54-03:00",
+      "title": "docs(johto): registrar seis warps offline de New Bark e limites de teste/instalador",
+      "category": "Documentação"
+    },
+    {
+      "sha": "f2fda8ca9694d91ed51c0c1afab5133d42c6541a",
+      "date": "2026-11-13T14:42:00-03:00",
+      "title": "test(johto): 12 provas offline de warps bidirecionais e inicio New Bark",
+      "category": "Testes"
+    },
+    {
+      "sha": "8751baad509b7f64a9b53f264424e1e78807da1d",
+      "date": "2026-11-13T14:40:50-03:00",
+      "title": "feat(johto): compilar seis warps reversiveis New Bark em preview seguro, mantendo Route29 no PBS",
+      "category": "Novidades"
+    },
+    {
+      "sha": "5ed14f87815e65a96ccf82de548ff84abf9a772a",
+      "date": "2026-11-13T14:38:48-03:00",
+      "title": "data(johto): fixar seis warps New Bark com coordenadas offline nao aprovadas no EXE",
+      "category": "Melhorias"
+    },
+    {
       "sha": "89183ad860aca1c219a5e8c58945c73d49c6b5ca",
       "date": "2026-11-13T14:29:16-03:00",
       "title": "Merge Johto offline 6/12: Elm lab and 3 physical starters (#39)",
