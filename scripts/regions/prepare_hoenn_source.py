@@ -144,9 +144,6 @@ def extract_selected(archive: zipfile.ZipFile, rows: list[dict],
         rel = PurePosixPath(row["path"])
         target = stage.joinpath(*rel.parts)
         parent = target.parent
-        for folder in [stage, *reversed(list(parent.relative_to(stage).parents))]:
-            # Parent symlink checks below cover all existing components.
-            pass
         cursor = stage
         for part in rel.parts[:-1]:
             cursor /= part
@@ -221,8 +218,10 @@ def inspect_zip(archive_path: Path, *, include_audio: bool = False,
             out = stage / "inventory.json"
             # Inventory is tool-created metadata, not a donor asset.
             tmp = stage / "inventory.json.tmp"
-            tmp.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n",
-                           encoding="utf-8")
+            if tmp.is_symlink() or out.is_symlink():
+                raise ValueError("Unsafe inventory path (symlink)")
+            with tmp.open("x", encoding="utf-8") as handle:
+                handle.write(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
             tmp.replace(out)
         return result
 
