@@ -171,7 +171,7 @@ def merge_connections(path:Path)->tuple[bytes,dict]:
 def trainer_blocks(raw:bytes)->dict[str,list[str]]:
     blocks={}
     key=None
-    for line in raw.decode("utf8-sig").splitlines():
+    for line in raw.decode("utf-8-sig").splitlines():
         line=line.strip()
         if not line or line.startswith("#"):continue
         if line.startswith("[") and "]" in line:
