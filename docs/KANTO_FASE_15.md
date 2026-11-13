@@ -24,16 +24,16 @@ A rotina independente `scripts/regions/audit_canonical.py` lê a fonte pinada **
 | Medida | Resultado auditado |
 |---|---:|
 | Seções de encontros presentes na fonte FRLG | 58 |
-| Tabelas importadas de forma comprovadamente fiel | **22** |
-| Espécies distintas com encontros ativos | **52** |
-| Slots originais auditados nos 22 mapas | **284** |
-| Slots na representação compilada equivalente | **396** |
-| Listas consecutivas compactadas | **148** |
-| Listas com lacunas/repetições convertidas sem alteração de probabilidade | **67** |
+| Tabelas importadas de forma comprovadamente fiel | **23** |
+| Espécies distintas com encontros ativos | **53** |
+| Slots originais auditados nos 23 mapas | **303** |
+| Slots na representação compilada equivalente | **423** |
+| Listas consecutivas compactadas | **158** |
+| Listas com lacunas/repetições convertidas sem alteração de probabilidade | **72** |
 | Perfis PBS de treinador comparados linha por linha | **153** |
 | Mapas em prévia sem encontros | **45** |
 | Mapas totais (IDs preservados) | **142** |
-| Métodos de encontro verificados nas tabelas | **64** |
+| Métodos de encontro verificados nas tabelas | **69** |
 
 O portal exibe **144 treinadores** agrupados por identidade/localização, além de 142 localidades. Os **153 registros PBS** contam também variantes do mesmo treinador, incluindo os três times do Campeão Blue. Nenhum time-base foi alterado por esse processo; o escalonamento existente do Blue/Decades continua sendo aplicado em memória.
 
@@ -45,7 +45,7 @@ A auditoria confrontou as distribuições de grama diurna, surfe e três varas c
 
 ## Regiões/áreas que passaram a ter encontros reais na tabela do piloto
 
-Entre os 22 mapas com tabelas autenticadas estão Pallet/água (fonte 005), Viridian e rotas iniciais, **Route 22 (016)**, Fuchsia City (144), os **quatro andares da Pokémon Mansion (205–208)** e **Victory Road 1F–3F (211–213)**. A disponibilidade de Surf, pescaria, uso de área, passabilidade e demais métodos no gameplay real depende do estado do jogo e permanece no checklist manual.
+Entre os 23 mapas com tabelas autenticadas estão Pallet/água (fonte 005), Viridian e rotas iniciais, **Route 22 (016) e Route 23 (209)**, Fuchsia City (144), os **quatro andares da Pokémon Mansion (205–208)** e **Victory Road 1F–3F (211–213)**. A disponibilidade de Surf, pescaria, uso de área, passabilidade e demais métodos no gameplay real depende do estado do jogo e permanece no checklist manual.
 
 ## Verificações de segurança
 
