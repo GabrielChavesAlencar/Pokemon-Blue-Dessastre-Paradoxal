@@ -100,8 +100,8 @@ export function kantoLocation(model,data,area){
   const evolutionInfo=area.methods.length
     ? '<section class="panel kanto-encounters"><h3>Encontros dinâmicos por nível</h3>'+
       '<p>As porcentagens abaixo mostram as tabelas originais do mapa. No modo História, após instalar a atualização, o nível selvagem segue 45% do maior nível da equipe (mínimo 1). '+
-      'Quando esse nível alcança uma evolução automática por nível, ela pode substituir 35% das ocorrências da sua forma base; 65% continuam como a forma base. '+
-      'Exemplo: no nível selvagem 30, a vaga de Rattata pode gerar Raticate (e Rattata continua aparecendo). '+
+      'Quando o maior nível da equipe alcança uma evolução automática por nível, ela pode substituir 35% das ocorrências da sua forma base; 65% continuam como a forma base. '+
+      'Exemplo: com nível máximo da equipe 30, a vaga de Rattata pode gerar Raticate (e Rattata continua aparecendo), mantendo o escalonamento selvagem. '+
       'Evoluções por pedra, troca, amizade e condições especiais não são automáticas. O cálculo não altera os encontros de Decades nem os mapas em preparação de Johto/Hoenn.</p>'+
       '</section>'
     : '';
