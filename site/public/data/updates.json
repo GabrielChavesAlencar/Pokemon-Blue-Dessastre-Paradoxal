@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "884fe2ba3897cfe2dcf09b6d0414838db167146a",
+      "date": "2026-11-13T17:14:02-03:00",
+      "title": "feat(android): generate per-channel release manifests and verified incremental patches",
+      "category": "Novidades"
+    },
+    {
       "sha": "3db574fec7bc45f854c9d61b9eb5e1b00feb6ef6",
       "date": "2026-11-13T17:12:55-03:00",
       "title": "feat(android): add standalone safe JoiPlay incremental update client",
