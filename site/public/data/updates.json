@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "405cf7e792ecde795173028e91e9dda782dfbc77",
+      "date": "2026-11-13T19:25:40-03:00",
+      "title": "docs: comparar fontes de mapas e músicas de Sinnoh",
+      "category": "Documentação"
+    },
+    {
+      "sha": "f65dfd9a3b35014916acd749bb3d796c8573accb",
+      "date": "2026-11-13T19:25:36-03:00",
+      "title": "fix(johto): preserve mkxp settings when staging QA with trailing commas",
+      "category": "Correções"
+    },
+    {
       "sha": "a6fa433e2b51f3b99f68104c014c652faa41c7c2",
       "date": "2026-11-13T19:19:46-03:00",
       "title": "fix(johto): accept the audited original offline QA archive",
