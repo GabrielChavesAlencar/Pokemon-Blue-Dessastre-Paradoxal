@@ -16,7 +16,7 @@ from fractions import Fraction
 from pathlib import Path
 
 from audit import ROOT, KANTO, json_file
-from pbs import ENCOUNTER_TYPES, TRAINERS, ENCOUNTER_REVIEW_SOURCE_IDS, read_blocks
+from pbs import ENCOUNTER_TYPES, TRAINERS, deduplicate_route23_land_day, read_blocks
 
 
 def read_slot(raw, section, method, source_explicit):
@@ -86,7 +86,7 @@ def audit(source:Path,pilot:Path):
     info=json_file(pilot/"Kanto pilot.json")
     mapping={int(key):value for key,value in info["maps"].items()}
     active={key:value for key,value in mapping.items()
-            if key not in preview and key not in ENCOUNTER_REVIEW_SOURCE_IDS}
+            if key not in preview}
 
     original_file=source/"encounters.txt"
     compiled_file=installed/"encounters_kanto.txt"
@@ -100,7 +100,7 @@ def audit(source:Path,pilot:Path):
             continue
         if translated in expected:
             raise ValueError(f"Encounter map/version collision: [{translated}]")
-        expected[translated]=parse_methods(lines,header,True)
+        expected[translated]=parse_methods(deduplicate_route23_land_day(header, lines),header,True)
         source_by_dest[translated]=header
     produced={head:parse_methods(lines,head,False) for head,lines in compiled.items()}
     if set(produced)!=set(expected):
@@ -179,7 +179,7 @@ def audit(source:Path,pilot:Path):
         "source_non_100_relative_weight_tables":source_non_100,
         "trainer_source_rosters_verified_exactly":len(expected_trainers),
         "preview_maps_kept_without_encounters":len(preview),
-        "source_maps_with_ambiguous_encounters_kept_disabled":sorted(ENCOUNTER_REVIEW_SOURCE_IDS),
+        "route23_duplicate_land_day_removed":original.get("209") != deduplicate_route23_land_day("209", original.get("209", [])),
         "audited_source_map_tables":dict(sorted(map_counts.items(),key=lambda p:int(p[0]))),
         "independent_gba_red_green_exclusivity_check":"PENDING",
         "independent_sprites_sounds_rights_check":"PENDING",

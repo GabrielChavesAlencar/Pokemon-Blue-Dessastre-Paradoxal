@@ -5,7 +5,7 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, json_file
 from pilot_catalog import prepared_plan
-from pbs import read_blocks, ENCOUNTER_REVIEW_SOURCE_IDS
+from pbs import read_blocks
 
 LOCATION_NAMES = {
     "PALLET_TOWN": "Pallet Town",
@@ -331,7 +331,6 @@ def export(preview: Path):
                       for row in plan["maps"]}
     status_by_key = {
         key: ("preview" if source in preview_source_ids else
-              "encounter_review" if source in ENCOUNTER_REVIEW_SOURCE_IDS else
               "experimental")
         for source, key in keys_by_source.items()
     }

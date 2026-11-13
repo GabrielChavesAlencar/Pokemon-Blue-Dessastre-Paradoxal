@@ -13,7 +13,6 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, stable_source_order
 from export_kanto import LOCATION_NAMES, slug
-from pbs import ENCOUNTER_REVIEW_SOURCE_IDS
 
 BADGES = (
     ("Brock", "BOULDER"), ("Misty", "CASCADE"), ("Lt. Surge", "THUNDER"),
@@ -23,7 +22,6 @@ BADGES = (
 BLOCKERS = (
     "Etapa 02: caminhar, portas, eventos, batalhas reais e save/reload no Windows",
     "Fase 16: percurso completo e HMs reais (Strength/Surf/Cut/Flash) sem atalhos",
-    "Route 23 Map209: método LandDay duplicado, encontros não liberados",
     "Independência FireRed/LeafGreen: conferir exclusividades das ROMs oficiais",
     "Itens, histórias/quests, sprites, sons, créditos e licenças pendentes",
     "JoiPlay/Android: controles, mapa, captura, batalhas e saves reais",
@@ -48,9 +46,6 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     preview = set(manifest["preview_only"])
     if len(preview) != 45 or not preview.issubset(expected_ids):
         raise ValueError("45 geometry-only previews must remain protected")
-    review = set(ENCOUNTER_REVIEW_SOURCE_IDS)
-    if review != {209} or review & preview:
-        raise ValueError("Unreviewed Route 23 wild encounter exception changed")
     official = registry["regions"]["KANTO"]
     if official["status"] != "prototype":
         raise ValueError("Cannot mark Kanto playable before real Windows/JoiPlay acceptance")
@@ -74,14 +69,15 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     by_source = {int(k):slug(key) for k,key in manifest["maps"].items()}
     for original, ident in by_source.items():
         loc = locations[ident]
-        expected_status = ("preview" if original in preview else
-                           "encounter_review" if original in review else "experimental")
+        expected_status = "preview" if original in preview else "experimental"
         if loc["status"] != expected_status:
             raise ValueError(f"Incorrect prototype/preview/review classification: {ident}")
         if original in preview and (loc["methods"] or loc["trainers"]):
             raise ValueError(f"Preview was accidentally activated: {ident}")
-        if original in review and loc["methods"]:
-            raise ValueError("Map209 received unofficial/mixed encounter probabilities")
+        if original == 209 and {row["id"] for row in loc["methods"]} != {
+            "LandDay", "Water", "OldRod", "GoodRod", "SuperRod"
+        }:
+            raise ValueError("Route 23 must have its five audited encounter methods")
 
     species = {mon["id"] for mon in dex["species"]}
     # The editable FRLG kit uses mixed-case PBS IDs NIDORANfE/NIDORANmA;
@@ -142,7 +138,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
                 if (slot["weight"] <= 0 or
                     not 1 <= slot["min"] <= slot["max"] <= 100):
                     raise ValueError("Illegal encounter level or source weight")
-    if wild_locations != 22 or methods != 64 or len(encounter_species) != 52:
+    if wild_locations != 23 or methods != 69 or len(encounter_species) != 53:
         raise ValueError("Audited wild content disappeared from the portal")
 
     isolated = None
@@ -191,7 +187,6 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         "map_count":len(expected_ids),
         "preview_maps":len(preview),
         "prototype_maps":len(expected_ids-preview),
-        "encounter_review_maps":sorted(review),
         "trainers":len(trainer_ids),
         "regional_badges":badges,
         "wild_locations":wild_locations,

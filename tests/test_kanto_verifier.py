@@ -176,11 +176,11 @@ class KantoPilotAuditTests(unittest.TestCase):
         # Exact species-level source probabilities are carried as raw
         # integer weights, with percentages normalized solely for the portal.
         locations_with_wild = [x for x in data["locations"] if x["methods"]]
-        self.assertEqual(len(locations_with_wild),22)
-        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),64)
+        self.assertEqual(len(locations_with_wild),23)
+        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),69)
         wild_species={slot["species"] for loc in locations_with_wild
                       for method in loc["methods"] for slot in method["slots"]}
-        self.assertEqual(len(wild_species),52)
+        self.assertEqual(len(wild_species),53)
         for location in locations_with_wild:
             for method in location["methods"]:
                 self.assertEqual(method["weightTotal"],
@@ -192,7 +192,8 @@ class KantoPilotAuditTests(unittest.TestCase):
         route22 = next(x for x in data["locations"] if x["id"] == "kanto-route-22")
         self.assertTrue(any(m["id"] == "LandDay" for m in route22["methods"]))
         route23 = next(x for x in data["locations"] if x["id"] == "kanto-route-23")
-        self.assertEqual(route23["methods"], [], "Ambiguous double LandDay must remain off")
+        self.assertEqual({m["id"] for m in route23["methods"]},
+                         {"LandDay", "Water", "OldRod", "GoodRod", "SuperRod"})
         road = next(x for x in data["locations"] if x["id"] == "kanto-victory-road-1f")
         self.assertEqual({m["id"] for m in road["methods"]},{"CaveDay","CaveNight"})
         mansion = next(x for x in data["locations"] if x["id"] == "kanto-mansion-1f")

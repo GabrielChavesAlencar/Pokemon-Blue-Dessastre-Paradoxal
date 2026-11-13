@@ -58,7 +58,6 @@ function areaCard(area){
   if(area.methods.length) summary.push(area.methods.length+' métodos de encontro');
   if(area.trainers.length) summary.push(area.trainers.length+' adversários');
   if(area.status==='preview') summary.push('Somente cenário (sem eventos)');
-  if(area.status==='encounter_review') summary.push('Encontros sob revisão');
   return '<a class="regular-card" href="'+locationLink(area)+'"><h3>'+esc(area.name)+'</h3>'+
     (summary.length?'<p>'+esc(summary.join(' · '))+'</p>':'')+
     '<span class="regular-card-action">Ver local '+icon('arrow')+'</span></a>';
@@ -101,9 +100,7 @@ export function kantoLocation(model,data,area){
     ? '<section class="section"><h2>Encontros</h2><div class="region-entries">'+area.methods.map(method=>encounterTable(model,method)).join('')+'</div></section>'
     : '<p class="data-note">'+(area.status==='preview'
       ? 'Somente cenário: eventos, treinadores e encontros ainda não estão liberados.'
-      : area.status==='encounter_review'
-        ? 'Encontros temporariamente suspensos: a fonte contém um método duplicado; não foram inventadas probabilidades.'
-        : 'A fonte auditada não possui encontros selvagens ativos neste local.')+'</p>';
+      : 'A fonte auditada não possui encontros selvagens ativos neste local.')+'</p>';
   const battles=trainers.length
     ? '<section class="section"><h2>Adversários</h2>'+cards(trainers,row=>trainerCard(model,data,row))+'</section>' : '';
   return layout(data,'localizacoes',area.name,encounters+battles,true);

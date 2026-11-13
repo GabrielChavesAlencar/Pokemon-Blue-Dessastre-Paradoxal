@@ -3609,8 +3609,228 @@
     {
       "id": "kanto-route-23",
       "name": "Rota 23 — oito postos de insígnias",
-      "status": "encounter_review",
-      "methods": [],
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "MANKEY",
+              "chance": 15.151515151515,
+              "min": 32,
+              "max": 32,
+              "weight": 100
+            },
+            {
+              "species": "MANKEY",
+              "chance": 0.757575757576,
+              "min": 32,
+              "max": 32,
+              "weight": 5
+            },
+            {
+              "species": "MANKEY",
+              "chance": 15.151515151515,
+              "min": 34,
+              "max": 34,
+              "weight": 100
+            },
+            {
+              "species": "MANKEY",
+              "chance": 0.757575757576,
+              "min": 34,
+              "max": 34,
+              "weight": 5
+            },
+            {
+              "species": "FEAROW",
+              "chance": 7.575757575758,
+              "min": 40,
+              "max": 40,
+              "weight": 50
+            },
+            {
+              "species": "FEAROW",
+              "chance": 7.575757575758,
+              "min": 42,
+              "max": 42,
+              "weight": 50
+            },
+            {
+              "species": "FEAROW",
+              "chance": 7.575757575758,
+              "min": 44,
+              "max": 44,
+              "weight": 50
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 6.818181818182,
+              "min": 32,
+              "max": 32,
+              "weight": 45
+            },
+            {
+              "species": "SPEAROW",
+              "chance": 6.818181818182,
+              "min": 34,
+              "max": 34,
+              "weight": 45
+            },
+            {
+              "species": "EKANS",
+              "chance": 4.545454545455,
+              "min": 32,
+              "max": 32,
+              "weight": 30
+            },
+            {
+              "species": "EKANS",
+              "chance": 4.545454545455,
+              "min": 34,
+              "max": 34,
+              "weight": 30
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 4.545454545455,
+              "min": 32,
+              "max": 32,
+              "weight": 30
+            },
+            {
+              "species": "SANDSHREW",
+              "chance": 4.545454545455,
+              "min": 34,
+              "max": 34,
+              "weight": 30
+            },
+            {
+              "species": "ARBOK",
+              "chance": 4.545454545455,
+              "min": 44,
+              "max": 44,
+              "weight": 30
+            },
+            {
+              "species": "SANDSLASH",
+              "chance": 4.545454545455,
+              "min": 44,
+              "max": 44,
+              "weight": 30
+            },
+            {
+              "species": "PRIMEAPE",
+              "chance": 4.545454545455,
+              "min": 42,
+              "max": 42,
+              "weight": 30
+            }
+          ],
+          "weightTotal": 660
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "PSYDUCK",
+              "chance": 50,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 50,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "POLIWAG",
+              "chance": 60,
+              "min": 5,
+              "max": 15,
+              "weight": 60
+            },
+            {
+              "species": "GOLDEEN",
+              "chance": 20,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "POLIWAG",
+              "chance": 40,
+              "min": 15,
+              "max": 25,
+              "weight": 40
+            },
+            {
+              "species": "POLIWHIRL",
+              "chance": 35,
+              "min": 20,
+              "max": 30,
+              "weight": 35
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 15,
+              "min": 15,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 5,
+              "min": 20,
+              "max": 35,
+              "weight": 5
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 5,
+              "min": 20,
+              "max": 35,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
       "trainers": []
     },
     {

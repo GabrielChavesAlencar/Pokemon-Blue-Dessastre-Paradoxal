@@ -5,12 +5,6 @@ from pathlib import Path
 
 HEADER = re.compile(r"^\[([^]]+)]\s*(?:#.*)?$")
 # Extended Gen 9/Essentials encounter variants used inside Mt. Moon.
-# Route 23 source map209 repeats a LandDay method inside the same table.
-# Its intended relative weighting/version behavior is ambiguous. Rather than
-# silently merge two conflicting methods, leave ONLY this map's wild tables
-# disabled until the source is disambiguated (story/maps remain functional).
-ENCOUNTER_REVIEW_SOURCE_IDS = frozenset({209})
-
 ENCOUNTER_TYPES = {
     "Land", "LandMorning", "LandDay", "LandAfternoon", "LandEvening", "LandNight",
     "Cave", "CaveMorning", "CaveDay", "CaveAfternoon", "CaveEvening", "CaveNight",
@@ -200,6 +194,27 @@ def catalogue(game, prefix):
     return keys
 
 
+def deduplicate_route23_land_day(section, lines):
+    """Remove the repeated FRLG block only when both copies are identical."""
+    if section != "209":
+        return lines
+    headers = [index for index, line in enumerate(lines)
+               if not line.split("#", 1)[0].strip().split(",", 1)[0].isdigit()]
+    headers.append(len(lines))
+    ranges = [(start, end) for start, end in zip(headers, headers[1:])
+              if line_fields(lines[start])[0] == "LandDay"]
+    if len(ranges) != 2:
+        return lines
+    (first, first_end), (second, second_end) = ranges
+    if list(map(line_fields, lines[first:first_end])) == list(map(line_fields, lines[second:second_end])):
+        return lines[:second] + lines[second_end:]
+    return lines
+
+
+def line_fields(line):
+    return [part.strip() for part in line.split("#", 1)[0].strip().split(",")]
+
+
 def normalize_encounters(source, rows, species):
     tables = {}
     for key, lines in read_blocks(source).items():
@@ -212,8 +227,8 @@ def normalize_encounters(source, rows, species):
             raise ValueError(f"Duplicate encounter table {key}")
         methods = {}
         method = None
-        for line in lines:
-            fields = [s.strip() for s in line.split("#", 1)[0].strip().split(",")]
+        for line in deduplicate_route23_land_day(key, lines):
+            fields = line_fields(line)
             if not fields[0].isdigit():
                 method = fields[0]
                 if method not in ENCOUNTER_TYPES or len(fields) > 2:
@@ -236,8 +251,10 @@ def normalize_encounters(source, rows, species):
                 # repetitions change the source's relative level probabilities.
                 methods[method][1].append([weight, fields[1], levels])
         for encounter_method, (_, original_slots) in methods.items():
-            if sum(row[0] for row in original_slots) != 100:
-                raise ValueError(f"Encounter weights must total 100: {key}/{encounter_method}")
+            # The pinned Route 23 source uses relative weights totaling 110.
+            expected_total = 110 if (key, encounter_method) == ("209", "LandDay") else 100
+            if sum(row[0] for row in original_slots) != expected_total:
+                raise ValueError(f"Encounter weights must total {expected_total}: {key}/{encounter_method}")
             # Expand only discontinuous level lists into single-level slots.
             # Relative probabilities are preserved EXACTLY with integer
             # scaling by the LCM of their level counts; vanilla Essentials
@@ -320,12 +337,11 @@ def build_drafts(source, game, plan):
     from audit import KANTO, json_file
     no_gameplay = set(json_file(KANTO).get("preview_only", []))
     mapping = {row["source_id"]: row["proposed_id"] for row in plan["maps"]
-               if row["source_id"] not in no_gameplay
-               and row["source_id"] not in ENCOUNTER_REVIEW_SOURCE_IDS}
+               if row["source_id"] not in no_gameplay}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
-                      "source_policy": "Essentials FRLG 1.1 explicitly listed levels; exact integer-weight conversion; map209 LandDay ambiguous; independent official exclusivities pending"}
+                      "source_policy": "Essentials FRLG 1.1 explicitly listed levels; exact integer-weight conversion; identical Route 23 LandDay block deduplicated; independent official exclusivities pending"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
     return {Path("drafts", "encounters.txt"): (warning + encounters).encode("utf-8"),
             Path("drafts", "trainers.txt"): (warning + trainers).encode("utf-8")}

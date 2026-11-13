@@ -24,28 +24,28 @@ A rotina independente `scripts/regions/audit_canonical.py` lê a fonte pinada **
 | Medida | Resultado auditado |
 |---|---:|
 | Seções de encontros presentes na fonte FRLG | 58 |
-| Tabelas importadas de forma comprovadamente fiel | **22** |
-| Espécies distintas com encontros ativos | **52** |
-| Slots originais auditados nos 22 mapas | **284** |
-| Slots na representação compilada equivalente | **396** |
-| Listas consecutivas compactadas | **148** |
-| Listas com lacunas/repetições convertidas sem alteração de probabilidade | **67** |
+| Tabelas importadas de forma comprovadamente fiel | **23** |
+| Espécies distintas com encontros ativos | **53** |
+| Slots originais auditados nos 23 mapas | **303** |
+| Slots na representação compilada equivalente | **423** |
+| Listas consecutivas compactadas | **158** |
+| Listas com lacunas/repetições convertidas sem alteração de probabilidade | **72** |
 | Perfis PBS de treinador comparados linha por linha | **153** |
 | Mapas em prévia sem encontros | **45** |
 | Mapas totais (IDs preservados) | **142** |
-| Métodos de encontro verificados nas tabelas | **64** |
+| Métodos de encontro verificados nas tabelas | **69** |
 
 O portal exibe **144 treinadores** agrupados por identidade/localização, além de 142 localidades. Os **153 registros PBS** contam também variantes do mesmo treinador, incluindo os três times do Campeão Blue. Nenhum time-base foi alterado por esse processo; o escalonamento existente do Blue/Decades continua sendo aplicado em memória.
 
 ## Inconsistência da fonte: Route 23 / Map209
 
-A auditoria `scripts/regions/audit_source_encounters.py` identificou **um método `LandDay` duplicado dentro da mesma seção `[209]`** do arquivo de origem. Fundir os blocos automaticamente poderia mudar as proporções, e tratar a segunda ocorrência como variante seria especulação.
+O mapa fonte 209 contém duas cópias idênticas de LandDay. O importador mantém uma cópia e rejeita uma repetição que altere a taxa ou os Pokémon e níveis. A distribuição do bloco original usa pesos relativos que somam 110. O portal calcula as porcentagens sobre essa soma.
 
-**Decisão conservadora:** somente encontros selvagens do mapa fonte 209 ficam suspensos em `ENCOUNTER_REVIEW_SOURCE_IDS`. **O mapa, as oito verificações de insígnias, os guardas, as batalhas e a passagem para a Liga seguem ativos**, sem impacto no save. A resolução do método duplicado dependerá de uma fonte ou decisão confirmada.
+A auditoria confrontou as distribuições de grama diurna, surfe e três varas com o PBS gerado. São 23 áreas, 69 métodos e 53 espécies no total. Falta verificar encontros pela interface e comparar independentemente as exclusividades oficiais de FireRed e LeafGreen.
 
 ## Regiões/áreas que passaram a ter encontros reais na tabela do piloto
 
-Entre os 22 mapas com tabelas autenticadas estão Pallet/água (fonte 005), Viridian e rotas iniciais, **Route 22 (016)**, Fuchsia City (144), os **quatro andares da Pokémon Mansion (205–208)** e **Victory Road 1F–3F (211–213)**. A disponibilidade de Surf, pescaria, uso de área, passabilidade e demais métodos no gameplay real depende do estado do jogo e permanece no checklist manual.
+Entre os 23 mapas com tabelas autenticadas estão Pallet/água (fonte 005), Viridian e rotas iniciais, **Route 22 (016) e Route 23 (209)**, Fuchsia City (144), os **quatro andares da Pokémon Mansion (205–208)** e **Victory Road 1F–3F (211–213)**. A disponibilidade de Surf, pescaria, uso de área, passabilidade e demais métodos no gameplay real depende do estado do jogo e permanece no checklist manual.
 
 ## Verificações de segurança
 
@@ -59,7 +59,7 @@ Entre os 22 mapas com tabelas autenticadas estão Pallet/água (fonte 005), Viri
 ## Pendências de **aceite integral** (continuam abertas)
 
 - Comparação **independente com as tabelas oficiais de FireRed e LeafGreen** (incluindo exclusividades como Oddish/Bellsprout, Growlithe/Vulpix, Elekid/Magby quando aplicáveis), confrontando habitat, método e horário em cada versão. A fonte usada aqui **mescla** conteúdo e não prova equivalência oficial.
-- Resolver em segurança a duplicidade de `LandDay` do mapa 209, sem alterar os dados-base.
+- Verificar encontros da Rota 23 pela interface.
 - Confirmar que todos os métodos, rodadas dia/noite, pesca, Surf, taxas, nível e legendários funcionam **jogando** no Windows/JoiPlay, incluindo Save/Reload, repelentes e HM.
 - Auditar todos os itens de chão/TMs/Key Items e sequências de eventos canônicos que ainda estão excluídos por whitelist (Safari, Silph Scope, Rocket, Bill, fósseis e afins). **Importar tabelas não significa liberar esses eventos.**
 - Validar autorização individual de sprites, músicas, efeitos e créditos para eventual distribuição pública.
