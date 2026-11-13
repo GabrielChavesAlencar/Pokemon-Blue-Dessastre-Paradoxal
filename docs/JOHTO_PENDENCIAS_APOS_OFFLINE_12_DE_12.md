@@ -159,6 +159,22 @@ Eles **não devem** ser preenchidos como `true` por planejamento, testes simulad
 
 Ordem: **P0.1/P0.2 → P0.3 → P0.4/P0.5/P0.6 → P0.7/P0.8 → QA real → fase 04/16 jogável → fase 05/16 jogável → demais fases**.
 
+## Execução do Codex — instalador isolado de QA (13/11/2026)
+
+Implementado [johto_qa.py](../scripts/regions/johto_qa.py) para receber o ZIP do empacotador OFFLINE 12 e preparar uma cópia privada. A ferramenta confere os hashes da prévia, a compatibilidade com a base, MapIDs, eventos, referências de gráficos, duplicações PBS e conexões. Ela escreve exclusivamente em `.blue-work/game-johto-qa/` e preserva os originais substituídos no subdiretório `_johto_backup`. A instalação de produção continua bloqueada.
+
+~~~powershell
+python scripts/regions/johto_qa.py --dry-run --report .blue-work/johto-qa-preflight.json
+python scripts/regions/johto_qa.py --stage-qa
+python scripts/regions/johto_qa.py --rollback
+~~~
+
+Use `--game` para indicar outra base Decades em modo de leitura e `--bundle` para indicar o ZIP privado compatível. O rollback arquiva a cópia de QA inteira em `.blue-work`; uma execução nova recebe seu próprio perfil de save. Se o ZIP foi gerado sobre outra base, regenere a prévia com os MapInfos/Tilesets da base escolhida em vez de forçar a cópia. Nenhum desses comandos abre a engine.
+
+Quando a montagem real passar, a **primeira abertura** do Game.exe isolado solicita compilação nativa e encerra depois de registrar `Data/blue-johto-qa-compiled.txt` (conteúdo: SHA-256 do pacote) ou `Data/blue-johto-qa-compile-error.txt`. Um erro retém a solicitação para uma nova tentativa. Este registro é para diagnóstico; o instalador não cria marcadores de batalha pronta ou liberação e não habilita `Testar Johto` na campanha.
+
+**Evidência e bloqueio atual:** o contrato de instalação e rollback foi exercitado com fixtures. O ZIP privado da etapa 12 não está no ambiente. O download da entrada 1.0 no [catálogo do autor](https://eeveeexpo.com/resources/828/history) retornou um 7z de `60s Kanto v2`, sem Map079 e com SHA-256 diferente do ZIP v1 auditado, portanto foi descartado como fonte de Johto. Compilação real, portas/bordas, eventos, batalhas, saves e direitos continuam pendentes. **Jogáveis: 0/13. Testadas no Game.exe: 0/13.**
+
 ### Documentos que devem continuar sendo a referência
 
 - [Barra offline 12/12](JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md)

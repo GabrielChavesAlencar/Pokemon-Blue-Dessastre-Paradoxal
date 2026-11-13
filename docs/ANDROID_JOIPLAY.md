@@ -50,3 +50,5 @@ O guia detalhado está na página `Downloads → Atualizações Android` do site
 ### Critério para liberar os novos pacotes corrigidos
 
 A publicação deverá verificar **ambas** as condições: (1) o ZIP contém uma entrada `Input` já corrigida em `Data/Scripts.rxdata`; (2) o piloto Kanto inclui `Data/blue-mobile.txt` para ativar `Mobile.rb`. Nenhum teste que apenas confirma a presença do plugin substitui a verificação do marcador. O fluxo de release usa nomes separados para Kanto e Decades. A última verificação indispensável continua sendo abrir o ZIP novo no aparelho Android, tocar no menu e confirmar que o erro desapareceu.
+
+As correções acima já foram publicadas em 13/11/2026 em dois canais: [Decades 563](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/battle-hub-563-6c78aa4) e [Kanto Piloto 690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/kanto-android-690-6c78aa4). Os workflows de empacotamento das duas releases passaram. Continua pendente a confirmação de toque e abertura de uma nova partida no Poco com JoiPlay.

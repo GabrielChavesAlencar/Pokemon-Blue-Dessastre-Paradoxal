@@ -2,7 +2,7 @@
 
 **Data:** 13/11/2026  
 **Referências:** [plano de 16 fases](HOENN_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) · [fontes de mapas e músicas](HOENN_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md).  
-**Estado:** preparação técnica da Fase 01. Nenhum arquivo de mapa Hoenn foi instalado no jogo.
+**Estado:** fonte pública e instalação local auditadas para a Fase 01; ZIP privado e direitos por recurso ainda pendentes. Nenhum arquivo de mapa Hoenn foi instalado no jogo.
 
 ## 1. O que pode e não pode ir ao GitHub público
 
@@ -77,3 +77,21 @@ O script registra SHA-256 do ZIP, lista MapNNN, dependências e volumes, bloquei
 - Este documento.
 
 **Limite desta entrega:** a tentativa de abrir o ZIP montado no ambiente do assistente falhou por indisponibilidade técnica da ferramenta de leitura de arquivos. Os bytes reais não foram examinados nem foi calculado um hash do ZIP fornecido; o preparador e seus testes foram publicados mas ainda exigem execução/CI para validação. **Não existe importação jogável de Hoenn nesta etapa.**
+
+## Auditoria da fonte pública e da instalação local (13/11/2026)
+
+A revisão pública [c59233b](https://github.com/SocomSeal/The-PMon-World-Project/tree/c59233bdbaac4fbfeca6aa01c7f05be628da2a92) tem **373 mapas** com registro em MapInfos e **100 tilesets**. A árvore do subdiretório Hoenn estava completa. O script conferiu os IDs e os hashes dos arquivos de referência contra a árvore Git; não executou eventos nem programas do doador.
+
+| Mapa de origem | ID | Tileset | Eventos de origem |
+|---|---:|---:|---:|
+| Littleroot | 7 | 23 | 28 |
+| Casa do jogador | 8 | 34 | 42 |
+| Laboratório do Birch | 11 | 35 | 19 |
+| Rota 101 | 101 | 23 | 12 |
+| Oldale | 12 | 23 | 16 |
+
+Os arquivos dos tilesets/autotiles citados por esses cinco mapas aparecem no inventário público. Isso não valida conteúdo, passabilidade ou direitos desses PNGs. O Blue local tem **349 mapas físicos e 349 registros**, com maior ID **441**; **281 IDs colidem** com a numeração do doador e nenhum mapa ocupa a faixa Johto 600–681. Nenhum destino Hoenn foi reservado nesta verificação.
+
+Use [audit_hoenn_baseline.py](../scripts/regions/audit_hoenn_baseline.py) com a resposta completa de `git/trees/<SHA da subárvore Hoenn>?recursive=1`, adicionando o campo `revision` com o SHA do commit público. Em `--source-data`, forneça as cópias locais de MapInfos, Tilesets e Map007/008/011/012/101 da revisão; em `--game-data`, indique o Data do Blue. Passe `--archive` somente se tiver o ZIP privado. O resultado da fonte pública está em [hoenn-source.json](../data/regions/hoenn-source.json).
+
+**Fase 01: parcial.** O ZIP privado original continua sem SHA-256 confirmado e a autorização de redistribuição continua pendente. Nenhum mapa foi instalado; nenhuma fase foi aprovada por gameplay.

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -88,15 +89,15 @@ class JohtoReleaseTests(unittest.TestCase):
     def test_command_dry_run_works_and_strict_apply_refuse(self):
         base = [sys.executable, str(PATH), "--root", str(ROOT)]
         process = subprocess.run(base + ["--dry-run"], capture_output=True,
-                                 text=True, encoding="utf-8", timeout=25)
+                                 text=True, encoding="utf-8", env={**os.environ, "PYTHONUTF8": "1"}, timeout=25)
         self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
         self.assertEqual(json.loads(process.stdout)["status"],
                          "BLOCKED_AWAITING_ASSETS")
         strict = subprocess.run(base + ["--strict"], capture_output=True,
-                                text=True, encoding="utf-8", timeout=25)
+                                text=True, encoding="utf-8", env={**os.environ, "PYTHONUTF8": "1"}, timeout=25)
         self.assertEqual(strict.returncode, 2)
         apply = subprocess.run(base + ["--apply"], capture_output=True,
-                               text=True, encoding="utf-8", timeout=25)
+                               text=True, encoding="utf-8", env={**os.environ, "PYTHONUTF8": "1"}, timeout=25)
         self.assertEqual(apply.returncode, 2)
         self.assertIn("BLOQUEADO", apply.stderr)
         self.assertIn('"game_files_modified": 0', apply.stdout)
@@ -220,7 +221,12 @@ class JohtoReleaseIntegrityTests(unittest.TestCase):
             manifest.write_text(json.dumps(proof), encoding="utf-8")
             physical = pilot / "Data/Map701.rxdata"
             physical.unlink()
-            physical.symlink_to("Map700.rxdata")
+            try:
+                physical.symlink_to("Map700.rxdata")
+            except OSError as error:
+                if getattr(error, "winerror", None) != 1314:
+                    raise
+                self.skipTest("Windows não permite criar links simbólicos nesta sessão")
             self.assertTrue(any("symlink" in x for x in
                                 AUDIT.verify_pilot_package(root, pilot)))
 
@@ -228,7 +234,12 @@ class JohtoReleaseIntegrityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "game/Data").mkdir(parents=True)
-            (root / ".blue-work").symlink_to(root / "game", target_is_directory=True)
+            try:
+                (root / ".blue-work").symlink_to(root / "game", target_is_directory=True)
+            except OSError as error:
+                if getattr(error, "winerror", None) != 1314:
+                    raise
+                self.skipTest("Windows não permite criar links simbólicos nesta sessão")
             with self.assertRaisesRegex(ValueError, "symlink"):
                 AUDIT.save_report({}, root / ".blue-work/Data/unsafe.json", root)
         with tempfile.TemporaryDirectory() as temp:
@@ -238,7 +249,7 @@ class JohtoReleaseIntegrityTests(unittest.TestCase):
             result = subprocess.run([
                 sys.executable, str(PATH), "--root", str(root),
                 "--apply", "--report", str(unsafe)
-            ], capture_output=True, text=True, encoding="utf-8", timeout=20)
+            ], capture_output=True, text=True, encoding="utf-8", env={**os.environ, "PYTHONUTF8": "1"}, timeout=20)
             self.assertEqual(result.returncode, 2)
             self.assertFalse(unsafe.exists(), "--apply wrote a report despite refusal")
             self.assertIn("BLOQUEADO", result.stderr)

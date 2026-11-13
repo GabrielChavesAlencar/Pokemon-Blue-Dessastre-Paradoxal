@@ -195,7 +195,7 @@ def audit(root: Path = ROOT) -> dict:
         "phases": phase_rows,
         "blockers": blockers,
         "source_archive_sha256": archive_hash,
-        "next_action": "Auditar Map Pack/RMXP e direitos, compilar eventos/PBS/áudio, testar em piloto, comprovar os 13 gates e só então construir instalador transacional com backups e rollback.",
+        "next_action": "Usar johto_qa.py em cópia isolada com a prévia OFFLINE 12 compatível; compilar PBS e auditar direitos. O instalador público requer os 13 gates de release.",
     }
 
 
@@ -234,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         report = audit(args.root)
-        print(json.dumps(report, ensure_ascii=False, indent=2))
+        print(json.dumps(report, ensure_ascii=True, indent=2))
         if args.apply:
             # Even --report must not create files when --apply is denied.
             print("[JOHTO][BLOQUEADO] Aplicação transacional indisponível; nenhum jogo modificado.",

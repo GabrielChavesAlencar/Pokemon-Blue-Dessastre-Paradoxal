@@ -69,7 +69,12 @@ class JohtoPrivateExportTests(unittest.TestCase):
         (self.game / 'Data/Map001.rxdata').unlink()
         with self.assertRaisesRegex(ValueError, 'Nenhum Map'):
             gather(self.game)
-        (self.game / 'Data/Map001.rxdata').symlink_to(self.game / 'Data/MapInfos.rxdata')
+        try:
+            (self.game / 'Data/Map001.rxdata').symlink_to(self.game / 'Data/MapInfos.rxdata')
+        except OSError as error:
+            if getattr(error, "winerror", None) != 1314:
+                raise
+            self.skipTest("Windows não permite criar links simbólicos nesta sessão")
         with self.assertRaisesRegex(ValueError, 'Link simbolico'):
             gather(self.game)
 

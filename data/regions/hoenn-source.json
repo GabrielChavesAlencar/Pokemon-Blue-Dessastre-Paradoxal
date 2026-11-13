@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "region": "HOENN",
-  "status": "PENDING_LOCAL_ZIP_AUDIT",
+  "status": "PUBLIC_REVISION_AND_NATIVE_BASELINE_AUDITED_PRIVATE_ZIP_PENDING",
   "source": {
     "name": "The Pokémon World Project - Hoenn",
     "author": "SocomSeal and credited project contributors",
@@ -13,7 +13,117 @@
     "public_repository_has_explicit_license": false,
     "public_redistribution_approved": false,
     "source_usage_intent": "Author offers as fangame base; verify rights/credits for redistribution of individual files",
-    "credits_status": "PENDING_PER_ASSET_REVIEW"
+    "credits_status": "PENDING_PER_ASSET_REVIEW",
+    "upstream_audit": {
+      "upstream_revision": "c59233bdbaac4fbfeca6aa01c7f05be628da2a92",
+      "source_map_count": 373,
+      "source_tileset_count": 100,
+      "source_mapinfos_sha256": "7a69152de41a8b70df3199182e09d04e2f1be2db73a2ab509137571e4d8ade15",
+      "source_tilesets_sha256": "6812832c71da1b6b27585f45212135afcd74bd578e5127caa4d5296ee1126a9b",
+      "pilot": [
+        {
+          "source_map_id": 7,
+          "area": "Littleroot",
+          "source_name": "Littleroot Town",
+          "dimensions": [
+            20,
+            20
+          ],
+          "source_tileset": 23,
+          "source_event_count": 28,
+          "sha256": "9b37800864b4f426e8aaac8a6a195a003c32232da6fbab94cec9dba926f23013",
+          "graphics_refs": [
+            "Graphics/Tilesets/RSE_Outside.png",
+            "Graphics/Autotiles/RSE_Ocean.png",
+            "Graphics/Autotiles/RSE_Water Calm.png",
+            "Graphics/Autotiles/RSE_Water Rock.png",
+            "Graphics/Autotiles/RSE_Steam.png",
+            "Graphics/Autotiles/RSE_OW Anims 1.png",
+            "Graphics/Autotiles/RSE_Flowers LONG.png",
+            "Graphics/Autotiles/RSE_Lava.png"
+          ],
+          "graphics_missing_from_tree": []
+        },
+        {
+          "source_map_id": 8,
+          "area": "Casa do jogador",
+          "source_name": "\\PN's House",
+          "dimensions": [
+            40,
+            40
+          ],
+          "source_tileset": 34,
+          "source_event_count": 42,
+          "sha256": "cf66b109b6a10c4d303c3e99fd8c779ca78727009885ff17eda9c58c04da24c2",
+          "graphics_refs": [
+            "Graphics/Tilesets/RSE_Playerhouse interior.png"
+          ],
+          "graphics_missing_from_tree": []
+        },
+        {
+          "source_map_id": 11,
+          "area": "Laboratório do Birch",
+          "source_name": "Birch's Lab",
+          "dimensions": [
+            20,
+            20
+          ],
+          "source_tileset": 35,
+          "source_event_count": 19,
+          "sha256": "be8faece2d373a1bf6788329416feae1ba8006571a5fba6c08e0237febbce472",
+          "graphics_refs": [
+            "Graphics/Tilesets/RSE_Lab.png"
+          ],
+          "graphics_missing_from_tree": []
+        },
+        {
+          "source_map_id": 12,
+          "area": "Oldale",
+          "source_name": "Oldale Town",
+          "dimensions": [
+            20,
+            20
+          ],
+          "source_tileset": 23,
+          "source_event_count": 16,
+          "sha256": "0bf684c2c3ead88228adb2f7e93c387fb0a69192b82a7b88826b4ee812c7b5f6",
+          "graphics_refs": [
+            "Graphics/Tilesets/RSE_Outside.png",
+            "Graphics/Autotiles/RSE_Ocean.png",
+            "Graphics/Autotiles/RSE_Water Calm.png",
+            "Graphics/Autotiles/RSE_Water Rock.png",
+            "Graphics/Autotiles/RSE_Steam.png",
+            "Graphics/Autotiles/RSE_OW Anims 1.png",
+            "Graphics/Autotiles/RSE_Flowers LONG.png",
+            "Graphics/Autotiles/RSE_Lava.png"
+          ],
+          "graphics_missing_from_tree": []
+        },
+        {
+          "source_map_id": 101,
+          "area": "Rota 101",
+          "source_name": "Route 101",
+          "dimensions": [
+            20,
+            20
+          ],
+          "source_tileset": 23,
+          "source_event_count": 12,
+          "sha256": "d6b87439f5feb9623aaeed5cc988f0485d32c3b9285b6e9a9322028bcd970522",
+          "graphics_refs": [
+            "Graphics/Tilesets/RSE_Outside.png",
+            "Graphics/Autotiles/RSE_Ocean.png",
+            "Graphics/Autotiles/RSE_Water Calm.png",
+            "Graphics/Autotiles/RSE_Water Rock.png",
+            "Graphics/Autotiles/RSE_Steam.png",
+            "Graphics/Autotiles/RSE_OW Anims 1.png",
+            "Graphics/Autotiles/RSE_Flowers LONG.png",
+            "Graphics/Autotiles/RSE_Lava.png"
+          ],
+          "graphics_missing_from_tree": []
+        }
+      ]
+    }
   },
   "extraction": {
     "script": "scripts/regions/prepare_hoenn_source.py",
@@ -46,10 +156,17 @@
   "maps": {},
   "missing_required": [
     "Read actual uploaded ZIP contents and SHA256 in local runtime",
-    "MapInfos/MapID/warps/tilesets audit against live game/",
+    "Inventory all event and graphics dependencies and allocate safe destination MapIDs",
     "Asset and audio redistribution permissions",
     "Game.exe map conversion and safe isolated playable pilot",
     "Native E2E and Kanto/Johto/Decades regression"
   ],
-  "notes": "This manifest documents prepared tooling, NOT a verified import or an authorization to upload map/graphics/audio binaries to main."
+  "notes": "This manifest documents prepared tooling, NOT a verified import or an authorization to upload map/graphics/audio binaries to main.",
+  "native_baseline": {
+    "native_physical_maps": 349,
+    "native_mapinfos_count": 349,
+    "native_highest_id": 441,
+    "unmapped_collisions": 281,
+    "johto_reserved_collision": []
+  }
 }
