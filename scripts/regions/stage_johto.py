@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import re
+import struct
 import sys
 import tempfile
 from pathlib import Path
@@ -21,7 +22,7 @@ from pathlib import Path
 from audit_johto import ROOT, project_data, map_files, read_map_data, checksum
 from plan_johto import read_json
 from stage import serialize
-from server.ruby_marshal import RubyObject, text
+from server.ruby_marshal import RubyObject, RubyData, text
 
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 IMAGE_NAME = re.compile(r"^[\w .()\-]+$", re.UNICODE)
@@ -50,6 +51,28 @@ def check_workspace(root: Path, source: Path, game: Path, output: Path, archive:
         raise FileNotFoundError("Original archived map pack is required")
     if not game.is_dir():
         raise FileNotFoundError("Native game/ does not exist; stage cannot replace it")
+
+
+def autotile_slot_used(map_object: RubyObject, slot: int) -> bool:
+    """Read a real RPG Maker XP Table; slot 0 covers IDs 48..95.
+
+    Unknown or malformed geometry is not an excuse to remove an asset.
+    """
+    props = map_object.attrs
+    width, height, data = props.get("@width"), props.get("@height"), props.get("@data")
+    if (type(width) is not int or type(height) is not int or
+            width < 1 or height < 1 or
+            not isinstance(data, RubyData) or data.name != "Table" or
+            not isinstance(data.data, bytes) or len(data.data) < 20):
+        raise ValueError("Cannot audit missing Johto autotile without real RMXP Table")
+    dimensions, x, y, z, count = struct.unpack("<5I", data.data[:20])
+    if (dimensions, x, y, z, count) != (3, width, height, 3, width * height * 3):
+        raise ValueError("Malformed Johto tile table for missing autotile audit")
+    if len(data.data) != 20 + 2 * count:
+        raise ValueError("Truncated Johto tile table for missing autotile audit")
+    lo, hi = 48 * (slot + 1), 48 * (slot + 2)
+    return any(lo <= tile < hi for (tile,) in
+               struct.iter_unpack("<H", data.data[20:]))
 
 
 def stage(*, root: Path, source: Path, game: Path, output: Path,
@@ -115,6 +138,31 @@ def stage(*, root: Path, source: Path, game: Path, output: Path,
     assets: dict[Path, bytes] = {}
     assets_casefold = set()
     summary = []
+    missing_unused_autotiles = []
+
+    def unused_autotile_or_fail(tileset_id: int, slot: int, name: str) -> bytes:
+        if (not IMAGE_NAME.fullmatch(name) or name in (".", "..")):
+            raise ValueError("Unsafe Johto graphic filename: " + name)
+        expected = source_art / "Autotiles" / (name + ".png")
+        if expected.is_symlink() or (
+                expected.exists() and not expected.is_file()):
+            raise ValueError("Unsafe source Johto autotile: " + str(expected))
+        if expected.is_file():
+            return safe_image("Autotiles", name)
+        for sid in mapping:
+            path = source_maps.get(sid)
+            if path is None or checksum(path) != original_hashes[str(sid)]:
+                raise ValueError("Source map changed before missing autotile review")
+            area = read_map_data(path)
+            if not isinstance(area, RubyObject) or area.name != "RPG::Map":
+                raise ValueError("Invalid Johto map for autotile dependency review")
+            if area.attrs.get("@tileset_id") == tileset_id and autotile_slot_used(area, slot):
+                raise ValueError(
+                    f"Missing Johto autotile {name} IS USED by Map{sid:03d}; supply authentic PNG")
+        missing_unused_autotiles.append({
+            "tileset_id": tileset_id, "slot": slot + 1,
+            "name": name, "action": "CLEARED_UNUSED_AUTOTILE_SLOT"})
+        return b""
 
     def safe_image(folder: str, source_stem: bytes | str | None) -> bytes:
         stem = text(source_stem).strip() if source_stem else ""
@@ -163,7 +211,10 @@ def stage(*, root: Path, source: Path, game: Path, output: Path,
             autotiles = attrs.get("@autotile_names", [])
             if not isinstance(autotiles, list):
                 raise ValueError("Johto tileset has invalid autotile list")
-            attrs["@autotile_names"] = [safe_image("Autotiles", x) for x in autotiles]
+            attrs["@autotile_names"] = [
+                unused_autotile_or_fail(tid, pos, text(name).strip()) if name else b""
+                for pos, name in enumerate(autotiles)
+            ]
             for name in ("@panorama_name", "@fog_name", "@battleback_name"):
                 if name in attrs:
                     attrs[name] = b""
@@ -195,6 +246,7 @@ def stage(*, root: Path, source: Path, game: Path, output: Path,
     assets[Path("Data/Tilesets.rxdata")] = serialize(dest_tiles)
     result = {"schema": 1, "region": "JOHTO", "status": "GEOMETRY_PREVIEW_ONLY",
               "not_playable": True, "can_install": False, "maps": summary,
+              "unused_missing_autotiles_cleared": missing_unused_autotiles,
               "native_mapinfos_sha256": expected_hashes["Data/MapInfos.rxdata"],
               "native_tilesets_sha256": expected_hashes["Data/Tilesets.rxdata"],
               "source_archive_sha256": pinned,
