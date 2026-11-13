@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a15521204bcc3968e124b4313dcffc685b9bf42f",
+      "date": "2026-11-12T21:04:24-03:00",
+      "title": "test(johto): executa regras Ruby de Olivine Cianwood no CI Blue Studio",
+      "category": "Testes"
+    },
+    {
+      "sha": "f54b8e8fe84d848fa55649d14e5b14911b3f064f",
+      "date": "2026-11-12T21:04:12-03:00",
+      "title": "test(johto): valida Ampharos, travessia Surf, Chuck, STORM, Fly e save isolado",
+      "category": "Testes"
+    },
+    {
       "sha": "dc15ce2fc1f7485da6e72c4fb262f8b344c8414f",
       "date": "2026-11-12T21:03:00-03:00",
       "title": "feat(johto): prepara Olivine, Lighthouse, Routes 38-41, farmacia, Chuck/STORM e Fly",
