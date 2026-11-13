@@ -6,11 +6,11 @@
 
 | Indicador | Progresso | Interpretação |
 |---|---:|---|
-| **Desenvolvimento OFFLINE** | **11/12 (91,7%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
+| **Desenvolvimento OFFLINE** | **12/12 (100%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
 | **Fases JOGÁVEIS** | **0/13 (0%)** | Depende de jogo real e caminho completo funcional |
 | **Fases TESTADAS NO EXE** | **0/13 (0%)** | Depende de QA de gameplay real aprovado |
 
-**Progress bar OFFLINE:** `[###########-] 11/12 = 91,7%`
+**Progress bar OFFLINE:** `[############] 12/12 = 100%`
 
 ## Checklist das 12 etapas
 
@@ -27,11 +27,11 @@
 | 09 | **CONCLUÍDO** | Preparar PBS do rival e três iniciais | Três equipes rival condicionadas ao inicial escolhido, validação offline de species/trainer types e scripts, sem criar marcador falso de PBS compilado |
 | 10 | **CONCLUÍDO** | Preparar encontros e treinadores das Rotas 29–31 | Tabelas de encontros e times na cópia isolada, níveis ajustados às regras Blue, nomes/referências conferidos com PBS, testes de consistência |
 | 11 | **CONCLUÍDO** | Preparar Violet City, Sprout Tower e Falkner | Integração offline de mapa/entradas/interiores propostos, eventos de Falkner e Torre Sprout, contratos PBS e insígnia Zephyr sem recompensa duplicada |
-| 12 | PENDENTE | Auditoria e empacotamento offline da fase inicial | Todas as saídas da prévia verificadas, suíte offline passando, SHA/IDs e proteção de Kanto/Decades/saves confirmados; relatório pronto para futura QA nativa sem alegar jogo funcional |
+| 12 | **CONCLUÍDO** | Auditoria e empacotamento offline da fase inicial | Todas as saídas da prévia verificadas, suíte offline passando, SHA/IDs e proteção de Kanto/Decades/saves confirmados; relatório pronto para futura QA nativa sem alegar jogo funcional |
 
 ## Ordem e evidência
 
-As etapas 04/12 (quarto 2F) e 05/12 (casa 1F) foram concluídas em previews privadas. **06/12 — laboratório de Elm concluído; 07/12 — portas/escadas/spawn concluída; 08/12 — eventos de New Bark concluída; 09/12 — PBS rival/iniciais concluída; 10/12 — encontros e treinadores Rotas 29–31 concluída; 11/12 — Violet, Torre Sprout e Falkner concluída; próxima: 12/12 — auditoria e empacotamento offline**. Depois portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
+As etapas 04/12 (quarto 2F) e 05/12 (casa 1F) foram concluídas em previews privadas. **06/12 — laboratório de Elm concluído; 07/12 — portas/escadas/spawn concluída; 08/12 — eventos de New Bark concluída; 09/12 — PBS rival/iniciais concluída; 10/12 — encontros e treinadores Rotas 29–31 concluída; 11/12 — Violet, Torre Sprout e Falkner concluída; 12/12 — auditoria e empacotamento concluída; próximo ciclo: compilação/instalação de teste/QA da engine**. Depois portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
 
 - 01: `docs/JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md`, `docs/JOHTO_FASE_04_ENTRADAS_REAIS_V1.md`
 - 02: `docs/JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md`
@@ -88,3 +88,9 @@ Contrato `data/regions/johto-stage10-routes.json`, gerador `build_johto_routes_s
 ### Etapa 11/12 — Violet City, Torre Sprout e Falkner
 
 Em `.blue-work`, acrescentados **cinco interiores provisórios**: ginásio Map677, Torre Sprout andares 1F/2F/3F Maps678-680 e Centro Map681; a cidade original Map602 recebe **três entradas**, ligadas por **10 eventos de transferência reversíveis**. Cinco NPCs de história, incluindo Falkner e Ancião Li; **8 equipes PBS** (normal2/Master4) de Falkner/Li/Sages Nico e Troy. Zephyr é concedida **uma única vez por BlueRegions.award após batalha vencida**, e Li nunca concede a insígnia. RXDATA privado real: **76 mapas anteriores preservados**, cinco novos MapInfos, tilesets existentes intocados, 82 mapas no total. **Limites:** sprites específicos de Falkner, Li, Sages e atendente não encontrados na fonte; interiores não são oficiais HGSS; Centro não cura; PBS ainda não compilados na engine e Blue-Story.exe não instala Johto automaticamente. [Relatório detalhado](JOHTO_OFFLINE_FASE_11_VIOLET_SPROUT_FALKNER.md). **OFFLINE 11/12 (91,7%) · JOGÁVEIS 0/13 · TESTADAS 0/13.**
+
+### Etapa 12/12 — Auditoria de integração privada completa (não é gameplay)
+
+O auditor e empacotador `scripts/regions/package_johto_offline12.py` valida **82 RXDATA** com **16 warps e 16 eventos autorais**, **21 equipes PBS** (Silver3+Rotas10+Violet8), **6 tabelas dia/noite**, **44 conexões** (42 originais + duas inferidas), **5 tilesets e 14 autotiles realmente usados** e sprites dos NPCs. A exportação nativa completa mostrou que Falkner/Sage já existiam e permitiu corrigir as referências Li→`NPC_HGSS_Elder` e enfermeira→`NPC_DPP_PokeCenter_Nurse` em uma cópia dos mapas 680/681; **80/82 mapas permaneceram idênticos**, MapInfos/Tilesets preservados. ZIP privado auditado por CRC, SHA256 `74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49`; **nenhuma alteração do game/ original**. [Relatório](JOHTO_OFFLINE_FASE_12_AUDITORIA_INTEGRACAO.md). 
+
+**Importante:** 12/12 é **somente preparação offline**; a opção de instalar Johto via `Blue-Story.exe` **não foi habilitada**, porque ainda faltam montagem transacional, PBS compilados, direitos de distribuição, gráficos de batalha, cura no Centro e QA Windows/JoiPlay. **JOGÁVEIS 0/13; TESTADAS NO EXE 0/13.**
