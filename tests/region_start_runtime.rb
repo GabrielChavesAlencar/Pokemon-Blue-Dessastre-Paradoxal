@@ -164,7 +164,7 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     File.write("Data/blue-johto-install.json", JSON.generate(proof))
     check(!BlueRegionStart.playable?("JOHTO"), "Uncompiled PBS enabled Johto")
     proof["checks"]["trainers_pbs"] = true
-    proof["file_hashes"]["Data/Map713.rxdata"] = "0" * 64
+    proof["file_hashes"] = hashes.merge("Data/Map713.rxdata" => "0" * 64)
     File.write("Data/blue-johto-install.json", JSON.generate(proof))
     check(!BlueRegionStart.playable?("JOHTO"), "Modified Johto town map passed hash check")
     proof["file_hashes"] = hashes
