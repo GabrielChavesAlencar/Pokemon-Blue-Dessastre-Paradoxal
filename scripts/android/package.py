@@ -99,7 +99,9 @@ def build(game,output,revision):
                 '\nPlugins-SHA256: '+fingerprint(game)+'\n').encode('utf8')
         }
         archive.writestr('Pokemon-Blue-Android/Data/blue-update.json',
-                         installed_manifest('decades',revision,{**plans,**extras}))
+                         installed_manifest('decades',revision,{**plans,**extras,
+                                                               'ATUALIZAR-ANDROID.py':
+                                                               (ROOT/'scripts/android/update_client.py').read_bytes()}))
         archive.writestr('Pokemon-Blue-Android/ATUALIZAR-ANDROID.py',
                          (ROOT/'scripts/android/update_client.py').read_bytes())
     verify_archive(output,revision,mobile_sha)
