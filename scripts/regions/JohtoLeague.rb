@@ -243,7 +243,12 @@ module BlueJohtoLeague
                         flags["johto_league_lance_won"] &&
                         flags["johto_league_step"] == ELITE.length &&
                         marker?(HOF_READY, HOF_TOKEN)
-    return false unless result == :recorded
+    unless result == :recorded
+      # Failed or cancelled recording may be retried by a real Hall of Fame
+      # event without granting an unlock or rerunning any Elite Four battle.
+      flags["johto_league_hof_pending"] = false
+      return false
+    end
     return false unless defined?(BlueRegions) &&
                         BlueRegions.complete_league(state, REGION) == true
     flags["johto_league_hof_pending"] = false
