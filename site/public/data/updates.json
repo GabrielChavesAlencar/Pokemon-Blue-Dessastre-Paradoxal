@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d727c0b0a6656dee242275e7c9640ae645a2debf",
+      "date": "2026-11-13T11:10:14-03:00",
+      "title": "docs(hoenn): record ZIP selection, rights and private staging procedure",
+      "category": "Documentação"
+    },
+    {
       "sha": "dd0724809c50bd2d06289d4d00a45ee3c145de35",
       "date": "2026-11-13T11:09:46-03:00",
       "title": "feat(johto): preparar primeiro piloto New Bark com 74 mapas e 42 conexoes isoladas",
