@@ -18,6 +18,7 @@ from pathlib import Path
 from audit_johto import ROOT, checksum, read_map_data
 from build_johto_events import compile_events, read_json
 from draft_johto_rival_pbs import build as build_rival_pbs
+from compile_johto_connections import build as build_connections, merge_pbs
 from pilot import copy_game, SYSTEM_CLASSES
 from stage import serialize
 from verify_johto import inspect
@@ -163,13 +164,19 @@ def plan(preview: Path, game: Path, spec: dict, *, root: Path = ROOT) -> tuple[d
 
 
 def assemble(preview: Path, game: Path, output: Path, spec: dict,
-             *, root: Path = ROOT) -> dict:
+             *, root: Path = ROOT, with_connections: bool = False) -> dict:
     root = root.resolve()
     preview, game, output = preview.absolute(), game.absolute(), output.absolute()
     allowed_workspace(root, output, must_be_new=True)
     if output.resolve() == preview.resolve() or output.resolve().is_relative_to(preview.resolve()):
         raise ValueError("Destino dentro da prévia")
     report, events, pbs, pbs_report = plan(preview, game, spec, root=root)
+    connection_text, connection_report = None, None
+    if with_connections:
+        graph = read_json(root / "data/regions/johto-v1-map-connections.json")
+        source_manifest = read_json(root / "data/regions/johto-source.json")
+        connection_text, connection_report = build_connections(
+            preview, game, graph, source_manifest, root=root)
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent, prefix=".johto-pilot-build-") as temp:
         target = Path(temp) / "game"
@@ -184,6 +191,13 @@ def assemble(preview: Path, game: Path, output: Path, spec: dict,
             destination = target / name
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_bytes(payload)
+        if connection_text is not None:
+            # IMPORTANT: merge only into the experimental copy, preserve every
+            # installed Kanto/Decades PBS line and avoid overwriting game/.
+            dest_pbs = target / "PBS/map_connections.txt"
+            existing = dest_pbs.read_bytes() if dest_pbs.is_file() else None
+            dest_pbs.parent.mkdir(parents=True, exist_ok=True)
+            dest_pbs.write_bytes(merge_pbs(existing, connection_text))
 
         # Only experimental copy receives custom trainer graphic/runtime.
         shutil.copyfile(game / "Graphics/Trainers/RIVAL1.png",
@@ -221,12 +235,17 @@ def assemble(preview: Path, game: Path, output: Path, spec: dict,
         watched = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
                    "Data/System.rxdata", f"Data/Map{mid:03d}.rxdata",
                    *sorted(pbs)]
+        if connection_text is not None:
+            watched.append("PBS/map_connections.txt")
         hashes = {name: checksum(target / name) for name in watched}
         proof = {"schema": 1, "region": "JOHTO",
                  "status": "EXPERIMENTAL_UNTESTED", "can_install": False,
                  "archive_sha256": report["source_archive_sha256"],
                  "start": report["start"], "file_hashes": hashes,
-                 "battle_proven": False, "gameplay_verified": False}
+                 "battle_proven": False, "gameplay_verified": False,
+                 "source_connections_compiled": (
+                     connection_report["compiled_count"] if connection_report else 0),
+                 "connections_tested_in_game": False}
         (target / "Data/blue-johto-pilot-proof.json").write_text(
             json.dumps(proof, indent=2) + "\n", encoding="utf-8")
         (target / "Johto pilot.json").write_text(
@@ -249,6 +268,8 @@ def assemble(preview: Path, game: Path, output: Path, spec: dict,
     report["status"] = "EXPERIMENTAL_COPY_ASSEMBLED_UNTESTED"
     report["output"] = str(output)
     report["rival_versions"] = pbs_report["versions"]
+    report["source_connections_compiled"] = (
+        connection_report["compiled_count"] if connection_report else 0)
     return report
 
 
@@ -258,9 +279,12 @@ def main(argv=None) -> int:
     cli.add_argument("--game", type=Path, default=ROOT / "game")
     cli.add_argument("--spec", type=Path, default=SPEC)
     cli.add_argument("--output", type=Path, default=OUTPUT)
+    cli.add_argument("--with-connections", action="store_true",
+                     help="Adicionar as conexoes reais remapeadas somente no PBS da copia piloto")
     args = cli.parse_args(argv)
     try:
-        report = assemble(args.preview, args.game, args.output, read_json(args.spec))
+        report = assemble(args.preview, args.game, args.output, read_json(args.spec),
+                          with_connections=args.with_connections)
     except (ValueError, OSError, TypeError, KeyError, json.JSONDecodeError) as error:
         print("[JOHTO][BLOQUEADO] " + str(error), file=sys.stderr)
         return 2
