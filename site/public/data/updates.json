@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ec5c063284548d2773006264027aa0fbe369e099",
+      "date": "2026-11-13T06:58:15-03:00",
+      "title": "docs(johto): sincroniza plano mestre com Elite Four Lance e Hall of Fame protegido",
+      "category": "Documentação"
+    },
+    {
       "sha": "581e606877da7a0b9d184514718307be20635881",
       "date": "2026-11-13T06:57:56-03:00",
       "title": "docs(johto): registra fase 13 parcial e pendencias do Hall of Fame real",
