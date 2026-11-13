@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2609c556ad575324128dc18882df441b5f6c2d78",
+      "date": "2026-11-13T17:20:16-03:00",
+      "title": "docs(android): document updates for independent Decades and Kanto JoiPlay channels",
+      "category": "Documentação"
+    },
+    {
       "sha": "a2b64a02cfff628bca0e562cf7d172fc8d790120",
       "date": "2026-11-13T17:19:17-03:00",
       "title": "fix(android): block in-place updates across incompatible runtime/save configurations",
