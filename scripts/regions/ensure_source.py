@@ -14,7 +14,9 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 from urllib.request import Request, urlopen
+from uuid import uuid4
 
 from audit import KANTO, ROOT, json_file
 
@@ -68,7 +70,14 @@ def download_pinned(url: str, archive: Path, expected: str) -> None:
     digest = hashlib.sha256()
     size = 0
     try:
-        request = Request(url, headers={"User-Agent": "PokemonBlueKantoTest/1.0"})
+        parsed = urlsplit(url)
+        if parsed.hostname == "drive.usercontent.google.com":
+            # Drive can cache an HTML interstitial under the download URL.
+            query = f"{parsed.query}&blue_download={uuid4().hex}"
+            url = urlunsplit(parsed._replace(query=query))
+        request = Request(url, headers={
+            "User-Agent": "PokemonBlueKantoTest/1.0", "Cache-Control": "no-cache",
+        })
         with urlopen(request, timeout=120) as response, part.open("xb") as output:
             while True:
                 chunk = response.read(1024 * 1024)
@@ -80,7 +89,10 @@ def download_pinned(url: str, archive: Path, expected: str) -> None:
                 digest.update(chunk)
                 output.write(chunk)
         if digest.hexdigest() != expected:
-            raise RuntimeError("O hash da fonte FRLG não confere com o manifesto fixado; download recusado.")
+            raise RuntimeError(
+                f"O hash da fonte FRLG não confere com o manifesto fixado "
+                f"({size} bytes recebidos); download recusado."
+            )
         os.replace(part, archive)
     except BaseException:
         part.unlink(missing_ok=True)
