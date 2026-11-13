@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8c2fc003431bf315126b74aa309091229e7fe536",
+      "date": "2026-11-13T20:53:35-03:00",
+      "title": "data(sinnoh): record remap planner and keep actual source mapping/import unverified",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "112524d46f4c02441bbc814cbc616a082510d524",
+      "date": "2026-11-13T20:53:24-03:00",
+      "title": "docs(sinnoh): delegate only local R07–R09 after new safe remap planner and 6/9 preparation milestone",
+      "category": "Documentação"
+    },
+    {
       "sha": "11f109216721cee19a93c0fff28804074d029e60",
       "date": "2026-11-13T20:52:46-03:00",
       "title": "test(sinnoh): verify 6/9 remap substeps cannot inflate 8/32 or native acceptance bars",
