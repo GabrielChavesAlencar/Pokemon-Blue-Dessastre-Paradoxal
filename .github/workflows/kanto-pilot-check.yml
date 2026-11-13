@@ -327,11 +327,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           New-Item -ItemType Directory -Force '.blue-work/previous-kanto' | Out-Null
-          $previous=gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" --jq '.[] | select(.tag_name | startswith("kanto-android-")) | .tag_name' 2>$null | Select-Object -First 1
-          if($previous){
-            gh release download "$previous" --pattern 'Blue-Android-Kanto-Piloto.update.json' --dir '.blue-work/previous-kanto'
-            if($LASTEXITCODE -ne 0){Write-Output "Previous Kanto has no update manifest: first incremental baseline."}
-          }
+          $recent=gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json
+          if($LASTEXITCODE -ne 0){throw 'Cannot query published Kanto release history'}
+          $previous=$recent | Where-Object { $_.tag_name -like 'kanto-android-*' } | Select-Object -First 1
+          $hasManifest=$previous -and @($previous.assets | Where-Object { $_.name -eq 'Blue-Android-Kanto-Piloto.update.json' }).Count -gt 0
+          if($hasManifest){
+            gh release download "$($previous.tag_name)" --pattern 'Blue-Android-Kanto-Piloto.update.json' --dir '.blue-work/previous-kanto'
+            if($LASTEXITCODE -ne 0){throw 'Cannot retrieve the previous Kanto manifest'}
+          } else {Write-Output "Previous Kanto has no update manifest: first incremental baseline."}
           python scripts/android/publish_updates.py --channel kanto --full-zip dist/Blue-Android-Kanto-Piloto.zip --previous-manifest .blue-work/previous-kanto/Blue-Android-Kanto-Piloto.update.json
           if($LASTEXITCODE -ne 0){throw 'Kanto update manifest validation failed'}
       - name: Guardar ZIP de testes de Kanto
