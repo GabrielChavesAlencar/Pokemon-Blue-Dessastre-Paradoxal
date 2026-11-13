@@ -240,11 +240,12 @@ def apply_patch(root, installed, manifest, patch_file):
                 "schema": 1, "channel": manifest["channel"], "revision": manifest["revision"],
                 "files": manifest["files"], "immutable": manifest.get("immutable", {})},
                 sort_keys=True), encoding="utf8")
-            os.replace(temp_marker, marker)
             (backup / "BACKUP-INFO.txt").write_text(
                 "Previous revision: " + installed["revision"] + "\n"
                 "New revision: " + manifest["revision"] + "\n"
                 "Do not delete until the game and its saves are tested.\n", encoding="utf8")
+            # Last operation commits the new revision only after everything succeeds.
+            os.replace(temp_marker, marker)
         except BaseException:
             for name in reversed(modified):
                 original = backup / name
