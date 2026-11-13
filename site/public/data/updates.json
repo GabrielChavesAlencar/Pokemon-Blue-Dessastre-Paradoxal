@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2eba580dca6a0551a285620f158a5f7060899ae4",
+      "date": "2026-11-13T07:08:16-03:00",
+      "title": "test(johto): fase 14 HG SS Crystal, Kimono, roamers, Lugia Ho-Oh, ruínas e isolamento",
+      "category": "Testes"
+    },
+    {
       "sha": "5a79dd77acf515cc2e8502aee753cdf6f4fc3e3e",
       "date": "2026-11-13T07:06:08-03:00",
       "title": "feat(johto): fase 14 variantes HG SS Crystal, lendarios, roamers, ruinas e pós-jogo isolados",
