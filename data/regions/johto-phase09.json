@@ -1,0 +1,369 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "phase": "09/16",
+  "status": "SPECIFICATION_ONLY_NOT_INSTALLED",
+  "notes": "Symbolic topology only: no source MapIDs, warp coordinates, cave/tide behavior, Pokemon encounters, trainer PBS, movement sprites or audiovisual assets audited. Phase 10 must perform actual Ampharos cure and Jasmine battle.",
+  "requires_completed_phase": "08/16",
+  "entrance": "JOHTO_ECRUTEAK_CITY",
+  "corridor": [
+    {
+      "key": "JOHTO_ECRUTEAK_CITY",
+      "label": "Ecruteak City"
+    },
+    {
+      "key": "JOHTO_ROUTE_38_GATE",
+      "label": "Route 38 west gate"
+    },
+    {
+      "key": "JOHTO_ROUTE_38",
+      "label": "Route 38"
+    },
+    {
+      "key": "JOHTO_ROUTE_39",
+      "label": "Route 39"
+    },
+    {
+      "key": "JOHTO_OLIVINE_CITY",
+      "label": "Olivine City"
+    },
+    {
+      "key": "JOHTO_ROUTE_40",
+      "label": "Route 40 (Surf)"
+    },
+    {
+      "key": "JOHTO_ROUTE_41",
+      "label": "Route 41 (Surf / Whirl Islands approach)"
+    },
+    {
+      "key": "JOHTO_CIANWOOD_CITY",
+      "label": "Cianwood City"
+    }
+  ],
+  "required_interiors": [
+    {
+      "key": "JOHTO_ROUTE_39_MOOMOO_FARM",
+      "label": "Moomoo Farm"
+    },
+    {
+      "key": "JOHTO_OLIVINE_POKEMON_CENTER",
+      "label": "Olivine Pokemon Center"
+    },
+    {
+      "key": "JOHTO_OLIVINE_MART",
+      "label": "Olivine Poke Mart"
+    },
+    {
+      "key": "JOHTO_OLIVINE_CAFE",
+      "label": "Olivine Cafe"
+    },
+    {
+      "key": "JOHTO_OLIVINE_GYM",
+      "label": "Olivine Gym (Jasmine phase 10 only)"
+    },
+    {
+      "key": "JOHTO_OLIVINE_PORT",
+      "label": "Olivine Port"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_1F",
+      "label": "Olivine Lighthouse 1F"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_2F",
+      "label": "Olivine Lighthouse 2F"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_3F",
+      "label": "Olivine Lighthouse 3F"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_4F",
+      "label": "Olivine Lighthouse 4F"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_5F",
+      "label": "Olivine Lighthouse 5F"
+    },
+    {
+      "key": "JOHTO_OLIVINE_LIGHTHOUSE_6F",
+      "label": "Olivine Lighthouse 6F (Jasmine / Ampharos)"
+    },
+    {
+      "key": "JOHTO_CIANWOOD_POKEMON_CENTER",
+      "label": "Cianwood Pokemon Center"
+    },
+    {
+      "key": "JOHTO_CIANWOOD_PHARMACY",
+      "label": "Cianwood Pharmacy"
+    },
+    {
+      "key": "JOHTO_CIANWOOD_GYM",
+      "label": "Cianwood Gym (Chuck / waterfall)"
+    },
+    {
+      "key": "JOHTO_CIANWOOD_CHUCK_WIFE",
+      "label": "Chuck's wife / Fly reward"
+    },
+    {
+      "key": "JOHTO_CIANWOOD_PHOTO_STUDIO",
+      "label": "Cianwood Photo Studio"
+    },
+    {
+      "key": "JOHTO_WHIRL_ISLANDS_GATE",
+      "label": "Whirl Islands approach (legendary dungeon NOT installed)"
+    }
+  ],
+  "links": [
+    {
+      "from": "JOHTO_ECRUTEAK_CITY",
+      "to": "JOHTO_ROUTE_38_GATE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_38_GATE",
+      "to": "JOHTO_ROUTE_38",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_38",
+      "to": "JOHTO_ROUTE_39",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_39",
+      "to": "JOHTO_OLIVINE_CITY",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_ROUTE_40",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_40",
+      "to": "JOHTO_ROUTE_41",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_CIANWOOD_CITY",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_39",
+      "to": "JOHTO_ROUTE_39_MOOMOO_FARM",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_POKEMON_CENTER",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_MART",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_CAFE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_GYM",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_PORT",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_CITY",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_1F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_LIGHTHOUSE_1F",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_2F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_LIGHTHOUSE_2F",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_3F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_LIGHTHOUSE_3F",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_4F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_LIGHTHOUSE_4F",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_5F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_OLIVINE_LIGHTHOUSE_5F",
+      "to": "JOHTO_OLIVINE_LIGHTHOUSE_6F",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_CIANWOOD_CITY",
+      "to": "JOHTO_CIANWOOD_POKEMON_CENTER",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_CIANWOOD_CITY",
+      "to": "JOHTO_CIANWOOD_PHARMACY",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_CIANWOOD_CITY",
+      "to": "JOHTO_CIANWOOD_GYM",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_CIANWOOD_CITY",
+      "to": "JOHTO_CIANWOOD_CHUCK_WIFE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_CIANWOOD_CITY",
+      "to": "JOHTO_CIANWOOD_PHOTO_STUDIO",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    },
+    {
+      "from": "JOHTO_ROUTE_41",
+      "to": "JOHTO_WHIRL_ISLANDS_GATE",
+      "two_way": true,
+      "kind": "symbolic_only_no_warp"
+    }
+  ],
+  "trainer_requirements": [
+    {
+      "trainer_type": "BLUE_JOHTO_CHUCK",
+      "name": "Chuck",
+      "versions": [
+        0
+      ],
+      "implemented": "ruby_gate_only_no_pbs"
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_CIANWOOD_GYM_TRAINER",
+      "name": "Cianwood Gym trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "implemented": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_LIGHTHOUSE_TRAINER",
+      "name": "Olivine Lighthouse trainers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "implemented": false
+    },
+    {
+      "trainer_type": "BLUE_JOHTO_SWIMMER_ROUTE40_41",
+      "name": "Route 40-41 Swimmers",
+      "versions": [
+        0,
+        1,
+        2
+      ],
+      "implemented": false
+    }
+  ],
+  "story_requirements": [
+    "Route 38 requires FOG and prior Ecruteak visit; no native or Kanto badge substitution",
+    "Route 39 leads into Olivine, Lighthouse uses verified floor transitions 1F through 6F",
+    "Jasmine at top asks for medicine; no Ampharos healing or Jasmine battle in phase 09",
+    "Surf on Route 40 requires Johto FOG, real Surf tool and verified previous regional Surf reward",
+    "Route 41 and Cianwood require the ocean traversal; no Whirl Islands legendary encounter",
+    "Cianwood pharmacy gives one SecretPotion only after Jasmine request and validated real item ID",
+    "Return to Olivine with medicine uses Surf and records only the return, not its consumption",
+    "Chuck gym waterfall switch must be triggered before the trainer challenge",
+    "Chuck win awards STORM once using BlueRegions.award, no increment by event code",
+    "Fly checks STORM badge and actual tool; candidate HM02 only awarded after validated item and pilot marker",
+    "Goldenrod and Kanto party/badges/saves remain intact",
+    "Day/Night Land/Water/Fishing encounters and full lighthouse floor collision await actual map audit"
+  ],
+  "badge": {
+    "key": "STORM",
+    "region": "JOHTO",
+    "award_source": "BlueRegions.award",
+    "max_awards_per_save": 1,
+    "grants_field_action": "FLY"
+  },
+  "items": [
+    {
+      "key": "SECRETPOTION",
+      "role": "Ampharos medicine for phase 10",
+      "status": "CANDIDATE_UNVERIFIED",
+      "marker": "Data/blue-johto-medicine-ready.txt"
+    },
+    {
+      "key": "HM02",
+      "role": "Fly reward after Chuck",
+      "status": "CANDIDATE_UNVERIFIED",
+      "marker": "Data/blue-johto-fly-ready.txt"
+    }
+  ],
+  "future_not_implemented": [
+    "OLIVINE_JASMINE_BATTLE",
+    "AMPHAROS_CURE",
+    "WHIRL_ISLANDS_LUGIA_EVENT",
+    "OLIVINE_FAST_SHIP",
+    "REAL_LIGHTHOUSE_ELEVATOR_AND_WARPS"
+  ],
+  "validation": {
+    "source_archive_audited": false,
+    "asset_licenses_verified": false,
+    "map_ids_and_collisions_verified": false,
+    "lighthouse_stairs_and_elevator_verified": false,
+    "route39_moomoo_farm_verified": false,
+    "ocean_surf_and_whirlpool_boundaries_verified": false,
+    "land_water_fishing_encounters_verified": false,
+    "pharmacy_item_catalog_and_inventory_verified": false,
+    "chuck_gym_waterfall_map_switch_verified": false,
+    "chuck_team_and_other_trainers_compiled": false,
+    "storm_fly_field_move_gameplay_verified": false,
+    "ampharos_medicine_return_verified": false,
+    "separate_save_reload_and_kanto_regression_verified": false,
+    "windows_gameplay_verified": false,
+    "joi_play_gameplay_verified": false
+  },
+  "integrated": false
+}
