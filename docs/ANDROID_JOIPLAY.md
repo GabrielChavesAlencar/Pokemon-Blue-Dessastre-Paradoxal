@@ -69,3 +69,5 @@ undefined method 'party2' for #<Battle>
 **Teste de regressão:** `tests/kanto_music_battles.rb` passou a simular o objeto `Battle` real que implementa `pbParty(1)`, mas não tem `party2`, e testar encontros comuns, com lendário, treinador e troca de região para Decades. `tests/test_joiplay_wild_bgm.py` exige a API correta e executa o Ruby durante a CI. A versão destinada ao usuário deve ser compilada e publicada **depois** do commit que contém a correção.
 
 Ao atualizar: feche o JoiPlay e execute `ATUALIZAR-ANDROID.py` em Termux, se houver patch direto compatível, ou extraia o ZIP novo em pasta separada. Preserve os saves. Testar a entrada na grama no Android ainda é necessário para aceite físico.
+
+A correção do encontro selvagem foi registrada com testes para Kanto e Decades. Publicar uma prerelease Kanto nova exige compilar novamente o cache dos plugins Ruby dentro de `Data/PluginScripts.rxdata`; não basta substituir o arquivo-fonte `BlueMusic.rb` no ZIP. A publicação é condicionada aos testes nativos e à verificação do pacote. O teste físico do encontro selvagem permanece necessário.
