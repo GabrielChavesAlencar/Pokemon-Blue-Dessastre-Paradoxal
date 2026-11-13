@@ -113,6 +113,15 @@ def stage(*, root: Path, source: Path, game: Path, output: Path,
     source_maps = map_files(data)
     source_infos = read_map_data(data / "MapInfos.rxdata")
     source_tiles = read_map_data(data / "Tilesets.rxdata")
+    # Pin RMXP metadata as well as MapNNN files. Only hashes from the
+    # read-only source audit may reach the stage, never unchecked replacements.
+    for filename, key in (("MapInfos.rxdata", "source_mapinfos_sha256"),
+                          ("Tilesets.rxdata", "source_tilesets_sha256")):
+        expected = proposed.get(key)
+        if (not isinstance(expected, str) or
+                not re.fullmatch(r"[a-f0-9]{64}", expected) or
+                checksum(data / filename) != expected):
+            raise ValueError("Johto source metadata changed since audit: " + filename)
     native_data = game / "Data"
     infos_path, tiles_path = native_data / "MapInfos.rxdata", native_data / "Tilesets.rxdata"
     expected_hashes = proposed.get("protected_game_hashes", {})
