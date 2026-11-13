@@ -41,10 +41,10 @@
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     },
     "offline_development_milestones": {
-      "verified": 9,
+      "verified": 10,
       "total": 12,
-      "percent": 75,
-      "meaning": "9/12: três versões PBS de Silver preparadas a partir dos moves aprendidos até nível 5 no pokemon.txt nativo (Cyndaquil/Leer,Tackle; Totodile/Leer,Scratch; Chikorita/Growl,Tackle); bloqueio de batalha sem ready marker mantido. Não é PBS compilado, jogo instalado ou QA EXE."
+      "percent": 83.3,
+      "meaning": "10/12: três rotas 29-31 com 6 tabelas selvagens e 5 NPCs, 10 PBS normal/master preparados. Pokémon/golpes referenciados pela base Blue; mapa de fonte não possui encontros oficiais. Sem Game.exe, sem PBS compilado no Essentials, sem integração Blue-Story.exe."
     }
   },
   "phases": [
@@ -132,7 +132,8 @@
       "state": "PARTIAL",
       "evidence": [
         "Contratos e lógica parcial no repositório",
-        "Corredor New Bark -> Route29 -> Cherrygrove -> Route30 -> Route31 -> Violet proposto offline; 2 bordas ausentes deduzidas a partir de tiles RMXP e passagem estática (nove testes unitários locais), sem copiar/sobrescrever dados do jogo"
+        "Corredor New Bark -> Route29 -> Cherrygrove -> Route30 -> Route31 -> Violet proposto offline; 2 bordas ausentes deduzidas a partir de tiles RMXP e passagem estática (nove testes unitários locais), sem copiar/sobrescrever dados do jogo",
+        "Etapa offline 10/12: rotas 29-31 com 5 treinadores e PBS de encontros diurno/noturno propostos e validados contra Pokemon/moves da base nativa Blue; não instalados na engine"
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes",
@@ -300,7 +301,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Etapa 10: preparar encontros selvagens e treinadores Rotas 29-31 em PBS isolado, validar níveis/learnsets/compatibilidade Blue. Etapa 12 montará integração offline; Blue-Story.exe e Game.exe ainda não validados.",
+  "next_required_input": "Etapa 11/12: preparar Violet, Sprout Tower e Falkner em stage isolado, com insígnia Zephyr única e QA de entidades; etapa 12 integrar auditoria de instalação. Não requer execução do EXE agora.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
@@ -318,8 +319,8 @@
   "offline_development": {
     "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
     "total": 12,
-    "completed": 9,
-    "percent": 75,
+    "completed": 10,
+    "percent": 83.3,
     "not_gameplay_proof": true,
     "never_execute_game_exe": true,
     "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
@@ -435,9 +436,18 @@
       {
         "number": 10,
         "title": "Preparar encontros e treinadores das Rotas 29–31",
-        "status": "PENDING",
-        "acceptance": "Tabelas de encontros e times na cópia isolada, níveis ajustados às regras Blue, nomes/referências conferidos com PBS, testes de consistência",
-        "evidence": []
+        "status": "COMPLETE",
+        "acceptance": "Seis tabelas de encontros Land/LandNight (três rotas), 100% de chances por tabela; cinco NPCs nos Map625/626/627, 10 equipes PBS (normal de dois e master de quatro), espécies e golpes auditados em pokemon/moves nativos, taxa de nível 70/90 trainer e 45 wild delegada à BlueCampaign. Testes sintéticos e geometria real aprovados, sem Game.exe ou instalação automática.",
+        "evidence": [
+          "data/regions/johto-stage10-routes.json (3 rotas, 5 NPCs, 10 equipes normal/master)",
+          "scripts/regions/build_johto_routes_stage10.py",
+          "scripts/regions/JohtoRouteTrainers.rb (batalhas bloqueadas sem ready marker real)",
+          "tests/test_johto_routes_stage10.py (10 testes Python)",
+          "tests/johto_routes10_runtime.rb + tests/test_johto_routes10_runtime.py (5 NPCs, variantes normal/Master e save)",
+          "docs/JOHTO_OFFLINE_FASE_10_ROTAS_29_31.md",
+          "Prévia privada Map625, Map626, Map627 atualizados e reabertos Ruby Marshal: 74 outros mapas e MapInfos/Tilesets idênticos; 5 NPCs colocados em componentes caminháveis",
+          "PBS privado encounters SHA-256 63c520ee529526a17e797d775ff5dc4fb9c9cda1c2748132d6bad7f787aaaa1b e trainers SHA-256 0af84144a84d2fe01dabff2278fcf2fb0c3ced41fccedb4743e622fe44a97508"
+        ]
       },
       {
         "number": 11,
