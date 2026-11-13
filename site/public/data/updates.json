@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c1240b06ec022610acfeef6a4f70e633cad71956",
+      "date": "2026-11-13T20:42:35-03:00",
+      "title": "docs(sinnoh): sync 25% code progress and partial safe staging transaction",
+      "category": "Documentação"
+    },
+    {
+      "sha": "201796cdee1889a71ac6058b7bc6c803a783c0d6",
+      "date": "2026-11-13T20:42:19-03:00",
+      "title": "data(sinnoh): mark isolated transaction helper as partial S07; no game imports approved",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f9a1dc9fbcf872bc066f6648e59404ac67849f98",
       "date": "2026-11-13T20:41:50-03:00",
       "title": "test(sinnoh): dry-run, staging, rollback and symlink safety never modify game/",
