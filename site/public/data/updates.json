@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f607cc0296e399b6692353661eef2b654af4fb1e",
+      "date": "2026-11-13T07:52:53-03:00",
+      "title": "feat(johto): instala gate fase 16 dry-run, matriz de 16 etapas e aplicação bloqueada sem piloto auditado",
+      "category": "Novidades"
+    },
+    {
       "sha": "c53f9c1ddf78dd49fb05cc1f632bae4cf9866b5a",
       "date": "2026-11-13T07:51:30-03:00",
       "title": "test(johto): adapta contrato 13 à viagem Johto opcional e bloqueada sem prova fase 16",
