@@ -11,8 +11,8 @@
   "development": {
     "total": 32,
     "done": 8,
-    "partial": 4,
-    "pending": 20,
+    "partial": 5,
+    "pending": 19,
     "percent_complete": 25,
     "percent_with_partial_not_counted": 25,
     "groups": [
@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "S07 - importador transacional em cópia isolada; nunca alterar game/ nem saves",
+  "next": "S07 - completar integração de importador real sob reservas auditadas; staging isolado dry-run/rollback já codificado, sem importação para game/",
   "tasks": [
     {
       "id": "S01",
@@ -134,8 +134,8 @@
     {
       "id": "S07",
       "title": "Importador transacional dry-run e rollback",
-      "status": "pending",
-      "evidence_path": null
+      "status": "partial",
+      "evidence_path": "scripts/regions/sinnoh_staging_transaction.py"
     },
     {
       "id": "S08",
