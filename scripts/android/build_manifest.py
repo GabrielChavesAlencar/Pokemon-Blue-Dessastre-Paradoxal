@@ -9,9 +9,8 @@ def installed_manifest(channel, revision, files):
     if channel not in ("decades", "kanto"):
         raise ValueError("Unknown Android update channel.")
     assets = {}
+    immutable = {}
     for name, source in sorted(files.items()):
-        if not safe_path(name):
-            continue
         if isinstance(source, Path):
             digest = hashlib.sha256()
             size = 0
@@ -19,12 +18,14 @@ def installed_manifest(channel, revision, files):
                 for chunk in iter(lambda: stream.read(1024 * 1024), b""):
                     size += len(chunk)
                     digest.update(chunk)
-            assets[name] = {"sha256": digest.hexdigest(), "size": size}
+            entry = {"sha256": digest.hexdigest(), "size": size}
+            (assets if safe_path(name) else immutable)[name] = entry
         else:
             data = bytes(source)
-            assets[name] = {"sha256": hashlib.sha256(data).hexdigest(), "size": len(data)}
+            entry = {"sha256": hashlib.sha256(data).hexdigest(), "size": len(data)}
+            (assets if safe_path(name) else immutable)[name] = entry
     return json.dumps({
-        "schema": 1, "channel": channel, "revision": revision, "files": assets,
+        "schema": 1, "channel": channel, "revision": revision, "files": assets, "immutable": immutable,
     }, sort_keys=True, separators=(",", ":")).encode("utf8")
 
 
