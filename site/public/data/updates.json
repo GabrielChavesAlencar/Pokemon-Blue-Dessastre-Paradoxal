@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c57a05374f3e26a0519ae6fe67b88a1634a57fce",
+      "date": "2026-11-13T17:53:21-03:00",
+      "title": "fix(android): require early Input shim in published Kanto pilot ZIP",
+      "category": "Correções"
+    },
+    {
+      "sha": "08c1f93a66b8d2049e81889abc41bac790543ee6",
+      "date": "2026-11-13T17:53:18-03:00",
+      "title": "fix(android): insert verified Input shim before native Decades compilation",
+      "category": "Correções"
+    },
+    {
       "sha": "b96a365d8be7a5cdc70a82a85fbc3f782f52ae7a",
       "date": "2026-11-13T17:52:53-03:00",
       "title": "fix(android): add pre-plugin Input.mouse_in_window compatibility shim for JoiPlay",
