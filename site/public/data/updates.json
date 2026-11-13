@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "31309a3c0085612d17ab986fd6843030e8aa80bc",
+      "date": "2026-11-13T07:14:33-03:00",
+      "title": "test(johto): corrige nome de metodo do Bug Contest no contrato da fase 14",
+      "category": "Correções"
+    },
+    {
       "sha": "31d785b5f61aef21319acb49ff5122409dc85c21",
       "date": "2026-11-13T07:13:27-03:00",
       "title": "docs(johto): fase 14 Bell Tower Lugia Ho-Oh roamers Suicune Ruins e pos-jogo protegido",
