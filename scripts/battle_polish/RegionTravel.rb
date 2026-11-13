@@ -7,6 +7,15 @@ module BlueRegionTravel
     defined?(BlueRegionStart) && BlueRegionStart.kanto_spawn && File.file?("Data/blue-kanto-install.json")
   end
 
+  def self.johto_installed?
+    return false unless installed? && defined?(BlueRegionStart) &&
+                        BlueRegionStart.respond_to?(:johto_spawn) &&
+                        BlueRegionStart.respond_to?(:johto_town_point) &&
+                        BlueRegionStart.respond_to?(:johto_agent_point)
+    BlueRegionStart.johto_spawn && BlueRegionStart.johto_town_point &&
+      BlueRegionStart.johto_agent_point
+  end
+
   def self.safe_context?
     return false unless BlueRegions.active? && $player && $game_map && $game_player && $scene
     return false unless $game_temp && !$game_temp.in_battle && !$game_temp.player_transferring
@@ -33,6 +42,11 @@ module BlueRegionTravel
       # Returning visitors already have a trusted Decades origin to revisit.
       installed? && (state["leagues"].include?("KANTO") ||
                      state["decades_return"].is_a?(Array))
+    when "JOHTO"
+      # The physical New Bark agent is exclusively a post-Hall-of-Fame NPC.
+      # An editable story flag alone is not proof of native League completion.
+      !!johto_installed? && state["leagues"].is_a?(Array) &&
+        state["leagues"].include?("JOHTO")
     else
       false
     end
@@ -41,7 +55,7 @@ module BlueRegionTravel
   def self.available?(state = nil)
     return false unless safe_context? && installed?
     state ||= BlueRegions.snapshot
-    source_valid?(state) && %w[DECADES KANTO].include?(state["current"])
+    source_valid?(state) && %w[DECADES KANTO JOHTO].include?(state["current"])
   end
 
   # A new adventure begins upstairs at home, but returning from another
@@ -66,6 +80,10 @@ module BlueRegionTravel
     if key == "KANTO"
       return nil unless installed?
       kanto_town_point || (BlueRegionStart.kanto_spawn + [2])
+    elsif key == "JOHTO"
+      # Never use Kanto's maps or Johto's bedroom as an arrival fallback.
+      return nil unless johto_installed?
+      BlueRegionStart.johto_town_point
     elsif key == "DECADES"
       position = state["decades_return"]
       return nil unless position.is_a?(Array) && position.length == 4
@@ -315,10 +333,42 @@ module BlueRegionTravel
     map.events[event.id] = Game_Event.new(map.map_id, event)
   end
 
+  # The new-game room and travel destination are separate audited points.
+  # Do not spawn an NPC on arbitrary Johto maps or before the real Hall of Fame.
+  # This event is in memory only and will not replace any RMXP map file.
+  JOHTO_AGENT_NAME = "Agente Regional Johto".freeze
+  def self.attach_johto_agent(map)
+    return unless johto_installed? && map && map.events.is_a?(Hash)
+    point = BlueRegionStart.johto_agent_point
+    return unless point && map.map_id == point[0]
+    state = $PokemonGlobal && $PokemonGlobal.blue_regions
+    return unless state.is_a?(Hash) && state["version"] == 1 &&
+                  state["current"] == "JOHTO" &&
+                  state["leagues"].is_a?(Array) &&
+                  state["leagues"].include?("JOHTO")
+    return if map.events.values.any? { |event| event.name == JOHTO_AGENT_NAME }
+    return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
+    x, y = point[1, 2]
+    return if map.events.values.any? { |event| event.x == x && event.y == y }
+    return unless (map.valid?(x,y) rescue false) && (map.passable?(x,y,2) rescue false)
+    event = RPG::Event.new(x,y)
+    event.id = (map.events.keys.max || 0) + 1
+    event.name = JOHTO_AGENT_NAME
+    page = event.pages.first
+    page.graphic.character_name = DECADES_AGENT_GRAPHIC
+    page.trigger = 0
+    page.list = [
+      RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
+      RPG::EventCommand.new(0,0,[])
+    ]
+    map.events[event.id] = Game_Event.new(map.map_id,event)
+  end
+
   module DecadesTownAgent
     def setup(*args)
       result = super
       BlueRegionTravel.attach_decades_agent(self)
+      BlueRegionTravel.attach_johto_agent(self)
       result
     end
   end
