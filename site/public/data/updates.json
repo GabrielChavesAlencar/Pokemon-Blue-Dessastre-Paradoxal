@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4534529e0a2c9d591fd50b69957c6e1120c36283",
+      "date": "2026-11-13T08:05:24-03:00",
+      "title": "docs(johto): detalha validação de hashes, bloqueio symlink e recusa total de --apply",
+      "category": "Documentação"
+    },
+    {
       "sha": "56edf3b518848253d810e5441d5378d9e3ca20a2",
       "date": "2026-11-13T08:04:24-03:00",
       "title": "test(johto): impede comprovantes falsos, hash trocado, MapIDs Kanto e symlink em release 16",
