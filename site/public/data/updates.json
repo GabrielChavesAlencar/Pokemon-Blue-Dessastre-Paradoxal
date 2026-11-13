@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a2b82b4697825a3e40daa05baf75e782a16aec00",
+      "date": "2026-11-13T20:58:58-03:00",
+      "title": "feat(sinnoh): create geometry-only RMXP preview converter with native baseline and hashed isolated staging",
+      "category": "Novidades"
+    },
+    {
       "sha": "8c2fc003431bf315126b74aa309091229e7fe536",
       "date": "2026-11-13T20:53:35-03:00",
       "title": "data(sinnoh): record remap planner and keep actual source mapping/import unverified",
