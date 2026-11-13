@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "10579e55b37f8151ad65686d0e7d4943f2abe9d2",
+      "date": "2026-11-13T10:26:05-03:00",
+      "title": "docs: comparar fontes de mapas e musicas de Hoenn",
+      "category": "Documentação"
+    },
+    {
       "sha": "06191a71f7b20f2068c0f1f49d8dca6cbdee6df5",
       "date": "2026-11-13T09:59:38-03:00",
       "title": "feat(johto): auditar interiores e vincular MapIDs reais de New Bark com segurança",
