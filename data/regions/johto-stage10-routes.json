@@ -1,0 +1,357 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "OFFLINE_10_ROUTE29_31_PROPOSED_ENCOUNTERS_NOT_ENGINE_TESTED",
+  "source_policy": "DESIGNED_JOHTO_ROUTE_DRAFT_VALIDATED_AGAINST_BLUE_NATIVE_PBS; MAP_PACK_HAS_NO_WILD_OR_TRAINER_PBS",
+  "requires_stage_status": "BLUE_STORY_PREVIEW_ONLY_NOT_PLAYABLE",
+  "requires_johto_story_warps": 6,
+  "gameplay_ready": false,
+  "installer_integrated": false,
+  "balance_policy": {
+    "global_shared_engine": "BlueStory.stage + BlueCampaign.common_level/wild_level + BlueTrainerMoves",
+    "trainer_normal_ratio": 0.7,
+    "trainer_master_ratio": 0.9,
+    "wild_ratio": 0.45,
+    "master_stage": 3,
+    "master_team_size": 4,
+    "runtime_scaling_verified": false,
+    "note": "PBS levels are early-game base proposals; no local alternate level-scaling formula is installed; real runtime levels need engine verification."
+  },
+  "routes": [
+    {
+      "symbol": "JOHTO_ROUTE_29",
+      "map_id": 625,
+      "source_id": 104,
+      "encounter_rate": 21,
+      "land": [
+        [
+          50,
+          "PIDGEY",
+          2,
+          4
+        ],
+        [
+          30,
+          "SENTRET",
+          2,
+          4
+        ],
+        [
+          20,
+          "RATTATA",
+          2,
+          4
+        ]
+      ],
+      "night": [
+        [
+          50,
+          "HOOTHOOT",
+          2,
+          4
+        ],
+        [
+          30,
+          "RATTATA",
+          2,
+          4
+        ],
+        [
+          20,
+          "SPINARAK",
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "symbol": "JOHTO_ROUTE_30",
+      "map_id": 626,
+      "source_id": 105,
+      "encounter_rate": 21,
+      "land": [
+        [
+          40,
+          "PIDGEY",
+          3,
+          5
+        ],
+        [
+          30,
+          "CATERPIE",
+          3,
+          5
+        ],
+        [
+          30,
+          "WEEDLE",
+          3,
+          5
+        ]
+      ],
+      "night": [
+        [
+          40,
+          "HOOTHOOT",
+          3,
+          5
+        ],
+        [
+          30,
+          "SPINARAK",
+          3,
+          5
+        ],
+        [
+          30,
+          "RATTATA",
+          3,
+          5
+        ]
+      ]
+    },
+    {
+      "symbol": "JOHTO_ROUTE_31",
+      "map_id": 627,
+      "source_id": 106,
+      "encounter_rate": 21,
+      "land": [
+        [
+          40,
+          "BELLSPROUT",
+          4,
+          6
+        ],
+        [
+          30,
+          "PIDGEY",
+          4,
+          6
+        ],
+        [
+          30,
+          "CATERPIE",
+          4,
+          5
+        ]
+      ],
+      "night": [
+        [
+          40,
+          "HOOTHOOT",
+          4,
+          6
+        ],
+        [
+          30,
+          "SPINARAK",
+          4,
+          6
+        ],
+        [
+          30,
+          "RATTATA",
+          4,
+          6
+        ]
+      ]
+    }
+  ],
+  "trainers": [
+    {
+      "key": "JH_ROUTE29_MIKE",
+      "symbol": "JOHTO_ROUTE_29",
+      "map_id": 625,
+      "x": 36,
+      "y": 10,
+      "sprite": "NPC_HGSS_Youngster",
+      "trainer_type": "YOUNGSTER",
+      "name": "Johto Mikey",
+      "normal": [
+        [
+          "RATTATA",
+          5
+        ],
+        [
+          "SENTRET",
+          5
+        ]
+      ],
+      "master": [
+        [
+          "RATTATA",
+          5
+        ],
+        [
+          "SENTRET",
+          5
+        ],
+        [
+          "PIDGEY",
+          5
+        ],
+        [
+          "HOOTHOOT",
+          5
+        ]
+      ],
+      "engine_verified": false
+    },
+    {
+      "key": "JH_ROUTE30_JOEY",
+      "symbol": "JOHTO_ROUTE_30",
+      "map_id": 626,
+      "x": 18,
+      "y": 20,
+      "sprite": "NPC_HGSS_Youngster",
+      "trainer_type": "YOUNGSTER",
+      "name": "Johto Joey",
+      "normal": [
+        [
+          "RATTATA",
+          6
+        ],
+        [
+          "PIDGEY",
+          6
+        ]
+      ],
+      "master": [
+        [
+          "RATTATA",
+          6
+        ],
+        [
+          "PIDGEY",
+          6
+        ],
+        [
+          "SENTRET",
+          6
+        ],
+        [
+          "HOOTHOOT",
+          6
+        ]
+      ],
+      "engine_verified": false
+    },
+    {
+      "key": "JH_ROUTE30_DON",
+      "symbol": "JOHTO_ROUTE_30",
+      "map_id": 626,
+      "x": 36,
+      "y": 35,
+      "sprite": "NPC_HGSS_Bug_Catcher",
+      "trainer_type": "BUGCATCHER",
+      "name": "Johto Don",
+      "normal": [
+        [
+          "CATERPIE",
+          6
+        ],
+        [
+          "WEEDLE",
+          6
+        ]
+      ],
+      "master": [
+        [
+          "CATERPIE",
+          6
+        ],
+        [
+          "WEEDLE",
+          6
+        ],
+        [
+          "SPINARAK",
+          6
+        ],
+        [
+          "LEDYBA",
+          6
+        ]
+      ],
+      "engine_verified": false
+    },
+    {
+      "key": "JH_ROUTE31_WADE",
+      "symbol": "JOHTO_ROUTE_31",
+      "map_id": 627,
+      "x": 18,
+      "y": 35,
+      "sprite": "NPC_HGSS_Bug_Catcher",
+      "trainer_type": "BUGCATCHER",
+      "name": "Johto Wade",
+      "normal": [
+        [
+          "CATERPIE",
+          7
+        ],
+        [
+          "WEEDLE",
+          7
+        ]
+      ],
+      "master": [
+        [
+          "CATERPIE",
+          7
+        ],
+        [
+          "WEEDLE",
+          7
+        ],
+        [
+          "SPINARAK",
+          7
+        ],
+        [
+          "LEDYBA",
+          7
+        ]
+      ],
+      "engine_verified": false
+    },
+    {
+      "key": "JH_ROUTE31_IAN",
+      "symbol": "JOHTO_ROUTE_31",
+      "map_id": 627,
+      "x": 54,
+      "y": 40,
+      "sprite": "NPC_HGSS_Youngster",
+      "trainer_type": "YOUNGSTER",
+      "name": "Johto Ian",
+      "normal": [
+        [
+          "BELLSPROUT",
+          7
+        ],
+        [
+          "PIDGEY",
+          7
+        ]
+      ],
+      "master": [
+        [
+          "BELLSPROUT",
+          7
+        ],
+        [
+          "PIDGEY",
+          7
+        ],
+        [
+          "RATTATA",
+          7
+        ],
+        [
+          "SENTRET",
+          7
+        ]
+      ],
+      "engine_verified": false
+    }
+  ]
+}
