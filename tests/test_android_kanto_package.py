@@ -25,7 +25,7 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
         self.write("Kanto pilot.json", json.dumps(self.meta))
         self.write("Game.exe", "exe")
         self.write("Game.ini", "Title=Kanto Piloto\n")
-        self.write("mkxp.json", json.dumps({"dataPathApp": "Kanto Piloto", "dataPathOrg": "Dessastre Paradoxal Kanto Testes"}))
+        self.write("mkxp.json", '// mkxp-z aceita comentários na configuração\n{\n  // não confundir com esta linha:\n  // "dataPathApp": "Decades",\n  "dataPathApp": "Kanto Piloto",\n  "dataPathOrg": "Dessastre Paradoxal Kanto Testes"\n}\n')
         self.write("Data/blue-kanto-start.txt", "BLUE_KANTO_START_V1,KANTO," + str(self.mapping["7"]) + ",25,7\n")
         for file in k.CORE_FILES:
             if file not in {"Kanto pilot.json", "Game.exe", "Game.ini", "mkxp.json",
@@ -41,6 +41,12 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
         path = self.game / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content.encode("utf8"))
+
+    def test_mkxp_json_with_comments_and_no_save_overlap(self):
+        config = (self.game / "mkxp.json").read_text(encoding="utf8")
+        self.assertTrue(k._kanto_save_profile(config))
+        self.assertFalse(k._kanto_save_profile(config.replace('"dataPathApp": "Kanto Piloto"', '"dataPathApp": "Decades"')))
+        self.assertFalse(k._kanto_save_profile(config.replace('  "dataPathOrg"', '  "dataPathApp": "Kanto Piloto",\n  "dataPathOrg"')))
 
     def test_refuses_main_game_without_pilot_marker(self):
         (self.game / "Kanto pilot.json").unlink()
