@@ -99,6 +99,20 @@ class JohtoV1RealSourceContractTests(unittest.TestCase):
             self.assertFalse(args["output"].exists())
             self.assertTrue((args["game"] / "Data/Map599.rxdata").exists())
 
+    def test_source_tilesets_metadata_change_blocks_stage_before_writing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            args = fixture(Path(temp))
+            native = args["game"] / "Data/Tilesets.rxdata"
+            before = native.read_bytes()
+            source_tiles = args["source"] / "Data/Tilesets.rxdata"
+            tiles = loads(source_tiles.read_bytes())
+            tiles[1].attrs["@name"] = b"Modified source after audit"
+            dump(source_tiles, tiles)
+            with self.assertRaisesRegex(ValueError, "source metadata changed"):
+                stage(**args)
+            self.assertFalse(args["output"].exists())
+            self.assertEqual(native.read_bytes(), before)
+
     def test_invalid_table_never_proves_missing_asset_unused(self):
         area = RubyObject("RPG::Map", {
             "@width": 20, "@height": 15, "@data": RubyData("Table", b"bad")})
