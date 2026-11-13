@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a2b64a02cfff628bca0e562cf7d172fc8d790120",
+      "date": "2026-11-13T17:19:17-03:00",
+      "title": "fix(android): block in-place updates across incompatible runtime/save configurations",
+      "category": "Correções"
+    },
+    {
+      "sha": "792d495805f1fde99b375dfe7444b8d5a170fb74",
+      "date": "2026-11-13T17:19:15-03:00",
+      "title": "fix(android): never emit incremental patches when JoiPlay runtime or save profile changes",
+      "category": "Correções"
+    },
+    {
       "sha": "b6a1c4a20cf7c24787b14922738d917ebc95c186",
       "date": "2026-11-13T17:18:57-03:00",
       "title": "fix(android): guard Kanto pilot metadata and updater compatibility",
