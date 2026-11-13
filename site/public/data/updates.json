@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1a2961147124cc05b56d700b7f1befee026beafc",
+      "date": "2026-11-13T10:38:06-03:00",
+      "title": "docs: plano definitivo de implementacao de Hoenn em 16 fases",
+      "category": "Documentação"
+    },
+    {
       "sha": "86aedd52fcee268d27ca41e70785703137704818",
       "date": "2026-11-13T10:31:41-03:00",
       "title": "feat(johto): auditar 74 mapas e 42 conexoes do ZIP real v1 e endurecer importacao",
