@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bc08ab3bad042de54d7c28ae6fcc1658f8f299f7",
+      "date": "2026-11-13T19:34:51-03:00",
+      "title": "docs: add step-by-step safe Sinnoh integration and pilot roadmap",
+      "category": "Documentação"
+    },
+    {
       "sha": "41134b7f4ae6b76cc9caf917e8b80b2cf6530857",
       "date": "2026-11-13T19:30:51-03:00",
       "title": "test: cover new Sinnoh menu integration contract",
