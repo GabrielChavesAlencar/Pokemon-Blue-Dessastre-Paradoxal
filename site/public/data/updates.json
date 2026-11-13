@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6fbb1b07a44114536a577757e810ff2b70125c4e",
+      "date": "2026-11-13T20:09:04-03:00",
+      "title": "test: verify Sinnoh source preflight is read-only and rejects unsafe ZIPs",
+      "category": "Testes"
+    },
+    {
       "sha": "069a7dca1c8cfe5e91ffc81742f85422d230b7d1",
       "date": "2026-11-13T20:08:24-03:00",
       "title": "feat: add safe read-only Sinnoh source and game baseline auditor",
