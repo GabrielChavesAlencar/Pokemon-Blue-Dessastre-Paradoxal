@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a16c1a14acc3b61cf323954fd693d348f42bf149",
+      "date": "2026-11-13T07:29:23-03:00",
+      "title": "feat(johto): configura regras musicais M0-M6 fail-closed para mapas batalhas ME e cenas",
+      "category": "Novidades"
+    },
+    {
       "sha": "e23d60ed768fc138ff4ae6f16b3ebc28e357b394",
       "date": "2026-11-13T07:28:53-03:00",
       "title": "feat(johto): cria catalogo de 53 cues musicais planejadas sem arquivos ou direitos presumidos",
