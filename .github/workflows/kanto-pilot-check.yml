@@ -7,11 +7,11 @@ on:
     paths: ['scripts/regions/**', 'scripts/music/**', 'scripts/battle_polish/Title.rb', 'data/kanto-music-rules.json', 'data/regions/kanto-source.json', '.github/workflows/kanto-pilot-check.yml']
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   pilot:
     runs-on: windows-2022
-    timeout-minutes: 25
+    timeout-minutes: 60
     env:
       GALLIUM_DRIVER: llvmpipe
       ALSOFT_DRIVERS: 'null'
@@ -191,7 +191,12 @@ jobs:
           for($attempt=1;$attempt -le 3;$attempt++){
             $process=Start-Process -FilePath "$pilot/Game.exe" -WorkingDirectory $pilot -WindowStyle Hidden -PassThru -RedirectStandardOutput ".blue-work/kanto-native-out.txt" -RedirectStandardError ".blue-work/kanto-native-err.txt"
             $handle=$process.Handle
-            if(-not $process.WaitForExit(150000)){Stop-Process -Id $process.Id;throw 'Kanto native test timed out'}
+            if(-not $process.WaitForExit(150000)){
+              Stop-Process -Id $process.Id -ErrorAction SilentlyContinue
+              Get-Content ".blue-work/kanto-native-out.txt",".blue-work/kanto-native-err.txt","$pilot/Data/blue-kanto-error.txt","$pilot/errorlog.txt","$pilot/Data/blue-kanto-stage.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+              Get-ChildItem "$pilot/Data" -Filter "blue-kanto-*" -ErrorAction SilentlyContinue | Select-Object Name,Length
+              throw 'Kanto native test timed out; see diagnostics above'
+            }
             if(Test-Path "$pilot/Data/blue-kanto-proof.txt"){
               $nativeAudio="$pilot/Data/blue-kanto-music-native-pilot.txt"
               if(-not (Test-Path $nativeAudio)){throw "Native Kanto F6 AudioFile probe missing"}
@@ -285,3 +290,69 @@ jobs:
           }
           Get-Content ".blue-work/kanto-main-out.txt",".blue-work/kanto-main-err.txt","$game/Data/blue-kanto-integrated-error.txt","$game/Data/blue-kanto-integrated-stage.txt","$game/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
           throw 'Integrated Kanto new game/save proof missing'
+
+      # The Kanto ZIP is a separate compiled game. It cannot be the Decades ZIP.
+      - name: Compilar versão mobile do piloto de Kanto
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        shell: powershell
+        run: |
+          $pilot=(Resolve-Path '.blue-work/kanto-pilot').Path
+          Copy-Item '.blue-work/kanto-clean-main.rxdata' "$pilot/Data/Scripts.rxdata" -Force
+          Remove-Item "$pilot/Data/blue-kanto-proof.rb","$pilot/Data/blue-kanto-walk-check.rb" -ErrorAction SilentlyContinue
+          python scripts/android/package_kanto.py --game-dir $pilot --request-compile
+          if($LASTEXITCODE -ne 0){throw 'Kanto JoiPlay native compiler request failed'}
+          for($attempt=1;$attempt -le 3;$attempt++){
+            $process=Start-Process -FilePath "$pilot/Game.exe" -WorkingDirectory $pilot -WindowStyle Hidden -PassThru -RedirectStandardOutput '.blue-work/kanto-mobile-out.txt' -RedirectStandardError '.blue-work/kanto-mobile-err.txt'
+            $null=$process.Handle
+            if(-not $process.WaitForExit(180000)){
+              Stop-Process -Id $process.Id -ErrorAction SilentlyContinue
+              Get-Content '.blue-work/kanto-mobile-out.txt','.blue-work/kanto-mobile-err.txt',"$pilot/Data/blue-android-stage.txt","$pilot/Data/blue-android-error.txt","$pilot/errorlog.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+              throw 'Kanto JoiPlay compiler timed out; no ZIP will be published'
+            }
+            if(Test-Path "$pilot/Data/blue-android-compiled.txt"){break}
+            if(Test-Path "$pilot/Data/blue-android-error.txt"){break}
+          }
+          if(-not (Test-Path "$pilot/Data/blue-android-compiled.txt")){
+            Get-Content '.blue-work/kanto-mobile-out.txt','.blue-work/kanto-mobile-err.txt',"$pilot/Data/blue-android-stage.txt","$pilot/Data/blue-android-error.txt" -ErrorAction SilentlyContinue | Select-Object -Last 100
+            throw 'Kanto native compilation did not complete; publish blocked'
+          }
+          python scripts/android/package_kanto.py --game-dir $pilot --revision '${{ github.sha }}'
+          if($LASTEXITCODE -ne 0){throw 'Kanto mobile archive build failed'}
+          python scripts/android/package_kanto.py --verify --revision '${{ github.sha }}'
+          if($LASTEXITCODE -ne 0){throw 'Kanto mobile archive verification failed'}
+      - name: Guardar ZIP de testes de Kanto
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-android-kanto-piloto
+          path: |
+            dist/Blue-Android-Kanto-Piloto.zip
+            dist/Blue-Android-Kanto-Piloto.zip.sha256
+          compression-level: 0
+          retention-days: 14
+          if-no-files-found: error
+      - name: Publicar release experimental Kanto (se compilado e conferido)
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[android-kanto-release]')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          short=$(echo "$GITHUB_SHA" | cut -c 1-7)
+          tag="kanto-android-$GITHUB_RUN_NUMBER-$short"
+          gh release create "$tag" dist/Blue-Android-Kanto-Piloto.zip dist/Blue-Android-Kanto-Piloto.zip.sha256 --target "$GITHUB_SHA" --title "Pokémon Blue — Kanto Android experimental ($GITHUB_RUN_NUMBER)" --notes-file docs/ANDROID_PILOTOS_KANTO_JOHTO.md --prerelease --latest=false
+      - name: Preservar diagnóstico de falha nativa Kanto
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanto-mobile-native-diagnostic
+          path: |
+            .blue-work/kanto-native-out.txt
+            .blue-work/kanto-native-err.txt
+            .blue-work/kanto-mobile-out.txt
+            .blue-work/kanto-mobile-err.txt
+            .blue-work/kanto-pilot/Data/blue-kanto-error.txt
+            .blue-work/kanto-pilot/Data/blue-android-error.txt
+            .blue-work/kanto-pilot/errorlog.txt
+          if-no-files-found: warn
+          retention-days: 7
