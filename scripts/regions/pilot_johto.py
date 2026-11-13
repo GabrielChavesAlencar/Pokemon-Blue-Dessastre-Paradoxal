@@ -190,12 +190,15 @@ def assemble(preview: Path, game: Path, output: Path, spec: dict,
                         target / "Graphics/Trainers/BLUE_JOHTO_RIVAL.png")
         plugin = target / "Plugins/ZZZZZ Blue Johto Pilot"
         plugin.mkdir(parents=True)
-        for file in PILOT_FILES:
-            shutil.copyfile(root / file, plugin / Path(file).name)
+        # A single registered Ruby script guarantees load order; the source
+        # files remain independently versioned in scripts/regions/.
+        runtime = "\n".join((root / file).read_text(encoding="utf-8")
+                            for file in PILOT_FILES)
+        (plugin / "JohtoPilotBoot.rb").write_text(runtime + "\n", encoding="utf-8")
         (plugin / "meta.txt").write_text(
             "Name = Blue Johto Pilot\nVersion = 0.1\nEssentials = 21.1\n"
             "Requires = Blue Battle Presentation and Story\n"
-            "Scripts = JohtoPilot.rb,JohtoPilotStart.rb\n", encoding="utf-8")
+            "Scripts = JohtoPilotBoot.rb\n", encoding="utf-8")
 
         system_file = target / "Data/System.rxdata"
         system = read_map_data(system_file)
