@@ -6,11 +6,11 @@
 
 | Indicador | Progresso | Interpretação |
 |---|---:|---|
-| **Desenvolvimento OFFLINE** | **7/12 (58,3%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
+| **Desenvolvimento OFFLINE** | **8/12 (66,7%)** | Passos técnicos fechados com artefatos verificáveis, não jogo pronto |
 | **Fases JOGÁVEIS** | **0/13 (0%)** | Depende de jogo real e caminho completo funcional |
 | **Fases TESTADAS NO EXE** | **0/13 (0%)** | Depende de QA de gameplay real aprovado |
 
-**Progress bar OFFLINE:** `[#######-----] 7/12 = 58,3%`
+**Progress bar OFFLINE:** `[########----] 8/12 = 66,7%`
 
 ## Checklist das 12 etapas
 
@@ -23,7 +23,7 @@
 | 05 | **CONCLUÍDO** | Construir casa definitiva do jogador (New Bark 1F) | RXDATA próprio de casa 1F, escada 2F, porta exterior, espaço da mãe, propostas de chegada e prévia de passabilidade |
 | 06 | **CONCLUÍDO** | Construir laboratório definitivo de Elm | RXDATA de laboratório próprio, mesa com três Poké Bolas físicas, lugar de Elm, porta, caminhos internos e verificação estática |
 | 07 | **CONCLUÍDO** | Ligar portas, escadas e spawn entre mapas | 12 pontos/eventos com MapIDs e coordenadas derivados dos layouts, transições reversíveis e checagens de limites/ocupação; aprovação de colisão real permanece separada |
-| 08 | PENDENTE | Inserir eventos de história de New Bark nos mapas | Eventos próprios para mãe, Elm, três Poké Bolas e rival ligados em RXDATA de cópia isolada; flags únicas, handlers auditados e testes sintéticos sem duplicar iniciais |
+| 08 | **CONCLUÍDO** | Inserir eventos de história de New Bark nos mapas | Eventos próprios para mãe, Elm, três Poké Bolas e rival ligados em RXDATA de cópia isolada; flags únicas, handlers auditados e testes sintéticos sem duplicar iniciais |
 | 09 | PENDENTE | Preparar PBS do rival e três iniciais | Três equipes rival condicionadas ao inicial escolhido, validação offline de species/trainer types e scripts, sem criar marcador falso de PBS compilado |
 | 10 | PENDENTE | Preparar encontros e treinadores das Rotas 29–31 | Tabelas de encontros e times na cópia isolada, níveis ajustados às regras Blue, nomes/referências conferidos com PBS, testes de consistência |
 | 11 | PENDENTE | Preparar Violet City, Sprout Tower e Falkner | Integração offline de mapa/entradas/interiores propostos, eventos de Falkner e Torre Sprout, contratos PBS e insígnia Zephyr sem recompensa duplicada |
@@ -31,7 +31,7 @@
 
 ## Ordem e evidência
 
-As etapas 04/12 (quarto 2F) e 05/12 (casa 1F) foram concluídas em previews privadas. **06/12 — laboratório de Elm concluído; 07/12 — portas/escadas/spawn concluída; próxima: 08/12 — eventos de New Bark**. Depois portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
+As etapas 04/12 (quarto 2F) e 05/12 (casa 1F) foram concluídas em previews privadas. **06/12 — laboratório de Elm concluído; 07/12 — portas/escadas/spawn concluída; 08/12 — eventos de New Bark concluída; próxima: 09/12 — PBS rival e iniciais**. Depois portas/spawn (07), eventos (08) e PBS (09). O bloco seguinte prepara Rotas 29–31 (10) e Violet (11). Por último, a auditoria/empacotamento offline fecha o **12/12**.
 
 - 01: `docs/JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md`, `docs/JOHTO_FASE_04_ENTRADAS_REAIS_V1.md`
 - 02: `docs/JOHTO_FASE_04_STAGE_REAL_PRIVADO_77_MAPAS.md`
@@ -72,3 +72,7 @@ Gerado **Map676 (20×16)** em prévia isolada com três Poké Bolas físicas em 
 ### Etapa 07/12 concluída — seis warps em quatro mapas de New Bark
 
 A rotina `scripts/regions/build_johto_warps_v1.py` compila eventos **RMXP código 201** em cópia **nova** da prévia privada de 77 mapas. Ida/volta: quarto↔casa, casa↔cidade, cidade↔laboratório. Destinos não coincidem com gatilhos de retorno; spawn proposto no quarto (6,7). A rota New Bark↔Route29 continua no PBS de conexão, sem teleport duplicado. Todos os 13 pontos de origem/chegada/spawn têm passabilidade de flags estáticas e são alcançáveis por caminho local. Prova privada Ruby Marshal: 6 eventos, **somente Map600, Map674, Map675, Map676 alterados; 73 mapas, MapInfos e Tilesets inalterados**. [Relatório](JOHTO_OFFLINE_FASE_07_PORTAS_ESCADAS_SPAWN.md) e **12 testes sintéticos**. A próxima fase 08 deverá anexar os NPCs/3 Poké Bolas interativas sem apagar os warps. **Offline 7/12 (58,3%); Jogáveis 0/13; Testados no EXE 0/13.**
+
+### Etapa 08/12 concluída — mãe, Elm, três Poké Bolas e Silver
+
+Gerador `scripts/regions/build_johto_story_v1.py` acrescenta **6 eventos** no estágio privado de 77 mapas, mantendo os **6 warps** anteriores. A escolha do inicial passou a ocorrer **diretamente em cada bola** (handler `BlueJohtoPilot.choose_starter_from_ball(:SPECIES)`), sem menu do Elm, idempotente por estado de save; as três bolas originais da camada de tiles foram removidas para não duplicar gráficos. Silver ocupa posição candidata na Route29 e sua batalha depende dos PBS da etapa 09. Os RXDATA reais foram serializados/reabertos com Ruby Marshal: alterados somente Map625/675/676, 74 restantes e MapInfos/Tilesets intactos. [Relatório 08/12](JOHTO_OFFLINE_FASE_08_EVENTOS_NEW_BARK.md); dez testes Python novos e harness Ruby adaptado. **OFFLINE 8/12 (66,7%) · JOGÁVEIS 0/13 · TESTADAS 0/13.**
