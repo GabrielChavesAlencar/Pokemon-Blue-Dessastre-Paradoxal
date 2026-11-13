@@ -1,6 +1,3 @@
-require "json"
-require "digest"
-
 # Regional starting point for NEW GAME only.
 # Older saves and the native Decades introduction are never rewritten.
 module BlueRegionStart
@@ -34,6 +31,15 @@ module BlueRegionStart
   ].freeze
   def self.johto_install_proof
     return nil unless File.file?(JOHTO_INSTALL) && !File.symlink?(JOHTO_INSTALL)
+    # A ausência das bibliotecas JSON/Digest no runtime minimalista não pode
+    # impedir o menu e os mapas de Kanto/Decades de abrir. O gate de Johto
+    # permanece fechado quando não puder validar a prova completa.
+    begin
+      require "json" unless defined?(JSON)
+      require "digest" unless defined?(Digest::SHA256)
+    rescue LoadError
+      return nil
+    end
     data = JSON.parse(File.read(JOHTO_INSTALL))
     return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
                       data["region"] == "JOHTO" &&
