@@ -32,7 +32,7 @@ original = [" <- My Save -> ", "New Game", "Options", "Quit Game"]
 scene = PokemonLoad_Scene.new
 scene.queue = [1]
 scene.pbStartScene(original, true, nil, nil, 0)
-require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Testar Sinnoh", "Options", "Quit Game"],
+require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Testar Sinnoh", "Options", "Quit Game"],
               "Kanto/Johto test options have wrong positions after Continue")
 require_check(scene.pbChoose(original, 0) == 1, "New Game index changed")
 require_check(scene.last_continue == 0, "Continue slot arrows were remapped")
@@ -48,10 +48,10 @@ require_check(scene.pbChoose(original, 0) == -2, "Next save-slot arrow changed")
 # slot and the ORIGINAL handler index must be preserved.
 gift = [" <- Save 2 -> ", "Mystery Gift", "New Game", "Options", "Quit Game"]
 scene2 = PokemonLoad_Scene.new
-scene2.queue = [1, 5]
+scene2.queue = [1, 6]
 scene2.pbStartScene(gift, true, nil, nil, 0)
 require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto", "Testar Johto",
-                                   "Testar Sinnoh", "Mystery Gift", "Options", "Quit Game"],
+                                   "Testar Hoenn", "Testar Sinnoh", "Mystery Gift", "Options", "Quit Game"],
               "Mystery Gift broke title menu order")
 require_check(scene2.pbChoose(gift, 0) == 2, "New Game handler no longer maps to original")
 require_check(scene2.pbChoose(gift, 0) == 1, "Mystery Gift handler no longer maps to original")
@@ -61,7 +61,7 @@ fresh = ["New Game", "Options", "Quit Game"]
 scene3 = PokemonLoad_Scene.new
 scene3.queue = [0]
 scene3.pbStartScene(fresh, false, nil, nil, 0)
-require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Testar Sinnoh", "Options", "Quit Game"],
+require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Testar Sinnoh", "Options", "Quit Game"],
               "No-save title order is invalid")
 require_check(scene3.pbChoose(fresh, -1) == 0, "No-save New Game changed")
 
@@ -82,12 +82,20 @@ BlueKantoTitle.define_singleton_method(:launch_johto) { false }
 scene.queue = [3, 1]
 require_check(scene.pbChoose(original, 0) == 1, "Johto unavailable must return to normal title")
 
-# Sinnoh is the fifth option and must keep the original Quit/New Game indices.
-BlueKantoTitle.define_singleton_method(:launch_sinnoh) { true }
+# Hoenn occupies the slot between Johto and Sinnoh.
+BlueKantoTitle.define_singleton_method(:launch_hoenn) { true }
 scene.queue = [4]
+require_check(scene.pbChoose(original, 0) == 3, "Hoenn success did not cleanly quit main game")
+BlueKantoTitle.define_singleton_method(:launch_hoenn) { false }
+scene.queue = [4, 1]
+require_check(scene.pbChoose(original, 0) == 1, "Unavailable Hoenn must return to title")
+
+# Sinnoh is the sixth option and must keep the original Quit/New Game indices.
+BlueKantoTitle.define_singleton_method(:launch_sinnoh) { true }
+scene.queue = [5]
 require_check(scene.pbChoose(original, 0) == 3, "Sinnoh pilot success did not cleanly quit main game")
 BlueKantoTitle.define_singleton_method(:launch_sinnoh) { false }
-scene.queue = [4, 1]
+scene.queue = [5, 1]
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return to title")
 
 # Isolated pilot cannot spawn itself recursively from its own Game.exe.
@@ -132,6 +140,25 @@ Dir.mktmpdir("blue-title-root-") do |root|
     File.write("Sinnoh pilot.json", "{}")
     require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh pilot may launch itself recursively")
     File.delete("Sinnoh pilot.json")
+    hoenn = File.join(root, ".blue-work", "hoenn-pilot")
+    FileUtils.mkdir_p(File.join(hoenn, "Data"))
+    File.write(File.join(hoenn, "Game.exe"), "pilot")
+    File.write(File.join(hoenn, "Hoenn pilot.json"), "{}")
+    File.write(File.join(hoenn, "Data/blue-hoenn-pilot.txt"), "BLUE_HOENN_PILOT_V1")
+    previous_profile = ENV.delete("USERPROFILE")
+    begin
+      require_check(BlueKantoTitle.hoenn_launcher.nil?, "Hoenn needs compiled game data")
+      File.write(File.join(hoenn, "Data/blue-hoenn-compiled.txt"), "compiled")
+      require_check(BlueKantoTitle.hoenn_launcher == [File.join(hoenn, "Game.exe"), hoenn],
+                    "Hoenn must use its own compiled pilot")
+      Dir.chdir(hoenn) do
+        require_check(BlueKantoTitle.hoenn_launcher.nil?, "Hoenn may launch itself recursively")
+        require_check(BlueKantoTitle.command_order(original, true) == [0, 1, 2, 3],
+                      "Regional options appeared inside Hoenn")
+      end
+    ensure
+      ENV["USERPROFILE"] = previous_profile
+    end
   end
 end
 puts "Third, fourth and fifth title options, save slots, Mystery Gift, pilot isolation and launcher paths OK"

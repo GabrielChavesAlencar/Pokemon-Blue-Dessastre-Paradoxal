@@ -1,10 +1,11 @@
-# Add "Testar Kanto" to the MAIN Game.exe's load/new-game screen.
+# Add regional test options to the main Game.exe load/new-game screen.
 # Decades' Auto Multi Save changes the original PokemonLoadScreen method, so
 # do not replace that controller: adapt only scene commands and return their
 # ORIGINAL indexes. Existing save-slot navigation remains untouched.
 module BlueKantoTitle
   LABEL = "Testar Kanto".freeze
   JOHTO_LABEL = "Testar Johto".freeze
+  HOENN_LABEL = "Testar Hoenn".freeze
   SINNOH_LABEL = "Testar Sinnoh".freeze
   LAUNCHER = "KANTO_JOGAR_EXPERIMENTAL.bat".freeze
   JOHTO_LAUNCHER = "JOHTO_JOGAR_EXPERIMENTAL.bat".freeze
@@ -12,7 +13,7 @@ module BlueKantoTitle
 
   def self.pilot?
     File.file?("Kanto pilot.json") || File.file?("Johto pilot.json") ||
-      File.file?("Sinnoh pilot.json")
+      File.file?("Hoenn pilot.json") || File.file?("Sinnoh pilot.json")
   end
 
   def self.command_order(commands, show_continue)
@@ -23,6 +24,7 @@ module BlueKantoTitle
     ordered << new_game
     ordered << :blue_test_kanto
     ordered << :blue_test_johto
+    ordered << :blue_test_hoenn
     ordered << :blue_test_sinnoh
     ordered.concat(indices.reject { |idx| ordered.include?(idx) })
     ordered
@@ -117,6 +119,47 @@ module BlueKantoTitle
     end
   end
 
+  def self.hoenn_launcher
+    return nil if pilot? || !File.file?("Game.exe")
+    game = File.expand_path(Dir.pwd)
+    candidates = [File.expand_path("../.blue-work/hoenn-pilot", game)]
+    profile = ENV["USERPROFILE"]
+    if profile && !profile.empty?
+      candidates << File.expand_path("Documents/Codex/HoennQA", profile)
+    end
+    candidates.each do |folder|
+      exe = File.join(folder, "Game.exe")
+      next unless File.file?(exe) && File.realpath(folder) != File.realpath(game)
+      next unless File.file?(File.join(folder, "Hoenn pilot.json"))
+      next unless File.file?(File.join(folder, "Data", "blue-hoenn-pilot.txt"))
+      next unless File.file?(File.join(folder, "Data", "blue-hoenn-compiled.txt"))
+      return [exe, folder]
+    end
+    nil
+  rescue SystemCallError, ArgumentError
+    nil
+  end
+
+  def self.launch_hoenn
+    unless windows?
+      pbMessage(_INTL("O teste de Hoenn pelo menu inicial está disponível no Windows."))
+      return false
+    end
+    target = hoenn_launcher
+    unless target
+      pbMessage(_INTL("O piloto de Hoenn ainda não está disponível. Monte e compile a cópia de teste antes de abrir por aqui."))
+      return false
+    end
+    return false unless pbConfirmMessage(_INTL("Abrir o piloto de Hoenn com saves separados? O menu principal será fechado."))
+    exe, folder = target
+    pid = Process.spawn([exe, exe], :chdir => folder)
+    Process.detach(pid)
+    true
+  rescue SystemCallError, ArgumentError, NotImplementedError => error
+    pbMessage(_INTL("Não foi possível iniciar Hoenn: {1}", error.message))
+    false
+  end
+
   def self.launch_sinnoh
     unless windows?
       pbMessage(_INTL("O teste de Sinnoh pelo menu inicial estará disponível no Windows."))
@@ -147,6 +190,7 @@ module BlueKantoTitle
         case item
         when :blue_test_kanto then _INTL(BlueKantoTitle::LABEL)
         when :blue_test_johto then _INTL(BlueKantoTitle::JOHTO_LABEL)
+        when :blue_test_hoenn then _INTL(BlueKantoTitle::HOENN_LABEL)
         when :blue_test_sinnoh then _INTL(BlueKantoTitle::SINNOH_LABEL)
         else commands[item]
         end
@@ -168,10 +212,11 @@ module BlueKantoTitle
                     end
         return selection if selection.nil? || selection < 0
         original = @blue_kanto_order[selection]
-        if original == :blue_test_kanto || original == :blue_test_johto || original == :blue_test_sinnoh
+        if [:blue_test_kanto, :blue_test_johto, :blue_test_hoenn, :blue_test_sinnoh].include?(original)
           launched = case original
                      when :blue_test_kanto then BlueKantoTitle.launch
                      when :blue_test_johto then BlueKantoTitle.launch_johto
+                     when :blue_test_hoenn then BlueKantoTitle.launch_hoenn
                      when :blue_test_sinnoh then BlueKantoTitle.launch_sinnoh
                      end
           if launched
