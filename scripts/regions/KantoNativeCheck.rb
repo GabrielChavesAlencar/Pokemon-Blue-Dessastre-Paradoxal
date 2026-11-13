@@ -62,7 +62,7 @@ module KantoNativeCheck
 
     current = $game_map.map_id
     destinations = $game_map.events.values.flat_map do |event|
-      event.list.filter_map { |command| command.parameters[1] if command.code == 201 }
+      Array(event.list).filter_map { |command| command.parameters[1] if command.code == 201 }
     end
     lab = destinations.find { |id| GameData::MapMetadata.get(id).real_name.include?("Oak") }
     require!(lab, "Oak's Lab transfer missing")
