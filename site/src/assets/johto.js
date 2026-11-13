@@ -45,6 +45,6 @@ export function johtoIndex(data,route){
     '<p>As oito insígnias locais de Johto e a página global de esmeraldas seguem o contrato regional do jogo. '+
     'As duas visualizações ainda dependem da integração real do piloto, sem dados fictícios de jogador.</p>'+
     '<p><a class="text-link" href="'+esc(data.links.tracker)+'" target="_blank" rel="noopener noreferrer">'+
-    'Acompanhar progresso técnico '+icon('arrow')+'</a></p></section>'+
+    'Acompanhar progresso técnico '+icon('arrow')+'</a></p>'+'<p><a class="text-link" href="/liga?regiao=johto">Elite Four e campeão · referências históricas '+icon('arrow')+'</a></p></section>'+
     '<div class="region-entries">'+grouped+'</div></div>';
 }

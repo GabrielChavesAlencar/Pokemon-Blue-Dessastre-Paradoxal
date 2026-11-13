@@ -9,6 +9,7 @@ import {loadRegions,regionsPage,regionPicker} from './regions.js';
 import {loadKanto,kantoIndex,kantoLocation,kantoTrainer} from './kanto.js';
 import {loadJohtoPreview,johtoIndex} from './johto.js';
 import {downloadsPage} from './downloads.js';
+import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
 
 const main=document.getElementById('main');
@@ -55,7 +56,15 @@ async function render(scroll=false){
       detailData=await loadDetails();if(id!==renderId)return;
       currentBase=base;const form=state.form?detailData.species[`${base.id},${state.form}`]:null;currentEffective=effectiveDetail(base,form,detailData);
       main.innerHTML=pokemonDetail(model,base,detailData,state,favorites);setPage(base.name);
-    }else if(['localizacoes','treinadores','chefes'].includes(route) &&
+    }else if(route==='liga'){
+      const db=await loadStrongestTeams();if(id!==renderId)return;
+      if(parts[1]){
+        const entry=db.teams.find(t=>t.id===decodeURIComponent(parts[1]));if(!entry)throw new Error('not-found');
+        const details=await loadDetails();if(id!==renderId)return;
+        main.innerHTML=leagueDetail(model,db,entry,details);setPage(entry.name+' · Liga');
+      }else{main.innerHTML=leagueIndex(model,db,(url.searchParams.get('regiao')||'kanto').toUpperCase());setPage('Elite Four e Campeões');}
+    }
+    else if(['localizacoes','treinadores','chefes'].includes(route) &&
       !parts[1] && url.searchParams.get('regiao')==='johto'){
       const data=await loadJohtoPreview();if(id!==renderId)return;
       main.innerHTML=johtoIndex(data,route);

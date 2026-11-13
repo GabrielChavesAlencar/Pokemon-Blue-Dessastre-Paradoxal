@@ -1,0 +1,555 @@
+{
+  "schema": 1,
+  "source": {
+    "path": "docs/ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md",
+    "url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md"
+  },
+  "notes": "Referências históricas, não equipes já implementadas.",
+  "teams": [
+    {
+      "id": "kanto-brock",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Brock",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "3.1",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "GOLEM",
+            "RELICANTH",
+            "OMASTAR",
+            "KABUTOPS",
+            "RAMPARDOS",
+            "ONIX"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-misty",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Misty",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "3.2",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "QUAGSIRE",
+            "LAPRAS",
+            "LANTURN",
+            "FLOATZEL",
+            "MILOTIC",
+            "STARMIE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lt-surge",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Lt. Surge",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "3.3",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "MAGNEZONE",
+            "ELECTRODE",
+            "MANECTRIC",
+            "ELECTIVIRE",
+            "PACHIRISU",
+            "RAICHU"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-erika",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Erika",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "3.4",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "JUMPLUFF",
+            "VICTREEBEL",
+            "BELLOSSOM",
+            "SHIFTRY",
+            "ROSERADE",
+            "TANGROWTH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-koga-gym",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Koga",
+      "sourceGame": "Let's Go · líder, não Elite Four",
+      "studySection": "3.5",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "TENTACRUEL",
+            "GOLBAT",
+            "WEEZING",
+            "VENOMOTH",
+            "MUK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-sabrina",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Sabrina",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "3.6",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "ESPEON",
+            "MRMIME",
+            "JYNX",
+            "WOBBUFFET",
+            "GALLADE",
+            "ALAKAZAM"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blaine",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Blaine",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "3.7",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "TORKOAL",
+            "CAMERUPT",
+            "RAPIDASH",
+            "MAGCARGO",
+            "HOUNDOOM",
+            "MAGMORTAR"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-giovanni",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Giovanni",
+      "sourceGame": "FRLG · líder, não Rainbow Rocket",
+      "studySection": "3.8",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "RHYHORN",
+            "DUGTRIO",
+            "NIDOQUEEN",
+            "NIDOKING",
+            "RHYHORN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-janine",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Janine",
+      "sourceGame": "HGSS · líder da era posterior",
+      "studySection": "3.9",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "ARIADOS",
+            "TOXICROAK",
+            "WEEZING",
+            "DRAPION",
+            "CROBAT",
+            "VENOMOTH"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-gym",
+      "region": "KANTO",
+      "role": "gym",
+      "name": "Blue",
+      "sourceGame": "HGSS · líder, não campeão",
+      "studySection": "3.10",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "EXEGGUTOR",
+            "MACHAMP",
+            "ARCANINE",
+            "RHYPERIOR",
+            "TYRANITAR",
+            "PIDGEOT"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lorelei",
+      "region": "KANTO",
+      "role": "elite",
+      "name": "Lorelei",
+      "sourceGame": "FRLG · revanche",
+      "studySection": "4.1",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "DEWGONG",
+            "CLOYSTER",
+            "PILOSWINE",
+            "JYNX",
+            "LAPRAS"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-bruno-elite",
+      "region": "KANTO",
+      "role": "elite",
+      "name": "Bruno",
+      "sourceGame": "FRLG · revanche",
+      "studySection": "4.2",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "STEELIX",
+            "HITMONCHAN",
+            "HITMONLEE",
+            "STEELIX",
+            "MACHAMP"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-agatha",
+      "region": "KANTO",
+      "role": "elite",
+      "name": "Agatha",
+      "sourceGame": "FRLG · revanche",
+      "studySection": "4.3",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "GENGAR",
+            "CROBAT",
+            "MISDREAVUS",
+            "ARBOK",
+            "GENGAR"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-lance-elite",
+      "region": "KANTO",
+      "role": "elite",
+      "name": "Lance",
+      "sourceGame": "FRLG · Elite Four, não campeão",
+      "studySection": "4.4",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "GYARADOS",
+            "DRAGONITE",
+            "KINGDRA",
+            "AERODACTYL",
+            "DRAGONITE"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johto-will",
+      "region": "JOHTO",
+      "role": "elite",
+      "name": "Will",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "5.1",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "BRONZONG",
+            "JYNX",
+            "GRUMPIG",
+            "SLOWBRO",
+            "GARDEVOIR",
+            "XATU"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johto-koga-elite",
+      "region": "JOHTO",
+      "role": "elite",
+      "name": "Koga",
+      "sourceGame": "HGSS · Elite Four, não líder",
+      "studySection": "5.2",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "SKUNTANK",
+            "TOXICROAK",
+            "SWALOT",
+            "VENOMOTH",
+            "MUK",
+            "CROBAT"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johto-karen",
+      "region": "JOHTO",
+      "role": "elite",
+      "name": "Karen",
+      "sourceGame": "HGSS · revanche",
+      "studySection": "5.3",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "WEAVILE",
+            "SPIRITOMB",
+            "HONCHKROW",
+            "UMBREON",
+            "HOUNDOOM",
+            "ABSOL"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johto-lance-champion",
+      "region": "JOHTO",
+      "role": "champion",
+      "name": "Lance",
+      "sourceGame": "HGSS · campeão",
+      "studySection": "6.3",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "SALAMENCE",
+            "GARCHOMP",
+            "DRAGONITE",
+            "CHARIZARD",
+            "ALTARIA",
+            "GYARADOS"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johto-red",
+      "region": "JOHTO",
+      "role": "extra",
+      "name": "Red",
+      "sourceGame": "HGSS · superboss, não campeão da campanha",
+      "studySection": "6.4",
+      "variants": [
+        {
+          "id": "strongest",
+          "label": "Time mais forte documentado",
+          "species": [
+            "PIKACHU",
+            "VENUSAUR",
+            "CHARIZARD",
+            "BLASTOISE",
+            "LAPRAS",
+            "SNORLAX"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-giovanni-rainbow-rocket",
+      "region": "KANTO",
+      "role": "extra",
+      "name": "Giovanni · Rainbow Rocket",
+      "sourceGame": "USUM · chefe extra, não líder",
+      "studySection": "3.8",
+      "variants": [
+        {
+          "id": "mega-x",
+          "label": "Ultra Sun · Mega Mewtwo X",
+          "species": [
+            "DUGTRIO",
+            "NIDOKING",
+            "NIDOQUEEN",
+            "RHYPERIOR",
+            "MEWTWO"
+          ]
+        },
+        {
+          "id": "mega-y",
+          "label": "Ultra Moon · Mega Mewtwo Y",
+          "species": [
+            "DUGTRIO",
+            "NIDOKING",
+            "NIDOQUEEN",
+            "RHYPERIOR",
+            "MEWTWO"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "johto-bruno-elite",
+      "region": "JOHTO",
+      "role": "elite",
+      "name": "Bruno",
+      "sourceGame": "FRLG · maior equipe documentada (não é a de HGSS)",
+      "studySection": "4.2",
+      "variants": [
+        {
+          "id": "reference",
+          "label": "Referência histórica de força",
+          "species": [
+            "STEELIX",
+            "HITMONCHAN",
+            "HITMONLEE",
+            "STEELIX",
+            "MACHAMP"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-champion",
+      "region": "KANTO",
+      "role": "champion",
+      "name": "Blue",
+      "sourceGame": "FRLG · revanche do campeão",
+      "studySection": "6.1",
+      "variants": [
+        {
+          "id": "bulbasaur",
+          "label": "Jogador escolheu Bulbasaur · Blue usa Charizard",
+          "species": [
+            "HERACROSS",
+            "ALAKAZAM",
+            "TYRANITAR",
+            "EXEGGUTOR",
+            "GYARADOS",
+            "CHARIZARD"
+          ]
+        },
+        {
+          "id": "charmander",
+          "label": "Jogador escolheu Charmander · Blue usa Blastoise",
+          "species": [
+            "HERACROSS",
+            "ALAKAZAM",
+            "TYRANITAR",
+            "ARCANINE",
+            "EXEGGUTOR",
+            "BLASTOISE"
+          ]
+        },
+        {
+          "id": "squirtle",
+          "label": "Jogador escolheu Squirtle · Blue usa Venusaur",
+          "species": [
+            "HERACROSS",
+            "ALAKAZAM",
+            "TYRANITAR",
+            "GYARADOS",
+            "ARCANINE",
+            "VENUSAUR"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-trace-champion",
+      "region": "KANTO",
+      "role": "champion",
+      "name": "Trace",
+      "sourceGame": "Let's Go · campeão alternativo",
+      "studySection": "6.2",
+      "variants": [
+        {
+          "id": "pikachu",
+          "label": "Let's Go Pikachu · Jolteon",
+          "species": [
+            "PIDGEOT",
+            "VILEPLUME",
+            "MAROWAK",
+            "RAPIDASH",
+            "SLOWBRO",
+            "JOLTEON"
+          ]
+        },
+        {
+          "id": "eevee",
+          "label": "Let's Go Eevee · Raichu",
+          "species": [
+            "PIDGEOT",
+            "VILEPLUME",
+            "MAROWAK",
+            "RAPIDASH",
+            "SLOWBRO",
+            "RAICHU"
+          ]
+        }
+      ]
+    }
+  ]
+}

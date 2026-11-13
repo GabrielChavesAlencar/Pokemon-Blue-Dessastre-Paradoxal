@@ -88,7 +88,7 @@ export function bossesIndex(model){
    '<span class="eyebrow">FULL DOUBLES · CAMPANHA BLUE</span><h1>Chefes e <em>Mestres.</em></h1><p>Os líderes mostram somente suas equipes Full Doubles, nas dificuldades Iniciante, Intermediário, Avançado e Master. Selecione um líder para consultar Pokémon, habilidades, itens e golpes.</p></section>'+difficultyGuide()+
    '<section class="section"><div class="section-heading"><div><span class="eyebrow">BEATHA</span><h2>Todos os Mestres<span>.</span></h2></div></div><div class="story-master-grid">'+(story.masters||[]).map((t,i)=>masterCard(t,i,model)).join('')+'</div></section>'+
    '<section class="section"><div class="section-heading"><div><span class="eyebrow">ZENITH DOMAIN</span><h2>Chefe final<span>.</span></h2></div></div><div class="story-master-grid">'+(story.bosses||[]).map((t,i)=>masterCard({...t,type:'STELLAR'},i,model)).join('')+'</div></section>'+
-   '<p class="data-note">A Elite Four clássica e os times do Super Boss não são confirmados por esta extração. '+iconLink(srcRef,'Consultar fonte')+'</p></div>';
+   '<p class="data-note">A Elite Four clássica e os times do Super Boss não são confirmados por esta extração. '+iconLink(srcRef,'Consultar fonte')+'</p><p class="data-note"><a href="/liga?regiao=kanto">Times fortes de Elite Four e campeões '+icon('arrow')+'</a></p></div>';
 }
 const moveName=(id,details)=>esc(details?.moves?.[id]?.name??simple(id));
 export function teamPokemon(p,model,details){
@@ -99,10 +99,10 @@ export function teamPokemon(p,model,details){
   const subtitle=[p.form?('Forma '+p.form):null,p.item?('Item: '+(details?.items?.[p.item]??simple(p.item))):null,p.teraType?('Tera: '+(types[p.teraType]||simple(p.teraType))):null,p.nature?('Nature: '+simple(p.nature)):null].filter(Boolean);
   const name=entity?.name||simple(baseId);
   const url=entity?pokemonPath(entity):null;
-  return '<article class="story-pokemon"><div class="story-poke-header">'+artwork+'<div><h3>'+(url?'<a href="'+esc(url)+'">'+esc(name)+'</a>':esc(name))+'</h3><span>'+ ((p.movesByLevel||p.calculatedLevel)?'Nível previsto: '+esc(p.level):p.level===1?'Nível base 1 · escalonável':'Nível PBS: '+esc(p.level)) +'</span></div></div>'+
+  return '<article class="story-pokemon"><div class="story-poke-header">'+artwork+'<div><h3>'+(url?'<a href="'+esc(url)+'">'+esc(name)+'</a>':esc(name))+'</h3><span>'+ ((p.dynamicLevel?'Nível dinâmico · ajustado pela campanha':(p.movesByLevel||p.calculatedLevel)?'Nível previsto: '+esc(p.level):p.level===1?'Nível base 1 · escalonável':'Nível PBS: '+esc(p.level)) +'</span></div></div>'+
     '<p class="story-poke-extras">'+subtitle.map(esc).join(' · ')+(p.ability?' · Ability: '+esc(p.ability):'')+(p.abilityIndex!=null?' · Índice da habilidade: '+esc(p.abilityIndex):'')+(p.preview?' · Reforço Master estimado':'')+(p.planned?' · PARADOXO FUTURO PLANEJADO (só no site)':'')+'</p>'+
     (p.evs?'<p class="story-poke-extras">EVs: '+Object.entries(p.evs).filter(([,n])=>n>0).map(([s,n])=>esc(({HP:'HP',ATTACK:'Atk',DEFENSE:'Def',SPECIAL_ATTACK:'SpA',SPECIAL_DEFENSE:'SpD',SPEED:'Spe'}[s]??s)+' '+n)).join(' / ')+'</p>':'')+
-    (Array.isArray(p.moves)&&p.moves.length?'<div class="story-poke-moves">'+p.moves.map(m=>'<span>'+moveName(m,details)+'</span>').join('')+'</div>':'<p class="data-note">'+(p.movesByLevel?'Sem golpe legal disponível neste nível; a engine usa Struggle.':'Golpes não informados no PBS')+'</p>')+
+    (Array.isArray(p.moves)&&p.moves.length?'<div class="story-poke-moves">'+p.moves.map(m=>'<span>'+moveName(m,details)+'</span>').join('')+'</div>':'<p class="data-note">'+(p.referenceOnly?'Golpes variam conforme a implementação e fase da campanha.':p.movesByLevel?'Sem golpe legal disponível neste nível; a engine usa Struggle.':'Golpes não informados no PBS')+'</p>')+
     '</article>';
 }
 

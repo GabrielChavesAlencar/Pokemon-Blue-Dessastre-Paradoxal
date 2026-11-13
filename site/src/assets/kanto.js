@@ -79,7 +79,7 @@ export function kantoIndex(model,data,page){
   if(page==='localizacoes') return layout(data,page,'Localizações de Kanto',cards(data.locations,areaCard));
   const leaders=page==='chefes';
   const trainers=data.trainers.filter(row=>row.leader===leaders);
-  return layout(data,page,leaders?'Líderes de Kanto':'Treinadores de Kanto',cards(trainers,row=>trainerCard(model,data,row)));
+  return layout(data,page,leaders?'Líderes de Kanto':'Treinadores de Kanto',(leaders?'<p class="data-note">'+link('/liga?regiao=kanto','Ver Elite Four, campeões e revanches mais fortes')+'</p>':'')+cards(trainers,row=>trainerCard(model,data,row)));
 }
 
 function encounterTable(model,method){
@@ -115,11 +115,11 @@ export function kantoTrainer(model,data,trainer,details){
     const starter=model.byId.get(variant.starter);
     const title=variant.starter?'Se você escolheu '+(starter?.name||variant.starter):'Equipe';
     return '<section class="section"><h2>'+esc(title)+'</h2><div class="story-team-grid">'+
-      variant.team.map(pokemon=>teamPokemon(displayPokemon(model,pokemon),model,details)).join('')+'</div></section>';
+      variant.team.map(pokemon=>teamPokemon({...displayPokemon(model,pokemon),dynamicLevel:true},model,details)).join('')+'</div></section>';
   }).join('');
   return layout(data,trainer.leader?'chefes':'treinadores',trainer.name,
     '<p>'+esc(trainer.role)+' · '+link(locationLink(area),area.name)+'</p>'+
     (trainer.leader&&KANTO_GYM_REWARDS[trainer.name]
       ? '<p>Recompensa: '+esc(KANTO_GYM_REWARDS[trainer.name])+' Badge (somente após vitória)</p>'
-      : '')+variants,true);
+      : '')+(trainer.leader?'<p class="data-note">'+link('/liga?regiao=kanto','Consultar times mais fortes documentados')+'</p>':'')+variants,true);
 }
