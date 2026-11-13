@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a79b3f39572a3aa9d47be23efc59572005ef5c17",
+      "date": "2026-11-13T17:28:03-03:00",
+      "title": "release(android): enable safe Kanto map metadata deltas and rebuild both channels [android-kanto-release]",
+      "category": "Melhorias"
+    },
+    {
       "sha": "691a855657858a9ec3776dee1c0dc458b276586c",
       "date": "2026-11-13T17:27:48-03:00",
       "title": "test(android): require Kanto pilot metadata in incremental terrain updates",
