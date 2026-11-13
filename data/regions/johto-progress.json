@@ -100,12 +100,14 @@
         "Piloto experimental pode mesclar PBS Johto em copia isolada via --with-connections (nao liberado automaticamente)",
         "Map079 real (22x48) inspecionado: 4 fachadas candidatas com coordenadas e snapshots de tiles SHA-256, sem alegar porta validada",
         "No piloto com --with-connections, os dois warps redundantes para Route29 sao removidos da copia em memoria e substituidos pela borda PBS real",
-        "Exportador local de insumos nativos com allowlist e SHA-256 criado; somente game/ local, sem executavel/saves/plugins e sem ZIP publico; testes sinteticos do exportador"
+        "Exportador local de insumos nativos com allowlist e SHA-256 criado; somente game/ local, sem executavel/saves/plugins e sem ZIP publico; testes sinteticos do exportador",
+        "Validador de 12 eventos e spawn com comprovacao por SHA/MapID/PNG, aceita borda PBS sem dois warps duplicados; montador privado isolado bloqueia coordenadas nao conferidas"
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe",
         "A instalacao nativa game/ nao foi fornecida nesta conversa; Fase 04 ainda nao pode ser executada e verificada no Game.exe",
-        "Falta confirmar qual das fachadas e a casa do jogador e validar os destinos no Game.exe; candidatos nao equivalem a portas jogaveis"
+        "Falta confirmar qual das fachadas e a casa do jogador e validar os destinos no Game.exe; candidatos nao equivalem a portas jogaveis",
+        "Ainda nao ha dados nativos game/ para executar com geometria real nem QA Windows, e interiores/posicoes continuaram pendentes"
       ],
       "automated_code_test": "tests/test_johto_new_bark_exterior_audit.py",
       "gameplay_playable": false,
