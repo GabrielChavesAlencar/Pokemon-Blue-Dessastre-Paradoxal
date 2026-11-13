@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "11f109216721cee19a93c0fff28804074d029e60",
+      "date": "2026-11-13T20:52:46-03:00",
+      "title": "test(sinnoh): verify 6/9 remap substeps cannot inflate 8/32 or native acceptance bars",
+      "category": "Testes"
+    },
+    {
+      "sha": "46c0771e121a1d3bc0cc9bf425aa9952f8ee3591",
+      "date": "2026-11-13T20:52:31-03:00",
+      "title": "docs(sinnoh): show 6/9 remap workstream progress and link pinned candidate planner",
+      "category": "Documentação"
+    },
+    {
       "sha": "a8cd69b955ac66276a6a9a9bfc3daa191a393129",
       "date": "2026-11-13T20:52:14-03:00",
       "title": "data(sinnoh): track 6/9 remap preparation substeps without inflating global 8/32 or 0/13 gates",
