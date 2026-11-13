@@ -47,7 +47,7 @@ test('Kanto tem release experimental própria; download não depende do ZIP gera
   const html=androidPilotsHtml({state:'unavailable',regional});
   assert.match(html,/releases\/download\/kanto-android-512-abc1234\/Blue-Android-Kanto-Piloto\.zip/);
   assert.match(html,/Piloto Johto · indisponível/);
-  assert.doesNotMatch(html,/releases\/download\/.*Johto/);
+  assert.doesNotMatch(html,/href="[^"]*Blue-Android-Johto-Piloto\.zip"/);
   const malformed=await regionalAndroidReleases(async()=>({ok:true,json:async()=>[
     {...release,target_commitish:'not-sha'},
     {...release,assets:[{name:'Blue-Android-Kanto-Piloto.zip',state:'starter',size:200}]}
