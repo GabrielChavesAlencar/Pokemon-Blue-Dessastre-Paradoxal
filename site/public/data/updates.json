@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7f78bbd7c622911f6f8b5049ec409a409f2a1685",
+      "date": "2026-11-13T20:49:10-03:00",
+      "title": "test(sinnoh): guard remap preview against native/Johto collisions, hash drift and save mapping changes",
+      "category": "Testes"
+    },
+    {
       "sha": "a2d568e87fdb9d3614957f6417a315bd3eff7a37",
       "date": "2026-11-13T20:48:19-03:00",
       "title": "feat(sinnoh): add explicitly pinned collision-safe map remap preview without changing game",
