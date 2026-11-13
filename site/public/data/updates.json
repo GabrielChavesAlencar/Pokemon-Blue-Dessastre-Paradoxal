@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a8cd69b955ac66276a6a9a9bfc3daa191a393129",
+      "date": "2026-11-13T20:52:14-03:00",
+      "title": "data(sinnoh): track 6/9 remap preparation substeps without inflating global 8/32 or 0/13 gates",
+      "category": "Melhorias"
+    },
+    {
       "sha": "f6bdbebe7bff862ef65216f09254dd6cba8e8037",
       "date": "2026-11-13T20:51:42-03:00",
       "title": "test(sinnoh): assert remap proposal explicitly forbids install and staging instead of implicit fallback",
