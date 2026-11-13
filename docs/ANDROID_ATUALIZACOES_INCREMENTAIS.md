@@ -35,7 +35,7 @@ O primeiro comando consulta a versão disponível; o segundo baixa o patch e apl
 
 ## Como funciona tecnicamente
 
-Cada ZIP completo inclui `Data/blue-update.json` com canal, SHA-40 de revisão, caminhos e SHA-256 dos arquivos rastreados. Arquivos críticos de raiz ficam em `immutable` e só podem mudar por reinstalação completa. A etapa de release publica `Blue-Android-{JoiPlay|Kanto-Piloto}.update.json` e, quando a versão anterior dispõe de manifesto e o patch é útil, `Blue-Android-{JoiPlay|Kanto-Piloto}.patch.zip`.
+Cada ZIP completo inclui `Data/blue-update.json` com canal, SHA-40 de revisão, caminhos e SHA-256 dos arquivos rastreados. Arquivos críticos de raiz (como `Game.exe`, `mkxp.json` e o atualizador) ficam em `immutable` e só podem mudar por reinstalação completa. **Exceção importante:** `Kanto pilot.json` é metadado de mapas/eventos, não configuração de saves, e pode ser incluído no patch regional com SHA-256. A etapa de release publica `Blue-Android-{JoiPlay|Kanto-Piloto}.update.json` e, quando a versão anterior dispõe de manifesto e o patch é útil, `Blue-Android-{JoiPlay|Kanto-Piloto}.patch.zip`.
 
 O atualizador consulta `releases/latest` (Decades) ou a prerelease `kanto-android-*` mais recente dentre as 100 releases (Kanto), sem confundir os downloads. Confere SHA-256, tamanhos, nomes dos arquivos, origem/destino, inventário local e possíveis modificações do usuário. Nunca aplica caminhos fora das pastas permitidas e proíbe arquivos de save, logs e backup. Mantém os arquivos substituídos em `.blue-android-update-backups/<revisão-antiga>-to-<nova>/` e tenta restaurá-los se ocorrer falha durante a aplicação. Antes da atualização, **também faça uma cópia manual do seu save**: backups de arquivos do jogo não substituem backup de progresso.
 
