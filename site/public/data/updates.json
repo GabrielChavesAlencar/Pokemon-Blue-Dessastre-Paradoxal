@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "38423e4ece976ddf50586152f28a5dc4d54aef68",
+      "date": "2026-11-12T21:23:21-03:00",
+      "title": "docs(johto): detalha fase 10 Jasmine Ampharos e ilhas ainda nao instaladas",
+      "category": "Documentação"
+    },
+    {
       "sha": "c1caa071a7dd97e8fa3f2de62c22c701f3208692",
       "date": "2026-11-12T21:22:26-03:00",
       "title": "test(johto): valida Mineral 6a badge, medicina e bloqueio real das Whirl Islands",
