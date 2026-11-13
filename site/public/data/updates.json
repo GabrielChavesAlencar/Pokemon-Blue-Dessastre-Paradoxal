@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "759598a718587531e78386d10ea777d45c77dea1",
+      "date": "2026-11-13T20:39:09-03:00",
+      "title": "docs(sinnoh): publish persistent four-bar progress dashboard with explicit code vs gameplay gates",
+      "category": "Documentação"
+    },
+    {
       "sha": "358e951c11267f7d880a60fb956cac05b937ba3f",
       "date": "2026-11-13T20:37:54-03:00",
       "title": "data(sinnoh): add transparent 32-deliverable progress ledger separate from playable-phase gates",
