@@ -21,7 +21,7 @@ from verify_johto import inspect
 from server.ruby_marshal import RubyObject, text
 
 DEFAULT_OUTPUT = ROOT / ".blue-work/johto-native-room-candidates.json"
-DEFAULT_PREVIEW = ROOT / ".blue-work/johto-staging-interiors"
+DEFAULT_PREVIEW = ROOT / ".blue-work/johto-staging"
 KEYWORDS = {
     "JOHTO_NEW_BARK_PLAYER_HOME_2F": ("bedroom", "bed", "quarto", "room", "upstairs", "2f"),
     "JOHTO_NEW_BARK_PLAYER_HOME_1F": ("home", "house", "casa", "mother", "mae", "mom"),
