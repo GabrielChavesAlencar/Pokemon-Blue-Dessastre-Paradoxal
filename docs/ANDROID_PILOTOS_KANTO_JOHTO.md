@@ -26,3 +26,28 @@ Os pilotos são ZIPs completos de RPG Maker XP para JoiPlay + RPG Maker Plugin, 
 A página /downloads usa site/src/assets/android-release.js para ler a última release pública e determinar a disponibilidade de cada ZIP por seu **nome exato**. Sem asset confirmado, mostra "Piloto Kanto · indisponível" ou "Piloto Johto · indisponível", sem hyperlink. O pacote geral permanece disponível separadamente.
 
 **Importante:** mostrar as duas opções no site não significa que os pilotos já podem ser instalados no celular. A aprovação e a publicação dependem dos pré-requisitos acima.
+
+
+## Piloto Kanto — implementação técnica (13/11/2026)
+
+O gerador scripts/android/package_kanto.py cria Blue-Android-Kanto-Piloto.zip com a pasta Pokemon-Blue-Kanto-Android/. Exige uma instalação regional isolada, metadados Kanto pilot.json, 142 mapas remapeados, Pallet como início, perfil próprio de saves, os dois plugins Mobile.rb e KantoPilot.rb compilados e marcador de compilação nativa atual. Não empacota saves, logs ou Main de testes; valida o ZIP e produz checksum SHA-256. O pacote inclui LEIA-ME-ANDROID-KANTO.txt, créditos e a revisão exata.
+
+O workflow .github/workflows/kanto-pilot-check.yml agora prepara a compilação regional, guarda um GitHub Actions Artifact e só cria uma prerelease separada quando tudo for aprovado. A marca no commit [android-kanto-release] ativa essa publicação. A prerelease segue o padrão kanto-android-N-SHA e não altera a release principal. O site consulta releases/latest para a História e releases?per_page=30 para os pilotos.
+
+### Bloqueio nativo detectado
+
+Em 13/11/2026 a CI Windows conseguiu preparar a fonte e montar o piloto, porém Game.exe excedeu 150 segundos na verificação nativa (execução 43489379211). A compilação Android geral também excedeu 300 segundos no mesmo ambiente. Não ignorar essas falhas nem publicar um ZIP renomeado do Decades. O workflow passou a gerar diagnósticos de stdout/stderr e scripts de teste em caso de timeout.
+
+### Caminho de compilação local, se a CI continuar bloqueada
+
+Com a fonte FRLG e a base já instaladas em um Windows funcional, na raiz do projeto:
+
+~~~powershell
+python scripts/regions/pilot.py
+python scripts/android/package_kanto.py --game-dir .blue-work/kanto-pilot --request-compile
+# Abrir o Game.exe da pasta .blue-work/kanto-pilot para compilar os plugins.
+python scripts/android/package_kanto.py --game-dir .blue-work/kanto-pilot --revision <sha-completo-de-40-caracteres>
+python scripts/android/package_kanto.py --verify --revision <sha-completo-de-40-caracteres>
+~~~
+
+O Android usa JoiPlay + RPG Maker Plugin e precisa ser validado em aparelho real. Não publicar recursos de terceiros sem os créditos e direitos necessários.
