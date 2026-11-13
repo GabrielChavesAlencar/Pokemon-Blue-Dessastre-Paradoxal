@@ -30,7 +30,7 @@ def write_record(path: Path, data: dict, *, root: Path) -> None:
         raise ValueError("So criar arquivo NOVO em .blue-work/")
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x", encoding="utf-8") as output:
-        output.write(json.dumps(data, ensure_ascii=False, indent=2) + "\\n")
+        output.write(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
 
 
 def run(*, root: Path = ROOT) -> dict:
