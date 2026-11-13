@@ -14,6 +14,10 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.ok(html.includes(`href="${joiplayDownload}"`));
   assert.ok(html.includes('Baixar JoiPlay · site oficial'));
   assert.ok(html.includes('android-download-actions'));
+  assert.match(html,/Testar Kanto ou Johto no Android/);
+  assert.match(html,/data-android-pilots/);
+  assert.doesNotMatch(html,/href="[^"]*Blue-Android-(Kanto|Johto)-Piloto[.]zip"/);
+
   assert.ok(html.includes('RPG Maker Plugin'));
   assert.match(html,/Python ou Git/);assert.match(html,/cópias portáteis verificadas/);
   assert.equal((html.match(/<ol>/g)||[]).length,2);

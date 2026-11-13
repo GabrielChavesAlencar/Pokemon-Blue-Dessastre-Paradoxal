@@ -15,7 +15,11 @@ export async function androidReleaseStatus(fetcher=fetch){
   const pending=run&&run.head_sha!==release.target_commitish;
   return {state:pending?(run.status==='completed'?'outdated':'building'):'published',buildKnown:!!run,
     tag:release.tag_name,revision:release.target_commitish,date:release.published_at,
-    bytes:asset.size,digest:asset.digest??'',runId:run?.id};
+    bytes:asset.size,digest:asset.digest??'',runId:run?.id,
+    pilots:{
+      kanto:!!release.assets?.some(x=>x.name==='Blue-Android-Kanto-Piloto.zip'&&x.state==='uploaded'&&x.size>0),
+      johto:!!release.assets?.some(x=>x.name==='Blue-Android-Johto-Piloto.zip'&&x.state==='uploaded'&&x.size>0)
+    }};
 }
 export function androidReleaseHtml(status){
   if(status.state==='unavailable')return '<p>Não foi possível consultar a revisão agora. Confira a linha <code>Revision:</code> no arquivo <code>LEIA-ME-ANDROID.txt</code> do ZIP.</p>';
@@ -23,9 +27,30 @@ export function androidReleaseHtml(status){
   const href=`https://github.com/${repo}/releases/tag/${encodeURIComponent(status.tag)}`;
   return `${warning?`<p class="android-release-warning">${esc(warning)}</p>`:''}<p><strong>Pacote publicado:</strong> <a href="${href}" target="_blank" rel="noopener noreferrer">${esc(status.tag)}</a><br>Revisão <code>${esc(status.revision)}</code>${Number.isFinite(status.bytes)?` · ${(status.bytes/1e9).toFixed(2).replace('.',',')} GB`:''}</p><p>Depois de extrair, compare essa revisão com <code>LEIA-ME-ANDROID.txt</code>. Se um evento falhar, o diagnóstico fica em <code>Data/blue-android-event-error.txt</code>.</p>${status.buildKnown?'':'<p>Estado da compilação mais recente indisponível.</p>'}`;
 }
+
+const androidPilots=[
+  {id:'kanto',region:'Kanto',asset:'Blue-Android-Kanto-Piloto.zip',note:'Experimento isolado a partir de Pallet Town; saves separados do jogo principal.'},
+  {id:'johto',region:'Johto',asset:'Blue-Android-Johto-Piloto.zip',note:'Experimento isolado a partir de New Bark; mapas, eventos e QA próprios.'}
+];
+export function androidPilotsHtml(status){
+  return androidPilots.map(p=>{
+    const enabled=status.state!=='unavailable'&&status.pilots?.[p.id]===true&&typeof status.tag==='string'&&status.tag.length>0;
+    const href=enabled?'https://github.com/'+repo+'/releases/download/'+encodeURIComponent(status.tag)+'/'+p.asset:'';
+    return '<article class="android-pilot-card"><span class="eyebrow">PILOTO '+esc(p.region.toUpperCase())+'</span>'+
+      '<h4>'+esc(p.region)+'</h4><p>'+esc(p.note)+'</p>'+
+      (enabled?'<a class="button button-secondary" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">Baixar piloto '+esc(p.region)+' · .zip</a>':
+      '<span class="button button-secondary android-pilot-disabled" aria-disabled="true">Piloto '+esc(p.region)+' · indisponível</span>')+
+      '<small>'+(enabled?'Arquivo independente publicado na release '+esc(status.tag)+'. Adicione Game.exe desta pasta ao JoiPlay.':
+        'Ainda não existe ZIP regional publicado e verificado. O ZIP geral não substitui este piloto.')+'</small></article>';
+  }).join('');
+}
+
 export async function bindAndroidRelease(container){
-  const target=container.querySelector('[data-android-release]');if(!target)return;
+  const target=container.querySelector('[data-android-release]');
+  const pilots=container.querySelector('[data-android-pilots]');
+  if(!target&&!pilots)return;
   if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:androidReleaseStatus()};
   const status=await cached.promise;
-  if(target.isConnected)target.innerHTML=androidReleaseHtml(status);
+  if(target?.isConnected)target.innerHTML=androidReleaseHtml(status);
+  if(pilots?.isConnected)pilots.innerHTML=androidPilotsHtml(status);
 }
