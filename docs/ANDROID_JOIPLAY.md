@@ -52,3 +52,20 @@ O guia detalhado está na página `Downloads → Atualizações Android` do site
 A publicação deverá verificar **ambas** as condições: (1) o ZIP contém uma entrada `Input` já corrigida em `Data/Scripts.rxdata`; (2) o piloto Kanto inclui `Data/blue-mobile.txt` para ativar `Mobile.rb`. Nenhum teste que apenas confirma a presença do plugin substitui a verificação do marcador. O fluxo de release usa nomes separados para Kanto e Decades. A última verificação indispensável continua sendo abrir o ZIP novo no aparelho Android, tocar no menu e confirmar que o erro desapareceu.
 
 As correções acima já foram publicadas em 13/11/2026 em dois canais: [Decades 563](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/battle-hub-563-6c78aa4) e [Kanto Piloto 690](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/kanto-android-690-6c78aa4). Os workflows de empacotamento das duas releases passaram. Continua pendente a confirmação de toque e abertura de uma nova partida no Poco com JoiPlay.
+
+## Correção do encontro selvagem no mato — BlueMusic (13/11/2026)
+
+O segundo teste real em celular conseguiu chegar à grama alta, mas falhou na preparação do encontro selvagem:
+
+~~~text
+Script '[Blue Music] BlueMusic.rb' line 517: NoMethodError occurred.
+undefined method 'party2' for #<Battle>
+~~~
+
+**Causa:** o módulo `BlueMusic::PrepareMusic#prepare_battle` tentava acessar `battle.party2`, que não existe como método público na versão Pokémon Essentials 21.1. A engine expõe a equipe adversária via `battle.pbParty(1)`, em que 1 representa o lado oponente. O problema interrompia a preparação antes da batalha selvagem.
+
+**Correção:** substituição da chamada em `scripts/music/BlueMusic.rb` para `BlueMusic.kanto_wild_kind(battle.pbParty(1))`. A classificação de encontros comuns/lendários continua usando o mesmo algoritmo; não são alteradas taxas de encontro, times, níveis, status, saves ou mapas. A mudança também protege o Decades principal, já que o plugin de música é compartilhado.
+
+**Teste de regressão:** `tests/kanto_music_battles.rb` passou a simular o objeto `Battle` real que implementa `pbParty(1)`, mas não tem `party2`, e testar encontros comuns, com lendário, treinador e troca de região para Decades. `tests/test_joiplay_wild_bgm.py` exige a API correta e executa o Ruby durante a CI. A versão destinada ao usuário deve ser compilada e publicada **depois** do commit que contém a correção.
+
+Ao atualizar: feche o JoiPlay e execute `ATUALIZAR-ANDROID.py` em Termux, se houver patch direto compatível, ou extraia o ZIP novo em pasta separada. Preserve os saves. Testar a entrada na grama no Android ainda é necessário para aceite físico.
