@@ -1,0 +1,1033 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "PLANNED_AUDIT_CHECKLIST_ONLY",
+  "reference_game": "Platinum",
+  "main_engine": "Blue/Decades",
+  "purpose": "Symbolic audit checklist, NOT imported playable data",
+  "integrity": {
+    "all_source_map_ids_empty": true,
+    "all_destination_map_ids_empty": true,
+    "verified_runtime_entries": 0,
+    "do_not_auto_enable_region": true
+  },
+  "policy": {
+    "no_external_scripts": true,
+    "no_fabricated_maps": true,
+    "manual_rights_review_required": true,
+    "restore_original_world_after_failure": true,
+    "unmapped_donor_map_not_playable": true
+  },
+  "badges": [
+    {
+      "key": "COAL",
+      "leader": "Roark",
+      "field": "ROCK_SMASH"
+    },
+    {
+      "key": "FOREST",
+      "leader": "Gardenia",
+      "field": "CUT"
+    },
+    {
+      "key": "COBBLE",
+      "leader": "Maylene",
+      "field": "FLY"
+    },
+    {
+      "key": "RELIC",
+      "leader": "Fantina",
+      "field": "DEFOG"
+    },
+    {
+      "key": "FEN",
+      "leader": "Crasher Wake",
+      "field": "SURF"
+    },
+    {
+      "key": "MINE",
+      "leader": "Byron",
+      "field": "STRENGTH"
+    },
+    {
+      "key": "ICICLE",
+      "leader": "Candice",
+      "field": "ROCK_CLIMB"
+    },
+    {
+      "key": "BEACON",
+      "leader": "Volkner",
+      "field": "WATERFALL"
+    }
+  ],
+  "elite_four": [
+    "Aaron",
+    "Bertha",
+    "Flint",
+    "Lucian"
+  ],
+  "champion": "Cynthia",
+  "phases": [
+    {
+      "phase": 3,
+      "section": "Abertura Platinum",
+      "areas": [
+        {
+          "symbol": "TWINLEAF_TOWN",
+          "label": "Twinleaf Town",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "PLAYER_BEDROOM",
+          "label": "Player Bedroom",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "PLAYER_HOUSE_1F",
+          "label": "Player House 1F",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "BARRY_HOUSE",
+          "label": "Barry House",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_201",
+          "label": "Route 201",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "LAKE_VERITY",
+          "label": "Lake Verity",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SANDGEM_TOWN",
+          "label": "Sandgem Town",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "PROFESSOR_ROWAN_LABORATORY",
+          "label": "Professor Rowan Laboratory",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_202",
+          "label": "Route 202",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P03_BARRY_INTRODUCTION",
+          "description": "Barry introduction",
+          "verified": false
+        },
+        {
+          "key": "P03_ROWAN_AND_BRIEFCASE",
+          "description": "Rowan and briefcase",
+          "verified": false
+        },
+        {
+          "key": "P03_TURTWIG_CHIMCHAR_PIPLUP_SELECTION",
+          "description": "Turtwig Chimchar Piplup selection",
+          "verified": false
+        },
+        {
+          "key": "P03_FIRST_RIVAL_BATTLE",
+          "description": "First rival battle",
+          "verified": false
+        },
+        {
+          "key": "P03_POKEDEX",
+          "description": "Pokedex",
+          "verified": false
+        },
+        {
+          "key": "P03_TUTORIAL_ENCOUNTERS",
+          "description": "Tutorial encounters",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "section": "Primeira insígnia",
+      "areas": [
+        {
+          "symbol": "JUBILIFE_CITY",
+          "label": "Jubilife City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "JUBILIFE_TRAINER_SCHOOL",
+          "label": "Jubilife Trainer School",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_203",
+          "label": "Route 203",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "OREBURGH_GATE",
+          "label": "Oreburgh Gate",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "OREBURGH_CITY",
+          "label": "Oreburgh City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "OREBURGH_MINE",
+          "label": "Oreburgh Mine",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "OREBURGH_GYM",
+          "label": "Oreburgh Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P04_BARRY_JUBILIFE_MEETING",
+          "description": "Barry Jubilife meeting",
+          "verified": false
+        },
+        {
+          "key": "P04_ROARK_AT_THE_MINE",
+          "description": "Roark at the mine",
+          "verified": false
+        },
+        {
+          "key": "P04_COAL_BADGE",
+          "description": "Coal Badge",
+          "verified": false
+        },
+        {
+          "key": "P04_ROCK_SMASH_ACCESS",
+          "description": "Rock Smash access",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "section": "Floaroma e Eterna",
+      "areas": [
+        {
+          "symbol": "ROUTE_204",
+          "label": "Route 204",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "RAVAGED_PATH",
+          "label": "Ravaged Path",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "FLOAROMA_TOWN",
+          "label": "Floaroma Town",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_205",
+          "label": "Route 205",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "VALLEY_WINDWORKS",
+          "label": "Valley Windworks",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ETERNA_FOREST",
+          "label": "Eterna Forest",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ETERNA_CITY",
+          "label": "Eterna City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ETERNA_GYM",
+          "label": "Eterna Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "GALACTIC_ETERNA_BUILDING",
+          "label": "Galactic Eterna Building",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P05_TEAM_GALACTIC_WINDWORKS",
+          "description": "Team Galactic Windworks",
+          "verified": false
+        },
+        {
+          "key": "P05_COMMANDER_MARS",
+          "description": "Commander Mars",
+          "verified": false
+        },
+        {
+          "key": "P05_CHERYL_ESCORT",
+          "description": "Cheryl escort",
+          "verified": false
+        },
+        {
+          "key": "P05_GARDENIA_FOREST_BADGE",
+          "description": "Gardenia Forest Badge",
+          "verified": false
+        },
+        {
+          "key": "P05_COMMANDER_JUPITER",
+          "description": "Commander Jupiter",
+          "verified": false
+        },
+        {
+          "key": "P05_CUT_ACCESS",
+          "description": "Cut access",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "section": "Hearthome a Pastoria",
+      "areas": [
+        {
+          "symbol": "CYCLING_ROAD",
+          "label": "Cycling Road",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_206",
+          "label": "Route 206",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "WAYWARD_CAVE",
+          "label": "Wayward Cave",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "MT_CORONET_WEST_APPROACH",
+          "label": "Mt. Coronet West Approach",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_208",
+          "label": "Route 208",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "HEARTHOME_CITY",
+          "label": "Hearthome City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "HEARTHOME_GYM",
+          "label": "Hearthome Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_209",
+          "label": "Route 209",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "LOST_TOWER",
+          "label": "Lost Tower",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SOLACEON_TOWN",
+          "label": "Solaceon Town",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SOLACEON_RUINS",
+          "label": "Solaceon Ruins",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_210",
+          "label": "Route 210",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_215",
+          "label": "Route 215",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "VEILSTONE_CITY",
+          "label": "Veilstone City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "VEILSTONE_GYM",
+          "label": "Veilstone Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_214",
+          "label": "Route 214",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_213",
+          "label": "Route 213",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "VALOR_LAKEFRONT",
+          "label": "Valor Lakefront",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "PASTORIA_CITY",
+          "label": "Pastoria City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "GREAT_MARSH",
+          "label": "Great Marsh",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "PASTORIA_GYM",
+          "label": "Pastoria Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P06_FANTINA_RELIC_BADGE",
+          "description": "Fantina Relic Badge",
+          "verified": false
+        },
+        {
+          "key": "P06_DEFOG_FIELD_ACCESS",
+          "description": "Defog field access",
+          "verified": false
+        },
+        {
+          "key": "P06_MAYLENE_COBBLE_BADGE",
+          "description": "Maylene Cobble Badge",
+          "verified": false
+        },
+        {
+          "key": "P06_CRASHER_WAKE_FEN_BADGE",
+          "description": "Crasher Wake Fen Badge",
+          "verified": false
+        },
+        {
+          "key": "P06_SURF_FIELD_ACCESS",
+          "description": "Surf field access",
+          "verified": false
+        },
+        {
+          "key": "P06_TEAM_GALACTIC_PASTORIA_ENCOUNTER",
+          "description": "Team Galactic Pastoria encounter",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "section": "Canalave e Snowpoint",
+      "areas": [
+        {
+          "symbol": "ROUTE_218",
+          "label": "Route 218",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "CANALAVE_CITY",
+          "label": "Canalave City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "CANALAVE_GYM",
+          "label": "Canalave Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "CANALAVE_LIBRARY",
+          "label": "Canalave Library",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "IRON_ISLAND",
+          "label": "Iron Island",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "MT_CORONET_INTERIOR_ROUTES",
+          "label": "Mt. Coronet Interior Routes",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_216",
+          "label": "Route 216",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_217",
+          "label": "Route 217",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ACUITY_LAKEFRONT",
+          "label": "Acuity Lakefront",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "LAKE_ACUITY",
+          "label": "Lake Acuity",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SNOWPOINT_CITY",
+          "label": "Snowpoint City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SNOWPOINT_GYM",
+          "label": "Snowpoint Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "LAKE_VERITY_RETURN",
+          "label": "Lake Verity Return",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "LAKE_VALOR_RETURN",
+          "label": "Lake Valor Return",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P07_BYRON_MINE_BADGE",
+          "description": "Byron Mine Badge",
+          "verified": false
+        },
+        {
+          "key": "P07_IRON_ISLAND_RILEY_ESCORT",
+          "description": "Iron Island Riley escort",
+          "verified": false
+        },
+        {
+          "key": "P07_TEAM_GALACTIC_LAKE_EVENTS",
+          "description": "Team Galactic lake events",
+          "verified": false
+        },
+        {
+          "key": "P07_CANDICE_ICICLE_BADGE",
+          "description": "Candice Icicle Badge",
+          "verified": false
+        },
+        {
+          "key": "P07_ROCK_CLIMB_FIELD_ACCESS",
+          "description": "Rock Climb field access",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 8,
+      "section": "Galactic e Giratina",
+      "areas": [
+        {
+          "symbol": "VEILSTONE_GALACTIC_HQ",
+          "label": "Veilstone Galactic HQ",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "MT_CORONET_SUMMIT_ASCENT",
+          "label": "Mt. Coronet Summit Ascent",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SPEAR_PILLAR",
+          "label": "Spear Pillar",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "DISTORTION_WORLD",
+          "label": "Distortion World",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "TURNBACK_CAVE",
+          "label": "Turnback Cave",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P08_COMMANDER_SATURN",
+          "description": "Commander Saturn",
+          "verified": false
+        },
+        {
+          "key": "P08_COMMANDER_MARS",
+          "description": "Commander Mars",
+          "verified": false
+        },
+        {
+          "key": "P08_COMMANDER_JUPITER",
+          "description": "Commander Jupiter",
+          "verified": false
+        },
+        {
+          "key": "P08_CYRUS",
+          "description": "Cyrus",
+          "verified": false
+        },
+        {
+          "key": "P08_DIALGA_PALKIA_STORY_SCENE",
+          "description": "Dialga Palkia story scene",
+          "verified": false
+        },
+        {
+          "key": "P08_DISTORTION_WORLD_PUZZLES",
+          "description": "Distortion World puzzles",
+          "verified": false
+        },
+        {
+          "key": "P08_GIRATINA_ENCOUNTER",
+          "description": "Giratina encounter",
+          "verified": false
+        },
+        {
+          "key": "P08_SAFE_RETURN_FROM_DISTORTION_WORLD",
+          "description": "Safe return from Distortion World",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 9,
+      "section": "Liga",
+      "areas": [
+        {
+          "symbol": "ROUTE_222",
+          "label": "Route 222",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SUNYSHORE_CITY",
+          "label": "Sunyshore City",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SUNYSHORE_GYM",
+          "label": "Sunyshore Gym",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_223",
+          "label": "Route 223",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "VICTORY_ROAD",
+          "label": "Victory Road",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "POKEMON_LEAGUE",
+          "label": "Pokemon League",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ELITE_FOUR_AARON_CHAMBER",
+          "label": "Elite Four Aaron Chamber",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ELITE_FOUR_BERTHA_CHAMBER",
+          "label": "Elite Four Bertha Chamber",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ELITE_FOUR_FLINT_CHAMBER",
+          "label": "Elite Four Flint Chamber",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ELITE_FOUR_LUCIAN_CHAMBER",
+          "label": "Elite Four Lucian Chamber",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "CHAMPION_CYNTHIA_CHAMBER",
+          "label": "Champion Cynthia Chamber",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "HALL_OF_FAME",
+          "label": "Hall of Fame",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P09_VOLKNER_BEACON_BADGE",
+          "description": "Volkner Beacon Badge",
+          "verified": false
+        },
+        {
+          "key": "P09_WATERFALL_FIELD_ACCESS",
+          "description": "Waterfall field access",
+          "verified": false
+        },
+        {
+          "key": "P09_AARON_BATTLE",
+          "description": "Aaron battle",
+          "verified": false
+        },
+        {
+          "key": "P09_BERTHA_BATTLE",
+          "description": "Bertha battle",
+          "verified": false
+        },
+        {
+          "key": "P09_FLINT_BATTLE",
+          "description": "Flint battle",
+          "verified": false
+        },
+        {
+          "key": "P09_LUCIAN_BATTLE",
+          "description": "Lucian battle",
+          "verified": false
+        },
+        {
+          "key": "P09_CYNTHIA_BATTLE",
+          "description": "Cynthia battle",
+          "verified": false
+        },
+        {
+          "key": "P09_HALL_OF_FAME",
+          "description": "Hall of Fame",
+          "verified": false
+        },
+        {
+          "key": "P09_SINNOH_FIRST_CLEAR_UNLOCKS_HOENN_AND_UNOVA",
+          "description": "Sinnoh first clear unlocks Hoenn and Unova",
+          "verified": false
+        },
+        {
+          "key": "P09_TWINLEAF_REGION_TRAVEL_NPC",
+          "description": "Twinleaf region travel NPC",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "phase": 10,
+      "section": "Pós-jogo",
+      "areas": [
+        {
+          "symbol": "FIGHT_AREA",
+          "label": "Fight Area",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "SURVIVAL_AREA",
+          "label": "Survival Area",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "RESORT_AREA",
+          "label": "Resort Area",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_225",
+          "label": "Route 225",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_226",
+          "label": "Route 226",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_227",
+          "label": "Route 227",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_228",
+          "label": "Route 228",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_229",
+          "label": "Route 229",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "ROUTE_230",
+          "label": "Route 230",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "STARK_MOUNTAIN",
+          "label": "Stark Mountain",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "BATTLE_FRONTIER",
+          "label": "Battle Frontier",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "FULLMOON_ISLAND",
+          "label": "Fullmoon Island",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "NEWMOON_ISLAND",
+          "label": "Newmoon Island",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        },
+        {
+          "symbol": "FLOWER_PARADISE",
+          "label": "Flower Paradise",
+          "source_map_ids": [],
+          "destination_map_ids": [],
+          "verified": false
+        }
+      ],
+      "events": [
+        {
+          "key": "P10_BATTLE_ZONE_ENTRY",
+          "description": "Battle Zone entry",
+          "verified": false
+        },
+        {
+          "key": "P10_HEATRAN_QUEST",
+          "description": "Heatran quest",
+          "verified": false
+        },
+        {
+          "key": "P10_CRESSELIA_EVENT",
+          "description": "Cresselia event",
+          "verified": false
+        },
+        {
+          "key": "P10_DARKRAI_CONDITIONAL_QUEST",
+          "description": "Darkrai conditional quest",
+          "verified": false
+        },
+        {
+          "key": "P10_SHAYMIN_CONDITIONAL_QUEST",
+          "description": "Shaymin conditional quest",
+          "verified": false
+        },
+        {
+          "key": "P10_OFFICIAL_STRONGEST_TEAM_REMATCHES",
+          "description": "Official strongest team rematches",
+          "verified": false
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "This is not a complete list of all building interiors. Codex C00/C01 must add every real submap, entrance, NPC, item, music, and exit after inspecting a donor project.",
+    "Names are symbolic and cannot substitute for signed-off donor MapInfos or game maps.",
+    "No fixed trainer levels; the Blue dynamic scaling remains the authority."
+  ]
+}
