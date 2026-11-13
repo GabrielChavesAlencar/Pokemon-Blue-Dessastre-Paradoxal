@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e397958962768ff35ae868469ec13c6521a92afe",
+      "date": "2026-11-13T20:50:13-03:00",
+      "title": "data(sinnoh): add deliberately unfilled audited remap request template",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7f78bbd7c622911f6f8b5049ec409a409f2a1685",
       "date": "2026-11-13T20:49:10-03:00",
       "title": "test(sinnoh): guard remap preview against native/Johto collisions, hash drift and save mapping changes",
