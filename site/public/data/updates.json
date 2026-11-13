@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7e688f21d8af2387d8af7d01c9ad1e2164094196",
+      "date": "2026-11-12T22:47:36-03:00",
+      "title": "test(johto): protege roteiro Mahogany Rocket Pryce e status nao jogavel",
+      "category": "Testes"
+    },
+    {
       "sha": "55120e5f9fd9f9205b3a551401cc1a444d06cb67",
       "date": "2026-11-12T22:46:51-03:00",
       "title": "docs(johto): contrato da fase 11 Mahogany Lake of Rage Rockets Pryce e Radio Tower",
