@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "28f94012d8ac38183de713a10afc7d94cf5abe81",
+      "date": "2026-11-12T21:07:40-03:00",
+      "title": "docs(johto): sincroniza plano mestre com etapa 09 Olivine Cianwood Chuck parcial",
+      "category": "Documentação"
+    },
+    {
       "sha": "15fbea1eca19c97109c570fdf79d3ae91eec0acf",
       "date": "2026-11-12T21:07:26-03:00",
       "title": "docs(johto): registra Etapa 09 parcial e preserva ambas as barras 0/16",
