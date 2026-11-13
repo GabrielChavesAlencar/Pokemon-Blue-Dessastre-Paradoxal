@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "63cc7f0ed5d9cc59cc65b3e9dff47acedfa62f86",
+      "date": "2026-11-13T07:51:07-03:00",
+      "title": "fix(test): não corrompe hashes válidos ao simular manifesto adulterado",
+      "category": "Correções"
+    },
+    {
       "sha": "33b928228ce5823df3227434226535101438fc7d",
       "date": "2026-11-13T07:49:41-03:00",
       "title": "test(regions): Kanto↔Johto pos-Liga, destino seguro, Box, rollback e sem Hoenn ficticia",
