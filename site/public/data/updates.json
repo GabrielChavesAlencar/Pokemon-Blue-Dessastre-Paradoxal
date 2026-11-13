@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8ad81feccf3a0b6afdd5d4ace6b6da4315ca347b",
+      "date": "2026-11-13T20:19:01-03:00",
+      "title": "feat(hoenn): open the isolated pilot from the title menu",
+      "category": "Novidades"
+    },
+    {
       "sha": "a6253d93abc08ffcc0df3ffce489dac8528dfa4d",
       "date": "2026-11-13T20:15:22-03:00",
       "title": "docs: assign structured Sinnoh area/event checklist to Codex source audit",
