@@ -41,10 +41,10 @@
       "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     },
     "offline_development_milestones": {
-      "verified": 6,
+      "verified": 7,
       "total": 12,
-      "percent": 50,
-      "meaning": "6/12: base e mapa auditados, staging de 77 mapas, duas conexoes candidatas, quarto 2F, casa 1F, laboratorio Elm com 3 Poke Bolas graficas estaticas. Ainda sem eventos, instabilidade do Game.exe nao avaliada; Blue-Story.exe ainda nao instala Johto."
+      "percent": 58.3,
+      "meaning": "7/12: seis warps de New Bark preparados em preview isolada, retorno e chegada sem loop; conexão de Route 29 já existente no PBS. Somente auditoria de tiles/Marshal, sem gameplay, sem instalação automática no Blue-Story.exe."
     }
   },
   "phases": [
@@ -299,7 +299,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Etapa 07: preparar ligacoes escada/portas/spawn e validar coordenadas e caminho em stage isolado; etapa 08 trocar tres Poke Bolas estaticas por eventos individuais. Nao precisa reenviar ZIP ou executar Game.exe agora.",
+  "next_required_input": "Etapa 08: integrar eventos próprios da mãe, Elm, 3 Poké Bolas interativas e rival preservando os 6 warps já construídos. Nenhum novo ZIP ou execução do EXE é necessário agora. Instalação pelo site ainda pendente.",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
@@ -317,8 +317,8 @@
   "offline_development": {
     "scope": "New Bark, Route 29-31, Cherrygrove, Violet, Sprout Tower e Falkner - apenas integracao e validacao offline",
     "total": 12,
-    "completed": 6,
-    "percent": 50,
+    "completed": 7,
+    "percent": 58.3,
     "not_gameplay_proof": true,
     "never_execute_game_exe": true,
     "plan_file": "docs/JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md",
@@ -392,9 +392,15 @@
       {
         "number": 7,
         "title": "Ligar portas, escadas e spawn entre mapas",
-        "status": "PENDING",
-        "acceptance": "12 pontos/eventos com MapIDs e coordenadas derivados dos layouts, transições reversíveis e checagens de limites/ocupação; aprovação de colisão real permanece separada",
-        "evidence": []
+        "status": "COMPLETE",
+        "acceptance": "Seis warps RMXP reversíveis (quarto/casa/town/lab) em quatro mapas com spawn proposto e chegadas em células diferentes dos gatilhos; conexão de borda New Bark/Route29 preservada por PBS. Passabilidade e alcance estáticos conferidos nos quatro RXDATA, 73 mapas e MapInfos/Tilesets intactos; sem executar Game.exe.",
+        "evidence": [
+          "scripts/regions/build_johto_warps_v1.py",
+          "data/regions/johto-stage07-warps.json (seis warps, spawn, borda PBS, sem flags de gameplay)",
+          "tests/test_johto_warps_v1.py (12 testes sintéticos)",
+          "docs/JOHTO_OFFLINE_FASE_07_PORTAS_ESCADAS_SPAWN.md",
+          "Preview privada real: Map600/674/675/676 regravados em Ruby Marshal, comandos 201, outras 73 fontes e MapInfos/Tilesets sem diferenças"
+        ]
       },
       {
         "number": 8,
