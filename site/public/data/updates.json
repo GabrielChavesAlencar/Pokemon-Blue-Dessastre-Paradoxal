@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1e01a58a1d3cfcf765f02182a78d6b4dfcc981a4",
+      "date": "2026-11-13T17:16:42-03:00",
+      "title": "feat(android): add update instructions to Decades title and both mobile pause menus",
+      "category": "Novidades"
+    },
+    {
       "sha": "88d1912c6af95e1f520b7566d3610fddda3db94b",
       "date": "2026-11-13T17:15:53-03:00",
       "title": "feat(android): publish isolated Kanto incremental updates with prereleases",
