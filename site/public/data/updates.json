@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "63d7664c159cf18d6c64281d02db72697612fed0",
+      "date": "2026-11-13T16:00:38-03:00",
+      "title": "fix(site): balancear expressão de nível dinâmico",
+      "category": "Correções"
+    },
+    {
       "sha": "f70a27e0210a8122311faa00f048091b9060cf20",
       "date": "2026-11-13T16:00:11-03:00",
       "title": "feat(site): mostrar equipes documentadas de elites, campeões e líderes sem níveis fixos",
