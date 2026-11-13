@@ -21,7 +21,24 @@
     "gameplay_phases_fully_approved": {
       "verified": 0,
       "total": 16,
-      "meaning": "Requer execução em Game.exe e testes reais de mapas, warps, eventos, batalhas e saves; nenhuma fase passou."
+      "meaning": "Indicador legado de aceite integral: 0/16. Use tested_gameplay_phases (04–16) como barra explícita de QA real."
+    },
+    "playable_gameplay_phases": {
+      "verified": 0,
+      "total": 13,
+      "scope": "Fases 04–16",
+      "meaning": "Conta somente fases de conteúdo que já podem ser iniciadas e percorridas num Game.exe isolado, com eventos e transições funcionais. NÃO requer QA completo; não contam scripts ou mapas só identificados."
+    },
+    "tested_gameplay_phases": {
+      "verified": 0,
+      "total": 13,
+      "scope": "Fases 04–16",
+      "meaning": "Conta somente fases jogáveis com QA real aprovado no Game.exe, cobrindo fluxos, portas, batalhas e saves (Windows/JoiPlay quando aplicável); testes Python/Ruby sintéticos não entram."
+    },
+    "automated_code_test_coverage": {
+      "verified": 16,
+      "total": 16,
+      "meaning": "Existe pelo menos um teste automatizado de código/contrato para cada uma das 16 fases, executado na CI Blue Studio; NÃO comprova que as fases estejam jogáveis ou testadas no motor."
     }
   },
   "phases": [
@@ -37,7 +54,10 @@
         "game/Data nativo ainda ausente no repositório e nos anexos",
         "Permissões e créditos por asset não aprovados",
         "Baseline da instalação e hashes de Kanto/Decades não comparados"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_source_audit.py",
+      "gameplay_playable": null,
+      "gameplay_tested": null
     },
     {
       "id": 2,
@@ -51,7 +71,10 @@
       "blockers": [
         "Passabilidade e pontos de chegada ainda não certificados no Game.exe nativo",
         "Conexões faltantes e dependências de interiores ainda pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_content_inventory.py",
+      "gameplay_playable": null,
+      "gameplay_tested": null
     },
     {
       "id": 3,
@@ -62,7 +85,10 @@
       ],
       "blockers": [
         "Prévia com assets reais e game/ nativo não foi criada/validada"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_stage.py",
+      "gameplay_playable": null,
+      "gameplay_tested": null
     },
     {
       "id": 4,
@@ -73,7 +99,10 @@
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_pilot_assembly.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 5,
@@ -84,7 +113,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase05_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 6,
@@ -95,7 +127,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase06_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 7,
@@ -106,7 +141,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase07_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 8,
@@ -117,7 +155,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase08_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 9,
@@ -128,7 +169,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase09_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 10,
@@ -139,7 +183,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase10_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 11,
@@ -150,7 +197,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase11_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 12,
@@ -161,7 +211,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase12_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 13,
@@ -172,7 +225,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase13_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 14,
@@ -183,7 +239,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase14_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 15,
@@ -194,7 +253,10 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase15_contract.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     },
     {
       "id": 16,
@@ -205,11 +267,26 @@
       ],
       "blockers": [
         "Integração no Game.exe e aprovação de gameplay pendentes"
-      ]
+      ],
+      "automated_code_test": "tests/test_johto_phase16_release.py",
+      "gameplay_playable": false,
+      "gameplay_tested": false
     }
   ],
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Arquivos locais game/Data, game/Graphics/Tilesets, game/Graphics/Autotiles e PBS; sem saves pessoais e sem executáveis"
+  "next_required_input": "Arquivos locais game/Data, game/Graphics/Tilesets, game/Graphics/Autotiles e PBS; sem saves pessoais e sem executáveis",
+  "progress_labels": {
+    "playable": "Fases jogáveis no Game.exe",
+    "tested": "Fases testadas no jogo (QA aprovado)",
+    "code": "Cobertura de testes automatizados de código",
+    "technical": "Fases técnicas integralmente aprovadas"
+  },
+  "counting_rules": {
+    "playable": "gameplay_playable === true somente com build piloto real, instalação isolada e caminho funcional comprovado",
+    "tested": "gameplay_tested === true somente após gameplay_playable === true e evidências QA nativas aprovadas",
+    "automated": "automated_code_test aponta para teste existente executado na suíte; não substitui testes em Game.exe",
+    "exclusions": "Fases 01–03 são infraestrutura, não fases de gameplay; por isso as duas barras de gameplay usam 13 etapas (04–16)."
+  }
 }
