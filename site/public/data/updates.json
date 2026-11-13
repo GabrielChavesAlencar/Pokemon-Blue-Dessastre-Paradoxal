@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "33b928228ce5823df3227434226535101438fc7d",
+      "date": "2026-11-13T07:49:41-03:00",
+      "title": "test(regions): Kanto↔Johto pos-Liga, destino seguro, Box, rollback e sem Hoenn ficticia",
+      "category": "Testes"
+    },
+    {
       "sha": "92c163d599163906a789bacf5a161d6ede592530",
       "date": "2026-11-13T07:48:43-03:00",
       "title": "feat(regions): viagem Johto pós Liga com ponto auditado, NPC New Bark e rollback existente",
