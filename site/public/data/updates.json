@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f6bdbebe7bff862ef65216f09254dd6cba8e8037",
+      "date": "2026-11-13T20:51:42-03:00",
+      "title": "test(sinnoh): assert remap proposal explicitly forbids install and staging instead of implicit fallback",
+      "category": "Testes"
+    },
+    {
       "sha": "1f9235eb0502cdf5014b098ea9f96b4202a0348e",
       "date": "2026-11-13T20:51:23-03:00",
       "title": "docs(sinnoh): document phase-01 explicit collision-safe remap preview, limits and Codex steps",
