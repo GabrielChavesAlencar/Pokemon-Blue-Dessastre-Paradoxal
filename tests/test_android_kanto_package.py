@@ -79,5 +79,16 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
                 k.verify_archive(self.output, "b" * 40)
 
 
+class KantoBootstrapCompatibilityTests(unittest.TestCase):
+    def test_kanto_start_is_not_blocked_by_missing_ruby_stdlib(self):
+        runtime = (k.ROOT / "scripts/battle_polish/RegionStart.rb").read_text(encoding="utf8")
+        self.assertFalse(runtime.lstrip().startswith('require "json"'))
+        self.assertIn('def self.johto_install_proof', runtime)
+        self.assertIn('require "json" unless defined?(JSON)', runtime)
+        self.assertIn('require "digest" unless defined?(Digest::SHA256)', runtime)
+        self.assertIn('rescue LoadError', runtime)
+        self.assertIn('def self.kanto_spawn', runtime)
+
+
 if __name__ == "__main__":
     unittest.main()
