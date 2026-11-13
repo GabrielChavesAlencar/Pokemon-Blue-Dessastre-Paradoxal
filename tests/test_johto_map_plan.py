@@ -41,12 +41,12 @@ class JohtoMapPlanTests(unittest.TestCase):
     def test_baseline_does_not_enable_unverified_johto(self):
         m = json.loads((ROOT / "data/regions/johto-source.json").read_text("utf-8"))
         report = make_report()
-        # Genuine manifest is still source-unverified and selects nothing.
-        result = plan(m, report)
-        self.assertEqual(result["status"], "BLOCKED")
-        self.assertFalse(result["can_install"])
-        self.assertEqual(result["mapping"], {})
-        self.assertIn("NO_VERIFIED_JOHTO_MAP_SELECTION", result["blocking_reasons"])
+        # A real v1 archive has been audited, but a fake synthetic source
+        # report must not be accepted as its matching Game.exe baseline.
+        self.assertEqual(len(m["maps"]), 74)
+        self.assertTrue(m["mapping_verified"])
+        with self.assertRaisesRegex(ValueError, "Unverified"):
+            plan(m, report)
 
     def test_allocates_above_all_existing_and_registered_ids(self):
         result = plan(make_manifest(), make_report())
@@ -106,6 +106,24 @@ class JohtoMapPlanTests(unittest.TestCase):
         report["mode"] = "GAME_INSTALL"
         with self.assertRaisesRegex(ValueError, "read-only"):
             plan(make_manifest(), report)
+
+    def test_only_explicit_unselected_intro_mapinfo_can_be_missing(self):
+        m = make_manifest()
+        m["source"]["accepted_missing_mapinfo_ids"] = [1]
+        report = make_report()
+        report["missing_map_files"] = [1]
+        result = plan(m, report)
+        self.assertEqual(result["status"], "READY_FOR_GEOMETRY_PREVIEW")
+        self.assertFalse(result["can_install"])
+
+        report["missing_map_files"] = [1, 99]
+        missing = plan(m, report)
+        self.assertEqual(missing["status"], "BLOCKED")
+        self.assertIn("MAPINFOS_MISMATCH", missing["blocking_reasons"])
+
+        m["source"]["accepted_missing_mapinfo_ids"] = [3]
+        with self.assertRaisesRegex(ValueError, "Invalid selected"):
+            plan(m, report)
 
     def test_unverified_pack_cannot_get_ready_status(self):
         report = make_report()

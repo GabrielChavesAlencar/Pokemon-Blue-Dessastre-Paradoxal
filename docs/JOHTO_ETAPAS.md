@@ -3,7 +3,7 @@
 **Início:** 12/11/2026  
 **Plano mestre:** [JOHTO_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md](JOHTO_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md)  
 **Fontes:** [JOHTO_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md](JOHTO_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md)  
-**Estado:** preparação técnica iniciada. Nenhum mapa de Johto foi incorporado ou habilitado para jogar.
+**Estado (13/11/2026):** fonte real ZIP v1 auditada (74 mapas Johto, 42 conexões externas); nenhum mapa foi incorporado ao jogo nativo ou habilitado para jogar.
 
 ## Duas barras separadas
 
@@ -14,14 +14,15 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 
 ## Trabalho inicial de Johto entregue ao GitHub
 
-- [x] Fonte de mundo/tiles selecionada: [Map Pack de Johto de AenaonDogsky](https://www.eeveeexpo.com/resources/828/) — overworld e cavernas de Johto; Mt. Silver não incluído.
+- [x] Fonte de mundo/tiles [Map Pack de AenaonDogsky](https://www.eeveeexpo.com/resources/828/): o ZIP **v1 efetivamente recebido** possui 74 mapas Johto IDs 79–152, **incluindo Mt. Silver (102/103)**. A v3 do catálogo não foi assumida como equivalente à v1.
 - [x] Política de não-regressão para Decades, Kanto, Game.exe, slots, saves, músicas, portal e Blue Studio.
-- [x] **data/regions/johto-source.json** criado com fonte e créditos, direitos pendentes, import_enabled=false, mapping_verified=false, maps vazio e hash da fonte ainda desconhecido.
+- [x] **data/regions/johto-source.json** agora contém SHA-256 real do ZIP v1 e as **74 associações verificadas ID de origem → símbolo Johto**, com direitos pendentes e `import_enabled=false`.
 - [x] **scripts/regions/audit_johto.py** criado para ler RMXP em modo somente leitura (sem executar Ruby), inventariar mapas, dimensões, tilesets, eventos, transferências, hashes e colisões com IDs atuais.
 - [x] **tests/test_johto_source_audit.py** criado com mapas sintéticos, proteção de hashes, referências faltantes, scripts não executados e teste de fonte ausente.
 - [x] **Testar Johto** já está no menu principal junto de **Testar Kanto**. Enquanto o piloto estiver ausente, informa que Johto está em preparação sem usar os arquivos de Kanto.
-- [ ] Confirmar arquivo original ZIP/RAR e SHA-256 do Map Pack.
-- [ ] Auditar mapa real de origem, permissões separadas de cada arte e inventário da instalação game/ local.
+- [x] Confirmado o ZIP real v1 enviado em 13/11/2026: SHA-256 `5d5697e9c3bf5db6ca7039d4af65697dd8b231f4b1305f14731e35ac324b6715`.
+- [x] Auditados **74 mapas Johto reais**, dimensões, tilesets e ausência de eventos, mais 42 conexões da origem. [Relatório da fonte real v1](JOHTO_AUDITORIA_FONTE_REAL_V1.md).
+- [ ] Verificar licenças/créditos específicos e auditar o `game/` instalado para evitar colisões com MapIDs, salvar provas e confirmar o motor nativo.
 - [x] Planejamento seguro de IDs implementado em `scripts/regions/plan_johto.py` (IDs livres ≥600, compatibilidade com mapeamentos anteriores).
 - [x] Staging de terreno em `scripts/regions/stage_johto.py`, somente em `.blue-work`, sem eventos nem músicas, com proteção dos arquivos originais.
 - [x] Verificador `scripts/regions/verify_johto.py` e testes sintéticos `tests/test_johto_map_plan.py` e `tests/test_johto_stage.py`.
@@ -269,3 +270,12 @@ REM Inspecionar e preencher coordenadas e sprites no johto-new-bark-bound.json.
 ```
 
 **As coordenadas não são descobertas automaticamente**: a saída vinculada permanece com o status `MAP_IDS_BOUND_EVENT_POSITIONS_PENDING`. A cópia experimental do `pilot_johto.py` continua bloqueada até que a geometria, as portas e os gatilhos sejam realmente validados. Os binários de `game/` e do Map Pack não estão versionados no GitHub; os testes sintéticos não substituem executar `Game.exe`. **Barras de aceite: 0/16 técnicas e 0/16 gameplay real.**
+
+## Atualização verificada do arquivo real de Johto v1 — 13/11/2026
+
+O usuário forneceu `Remastered Kanto Johto Map Packv1.zip`, que foi efetivamente lido sem executar eventos. Identificados **74 mapas Johto**, **42 conexões de borda** e SHA-256 fixado. [Detalhes completos aqui](JOHTO_AUDITORIA_FONTE_REAL_V1.md). A seleção está congelada em `data/regions/johto-source.json` e a topologia de referência em `data/regions/johto-v1-map-connections.json`. Nenhum `.rxdata` estrangeiro, `.png` ou `.ogg` foi colocado na `main`.
+
+- **Map079 = New Bark Town**, **Map104 = Route 29** (origem), **Map102/103 = Mt. Silver/Mt. Silver Peak**, não presentes no jogo instalado ainda.
+- O ZIP contém **0 eventos nos 74 mapas de Johto**. `Map001` ausente é índice Intro não selecionado; `R49Water` ausente e comprovadamente **sem tiles de referência** nesta seleção. O stage permite limpar somente autotile realmente sem uso e rejeita os usados.
+- Falta ainda a **instalação local `game/`** para plano de IDs de destino, prévia RMXP com assets, interiores, conversão segura de 42 conexões e testes reais de Game.exe, batalha, save e troca de região.
+- **Subtarefas da fonte auditadas:** 74/74 MapIDs identificados e 42/42 linhas de conexões capturadas; esses não são 74 mapas jogáveis. **Barras oficiais conservadas:** 0/16 núcleos totalmente aprovados por testes de integração real e 0/16 com gameplay real.

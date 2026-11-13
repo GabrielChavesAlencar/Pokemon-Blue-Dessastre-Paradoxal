@@ -56,9 +56,15 @@ class JohtoSourceAuditTests(unittest.TestCase):
         manifest = json.loads((ROOT / "data/regions/johto-source.json").read_text("utf-8"))
         self.assertEqual(manifest["region"], "JOHTO")
         self.assertFalse(manifest["import_enabled"])
-        self.assertFalse(manifest["mapping_verified"])
-        self.assertIsNone(manifest["source"]["archive_sha256"])
-        self.assertEqual(manifest["maps"], {})
+        self.assertTrue(manifest["mapping_verified"])
+        self.assertEqual(manifest["source"]["archive_sha256"],
+                         "5d5697e9c3bf5db6ca7039d4af65697dd8b231f4b1305f14731e35ac324b6715")
+        self.assertEqual(len(manifest["maps"]), 74)
+        self.assertEqual(manifest["maps"]["79"], "JOHTO_NEW_BARK_TOWN")
+        self.assertEqual(manifest["maps"]["104"], "JOHTO_ROUTE_29")
+        self.assertEqual(manifest["maps"]["102"], "JOHTO_MT_SILVER")
+        self.assertEqual(manifest["source"]["accepted_missing_mapinfo_ids"], [1])
+        self.assertFalse(manifest["source"]["distribution_approved"])
 
     def test_inert_reader_detects_maps_scripts_missing_transfers_and_does_not_modify_source(self):
         with tempfile.TemporaryDirectory() as tmp:
