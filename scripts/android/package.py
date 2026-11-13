@@ -85,7 +85,7 @@ def build(game,output,revision):
         for name,file in sorted(plans.items()):archive.write(file,'Pokemon-Blue-Android/'+name)
         archive.writestr('Pokemon-Blue-Android/Data/blue-mobile.txt','experimental-v1\n')
         archive.writestr('Pokemon-Blue-Android/Data/blue-mobile-build.txt','Compatibility: 2\nRevision: '+revision+'\nMobile-SHA256: '+mobile_sha+'\nPlugins-SHA256: '+fingerprint(game)+'\n')
-        archive.writestr('Pokemon-Blue-Android/LEIA-ME-ANDROID.txt',
+        readme = (
             'Versao experimental para JoiPlay + RPG Maker Plugin. Nao e um APK nativo.\n'
             'Instale os aplicativos de https://www.joiplay.net/ e extraia este ZIP por completo.\n'
             'Adicione Game.exe ao JoiPlay. Escolha Historia ou Hub offline na abertura.\n'
@@ -95,6 +95,7 @@ def build(game,output,revision):
             'Para baixar e instalar: python ATUALIZAR-ANDROID.py --update\n'
             'Guia: docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md no GitHub.\n'
             'Ainda requer validacao em aparelhos Android reais.\nRevision: '+revision+'\n')
+        archive.writestr('Pokemon-Blue-Android/LEIA-ME-ANDROID.txt', readme)
         # Inventory is checked by the release publisher and the Android updater.
         extras={
             'Data/blue-mobile.txt': b'experimental-v1\n',
@@ -105,7 +106,8 @@ def build(game,output,revision):
         archive.writestr('Pokemon-Blue-Android/Data/blue-update.json',
                          installed_manifest('decades',revision,{**plans,**extras,
                                                                'ATUALIZAR-ANDROID.py':
-                                                               (ROOT/'scripts/android/update_client.py').read_bytes()}))
+                                                               (ROOT/'scripts/android/update_client.py').read_bytes(),
+                                                               'LEIA-ME-ANDROID.txt': readme.encode('utf8')}))
         archive.writestr('Pokemon-Blue-Android/ATUALIZAR-ANDROID.py',
                          (ROOT/'scripts/android/update_client.py').read_bytes())
     verify_archive(output,revision,mobile_sha)
