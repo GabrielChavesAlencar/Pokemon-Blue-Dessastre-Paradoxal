@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "15fbea1eca19c97109c570fdf79d3ae91eec0acf",
+      "date": "2026-11-12T21:07:26-03:00",
+      "title": "docs(johto): registra Etapa 09 parcial e preserva ambas as barras 0/16",
+      "category": "Documentação"
+    },
+    {
+      "sha": "0bbf2430b8b2603dcda8923f464bd2b6ff126001",
+      "date": "2026-11-12T21:07:08-03:00",
+      "title": "docs(johto): detalha Etapa 09 Olivine Cianwood Chuck e transição para Jasmine",
+      "category": "Documentação"
+    },
+    {
       "sha": "32e5947ccd23be4026fb4a036399684bff249fa7",
       "date": "2026-11-12T21:05:46-03:00",
       "title": "test(johto): valida grafo Etapa 09, itens, STORM Fly e entrega da medicina sem liberar Jasmine",
