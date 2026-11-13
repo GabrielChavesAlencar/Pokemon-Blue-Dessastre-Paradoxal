@@ -64,3 +64,7 @@ Este commit dispara uma nova tentativa da CI Kanto. O ZIP Blue-Android-Kanto-Pil
 ## Segunda rodada de diagnóstico do Kanto
 
 A execução 43495139107 avançou após corrigir o carregamento da biblioteca JSON. Em vez de timeout, o teste nativo revelou `NoMethodError` no verificador `KantoNativeCheck.rb`: alguns eventos do mapa não têm página ativa e `event.list` pode ser `nil`. O teste foi alterado para percorrer `Array(event.list)`, mantendo a verificação dos teletransportes sem tocar nos eventos originais. A próxima compilação continua bloqueada se qualquer teste nativo ou verificação de JoiPlay falhar.
+
+## Ajuste do configurador mkxp-z para o pacote Android Kanto
+
+Na execução 43495547842, toda a verificação nativa Kanto, inclusive a integração segura no Decades, concluiu com êxito. A etapa de empacotamento Android falhou antes da compilação porque o validador usava json.loads sobre mkxp.json. Esse arquivo no Pokémon Decades usa comentários // aceitos pelo mkxp-z. O empacotador agora extrai e valida estritamente somente as propriedades ativas dataPathApp e dataPathOrg, exige um único valor correto para cada uma e rejeita configurações sobrepostas, sem alterar o mkxp.json. Testes unitários adicionais cobrem comentários e duplicidade. Este commit dispara uma nova tentativa experimental.
