@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e976f5e07e573b924e2b5e10d655bb23f05ee391",
+      "date": "2026-11-13T17:22:12-03:00",
+      "title": "fix(android): verify Decades update inventory before closing ZIP archive",
+      "category": "Correções"
+    },
+    {
       "sha": "2d215c744c9ccc40a9c025581fef3deaf4b41ef6",
       "date": "2026-11-13T17:20:55-03:00",
       "title": "fix(site): keep older Kanto prereleases discoverable alongside frequent Decades releases",
