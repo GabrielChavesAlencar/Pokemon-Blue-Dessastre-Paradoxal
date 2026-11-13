@@ -5,12 +5,22 @@
 **Fontes:** [JOHTO_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md](JOHTO_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md)  
 **Estado (13/11/2026):** fonte real ZIP v1 auditada (74 mapas Johto, 42 conexões externas); nenhum mapa foi incorporado ao jogo nativo ou habilitado para jogar.
 
-## Duas barras separadas
+## Progresso auditável — fonte vs. 16 etapas (13/11/2026)
 
-- **Barra 1 — Núcleos implementados e comprovados por testes automatizados:** **0/16 (0%)** — faltam 16.
-- **Barra 2 — Etapas integralmente aceitas com gameplay real:** **0/16 (0%)** — faltam 16.
+O [registro estruturado de progresso](../data/regions/johto-progress.json) separa o trabalho sobre os arquivos reais do ZIP da aprovação das fases do jogo. Os totais são verificados em `tests/test_johto_progress.py`.
 
-Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento concluído autoriza subir a Barra 2.
+| Indicador | Resultado | Significado |
+|---|---:|---|
+| Mapas reais identificados no ZIP | **74/74 (100%)** | IDs e nomes da fonte v1 catalogados, não instalados |
+| Linhas de conexão do ZIP registradas | **42/42 (100%)** | Total **existente na fonte**, não todas as transições necessárias |
+| **Barra 1 — Núcleos técnicos totalmente aprovados** | **0/16 (0%)** | Critérios por fase ainda incompletos, inclusive baseline `game/` |
+| **Barra 2 — Fases totalmente aprovadas com gameplay real** | **0/16 (0%)** | Nenhuma fase testada em `Game.exe` real; Windows/JoiPlay pendentes |
+
+**Por que a segunda barra não avançou com o ZIP?** A fonte não contém eventos, NPCs, Pokémon, interiores do começo ou os testes no motor de jogo. A primeira etapa ainda requer verificação de direitos e arquivos nativos; a segunda ainda requer revisão de passabilidade e conexões físicas. Etapas 03–16 exigem integração e verificações específicas. Publicar os 74 MapIDs ou passar testes sintéticos **não equivale a fase 100% aprovada**.
+
+**Próximo desbloqueio:** fornecer `game/Data`, `game/Graphics/Tilesets`, `game/Graphics/Autotiles` e `game/PBS` (sem saves nem Game.exe) para planejar remapeamento sem colisão e gerar prévia real em cópia isolada.
+
+Nenhum teste sintético, checklist ou documento autoriza subir a Barra 2 sem gameplay comprovado.
 
 ## Trabalho inicial de Johto entregue ao GitHub
 
