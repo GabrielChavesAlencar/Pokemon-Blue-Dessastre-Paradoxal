@@ -83,6 +83,22 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
             result = k.build(self.game, self.output, SHA)
             self.assertEqual(result["revision"], SHA)
             self.assertEqual(k.verify_archive(self.output, SHA)["maps"], len(self.mapping))
+        import zipfile
+        with zipfile.ZipFile(self.output) as archive:
+            self.assertEqual(archive.read(k.FOLDER + "Data/blue-mobile.txt"), b"experimental-v1\n")
+            self.assertIn(k.FOLDER + "Data/Scripts.rxdata", archive.namelist())
+            self.assertIn(k.FOLDER + "ATUALIZAR-ANDROID.py", archive.namelist())
+        # A ZIP with the Mobile.rb compiled but without the enabling marker
+        # must be rejected (this reproduced Input line 28 on real JoiPlay).
+        import zipfile
+        broken = Path(self.tmp.name) / "missing-mobile.zip"
+        with zipfile.ZipFile(self.output) as source, zipfile.ZipFile(broken, "w") as target:
+            for entry in source.infolist():
+                if entry.filename != k.FOLDER + "Data/blue-mobile.txt":
+                    target.writestr(entry, source.read(entry.filename))
+        with patch.object(k, "compiled_mobile", return_value="mobile-sha"), patch.object(k, "compiled_kanto", return_value="kanto-sha"):
+            with self.assertRaisesRegex(KeyError, "blue-mobile.txt"):
+                k.verify_archive(broken, SHA)
         self.assertTrue(self.output.with_name(self.output.name + ".sha256").is_file())
         with self.assertRaisesRegex(ValueError, "Existing"):
             with patch.object(k, "_metadata", return_value=self.meta), patch.object(k, "_compiled", side_effect=checked):
