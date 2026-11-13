@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "86aedd52fcee268d27ca41e70785703137704818",
+      "date": "2026-11-13T10:31:41-03:00",
+      "title": "feat(johto): auditar 74 mapas e 42 conexoes do ZIP real v1 e endurecer importacao",
+      "category": "Novidades"
+    },
+    {
       "sha": "10579e55b37f8151ad65686d0e7d4943f2abe9d2",
       "date": "2026-11-13T10:26:05-03:00",
       "title": "docs: comparar fontes de mapas e musicas de Hoenn",
