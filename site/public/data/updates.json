@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ab94bb6317bdaaaf50bdae240140a27c5ba9af7",
+      "date": "2026-11-13T17:35:42-03:00",
+      "title": "docs(android): record verified Kanto updater baseline and trigger current Decades release",
+      "category": "Documentação"
+    },
+    {
       "sha": "20089a53816ebb0a367a8b081250ad4ad6b3a731",
       "date": "2026-11-13T17:29:39-03:00",
       "title": "fix(android): use PowerShell JSON parser for Kanto prerelease discovery [android-kanto-release]",
