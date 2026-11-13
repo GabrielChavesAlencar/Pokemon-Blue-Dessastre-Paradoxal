@@ -66,6 +66,26 @@ python -m unittest discover -s tests -p "test_sinnoh_staging_transaction.py" -v
 
 **O que continua exclusivo de Codex/local:** verificar MapInfos/tilesets reais, direitos e uso de assets, MapIDs globais ocupados/reservados, conversão dos mapas e referências de eventos, instalação do piloto em `Game.exe`, áudio, saves e QA Windows/Android. O painel de preparação não autoriza elevar as barras de gameplay.
 
+### Fase 01 — planejamento de remapeamento já concluído por código; integração real pendente
+
+- **Não recriar o planejador:** [scripts/regions/plan_sinnoh_remap.py](../scripts/regions/plan_sinnoh_remap.py) recebe um relatório RXDATA inerte, `request` com MapIDs reais e hashes, opcionalmente `previous` para congelar os IDs dos saves e `reserved` para registrar IDs reservados de outras regiões. Nunca escolhe IDs sozinho nem autoriza instalar; rejeita destinos ocupados, Johto 600–999 e IDs ≥1000 sem teste.
+- **Template de entrada deliberadamente vazio:** [sinnoh-remap-request.template.json](../data/regions/sinnoh-remap-request.template.json). Sem fonte, MapInfos, hashes e IDs reais ela **deve falhar**. Não colocar números falsos, nem mesmo para demonstração na main.
+- **Testes unitários:** [tests/test_sinnoh_remap.py](../tests/test_sinnoh_remap.py). Checam colisões, alterações nos hashes, símbolos, transferências, duplicidade e continuidade de save mapping.
+- **Procedimento completo da fase e comandos:** [SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md](SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md). O Codex deve ler esse MD antes de qualquer conversão.
+- **Progresso:** [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md) — S07 **6/9 subetapas de preparação**, mas **parcial** no quadro 32 tarefas; barra A 8/32 (25%); técnicas/jogáveis/QA 0/13.
+
+**Três entregas locais efetivas restantes no S07:**
+1. **R07:** auditar a pasta `game/Data` e todas as reservas Kanto/Johto/Hoenn, inclusive mapas ainda não instalados, garantindo que a proposta não sobrescreva IDs de outras regiões.
+2. **R08:** converter a fonte real e permitida em geometria, recursos e referências de mapa em staging isolado, adaptando eventos sem copiar scripts/RMXP de outra engine. Não copiar `MapInfos` global, `Scripts.rxdata`, `System.rxdata` nem arquivos de saves.
+3. **R09:** montar o piloto com o primeiro mapa real de Twinleaf e validar `Game.exe` e JoiPlay, entrada/saída e save/load. **Não usar a aprovação dos testes Python como substituto dessa prova.**
+
+**Linha de comando para a proposta somente leitura**, depois de executar `audit_sinnoh_rxdata.py` com o ZIP verdadeiro:
+
+```powershell
+python scripts/regions/plan_sinnoh_remap.py --audit .blue-work/sinnoh/rxdata-report.json --request .blue-work/sinnoh/remap-request.json --output .blue-work/sinnoh/remap-plan.json
+python -m unittest discover -s tests -p "test_sinnoh_remap.py" -v
+```
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
