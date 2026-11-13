@@ -43,7 +43,7 @@ module BlueRegionStart
     checks = data["checks"]
     return nil unless checks.is_a?(Hash) &&
                       JOHTO_PROOFS.all? { |key| checks[key] == true }
-    points = [data["start"], data["travel_point"]]
+    points = [data["start"], data["travel_point"], data["npc_point"]]
     return nil unless points.all? do |point|
       point.is_a?(Array) && point.length == 4 &&
         point.all? { |v| v.is_a?(Integer) } &&
@@ -52,6 +52,10 @@ module BlueRegionStart
         [2,4,6,8].include?(point[3]) &&
         pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0]))
     end
+    return nil unless data["travel_point"][0] == data["npc_point"][0] &&
+                      data["travel_point"][1, 2] != data["npc_point"][1, 2] &&
+                      (data["travel_point"][1] - data["npc_point"][1]).abs +
+                      (data["travel_point"][2] - data["npc_point"][2]).abs <= 3
     files = data["file_hashes"]
     required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
                points.map { |point| sprintf("Data/Map%03d.rxdata", point[0]) }
@@ -87,6 +91,12 @@ module BlueRegionStart
     proof = johto_install_proof
     return nil unless proof && johto_spawn
     proof["travel_point"]
+  end
+
+  def self.johto_agent_point
+    proof = johto_install_proof
+    return nil unless proof && johto_spawn
+    proof["npc_point"]
   end
 
   def self.playable?(region)
