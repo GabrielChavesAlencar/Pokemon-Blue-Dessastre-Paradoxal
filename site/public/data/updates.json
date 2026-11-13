@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e2cd3d4ad637605f5c5a706d17339d772457312d",
+      "date": "2026-11-13T17:24:29-03:00",
+      "title": "docs(android): record live Kanto pilot release and update-channel roadmap",
+      "category": "Documentação"
+    },
+    {
+      "sha": "beb50683ce351a37b8fbfc93679d13dbdd45f656",
+      "date": "2026-11-13T17:24:26-03:00",
+      "title": "fix(android): write final installed revision only after backup metadata succeeds",
+      "category": "Correções"
+    },
+    {
       "sha": "290f030a12bd1ca4343c2245eba0eea38ff5a969",
       "date": "2026-11-13T17:23:30-03:00",
       "title": "test(android): reject incomplete patches and incompatible immutable profiles",
