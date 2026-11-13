@@ -69,6 +69,12 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 - [x] `data/regions/johto-phase10.json` delimita mapas simbólicos, estados das quatro entradas das Whirl Islands, tokens de prontidão e aceite pendente; `tests/test_johto_phase10_contract.py` protege o contrato.
 - [x] [MD da Etapa 10 — Jasmine, Ampharos, MINERAL e Whirl Islands](JOHTO_FASE_10_JASMINE_AMPHAROS_MINERAL.md).
 - [ ] Verificar item/bag de Essentials real, integrar física e NPCs de Olivine, PBS de Jasmine, mapas das ilhas e testar no Game.exe antes de concluir a Etapa 10.
+- [x] **Etapa 11 iniciada:** `scripts/regions/JohtoMahogany.rb` prepara Mahogany/Lake of Rage, Red Gyarados com resultado auditável, Lance, Rocket HQ, Electrode, Pryce/GLACIER, Whirlpool e Radio Tower após a sétima insígnia.
+- [x] `tests/johto_mahogany_runtime.rb` e `tests/test_johto_mahogany_runtime.py` cobrem fuga, derrota/vitória, Rocket, recompensas únicas, GLACIER, Whirlpool, save/reload e isolamento Kanto/Decades.
+- [x] `data/regions/johto-phase11.json` descreve Ecruteak → Route 42 → Mahogany → Route 43 → Lake of Rage, HQ, ginásio e Radio Tower com nós simbólicos sem MapIDs reais.
+- [x] `tests/test_johto_phase11_contract.py` verifica treinadores PBS, itens, encontros e bloqueios de liberação.
+- [x] [MD da Etapa 11 — Mahogany, Equipe Rocket, Pryce e GLACIER](JOHTO_FASE_11_MAHOGANY_ROCKET_PRYCE.md).
+- [ ] Integrar mapas e eventos reais, compilar PBS, validar Gyarados/Electrode, HQ, Pryce, Whirlpool e Radio Tower no Game.exe antes de concluir 11/16.
 
 **Limitação atual:** o GitHub não inclui os arquivos reais da instalação game/, da fonte RMXP nem dos saves. O pacote é hospedado externamente via Mega e o arquivo não foi obtido nesta etapa. Não foram inventados MapIDs, hashes ou evidências de jogabilidade.
 
@@ -86,7 +92,7 @@ Progresso parcial não é etapa concluída. Nenhum teste sintético ou documento
 | 08 | Ecruteak e Morty | **PARCIAL**: eventos das rotas, Burned Tower, rival, Rocket, FOG/Surf e topologia simbólica; faltam fonte, mapas, PBS e gameplay |
 | 09 | Cianwood e Chuck | **PARCIAL**: rotas Olivine/Cianwood, farol, medicina, Chuck/STORM, Surf/Fly e contrato simbólico; faltam mapas, PBS e gameplay |
 | 10 | Olivine e Jasmine | **PARCIAL**: cura segura de Ampharos, Jasmine/MINERAL, inventário e Whirl Islands bloqueadas com testes; faltam Map Pack, PBS e jogo real |
-| 11 | Mahogany, Rocket e Pryce | PENDENTE |
+| 11 | Mahogany, Rocket e Pryce | **PARCIAL**: Lake of Rage, Rocket HQ, Pryce/GLACIER, Whirlpool e Radio Tower preparados; faltam mapas, PBS e gameplay |
 | 12 | Blackthorn e Clair | PENDENTE |
 | 13 | Liga Johto e Lance | PENDENTE |
 | 14 | Lendários e pós-jogo | PENDENTE |
