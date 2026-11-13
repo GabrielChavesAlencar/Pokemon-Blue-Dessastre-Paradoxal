@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0864ec0e6d71c5e57a5eee241d5cab3c8c877f89",
+      "date": "2026-11-13T09:31:27-03:00",
+      "title": "feat(johto): montar piloto New Bark em copia isolada e validar boot Ruby",
+      "category": "Novidades"
+    },
+    {
       "sha": "2014d8e5eb998340db87629e0d6cd61a01f65a9b",
       "date": "2026-11-13T09:13:08-03:00",
       "title": "feat(johto): ferramentas de mapas, eventos New Bark e PBS do rival",
