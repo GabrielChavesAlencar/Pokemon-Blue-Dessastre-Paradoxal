@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c53f9c1ddf78dd49fb05cc1f632bae4cf9866b5a",
+      "date": "2026-11-13T07:51:30-03:00",
+      "title": "test(johto): adapta contrato 13 à viagem Johto opcional e bloqueada sem prova fase 16",
+      "category": "Testes"
+    },
+    {
       "sha": "63cc7f0ed5d9cc59cc65b3e9dff47acedfa62f86",
       "date": "2026-11-13T07:51:07-03:00",
       "title": "fix(test): não corrompe hashes válidos ao simular manifesto adulterado",
