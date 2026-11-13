@@ -25,7 +25,7 @@ export async function androidReleaseStatus(fetcher=fetch){
 export async function regionalAndroidReleases(fetcher=fetch){
   let releases;
   try{
-    const response=await fetcher(api+'/releases?per_page=30');
+    const response=await fetcher(api+'/releases?per_page=100');
     if(!response.ok)throw new Error('releases');
     releases=await response.json();
   }catch{return {kanto:null,johto:null};}
