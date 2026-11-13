@@ -360,3 +360,7 @@ porta/spawn, compilar eventos/PBS e testar Game.exe isolado. Barras
 Adicionados `scripts/regions/inspect_johto_pilot_readiness.py`, `scripts/regions/assemble_johto_first_playable.py` e dois atalhos Windows. A verificação audita os **12 eventos** do início, sua topologia/handlers, spawn, sprites, posições e conexões PBS. O relatório inclui todos os bloqueios, sem aprovar posição por heurística. A montagem só permite uma **cópia experimental em `.blue-work`** quando o próprio estado do mapa e dos eventos confirma pré-requisitos. Nenhum marcador `VERIFIED_PLAYABLE` é produzido.
 
 Próximo bloqueio factual: dados nativos `game/` disponíveis **no Windows do usuário**, seleção auditada de 3 interiores, posições de entrada/chegada e execução real do Game.exe. **Fases JOGÁVEIS 0/13; Fases TESTADAS 0/13.**
+
+### Auditoria dos insumos reais entregues em 13/11/2026
+
+Recebido e verificado em contexto privado o arquivo `johto-pilot-inputs.zip` (SHA-256 `f34b13b56fd42f089c6df525c54e11ad0f5b64acef9027911867efc4be89fee4`), com **2.460 arquivos sem erro de hash**, **207 mapas nativos**, **95 PBS**, gráficos/sprites de `NPC_GSC_Mom`, `NPC_HGSS_Professor_Elm`, `NPC_HGSS_Silver`, `Object_Ball`; `CHIKORITA`/`CYNDAQUIL`/`TOTODILE` e `RIVAL1` presentes. Consulte [auditoria detalhada](JOHTO_FASE_04_AUDITORIA_BASE_NATIVA_20261113.md). A dependência de insumos para **auditoria offline** está satisfeita; o arquivo não contém executável nem plugins e **não** resolve a criação de interiores fiéis, posições/colisões e QA Windows. Fases JOGÁVEIS **0/13**, TESTADAS **0/13**.
