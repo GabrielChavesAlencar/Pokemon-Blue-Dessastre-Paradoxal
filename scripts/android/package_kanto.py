@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.android.package import allowed, compiled_mobile, fingerprint, request_compile
+from scripts.android.build_manifest import installed_manifest, verify_manifest
 
 ASSET = "Blue-Android-Kanto-Piloto.zip"
 FOLDER = "Pokemon-Blue-Kanto-Android/"
@@ -184,6 +185,12 @@ def build(game: Path, output: Path, revision: str) -> dict:
                 archive.write(file, FOLDER + name)
             archive.writestr(FOLDER + "LEIA-ME-ANDROID-KANTO.txt", text)
             archive.writestr(FOLDER + "Data/blue-kanto-android-build.txt", build_info)
+            archive.writestr(FOLDER + "Data/blue-update.json",
+                             installed_manifest("kanto", revision, {
+                                 **files, "Data/blue-kanto-android-build.txt": build_info.encode("utf8")
+                             }))
+            archive.writestr(FOLDER + "ATUALIZAR-ANDROID.py",
+                             (ROOT / "scripts/android/update_client.py").read_bytes())
         verify_archive(output, revision)
     except BaseException:
         output.unlink(missing_ok=True)
@@ -225,6 +232,7 @@ def verify_archive(zip_path: Path, revision: str) -> dict:
         config = archive.read(FOLDER + "mkxp.json").decode("utf-8-sig")
         if not _kanto_save_profile(config):
             raise ValueError("Archived Kanto saves would overlap with Decades.")
+        verify_manifest(archive, FOLDER, "kanto", revision)
         return {"region": "KANTO", "revision": revision, "maps": len(mapping), "mobile_sha256": mobile}
 
 def main() -> None:
