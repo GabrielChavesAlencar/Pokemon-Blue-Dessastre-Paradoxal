@@ -142,6 +142,8 @@ def plan(manifest: dict, report: dict, *, previous: dict | None = None) -> dict:
         "blocking_reasons": missing,
         "source_archive_sha256": pinned,
         "source_map_hashes": {str(n): audited[n]["sha256"] for n in sorted(wanted)},
+        "source_mapinfos_sha256": report.get("mapinfos_sha256"),
+        "source_tilesets_sha256": report.get("tilesets_sha256"),
         "original_names": {str(n): audited[n]["name"] for n in sorted(wanted)},
         "symbols": {str(n): wanted[n] for n in sorted(wanted)},
         "mapping": {str(n): mapping[n] for n in sorted(mapping)},
