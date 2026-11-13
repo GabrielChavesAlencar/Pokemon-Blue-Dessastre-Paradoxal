@@ -91,9 +91,12 @@ module BlueJohtoLegendaries
   end
 
   def self.item_in_bag?(item)
-    item && defined?(GameData::Item) && GameData::Item.respond_to?(:exists?) &&
-      GameData::Item.exists?(item) && defined?($bag) && $bag &&
-      $bag.respond_to?(:quantity) && $bag.quantity(item) > 0
+    return false unless item && defined?(GameData::Item) &&
+                        GameData::Item.respond_to?(:exists?) &&
+                        GameData::Item.exists?(item) && defined?($bag) && $bag &&
+                        $bag.respond_to?(:quantity)
+    quantity = $bag.quantity(item)
+    quantity.is_a?(Numeric) && quantity > 0
   end
 
   def self.give_item_once(item, flag)
@@ -296,6 +299,8 @@ module BlueJohtoLegendaries
                         marker?(ENCOUNTER_READY, ENCOUNTER_TOKEN)
     flags.delete("johto_legendary_pending")
     return false unless [:caught, :defeated].include?(outcome)
+    existing = flags["johto_legendary_results"]
+    return false if existing && !existing.is_a?(Hash)
     (flags["johto_legendary_results"] ||= {})[species.to_s] =
       outcome == :caught ? "caught" : "awaiting_verified_rematch"
     true
@@ -344,7 +349,7 @@ module BlueJohtoLegendaries
   def self.ruins_puzzle(index)
     flags = progress
     return false unless flags && flags["johto_ruins_entered"] &&
-                        RUINS_PUZZLES.include?(index) &&
+                        index.is_a?(Integer) && RUINS_PUZZLES.include?(index) &&
                         marker?(RUINS_READY, RUINS_TOKEN)
     solved = flags["johto_ruins_puzzles"] || []
     return false unless solved.is_a?(Array) && !solved.include?(index)
@@ -354,7 +359,8 @@ module BlueJohtoLegendaries
 
   def self.unown_research_ready?
     flags = progress
-    flags && (flags["johto_ruins_puzzles"] || []).any?
+    solved = flags && flags["johto_ruins_puzzles"]
+    solved.is_a?(Array) && !solved.empty?
   end
 
   # Optional minigames, Kanto Route 25, Mt. Silver and Red require real maps,
