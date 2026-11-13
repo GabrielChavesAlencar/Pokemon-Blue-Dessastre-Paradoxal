@@ -1,3 +1,6 @@
+require "json"
+require "digest"
+
 # Regional starting point for NEW GAME only.
 # Older saves and the native Decades introduction are never rewritten.
 module BlueRegionStart
@@ -19,22 +22,71 @@ module BlueRegionStart
     nil
   end
 
-  # Read-only guard for a future audited Johto installation. Neither file
-  # exists in the current game, so Decades/Kanto behavior stays unchanged.
-  # An isolated Johto pilot must provide the same two markers inside its COPY.
+  # Shared read-only release proof for the future ISOLATED Johto pilot.
+  # Arbitrary "{}" or a lone start marker is NOT a valid install. The hashes
+  # bind the proof to real deployed map metadata and two audited map files.
+  # Neither this method nor phase 16 produces a release proof automatically.
+  JOHTO_PROOFS = %w[
+    source_rights maps_and_warps sprites_and_tilesets story_events
+    trainers_pbs battles_and_encounters native_save_reload hms_and_badges
+    region_travel_and_box audio_rights_and_playback kanto_decades_regression
+    windows_gameplay joiplay_gameplay
+  ].freeze
+  def self.johto_install_proof
+    return nil unless File.file?(JOHTO_INSTALL) && !File.symlink?(JOHTO_INSTALL)
+    data = JSON.parse(File.read(JOHTO_INSTALL))
+    return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
+                      data["region"] == "JOHTO" &&
+                      data["status"] == "VERIFIED_PLAYABLE" &&
+                      data["source_archive_sha256"].is_a?(String) &&
+                      data["source_archive_sha256"].match?(/\\A[a-f0-9]{64}\\z/)
+    checks = data["checks"]
+    return nil unless checks.is_a?(Hash) &&
+                      JOHTO_PROOFS.all? { |key| checks[key] == true }
+    points = [data["start"], data["travel_point"]]
+    return nil unless points.all? do |point|
+      point.is_a?(Array) && point.length == 4 &&
+        point.all? { |v| v.is_a?(Integer) } &&
+        (600..999).include?(point[0]) &&
+        point[1] >= 0 && point[2] >= 0 &&
+        [2,4,6,8].include?(point[3]) &&
+        pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0]))
+    end
+    files = data["file_hashes"]
+    required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
+               points.map { |point| sprintf("Data/Map%03d.rxdata", point[0]) }
+    return nil unless files.is_a?(Hash) &&
+                      required.all? { |name|
+                        hash = files[name]
+                        hash.is_a?(String) && hash.match?(/\\A[a-f0-9]{64}\\z/) &&
+                          File.file?(name) && !File.symlink?(name) &&
+                          Digest::SHA256.file(name).hexdigest == hash
+                      }
+    data
+  rescue JSON::ParserError, IOError, SystemCallError, ArgumentError
+    nil
+  end
+
   def self.johto_spawn
-    return nil unless File.file?(JOHTO_MARKER) && File.file?(JOHTO_INSTALL)
+    proof = johto_install_proof
+    return nil unless proof && File.file?(JOHTO_MARKER) &&
+                      !File.symlink?(JOHTO_MARKER)
     fields = File.read(JOHTO_MARKER).strip.split(",")
     return nil unless fields.length == 5 && fields[0] == "BLUE_JOHTO_START_V1" &&
                       fields[1] == "JOHTO"
     values = fields[2, 3].map { |part| Integer(part, 10) rescue nil }
     return nil unless values.all? { |part| part.is_a?(Integer) }
     map_id, x, y = values
-    return nil unless map_id >= 600 && map_id <= 999 && x >= 0 && y >= 0
-    return nil unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", map_id))
+    return nil unless [map_id, x, y, 2] == proof["start"]
     [map_id, x, y]
   rescue IOError, SystemCallError, ArgumentError
     nil
+  end
+
+  def self.johto_town_point
+    proof = johto_install_proof
+    return nil unless proof && johto_spawn
+    proof["travel_point"]
   end
 
   def self.playable?(region)
