@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "S07 - completar integração de importador real sob reservas auditadas; staging isolado dry-run/rollback já codificado, sem importação para game/",
+  "next": "S07 R07 - validar reservas físicas e planejadas de todas as regiões com game/Data local; R08 conversão do conteúdo autorizado; R09 piloto e testes nativos. Em paralelo, desenvolver S08 sem tocar em saves.",
   "tasks": [
     {
       "id": "S01",
@@ -287,5 +287,68 @@
       "status": "done",
       "evidence_path": "docs/SINNOH_CODEX_PENDENCIAS.md"
     }
-  ]
+  ],
+  "remap_workstream": {
+    "task_id": "S07",
+    "status": "PARTIAL_NOT_INSTALLABLE",
+    "complete": 6,
+    "total": 9,
+    "substeps": [
+      {
+        "id": "R01",
+        "description": "Dry-run que gera SHA-256 determinístico sem escrever",
+        "complete": true,
+        "evidence": "scripts/regions/sinnoh_staging_transaction.py"
+      },
+      {
+        "id": "R02",
+        "description": "Criação transacional de staging somente em .blue-work",
+        "complete": true,
+        "evidence": "scripts/regions/sinnoh_staging_transaction.py"
+      },
+      {
+        "id": "R03",
+        "description": "Rollback local que recusa apagar um stage alterado",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_staging_transaction.py"
+      },
+      {
+        "id": "R04",
+        "description": "Remapeamento manual explícito com validação de ID e símbolo",
+        "complete": true,
+        "evidence": "scripts/regions/plan_sinnoh_remap.py"
+      },
+      {
+        "id": "R05",
+        "description": "Hashes congelados e preservação de IDs anteriores para saves",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_remap.py"
+      },
+      {
+        "id": "R06",
+        "description": "Prévia declarativa de remapeamento das transferências estáticas",
+        "complete": true,
+        "evidence": "scripts/regions/plan_sinnoh_remap.py"
+      },
+      {
+        "id": "R07",
+        "description": "Auditar reservas não instaladas Kanto, Johto e Hoenn na cópia local",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "R08",
+        "description": "Converter os dados reais de mapas/tilesets/eventos autorizados para o Blue",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "R09",
+        "description": "Integrar e testar a cópia de Sinnoh no Game.exe/JoiPlay sem regressão",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "note": "6/9 subetapas de preparação do S07; continua parcial, sem importar mapas reais, e não conta para fases técnicas/jogáveis."
+  }
 }
