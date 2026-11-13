@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6111be26309dda8ffa1ba4d47239ae8269227e4e",
+      "date": "2026-11-13T08:03:16-03:00",
+      "title": "fix(johto): preflight coteja SHA-256 real, MapIDs, marcador e provas do piloto",
+      "category": "Correções"
+    },
+    {
       "sha": "1fcf2ee50474bf8db58d1fa01e84fd2dc03effd3",
       "date": "2026-11-13T08:02:26-03:00",
       "title": "fix(johto): auditor bloqueia symlink e nao escreve relatorios ao recusar --apply",
