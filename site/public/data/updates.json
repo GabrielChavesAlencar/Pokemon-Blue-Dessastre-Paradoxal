@@ -2,6 +2,240 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9ef66197ef79afc98401629f1fc519aecf1fe15d",
+      "date": "2026-11-13T13:52:52-03:00",
+      "title": "Merge Johto offline progress 4/12 and New Bark bedroom (PR #36)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7942327188fd5d091e7b069e24d846624cb33f4c",
+      "date": "2026-11-13T13:51:26-03:00",
+      "title": "docs(johto): atualizar terceira barra para 4/12 mantendo QA real pendente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "3614e91301c326974b97d1a31378d004f9754825",
+      "date": "2026-11-13T13:51:23-03:00",
+      "title": "docs(johto): mostrar 4/12 com quarto autoral e proximo 05/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "3186080fae27ed2c5728a9304e1d2fd0dcb7f88f",
+      "date": "2026-11-13T13:51:21-03:00",
+      "title": "data(johto): avançar barra offline a 4/12 com quarto 2F real sem EXE",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "878057ade159b0cb2a2ebdaf288f4ddcdbc3a825",
+      "date": "2026-11-13T13:50:21-03:00",
+      "title": "docs(johto): descrever quarto 2F autoral 14x11, provas offline e limite de QA",
+      "category": "Documentação"
+    },
+    {
+      "sha": "9fcd4b24e351cd47c5331727513624a3721da52f",
+      "date": "2026-11-13T13:49:28-03:00",
+      "title": "test(johto): 5 cenários offline de quarto original sem eventos nem EXE",
+      "category": "Testes"
+    },
+    {
+      "sha": "4540deea7e09c08ffa11d0993c2bbd0f744fdfde",
+      "date": "2026-11-13T13:49:10-03:00",
+      "title": "feat(johto): gerar quarto 2F autoral de New Bark no staging isolado sem Game.exe",
+      "category": "Novidades"
+    },
+    {
+      "sha": "33b4f7026b5d8c9ae5c1ddc8c3d51d233b73b55f",
+      "date": "2026-11-13T13:34:59-03:00",
+      "title": "docs(johto): mostrar terceira barra offline 3/12 e referencia para 12 marcos",
+      "category": "Documentação"
+    },
+    {
+      "sha": "b6e84559cc122e74ac5bfcab166a1e557fd4db02",
+      "date": "2026-11-13T13:34:42-03:00",
+      "title": "data(johto): contabilizar progresso offline 3/12 em barra separada",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "5367d4eab126861c88bc007b85a8009e684d0042",
+      "date": "2026-11-13T13:34:39-03:00",
+      "title": "docs(johto): criar terceira barra de progresso offline 3/12 independente do Game.exe",
+      "category": "Documentação"
+    },
+    {
+      "sha": "a80a952afeb745cdee4cd78185a1e018651e8faa",
+      "date": "2026-11-13T13:29:36-03:00",
+      "title": "docs(johto): evidenciar avanço offline de New Bark até Violet sem liberar jogabilidade",
+      "category": "Documentação"
+    },
+    {
+      "sha": "37b919398f367d19d0f4c51090937533730ee21a",
+      "date": "2026-11-13T13:29:34-03:00",
+      "title": "docs(johto): evidenciar avanço offline de New Bark até Violet sem liberar jogabilidade",
+      "category": "Documentação"
+    },
+    {
+      "sha": "5951c69a82779541fa42567c664f9b8f47aa7a78",
+      "date": "2026-11-13T13:29:06-03:00",
+      "title": "docs(johto): comprovar 2 bordas faltantes até Violet sem Game.exe",
+      "category": "Documentação"
+    },
+    {
+      "sha": "9039add5be20a9fe1ed1873d88d6f45a1503cc30",
+      "date": "2026-11-13T13:28:06-03:00",
+      "title": "test(johto): validar alinhamento Route31-Violet com checagens estaticas de passabilidade",
+      "category": "Testes"
+    },
+    {
+      "sha": "121c9e18e4e598a5ba20e28d1c581e3f88deaa36",
+      "date": "2026-11-13T13:27:51-03:00",
+      "title": "feat(johto): conferir offline borda adicional Route31-Violet pelo tileset nativo",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0a1449b692ab5248e31931227a3c16e6fa5ecb56",
+      "date": "2026-11-13T13:24:20-03:00",
+      "title": "test(johto): confirmar ligacao Route29/Cherrygrove por malha de 3x4 e offsets",
+      "category": "Testes"
+    },
+    {
+      "sha": "a6f7911ef79d730dc9477a227eaa8889ac790e0b",
+      "date": "2026-11-13T13:23:58-03:00",
+      "title": "feat(johto): deduzir borda Route29-Cherrygrove por tiles reais sem executar Game.exe",
+      "category": "Novidades"
+    },
+    {
+      "sha": "57a61bd1b449de654d1e56421883d204026e94bf",
+      "date": "2026-11-13T13:15:04-03:00",
+      "title": "docs(johto): atualizar prova de 77 mapas stage privado sem aprovar 1/13",
+      "category": "Documentação"
+    },
+    {
+      "sha": "06a513af9b8ce29ed439d481fe764bde15cabef3",
+      "date": "2026-11-13T13:15:02-03:00",
+      "title": "docs(johto): atualizar prova de 77 mapas stage privado sem aprovar 1/13",
+      "category": "Documentação"
+    },
+    {
+      "sha": "00b3f6e9692b6dc586ffb8a36874e98ca5ee912a",
+      "date": "2026-11-13T13:14:39-03:00",
+      "title": "docs(johto): registrar staging privado auditado de 74 mapas + 3 interiores provisórios e 42 conexoes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "8db057e470551a6499dd6640a64c8b9babec4c7d",
+      "date": "2026-11-13T13:03:04-03:00",
+      "title": "docs(johto): marcar insumos nativos recebidos e manter aceite de gameplay bloqueado",
+      "category": "Documentação"
+    },
+    {
+      "sha": "acb0dddfcf1fbcf3df180d45cc74c8c48b2b86ea",
+      "date": "2026-11-13T13:03:01-03:00",
+      "title": "docs(johto): marcar insumos nativos recebidos e manter aceite de gameplay bloqueado",
+      "category": "Documentação"
+    },
+    {
+      "sha": "3f1eb35e1724a14474d65a77a1622ab920380312",
+      "date": "2026-11-13T13:01:14-03:00",
+      "title": "docs(johto): comprovar exportacao nativa 2460 arquivos, identificar sprites e interiores nao fieis",
+      "category": "Documentação"
+    },
+    {
+      "sha": "06c136846c9b2c897c7f019ef9e75ed62517a280",
+      "date": "2026-11-13T12:11:35-03:00",
+      "title": "docs(johto): relatório técnico verificável de bloqueios para 1/13 e checklist nativo",
+      "category": "Documentação"
+    },
+    {
+      "sha": "c6716e6e81f48678276e2d3a185d46a4c369645a",
+      "date": "2026-11-13T11:55:02-03:00",
+      "title": "docs(johto): descrever gate dos 12 eventos e montagem do primeiro piloto sem aprovar gameplay",
+      "category": "Documentação"
+    },
+    {
+      "sha": "bc966254700759e79c1645a5f9d784f7dfa4c055",
+      "date": "2026-11-13T11:55:00-03:00",
+      "title": "docs(johto): descrever gate dos 12 eventos e montagem do primeiro piloto sem aprovar gameplay",
+      "category": "Documentação"
+    },
+    {
+      "sha": "54e3ccc0e7b19f9bc570957faf065e9eac789fa7",
+      "date": "2026-11-13T11:54:57-03:00",
+      "title": "docs(johto): descrever gate dos 12 eventos e montagem do primeiro piloto sem aprovar gameplay",
+      "category": "Documentação"
+    },
+    {
+      "sha": "0509f81a7d37e5fdd2d2fbe0c0e6e1f5a28563cf",
+      "date": "2026-11-13T11:54:10-03:00",
+      "title": "feat(johto): atalho Windows monta copia experimental sem tocar no jogo original",
+      "category": "Novidades"
+    },
+    {
+      "sha": "376aac7eafdda58494b4355294f61c2252d84e26",
+      "date": "2026-11-13T11:53:46-03:00",
+      "title": "feat(johto): permitir montar primeiro piloto somente apos auditoria completa",
+      "category": "Novidades"
+    },
+    {
+      "sha": "68350e7077eecacef424c77c497dbb97f4f33501",
+      "date": "2026-11-13T11:52:44-03:00",
+      "title": "feat(johto): validar por atalho Windows 12 eventos, spawn e borda PBS",
+      "category": "Novidades"
+    },
+    {
+      "sha": "89df9939c5715d9a0d2aaed06f45e617ea634034",
+      "date": "2026-11-13T11:52:12-03:00",
+      "title": "test(johto): simular aceite dos 12 eventos/spawn, bordas PBS e bloqueios",
+      "category": "Testes"
+    },
+    {
+      "sha": "7aa9b53d1f13e3bb20e6a71d69bbccfc1b87dee8",
+      "date": "2026-11-13T11:51:30-03:00",
+      "title": "fix(johto): proteger topologia de 12 eventos e handlers do primeiro piloto",
+      "category": "Correções"
+    },
+    {
+      "sha": "abbe832fe7e145e49b4e92b66d524fdbcc84b651",
+      "date": "2026-11-13T11:50:49-03:00",
+      "title": "feat(johto): auditar 12 eventos e spawn de New Bark antes da copia jogavel",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f8d390fc74fc9572c66d2ba43dea0f5c4eb8c817",
+      "date": "2026-11-13T11:39:49-03:00",
+      "title": "docs(johto): registrar exportacao privada da base sem alterar 0/13 jogavel e QA",
+      "category": "Documentação"
+    },
+    {
+      "sha": "287fb6eca1d9b6cbe6d186f05a1ddf6bfb7eb52e",
+      "date": "2026-11-13T11:39:46-03:00",
+      "title": "docs(johto): registrar exportacao privada da base sem alterar 0/13 jogavel e QA",
+      "category": "Documentação"
+    },
+    {
+      "sha": "c4735aac52f48f5233204649fb2170ab8639e98a",
+      "date": "2026-11-13T11:38:59-03:00",
+      "title": "docs(johto): orientar envio privado de game Data/PBS/Graphics para primeiro piloto",
+      "category": "Documentação"
+    },
+    {
+      "sha": "19dad9650ffeca15c42130a1b5d85ee30ffd3da1",
+      "date": "2026-11-13T11:38:33-03:00",
+      "title": "feat(johto): adicionar atalho Windows para exportar insumos privados da fase 04",
+      "category": "Novidades"
+    },
+    {
+      "sha": "bc5bd5bde7c2e0abe5c89f6ec1f749a6c7902953",
+      "date": "2026-11-13T11:38:19-03:00",
+      "title": "test(johto): validar ZIP privado sem saves/executaveis e bloqueios de seguranca",
+      "category": "Testes"
+    },
+    {
+      "sha": "e0ea33b03ab201224312c7e9234b109c7bad52d0",
+      "date": "2026-11-13T11:37:56-03:00",
+      "title": "feat(johto): criar exportador privado de dados nativos para New Bark sem saves ou executavel",
+      "category": "Novidades"
+    },
+    {
       "sha": "c627abd1aceeb6bdc54aab62842d305b49e95d6a",
       "date": "2026-11-13T11:29:23-03:00",
       "title": "feat(johto): auditar fachadas reais New Bark e eliminar warps duplicados para Route29",
