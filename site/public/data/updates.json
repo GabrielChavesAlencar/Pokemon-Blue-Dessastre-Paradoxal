@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d2f55d4e30a73f2c0d9589f124b30b149497cf6d",
+      "date": "2026-11-13T07:46:24-03:00",
+      "title": "fix(regions): exige manifesto Johto com hashes e aceite real antes de habilitar Novo Jogo",
+      "category": "Novidades"
+    },
+    {
       "sha": "0b15160887756d6e3c6ad92d856c5331ad6200b1",
       "date": "2026-11-13T07:37:55-03:00",
       "title": "docs(johto): sincroniza fase 15 M0-M6 portal de prévia e treinadores pendentes",
