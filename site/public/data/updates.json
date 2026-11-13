@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "332b10ee780d0c1f0f4f2af6f6d8241ce4cc4381",
+      "date": "2026-11-13T16:03:23-03:00",
+      "title": "feat(site): adicionar slots Android para pilotos Kanto e Johto somente com assets verificados",
+      "category": "Novidades"
+    },
+    {
       "sha": "63d7664c159cf18d6c64281d02db72697612fed0",
       "date": "2026-11-13T16:00:38-03:00",
       "title": "fix(site): balancear expressão de nível dinâmico",
