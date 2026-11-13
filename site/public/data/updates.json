@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "89958012e8a3c6c6d0d4405a5336d91629203e6d",
+      "date": "2026-11-12T21:24:16-03:00",
+      "title": "docs(johto): sincroniza plano com Jasmine MINERAL e Whirl Islands bloqueadas",
+      "category": "Documentação"
+    },
+    {
       "sha": "a1a10ddcb626ae9e263e736abcb1f810457f1896",
       "date": "2026-11-12T21:23:39-03:00",
       "title": "docs(johto): contabiliza Etapa 10 parcial no acompanhamento de 16 passos",
