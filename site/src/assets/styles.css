@@ -240,3 +240,9 @@
 .kanto-encounters table{width:100%;border-collapse:collapse;text-align:left;margin-top:10px}
 .kanto-encounters td,.kanto-encounters th{padding:6px 5px;border-bottom:1px solid var(--line)}
 .kanto-encounters td a{text-decoration:underline;text-underline-offset:.18em}
+
+/* Johto Phase 15 preview: informational only, no fake playable links. */
+.johto-preview-list{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.65rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr))}
+.johto-preview-list li{display:flex;flex-direction:column;gap:.28rem;padding:.8rem .9rem;background:var(--surface,#151d30);border:1px solid var(--border,rgba(140,160,190,.15));border-radius:12px;min-width:0}
+.johto-preview-list strong{font-size:.9rem;overflow-wrap:anywhere}
+.johto-preview-list span{font-size:.75rem;opacity:.75;overflow-wrap:anywhere}
