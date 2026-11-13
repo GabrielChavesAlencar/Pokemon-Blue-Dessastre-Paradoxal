@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1fcf2ee50474bf8db58d1fa01e84fd2dc03effd3",
+      "date": "2026-11-13T08:02:26-03:00",
+      "title": "fix(johto): auditor bloqueia symlink e nao escreve relatorios ao recusar --apply",
+      "category": "Correções"
+    },
+    {
       "sha": "19832f6be7ebb8ca4b93e9ac1aa70dc4b6f6cbd3",
       "date": "2026-11-13T07:58:48-03:00",
       "title": "docs(johto): sincroniza plano de 16 etapas com gate final e impedimentos reais",
