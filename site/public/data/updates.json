@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "951ee3e563e06a6d83aa9f21a77060bf9ac5e8a5",
+      "date": "2026-11-13T07:08:38-03:00",
+      "title": "test(johto): executa as regras de lendários de Johto na regressão do Blue Studio",
+      "category": "Testes"
+    },
+    {
       "sha": "2eba580dca6a0551a285620f158a5f7060899ae4",
       "date": "2026-11-13T07:08:16-03:00",
       "title": "test(johto): fase 14 HG SS Crystal, Kimono, roamers, Lugia Ho-Oh, ruínas e isolamento",
