@@ -39,7 +39,7 @@ module BlueMobile
       return
     end
     region=File.file?('Kanto pilot.json') ? 'Kanto (piloto)' : 'Decades'
-    revision=File.read(marker)[/"revision"\\s*:\\s*"([a-f0-9]{40})"/,1] rescue nil
+    revision=File.read(marker)[/"revision"\s*:\s*"([a-f0-9]{40})"/,1] rescue nil
     revision=revision ? revision[0,12] : 'nao identificada'
     BlueBattleLab.choose('Atualizacoes Android',[
       'Canal: '+region,
