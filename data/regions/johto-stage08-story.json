@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "region": "JOHTO",
+  "status": "STORY_EVENT_COORDINATES_STATIC_ONLY_NOT_GAMEPLAY_TESTED",
+  "requires_stage_status": "BLUE_WARP_PREVIEW_ONLY_NOT_PLAYABLE",
+  "requires_warp_keys": [
+    "JH_HOME2F_TO_1F",
+    "JH_HOME1F_TO_2F",
+    "JH_HOME1F_TO_TOWN",
+    "JH_TOWN_TO_HOME1F",
+    "JH_TOWN_TO_ELM_LAB",
+    "JH_LAB_TO_TOWN"
+  ],
+  "requires_existing_warps": 6,
+  "npcs": [
+    {
+      "key": "JH_NPC_MOTHER",
+      "symbol": "JOHTO_NEW_BARK_PLAYER_HOME_1F",
+      "x": 6,
+      "y": 8,
+      "sprite": "NPC_GSC_Mom",
+      "handler": "mother",
+      "trigger": "action",
+      "engine_verified": false
+    },
+    {
+      "key": "JH_NPC_ELM",
+      "symbol": "JOHTO_NEW_BARK_ELM_LAB",
+      "x": 10,
+      "y": 4,
+      "sprite": "NPC_HGSS_Professor_Elm",
+      "handler": "elm",
+      "trigger": "action",
+      "engine_verified": false
+    },
+    {
+      "key": "JH_ROUTE29_NPC_RIVAL",
+      "symbol": "JOHTO_ROUTE_29",
+      "x": 71,
+      "y": 17,
+      "sprite": "NPC_HGSS_Silver",
+      "handler": "rival",
+      "trigger": "action",
+      "engine_verified": false
+    }
+  ],
+  "starter_balls": [
+    {
+      "key": "JH_STARTER_CHIKORITA",
+      "symbol": "JOHTO_NEW_BARK_ELM_LAB",
+      "x": 7,
+      "y": 7,
+      "sprite": "Object_Ball",
+      "species": "CHIKORITA",
+      "static_tile_id": 5328,
+      "handler": "choose_starter_from_ball",
+      "engine_verified": false,
+      "static_tile_x": 7,
+      "static_tile_y": 6,
+      "interact_from_x": 7,
+      "interact_from_y": 8
+    },
+    {
+      "key": "JH_STARTER_CYNDAQUIL",
+      "symbol": "JOHTO_NEW_BARK_ELM_LAB",
+      "x": 10,
+      "y": 7,
+      "sprite": "Object_Ball",
+      "species": "CYNDAQUIL",
+      "static_tile_id": 5329,
+      "handler": "choose_starter_from_ball",
+      "engine_verified": false,
+      "static_tile_x": 10,
+      "static_tile_y": 6,
+      "interact_from_x": 10,
+      "interact_from_y": 8
+    },
+    {
+      "key": "JH_STARTER_TOTODILE",
+      "symbol": "JOHTO_NEW_BARK_ELM_LAB",
+      "x": 13,
+      "y": 7,
+      "sprite": "Object_Ball",
+      "species": "TOTODILE",
+      "static_tile_id": 5330,
+      "handler": "choose_starter_from_ball",
+      "engine_verified": false,
+      "static_tile_x": 13,
+      "static_tile_y": 6,
+      "interact_from_x": 13,
+      "interact_from_y": 8
+    }
+  ],
+  "assumptions": [
+    "Elm dialogue sets elm_intro before selecting a ball",
+    "Silver position x71 y17 near Route29 east side, not proven in engine",
+    "Each ball graphic/event moves one tile forward onto front edge of pedestal (y7) so the player can interact from y8; the original static ball tile at y6 is removed to avoid duplication"
+  ],
+  "approval": {
+    "can_install": false,
+    "gameplay_playable": false,
+    "tested_in_game": false,
+    "installer_integrated": false
+  }
+}

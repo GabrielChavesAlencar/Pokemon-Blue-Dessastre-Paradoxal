@@ -63,27 +63,37 @@ module BlueJohtoPilot
     true
   end
 
-  # Idempotent by save state. The caller must provide an explicit Elm event in
-  # a verified Johto laboratory. Never run this on Decades/Kanto or on load.
-  def self.choose_starter
+  # Each Poké Ball event passes a FIXED species. No menu from Elm/dialogue.
+  # This lives only in the isolated Johto runtime; no global battle hooks.
+  def self.choose_starter_from_ball(species)
     flags = progress
     return false unless flags
-    if starter
+    requested = (species.is_a?(String) || species.is_a?(Symbol)) ? species.to_sym : nil
+    return false unless STARTERS.include?(requested)
+    if flags["starter_received"] || flags.key?("starter")
       pbMessage(_INTL("Elm: Você já escolheu seu Pokémon."))
       return false
     end
-    names = STARTERS.map { |species| GameData::Species.get(species).name }
-    selection = pbMessage(_INTL("Elm: Quem será seu primeiro parceiro?"),
-                          names + [_INTL("Voltar")], 3)
-    return false unless selection.is_a?(Integer) &&
-                        selection >= 0 && selection < STARTERS.length
-    species = STARTERS[selection]
-    return false unless pbAddPokemonSilent(species, 5)
-    flags["starter"] = species.to_s
+    unless flags["elm_intro"]
+      pbMessage(_INTL("Elm: Converse comigo antes de escolher uma das Poké Bolas."))
+      return false
+    end
+    # Only mark the save after the engine actually succeeds in granting it.
+    return false unless pbAddPokemonSilent(requested, 5)
+    flags["starter"] = requested.to_s
     flags["starter_received"] = true
-    pbMessage(_INTL("Elm: {1} irá com você. Que tal conhecer Cherrygrove?",
-                    names[selection]))
+    pbMessage(_INTL("Elm: {1} irá com você. Boa jornada por Johto!",
+                    GameData::Species.get(requested).name))
     true
+  end
+
+  # Kept as a non-granting compatibility entrypoint for older experiment
+  # calls; actual selection is exclusively via physical Poké Ball events.
+  def self.choose_starter
+    flags = progress
+    return false unless flags
+    pbMessage(_INTL("Elm: Escolha uma das três Poké Bolas sobre as bancadas."))
+    false
   end
 
   def self.rival_species

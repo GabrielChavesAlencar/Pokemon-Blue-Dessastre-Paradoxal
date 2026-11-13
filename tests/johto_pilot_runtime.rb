@@ -72,33 +72,34 @@ Dir.mktmpdir("johto-pilot-test-") do |dir|
     check(!BlueJohtoPilot.mother, "Johto mother should not run in Decades")
     check(!BlueJohtoPilot.elm, "Johto Elm should not run in Decades")
     check(!BlueJohtoPilot.choose_starter, "Johto starter cannot be taken from Decades")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:CHIKORITA), "Decades cannot receive Johto starter from ball")
     check(!BlueJohtoPilot.rival, "Johto rival cannot run in Decades")
     check(Marshal.dump($PokemonGlobal.blue_regions) == previous, "Johto polluted Decades")
     $PokemonGlobal.blue_regions["current"] = "KANTO"
     check(!BlueJohtoPilot.choose_starter, "Johto starter cannot be taken from Kanto")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:TOTODILE), "Kanto cannot receive Johto ball starter")
     check(!$PokemonGlobal.blue_regions.key?("johto_pilot"), "Kanto save got Johto flags")
 
     $PokemonGlobal.blue_regions["current"] = "JOHTO"
     check(BlueJohtoPilot.mother, "Initial mother conversation missing")
     check(!BlueJohtoPilot.mother, "Mother intro repeated")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:CYNDAQUIL), "Must talk to Elm first")
     check(BlueJohtoPilot.elm, "Elm intro missing")
-    $questions = [3]
-    check(!BlueJohtoPilot.choose_starter, "Cancel gave a starter")
-    check($player.party.empty?, "Cancel modified party")
+    check(!BlueJohtoPilot.choose_starter, "Old Elm dialogue must not grant starter")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:PIKACHU), "Unlisted ball species granted")
+    check($player.party.empty?, "Elm dialogue gave starter without clicking ball")
 
     $give_pokemon = false
-    $questions = [1]
-    check(!BlueJohtoPilot.choose_starter, "Failed party add was marked successful")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:CYNDAQUIL), "Failed party add was marked successful")
     check(BlueJohtoPilot.starter.nil?, "Failed starter persisted")
     $give_pokemon = true
-    $questions = [1]
-    check(BlueJohtoPilot.choose_starter, "Cyndaquil was not granted")
+    check(BlueJohtoPilot.choose_starter_from_ball(:CYNDAQUIL), "Cyndaquil ball did not grant starter")
     check($player.party == [[:CYNDAQUIL, 5]], "Wrong starter or level")
     check(BlueJohtoPilot.starter == :CYNDAQUIL, "Starter not saved")
     check(BlueJohtoPilot.rival_species == :TOTODILE, "Rival must counter Cyndaquil")
     check(BlueJohtoPilot.rival_version == 1, "Wrong rival PBS version")
-    $questions = [2]
-    check(!BlueJohtoPilot.choose_starter, "Duplicate Elm gift allowed")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:TOTODILE), "Second ball gave duplicate")
+    check(!BlueJohtoPilot.choose_starter, "Elm dialogue gave duplicate")
     check($player.party.size == 1, "Extra starter was duplicated")
 
     check(!BlueJohtoPilot.rival, "Uninstalled rival PBS should be blocked")
@@ -119,7 +120,7 @@ Dir.mktmpdir("johto-pilot-test-") do |dir|
     $PokemonGlobal.blue_regions = Marshal.load(saved)
     check(BlueJohtoPilot.starter == :CYNDAQUIL, "Save/reload lost starter")
     check(BlueJohtoPilot.rival_fought?, "Save/reload lost rival progress")
-    check(!BlueJohtoPilot.choose_starter, "Reload re-awarded starter")
+    check(!BlueJohtoPilot.choose_starter_from_ball(:CHIKORITA), "Reload re-awarded starter")
     $PokemonGlobal.blue_regions["current"] = "DECADES"
     check(!BlueJohtoPilot.rival, "Old region got Johto event after travel")
   end
