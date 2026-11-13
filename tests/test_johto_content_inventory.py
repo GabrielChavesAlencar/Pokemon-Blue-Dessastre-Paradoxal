@@ -156,5 +156,15 @@ class JohtoInventoryTests(unittest.TestCase):
                     audit_johto.write_report(Path(temp) / "game/Data/Map001.rxdata", found)
 
 
+    def test_windows_helper_stays_read_only(self):
+        batch = (ROOT / "JOHTO_PREPARAR_MAPAS.bat").read_text("utf-8").lower()
+        self.assertIn("inventory_johto.py", batch)
+        self.assertIn("audit_johto.py", batch)
+        self.assertIn("prepare_johto_source.py", batch)
+        self.assertIn("original.zip", batch)
+        self.assertNotIn("--apply", batch)
+        self.assertNotIn("install_johto.py", batch)
+        self.assertNotIn("copy /", batch)
+
 if __name__ == "__main__":
     unittest.main()
