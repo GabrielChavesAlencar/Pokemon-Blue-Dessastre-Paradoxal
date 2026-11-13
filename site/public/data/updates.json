@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c2404c1c7f420f6c195519349bffc401975c41c",
+      "date": "2026-11-13T20:30:19-03:00",
+      "title": "data(sinnoh): register deep source and map-capacity audit tools without changing readiness",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3b535871dcef3460409b98aa7a174128e45f3487",
       "date": "2026-11-13T20:29:46-03:00",
       "title": "docs(sinnoh): remove duplicate Codex work for new RXDATA and ID-capacity tools",
