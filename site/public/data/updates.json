@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "baef484e6e4bc9e33e25369d10a186b5a66663a5",
+      "date": "2026-11-13T17:53:37-03:00",
+      "title": "test(android): include real-order Input source in fake native compiler fixture",
+      "category": "Testes"
+    },
+    {
       "sha": "c57a05374f3e26a0519ae6fe67b88a1634a57fce",
       "date": "2026-11-13T17:53:21-03:00",
       "title": "fix(android): require early Input shim in published Kanto pilot ZIP",
