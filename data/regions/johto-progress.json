@@ -99,7 +99,8 @@
         "Pipeline local de preflight do ZIP v1 -> 74 mapas em previa + 42 conexoes remapeadas para IDs livres, sujeito a game/ real",
         "Piloto experimental pode mesclar PBS Johto em copia isolada via --with-connections (nao liberado automaticamente)",
         "Map079 real (22x48) inspecionado: 4 fachadas candidatas com coordenadas e snapshots de tiles SHA-256, sem alegar porta validada",
-        "No piloto com --with-connections, os dois warps redundantes para Route29 sao removidos da copia em memoria e substituidos pela borda PBS real"
+        "No piloto com --with-connections, os dois warps redundantes para Route29 sao removidos da copia em memoria e substituidos pela borda PBS real",
+        "Exportador local de insumos nativos com allowlist e SHA-256 criado; somente game/ local, sem executavel/saves/plugins e sem ZIP publico; testes sinteticos do exportador"
       ],
       "blockers": [
         "Interior do quarto/casa/laboratório e warps reais sem teste no Game.exe",
@@ -282,7 +283,7 @@
   "source_manifest": "data/regions/johto-source.json",
   "connections_manifest": "data/regions/johto-v1-map-connections.json",
   "gameplay_proof": "NO_WINDOWS_OR_JOIPLAY_GAMEPLAY_APPROVAL",
-  "next_required_input": "Instalacao nativa game/Data (MapInfos.rxdata, Tilesets.rxdata e MapNNN.rxdata), game/Graphics (Tilesets/Autotiles/Characters) e game/PBS, sem saves. Nao subir assets de terceiros ao GitHub sem autorizacao.",
+  "next_required_input": "Gerar .blue-work/johto-pilot-inputs.zip com JOHTO_EXPORTAR_BASE_PILOTO.bat sprites e compartilhar apenas em conversa privada, sem publicacao de assets no GitHub; ainda exige revisao de interiores/portas e gameplay em Game.exe",
   "progress_labels": {
     "playable": "Fases jogáveis no Game.exe",
     "tested": "Fases testadas no jogo (QA aprovado)",
