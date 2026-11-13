@@ -190,9 +190,13 @@ def build(game: Path, output: Path, revision: str) -> dict:
                 archive.write(file, FOLDER + name)
             archive.writestr(FOLDER + "LEIA-ME-ANDROID-KANTO.txt", text)
             archive.writestr(FOLDER + "Data/blue-kanto-android-build.txt", build_info)
+            # Mandatory Android runtime switch: without this Mobile.rb stays
+            # disabled and touches crash with Input.mouse_in_window on JoiPlay.
+            archive.writestr(FOLDER + "Data/blue-mobile.txt", b"experimental-v1\n")
             archive.writestr(FOLDER + "Data/blue-update.json",
                              installed_manifest("kanto", revision, {
                                  **files, "Data/blue-kanto-android-build.txt": build_info.encode("utf8"),
+                                 "Data/blue-mobile.txt": b"experimental-v1\n",
                                  "ATUALIZAR-ANDROID.py":
                                      (ROOT / "scripts/android/update_client.py").read_bytes(),
                                  "LEIA-ME-ANDROID-KANTO.txt": text.encode("utf8")
@@ -240,6 +244,8 @@ def verify_archive(zip_path: Path, revision: str) -> dict:
         config = archive.read(FOLDER + "mkxp.json").decode("utf-8-sig")
         if not _kanto_save_profile(config):
             raise ValueError("Archived Kanto saves would overlap with Decades.")
+        if archive.read(FOLDER + "Data/blue-mobile.txt") != b"experimental-v1\n":
+            raise ValueError("Kanto Android mobile adapter is disabled (missing marker).")
         verify_manifest(archive, FOLDER, "kanto", revision)
         verify_early_input(archive.read(FOLDER + "Data/Scripts.rxdata"))
         return {"region": "KANTO", "revision": revision, "maps": len(mapping), "mobile_sha256": mobile}
