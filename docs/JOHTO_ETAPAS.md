@@ -372,3 +372,12 @@ Com os ZIPs auditados da fonte e instalação Blue/Decades, gerado **staging pri
 ### Etapa 05 — duas ligações derivadas offline do próprio terreno de Johto
 
 Com os RXDATA reais do staging privado, o verificador localizou dois corredores **unívocos**, cada um com a assinatura de estrada `[116,96,124]` e flags de direção livres por três linhas × quatro colunas em ambos os mapas: **Route29 (625) ↔ Cherrygrove (601)**, PBS candidato `601,East,12,625,West,0`, e **Route31 (627) ↔ Violet (602)**, PBS candidato `602,East,6,627,West,0`. Agora existe uma sequência topológica *proposta* New Bark → Rota 29 → Cherrygrove → Rota 30 → Rota 31 → Violet, pois as outras três conexões já constam no donor v1. Duas ferramentas Python e nove testes sintéticos validados, além de execução das rotinas de extração de tile dos quatro mapas reais. **Não instalar candidatos na campanha, nem marcar Game.exe jogável/testado.** Ver [documentação](JOHTO_FASE05_CONEXOES_OFFLINE_ATE_VIOLET.md).
+
+
+## Barra 3 — Desenvolvimento OFFLINE (sem Game.exe)
+
+**3/12 marcos técnicos concluídos (25%) — `[###---------]`**
+
+A terceira barra é **independente** das barras **1) Jogáveis 0/13** e **2) Testadas 0/13**. Ela usa `data/regions/johto-progress.json → offline_development`. Foram contabilizados apenas: **1) auditoria dos dados nativos e fonte; 2) staging de 74 mapas mais três salas provisórias; 3) auditoria de duas bordas faltantes**. Essas entregas não significam mapas com eventos jogáveis.
+
+Próximo: **04/12, desenhar o quarto do jogador 2F**. Depois, casa 1F (05), laboratório de Elm (06), portas e spawn (07), eventos (08), PBS de iniciais/rival (09), encontros e treinadores (10), Violet/Sprout/Falkner (11) e auditoria de integração offline (12). Ver [barra e critérios detalhados](JOHTO_BARRA_DESENVOLVIMENTO_OFFLINE.md). **Não executar Game.exe** para completar nenhum dos 12 marcos; isso será avaliado apenas nas barras originais, mais tarde.
