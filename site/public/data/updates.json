@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e7d9d2d3e76fedc3dd5803ca75053028963bf59d",
+      "date": "2026-11-13T08:28:18-03:00",
+      "title": "docs(johto): plano definitivo de mapas eventos NPCs itens musica e batalha Blue",
+      "category": "Documentação"
+    },
+    {
       "sha": "7a8601387a8861c5c146d480238a862c87bdbc4f",
       "date": "2026-11-13T08:14:46-03:00",
       "title": "chore(vercel): bloquear deploy automático também na raiz do repositório",
