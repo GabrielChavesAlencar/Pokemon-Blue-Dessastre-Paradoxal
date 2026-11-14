@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Piloto isolado de Hoenn (até Lilycove): 110 MapIDs e 144 equipes-base. Badge Balance/Feather usa BlueRegions; Surf/Fly e Castform aguardam testes nativos no Game.exe. A conclusão de Norman, Weather Institute, Winona e rival Lilycove é apenas técnica, não prova jogabilidade completa.",
+  "note": "Hoenn até Mossdeep/Mt Pyre/esconderijos: 138 MapIDs e 186 equipes catalogadas. Eventos de BlueRegions Mind, Magma/Aqua, submarino e Dive são provisórios até teste Game.exe. Conexões costeiras requerem Surf; batalhas Magma grunts usam equipes provisórias aguardando comparação por evento; Steven dupla nativa não aprovada.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -1280,6 +1280,118 @@
           ]
         ]
       }
+    },
+    {
+      "name": "Mossdeep City",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Mossdeep",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Mossdeep",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Mossdeep",
+      "encounters": {}
+    },
+    {
+      "name": "Mossdeep Game Corner",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Espacial de Mossdeep",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Mossdeep",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 122",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 124",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 1F",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 2F-1",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 2F-2",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 2F-3",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 3F-1",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 3F-2",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 3F-3",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Magma 4F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre 1F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre 2F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre 3F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre 4F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre 5F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre 6F",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre Exterior",
+      "encounters": {}
+    },
+    {
+      "name": "Mt. Pyre Summit",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Aqua 1F",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Aqua B1F",
+      "encounters": {}
+    },
+    {
+      "name": "Esconderijo Aqua B2F",
+      "encounters": {}
     }
   ],
   "trainers": [
@@ -4286,6 +4398,880 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Maura",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "KADABRA",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Nate",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SPOINK",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Preston",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "KIRLIA",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Hannah",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "KIRLIA",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Virgil",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "RALTS",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Macey",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "NATU",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Blake",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "GIRAFARIG",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Samantha",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "XATU",
+              36
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Mark",
+      "area": "Mt. Pyre 2F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "RHYHORN",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Leah",
+      "area": "Mt. Pyre 2F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SPOINK",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Zander",
+      "area": "Mt. Pyre 2F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "HARIYAMA",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "William",
+      "area": "Mt. Pyre 3F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "RALTS",
+              26
+            ],
+            [
+              "RALTS",
+              26
+            ],
+            [
+              "KIRLIA",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Gabrielle",
+      "area": "Mt. Pyre 3F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SKITTY",
+              26
+            ],
+            [
+              "POOCHYENA",
+              26
+            ],
+            [
+              "ZIGZAGOON",
+              26
+            ],
+            [
+              "LOTAD",
+              26
+            ],
+            [
+              "SEEDOT",
+              26
+            ],
+            [
+              "TAILLOW",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Kayla",
+      "area": "Mt. Pyre 3F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "WOBBUFFET",
+              26
+            ],
+            [
+              "NATU",
+              26
+            ],
+            [
+              "KADABRA",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tasha",
+      "area": "Mt. Pyre 4F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SHUPPET",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Atsushi",
+      "area": "Mt. Pyre 5F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "HARIYAMA",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Cedric",
+      "area": "Mt. Pyre 6F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "WOBBUFFET",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Valerie",
+      "area": "Mt. Pyre 6F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SABLEYE",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Mt. Pyre (920)",
+      "area": "Mt. Pyre Summit",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              32
+            ],
+            [
+              "CARVANHA",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Mt. Pyre (921)",
+      "area": "Mt. Pyre Summit",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "ZUBAT",
+              32
+            ],
+            [
+              "POOCHYENA",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Mt. Pyre (922)",
+      "area": "Mt. Pyre Summit",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "CARVANHA",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Mt. Pyre (923)",
+      "area": "Mt. Pyre Summit",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "ZUBAT",
+              32
+            ],
+            [
+              "CARVANHA",
+              32
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (940)",
+      "area": "Esconderijo Magma 1F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              33
+            ],
+            [
+              "GOLBAT",
+              33
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (941)",
+      "area": "Esconderijo Magma 1F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              33
+            ],
+            [
+              "NUMEL",
+              33
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (942)",
+      "area": "Esconderijo Magma 2F-1",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              34
+            ],
+            [
+              "POOCHYENA",
+              34
+            ],
+            [
+              "GOLBAT",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (943)",
+      "area": "Esconderijo Magma 2F-1",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              34
+            ],
+            [
+              "GOLBAT",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (944)",
+      "area": "Esconderijo Magma 2F-2",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              34
+            ],
+            [
+              "NUMEL",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (945)",
+      "area": "Esconderijo Magma 4F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "GOLBAT",
+              35
+            ],
+            [
+              "CAMERUPT",
+              35
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Hideout (946)",
+      "area": "Esconderijo Magma 4F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              35
+            ],
+            [
+              "NUMEL",
+              35
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Hideout (950)",
+      "area": "Esconderijo Aqua B1F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "CARVANHA",
+              33
+            ],
+            [
+              "MIGHTYENA",
+              33
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Hideout (951)",
+      "area": "Esconderijo Aqua B1F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "ZUBAT",
+              33
+            ],
+            [
+              "POOCHYENA",
+              33
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Hideout (952)",
+      "area": "Esconderijo Aqua B1F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "CARVANHA",
+              34
+            ],
+            [
+              "ZUBAT",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Hideout (953)",
+      "area": "Esconderijo Aqua B2F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              34
+            ],
+            [
+              "ZUBAT",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua · Hideout (954)",
+      "area": "Esconderijo Aqua B2F",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "CARVANHA",
+              34
+            ],
+            [
+              "POOCHYENA",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Space Center (991)",
+      "area": "Centro Espacial de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              31
+            ],
+            [
+              "ZUBAT",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma · Space Center (994)",
+      "area": "Centro Espacial de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base provisória — confrontar PBS do evento RXDATA; nível escala Blue",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              31
+            ],
+            [
+              "NUMEL",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tate & Liza",
+      "area": "Ginásio de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "CLAYDOL",
+              41
+            ],
+            [
+              "XATU",
+              41
+            ],
+            [
+              "LUNATONE",
+              42
+            ],
+            [
+              "SOLROCK",
+              42
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "MIND"
+    },
+    {
+      "name": "Matt",
+      "area": "Esconderijo Aqua B2F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              34
+            ],
+            [
+              "GOLBAT",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tabitha (Esconderijo Magma)",
+      "area": "Esconderijo Magma 4F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "NUMEL",
+              26
+            ],
+            [
+              "MIGHTYENA",
+              28
+            ],
+            [
+              "ZUBAT",
+              30
+            ],
+            [
+              "CAMERUPT",
+              33
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Maxie (Esconderijo Magma)",
+      "area": "Esconderijo Magma 4F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              37
+            ],
+            [
+              "CROBAT",
+              38
+            ],
+            [
+              "CAMERUPT",
+              39
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Maxie (Centro Espacial)",
+      "area": "Centro Espacial de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              42
+            ],
+            [
+              "CROBAT",
+              43
+            ],
+            [
+              "CAMERUPT",
+              44
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tabitha (Centro Espacial)",
+      "area": "Centro Espacial de Mossdeep",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "CAMERUPT",
+              36
+            ],
+            [
+              "MIGHTYENA",
+              38
+            ],
+            [
+              "GOLBAT",
+              40
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
   ],
   "native_gameplay_verified": false,
@@ -4294,5 +5280,6 @@
   "stage5_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage6_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage7_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
-  "stage8_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
+  "stage8_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
+  "stage9_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
