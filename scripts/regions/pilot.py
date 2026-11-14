@@ -660,6 +660,49 @@ def make_viridian_route2_gates(events, source, city_map, route_map):
     return gates
 
 
+def pewter_route3_east_rows(source, city_height, route_height):
+    """Find the exact FRLG Pewter(25) <-> Route 3(32) east-west edge."""
+    found = []
+    lines = (source / "PBS/map_connections.txt").read_text(
+        encoding="utf-8-sig").splitlines()
+    for line in lines:
+        row = line.split("#", 1)[0].strip()
+        if not row:
+            continue
+        parts = [part.strip() for part in row.split(",")]
+        if len(parts) != 6:
+            raise ValueError("Malformed FRLG map connection: " + row)
+        a, a_side, a_offset, b, b_side, b_offset = parts
+        if (int(a), int(b)) == (25, 32):
+            city_side, city_offset, route_side, route_offset = (
+                a_side, int(a_offset), b_side, int(b_offset))
+        elif (int(a), int(b)) == (32, 25):
+            city_side, city_offset, route_side, route_offset = (
+                b_side, int(b_offset), a_side, int(a_offset))
+        else:
+            continue
+        if (city_side, route_side) != ("East", "West"):
+            raise ValueError("Pewter -> Route 3 source is not an east-west edge")
+        first = max(0, city_offset - route_offset)
+        last = min(city_height, route_height + city_offset - route_offset)
+        if first >= last:
+            raise ValueError("Pewter -> Route 3 has no overlapping rows")
+        found.append((first, last))
+    if len(found) != 1:
+        raise ValueError("Expected exactly one Pewter to Route 3 source connection")
+    return found[0]
+
+
+def install_pewter_route3_gate(source, target, mapping):
+    """Native movement guard uses real source dimensions, never fake NPCs."""
+    pewter = load(source / "Data/Map025.rxdata").attrs
+    route = load(source / "Data/Map032.rxdata").attrs
+    first, last = pewter_route3_east_rows(
+        source, pewter["@height"], route["@height"])
+    (target / "Data/blue-kanto-pewter-route3-gate.txt").write_text(
+        f"{mapping[25]}|{pewter['@width']}|{first}|{last}\n", encoding="ascii")
+
+
 def make_viridian_parcel_intro(events):
     """One-time autorun, anchored to the real shopkeeper, never a fake NPC."""
     clerk = events[find_shopkeeper(events)]
@@ -1479,6 +1522,7 @@ def build(source, game, output):
         for folder in ("Data", "Graphics"):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         install_events(source, target, mapping)
+        install_pewter_route3_gate(source, target, mapping)
         # Merge local Argos/manual translations with BlueLocale in this pilot
         # only. English story text and the Decades installation remain intact.
         install_npc_locale(ROOT, source, target)
