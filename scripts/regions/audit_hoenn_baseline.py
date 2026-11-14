@@ -52,6 +52,9 @@ PILOT.update(SOURCE_MAPS_STAGE8)
 from hoenn_stage9 import SOURCE_MAPS_STAGE9
 assert not set(PILOT).intersection(SOURCE_MAPS_STAGE9), "Stage9 donor MapID duplicado"
 PILOT.update(SOURCE_MAPS_STAGE9)
+from hoenn_stage10 import SOURCE_MAPS_STAGE10
+assert not set(PILOT).intersection(SOURCE_MAPS_STAGE10), "Stage10 donor MapID duplicado"
+PILOT.update(SOURCE_MAPS_STAGE10)
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
