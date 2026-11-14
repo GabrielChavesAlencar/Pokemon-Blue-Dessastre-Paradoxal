@@ -31,10 +31,10 @@ VALID_REGIONS = ("KANTO", "JOHTO", "HOENN", "SINNOH")
 
 def normalize(value: str) -> str:
     """Normalize Portuguese/English route aliases without fuzzy map ID inference."""
+    # Strip floor/subtitle suffixes BEFORE ASCII folding removes Unicode dashes.
+    value = re.split(r"\s+[\u2014\u2013]\s+", value, 1)[0]
     value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
     value = value.lower().replace("rota ", "route ").replace("rotas ", "routes ")
-    # Names in Kanto may include subtitles after an em dash.
-    value = re.split(r"\s+[\u2014\u2013]\s+", value, 1)[0]
     return re.sub(r"[^a-z0-9]", "", value)
 
 
