@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27f473ff4fa2157ccedbac8adacf5e044c831885",
+      "date": "2026-11-14T20:59:38-03:00",
+      "title": "docs(kanto): entrega dos Tenis de Corrida e corrida automatica apos Brock",
+      "category": "Documentação"
+    },
+    {
       "sha": "d3bc2e95c801407bf21201d0e7f65c865c03bb10",
       "date": "2026-11-14T20:58:12-03:00",
       "title": "test(kanto): incluir premio dos tenis na contagem de ME aprovada",
