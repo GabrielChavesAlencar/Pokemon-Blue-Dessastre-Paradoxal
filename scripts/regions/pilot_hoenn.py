@@ -182,8 +182,10 @@ def starter_ball_positions(maps, tiles, edges, required):
     """
     width, height = (maps[101].attrs[key] for key in ("@width", "@height"))
     blocked = {row[:3] for row in PEOPLE}
-    for y in sorted(range(19, min(height - 2, 30)), key=lambda v: abs(v - 20)):
-        for x in sorted(range(2, width - 5), key=lambda v: abs(v + 2 - 10)):
+    # Route 101 donor geometry is 20x20. The southern entry is at y=18/19;
+    # three balls must sit north of the Birch encounter, around row 16.
+    for y in sorted(range(3, min(height - 2, 18)), key=lambda v: abs(v - 16)):
+        for x in sorted(range(2, width - 5), key=lambda v: abs(v + 2 - 8)):
             balls = [(101, x + dx, y) for dx in (0, 2, 4)]
             approach = [(101, px, y + 1) for _, px, _ in balls]
             if not all(open_tile(maps[101], tiles[101], px, py)
