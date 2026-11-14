@@ -29,20 +29,33 @@ def fixture_event(name=b"Signpost", codes=None, sprite=b"", tile=44):
 
 
 class RegionalCorrectionsContracts(unittest.TestCase):
-    def test_all_15_full_power_profiles_have_strong_six_and_unique_versions(self):
+    def test_all_15_full_power_profiles_preserve_official_five_or_six(self):
         path = ROOT / "data/kanto-full-power.json"
         manifest = json.loads(path.read_text("utf8"))
         profiles = manifest["teams"]
         self.assertEqual(len(profiles), 15)
         species = set(p for row in profiles for p in row["species"])
         compiled = full_power_draft(path, species, TRAINERS)
-        self.assertEqual(compiled.count("Pokemon = "), 90)
+        self.assertEqual(compiled.count("Pokemon = "), 84)
         self.assertEqual(sum(line.startswith("[BLUE_KANTO_")
                              for line in compiled.splitlines()), 15)
-        self.assertTrue(all(len(row["species"]) == len(set(row["species"])) == 6
-                            for row in profiles))
+        self.assertTrue(all(5 <= len(row["species"]) <= 6 for row in profiles))
+        self.assertTrue(all(len(row["species"]) == len(row["levels"]) for row in profiles))
+        self.assertEqual(compiled.count("Pokemon = RHYHORN,"), 2)
+        self.assertIn("Pokemon = ONIX,61", compiled)
+        self.assertIn("Pokemon = GENGAR,70", compiled)
+        self.assertTrue(all(row["source_game"] in ("FRLG", "HGSS", "LGPE") for row in profiles))
         self.assertIn("[BLUE_KANTO_LEADER,Brock,100]", compiled)
         self.assertIn("[BLUE_KANTO_CHAMPION_BLUE,Blue,103]", compiled)
+
+    def test_full_power_is_authored_not_invented_six_members(self):
+        manifest = json.loads((ROOT / "data/kanto-full-power.json").read_text("utf8"))
+        by_name = {r["name"]: r for r in manifest["teams"] if r["version"] == 0}
+        self.assertEqual(by_name["Koga"]["species"],
+                         ["TENTACRUEL", "GOLBAT", "WEEZING", "VENOMOTH", "MUK"])
+        self.assertEqual(by_name["Giovanni"]["species"].count("RHYHORN"), 2)
+        self.assertEqual(by_name["Lorelei"]["levels"], [64, 63, 63, 66, 66])
+        self.assertEqual(by_name["Brock"]["levels"], [55, 54, 56, 55, 57, 61])
 
     def test_full_power_refuses_unavailable_species_and_does_not_forge_source(self):
         path = ROOT / "data/kanto-full-power.json"
