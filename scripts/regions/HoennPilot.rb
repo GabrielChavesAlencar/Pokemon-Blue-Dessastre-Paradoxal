@@ -948,9 +948,15 @@ module BlueHoennPilot
   end
 
   def self.tunnelers
-    return false unless state
-    pbMessage(_INTL("Escavador: O túnel para Verdanturf ainda não está concluído."))
-    true
+    flags = state
+    return false unless flags
+    unless flags["rusturf_aqua_defeated"] && dynamo_badge?
+      pbMessage(_INTL("Escavador: primeiro ajude em Rusturf Tunnel e conquiste a Dynamo Badge."))
+      return false
+    end
+    return field_hm_reward(:STRENGTH, [:HM04, :HMSTRENGTH],
+                           "hm_strength_received",
+                           "Escavador: receba Strength! A Heat Badge permite mover pedras em Hoenn.")
   end
 
   def self.rusturf_east_gate
@@ -2554,16 +2560,133 @@ module BlueHoennPilot
     true
   end
 
+  # QA04: these guards apply exclusively to the isolated HOENN regional save.
+  # No prepend of Essentials native field-move handlers and no global badge
+  # mutation: native field movement still needs real Game.exe certification.
+  HOENN_FIELD_BADGES = {
+    CUT:"STONE", FLASH:"KNUCKLE", ROCKSMASH:"DYNAMO",
+    STRENGTH:"HEAT", SURF:"BALANCE", DIVE:"MIND",
+    WATERFALL:"RAIN"
+  }.freeze
+  HOENN_FIELD_ITEMS = {
+    CUT:[:HM01,:HMCUT], FLASH:[:HM05,:HMFLASH],
+    ROCKSMASH:[:HM06,:TM94], STRENGTH:[:HM04,:HMSTRENGTH],
+    SURF:[:HM03,:HMSURF], DIVE:[:HM08,:HMDIVE],
+    WATERFALL:[:HM07,:HMWATERFALL]
+  }.freeze
+
+  def self.field_move_ready?(move, show_message=false)
+    flags=state
+    badge=HOENN_FIELD_BADGES[move]
+    return false unless flags && badge && defined?(BlueRegions)
+    badges=BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN")
+    unless badges.include?(badge)
+      pbMessage(_INTL("Este movimento exige a insígnia {1} de Hoenn.", badge)) if show_message
+      return false
+    end
+    return false unless $bag && defined?(GameData::Item)
+    item=HOENN_FIELD_ITEMS.fetch(move).find{|id|
+      GameData::Item.exists?(id) &&
+      GameData::Item.get(id).respond_to?(:move) &&
+      GameData::Item.get(id).move==move &&
+      $bag.has?(id)
+    }
+    unless item
+      pbMessage(_INTL("Obtenha o HM do movimento {1} antes de usá-lo em Hoenn.",move)) if show_message
+      return false
+    end
+    party=$player && $player.respond_to?(:party) ? $player.party : nil
+    unless party && party.any?{|pkmn|
+      pkmn.respond_to?(:hasMove?) && pkmn.hasMove?(move)
+    }
+      pbMessage(_INTL("Um Pokémon da sua equipe precisa conhecer {1}.",move)) if show_message
+      return false
+    end
+    true
+  end
+
+  def self.field_hm_reward(move, candidates, key, message)
+    flags=state
+    return false unless flags && HOENN_FIELD_BADGES.key?(move) &&
+                        key.is_a?(String) && candidates.is_a?(Array)
+    return false if flags[key]
+    return false unless defined?(GameData::Item)
+    hm=candidates.find{|id|
+      GameData::Item.exists?(id) && GameData::Item.get(id).move==move
+    }
+    unless hm
+      pbMessage(_INTL("O HM {1} ainda não está registrado nesta instalação do Blue.",move))
+      return false
+    end
+    unless $bag && $bag.add(hm,1)
+      pbMessage(_INTL("Abra espaço na Bolsa para receber o HM {1}.",move))
+      return false
+    end
+    flags[key]=true
+    pbMessage(_INTL(message))
+    true
+  end
+
+  def self.waterfall_from_juan
+    flags=state
+    return false unless flags && rain_badge?
+    field_hm_reward(:WATERFALL,[:HM07,:HMWATERFALL],"hm_waterfall_received",
+                    "Juan: receba HM Waterfall! A Rain Badge libera seu uso em Hoenn.")
+  end
+
+  def self.rock_smash_obstacle(event_id)
+    flags=state
+    return false unless flags && event_id.is_a?(Integer) &&
+                        $game_map && $game_self_switches
+    _,map_ids=metadata
+    return false unless map_ids.value?($game_map.map_id)
+    event=$game_map.events[event_id]
+    return false unless event
+    key="rock_smash_#{$game_map.map_id}_#{event_id}"
+    if flags[key]
+      $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
+      event.refresh
+      return true
+    end
+    return false unless field_move_ready?(:ROCKSMASH,true)
+    return false unless pbConfirmMessage(_INTL("Usar Rock Smash para quebrar a pedra?"))
+    flags[key]=true
+    $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
+    event.refresh
+    pbMessage(_INTL("A pedra foi quebrada."))
+    true
+  end
+
+  def self.strength_boulder(event_id)
+    return false unless state && event_id.is_a?(Integer) &&
+                        $game_map && $game_player
+    _,map_ids=metadata
+    return false unless map_ids.value?($game_map.map_id)
+    event=$game_map.events[event_id]
+    return false unless event && event.respond_to?(:move_straight)
+    return false unless field_move_ready?(:STRENGTH,true)
+    old=[event.x,event.y]
+    event.move_straight($game_player.direction)
+    moved=[event.x,event.y]!=old
+    pbMessage(_INTL("A pedra não pode ser empurrada nessa direção.")) unless moved
+    moved
+  end
+
   def self.stage10_transfer(source_id,dest_id,x,y)
     flags=state
     return false unless flags && [source_id,dest_id,x,y].all?{|n|n.is_a?(Integer)}
     _,maps=metadata
     return false unless maps[source_id] && maps[dest_id] && $game_map &&
                         $game_map.map_id==maps[source_id]
-    unless mind_badge? && flags["hm_dive_received"]
-      pbMessage(_INTL("Steven: a Mind Badge e o HM Dive são necessários para continuar no mar."))
-      return false
-    end if [255,258,259,260,261,262,263,266,227,228,229,230,231,232,233,234,235,236].include?(dest_id)
+    if [255,258,259,260,261,262,263,266,227,228,229,230,231,232,233,234,235,236].include?(dest_id) &&
+       !([255,258,259,260,261,262,263,266,227,228,229,230,231,232,233,234,235,236].include?(source_id))
+      return false unless field_move_ready?(:DIVE,true)
+    end
+    # Upper Ever Grande: real Waterfall competency is required; the Rain Badge
+    # alone is NOT enough. Other coastal crossings still rely on native Surf.
+    if source_id==91 && dest_id==322
+      return false unless field_move_ready?(:WATERFALL,true)
+    end
     if (227..236).cover?(dest_id) && !flags["submarine_escaped"]
       pbMessage(_INTL("O submarino Aqua ainda não chegou à Seafloor Cavern."))
       return false
@@ -2683,7 +2806,10 @@ module BlueHoennPilot
   def self.juan
     flags=state
     return false unless flags && $player && !$player.party.empty?
-    return juan_tm if rain_badge?
+    if rain_badge?
+      waterfall_from_juan unless flags["hm_waterfall_received"]
+      return juan_tm
+    end
     unless flags["crisis_resolved"] && mind_badge?
       pbMessage(_INTL("Juan: a paz deve voltar a Sootopolis antes da nossa batalha."))
       return false
@@ -2700,6 +2826,7 @@ module BlueHoennPilot
     end
     flags["juan_defeated"]=true
     pbMessage(_INTL("Rain Badge de Hoenn conquistada! Waterfall está autorizado na região."))
+    waterfall_from_juan
     juan_tm
     true
   end
