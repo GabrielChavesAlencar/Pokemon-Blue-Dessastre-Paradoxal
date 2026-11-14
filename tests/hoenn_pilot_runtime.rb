@@ -120,6 +120,11 @@ def pbGetTimeNow
   Time.utc(2026, 11, 14, 12, 0)
 end
 
+$center_registered = 0
+def pbSetPokemonCenter
+  $center_registered += 1
+end
+
 def check(condition, message)
   raise "[HOENN] #{message}" unless condition
 end
@@ -161,6 +166,8 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     $confirm_starter = true
     check(BlueHoennPilot.choose_birch_ball(:TREECKO), "Starter/rescue not completed")
     check($player.party == [[:TREECKO, 5]], "Wrong starter")
+    BlueHoennPilot.heal
+    check($center_registered == 1, "Oldale did not register respawn point")
     check(WildBattle.history == [[:ZIGZAGOON, 2]], "Zigzagoon battle missing/repeated")
     check(BlueHoennPilot.state["birch_rescued"], "Rescue not saved")
     check($bag.items[:POKEBALL] == 0, "Five balls awarded too early")
