@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 7 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 8 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -17,7 +17,7 @@
 | 5 | Equipes Aqua/Magma, Seafloor Cavern | **Gates de história e auditoria de eventos implementados; teste real pendente** | ⏳ |
 | 6 | Cave of Origin, clima, Rayquaza | **Gates regionais, auditoria RXDATA e perfil QA06 preparados; cenas nativas pendentes** | ⏳ |
 | 7 | Oito ginásios e insígnias locais | **Nove eventos autorais, oito times PBS e auditoria QA07 preparados; Game.exe pendente** | ⏳ |
-| 8 | Victory Road e Wally | Pendente | ⏳ |
+| 8 | Victory Road e Wally | **Três mapas, Wally, gates de Waterfall e Liga e auditoria QA08 preparados; Game.exe pendente** | ⏳ |
 | 9 | Elite Four e Wallace | Pendente | ⏳ |
 | 10 | Hall of Fame e pós-jogo | Pendente | ⏳ |
 | 11 | Traduções, placas, áudio e Trainer Card | Pendente | ⏳ |
@@ -327,3 +327,52 @@ A quantidade **efetivamente instalada** de boulders depende de não haver sobrep
 - [ ] Game.exe e Android/JoiPlay verificados com evidências reais, em separado.
 
 **Importante:** a auditoria PY/Ruby prova apenas a estrutura **autoral** e seus contratos, não que uma campanha completa, a interface, os puzzles ou os visuais sejam jogáveis. Por isso o marco de aceite permanece em **0/12**.
+
+## Fase 08/12 — Victory Road, Wally e acesso à Liga
+
+**Preparação técnica: 8/12 (66,7%). Aprovação jogável nativa: 0/12.** Foi publicada na `main` a auditoria da **Victory Road 1F (Map250), B1F (Map251), B2F (Map252)**, ligando a parte sul e norte de Ever Grande à Liga, sem substituir os mapas originais da cópia isolada ou alterar o motor de batalha Decades.
+
+### Implementação realizada
+
+- `BlueHoennPilot.qa8_league_badges?` exige **STONE, KNUCKLE, DYNAMO, HEAT, BALANCE, FEATHER, MIND e RAIN** dentro do estado regional `HOENN`; possuir apenas a Rain Badge ou insígnias de outras regiões não autoriza pular o percurso.
+- `BlueHoennPilot.wally_victory_road` só executa no **Map250 remapeado** e exige oito insígnias. Em derrota, o encontro pode ser tentado novamente; em vitória grava `wally_road_defeated` sem promover o Wally a líder ou mudar balanceamento.
+- As transferências autorais da `stage10_transfer` exigem **Waterfall pronto** (insígnia + HM correto na Bolsa + Pokémon com o movimento) quando se chega do **sul de Ever Grande (91)** para Victory Road (250) ou Ever Grande Norte (322). Os saltos dentro da caverna não exigem novamente HM.
+- A saída **Victory Road 1F (250) → Ever Grande Norte (322)** exige vencer Wally; o acesso à **Liga (Map93 e salas)** exige oito insígnias regionais + Wally. O retorno das camadas da caverna não é bloqueado artificialmente.
+- O inventário inclui o caminho lógico do autor: `91 → 250 → 251 → 252`, `250 → 322 → 93`. São **ligações de referência, não confirmação de jogabilidade**, pois colisões, escadas, ondas, encontros selvagens e os puzzles nativos não foram testados.
+- `scripts/regions/hoenn_qa_phase8.py` relê os mapas reais no perfil privado e confere o evento automático de Wally **(Map250, 8,26)**, a placa da Liga **(Map322, 23,16)**, os cinco Pokémon do PBS `[BLUE_HOENN_WALLY,Wally,1025]` e os obstáculos recriados pela QA04 versus os ainda pendentes. Se faltarem eventos, scripts, mapas ou houver divergência de manifesto, a checagem bloqueia.
+- A geração usa `.blue-work/hoenn-qa-fase08/` e save `Hoenn QA Fase08` / `Dessastre Paradoxal Hoenn QA08`; a base `game/`, QA04–QA07 e os saves das demais regiões permanecem separados.
+- `TESTAR_HOENN.bat` executa auditorias **QA01–QA08**, cada uma com relatório independente, antes da abertura da nova cópia.
+- Os testes Python sintéticos verificam contrato dos mapas, evento do rival, placa, equipe PBS, inventário de obstáculos e falhas artificiais. Os testes Ruby simulam perda/vitória, bloqueios de Waterfall, progressão, retorno e isolamento regional. A CI é apenas regressão de contratos; não executa `Game.exe`.
+
+### Equipe de Wally (referência Emerald; níveis não são fixados por este plano)
+
+| Pokémon | Nível de referência |
+|---|---:|
+| Altaria | 44 |
+| Delcatty | 43 |
+| Roselia | 44 |
+| Magneton | 41 |
+| Gardevoir | 45 |
+
+**O escalonamento de Pokémon no jogo continua pertencendo ao Blue/Decades.** Os níveis acima identificam a origem da equipe e são usados apenas para validar os dados PBS.
+
+### Como executar a fase 8 no PC
+
+1. Atualize a `main`, instale a base em `game/` e mantenha o ZIP original do projeto Hoenn na raiz, sem renomear os arquivos RXDATA.
+2. Execute `TESTAR_HOENN.bat`; será criada a cópia **Hoenn QA Fase08**. Veja `.blue-work/hoenn-qa-fase08-report.json`, que deve registrar `VICTORY_ROAD_WALLY_STATICALLY_VERIFIED`, sem declaração de aceite nativo.
+3. No `Game.exe` isolado, avance até obter as oito insígnias. Ensine Waterfall a um Pokémon e confirme que a Bolsa contém o HM com o movimento correto.
+4. Entre por Ever Grande Sul; percorra **Victory Road 1F → B1F → B2F**, usando iluminação, Strength e Rock Smash onde aplicável. Teste retorno, pisos, escadas e se as pedras de Strength voltam ao lugar correto após salvar e recarregar.
+5. Enfrente Wally em seu ponto original. Teste **derrota e repetição**, depois vitória e tentativa de confronto duplicado. Entre em Ever Grande Norte e confirme o bloqueio/liberação da Liga.
+6. Salve e recarregue, volte à caverna e troque de região para confirmar que os eventos não alteram Kanto, Johto, Sinnoh ou Decades. Repita no Android/JoiPlay **separadamente**, sem supor compatibilidade a partir do PC.
+
+### Critérios de aceite ainda pendentes
+
+- [ ] Percurso real de Ever Grande, Victory Road 1F/B1F/B2F e Liga atravessado **no Game.exe**, sem atravessar paredes ou ficar preso.
+- [ ] Todos os treinadores secundários, itens, escadas, placas, pedras, iluminação e puzzles específicos revisados; pendências de QA04 resolvidas.
+- [ ] HM Waterfall, Strength e Rock Smash usados na prática, respeitando as insígnias e os Pokémon da equipe.
+- [ ] Wally aparece no lugar correto, com gráfico e batalha funcionais e escalonados; derrota permite tentar novamente.
+- [ ] Wally derrotado libera a saída, e a Liga exige oito insígnias; impossível pular a batalha por outro warp/entrada.
+- [ ] Save/load, retorno e eventos após vitória sem softlock nem duplicação; demais regiões intactas.
+- [ ] Windows **e** Android/JoiPlay aprovados com evidência real.
+
+**Aprovação jogável ainda é 0/12.** O auditor prova que arquivos e scripts foram preparados e conferidos estaticamente, não que o jogo completo já foi jogado.
