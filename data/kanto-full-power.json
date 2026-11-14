@@ -1,0 +1,204 @@
+{
+  "version": 1,
+  "region": "KANTO",
+  "full_power_offset": 100,
+  "minimum_local_league": "KANTO",
+  "note": "Authored Full Power candidate teams. Only species present in the installed game catalogue are emitted; the original FRLG first-challenge teams are never overwritten.",
+  "teams": [
+    {
+      "kind": "LEADER",
+      "name": "Brock",
+      "version": 0,
+      "species": [
+        "GOLEM",
+        "STEELIX",
+        "AERODACTYL",
+        "KABUTOPS",
+        "OMASTAR",
+        "RHYDON"
+      ]
+    },
+    {
+      "kind": "LEADER_MISTY",
+      "name": "Misty",
+      "version": 0,
+      "species": [
+        "STARMIE",
+        "LAPRAS",
+        "GYARADOS",
+        "SLOWBRO",
+        "VAPOREON",
+        "BLASTOISE"
+      ]
+    },
+    {
+      "kind": "LEADER_SURGE",
+      "name": "Lt. Surge",
+      "version": 0,
+      "species": [
+        "RAICHU",
+        "AMPHAROS",
+        "MAGNETON",
+        "ELECTRODE",
+        "JOLTEON",
+        "ELECTABUZZ"
+      ]
+    },
+    {
+      "kind": "LEADER_ERIKA",
+      "name": "Erika",
+      "version": 0,
+      "species": [
+        "VENUSAUR",
+        "VILEPLUME",
+        "VICTREEBEL",
+        "EXEGGUTOR",
+        "LEAFEON",
+        "BELLOSSOM"
+      ]
+    },
+    {
+      "kind": "LEADER_KOGA",
+      "name": "Koga",
+      "version": 0,
+      "species": [
+        "CROBAT",
+        "MUK",
+        "WEEZING",
+        "VENOMOTH",
+        "ARBOK",
+        "NIDOKING"
+      ]
+    },
+    {
+      "kind": "LEADER_SABRINA",
+      "name": "Sabrina",
+      "version": 0,
+      "species": [
+        "ALAKAZAM",
+        "ESPEON",
+        "SLOWBRO",
+        "MRMIME",
+        "GARDEVOIR",
+        "HYPNO"
+      ]
+    },
+    {
+      "kind": "LEADER_BLAINE",
+      "name": "Blaine",
+      "version": 0,
+      "species": [
+        "ARCANINE",
+        "CHARIZARD",
+        "MAGMAR",
+        "RAPIDASH",
+        "NINETALES",
+        "FLAREON"
+      ]
+    },
+    {
+      "kind": "LEADER_GIOVANNI",
+      "name": "Giovanni",
+      "version": 0,
+      "species": [
+        "NIDOKING",
+        "NIDOQUEEN",
+        "RHYDON",
+        "GOLEM",
+        "DUGTRIO",
+        "MAROWAK"
+      ]
+    },
+    {
+      "kind": "ELITE_LORELEI",
+      "name": "Lorelei",
+      "version": 0,
+      "species": [
+        "LAPRAS",
+        "DEWGONG",
+        "CLOYSTER",
+        "SLOWBRO",
+        "JYNX",
+        "WALREIN"
+      ]
+    },
+    {
+      "kind": "ELITE_BRUNO",
+      "name": "Bruno",
+      "version": 0,
+      "species": [
+        "MACHAMP",
+        "HITMONLEE",
+        "HITMONCHAN",
+        "POLIWRATH",
+        "STEELIX",
+        "HERACROSS"
+      ]
+    },
+    {
+      "kind": "ELITE_AGATHA",
+      "name": "Agatha",
+      "version": 0,
+      "species": [
+        "GENGAR",
+        "CROBAT",
+        "ARBOK",
+        "MISDREAVUS",
+        "HAUNTER",
+        "MUK"
+      ]
+    },
+    {
+      "kind": "ELITE_LANCE",
+      "name": "Lance",
+      "version": 0,
+      "species": [
+        "DRAGONITE",
+        "KINGDRA",
+        "AERODACTYL",
+        "GYARADOS",
+        "CHARIZARD",
+        "SALAMENCE"
+      ]
+    },
+    {
+      "kind": "CHAMPION_BLUE",
+      "name": "Blue",
+      "version": 1,
+      "species": [
+        "PIDGEOT",
+        "ALAKAZAM",
+        "RHYDON",
+        "EXEGGUTOR",
+        "GYARADOS",
+        "CHARIZARD"
+      ]
+    },
+    {
+      "kind": "CHAMPION_BLUE",
+      "name": "Blue",
+      "version": 2,
+      "species": [
+        "PIDGEOT",
+        "ALAKAZAM",
+        "RHYDON",
+        "ARCANINE",
+        "EXEGGUTOR",
+        "BLASTOISE"
+      ]
+    },
+    {
+      "kind": "CHAMPION_BLUE",
+      "name": "Blue",
+      "version": 3,
+      "species": [
+        "PIDGEOT",
+        "ALAKAZAM",
+        "RHYDON",
+        "ARCANINE",
+        "GYARADOS",
+        "VENUSAUR"
+      ]
+    }
+  ]
+}
