@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1, 2 e 3 implementada; execução/aceite pendentes — ▣▣▣□□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 4 implementada; execução/aceite pendentes — ▣▣▣▣□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -13,7 +13,7 @@
 | 1 | Gerar cópia isolada com 199 mapas e PBS | **Ferramenta preparada, execução local pendente** | ⏳ |
 | 2 | Corrigir conexões e colisões dos mapas | **Auditoria de RXDATA/PBS implementada; execução local pendente** | ⏳ |
 | 3 | Conferir encontros, NPCs, treinadores e itens | **Perfis-base, itens simples e catálogo de pendências implementados; QA nativo pendente** | ⏳ |
-| 4 | Surf, Dive, Waterfall, Strength e puzzles | Pendente | ⏳ |
+| 4 | Surf, Dive, Waterfall, Strength e puzzles | **HM e gate regional + rochas simples + auditoria fonte; puzzles nativos pendentes** | ⏳ |
 | 5 | Equipes Aqua/Magma, Seafloor Cavern | Pendente | ⏳ |
 | 6 | Cave of Origin, clima, Rayquaza | Pendente | ⏳ |
 | 7 | Oito ginásios e insígnias locais | Pendente | ⏳ |
@@ -159,3 +159,41 @@ O workflow [Hoenn QA 03 - auditar fonte original de encontros](../.github/workfl
 - [ ] Saves Decades/Kanto/Johto/Sinnoh intactos; Android/JoiPlay continua pendente.
 
 **Limitações:** esta fase não converte automaticamente treinadores de mapas do doador em eventos de batalha, não importa sprites/NPCs condicionalmente animados, não traduz todas as placas e não implementa os encontros de enxame. São lacunas explicitamente abertas; a barra mede **preparação de código**, não integralidade de conteúdo.
+
+
+## Fase 04/12 — movimentos de campo, pedras e quebra-cabeças
+
+**Implementação técnica preparada (4/12), aceite em Game.exe pendente (0/12).** Esta fase não instala hooks globais nas HMs do Blue e não muda a política de insígnias de Decades/Kanto/Johto/Sinnoh.
+
+### Implementado
+
+- `HoennPilot.rb` recebeu `field_move_ready?(move)` com exigência simultânea de **insígnia de Hoenn**, **HM/TM correspondente registrado e presente na Bolsa** e **Pokémon da equipe conhecendo a técnica**. Tabela: Cut/Stone; Flash/Knuckle; Rock Smash/Dynamo; Strength/Heat; Surf/Balance; Dive/Mind; Waterfall/Rain. Retorna falso quando o save não está na região Hoenn.
+- A entrada **submersa** via transferência autoral da fase 10 exige Dive completo (não apenas uma flag); os scripts não bloqueiam deliberadamente a saída de jogadores que já estão em mapas submersos. A passagem **Ever Grande Sul (91) → Norte (322)** exige Waterfall completo, evitando desbloqueio somente por Rain Badge. As conexões aquáticas em PBS sem evento continuam dependendo da engine nativa.
+- `tunnelers`, após a missão de Rusturf e Dynamo Badge, oferece Strength (`HM04` ou variante equivalente cadastrada) uma vez por save de Hoenn. Não dá o item sem espaço nem tenta adicionar IDs ausentes. O recebedor é provisório; comparar a cena canônica com o detonado.
+- `juan`, depois da Rain Badge, oferece Waterfall (`HM07` ou variante equivalente cadastrada) com checagem de espaço, registro único e possibilidade de falar novamente caso não haja espaço. Não altera a recompensa TM anterior.
+- `rock_smash_obstacle(event_id)` só remove uma pedra após validar habilidade local, confirmar a ação e ativar **Self Switch A**, persistindo flag de Hoenn. `strength_boulder(event_id)` tenta empurrar a pedra pelo método de movimento da engine e retorna falha se a colisão impedir. Sem teleporte e sem alterar posição do jogador artificialmente.
+- `hoenn_qa_phase4.py` inspeciona as posições dos obstáculos no RXDATA real do doador, reautora **apenas nomes exatos, incondicionais e de uma página** de pedras de Rock Smash/Strength, onde não há evento sobreposto e existe um sprite equivalente já instalado no Blue. Ambiguidades, falta de sprite, páginas condicionais, pistas de Surf/Dive/Waterfall e gelo entram no **backlog do relatório** — não são falsamente implementadas.
+- `TESTAR_HOENN.bat` agora prepara cópia isolada **`.blue-work/hoenn-qa-fase04/`**, preservando a da Fase 3, e executa as auditorias 1→2→3→4 antes de abrir o Game.exe. O relatório é `.blue-work/hoenn-qa-fase04-report.json`.
+- A CI inclui teste Ruby com badges, HMs, golpe no time, rocha, boulder, bloqueio Ever Grande/Dive, save/reload e troca para Kanto. O workflow específico audita eventos da revisão original fixa do doador, em leitura, sem importar mapas ou scripts ao GitHub.
+
+### Como executar
+
+1. Atualize a `main`, confirme `game/Game.exe` e `The Pokémon World Project - Hoenn.zip` original na raiz do clone, depois abra `TESTAR_HOENN.bat`.
+2. Confira os relatórios `hoenn-qa-fase04-prep-report.json`, `hoenn-qa-fase04-mapas-report.json`, `hoenn-qa-fase04-encontros-report.json` e `hoenn-qa-fase04-report.json` sob `.blue-work/`.
+3. No Game.exe isolado: obtenha cada insígnia correspondente, HM e Pokémon com o movimento, e verifique o **antes/depois**; tente Rock Smash (repetir e salvar/recarregar), empurrar Strength e bloqueio quando não puder mover.
+4. Teste **Surf em praias e bordas**, **Dive em rotas marinhas**, emergir após Dive e **Waterfall** em Ever Grande. Movimentos de campo da engine ainda não foram interceptados universalmente; o teste nativo deve identificar se o motor os permite indevidamente fora do contexto regional.
+5. Teste **gelo de Sootopolis**, pedras e correntes de Seafloor Cavern e **Victory Road**. Um gráfico ou script inventariado não significa puzzle funcional. Registre MapID, coordenadas, insígnia, golpe no time e se é possível continuar/voltar.
+6. Teste troca de região e saves Decades/Kanto/Johto/Sinnoh. Não renomeie nem recopie os assets do doador ao jogo principal.
+
+### Critérios de aceite nativo — pendentes
+
+- [ ] Cópia fase 4 gerada com ZIP pinado, 199 mapas reais e relatórios sem bloqueio.
+- [ ] Rocha Rock Smash visível, bloqueia, desaparece, não reaparece após save/reload.
+- [ ] Strength empurra pedra pelo layout real, não empurra através de paredes e permite resolver puzzles.
+- [ ] Surf e Dive usam colisões corretas, não atravessam fronteiras sem HM e permitem voltar.
+- [ ] Waterfall sobe/desce sob controle da Rain Badge e da engine sem perder posições.
+- [ ] Puzzle de gelo de Juan/Sootopolis, Seafloor e Victory Road foram efetivamente resolvidos.
+- [ ] Batalhas, saves e trocas de região anteriores permanecem intactos.
+- [ ] Windows e Android/JoiPlay testados separadamente.
+
+**Limites explícitos:** sem hooks nas rotas aquáticas nativas, sem solução completa do gelo, sem confirmação visual de movimentos/efeitos e sem correção de todos os obstáculos condicionais do doador. A CI mede apenas scripts, entradas estáticas e simulações; a barra aprovada continua em 0/12.
