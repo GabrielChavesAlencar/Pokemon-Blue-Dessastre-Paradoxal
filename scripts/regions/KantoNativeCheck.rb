@@ -618,6 +618,16 @@ module KantoNativeCheck
              "Viridian map banner changed in English")
     $PokemonSystem.blue_locale = previous_locale
     $map_factory.setup(viridian)
+    northern_house = $game_map.events[2]
+    threshold = BlueKantoPilot.viridian_route2_line
+    require!(northern_house && threshold &&
+             threshold == [viridian, northern_house.y - 1,
+                           northern_house.x - 6, northern_house.x - 1] &&
+             threshold[1] > 0,
+             "Route 2 gate is not on the red-marked line by Viridian north house")
+    require!($game_map.events.values.none? { |event|
+      event.name == "Kanto Viridian Route 2 Parcel Gate"
+    }, "Obsolete north-edge RPG gate survived in Viridian")
     gate = $game_map.events[1]
     require!(gate && gate.trigger == 1 &&
              gate.list.none? { |row| row.code == 201 } &&
