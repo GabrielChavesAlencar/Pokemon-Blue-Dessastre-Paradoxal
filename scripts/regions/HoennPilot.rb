@@ -2617,6 +2617,11 @@ module BlueHoennPilot
       LEAGUE_GATE: "Liga Pokémon de Hoenn: são exigidas oito insígnias desta região."
     }
     return false unless signs.key?(key)
+    if key==:LEAGUE_GATE && $PokemonGlobal &&
+       $PokemonGlobal.blue_regions.is_a?(Hash) &&
+       $PokemonGlobal.blue_regions.fetch("leagues",[]).include?("HOENN")
+      return qa10_postgame_status
+    end
     pbMessage(_INTL(signs.fetch(key)))
     true
   end
@@ -3028,7 +3033,8 @@ module BlueHoennPilot
                         [maps[99],maps[322]].include?($game_map.map_id)
     neighbors=BlueRegions.neighbors("HOENN")
     unlocked=BlueRegions.unlocked(region)
-    return false unless neighbors.is_a?(Array) && neighbors.length==2 &&
+    return false unless neighbors.is_a?(Array) &&
+                        neighbors.sort==%w[JOHTO SINNOH] &&
                         neighbors.all?{|key| unlocked.include?(key)}
     pbMessage(_INTL("Circuito regional: Hoenn concluída. Johto e Sinnoh foram liberadas; a viagem só ficará disponível após a instalação e validação dos respectivos mapas."))
     true
