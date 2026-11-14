@@ -32,7 +32,7 @@ module TrainerBattle
     attr_reader :history
     def start(*args)
       @history << args
-      true
+      $battle_returns_nil ? nil : true
     end
   end
 end
@@ -148,6 +148,47 @@ Dir.mktmpdir("sinnoh-isolated-runtime-") do |directory|
     check(!BlueSinnohPilot.choose_starter_from_ball(:TURTWIG),
           "Kanto received Sinnoh starter")
     check(!BlueSinnohPilot.rowan_pokedex, "Sinnoh handler active in Kanto")
+
+    # A new, separate QA session may TEST Barry without creating a release
+    # marker, but only after its native compile/probe proof has been accepted.
+    File.delete(BlueSinnohPilot::RIVAL_READY)
+    $PokemonGlobal.blue_regions = {"version" => 1, "current" => "SINNOH"}
+    $player = FakeSinnohPlayer.new
+    $qa_barry_valid = false
+    module_eval_code = <<~RUBY
+      module BlueSinnohQAStart
+        def self.barry_test_authorized?
+          $qa_barry_valid == true
+        end
+      end
+    RUBY
+    eval(module_eval_code)
+    check(BlueSinnohPilot.mother, "QA mother not initialized")
+    check(BlueSinnohPilot.barry_intro, "QA Barry intro not initialized")
+    check(BlueSinnohPilot.rowan_briefcase, "QA Rowan not initialized")
+    check(BlueSinnohPilot.choose_starter_from_ball(:CHIMCHAR),
+          "QA Chimchar ball was not granted")
+    before_qa_battle = TrainerBattle.history.length
+    check(!BlueSinnohPilot.barry_rival, "QA Barry started without proof")
+    check(TrainerBattle.history.length == before_qa_battle,
+          "QA battle went through before proof")
+    $qa_barry_valid = true
+    $battle_returns_nil = true
+    check(!BlueSinnohPilot.barry_rival, "QA Barry nil battle result accepted")
+    check(!BlueSinnohPilot.rival_fought?, "Nil battle marked as completed")
+    $battle_returns_nil = false
+    check(BlueSinnohPilot.barry_rival, "Verified QA Barry battle not available")
+    check(TrainerBattle.history.last == [:BLUE_SINNOH_RIVAL, "Barry", 1],
+          "QA rival was not Piplup against Chimchar")
+    check(BlueSinnohPilot.rival_fought?, "QA battle win not stored")
+    check(!File.exist?(BlueSinnohPilot::RIVAL_READY),
+          "QA created release marker")
+    check(BlueSinnohPilot.rowan_pokedex, "QA Pokedex missing after Barry")
+    $PokemonGlobal.blue_regions["current"] = "JOHTO"
+    old_johto = Marshal.dump($PokemonGlobal.blue_regions)
+    check(!BlueSinnohPilot.barry_rival, "QA enabled Barry in Johto")
+    check(Marshal.dump($PokemonGlobal.blue_regions) == old_johto,
+          "QA altered Johto saves")
   end
 end
 
