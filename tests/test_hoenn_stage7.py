@@ -40,9 +40,9 @@ class HoennStage7Tests(unittest.TestCase):
 
     def test_27_new_maps_and_conditional_cable(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE7),27)
-        self.assertEqual(len(SOURCE_MAPS),85)
+        self.assertEqual(len(SOURCE_MAPS),110)
         self.assertEqual(len(WARP_PAIRS_STAGE7),23)
-        self.assertEqual(len(WARP_PAIRS),91)
+        self.assertEqual(len(WARP_PAIRS),130)
         self.assertEqual(len(OFFSET_BORDERS_STAGE7),7)
         self.assertEqual(CABLE_POINTS_STAGE7,((122,8,9),(179,8,9)))
         self.assertFalse(any(a[0]==122 and b[0]==179 or
