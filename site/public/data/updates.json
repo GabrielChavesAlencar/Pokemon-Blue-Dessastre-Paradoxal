@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2599782e17370168007edae87747a201336134db",
+      "date": "2026-11-13T21:08:32-03:00",
+      "title": "data(sinnoh): define original Twinleaf Verity Sandgem events with unknown real MapIDs and positions",
+      "category": "Melhorias"
+    },
+    {
       "sha": "82426dbc55c21def1f5cad03f9ee5274c23b186b",
       "date": "2026-11-13T21:07:34-03:00",
       "title": "feat(sinnoh): add isolated original Rowan Barry and three starter-ball story handlers",
