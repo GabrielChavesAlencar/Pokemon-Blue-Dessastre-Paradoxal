@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 4 implementada; execução/aceite pendentes — ▣▣▣▣□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 5 implementada; execução/aceite pendentes — ▣▣▣▣▣□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -14,7 +14,7 @@
 | 2 | Corrigir conexões e colisões dos mapas | **Auditoria de RXDATA/PBS implementada; execução local pendente** | ⏳ |
 | 3 | Conferir encontros, NPCs, treinadores e itens | **Perfis-base, itens simples e catálogo de pendências implementados; QA nativo pendente** | ⏳ |
 | 4 | Surf, Dive, Waterfall, Strength e puzzles | **HM e gate regional + rochas simples + auditoria fonte; puzzles nativos pendentes** | ⏳ |
-| 5 | Equipes Aqua/Magma, Seafloor Cavern | Pendente | ⏳ |
+| 5 | Equipes Aqua/Magma, Seafloor Cavern | **Gates de história e auditoria de eventos implementados; teste real pendente** | ⏳ |
 | 6 | Cave of Origin, clima, Rayquaza | Pendente | ⏳ |
 | 7 | Oito ginásios e insígnias locais | Pendente | ⏳ |
 | 8 | Victory Road e Wally | Pendente | ⏳ |
@@ -203,3 +203,45 @@ A quantidade **efetivamente instalada** de boulders depende de não haver sobrep
 - [ ] Windows e Android/JoiPlay testados separadamente.
 
 **Limites explícitos:** sem hooks nas rotas aquáticas nativas, sem solução completa do gelo, sem confirmação visual de movimentos/efeitos e sem correção de todos os obstáculos condicionais do doador. A CI mede apenas scripts, entradas estáticas e simulações; a barra aprovada continua em 0/12.
+
+
+## Fase 05/12 — Aqua, Magma, Seafloor Cavern, Archie e Kyogre
+
+**Preparação técnica: 5/12. Aprovação jogável nativa: 0/12.** O código novo **não** importa scripts do doador e **não** altera a instalação principal de Decades nem os saves de Kanto, Johto ou Sinnoh.
+
+### Correções efetivas
+
+- A **cena invisível de Groudon** no esconderijo Magma (Map189, x21/y19) agora usa evento **Player Touch** (`trigger=1`, `through=true`): o jogador não precisa apertar ação em um evento invisível. Ainda exige derrotar Maxie, e o despertar continua único por save.
+- A fuga do submarino Aqua agora exige **o roubo em Slateport e a vitória contra Matt**, e não apenas uma flag de batalha solta.
+- **Entrada externa de Seafloor Cavern** (Map227–236): exige a sequência regional `groudon_awakened`, `slateport_submarine_stolen`, `submarine_escaped`, `space_center_saved`, `hm_dive_received` e **Mind Badge de Hoenn**. O acesso físico submerso ainda depende dos guards de Dive da Fase 4.
+- **Saídas da caverna e escadas entre os dez mapas internos não dependem dessas flags de entrada**, evitando aprisionar o jogador em um save parcialmente migrado.
+- A batalha de **Archie** e o despertar de **Kyogre** exigem a sequência completa e ocorrer no santuário Map236. Uma derrota não marca vitória, a batalha não se repete após vitória, e Kyogre não desperta antes de Archie.
+- Os scripts de batalha continuam usando o **motor do Blue**, incluindo balanceamento dinâmico por insígnias; os números PBS são referências, não níveis fixos para o site.
+
+### Auditoria estática e código
+
+- `scripts/regions/hoenn_qa_phase5.py` confere **9 eventos autorais centrais**, suas coordenadas, handlers e trigger correto, além de **18 eventos de recrutas** (4 Pyre, 7 Magma, 5 Aqua, 2 Centro Espacial). Também confere os PBS de Maxie, Tabitha, Matt e Archie.
+- `scripts/regions/inspect_hoenn_qa5_public.py` consulta **oito mapas RXDATA** da revisão imutável Hoenn, valida os SHA-1 Git previamente conferidos na subárvore imutável `c3876ecea7545eb3a91b9c8748d7e2b13f07805d` e usa `data/regions/hoenn-source.json` para confirmar a revisão; produz somente metadados de eventos. Nenhum script, fala ou binário do doador é publicado.
+- Os NPCs e treinadores da fonte sem correspondência validada continuam no backlog. **Não** se pode afirmar que todas as equipes e cenas da campanha já estejam completas.
+- `TESTAR_HOENN.bat` usa a nova pasta privada `.blue-work/hoenn-qa-fase05/` e novo perfil mkxp **Hoenn QA Fase05** / **Dessastre Paradoxal Hoenn QA05**; cópias e saves das fases anteriores permanecem separados.
+
+### Executar e conferir
+
+1. Atualize a `main`, mantenha o `The Pokémon World Project - Hoenn.zip` verdadeiro na raiz e o `game/Game.exe` intacto.
+2. Rode `TESTAR_HOENN.bat`: as auditorias das fases 1→2→3→4→5 precisam passar antes da abertura do piloto.
+3. Leia os relatórios locais `.blue-work/hoenn-qa-fase05-prep-report.json`, `hoenn-qa-fase05-mapas-report.json`, `hoenn-qa-fase05-encontros-report.json`, `hoenn-qa-fase05-campo-report.json` e `hoenn-qa-fase05-report.json`.
+4. Teste em ordem: Mt. Pyre/Red Orb → Magma Emblem/Jagged Pass → Tabitha/Maxie/Groudon → Slateport/Submarino → Lilycove/Matt/fuga → Tate e Liza/Centro Espacial/Steven/Dive → Rota 128/Seafloor → Archie/Kyogre.
+5. Registre MapID/x/y, flags e resultado da batalha para cada bloqueio. Tente entrar antes e depois dos requisitos, sair da caverna, salvar/carregar e retornar a outra região.
+
+### Aprovação do Game.exe — ainda pendente
+
+- [ ] Gerar a cópia QA05 com os 199 mapas reais e compilar/iniciar Game.exe.
+- [ ] Groudon dispara por contato após Maxie, mas não antes.
+- [ ] Portas de Aqua/Magma e Seafloor respeitam a ordem sem softlock.
+- [ ] Submarino foge somente depois de Slateport/Matt, sem duplicação.
+- [ ] Strength e correntes dos **dez interiores** de Seafloor são transponíveis fisicamente.
+- [ ] Archie, Kyogre e os efeitos de clima ocorrem corretamente, com reentrada e save/reload.
+- [ ] Trainer teams e áudio, tradução de NPCs/placas e sprites aprovados visualmente.
+- [ ] Saves Blue/Decades e Kanto/Johto/Sinnoh preservados; Android/JoiPlay testado separadamente.
+
+**Limites:** não foram reproduzidos todos os puzzles, animações lendárias ou o movimento físico do submarino. Fase 6/12 cuidará da crise do clima, Cave of Origin e Rayquaza. A CI não comprova jogabilidade nativa.

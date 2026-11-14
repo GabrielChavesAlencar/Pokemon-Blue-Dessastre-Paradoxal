@@ -103,10 +103,12 @@ $PokemonGlobal.blue_regions={
   "achievements"=>{"HOENN"=>%w[STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND]},
   "hoenn_pilot"=>{
     "starter"=>"TREECKO","hm_dive_received"=>true,
-    "submarine_escaped"=>true,"groudon_awakened"=>true
+    "submarine_escaped"=>true,"groudon_awakened"=>true,
+    "slateport_submarine_stolen"=>true,"space_center_saved"=>true
   }
 }
 flags=BlueHoennPilot.state
+$game_map.map_id=836  # isolated original Seafloor Map236 mapped to 836 in fixture
 assert9(!BlueHoennPilot.sootopolis_crisis,"crisis before Kyogre")
 assert9(!BlueHoennPilot.juan,"Juan before Rayquaza")
 assert9(!BlueHoennPilot.wally_victory_road,"Wally before RAIN")

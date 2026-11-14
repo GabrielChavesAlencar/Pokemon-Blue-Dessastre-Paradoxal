@@ -1,0 +1,41 @@
+name: Hoenn QA 05 - Aqua Magma Seafloor audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/regions/HoennPilot.rb'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'scripts/regions/hoenn_qa_phase5.py'
+      - 'scripts/regions/inspect_hoenn_qa5_public.py'
+      - 'tests/test_hoenn_qa_phase5.py'
+      - 'tests/hoenn_qa_phase5_runtime.rb'
+      - '.github/workflows/hoenn_qa5_source_audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/HoennPilot.rb'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'scripts/regions/hoenn_qa_phase5.py'
+      - 'scripts/regions/inspect_hoenn_qa5_public.py'
+      - 'tests/test_hoenn_qa_phase5.py'
+      - 'tests/hoenn_qa_phase5_runtime.rb'
+      - '.github/workflows/hoenn_qa5_source_audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-aqua-magma-seafloor:
+    name: Map IDs fonte pinada e contratos Aqua/Magma (sem Game.exe)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inspecionar oito mapas originais com SHA-1 Git fixado
+        run: python scripts/regions/inspect_hoenn_qa5_public.py
+      - name: Testar mapas, batalhas e isolamentos por fixtures
+        run: |
+          python -m unittest discover -s tests -p 'test_hoenn_qa_phase5.py' -v
+          ruby -c scripts/regions/HoennPilot.rb
+          ruby tests/hoenn_qa_phase5_runtime.rb scripts/regions/HoennPilot.rb
