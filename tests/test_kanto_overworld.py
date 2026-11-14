@@ -6,7 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 try:
-    from pilot import command, new_event, if_scene
+    from pilot import command, new_event, if_scene, KANTO_MOONSTONE_CALLBACK
+    from verify_pilot import KANTO_MOONSTONE_CALLBACK as REQUIRED_MOONSTONE_CALLBACK
     from kanto_overworld import (
         source_item_ball, source_obstacle, source_npc_dialogue,
         adapt_source_field_event, safely_adapt_source_field_event, MissingActorGraphic,
@@ -173,6 +174,31 @@ class KantoOverworldContracts(unittest.TestCase):
             safely_adapt_source_field_event(
                 npc, 24, 9, {"POTION"}, unexpected_failure,
                 new_event, command, if_scene)
+
+    def test_moonstone_required_event_and_verifier_use_same_script(self):
+        # Regression for Windows startup failure:
+        # Required Kanto event scripts are missing: [(36, 18)]
+        # The pickup gained an event-id argument but verifier kept old text.
+        expected = REQUIRED_MOONSTONE_CALLBACK
+        self.assertEqual(
+            expected,
+            'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018", 18)')
+        self.assertEqual(KANTO_MOONSTONE_CALLBACK, expected)
+        pilot = (ROOT / "scripts/regions/pilot.py").read_text("utf8")
+        verifier = (ROOT / "scripts/regions/verify_pilot.py").read_text("utf8")
+        self.assertIn("36: {18: KANTO_MOONSTONE_CALLBACK}", pilot)
+        self.assertIn("(36, 18): KANTO_MOONSTONE_CALLBACK", verifier)
+        # A compiled native event command must match the verifier string.
+        native = new_event(
+            fake_event(event_id=18, name=b"Moon Stone", graphic=b""),
+            [command(355, KANTO_MOONSTONE_CALLBACK.encode("utf8"))],
+            0, b"")
+        scripts = [
+            op.attrs["@parameters"][0].decode("utf8")
+            for op in native.attrs["@pages"][0].attrs["@list"]
+            if op.attrs["@code"] in (355, 655) and op.attrs["@parameters"]
+        ]
+        self.assertIn(expected, scripts)
 
     def test_source_coverage_is_scoped_to_active_kanto_maps(self):
         script = (ROOT / "scripts/regions/pilot.py").read_text("utf8")
