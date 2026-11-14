@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f83c957549485ecd26d72792b7beb9cfde92353f",
+      "date": "2026-11-14T11:29:06-03:00",
+      "title": "fix(hoenn): reconhecer métodos Ruby interrogativos no contrato da Stone Badge",
+      "category": "Correções"
+    },
+    {
       "sha": "55ff105bb107060a94f85df3638df8adabcf2d28",
       "date": "2026-11-14T11:28:55-03:00",
       "title": "test(hoenn): atualizar contratos de mapa, eventos e habitat para 28 áreas",
