@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 7,
-    "implementation_preparation_count": 7,
+    "current_phase": 8,
+    "implementation_preparation_count": 8,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -72,8 +72,8 @@
       {
         "phase": 8,
         "name": "Victory Road e Wally",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "victory_road_wally_map_guard_eight_badge_waterfall_and_league_gate_static_audit_prepared",
+        "native_acceptance": "pending_private_source_and_game_exe_victory_road_navigation_hms_puzzles_wally_battle",
         "native_approved": false
       },
       {
@@ -158,9 +158,22 @@
       "Test native gym puzzles and doors (Wattson switches, Flannery steam, Norman rooms, Sootopolis ice), dialogue/sprites, defeat retry, save/reload",
       "Verify that region transition cannot use HOENN badge flags outside HOENN; Kanto/Johto/Sinnoh/Decades saves and Android unchanged",
       "No Game.exe native or Android approval from static Python/Ruby/CI checks"
+    ],
+    "phase8_requires": [
+      "Create separate hoenn-qa-fase08/ from pinned original Hoenn donor ZIP and original Blue game/; preserve QA07 and earlier saves",
+      "Audit map IDs 91, 92, 250, 251, 252, 322, 93, original coordinates, physical events and remapped scripts of Wally and League gate",
+      "Validate native Waterfall use from Ever Grande south; Rain badge, matching HM and a Pokemon knowing WATERFALL are mandatory for southern crossings",
+      "Traverse Victory Road 1F B1F B2F; test every entrance, warp, floor connection, ladder and return path without softlocks",
+      "Check safe authored Strength/Rock Smash boulders from QA04 separately from source obstacle candidates needing manual reconstruction; verify collision, positions and movement resets",
+      "Trigger Wally only in Victory Road 1F at original (8,26) and only with all 8 regional badges; loss cannot mark victory or unlock exit",
+      "Win Wally using real Blue/Decades scaling and Wally's 5-Pokemon reference PBS lineup; check reward, save/reload, defeated event idempotency",
+      "Ensure from Victory Road 1F to upper Ever Grande (322) the exit stays blocked until Wally is defeated, but cave retreat always works",
+      "Access League map 93 only with eight local badges plus Wally victory; without battle, Level Cap or other region badges cannot bypass",
+      "Repeat in original installed Game.exe and save/reload, compare Kanto Johto Sinnoh Decades and Android/JoiPlay separately",
+      "NO native, PC or Android approval inferred from synthetic tests/CI; puzzles may still be incomplete"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA7 binds 8 Hoenn leaders through map-scoped gym dispatcher (9 NPC events for Tate+Liza), audits source RXDATA and PBS in isolated Hoenn QA07 and keeps original Blue/Decades scaling. Native gym puzzles, real battle UI, badges on Trainer Card and Game.exe still unapproved. 0/12 native approved."
+  "last_publication_note": "QA8: victory road 3 floors, 5-Pokemon Wally reference team, Waterfall and all-eight-badge gating, no Wally/League skip. Separate QA08 save profile and physical RXDATA/PBS/static obstacle auditor; native Game.exe still unapproved; 0/12."
 }
