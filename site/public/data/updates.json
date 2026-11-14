@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "37d5bf49964c15ff885026a012f76d5a4be573db",
+      "date": "2026-11-13T22:10:41-03:00",
+      "title": "feat(sinnoh): gate isolated QA new game on compiled PBS proof and hashed Twinleaf spawn with region-scoped state",
+      "category": "Novidades"
+    },
+    {
       "sha": "2f0c071e3c6927f386b0f4417dda40ef9a9cd04c",
       "date": "2026-11-13T22:07:11-03:00",
       "title": "docs(sinnoh): note 119 passing isolated tests and separate existing Johto global CI failure",
