@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6cd0b19a5e50013904e085b6fbacb7d66217061f",
+      "date": "2026-11-14T12:30:31-03:00",
+      "title": "ci(hoenn): testar Dynamo, rival, Wattson e bicicletas em Ruby",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3087bd286dbb7171555dd1ce68ba1a0252129efe",
+      "date": "2026-11-14T12:30:22-03:00",
+      "title": "test(hoenn): simular rival110, Wally, Dynamo, Rydel e Cycling Road em Ruby puro",
+      "category": "Testes"
+    },
+    {
       "sha": "6469a32a8d4b25d2e8eecf0daa3d9f2819f1529c",
       "date": "2026-11-14T12:28:58-03:00",
       "title": "test(hoenn): validar Mauville, Wattson, 27 equipes e gates sem Game.exe",
