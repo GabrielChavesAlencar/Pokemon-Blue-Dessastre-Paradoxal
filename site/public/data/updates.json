@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "21ccd783cc0bb2cbd60ab3650a242b7220f31ed8",
+      "date": "2026-11-14T17:06:06-03:00",
+      "title": "test(hoenn): QA6 Sky Pillar retreat and post-Wallace access",
+      "category": "Testes"
+    },
+    {
       "sha": "90057bfea156da10fe64221eb807c0f7591ebd10",
       "date": "2026-11-14T17:05:04-03:00",
       "title": "docs(hoenn): QA6 climate sequence implementation and native playtest checklist",
