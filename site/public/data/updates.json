@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f1a9d4dff4adc379ed02fe1345f3ef8c566c4e10",
+      "date": "2026-11-13T21:26:54-03:00",
+      "title": "test(sinnoh): reject tampered or incomplete Barry PBS and ensure draft verifier never releases marker",
+      "category": "Testes"
+    },
+    {
       "sha": "c868222b4c82994bb53d709f5f15825e1bc56980",
       "date": "2026-11-13T21:26:19-03:00",
       "title": "feat(sinnoh): verify Barry PBS trio hashes, native learnsets and 70/90 scaling provenance without issuing battle marker",
