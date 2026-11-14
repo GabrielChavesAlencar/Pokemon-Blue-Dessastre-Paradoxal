@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "85ac1046c47968dbd2e5c5b528a1b7c803cc2f56",
+      "date": "2026-11-14T11:25:56-03:00",
+      "title": "feat(hoenn): Stone Badge regional, Cut, Roxanne, resgate Peecko e Devon em Ruby",
+      "category": "Novidades"
+    },
+    {
       "sha": "51e89e3a6a65b8f253365d8cb19309303a1fe735",
       "date": "2026-11-14T11:24:32-03:00",
       "title": "test(hoenn): exigir 28 mapas, Stone Gym, treinadores e Rusturf compilados",
