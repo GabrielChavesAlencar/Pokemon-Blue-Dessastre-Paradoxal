@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c888aa8765da1ed54b168a9296364b7e8a700289",
+      "date": "2026-11-13T22:17:29-03:00",
+      "title": "docs(sinnoh): hand off only local native QA after save-isolated installer, compiler bootstrap and guarded Sinnoh start",
+      "category": "Documentação"
+    },
+    {
       "sha": "70c3380ec1f1f6b8e2f69520679724c061eb8c23",
       "date": "2026-11-13T22:17:09-03:00",
       "title": "docs(sinnoh): show 4/7 QA installation/save isolation subbar without inflating native or gameplay approvals",
