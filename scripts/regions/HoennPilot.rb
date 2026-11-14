@@ -410,12 +410,13 @@ module BlueHoennPilot
   def self.briney
     flags = state
     return false unless flags
-    if flags["peecko_rescued"]
-      pbMessage(_INTL("Mr. Briney: Obrigado por salvar Peecko! Um dia vou levá-lo até Dewford."))
-    else
-      pbMessage(_INTL("Mr. Briney: Peecko está desaparecida. Preciso encontrá-la antes de zarpar!"))
+    unless flags["peecko_rescued"] && flags["stone_letter_received"]
+      pbMessage(_INTL("Mr. Briney: primeiro salve Peecko e converse com o presidente Stone em Rustboro."))
+      return false
     end
-    true
+    pbMessage(_INTL("Mr. Briney: obrigado por ajudar Peecko! Posso levá-lo a Dewford."))
+    return false unless pbConfirmMessage(_INTL("Viajar para Dewford agora?"))
+    boat_to(28)
   end
 
   def self.pickup(item, key, event_id)
@@ -778,6 +779,283 @@ module BlueHoennPilot
     return false unless state
     pbMessage(_INTL("A saída leste de Rusturf Tunnel será liberada quando Verdanturf for integrada."))
     false
+  end
+
+
+
+  # Stage 05: storyline is persisted ONLY in blue_regions["hoenn_pilot"].
+  # Brawly awards the existing KNUCKLE milestone; never a native Blue badge.
+  STAGE5_SIGNS = {
+    DEWFORD_GYM: "Ginásio de Dewford. Brawly utiliza Pokémon Lutadores.",
+    DEWFORD_TOWN: "Dewford: uma ilha tranquila ao lado de Granite Cave.",
+    BRAWLY_GYM: "Knuckle Badge: permite usar Flash em Hoenn.",
+    SLATEPORT_CITY: "Slateport: cidade portuária e centro de pesquisa marinha.",
+    SLATEPORT_SHIPYARD: "Estaleiro Stern: converse com a equipe para localizar o capitão.",
+    SLATEPORT_HARBOR: "Porto de Slateport. Mais viagens estão em preparação.",
+    POKEMON_FAN_CLUB: "Clube dos Fãs: troque histórias com treinadores.",
+    SLATEPORT_MART: "Poké Mart de Slateport.",
+    OCEANIC_MUSEUM: "Museu Oceânico: pesquisas sobre a vida marinha.",
+    GRANITE_CAVE: "Granite Cave: cuidado com os túneis e as escadas.",
+    SEASIDE_HOUSE: "Casa da Praia, na Rota 109."
+  }.freeze
+
+  def self.sign_stage5(key)
+    return false unless state && STAGE5_SIGNS.key?(key)
+    pbMessage(_INTL(STAGE5_SIGNS.fetch(key)))
+    true
+  end
+
+  def self.knuckle_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions, "HOENN").include?("KNUCKLE")
+  end
+
+  # A verified item is preferable to guessing a TM index that may be
+  # reassigned by Decades. Keep pending rewards until the real move is found.
+  def self.give_move_tm(flag, move, candidates, message)
+    flags = state
+    return false unless flags && !flags[flag]
+    item = candidates.find do |candidate|
+      GameData::Item.exists?(candidate) &&
+        GameData::Item.get(candidate).respond_to?(:move) &&
+        GameData::Item.get(candidate).move == move
+    end
+    unless item
+      pbMessage(_INTL("Recompensa pendente: a TM deste movimento ainda não está cadastrada."))
+      return false
+    end
+    unless $bag && $bag.add(item, 1)
+      pbMessage(_INTL("Libere espaço na Bolsa para receber a TM."))
+      return false
+    end
+    flags[flag] = true
+    pbMessage(_INTL(message))
+    true
+  end
+
+  def self.brawly
+    flags = state
+    return false unless flags && $player && !$player.party.empty?
+    return give_move_tm("brawly_tm_given", :BULKUP, [:TM08, :TM064, :TM0640],
+                        "Brawly: receba Bulk Up!") if knuckle_badge?
+    unless stone_badge? && flags["peecko_rescued"]
+      pbMessage(_INTL("Brawly: só aceitarei o desafio após sua primeira insígnia e o resgate de Peecko."))
+      return false
+    end
+    pbMessage(_INTL("Brawly: mostrarei a força dos Pokémon Lutadores!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_BRAWLY, "Brawly", 531)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions, "HOENN", "KNUCKLE")
+      pbMessage(_INTL("Brawly: erro ao registrar a Knuckle Badge regional."))
+      return false
+    end
+    flags["brawly_defeated"] = true
+    pbMessage(_INTL("Você conquistou a Knuckle Badge de Hoenn! Flash está liberado nesta região."))
+    give_move_tm("brawly_tm_given", :BULKUP, [:TM08, :TM064, :TM0640],
+                 "Brawly: receba Bulk Up!")
+    true
+  end
+
+  def self.flash_hiker
+    flags = state
+    return false unless flags
+    if flags["hm_flash_received"]
+      pbMessage(_INTL("Montanhista: com a Knuckle Badge você pode usar Flash em Hoenn."))
+      return false
+    end
+    hm = [:HM05, :HMFLASH].find { |item| GameData::Item.exists?(item) }
+    unless hm
+      pbMessage(_INTL("O HM Flash não está cadastrado nesta instalação do Blue."))
+      return false
+    end
+    unless $bag && $bag.add(hm, 1)
+      pbMessage(_INTL("Montanhista: deixe espaço na Bolsa para receber HM Flash."))
+      return false
+    end
+    flags["hm_flash_received"] = true
+    pbMessage(_INTL("Você recebeu HM Flash! A Knuckle Badge libera seu uso em Hoenn."))
+    true
+  end
+
+  def self.steven_letter
+    flags = state
+    return false unless flags
+    unless flags["stone_letter_received"]
+      pbMessage(_INTL("Steven: Mr. Stone ainda não lhe entregou nenhuma carta."))
+      return false
+    end
+    unless flags["steven_letter_delivered"]
+      if GameData::Item.exists?(:LETTER) && !flags["stone_letter_virtual"]
+        unless $bag && $bag.has?(:LETTER) && $bag.remove(:LETTER, 1)
+          pbMessage(_INTL("Steven: a carta não está na sua Bolsa."))
+          return false
+        end
+      end
+      flags["steven_letter_delivered"] = true
+      pbMessage(_INTL("Steven: agradeço pela carta de meu pai. Boa sorte em Hoenn!"))
+    end
+    return false if flags["steven_tm_given"]
+    give_move_tm("steven_tm_given", :STEELWING, [:TM47, :TM051],
+                 "Steven: aceite a TM Steel Wing como agradecimento!")
+  end
+
+  def self.boat_to(source_id)
+    flags = state
+    return false unless flags
+    return false unless [105, 28, 111].include?(source_id)
+    unless defined?(BlueRegionTravel) && BlueRegionTravel.respond_to?(:move_to) &&
+           defined?($game_temp) && $game_temp && defined?($scene) && $scene &&
+           defined?($game_map) && $game_map && !$game_temp.in_battle
+      pbMessage(_INTL("O barco ainda não está disponível neste ambiente do jogo."))
+      return false
+    end
+    _, mapped = metadata
+    positions = {105 => [11, 6, 2], 28 => [12, 10, 2], 111 => [21, 23, 2]}
+    map_id = mapped[source_id]
+    return false unless map_id
+    to = [map_id, *positions.fetch(source_id)]
+    previous = [$game_map.map_id, $game_player.x, $game_player.y, $game_player.direction]
+    begin
+      pbFadeOutIn { BlueRegionTravel.move_to(to) }
+      true
+    rescue StandardError => error
+      begin
+        pbFadeOutIn { BlueRegionTravel.move_to(previous) } if $game_map.map_id != previous[0]
+      rescue StandardError
+        # Leave the original error visible; NEVER mutate regional flags here.
+      end
+      pbMessage(_INTL("A travessia não pôde ser concluída: {1}", error.message))
+      false
+    end
+  end
+
+  def self.dewford_boat
+    flags = state
+    return false unless flags && flags["peecko_rescued"]
+    if knuckle_badge? && flags["steven_letter_delivered"] &&
+       pbConfirmMessage(_INTL("Mr. Briney: seguir para a praia de Slateport agora?"))
+      return boat_to(111)
+    end
+    return false unless pbConfirmMessage(_INTL("Mr. Briney: voltar à minha casa na Rota 104?"))
+    boat_to(105)
+  end
+
+  def self.slateport_boat
+    return false unless state && $PokemonGlobal.blue_regions["hoenn_pilot"]["steven_letter_delivered"]
+    return false unless pbConfirmMessage(_INTL("Mr. Briney: viajar de volta para Dewford?"))
+    boat_to(28)
+  end
+
+  def self.shipyard
+    flags = state
+    return false unless flags
+    unless flags["devon_goods_delivered"] && flags["stone_letter_received"]
+      pbMessage(_INTL("Estaleiro: os pesquisadores aguardam uma entrega da Devon de Rustboro."))
+      return false
+    end
+    if flags["stern_package_delivered"]
+      pbMessage(_INTL("Estaleiro: agradecemos por proteger os produtos da Devon!"))
+      return true
+    end
+    flags["stern_delivery_ready"] = true
+    pbMessage(_INTL("Estaleiro: o capitão Stern está no Museu Oceânico. O pacote da Devon deve ser entregue a ele."))
+    true
+  end
+
+  def self.museum_entry
+    flags = state
+    return false unless flags
+    return true if flags["museum_fee_paid"]
+    if !$player || !$player.respond_to?(:money) || $player.money < 50
+      pbMessage(_INTL("Museu Oceânico: a entrada custa ₽50. Dinheiro insuficiente."))
+      $game_player.moveto($game_player.x, 10) if $game_player
+      return false
+    end
+    unless pbConfirmMessage(_INTL("Museu Oceânico: pagar ₽50 pela entrada?"))
+      $game_player.moveto($game_player.x, 10) if $game_player
+      return false
+    end
+    $player.money -= 50
+    flags["museum_fee_paid"] = true
+    pbMessage(_INTL("Bilhete do Museu Oceânico registrado."))
+    true
+  end
+
+  def self.museum_aqua(index)
+    flags = state
+    return false unless flags && [1, 2].include?(index)
+    key = "museum_aqua_#{index}_defeated"
+    return true if flags[key]
+    unless flags["stern_delivery_ready"] && flags["museum_fee_paid"]
+      pbMessage(_INTL("Recruta Aqua: ainda não é hora de batalhar."))
+      return false
+    end
+    version = index == 1 ? 539 : 540
+    pbMessage(_INTL("Recruta Aqua: os produtos da Devon agora pertencem à nossa equipe!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_AQUA, "Recruta", version)
+      $player.heal_party if $player && $player.respond_to?(:heal_party)
+      return false
+    end
+    flags[key] = true
+    pbMessage(_INTL("O recruta Aqua foi derrotado."))
+    true
+  end
+
+  def self.stern
+    flags = state
+    return false unless flags
+    unless flags["stern_delivery_ready"] && flags["museum_fee_paid"]
+      pbMessage(_INTL("Capitão Stern: você veio do estaleiro com a encomenda da Devon?"))
+      return false
+    end
+    unless flags["museum_aqua_1_defeated"] && flags["museum_aqua_2_defeated"]
+      pbMessage(_INTL("Stern: dois membros da Equipe Aqua estão ameaçando minha pesquisa. Enfrente-os!"))
+      return false
+    end
+    if flags["stern_package_delivered"]
+      pbMessage(_INTL("Capitão Stern: os produtos da Devon estão seguros. Obrigado!"))
+      return true
+    end
+    flags["stern_package_delivered"] = true
+    pbMessage(_INTL("Capitão Stern: obrigado! A encomenda da Devon chegou em segurança."))
+    true
+  end
+
+  def self.slateport_north_gate
+    return false unless state
+    pbMessage(_INTL("A Rota 110 será liberada numa fase posterior. Volte para o sul de Slateport."))
+    $game_player.moveto($game_player.x, 2) if $game_player && $game_player.y == 1
+    false
+  end
+
+  def self.soothe_bell
+    flags = state
+    return false unless flags
+    return false if flags["soothe_bell_given"]
+    unless GameData::Item.exists?(:SOOTHEBELL) && $bag && $bag.add(:SOOTHEBELL, 1)
+      pbMessage(_INTL("Clube Pokémon: abra espaço na Bolsa para receber Soothe Bell."))
+      return false
+    end
+    flags["soothe_bell_given"] = true
+    pbMessage(_INTL("Você recebeu Soothe Bell!"))
+    true
+  end
+
+  def self.soft_sand
+    flags = state
+    return false unless flags
+    return false if flags["soft_sand_given"]
+    unless GameData::Item.exists?(:SOFTSAND) && $bag && $bag.add(:SOFTSAND, 1)
+      pbMessage(_INTL("Praia: deixe espaço para receber Soft Sand."))
+      return false
+    end
+    flags["soft_sand_given"] = true
+    pbMessage(_INTL("Você recebeu Soft Sand!"))
+    true
   end
 
 
