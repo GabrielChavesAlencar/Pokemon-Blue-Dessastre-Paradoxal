@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "03fb61c382d7177e6b28abead64e5c66c27f2324",
+      "date": "2026-11-13T21:41:12-03:00",
+      "title": "test(sinnoh): pin legacy 800-805 Johto collision, old dialog starter and fail-closed shared merge",
+      "category": "Testes"
+    },
+    {
       "sha": "d1417987d9107414415872393f9c3005e414e23c",
       "date": "2026-11-13T21:40:31-03:00",
       "title": "feat(sinnoh): audit legacy standalone 800-805 pilot vs Johto reservation and new three-ball workflow without merging",
