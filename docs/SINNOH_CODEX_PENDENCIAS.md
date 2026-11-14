@@ -173,6 +173,23 @@ python -m unittest discover -s tests -p "test_sinnoh_barry*.py" -v
 
 **Progresso honesto:** pacote de integração **3/6 subetapas de preparação**, geral **8/32**, fase técnica/jogável/QA **0/13**. Os scripts isolados, por si sós, não certificam gameplay.
 
+### Instalador QA isolado e primeiro bootstrap PBS — código publicado
+
+**Implementado aqui:**
+- [install_sinnoh_qa_copy.py](../scripts/regions/install_sinnoh_qa_copy.py) — usa como entrada `game/` original e overlay Sinnoh privado com hashes; copia base **sem saves** para novo diretório `.blue-work`, cria identidade exclusiva `mkxp.json`/`Game.ini`, posiciona `System.rxdata` no quarto real, injeta na **cópia** o bootstrap de compilação das três versões Barry e fornece opção `--verify`. Não toca no jogo principal.
+- [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) — no piloto isolado, impede `Novo Jogo` sem prova da compilação e hashes de MapInfos, System, mapa inicial e dois PBS. Inicializa `BlueRegions.new_state("SINNOH")` apenas após verificação; não reinicia saves carregados.
+- [test_sinnoh_qa_install.py](../tests/test_sinnoh_qa_install.py) + [sinnoh_qa_start_runtime.rb](../tests/sinnoh_qa_start_runtime.rb) — testes com Game.exe **fictício**, sem ROM, cobrindo perfis novos, preservação de arquivos, compilação pendente, start gate, hashes e save state. Executados na CI isolada.
+- [SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md](SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md) — comandos exatos e critérios nativos.
+
+**Não reimplementar ferramentas. Necessário somente no ambiente Codex/Windows local:**
+1. Auditar mapas/sprites originais e autorização de Sinnoh, resolver reservas de Johto/Hoenn/Kanto e preencher o JSON **local** de Twinleaf com hashes/MapIDs/coordenadas reais.
+2. Produzir o overlay com `prepare_sinnoh_pilot_bundle.py`, executar `install_sinnoh_qa_copy.py` primeiro sem `--install` (dry-run) e depois com `--install`. Não incluir saves reais no GitHub; a nova pasta terá perfil próprio.
+3. Abrir o `Game.exe` **da cópia**, aguardar a compilação PBS nativa de `BLUE_SINNOH_RIVAL,Barry,0/1/2`, conferir `--verify` e eventuais erros dentro da cópia. A primeira execução deve **encerrar depois da compilação**, não começar um jogo.
+4. Na segunda abertura, verificar start no quarto, três Poké Bolas físicas, Rowan, Barry, 16 warps, save/load e diferença efetiva dos diretórios de save em `AppData`/mkxp. Testar Normal 70% e Master 90% sem criar o marcador de rival prematuramente.
+5. Validar Android/JoiPlay, regressão Decades/Kanto/Johto/Hoenn e documentação de direitos; **só depois** considerar aprovação de fases jogáveis. Não ativar Barry na main.
+
+**Progresso:** QA installation **4/7** em código; bundle **3/6**, introdução **5/8**, desenvolvimento total **8/32**, aprovações técnicas/jogáveis/Android **0/13**.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
