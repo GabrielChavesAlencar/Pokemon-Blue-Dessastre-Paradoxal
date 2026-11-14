@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7247f65001a734ce644846f7ae3647204a6c6ae9",
+      "date": "2026-11-13T22:19:41-03:00",
+      "title": "docs(sinnoh): record 134 isolated Python tests after QA coordinate and legacy collision guards",
+      "category": "Documentação"
+    },
+    {
       "sha": "6ba2ef1fbb7175de4715790598adfdb74a8d34ee",
       "date": "2026-11-13T22:19:07-03:00",
       "title": "docs(sinnoh): clarify QA base must be clean and authored event coordinates are revalidated",
