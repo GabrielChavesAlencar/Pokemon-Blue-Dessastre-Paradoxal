@@ -32,6 +32,24 @@ module BlueKantoPilot
       event.name.to_s.match?(/cut[ _-]*tree|cuttable[ _-]*tree/i)
   end
 
+  # Correct the pilot's map-name announcement without changing map IDs,
+  # the FRLG source atlas or the official names in the English-language PBS.
+  # The generated Kanto pilot.json maps source FRLG Map010 to the stable Blue ID.
+  def self.viridian_map_id
+    return nil unless File.file?("Kanto pilot.json")
+    @viridian_map_id ||= begin
+      match = File.read("Kanto pilot.json").match(/"10"\s*:\s*(\d+)/)
+      match ? match[1].to_i : nil
+    end
+  rescue IOError, SystemCallError
+    nil
+  end
+
+  def self.viridian_display_name_for_map(map_id)
+    return nil unless PILOT_OVERWORLD_SCALE && viridian_map_id == map_id
+    defined?(BlueLocale) && BlueLocale.enabled? ? "Cidade de Viridian" : "Viridian City"
+  end
+
   def self.standard_npc_text(message)
     message.gsub(/\\(?:fn|fs|font|c)\[[^\]]*\]/i, "").gsub(/\\[br]/i, "")
   end
@@ -232,13 +250,20 @@ module BlueKantoPilot
   end
 
   def self.viridian_mart
+    # Kanto's first Viridian visit gives Oak's parcel, but never sells
+    # items until Oak has actually received it. The dialogue alone must
+    # not fall through to pbPokemonMart (including on older saved games).
     if parcel_pickup_pending?
-      # Recovery for already-installed saves; normal entry uses the autorun.
-      # FireRed does not offer shopping during the first parcel handoff.
+      # Recovery for existing saves where the shop's autorun was skipped.
       receive_oak_parcel
-      return
-    elsif progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
-      pbMessage(BlueKantoPilot.t("Clerk: Don't forget to deliver the package to Professor Oak in Pallet.", "Funcionário: Não esqueça de entregar o pacote ao professor Oak, em Pallet."))
+      return false
+    end
+    unless progress["pilot_oak_parcel_delivered"] == true
+      pbMessage(BlueKantoPilot.t(
+        "Clerk: Please deliver the package to Professor Oak in Pallet before shopping.",
+        "Funcionário: Primeiro entregue o pacote ao professor Oak, em Pallet, para liberar as compras."
+      ))
+      return false
     end
     pbPokemonMart(VIRIDIAN_MART_STOCK.dup)
   end
@@ -1283,6 +1308,17 @@ module BlueKantoPilot::CutTreeSmashAnimation
   end
 end
 Object.prepend(BlueKantoPilot::CutTreeSmashAnimation)
+
+# MapMetadata#name is used by the native location banner and map UI. Some
+# localized saves show just "Cidade"; the pilot's source Map010 must retain
+# its proper place name. Never change the actual map ID, real_name, or Decades.
+module BlueKantoPilot::ViridianMapLabel
+  def name
+    local_name = BlueKantoPilot.viridian_display_name_for_map(@id)
+    local_name || super
+  end
+end
+GameData::MapMetadata.prepend(BlueKantoPilot::ViridianMapLabel) if defined?(GameData::MapMetadata)
 
 # The Kanto-only markers ensure this global movement hook is inert on
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
