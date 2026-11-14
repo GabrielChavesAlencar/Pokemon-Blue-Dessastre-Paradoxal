@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f63b0b5edd0add7af2b8658ea132aaf1d70d49d7",
+      "date": "2026-11-13T22:04:02-03:00",
+      "title": "docs(sinnoh): document private multi-input integration overlay and safe Windows QA procedure",
+      "category": "Documentação"
+    },
+    {
       "sha": "38b2a3998d5380c2520919875bc2c010df9949c9",
       "date": "2026-11-13T22:02:30-03:00",
       "title": "test(sinnoh): fix ASCII-only bytes literal in synthetic QA fixture",
