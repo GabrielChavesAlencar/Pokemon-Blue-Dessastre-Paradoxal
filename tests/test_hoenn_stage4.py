@@ -34,7 +34,7 @@ class HoennStage4Tests(unittest.TestCase):
 
     def test_ten_new_maps_and_emulated_warps(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE4), 10)
-        self.assertEqual(len(SOURCE_MAPS), 138)
+        self.assertEqual(len(SOURCE_MAPS), 199)
         self.assertEqual(len(WARP_PAIRS_STAGE4), 16)
         self.assertEqual(len(WARP_PAIRS), 130)
         self.assertEqual(OFFSET_BORDERS_STAGE4, (
