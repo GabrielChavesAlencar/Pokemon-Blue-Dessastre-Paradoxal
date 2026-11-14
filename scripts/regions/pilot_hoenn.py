@@ -107,6 +107,7 @@ from hoenn_qa_phase7 import audit_generated as audit_gyms
 from hoenn_qa_phase8 import audit_generated as audit_road
 from hoenn_qa_phase9 import audit_generated as audit_league
 from hoenn_qa_phase10 import audit_generated as audit_hall
+from hoenn_qa_phase11 import audit_generated as audit_presentation, localized_map_name
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -178,6 +179,21 @@ OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 53, 58, 101, 102, 103, 104,
             108, 111, 113, 114, 117, 121, 123, 125, 130, 132, 134,
             135, 138, 139, 141, 144, 156, 178, 180, 212, 213, 48, 64, 69, 76,
             83,88,91,146,147,148,149,150,151,152,153,154,155,241,322)
+# QA11: safe provisional OGG music for the entire Stage10 finale.
+# Reuse only seven already pinned ORAS audio assets. Never pretend this is the
+# complete Emerald soundtrack or alter Blue/Decades' global music settings.
+MAP_BGM.update({
+    mid: ("Center" if mid in (84,89,92,93,94,95,96,97,98,99,100) else
+          "Oldale" if mid in (83,88,91,322) else
+          "Route101" if mid in (*range(146,156),*range(258,264),250,251,252) else
+          "Birch")
+    for mid in SOURCE_MAPS_STAGE10
+})
+# Source maps without an explicit prior track remain audible and isolated;
+# the fallbacks are catalogued as pending native review in QA11.
+for _hoenn_mid in SOURCE_MAPS:
+    MAP_BGM.setdefault(_hoenn_mid, "Route101" if _hoenn_mid in OUTDOORS else "Center")
+
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -1982,7 +1998,7 @@ def build_overlay(game, source):
 
     order = max(info.attrs.get("@order", 0) for info in native_infos.values())
     for index, (old, name) in enumerate(SOURCE_MAPS.items(), 1):
-        native_infos[ids[old]] = ruby("RPG::MapInfo", name=name.encode("utf-8"),
+        native_infos[ids[old]] = ruby("RPG::MapInfo", name=localized_map_name(name).encode("utf-8"),
                                     parent_id=0, order=order + index,
                                     expanded=False, scroll_x=0, scroll_y=0)
         overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old], EVENT_CLASSES)
@@ -2001,7 +2017,7 @@ def build_overlay(game, source):
         reference_profiles, ids, LAND_ENCOUNTERS, CAVE_ENCOUNTERS)
     overlay["PBS/encounters_hoenn_pilot.txt"] = encounter_bytes
     overlay["PBS/map_metadata_hoenn_pilot.txt"] = "".join(
-        f"[{ids[mid]}]\nName = {name}\n" + ("Outdoor = true\nSnapEdges = true\n" if mid in OUTDOORS else "")
+        f"[{ids[mid]}]\nName = {localized_map_name(name)}\n" + ("Outdoor = true\nSnapEdges = true\n" if mid in OUTDOORS else "")
         for mid, name in SOURCE_MAPS.items()
     ).encode("utf-8")
     overlay["Data/blue-hoenn-compile-request.txt"] = (UPSTREAM + "\n").encode("ascii")
@@ -2139,6 +2155,7 @@ def build_overlay(game, source):
     report["qa8"] = audit_road(maps, report["qa4"])
     report["qa9"] = audit_league(maps)
     report["qa10"] = audit_hall(maps)
+    report["qa11"] = audit_presentation(maps, SOURCE_MAPS, MAP_BGM, set(SOURCE_MAPS_STAGE10))
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())
@@ -2148,6 +2165,8 @@ def build_overlay(game, source):
         b"Requires = Blue Battle Presentation and Story\nScripts = HoennPilot.rb\n"
     )
     overlay[f"{PLUGIN}/HoennPilot.rb"] = regular(ROOT / "scripts/regions/HoennPilot.rb").read_bytes()
+    cards = f"{STORY}/RegionalCards.rb"
+    overlay[cards] = regular(ROOT / "scripts/battle_polish/RegionalCards.rb").read_bytes()
     music = "Plugins/ZZZZ Blue Music/BlueMusic.rb"
     if (game / music).is_file():
         overlay[music] = regular(ROOT / "scripts/music/BlueMusic.rb").read_bytes()
@@ -2210,6 +2229,7 @@ def stage(game: Path, source: Source, output: Path) -> dict:
         "hoenn-qa-fase08": ("Hoenn QA Fase08", "Dessastre Paradoxal Hoenn QA08"),
         "hoenn-qa-fase09": ("Hoenn QA Fase09", "Dessastre Paradoxal Hoenn QA09"),
         "hoenn-qa-fase10": ("Hoenn QA Fase10", "Dessastre Paradoxal Hoenn QA10"),
+        "hoenn-qa-fase11": ("Hoenn QA Fase11", "Dessastre Paradoxal Hoenn QA11"),
     }
     if output.name in qa_profiles:
         profile, org = qa_profiles[output.name]
