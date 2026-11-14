@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "af0161d418fbfb5e73173d55ddbb6b0313d96a5b",
+      "date": "2026-11-14T10:45:33-03:00",
+      "title": "test(hoenn): validar templates de Petalburg/Woods, itens, Aqua e offsets",
+      "category": "Testes"
+    },
+    {
       "sha": "f3493cfb647a3d4410bd994233245283dfcc9c37",
       "date": "2026-11-14T10:43:16-03:00",
       "title": "ci(hoenn): executar testes de Norman/Wally/Aqua e itens no Ruby isolado",
