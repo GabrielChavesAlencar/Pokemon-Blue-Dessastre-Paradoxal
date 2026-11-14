@@ -113,23 +113,54 @@ def install_npc_locale(root: Path, source: Path, target: Path):
     rows = imported_npc_lines(source, inventory)
     custom, errors = read_custom_translations(root)
     path = target / "Data/blue-pt-br.dat"
+    # Always update the isolated pilot with the *current* project locale,
+    # even if Blue-Story.exe has not recompiled the installed game's cache.
+    # This does not change the main Decades installation.
     baseline = {}
     if path.is_file():
         baseline = {text(pair[0]): text(pair[1])
                     for pair in loads(path.read_bytes())}
-    else:
-        # Some custom installs may not have compiled the locale yet.
-        upstream = root / "data/pt-br.json"
-        if upstream.is_file():
-            original = json.loads(upstream.read_text(encoding="utf-8"))
-            baseline = original.get("translations", {})
+    upstream = root / "data/pt-br.json"
+    if upstream.is_file():
+        catalogue = json.loads(upstream.read_text(encoding="utf-8"))
+        baseline.update(catalogue.get("translations", {}))
 
-    # Controls and variables must survive source-to-target conversion.
     from scripts.localization.catalog import validate
+    # Manually reviewed strings ship with the game so that choosing pt-BR
+    # NEVER depends on downloading or manually invoking a translator.
+    curated_path = root / "data/kanto-npc-ptbr.json"
+    curated = {}
+    if curated_path.is_file():
+        curated_data = json.loads(curated_path.read_text(encoding="utf-8"))
+        if (curated_data.get("version") != 1 or
+                curated_data.get("language") != "pt-BR" or
+                not isinstance(curated_data.get("translations"), dict)):
+            raise ValueError("Invalid built-in Kanto NPC pt-BR catalogue")
+        for english, portuguese in curated_data["translations"].items():
+            validate(english, portuguese)
+            curated[english] = portuguese
+    baseline.update(curated)
+
+    # Only the source-confirmed, imported, non-quest NPCs are eligible for
+    # optional automatic translation. An already installed OFFLINE Argos
+    # model can fill gaps; no network call or package install occurs here.
     all_lines = {s for row in rows for s in row["lines"]}
     new_locale = {}
+    private_path = root / ".blue-work/kanto-npc-ptbr.json"
+    automated_cache = False
+    if private_path.is_file():
+        try:
+            metadata = json.loads(private_path.read_text(encoding="utf-8"))
+            automated_cache = str(metadata.get("translation_method", "")).startswith(
+                "Argos Translate")
+        except (OSError, ValueError, TypeError):
+            pass
     for english, portuguese in custom.items():
         if english not in all_lines or not portuguese.strip():
+            continue
+        # A preexisting, unreviewed Argos cache must not replace a human-
+        # reviewed translation that has since shipped with the project.
+        if automated_cache and english in curated:
             continue
         try:
             validate(english, portuguese)
@@ -137,6 +168,24 @@ def install_npc_locale(root: Path, source: Path, target: Path):
             errors.append(f"Invalid controls in NPC text {english[:90]!r}: {error}")
             continue
         new_locale[english] = portuguese
+
+    automatic = {}
+    waiting = sorted(s for s in all_lines
+                     if (not baseline.get(s) or baseline[s] == s)
+                     and s not in new_locale)
+    if waiting:
+        try:
+            from translate_kanto_npcs import get_argos_translator, safe_translate
+            offline_translator = get_argos_translator(False)
+        except (ImportError, RuntimeError, OSError, ValueError):
+            offline_translator = None
+        if offline_translator:
+            for english in waiting:
+                translated, problem = safe_translate(english, offline_translator)
+                if translated and not problem:
+                    automatic[english] = translated
+    baseline.update(automatic)
+    # Explicit private corrections always have the final priority.
     baseline.update(new_locale)
     if baseline:
         path.write_bytes(dumps_simple([[k, v] for k, v in sorted(baseline.items())]))
@@ -162,6 +211,11 @@ def install_npc_locale(root: Path, source: Path, target: Path):
         "npc_events_with_some_portuguese": len(translated),
         "missing_english_lines_by_npc": pending,
         "invalid_local_translations": errors,
+        "reviewed_project_translations": len(set(curated) & all_lines),
+        "automatic_unreviewed_translations": [
+            {"english": k, "portuguese": v}
+            for k, v in sorted(automatic.items())
+        ],
         "local_translation_file": str(root / ".blue-work/kanto-npc-ptbr.json"),
     }
     (target / "Data/blue-kanto-npc-translation-audit.json").write_text(
