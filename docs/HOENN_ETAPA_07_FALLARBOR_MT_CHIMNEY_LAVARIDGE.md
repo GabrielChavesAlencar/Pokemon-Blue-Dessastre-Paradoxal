@@ -44,10 +44,12 @@ Quando o PBS da fonte soma 200 pesos relativos, a tabela do piloto normaliza par
 
 A fase cadastra **23 treinadores comuns**, **2 recrutas Magma**, Tabitha, Maxie e **Flannery**: **28 novas equipes**, total de **96 registros no catálogo público de Hoenn**. Sprites de substituição nativa são marcados como provisórios, nunca como aprovação visual.
 
+- Foram auditados **18 itens de chão/ocultos** na Rota 111, Rota 112, Rota 113, Rota 114, Fiery Path, Jagged Pass e Meteor Falls, incluindo Moon Stone, PP Up e a TM068 da fonte. Recompensas só são concedidas quando o item existir e houver espaço na Bolsa.
+
 ## 3. História implementada em Ruby
 
 1. Após o pacote de Stern e a Dynamo Badge, o evento de **Meteor Falls** registra o roubo do meteorito do Professor Cozmo.
-2. O bloqueio de recrutas na Rota 112 permite liberar a estação do teleférico após a investigação. A viagem ao topo tem fallback seguro em erro de transferência e não altera progresso de outras regiões.
+2. Os **dois recrutas do bloqueio na Rota 112** precisam recuar após a investigação: a subida no teleférico só é permitida quando ambos estiverem registrados no save. A descida continua disponível. A viagem ao topo tem fallback seguro em erro de transferência e não altera progresso de outras regiões.
 3. Em **Mt. Chimney**, os dois recrutas Magma devem ser vencidos antes de **Tabitha**; somente após Tabitha pode ocorrer a batalha contra **Maxie**. Perder uma batalha não marca vitória e permite tentar novamente.
 4. Depois de vencer Maxie, a máquina libera o meteorito. Se o item `METEORITE_RSE` não existir na instalação Blue, um estado virtual de missão substitui **somente** a identidade do item. Bolsa cheia não conclui a retirada do item real.
 5. Em **Lavaridge**, Flannery só aceita o desafio após Dynamo + Maxie + recuperação do meteorito. Vitória concede a **Heat Badge (HOENN:HEAT)** via BlueRegions.award, sem modificar a lista de insígnias nativas de Decades ou de outras regiões.
