@@ -97,6 +97,72 @@ module BlueKantoPilot
       !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
   end
 
+  def self.prepare_viridian_mart_visit(mart_map_id, intro_event_id)
+    return unless parcel_pickup_pending?
+    # Old saves may have an A self-switch even though the automatic scene
+    # was never actually completed. Reset only this Kanto Mart scene.
+    key = [mart_map_id, intro_event_id, "A"]
+    $game_self_switches[key] = false if $game_self_switches[key]
+  end
+
+  # The entrance autorun calls this and then waits (event command 210)
+  # before the clerk hands out Oak's Parcel. Navigate around real shelves
+  # and events, never through walls, and stop beside the actual shopkeeper.
+  def self.walk_to_viridian_clerk(clerk_event_id)
+    clerk = $game_map.events[clerk_event_id]
+    return false unless clerk && $game_player
+    start = [$game_player.x, $game_player.y]
+    directions = [[2, 0, 1, 1], [4, -1, 0, 2],
+                  [6, 1, 0, 3], [8, 0, -1, 4]]
+    queue = [start]
+    previous = {start => nil}
+    destination = nil
+    checked = 0
+    until queue.empty? || checked >= 1024
+      pos = queue.shift
+      checked += 1
+      if (pos[0] - clerk.x).abs + (pos[1] - clerk.y).abs == 1
+        destination = pos
+        break
+      end
+      directions.each do |direction, dx, dy, step|
+        nx, ny = pos[0] + dx, pos[1] + dy
+        neighbor = [nx, ny]
+        next if nx < 0 || ny < 0 || nx >= $game_map.width || ny >= $game_map.height
+        next if previous.key?(neighbor)
+        next unless $game_player.passable?(pos[0], pos[1], direction)
+        previous[neighbor] = [pos, step]
+        queue << neighbor
+      end
+    end
+    unless destination
+      pbMessage(_INTL("Funcionário: Pode falar comigo daqui mesmo; o balcão está ocupado."))
+      return false
+    end
+    steps = []
+    cursor = destination
+    while cursor != start
+      parent, step = previous.fetch(cursor)
+      steps.unshift(step)
+      cursor = parent
+    end
+    face = if clerk.x > destination[0]
+             18
+           elsif clerk.x < destination[0]
+             17
+           elsif clerk.y > destination[1]
+             16
+           else
+             19
+           end
+    route = RPG::MoveRoute.new
+    route.repeat = false
+    route.skippable = true
+    route.list = (steps + [face, 0]).map { |code| RPG::MoveCommand.new(code) }
+    $game_player.force_move_route(route)
+    true
+  end
+
   def self.viridian_parcel_call
     return unless parcel_pickup_pending?
     pbMessage(_INTL("Funcionário: Ei, você! Pode vir até o balcão um instante?"))
@@ -113,8 +179,10 @@ module BlueKantoPilot
 
   def self.viridian_mart
     if parcel_pickup_pending?
-      # Fallback for saves whose one-shot entrance event was already consumed.
+      # Recovery for already-installed saves; normal entry uses the autorun.
+      # FireRed does not offer shopping during the first parcel handoff.
       receive_oak_parcel
+      return
     elsif progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
       pbMessage(_INTL("Funcionário: Não esqueça de entregar o pacote ao professor Oak, em Pallet."))
     end
@@ -127,8 +195,21 @@ module BlueKantoPilot
       BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
   end
 
-  def self.forest_gate_warning
-    pbMessage(_INTL("Antes de entrar na Viridian Forest, entregue o pacote do Poké Mart ao professor Oak em Pallet."))
+  def self.route2_gate_warning
+    pbMessage(_INTL("O caminho norte para a Rota 2 está bloqueado. Primeiro entregue a encomenda do Poké Mart ao Professor Oak em Pallet!"))
+  end
+
+  # A connected outdoor map changes before a normal transfer event runs.
+  # The event markers created on Viridian's actual north edge define where
+  # the route exists. Guard the LAST movement into Route 2 itself, even if an
+  # invisible Player Touch event does not block the preceding tile.
+  def self.route2_exit_blocked?(player, direction)
+    return false unless player && direction == 8 && player.y == 0 && $game_map
+    return false unless $game_map.events.values.any? { |event|
+      event.name == "Kanto Viridian Route 2 Parcel Gate" &&
+        event.y == 0 && event.x == player.x
+    }
+    !forest_unlocked?
   end
 
   def self.rival_done?
@@ -913,6 +994,25 @@ module BlueKantoPilot
     pbMessage(_INTL("Sua equipe está descansada."))
   end
 end
+
+# The Kanto-only markers ensure this global movement hook is inert on
+# Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
+module BlueKantoPilot::Route2ExitGuard
+  def move_generic(dir, turn_enabled = true)
+    if BlueKantoPilot.route2_exit_blocked?(self, dir)
+      turn_generic(dir, true) if turn_enabled
+      warning_key = [$game_map.map_id, x, y]
+      if @blue_route2_last_warning != warning_key
+        @blue_route2_last_warning = warning_key
+        BlueKantoPilot.route2_gate_warning
+      end
+      return
+    end
+    @blue_route2_last_warning = nil
+    super
+  end
+end
+Game_Player.prepend(BlueKantoPilot::Route2ExitGuard)
 
 # This menu is visible ONLY in the isolated pilot with its local stop manifest.
 MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {

@@ -88,23 +88,36 @@ module KantoNativeCheck
     BlueKantoPilot.choose_starter_ball(:BULBASAUR)
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before Oak's parcel")
+    require!(Game_Player.ancestors.include?(BlueKantoPilot::Route2ExitGuard),
+             "Viridian Route 2 outdoor boundary hook was not installed")
     starting_balls = $bag.quantity(:POKEBALL)
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
     mart_visits = []
+    # A stale intro self-switch in older Kanto saves must be reset by
+    # walking into the Mart, before the parcel has been collected.
+    mart_id = File.read("Kanto pilot.json").match(/"12":\s*(\d+)/)[1].to_i
+    $map_factory.setup(mart_id)
+    intro_id = $game_map.events.values.find { |ev| ev.name == "Kanto Oak Parcel Intro" }&.id
+    require!(intro_id, "Viridian Mart automatic parcel scene is missing")
+    $game_self_switches[[mart_id, intro_id, "A"]] = true
+    BlueKantoPilot.prepare_viridian_mart_visit(mart_id, intro_id)
+    require!(!$game_self_switches[[mart_id, intro_id, "A"]],
+             "Mart entrance did not re-arm the automatic parcel event")
     Object.send(:define_method, :pbPokemonMart) do |stock|
       stock.delete_if { false }
       mart_visits << stock
       true
     end
     BlueKantoPilot.viridian_mart
+    require!(mart_visits.empty?, "First parcel encounter unexpectedly opened the Mart")
     require!(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true,
              "Viridian Mart did not register Oak's parcel")
     require!(!BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
              "Oak's parcel delivered without returning to the laboratory")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before parcel delivery")
     BlueKantoPilot.viridian_mart
-    require!(mart_visits.length == 2, "Oak parcel interaction disabled Mart shopping")
+    require!(mart_visits.length == 1, "Returning to the Mart should allow shopping")
     BlueKantoPilot.choose_starter
     require!(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak did not accept the parcel upon return")
@@ -116,7 +129,7 @@ module KantoNativeCheck
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
     BlueKantoPilot.viridian_mart
-    require!(mart_visits.length == 3 &&
+    require!(mart_visits.length == 2 &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
              "Returning to Mart after delivery did not keep the shop available")
     BlueKantoPilot.rival

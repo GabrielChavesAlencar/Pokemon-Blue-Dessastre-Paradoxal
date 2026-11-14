@@ -544,30 +544,89 @@ def update_oak_lab(events, pallet, ball_sprite):
         ]), 1, b"")
 
 
-def guarded_forest_transfer(warp):
-    """Keep the source's native warp, but only after Oak's parcel delivery."""
-    params = warp.attrs["@parameters"]
-    return [
-        command(111, 12, b"BlueKantoPilot.forest_unlocked?"),
-        command(201, *params, indent=1),
-        command(0, indent=1),
-        command(411),
-        command(355, b"BlueKantoPilot.forest_gate_warning", indent=1),
-        command(0, indent=1),
-        command(412),
-    ]
+def route2_north_columns(source, city_width, route_width):
+    """Read the REAL FRLG 10 <-> 18 connection, not an assumed tunnel warp.
+
+    North/South connection offsets refer to positions along the shared edge.
+    Coordinates must overlap in the two maps; fail closed on missing data.
+    """
+    raw = (source / "PBS/map_connections.txt").read_text(encoding="utf-8-sig")
+    found = []
+    for line in raw.splitlines():
+        row = line.split("#", 1)[0].strip()
+        if not row:
+            continue
+        parts = [part.strip() for part in row.split(",")]
+        if len(parts) != 6:
+            raise ValueError("Malformed FRLG map connection: " + row)
+        a, a_side, a_offset, b, b_side, b_offset = parts
+        a, b = int(a), int(b)
+        if (a, b) == (10, 18):
+            city_side, city_offset = a_side, int(a_offset)
+            route_side, route_offset = b_side, int(b_offset)
+        elif (a, b) == (18, 10):
+            city_side, city_offset = b_side, int(b_offset)
+            route_side, route_offset = a_side, int(a_offset)
+        else:
+            continue
+        if (city_side, route_side) != ("North", "South"):
+            raise ValueError("Viridian -> Route 2 is not a northern connection")
+        first = max(0, city_offset - route_offset)
+        last = min(city_width, route_width + city_offset - route_offset)
+        if first >= last:
+            raise ValueError("Viridian -> Route 2 source connection does not overlap")
+        found.append(tuple(range(first, last)))
+    if len(found) != 1:
+        raise ValueError("Expected exactly one source connection Viridian -> Route 2")
+    return found[0]
 
 
-def mart_counter_approach():
-    """Walk toward the vendor without ghosting through shelves or walls."""
-    route = RubyObject("RPG::MoveRoute", {
-        "@repeat": False, "@skippable": True,
-        "@list": [
-            RubyObject("RPG::MoveCommand", {"@code": step, "@parameters": []})
-            for step in (4, 4, 16, 0)
-        ],
-    })
-    return command(209, -1, route, indent=1)
+def make_viridian_route2_gates(events, source, city_map, route_map):
+    """Put the physical story barrier on Viridian City's north edge.
+
+    No guard belongs in the Forest Gate building/tunnel. Until Oak receives
+    the parcel, these solid Player Touch events stop the player BEFORE Route 2.
+    Their local self-switch A makes them passable after the quest.
+    """
+    width = city_map.attrs["@width"]
+    height = city_map.attrs["@height"]
+    if height < 2:
+        raise ValueError("Viridian City is too short for an approach barrier")
+    columns = route2_north_columns(source, width, route_map.attrs["@width"])
+    occupied = {(item.attrs["@x"], item.attrs["@y"]) for item in events.values()}
+    if any((x, 0) in occupied for x in columns):
+        raise ValueError("Viridian Route 2 barrier would overlap an original event")
+    template = next(iter(events.values()))
+    gates = {}
+    next_id = max(events) + 1
+    for offset, x in enumerate(columns):
+        event = copy.deepcopy(template)
+        event.attrs.update({
+            "@id": next_id + offset,
+            "@name": b"Kanto Viridian Route 2 Parcel Gate",
+            "@x": x,
+            "@y": 0,
+        })
+        event = new_event(event, [
+            *if_scene(b"BlueKantoPilot.forest_unlocked?", [
+                command(123, b"A", 0, indent=1),
+            ]),
+            # Warning only while the player still owes the parcel to Oak.
+            *if_scene(b"!BlueKantoPilot.forest_unlocked?", [
+                command(355, b"BlueKantoPilot.route2_gate_warning", indent=1),
+            ]),
+        ], 1, b"")
+        first = event.attrs["@pages"][0].attrs
+        first["@through"] = False  # a solid obstacle, not a skippable floor trigger
+        first["@direction_fix"] = True
+        opened = copy.deepcopy(event.attrs["@pages"][0])
+        opened.attrs["@condition"].attrs.update({
+            "@self_switch_valid": True, "@self_switch_ch": b"A",
+        })
+        opened.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
+        event.attrs["@pages"].append(opened)
+        gates[event.attrs["@id"]] = event
+    return gates
 
 
 def make_viridian_parcel_intro(events):
@@ -581,9 +640,9 @@ def make_viridian_parcel_intro(events):
     intro = new_event(intro, [
         *if_scene(b"BlueKantoPilot.parcel_pickup_pending?", [
             command(355, b"BlueKantoPilot.viridian_parcel_call", indent=1),
-            # A skippable two-step route respects Mart collisions and
-            # cannot strand the player inside a shelf or another NPC.
-            mart_counter_approach(),
+            # Let the native game calculate a path from the REAL arrival tile
+            # to an adjacent counter tile. Never walk through a shelf.
+            command(355, f"BlueKantoPilot.walk_to_viridian_clerk({find_shopkeeper(events)})".encode(), indent=1),
             command(210, indent=1),
             command(355, b"BlueKantoPilot.receive_oak_parcel", indent=1),
         ]),
@@ -627,6 +686,10 @@ def install_events(source, target, mapping):
         shutil.copyfile(src, dest_graphics / (new_name + ".png"))
         return new_name.encode("utf8")
 
+    # This map is used to restore the automatic event for old pilot saves
+    # that previously marked its self-switch before the parcel was collected.
+    mart_events = load(source / "Data/Map012.rxdata").attrs["@events"]
+    mart_intro_event_id = max(mart_events) + 1
     preview_only = set(json_file(KANTO).get("preview_only", []))
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
@@ -1052,13 +1115,21 @@ def install_events(source, target, mapping):
                     original == 168 and event_id in (6, 10, 12, 13, 14)) or (
                     original == 199 and event_id in (1, 2, 3, 5))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
-                # Both Forest Gate buildings must respect the parcel quest.
-                # Preserve the source transfer coordinates and direction.
-                if original != 24 and warp.attrs["@parameters"][1] == mapping[24]:
-                    selected[event_id] = new_event(
-                        event, guarded_forest_transfer(warp), 1, character)
-                else:
-                    selected[event_id] = new_event(event, [warp], trigger, character)
+                # Viridian City is the TRUE story gate. The Forest buildings
+                # retain their original transfers, without extra tunnel locks.
+                operations = [warp]
+                if original == 10 and warp.attrs["@parameters"][1] == mapping[12]:
+                    operations = [
+                        command(355, f"BlueKantoPilot.prepare_viridian_mart_visit({mapping[12]}, {mart_intro_event_id})".encode()),
+                        warp,
+                    ]
+                selected[event_id] = new_event(event, operations, trigger, character)
+        if original == 10:
+            route2_map = load(source / "Data/Map018.rxdata")
+            gates = make_viridian_route2_gates(events, source, map_data, route2_map)
+            if set(gates).intersection(selected):
+                raise ValueError("Viridian Route 2 barrier overlaps an imported event ID")
+            selected.update(gates)
         if original == 12:
             intro = make_viridian_parcel_intro(events)
             if intro.attrs["@id"] in selected:
