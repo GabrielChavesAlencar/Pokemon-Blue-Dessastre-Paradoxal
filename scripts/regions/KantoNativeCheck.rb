@@ -141,7 +141,9 @@ module KantoNativeCheck
              "Native KantoDex and National missing after Oak: " +
              "index=#{dexid} available=#{$player.pokedex.accessible_dexes.inspect} " +
              "seen_bulbasaur=#{$player.pokedex.seen?(:BULBASAUR)} " +
-             "seen_regional=#{$player.pokedex.seen_count(dexid)}")
+             "seen_regional=#{$player.pokedex.seen_count(dexid)} " +
+             "flags=#{$player.pokedex.instance_variable_get(:@unlocked_dexes).inspect} " +
+             "stored_dexes=#{pbLoadRegionalDexes.length}")
     BlueKantoPilot.choose_starter
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
