@@ -135,9 +135,25 @@ def audit_generated(manifest: dict) -> dict:
     for index in range(3,12):
         if not isinstance(manifest.get(f"qa{index}"), dict):
             raise ValueError(f"QA12: falta manifesto QA{index:02}")
+    teleports = manifest.get("qa_test_stops")
+    if (not isinstance(teleports, dict) or teleports.get("count") != 199
+        or teleports.get("file") != "Data/blue-hoenn-test-stops.txt"
+        or teleports.get("real_terrain_walkable") is not True
+        or teleports.get("debug_only_no_story_flag_mutation") is not True
+        or teleports.get("game_exe_tested") is not False
+        or not isinstance(teleports.get("source_ids"), list)
+        or teleports["source_ids"] != sorted(SOURCE_MAPS)
+        or not isinstance(teleports.get("sha256"), str)
+        or len(teleports["sha256"]) != 64
+        or any(c not in "0123456789abcdef" for c in teleports["sha256"])):
+        raise ValueError("QA12: catálogo de teleporte dos 199 mapas não foi preparado")
     return {
         "source_commit": UPSTREAM,
         "maps_expected": 199,
+        "test_teleport_map_count": 199,
+        "debug_teleport_catalog_sha256": teleports["sha256"],
+        "debug_teleport_scope": "isolated_hoenn_pilot_only",
+        "debug_teleport_native_playtested": False,
         "audits_expected": [phase for phase, _, _ in AUDITS],
         "native_scenario_count_per_platform": len(NATIVE_SCENARIOS),
         "native_platforms_expected": list(PLATFORMS),
@@ -172,6 +188,76 @@ def manual_template() -> dict:
     }
 
 
+def verify_test_stops_copy(copy: Path, manifest: dict) -> dict:
+    """Read every physically staged map and check its QA landing tile.
+
+    Only validates a private local copy; it does not run native Game.exe or
+    prove trainer/surf/warp/puzzle event behavior in-game.
+    """
+    from server.ruby_marshal import loads
+    from pilot_hoenn import SOURCE_MAPS, open_tile
+    from hoenn_qa_phase11 import localized_map_name
+
+    path = copy / "Data/blue-hoenn-test-stops.txt"
+    if not path.is_file() or path.is_symlink():
+        raise ValueError("QA12: falta Data/blue-hoenn-test-stops.txt")
+    raw = path.read_bytes()
+    expected = manifest["qa_test_stops"]["sha256"]
+    if hashlib.sha256(raw).hexdigest() != expected:
+        raise ValueError("QA12: hash do catálogo de teleporte não confere")
+    lines = raw.decode("utf-8").splitlines()
+    if not lines or lines.pop(0) != "BLUE_HOENN_TEST_STOPS_V1" or len(lines) != 199:
+        raise ValueError("QA12: catálogo de teleporte incompleto")
+    ids = {int(key): value for key, value in manifest["maps"].items()}
+    tilesets = loads((copy / "Data/Tilesets.rxdata").read_bytes())
+    matched = set()
+    for line in lines:
+        parts = line.split("|", 5)
+        if len(parts) != 6:
+            raise ValueError("QA12: registro de teleporte inválido")
+        try:
+            src, dest, x, y, direction = map(int, parts[:5])
+        except ValueError:
+            raise ValueError("QA12: MapID ou posição de teleporte inválida") from None
+        if (src not in SOURCE_MAPS or src in matched or ids.get(src) != dest
+            or direction not in (2,4,6,8) or x < 0 or y < 0
+            or parts[5] != localized_map_name(SOURCE_MAPS[src])):
+            raise ValueError(f"QA12: teleporte de mapa original inválido: {src}")
+        filepath = copy / f"Data/Map{dest:03}.rxdata"
+        if filepath.is_symlink() or not filepath.is_file():
+            raise ValueError(f"QA12: destino de teleporte ausente: {src}")
+        world = loads(filepath.read_bytes())
+        width, height = world.attrs["@width"], world.attrs["@height"]
+        if not 0 <= x < width or not 0 <= y < height:
+            raise ValueError(f"QA12: teleporte fora do mapa: {src}")
+        events = world.attrs.get("@events", {})
+        if any(event.attrs["@x"] == x and event.attrs["@y"] == y
+               for event in events.values()):
+            raise ValueError(f"QA12: teleporte em evento NPC/porta/obstáculo: {src}")
+        tileset = tilesets[world.attrs["@tileset_id"]]
+        if not open_tile(world, tileset, x, y):
+            raise ValueError(f"QA12: teleporte em terreno sem passagem: {src}")
+        if not any(open_tile(world, tileset, x+dx, y+dy)
+                   for dx,dy in ((0,1),(0,-1),(1,0),(-1,0))):
+            raise ValueError(f"QA12: teleporte sem saída caminhável: {src}")
+        matched.add(src)
+    if matched != set(SOURCE_MAPS):
+        raise ValueError("QA12: mapa sem posição de teleporte")
+    ruby = (copy / "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb").read_text("utf-8")
+    required = (
+        "def self.test_tools?", "def self.test_stops",
+        "def self.test_teleport(row)", "def self.test_menu",
+        "BlueRegionTravel.move_to([native_id,x,y,direction])",
+        "MenuHandlers.add(:pause_menu, :blue_hoenn_test_teleport",
+    )
+    missing = [part for part in required if part not in ruby]
+    if missing:
+        raise ValueError(f"QA12: menu nativo do teleporte não instalado: {missing}")
+    return {"teleport_points_physically_checked": 199,
+            "teleport_guarded_in_hoenn_test_only": True,
+            "native_tested": False}
+
+
 def verify_copy(copy: Path, report_dir: Path | None = None) -> dict:
     from hoenn_qa_phase1 import ROOT, UPSTREAM, require_private_path, verify_copy as check_base
     copy = require_private_path(copy)
@@ -199,6 +285,7 @@ def verify_copy(copy: Path, report_dir: Path | None = None) -> dict:
             raise ValueError(f"QA12: relatório da fase {phase} ausente: {file.name}")
         reports[phase] = json.loads(file.read_text("utf-8"))
     checked = accepted_reports(reports)
+    teleport = verify_test_stops_copy(copy, manifest)
 
     # Reproducibility checksums: hashes of our staged private copy, NOT
     # proofs that native Game.exe ever launched or was heard/seen.
@@ -225,6 +312,7 @@ def verify_copy(copy: Path, report_dir: Path | None = None) -> dict:
         "native_game_exe_approved": False,
         "all_12_phases_playable_approved": False,
         "qa01_to_qa11": checked, "physical_map_count": 199,
+        "test_teleport": teleport,
         "source_commit": UPSTREAM, "save_profile": "Hoenn QA Fase12",
         "pending_native_cases": len(NATIVE_SCENARIOS) * len(PLATFORMS),
         "native_test_plan": manual_template()["tests"],
