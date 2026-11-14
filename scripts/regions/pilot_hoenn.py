@@ -22,12 +22,19 @@ from compile_johto_connections import merge_pbs
 from johto_qa import SAVE, SYSTEM_CLASSES, Marshal, RubyString, dump, json_bytes, regular, safe_path
 from server.ruby_marshal import RubyObject, loads, text
 from stage import ROOT, serialize
+from hoenn_stage3 import (
+    SOURCE_MAPS_STAGE3, OFFSET_BORDERS, WARP_PAIRS_STAGE3,
+    LAND_ENCOUNTERS_STAGE3, TRAINERS_STAGE3, PICKUPS_STAGE3,
+    SIGNS_STAGE3, NPCS_STAGE3, FOREST_AQUA_TRIGGERS,
+    FOREST_AQUA_PBS, FOREST_AQUA_TEAM,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
     7: "Littleroot Town", 8: "Casa do jogador", 11: "Laboratório do Birch",
     101: "Rota 101", 12: "Oldale Town", 13: "Centro Pokémon de Oldale",
     14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103",
+    **SOURCE_MAPS_STAGE3,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -35,7 +42,7 @@ WARP_PAIRS = (
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
     ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
-)
+) + WARP_PAIRS_STAGE3
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
     (11, 8, 6, "Birch", "NPC_ORAS_Professor_Birch", "BlueHoennPilot.birch"),
@@ -55,8 +62,10 @@ BGM = {
     "WildVictory": "Battle Victory - Wild Pokemon (Victory! (Wild Pokemon))",
 }
 MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
-           12: "Oldale", 13: "Center", 14: "Oldale", 102: "Route101", 103: "Route101"}
-OUTDOORS = (7, 12, 101, 102, 103)
+           12: "Oldale", 13: "Center", 14: "Oldale", 102: "Route101", 103: "Route101",
+           16: "Oldale", 17: "Center", 18: "Oldale", 19: "Oldale", 20: "Birch",
+           104: "Route101", 105: "Oldale", 106: "Oldale", 156: "Route101"}
+OUTDOORS = (7, 12, 16, 101, 102, 103, 104, 156)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -64,6 +73,7 @@ LAND_ENCOUNTERS = {
     102: ((30, "POOCHYENA", 3, 4), (15, "ZIGZAGOON", 3, 4), (30, "WURMPLE", 3, 4),
           (10, "LOTAD", 3, 4), (10, "SEEDOT", 3, 3), (4, "RALTS", 4, 4), (1, "SURSKIT", 3, 3)),
     103: ((60, "POOCHYENA", 2, 4), (20, "ZIGZAGOON", 3, 4), (20, "WINGULL", 2, 4)),
+    **LAND_ENCOUNTERS_STAGE3,
 }
 ROUTE_102_TRAINERS = (
     (33, 14, "YOUNGSTER", "Calvin", "trainer_YOUNGSTER", (("POOCHYENA", 5),)),
