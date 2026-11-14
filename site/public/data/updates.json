@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3ba68f18293dc5825e8524e26f79102086f9e881",
+      "date": "2026-11-14T10:41:35-03:00",
+      "title": "test(hoenn): bloquear eventos sobrepostos e registrar escopo real da etapa 3",
+      "category": "Testes"
+    },
+    {
       "sha": "6a79c1648dca8508f5a96896a155b251f1902f8c",
       "date": "2026-11-14T10:40:56-03:00",
       "title": "test(hoenn): auditar treinadores e conectividade Petalburg/Woods no catálogo",
