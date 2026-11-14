@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "80e591366900b52b2427d3b5f1cd28d758aaf0de",
+      "date": "2026-11-13T21:45:39-03:00",
+      "title": "feat(sinnoh): add read-only QA copy preflight for Barry PBS hashes, separate saves and legacy/new starter plugin detection",
+      "category": "Novidades"
+    },
+    {
       "sha": "acc870f485f9335c4b0b95b0859d46221743443e",
       "date": "2026-11-13T21:43:21-03:00",
       "title": "ci(sinnoh): verify Barry native-probe Ruby syntax and strict mock-runtime gates",
