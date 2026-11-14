@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "af01be9eba607a58d1696762c3802a1f3e729108",
+      "date": "2026-11-14T10:34:34-03:00",
+      "title": "feat(hoenn): catalogar mapas e conteúdo Emerald auditado da etapa 3",
+      "category": "Novidades"
+    },
+    {
       "sha": "dc45ac5f08984ad76c80b0a85d8c4b7362c002f4",
       "date": "2026-11-14T10:23:19-03:00",
       "title": "docs(hoenn): registrar centro de retorno Oldale e teste correspondente",
