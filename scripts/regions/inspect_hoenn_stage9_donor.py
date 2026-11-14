@@ -1,6 +1,6 @@
 """Read-only one-shot audit of pinned public donor's Hoenn MapInfos/events.
 
-Prints an event/connection report to GitHub Actions logs. NEVER caches,
+Prints an event/connection report to GitHub Actions logs (one-shot audit). NEVER caches,
 redistributes, commits or installs donor RXDATA. For implementation planning
 only; the actual source ZIP and native game are still needed for acceptance.
 """
