@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f095c9303867dddf8c921fe0fbe08a3fb4e53826",
+      "date": "2026-11-14T19:36:55-03:00",
+      "title": "test(kanto): recuperar encomenda em saves antigos com Boulder sem liberar compra",
+      "category": "Testes"
+    },
+    {
+      "sha": "4cd9b2a936e48d2032effce4d2c7a261f5ad7431",
+      "date": "2026-11-14T19:36:43-03:00",
+      "title": "fix(kanto): permitir que saves antigos obtenham pacote antes de liberar o Mart",
+      "category": "Correções"
+    },
+    {
       "sha": "09b0d5c06c337d27ff1eae94268130fb371ece7b",
       "date": "2026-11-14T19:35:39-03:00",
       "title": "ci(kanto): testar loja de Viridian e nomes de mapa PT-BR/EN",
