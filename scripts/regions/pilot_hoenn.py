@@ -1075,7 +1075,7 @@ def scan_stage9_source_events(original_events, maps, allowed_maps=None, strict=T
             raw_cmds=[cmd for page in pages
                       for cmd in page.attrs.get("@list",[])
                       if isinstance(cmd,RubyObject) and cmd.name=="RPG::EventCommand"]
-            if transfer_names.search(name) and "activate" not in name.lower():
+            if transfer_names.search(name) and not re.search(r"activate|controller|trigger|cutscene|battle",name,re.I):
                 choices=set()
                 for cmd in raw_cmds:
                     if cmd.attrs.get("@code")!=201:
