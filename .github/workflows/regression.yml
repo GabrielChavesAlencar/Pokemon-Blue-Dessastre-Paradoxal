@@ -65,6 +65,7 @@ jobs:
           ruby tests/kanto_music_scenes.rb
           ruby -c scripts/regions/KantoPilot.rb
           ruby tests/kanto_npc_runtime.rb scripts/regions/KantoPilot.rb scripts/battle_polish/Locale.rb
+          ruby tests/kanto_hm_gate_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionalPolicy.rb site/public/data/regions.json
           ruby -c scripts/battle_polish/Story.rb
           ruby -c scripts/regions/KantoPilot.rb
           ruby tests/regional_boss_balance_runtime.rb scripts/battle_polish/Story.rb scripts/battle_polish/Balance.rb
