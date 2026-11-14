@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "V05–V07: executar na máquina local autorizada a compilação Essentials e a sondagem nativa de 9 mapas/24 eventos/3 versões Barry; depois gameplay/saves Windows e Android. Em GitHub há somente código e CI sintética.",
+  "next": "T05–T07: no Windows local, produzir mapa real autorizado e perfil QA compilado, jogar Barry com os 3 iniciais em Normal/Master, registrar nível e resultados, percorrer 16 portais, salvar/carregar e testar JoiPlay. O roteiro e auditor de 44 casos foram publicados em código; fases jogáveis continuam 0/13.",
   "tasks": [
     {
       "id": "S01",
@@ -721,5 +721,71 @@
     "main_game_or_user_saves_modified": false,
     "ready_marker_created": false,
     "playable_approved": false
+  },
+  "native_playtest_workstream": {
+    "status": "QA_BARRY_UNLOCK_AND_MANUAL_EVIDENCE_CODE_READY_REAL_PLAYTEST_PENDING",
+    "complete": 4,
+    "total": 7,
+    "substeps": [
+      {
+        "id": "T01",
+        "title": "Permitir testar Barry somente na cópia QA verificada sem criar marcador definitivo",
+        "complete": true,
+        "evidence": "scripts/regions/SinnohPilot.rb"
+      },
+      {
+        "id": "T02",
+        "title": "Bloquear retorno incorreto e isolar tentativas de Barry por estado regional",
+        "complete": true,
+        "evidence": "tests/sinnoh_pilot_runtime.rb"
+      },
+      {
+        "id": "T03",
+        "title": "Gerar checklist de 44 casos para três iniciais, Normal/Master, vitória/derrota, warps, NPCs, saves, regiões e Android",
+        "complete": true,
+        "evidence": "scripts/regions/audit_sinnoh_playtest.py"
+      },
+      {
+        "id": "T04",
+        "title": "Validar evidências privadas com SHA-256, fórmula 70/90, tipo rival, coordenadas e perfil de save sem liberar jogo",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_playtest_audit.py"
+      },
+      {
+        "id": "T05",
+        "title": "Executar os 12 casos de batalha de Barry com nível efetivo real em cópia Game.exe Windows",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "T06",
+        "title": "Conferir os portais, três Poké Bolas, NPCs, saves e regressões com capturas e logs reais Windows",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "T07",
+        "title": "Testar JoiPlay e revisar manualmente a autenticidade/adequação das 44 evidências",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "documentation": "docs/SINNOH_FASE_02_PLAYTEST_REAL_BARRY_SAVES.md",
+    "tests": [
+      "tests/test_sinnoh_playtest_audit.py",
+      "tests/sinnoh_pilot_runtime.rb",
+      "tests/sinnoh_qa_start_runtime.rb"
+    ],
+    "real_game_exe_playtest": false,
+    "battle_level_70_90_observed": false,
+    "win_loss_tested_natively": false,
+    "save_reload_tested_natively": false,
+    "region_regression_tested_natively": false,
+    "android_joi_play_tested": false,
+    "manual_evidence_accepted": false,
+    "ready_marker_created": false,
+    "native_qa_approved": false,
+    "main_game_or_user_saves_modified": false,
+    "note": "44 casos são checklist e validação de formato/observações, não evidência de que o Game.exe foi executado. A autorização QA de Barry nunca cria marcador de publicação."
   }
 }
