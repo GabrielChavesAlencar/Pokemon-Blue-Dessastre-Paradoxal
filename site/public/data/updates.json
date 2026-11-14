@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3ca3195492da1572202ef99e52a44da2503beee5",
+      "date": "2026-11-14T13:45:38-03:00",
+      "title": "docs(hoenn): registrar Etapa 08 Norman, Surf, Weather Institute e Winona com QA",
+      "category": "Documentação"
+    },
+    {
       "sha": "a69a89f8894f217542723c489419f9a4e3b7fe47",
       "date": "2026-11-14T13:43:38-03:00",
       "title": "fix(test/hoenn): fornecer sprite do rival no teste de sobreposição Stage8",
