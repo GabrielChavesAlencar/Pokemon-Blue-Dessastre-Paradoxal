@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c878f10df84186aa6ee24e1c3cdb8901e789473",
+      "date": "2026-11-13T23:09:21-03:00",
+      "title": "docs(kanto): organizar detonado FRLG como roteiro factual e matriz de eventos do Blue",
+      "category": "Documentação"
+    },
+    {
       "sha": "1653513b799e4f38f1049b34e4976e4c616b1f8d",
       "date": "2026-11-13T23:06:59-03:00",
       "title": "fix(kanto): Oak parcel, Viridian Forest gate and Center healing fanfare",
