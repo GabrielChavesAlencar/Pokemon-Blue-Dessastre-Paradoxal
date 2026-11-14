@@ -85,7 +85,7 @@ def inspect(game: Path) -> dict:
         if any(not text(message).strip() for message in messages):
             raise ValueError("Blank Kanto runtime NPC dialogue")
         native_dialogues[key] = messages
-    known = {"item", "npc_dialogue", "rock_smash", "strength", "cut"}
+    known = {"item", "npc_dialogue", "sign_dialogue", "rock_smash", "strength", "cut"}
     seen = set()
     for row in field_report["imported"]:
         source, destination, event_id = row["source_map"], row["map"], row["event"]
@@ -102,7 +102,7 @@ def inspect(game: Path) -> dict:
         page = event.attrs["@pages"][0].attrs
         commands = [text(op.attrs["@parameters"][0]) for op in page["@list"]
                     if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
-        if row["kind"] == "npc_dialogue" and (source, event_id) in native_dialogues:
+        if row["kind"] in ("npc_dialogue", "sign_dialogue") and (source, event_id) in native_dialogues:
             messages = native_dialogues[(source, event_id)]
             expected_calls = [
                 f"BlueKantoPilot.npc_dialogue({source}, {event_id}, {index})"
@@ -129,7 +129,7 @@ def inspect(game: Path) -> dict:
                             for op in page["@list"] if len(op.attrs["@parameters"]) > 1)):
                 raise ValueError("CutTree does not use native badge-gated Cut")
     source_npcs = {(r["source_map"], r["event"])
-                   for r in field_report["imported"] if r["kind"] == "npc_dialogue"}
+                   for r in field_report["imported"] if r["kind"] in ("npc_dialogue", "sign_dialogue")}
     if not native_dialogues.keys() <= source_npcs:
         raise ValueError("Kanto dialogue bridge contains an unapproved source event")
     # Missing PNGs for *optional* field NPCs must be recorded and omitted,
