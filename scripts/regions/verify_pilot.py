@@ -103,7 +103,10 @@ def inspect(game: Path) -> dict:
             if (page["@trigger"] != 0 or page["@through"] or
                     "cuttree" not in text(event.attrs["@name"]).lower() or
                     len(event.attrs["@pages"]) != 1 or
-                    "pbCut" not in commands or "pbSmashThisEvent" not in commands):
+                    not any(op.attrs["@code"] == 111 and
+                            "pbCut" in str(op.attrs["@parameters"])
+                            for op in page["@list"]) or
+                    "pbSmashThisEvent" not in commands):
                 raise ValueError("Cut tree must be a solid native-cut event at source coordinates")
         if row["kind"] == "strength":
             if page["@trigger"] != 1 or page["@through"] or commands != ["pbPushThisBoulder"]:
