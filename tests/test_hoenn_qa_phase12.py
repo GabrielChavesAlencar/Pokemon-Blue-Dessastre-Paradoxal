@@ -46,6 +46,15 @@ def valid_manifest() -> dict:
     return {
         "region": "HOENN", "source_commit": UPSTREAM,
         "maps": {mid: 700 + i for i, mid in enumerate(SOURCE_MAPS)},
+        "qa_test_stops": {
+            "schema": 1, "count": 199,
+            "file": "Data/blue-hoenn-test-stops.txt",
+            "sha256": "a" * 64,
+            "source_ids": sorted(SOURCE_MAPS),
+            "real_terrain_walkable": True,
+            "debug_only_no_story_flag_mutation": True,
+            "game_exe_tested": False,
+        },
         "qa3": {"source_events": {"unimplemented_source_event_candidates": [
             {"name": "Unreviewed original NPC"}
         ]}},
@@ -113,6 +122,24 @@ class IntegratedHoennQA12Tests(unittest.TestCase):
         self.assertFalse(first["all_12_phases_playable_approved"])
         self.assertEqual(first["unresolved_backlog"]["unimplemented_original_npc_trainer_sign_candidates"], 1)
         self.assertEqual(first["unresolved_backlog"]["stage10_boss_graphics_using_placeholders"], ["Sidney"])
+
+    def test_missing_or_corrupted_teleport_catalog_is_rejected(self):
+        m = valid_manifest()
+        m.pop("qa_test_stops")
+        with self.assertRaisesRegex(ValueError, "teleporte"):
+            audit_generated(m)
+        m = valid_manifest()
+        m["qa_test_stops"]["count"] = 198
+        with self.assertRaisesRegex(ValueError, "teleporte"):
+            audit_generated(m)
+        m = valid_manifest()
+        m["qa_test_stops"]["source_ids"].pop()
+        with self.assertRaisesRegex(ValueError, "teleporte"):
+            audit_generated(m)
+        m = valid_manifest()
+        m["qa_test_stops"]["game_exe_tested"] = True
+        with self.assertRaisesRegex(ValueError, "teleporte"):
+            audit_generated(m)
 
     def test_duplicate_or_unknown_source_map_rejected(self):
         m = valid_manifest()
