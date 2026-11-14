@@ -18,6 +18,23 @@ Os diálogos de outros NPCs FRLG que não estão no catálogo continuam identifi
 
 Para traduzir as demais falas da fonte na primeira vez, use `KANTO_TRADUZIR_NPCS_PTBR.bat`, que instala/baixa o modelo com o fluxo explícito já documentado abaixo. Isso não executa scripts de missões estrangeiros nem altera Decades. Os NPCs de eventos especiais que ainda não são importados como `npc_dialogue` exigem trabalho separado e não podem ser considerados 100% traduzidos.
 
+## Correção adicional — execução real do diálogo
+
+A correção inicial validava apenas a presença da frase traduzida em `blue-pt-br.dat`. Esse teste **não comprovava** que eventos `101/401` do RPG Maker realmente passavam pelo sistema de tradução. Uma captura posterior ainda mostrava o guarda em inglês.
+
+Agora, durante a construção de **Testar Kanto**, o importador extrai as falas dos NPCs passivos já auditados e grava os textos originais em `Data/blue-kanto-npc-dialogues.dat` (Ruby Marshal, somente na cópia local). Seus eventos chamam `BlueKantoPilot.npc_dialogue(mapa_origem, evento, indice)`: essa função consulta `BlueLocale.translate` **no momento da conversa**, respeitando a escolha Português ou English. O código do evento contém apenas IDs numéricos, nunca uma string ou script Ruby arbitrário da fonte FRLG. Eventos de história, batalha, itens, HM, escolhas e outras regiões ficam fora dessa ponte.
+
+`scripts/regions/verify_pilot.py` verifica, antes de abrir o jogo, se cada NPC conectado aponta para as mensagens correspondentes e se o arquivo compilado existe. Isso é uma **verificação estrutural**, não uma confirmação de que a imagem exibida no Windows está correta.
+
+**Para verificar a correção da imagem:**
+
+1. Feche todas as janelas do piloto. Atualize os arquivos do projeto com o `Blue-Story.exe`.
+2. Na pasta `%LOCALAPPDATA%\\PokemonBlueDessastreParadoxal`, execute `KANTO_JOGAR_EXPERIMENTAL.bat --rebuild`. O processo monta uma **nova pasta** em `.blue-work`, mantendo os saves separados e preservando o piloto anterior.
+3. Selecione Português no menu de idioma e fale com o mesmo guarda. A resposta esperada é: **“Está terminantemente proibido passar por aqui!”**. Se alterar para English, a frase deve continuar no original.
+4. Se ainda aparecer inglês, confira o caminho do piloto aberto no relatório de `.blue-work/kanto-gui-reports` e se `Data/blue-kanto-npc-dialogues.dat` e `Data/blue-pt-br.dat` existem nessa cópia. Não é necessário instalar o Argos para esta frase revisada.
+
+**Limite:** esta correção garante a rota de execução das traduções já existentes para NPCs passivos; não cria tradução revisada para as 206 falas previamente pendentes. Para essas, continua válido o procedimento local de tradução e revisão abaixo.
+
 ## Fluxo recomendado no Windows
 
 1. Atualize a `main` pelo `Blue-Story.exe` e abra uma vez **Testar Kanto** para ter uma cópia válida do piloto.
