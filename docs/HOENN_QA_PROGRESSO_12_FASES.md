@@ -566,3 +566,29 @@ A caminhada deve incluir **NPCs novos/antigos, placas, itens no chão, encontros
 - [ ] **Windows e Android separados:** checklist `playtest.json` com evidências reproduzíveis por plataforma, **sem conclusão automática**.
 
 **Conclusão da etapa:** todas as **12/12 ferramentas de preparação/auditoria estão no repositório**, mas não foi executado aqui um jogo completo com os insumos privados de Hoenn. Portanto **aceite nativo: 0/12**, até que testes reais em Windows e Android comprovem o contrário. É normal e correto permanecer com pendências abertas após a etapa técnica final.
+
+
+## Ferramenta extra — Testar Hoenn · Teleporte para qualquer mapa
+
+Esta ferramenta é **exclusiva do piloto Hoenn** preparado pelo `TESTAR_HOENN.bat`. Não é instalada no Blue/Decades principal, em Kanto, Johto ou Sinnoh.
+
+### Acesso no jogo
+
+1. Atualize a `main`, feche qualquer `Game.exe` da cópia QA12 que esteja aberto e execute **`TESTAR_HOENN.bat`**.
+2. O BAT prepara `.blue-work/hoenn-qa-fase12/` e roda as auditorias de RXDATA/PBS. Se a cópia QA12 já existir, o preparador atualiza **somente o plugin do piloto, o catálogo de destinos e o manifesto QA12**, após conferir os 199 mapas e o `Game.exe` contra a instalação Blue. O original `game/`, outros pilotos e os saves não são alterados. Arquivos anteriores modificados são copiados para `.blue-work/hoenn-qa12-debug-backups/`.
+3. No piloto, **escolha seu Pokémon inicial** e abra o menu de pausa. Entre em **Testar Hoenn · Teleporte**.
+4. Use **Lista completa (199 mapas)**, **Escolher faixa de MapIDs**, **Pesquisar nome do mapa** (quando disponível no dispositivo) ou **Digitar MapID (original/Blue)**. A lista é paginada; cada destino mostra seu número **original** e nome em português. Digitar o ID real remapeado também localiza o destino, sem aceitar mapas externos.
+5. Confirme o destino. Uma coordenada calculada da **geometria RXDATA original** é escolhida para não pousar em NPCs, portas, itens ou obstáculos; o catálogo verifica o ID remapeado e o arquivo físico. A opção **Voltar ao mapa anterior** restaura o último local da sessão, sem editar o save.
+6. Examine NPCs, placas, itens, ginásios, transições, encontros e eventos e anote o **MapID original** no relatório. **O teleporte ultrapassa gates narrativos para permitir inspeção, mas não concede insígnias, não conclui batalhas, não modifica missões e não habilita viagens regionais oficiais.** Batalhas e gatilhos podem permanecer bloqueados até a progressão legítima.
+
+**Segurança e limitações:** menus de teleporte ficam ocultos fora da região Hoenn e em batalha. O uso é limitado aos 199 mapas remapeados do piloto, não aos mapas de Decades nem a IDs arbitrários. Uma coordenada de terreno caminhável validada estaticamente **não** comprova movimento nativo, colisão de NPC ou retorno após eventos; salve apenas no **perfil de testes**. O último ponto de retorno existe somente enquanto a sessão estiver aberta.
+
+### Código, regressão e aceite
+
+- `scripts/regions/pilot_hoenn.py`: gera `Data/blue-hoenn-test-stops.txt` com **199 destinos reais**, após inserir NPCs, eventos, itens e obstáculos, com coordenadas derivadas dos tilesets. Inclui hash e inventário no manifesto.
+- `scripts/regions/HoennPilot.rb`: menu in-game, busca, entrada de MapID original/remapeado, páginas e retorno. Utiliza a transferência existente `BlueRegionTravel.move_to` e nunca altera o estado regional.
+- `scripts/regions/hoenn_qa_teleport_upgrade.py`: atualiza ferramentas de teste em cópias QA12 já preparadas, com backups e rollback, sem criar mapas fictícios ou exigir repetição da extração do ZIP.
+- `scripts/regions/hoenn_qa_phase12.py`: valida o hash do catálogo, os **199 MapIDs**, posições dentro de cada mapa, terreno passável, ausência de eventos na célula de chegada e presença do menu Ruby na cópia.
+- `tests/hoenn_qa_teleport_runtime.rb` e `tests/test_hoenn_qa_teleport.py`: testes simulados do menu, proteção regional, retorno, buscas e geometria. São simuladores, **não Game.exe**.
+
+**Não altera:** a barra técnica continua 12/12 e a barra de aprovação nativa permanece 0/12 até o teste real em Windows e Android/JoiPlay.
