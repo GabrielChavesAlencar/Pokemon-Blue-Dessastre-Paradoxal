@@ -137,6 +137,13 @@ def audit(root: Path = ROOT) -> dict:
         + [(a[0], a[1], a[2], "warp") for a, _, b, _ in WARP_PAIRS]
         + [(b[0], b[1], b[2], "warp") for a, _, b, _ in WARP_PAIRS]
         + [(102, x, y, f"trainer:{name}") for x, y, _, name, _, _ in ROUTE_102_TRAINERS]
+        + [(mid, x, y, f"trainer:{name}") for mid, x, y, _, name, _, _, _ in TRAINERS_STAGE3]
+        + [(104, 138, 15, "Twins Mia")]
+        + [(mid, x, y, f"NPC:{handler}") for mid, x, y, _, handler in NPCS_STAGE3]
+        + [(17, 9, 4, "nurse"), (17, 9, 5, "nurse counter"), (18, 3, 5, "mart")]
+        + [(mid, x, y, f"sign:{key}") for mid, x, y, key, _ in SIGNS_STAGE3]
+        + [(mid, x, y, f"pickup:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE3]
+        + [(mid, x, y, "Aqua trigger") for mid, x, y in FOREST_AQUA_TRIGGERS]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
            (101, 10, 18, "Birch rescue"), (101, 11, 18, "Birch rescue")]
     )
@@ -152,7 +159,9 @@ def audit(root: Path = ROOT) -> dict:
     required = {"state", "choose_profile", "choose_starter", "route_birch",
                 "choose_birch_ball", "rescue_birch_battle", "rival_103",
                 "rival_name", "birch", "mother", "mart", "heal", "clock",
-                "battle", "verify_compilation"}
+                "battle", "verify_compilation", "norman_intro", "wally_family",
+                "flower_shop", "briney", "pickup", "sign", "forest_aqua",
+                "battle_stage3"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -171,14 +180,16 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("Rival must choose counter-starter species")
 
 
-    # Prepared scripts are not a substitute for a Game.exe proof.
+    # Scripts and site inventory are NOT native gameplay acceptance.
     gaps = [
-        "Caminhão/introdução visual de Emerald ainda não construídos; spawn é na casa.",
-        "Posições das três Poké Bolas e rival exigem geometria RXDATA da cópia isolada e teste real.",
-        "Rival 103 depende de seis variantes RIVAL1 compiladas e sprite nativo auditado.",
-        "Pokédex, cinco Poké Bolas e Tênis de Corrida têm lógica Ruby; save/reload nativo exige teste.",
-        "Rota 102 termina o recorte: Petalburg, Wally e Norman não fazem parte dos nove mapas.",
-        "Placas, itens de chão e NPCs secundários não foram auditados nos RXDATA reais.",
+        "Abertura visual do caminhão ainda não foi criada.",
+        "A demonstração de Wally capturar Ralts está roteirizada em diálogo, mas não animada no Game.exe.",
+        "Norman é encontrado no ginásio, mas sua luta de quatro insígnias pertence a uma etapa posterior.",
+        "As ligações de borda Petalburg/Route 104 e os três warps da floresta exigem compilação real.",
+        "Recruta Aqua, nove treinadores comuns e seus sprites/PBS exigem prova nativa em cópia isolada.",
+        "Os itens de chão possuem flags e self-switches, mas requerem teste de coleta/reload no Game.exe.",
+        "Cut trees, eventos de berry planting, os outros NPCs e os quebra-cabeças interiores ainda são pendentes.",
+        "Rustboro (saída norte da Route 104) está fora do recorte e não deve ser anunciada jogável.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -189,6 +200,10 @@ def audit(root: Path = ROOT) -> dict:
         "source_ids": list(SOURCE_MAPS),
         "public_catalog_locations": len(locations),
         "route_102_trainers": len(ROUTE_102_TRAINERS),
+        "stage3_trainer_presets": len(TRAINERS_STAGE3) + 1,
+        "stage3_pickup_events": len(PICKUPS_STAGE3),
+        "stage3_source_maps": len(SOURCE_MAPS_STAGE3),
+        "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
         "rival_route103_event_prepared": True,
