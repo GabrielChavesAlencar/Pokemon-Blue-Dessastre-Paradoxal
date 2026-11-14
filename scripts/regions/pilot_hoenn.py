@@ -61,6 +61,15 @@ from hoenn_stage7 import (
     ROUTE112_MAGMA_BLOCKERS, NPCS_STAGE7, FUTURE_GATES_STAGE7,
     PICKUPS_STAGE7, SIGNS_STAGE7, GYM_STEAM_PAIRS_STAGE7,
 )
+from hoenn_stage8 import (
+    SOURCE_MAPS_STAGE8, OFFSET_BORDERS_STAGE8, WARP_PAIRS_STAGE8,
+    LAND_ENCOUNTERS_STAGE8, NORMAN_EVENT, NORMAN_PBS, NORMAN_TEAM,
+    WINONA_EVENT, WINONA_PBS, WINONA_TEAM, SHELLY_EVENT, SHELLY_PBS, SHELLY_TEAM,
+    AQUA_INSTITUTE, RIVAL_119_EVENT, RIVAL_LILYCOVE_EVENT, RIVAL_119_TEAMS,
+    RIVAL_LILYCOVE_TEAMS, TRAINERS_STAGE8, STEVEN_SCOPE_EVENT,
+    FORTREE_KECLEON_EVENT, ROUTE120_KECLEON_EVENT, WEATHER_REWARD_EVENT,
+    NPCS_STAGE8, FUTURE_GATES_STAGE8, SIGNS_STAGE8, PICKUPS_STAGE8,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -72,6 +81,7 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE5,
     **SOURCE_MAPS_STAGE6,
     **SOURCE_MAPS_STAGE7,
+    **SOURCE_MAPS_STAGE8,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -79,7 +89,7 @@ WARP_PAIRS = (
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
     ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
-) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5 + WARP_PAIRS_STAGE6 + WARP_PAIRS_STAGE7
+) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5 + WARP_PAIRS_STAGE6 + WARP_PAIRS_STAGE7 + WARP_PAIRS_STAGE8
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
     (11, 8, 6, "Birch", "NPC_ORAS_Professor_Birch", "BlueHoennPilot.birch"),
@@ -116,9 +126,14 @@ MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
            113: "Route101", 114: "Route101", 115: "Oldale",
            **{mid: ("Center" if mid in (54, 59) else "Birch" if mid in (63, 124) else
                     "Route101" if mid in (117, 121, 123, 125, 177, 178, 180, 191, 192)
-                    else "Oldale") for mid in SOURCE_MAPS_STAGE7}}
+                    else "Oldale") for mid in SOURCE_MAPS_STAGE7},
+           **{mid: ("Center" if mid in (49, 65, 71) else
+                    "Route101" if mid in (132, 134, 135, 138, 139) else
+                    "Birch" if mid in (68, 137) else "Oldale")
+              for mid in SOURCE_MAPS_STAGE8}}
 OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 53, 58, 101, 102, 103, 104,
-            108, 111, 113, 114, 117, 121, 123, 125, 130, 156, 178, 180)
+            108, 111, 113, 114, 117, 121, 123, 125, 130, 132, 134,
+            135, 138, 139, 156, 178, 180, 48, 64, 69)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -130,6 +145,7 @@ LAND_ENCOUNTERS = {
     **LAND_ENCOUNTERS_STAGE4,
     **LAND_ENCOUNTERS_STAGE6,
     **LAND_ENCOUNTERS_STAGE7,
+    **LAND_ENCOUNTERS_STAGE8,
 }
 CAVE_ENCOUNTERS = {**CAVE_ENCOUNTERS_STAGE4, **CAVE_ENCOUNTERS_STAGE5, **CAVE_ENCOUNTERS_STAGE7}
 ROUTE_102_TRAINERS = (
@@ -249,6 +265,7 @@ def validate_geometry(maps, tiles):
         *OFFSET_BORDERS_STAGE5,
         *OFFSET_BORDERS_STAGE6,
         *OFFSET_BORDERS_STAGE7,
+        *OFFSET_BORDERS_STAGE8,
     ):
         def border(map_id, side):
             w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
