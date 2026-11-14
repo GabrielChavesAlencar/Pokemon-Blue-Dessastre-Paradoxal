@@ -162,11 +162,11 @@ module BlueKantoPilot
 
   # A safe, local story step for the first Pallet -> Viridian -> Pallet
   # loop. The source item need not exist in Decades; state is saved only in
-  # the active Kanto campaign. Existing Boulder+ saves skip the new quest.
+  # the active Kanto campaign. Old Boulder+ saves lacking the parcel flag can
+  # still collect and deliver it; do not permanently lock their Mart.
   def self.parcel_pickup_pending?
     starter && !progress["pilot_oak_parcel_received"] &&
-      !progress["pilot_oak_parcel_delivered"] &&
-      !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+      !progress["pilot_oak_parcel_delivered"]
   end
 
   def self.prepare_viridian_mart_visit(mart_map_id, intro_event_id)
