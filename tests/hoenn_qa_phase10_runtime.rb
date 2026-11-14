@@ -4,7 +4,7 @@ module BlueRegionData
   CIRCUIT = %w[DECADES KANTO JOHTO HOENN SINNOH UNOVA KALOS ALOLA GALAR PALDEA].freeze
   REGISTRY = {
     "circuit" => CIRCUIT,
-    "regions" => Hash[CIRCUIT.map { |key| [key, {"name"=>key,"milestones"=>[]}] }],
+    "regions" => Hash[CIRCUIT.map { |key| [key, {"name"=>key,"milestones"=>(key=="HOENN" ? %w[STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND RAIN] : [])}] }],
     "hisui" => {"startExits"=>["SINNOH","DECADES"], "questRegion"=>"SINNOH"}
   }
 end
