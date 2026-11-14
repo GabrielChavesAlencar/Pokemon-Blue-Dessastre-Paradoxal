@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b07edde5a7c64ddf32c461c5eccebb2de5e8f146",
+      "date": "2026-11-14T12:03:39-03:00",
+      "title": "fix(hoenn): impedir repetição do combate Aqua no museu após recarga",
+      "category": "Correções"
+    },
+    {
       "sha": "7d25870a57d631abe02552da25a9926def310f42",
       "date": "2026-11-14T12:01:43-03:00",
       "title": "fix(test/hoenn): reconhecer fallback Aqua como arte provisória não aprovada",
