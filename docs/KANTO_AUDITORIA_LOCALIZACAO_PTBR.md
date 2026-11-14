@@ -30,6 +30,16 @@ python scripts/regions/kanto_locale_audit.py "CAMINHO_DO_PILOTO" --strict
 
 O relatório identifica mapa, evento e página para falas de NPC, placa, diálogos em comandos, escolhas e scripts rastreáveis. Para derrotas, lista arquivo PBS, linha e treinador. A última auditoria registrou zero ocorrências pendentes nessas fontes. A auditoria usa as chaves que o jogo recebe com seus controles. Compare a mesma interação após alternar o idioma e conserve os códigos da fala ao acrescentar uma tradução. O teste de regressão injeta uma placa, uma escolha e uma fala de derrota novas e verifica se aparecem na lista de pendências.
 
+## Normalização de cores das falas importadas (14/11/2026)
+
+O catálogo do FRLG inclui comandos de cor herdados, principalmente `\\b` (fonte azul) e `\\r` (fonte vermelha), que ficam pouco legíveis na caixa escura padrão do Blue. Um exemplo é a fala traduzida do NPC que explica o armazenamento de Pokémon no PC: começava com `\\bAgora você pode depositar...`.
+
+O callback **`BlueKantoPilot.npc_dialogue`** agora remove esses comandos de paleta e também `\\c[...]` e as substituições de fonte `\\fn[...]`, `\\fs[...]`, `\\font[...]` **depois de traduzir, antes de chamar `pbMessage`**. Assim o jogo usa sua própria cor branca padrão com o contorno do tema. O texto original e as traduções permanecem intactos; `\\w[signskin]` das placas, nomes do jogador (`\\PN`), quebras de linha e demais controles continuam preservados. O ajuste é restrito aos diálogos importados pelo piloto, sem alterar caixas de batalha, menus nem outras regiões.
+
+**Regressão:** `ruby tests/kanto_npc_runtime.rb scripts/regions/KantoPilot.rb scripts/battle_polish/Locale.rb`; o teste cobre a fala do PC, comandos azul/vermelho, troca PT-BR/EN e os controles de placas/variáveis.
+
+**Aceite visual pendente:** atualizar a `main` e reconstruir a cópia com `KANTO_JOGAR_EXPERIMENTAL.bat --rebuild`. Visitar o NPC junto ao PC e conferir letras brancas e sombra escura. Confirmar também as placas e outras falas, em português e inglês; não declarar jogável apenas pelo teste automatizado.
+
 ## Limites
 
 A cobertura é das fontes inventariadas. As 35 prévias sem eventos, funcionalidades ainda não importadas e mensagens construídas apenas durante a execução de plugins compartilhados ficam fora dessa contagem. Uma varredura estrutural não substitui percorrer toda a campanha em ambos os idiomas. O Android também requer uma rodada própria de QA. As abreviações internacionais como PP e nomes de itens como Mega Ring foram preservados.
