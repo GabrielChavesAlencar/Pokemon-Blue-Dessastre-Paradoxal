@@ -125,6 +125,20 @@ module KantoNativeCheck
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Oak must award exactly five Poke Balls, not the starter event")
     require!($player.has_pokedex, "Oak parcel delivery did not unlock the Pokedex") if $player.respond_to?(:has_pokedex)
+    # Real Essentials 21.1 regional PBS + menu hook, not a mock UI. The
+    # original seen/owned flags are shared between KantoDex and National.
+    dexid = BlueKantoDex.index
+    require!(dexid.is_a?(Integer), "KantoDex native manifest was not loaded")
+    entries = pbAllRegionalSpecies(dexid)
+    require!(entries.length == 151 && entries.first == :BULBASAUR && entries.last == :MEW,
+             "Native KantoDex is not Bulbasaur #001 through Mew #151")
+    require!(Settings.pokedex_names[dexid] == "KantoDex" &&
+             Settings.pokedex_names.last == "Pokédex Nacional",
+             "Native Pokédex selector does not name KantoDex and National correctly")
+    $player.pokedex.refresh_accessible_dexes
+    require!($player.pokedex.accessible_dexes.include?(dexid) &&
+             $player.pokedex.accessible_dexes.include?(-1),
+             "Native KantoDex and National not both accessible after Oak")
     BlueKantoPilot.choose_starter
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
