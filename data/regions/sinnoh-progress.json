@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "Compilar e validar 3 PBS Barry (B05/B06) na cópia isolada, reconciliar piloto legado de Sinnoh 800–805 com reservas Johto, auditar nove mapas e iniciar piloto sem interferir em Decades.",
+  "next": "Completar C04–C06: reconciliar reservas de mapas usando fonte e game/Data locais, preparar QA isolado com PBS compilados, testar Ruby/Essentials e Android. Não instalar o piloto legado na malha multirregional.",
   "tasks": [
     {
       "id": "S01",
@@ -489,7 +489,57 @@
     "legacy_pilot_map_id_overlap": {
       "observed": "scripts/regions/pilot_sinnoh.py uses 800–805",
       "reserved_johto_range": "600–999",
-      "resolution": "Verify whether independent QA-only IDs or multi-region integration; no merges before reconciliation"
+      "resolution": "Auditoria estática implementada, mas nenhum remapeamento/migração automática; IDs 800–805 apenas no piloto isolado legado."
     }
+  },
+  "pilot_compat_qa_workstream": {
+    "status": "STATIC_TOOLS_READY_LOCAL_QA_PENDING",
+    "complete": 3,
+    "total": 6,
+    "substeps": [
+      {
+        "id": "C01",
+        "title": "Auditor estático detecta IDs 800–805 e escolha em diálogo do piloto legado",
+        "complete": true,
+        "evidence": "scripts/regions/audit_sinnoh_pilot_compat.py"
+      },
+      {
+        "id": "C02",
+        "title": "Pré-verificação da cópia isolada de Barry compara hash PBS, game.exe, sprite candidato e marcador",
+        "complete": true,
+        "evidence": "scripts/regions/preflight_sinnoh_barry_qa.py"
+      },
+      {
+        "id": "C03",
+        "title": "Testes sintéticos de compatibilidade e QA sem alterar jogo ou saves",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_barry_qa.py"
+      },
+      {
+        "id": "C04",
+        "title": "Conferir reservas físicas e planejadas dos MapIDs de Johto, Hoenn, Kanto e Decades",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "C05",
+        "title": "Conciliar e montar piloto real com mapa autorizado, três Poké Bolas físicas, sprite e três PBS compilados",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "C06",
+        "title": "Teste real Windows/Android de Barry, level cap 70/90, regressões e save/load",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "document": "docs/SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md",
+    "physical_map_ids_verified": false,
+    "legacy_800_805_migrated": false,
+    "pilot_built": false,
+    "pbs_compiled": false,
+    "runtime_verified": false,
+    "can_merge_into_multiregion": false
   }
 }
