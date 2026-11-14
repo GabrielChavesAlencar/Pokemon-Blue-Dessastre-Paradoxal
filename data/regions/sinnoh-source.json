@@ -79,7 +79,12 @@
     "pilot_compatibility_qa_guide": "docs/SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md",
     "private_sinnoh_qa_overlay_assembler": "scripts/regions/prepare_sinnoh_pilot_bundle.py",
     "private_sinnoh_qa_overlay_tests": "tests/test_sinnoh_pilot_bundle.py",
-    "private_sinnoh_qa_overlay_guide": "docs/SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md"
+    "private_sinnoh_qa_overlay_guide": "docs/SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md",
+    "private_sinnoh_qa_installer": "scripts/regions/install_sinnoh_qa_copy.py",
+    "private_sinnoh_qa_start_gate": "scripts/regions/SinnohQAStart.rb",
+    "private_sinnoh_qa_installer_tests": "tests/test_sinnoh_qa_install.py",
+    "private_sinnoh_qa_start_tests": "tests/sinnoh_qa_start_runtime.rb",
+    "private_sinnoh_qa_installation_guide": "docs/SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -129,7 +134,16 @@
     "real_sinnoh_qa_overlay_built": false,
     "saves_isolated_in_native_pilot": false,
     "barry_pbs_compiled_in_pilot": false,
-    "native_sinnoh_game_exe_tested": false
+    "native_sinnoh_game_exe_tested": false,
+    "private_qa_installer_code_prepared": true,
+    "qa_unique_save_profile_generator_implemented": true,
+    "qa_native_compiler_bootstrap_code_prepared": true,
+    "qa_native_compiler_executed_on_real_game": false,
+    "qa_start_gate_code_prepared": true,
+    "qa_save_paths_native_verified": false,
+    "real_qa_copy_generated": false,
+    "qa_rival_ready_marker_created": false,
+    "android_qa_tested": false
   },
   "progress": {
     "total_phases": 13,
@@ -145,7 +159,9 @@
     "pilot_compat_qa_steps_done": 3,
     "pilot_compat_qa_steps_total": 6,
     "private_qa_bundle_preparation_steps_done": 3,
-    "private_qa_bundle_preparation_steps_total": 6
+    "private_qa_bundle_preparation_steps_total": 6,
+    "qa_installer_preparation_steps_done": 4,
+    "qa_installer_preparation_steps_total": 7
   },
   "blockers": [
     "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
