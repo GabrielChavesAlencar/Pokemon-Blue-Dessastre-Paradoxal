@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 2,
-    "implementation_preparation_count": 2,
+    "current_phase": 3,
+    "implementation_preparation_count": 3,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -37,8 +37,8 @@
       {
         "phase": 3,
         "name": "Encontros, treinadores, NPCs e itens",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "pinned_encounter_profiles_and_conservative_source_event_audit_prepared",
+        "native_acceptance": "pending_local_private_source_and_game_exe",
         "native_approved": false
       },
       {
@@ -110,9 +110,16 @@
       "read-only RXDATA/PBS topology audit produces zero errors",
       "field move and event-gated paths manually traversed in Game.exe",
       "all main Decades and region save slots preserved"
+    ],
+    "phase3_requires": [
+      "local donor ZIP pinned SHA and separate hoenn-qa-fase03 copy",
+      "default source PBS encounter profiles merged with author Land/Cave, compile Game.exe",
+      "native field encounters: Land Cave Surf OldRod GoodRod SuperRod RockSmash",
+      "read-only source event backlog of trainers NPC signs and conditional items reviewed",
+      "physical captures and trainer battles, save reload and regional isolation validated"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA2 script and launcher preparation only; no native gameplay approval recorded"
+  "last_publication_note": "QA3 prepares pinned donor encounter defaults, conservative source item placement and backlog. Existing game copy and saves unchanged; native approval remains 0/12."
 }

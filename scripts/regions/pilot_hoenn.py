@@ -96,6 +96,10 @@ from hoenn_stage10 import (
     SEAFLOOR_AWAKENING_EVENT, WALLY_VICTORY_ROAD_EVENT,
     LEAGUE_EXIT_EVENT, HALL_OF_FAME_EVENT, STAGE10_SIGNS,
 )
+from hoenn_qa_phase3 import (
+    parse_reference_encounters, assemble_encounters,
+    reauthor_safe_items_and_audit,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -1369,6 +1373,7 @@ def build_overlay(game, source):
     maps, tiles, tile_ids, overlay = {}, {}, {}, {}
     stage9_original_events = {}
     stage10_original_events = {}
+    all_original_events = {}
     for old in SOURCE_MAPS:
         m = loads(source.read(f"Data/Map{old:03}.rxdata"))
         if not isinstance(m, RubyObject) or m.name != "RPG::Map":
@@ -1398,6 +1403,9 @@ def build_overlay(game, source):
             tile_ids[native_id] = len(native_tiles)
             native_tiles.append(ts)
         maps[old], tiles[old] = m, native_tiles[tile_ids[native_id]]
+        # Keep only decoded source events in memory for read-only QA inventory.
+        # No donor scripts or dialogue are copied into the new Blue map.
+        all_original_events[old] = dict(m.attrs.get("@events", {}))
         if old in SOURCE_MAPS_STAGE9:
             stage9_original_events[old] = dict(m.attrs.get("@events", {}))
         if old in SOURCE_MAPS_STAGE10:
@@ -1973,17 +1981,14 @@ def build_overlay(game, source):
     system.attrs.update({"@start_map_id": ids[START[0]], "@start_x": START[1], "@start_y": START[2]})
     overlay["Data/System.rxdata"] = serialize(system, SYSTEM_CLASSES)
     overlay["Data/Scripts.rxdata"] = startup(regular(game / "Data/Scripts.rxdata").read_bytes())
-    overlay["PBS/encounters_hoenn_pilot.txt"] = (
-        "".join(
-            f"[{ids[mid]}]\nLand,{21 if mid == 101 else 11}\n" +
-            "".join(f"    {chance},{species},{low},{high}\n" for chance, species, low, high in entries)
-            for mid, entries in LAND_ENCOUNTERS.items()
-        ) + "".join(
-            f"[{ids[mid]}]\nCave,5\n" +
-            "".join(f"    {chance},{species},{low},{high}\n" for chance, species, low, high in entries)
-            for mid, entries in CAVE_ENCOUNTERS.items()
-        )
-    ).encode("ascii")
+    # QA 3/12 imports ONLY ordinary default encounter methods from the
+    # pinned donor PBS. Original Blue Land/Cave presets keep priority.
+    # Alternate swarm versions and conditional encounters are not activated.
+    reference_profiles, reference_audit = parse_reference_encounters(
+        source.read("PBS/encounters.txt").decode("utf-8-sig"), set(SOURCE_MAPS))
+    encounter_bytes, encounters_audit = assemble_encounters(
+        reference_profiles, ids, LAND_ENCOUNTERS, CAVE_ENCOUNTERS)
+    overlay["PBS/encounters_hoenn_pilot.txt"] = encounter_bytes
     overlay["PBS/map_metadata_hoenn_pilot.txt"] = "".join(
         f"[{ids[mid]}]\nName = {name}\n" + ("Outdoor = true\nSnapEdges = true\n" if mid in OUTDOORS else "")
         for mid, name in SOURCE_MAPS.items()
@@ -2079,6 +2084,23 @@ def build_overlay(game, source):
               "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False}
+    # Reauthor only simple unconditional source pickups not already located
+    # on an original Blue event. Other trainer/NPC/sign anchors are inventoried
+    # as a *manual QA backlog*, not fictitious events or copied donor dialogue.
+    qa3_event_audit = reauthor_safe_items_and_audit(
+        all_original_events, maps, maps, game)
+    # The QA3 item injection occurs after stage events; refresh RXDATA for every
+    # map whose items were appended before writing the final pilot report.
+    # Important: no changes to the native game/ data on disk.
+    for old,x,y,item in qa3_event_audit["new_item_positions"]:
+        overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old], EVENT_CLASSES)
+    report["qa3"] = {
+        "reference": reference_audit,
+        "method_imports": encounters_audit,
+        "source_events": qa3_event_audit,
+        "native_gameplay_verified": False,
+        "all_trainers_npcs_signs_added": False,
+    }
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())

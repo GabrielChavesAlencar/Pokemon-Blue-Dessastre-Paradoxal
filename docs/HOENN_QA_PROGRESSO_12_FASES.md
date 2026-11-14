@@ -5,14 +5,14 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 e 2 implementada; execução/aceite pendentes — ▣▣□□□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1, 2 e 3 implementada; execução/aceite pendentes — ▣▣▣□□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
 |---:|---|---|---|
 | 1 | Gerar cópia isolada com 199 mapas e PBS | **Ferramenta preparada, execução local pendente** | ⏳ |
 | 2 | Corrigir conexões e colisões dos mapas | **Auditoria de RXDATA/PBS implementada; execução local pendente** | ⏳ |
-| 3 | Conferir encontros, NPCs, treinadores e itens | Pendente | ⏳ |
+| 3 | Conferir encontros, NPCs, treinadores e itens | **Perfis-base, itens simples e catálogo de pendências implementados; QA nativo pendente** | ⏳ |
 | 4 | Surf, Dive, Waterfall, Strength e puzzles | Pendente | ⏳ |
 | 5 | Equipes Aqua/Magma, Seafloor Cavern | Pendente | ⏳ |
 | 6 | Cave of Origin, clima, Rayquaza | Pendente | ⏳ |
@@ -107,3 +107,55 @@ py -3 scripts/regions/hoenn_qa_phase2.py --copy ".blue-work/hoenn-qa-fase01"
 - [ ] Eventuais falhas anotadas e corrigidas, com nova regressão.
 
 **Aviso:** este auditor lê tabelas e código de eventos sem executá-los. Não demonstra que os gráficos, colisões, HMs, páginas condicionais ou movimentação funcionam na engine. Nenhuma fase foi promovida para "aprovada" somente por CI.
+
+
+## Fase 03/12 — encontros, itens, NPCs, placas e treinadores
+
+**Estado:** implementação técnica em cópia isolada; sem aprovação de jogabilidade. A preparação avança para 3/12 e o aceite real permanece 0/12.
+
+### Implementado na fase
+
+- `scripts/regions/hoenn_qa_phase3.py` lê o `PBS/encounters.txt` **real** da fonte Hoenn de revisão fixa (`c59233bdbaac4fbfeca6aa01c7f05be628da2a92`), usando `Source.read` com SHA Git verificado.
+- Importa somente o **perfil padrão de cada MapID** dentro do piloto de 199 mapas: grama (`Land`), cavernas (`Cave`), água (`Water`), pesca (`OldRod/GoodRod/SuperRod`) e pedras (`RockSmash`), conforme existam na fonte. **Não inventa encontros para mapas sem tabela.**
+- Preserva os perfis de `Land/Cave` que o projeto Blue já personalizou e adiciona somente os métodos **ausentes**. O novo `PBS/encounters_hoenn_pilot.txt` possui **uma única seção por MapID remapeado**, evitando definições duplicadas.
+- O doador contém tabelas especiais `[MapID,versão]` para enxames de Pokémon. Essas versões **não entram automaticamente** no jogo, pois exigem lógica de clima/evento. O relatório separa essas versões de `[MapID]` padrão.
+- Algumas porcentagens do `PBS` original somam valores diferentes de 100% (por exemplo 200%, 95% ou 30%); o montador usa normalização determinística e documenta o total original por mapa/método. **As porcentagens normalizadas não devem ser apresentadas como chances canônicas de Emerald.**
+- Inspeciona a fonte `Data/MapNNN.rxdata` de todos os 199 mapas na preparação local, **sem executar scripts de terceiros**. Recria apenas `Item/HiddenItem` com um `pbItemBall(:ITEM)` inequívoco, sem condição inicial e sem colisão física com evento já criado. Verifica se o item existe no `game/PBS/items*.txt` do Blue. Utiliza `BlueHoennPilot.pickup` e Self Switch A para não duplicar o item depois de salvar/carregar.
+- Mantém **um relatório de pendências por mapa** para eventos candidatos de treinadores, NPCs, diálogos e placas que não são seguros de copiar automaticamente. Posições já ocupadas e itens condicionais também são sinalizados. Não publica diálogos, sprites ou scripts do doador.
+- Integra o verificador `hoenn_qa_phase3.py` ao `TESTAR_HOENN.bat` **depois das auditorias 1/12 e 2/12**; a auditoria verifica integridade do PBS e lê o manifesto de source events gerado localmente.
+
+### Proteção de saves anteriores
+
+**A partir desta fase**, `TESTAR_HOENN.bat` usa a nova pasta:
+
+`.blue-work/hoenn-qa-fase03/`
+
+Isso evita sobrescrever a cópia original `.blue-work/hoenn-qa-fase01/` e seus saves. Reexecutar o BAT **não recria/atualiza em silêncio** uma cópia que já existe. Caso o projeto avance para a próxima fase, escolher outra pasta de saída ou arquivar a antiga após backup e reconstruir; nunca sobrescrever a cópia com saves.
+
+### Executar no Windows
+
+1. Atualize a branch `main` e confirme a instalação principal em `game/`.
+2. Coloque seu ZIP **The Pokémon World Project - Hoenn.zip** na raiz, sem enviar RXDATA nem áudios de terceiros ao GitHub.
+3. Execute **`TESTAR_HOENN.bat`**. A Fase 1 prepara a cópia privada nova, a Fase 2 verifica mapas/warps/PBS e a Fase 3 valida encontros e inventário de eventos. O Game.exe só abre se as três verificações de arquivo passarem.
+4. Leia estes relatórios na pasta local ignorada:
+   - `.blue-work/hoenn-qa-fase03-prep-report.json` — preparação e SHA da fonte;
+   - `.blue-work/hoenn-qa-fase03-mapas-report.json` — auditora de portas, PBS e MapIDs;
+   - `.blue-work/hoenn-qa-fase03-report.json` — métodos novos, pesos normalizados, itens seguros adicionados e contagem de NPCs/treinadores/placas pendentes.
+5. No jogo, teste a pesca com três varas, encontros Surf, grama/caverna, itens visíveis e ocultos, batalha com treinador, derrotas, save/reload e troca de região. Não considere a existência do arquivo PBS como prova de que o motor selecionou esse tipo de encontro corretamente.
+6. Para investigar NPCs e treinadores que ainda faltam, leia o relatório **`Hoenn pilot.json`** na cópia, seção `qa3.source_events.unimplemented_source_event_candidates`. Cada entrada identifica MapID original, x/y, tipo de evento e motivo de revisão, sem executar o script do doador.
+
+### Evidência adicional da fonte pública
+
+O workflow [Hoenn QA 03 - auditar fonte original de encontros](../.github/workflows/hoenn_qa3_source_audit.yml) busca **temporariamente** apenas dois PBS de texto (encontros e treinadores) da revisão pinada, confere SHA de cada arquivo, descarta os bytes após processamento e executa os testes sintéticos. Ele não importa novos sprites, mapas, sons ou executáveis para a `main`.
+
+### Critérios de aprovação nativa — AINDA ABERTOS
+
+- [ ] Nova cópia da Fase 3 montada com o ZIP real e scripts atuais.
+- [ ] As três auditorias locais sem bloqueios; documentação dos perfis originais normalizados revisada.
+- [ ] Surf/água, pesca e Rock Smash realmente selecionam seus Pokémon no Game.exe.
+- [ ] Os itens incondicionais não duplicam após salvar/recarregar; nenhum item desconhecido causa erro.
+- [ ] Revisar **todos** os NPCs, placas, diálogos, itens condicionais e treinadores da lista de pendências. Não marcar como completos apenas pelo inventário.
+- [ ] Validar líderes e encontros com o balanceamento Blue e regras das insígnias (sem níveis fixos na UI).
+- [ ] Saves Decades/Kanto/Johto/Sinnoh intactos; Android/JoiPlay continua pendente.
+
+**Limitações:** esta fase não converte automaticamente treinadores de mapas do doador em eventos de batalha, não importa sprites/NPCs condicionalmente animados, não traduz todas as placas e não implementa os encontros de enxame. São lacunas explicitamente abertas; a barra mede **preparação de código**, não integralidade de conteúdo.

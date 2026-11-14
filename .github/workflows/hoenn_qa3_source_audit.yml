@@ -1,0 +1,34 @@
+name: Hoenn QA 03 - auditar fonte original de encontros
+on:
+  pull_request:
+    paths:
+      - 'scripts/regions/hoenn_qa_phase3.py'
+      - 'scripts/regions/inspect_hoenn_qa3_public.py'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'tests/test_hoenn_qa_phase3.py'
+      - '.github/workflows/hoenn_qa3_source_audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/hoenn_qa_phase3.py'
+      - 'scripts/regions/inspect_hoenn_qa3_public.py'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'tests/test_hoenn_qa_phase3.py'
+      - '.github/workflows/hoenn_qa3_source_audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-pbs-encounters:
+    name: Donor PBS fixo - encontros, pesca e treinadores (sem ROM)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar perfis reais do doador e hashes git (somente leitura)
+        run: python scripts/regions/inspect_hoenn_qa3_public.py
+      - name: Testes isolados de regras QA3
+        run: python -m unittest discover -s tests -p 'test_hoenn_qa_phase3.py' -v
