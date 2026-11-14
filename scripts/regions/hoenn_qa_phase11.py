@@ -16,6 +16,19 @@ from server.ruby_marshal import loads
 # Only display labels change, never canonical IDs, map coordinates, PBS
 # species/move tokens, event handlers or native Decades save state.
 MAP_TERM_TRANSLATIONS = (
+    ("Pretty Petal Flower Shop", "Floricultura Pretty Petal"),
+    ("Petalburg Woods", "Bosque de Petalburg"),
+    ("Rusturf Tunnel", "Túnel Rusturf"),
+    ("Devon Corporation", "Corporação Devon"),
+    ("Pokémon Fan Club", "Clube de Fãs Pokémon"),
+    ("Granite Cave", "Caverna de Granito"),
+    ("Cycling Road", "Ciclovia"),
+    ("Fossil Maniac", "Maníaco dos Fósseis"),
+    ("Fiery Path", "Caminho Ardente"),
+    ("Mt. Chimney", "Monte Chimney"),
+    ("Jagged Pass", "Passagem Rochosa"),
+    ("Meteor Falls", "Cachoeira Meteoro"),
+    ("Mt. Pyre Summit", "Cume do Monte Pyre"),
     ("Victory Road", "Estrada da Vitória"),
     ("Hall of Fame", "Hall da Fama"),
     ("Elite Four", "Elite Quatro"),
