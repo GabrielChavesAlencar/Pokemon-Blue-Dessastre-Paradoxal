@@ -190,6 +190,20 @@ python -m unittest discover -s tests -p "test_sinnoh_barry*.py" -v
 
 **Progresso:** QA installation **4/7** em código; bundle **3/6**, introdução **5/8**, desenvolvimento total **8/32**, aprovações técnicas/jogáveis/Android **0/13**.
 
+### Pós-compilação de Sinnoh — nova auditoria dentro da engine (código pronto)
+
+**Não reimplementar:** [SinnohQAProbe.rb](../scripts/regions/SinnohQAProbe.rb) é a nova sondagem autoral somente para o `Game.exe` **da cópia QA**. [install_sinnoh_qa_copy.py](../scripts/regions/install_sinnoh_qa_copy.py) já a inclui na cópia; depois do `Compiler.main`, exige exatamente os **9 mapas, 24 eventos, 16 portais, 3 Poké Bolas e 3 GameData::Trainer de Barry** com contra-iniciais e nível-base PBS 5. Os destinos, coordenadas, sprites e scripts são comparados com os dados da auditoria local; o relatório é `Data/blue-sinnoh-qa-engine-check.json`. O instalador só escreve o token de compilação se essa sondagem passar.
+
+O `--verify` do instalador valida esse relatório e os hashes dos mapas da cópia. [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) bloqueia `Novo Jogo` sem relatório nativo, mesmo que o token anterior já exista. Nenhuma ferramenta cria o arquivo `blue-sinnoh-rival-ready.txt` nem aprova gameplay. O [teste Ruby simulado](../tests/sinnoh_qa_engine_probe_runtime.rb) e os [testes Python](../tests/test_sinnoh_qa_install.py) estão na workflow. Procedimento completo: [SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md](SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md).
+
+**Somente o que depende do Codex/local agora:**
+1. Confirmar direito de uso, origem e hashes dos mapas reais de Twinleaf/Sandgem, além dos MapIDs de todas as regiões para evitar colisão.
+2. Gerar o overlay e instalar uma cópia QA **nova** via ferramenta já publicada, sem importar saves e sem tocar no jogo principal.
+3. Rodar o `Game.exe` QA apenas para compilar e executar a sondagem de eventos. Verificar o resultado de `--verify`: `compiled_marker_present:true`, `engine_structural_report_consistent:true` e `playable_approved:false`. Se houver erro, examinar `blue-sinnoh-qa-compile-error.txt`; não criar o marcador de Barry para contornar a falha.
+4. Testar em jogo os três iniciais, batalha de Barry, níveis efetivos 70%/90%, sprites, navegação real, save/load e caminhos de saves Windows. Testar Android/JoiPlay separadamente. Somente então discutir liberação e atualização das barras de aceite.
+
+**Barra de código da sondagem:** `4/7`. **Desenvolvimento geral** `8/32`. **Fases aprovadas** `0/13`; os mapas e a engine reais ainda não foram executados aqui.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
