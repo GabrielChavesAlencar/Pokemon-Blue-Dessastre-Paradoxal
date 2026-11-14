@@ -804,10 +804,16 @@ def build_overlay(game, source):
     system.attrs.update({"@start_map_id": ids[START[0]], "@start_x": START[1], "@start_y": START[2]})
     overlay["Data/System.rxdata"] = serialize(system, SYSTEM_CLASSES)
     overlay["Data/Scripts.rxdata"] = startup(regular(game / "Data/Scripts.rxdata").read_bytes())
-    overlay["PBS/encounters_hoenn_pilot.txt"] = "".join(
-        f"[{ids[mid]}]\nLand,{21 if mid == 101 else 11}\n" +
-        "".join(f"    {chance},{species},{low},{high}\n" for chance, species, low, high in entries)
-        for mid, entries in LAND_ENCOUNTERS.items()
+    overlay["PBS/encounters_hoenn_pilot.txt"] = (
+        "".join(
+            f"[{ids[mid]}]\nLand,{21 if mid == 101 else 11}\n" +
+            "".join(f"    {chance},{species},{low},{high}\n" for chance, species, low, high in entries)
+            for mid, entries in LAND_ENCOUNTERS.items()
+        ) + "".join(
+            f"[{ids[mid]}]\nCave,5\n" +
+            "".join(f"    {chance},{species},{low},{high}\n" for chance, species, low, high in entries)
+            for mid, entries in CAVE_ENCOUNTERS.items()
+        )
     ).encode("ascii")
     overlay["PBS/map_metadata_hoenn_pilot.txt"] = "".join(
         f"[{ids[mid]}]\nName = {name}\n" + ("Outdoor = true\nSnapEdges = true\n" if mid in OUTDOORS else "")
@@ -835,6 +841,17 @@ def build_overlay(game, source):
                          "aqua_sprite_source": aqua_art_name,
                          "aqua_sprite_placeholder": aqua_art_name != "RSE_AQUAGRUNT_M",
                          "gameplay_approved": False},
+              "stage4": {**stage4_counts,
+                         "source_map_ids": list(SOURCE_MAPS_STAGE4),
+                         "extra_borders": list(OFFSET_BORDERS_STAGE4),
+                         "trainer_bindings": [{"source_map_id": mid, "x": x, "y": y,
+                                               "trainer_type": kind, "name": name,
+                                               "pbs_version": mid}
+                                              for mid, x, y, kind, name, sprite, team, double
+                                              in TRAINERS_STAGE4],
+                         "roxanne_trainer_art": leader_art_name,
+                         "roxanne_battle_art_placeholder": leader_art_name != "RSE_LEADER_Roxanne",
+                         "native_gameplay_verified": False},
               "native_gameplay_verified": False}
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
