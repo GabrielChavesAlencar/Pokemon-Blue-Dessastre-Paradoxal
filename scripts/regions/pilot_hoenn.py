@@ -696,12 +696,16 @@ def build_overlay(game, source):
         types.update(match.group(1).strip() for match in
                      re.finditer(r"(?m)^\s*\[([^\]\r\n]+)\]", body))
     needed = {kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE3}
+    needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE4)
     missing = needed - types
     if missing:
         raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
     extra_ids = {(kind, name, mid) for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE3}
     extra_ids.add(FOREST_AQUA_PBS)
-    if len(extra_ids) != len(TRAINERS_STAGE3) + 1:
+    extra_ids.update((kind, name, mid)
+                     for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE4)
+    extra_ids.update((ROXANNE_PBS, TUNNEL_AQUA_PBS))
+    if len(extra_ids) != len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) + 3:
         raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
@@ -712,11 +716,13 @@ def build_overlay(game, source):
             ver = int(fields[2]) if len(fields) == 3 and fields[2].isdigit() else 0
             if (fields[0], fields[1], ver) in extra_ids:
                 raise ValueError(f"Treinador Hoenn da etapa 3 já existe: {fields} ({candidate.name})")
-    if "BLUE_HOENN_AQUA" in types:
-        raise ValueError("Tipo BLUE_HOENN_AQUA já existe no PBS nativo")
+    if {"BLUE_HOENN_AQUA", "BLUE_HOENN_ROXANNE"} & types:
+        raise ValueError("Tipo de chefe Hoenn já existe no PBS nativo")
     overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
         "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
         "BaseMoney = 20\nSkillLevel = 50\n"
+        "[BLUE_HOENN_ROXANNE]\nName = Líder de Ginásio\nGender = Female\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
     ).encode("utf-8")
     # Use only native trainer graphics; a fallback is explicitly NOT a visual
     # approval for the actual Aqua sprite.
@@ -742,6 +748,38 @@ def build_overlay(game, source):
         f"[{kind},{name},{version}]\nLoseText = Recuar!\n" +
         "".join(f"Pokemon = {species},{level}\n" for species, level in FOREST_AQUA_TEAM)
     )
+    # Stage 4 uses source-map versions for ordinary trainers; unique versions
+    # for bosses. A separate copy cannot change native trainer definitions.
+    for mid, _, _, kind, name, sprite, team, _double in TRAINERS_STAGE4:
+        trainer_sections.append(
+            f"[{kind},{name},{mid}]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+        )
+    kind, name, version = ROXANNE_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{version}]\nItems = POTION,POTION\n"
+        "LoseText = Você venceu a líder de Rustboro!\n"
+        "Pokemon = GEODUDE,12\n    Moves = TACKLE,DEFENSECURL,ROCKTHROW,ROCKTOMB\n"
+        "Pokemon = GEODUDE,12\n    Moves = TACKLE,DEFENSECURL,ROCKTHROW,ROCKTOMB\n"
+        "Pokemon = NOSEPASS,15\n    Moves = BLOCK,HARDEN,TACKLE,ROCKTOMB\n"
+        "    Item = ORANBERRY\n"
+    )
+    kind, name, version = TUNNEL_AQUA_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{version}]\nLoseText = Vou recuar!\n" +
+        "".join(f"Pokemon = {species},{level}\n" for species, level in TUNNEL_AQUA_TEAM)
+    )
+    leader_art, leader_art_name = None, None
+    for candidate_name in ("RSE_LEADER_Roxanne", "LEADER_ROXANNE", "ROXANNE", "LASS"):
+        candidate = game / f"Graphics/Trainers/{candidate_name}.png"
+        if candidate.is_file() and not candidate.is_symlink():
+            blob = regular(candidate).read_bytes()
+            if blob.startswith(PNG):
+                leader_art, leader_art_name = blob, candidate_name
+                break
+    if leader_art is None:
+        raise ValueError("Sem sprite de batalha Roxanne nem fallback nativo na instalação Blue")
+    overlay["Graphics/Trainers/BLUE_HOENN_ROXANNE.png"] = leader_art
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
