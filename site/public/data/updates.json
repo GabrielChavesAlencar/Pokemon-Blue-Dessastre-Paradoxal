@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7d25870a57d631abe02552da25a9926def310f42",
+      "date": "2026-11-14T12:01:43-03:00",
+      "title": "fix(test/hoenn): reconhecer fallback Aqua como arte provisória não aprovada",
+      "category": "Correções"
+    },
+    {
       "sha": "c73b2a4ae317fa21a1f1acf104d7fb59ebc2cc59",
       "date": "2026-11-14T12:01:11-03:00",
       "title": "ci(hoenn): testar Brawly, KNUCKLE, Flash, barco e Stern no Ruby simulado",
