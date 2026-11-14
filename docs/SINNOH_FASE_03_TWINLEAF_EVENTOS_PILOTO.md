@@ -71,6 +71,12 @@ ruby -c scripts/regions/SinnohPilot.rb
 ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
 ```
 
+### Atualização — equipes de Barry já preparadas por código
+
+Consulte [SINNOH_FASE_03_BARRY_PBS.md](SINNOH_FASE_03_BARRY_PBS.md). O gerador [build_sinnoh_barry_pbs.py](../scripts/regions/build_sinnoh_barry_pbs.py) produz as três equipes de Barry a partir dos PBS nativos, e [verify_sinnoh_barry_pbs.py](../scripts/regions/verify_sinnoh_barry_pbs.py) verifica hashes, learnsets e contratos de escala de nível (70%/90%). **Nenhum arquivo de liberação é gerado**, e as três equipes ainda precisam ser compiladas e testadas no Game.exe. Por isso I07 continua **pendente**.
+
+**Conflito a resolver antes de integração:** o piloto anterior [pilot_sinnoh.py](../scripts/regions/pilot_sinnoh.py) usa IDs 800–805, dentro da faixa 600–999 reservada a Johto, e [SinnohPreview.rb](../scripts/regions/SinnohPreview.rb) usa escolha de inicial por diálogo em vez das três Poké Bolas do roteiro novo. Não instalar esses dois modelos simultaneamente sem reconciliar as fontes/IDs/eventos.
+
 ## 5. Estado e próximos itens
 
 - **S13** (introdução/Rowan/Barry) e **S14** (três iniciais) passaram a ter código e fixtures, mas devem permanecer **parciais**, não finalizadas.
