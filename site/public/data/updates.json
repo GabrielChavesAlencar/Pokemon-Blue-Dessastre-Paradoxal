@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c27b3305c3f91ed148b21ea3eddb86c1ec8ebd56",
+      "date": "2026-11-14T18:11:36-03:00",
+      "title": "feat(hoenn): translate eight gym badge names across authored NPCs and sign dialogue",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c0918ac981f51e102c6b5f47271f37f3e530bc7a",
+      "date": "2026-11-14T18:11:31-03:00",
+      "title": "ci(kanto): testar bloqueio dos HMs do piloto em Ruby",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4d9ed9fe250bec25a3e093c4fd8200a517863491",
       "date": "2026-11-14T18:11:11-03:00",
       "title": "test(kanto): checar HMs sem move-slot e bloquear Surf Cut Fly Strength e demais",
