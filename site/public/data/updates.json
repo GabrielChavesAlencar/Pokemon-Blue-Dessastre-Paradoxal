@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d990aa4c6f86c32bb878219e861c6a3dd88fac42",
+      "date": "2026-11-14T12:33:02-03:00",
+      "title": "fix(hoenn): usar células caminháveis reais na portaria Cycling Road",
+      "category": "Correções"
+    },
+    {
+      "sha": "feef423c6105d1aceb1618eab3ef9b89b952f12d",
+      "date": "2026-11-14T12:32:59-03:00",
+      "title": "fix(hoenn): usar células caminháveis reais na portaria Cycling Road",
+      "category": "Correções"
+    },
+    {
+      "sha": "cf61963f64dda2d796e39901bc6a5dc8bd17c9b3",
+      "date": "2026-11-14T12:32:57-03:00",
+      "title": "fix(hoenn): usar células caminháveis reais na portaria Cycling Road",
+      "category": "Correções"
+    },
+    {
       "sha": "8ec3ce9e4f7985478e151eef22c0d446d8281fe2",
       "date": "2026-11-14T12:31:11-03:00",
       "title": "fix(hoenn): conectar Slateport a Route110/Mauville no contrato regressivo",
