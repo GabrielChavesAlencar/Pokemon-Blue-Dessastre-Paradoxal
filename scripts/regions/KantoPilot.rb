@@ -354,17 +354,41 @@ module BlueKantoPilot
     return false if progress["pilot_mom_running_shoes"] == true
     return false unless $player.respond_to?(:has_running_shoes=) &&
                         $PokemonSystem.respond_to?(:runstyle=)
-    pbMessage(t("Mom: {1}! I caught up with you at the Route 3 exit. Congratulations on beating Brock!",
-                "Mãe: {1}! Alcancei você na saída para a Rota 3. Parabéns por vencer o Brock!", $player.name))
-    pbMessage(t("Mom: I brought you these Running Shoes. Now you can run on your journey!",
-                "Mãe: Trouxe estes Tênis de Corrida para você. Agora pode correr durante sua jornada!"))
-    $player.has_running_shoes = true
-    $PokemonSystem.runstyle = 1  # Native Essentials default: run without holding a key.
-    progress["pilot_mom_running_shoes"] = true  # Stored on the Kanto regional save.
-    BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic)
-    pbMessage(t("You received the Running Shoes! You'll run automatically from now on.",
-                "Você recebeu os Tênis de Corrida! A partir de agora, correrá automaticamente."))
-    true
+    # Display the actual Pallet mother in front of the player for this
+    # scene only. The authored Pewter event is otherwise fully invisible
+    # and passable; no event refresh/prepend is needed (save-safe).
+    mother_event = nil
+    if $game_map && $game_map.respond_to?(:events) &&
+       File.file?("Data/blue-kanto-pewter-mom-sprite.txt")
+      mother_event = $game_map.events.values.find { |ev|
+        ev.name == "Kanto Running Shoes Mom"
+      }
+      sprite = File.read("Data/blue-kanto-pewter-mom-sprite.txt").strip
+      if mother_event && sprite.start_with?("FRLG_Pilot_") &&
+         mother_event.respond_to?(:character_name=)
+        mother_event.moveto([$game_player.x - 1, 0].max, $game_player.y) if
+          $game_player && mother_event.respond_to?(:moveto)
+        mother_event.direction = 6 if mother_event.respond_to?(:direction=)
+        mother_event.character_name = sprite
+      end
+    end
+    begin
+      pbMessage(t("Mom: {1}! I caught up with you at the Route 3 exit. Congratulations on beating Brock!",
+                  "Mãe: {1}! Alcancei você na saída para a Rota 3. Parabéns por vencer o Brock!", $player.name))
+      pbMessage(t("Mom: I brought you these Running Shoes. Now you can run on your journey!",
+                  "Mãe: Trouxe estes Tênis de Corrida para você. Agora pode correr durante sua jornada!"))
+      $player.has_running_shoes = true
+      $PokemonSystem.runstyle = 1  # Native Essentials default: run without holding a key.
+      progress["pilot_mom_running_shoes"] = true  # Stored on the Kanto regional save.
+      BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic)
+      pbMessage(t("You received the Running Shoes! You'll run automatically from now on.",
+                  "Você recebeu os Tênis de Corrida! A partir de agora, correrá automaticamente."))
+      true
+    ensure
+      # The mother is a one-shot scene, not a permanent passage obstruction.
+      mother_event.character_name = "" if mother_event &&
+                                       mother_event.respond_to?(:character_name=)
+    end
   end
 
   def self.pewter_route3_warning
