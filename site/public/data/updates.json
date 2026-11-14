@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "acc870f485f9335c4b0b95b0859d46221743443e",
+      "date": "2026-11-13T21:43:21-03:00",
+      "title": "ci(sinnoh): verify Barry native-probe Ruby syntax and strict mock-runtime gates",
+      "category": "Melhorias"
+    },
+    {
       "sha": "049eab96f0f83413818bc46d93b5076be8404663",
       "date": "2026-11-13T21:42:49-03:00",
       "title": "test(sinnoh): exercise native Barry probe gates with pure Ruby GameData mocks without touching game",
