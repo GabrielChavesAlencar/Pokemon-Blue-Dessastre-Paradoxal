@@ -753,7 +753,8 @@ def install_events(source, target, mapping):
                     "name": label,
                     "graphic": text(source_event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]),
                     "page_count": len(source_event.attrs["@pages"]),
-                    "script_sample": field_scripts[:3],
+                    "native_cut_script": "pbCut" in field_scripts,
+                    "native_smash_script": "pbSmashThisEvent" in field_scripts,
                 })
         dest_file = target / "Data" / f"Map{destination:03}.rxdata"
         map_data = load(dest_file)
@@ -1292,7 +1293,10 @@ def install_events(source, target, mapping):
             "cut_source_candidates": cut_source_candidates,
             "preview_maps_untouched": sorted(preview_only),
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
-    print("[KANTO CUT SOURCE AUDIT] " + json.dumps(cut_source_candidates[:80], ensure_ascii=False), flush=True)
+    print("[KANTO CUT SOURCE AUDIT] " + json.dumps({
+        "source_candidates": len(cut_source_candidates),
+        "imported": sum(r["kind"] == "cut" for r in field_inventory),
+    }), flush=True)
 
 
 def copy_game(game, target):
