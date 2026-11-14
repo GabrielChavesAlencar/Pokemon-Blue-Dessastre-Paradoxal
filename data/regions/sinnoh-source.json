@@ -76,7 +76,10 @@
     "legacy_pilot_compatibility_tests": "tests/test_sinnoh_pilot_compat.py",
     "barry_isolated_qa_static_preflight": "scripts/regions/preflight_sinnoh_barry_qa.py",
     "barry_isolated_qa_tests": "tests/test_sinnoh_barry_qa.py",
-    "pilot_compatibility_qa_guide": "docs/SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md"
+    "pilot_compatibility_qa_guide": "docs/SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md",
+    "private_sinnoh_qa_overlay_assembler": "scripts/regions/prepare_sinnoh_pilot_bundle.py",
+    "private_sinnoh_qa_overlay_tests": "tests/test_sinnoh_pilot_bundle.py",
+    "private_sinnoh_qa_overlay_guide": "docs/SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -121,7 +124,12 @@
     "legacy_pilot_merged_into_multiregion": false,
     "barry_qa_preflight_code_exists": true,
     "barry_qa_preflight_executed_on_real_game": false,
-    "legacy_saves_migrated": false
+    "legacy_saves_migrated": false,
+    "private_qa_overlay_code_prepared": true,
+    "real_sinnoh_qa_overlay_built": false,
+    "saves_isolated_in_native_pilot": false,
+    "barry_pbs_compiled_in_pilot": false,
+    "native_sinnoh_game_exe_tested": false
   },
   "progress": {
     "total_phases": 13,
@@ -135,7 +143,9 @@
     "barry_pbs_prep_steps_done": 4,
     "barry_pbs_prep_steps_total": 6,
     "pilot_compat_qa_steps_done": 3,
-    "pilot_compat_qa_steps_total": 6
+    "pilot_compat_qa_steps_total": 6,
+    "private_qa_bundle_preparation_steps_done": 3,
+    "private_qa_bundle_preparation_steps_total": 6
   },
   "blockers": [
     "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
