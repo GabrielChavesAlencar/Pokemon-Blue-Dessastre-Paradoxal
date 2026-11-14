@@ -138,7 +138,8 @@ def audit(root: Path = ROOT) -> dict:
     defined = set(re.findall(r"(?m)^\s*def self\.([a-z_]+)\b", plugin))
     required = {"state", "choose_profile", "choose_starter", "route_birch",
                 "birch", "mother", "mart", "heal", "clock", "battle", "verify_compilation"}
-    required.update(handler.removeprefix("BlueHoennPilot.") for *_, handler in PEOPLE)
+    required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
+                    for *_, handler in PEOPLE)
     if missing := required - defined:
         errors.append(f"Hoenn runtime handler(s) missing: {sorted(missing)}")
     if any(mid not in source_ids for mid in MAP_BGM):
