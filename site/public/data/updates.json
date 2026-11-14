@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7be5ac2b51df3dab58f826179204b6a95f67393e",
+      "date": "2026-11-14T19:34:26-03:00",
+      "title": "fix(kanto): liberar Viridian Mart somente apos Oak e exibir Cidade de Viridian",
+      "category": "Correções"
+    },
+    {
       "sha": "33c4630d1794937e0a5ba68b1c6594f4d5f7693d",
       "date": "2026-11-14T19:13:11-03:00",
       "title": "test(kanto): impedir stack overflow ao carregar save e proteger sprite Cut via renderer",
