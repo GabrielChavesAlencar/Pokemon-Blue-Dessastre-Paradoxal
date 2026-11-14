@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cc6c6b37c1443a30c82c2268a02b4e012e77bc1f",
+      "date": "2026-11-14T11:37:50-03:00",
+      "title": "test(hoenn): cobrir recuperação de save que ignorou o roubo Devon",
+      "category": "Testes"
+    },
+    {
       "sha": "599b5bb63c3c785aab7dfed80cb111f1c5c95899",
       "date": "2026-11-14T11:35:49-03:00",
       "title": "fix(hoenn): atualizar Briney após resgate e evitar softlock no roubo Devon",
