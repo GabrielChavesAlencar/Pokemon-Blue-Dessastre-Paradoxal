@@ -685,6 +685,30 @@ module BlueHoennPilot
     true
   end
 
+  # QA07: the standalone Hoenn gym events call this map-scoped dispatcher.
+  # TrainerBattle.start remains inside the original leader methods; the
+  # existing Blue/Decades scaling, local badges and deferred rewards are kept.
+  # Other scripts cannot invoke an arbitrary method via the event parameter.
+  HOENN_QA7_GYMS = {
+    STONE:   [27, :roxanne],
+    KNUCKLE: [31, :brawly],
+    DYNAMO:  [47, :wattson],
+    HEAT:    [63, :flannery],
+    BALANCE: [20, :norman],
+    FEATHER: [68, :winona],
+    MIND:    [82, :tate_liza],
+    RAIN:    [87, :juan]
+  }.freeze
+
+  def self.qa7_gym_battle(badge)
+    flags = state
+    config = HOENN_QA7_GYMS[badge]
+    return false unless flags && config && $game_map
+    _, maps = metadata
+    return false unless maps[config[0]] && $game_map.map_id == maps[config[0]]
+    send(config[1])
+  end
+
   def self.stone_badge?
     flags = state
     return false unless flags && defined?(BlueRegions)
