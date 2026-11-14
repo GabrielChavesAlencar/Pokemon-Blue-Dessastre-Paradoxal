@@ -73,6 +73,25 @@ def inspect(game: Path) -> dict:
             pewter_width != pewter_map["@width"] or
             not 0 <= first_row < last_row <= pewter_map["@height"]):
         raise ValueError("Pewter Route 3 story gate is outside source map edge")
+    # Mom reuses the actual Pallet mother charset. She appears only during
+    # the single post-Brock running-shoes scene, never as a permanent blocker.
+    mother_graphic = game / "Data/blue-kanto-pewter-mom-sprite.txt"
+    if not mother_graphic.is_file():
+        raise ValueError("Pewter running-shoes scene lacks Pallet mother graphic")
+    sprite = mother_graphic.read_text(encoding="utf-8").strip()
+    if not re.fullmatch(r"FRLG_Pilot_[\w .()-]+", sprite) or not (
+            game / "Graphics/Characters" / f"{sprite}.png").is_file():
+        raise ValueError("Pewter running-shoes mother sprite is absent or invalid")
+    mother_events = [
+        ev for ev in maps[mapping[25]].attrs["@events"].values()
+        if text(ev.attrs["@name"]) == "Kanto Running Shoes Mom"
+    ]
+    if len(mother_events) != 1:
+        raise ValueError("Pewter must contain exactly one hidden running-shoes mother")
+    mother_page = mother_events[0].attrs["@pages"][0].attrs
+    if (not mother_page["@through"] or mother_page["@graphic"].attrs["@character_name"] or
+            mother_page["@trigger"] != 0 or len(mother_events[0].attrs["@pages"]) != 1):
+        raise ValueError("Mother NPC must be invisible and passable until her scene")
     # Native field objects are generated from their real source EventIDs.
     # Reject invented coordinates, foreign-preview events and malformed
     # one-shot item and physical HM obstacle callbacks.
