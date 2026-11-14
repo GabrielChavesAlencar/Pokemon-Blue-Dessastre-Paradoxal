@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ab8413f066afbcb06ae691be1a4e41f1f458e1c8",
+      "date": "2026-11-14T14:12:52-03:00",
+      "title": "test(hoenn): auditar grafo de 28 mapas e remover portão sem posição confirmada",
+      "category": "Testes"
+    },
+    {
       "sha": "7017c74af6ef292fd1f028abecac21243f212d59",
       "date": "2026-11-14T14:12:21-03:00",
       "title": "test(hoenn): incluir 28 MapIDs fonte de Mossdeep, Mt Pyre e esconderijos",
