@@ -888,13 +888,18 @@ def install_events(source, target, mapping):
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            # Read-only signs and source-authored Cut trees are safe optional
+            # objects on functional maps, including reviewed cities/interiors.
+            # This does NOT affect any geometry-only preview region.
+            passive_field = bool(source_sign_dialogue(event)) or (
+                source_obstacle(event) == "cut")
             if not saffron_event_allowed(original, event_id, event):
                 continue
-            if not cinnabar_event_allowed(original, event_id):
+            if not cinnabar_event_allowed(original, event_id) and not passive_field:
                 continue
-            if not viridian_event_allowed(original, event_id):
+            if not viridian_event_allowed(original, event_id) and not passive_field:
                 continue
-            if not league_event_allowed(original, event_id):
+            if not league_event_allowed(original, event_id) and not passive_field:
                 continue
             if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
                 required = LEAGUE_BARRIER_GATES[original][event_id]
@@ -1021,22 +1026,22 @@ def install_events(source, target, mapping):
             if original == 114 and event_id not in (3, 20) and not (
                     source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
-            if original == 115 and event_id not in (1, 2):
+            if original == 115 and event_id not in (1, 2) and not passive_field:
                 continue
-            if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47):
+            if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47) and not passive_field:
                 continue
             # Phase 10: exact Fuchsia whitelists, no Warden/Gold Teeth,
             # Safari captures, Park South event transfers or source quests.
             if original == 144 and event_id not in (5, 17, 18, 24) and not (
                     source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
-            if original == 145 and event_id not in (1, 2):
+            if original == 145 and event_id not in (1, 2) and not passive_field:
                 continue
-            if original == 146 and event_id not in (1, 2):
+            if original == 146 and event_id not in (1, 2) and not passive_field:
                 continue
-            if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11):
+            if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11) and not passive_field:
                 continue
-            if original == 153 and event_id not in (1, 2, 5):
+            if original == 153 and event_id not in (1, 2, 5) and not passive_field:
                 continue
             if 179 <= original <= 188 and text(event.attrs["@name"]) == "Locked Door":
                 peers = silph_locked_group(events, event_id)
