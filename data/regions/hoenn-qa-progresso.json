@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "region": "HOENN",
+  "track": "JOGABILIDADE_NATIVA",
+  "date": "2026-11-14",
+  "historical_technical_stages": {
+    "done": 10,
+    "total": 10
+  },
+  "qa_phases": {
+    "total": 12,
+    "native_approved": 0,
+    "current_phase": 1,
+    "implementation_preparation_count": 1,
+    "platforms_approved": [],
+    "phase1_requires": [
+      "local Blue game/ with Game.exe",
+      "local donor ZIP pinned-byte verified",
+      "actual compilation and new save in Game.exe",
+      "save/reload plus isolated profile"
+    ],
+    "items": [
+      {
+        "phase": 1,
+        "name": "Preparar cópia isolada, 199 mapas e recursos",
+        "code_status": "qa_technical_preparation_ready",
+        "native_acceptance": "pending_real_game",
+        "native_approved": false
+      },
+      {
+        "phase": 2,
+        "name": "Revisar mapas e conexões",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 3,
+        "name": "Encontros, treinadores, NPCs e itens",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 4,
+        "name": "Movimentos de campo e quebra-cabeças",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 5,
+        "name": "Eventos Aqua/Magma e Seafloor",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 6,
+        "name": "Crise do clima, Cave of Origin e Rayquaza",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 7,
+        "name": "Oito ginásios e insígnias regionais",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 8,
+        "name": "Victory Road e Wally",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 9,
+        "name": "Elite Four e Campeão Wallace",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 10,
+        "name": "Hall of Fame e pós-jogo multirregional",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 11,
+        "name": "Tradução, áudio, Trainer Card e interface",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      },
+      {
+        "phase": 12,
+        "name": "Campanha inteira Windows e Android/JoiPlay",
+        "code_status": "todo",
+        "native_acceptance": "pending",
+        "native_approved": false
+      }
+    ]
+  },
+  "not_gameplay_approval": true,
+  "do_not_publish_donor_assets": true
+}
