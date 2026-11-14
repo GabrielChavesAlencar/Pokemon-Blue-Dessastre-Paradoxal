@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e9a1729202d1e0fe5a989995ac304e1329dddf5d",
+      "date": "2026-11-13T21:00:49-03:00",
+      "title": "data(sinnoh): record geometry converter as code-only R08 progress without claiming real maps installed",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7f00bb2755463363488fbb7e3fdf6189c9a21687",
       "date": "2026-11-13T20:59:53-03:00",
       "title": "test(sinnoh): verify terrain-only conversion excludes donor scripts/audio and stages without touching Decades",
