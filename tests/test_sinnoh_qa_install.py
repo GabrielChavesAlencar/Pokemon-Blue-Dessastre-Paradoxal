@@ -221,6 +221,21 @@ class SinnohQAInstallTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "adulterado"):
             self.planned()
 
+    def test_rejects_legacy_sinnoh_plugin_in_original_game(self):
+        (self.game / "Plugins/ZZZZZ Blue Sinnoh Pilot").mkdir()
+        with self.assertRaisesRegex(ValueError, "Decades limpa"):
+            self.planned()
+
+    def test_rejects_spoofed_map_events_or_coordinates_in_local_spec(self):
+        fake = copy.deepcopy(self.spec)
+        fake["maps"][0]["events"][0]["x"] += 1
+        with self.assertRaisesRegex(ValueError, "Evento/coordenada"):
+            self.planned(fake)
+        fake = copy.deepcopy(self.spec)
+        fake["maps"][0]["events"][0]["key"] = "SN_CHANGED_EVENT"
+        with self.assertRaisesRegex(ValueError, "Evento/coordenada"):
+            self.planned(fake)
+
     def test_rejects_symlink_into_game(self):
         shortcut = self.root / ".blue-work/malicious"
         try:
