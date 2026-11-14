@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c0d574e60a4a892e611368f0c1d74f6617f77232",
+      "date": "2026-11-13T23:56:04-03:00",
+      "title": "style(portal): add mobile-friendly pending-content cards with not-added status tags",
+      "category": "Melhorias"
+    },
+    {
       "sha": "80029d88a4b5f8b0a6be7d201093eb1a60a60ebc",
       "date": "2026-11-13T23:55:44-03:00",
       "title": "feat(portal): label Kanto preview-only map cards as not added",
