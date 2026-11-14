@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5cf9a785ec75cd8688b1ce2c6e884c5a38468d71",
+      "date": "2026-11-13T22:17:40-03:00",
+      "title": "data(sinnoh): register isolated QA installer/save profile and PBS compile gate without native approval",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c888aa8765da1ed54b168a9296364b7e8a700289",
       "date": "2026-11-13T22:17:29-03:00",
       "title": "docs(sinnoh): hand off only local native QA after save-isolated installer, compiler bootstrap and guarded Sinnoh start",
