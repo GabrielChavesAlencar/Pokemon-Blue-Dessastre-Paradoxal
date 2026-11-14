@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "da7cad29a91468ee72ec8927edeab7d22a6cabba",
+      "date": "2026-11-14T19:53:57-03:00",
+      "title": "feat(hoenn): apresentar Hall regional, entregar Dig e registrar pendencias",
+      "category": "Novidades"
+    },
+    {
+      "sha": "8e037e2ad804009c9fb165ac7672f7fe120c625f",
+      "date": "2026-11-14T19:50:20-03:00",
+      "title": "feat(hoenn): recriar eventos auditados e corrigir a montagem do piloto",
+      "category": "Novidades"
+    },
+    {
       "sha": "f095c9303867dddf8c921fe0fbe08a3fb4e53826",
       "date": "2026-11-14T19:36:55-03:00",
       "title": "test(kanto): recuperar encomenda em saves antigos com Boulder sem liberar compra",
