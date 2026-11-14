@@ -121,11 +121,16 @@ def audit_generated(manifest: dict) -> dict:
     """Stable QA12 contract; executed during private copy creation."""
     from pilot_hoenn import SOURCE_MAPS, UPSTREAM
     maps = manifest.get("maps", {})
+    if not isinstance(maps, dict) or any(type(key) not in (str, int) for key in maps):
+        raise ValueError("QA12: manifesto de MapIDs inválido")
+    # Builder uses integer source IDs; serialized Hoenn pilot.json uses string
+    # keys. Both MUST produce the identical QA12 manifest.
+    normalized = {str(key): val for key, val in maps.items()}
     if (manifest.get("source_commit") != UPSTREAM or
         manifest.get("region") != "HOENN" or
-        set(maps) != {str(i) for i in SOURCE_MAPS} or
-        len(set(maps.values())) != 199 or
-        any(type(x) is not int or not 700 <= x <= 999 for x in maps.values())):
+        set(normalized) != {str(i) for i in SOURCE_MAPS} or
+        len(set(normalized.values())) != 199 or
+        any(type(x) is not int or not 700 <= x <= 999 for x in normalized.values())):
         raise ValueError("QA12: mapa/fonte 199 não é a revisão fixada")
     for index in range(3,12):
         if not isinstance(manifest.get(f"qa{index}"), dict):
