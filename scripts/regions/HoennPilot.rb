@@ -20,8 +20,10 @@ module BlueHoennPilot
     stage6 = (stage5 + [41, 42, 43, 44, 45, 46, 47, 113, 114, 115]).sort
     stage7 = (stage6 + [53,54,55,56,57,58,59,60,61,62,63,117,118,120,121,122,123,
                         124,125,126,128,177,178,179,180,191,192]).sort
+    stage8 = (stage7 + [48,49,50,51,52,64,65,66,67,68,69,70,71,72,73,74,75,
+                        132,133,134,135,136,137,138,139]).sort
     stage2 = [7, 8, 11, 12, 13, 14, 101, 102, 103]
-    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7].include?(maps.keys.sort) &&
+    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7, stage8].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
@@ -184,6 +186,34 @@ module BlueHoennPilot
         raise "Chefe/treinadores Magma da Etapa 7 não compilados"
       end
     end
+    if maps[64] && maps[69] && maps[137]
+      {
+        132=>[:ODDISH,:POOCHYENA,:MARILL,:ROSELIA,:ILLUMISE,:VOLBEAT,:SEEDOT,:SURSKIT],
+        134=>[:ELECTRIKE,:ZIGZAGOON,:WINGULL,:LINOONE,:MANECTRIC,:KECLEON],
+        135=>[:LINOONE,:ODDISH,:ZIGZAGOON,:TROPIUS,:KECLEON,:GROVYLE],
+        138=>[:ODDISH,:MARILL,:MIGHTYENA,:POOCHYENA,:ABSOL,:KECLEON,:SEEDOT,:SURSKIT],
+        139=>[:SHUPPET,:DUSKULL,:MIGHTYENA,:POOCHYENA,:ODDISH,:GLOOM,:WINGULL,:KECLEON]
+      }.each do |source_id,species|
+        table=GameData::Encounter.get(maps.fetch(source_id),0)
+        unless table && table.types.fetch(:Land,[]).map{|row|row[1]}.sort==species.sort
+          raise "Encontros Stage8 não compilados: #{source_id}"
+        end
+      end
+      bosses=[
+        [:BLUE_HOENN_NORMAN,"Norman",820],
+        [:BLUE_HOENN_WINONA,"Winona",868],
+        [:BLUE_HOENN_SHELLY,"Shelly",837]
+      ]
+      grunts=[851,852,853,854].map{|ver|[:BLUE_HOENN_AQUA,"Recruta",ver]}
+      unless (bosses+grunts).all?{|kind,name,ver| GameData::Trainer.exists?(kind,name,ver)}
+        raise "Norman/Winona/Shelly/Aqua do Weather Institute não compilados"
+      end
+      ["May","Brendan"].each do |name|
+        [819,820,821,822,823,824].each do |ver|
+          raise "Rival de Route119/Lilycove não compilado: #{name}/#{ver}" unless GameData::Trainer.exists?(:RIVAL1,name,ver)
+        end
+      end
+    end
     names = ["May", "Brendan"]
     unless names.all? { |name| [210, 211, 212].all? { |version|
              GameData::Trainer.exists?(:RIVAL1, name, version) } }
@@ -216,6 +246,16 @@ module BlueHoennPilot
                     [maps.fetch(125),maps.fetch(53)],
                     [maps.fetch(121),maps.fetch(58)],
                     [maps.fetch(123),maps.fetch(121)]])
+    end
+    if maps[64] && maps[69] && maps[137]
+      links.concat([[maps.fetch(41),maps.fetch(132)],
+                    [maps.fetch(132),maps.fetch(48)],
+                    [maps.fetch(41),maps.fetch(134)],
+                    [maps.fetch(134),maps.fetch(135)],
+                    [maps.fetch(135),maps.fetch(64)],
+                    [maps.fetch(64),maps.fetch(138)],
+                    [maps.fetch(138),maps.fetch(139)],
+                    [maps.fetch(139),maps.fetch(69)]])
     end
     links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
