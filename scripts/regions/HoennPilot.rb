@@ -447,6 +447,300 @@ module BlueHoennPilot
     true
   end
 
+
+  # Stage 4 remains completely save-scoped to "HOENN", with one Stone Badge
+  # awarded by the existing regional registry. No native badge or global
+  # crystal count is overwritten.
+  STAGE4_SIGNS = {
+    RUSTBORO_CITY: "Rustboro: cidade de ciência, escolas e ginásios.",
+    RUSTBORO_GYM: "Ginásio de Rustboro. Líder Roxanne, tipo Pedra.",
+    DEVON_CORP: "Devon Corporation: pesquisa e tecnologia.",
+    TRAINER_SCHOOL: "Escola de Treinadores: aprenda sobre tipos e condições.",
+    CUTTER_HOUSE: "Casa do especialista na técnica Cut.",
+    RUSTURF_TUNNEL: "Túnel Rusturf: siga pela Rota 116 ao leste.",
+    ROUTE116_TIPS: "Dica: use a Bolsa para organizar os itens.",
+    ROUTE116_TRAINERS: "Dica: treine seus Pokémon antes de explorar o túnel.",
+    TUNNELERS_HOUSE: "Casa dos Escavadores.",
+    RUSTURF_ENTRANCE: "Entrada do Túnel Rusturf."
+  }.freeze
+
+  def self.sign_stage4(key)
+    return false unless state && STAGE4_SIGNS.key?(key)
+    pbMessage(_INTL(STAGE4_SIGNS.fetch(key)))
+    true
+  end
+
+  def self.stone_badge?
+    flags = state
+    return false unless flags && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions, "HOENN").include?("STONE")
+  end
+
+  def self.roxanne_tm
+    flags = state
+    return false unless flags && stone_badge?
+    if flags["roxanne_tm_given"]
+      pbMessage(_INTL("Roxanne: Continue evoluindo suas estratégias de batalha!"))
+      return false
+    end
+    item = [:TM100, :TM39].find do |candidate|
+      GameData::Item.exists?(candidate) &&
+        GameData::Item.get(candidate).move == :ROCKTOMB
+    end
+    unless item
+      pbMessage(_INTL("Roxanne: A TM Rock Tomb não está registrada neste Blue. Sua recompensa está reservada."))
+      return false
+    end
+    unless $bag && $bag.add(item, 1)
+      pbMessage(_INTL("Roxanne: Libere espaço na Bolsa para receber Rock Tomb."))
+      return false
+    end
+    flags["roxanne_tm_given"] = true
+    pbMessage(_INTL("Roxanne: Receba Rock Tomb! Use-a com inteligência."))
+    true
+  end
+
+  def self.roxanne
+    flags = state
+    return false unless flags && $player && !$player.party.empty?
+    if stone_badge?
+      flags["roxanne_defeated"] = true
+      return roxanne_tm
+    end
+    unless flags["wally_captured"] && flags["forest_aqua_defeated"]
+      pbMessage(_INTL("Roxanne: Explore Petalburg Woods e ajude o funcionário Devon antes do desafio."))
+      return false
+    end
+    pbMessage(_INTL("Roxanne: Sou especialista em Pokémon de Pedra. Aceita meu desafio?"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_ROXANNE, "Roxanne", 427)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions, "HOENN", "STONE")
+      pbMessage(_INTL("Roxanne: Erro ao registrar a Stone Badge. Verifique o estado regional."))
+      return false
+    end
+    flags["roxanne_defeated"] = true
+    pbMessage(_INTL("Você conquistou a Stone Badge de Hoenn! A técnica Cut está liberada nesta região."))
+    roxanne_tm
+    true
+  end
+
+  def self.cutter
+    flags = state
+    return false unless flags
+    if flags["hm_cut_given"]
+      pbMessage(_INTL("Especialista: Ensine Cut a um Pokémon. A Stone Badge libera seu uso em Hoenn."))
+      return false
+    end
+    item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
+    unless item
+      pbMessage(_INTL("Especialista: O HM Cut ainda não existe nos itens desta instalação."))
+      return false
+    end
+    unless $bag && $bag.add(item, 1)
+      pbMessage(_INTL("Especialista: Abra espaço na Bolsa para receber Cut."))
+      return false
+    end
+    flags["hm_cut_given"] = true
+    pbMessage(_INTL("Você recebeu HM Cut! Precisa da Stone Badge para usá-lo em Hoenn."))
+    true
+  end
+
+  def self.cut_tree(event_id)
+    flags = state
+    return false unless flags && $player && event_id.is_a?(Integer)
+    return false unless $game_map && $game_self_switches && $game_map.events[event_id]
+    identifier = "cut_tree_#{$game_map.map_id}_#{event_id}"
+    if flags[identifier]
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+      $game_map.events[event_id].refresh
+      return true
+    end
+    unless stone_badge?
+      pbMessage(_INTL("Uma árvore pequena bloqueia a passagem. A Stone Badge de Hoenn é necessária."))
+      return false
+    end
+    unless $bag && [:HM01, :HMCUT].any? { |item|
+           GameData::Item.exists?(item) && $bag.has?(item) }
+      pbMessage(_INTL("Você precisa obter o HM Cut em Rustboro."))
+      return false
+    end
+    unless $player.party.any? { |pokemon| pokemon.respond_to?(:hasMove?) &&
+                                     pokemon.hasMove?(:CUT) }
+      pbMessage(_INTL("Nenhum Pokémon da sua equipe conhece Cut."))
+      return false
+    end
+    return false unless pbConfirmMessage(_INTL("Usar Cut para retirar a árvore?"))
+    flags[identifier] = true
+    $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    $game_map.events[event_id].refresh
+    pbMessage(_INTL("A árvore foi cortada."))
+    true
+  end
+
+  def self.teacher
+    flags = state
+    return false unless flags
+    if flags["quick_claw_given"]
+      pbMessage(_INTL("Professora: Quick Claw pode fazer seu Pokémon agir primeiro!"))
+      return false
+    end
+    unless GameData::Item.exists?(:QUICKCLAW) && $bag && $bag.add(:QUICKCLAW, 1)
+      pbMessage(_INTL("Professora: Confira se o item Quick Claw existe e abra espaço na Bolsa."))
+      return false
+    end
+    flags["quick_claw_given"] = true
+    pbMessage(_INTL("Você recebeu Quick Claw na Escola de Treinadores!"))
+    true
+  end
+
+  def self.rustboro_theft
+    flags = state
+    return false unless flags && stone_badge?
+    return false if flags["devon_theft_seen"]
+    flags["devon_theft_seen"] = true
+    pbMessage(_INTL("Funcionário Devon: Um recruta Aqua roubou nossos produtos! Ele fugiu pela Rota 116!"))
+    true
+  end
+
+  def self.briney_route116
+    flags = state
+    return false unless flags
+    if flags["peecko_rescued"]
+      pbMessage(_INTL("Mr. Briney: Você salvou Peecko! Depois conversaremos sobre viajar pelo mar."))
+    elsif flags["devon_theft_seen"]
+      pbMessage(_INTL("Mr. Briney: Um recruta levou minha Wingull Peecko para Rusturf Tunnel."))
+    else
+      pbMessage(_INTL("Mr. Briney: Eu e Peecko gostamos de caminhar pela Rota 116."))
+    end
+    true
+  end
+
+  def self.peeko
+    flags = state
+    return false unless flags
+    pbMessage(flags["peecko_rescued"] ?
+      _INTL("Peecko: Pii! Parece muito feliz por estar segura.") :
+      _INTL("Peecko: Pii... Está com medo daquele recruta!"))
+    true
+  end
+
+  def self.rusturf_goods_reward
+    flags = state
+    return false unless flags && flags["rusturf_aqua_defeated"]
+    return true if flags["devon_goods_recovered"]
+    if GameData::Item.exists?(:DEVONGOODS)
+      unless $bag && $bag.add(:DEVONGOODS, 1)
+        pbMessage(_INTL("Os produtos Devon ainda estão aqui. Abra espaço na Bolsa para recuperá-los."))
+        return false
+      end
+      flags["devon_goods_in_bag"] = true
+    else
+      flags["devon_goods_virtual"] = true
+      pbMessage(_INTL("Os produtos Devon foram registrados como missão regional, pois este Blue não possui o item."))
+    end
+    flags["devon_goods_recovered"] = true
+    pbMessage(_INTL("Você recuperou os produtos roubados da Devon. Retorne à corporação."))
+    true
+  end
+
+  def self.rusturf_aqua
+    flags = state
+    return false unless flags
+    unless flags["devon_theft_seen"] && stone_badge?
+      pbMessage(_INTL("O túnel está silencioso. Investigue Rustboro após conquistar a Stone Badge."))
+      return false
+    end
+    if flags["rusturf_aqua_defeated"]
+      return rusturf_goods_reward
+    end
+    pbMessage(_INTL("Recruta Aqua: Não vou devolver os produtos da Devon sem uma batalha!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_AQUA, "Recruta", 405)
+      $player.heal_party if $player && $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["rusturf_aqua_defeated"] = true
+    flags["peecko_rescued"] = true
+    pbMessage(_INTL("O recruta fugiu! Peecko está livre e pode voltar com Mr. Briney."))
+    rusturf_goods_reward
+  end
+
+  def self.devon_route116
+    flags = state
+    return false unless flags
+    if flags["devon_goods_recovered"]
+      pbMessage(_INTL("Funcionário Devon: Leve nossos produtos à corporação de Rustboro. Obrigado!"))
+    elsif flags["devon_theft_seen"]
+      pbMessage(_INTL("Funcionário Devon: Precisamos recuperar o pacote roubado no túnel."))
+    else
+      pbMessage(_INTL("Funcionário Devon: Estamos preparando melhorias para os treinadores."))
+    end
+    true
+  end
+
+  def self.devon_employee
+    flags = state
+    return false unless flags
+    if flags["devon_goods_delivered"]
+      pbMessage(_INTL("Devon: O presidente Stone deseja conversar com você."))
+      return true
+    end
+    unless flags["devon_goods_recovered"]
+      pbMessage(_INTL("Devon: Procure um funcionário na Rota 116 se quiser ajudar nossa pesquisa."))
+      return false
+    end
+    if flags["devon_goods_in_bag"] && GameData::Item.exists?(:DEVONGOODS)
+      unless $bag && $bag.has?(:DEVONGOODS) && $bag.remove(:DEVONGOODS, 1)
+        pbMessage(_INTL("Devon: Os produtos não foram encontrados na Bolsa."))
+        return false
+      end
+    end
+    flags["devon_goods_delivered"] = true
+    pbMessage(_INTL("Devon: Obrigado por devolver os produtos! O presidente está no terceiro andar."))
+    true
+  end
+
+  def self.mr_stone
+    flags = state
+    return false unless flags
+    unless flags["devon_goods_delivered"]
+      pbMessage(_INTL("Mr. Stone: Nossa equipe está procurando um pacote que desapareceu."))
+      return false
+    end
+    if flags["stone_letter_received"]
+      pbMessage(_INTL("Mr. Stone: Entregue a carta a Steven em Dewford quando a travessia estiver aberta."))
+      return true
+    end
+    if GameData::Item.exists?(:LETTER)
+      unless $bag && $bag.add(:LETTER, 1)
+        pbMessage(_INTL("Mr. Stone: Libere espaço na Bolsa para receber minha carta."))
+        return false
+      end
+    else
+      flags["stone_letter_virtual"] = true
+      pbMessage(_INTL("Esta instalação não tem o item Carta; registrei a entrega futura no diário regional."))
+    end
+    flags["stone_letter_received"] = true
+    pbMessage(_INTL("Mr. Stone: Leve esta carta a Steven em Dewford. Briney poderá ajudar na próxima etapa."))
+    true
+  end
+
+  def self.tunnelers
+    return false unless state
+    pbMessage(_INTL("Escavador: O túnel para Verdanturf ainda não está concluído."))
+    true
+  end
+
+  def self.rusturf_east_gate
+    return false unless state
+    pbMessage(_INTL("A saída leste de Rusturf Tunnel será liberada quando Verdanturf for integrada."))
+    false
+  end
+
+
   def self.heal
     return unless state
     if $player.party.empty?
