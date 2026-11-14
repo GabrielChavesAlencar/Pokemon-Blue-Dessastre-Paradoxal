@@ -45,6 +45,18 @@ Os handlers Ruby [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb), a [templat
 
 **Verificação de código:** [CI de Sinnoh isolada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43533250672) — **62 testes Python aprovados**, sintaxe Ruby aprovada e execução de `sinnoh_pilot_runtime.rb` com resultado `SINNOH_STORY_RUNTIME_GUARDS_OK`. Esses testes usam fixtures e não certificam gameplay nativo. A suíte geral também inclui testes de Johto; falhas de Johto devem ser investigadas separadamente, sem alterar as barras de Sinnoh.
 
+## Barry — três equipes PBS (código preparado)
+
+```text
+████████████████░░░░░░░░  4/6 (67% das subetapas próprias)
+```
+
+O [gerador de PBS do Barry](../scripts/regions/build_sinnoh_barry_pbs.py) prepara **três versões com vantagem de tipo** (Turtwig → Chimchar; Chimchar → Piplup; Piplup → Turtwig), sempre usando espécies e golpes existentes na instalação Blue, sem importar equipes do jogo doador. O [verificador](../scripts/regions/verify_sinnoh_barry_pbs.py) compara SHA-256, valida a presença das três equipes, confere o código de balanceamento **70% normal / 90% Master** e recusa o arquivo de liberação no draft. Consulte a [documentação PBS](SINNOH_FASE_03_BARRY_PBS.md).
+
+**Faltam 2 subetapas:** compilar os PBS e conferir o sprite/batalhas na cópia experimental; testar níveis efetivos, vitória/derrota e saves em Game.exe/JoiPlay. O nível 5 nos PBS é **somente o nível-base técnico**, não o nível fixo exibido ao jogador. Como a integração real não foi verificada, o item **I07 da introdução continua pendente**, a preparação geral permanece **8/32** e nenhuma barra de fases jogáveis sobe.
+
+**Atenção:** existe um piloto legado de Sinnoh com MapIDs 800–805, na faixa 600–999 protegida no plano de Johto. Os dois modelos precisam ser conciliados antes de uma integração compartilhada; não mesclar os mapas automaticamente.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
