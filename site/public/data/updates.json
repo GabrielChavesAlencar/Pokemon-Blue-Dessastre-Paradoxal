@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7226de42c218605020a4b984e606c60a0cb1f939",
+      "date": "2026-11-14T10:54:30-03:00",
+      "title": "test(hoenn): checar offsets e portas em tiles bloqueados com geometria sintética",
+      "category": "Testes"
+    },
+    {
       "sha": "855774f8c414235b16fd1edf541dcff3995de901",
       "date": "2026-11-14T10:51:15-03:00",
       "title": "fix(hoenn): validar células de chegada e cachear tiles em mapas extensos",
