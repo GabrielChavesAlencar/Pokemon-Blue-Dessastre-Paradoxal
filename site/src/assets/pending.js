@@ -26,7 +26,9 @@ export async function loadPendingRegions(fetcher=fetch){
   return cached;
 }
 
-export const pendingLabel=()=>'<span class="content-pending-tag">Ainda não adicionado</span>';
+export const pendingLabel=(status='not_added')=>'<span class="content-pending-tag'+
+  (status==='native_qa_pending'?' pending-validation':'')+'">'+
+  (status==='native_qa_pending'?'Em validação':'Ainda não adicionado')+'</span>';
 
 // The public catalog is not the native runtime. "Not added" below means
 // not yet confirmed as added AND playable. Do not silently auto-publish PBS.
@@ -47,7 +49,7 @@ export function pendingBlocks(db,region,route,{excludeNames=[]}={}){
       '<div class="pending-grid">'+rows.map(row=>
         '<article class="pending-card"><h3>'+esc(row.name)+'</h3>'+
           (row.city?'<p>'+esc(row.city)+(row.badge?' · Insígnia '+esc(row.badge):'')+'</p>':'')+
-          (row.notes?'<p>'+esc(row.notes)+'</p>':'')+pendingLabel()+'</article>'
+          (row.notes?'<p>'+esc(row.notes)+'</p>':'')+pendingLabel(row.status)+'</article>'
       ).join('')+'</div></details>';
   }).filter(Boolean);
   if(!blocks.length)return '';
