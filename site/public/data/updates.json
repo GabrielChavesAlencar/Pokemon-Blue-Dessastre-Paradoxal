@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07aa89acf70dd0c9eee56b81920c318d12ea14ad",
+      "date": "2026-11-14T17:01:00-03:00",
+      "title": "test(hoenn): simulate QA6 map-local climate events and Sky Pillar gates",
+      "category": "Testes"
+    },
+    {
       "sha": "c321a1f22fa66a8172154513d33735693f9225a1",
       "date": "2026-11-14T17:00:40-03:00",
       "title": "fix(hoenn): QA6 progression guards for climate crisis, Wallace and Rayquaza",
