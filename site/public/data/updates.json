@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d8cac674cda25cc8feedf0b07aa42afcd7ab234b",
+      "date": "2026-11-14T18:48:51-03:00",
+      "title": "ci(hoenn): run isolated 199-map Ruby/QA teleport tests before unrelated Kanto suite",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7c2c887b77dee28ed87a423aba78bef042c717b2",
       "date": "2026-11-14T18:48:15-03:00",
       "title": "feat(hoenn): TESTAR_HOENN auto-upgrades existing QA12 test-only teleport safely",
