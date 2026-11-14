@@ -928,6 +928,9 @@ module BlueKantoPilot
       pbMessage(BlueKantoPilot.t("The Victory Road mechanism requires Kanto's Rainbow Badge.", "O mecanismo da Victory Road requer a Rainbow Badge de Kanto."))
       return false
     end
+    # This simplified puzzle is still an HM field action: no bypass via
+    # a Ruby map event when the player lacks HM04 or an eligible Pokemon.
+    return false unless BlueRegionalPolicy.field_allowed?(:STRENGTH)
     barrier_ids.each do |event_id|
       next unless $game_map.events[event_id]
       $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
