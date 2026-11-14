@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e76a914a05995cae90c249315649f6f870cf04ff",
+      "date": "2026-11-14T11:32:52-03:00",
+      "title": "fix(test/hoenn): gerar gráficos corretos para NPCs no fixture da Etapa 4",
+      "category": "Correções"
+    },
+    {
       "sha": "136621fff30a9ec792e97f4dec7f722a3ce8f12a",
       "date": "2026-11-14T11:32:15-03:00",
       "title": "ci(hoenn): validar Rustboro/Roxanne e recuperação de Devon em Ruby puro",
