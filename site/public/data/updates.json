@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7ff946b9af80e5d7b34640d4f97ee562046c05a2",
+      "date": "2026-11-14T13:28:01-03:00",
+      "title": "feat(hoenn): mapear 24 portas reais do ginásio Norman sem duplicar Petalburg",
+      "category": "Novidades"
+    },
+    {
       "sha": "1b7e9b3ecb760535931a42a6552064920b18e854",
       "date": "2026-11-14T13:26:34-03:00",
       "title": "feat(hoenn): acrescentar 25 mapas Verdanturf/Fortree/Lilycove e rotas 117-121",
