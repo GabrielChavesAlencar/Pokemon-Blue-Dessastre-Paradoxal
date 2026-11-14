@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "495d872664f9a307f2af60f060e8b581f60b19b5",
+      "date": "2026-11-14T18:17:46-03:00",
+      "title": "feat(hoenn): localize early-game forests, caves, landmarks and routes in QA11",
+      "category": "Novidades"
+    },
+    {
+      "sha": "a898dc9a2ae1855e68054f20c97771976caad8c1",
+      "date": "2026-11-14T18:17:39-03:00",
+      "title": "test(kanto): prova nativa de Victory Road nega Strength sem HM04",
+      "category": "Testes"
+    },
+    {
       "sha": "87cfae564c61ad05f1624e5790c208f1097423d7",
       "date": "2026-11-14T18:17:15-03:00",
       "title": "fix(kanto): exigir HM04 e Pokemon compativel no puzzle de Victory Road",
