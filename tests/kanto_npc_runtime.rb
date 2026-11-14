@@ -55,12 +55,30 @@ Dir.mktmpdir("blue-kanto-npc-runtime-") do |path|
       $shown_dialogues.last == "Está terminantemente proibido passar por aqui!"
 
     BlueKantoPilot.npc_dialogue(10, 7, 1)
-    raise "Formatted FRLG NPC message was not translated with color preserved" unless
-      $shown_dialogues.last == '\b' + "Está terminantemente proibido passar por aqui!"
+    raise "FRLG blue control leaked into PT-BR dialogue" unless
+      $shown_dialogues.last == "Está terminantemente proibido passar por aqui!"
 
     BlueKantoPilot.npc_dialogue(10, 7, 2)
     raise "Combined FRLG NPC message was not translated via catalog" unless
       $shown_dialogues.last == "Está terminantemente proibido passar por aqui! Esta é uma propriedade privada!"
+
+    # Repro from screenshot: the PC tutorial was blue because FRLG's
+    # translated NPC text kept the initial \\b palette control.
+    pc_message = '\\bAgora você pode depositar e retirar itens e Pokémon como dados em um PC.'
+    raise "PC tutorial still has blue letters" unless
+      BlueKantoPilot.standard_npc_text(pc_message) ==
+        "Agora você pode depositar e retirar itens e Pokémon como dados em um PC."
+    raise "FRLG red control was not normalized" unless
+      BlueKantoPilot.standard_npc_text('\\rEste NPC nao pode ficar vermelho.') ==
+        "Este NPC nao pode ficar vermelho."
+    raise "Inline palette controls were not removed" unless
+      BlueKantoPilot.standard_npc_text('\\bPrimeira \\c[2]segunda \\rterceira') ==
+        "Primeira segunda terceira"
+    raise "Text color fix broke signs, newlines or player placeholders" unless
+      BlueKantoPilot.standard_npc_text('\\w[signskin]<b>Rota 1</b>\\nOi, \\PN!') ==
+        '\\w[signskin]<b>Rota 1</b>\\nOi, \\PN!'
+    raise "FRLG font overrides still change the Blue font" unless
+      BlueKantoPilot.standard_npc_text('\\fn[OldFont]\\fs[17]\\font[Blue]\\bOla!') == "Ola!"
 
     BlueKantoPilot.oak_warning
     raise "Oak PT-BR line missing" unless $shown_dialogues.last == "Oak: Ei! Espere um pouco!"
@@ -72,7 +90,7 @@ Dir.mktmpdir("blue-kanto-npc-runtime-") do |path|
     BlueKantoPilot.npc_dialogue(10, 7, 0)
     raise "English dialogue was modified" unless $shown_dialogues.last == original
     BlueKantoPilot.npc_dialogue(10, 7, 1)
-    raise "Original formatted English dialogue was modified" unless $shown_dialogues.last == formatted
+    raise "FRLG blue control leaked into English dialogue" unless $shown_dialogues.last == original
 
     $PokemonSystem.blue_locale = "pt-BR"
     BlueKantoPilot.npc_dialogue(24, 2, 0)
@@ -86,4 +104,4 @@ Dir.mktmpdir("blue-kanto-npc-runtime-") do |path|
     end
   end
 end
-puts "PASS: real BlueLocale translates plain, color-coded and combined guard speech in Kanto, preserving English"
+puts "PASS: Kanto imported NPCs keep PT-BR/EN and use default white text; signs, placeholders and windowskins preserved"
