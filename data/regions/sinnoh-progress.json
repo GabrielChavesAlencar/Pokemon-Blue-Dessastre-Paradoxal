@@ -11,8 +11,8 @@
   "development": {
     "total": 32,
     "done": 8,
-    "partial": 5,
-    "pending": 19,
+    "partial": 7,
+    "pending": 17,
     "percent_complete": 25,
     "percent_with_partial_not_counted": 25,
     "groups": [
@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "Executar conversor de geometria somente com ZIP/pasta real auditada e direitos, validar assets, acrescentar eventos autorais e QA isolado; Code-only R08 ainda parcial.",
+  "next": "Fase 03 I06–I08: auditar Twinleaf/Lake Verity/Sandgem reais, criar e verificar PBS Barry, piloto isolado e testar Windows/JoiPlay. Código próprio e compilador já publicados.",
   "tasks": [
     {
       "id": "S01",
@@ -170,14 +170,14 @@
     {
       "id": "S13",
       "title": "Introdução, Rowan e Barry",
-      "status": "pending",
-      "evidence_path": null
+      "status": "partial",
+      "evidence_path": "scripts/regions/SinnohPilot.rb"
     },
     {
       "id": "S14",
       "title": "Três iniciais de Sinnoh",
-      "status": "pending",
-      "evidence_path": null
+      "status": "partial",
+      "evidence_path": "data/regions/sinnoh-twinleaf-events.json"
     },
     {
       "id": "S15",
@@ -374,5 +374,65 @@
       ],
       "counts_as_completed_R08": false
     }
+  },
+  "intro_workstream": {
+    "status": "ORIGINAL_EVENTS_PREPARED_NOT_PLAYABLE",
+    "complete": 5,
+    "total": 8,
+    "substeps": [
+      {
+        "id": "I01",
+        "name": "Handlers Ruby próprios e estado regional isolado para mãe, Rowan e Barry",
+        "complete": true,
+        "evidence": "scripts/regions/SinnohPilot.rb"
+      },
+      {
+        "id": "I02",
+        "name": "Escolha por três Poké Bolas com proteção anti duplicata e rival bloqueado sem PBS",
+        "complete": true,
+        "evidence": "scripts/regions/SinnohPilot.rb"
+      },
+      {
+        "id": "I03",
+        "name": "Template 9 mapas / 5 handlers / 3 Poké Bolas / 16 warps com IDs e coordenadas desconhecidos",
+        "complete": true,
+        "evidence": "data/regions/sinnoh-twinleaf-events.json"
+      },
+      {
+        "id": "I04",
+        "name": "Compilador de eventos autorais sobre stage de geometria com hashes e coordenadas verificadas",
+        "complete": true,
+        "evidence": "scripts/regions/build_sinnoh_twinleaf_events.py"
+      },
+      {
+        "id": "I05",
+        "name": "Fixtures e regressões Python/Ruby para isolamento de saves, scripts permitidos e Pokédex",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_twinleaf_events.py"
+      },
+      {
+        "id": "I06",
+        "name": "Conferir nove mapas/links reais, sprites, posições e spawn na casa do jogador",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "I07",
+        "name": "Definir e validar três equipes PBS autorais de Barry e recursos locais de sprites",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "I08",
+        "name": "Integrar piloto isolado e testar Game.exe/Android com save/load e passagens reais",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "runtime_test": "tests/sinnoh_pilot_runtime.rb",
+    "documentation": "docs/SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md",
+    "native_verified": false,
+    "assets_verified": false,
+    "not_playable": true
   }
 }
