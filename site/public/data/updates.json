@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "95936eb097cf283cb4bb0bb5a34d2c2ccff3d622",
+      "date": "2026-11-14T18:59:20-03:00",
+      "title": "ci(kanto): verificar sprite CutTree apos interacao bloqueada",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "50f93e930970d3327e77844de57b4e86348ae8ef",
+      "date": "2026-11-14T18:59:09-03:00",
+      "title": "test(kanto): reproduzir sprite de toco apos Cut bloqueado e animacao no sucesso",
+      "category": "Testes"
+    },
+    {
       "sha": "ea5f3a8e9d20a54e8b07a09c3dfa08d056112580",
       "date": "2026-11-14T18:58:28-03:00",
       "title": "fix(kanto): preservar quadro original da arvore Cut ate o corte autorizado",
