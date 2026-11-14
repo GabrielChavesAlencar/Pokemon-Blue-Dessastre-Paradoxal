@@ -126,6 +126,7 @@ def audit(root: Path = ROOT) -> dict:
                 "area": record["area"],
                 "catalog_locations": [loc["name"] for loc in matches],
                 "reference_species_count": len(record["reference_species"]),
+                "static_or_scripted_encounters_unverified": record.get("special_encounters", []),
                 "reference_species_not_in_catalog": missing,
                 "status": (
                     "NO_GAMEPLAY_CATALOG" if not matches
