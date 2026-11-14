@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f3868a94c80818f80f07e06aff18a6a84fbcef2b",
+      "date": "2026-11-13T23:48:13-03:00",
+      "title": "fix(regions): normalize map subtitles before Unicode folding",
+      "category": "Correções"
+    },
+    {
       "sha": "c66b332a754a0fecabb941ec2a06ac92a1c3dbf5",
       "date": "2026-11-13T23:46:36-03:00",
       "title": "docs(regions): specify safe integration of trainers gyms and wild habitats from four walkthroughs",
