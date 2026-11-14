@@ -123,34 +123,43 @@ Dir.mktmpdir("blue-title-root-") do |root|
   File.write(File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
   File.write(File.join(root, "scripts/regions/pilot.py"), "# pilot")
   Dir.chdir(game) do
-    files = BlueKantoTitle.launcher
-    require_check(files == [File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), root],
-                  "Pilot launcher escaped the project root")
-    require_check(BlueKantoTitle.johto_launcher.nil?, "Johto must not reuse Kanto launcher")
-    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh must not reuse Kanto launcher")
-    File.write(File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
-    File.write(File.join(root, "scripts/regions/pilot_johto.py"), "# isolated Johto pilot")
-    require_check(BlueKantoTitle.johto_launcher == [File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), root],
-                  "Johto launcher must use only its own project-owned pilot")
-    File.write(File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), "@echo off")
-    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh needs its own Python pilot, not only a BAT")
-    File.write(File.join(root, "scripts/regions/pilot_sinnoh.py"), "# isolated Sinnoh pilot")
-    require_check(BlueKantoTitle.sinnoh_launcher == [File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), root],
-                  "Sinnoh launcher must use only its project-owned pilot")
-    File.write("Sinnoh pilot.json", "{}")
-    require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh pilot may launch itself recursively")
-    File.delete("Sinnoh pilot.json")
-    hoenn = File.join(root, ".blue-work", "hoenn-pilot")
-    FileUtils.mkdir_p(File.join(hoenn, "Data"))
-    File.write(File.join(hoenn, "Game.exe"), "pilot")
-    File.write(File.join(hoenn, "Hoenn pilot.json"), "{}")
-    File.write(File.join(hoenn, "Data/blue-hoenn-pilot.txt"), "BLUE_HOENN_PILOT_V1")
     previous_profile = ENV.delete("USERPROFILE")
     begin
+      files = BlueKantoTitle.launcher
+      require_check(files == [File.join(root, "KANTO_JOGAR_EXPERIMENTAL.bat"), root],
+                    "Pilot launcher escaped the project root")
+      require_check(BlueKantoTitle.johto_launcher.nil?, "Johto must not reuse Kanto launcher")
+      require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh must not reuse Kanto launcher")
+      File.write(File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), "@echo off")
+      File.write(File.join(root, "scripts/regions/pilot_johto.py"), "# isolated Johto pilot")
+      require_check(BlueKantoTitle.johto_launcher == [File.join(root, "JOHTO_JOGAR_EXPERIMENTAL.bat"), root],
+                    "Johto launcher must use only its own project-owned pilot")
+      File.write(File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), "@echo off")
+      require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh needs its own Python pilot, not only a BAT")
+      File.write(File.join(root, "scripts/regions/pilot_sinnoh.py"), "# isolated Sinnoh pilot")
+      require_check(BlueKantoTitle.sinnoh_launcher == [File.join(root, "SINNOH_JOGAR_EXPERIMENTAL.bat"), root],
+                    "Sinnoh launcher must use only its project-owned pilot")
+      File.write("Sinnoh pilot.json", "{}")
+      require_check(BlueKantoTitle.sinnoh_launcher.nil?, "Sinnoh pilot may launch itself recursively")
+      File.delete("Sinnoh pilot.json")
+      hoenn = File.join(root, ".blue-work", "hoenn-pilot")
+      FileUtils.mkdir_p(File.join(hoenn, "Data"))
+      File.write(File.join(hoenn, "Game.exe"), "pilot")
+      File.write(File.join(hoenn, "Hoenn pilot.json"), "{}")
+      File.write(File.join(hoenn, "Data/blue-hoenn-pilot.txt"), "BLUE_HOENN_PILOT_V1")
       require_check(BlueKantoTitle.hoenn_launcher.nil?, "Hoenn needs compiled game data")
       File.write(File.join(hoenn, "Data/blue-hoenn-compiled.txt"), "compiled")
       require_check(BlueKantoTitle.hoenn_launcher == [File.join(hoenn, "Game.exe"), hoenn],
                     "Hoenn must use its own compiled pilot")
+      [["johto", "Johto", "blue-johto-qa-compiled.txt"], ["sinnoh", "Sinnoh", "blue-sinnoh-compiled.txt"]].each do |key, label, stamp|
+        pilot = File.join(root, ".blue-work", "#{key}-pilot")
+        FileUtils.mkdir_p(File.join(pilot, "Data"))
+        File.write(File.join(pilot, "Game.exe"), "pilot")
+        File.write(File.join(pilot, "#{label} pilot.json"), "{}")
+        File.write(File.join(pilot, "Data", stamp), "compiled")
+        require_check(BlueKantoTitle.public_send("#{key}_launcher") == [File.join(pilot, "Game.exe"), pilot],
+                      "#{label} must open its compiled copy before looking for a BAT")
+      end
       Dir.chdir(hoenn) do
         require_check(BlueKantoTitle.hoenn_launcher.nil?, "Hoenn may launch itself recursively")
         require_check(BlueKantoTitle.command_order(original, true) == [0, 1, 2, 3],

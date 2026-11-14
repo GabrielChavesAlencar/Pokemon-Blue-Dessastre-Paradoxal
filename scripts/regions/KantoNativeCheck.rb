@@ -72,6 +72,7 @@ module KantoNativeCheck
 
     # Supply the choice and battle results so the compiler can run without a user.
     Object.send(:define_method, :pbMessage) { |*args| args[1].is_a?(Array) ? 0 : nil }
+    Object.send(:define_method, :pbConfirmMessage) { |*args| true }
     battle_calls = []
     losses_remaining = { "Doug" => 1, "Erika" => 1, "Koga" => 1, "Giovanni" => 1, "Sabrina" => 1, "Blaine" => 1 }
     TrainerBattle.define_singleton_method(:start) do |type, name, version = 0|
@@ -84,7 +85,7 @@ module KantoNativeCheck
         !!data
       end
     end
-    BlueKantoPilot.choose_starter
+    BlueKantoPilot.choose_starter_ball(:BULBASAUR)
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.

@@ -368,7 +368,10 @@ def native_compile_boot(blob: bytes) -> bytes:
     hook = """    if File.file?('Johto pilot.json') && File.file?('Data/blue-johto-qa-compile-request.txt')
       $blue_johto_qa_compile = true
       $DEBUG = true
-      File.delete('Data/trainers.dat') if File.file?('Data/trainers.dat')
+      %w[PluginScripts.rxdata trainers.dat].each do |name|
+        path = "Data/#{name}"
+        File.delete(path) if File.file?(path)
+      end
       Object.send(:define_method, :pbPrintException) do |error|
         File.write('Data/blue-johto-qa-compile-error.txt', error.full_message)
         exit! 1
@@ -384,6 +387,19 @@ def native_compile_boot(blob: bytes) -> bytes:
         falkner = (0..1).all? { |v| GameData::Trainer.exists?(:BLUE_JOHTO_FALKNER, "Falkner", v) }
         raise 'Johto QA: Falkner PBS ausente' unless falkner
         raise 'Johto QA: rotas sem encontros' unless (625..627).all? { |id| GameData::Encounter.exists?(id, 0) }
+        routes = [[:YOUNGSTER, "Johto Mikey"], [:YOUNGSTER, "Johto Joey"],
+                  [:BUGCATCHER, "Johto Don"], [:BUGCATCHER, "Johto Wade"],
+                  [:YOUNGSTER, "Johto Ian"]]
+        tower = [[:BLUE_JOHTO_SAGE, "Nico"], [:BLUE_JOHTO_SAGE, "Troy"], [:BLUE_JOHTO_ELDER, "Li"]]
+        unless (routes + tower).all? { |type, name| (0..1).all? { |v| GameData::Trainer.exists?(type, name, v) } }
+          raise 'Johto QA: equipes de rota ou Torre Sprout ausentes'
+        end
+        # These markers activate trainer battles only inside this compiled QA copy.
+        if File.file?("Johto pilot.json") && File.file?("Data/blue-johto-qa-start.txt")
+          File.write("Data/blue-johto-rival-ready.txt", "BLUE_JOHTO_RIVAL_V1_READY")
+          File.write("Data/blue-johto-routes-ready.txt", "BLUE_JOHTO_ROUTES10_TESTED_READY")
+          File.write("Data/blue-johto-violet-ready.txt", "BLUE_JOHTO_VIOLET_V1_READY")
+        end
         File.write('Data/blue-johto-qa-compiled.txt', File.read('Data/blue-johto-qa-compile-request.txt'))
         File.delete('Data/blue-johto-qa-compile-request.txt')
       rescue StandardError => error
@@ -455,6 +471,7 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
     files["Data/System.rxdata"] = serialize(system, SYSTEM_CLASSES)
     files["Data/Scripts.rxdata"] = native_compile_boot((base / "Data/Scripts.rxdata").read_bytes())
     files["Data/blue-johto-qa-compile-request.txt"] = (bundle_hash + "\n").encode("ascii")
+    files["Data/blue-johto-qa-start.txt"] = ("BLUE_JOHTO_QA_START_V1," + ",".join(map(str, start)) + "\n").encode("ascii")
     runtime = (*RUNTIME, "JohtoPilotStart.rb")
     files[f"{PLUGIN}/Boot.rb"] = b"\n".join(regular(root / "scripts/regions" / name).read_bytes()
                                              for name in runtime)

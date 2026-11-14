@@ -479,6 +479,74 @@ def oak_escort(event_id, lab):
     ])
 
 
+def update_oak_lab(events, pallet, ball_sprite):
+    """Install the lab scenes on a compiled or newly generated Pallet map."""
+    def replace_event(event_id, operations, trigger=None):
+        event = events[event_id]
+        page = event.attrs["@pages"][0].attrs
+        events[event_id] = new_event(
+            event, operations, page["@trigger"] if trigger is None else trigger,
+            page["@graphic"].attrs["@character_name"])
+        return events[event_id]
+
+    def hidden_page(event):
+        page = copy.deepcopy(event.attrs["@pages"][0])
+        page.attrs["@condition"].attrs.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+        page.attrs["@graphic"].attrs.update({"@character_name": b"", "@tile_id": 0})
+        page.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
+        event.attrs["@pages"].append(page)
+
+    warp = extract_warps(events[1], {pallet: pallet})
+    if warp is None:
+        raise ValueError("Missing Oak laboratory exit")
+    replace_event(1, [warp], 1)
+    replace_event(14, [command(355, b"BlueKantoPilot.rival_hint")], 0)
+    replace_event(15, [command(355, b"BlueKantoPilot.choose_starter")], 0)
+
+    oak = copy.deepcopy(events[15])
+    oak.attrs.update({"@id": 17, "@name": b"Kanto Escort Oak", "@x": 6, "@y": 11})
+    oak = new_event(oak, [], 0, oak.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"])
+    oak.attrs["@pages"][0].attrs["@through"] = True
+    hidden_page(oak)
+    events[17] = oak
+    intro = copy.deepcopy(events[1])
+    intro.attrs.update({"@id": 28, "@name": b"Kanto Lab Escort", "@x": 6, "@y": 12})
+    intro = new_event(intro, if_scene(b"BlueKantoPilot.lab_escort_pending?", [
+        move_actor(17, *([4] * 6), 16),
+        move_actor(-1, *([4] * 6), 16),
+        command(210, indent=1),
+        command(355, b"BlueKantoPilot.choose_starter", indent=1),
+    ]) + [command(355, b"BlueKantoPilot.hide_escort_oak")], 3, b"")
+    intro.attrs["@pages"][0].attrs["@through"] = True
+    # Complete the autorun after the first visit to the entrance.
+    intro.attrs["@pages"][0].attrs["@list"][-1:-1] = [command(123, b"A", 0)]
+    hidden_page(intro)
+    events[28] = intro
+
+    for event_id, x, species in ((18, 8, "BULBASAUR"), (19, 9, "SQUIRTLE"), (20, 10, "CHARMANDER")):
+        event = copy.deepcopy(events[15])
+        event.attrs.update({"@id": event_id, "@name": f"Kanto Starter Ball {species}".encode(),
+                            "@x": x, "@y": 4})
+        event = new_event(event, [command(355, f"BlueKantoPilot.choose_starter_ball(:{species})".encode())],
+                          0, ball_sprite)
+        hidden_page(event)
+        events[event_id] = event
+
+    for x in (5, 6, 7):
+        event_id = 30 + x
+        trigger = copy.deepcopy(events[1])
+        trigger.attrs.update({"@id": event_id, "@name": b"Kanto Rival Line", "@x": x, "@y": 8})
+        right = x - 5
+        events[event_id] = new_event(trigger, if_scene(b"BlueKantoPilot.rival_pending?", [
+            move_actor(-1, 16),
+            move_actor(14, *([3] * right), 1, 1, 1, 16),
+            command(210, indent=1),
+            command(355, b"BlueKantoPilot.rival", indent=1),
+            move_actor(14, 4, 4, 4, *([2] * right), 16),
+            command(210, indent=1),
+        ]), 1, b"")
+
+
 def find_shopkeeper(events):
     for event_id, event in events.items():
         for page in event.attrs["@pages"]:
@@ -898,15 +966,7 @@ def install_events(source, target, mapping):
                 warp = extract_warps(event, mapping)
                 if warp is None:
                     raise ValueError("Missing Oak laboratory exit")
-                challenge = if_scene(b"BlueKantoPilot.rival_pending?", [
-                    move_actor(-1, 19),
-                    move_actor(14, 3, *([1] * 8), 16),
-                    command(210, indent=1),
-                    command(355, b"BlueKantoPilot.rival", indent=1),
-                    move_actor(14, *([4] * 8), 2, 16),
-                    command(210, indent=1),
-                ])
-                selected[event_id] = new_event(event, [*challenge, warp], 1, b"")
+                selected[event_id] = new_event(event, [warp], 1, b"")
                 continue
             if original == 7 and event_id == 4:
                 warp = extract_warps(event, mapping)
@@ -951,6 +1011,8 @@ def install_events(source, target, mapping):
             profile.attrs["@pages"][0].attrs["@through"] = True
             profile.attrs["@pages"].append(closed)
             selected[profile_id] = profile
+        if original == 6:
+            update_oak_lab(selected, mapping[5], actor(events[18]))
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
 

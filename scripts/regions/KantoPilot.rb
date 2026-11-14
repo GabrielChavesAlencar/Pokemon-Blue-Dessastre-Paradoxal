@@ -62,17 +62,24 @@ module BlueKantoPilot
       end
       return
     end
-    names = STARTERS.map { |id| GameData::Species.get(id).name }
-    choice = pbMessage(_INTL("Oak: Qual Pokémon vai viajar com você?"), names + [_INTL("Voltar")], 4)
-    return unless choice && choice.between?(0, STARTERS.length - 1)
-    species = STARTERS[choice]
+    pbMessage(_INTL("Oak: Escolha uma das três Poké Bolas sobre a mesa."))
+  end
+
+  def self.choose_starter_ball(species)
+    return if starter || !STARTERS.include?(species)
+    name = GameData::Species.get(species).name
+    return unless pbConfirmMessage(_INTL("Escolher {1} como seu parceiro?", name))
     return unless pbAddPokemonSilent(species, 5)
     progress["pilot_starter"] = species.to_s
+    [18, 19, 20].each do |id|
+      $game_self_switches[[$game_map.map_id, id, "A"]] = true
+      $game_map.events[id]&.refresh
+    end
     BlueMusic.kanto_me_play("obtained_pokemon")
     $bag.add(:POKEBALL, 5)
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
-    pbMessage(_INTL("Oak: {1} escolheu você! Leve estas Poké Bolas com você.", names[choice]))
+    pbMessage(_INTL("Oak: {1} escolheu você! Leve estas Poké Bolas com você.", name))
   end
 
   # A safe, local story step for the first Pallet -> Viridian -> Pallet
@@ -96,6 +103,24 @@ module BlueKantoPilot
 
   def self.rival_pending?
     starter && !rival_done? && $player.able_pokemon_count > 0
+  end
+
+  def self.lab_escort_pending?
+    !starter && !progress["pilot_oak_lab_seen"] && ($game_player.x == 6 && $game_player.y == 12)
+  end
+
+  def self.hide_escort_oak
+    progress["pilot_oak_lab_seen"] = true
+    $game_self_switches[[$game_map.map_id, 17, "A"]] = true
+    $game_map.events[17]&.refresh
+  end
+
+  def self.rival_hint
+    if rival_done?
+      pbMessage(_INTL("Gary: Continue treinando. Nossa revanche fica para depois!"))
+    else
+      pbMessage(_INTL("Gary: Quero ver qual Pokémon você vai escolher."))
+    end
   end
 
   def self.rival

@@ -2,6 +2,8 @@
 
 module BlueHoennPilot
   STARTERS = [:TREECKO, :TORCHIC, :MUDKIP].freeze
+  WILD_THEME = "BLUE_HOENN_Wild".freeze
+  VICTORY_THEME = "BLUE_HOENN_WildVictory".freeze
   MARKER = "Data/blue-hoenn-pilot.txt".freeze
 
   def self.metadata
@@ -48,9 +50,56 @@ module BlueHoennPilot
     region["hoenn_pilot"] ||= {}
   end
 
+  def self.choose_profile
+    progress = state
+    return unless progress && progress["profile_pending"]
+    pbCharacterSelect
+    $game_player.refresh_charset
+    $game_player.transparent = false
+    progress.delete("profile_pending")
+  end
+
+  def self.clock
+    progress = state
+    return unless progress && !progress["clock_set"]
+    now = pbGetTimeNow
+    pbMessage(_INTL("Você ajustou o relógio para {1}.", now.strftime("%H:%M")))
+    progress["clock_set"] = true
+  end
+
   def self.mother
-    return unless state
-    pbMessage(_INTL("Mãe: Bem-vindo a Littleroot! O Professor Birch espera por você no laboratório, ao sul da cidade."))
+    progress = state
+    return unless progress
+    if !progress["clock_set"]
+      pbMessage(_INTL("Mãe: Chegamos a Littleroot! Suba para acertar o relógio do seu quarto."))
+    else
+      pbMessage(_INTL("Mãe: O Professor Birch saiu para a Rota 101. Procure por ele ao norte da cidade."))
+    end
+    progress["met_mother"] = true
+  end
+
+  def self.route_birch
+    progress = state
+    return unless progress
+    return if progress["starter"]
+    if !progress["met_mother"] || !progress["clock_set"]
+      pbMessage(_INTL("Ajuste o relógio no quarto e fale com sua mãe antes de sair de Littleroot."))
+      $game_player.moveto($game_player.x, 19) if $game_player.y == 18
+      return
+    end
+    pbMessage(_INTL("Birch: Socorro! Um Zigzagoon me encurralou. Pegue um Pokémon da minha bolsa!"))
+    names = STARTERS.map { |id| GameData::Species.get(id).name }
+    choice = pbMessage(_INTL("Qual Pokémon você vai usar?"), names + [_INTL("Voltar")], names.length)
+    unless choice && choice.between?(0, STARTERS.length - 1) &&
+           choose_starter(STARTERS[choice], rescue_birch: true)
+      $game_player.moveto($game_player.x, 19) if $game_player.y == 18
+      return
+    end
+    setBattleRule("canLose")
+    WildBattle.start(:ZIGZAGOON, 2)
+    progress["met_birch"] = true
+    $player.heal_party
+    pbMessage(_INTL("Birch: Obrigado pela ajuda! Fique com esse Pokémon e passe no meu laboratório."))
   end
 
   def self.birch
@@ -60,19 +109,19 @@ module BlueHoennPilot
     if progress["starter"]
       pbMessage(_INTL("Birch: Siga ao norte pela Rota 101 para chegar a Oldale. Você pode treinar na grama pelo caminho."))
     else
-      pbMessage(_INTL("Birch: Escolha um parceiro na bancada. Da esquerda para a direita: Treecko, Torchic e Mudkip."))
+      pbMessage(_INTL("Birch está pesquisando os Pokémon da Rota 101."))
     end
   end
 
-  def self.choose_starter(species)
+  def self.choose_starter(species, rescue_birch: false)
     progress = state
     return unless progress && STARTERS.include?(species)
     if progress["starter"]
       pbMessage(_INTL("Birch: Você já escolheu seu parceiro."))
       return
     end
-    unless progress["met_birch"]
-      pbMessage(_INTL("Fale com o Professor Birch antes de escolher."))
+    unless rescue_birch
+      pbMessage(_INTL("Procure o Professor Birch na Rota 101."))
       return
     end
     name = GameData::Species.get(species).name
@@ -81,6 +130,7 @@ module BlueHoennPilot
     progress["starter"] = species.to_s
     $bag.add(:POKEBALL, 5)
     pbMessage(_INTL("Birch: {1} vai com você. Leve também cinco Poké Bolas para suas primeiras capturas.", name))
+    true
   end
 
   def self.heal
@@ -93,11 +143,32 @@ module BlueHoennPilot
     pbMessage(_INTL("Enfermeira: Seus Pokémon estão recuperados. Boa viagem!"))
   end
 
+  module Music
+    private
+
+    def pbGetWildBattleBGM(*args)
+      if BlueHoennPilot.state && !$PokemonGlobal.nextBattleBGM &&
+         File.file?("Audio/BGM/#{BlueHoennPilot::WILD_THEME}.ogg")
+        return pbResolveAudioFile(BlueHoennPilot::WILD_THEME)
+      end
+      super
+    end
+
+    def pbGetWildVictoryBGM(*args)
+      if BlueHoennPilot.state && !$PokemonGlobal.nextBattleVictoryBGM &&
+         File.file?("Audio/BGM/#{BlueHoennPilot::VICTORY_THEME}.ogg")
+        return pbResolveAudioFile("../../Audio/BGM/" + BlueHoennPilot::VICTORY_THEME)
+      end
+      super
+    end
+  end
+
   module Start
     def select_and_prepare
       return super unless @new_game && $PokemonGlobal && File.file?(BlueHoennPilot::MARKER)
       start, = BlueHoennPilot.metadata
       $PokemonGlobal.blue_regions = BlueRegions.new_state("HOENN")
+      $PokemonGlobal.blue_regions["hoenn_pilot"] = { "profile_pending" => true }
       BlueStory.choose_mode(:story)
       BlueCampaign.begin_journey(false)
       $PokemonGlobal.blue_traditional_starters = true
@@ -110,4 +181,7 @@ module BlueHoennPilot
   end
 
   BlueRegionStart.singleton_class.prepend(Start)
+  EventHandlers.add(:on_enter_map, :blue_hoenn_music, proc do |_old_map|
+    Object.prepend(Music) unless Object.ancestors.include?(Music)
+  end)
 end

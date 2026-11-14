@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -16,7 +17,7 @@ from collections import deque
 from pathlib import Path
 
 from build_johto_elm_lab_v1 import table_values
-from build_johto_events import EVENT_CLASSES, event_page, ruby
+from build_johto_events import EVENT_CLASSES, command, event_page, ruby
 from compile_johto_connections import merge_pbs
 from johto_qa import SAVE, SYSTEM_CLASSES, Marshal, RubyString, dump, json_bytes, regular, safe_path
 from server.ruby_marshal import RubyObject, loads, text
@@ -41,6 +42,16 @@ PEOPLE = (
     (11, 9, 5, "Mudkip", "Object_Ball", "BlueHoennPilot.choose_starter(:MUDKIP)"),
     (13, 9, 6, "Enfermeira", "NPC_DPP_PokeCenter_Nurse", "BlueHoennPilot.heal"),
 )
+BGM = {
+    "Littleroot": "City - Littleroot (Littleroot Town)",
+    "Birch": "Location - Birch Pokemon Lab (Birch Pokemon Lab)",
+    "Route101": "Route 101 (Route 101)",
+    "Oldale": "City - Oldale (Oldale Town)",
+    "Center": "Location - Pokemon Center (Pokemon Center)",
+    "Wild": "Battle Music - Wild Pokemon (Battle! (Wild Pokemon))",
+    "WildVictory": "Battle Victory - Wild Pokemon (Victory! (Wild Pokemon))",
+}
+MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101", 12: "Oldale", 13: "Center"}
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"))
 START = (8, 25, 6)
 PROFILE = "Hoenn Piloto"
@@ -138,7 +149,7 @@ def validate_geometry(maps, tiles):
     reachable(START, required, tiles, maps, edges, blocked)
 
 
-def startup(blob: bytes) -> bytes:
+def startup(blob: bytes, *, region="hoenn", module="BlueHoennPilot") -> bytes:
     rows = Marshal(blob).read()
     mains = [row for row in rows if row[1] == b"Main"]
     if len(mains) != 1:
@@ -172,6 +183,8 @@ def startup(blob: bytes) -> bytes:
       exit
     end
 """
+    before = before.replace("blue-hoenn-", f"blue-{region}-")
+    after = after.replace("blue-hoenn-", f"blue-{region}-").replace("BlueHoennPilot", module)
     source = source.replace(run_plugins, before + run_plugins).replace(initialize, after + initialize)
     row[2] = RubyString(zlib.compress(source.encode("utf-8")))
     return b"\x04\x08" + dump(rows)
@@ -183,6 +196,25 @@ def append_event(map_data, name, x, y, page):
         raise ValueError(f"Eventos Hoenn se sobrepõem em {(x, y)}")
     n = len(events) + 1
     events[n] = ruby("RPG::Event", id=n, name=name.encode("ascii"), x=x, y=y, pages=[page])
+
+
+def add_opening(maps):
+    # Trigger profile once on a new save. The self switch also works for
+    # existing saves with no pending profile.
+    profile = event_page(script="BlueHoennPilot.choose_profile")
+    profile.attrs.update({"@trigger": 3, "@through": True})
+    profile.attrs["@list"].insert(-1, command(123, b"A", 0))
+    append_event(maps[8], "HN_PlayerProfile", 25, 6, profile)
+    off = copy.deepcopy(profile)
+    off.attrs["@condition"].attrs.update({"@self_switch_valid": True, "@self_switch_ch": b"A"})
+    off.attrs.update({"@trigger": 0, "@list": [command(0)]})
+    maps[8].attrs["@events"][len(maps[8].attrs["@events"])].attrs["@pages"].append(off)
+    append_event(maps[8], "HN_Clock", 26, 3, event_page(script="BlueHoennPilot.clock"))
+    # These two cells are the complete width of the northbound Rota 101
+    # entrance. The invisible player-touch event starts the rescue scene.
+    for x in (10, 11):
+        page = event_page(script="BlueHoennPilot.route_birch", touch=True)
+        append_event(maps[101], f"HN_BirchRescue_{x}", x, 18, page)
 
 
 def build_overlay(game, source):
@@ -276,6 +308,18 @@ def build_overlay(game, source):
             raise ValueError(f"Sprite nativo inválido: {sprite}")
         append_event(maps[mid], f"HN_{name}", x, y, event_page(script=handler, sprite=sprite))
 
+    add_opening(maps)
+    for label, track in BGM.items():
+        source_path = f"Audio/BGM/ORAS {track}.ogg"
+        blob = source.read(source_path)
+        if not blob.startswith(b"OggS"):
+            raise ValueError(f"Áudio inválido: {source_path}")
+        overlay[f"Audio/BGM/BLUE_HOENN_{label}.ogg"] = blob
+    for old, label in MAP_BGM.items():
+        maps[old].attrs["@autoplay_bgm"] = True
+        maps[old].attrs["@bgm"] = ruby("RPG::AudioFile", name=f"BLUE_HOENN_{label}".encode(),
+                                     volume=80, pitch=100)
+
     order = max(info.attrs.get("@order", 0) for info in native_infos.values())
     for index, (old, name) in enumerate(SOURCE_MAPS.items(), 1):
         native_infos[ids[old]] = ruby("RPG::MapInfo", name=name.encode("utf-8"),
@@ -308,6 +352,9 @@ def build_overlay(game, source):
         b"Requires = Blue Battle Presentation and Story\nScripts = HoennPilot.rb\n"
     )
     overlay[f"{PLUGIN}/HoennPilot.rb"] = regular(ROOT / "scripts/regions/HoennPilot.rb").read_bytes()
+    music = "Plugins/ZZZZ Blue Music/BlueMusic.rb"
+    if (game / music).is_file():
+        overlay[music] = regular(ROOT / "scripts/music/BlueMusic.rb").read_bytes()
     ini, count = re.subn(r"(?m)^Title=[^\r\n]*", "Title=Hoenn Piloto",
                          regular(game / "Game.ini").read_text("utf-8-sig"))
     if count != 1:

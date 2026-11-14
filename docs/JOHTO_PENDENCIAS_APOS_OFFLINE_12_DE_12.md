@@ -171,9 +171,10 @@ python scripts/regions/johto_qa.py --rollback
 
 Use `--game` para indicar outra base Decades em modo de leitura e `--bundle` para indicar o ZIP privado compatível. O rollback arquiva a cópia de QA inteira em `.blue-work`; uma execução nova recebe seu próprio perfil de save. Se o ZIP foi gerado sobre outra base, regenere a prévia com os MapInfos/Tilesets da base escolhida em vez de forçar a cópia. Nenhum desses comandos abre a engine.
 
-Quando a montagem real passar, a **primeira abertura** do Game.exe isolado solicita compilação nativa e encerra depois de registrar `Data/blue-johto-qa-compiled.txt` (conteúdo: SHA-256 do pacote) ou `Data/blue-johto-qa-compile-error.txt`. Um erro retém a solicitação para uma nova tentativa. Este registro é para diagnóstico; o instalador não cria marcadores de batalha pronta ou liberação e não habilita `Testar Johto` na campanha.
+Na primeira abertura, a cópia isolada solicita compilação nativa e registra o SHA-256 do pacote em `Data/blue-johto-qa-compiled.txt`. Se houver erro, escreve `Data/blue-johto-qa-compile-error.txt` e retém a solicitação. O menu **Testar Johto** pode abrir essa cópia compilada. A entrada na campanha normal continua condicionada ao aceite regional.
 
-**Evidência e bloqueio atual:** o ZIP privado original da etapa 12 foi recuperado e conferido pelo SHA-256 publicado. O instalador reconhece o formato original e montou uma cópia separada usando a base Decades compatível anterior à integração de Kanto. A conferência dos arquivos aprovou 82 mapas, 32 eventos, 44 conexões e 21 equipes. A execução automatizada do Game.exe encontrou `Error initializing PhysFS` e não gerou o comprovante de compilação. A compilação nativa e os testes de portas, batalhas e saves seguem pendentes. **Jogáveis: 0/13. Testadas no Game.exe: 0/13.**
+**Evidência:** o ZIP privado da etapa 12 passou na conferência de 82 mapas, 32 eventos, 44 conexões e 21 equipes. A compilação nativa passou no Windows. Uma verificação no Game.exe iniciou uma nova partida no mapa 674, coordenadas (6, 7), identificou a região como Johto e carregou os dados de Silver. Portas, batalhas completas e saves ainda aguardam o percurso de QA. Nenhuma fase completa foi aprovada.
+
 
 ### Documentos que devem continuar sendo a referência
 

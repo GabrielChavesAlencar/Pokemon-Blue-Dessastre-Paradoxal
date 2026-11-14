@@ -106,7 +106,7 @@ def inspect(game: Path) -> dict:
         pallet_event = maps[mapping[5]].attrs["@events"][eid]
         if pallet_event.attrs["@pages"][0].attrs["@trigger"] != 1:
             raise ValueError(f"Pallet residence/lab door {eid} must trigger on touch")
-    for source, event_id, actor_id in ((5, 11, 12), (5, 13, 12), (6, 1, 14), (7, 4, 13)):
+    for source, event_id, actor_id in ((5, 11, 12), (5, 13, 12), (6, 35, 14), (6, 36, 14), (6, 37, 14), (7, 4, 13)):
         event = maps[mapping[source]].attrs["@events"][event_id]
         page = event.attrs["@pages"][0].attrs
         codes = [op.attrs for op in page["@list"]]
@@ -534,13 +534,19 @@ def inspect(game: Path) -> dict:
     anchors = {
         (5, 11): "BlueKantoPilot.oak_invitation",
         (5, 13): "BlueKantoPilot.oak_invitation",
-        (6, 1): "BlueKantoPilot.rival",
+        (6, 18): "BlueKantoPilot.choose_starter_ball(:BULBASAUR)",
+        (6, 19): "BlueKantoPilot.choose_starter_ball(:SQUIRTLE)",
+        (6, 20): "BlueKantoPilot.choose_starter_ball(:CHARMANDER)",
+        (6, 28): "BlueKantoPilot.hide_escort_oak",
+        (6, 35): "BlueKantoPilot.rival",
+        (6, 36): "BlueKantoPilot.rival",
+        (6, 37): "BlueKantoPilot.rival",
         (7, 4): "BlueKantoPilot.meet_mom",
         (7, 14): "BlueKantoPilot.choose_profile",
         (6, 15): "BlueKantoPilot.choose_starter",
         (10, 1): "BlueKantoPilot.viridian_gym_gate",
         (13, 16): "BlueKantoPilot.viridian_gym_guide",
-        (6, 14): "BlueKantoPilot.rival",
+        (6, 14): "BlueKantoPilot.rival_hint",
         (11, 2): "BlueKantoPilot.heal",
         (26, 2): "BlueKantoPilot.heal",
         (34, 2): "BlueKantoPilot.heal",

@@ -48,6 +48,8 @@ module BlueKantoTitle
     game_dir = File.expand_path(Dir.pwd)
     return nil unless File.file?(File.join(game_dir, "Game.exe"))
     return nil if pilot?
+    direct = regional_pilot("johto", "Johto", "JohtoQA", "blue-johto-qa-compiled.txt")
+    return direct if direct
     script = File.expand_path("../" + JOHTO_LAUNCHER, game_dir)
     root = File.dirname(script)
     return nil unless File.file?(script) && File.file?(File.join(root, "scripts/regions/pilot_johto.py"))
@@ -60,6 +62,8 @@ module BlueKantoTitle
     game_dir = File.expand_path(Dir.pwd)
     return nil unless File.file?(File.join(game_dir, "Game.exe"))
     return nil if pilot?
+    direct = regional_pilot("sinnoh", "Sinnoh", "SinnohQA", "blue-sinnoh-compiled.txt")
+    return direct if direct
     script = File.expand_path("../" + SINNOH_LAUNCHER, game_dir)
     root = File.dirname(script)
     return nil unless File.file?(script) && File.file?(File.join(root, "scripts/regions/pilot_sinnoh.py"))
@@ -110,7 +114,11 @@ module BlueKantoTitle
     return false unless pbConfirmMessage(_INTL("Abrir o Johto experimental com saves separados? O menu principal será fechado."))
     script, root = target
     begin
-      pid = Process.spawn("cmd.exe", "/d", "/c", script, :chdir => root)
+      pid = if File.extname(script).casecmp?(".exe")
+              Process.spawn([script, script], :chdir => root)
+            else
+              Process.spawn("cmd.exe", "/d", "/c", script, :chdir => root)
+            end
       Process.detach(pid)
       true
     rescue SystemCallError, ArgumentError, NotImplementedError => error
@@ -119,25 +127,29 @@ module BlueKantoTitle
     end
   end
 
-  def self.hoenn_launcher
+  def self.regional_pilot(directory, region, desktop_folder, compiled)
     return nil if pilot? || !File.file?("Game.exe")
     game = File.expand_path(Dir.pwd)
-    candidates = [File.expand_path("../.blue-work/hoenn-pilot", game)]
+    candidates = [File.expand_path("../.blue-work/#{directory}-pilot", game)]
+    candidates << File.expand_path("../.blue-work/game-johto-qa", game) if region == "Johto"
     profile = ENV["USERPROFILE"]
     if profile && !profile.empty?
-      candidates << File.expand_path("Documents/Codex/HoennQA", profile)
+      candidates << File.expand_path("Documents/Codex/#{desktop_folder}", profile)
     end
     candidates.each do |folder|
       exe = File.join(folder, "Game.exe")
       next unless File.file?(exe) && File.realpath(folder) != File.realpath(game)
-      next unless File.file?(File.join(folder, "Hoenn pilot.json"))
-      next unless File.file?(File.join(folder, "Data", "blue-hoenn-pilot.txt"))
-      next unless File.file?(File.join(folder, "Data", "blue-hoenn-compiled.txt"))
+      next unless File.file?(File.join(folder, "#{region} pilot.json"))
+      next unless File.file?(File.join(folder, "Data", compiled))
       return [exe, folder]
     end
     nil
   rescue SystemCallError, ArgumentError
     nil
+  end
+
+  def self.hoenn_launcher
+    regional_pilot("hoenn", "Hoenn", "HoennQA", "blue-hoenn-compiled.txt")
   end
 
   def self.launch_hoenn
@@ -167,13 +179,17 @@ module BlueKantoTitle
     end
     target = sinnoh_launcher
     unless target
-      pbMessage(_INTL("Sinnoh ainda está em preparação. Nenhum piloto de mapas reais foi instalado; Decades, Kanto e Johto não foram alterados."))
+      pbMessage(_INTL("Sinnoh ainda não tem um piloto instalado. É preciso preparar os mapas de Twinleaf, Rota 201 e Sandgem antes de testar."))
       return false
     end
     return false unless pbConfirmMessage(_INTL("Abrir o Sinnoh experimental com saves separados? O menu principal será fechado."))
     script, root = target
     begin
-      pid = Process.spawn("cmd.exe", "/d", "/c", script, :chdir => root)
+      pid = if File.extname(script).casecmp?(".exe")
+              Process.spawn([script, script], :chdir => root)
+            else
+              Process.spawn("cmd.exe", "/d", "/c", script, :chdir => root)
+            end
       Process.detach(pid)
       true
     rescue SystemCallError, ArgumentError, NotImplementedError => error
