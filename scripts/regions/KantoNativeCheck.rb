@@ -129,6 +129,8 @@ module KantoNativeCheck
     # original seen/owned flags are shared between KantoDex and National.
     dexid = BlueKantoDex.index
     require!(dexid.is_a?(Integer), "KantoDex native manifest was not loaded")
+    require!(Settings::USE_CURRENT_REGION_DEX == false,
+             "Kanto pilot must show a selectable Dex menu, not only the current region")
     entries = pbAllRegionalSpecies(dexid)
     require!(entries.length == 151 && entries.first == :BULBASAUR && entries.last == :MEW,
              "Native KantoDex is not Bulbasaur #001 through Mew #151")
