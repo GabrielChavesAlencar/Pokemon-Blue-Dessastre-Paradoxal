@@ -12,13 +12,13 @@ export async function loadStrongestTeams(fetcher=fetch){
   }
   return cache;
 }
-const regions={KANTO:'Kanto',JOHTO:'Johto'};
+const regions={KANTO:'Kanto',JOHTO:'Johto',HOENN:'Hoenn',SINNOH:'Sinnoh'};
 const roles=[['gym','Líderes de ginásio · revanches'],['elite','Elite Four'],['champion','Campeões'],['extra','Desafios extras']];
 const sourceLink=db=>'<a class="text-link" href="'+esc(db.source.url)+'" target="_blank" rel="noopener noreferrer">Estudo completo dos times mais fortes '+icon('arrow')+'</a>';
 const scaling='<p class="data-note">Níveis dinâmicos: o jogo calcula o nível dos adversários usando o maior nível da equipe do jogador, a dificuldade e as insígnias/esmeraldas conquistadas. Este catálogo apresenta espécies históricas de referência, não revanches já implementadas.</p>';
 const sprites=(model,t)=>'<div class="regular-pokemon-strip">'+[...new Set(t.variants.flatMap(v=>v.species))].slice(0,9).map(id=>{const p=model.byId.get(id);return p?'<img src="'+esc(sprite(p))+'" loading="lazy" alt="'+esc(p.name)+'"/>':'<span>'+esc(id)+'</span>';}).join('')+'</div>';
 export function leagueIndex(model,db,requested='KANTO'){
-  const region=requested==='JOHTO'?'JOHTO':'KANTO';
+  const region=Object.hasOwn(regions,requested)?requested:'KANTO';
   const menu='<nav class="region-picker" aria-label="Liga por região">'+Object.entries(regions).map(([r,name])=>'<a class="filter-chip'+(r===region?' active':'')+'" href="/liga?regiao='+r.toLowerCase()+'"'+(r===region?' aria-current="page"':'')+'>'+name+'</a>').join('')+'</nav>';
   const groups=roles.map(([role,label])=>{
     const matches=db.teams.filter(t=>t.region===region&&t.role===role);
