@@ -1,27 +1,36 @@
-# Kanto — Correção do Centro Pokémon e da entrega de Oak (Viridian)
+# Kanto — Evento do pacote de Oak, Poké Mart e acesso à Rota 2
 
-**Escopo:** piloto isolado de Kanto e seu instalador; sem sobrescrever mapas, flags, áudio ou saves de Decades/Johto/Sinnoh.
+**Referência de sequência:** [Detonado FireRed/LeafGreen organizado](KANTO_DETONADO_FIRERED_LEAFGREEN_REFERENCIA_ORGANIZADA.md), seções 2.1 e 2.2. Este documento corrige o local do bloqueio da primeira versão do evento, sem importar scripts/flags de projetos externos.
 
-## Fluxo da primeira visita
+## A sequência correta
 
-1. Escolher o inicial no laboratório de Oak. A recompensa antecipada de cinco Poké Bolas foi removida (as duas Potions de partida permanecem).
-2. Entrar pela primeira vez no **Poké Mart de Viridian**. Um evento **Autorun** isolado, invisível e de uso único (self-switch A), faz o funcionário chamar o jogador, caminhar dois passos automaticamente e iniciar o diálogo. O pacote é persistido exclusivamente em `pilot_oak_parcel_received`, sem importar um item estranho ao catálogo do Decades.
-3. Voltar ao laboratório de Oak e conversar com ele. A música da cena de Oak é iniciada; após adicionar com sucesso **cinco Poké Bolas** à Bolsa, a Pokédex é habilitada e `pilot_oak_parcel_delivered` é gravado. Bolsa sem espaço: o evento não é concluído e pode ser tentado novamente.
-4. As entradas importadas que fazem **transferência para Viridian Forest** passam a consultar `BlueKantoPilot.forest_unlocked?`. Antes da entrega, exibem aviso e **não transferem**; depois, preservam as coordenadas e a direção originais.
-5. Centros Pokémon de Kanto chamam `BlueMusic.kanto_me_play("healed")` **após** curar e registrar o Centro. Decades mantém seus próprios eventos/áudio.
+1. Depois de obter o inicial e enfrentar o rival, o jogador chega a Viridian pela Rota 1.
+2. Ao atravessar a entrada do **Poké Mart de Viridian**, o evento único é preparado novamente caso um save antigo tenha marcado seu self-switch antes da entrega. O evento **Autorun** chama o jogador.
+3. O protagonista **caminha automaticamente até uma casa adjacente ao vendedor**, seguindo uma rota calculada com a passabilidade real do mapa; aguarda o movimento e inicia o diálogo do pacote. Não é necessário interagir manualmente nem o personagem atravessa prateleiras.
+4. Ao receber a encomenda, registra `pilot_oak_parcel_received`; nessa primeira entrega **a loja não abre compras**. Interações seguintes permitem compras normalmente.
+5. Em Pallet, Oak recebe o pacote, ativa Pokédex e concede **cinco Poké Bolas**. Registrar `pilot_oak_parcel_delivered` somente após conseguir dar a recompensa, impedindo duplicação e permitindo recuperar Bolsa cheia.
+6. O **bloqueio é a saída NORTE de Viridian City antes de entrar na Rota 2**, na conexão real `10 ↔ 18`, e não os túneis/portarias da Viridian Forest. A barreira usa eventos locais sólidos de `Player Touch` nas colunas exatas da conexão e páginas livres após a entrega. Os transfers entre portarias e Viridian Forest permanecem intactos.
+7. O Centro Pokémon de Kanto mantém sua vinheta `healed` e retorno à BGM.
 
-O Poké Mart continua vendendo itens normalmente após a cena. Interagir com o funcionário também recupera a entrega em saves antigos que não executaram o novo evento automático. As flags continuam locais à campanha Kanto; saves com a Boulder Badge local já conquistada mantêm o caminho aberto, evitando bloquear campanhas existentes.
+## Segurança e compatibilidade
 
-## Verificações e restrições
+- O mapeamento lê o arquivo `PBS/map_connections.txt` da fonte FRLG previamente auditada. Se a conexão `10↔18` não existir ou não for a conexão norte/sul, o gerador **falha** em vez de colocar barreira no mapa errado.
+- A barreira só acrescenta eventos no mapa **Viridian City**, sem trocar MapIDs, tilesets, encontros, música, Johto, Sinnoh ou saves de Decades.
+- A barreira fica sólida antes da entrega. Quando o jogador toca nela após a entrega, o self-switch A local abre a passagem; ao tentar novamente, atravessa normalmente.
+- A entrada normal do Mart rearma o autorun somente se o pacote ainda estiver pendente, recuperando saves anteriores em que era preciso conversar manualmente.
+- Atalhos do menu **Testes Kanto (experimental)** podem teleportar para além do bloqueio, propositalmente, apenas para QA; isso não conta como progressão.
+- O algoritmo de caminho limita a busca a 1024 casas; se não encontrar um percurso, o funcionário entrega o pacote à distância sem prender o jogo. Esta exceção deve ser revisada em teste de movimento real.
 
-- A nova cena é compilada a partir do verdadeiro NPC do Mart, sem usar gráficos ou scripts estrangeiros não auditados; no novo piloto deve haver uma página Autorun e uma segunda página vazia por self-switch A.
-- O bloqueio vale para **warps de entrada na floresta**; conexões externas ou atalhos explicitamente experimentais devem ser auditados manualmente. O menu de teletransporte de teste não representa progressão de história.
-- O movimento automático é uma rota curta de dois passos para cima, com proteção contra travamento; **confirmar no jogo gráfico** que o trajeto ficou natural com a geometria específica do Mart.
-- Save/reload: verificar pacote adquirido, sem Pokédex/bolas antes de Oak; depois de entregar, Pokédex e cinco Poké Bolas persistem sem duplicar, e a floresta libera.
-- Em saves que já receberam as cinco Poké Bolas **na versão antiga**, elas não são removidas automaticamente da Bolsa. A nova recompensa também será concedida ao concluir Oak; conferir caso a caso, sem apagar inventário.
-- `python -m unittest tests.test_kanto_parcel_story -v`
-- `python -m unittest discover -s tests -v`
-- `ruby -c scripts/regions/KantoPilot.rb`
-- A CI nativa de Kanto constrói `.blue-work/kanto-pilot` usando a fonte fixada e executa `KantoNativeCheck.rb`. A execução nativa automatizada não substitui teste visual/sonoro e verificação no JoiPlay.
+## Critérios de aceite
 
-**Aplicação:** alterações nos scripts-fonte não atualizam automaticamente um `Game.exe` ou APK já distribuído. Reconstruir o piloto/empacotamento Kanto com os comandos documentados em `KANTO_JOGAR_EXPERIMENTAL.bat` e `docs/ANDROID_PILOTOS_KANTO_JOHTO.md` e atualizar a instalação.
+- [ ] No primeiro ingresso normal no Mart, o NPC chama o personagem sem pressionar ação; animação conduz até o balcão e concede pacote apenas uma vez
+- [ ] O primeiro atendimento não abre uma tela de compra; segunda visita abre a loja
+- [ ] Antes de levar o pacote a Oak, não é possível sair de Viridian para a Rota 2, inclusive depois de salvar e recarregar
+- [ ] Após a entrega, atravessar a mesma saída para Rota 2 normalmente; as portarias/floresta não impõem bloqueio adicional
+- [ ] Verificar saves antigos, Bolsa cheia, Johto/Decades, áudio da cura, Windows e Android/JoiPlay
+- [ ] `python -m unittest tests.test_kanto_parcel_story -v`
+- [ ] `python -m unittest discover -s tests -v`
+- [ ] `ruby -c scripts/regions/KantoPilot.rb`
+- [ ] Verificação estrutural do piloto, CI Windows, e caminhada real; se a CI não puder validar o arquivo FRLG fixado pelo SHA, manter aceite visual como pendente
+
+**Instalação:** atualizar a fonte e reconstruir o piloto/versão Android. O executável já instalado não é modificado por alterações no GitHub.

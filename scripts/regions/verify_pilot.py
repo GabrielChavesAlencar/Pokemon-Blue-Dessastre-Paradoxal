@@ -155,6 +155,46 @@ def inspect(game: Path) -> dict:
             parcel_mart.append(event_id)
     if len(parcel_mart) != 1:
         raise ValueError(f"Expected one Viridian parcel shopkeeper: {parcel_mart}")
+    mart_events = maps[mapping[12]].attrs["@events"]
+    intro = [ev for ev in mart_events.values()
+             if text(ev.attrs["@name"]) == "Kanto Oak Parcel Intro"]
+    if len(intro) != 1:
+        raise ValueError("Viridian Mart must contain exactly one automatic parcel intro")
+    intro_page = intro[0].attrs["@pages"][0].attrs
+    scripts = [text(cmd.attrs["@parameters"][0]) for cmd in intro_page["@list"]
+               if cmd.attrs["@code"] in (355, 655) and cmd.attrs["@parameters"]]
+    if intro_page["@trigger"] != 3 or not any(
+            cmd.startswith("BlueKantoPilot.walk_to_viridian_clerk(") for cmd in scripts):
+        raise ValueError("Viridian Mart must automatically walk the player to the vendor")
+    entrance_scripts = [
+        text(op.attrs["@parameters"][0])
+        for event in maps[mapping[10]].attrs["@events"].values()
+        for page in event.attrs["@pages"]
+        for op in page.attrs["@list"]
+        if op.attrs["@code"] == 355 and op.attrs["@parameters"]
+    ]
+    if not any("BlueKantoPilot.prepare_viridian_mart_visit(" in script
+               for script in entrance_scripts):
+        raise ValueError("Viridian Mart door does not rearm pending parcel saves")
+    # Real exterior block is on City 10 -> Route 2 (18), NOT Forest Gate.
+    gates = [ev for ev in maps[mapping[10]].attrs["@events"].values()
+             if text(ev.attrs["@name"]) == "Kanto Viridian Route 2 Parcel Gate"]
+    if not gates or any(
+            ev.attrs["@y"] != 0 or
+            ev.attrs["@pages"][0].attrs["@trigger"] != 1 or
+            ev.attrs["@pages"][0].attrs["@through"] or
+            len(ev.attrs["@pages"]) != 2 or
+            not ev.attrs["@pages"][1].attrs["@through"]
+            for ev in gates):
+        raise ValueError("Viridian Route 2 must have solid north-border parcel gates")
+    for source_id in (19, 20):
+        for event in maps[mapping[source_id]].attrs["@events"].values():
+            scripts = [text(op.attrs["@parameters"][0])
+                       for pg in event.attrs["@pages"]
+                       for op in pg.attrs["@list"]
+                       if op.attrs["@code"] in (355, 655) and op.attrs["@parameters"]]
+            if any("forest_unlocked?" in x for x in scripts):
+                raise ValueError("Forest tunnel must not contain the Oak parcel gate")
 
 
     # Phase 09 gameplay nucleus: exact Celadon event whitelist.
