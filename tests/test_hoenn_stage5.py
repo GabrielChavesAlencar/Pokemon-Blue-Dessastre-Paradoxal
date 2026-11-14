@@ -111,10 +111,12 @@ class HoennStage5Tests(unittest.TestCase):
             self.assertTrue(ev.attrs["@pages"][1].attrs["@through"])
             self.assertTrue(ev.attrs["@pages"][1].attrs["@condition"].attrs["@self_switch_valid"])
 
-    def test_aqua_sprite_missing_fails_closed(self):
+    def test_missing_aqua_art_is_explicitly_unapproved_fallback(self):
         (self.game / "Graphics/Characters/NPC_RSE_AquaGrunt.png").unlink()
-        with self.assertRaisesRegex(ValueError, "Equipe Aqua"):
-            add_stage5_events(self.maps, self.game)
+        summary = add_stage5_events(self.maps, self.game)
+        self.assertTrue(summary["museum_aqua_sprite_placeholder"])
+        self.assertEqual(summary["museum_aqua_sprite"], "trainer_YOUNGSTER")
+        self.assertFalse(summary["gameplay_verified"])
 
     def test_event_overlap_aborts_before_install(self):
         from build_johto_events import ruby
