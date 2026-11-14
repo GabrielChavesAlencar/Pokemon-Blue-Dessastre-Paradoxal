@@ -61,9 +61,9 @@ def fixture(root: Path):
     write(game, "Audio/Pokemon/placeholder.txt", b"test audio")
     write(game, "Fonts/placeholder.txt", b"test font")
     write(game, "Graphics/placeholder.txt", b"test graphics")
-    write(game, "Plugins/ZZZZ Blue Battle Presentation and Story/RegionStart.rb",
+    write(game, "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb",
           b"# BlueRegionStart synthetic")
-    write(game, "Plugins/ZZZZ Blue Battle Presentation and Story/meta.txt",
+    write(game, "Plugins/ZZZZ Blue Story and Presentation/meta.txt",
           b"Name = Blue Battle Presentation and Story\n")
     write(game, "Data/File A.rxdata", b"MAIN SAVE SHOULD NOT COPY")
     write(game, "Saves/File A.rxdata", b"MAIN BACKUP SAVE")
@@ -227,10 +227,9 @@ class SinnohQAInstallTests(unittest.TestCase):
             shortcut.symlink_to(self.game, target_is_directory=True)
         except (OSError, NotImplementedError):
             self.skipTest("Symlink creation unavailable")
+        report, files, native = self.planned()
         with self.assertRaisesRegex(ValueError, "link simbólico"):
-            self.planned(token="0123456789ab") if False else (
-                install(self.root, self.game, shortcut / "qa",
-                        *self.planned()[0:3]))
+            install(self.root, self.game, shortcut / "qa", report, files, native)
 
     def test_rejects_extra_overlay_payload(self):
         (self.bundle / "test-extra.bin").write_bytes(b"bad")
