@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 try:
     from pilot import command, new_event, if_scene, KANTO_MOONSTONE_CALLBACK
+    from verify_pilot import KANTO_MOONSTONE_CALLBACK as REQUIRED_MOONSTONE_CALLBACK
     from kanto_overworld import (
         source_item_ball, source_obstacle, source_npc_dialogue,
         adapt_source_field_event, safely_adapt_source_field_event, MissingActorGraphic,
@@ -178,7 +179,7 @@ class KantoOverworldContracts(unittest.TestCase):
         # Regression for Windows startup failure:
         # Required Kanto event scripts are missing: [(36, 18)]
         # The pickup gained an event-id argument but verifier kept old text.
-        from verify_pilot import KANTO_MOONSTONE_CALLBACK as expected
+        expected = REQUIRED_MOONSTONE_CALLBACK
         self.assertEqual(
             expected,
             'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018", 18)')
