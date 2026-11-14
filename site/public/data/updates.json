@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "90057bfea156da10fe64221eb807c0f7591ebd10",
+      "date": "2026-11-14T17:05:04-03:00",
+      "title": "docs(hoenn): QA6 climate sequence implementation and native playtest checklist",
+      "category": "Documentação"
+    },
+    {
       "sha": "cc4e50cdc8e59551122c9648756cc563e2f3b602",
       "date": "2026-11-14T17:04:30-03:00",
       "title": "docs(hoenn): QA6 progress prepared, 0/12 Game.exe acceptance",
