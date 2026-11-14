@@ -2585,6 +2585,31 @@ module BlueHoennPilot
     QA8_LEAGUE_BADGES.all?{|badge| badges.include?(badge)}
   end
 
+  # QA09: story flags must form a complete prefix of four League wins.
+  # A prior save with a later flag but missing an earlier win cannot skip a room.
+  # The remapped map guard protects direct event calls, not only entrances.
+  def self.qa9_at_league_map?(source_id)
+    return false unless state && $game_map
+    _, maps = metadata
+    maps[source_id] && $game_map.map_id == maps[source_id]
+  end
+
+  def self.qa9_elite_unlocked?(index)
+    flags = state
+    return false unless flags && index.is_a?(Integer) && (0..3).cover?(index)
+    return false unless qa8_league_badges? && flags["wally_road_defeated"]
+    (0...index).all? { |previous|
+      flags["elite_#{STAGE10_ELITE[previous][3]}_defeated"]
+    }
+  end
+
+  def self.qa9_champion_unlocked?
+    return false unless state && qa9_elite_unlocked?(3)
+    flags = state
+    flags["elite_drake_defeated"] &&
+      STAGE10_ELITE.all? { |_,_,_,key| flags["elite_#{key}_defeated"] }
+  end
+
   def self.sign_stage10(key)
     return false unless state
     signs = {
@@ -2785,15 +2810,12 @@ module BlueHoennPilot
       pbMessage(_INTL("A Liga exige as oito insígnias de Hoenn e a vitória sobre Wally em Victory Road."))
       return false
     end
-    if (94..97).cover?(dest_id)
-      index=dest_id-94
-      if index>0 && !flags["elite_#{STAGE10_ELITE[index-1][3]}_defeated"]
-        pbMessage(_INTL("Vença o membro anterior da Elite Four primeiro."))
-        return false
-      end
+    if (94..97).cover?(dest_id) && !qa9_elite_unlocked?(dest_id-94)
+      pbMessage(_INTL("A Elite Four deve ser vencida na ordem: Sidney, Phoebe, Glacia e Drake."))
+      return false
     end
-    if dest_id==98 && !flags["elite_drake_defeated"]
-      pbMessage(_INTL("Enfrente os quatro membros da Elite antes do Campeão."))
+    if dest_id==98 && !qa9_champion_unlocked?
+      pbMessage(_INTL("Vença Sidney, Phoebe, Glacia e Drake antes do Campeão Wallace."))
       return false
     end
     if dest_id==99 && !flags["champion_wallace_defeated"]
@@ -2945,14 +2967,11 @@ module BlueHoennPilot
     flags=state
     return false unless flags && index.is_a?(Integer) && (0..3).cover?(index) &&
                         $player && !$player.party.empty?
+    return false unless qa9_at_league_map?(94 + index)
     kind,name,version,key=STAGE10_ELITE[index]
     completed="elite_#{key}_defeated"
+    return false unless qa9_elite_unlocked?(index)
     return true if flags[completed]
-    return false unless rain_badge? && flags["wally_road_defeated"]
-    if index>0 && !flags["elite_#{STAGE10_ELITE[index-1][3]}_defeated"]
-      pbMessage(_INTL("É preciso vencer a Elite Four na ordem correta."))
-      return false
-    end
     pbMessage(_INTL("{1}: mostre a força de seu time!",name))
     setBattleRule("canLose")
     unless TrainerBattle.start(kind,name,version)
@@ -2967,9 +2986,8 @@ module BlueHoennPilot
   def self.champion_wallace
     flags=state
     return false unless flags && $player && !$player.party.empty?
+    return false unless qa9_at_league_map?(98) && qa9_champion_unlocked?
     return true if flags["champion_wallace_defeated"]
-    return false unless rain_badge? &&
-                        STAGE10_ELITE.all?{|_,_,_,key| flags["elite_#{key}_defeated"]}
     pbMessage(_INTL("Wallace: você conquistou o direito de me desafiar!"))
     setBattleRule("canLose")
     unless TrainerBattle.start(:BLUE_HOENN_CHAMPION,"Wallace",1098)
