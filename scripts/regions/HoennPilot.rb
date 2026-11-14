@@ -2400,8 +2400,8 @@ module BlueHoennPilot
     flags=state
     return false unless flags
     return false if flags["submarine_escaped"]
-    unless flags["aqua_matt_defeated"]
-      pbMessage(_INTL("O submarino Aqua está pronto para partir. Matt vigia a passagem."))
+    unless flags["slateport_submarine_stolen"] && flags["aqua_matt_defeated"]
+      pbMessage(_INTL("O submarino Aqua ainda não pode partir. Investigue Slateport e enfrente Matt."))
       return false
     end
     flags["submarine_escaped"]=true
@@ -2672,6 +2672,18 @@ module BlueHoennPilot
     moved
   end
 
+  SEAFLOOR_INTERIORS = (227..236).freeze
+  QA5_SEAFLOOR_STORY_KEYS = %w[
+    groudon_awakened slateport_submarine_stolen submarine_escaped
+    space_center_saved hm_dive_received
+  ].freeze
+
+  def self.seafloor_story_ready?
+    flags=state
+    return false unless flags && mind_badge?
+    QA5_SEAFLOOR_STORY_KEYS.all?{|key| flags[key]}
+  end
+
   def self.stage10_transfer(source_id,dest_id,x,y)
     flags=state
     return false unless flags && [source_id,dest_id,x,y].all?{|n|n.is_a?(Integer)}
@@ -2687,9 +2699,13 @@ module BlueHoennPilot
     if source_id==91 && dest_id==322
       return false unless field_move_ready?(:WATERFALL,true)
     end
-    if (227..236).cover?(dest_id) && !flags["submarine_escaped"]
-      pbMessage(_INTL("O submarino Aqua ainda não chegou à Seafloor Cavern."))
-      return false
+    # Lock the cave only when ENTERING from another area. Never lock stairs
+    # inside the cave or block a retreat from a partially migrated save.
+    if SEAFLOOR_INTERIORS.cover?(dest_id) && !SEAFLOOR_INTERIORS.cover?(source_id)
+      unless seafloor_story_ready?
+        pbMessage(_INTL("A Seafloor Cavern exige a fuga do submarino, a defesa do Centro Espacial e Dive com a Mind Badge."))
+        return false
+      end
     end
     if dest_id==238 && !flags["sootopolis_crisis_started"]
       pbMessage(_INTL("Fale com Steven sobre a crise do clima em Sootopolis."))
@@ -2734,8 +2750,10 @@ module BlueHoennPilot
 
   def self.seafloor_archie
     flags=state
-    return false unless flags && mind_badge? && flags["hm_dive_received"] &&
-                        flags["submarine_escaped"] && $player && !$player.party.empty?
+    return false unless flags && seafloor_story_ready? &&
+                        $player && !$player.party.empty?
+    _,map_ids=metadata
+    return false unless $game_map && $game_map.map_id==map_ids[236]
     return true if flags["seafloor_archie_defeated"]
     pbMessage(_INTL("Archie: o poder de Kyogre será da Equipe Aqua!"))
     setBattleRule("canLose")
@@ -2750,7 +2768,10 @@ module BlueHoennPilot
 
   def self.seafloor_awakening
     flags=state
-    return false unless flags && flags["seafloor_archie_defeated"]
+    return false unless flags && seafloor_story_ready? &&
+                        flags["seafloor_archie_defeated"]
+    _,map_ids=metadata
+    return false unless $game_map && $game_map.map_id==map_ids[236]
     return false if flags["kyogre_awakened"]
     flags["kyogre_awakened"]=true
     pbMessage(_INTL("Kyogre despertou! Uma crise climática se espalha por Hoenn."))
