@@ -1134,7 +1134,10 @@ module BlueKantoDex
       config = BlueKantoDex.manifest
       return names unless config
       count = config["previous_regional_count"]
-      result = names.first(count)
+      # Essentials' original names array ends in National, even when it has
+      # far fewer labels than the installed PBS regional sections. Never
+      # mislabel an existing regional slot as the National Pokédex.
+      result = names.first([names.length - 1, 0].max).first(count)
       result.fill(_INTL("Pokédex regional"), result.length...count)
       if config["added"]
         result << _INTL("KantoDex")
