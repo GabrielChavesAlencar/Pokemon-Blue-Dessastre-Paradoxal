@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "30c4a056e0d837c1444b755b99332a1989252b7e",
+      "date": "2026-11-14T10:20:24-03:00",
+      "title": "fix(hoenn): priorizar corredor verificado do rival na Route 103",
+      "category": "Correções"
+    },
+    {
       "sha": "766f1e7a3edf0418f4e1ec2206421c8b34e9a598",
       "date": "2026-11-14T10:17:17-03:00",
       "title": "test(hoenn): espelhar a geometria 20x20 da Route 101",
