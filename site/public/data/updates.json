@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "88af553cb1f1a10b7fe8f02bdbd4bcc835840990",
+      "date": "2026-11-13T22:24:31-03:00",
+      "title": "test(sinnoh): Ruby fake Essentials probe exercises 9 maps, 24 events, 3 balls, 16 warps, 3 Barry variants and fail-closed cases",
+      "category": "Testes"
+    },
+    {
       "sha": "7ca10d344f4dcd93cee3c96427017540a3959f03",
       "date": "2026-11-13T22:24:03-03:00",
       "title": "test(sinnoh): require native map event proof before isolated QA New Game and reject invalid warp counts",
