@@ -12,7 +12,7 @@ sys.path.insert(0,str(ROOT/"scripts/regions"))
 from build_johto_events import ruby,command,event_page
 from hoenn_qa_phase3 import (
     parse_reference_encounters,assemble_encounters,parse_compiled_encounters,
-    _safe_events,
+    _safe_events,native_item_ids,
 )
 from pilot_hoenn import append_event,LAND_ENCOUNTERS,CAVE_ENCOUNTERS,SOURCE_MAPS
 
@@ -158,6 +158,38 @@ class HoennQA3Tests(unittest.TestCase):
         report=_safe_events(events,donor,authored,append_event,event_page,command,ruby)
         self.assertEqual(report["source_event_counts"]["items_need_manual_review"],1)
         self.assertEqual(len(authored[101].attrs["@events"]),0)
+
+
+    def test_items_missing_in_native_pbs_are_never_inserted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            game=Path(tmp)
+            pbs=game/"PBS"
+            pbs.mkdir()
+            (pbs/"items.txt").write_text(
+                "[POTION]\nName = Poção\n[RARECANDY]\nName = Rare Candy\n",
+                encoding="utf-8")
+            allowed=native_item_ids(game)
+            self.assertIn("POTION",allowed)
+            src={101:{
+                1:self.synthetic_event("Item",4,5,(
+                    command(355,b"pbItemBall(:POTION)"),)),
+                2:self.synthetic_event("Item",7,8,(
+                    command(355,b"pbItemBall(:DONOR_UNKNOWN_ITEM)"),)),
+            }}
+            donor={101:ruby("RPG::Map",width=30,height=30,events=src[101])}
+            authored={101:ruby("RPG::Map",width=30,height=30,events={})}
+            result=_safe_events(src,donor,authored,append_event,
+                                event_page,command,ruby,item_ids=allowed)
+            self.assertEqual(result["source_event_counts"]["source_items_newly_authored"],1)
+            self.assertEqual(result["source_event_counts"]["items_need_manual_review"],1)
+            self.assertEqual(len(authored[101].attrs["@events"]),1)
+
+    def test_missing_native_item_pbs_aborts_instead_of_guessing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            game=Path(tmp)
+            (game/"PBS").mkdir()
+            with self.assertRaisesRegex(ValueError,"Itens Blue"):
+                native_item_ids(game)
 
     def test_named_trainer_sign_and_dialogue_are_catalogued_but_not_copied(self):
         src={101:{
