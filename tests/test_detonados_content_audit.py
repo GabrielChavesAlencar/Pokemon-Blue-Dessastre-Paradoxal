@@ -29,6 +29,7 @@ class DetonadoContentAuditTests(unittest.TestCase):
                 self.assertNotIn("map_id", area)
                 self.assertNotIn("rate", area)
                 self.assertNotIn("levels", area)
+                self.assertTrue(set(area.get("special_encounters", [])).isdisjoint(area["reference_species"]))
 
     def test_all_four_regions_have_review_entries(self):
         self.assertEqual(set(self.report["regions"]), {"KANTO", "JOHTO", "HOENN", "SINNOH"})
@@ -37,12 +38,12 @@ class DetonadoContentAuditTests(unittest.TestCase):
             self.assertTrue(all(row["gameplay_verified"] is False for row in record["habitats"]))
             self.assertTrue(all(row["native_battle_verified"] is False for row in record["leaders"]))
 
-    def test_kanto_route_22_discrepancy_is_flagged_not_changed(self):
+    def test_kanto_route_22_original_species_are_present(self):
         records = self.report["regions"]["KANTO"]["habitats"]
         route = next(row for row in records if row["area"] == "Route 22")
         self.assertTrue(route["catalog_locations"])
-        self.assertIn("PIDGEY", route["reference_species_not_in_catalog"])
-        self.assertEqual(route["status"], "CATALOG_REVIEW_REQUIRED")
+        self.assertEqual(route["reference_species_not_in_catalog"], [])
+        self.assertEqual(route["status"], "CATALOG_SPECIES_PRESENT_REVIEW_NATIVE")
 
     def test_johto_route_29_existing_species_are_not_marked_missing(self):
         records = self.report["regions"]["JOHTO"]["habitats"]
