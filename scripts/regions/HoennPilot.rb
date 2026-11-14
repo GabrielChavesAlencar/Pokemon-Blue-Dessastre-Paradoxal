@@ -447,6 +447,11 @@ module BlueHoennPilot
   def self.wally_family
     flags = state
     return false unless flags
+    if balance_badge?
+      return surf_from_wally_family unless flags["hm_surf_received"]
+      pbMessage(_INTL("Família de Wally: Surf já foi entregue. Boa sorte em Hoenn!"))
+      return true
+    end
     pbMessage(flags["wally_captured"] ?
       _INTL("Família de Wally: Nosso filho está animado por ter capturado seu primeiro Pokémon.") :
       _INTL("Família de Wally: Ele quer conhecer melhor os Pokémon. Visite o ginásio de Norman."))
@@ -467,7 +472,8 @@ module BlueHoennPilot
       pbMessage(_INTL("Norman: Muito bem, Wally! Continue sua jornada até Rustboro."))
       return true
     end
-    pbMessage(_INTL("Norman: Volte quando tiver quatro insígnias de Hoenn. Então batalharemos!"))
+    pbMessage(heat_badge? ? _INTL("Norman: você está pronto para o desafio da Balance Badge. Venha ao fundo do ginásio!") :
+      _INTL("Norman: Volte quando tiver quatro insígnias de Hoenn. Então batalharemos!"))
     true
   end
 
@@ -1677,6 +1683,364 @@ module BlueHoennPilot
     }
     return false unless messages.key?(reason)
     pbMessage(_INTL(messages.fetch(reason)))
+    false
+  end
+
+
+
+  # Stage 08 — Norman / HM Surf / Weather Institute / Winona / Lilycove.
+  # No event touches the native Blue badges or switches in other regions.
+  STAGE8_SIGNS = {
+    VERDANTURF: "Verdanturf: uma cidade tranquila próxima a Mauville.",
+    FORTREE_GYM: "Ginásio de Fortree: Winona, especialista no tipo Voador.",
+    FORTREE: "Fortree: casas construídas nas árvores.",
+    LILYCOVE: "Lilycove: uma cidade costeira com lojas e museu.",
+    LILYCOVE_STORE: "Department Store de Lilycove: várias seções.",
+    WEATHER_INSTITUTE: "Instituto Meteorológico: a Equipe Aqua tomou conta da pesquisa!",
+    SAFARI: "Safari Zone: a entrada será liberada em outra etapa."
+  }.freeze
+
+  NORMAN_GYM_TARGETS = [
+    [9,8],[54,24],[46,8],[46,36],[52,8],[9,20],[43,20],
+    [35,40],[29,36],[35,4],[26,24],[52,36],[46,40],[26,20],
+    [54,20],[37,24],[29,8],[35,36],[46,4],[3,8],[43,24],
+    [35,8],[3,20],[37,20]
+  ].freeze
+
+  def self.sign_stage8(key)
+    return false unless state && STAGE8_SIGNS.key?(key)
+    pbMessage(_INTL(STAGE8_SIGNS.fetch(key)))
+    true
+  end
+
+  def self.balance_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN").include?("BALANCE")
+  end
+
+  def self.feather_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN").include?("FEATHER")
+  end
+
+  def self.norman_gym_warp(x,y)
+    flags=state
+    return false unless flags && NORMAN_GYM_TARGETS.include?([x,y])
+    _,map_ids=metadata
+    return false unless defined?($game_map) && $game_map &&
+                        $game_map.map_id==map_ids[20] &&
+                        defined?($game_player) && $game_player
+    $game_player.moveto(x,y)
+    true
+  end
+
+  def self.norman_tm
+    flags=state
+    return false unless flags && balance_badge?
+    return false if flags["norman_tm_given"]
+    give_move_tm("norman_tm_given",:FACADE,[:TM42,:TM103],
+                 "Norman: receba a TM Facade!")
+  end
+
+  def self.norman
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return norman_tm if balance_badge?
+    needed=["STONE","KNUCKLE","DYNAMO","HEAT"]
+    badges=BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN")
+    unless needed.all?{|badge|badges.include?(badge)}
+      pbMessage(_INTL("Norman: enfrente-me depois das quatro primeiras insígnias de Hoenn!"))
+      return false
+    end
+    pbMessage(_INTL("Norman: mostre a força que desenvolveu durante sua jornada!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_NORMAN,"Norman",820)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","BALANCE")
+      pbMessage(_INTL("Norman: não foi possível registrar a Balance Badge."))
+      return false
+    end
+    flags["norman_defeated"]=true
+    pbMessage(_INTL("Você recebeu a Balance Badge de Hoenn! Surf foi liberado nesta região."))
+    norman_tm
+    true
+  end
+
+  def self.surf_from_wally_family
+    flags=state
+    return false unless flags && balance_badge? && !flags["hm_surf_received"]
+    item=[:HM03,:HMSURF].find{|id|
+      GameData::Item.exists?(id) &&
+      GameData::Item.get(id).respond_to?(:move) &&
+      GameData::Item.get(id).move==:SURF
+    }
+    unless item
+      pbMessage(_INTL("Família de Wally: o HM Surf não está cadastrado com o movimento correto neste Blue."))
+      return false
+    end
+    unless $bag && $bag.add(item,1)
+      pbMessage(_INTL("Família de Wally: libere espaço na Bolsa para receber Surf."))
+      return false
+    end
+    flags["hm_surf_received"]=true
+    pbMessage(_INTL("Você recebeu HM Surf! A Balance Badge permite usá-lo em Hoenn."))
+    true
+  end
+
+  def self.good_rod_fisherman
+    flags=state
+    return false unless flags
+    if flags["good_rod_received"]
+      pbMessage(_INTL("Pescador: continue praticando com sua Good Rod!"))
+      return false
+    end
+    unless GameData::Item.exists?(:GOODROD) && $bag && $bag.add(:GOODROD,1)
+      pbMessage(_INTL("Pescador: a Good Rod precisa estar registrada e caber na Bolsa."))
+      return false
+    end
+    flags["good_rod_received"]=true
+    pbMessage(_INTL("Você recebeu a Good Rod!"))
+    true
+  end
+
+  def self.daycare_info
+    return false unless state
+    pbMessage(_INTL("Day Care de Hoenn: o serviço de criação e ovos ainda está em integração neste piloto."))
+    true
+  end
+
+  def self.weather_aqua(version)
+    flags=state
+    return false unless flags && [851,852,853,854].include?(version) &&
+                        $player && !$player.party.empty?
+    unless balance_badge? && flags["hm_surf_received"]
+      pbMessage(_INTL("Recruta Aqua: primeiro vença Norman e obtenha Surf para alcançar a Rota 119."))
+      return false
+    end
+    key="weather_aqua_#{version}_defeated"
+    if flags[key]
+      pbMessage(_INTL("Recruta Aqua: já fui derrotado, vou recuar!"))
+      return false
+    end
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_AQUA,"Recruta",version)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags[key]=true
+    pbMessage(_INTL("O recruta Aqua foi derrotado."))
+    true
+  end
+
+  def self.weather_shelly
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    if flags["weather_shelly_defeated"]
+      pbMessage(_INTL("Shelly: vamos retirar a Equipe Aqua do instituto!"))
+      return false
+    end
+    unless [851,852,853,854].all?{|version|flags["weather_aqua_#{version}_defeated"]}
+      pbMessage(_INTL("Shelly: antes de me enfrentar, passe pelos recrutas da Equipe Aqua."))
+      return false
+    end
+    pbMessage(_INTL("Shelly: os dados deste instituto pertencem à Equipe Aqua!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_SHELLY,"Shelly",837)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["weather_shelly_defeated"]=true
+    pbMessage(_INTL("Shelly: a Equipe Aqua vai recuar do Instituto Meteorológico!"))
+    true
+  end
+
+  def self.weather_castform
+    flags=state
+    return false unless flags
+    unless flags["weather_shelly_defeated"]
+      pbMessage(_INTL("Pesquisador: a Equipe Aqua ainda está ocupando o instituto!"))
+      return false
+    end
+    if flags["weather_castform_received"]
+      pbMessage(_INTL("Pesquisador: cuide bem de Castform!"))
+      return false
+    end
+    unless GameData::Species.exists?(:CASTFORM) && defined?(pbAddPokemon)
+      pbMessage(_INTL("Pesquisador: Castform não pode ser entregue nesta instalação."))
+      return false
+    end
+    unless pbAddPokemon(:CASTFORM,25)
+      pbMessage(_INTL("Pesquisador: libere espaço para receber Castform."))
+      return false
+    end
+    flags["weather_castform_received"]=true
+    pbMessage(_INTL("Você recebeu Castform como agradecimento!"))
+    true
+  end
+
+  RIVAL_STAGE8_119_VERSIONS={TREECKO:819,TORCHIC:820,MUDKIP:821}.freeze
+  RIVAL_STAGE8_LILYCOVE_VERSIONS={TREECKO:822,TORCHIC:823,MUDKIP:824}.freeze
+
+  def self.rival_119_fly
+    flags=state
+    return false unless flags && flags["rival_119_done"] && !flags["hm_fly_received"]
+    item=[:HM02,:HMFLY].find{|id|
+      GameData::Item.exists?(id) &&
+      GameData::Item.get(id).respond_to?(:move) &&
+      GameData::Item.get(id).move==:FLY
+    }
+    unless item && $bag && $bag.add(item,1)
+      pbMessage(_INTL("Rival: o HM Fly precisa estar cadastrado e caber na Bolsa."))
+      return false
+    end
+    flags["hm_fly_received"]=true
+    pbMessage(_INTL("Você recebeu HM Fly! A Feather Badge permitirá usá-lo."))
+    true
+  end
+
+  def self.rival_119
+    flags=state
+    return false unless flags && starter && $player && !$player.party.empty?
+    unless flags["weather_shelly_defeated"]
+      pbMessage(_INTL("Seu rival está treinando ao norte. Antes liberte o Weather Institute."))
+      return false
+    end
+    return rival_119_fly if flags["rival_119_done"]
+    name=rival_name
+    pbMessage(_INTL("{1}: quero testar o quanto seus Pokémon melhoraram!",name))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:RIVAL1,name,RIVAL_STAGE8_119_VERSIONS.fetch(starter))
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["rival_119_done"]=true
+    pbMessage(_INTL("{1}: foi uma batalha incrível! Você está chegando a Fortree!",name))
+    rival_119_fly
+    true
+  end
+
+  def self.steven_scope
+    flags=state
+    return false unless flags
+    unless flags["rival_119_done"]
+      pbMessage(_INTL("Steven: ainda não chegou o momento da pesquisa com Kecleon. Explore a Rota 119!"))
+      return false
+    end
+    if flags["devon_scope_received"]
+      pbMessage(_INTL("Steven: use o Devon Scope para revelar os Kecleon invisíveis."))
+      return true
+    end
+    unless GameData::Item.exists?(:DEVONSCOPE) && $bag && $bag.add(:DEVONSCOPE,1)
+      pbMessage(_INTL("Steven: o Devon Scope ainda não está disponível ou sua Bolsa está cheia."))
+      return false
+    end
+    flags["devon_scope_received"]=true
+    pbMessage(_INTL("Steven: receba o Devon Scope! Ele revela Pokémon Kecleon escondidos."))
+    true
+  end
+
+  def self.kecleon_scope(event_id,location)
+    flags=state
+    return false unless flags && [:FORTREE,:ROUTE120].include?(location) &&
+                        event_id.is_a?(Integer) && $game_map &&
+                        $game_self_switches && $game_map.events[event_id]
+    _,map_ids=metadata
+    expected=location==:FORTREE ? map_ids[64] : map_ids[138]
+    return false unless expected && $game_map.map_id==expected
+    unless flags["devon_scope_received"]
+      pbMessage(_INTL("Uma presença invisível bloqueia sua passagem! Procure Steven e o Devon Scope."))
+      return false
+    end
+    key="kecleon_#{location}_cleared"
+    unless flags[key]
+      pbMessage(_INTL("O Devon Scope revelou Kecleon! Ele fugiu e liberou a passagem."))
+      flags[key]=true
+    end
+    $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
+    $game_map.events[event_id].refresh
+    true
+  end
+
+  def self.winona_tm
+    flags=state
+    return false unless flags && feather_badge?
+    return false if flags["winona_tm_given"]
+    give_move_tm("winona_tm_given",:AERIALACE,[:TM40,:TM099,:TM101],
+                 "Winona: receba a TM Aerial Ace!")
+  end
+
+  def self.winona
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return winona_tm if feather_badge?
+    unless balance_badge? && flags["rival_119_done"] &&
+           flags["devon_scope_received"] && flags["kecleon_FORTREE_cleared"]
+      pbMessage(_INTL("Winona: conclua a missão do Weather Institute e use o Devon Scope antes do desafio."))
+      return false
+    end
+    pbMessage(_INTL("Winona: vamos descobrir até onde seus Pokémon conseguem voar!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_WINONA,"Winona",868)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","FEATHER")
+      pbMessage(_INTL("Winona: não foi possível registrar a Feather Badge."))
+      return false
+    end
+    flags["winona_defeated"]=true
+    pbMessage(_INTL("Você conquistou a Feather Badge de Hoenn! Fly está liberado nesta região."))
+    winona_tm
+    true
+  end
+
+  def self.rival_lilycove
+    flags=state
+    return false unless flags && starter && $player && !$player.party.empty?
+    unless feather_badge?
+      pbMessage(_INTL("Seu rival: enfrente Winona em Fortree antes de continuar por Lilycove."))
+      return false
+    end
+    if flags["rival_lilycove_done"]
+      pbMessage(_INTL("Seu rival: nos encontraremos novamente mais adiante!"))
+      return false
+    end
+    name=rival_name
+    pbMessage(_INTL("{1}: uma última batalha antes de explorar Lilycove!",name))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:RIVAL1,name,RIVAL_STAGE8_LILYCOVE_VERSIONS.fetch(starter))
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["rival_lilycove_done"]=true
+    pbMessage(_INTL("{1}: você venceu de novo! Vamos continuar nossa jornada!",name))
+    true
+  end
+
+  def self.harbor_stage8
+    return false unless state
+    pbMessage(_INTL("Porto de Lilycove: as viagens marítimas e a Equipe Aqua serão integradas na próxima fase."))
+    true
+  end
+
+  def self.contest_stage8
+    return false unless state
+    pbMessage(_INTL("Contest Hall de Lilycove: o concurso completo será integrado depois."))
+    true
+  end
+
+  def self.stage8_future_gate(key)
+    return false unless state
+    messages={
+      AQUA_HIDEOUT:"O esconderijo Aqua será aberto na próxima etapa.",
+      SAFARI_ZONE:"A Safari Zone ainda não foi integrada neste piloto.",
+      SCORCHED_SLAB:"Scorched Slab ainda não possui eventos validados.",
+      MT_PYRE_PIER:"A travessia para Mt. Pyre pertence à próxima etapa."
+    }
+    return false unless messages.key?(key)
+    pbMessage(_INTL(messages.fetch(key)))
     false
   end
 
