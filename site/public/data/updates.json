@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c6642d328a3b1603d03c958d5f7b956e63d2c219",
+      "date": "2026-11-14T11:55:53-03:00",
+      "title": "feat(site/hoenn): publicar Dewford, Granite Cave, Slateport, Brawly e museu como piloto",
+      "category": "Novidades"
+    },
+    {
       "sha": "c9ee319929cbb705599d5b8756492ca5a1e561e7",
       "date": "2026-11-14T11:55:28-03:00",
       "title": "test(hoenn): estender auditoria de origem para 48 MapIDs de Hoenn",
