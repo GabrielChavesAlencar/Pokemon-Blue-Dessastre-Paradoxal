@@ -185,7 +185,7 @@ assert9(!BlueHoennPilot.aqua_hideout_matt,"Matt loss counted as win")
 assert9(!flags["aqua_matt_defeated"],"Matt flag on loss")
 TrainerBattle.result=true
 assert9(BlueHoennPilot.aqua_hideout_matt,"Matt battle failed")
-assert9(!BlueHoennPilot.submarine_escape==false ? false : true,"noop")
+assert9(BlueHoennPilot.submarine_escape,"Submarine escape event failed")
 assert9(flags["submarine_escaped"],"Submarine not escaped")
 assert9(!BlueHoennPilot.submarine_escape,"Submarine duplicated")
 assert9(!BlueHoennPilot.space_center_steven,"Space invasion skipped before Mind")
