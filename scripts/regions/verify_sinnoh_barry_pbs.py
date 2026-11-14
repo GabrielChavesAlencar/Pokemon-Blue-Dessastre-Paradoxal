@@ -32,8 +32,10 @@ def inspect(draft: Path, game: Path, *, root: Path = ROOT) -> dict:
     draft = draft.expanduser().absolute()
     game = game.expanduser().absolute()
     workspace = root / ".blue-work"
-    if (root.is_symlink() or workspace.is_symlink() or draft.is_symlink()
+    if (root.is_symlink() or workspace.is_symlink()
+            or any(part.is_symlink() for part in (draft, *draft.parents))
             or not draft.is_dir() or not draft.is_relative_to(workspace)
+            or not draft.resolve().is_relative_to(workspace.resolve())
             or draft == workspace or draft == game or draft in game.parents
             or game.is_symlink() or not game.is_dir()):
         fail("Draft deve estar em .blue-work, distinto da instalação real")
