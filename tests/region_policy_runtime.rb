@@ -38,6 +38,20 @@ class Pokemon
   def name; @species.to_s; end
   def egg?; false; end
   def fainted?; false; end
+  def compatible_with_move?(move)
+    (@species == :PIKACHU && move == :FLASH) ||
+      (@species == :SQUIRTLE && move == :SURF)
+  end
+end
+class MockBag
+  def initialize; @items = []; end
+  def has?(item); @items.include?(item); end
+  def add(item); @items << item; end
+end
+module GameData
+  module Item
+    def self.exists?(item); [:HM03, :HM05].include?(item); end
+  end
 end
 class Player
   attr_accessor :party,:badges,:pokedex
@@ -147,9 +161,11 @@ Dir.mktmpdir("blue-regional-policy-") do |dir|
     $PokemonGlobal=PokemonGlobalMetadata.new
     $PokemonStorage=PokemonStorage.new
     $game_switches=Hash.new(false)
+    $bag=MockBag.new
     special=Pokemon.new(:MEWTWO)
     paradox=Pokemon.new(:IRONTEST)
-    normal=Pokemon.new(:PIDGEY)
+    normal=Pokemon.new(:PIKACHU)
+    swimmer=Pokemon.new(:SQUIRTLE)
     # Codex finding: no Kanto installed means NO regional PC policy.
     assert(!BlueRegionalPolicy.restricted?(special),"Legacy Decades PC locked without Kanto")
     File.write("Data/blue-kanto-install.json", "{}")
@@ -167,10 +183,18 @@ Dir.mktmpdir("blue-regional-policy-") do |dir|
     assert(!HiddenMoveHandlers.triggerCanUseMove(:FLASH,normal,true),"Flash allowed without Boulder")
     assert(BlueRegions.award($PokemonGlobal.blue_regions,"KANTO","BOULDER"),"Boulder not awarded")
     assert(!BlueRegions.award($PokemonGlobal.blue_regions,"KANTO","BOULDER"),"Boulder awarded twice")
-    assert(HiddenMoveHandlers.triggerCanUseMove(:FLASH,normal,true),"Boulder should allow Flash")
+    assert(!HiddenMoveHandlers.triggerCanUseMove(:FLASH,normal,true),"Flash allowed without HM and party")
+    $bag.add(:HM05)
+    $player.party << normal
+    assert(HiddenMoveHandlers.triggerCanUseMove(:FLASH,normal,true),"Boulder HM05 Pikachu should allow Flash")
     assert(!HiddenMoveHandlers.triggerCanUseMove(:SURF,normal,true),"Surf allowed without Soul")
     assert(BlueRegions.award($PokemonGlobal.blue_regions,"KANTO","SOUL"),"Soul not awarded")
-    assert(HiddenMoveHandlers.triggerUseMove(:SURF,normal),"Surf still blocked by native Decades badge")
+    assert(!HiddenMoveHandlers.triggerUseMove(:SURF,normal),"Surf allowed without HM and compatible Pokemon")
+    $bag.add(:HM03)
+    $player.party << swimmer
+    assert(HiddenMoveHandlers.triggerUseMove(:SURF,swimmer),"Surf should work with Soul HM03 Squirtle")
+    assert(!HiddenMoveHandlers.triggerUseMove(:SURF,normal),"Pikachu cannot Surf")
+    $player.party.clear
 
     assert(pbAddPokemonSilent(special),"Special gift failed")
     assert($player.party.empty?,"Special gift entered Kanto party")
