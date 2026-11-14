@@ -377,9 +377,14 @@ module BlueHoennPilot
   end
 
   def self.briney
-    return false unless state
-    pbMessage(_INTL("Mr. Briney: Peecko está desaparecida. Preciso encontrá-la antes de zarpar!"))
-    false
+    flags = state
+    return false unless flags
+    if flags["peecko_rescued"]
+      pbMessage(_INTL("Mr. Briney: Obrigado por salvar Peecko! Um dia vou levá-lo até Dewford."))
+    else
+      pbMessage(_INTL("Mr. Briney: Peecko está desaparecida. Preciso encontrá-la antes de zarpar!"))
+    end
+    true
   end
 
   def self.pickup(item, key, event_id)
@@ -649,6 +654,9 @@ module BlueHoennPilot
   def self.rusturf_aqua
     flags = state
     return false unless flags
+    # Recover from a missed city touch trigger instead of trapping a save:
+    # the Stone Badge is still mandatory, and the report is unique.
+    rustboro_theft if stone_badge? && !flags["devon_theft_seen"]
     unless flags["devon_theft_seen"] && stone_badge?
       pbMessage(_INTL("O túnel está silencioso. Investigue Rustboro após conquistar a Stone Badge."))
       return false
@@ -671,6 +679,7 @@ module BlueHoennPilot
   def self.devon_route116
     flags = state
     return false unless flags
+    rustboro_theft if stone_badge? && !flags["devon_theft_seen"]
     if flags["devon_goods_recovered"]
       pbMessage(_INTL("Funcionário Devon: Leve nossos produtos à corporação de Rustboro. Obrigado!"))
     elsif flags["devon_theft_seen"]
