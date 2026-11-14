@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0ba3952dfd7010a8964c0d8190568bffb023c70a",
+      "date": "2026-11-14T18:45:58-03:00",
+      "title": "ci(hoenn): enforce 199-map test teleport menu and region/save isolation via Ruby fixture",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f42622c788ba2dfb553e73ee743c5696cb36e320",
+      "date": "2026-11-14T18:45:47-03:00",
+      "title": "test(hoenn): simulate 199-map teleport UI, search, MapID lookup, return and zero story mutations",
+      "category": "Testes"
+    },
+    {
       "sha": "c3bbad337d1137f9b00af494537074f9e0a1c842",
       "date": "2026-11-14T18:45:19-03:00",
       "title": "test(hoenn): QA12 requires 199-source teleport catalog and rejects false native approvals",
