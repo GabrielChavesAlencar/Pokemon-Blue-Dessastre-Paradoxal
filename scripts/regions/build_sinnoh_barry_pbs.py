@@ -244,8 +244,12 @@ def publish(game: Path, output: Path, *, root: Path = ROOT) -> dict:
     game = game.expanduser().absolute()
     output = output.expanduser().absolute()
     work = root / ".blue-work"
-    if (root.is_symlink() or work.is_symlink() or output.is_symlink()
+    # Reject symlinked ancestor folders too (e.g. .blue-work/link -> game/).
+    # Lexical is_relative_to() by itself does not prevent a workspace escape.
+    if (any(part.is_symlink() for part in (output, *output.parents))
+            or root.is_symlink() or work.is_symlink()
             or output.exists() or not output.is_relative_to(work)
+            or not output.resolve().is_relative_to(work.resolve())
             or output == work or game == output or game in output.parents):
         fail("Saída deve ser pasta NOVA dentro de .blue-work, fora de game/")
     report, files = build(game, root=root)
