@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 try:
     from pilot import (
-        command, route2_north_columns, make_viridian_route2_gates,
+        command, route2_north_columns, viridian_route2_block_line,
         make_viridian_parcel_intro,
     )
     from server.ruby_marshal import RubyObject
@@ -74,38 +74,37 @@ class KantoParcelStoryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "exactly one"):
                 route2_north_columns(root, 10, 4)
 
-    def test_solid_gates_are_in_viridian_not_the_forest_building(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            (root / "PBS").mkdir()
-            (root / "PBS/map_connections.txt").write_text(
-                "10,North,4,18,South,1\n", encoding="utf8")
-            city = RubyObject("RPG::Map", {"@width": 10, "@height": 12})
-            route = RubyObject("RPG::Map", {"@width": 4, "@height": 9})
-            gate_events = make_viridian_route2_gates(
-                {2: example_clerk()}, root, city, route,
-            )
-            self.assertEqual(len(gate_events), 4)
-            self.assertEqual([g.attrs["@x"] for g in gate_events.values()], [3, 4, 5, 6])
-            self.assertTrue(all(g.attrs["@y"] == 0 for g in gate_events.values()))
-            for ev in gate_events.values():
-                active, unlocked = [pg.attrs for pg in ev.attrs["@pages"]]
-                self.assertEqual(active["@trigger"], 1)
-                self.assertFalse(active["@through"])
-                self.assertEqual(unlocked["@trigger"], 0)
-                self.assertTrue(unlocked["@through"])
-                self.assertTrue(unlocked["@condition"].attrs["@self_switch_valid"])
-                scripts = [op.attrs["@parameters"][0] for op in active["@list"]
-                           if op.attrs["@code"] == 355]
-                self.assertEqual(scripts, [b"BlueKantoPilot.route2_gate_warning"])
-                self.assertTrue(any(op.attrs["@code"] == 123 for op in active["@list"]))
-            # Original event remains unchanged (no frozen region-wide switch).
-            self.assertEqual(example_clerk().attrs["@pages"][0].attrs["@trigger"], 0)
+    def test_gate_follows_red_line_beside_northern_house_not_map_edge(self):
+        # The reference screenshot draws the horizontal restriction near the
+        # sleeping old man, west of the northern house, not at map y=0.
+        door = example_clerk()
+        door.attrs["@x"], door.attrs["@y"] = 9, 6
+        city = RubyObject("RPG::Map", {"@width": 15, "@height": 12})
+        row, first, last = viridian_route2_block_line({2: door}, city)
+        self.assertEqual((row, first, last), (5, 3, 8))
+        self.assertNotEqual(row, 0)
+        self.assertEqual(last - first, 5)
+
+    def test_gate_rejects_missing_house_or_out_of_bounds_corridor(self):
+        city = RubyObject("RPG::Map", {"@width": 15, "@height": 12})
+        with self.assertRaisesRegex(ValueError, "northern Viridian house"):
+            viridian_route2_block_line({}, city)
+        door = example_clerk()
+        door.attrs["@x"] = 3
+        door.attrs["@y"] = 6
+        with self.assertRaisesRegex(ValueError, "outside the source map"):
+            viridian_route2_block_line({2: door}, city)
+        door.attrs["@x"] = 9
+        door.attrs["@y"] = 1
+        with self.assertRaisesRegex(ValueError, "outside the source map"):
+            viridian_route2_block_line({2: door}, city)
 
     def test_mart_entry_resets_stale_autorun_and_tunnels_are_unmodified(self):
         script = (ROOT / "scripts/regions/pilot.py").read_text("utf8")
         self.assertIn("prepare_viridian_mart_visit", script)
-        self.assertIn("make_viridian_route2_gates(events, source, map_data, route2_map)", script)
+        self.assertIn("viridian_route2_block_line(events, map_data)", script)
+        self.assertIn("blue-kanto-viridian-route2-line.txt", script)
+        self.assertNotIn("selected.update(gates)", script)
         self.assertNotIn("guarded_forest_transfer", script)
         self.assertNotIn("mart_counter_approach", script)
         runtime = (ROOT / "scripts/regions/KantoPilot.rb").read_text("utf8")
@@ -115,6 +114,9 @@ class KantoParcelStoryTests(unittest.TestCase):
         self.assertIn("def self.route2_exit_blocked?", runtime)
         self.assertIn("Game_Player.prepend(BlueKantoPilot::Route2ExitGuard)", runtime)
         self.assertIn('event.name == "Kanto Viridian Route 2 Parcel Gate"', runtime)
+        self.assertIn("clear_legacy_viridian_route2_gates", runtime)
+        self.assertIn("player.y == row + 1", runtime)
+        self.assertNotIn("player.y == 0 && $game_map", runtime)
         self.assertIn('BlueMusic.kanto_me_play("healed")', runtime)
         self.assertIn('progress["pilot_oak_parcel_delivered"] = true', runtime)
 
