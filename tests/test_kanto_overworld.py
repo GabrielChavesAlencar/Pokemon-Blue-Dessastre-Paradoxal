@@ -9,7 +9,7 @@ try:
     from pilot import command, new_event, if_scene
     from kanto_overworld import (
         source_item_ball, source_obstacle, source_npc_dialogue,
-        adapt_source_field_event,
+        adapt_source_field_event, safely_adapt_source_field_event, MissingActorGraphic,
     )
     from server.ruby_marshal import RubyObject
 finally:
@@ -129,11 +129,58 @@ class KantoOverworldContracts(unittest.TestCase):
                                  scripts=[command(101, b"Oi")], conditional=True)
         self.assertIsNone(source_npc_dialogue(conditioned))
 
+    def test_missing_optional_npc_sprite_never_crashes_kanto_build(self):
+        # Reproduces the Windows error from FRLG: NPC_Hiker.png is absent.
+        npc = fake_event(name=b"Friendly Hiker", scripts=[
+            command(101, b"Ola!"),
+        ], graphic=b"NPC_Hiker")
+        def missing_actor(event):
+            raise MissingActorGraphic("Missing actor graphic: NPC_Hiker")
+
+        field, problem = safely_adapt_source_field_event(
+            npc, 24, 9, {"POTION"}, missing_actor,
+            new_event, command, if_scene)
+        self.assertIsNone(field)
+        self.assertEqual(problem, "Missing actor graphic: NPC_Hiker")
+        # Other safe NPCs with real sprites are still recovered.
+        result, problem = safely_adapt_source_field_event(
+            npc, 24, 9, {"POTION"}, lambda e: b"FRLG_Pilot_NPC_Hiker",
+            new_event, command, if_scene)
+        self.assertIsNone(problem)
+        self.assertEqual(result[1]["kind"], "npc_dialogue")
+
+    def test_missing_optional_item_and_rock_art_is_recoverable(self):
+        def missing_actor(event):
+            raise MissingActorGraphic("Missing actor graphic: MissingSheet")
+        for event in (
+            fake_event(name=b"Item:POTION", graphic=b"MissingSheet"),
+            fake_event(name=b"SmashRock", scripts=[command(0)],
+                       graphic=b"MissingSheet"),
+        ):
+            result, problem = safely_adapt_source_field_event(
+                event, 24, 9, {"POTION"}, missing_actor,
+                new_event, command, if_scene)
+            self.assertIsNone(result)
+            self.assertIn("MissingSheet", problem)
+
+    def test_only_missing_graphic_is_nonfatal(self):
+        npc = fake_event(name=b"Friendly Hiker", scripts=[
+            command(101, b"Oi!"),
+        ], graphic=b"NPC_Hiker")
+        def unexpected_failure(event):
+            raise ValueError("Other source audit error")
+        with self.assertRaisesRegex(ValueError, "Other source audit error"):
+            safely_adapt_source_field_event(
+                npc, 24, 9, {"POTION"}, unexpected_failure,
+                new_event, command, if_scene)
+
     def test_source_coverage_is_scoped_to_active_kanto_maps(self):
         script = (ROOT / "scripts/regions/pilot.py").read_text("utf8")
         self.assertIn('if original in preview_only:', script)
         self.assertIn('adapt_source_field_event(', script)
         self.assertIn('blue-kanto-field-events.json', script)
+        self.assertIn('missing_graphics', script)
+        self.assertIn('safely_adapt_source_field_event(', script)
         self.assertIn('scripts/regions/kanto_overworld.py', script)
         runtime = (ROOT / "scripts/regions/KantoPilot.rb").read_text("utf8")
         self.assertIn('def self.pickup(item, key, event_id = nil, quantity = 1)', runtime)
