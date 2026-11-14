@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b5c3112b2e6684414a7136c016e63e06c12d9cfb",
+      "date": "2026-11-14T17:39:43-03:00",
+      "title": "test(hoenn): QA09 missing/duplicate Elite events, Wallace party and private-copy safety",
+      "category": "Testes"
+    },
+    {
       "sha": "c46deba85127d427ce4d8e32b2958e7895f3464d",
       "date": "2026-11-14T17:39:10-03:00",
       "title": "feat(hoenn): integrate QA09 isolated copy and prior QA5–8 audits",
