@@ -27,7 +27,7 @@ LEARNSETS = {
 def fixture(root: Path) -> Path:
     game = root / "game"
     pbs = game / "PBS"
-    pbs.mkdir(parents=True)
+    pbs.mkdir(parents=True, exist_ok=True)
     (pbs / "trainer_types.txt").write_text(
         "[RIVAL1]\nName = Rival\nGender = Male\nBaseMoney = 16\n",
         encoding="utf-8",
