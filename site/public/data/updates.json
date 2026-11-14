@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8d08f3141a209cfe83419fead51af94a18461d21",
+      "date": "2026-11-14T16:28:56-03:00",
+      "title": "feat(hoenn): QA jogável 4/12 HMs regionais, Strength e Waterfall",
+      "category": "Novidades"
+    },
+    {
       "sha": "2b503a1d5b96dcd3a6f43b2197a78d7b925d9059",
       "date": "2026-11-14T16:19:50-03:00",
       "title": "Lista todos os mapas na viagem rápida do Johto QA",
