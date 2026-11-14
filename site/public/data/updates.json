@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0ac499339a2a44a38779d459e5631991acd62241",
+      "date": "2026-11-13T21:29:04-03:00",
+      "title": "docs(sinnoh): detail Barry's three native PBS drafts, 70/90 scaling and legacy 800-805 pilot conflict",
+      "category": "Documentação"
+    },
+    {
       "sha": "d3f72c31a8ca4db0c9ed5a490ec00bbb4492218a",
       "date": "2026-11-13T21:27:37-03:00",
       "title": "test(sinnoh): make repeated synthetic Barry PBS fixture setup idempotent",
