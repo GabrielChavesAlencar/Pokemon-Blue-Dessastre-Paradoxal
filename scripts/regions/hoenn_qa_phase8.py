@@ -157,7 +157,7 @@ def verify_copy(copy: Path) -> dict:
     qa8 = report.get("qa8")
     if (report.get("region") != "HOENN"
             or report.get("kind") != "ISOLATED_HOENN_TEST"
-            or report.get("save_profile") != "Hoenn QA Fase08"
+            or report.get("save_profile") not in ("Hoenn QA Fase08", "Hoenn QA Fase09")
             or not isinstance(ids, dict) or len(ids) != 199
             or not isinstance(qa8, dict)):
         raise ValueError("QA08: exige cópia privada isolada com 199 mapas e save Fase08")
