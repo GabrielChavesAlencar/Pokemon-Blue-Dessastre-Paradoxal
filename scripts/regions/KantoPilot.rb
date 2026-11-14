@@ -502,19 +502,39 @@ module BlueKantoPilot
     pbMessage(_INTL("O Capitão entregou o HM Cut! A Cascade Badge permite usá-lo em Kanto."))
   end
 
-  def self.pickup(item, key)
+  # Ground items preserve FRLG EventID and quantity, but all ownership and
+  # persistence are Kanto-local. Only success hides the object; existing
+  # field item flags migrate without granting a second copy.
+  def self.pickup(item, key, event_id = nil, quantity = 1)
     collected = (progress["pilot_items"] ||= [])
     if collected.include?(key)
-      pbMessage(_INTL("Você já recolheu este item."))
-      return
+      if event_id && $game_map && $game_map.events[event_id]
+        $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+        $game_map.events[event_id].refresh
+      end
+      return true
     end
-    if $bag.add(item, 1)
-      collected << key
-      BlueMusic.kanto_me_play("obtained_item")
-      pbMessage(_INTL("Encontrou {1}!", GameData::Item.get(item).name))
-    else
+    unless GameData::Item.exists?(item)
+      pbMessage(_INTL("O item não está cadastrado no Blue."))
+      return false
+    end
+    unless quantity.between?(1, 99) && (!$bag.respond_to?(:can_add?) || $bag.can_add?(item, quantity))
       pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
+      return false
     end
+    unless $bag.add(item, quantity)
+      pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
+      return false
+    end
+    collected << key
+    if event_id && $game_map && $game_map.events[event_id]
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+      $game_map.events[event_id].refresh
+    end
+    BlueMusic.kanto_me_play("obtained_item")
+    label = GameData::Item.get(item).name
+    pbMessage(_INTL("Encontrou {1}{2}!", quantity == 1 ? "" : "#{quantity}x ", label))
+    true
   end
 
 

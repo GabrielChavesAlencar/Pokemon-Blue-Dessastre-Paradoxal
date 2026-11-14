@@ -58,6 +58,45 @@ def inspect(game: Path) -> dict:
         if not file.is_file():
             raise ValueError(f"Missing {expected[source]} map: {file.name}")
         maps[dest] = load(file)
+    # Native field objects are generated from their real source EventIDs.
+    # Reject invented coordinates, foreign-preview events and malformed
+    # one-shot item and physical HM obstacle callbacks.
+    field_path = game / "Data/blue-kanto-field-events.json"
+    if not field_path.is_file():
+        raise ValueError("Missing Kanto source-grounded field event inventory")
+    field_report = json.loads(field_path.read_text("utf-8"))
+    if field_report.get("schema") != 1:
+        raise ValueError("Unsupported Kanto field inventory schema")
+    if field_report.get("preview_maps_untouched") != sorted(preview_only):
+        raise ValueError("Kanto field importer touched an unaudited preview")
+    known = {"item", "npc_dialogue", "rock_smash", "strength"}
+    seen = set()
+    for row in field_report["imported"]:
+        source, destination, event_id = row["source_map"], row["map"], row["event"]
+        if source not in mapping or source in preview_only or mapping[source] != destination:
+            raise ValueError("Kanto field event points outside the active Kanto maps")
+        if (destination, event_id) in seen:
+            raise ValueError("Duplicate source-grounded Kanto field event")
+        seen.add((destination, event_id))
+        if row["kind"] not in known:
+            raise ValueError("Unreviewed source-grounded Kanto event kind")
+        event = maps[destination].attrs["@events"].get(event_id)
+        if event is None or (event.attrs["@x"], event.attrs["@y"]) != (row["x"], row["y"]):
+            raise ValueError("A source-grounded Kanto field event changed coordinates")
+        page = event.attrs["@pages"][0].attrs
+        commands = [text(op.attrs["@parameters"][0]) for op in page["@list"]
+                    if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
+        if row["kind"] == "item":
+            if (len(event.attrs["@pages"]) != 2 or
+                    not event.attrs["@pages"][1].attrs["@condition"].attrs["@self_switch_valid"] or
+                    not any("BlueKantoPilot.pickup(" in script for script in commands)):
+                raise ValueError("Ground item missing a safe pickup and persistent hide page")
+        if row["kind"] == "strength":
+            if page["@trigger"] != 1 or page["@through"] or commands != ["pbPushThisBoulder"]:
+                raise ValueError("Source boulder cannot be pushed by native Strength")
+        if row["kind"] == "rock_smash":
+            if page["@trigger"] != 0 or not any("pbSmashThisEvent" in c for c in commands):
+                raise ValueError("SmashRock event does not invoke native Rock Smash")
     # Celadon phase 09 is map-terrain only. Not even source self-switches,
     # NPCs, warps or trainer events may slip into these compiled RPG maps.
     for source in preview_only:
