@@ -29,7 +29,7 @@ Agora, durante a construção de **Testar Kanto**, o importador extrai as falas 
 **Para verificar a correção da imagem:**
 
 1. Feche todas as janelas do piloto. Atualize os arquivos do projeto com o `Blue-Story.exe`.
-2. Na pasta `%LOCALAPPDATA%\\PokemonBlueDessastreParadoxal`, execute `KANTO_JOGAR_EXPERIMENTAL.bat --rebuild`. O processo monta uma **nova pasta** em `.blue-work`, mantendo os saves separados e preservando o piloto anterior.
+2. Na pasta `%LOCALAPPDATA%\PokemonBlueDessastreParadoxal`, execute `KANTO_JOGAR_EXPERIMENTAL.bat --rebuild`. O processo monta uma **nova pasta** em `.blue-work`, mantendo os saves separados e preservando o piloto anterior.
 3. Selecione Português no menu de idioma e fale com o mesmo guarda. A resposta esperada é: **“Está terminantemente proibido passar por aqui!”**. Se alterar para English, a frase deve continuar no original.
 4. Se ainda aparecer inglês, confira o caminho do piloto aberto no relatório de `.blue-work/kanto-gui-reports` e se `Data/blue-kanto-npc-dialogues.dat` e `Data/blue-pt-br.dat` existem nessa cópia. Não é necessário instalar o Argos para esta frase revisada.
 
