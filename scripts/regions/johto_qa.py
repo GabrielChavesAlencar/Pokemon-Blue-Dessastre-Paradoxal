@@ -21,7 +21,8 @@ from build_johto_elm_lab_v1 import table_values
 from build_johto_bedroom_v1 import tile
 from compile_johto_connections import merge_pbs
 from install_johto import save_report
-from johto_opening import THEMES, GATES, NPCS, PICKUPS, OBSTACLES, repair_opening, rival_house, install_audio
+from johto_opening import THEMES, GATES, NPCS, PICKUPS, OBSTACLES, repair_opening, install_audio
+from johto_visual import BASE_MAPS, NEW_MAPS, audit_tilesets, repair_visual_layout
 from package_johto_offline12 import MAP_IDS, RIVAL_PBS, STAGE_PBS, RUNTIME, expected_events
 from pilot import SYSTEM_CLASSES
 from server.ruby_marshal import RubyObject, loads, text
@@ -404,6 +405,12 @@ def native_compile_boot(blob: bytes) -> bytes:
           File.write("Data/blue-johto-routes-ready.txt", "BLUE_JOHTO_ROUTES10_TESTED_READY")
           File.write("Data/blue-johto-violet-ready.txt", "BLUE_JOHTO_VIOLET_V1_READY")
         end
+        # Compiler may rewrite the startup map while normalizing its events.
+        marker = 'Data/blue-johto-qa-start.txt'
+        values = File.read(marker).strip.split(',')
+        path = sprintf('Data/Map%03d.rxdata', Integer(values.fetch(1)))
+        values[4] = Zlib.crc32(File.binread(path)).to_s
+        File.write(marker, values.join(',') + "\\n")
         File.write('Data/blue-johto-qa-compiled.txt', File.read('Data/blue-johto-qa-compile-request.txt'))
         File.delete('Data/blue-johto-qa-compile-request.txt')
       rescue StandardError => error
@@ -494,27 +501,34 @@ def plan(base: Path, bundle: Path, root: Path, report: dict, *, audio: Path | No
 
     # Apply authored QA repairs only after validation of the pinned bundle.
     repair_count = 0
+    map_count = len(MAP_IDS)
     if "Graphics/Characters/doors2.png" in native:
-        ids = {600, start[0], 675, 676, *(THEMES.keys() & MAP_IDS), *GATES,
-               *(row[0] for row in (*NPCS, *PICKUPS, *OBSTACLES))}
-        maps = {mid: loads(files[f"Data/Map{mid:03}.rxdata"]) for mid in ids}
+        maps = {mid: loads(files[f"Data/Map{mid:03}.rxdata"]) for mid in MAP_IDS}
+        infos = loads(files["Data/MapInfos.rxdata"])
+        sets = loads(files["Data/Tilesets.rxdata"])
+        new_paths = {f"Data/Map{mid:03}.rxdata" for mid in NEW_MAPS}
+        if new_paths & native.keys() or NEW_MAPS.keys() & infos.keys():
+            raise ValueError("Os novos interiores de Johto conflitam com mapas da base")
+
+        def read_graphic(folder, name):
+            rel = f"Graphics/{folder}/{name}.png"
+            return files[rel] if rel in files else regular(base / rel).read_bytes()
+
         native_sprites = {Path(path).stem for path in native if path.startswith("Graphics/Characters/")}
         count = sum(len(m.attrs["@events"]) for m in maps.values())
         repair_new_bark(*(maps[mid] for mid in (600, start[0], 675, 676)))
-        if "Data/Map682.rxdata" in native:
-            raise ValueError("A casa do vizinho de Johto colide com o mapa 682")
-        infos = loads(files["Data/MapInfos.rxdata"])
-        if 682 in infos:
-            raise ValueError("A casa do vizinho de Johto colide com o MapInfos")
-        infos[682] = ruby("RPG::MapInfo", name=b"Casa vizinha de New Bark", parent_id=600,
-                          order=max(info.attrs["@order"] for info in infos.values()) + 1,
-                          expanded=False, scroll_x=0, scroll_y=0)
-        files["Data/MapInfos.rxdata"] = serialize(infos)
-        maps[682] = rival_house(maps[600], maps[675], native_sprites)
         repair_opening(maps, native_sprites)
+        repair_visual_layout(maps, infos, sets, files, read_graphic)
+        map_count, tileset_count = audit_tilesets(maps, sets, read_graphic)
+        report["tilesets_audited"] = tileset_count
         repair_count = sum(len(m.attrs["@events"]) for m in maps.values()) - count
-        files.update({f"Data/Map{mid:03}.rxdata": serialize(data, EVENT_CLASSES)
-                      for mid, data in maps.items()})
+        files["Data/MapInfos.rxdata"] = serialize(infos)
+        files["Data/Tilesets.rxdata"] = serialize(sets)
+        changed = BASE_MAPS | NEW_MAPS.keys() | (THEMES.keys() & MAP_IDS) | GATES.keys() | {
+            row[0] for row in (*NPCS, *PICKUPS, *OBSTACLES)
+        }
+        files.update({f"Data/Map{mid:03}.rxdata": serialize(maps[mid], EVENT_CLASSES)
+                      for mid in changed})
     if audio:
         install_audio(safe_path(audio), files)
     for rel, source in ((f"{STORY}/Economy.rb", "scripts/battle_polish/Economy.rb"),
@@ -563,7 +577,7 @@ def plan(base: Path, bundle: Path, root: Path, report: dict, *, audio: Path | No
         "can_install": False, "archive_sha256": pinned, "start": start,
         "file_hashes": {name: hash_bytes(files[name]) for name in sorted(DATA | PBS | {"Data/System.rxdata"})},
     })
-    report.update(status="QA_COPY_PLANNED", bundle_sha256=bundle_hash, maps=83 if repair_count else 82,
+    report.update(status="QA_COPY_PLANNED", bundle_sha256=bundle_hash, maps=map_count,
                   events=32 + repair_count, connections=44, trainer_teams=21, start=start)
     return native, files
 

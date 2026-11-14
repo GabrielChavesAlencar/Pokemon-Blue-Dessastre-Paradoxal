@@ -81,22 +81,6 @@ def connect_gate(map_data, map_id, pair, index):
         add_event(map_data, f"JH_GATE_{index}_{side}", (x, y), page)
 
 
-def rival_house(town, home, sprites):
-    room = deepcopy(home)
-    room.attrs["@events"] = {}
-    # The house opposite the player's uses a ground-floor interior and a
-    # return warp on its own doorstep. No player-home event is shared.
-    door = (4, 31)
-    arrival = (4, 32)
-    add_event(town, "JH_SILVER_HOUSE_ENTER", door,
-              event_page(warp=(682, 7, 8), sprite="doors2", touch=True))
-    add_event(room, "JH_SILVER_HOUSE_EXIT", (7, 9), event_page(warp=(600, *arrival), touch=True))
-    if "NPC_HGSS_Young_Couple_Woman" in sprites:
-        page = event_page(script="BlueJohtoPilot.neighbor", sprite="NPC_HGSS_Young_Couple_Woman")
-        add_event(room, "JH_NEW_BARK_NEIGHBOR", (6, 8), page)
-    return room
-
-
 def repair_opening(maps, sprites):
     for mid, pairs in GATES.items():
         for index, pair in enumerate(pairs):

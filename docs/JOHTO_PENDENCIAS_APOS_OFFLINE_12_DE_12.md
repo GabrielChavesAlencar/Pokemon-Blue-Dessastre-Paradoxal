@@ -195,3 +195,8 @@ Na primeira abertura, a cópia isolada solicita compilação nativa e registra o
 A revisão do piloto usa os portões existentes do Route 29, Cherrygrove, Route 31 e Violet. As passagens entre os lados do mesmo portão mantêm a fachada e permitem o retorno. A abertura ganhou a entrega do Ovo Misterioso, o assistente de Elm, o guia de Cherrygrove, itens de campo e atendimento do Centro de Violet. Cut, Strength e Rock Smash usam a insígnia local e um Pokémon com o golpe.
 
 Para montar com as músicas locais, informe `--audio PASTA_HGSS` ao [instalador de QA](../scripts/regions/johto_qa.py). O piloto reconhece as faixas loopadas pelo nome original da [biblioteca ENLS](https://www.enls.eu/prelooped/album/?game=HGSS). Os arquivos de áudio ficam na instalação local. As outras etapas da campanha seguem o [detonado](JOHTO_DETONADO_HEARTGOLD_SOULSILVER_REFERENCIA_ORGANIZADA.md).
+
+
+A revisão dos tilesets auditou 92 mapas e seis conjuntos gráficos do piloto. New Bark ganhou os interiores do quarto e da casa refeitos com base nas referências de HGSS, laboratório com piso verde-azulado e portas para os quatro prédios. A casa do jogador passou para a fachada azul ao nordeste. Em Cherrygrove, seis casas, o Centro Pokémon e a loja receberam entradas e interiores. A Rota 29 teve fachadas cortadas removidas e colisões de borda corrigidas.
+
+A verificação no Game.exe carregou o início, renderizou os mapas, percorreu os destinos das oito portas de Cherrygrove e seus retornos, verificou a cura no Centro e o estoque da loja. A auditoria dos conjuntos gráficos confere dimensões, slots de autotile e índices utilizados. A revisão visual detalhada dos demais mapas continua pendente.

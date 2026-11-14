@@ -69,6 +69,16 @@ module BlueJohtoPilot
     pbMessage(_INTL("Vizinha: A entrada da Rota 29 fica a oeste de New Bark. Passe no laboratório antes de sair."))
   end
 
+  def self.cherrygrove_resident
+    return unless progress
+    pbMessage(_INTL("Os treinadores que chegam da Rota 29 costumam descansar no Centro Pokémon antes de seguir ao norte."))
+  end
+
+  def self.cherrygrove_mart
+    return unless progress
+    pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])
+  end
+
   def self.silver_window
     return unless progress
     pbMessage(_INTL("Jovem: ... O que você está olhando?"))
