@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "458241e568b8b397f898f93180df2ffc65444436",
+      "date": "2026-11-14T20:57:33-03:00",
+      "title": "test(kanto): evento da mae usa sprite Pallet invisivel ate a entrega de tenis",
+      "category": "Testes"
+    },
+    {
       "sha": "7bf056092f9f1f149c1f0febc03fb72e98aa59eb",
       "date": "2026-11-14T20:57:10-03:00",
       "title": "verify(kanto): auditar sprite real da mae sem obstruir passagem Pewter Rota 3",
