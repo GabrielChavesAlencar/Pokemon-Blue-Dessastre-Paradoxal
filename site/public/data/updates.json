@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3381d800d4ccf65190299482196de3b6b3dcffde",
+      "date": "2026-11-14T18:12:55-03:00",
+      "title": "test(regions): adaptar expectativas HM ao inventario e a especie compativel",
+      "category": "Testes"
+    },
+    {
+      "sha": "428ee4a32357da04f0b936f4f76cab8269788673",
+      "date": "2026-11-14T18:12:54-03:00",
+      "title": "test(hoenn): QA11 Portuguese labels, OGG fallback and native Trainer Card regression",
+      "category": "Testes"
+    },
+    {
       "sha": "c362fa0e57a4d8e11f1026152e68c002ad2d677d",
       "date": "2026-11-14T18:12:25-03:00",
       "title": "test(hoenn): validate 8 local badges and native Trainer Card, keep Decades original",
