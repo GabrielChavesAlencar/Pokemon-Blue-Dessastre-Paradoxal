@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a576d99e86b72643440fb4a5ed6f9486ae534f4e",
+      "date": "2026-11-13T23:32:20-03:00",
+      "title": "fix(kanto): block Route 2 north of Viridian and automate Oak parcel Mart scene",
+      "category": "Correções"
+    },
+    {
       "sha": "7e9b4f1c5dbee03f1b6edf117b4dddef5620ecda",
       "date": "2026-11-13T23:26:16-03:00",
       "title": "docs(hoenn): organizar detonado Emerald e contratos de implementação",
