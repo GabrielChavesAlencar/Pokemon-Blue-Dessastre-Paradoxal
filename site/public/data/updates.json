@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4a7279fc72d5e0b3166302dbebc585f4e108b0d5",
+      "date": "2026-11-13T23:58:56-03:00",
+      "title": "style(portal): distinguish validation status from unadded content",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "18ec81e652be551ec71dc867220f5783c4684534",
+      "date": "2026-11-13T23:58:47-03:00",
+      "title": "test(portal): validate distinct not-added vs experimental QA labels",
+      "category": "Testes"
+    },
+    {
       "sha": "701769a0c64714b3826fe4d16cd5a835b91da4f3",
       "date": "2026-11-13T23:58:39-03:00",
       "title": "feat(portal): distinguish not-added from experimental content pending native verification",
