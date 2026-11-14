@@ -139,7 +139,7 @@ def install_npc_locale(root: Path, source: Path, target: Path):
         new_locale[english] = portuguese
     baseline.update(new_locale)
     if baseline:
-        path.write_bytes(dumps_simple(sorted(baseline.items())))
+        path.write_bytes(dumps_simple([[k, v] for k, v in sorted(baseline.items())]))
 
     pending = []
     translated = []
