@@ -43,6 +43,8 @@ Os handlers Ruby [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb), a [templat
 
 **Faltam 3 subetapas:** auditar os nove mapas e sprites reais com coordenadas e spawn, validar as três equipes PBS de Barry, e integrar/testar o piloto no Game.exe e Android. Todos os mapas e posições da template permanecem `null`/`false`. Portanto **S13 e S14 são parciais**, não entregas jogáveis. Veja o [MD detalhado da Fase 03](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md) e o [inventário de 8 subetapas](../data/regions/sinnoh-progress.json).
 
+**Verificação de código:** [CI de Sinnoh isolada](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43533250672) — **62 testes Python aprovados**, sintaxe Ruby aprovada e execução de `sinnoh_pilot_runtime.rb` com resultado `SINNOH_STORY_RUNTIME_GUARDS_OK`. Esses testes usam fixtures e não certificam gameplay nativo. A suíte geral também inclui testes de Johto; falhas de Johto devem ser investigadas separadamente, sem alterar as barras de Sinnoh.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
