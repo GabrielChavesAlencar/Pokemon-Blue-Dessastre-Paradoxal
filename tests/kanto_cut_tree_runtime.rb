@@ -1,20 +1,17 @@
-# Standalone regression for the REAL KantoPilot.rb CutTree frame guard.
-# No FRLG/ROM, Game.exe, network, or saves from the user's installation.
+# Runtime regression against the REAL KantoPilot.rb visual CutTree guard.
+# No FRLG assets, Game.exe or personal saves. Reproduces save-load refresh.
 require "tmpdir"
 
 pilot_source = File.expand_path(ARGV.fetch(0))
-
 class Game_Player; end
-
 module MenuHandlers
   def self.add(*_args); end
 end
-
 def _INTL(text, *_args); text; end
 
 class Game_Event
   attr_accessor :direction, :pattern
-  attr_reader :name, :updates
+  attr_reader :name, :refreshes
 
   def initialize(name, direction = 2, pattern = 1)
     @name = name
@@ -22,30 +19,48 @@ class Game_Event
     @page = Struct.new(:graphic).new(graphic)
     @direction = direction
     @pattern = pattern
-    @direction_fix = false
-    @walk_anime = true
-    @step_anime = true
     @erased = false
-    @updates = 0
+    @refreshes = 0
   end
 
-  # The native RPG Maker event interaction can turn a non-NPC charset.
-  def lock
-    @direction = 4 unless @direction_fix
+  # Native map load refresh is left untouched. Earlier hook prepended
+  # Game_Event#refresh with super and caused SystemStackError on a real save.
+  def refresh
+    @refreshes += 1
+    @direction = 4 if @refreshes.odd?
     @pattern = 3
   end
 
-  def update
-    @updates += 1
-  end
-
-  def refresh
-    @direction = 6 unless @direction_fix
+  def lock
+    @direction = 4
     @pattern = 2
   end
 
-  def erase
-    @erased = true
+  def erase; @erased = true; end
+end
+
+class FrameRect
+  attr_reader :rect
+  def set(*params); @rect = params; end
+end
+
+class Sprite_Character
+  attr_accessor :zoom_x, :zoom_y
+  attr_reader :src_rect, :base_updates
+  def initialize(character)
+    @character = character
+    @cw = 32
+    @ch = 32
+    @tile_id = 0
+    @src_rect = FrameRect.new
+    @zoom_x = @zoom_y = 1.0
+    @base_updates = 0
+  end
+
+  def update
+    @base_updates += 1
+    @src_rect.set(@character.pattern * @cw,
+                  ((@character.direction - 2) / 2) * @ch, @cw, @ch)
   end
 end
 
@@ -53,21 +68,15 @@ $native_smashes = 0
 $animation_frame = nil
 def pbSmashEvent(event)
   $native_smashes += 1
-  # This part emulates native Essentials' Cut event move route/erase.
   event.direction = 4
   event.pattern = 3
-  event.update
-  $animation_frame = [
-    event.direction, event.pattern,
-    event.instance_variable_get(:@direction_fix),
-    event.instance_variable_get(:@blue_kanto_cut_animating)
-  ]
+  $animation_frame = $tree_sprite.tap(&:update).src_rect.rect
   event.erase
   true
 end
 
-def check(value, description)
-  raise "CutTree runtime failure: #{description}" unless value
+def check(value, name)
+  raise "CutTree regression: #{name}" unless value
 end
 
 Dir.mktmpdir("kanto-cut-tree-") do |dir|
@@ -75,52 +84,62 @@ Dir.mktmpdir("kanto-cut-tree-") do |dir|
     File.write("Kanto pilot.json", "{}")
     load pilot_source
 
-    tree = Game_Event.new("CutTree")
+    check(!Game_Event.ancestors.any? { |m| m.name.to_s.include?("CutTreeFrameGuard") },
+          "Game_Event refresh hook still installed (can recurse on map loading)")
+
+    tree = Game_Event.new("CutTree", 2, 1)
+    $tree_sprite = Sprite_Character.new(tree)
+    # Existing save has event direction/pattern changed to a stump.
+    200.times { tree.refresh }
+    check(tree.refreshes == 200, "native refresh chain was altered")
     tree.direction = 6
     tree.pattern = 3
-    tree.update
-    check([tree.direction, tree.pattern] == [2, 1],
-          "an old changed/stump frame was not reset on a Kanto map")
-    check(tree.instance_variable_get(:@direction_fix) == true &&
-          tree.instance_variable_get(:@walk_anime) == false &&
-          tree.instance_variable_get(:@step_anime) == false,
-          "a standing tree was not frozen")
+    $tree_sprite.update
+    check($tree_sprite.src_rect.rect == [32, 0, 32, 32],
+          "stump frame not visually normalized after save load")
+    check([tree.direction, tree.pattern] == [6, 3],
+          "visual fix must not mutate native Game_Event state")
 
-    # Reproduce the screenshot: press action, show the badge warning,
-    # leave the Cut conditional false, then render another frame.
+    # A denied Cut interaction must not display a changed tree sprite.
     tree.lock
-    tree.update
-    check([tree.direction, tree.pattern] == [2, 1],
-          "failed Cut interaction displayed a stump instead of the tree")
-    check($native_smashes == 0, "failed Cut accidentally began Cut animation")
-    tree.direction = 8
-    tree.pattern = 2
-    tree.refresh
-    check([tree.direction, tree.pattern] == [2, 1],
-          "refresh did not recover the original graphics")
+    $tree_sprite.update
+    check($tree_sprite.src_rect.rect == [32, 0, 32, 32],
+          "tree sprite changed during a rejected Cut interaction")
+    check($native_smashes == 0, "denied Cut invoked removal animation")
 
-    # Other NPCs must still look toward the player; no global sprite freeze.
     npc = Game_Event.new("NPC_Youngster")
     npc.lock
-    check([npc.direction, npc.pattern] == [4, 3],
-          "NPC interaction/turning was altered by the tree guard")
+    npc_sprite = Sprite_Character.new(npc)
+    npc_sprite.update
+    check(npc_sprite.src_rect.rect == [64, 32, 32, 32],
+          "regular NPC rendering was incorrectly frozen")
 
-    # Only an authorized successful cut is allowed to rotate the tree
-    # through its normal animation frames, then erase it.
-    check(pbSmashEvent(tree), "native smash callback did not run")
-    check($native_smashes == 1, "native smash was duplicated")
-    check($animation_frame == [4, 3, false, true],
-          "real Cut animation was frozen or did not release direction fix")
-    check(tree.instance_variable_get(:@erased), "successful Cut did not erase tree")
+    # The successful native Cut can temporarily use all animation frames.
+    check(pbSmashEvent(tree), "native smash was not invoked")
+    check($native_smashes == 1, "successful Cut animation ran twice")
+    check($animation_frame == [96, 32, 32, 32],
+          "successful Cut animation was still frozen")
+    check(tree.instance_variable_get(:@erased), "successful Cut did not remove tree")
     check(!tree.instance_variable_get(:@blue_kanto_cut_animating),
-          "animation guard did not clean up after Cut")
+          "Cut animation flag did not reset")
 
-    # The same patch must remain completely inert in the main Decades game.
+    # Main Decades never has the isolated pilot marker.
     File.delete("Kanto pilot.json")
-    decades = Game_Event.new("CutTree")
-    decades.lock
-    check([decades.direction, decades.pattern] == [4, 3],
-          "main Decades CutTree was modified by isolated Kanto")
+    original = Game_Event.new("CutTree")
+    original.lock
+    original_sprite = Sprite_Character.new(original)
+    original_sprite.update
+    check(original_sprite.src_rect.rect == [64, 32, 32, 32],
+          "main Decades was changed by Kanto rendering")
+    player = Game_Player.new
+    player_sprite = Sprite_Character.new(player)
+    def player.pattern; 0; end
+    def player.direction; 2; end
+    $game_player = player
+    player_sprite.update
+    check(player_sprite.zoom_x == 0.75 && player_sprite.zoom_y == 0.75,
+          "previous protagonist scale fix was lost")
   end
 end
-puts "PASS: Kanto CutTree remains on original frame after denied Cut; native success animates and erases; NPCs/Decades unchanged"
+
+puts "PASS: Kanto CutTree save load no Game_Event recursion; denied Cut visual unchanged; successful animation and Decades isolated"
