@@ -1101,6 +1101,18 @@ module BlueKantoDex
   module PokedexAccess
     def refresh_accessible_dexes
       BlueKantoDex.access!(self)
+      @blue_kanto_dex_ready = true if BlueKantoDex.index && $player && $player.has_pokedex
+      super
+    end
+
+    # The native pause menu checks accessible_dexes *before* opening the Dex
+    # selector. On a save created before KantoDex existed, migrate here first
+    # so the menu actually offers both KantoDex and National.
+    def accessible_dexes
+      if BlueKantoDex.index && $player && $player.has_pokedex &&
+         !@blue_kanto_dex_ready
+        refresh_accessible_dexes
+      end
       super
     end
   end
