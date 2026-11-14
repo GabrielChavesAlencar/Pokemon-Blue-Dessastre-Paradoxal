@@ -72,7 +72,8 @@ function trainerCard(model,data,trainer){
     '<img loading="lazy" src="'+esc(sprite(pokemon))+'" alt="'+esc(pokemon.name)+'"/>').join('');
   return '<a class="regular-card" href="'+trainerLink(trainer)+'">'+
     '<div class="regular-card-meta"><span class="mini-label">'+esc(trainer.role)+'</span><span>'+esc(area.name)+'</span></div>'+
-    '<h3>'+esc(trainer.name)+'</h3><div class="regular-pokemon-strip">'+images+'</div>'+
+    '<h3>'+esc(trainer.name)+'</h3><div class="regular-pokemon-strip">'+images+'</div>'+ 
+    (trainer.leader?'<span class="content-pending-tag pending-validation">Em validação</span>':'')+
     '<span class="regular-card-action">Ver equipe'+(trainer.variants.length>1?'s':'')+' '+icon('arrow')+'</span></a>';
 }
 
