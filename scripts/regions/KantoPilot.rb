@@ -27,6 +27,11 @@ module BlueKantoPilot
   # Removes only old source font/color overrides from imported FRLG NPC text.
   # Do not alter the underlying localization catalog, other regions, or signs'
   # window skins; this runs only when the isolated Kanto NPC bridge is called.
+  def self.cut_tree_obstacle?(event)
+    File.file?("Kanto pilot.json") && event && event.respond_to?(:name) &&
+      event.name.to_s.match?(/cut[ _-]*tree|cuttable[ _-]*tree/i)
+  end
+
   def self.standard_npc_text(message)
     message.gsub(/\\(?:fn|fs|font|c)\[[^\]]*\]/i, "").gsub(/\\[br]/i, "")
   end
@@ -1245,6 +1250,60 @@ module BlueKantoPilot::PlayerOverworldScale
   end
 end
 Sprite_Character.prepend(BlueKantoPilot::PlayerOverworldScale) if defined?(Sprite_Character)
+
+# A CutTree uses direction/pattern rows as visual stages, not NPC facings.
+# Some existing pilot saves retain an altered row after a denied interaction.
+# Freeze the standing graphic from the original event page while the tree is
+# intact; let native pbSmashEvent animate only AFTER a real, authorized Cut.
+module BlueKantoPilot::CutTreeFrameGuard
+  def blue_kanto_restore_tree_frame
+    return unless BlueKantoPilot.cut_tree_obstacle?(self)
+    return if @erased || @blue_kanto_cut_animating
+    original = @page && @page.graphic
+    return unless original
+    @direction_fix = true
+    @walk_anime = false
+    @step_anime = false
+    @direction = original.direction
+    @pattern = original.pattern
+  end
+
+  def refresh
+    super
+    blue_kanto_restore_tree_frame
+  end
+
+  def lock
+    blue_kanto_restore_tree_frame
+    super
+    blue_kanto_restore_tree_frame
+  end
+
+  def update
+    super
+    blue_kanto_restore_tree_frame
+  end
+end
+
+# Essentials' pbSmashEvent animates Cut by rotating the event. Release the
+# frame lock for that animation only; in all other cases the standing tree
+# must not animate, including a failed badge/HM/party check or cancelled Cut.
+module BlueKantoPilot::CutTreeSmashAnimation
+  def pbSmashEvent(event)
+    return super unless BlueKantoPilot.cut_tree_obstacle?(event)
+    event.instance_variable_set(:@blue_kanto_cut_animating, true)
+    event.instance_variable_set(:@direction_fix, false)
+    begin
+      super
+    ensure
+      event.instance_variable_set(:@blue_kanto_cut_animating, false)
+      event.blue_kanto_restore_tree_frame if event.respond_to?(:blue_kanto_restore_tree_frame)
+    end
+  end
+end
+
+Game_Event.prepend(BlueKantoPilot::CutTreeFrameGuard) if defined?(Game_Event)
+Object.prepend(BlueKantoPilot::CutTreeSmashAnimation)
 
 # The Kanto-only markers ensure this global movement hook is inert on
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
