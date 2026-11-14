@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "046f656640fccd7d656285edfd5776ebce421046",
+      "date": "2026-11-14T12:50:55-03:00",
+      "title": "feat(hoenn): meteorito, teleférico, Magma, Flannery e Heat Badge com saves regionais",
+      "category": "Novidades"
+    },
+    {
       "sha": "ce171bb4e82b672678e3dbb3e0d6269b00f93f9c",
       "date": "2026-11-14T12:49:22-03:00",
       "title": "test(hoenn): validar 85 MapIDs, Flannery, Magma, cavernas e conexão Fallarbor",
