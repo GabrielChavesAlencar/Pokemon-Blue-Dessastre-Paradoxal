@@ -621,6 +621,125 @@ def add_stage5_events(maps, game):
 
 
 
+
+def add_stage6_events(maps, game, rival_image):
+    """Insert Route 110/Mauville events into source maps cleared by the pilot.
+
+    Gym gates use source-matched sprite names when present. Missing RSE gate
+    images are explicitly reported as temporary art; no native visual/gameplay
+    approval is inferred from the synthetic checks.
+    """
+    for mid, x, y, sprite, handler in NPCS_STAGE6:
+        asset = game / f"Graphics/Characters/{sprite}.png"
+        if not regular(asset).read_bytes().startswith(PNG):
+            raise ValueError(f"Gráfico de NPC Mauville inválido: {asset}")
+        append_event(maps[mid], f"HN6_NPC_{mid}_{x}_{y}", x, y,
+                     event_page(script=handler, sprite=sprite))
+        if mid in (42, 43):
+            cx, cy = ((9, 5) if mid == 42 else (4, 5))
+            append_event(maps[mid], f"HN6_Counter_{mid}", cx, cy,
+                         event_page(script=handler))
+    for mid, x, y, key, _message in SIGNS_STAGE6:
+        append_event(maps[mid], f"HN6_Sign_{key}", x, y,
+                     event_page(script=f"BlueHoennPilot.sign_stage6(:{key})"))
+    for mid, x, y, key, item, visible in PICKUPS_STAGE6:
+        page = event_page(script="nil", sprite="Object_Ball" if visible else "")
+        event_id = append_event(maps[mid], f"HN6_Item_{key}", x, y, page)
+        page.attrs["@list"][0] = command(
+            355, f'BlueHoennPilot.pickup(:{item}, "{key}", {event_id})'.encode("ascii"))
+        done = event_page(script="nil")
+        done.attrs["@condition"].attrs["@self_switch_valid"] = True
+        done.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        done.attrs["@through"] = True
+        done.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(done)
+
+    wally_img, wally_fallback = select_native_character(
+        game, ("NPC_RSE_Wally", "NPC_ORAS_Wally", "trainer_YOUNGSTER"),
+        role="Wally Mauville")
+    wattson_img, wattson_fallback = select_native_character(
+        game, ("NPC_RSE_Wattson", "NPC_ORAS_Wattson", "trainer_YOUNGSTER"),
+        role="Wattson Mauville")
+    x, y = WALLY_EVENT[1:]
+    append_event(maps[41], "HN6_Wally_Mauville", x, y,
+                 event_page(script="BlueHoennPilot.wally_mauville", sprite=wally_img))
+    x, y = WATTSON_EVENT[1:]
+    append_event(maps[47], "HN6_Leader_Wattson", x, y,
+                 event_page(script="BlueHoennPilot.wattson", sprite=wattson_img))
+
+    x, y = RIVAL_110_EVENT[1:]
+    append_event(maps[113], "HN6_Rival110", x, y,
+                 event_page(script="BlueHoennPilot.rival_110",
+                            sprite=rival_image))
+    for mid, x, y in RIVAL_110_TRIGGERS:
+        p = event_page(script="BlueHoennPilot.rival_110", touch=True)
+        p.attrs["@through"] = True
+        append_event(maps[mid], f"HN6_RivalTrigger_{x}", x, y, p)
+
+    gate_images = {}
+    for orientation in ("H", "V"):
+        preferred = f"OBJ_RSE_Electric Gate {orientation}"
+        image, placeholder = select_native_character(
+            game, (preferred, "Object_Ball"),
+            role=f"barreira {orientation} do ginásio Wattson")
+        gate_images[orientation] = (image, placeholder)
+    gate_ids = {"blue": [], "pink": []}
+    for mid, x, y, color, direction in GYM_GATES_STAGE6:
+        image, _ = gate_images[direction]
+        page = event_page(script="BlueHoennPilot.wattson_gate", sprite=image)
+        page.attrs["@through"] = False
+        if not image == "Object_Ball":
+            page.attrs["@graphic"].attrs["@direction"] = 2 if color == "blue" else 4
+        event_id = append_event(maps[mid], f"HN6_Gate_{color}_{x}_{y}",
+                                x, y, page)
+        clear = event_page(script="nil")
+        clear.attrs["@condition"].attrs["@self_switch_valid"] = True
+        clear.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        clear.attrs["@through"] = True
+        clear.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(clear)
+        gate_ids[color].append(event_id)
+    blue_ids = repr(gate_ids["blue"])
+    pink_ids = repr(gate_ids["pink"])
+    for mid, x, y in GYM_SWITCHES_STAGE6:
+        trigger = event_page(script=f"BlueHoennPilot.wattson_switch({blue_ids}, {pink_ids})",
+                             touch=True)
+        trigger.attrs["@through"] = True
+        append_event(maps[mid], f"HN6_GymSwitch_{x}_{y}", x, y, trigger)
+
+    for src, ex, ey, sx, sy, dst, dx, dy in CYCLE_TRANSFERS_STAGE6:
+        p = event_page(script=f"BlueHoennPilot.cycling_gate({dst}, {dx}, {dy})",
+                       touch=True)
+        p.attrs["@through"] = True
+        append_event(maps[src], f"HN6_CyclingGate_{src}_{ex}_{ey}",
+                     ex, ey, p)
+    for mid, x, y in MAUVILLE_FUTURE_GATES:
+        page = event_page(script="BlueHoennPilot.mauville_future_gate",
+                          touch=True)
+        page.attrs["@through"] = True
+        append_event(maps[mid], f"HN6_FutureGate_{x}_{y}", x, y, page)
+    for mid, x, y, kind, name, sprite, team, double in TRAINERS_STAGE6:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Treinador Route 110/Mauville sem sprite nativo: {sprite}")
+        append_event(maps[mid], f"HN6_Trainer_{mid}_{x}_{y}", x, y,
+                     event_page(script=f'BlueHoennPilot.battle_stage3(:{kind}, "{name}", {mid})',
+                                sprite=sprite))
+    return {
+        "new_maps": len(SOURCE_MAPS_STAGE6),
+        "trainers": len(TRAINERS_STAGE6) + 2 + len(RIVAL_110_TEAMS) * 2,
+        "gym_switches": len(GYM_SWITCHES_STAGE6),
+        "gym_gates": len(GYM_GATES_STAGE6),
+        "cycling_gate_events": len(CYCLE_TRANSFERS_STAGE6),
+        "pickups": len(PICKUPS_STAGE6),
+        "wattson_sprite_placeholder": wattson_fallback,
+        "wally_sprite_placeholder": wally_fallback,
+        "gate_graphic_placeholders": {k: v[1] for k, v in gate_images.items()},
+        "bike_cycling_animation_verified": False,
+        "gameplay_verified": False,
+    }
+
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
@@ -763,6 +882,7 @@ def build_overlay(game, source):
     stage3_counts = add_stage3_events(maps, game)
     stage4_counts = add_stage4_events(maps, game)
     stage5_counts = add_stage5_events(maps, game)
+    stage6_counts = add_stage6_events(maps, game, rival_image)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
