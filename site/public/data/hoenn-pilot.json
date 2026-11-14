@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Piloto de Hoenn até Mauville/Route110: 58 MapIDs de referência. Níveis históricos não são fixos; Dynamo Badge usa BlueRegions. Bike/Cycling Road e barreiras elétricas precisam de validação Game.exe. Rota 111/118 e Trick House ainda não estão implementadas.",
+  "note": "Piloto Hoenn até Fallarbor/Mt Chimney/Lavaridge: 85 MapIDs. Escalonamento de nível e esmeraldas fica no Blue/Decades. Teleférico, sequência Magma/meteorito, puzzles das fontes termais e Heat Badge requerem teste real do Game.exe; Stage7 é piloto isolado.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -619,6 +619,336 @@
     {
       "name": "Portaria da Cycling Road",
       "encounters": {}
+    },
+    {
+      "name": "Fallarbor Town",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Fallarbor",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Fallarbor",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Fallarbor",
+      "encounters": {}
+    },
+    {
+      "name": "Battle Tent de Fallarbor",
+      "encounters": {}
+    },
+    {
+      "name": "Lavaridge Town",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Lavaridge",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Lavaridge",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Lavaridge",
+      "encounters": {}
+    },
+    {
+      "name": "Loja de ervas de Lavaridge",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Lavaridge",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 111",
+      "encounters": {
+        "Grama": [
+          [
+            "SANDSHREW",
+            19,
+            21,
+            35
+          ],
+          [
+            "TRAPINCH",
+            19,
+            21,
+            35
+          ],
+          [
+            "BALTOY",
+            19,
+            21,
+            24
+          ],
+          [
+            "CACNEA",
+            20,
+            22,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Casa dos Winstrate",
+      "encounters": {}
+    },
+    {
+      "name": "Casa de descanso da Rota 111",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 112",
+      "encounters": {
+        "Grama": [
+          [
+            "NUMEL",
+            14,
+            16,
+            75
+          ],
+          [
+            "MARILL",
+            14,
+            16,
+            25
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Estação inferior do teleférico",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 113",
+      "encounters": {
+        "Grama": [
+          [
+            "SPINDA",
+            14,
+            16,
+            70
+          ],
+          [
+            "SLUGMA",
+            14,
+            16,
+            25
+          ],
+          [
+            "SKARMORY",
+            16,
+            16,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Oficina de vidro vulcânico",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 114",
+      "encounters": {
+        "Grama": [
+          [
+            "SWABLU",
+            15,
+            17,
+            40
+          ],
+          [
+            "LOTAD",
+            15,
+            16,
+            15
+          ],
+          [
+            "SEEDOT",
+            15,
+            16,
+            15
+          ],
+          [
+            "LOMBRE",
+            16,
+            18,
+            5
+          ],
+          [
+            "NUZLEAF",
+            16,
+            18,
+            5
+          ],
+          [
+            "SEVIPER",
+            15,
+            17,
+            10
+          ],
+          [
+            "ZANGOOSE",
+            15,
+            17,
+            9
+          ],
+          [
+            "SURSKIT",
+            15,
+            15,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Casa do Fossil Maniac",
+      "encounters": {}
+    },
+    {
+      "name": "Casa de Lanette",
+      "encounters": {}
+    },
+    {
+      "name": "Fiery Path",
+      "encounters": {
+        "Caverna": [
+          [
+            "NUMEL",
+            15,
+            16,
+            30
+          ],
+          [
+            "GRIMER",
+            15,
+            16,
+            14
+          ],
+          [
+            "KOFFING",
+            15,
+            16,
+            13
+          ],
+          [
+            "MACHOP",
+            15,
+            16,
+            15
+          ],
+          [
+            "SLUGMA",
+            15,
+            15,
+            10
+          ],
+          [
+            "TORKOAL",
+            14,
+            16,
+            18
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Mt. Chimney",
+      "encounters": {}
+    },
+    {
+      "name": "Estação superior do teleférico",
+      "encounters": {}
+    },
+    {
+      "name": "Jagged Pass",
+      "encounters": {
+        "Grama": [
+          [
+            "NUMEL",
+            20,
+            22,
+            55
+          ],
+          [
+            "MACHOP",
+            20,
+            22,
+            25
+          ],
+          [
+            "SPOINK",
+            20,
+            22,
+            19
+          ],
+          [
+            "COMBUSKEN",
+            20,
+            20,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Meteor Falls 1F",
+      "encounters": {
+        "Caverna": [
+          [
+            "ZUBAT",
+            14,
+            20,
+            80
+          ],
+          [
+            "LUNATONE",
+            14,
+            18,
+            10
+          ],
+          [
+            "SOLROCK",
+            14,
+            18,
+            10
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Meteor Falls - interior",
+      "encounters": {
+        "Caverna": [
+          [
+            "GOLBAT",
+            33,
+            40,
+            65
+          ],
+          [
+            "LUNATONE",
+            33,
+            39,
+            18
+          ],
+          [
+            "SOLROCK",
+            33,
+            39,
+            17
+          ]
+        ]
+      }
     }
   ],
   "trainers": [
@@ -2025,11 +2355,560 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Heidi",
+      "area": "Rota 111",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "SANDSHREW",
+              22
+            ],
+            [
+              "BALTOY",
+              22
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Hayden",
+      "area": "Rota 111",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Bianca",
+      "area": "Rota 111",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "SHROOMISH",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Larry",
+      "area": "Rota 112",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUZLEAF",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Bryant",
+      "area": "Rota 112",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              18
+            ],
+            [
+              "SLUGMA",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brice",
+      "area": "Rota 112",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              17
+            ],
+            [
+              "MACHOP",
+              17
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Dillon",
+      "area": "Rota 113",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "ARON",
+              19
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Wyatt",
+      "area": "Rota 113",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "ARON",
+              18
+            ],
+            [
+              "ARON",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Sophie",
+      "area": "Rota 113",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "MARILL",
+              17
+            ],
+            [
+              "LOMBRE",
+              19
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Nolan",
+      "area": "Rota 114",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "BARBOACH",
+              19
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Nancy",
+      "area": "Rota 114",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "MARILL",
+              18
+            ],
+            [
+              "LOMBRE",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Lenny",
+      "area": "Rota 114",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "GEODUDE",
+              18
+            ],
+            [
+              "MACHOP",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Lucas",
+      "area": "Rota 114",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "GEODUDE",
+              18
+            ],
+            [
+              "NUMEL",
+              18
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Autumn",
+      "area": "Jagged Pass",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "SHROOMISH",
+              21
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Ethan",
+      "area": "Jagged Pass",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              20
+            ],
+            [
+              "TAILLOW",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Keegan",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "SLUGMA",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Cole",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jeff",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "SLUGMA",
+              22
+            ],
+            [
+              "SLUGMA",
+              22
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Axle",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jace",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "SLUGMA",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Eli",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Danielle",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "MEDITITE",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Gerald",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "KECLEON",
+              23
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Flannery",
+      "area": "Ginásio de Lavaridge",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              24
+            ],
+            [
+              "SLUGMA",
+              24
+            ],
+            [
+              "CAMERUPT",
+              26
+            ],
+            [
+              "TORKOAL",
+              29
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "HEAT"
+    },
+    {
+      "name": "Tabitha",
+      "area": "Mt. Chimney",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              18
+            ],
+            [
+              "POOCHYENA",
+              20
+            ],
+            [
+              "NUMEL",
+              22
+            ],
+            [
+              "ZUBAT",
+              22
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Maxie",
+      "area": "Mt. Chimney",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              24
+            ],
+            [
+              "ZUBAT",
+              24
+            ],
+            [
+              "CAMERUPT",
+              25
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma (Mt. Chimney 1)",
+      "area": "Mt. Chimney",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "NUMEL",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Magma (Mt. Chimney 2)",
+      "area": "Mt. Chimney",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — níveis ajustáveis pelo Blue",
+          "pokemon": [
+            [
+              "ZUBAT",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
   ],
   "native_gameplay_verified": false,
   "stage3_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage4_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage5_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
-  "stage6_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
+  "stage6_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
+  "stage7_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
