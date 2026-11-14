@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "47ccc6a62ac8297a59365ef05b4e53b0f040c899",
+      "date": "2026-11-13T22:16:09-03:00",
+      "title": "docs(sinnoh): publish Windows guide for isolated QA Game.exe copy, per-profile saves and one-shot Barry compilation",
+      "category": "Documentação"
+    },
+    {
       "sha": "d7722ee99d229973f69824c799e8046bd08fdf3c",
       "date": "2026-11-13T22:15:29-03:00",
       "title": "fix(sinnoh): fail closed if isolated QA metadata missing instead of silently starting Decades",
