@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c321a1f22fa66a8172154513d33735693f9225a1",
+      "date": "2026-11-14T17:00:40-03:00",
+      "title": "fix(hoenn): QA6 progression guards for climate crisis, Wallace and Rayquaza",
+      "category": "Correções"
+    },
+    {
       "sha": "8d6c14a3e5bc0414c37ba9239c886d0d624191a5",
       "date": "2026-11-14T16:53:12-03:00",
       "title": "feat(hoenn): QA 5/12 progressão Aqua/Magma e Seafloor sem softlocks",
