@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts/regions"))
 
 from build_johto_events import ruby,event_page
-from pilot_hoenn import append_event
+from pilot_hoenn import append_event,SOURCE_MAPS
 from hoenn_qa_phase5 import (
     STORY_EVENTS,GRUNT_GROUPS,STORY_KEYS,BOSS_PBS,SOURCE_SCOPE,
     verify_story_events,inventory_source,audit_generated,verify_copy,
@@ -111,8 +111,7 @@ class HoennQA5Tests(unittest.TestCase):
             copy=base/"hoenn-qa-fase05"
             (copy/"Data").mkdir(parents=True)
             (copy/"PBS").mkdir()
-            mapping={str(i):700+i for i in range(1,200)}
-            mapping.update({str(i):700+i for i in self.maps})
+            mapping={str(mid):700+i for i,mid in enumerate(SOURCE_MAPS)}
             manifest={
                 "region":"HOENN","kind":"ISOLATED_HOENN_TEST",
                 "save_profile":"Hoenn QA Fase05","maps":mapping,
@@ -121,12 +120,6 @@ class HoennQA5Tests(unittest.TestCase):
                     "source_dialogues_or_scripts_redistributed":False,
                 }
             }
-            # A synthetic 199-map table with the required real source IDs.
-            fixed={str(k):700+i for i,k in enumerate(
-                sorted(set(map(int,mapping)))[:199])}
-            # Fixed source IDs need unique, stable remapped test IDs.
-            mapping={str(mid):700+i for i,mid in enumerate(
-                sorted(set(map(int,mapping))))}
             self.assertEqual(len(mapping),199)
             manifest["maps"]=mapping
             (copy/"Hoenn pilot.json").write_text(json.dumps(manifest),
