@@ -50,12 +50,28 @@ class FakeSystem
   attr_accessor :runstyle
   def initialize; @runstyle = 0; end
 end
+class FakeMother
+  attr_accessor :character_name, :direction
+  attr_reader :name, :frames, :coords
+  def initialize
+    @name = "Kanto Running Shoes Mom"
+    @character_name = ""
+    @frames = []
+  end
+  def character_name=(value)
+    @character_name = value
+    @frames << value
+  end
+  def moveto(x, y)
+    @coords = [x, y]
+  end
+end
 class FakeMap
   attr_accessor :map_id
   attr_reader :events
   def initialize(id)
     @map_id = id
-    @events = {}
+    @events = {25 => FakeMother.new}
   end
 end
 $dialogues = []
@@ -67,6 +83,7 @@ Dir.mktmpdir("kanto-running-shoes-") do |tmp|
     Dir.mkdir("Data")
     File.write("Kanto pilot.json", "{}")
     File.write("Data/blue-kanto-pewter-route3-gate.txt", "777|20|5|9\n")
+    File.write("Data/blue-kanto-pewter-mom-sprite.txt", "FRLG_Pilot_Pallet_Mom\n")
     load ruby_source
     $PokemonGlobal = Struct.new(:blue_regions).new(BlueRegions.new_state("KANTO"))
     $PokemonSystem = FakeSystem.new
@@ -109,6 +126,12 @@ Dir.mktmpdir("kanto-running-shoes-") do |tmp|
            $dialogues.any? { |msg| msg.include?("Tênis de Corrida") },
            "mother's gift and item messages are missing")
     verify(($music || []).count("obtained_item") == 1, "item fanfare missing")
+    mother = $game_map.events[25]
+    verify(mother.frames.include?("FRLG_Pilot_Pallet_Mom"),
+           "actual mother sprite never appeared during the gift")
+    verify(mother.frames.last == "", "mother sprite remained blocking the exit")
+    verify(mother.coords == [18, 6] && mother.direction == 6,
+           "mother did not appear beside and facing the player")
 
     before = $dialogues.length
     player.move_generic(6)
