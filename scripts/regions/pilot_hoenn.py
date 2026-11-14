@@ -51,6 +51,16 @@ from hoenn_stage6 import (
     GYM_SWITCHES_STAGE6, NPCS_STAGE6, PICKUPS_STAGE6, SIGNS_STAGE6,
     MAUVILLE_FUTURE_GATES,
 )
+from hoenn_stage7 import (
+    SOURCE_MAPS_STAGE7, OFFSET_BORDERS_STAGE7, WARP_PAIRS_STAGE7,
+    CABLE_POINTS_STAGE7, LAND_ENCOUNTERS_STAGE7, CAVE_ENCOUNTERS_STAGE7,
+    TRAINERS_STAGE7, FLANNERY_PBS, FLANNERY_TEAM,
+    TABITHA_PBS, TABITHA_TEAM, MAXIE_PBS, MAXIE_TEAM,
+    MAGMA_GRUNTS_STAGE7, MAGMA_GRUNT_EVENTS, TABITHA_EVENT, MAXIE_EVENT,
+    METEORITE_MACHINE_EVENT, METEOR_FALLS_CUTSCENE, FLANNERY_EVENT,
+    ROUTE112_MAGMA_BLOCKERS, NPCS_STAGE7, FUTURE_GATES_STAGE7,
+    PICKUPS_STAGE7, SIGNS_STAGE7,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -61,6 +71,7 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE4,
     **SOURCE_MAPS_STAGE5,
     **SOURCE_MAPS_STAGE6,
+    **SOURCE_MAPS_STAGE7,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -68,7 +79,7 @@ WARP_PAIRS = (
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
     ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
-) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5 + WARP_PAIRS_STAGE6
+) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5 + WARP_PAIRS_STAGE6 + WARP_PAIRS_STAGE7
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
     (11, 8, 6, "Birch", "NPC_ORAS_Professor_Birch", "BlueHoennPilot.birch"),
@@ -102,8 +113,12 @@ MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
            161: "Route101", 162: "Route101",
            41: "Oldale", 42: "Center", 43: "Oldale", 44: "Oldale",
            45: "Oldale", 46: "Oldale", 47: "Birch",
-           113: "Route101", 114: "Route101", 115: "Oldale"}
-OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 101, 102, 103, 104, 108, 111, 113, 114, 130, 156)
+           113: "Route101", 114: "Route101", 115: "Oldale",
+           **{mid: ("Center" if mid in (54, 59) else "Birch" if mid in (63, 124) else
+                    "Route101" if mid in (117, 121, 123, 125, 177, 178, 180, 191, 192)
+                    else "Oldale") for mid in SOURCE_MAPS_STAGE7}}
+OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 53, 58, 101, 102, 103, 104,
+            108, 111, 113, 114, 117, 121, 123, 125, 130, 156, 178, 180)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -114,8 +129,9 @@ LAND_ENCOUNTERS = {
     **LAND_ENCOUNTERS_STAGE3,
     **LAND_ENCOUNTERS_STAGE4,
     **LAND_ENCOUNTERS_STAGE6,
+    **LAND_ENCOUNTERS_STAGE7,
 }
-CAVE_ENCOUNTERS = {**CAVE_ENCOUNTERS_STAGE4, **CAVE_ENCOUNTERS_STAGE5}
+CAVE_ENCOUNTERS = {**CAVE_ENCOUNTERS_STAGE4, **CAVE_ENCOUNTERS_STAGE5, **CAVE_ENCOUNTERS_STAGE7}
 ROUTE_102_TRAINERS = (
     (33, 14, "YOUNGSTER", "Calvin", "trainer_YOUNGSTER", (("POOCHYENA", 5),)),
     (25, 15, "BUGCATCHER", "Rick", "trainer_BUGCATCHER", (("WURMPLE", 4), ("WURMPLE", 4))),
@@ -232,6 +248,7 @@ def validate_geometry(maps, tiles):
         *OFFSET_BORDERS_STAGE4,
         *OFFSET_BORDERS_STAGE5,
         *OFFSET_BORDERS_STAGE6,
+        *OFFSET_BORDERS_STAGE7,
     ):
         def border(map_id, side):
             w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
@@ -269,6 +286,16 @@ def validate_geometry(maps, tiles):
         edges.setdefault((src, sx, sy), []).append((dest, dx, dy))
         edges.setdefault((dest, dx, dy), []).append((src, sx, sy))
         required.update(((src, sx, sy), (dest, dx, dy)))
+    # Summit cable only unlocks after the meteorite cutscene. Static
+    # connectivity validation includes the conditional edge but the real
+    # runtime checks Hoenn's quest flag before moving the player.
+    lower, upper = CABLE_POINTS_STAGE7
+    if not (open_tile(maps[lower[0]], tiles[lower[0]], *lower[1:]) and
+            open_tile(maps[upper[0]], tiles[upper[0]], *upper[1:])):
+        raise ValueError("Pontos do teleférico bloqueados em RXDATA auditado")
+    edges.setdefault(lower, []).append(upper)
+    edges.setdefault(upper, []).append(lower)
+    required.update((lower, upper))
     reachable(START, required, tiles, maps, edges, blocked)
     return edges, required
 
