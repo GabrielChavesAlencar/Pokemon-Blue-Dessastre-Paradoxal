@@ -405,6 +405,10 @@ SURGE_LOCKS = {8, *range(11, 20)}
 
 MART = 'pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])'
 VIRIDIAN_MART = "BlueKantoPilot.viridian_mart"
+# The compiled script for source Map036/Event018 is also validated by
+# verify_pilot.py. Keep a single canonical callback to avoid false failures
+# when its event-id argument changes (e.g. one-shot item persistence).
+KANTO_MOONSTONE_CALLBACK = 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018", 18)'
 
 
 def write_map(path, obj, classes=()):
@@ -761,7 +765,7 @@ def install_events(source, target, mapping):
                          26: {2: "BlueKantoPilot.heal"},
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
-                         36: {18: 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018", 18)'},
+                         36: {18: KANTO_MOONSTONE_CALLBACK},
                          65: {2: "BlueKantoPilot.heal"},
                          64: {7: "BlueKantoPilot.ticketmaster"},
                          76: {2: "BlueKantoPilot.captain"}}
