@@ -119,7 +119,8 @@ def _safe_obstacle_name(name: str,kind: str) -> bool:
 
 
 def install_simple_obstacles(events_by_map: dict, donor_maps: dict,
-                             target_maps: dict, game: Path) -> dict:
+                             target_maps: dict, game: Path,
+                             source=None, overlay: dict | None = None) -> dict:
     """Reauthor exact named rocks only if a compatible native sprite exists.
 
     Source RXDATA scripts/conditions are not copied or evaluated.
@@ -164,8 +165,28 @@ def install_simple_obstacles(events_by_map: dict, donor_maps: dict,
         sprite=next((n for n in choices
                      if (game/f"Graphics/Characters/{n}.png").is_file() and
                      not (game/f"Graphics/Characters/{n}.png").is_symlink()),None)
+        if sprite is None and source is not None and overlay is not None:
+            # The pinned character graphic may be used ONLY inside the
+            # isolated local Blue copy. Source.read verifies its Git blob hash.
+            # No third-party character image is added to public Git history.
+            original_graphic=page_orig.attrs.get("@graphic")
+            original_name=text(original_graphic.attrs.get("@character_name",b"")) if original_graphic else ""
+            if re.fullmatch(r"[A-Za-z0-9_ ()-]+",original_name):
+                rel=f"Graphics/Characters/{original_name}.png"
+                try:
+                    blob=source.read(rel)
+                except (OSError,ValueError,FileNotFoundError):
+                    blob=b""
+                if blob.startswith(b"\x89PNG\r\n\x1a\n"):
+                    sprite="BLUE_HOENN_QA4_"+original_name
+                    target=f"Graphics/Characters/{sprite}.png"
+                    if (game/target).exists() or (target in overlay and overlay[target]!=blob):
+                        skipped.append([mid,x,y,kind,"sprite_name_collision"])
+                        continue
+                    overlay[target]=blob
+                    counts["private_pinned_sprite_assets"]+=1
         if sprite is None:
-            skipped.append([mid,x,y,kind,"no_native_sprite"])
+            skipped.append([mid,x,y,kind,"no_native_or_pinned_sprite"])
             continue
         page=event_page(script="nil",sprite=sprite)
         script=("BlueHoennPilot.rock_smash_obstacle({event})"
