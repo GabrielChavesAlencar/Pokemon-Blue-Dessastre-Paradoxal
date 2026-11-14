@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c7474e3dc5c3c3adc2c0effd78ecce5867fd3f48",
+      "date": "2026-11-13T22:35:09-03:00",
+      "title": "test(sinnoh): validate all 44 QA scenarios, 70/90 levels, screenshot hashes and no false native acceptance",
+      "category": "Testes"
+    },
+    {
       "sha": "3e46998fd683bff8e1843cf1d54774cc7cae68de",
       "date": "2026-11-13T22:34:28-03:00",
       "title": "feat(sinnoh): add private 44-case Windows/Android manual playtest evidence checklist with hash and dynamic-level validation",
