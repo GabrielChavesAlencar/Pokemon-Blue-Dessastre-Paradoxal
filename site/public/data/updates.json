@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "049eab96f0f83413818bc46d93b5076be8404663",
+      "date": "2026-11-13T21:42:49-03:00",
+      "title": "test(sinnoh): exercise native Barry probe gates with pure Ruby GameData mocks without touching game",
+      "category": "Testes"
+    },
+    {
       "sha": "cd7835906e6f880bafc454d47aff61415c2585ae",
       "date": "2026-11-13T21:42:10-03:00",
       "title": "feat(sinnoh): add explicit read-only Essentials native probe for compiled Barry trainer versions; no battle or marker",
