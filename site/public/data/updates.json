@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6ba2ef1fbb7175de4715790598adfdb74a8d34ee",
+      "date": "2026-11-13T22:19:07-03:00",
+      "title": "docs(sinnoh): clarify QA base must be clean and authored event coordinates are revalidated",
+      "category": "Documentação"
+    },
+    {
       "sha": "241dfd6ccde4be46fcb14f08b3776df532ea9a6d",
       "date": "2026-11-13T22:18:40-03:00",
       "title": "test(sinnoh): assert QA install 4/7 code-only progress and zero real native approvals",
