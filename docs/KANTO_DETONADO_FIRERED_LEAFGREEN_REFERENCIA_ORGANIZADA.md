@@ -73,7 +73,7 @@ Organizar o percurso de Kanto, os marcos narrativos, os prêmios, os desafios, o
 
 ### 2.2 Viridian, Forest, Pewter e Mt. Moon
 
-- **Viridian:** velho ensina captura e entrega Teachy TV; Route 22 permite rival opcional e captura de Mankey/Pidgey; a academia da cidade espera o final da história.
+- **Viridian:** velho ensina captura e entrega Teachy TV; Route 22 permite rival opcional e captura de Mankey/Rattata/Spearow; a academia da cidade espera o final da história.
 - **Viridian Forest:** treinadores Bug Catcher, insetos e Pikachu raro (**5% na referência FRLG**, não substituir probabilidades locais sem auditar a tabela).
 - **Pewter:** Brock entrega Boulder Badge e TM39 Rock Tomb. Após a vitória, um NPC entrega Running Shoes na saída para Route 3. Museu de Pewter oferece Old Amber posteriormente, quando Cut estiver disponível.
 - **Route 3:** treinadores, Jigglypuff e ponto de cura antes de Mt. Moon.
@@ -291,7 +291,7 @@ O detonado relaciona a revanche à sequência pós-Liga e ao resgate de Lorelei 
 | Área | Conteúdo específico a confirmar | Natureza |
 |---|---|---|
 | Route 1 | NPC que entrega item, encontros iniciais | História inicial |
-| Route 22 | Rival opcional, Mankey/Pidgey, acesso posterior à Liga | Opcional no começo |
+| Route 22 | Rival opcional, Mankey/Rattata/Spearow, acesso posterior à Liga | Opcional no começo |
 | Viridian Forest | Pikachu raro, insetos, treinadores | Progressão |
 | Route 3 | Jigglypuff, treinadores e cura em Mt. Moon | Progressão |
 | Mt. Moon | Clefairy, Rockets, seleção de fóssil | Obrigatório |
