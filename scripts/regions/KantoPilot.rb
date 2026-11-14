@@ -57,7 +57,17 @@ module BlueKantoPilot
           pbMessage(_INTL("Oak: Você trouxe meu pacote de Viridian! Muito obrigado!"))
           if $bag.add(:POKEBALL, 5)
             $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
-            $player.pokedex.refresh_accessible_dexes if $player.pokedex
+            if $player.pokedex
+              # The starter was obtained before Oak issued the Pokédex.
+              # Register currently owned, non-egg party species rather than
+              # forcing an empty KantoDex menu; never clear prior records.
+              $player.party.each do |pkmn|
+                next if pkmn.egg?
+                $player.pokedex.set_seen(pkmn.species, false)
+                $player.pokedex.set_owned(pkmn.species, false)
+              end
+              $player.pokedex.refresh_accessible_dexes
+            end
             progress["pilot_oak_parcel_delivered"] = true
             BlueMusic.kanto_me_play("obtained_item")
             pbMessage(_INTL("Oak: Aqui estão sua Pokédex e 5 Poké Bolas. Agora você pode explorar a Viridian Forest!"))
