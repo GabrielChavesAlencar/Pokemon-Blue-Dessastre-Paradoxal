@@ -164,6 +164,28 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertIn("3/6", panel)
         self.assertIn("8/32 (25%)", panel)
 
+    def test_qa_installer_is_code_preparation_not_native_acceptance(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        stage = record["qa_install_workstream"]
+        self.assertEqual((stage["complete"], stage["total"]), (4, 7))
+        self.assertEqual(stage["complete"],
+                         sum(bool(row["complete"]) for row in stage["substeps"]))
+        self.assertTrue(all(not item["complete"] or
+                            (ROOT / item["evidence"]).is_file()
+                            for item in stage["substeps"]))
+        for gate in ("compiled_pbs_in_qa", "qa_copy_built_with_real_assets",
+                     "verified_save_paths_on_windows", "native_playability_verified",
+                     "android_verified", "source_assets_rights_verified",
+                     "can_launch_as_verified_game", "actual_main_game_or_saves_modified"):
+            self.assertFalse(stage[gate], gate)
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["phase_gates"]["technically_approved"], 0)
+        self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("4/7", panel)
+        self.assertIn("8/32 (25%)", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
