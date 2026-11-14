@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d3d4b53c2de3ab87f5efdeaf31bcc2cb1f1b6be2",
+      "date": "2026-11-14T00:10:55-03:00",
+      "title": "docs(portal): mark missing Hoenn Route103 starter-dependent rival as a specific pending battle",
+      "category": "Documentação"
+    },
+    {
       "sha": "de192a5e32d35421b495c50a150660a75b1f6d5a",
       "date": "2026-11-14T00:10:40-03:00",
       "title": "feat(portal): connect regional trainer-binding evidence to backlog and pilot trainer pages",
