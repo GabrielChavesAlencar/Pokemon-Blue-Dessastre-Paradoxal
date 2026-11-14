@@ -41,6 +41,11 @@ module BlueHoennPilot
                       [:YOUNGSTER, "Allen"], [:LASS, "Tiana"]].all? { |kind, name| GameData::Trainer.exists?(kind, name, 102) }
       raise "Treinadores da Rota 102 incompletos"
     end
+    names = ["May", "Brendan"]
+    unless names.all? { |name| [210, 211, 212].all? { |version|
+             GameData::Trainer.exists?(:RIVAL1, name, version) } }
+      raise "As seis variantes PBS do rival de Hoenn não foram compiladas"
+    end
     connections = load_data("Data/map_connections.dat")
     links = [[maps.fetch(7), route], [maps.fetch(12), route]]
     [102, 103].each do |source_id|
