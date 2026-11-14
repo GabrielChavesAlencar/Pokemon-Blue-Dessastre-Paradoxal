@@ -154,8 +154,15 @@ module BlueSinnohPilot
     end
     # Until all three versions exist and are checked by the isolated build,
     # DO NOT attempt to start an arbitrary PBS trainer from the main game.
-    unless File.file?(RIVAL_READY) && !File.symlink?(RIVAL_READY) &&
-           File.read(RIVAL_READY).strip == RIVAL_PROOF &&
+    ready_for_release = File.file?(RIVAL_READY) && !File.symlink?(RIVAL_READY) &&
+                        File.read(RIVAL_READY).strip == RIVAL_PROOF
+    # The private QA may TEST the battle before final gameplay acceptance.
+    # Its native map/PBS probe + per-copy hash proof is mandatory, and this
+    # does not create the release marker or change behavior in the main game.
+    qa_test_only = defined?(BlueSinnohQAStart) &&
+                   BlueSinnohQAStart.respond_to?(:barry_test_authorized?) &&
+                   BlueSinnohQAStart.barry_test_authorized?
+    unless (ready_for_release || qa_test_only) &&
            defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
       return false
@@ -163,6 +170,7 @@ module BlueSinnohPilot
     pbMessage(_INTL("Barry: Vamos descobrir como nossos parceiros se saem!"))
     setBattleRule("canLose")
     result = TrainerBattle.start(:BLUE_SINNOH_RIVAL, "Barry", rival_version)
+    return false if result.nil?
     $player.heal_party if defined?($player) && $player && $player.respond_to?(:heal_party)
     flags["rival_fought"] = true
     pbMessage(result ?
