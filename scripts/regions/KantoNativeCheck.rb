@@ -143,7 +143,8 @@ module KantoNativeCheck
              "Oak's parcel delivered without returning to the laboratory")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before parcel delivery")
     BlueKantoPilot.viridian_mart
-    require!(mart_visits.length == 1, "Returning to the Mart should allow shopping")
+    require!(mart_visits.empty?,
+             "Viridian Mart opened before Oak received the parcel")
     BlueKantoPilot.choose_starter
     require!(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak did not accept the parcel upon return")
@@ -155,9 +156,10 @@ module KantoNativeCheck
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
     BlueKantoPilot.viridian_mart
+    BlueKantoPilot.viridian_mart
     require!(mart_visits.length == 2 &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
-             "Returning to Mart after delivery did not keep the shop available")
+             "Viridian Mart must open only after Oak receives his parcel")
     BlueKantoPilot.rival
     require!(battle_calls.last == [:BLUE_KANTO_RIVAL, "Blue", 11], "Wrong rival team")
     require!(BlueKantoPilot.rival_done?, "Rival result not recorded")
@@ -605,6 +607,16 @@ module KantoNativeCheck
     # and rescued Silph required. All fights here are simulated by this CI test.
     viridian_gym = map_for.call("Ginasio Viridian Giovanni")
     viridian = map_for.call("Viridian City")
+    require!(BlueKantoPilot.viridian_map_id == viridian,
+             "Viridian local name points to the wrong mapped Kanto map")
+    previous_locale = $PokemonSystem.blue_locale
+    $PokemonSystem.blue_locale = "pt-BR"
+    require!(GameData::MapMetadata.get(viridian).name == "Cidade de Viridian",
+             "Viridian map banner is truncated in Portuguese")
+    $PokemonSystem.blue_locale = "en"
+    require!(GameData::MapMetadata.get(viridian).name == "Viridian City",
+             "Viridian map banner changed in English")
+    $PokemonSystem.blue_locale = previous_locale
     $map_factory.setup(viridian)
     gate = $game_map.events[1]
     require!(gate && gate.trigger == 1 &&
