@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "084355006db6c39049e87a19a7f4072e7a2ed59e",
+      "date": "2026-11-14T11:54:17-03:00",
+      "title": "feat(hoenn): Knuckle Badge, Brawly, Flash, Steven, Briney e Stern com progresso persistente",
+      "category": "Novidades"
+    },
+    {
       "sha": "151b59c95bcc013c9cada110e0b21fc8335d4910",
       "date": "2026-11-14T11:52:59-03:00",
       "title": "test(hoenn): validar 48 mapas, Granite Cave, Brawly e Aqua no PBS compilado",
