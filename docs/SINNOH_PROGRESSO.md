@@ -85,6 +85,20 @@ O novo montador [prepare_sinnoh_pilot_bundle.py](../scripts/regions/prepare_sinn
 
 **Validação atualizada de código:** a [CI isolada de Sinnoh, execução 43538522476](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43538522476), aprovou **119 testes Python** e os testes Ruby de introdução e sondagem do Barry em ambiente sintético. A regressão geral permanece com a falha preexistente de Johto `test_ruby_guard_only_accepts_signed_local_pilot` (`[601, 13, 13]` vs `nil`), sem representar falha do montador de Sinnoh. Teste offline não prova Game.exe jogável.
 
+## Instalação experimental com saves separados — preparada em código
+
+```text
+██████████████░░░░░░░░░░  4/7 (57% das subetapas da instalação QA)
+```
+
+O [instalador QA](../scripts/regions/install_sinnoh_qa_copy.py) monta **uma cópia nova em `.blue-work`** a partir de um overlay Sinnoh já auditado. Ele exclui saves da base, atribui identificadores exclusivos em `mkxp.json` e `Game.ini`, prepara o `System.rxdata` para o quarto do jogador e inclui um bootstrap para a compilação das três versões PBS de Barry. Na **primeira execução local do Game.exe QA**, o bootstrap tenta compilar e registra erros ou a prova local da compilação; **não libera o marcador de batalha do Barry**.
+
+O plugin [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) exige a prova de compilação, o perfil Sinnoh e SHA-256 dos arquivos protegidos antes de preparar um novo jogo. A falta de prova bloqueia o início em vez de cair silenciosamente na campanha Decades. Os [testes Python](../tests/test_sinnoh_qa_install.py) e [testes Ruby](../tests/sinnoh_qa_start_runtime.rb) cobrem esse contrato com instalações fictícias. [Guia completo para Codex/Windows](SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md).
+
+**Restam 3 subetapas reais:** auditar e montar a cópia com os mapas autorizados, compilar/verificar o PBS e os caminhos efetivos de saves no Game.exe Windows, e testar Twinleaf/Barry/saves/Android sem regressões. Por isso a instalação QA ainda **não foi executada com assets reais**, o item do piloto continua **parcial**, o desenvolvimento geral permanece **8/32 (25%)** e as barras de aceite **0/13**. Nenhum save principal foi modificado.
+
+**CI isolada:** [execução de Sinnoh](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43539553514) aprovou **131 testes Python**, sintaxe Ruby e os harnesses de abertura/Barry, inclusive `SINNOH_QA_START_SAVE_AND_PBS_GUARDS_OK`. A suíte geral possui uma falha separada anterior do piloto de Johto; isso não equivale a QA Windows/Android para Sinnoh.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
@@ -115,7 +129,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 |---|---|---|---|
 | 00 | Auditoria de fontes, direitos e baseline | Ferramentas criadas; fonte local pendente | Não |
 | 01 | Importador e remapeamento de mapas | Prévia segura de geometria codificada; fonte real, eventos e instalação pendentes | Não |
-| 02 | Piloto de Sinnoh no menu | Botão no código; faltam piloto e mapas reais | Não |
+| 02 | Piloto de Sinnoh no menu | Montador e instalador QA com saves distintos feitos; fonte real e testes nativos pendentes | Não |
 | 03 | Twinleaf, Rowan, Barry, Sandgem | Handlers próprios + 3 bolas + compilador de eventos prontos; mapas e PBS reais pendentes | Não |
 | 04 | Jubilife, Oreburgh e Roark | Inventário simbólico | Não |
 | 05 | Floaroma, Eterna e Gardenia | Inventário simbólico | Não |
