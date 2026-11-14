@@ -349,10 +349,8 @@ module KantoNativeCheck
     require!(battle_calls.count { |row| row[1] == "Erika" } == 2,
              "Erika was challenged again after winning the Rainbow Badge")
 
-    # Phase 10 Fuchsia/Koga: limited City/Center/Mart/Gym/Safari-Gate
-    # core while all Safari capture sectors and Warden remain preview-only.
-    ["Casa Warden", "Safari Zone Sul", "Safari Zone Norte",
-     "Safari Zone Oeste", "Rota 15"].each do |label|
+    # Phase 10: the Safari sectors and Warden now coexist with protected Fuchsia previews.
+    ["Rota 15"].each do |label|
       location = map_for.call(label)
       $map_factory.setup(location)
       require!($game_map.events.empty?, "Protected Fuchsia preview imported foreign events: #{label}")
@@ -363,18 +361,21 @@ module KantoNativeCheck
     fuchsia_gym = map_for.call("Ginasio Fuchsia Koga")
     safari_gate = map_for.call("Safari Zone Portao")
     safari_south = map_for.call("Safari Zone Sul")
+    safari_north = map_for.call("Safari Zone Norte")
+    safari_west = map_for.call("Safari Zone Oeste")
+    warden_house = map_for.call("Casa do Warden")
     $map_factory.setup(fuchsia_city)
-    require!(whitelisted_core?($game_map.events, [5, 17, 18, 24]),
+    require!(whitelisted_core?($game_map.events, [5, 17, 18, 22, 24]),
              "Unreviewed Fuchsia city events leaked into core")
     [[5, fuchsia_gym], [17, fuchsia_center],
-     [18, fuchsia_mart], [24, safari_gate]].each do |event_id, target_id|
+     [18, fuchsia_mart], [22, warden_house], [24, safari_gate]].each do |event_id, target_id|
       ev = $game_map.events[event_id]
       require!(ev.trigger == 1 && ev.list.any? { |op| op.code == 201 && op.parameters[1] == target_id },
                "Fuchsia city has broken entry #{event_id}")
     end
     [[fuchsia_center, [1, 2]], [fuchsia_mart, [1, 2]],
      [fuchsia_gym, [3, 4, 5, 6, 7, 8, 9, 11]],
-     [safari_gate, [1, 2, 5]]].each do |mid, required|
+     [warden_house, [1, 3]], [safari_gate, [1, 2, 3, 5]]].each do |mid, required|
       $map_factory.setup(mid)
       actual = $game_map.events.keys
       optional_center_pc = mid == fuchsia_center ? [3] : []
@@ -391,9 +392,17 @@ module KantoNativeCheck
                row.parameters[1] == safari_south },
              "Safari access started without tickets/balls/steps implementation")
     before_safari_money = $player.money
-    BlueKantoPilot.safari_preview
+    BlueKantoPilot.safari_guide
     require!($player.money == before_safari_money,
              "Safari informational gate charged money without starting a native session")
+    [safari_south, safari_north, safari_west].each do |zone|
+      $map_factory.setup(zone)
+      require!($game_map.metadata.safari_map && !$game_map.events.empty?,
+               "Safari sector lacks native session metadata or map events")
+    end
+    require!($game_map.events[24].list.any? { |op| op.code == 355 &&
+      op.parameters[0] == "BlueKantoPilot.safari_teeth(24)"
+    }, "The original West Safari Gold Teeth pickup is missing")
     $map_factory.setup(fuchsia_gym)
     require!($game_map.events[3].trigger == 2 && $game_map.events[11].trigger == 0,
              "Koga/Tamers have incorrect trigger modes")

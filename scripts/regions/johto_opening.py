@@ -76,8 +76,13 @@ def connect_gate(map_data, map_id, pair, index):
         x, y = pair[side]
         other_x, other_y = pair[1 - side]
         arrival_x = other_x + (-1 if other_x < x else 1)
-        page = event_page(warp=(map_id, arrival_x, other_y), touch=True)
-        page.attrs["@list"][0].attrs["@parameters"][4] = direction
+        if (map_id, index, side) == (602, 0, 1):
+            page = event_page(script=f"BlueJohtoPilot.violet_gate({map_id}, {arrival_x}, {other_y}, {direction})", touch=True)
+        elif (map_id, index, side) == (602, 1, 1):
+            page = event_page(script=f"BlueJohtoPilot.violet_south_gate({map_id}, {arrival_x}, {other_y}, {direction})", touch=True)
+        else:
+            page = event_page(warp=(map_id, arrival_x, other_y), touch=True)
+            page.attrs["@list"][0].attrs["@parameters"][4] = direction
         add_event(map_data, f"JH_GATE_{index}_{side}", (x, y), page)
 
 

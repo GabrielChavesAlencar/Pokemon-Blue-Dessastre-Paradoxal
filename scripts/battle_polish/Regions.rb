@@ -167,7 +167,17 @@ module BlueRegions
     end
   end
 
+  module PauseIcon
+    def from_current_menu_theme(name, default = nil)
+      return super("menu_town_map", nil) if ["menu_blue_regions", "menu_blue_johto_teleport"].include?(name)
+      super
+    end
+  end
+
   def self.install
+    if PokemonSystem.method_defined?(:from_current_menu_theme) && !PokemonSystem.ancestors.include?(PauseIcon)
+      PokemonSystem.prepend(PauseIcon)
+    end
     MenuHandlers.add(:pause_menu,:blue_regions,{
       "name"=>_INTL("Circuito de regiões"),"order"=>67,
       "condition"=>proc { |_menu| active? },

@@ -198,37 +198,6 @@ module BlueRegionalCards
         false
       end
     })
-    # The Kanto pilot does not necessarily use the Decades Story Mode
-    # switch. Expose BOTH real cards directly, each with its own initial page.
-    # No change to the native Decades Trainer Card or badge switches.
-    MenuHandlers.add(:pause_menu, :blue_kanto_trainer_card, {
-      "name" => _INTL("Cartão de Kanto · insígnias"), "order" => 49,
-      "condition" => proc { |_menu|
-        state = BlueRegions.snapshot
-        state && state["current"] == "KANTO" && !BlueBattleOptions.battle_area?
-      },
-      "effect" => proc do |menu|
-        menu.pbHideMenu
-        pbFadeOutIn { BlueRegionalCards.open(0) }
-        menu.pbShowMenu
-        menu.pbRefresh
-        false
-      end
-    })
-    MenuHandlers.add(:pause_menu, :blue_global_trainer_card, {
-      "name" => _INTL("Cartão global · esmeraldas"), "order" => 50,
-      "condition" => proc { |_menu|
-        state = BlueRegions.snapshot
-        state && state["current"] != "DECADES" && !BlueBattleOptions.battle_area?
-      },
-      "effect" => proc do |menu|
-        menu.pbHideMenu
-        pbFadeOutIn { BlueRegionalCards.open(1) }
-        menu.pbShowMenu
-        menu.pbRefresh
-        false
-      end
-    })
     @installed = true
   end
 end

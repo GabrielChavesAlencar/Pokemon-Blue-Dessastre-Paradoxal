@@ -266,6 +266,116 @@
       "map": "VIRIDIAN_GYM",
       "track": 25,
       "enabled": true
+    },
+    {
+      "map": "ROUTE_2",
+      "track": 13,
+      "enabled": true
+    },
+    {
+      "map": "FOREST_GATE_SOUTH",
+      "track": 13,
+      "enabled": true
+    },
+    {
+      "map": "FOREST_GATE_NORTH",
+      "track": 13,
+      "enabled": true
+    },
+    {
+      "map": "ROUTE_3",
+      "track": 32,
+      "enabled": true
+    },
+    {
+      "map": "INDIGO_GATE",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "INDIGO_PLATEAU",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "INDIGO_LOBBY",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "ELITE_LORELEI_ROOM",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "ELITE_BRUNO_ROOM",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "ELITE_AGATHA_ROOM",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "ELITE_LANCE_ROOM",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "CHAMPION_HALL",
+      "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "FUCHSIA_SAFARI_GATE",
+      "track": 50,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_SOUTH",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_EAST",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_NORTH",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_WEST",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_REST_SOUTH",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_REST_EAST",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_REST_NORTH",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_REST_WEST",
+      "track": 48,
+      "enabled": true
+    },
+    {
+      "map": "SAFARI_SECRET_HOUSE",
+      "track": 48,
+      "enabled": true
     }
   ],
   "battles": [

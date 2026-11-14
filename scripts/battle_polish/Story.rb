@@ -268,11 +268,6 @@ module BlueStory
     TrainerBattle.singleton_class.prepend(BattleStart)
     BattleCreationHelperMethods.singleton_class.prepend(Preparation)
     Object.prepend(NoPickup)
-    MenuHandlers.add(:pause_menu,:blue_story_progress,{
-      'name'=>'Progressao / Revanches Blue','order'=>66,
-      'condition'=>proc { |menu| story? && !BlueBattleOptions.battle_area? },
-      'effect'=>proc { |menu| menu.pbHideMenu;pbFadeOutIn { BlueStory.menu };menu.pbShowMenu;false }
-    })
     @installed=true
   end
 end

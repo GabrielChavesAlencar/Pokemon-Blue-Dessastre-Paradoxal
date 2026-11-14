@@ -207,6 +207,9 @@ module BlueMusic
         BlueKantoPilot.respond_to?(:league_active?) && BlueKantoPilot.league_active?
       return 'champion'
     end
+    if types.length == 1 && (elite = types[0].match(/\ABLUE_KANTO_ELITE_(LORELEI|BRUNO|AGATHA|LANCE)\z/))
+      return 'gym' if kanto_map_symbol?("ELITE_#{elite[1]}_ROOM")
+    end
     return 'gym' if types.any? { |t| KANTO_GYM_TYPES.include?(t) }
     'trainer'
   end

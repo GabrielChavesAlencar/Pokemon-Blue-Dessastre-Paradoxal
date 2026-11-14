@@ -215,10 +215,80 @@ module BlueJohtoPilot
     end)
   end
 
+  TEST_STOPS = {
+    "New Bark Town" => [600, 10, 26, 2],
+    "Laboratório Elm" => [676, 10, 11, 8],
+    "Rota 29" => [625, 70, 14, 4],
+    "Cherrygrove City" => [601, 63, 24, 4],
+    "Rota 30 / Sr. Pokémon" => [626, 20, 20, 8],
+    "Rota 31" => [627, 39, 35, 4],
+    "Violet City" => [602, 32, 32, 8],
+    "Torre Sprout" => [678, 9, 12, 8],
+    "Ginásio de Violet" => [677, 9, 12, 8],
+    "Rota 36" => [637, 68, 8, 4]
+  }.freeze
+
+  def self.testing?
+    return false unless File.file?("Johto pilot.json") && regional_state
+    $scene.is_a?(Scene_Map) && $game_temp && !$game_temp.in_battle
+  end
+
+  def self.teleport_menu
+    return unless testing?
+    stops = TEST_STOPS.select { |_, point| pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0])) }
+    # Keep the starter requirement so the player can return without getting stuck.
+    stops = stops.select { |_, point| [600, 676].include?(point[0]) } unless starter
+    choice = pbMessage(_INTL("Testar Johto / Viagem rápida"), stops.keys + [_INTL("Voltar")], -1)
+    return if !choice || choice < 0 || choice >= stops.length
+    pbFadeOutIn { BlueRegionTravel.move_to(stops.values[choice]) }
+  end
+
+  def self.sign(label)
+    pbMessage(_INTL(label))
+  end
+
+  def self.regional_resident
+    pbMessage(_INTL("Se precisar descansar, procure o Centro Pokémon mais próximo."))
+  end
+
+  def self.violet_gate_open?
+    flags = progress
+    flags && (flags["mystery_egg_delivered"] || BlueJohtoViolet.badge_earned?)
+  end
+
+  def self.violet_gate(map_id, x, y, direction)
+    unless violet_gate_open?
+      pbMessage(_INTL("Entregue o Ovo Misterioso ao Professor Elm antes de seguir para Violet."))
+      return
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, direction]) }
+  end
+
+  def self.violet_south_gate(map_id, x, y, direction)
+    unless BlueJohtoViolet.badge_earned?
+      pbMessage(_INTL("Mostre a Zephyr Badge de Falkner para seguir viagem."))
+      return
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, direction]) }
+  end
+
+  if defined?(MenuHandlers)
+    MenuHandlers.add(:pause_menu, :blue_johto_teleport, {
+      "name" => _INTL("Testar Johto / Viagem rápida"), "order" => 68,
+      "condition" => proc { |_menu| BlueJohtoPilot.testing? },
+      "effect" => proc do |menu|
+        menu.pbHideMenu
+        BlueJohtoPilot.teleport_menu
+        true
+      end
+    })
+  end
+
   def self.heal
     return unless progress && $player && !$player.party.empty?
     pbSetPokemonCenter
     $player.heal_party
+    pbMEPlay("Pkmn healing") if respond_to?(:pbMEPlay, true)
     pbMessage(_INTL("Enfermeira: Seus Pokémon estão recuperados!"))
   end
 

@@ -50,12 +50,12 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         file.parent.mkdir(parents=True,exist_ok=True)
         file.write_bytes(b"synthetic fixture, no soundtrack recording")
 
-    def test_142_actual_ids_and_45_previews_are_scoped_but_not_playing(self):
+    def test_142_actual_ids_and_35_previews_are_scoped_but_not_playing(self):
         content, report = self.compile()
         lines = content.decode().splitlines()
         self.assertEqual(report["source_maps"], 142)
-        self.assertEqual(report["preview_maps"], 45)
-        self.assertEqual(report["staged_map_rules"], 52)
+        self.assertEqual(report["preview_maps"], 35)
+        self.assertEqual(report["staged_map_rules"], 74)
         self.assertEqual(report["staged_battles"], 8)
         self.assertEqual(report["staged_events"], 14)
         self.assertEqual(report["staged_scenes"], 13)

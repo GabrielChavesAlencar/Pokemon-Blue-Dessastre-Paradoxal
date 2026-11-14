@@ -27,6 +27,7 @@ REGIONAL_FILES = (
     "Data/blue-kanto-music.txt",
     "Data/blue-kanto-experimental-stops.txt",
     "Data/blue-kanto-silph-floors.txt",
+    "Data/blue-kanto-pewter-route3-gate.txt",
 )
 SHARED_FILES = (
     "Data/blue-trainer-album.dat",

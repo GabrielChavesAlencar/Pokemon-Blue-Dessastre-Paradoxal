@@ -22,7 +22,8 @@ from build_johto_bedroom_v1 import tile
 from compile_johto_connections import merge_pbs
 from install_johto import save_report
 from johto_opening import THEMES, GATES, NPCS, PICKUPS, OBSTACLES, repair_opening, install_audio
-from johto_visual import BASE_MAPS, NEW_MAPS, audit_tilesets, repair_visual_layout
+from johto_visual import (BASE_MAPS, NEW_MAPS, audit_tilesets, johto_metadata,
+                          repair_visual_layout, revise_connections)
 from package_johto_offline12 import MAP_IDS, RIVAL_PBS, STAGE_PBS, RUNTIME, expected_events
 from pilot import SYSTEM_CLASSES
 from server.ruby_marshal import RubyObject, loads, text
@@ -518,21 +519,27 @@ def plan(base: Path, bundle: Path, root: Path, report: dict, *, audio: Path | No
         count = sum(len(m.attrs["@events"]) for m in maps.values())
         repair_new_bark(*(maps[mid] for mid in (600, start[0], 675, 676)))
         repair_opening(maps, native_sprites)
-        repair_visual_layout(maps, infos, sets, files, read_graphic)
+        sign_maps = repair_visual_layout(maps, infos, sets, files, read_graphic)
+        files["PBS/map_metadata_johto_qa.txt"] = johto_metadata(maps, infos)
+        files["PBS/map_connections.txt"] = revise_connections(files["PBS/map_connections.txt"])
         map_count, tileset_count = audit_tilesets(maps, sets, read_graphic)
         report["tilesets_audited"] = tileset_count
         repair_count = sum(len(m.attrs["@events"]) for m in maps.values()) - count
         files["Data/MapInfos.rxdata"] = serialize(infos)
         files["Data/Tilesets.rxdata"] = serialize(sets)
-        changed = BASE_MAPS | NEW_MAPS.keys() | (THEMES.keys() & MAP_IDS) | GATES.keys() | {
+        changed = BASE_MAPS | sign_maps | NEW_MAPS.keys() | (THEMES.keys() & MAP_IDS) | GATES.keys() | {
             row[0] for row in (*NPCS, *PICKUPS, *OBSTACLES)
         }
         files.update({f"Data/Map{mid:03}.rxdata": serialize(maps[mid], EVENT_CLASSES)
                       for mid in changed})
     if audio:
         install_audio(safe_path(audio), files)
-    for rel, source in ((f"{STORY}/Economy.rb", "scripts/battle_polish/Economy.rb"),
-                        ("Plugins/ZZZZ Blue Music/BlueMusic.rb", "scripts/music/BlueMusic.rb")):
+    updates = {
+        f"{STORY}/{name}.rb": f"scripts/battle_polish/{name}.rb"
+        for name in ("Economy", "Regions", "Title", "Story", "RegionalCards")
+    }
+    updates["Plugins/ZZZZ Blue Music/BlueMusic.rb"] = "scripts/music/BlueMusic.rb"
+    for rel, source in updates.items():
         if rel in native:
             files[rel] = regular(root / source).read_bytes()
 

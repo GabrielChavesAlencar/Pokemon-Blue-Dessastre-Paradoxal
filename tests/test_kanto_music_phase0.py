@@ -18,7 +18,7 @@ class PhaseZeroMusicTests(unittest.TestCase):
         return {"files": 64, "BGM": 50, "ME": 14,
                 "bytes": 135_768_381}
 
-    def test_existing_repo_baseline_has_142_source_maps_45_previews(self):
+    def test_existing_repo_baseline_has_142_source_maps_35_previews(self):
         # Avoid rereading all 135 MB in each unit test; the workflow separately
         # runs the real CLI with hashes verified for ALL 64 assets.
         with patch.object(phase0.install_kanto_music, "audit",
@@ -30,7 +30,7 @@ class PhaseZeroMusicTests(unittest.TestCase):
         self.assertEqual(report["audio_catalog"]["BGM"], 50)
         self.assertEqual(report["audio_catalog"]["ME"], 14)
         self.assertEqual(report["source_maps"]["source_count"], 142)
-        self.assertEqual(report["source_maps"]["preview_only"], 45)
+        self.assertEqual(report["source_maps"]["preview_only"], 35)
         self.assertFalse(report["source_maps"]["compiled_map_ids_audited"])
         self.assertEqual(report["integration"]["map_music_bindings_added"], 0)
         self.assertEqual(report["integration"]["event_music_bindings_added"], 0)

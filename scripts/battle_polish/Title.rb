@@ -13,6 +13,7 @@ module BlueParadoxTitle
       ModularTitle.const_set(key,value)
     end
     ModularTitleScreen.prepend(Music) unless ModularTitleScreen.ancestors.include?(Music)
+    MTS_Element_MX4.prepend(Breathing) unless MTS_Element_MX4.ancestors.include?(Breathing)
     MTS_Element_Logo.prepend(Subtitle) unless MTS_Element_Logo.ancestors.include?(Subtitle)
   end
   def self.run_checks
@@ -41,6 +42,24 @@ module BlueParadoxTitle
     previous ? pbBGMPlay(previous) : pbBGMStop
     File.open('Data/blue-title-validation.txt','wb') { |f| f.write(lines.join("\n")+"\n") }
   end
+  module Breathing
+    def initialize(*args)
+      super
+      return unless (sprite = @sprites["poke"]) && ModularTitle::SPECIES == :IRONMAELTROM
+      sprite.zoom_x *= 0.67
+      @blue_title_idle_scale = sprite.zoom_y * 0.67
+      @blue_title_idle_started = System.uptime
+      sprite.zoom_y = @blue_title_idle_scale
+    end
+
+    def update
+      super
+      return if disposed? || !@blue_title_idle_scale
+      phase = (System.uptime - @blue_title_idle_started) * (2 * Math::PI / 2.6)
+      @sprites["poke"].zoom_y = @blue_title_idle_scale * (1 + Math.sin(phase) * 0.035)
+    end
+  end
+
   module Music
     def playBGM
       # Kanto's separate pilot executable has a real title screen. Override

@@ -46,8 +46,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     if len(expected_order[:127]) != 127 or expected_order[126] != 13:
         raise ValueError("Previous Kanto save IDs were shifted")
     preview = set(manifest["preview_only"])
-    if len(preview) != 45 or not preview.issubset(expected_ids):
-        raise ValueError("45 geometry-only previews must remain protected")
+    if len(preview) != 35 or not preview.issubset(expected_ids):
+        raise ValueError("35 geometry-only previews must remain protected")
     review = set(ENCOUNTER_REVIEW_SOURCE_IDS)
     if review != {209} or review & preview:
         raise ValueError("Unreviewed Route 23 wild encounter exception changed")
@@ -142,8 +142,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
                 if (slot["weight"] <= 0 or
                     not 1 <= slot["min"] <= slot["max"] <= 100):
                     raise ValueError("Illegal encounter level or source weight")
-    if wild_locations != 22 or methods != 64 or len(encounter_species) != 52:
-        raise ValueError("Audited wild content disappeared from the portal")
+    if wild_locations != 26 or methods != 88 or len(encounter_species) != 67:
+        raise ValueError("Audited wild content differs from the portal")
 
     isolated = None
     if pilot is not None:

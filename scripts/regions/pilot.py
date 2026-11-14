@@ -42,6 +42,8 @@ PILOT_INPUTS = (
     "scripts/regions/export_kanto.py",
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
+    "scripts/battle_polish/Regions.rb",
+    "scripts/battle_polish/Title.rb",
     "scripts/battle_polish/Story.rb",
     "scripts/battle_polish/Balance.rb",
     "scripts/battle_polish/RegionalCards.rb",
@@ -710,6 +712,14 @@ def install_pewter_route3_gate(source, target, mapping):
         f"{mapping[25]}|{pewter['@width']}|{first}|{last}\n", encoding="ascii")
 
 
+def add_pewter_guard(selected, source_events):
+    # Use Oak's aide at the native city's east exit.
+    template = source_events[21]
+    event = new_event(template, [command(355, b"BlueKantoPilot.pewter_route3_warning")],
+                      0, b"NPC_HGSS_Gatehouse_Employee_Man")
+    selected[21] = event
+
+
 def make_viridian_parcel_intro(events):
     """One-time autorun, anchored to the real shopkeeper, never a fake NPC."""
     clerk = events[find_shopkeeper(events)]
@@ -837,7 +847,12 @@ def install_events(source, target, mapping):
                           201: {2: MART},
                           208: {8: "BlueKantoPilot.mansion_secret_key"},
                          146: {2: MART},
-                         153: {1: "BlueKantoPilot.safari_preview", 5: "BlueKantoPilot.safari_preview"},
+                         152: {3: "BlueKantoPilot.safari_warden"},
+                         153: {1: f"BlueKantoPilot.safari_admission({mapping[155]})",
+                               3: f"BlueKantoPilot.safari_admission({mapping[155]})",
+                               5: "BlueKantoPilot.safari_guide"},
+                         161: {24: "BlueKantoPilot.safari_teeth(24)"},
+                         163: {3: "BlueKantoPilot.safari_reward"},
                          26: {2: "BlueKantoPilot.heal"},
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
@@ -1035,9 +1050,8 @@ def install_events(source, target, mapping):
                 continue
             if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47) and not passive_field:
                 continue
-            # Phase 10: exact Fuchsia whitelists, no Warden/Gold Teeth,
-            # Safari captures, Park South event transfers or source quests.
-            if original == 144 and event_id not in (5, 17, 18, 24) and not (
+            # Phase 10: audited Fuchsia doors, facilities and local Safari callbacks.
+            if original == 144 and event_id not in (5, 17, 18, 22, 24) and not (
                     source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
             if original == 145 and event_id not in (1, 2) and not passive_field:
@@ -1046,7 +1060,9 @@ def install_events(source, target, mapping):
                 continue
             if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11) and not passive_field:
                 continue
-            if original == 153 and event_id not in (1, 2, 5) and not passive_field:
+            if original == 152 and event_id not in (1, 3) and not passive_field:
+                continue
+            if original == 153 and event_id not in (1, 2, 3, 5) and not passive_field:
                 continue
             if 179 <= original <= 188 and text(event.attrs["@name"]) == "Locked Door":
                 peers = silph_locked_group(events, event_id)
@@ -1089,6 +1105,7 @@ def install_events(source, target, mapping):
                 continue
             if event_id in scripts:
                 floor_trigger = ((original == 64 and event_id in (9, 29, 30)) or
+                                 (original == 153 and event_id == 3) or
                                  (original == 189 and event_id == 1) or
                                  (original == 199 and event_id == 4) or
                                  (original == 17 and event_id == 3) or
@@ -1143,7 +1160,7 @@ def install_events(source, target, mapping):
                         b"" if (floor_trigger or
                                 not event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"])
                         else actor(event))
-                    if (original, event_id) in {(36, 18), (182, 9), (172, 1), (172, 2), (208, 8)}:
+                    if (original, event_id) in {(36, 18), (182, 9), (172, 1), (172, 2), (208, 8), (161, 24)}:
                         # A one-time Card Key/Dojo prize no longer appears
                         # after the region-local reward has been recorded.
                         collected = copy.deepcopy(scripted.attrs["@pages"][0])
@@ -1265,6 +1282,8 @@ def install_events(source, target, mapping):
                         warp,
                     ]
                 selected[event_id] = new_event(event, operations, trigger, character)
+        if original == 25:
+            add_pewter_guard(selected, events)
         if original == 10:
             route2_map = load(source / "Data/Map018.rxdata")
             gates = make_viridian_route2_gates(events, source, map_data, route2_map)
@@ -1376,13 +1395,15 @@ def install_pbs(preview, target, mapping):
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
         if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
+        if source_id in {*range(155, 164), 153}:
+            metadata.append("SafariMap = true")
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
 
 
 def install_runtime(target, mapping, game):
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
-    for name in ("RegionStart.rb", "Story.rb", "Balance.rb", "RegionalCards.rb",
+    for name in ("RegionStart.rb", "Regions.rb", "Title.rb", "Story.rb", "Balance.rb", "RegionalCards.rb",
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
@@ -1448,11 +1469,11 @@ def install_runtime(target, mapping, game):
         ("KOGA", "Ginasio Fuchsia Koga (batalha experimental)", 147, 7, 21),
         ("FUCH_CENTER", "Fuchsia Centro Pokemon (cura)", 145, 7, 8),
         ("FUCH_MART", "Fuchsia Mart (loja)", 146, 4, 7),
-        ("FUCH_WARDEN", "Casa Warden (cenario)", 152, 6, 9),
-        ("SAF_GATE", "Safari Zone Portao (entrada bloqueada)", 153, 4, 7),
-        ("SAF_SOUTH", "Safari Zone Sul (cenario)", 155, 26, 31),
-        ("SAF_NORTH", "Safari Zone Norte (cenario)", 159, 25, 6),
-        ("SAF_WEST", "Safari Zone Oeste (cenario)", 161, 14, 9),
+        ("FUCH_WARDEN", "Casa do Warden (missao da Safari Zone)", 152, 6, 9),
+        ("SAF_GATE", "Safari Zone Portao (entrada paga)", 153, 4, 7),
+        ("SAF_SOUTH", "Safari Zone Sul (captura)", 155, 26, 31),
+        ("SAF_NORTH", "Safari Zone Norte (captura)", 159, 25, 6),
+        ("SAF_WEST", "Safari Zone Oeste (captura e Dentes de Ouro)", 161, 14, 9),
         ("ROUTE15", "Rota 15 (cenario)", 164, 16, 25),
         # Phase 11: only audited incoming-warp coordinates, geometry only.
         ("ROUTE8", "Rota 8 (cenario)", 107, 3, 25),
@@ -1510,6 +1531,9 @@ def install_runtime(target, mapping, game):
     }), encoding="utf8")
     # Only the isolated copy receives the generated Kanto soundtrack scope.
     from scripts.music.compile_kanto_music import compile_bytes
+    music = target / "Plugins/ZZZZ Blue Music/BlueMusic.rb"
+    if music.is_file():
+        shutil.copyfile(ROOT / "scripts/music/BlueMusic.rb", music)
     compiled, _ = compile_bytes(ROOT, target, mapping)
     (data / "blue-kanto-music.txt").write_bytes(compiled)
 

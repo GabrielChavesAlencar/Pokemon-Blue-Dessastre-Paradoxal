@@ -333,14 +333,14 @@ def inspect(game: Path) -> dict:
     if nurse_scripts != ["BlueKantoPilot.heal"]:
         raise ValueError("Celadon Center must use exactly the local heal callback")
 
-    # Stage 10: restricted Fuchsia gameplay core. Warden, Safari South,
-    # Gold Teeth, encounters and the 15 protected Fuchsia maps stay untouched.
+    # Stage 10: audited facilities, paid Safari entry and the Warden reward.
     fuchsia = {
-        144: {5, 17, 18, 24},           # City to gym/Center/Mart/Safari gate
+        144: {5, 17, 18, 22, 24},           # City to gym/Center/Mart/Safari gate
         145: {1, 2},                   # Center exit + nurse
         146: {1, 2},                   # Mart exit + licensed generic Mart
         147: {3, 4, 5, 6, 7, 8, 9, 11},  # Six trainers, Koga, gym exit
-        153: {1, 2, 5},                # Gate counter/guide (not admission), exit
+        152: {1, 3},                   # Warden house exit and Strength reward
+        153: {1, 2, 3, 5},             # Fee counter, exit, controlled admission, guide
     }
     for origin, allowed in fuchsia.items():
         found_ids = set(maps[mapping[origin]].attrs["@events"])
@@ -350,6 +350,7 @@ def inspect(game: Path) -> dict:
         (144, 5, 147, 9),
         (144, 17, 145, 1),
         (144, 18, 146, 1),
+        (144, 22, 152, 1),
         (144, 24, 153, 2),
     )
     for exterior, entry, interior, leave in fuchsia_returns:
@@ -362,8 +363,12 @@ def inspect(game: Path) -> dict:
             raise ValueError("Fuchsia city entrances must trigger when walked into")
     for origin, eid, script in ((145, 2, "BlueKantoPilot.heal"),
                                 (146, 2, "pbPokemonMart"),
-                                (153, 1, "BlueKantoPilot.safari_preview"),
-                                (153, 5, "BlueKantoPilot.safari_preview")):
+                                (152, 3, "BlueKantoPilot.safari_warden"),
+                                (161, 24, "BlueKantoPilot.safari_teeth"),
+                                (163, 3, "BlueKantoPilot.safari_reward"),
+                                (153, 1, "BlueKantoPilot.safari_admission"),
+                                (153, 3, "BlueKantoPilot.safari_admission"),
+                                (153, 5, "BlueKantoPilot.safari_guide")):
         found_scripts = [
             text(op.attrs["@parameters"][0])
             for op in maps[mapping[origin]].attrs["@events"][eid].attrs["@pages"][0].attrs["@list"]
@@ -376,7 +381,7 @@ def inspect(game: Path) -> dict:
             for op in page.attrs["@list"]:
                 args = op.attrs["@parameters"]
                 if op.attrs["@code"] == 201 and len(args) > 1 and args[1] == mapping[155]:
-                    raise ValueError("Safari admission must not bypass the unimplemented session and catch rules")
+                    raise ValueError("Safari entry bypasses the native session and admission fee")
 
 
     # Saffron 10th functional nucleus: exact city, Center, Mart, Gym,
@@ -807,6 +812,9 @@ def inspect(game: Path) -> dict:
                             expected_local = league_expected_callback(source,event_id,target,x,y,required)
                             if script == expected_local:
                                 edges[dest].add(mapping[target])
+                        if source == 153 and event_id in (1, 3):
+                            if script == f"BlueKantoPilot.safari_admission({mapping[155]})":
+                                edges[dest].add(mapping[155])
                         if source == 10 and event_id == 1:
                             if script == f"BlueKantoPilot.viridian_gym_gate({mapping[13]}, 17, 22)":
                                 edges[dest].add(mapping[13])
@@ -903,7 +911,7 @@ def inspect(game: Path) -> dict:
         "fuchsia_functional_maps": len(set(fuchsia) - preview_only),
         "fuchsia_bidirectional_core_doors": len(fuchsia_returns),
         "fuchsia_gym_battle_events": len(TRAINERS[147]),
-        "safari_admission_blocked": True,
+        "safari_admission_blocked": False,
         "phase11_geometry_only": len(preview_only & {57,62,107,108,109,110,112,113,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189}),
         "preview_event_count": sum(len(maps[mapping[source]].attrs["@events"])
                                    for source in preview_only),
@@ -919,7 +927,7 @@ def inspect(game: Path) -> dict:
         "required_events": len(found),
         "experimental_stops": len(seen_stops),
         "route": [expected[source] for source in route],
-        "limitations": "Celadon and Fuchsia City/Center/Gym plus Fuchsia Mart and Safari Gate have limited selective gameplay. Remaining 36 preview maps include Safari capture areas, Warden, Fuchsia approaches and Saffron gatehouses; Safari admission/capture, Gold Teeth, Surf/Strength and interactive Windows/JoiPlay QA remain pending.",
+        "limitations": "Fuchsia Safari supports paid admission, capture, Surf and the Warden reward. Remaining previews include Fuchsia approaches, parts of Celadon and Saffron gatehouses. Interactive Windows/JoiPlay QA remains pending.",
     }
 
 

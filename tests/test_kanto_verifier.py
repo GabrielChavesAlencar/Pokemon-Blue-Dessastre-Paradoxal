@@ -39,13 +39,12 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[127:], [16,17,*range(209,222)])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
-            141,142,143,152,155,156,157,158,159,
-            160,161,162,163,164,165,
+            141,142,143,164,165,
             57,62,107,108,109,110,112,113,
             173,174,175,176,177,
             190,191,193,194,195,196,197,198,210]))
         self.assertIn(42, order[13:])
-        self.assertEqual(len(manifest["preview_only"]), 45)
+        self.assertEqual(len(manifest["preview_only"]), 35)
         self.assertTrue({114, 115, 124, 144, 145, 146, 147, 153,
                          168,169,170,171,172,*range(178,190),
                          199,200,201,202,203,205,206,207,208,13,
@@ -166,21 +165,26 @@ class KantoPilotAuditTests(unittest.TestCase):
             row = next(x for x in data["locations"] if x["id"] == slug)
             self.assertEqual(row["methods"], [])
             self.assertEqual(row["trainers"], [])
-        for slug in ("kanto-fuchsia-warden-house", "kanto-safari-south",
-                     "kanto-safari-north", "kanto-safari-west",
-                     "kanto-safari-secret-house"):
+        for slug in ("kanto-fuchsia-warden-house", "kanto-safari-secret-house"):
             preview_row = next(x for x in data["locations"] if x["id"] == slug)
             self.assertFalse(preview_row["methods"])
             self.assertFalse(preview_row["trainers"])
 
+        for sector in ("south", "east", "north", "west"):
+            row = next(x for x in data["locations"] if x["id"] == f"kanto-safari-{sector}")
+            self.assertEqual(row["status"], "experimental")
+            self.assertEqual({m["id"] for m in row["methods"]},
+                             {"LandDay", "LandNight", "Water", "OldRod", "GoodRod", "SuperRod"})
+            self.assertFalse(row["trainers"])
+
         # Exact species-level source probabilities are carried as raw
         # integer weights, with percentages normalized solely for the portal.
         locations_with_wild = [x for x in data["locations"] if x["methods"]]
-        self.assertEqual(len(locations_with_wild),22)
-        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),64)
+        self.assertEqual(len(locations_with_wild),26)
+        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),88)
         wild_species={slot["species"] for loc in locations_with_wild
                       for method in loc["methods"] for slot in method["slots"]}
-        self.assertEqual(len(wild_species),52)
+        self.assertEqual(len(wild_species),67)
         for location in locations_with_wild:
             for method in location["methods"]:
                 self.assertEqual(method["weightTotal"],
@@ -208,9 +212,10 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(len(phase10), 20)
         active_fuchsia = {"kanto-fuchsia-city", "kanto-fuchsia-center",
                           "kanto-fuchsia-mart", "kanto-fuchsia-gym",
-                          "kanto-fuchsia-safari-gate"}
+                          "kanto-fuchsia-safari-gate", "kanto-fuchsia-warden-house"}
+        active_fuchsia.update(x["id"] for x in phase10 if x["id"].startswith("kanto-safari-"))
         protected_fuchsia = [x for x in phase10 if x["id"] not in active_fuchsia]
-        self.assertEqual(len(protected_fuchsia), 15)
+        self.assertEqual(len(protected_fuchsia), 5)
         self.assertTrue(all(not x["methods"] and not x["trainers"]
                             for x in protected_fuchsia))
         self.assertEqual(sum(t["name"] == "Koga" for t in data["trainers"]), 1)

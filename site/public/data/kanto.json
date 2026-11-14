@@ -2046,78 +2046,1192 @@
     },
     {
       "id": "kanto-fuchsia-warden-house",
-      "name": "Casa do Warden (prévia)",
-      "status": "preview",
+      "name": "Casa do Warden",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-fuchsia-safari-gate",
-      "name": "Portão da Safari Zone — entrada de captura indisponível",
+      "name": "Portão da Safari Zone",
       "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-south",
-      "name": "Safari Zone — setor sul (prévia)",
-      "status": "preview",
-      "methods": [],
+      "name": "Safari Zone — setor sul",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "EXEGGCUTE",
+              "chance": 20.0,
+              "min": 24,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "RHYHORN",
+              "chance": 20.0,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "VENONAT",
+              "chance": 15.0,
+              "min": 22,
+              "max": 22,
+              "weight": 15
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.0,
+              "min": 22,
+              "max": 22,
+              "weight": 10
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10.0,
+              "min": 22,
+              "max": 22,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.0,
+              "min": 31,
+              "max": 31,
+              "weight": 5
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.0,
+              "min": 31,
+              "max": 31,
+              "weight": 5
+            },
+            {
+              "species": "PARASECT",
+              "chance": 5.0,
+              "min": 30,
+              "max": 30,
+              "weight": 5
+            },
+            {
+              "species": "PINSIR",
+              "chance": 4.0,
+              "min": 23,
+              "max": 23,
+              "weight": 4
+            },
+            {
+              "species": "SCYTHER",
+              "chance": 4.0,
+              "min": 23,
+              "max": 23,
+              "weight": 4
+            },
+            {
+              "species": "CHANSEY",
+              "chance": 2.0,
+              "min": 23,
+              "max": 23,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "EXEGGCUTE",
+              "chance": 20.0,
+              "min": 24,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "RHYHORN",
+              "chance": 20.0,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "VENONAT",
+              "chance": 15.0,
+              "min": 22,
+              "max": 22,
+              "weight": 15
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.0,
+              "min": 22,
+              "max": 22,
+              "weight": 10
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10.0,
+              "min": 22,
+              "max": 22,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.0,
+              "min": 31,
+              "max": 31,
+              "weight": 5
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.0,
+              "min": 31,
+              "max": 31,
+              "weight": 5
+            },
+            {
+              "species": "PARASECT",
+              "chance": 5.0,
+              "min": 30,
+              "max": 30,
+              "weight": 5
+            },
+            {
+              "species": "PINSIR",
+              "chance": 4.0,
+              "min": 23,
+              "max": 23,
+              "weight": 4
+            },
+            {
+              "species": "SCYTHER",
+              "chance": 4.0,
+              "min": 23,
+              "max": 23,
+              "weight": 4
+            },
+            {
+              "species": "CHANSEY",
+              "chance": 2.0,
+              "min": 23,
+              "max": 23,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "PSYDUCK",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100.0,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 60.0,
+              "min": 5,
+              "max": 15,
+              "weight": 60
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "POLIWAG",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 40.0,
+              "min": 15,
+              "max": 25,
+              "weight": 40
+            },
+            {
+              "species": "SEAKING",
+              "chance": 35.0,
+              "min": 20,
+              "max": 30,
+              "weight": 35
+            },
+            {
+              "species": "DRATINI",
+              "chance": 15.0,
+              "min": 15,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "DRAGONAIR",
+              "chance": 2.0,
+              "min": 25,
+              "max": 35,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-south",
-      "name": "Safari Zone — casa de descanso sul (prévia)",
-      "status": "preview",
+      "name": "Safari Zone — casa de descanso sul",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-east",
-      "name": "Safari Zone — setor leste (prévia)",
-      "status": "preview",
-      "methods": [],
+      "name": "Safari Zone — setor leste",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 23,
+              "max": 23,
+              "weight": 20
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "DODUO",
+              "chance": 20.0,
+              "min": 26,
+              "max": 26,
+              "weight": 40
+            },
+            {
+              "species": "PARAS",
+              "chance": 15.0,
+              "min": 22,
+              "max": 22,
+              "weight": 30
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.0,
+              "min": 24,
+              "max": 24,
+              "weight": 20
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10.0,
+              "min": 24,
+              "max": 24,
+              "weight": 20
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.0,
+              "min": 33,
+              "max": 33,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.0,
+              "min": 33,
+              "max": 33,
+              "weight": 10
+            },
+            {
+              "species": "PARASECT",
+              "chance": 5.0,
+              "min": 25,
+              "max": 25,
+              "weight": 10
+            },
+            {
+              "species": "KANGASKHAN",
+              "chance": 8.0,
+              "min": 25,
+              "max": 25,
+              "weight": 16
+            },
+            {
+              "species": "PINSIR",
+              "chance": 1.0,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            },
+            {
+              "species": "SCYTHER",
+              "chance": 1.0,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 23,
+              "max": 23,
+              "weight": 20
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "DODUO",
+              "chance": 20.0,
+              "min": 26,
+              "max": 26,
+              "weight": 40
+            },
+            {
+              "species": "PARAS",
+              "chance": 15.0,
+              "min": 22,
+              "max": 22,
+              "weight": 30
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.0,
+              "min": 24,
+              "max": 24,
+              "weight": 20
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10.0,
+              "min": 24,
+              "max": 24,
+              "weight": 20
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.0,
+              "min": 33,
+              "max": 33,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.0,
+              "min": 33,
+              "max": 33,
+              "weight": 10
+            },
+            {
+              "species": "PARASECT",
+              "chance": 5.0,
+              "min": 25,
+              "max": 25,
+              "weight": 10
+            },
+            {
+              "species": "KANGASKHAN",
+              "chance": 8.0,
+              "min": 25,
+              "max": 25,
+              "weight": 16
+            },
+            {
+              "species": "PINSIR",
+              "chance": 1.0,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            },
+            {
+              "species": "SCYTHER",
+              "chance": 1.0,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "PSYDUCK",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100.0,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 60.0,
+              "min": 5,
+              "max": 15,
+              "weight": 60
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "POLIWAG",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 40.0,
+              "min": 15,
+              "max": 25,
+              "weight": 40
+            },
+            {
+              "species": "SEAKING",
+              "chance": 35.0,
+              "min": 20,
+              "max": 30,
+              "weight": 35
+            },
+            {
+              "species": "DRATINI",
+              "chance": 15.0,
+              "min": 15,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "DRAGONAIR",
+              "chance": 2.0,
+              "min": 25,
+              "max": 35,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-east",
-      "name": "Safari Zone — casa de descanso leste (prévia)",
-      "status": "preview",
+      "name": "Safari Zone — casa de descanso leste",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-north",
-      "name": "Safari Zone — setor norte (prévia)",
-      "status": "preview",
-      "methods": [],
+      "name": "Safari Zone — setor norte",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.526315789474,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.526315789474,
+              "min": 27,
+              "max": 27,
+              "weight": 20
+            },
+            {
+              "species": "RHYHORN",
+              "chance": 21.052631578947,
+              "min": 26,
+              "max": 26,
+              "weight": 40
+            },
+            {
+              "species": "PARAS",
+              "chance": 15.789473684211,
+              "min": 23,
+              "max": 23,
+              "weight": 30
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.526315789474,
+              "min": 30,
+              "max": 30,
+              "weight": 20
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10.526315789474,
+              "min": 30,
+              "max": 30,
+              "weight": 20
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.263157894737,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.263157894737,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "VENOMOTH",
+              "chance": 5.263157894737,
+              "min": 32,
+              "max": 32,
+              "weight": 10
+            },
+            {
+              "species": "CHANSEY",
+              "chance": 4.210526315789,
+              "min": 26,
+              "max": 26,
+              "weight": 8
+            },
+            {
+              "species": "TAUROS",
+              "chance": 1.052631578947,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 190
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.526315789474,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.526315789474,
+              "min": 27,
+              "max": 27,
+              "weight": 20
+            },
+            {
+              "species": "RHYHORN",
+              "chance": 21.052631578947,
+              "min": 26,
+              "max": 26,
+              "weight": 40
+            },
+            {
+              "species": "PARAS",
+              "chance": 15.789473684211,
+              "min": 23,
+              "max": 23,
+              "weight": 30
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.526315789474,
+              "min": 30,
+              "max": 30,
+              "weight": 20
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 10.526315789474,
+              "min": 30,
+              "max": 30,
+              "weight": 20
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.263157894737,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.263157894737,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "VENOMOTH",
+              "chance": 5.263157894737,
+              "min": 32,
+              "max": 32,
+              "weight": 10
+            },
+            {
+              "species": "CHANSEY",
+              "chance": 4.210526315789,
+              "min": 26,
+              "max": 26,
+              "weight": 8
+            },
+            {
+              "species": "TAUROS",
+              "chance": 1.052631578947,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 190
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "PSYDUCK",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100.0,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 60.0,
+              "min": 5,
+              "max": 15,
+              "weight": 60
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "POLIWAG",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 40.0,
+              "min": 15,
+              "max": 25,
+              "weight": 40
+            },
+            {
+              "species": "SEAKING",
+              "chance": 35.0,
+              "min": 20,
+              "max": 30,
+              "weight": 35
+            },
+            {
+              "species": "DRATINI",
+              "chance": 15.0,
+              "min": 15,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "DRAGONAIR",
+              "chance": 2.0,
+              "min": 25,
+              "max": 35,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-north",
-      "name": "Safari Zone — casa de descanso norte (prévia)",
-      "status": "preview",
+      "name": "Safari Zone — casa de descanso norte",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-west",
-      "name": "Safari Zone — setor oeste (prévia)",
-      "status": "preview",
-      "methods": [],
+      "name": "Safari Zone — setor oeste",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "DODUO",
+              "chance": 20.0,
+              "min": 26,
+              "max": 26,
+              "weight": 40
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 27,
+              "max": 27,
+              "weight": 20
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 15.0,
+              "min": 22,
+              "max": 22,
+              "weight": 30
+            },
+            {
+              "species": "VENONAT",
+              "chance": 15.0,
+              "min": 23,
+              "max": 23,
+              "weight": 30
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.0,
+              "min": 22,
+              "max": 22,
+              "weight": 20
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.0,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.0,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "VENOMOTH",
+              "chance": 5.0,
+              "min": 32,
+              "max": 32,
+              "weight": 10
+            },
+            {
+              "species": "TAUROS",
+              "chance": 4.0,
+              "min": 25,
+              "max": 25,
+              "weight": 8
+            },
+            {
+              "species": "KANGASKHAN",
+              "chance": 1.0,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "DODUO",
+              "chance": 20.0,
+              "min": 26,
+              "max": 26,
+              "weight": 40
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 25,
+              "max": 25,
+              "weight": 20
+            },
+            {
+              "species": "EXEGGCUTE",
+              "chance": 10.0,
+              "min": 27,
+              "max": 27,
+              "weight": 20
+            },
+            {
+              "species": "NIDORANmA",
+              "chance": 15.0,
+              "min": 22,
+              "max": 22,
+              "weight": 30
+            },
+            {
+              "species": "VENONAT",
+              "chance": 15.0,
+              "min": 23,
+              "max": 23,
+              "weight": 30
+            },
+            {
+              "species": "NIDORANfE",
+              "chance": 10.0,
+              "min": 22,
+              "max": 22,
+              "weight": 20
+            },
+            {
+              "species": "NIDORINA",
+              "chance": 5.0,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "NIDORINO",
+              "chance": 5.0,
+              "min": 30,
+              "max": 30,
+              "weight": 10
+            },
+            {
+              "species": "VENOMOTH",
+              "chance": 5.0,
+              "min": 32,
+              "max": 32,
+              "weight": 10
+            },
+            {
+              "species": "TAUROS",
+              "chance": 4.0,
+              "min": 25,
+              "max": 25,
+              "weight": 8
+            },
+            {
+              "species": "KANGASKHAN",
+              "chance": 1.0,
+              "min": 28,
+              "max": 28,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 200
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "PSYDUCK",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 50.0,
+              "min": 20,
+              "max": 40,
+              "weight": 50
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100.0,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 60.0,
+              "min": 5,
+              "max": 15,
+              "weight": 60
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "POLIWAG",
+              "chance": 20.0,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "GOLDEEN",
+              "chance": 40.0,
+              "min": 15,
+              "max": 25,
+              "weight": 40
+            },
+            {
+              "species": "SEAKING",
+              "chance": 35.0,
+              "min": 20,
+              "max": 30,
+              "weight": 35
+            },
+            {
+              "species": "DRATINI",
+              "chance": 15.0,
+              "min": 15,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 4.0,
+              "min": 20,
+              "max": 35,
+              "weight": 4
+            },
+            {
+              "species": "DRAGONAIR",
+              "chance": 2.0,
+              "min": 25,
+              "max": 35,
+              "weight": 2
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
       "trainers": []
     },
     {
       "id": "kanto-safari-rest-west",
-      "name": "Safari Zone — casa de descanso oeste (prévia)",
-      "status": "preview",
+      "name": "Safari Zone — casa de descanso oeste",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },
     {
       "id": "kanto-safari-secret-house",
-      "name": "Safari Zone — Secret House (prévia)",
-      "status": "preview",
+      "name": "Safari Zone — Secret House",
+      "status": "experimental",
       "methods": [],
       "trainers": []
     },

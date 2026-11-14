@@ -19,13 +19,13 @@ class KantoPhaseSixAuditTests(unittest.TestCase):
     def test_complete_catalog_matrix_never_claims_audible_or_loop_acceptance(self):
         rows=phase6.classify_catalog(ROOT,self.manifest)
         self.assertEqual(len(rows),64)
-        self.assertEqual(sum(x["status"]=="VINCULADA" for x in rows),36)
-        self.assertEqual(sum(x["status"]=="PENDENTE_EVENTO" for x in rows),21)
-        self.assertEqual(sum(x["status"]=="MAPA_AUSENTE" for x in rows),7)
+        self.assertEqual(sum(x["status"]=="VINCULADA" for x in rows),38)
+        self.assertEqual(sum(x["status"]=="PENDENTE_EVENTO" for x in rows),20)
+        self.assertEqual(sum(x["status"]=="MAPA_AUSENTE" for x in rows),6)
         self.assertEqual({x["number"] for x in rows if x["status"]=="MAPA_AUSENTE"},
                          set(phase6.ABSENT_KANTO_AREAS))
         self.assertEqual(sum(x["kind"]=="ME" and x["status"]=="VINCULADA" for x in rows),6)
-        self.assertEqual(sum(x["kind"]=="BGM" and x["status"]=="VINCULADA" for x in rows),30)
+        self.assertEqual(sum(x["kind"]=="BGM" and x["status"]=="VINCULADA" for x in rows),32)
         self.assertEqual({x["number"] for x in rows if x["status"]=="VINCULADA"},
                          compiler.approved_audio_track_numbers(ROOT))
         self.assertTrue(all(x["engine_playback"]=="BLOQUEADA_AMBIENTE" for x in rows))
@@ -103,7 +103,7 @@ class KantoPhaseSixAuditTests(unittest.TestCase):
             data=phase6.audit(ROOT,decoder="auto")
             self.assertEqual(data["status"],"BLOCKED_ENV")
             self.assertEqual(data["codec_full_decode_pass"],0)
-            self.assertEqual(data["approved_tracks"],36)
+            self.assertEqual(data["approved_tracks"],38)
             self.assertEqual(data["audible_windows_acceptance"],"BLOCKED_ENV")
             self.assertFalse(data["native_engine_scope_checked"])
             self.assertFalse(data["saves_were_modified"])

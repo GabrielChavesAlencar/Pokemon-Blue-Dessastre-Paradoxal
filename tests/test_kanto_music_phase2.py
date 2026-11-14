@@ -14,28 +14,28 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         enabled = [row for row in self.rules["maps"] if row["enabled"]]
         disabled = {row["map"] for row in self.rules["maps"] if not row["enabled"]}
         self.assertGreaterEqual(self.rules["phase"], 2)
-        self.assertEqual(len(enabled), 50)
+        self.assertEqual(len(enabled), 72)
         self.assertEqual(disabled, {"ROUTE_4", "SILPH_LOBBY"})
         self.assertEqual(compiler.phase2_track_numbers(self.project),
-                         {6, 8, 13, 15, 17, 21, 25, 34, 35, 36, 37, 40,
-                          47, 50, 52, 55, 56})
+                         {6, 8, 13, 15, 17, 21, 25, 32, 34, 35, 36, 37, 40,
+                          47, 48, 50, 52, 55, 56})
         self.assertEqual(sum(x["enabled"] for x in self.rules["battles"]), 8)
         self.assertEqual(sum(x["enabled"] for x in self.rules["events"]),6)
         self.assertEqual(sum(x["enabled"] for x in self.rules["scenes"]), 5)
 
-    def test_real_compiled_ids_emit_50_maps_2_vehicles_no_decades(self):
+    def test_real_compiled_ids_emit_72_maps_2_vehicles_no_decades(self):
         for number in compiler.phase2_track_numbers(self.project):
             self.add_music(number)
         content, report = self.compile()
         lines = content.decode().splitlines()
         maps = [row.split("\t") for row in lines if row.startswith("MAP\t")]
         modes = [row.split("\t") for row in lines if row.startswith("TRANSPORT\t")]
-        self.assertEqual(len(maps), 50)
+        self.assertEqual(len(maps), 72)
         self.assertEqual(len(modes), 2)
-        self.assertEqual(report["active_map_bindings"], 50)
+        self.assertEqual(report["active_map_bindings"], 72)
         self.assertEqual(report["active_transport_bindings"], 2)
         self.assertEqual(report["active_battle_bindings"], 0)
-        # This fixture installs only 17 F2 tracks. Missing F3 tracks must
+        # This fixture installs only 19 F2 tracks. Missing F3 tracks must
         # remain non-binding while F2 MAP and TRANSPORT still compile.
         self.assertEqual(len(report["missing_audio"]),19)
         self.assertTrue(all(name.startswith(("Kanto/", "ME/Kanto/")) for name in report["missing_audio"]))
@@ -58,7 +58,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
                                   self.catalog["files"] if item["number"] == 6)
         pallet.unlink()
         content, report = self.compile()
-        self.assertEqual(report["active_map_bindings"], 49)
+        self.assertEqual(report["active_map_bindings"], 71)
         self.assertEqual(report["active_transport_bindings"], 2)
         self.assertFalse(any(row.startswith("MAP\t705\t") for row in
                              content.decode().splitlines()))
@@ -71,7 +71,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         row["enabled"]=True
         self.write_rules()
         content, report=self.compile()
-        self.assertEqual(report["active_map_bindings"],50)
+        self.assertEqual(report["active_map_bindings"],72)
         self.assertIn("SILPH_LOBBY",report["preview_skipped"])
         self.assertFalse(any(row.startswith(f"MAP\t{self.mapping['177']}\t") for
                              row in content.decode().splitlines()))
@@ -80,7 +80,7 @@ class PhaseTwoMusicTests(KantoMusicPhaseOneTests):
         for number in compiler.phase2_track_numbers(self.project):
             self.add_music(number)
         generated,_=self.compile()
-        self.assertNotIn("Kanto/1-32.",generated.decode())
+        self.assertIn(f"MAP\t{self.mapping['32']}\tKanto/1-32.", generated.decode())
         self.assertNotIn("Kanto/1-38.",generated.decode())
         self.assertNotIn("Kanto/1-59.",generated.decode())
 

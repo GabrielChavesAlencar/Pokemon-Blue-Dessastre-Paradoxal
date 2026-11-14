@@ -32,7 +32,9 @@ module BlueKantoPilot
     message = lines && lines[index]
     raise "Missing Kanto NPC dialogue #{source_map}/#{source_event}/#{index}" unless message.is_a?(String)
     translated = defined?(BlueLocale) ? BlueLocale.translate(message) : message
-    pbMessage(translated)
+    # Old FRLG messages can carry font overrides that depend on its own fonts.
+    # Keep colours, windowskins and variables while using Blue's dialogue font.
+    pbMessage(translated.gsub(/\\(?:fn|fs|font)\[[^\]]*\]/i, ""))
   end
 
   def self.t(english, portuguese, *args)
@@ -266,7 +268,12 @@ module BlueKantoPilot
   end
 
   def self.pewter_route3_warning
-    pbMessage(BlueKantoPilot.t("The eastern exit from Pewter to Route 3 is blocked. Defeat Brock and earn the Boulder Badge first!", "A saída leste de Pewter para a Rota 3 está bloqueada. Derrote Brock e conquiste a Boulder Badge primeiro!"))
+    if BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+      pbMessage(t("Pewter Guard: You have the Boulder Badge. Route 3 is open!", "Guarda de Pewter: você tem a Boulder Badge. A Rota 3 está liberada!"))
+    else
+      pbMessage(t("Pewter Guard: Defeat Brock and earn the Boulder Badge before heading to Route 3.",
+                  "Guarda de Pewter: derrote Brock e conquiste a Boulder Badge antes de seguir para a Rota 3."))
+    end
   end
 
   def self.rival_done?
@@ -1081,15 +1088,73 @@ module BlueKantoPilot
     end
   end
 
-  # The source Safari Gate is mapped for navigation, but the isolated
-  # pilot must NOT start a fake Safari session: native catch rules, step
-  # limits, Safari Balls and exit restoration have not been audited.
-  # Both the gate's counter and its guide use this non-transactional message.
-  def self.safari_preview
-    pbMessage(BlueKantoPilot.t(
-      "Safari Zone: The entrance for catching Pokémon is in development. No ticket, money or Safari Ball will be used in this version.",
-      "Safari Zone: a entrada para captura está em preparação. Nenhum ingresso, dinheiro ou Safari Ball será consumido nesta versão."
-    ))
+  def self.safari_guide
+    pbMessage(t("The Safari Game costs $500. Explore four areas with 30 Safari Balls and a limit on steps.",
+                "O jogo do Safari custa $500. Explore quatro áreas com 30 Safari Balls e um limite de passos."))
+  end
+
+  def self.safari_admission(destination)
+    safari = pbSafariState
+    charged = false
+    if safari.inProgress?
+      if safari.decision != 0
+        safari.pbEnd
+        pbMessage(t("Thanks for visiting the Safari Zone!", "Obrigado por visitar a Zona Safari!"))
+        return
+      end
+    else
+      return unless pbConfirmMessage(t("Enter the Safari Zone for $500?", "Entrar na Zona Safari por $500?"))
+      if $player.money < 500
+        pbMessage(t("You need $500 to enter.", "Você precisa de $500 para entrar."))
+        return
+      end
+      if pbBoxesFull?
+        pbMessage(t("Your Pokémon storage is full.", "O armazenamento de Pokémon está cheio."))
+        return
+      end
+      $player.money -= 500
+      charged = true
+      safari.pbStart(30)
+    end
+    pbFadeOutIn { BlueRegionTravel.move_to([destination, 26, 31, 8]) }
+  rescue StandardError
+    if charged && $game_map.map_id != destination
+      $player.money += 500
+      safari.pbEnd
+    end
+    raise
+  end
+
+  def self.safari_teeth(event_id)
+    return unless pbInSafari?
+    unless progress["pilot_safari_teeth"]
+      progress["pilot_safari_teeth"] = true
+      pbMessage(t("You found the Safari Warden's Gold Teeth!",
+                  "Você encontrou os Dentes de Ouro do Warden da Zona Safari!"))
+    end
+    $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    $game_map.events[event_id].refresh
+  end
+
+  def self.safari_warden
+    if progress["pilot_safari_strength"]
+      pbMessage(t("Warden: Strength can move boulders outside battle.", "Warden: Strength move pedras pesadas fora de batalha."))
+    elsif progress["pilot_safari_teeth"]
+      pbMessage(t("Warden: You found my teeth! Please take this HM.", "Warden: Você encontrou meus dentes! Aceite este HM."))
+      progress["pilot_safari_strength"] = true if pbReceiveItem(:HM04)
+    else
+      pbMessage(t("The Warden is missing his Gold Teeth. Look in the Safari Zone.",
+                  "O Warden perdeu os Dentes de Ouro. Procure na Zona Safari."))
+    end
+  end
+
+  def self.safari_reward
+    if progress["pilot_safari_surf"]
+      pbMessage(t("You already found the Surf prize.", "Você já resgatou o prêmio de Surf."))
+      return
+    end
+    return unless pbReceiveItem(:HM03)
+    progress["pilot_safari_surf"] = true
   end
 
   # Local Pallet residents; never run the foreign FRLG quest scripts.
@@ -1121,9 +1186,14 @@ module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
     if BlueKantoPilot.pewter_route3_blocked?(self, dir)
       turn_generic(dir, true) if turn_enabled
-      key = [$game_map.map_id, x, y, :pewter_route3]
+      key = $game_map.map_id
       if @blue_pewter_last_warning != key
         @blue_pewter_last_warning = key
+        guard = $game_map.events[21]
+        if guard
+          guard.turn_toward_player
+          pbExclaim(guard)
+        end
         BlueKantoPilot.pewter_route3_warning
       end
       return

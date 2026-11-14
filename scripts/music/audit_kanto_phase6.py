@@ -28,7 +28,7 @@ REPORT = ROOT / ".blue-work/kanto-music-phase6-audio.json"
 # requires revisiting the policy rather than silently changing its status.
 ABSENT_KANTO_AREAS = {
     38: "LAVENDER", 39: "POKEMON_TOWER", 41: "ROCKET_GAME_CORNER",
-    45: "ROCKET_HIDEOUT", 48: "LAVENDER", 57: "NET_CENTER",
+    45: "ROCKET_HIDEOUT", 57: "NET_CENTER",
     59: "SEVII",
 }
 
@@ -71,10 +71,8 @@ def classify_catalog(root: Path, manifest: dict[str, Any]) -> list[dict[str, Any
             "decoder_channels": None,
             "decoder_duration_seconds": None,
         })
-    assert len(rows) == 64 and len(active) == 36
-    assert sum(x["status"] == "VINCULADA" for x in rows) == 36
-    assert sum(x["status"] == "PENDENTE_EVENTO" for x in rows) == 21
-    assert sum(x["status"] == "MAPA_AUSENTE" for x in rows) == 7
+    assert len(rows) == 64
+    assert {row["number"] for row in rows if row["status"] == "VINCULADA"} == active
     return rows
 
 
@@ -151,12 +149,12 @@ def audit(root: Path = ROOT, *, decoder: str = "auto",
         "source_files_sha_pass": 64,
         "source_total_bytes": catalog["bytes"],
         "catalog_bgm": catalog["BGM"], "catalog_me": catalog["ME"],
-        "approved_tracks": 36,
+        "approved_tracks": sum(row["status"] == "VINCULADA" for row in rows),
         "approved_bgm": sum(x["kind"] == "BGM" and x["status"] == "VINCULADA" for x in rows),
         "approved_me": sum(x["kind"] == "ME" and x["status"] == "VINCULADA" for x in rows),
-        "pending_tracks": 28,
-        "pending_events": 21,
-        "missing_map_tracks": 7,
+        "pending_tracks": sum(row["status"] != "VINCULADA" for row in rows),
+        "pending_events": sum(row["status"] == "PENDENTE_EVENTO" for row in rows),
+        "missing_map_tracks": sum(row["status"] == "MAPA_AUSENTE" for row in rows),
         "codec_full_decode_pass": sum(x["codec_probe"] == "PASS_FULL_MP3_DECODE" for x in rows),
         "codec_failures": failures,
         "decoder_mode": decoder, "decoder_available": has_decoder,

@@ -16,8 +16,8 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
                           "wildVictory","trainerVictory","gymVictory"})
         self.assertEqual(compiler.phase3_track_numbers(self.project),
                          {11,12,18,19,27,28,53,70})
-        self.assertEqual(len(compiler.phase2_track_numbers(self.project)),17)
-        self.assertEqual(len(compiler.approved_track_numbers(self.project)),30)
+        self.assertEqual(len(compiler.phase2_track_numbers(self.project)),19)
+        self.assertEqual(len(compiler.approved_track_numbers(self.project)),32)
         self.assertEqual(sum(x["enabled"] for x in self.rules["events"]),6)
         self.assertEqual(sum(x["enabled"] for x in self.rules["scenes"]), 5)
 
@@ -26,7 +26,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
             self.add_music(number)
         data, report = self.compile()
         lines = data.decode("utf-8").splitlines()
-        self.assertEqual(report["active_map_bindings"],50)
+        self.assertEqual(report["active_map_bindings"],72)
         self.assertEqual(report["active_transport_bindings"],2)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["default_global_pool_signatures"],3)
@@ -64,7 +64,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
             if number!=53:
                 self.add_music(number)
         data,report=self.compile()
-        self.assertEqual(report["active_map_bindings"],50)
+        self.assertEqual(report["active_map_bindings"],72)
         self.assertEqual(report["active_battle_bindings"],7)
         self.assertIn("Kanto/1-53. Battle! (Legendary Pokémon).mp3",report["missing_audio"])
         self.assertNotIn("BATTLE\tlegendary\t",data.decode("utf-8"))
@@ -87,7 +87,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
         before=(self.game/"Kanto pilot.json").read_bytes()
         data,report=self.compile()
         self.assertEqual(report["source_maps"],142)
-        self.assertEqual(report["preview_maps"],45)
+        self.assertEqual(report["preview_maps"],35)
         self.assertFalse((self.game/compiler.OUTPUT).exists())
         self.assertEqual((self.game/"Kanto pilot.json").read_bytes(),before)
 

@@ -14,8 +14,8 @@ class PhaseFiveMusicTests(KantoMusicPhaseOneTests):
         self.assertEqual({x["scene"] for x in self.rules["scenes"] if x["enabled"]},
                          compiler.SCENE_ENABLED_PHASE5)
         self.assertEqual(compiler.phase5_track_numbers(self.project), {3,7,10,30,72})
-        self.assertEqual(len(compiler.approved_track_numbers(self.project)),30)
-        self.assertEqual(len(compiler.approved_audio_track_numbers(self.project)),36)
+        self.assertEqual(len(compiler.approved_track_numbers(self.project)),32)
+        self.assertEqual(len(compiler.approved_audio_track_numbers(self.project)),38)
         self.assertEqual(sum(not row["enabled"] for row in self.rules["scenes"]),8)
         self.assertTrue(all("pending_reason" in row for row in self.rules["scenes"]
                             if not row["enabled"]))
@@ -27,8 +27,8 @@ class PhaseFiveMusicTests(KantoMusicPhaseOneTests):
         lines=data.decode().splitlines()
         scenes=[row.split("\t") for row in lines if row.startswith("SCENE\t")]
         self.assertEqual(report["source_maps"],142)
-        self.assertEqual(report["preview_maps"],45)
-        self.assertEqual(report["active_map_bindings"],50)
+        self.assertEqual(report["preview_maps"],35)
+        self.assertEqual(report["active_map_bindings"],72)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["active_transport_bindings"],2)
         self.assertEqual(report["active_me_bindings"],6)
@@ -51,7 +51,7 @@ class PhaseFiveMusicTests(KantoMusicPhaseOneTests):
                 self.add_music(number)
         data,report=self.compile()
         self.assertEqual(report["active_scene_bindings"],4)
-        self.assertEqual(report["active_map_bindings"],50)
+        self.assertEqual(report["active_map_bindings"],72)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["active_me_bindings"],6)
         self.assertIn("Kanto/1-03. Title Screen.mp3",report["missing_audio"])

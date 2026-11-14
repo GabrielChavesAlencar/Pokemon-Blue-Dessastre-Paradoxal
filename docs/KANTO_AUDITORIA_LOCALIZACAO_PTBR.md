@@ -6,9 +6,9 @@ A opção **Idioma** do jogo escolhe o idioma ao exibir a fala. Os textos origin
 
 | Origem | Resultado |
 | --- | --- |
-| Mapas da edição montada | 142 examinados, dos quais 97 contêm eventos e 45 são prévias sem eventos. 89 mapas têm texto localizável detectado. |
-| NPCs e placas importados | 316 chaves distintas encontradas em 219 eventos ativos, com 316 revisadas, incluindo títulos próprios mantidos no original. |
-| História, interações e escolhas autorais | 137 pares PT-BR/EN, incluindo casa, Oak, ginásios, Silph, Victory Road e Liga. |
+| Mapas da edição montada | 142 examinados, dos quais 107 têm conteúdo ativo e 35 são prévias sem eventos. |
+| NPCs e placas importados | 348 chaves distintas encontradas em 246 eventos ativos, com 348 revisadas, incluindo títulos próprios mantidos no original. |
+| História, interações e escolhas autorais | Pares PT-BR/EN em casa, Oak, ginásios, Silph, Victory Road, Liga e Safari. |
 | Falas de derrota no PBS | 154 ocorrências e 144 falas distintas na instalação auditada. |
 | Captura e armazenamento | Aviso na placa, bloqueio em batalha contra treinador, restrições de mira e falta de espaço no PC. A varredura também conferiu 453 chaves estáticas do motor nativo. |
 
@@ -18,9 +18,11 @@ A placa da Viridian Forest usa o comando de janela de placas seguido de “You c
 
 O executável de Windows confirmou Português e Inglês para a placa de captura da Viridian Forest, o NPC de Pallet, o aviso de Oak, a fala de derrota de Brock e a tentativa de capturar um Pokémon de outro treinador. A verificação também conferiu o valor padrão de uma configuração antiga e a serialização da preferência de idioma. Passaram 206 testes de Kanto e seis testes do empacotador JoiPlay.
 
+A atualização também verificou no motor a admissão da Safari Zone, as duas recompensas e a escolha das trilhas da Rota 2 e da Elite Four. Essa prova automatizada não avalia a experiência de jogar nem a saída de som nos alto-falantes.
+
 ## Repetir a auditoria
 
-A construção gera `Data/blue-kanto-locale-audit.json` dentro do novo piloto. Para repetir ou obter um código de saída de erro quando houver pendências detectadas:
+A inclusão da Safari Zone trouxe 32 falas importadas revisadas. O diálogo padrão usa a janela nativa, e as placas mantêm seus controles de formatação. A construção gera `Data/blue-kanto-locale-audit.json` dentro do novo piloto. Para repetir ou obter um código de saída de erro quando houver pendências detectadas:
 
 ```powershell
 python scripts/regions/kanto_locale_audit.py "CAMINHO_DO_PILOTO" --strict
@@ -30,4 +32,4 @@ O relatório identifica mapa, evento e página para falas de NPC, placa, diálog
 
 ## Limites
 
-A cobertura é das fontes inventariadas. As 45 prévias sem eventos, funcionalidades ainda não importadas e mensagens construídas apenas durante a execução de plugins compartilhados ficam fora dessa contagem. Uma varredura estrutural não substitui percorrer toda a campanha em ambos os idiomas. O Android também requer uma rodada própria de QA. As abreviações internacionais como PP e nomes de itens como Mega Ring foram preservados.
+A cobertura é das fontes inventariadas. As 35 prévias sem eventos, funcionalidades ainda não importadas e mensagens construídas apenas durante a execução de plugins compartilhados ficam fora dessa contagem. Uma varredura estrutural não substitui percorrer toda a campanha em ambos os idiomas. O Android também requer uma rodada própria de QA. As abreviações internacionais como PP e nomes de itens como Mega Ring foram preservados.

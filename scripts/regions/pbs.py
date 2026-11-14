@@ -236,8 +236,11 @@ def normalize_encounters(source, rows, species):
                 # repetitions change the source's relative level probabilities.
                 methods[method][1].append([weight, fields[1], levels])
         for encounter_method, (_, original_slots) in methods.items():
-            if sum(row[0] for row in original_slots) != 100:
-                raise ValueError(f"Encounter weights must total 100: {key}/{encounter_method}")
+            # FRLG's Safari North grass tables total 95. Essentials draws
+            # from relative weights, so preserve all ten original entries.
+            weight_total = 95 if old_id == 159 and encounter_method in ("LandDay", "LandNight") else 100
+            if sum(row[0] for row in original_slots) != weight_total:
+                raise ValueError(f"Encounter weights must total {weight_total}: {key}/{encounter_method}")
             # Expand only discontinuous level lists into single-level slots.
             # Relative probabilities are preserved EXACTLY with integer
             # scaling by the LCM of their level counts; vanilla Essentials
