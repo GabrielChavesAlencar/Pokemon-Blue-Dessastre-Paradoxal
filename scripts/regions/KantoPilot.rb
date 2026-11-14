@@ -57,6 +57,7 @@ module BlueKantoPilot
           pbMessage(_INTL("Oak: Você trouxe meu pacote de Viridian! Muito obrigado!"))
           if $bag.add(:POKEBALL, 5)
             $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
+            $player.pokedex.refresh_accessible_dexes if $player.pokedex
             progress["pilot_oak_parcel_delivered"] = true
             BlueMusic.kanto_me_play("obtained_item")
             pbMessage(_INTL("Oak: Aqui estão sua Pokédex e 5 Poké Bolas. Agora você pode explorar a Viridian Forest!"))
@@ -1046,3 +1047,98 @@ MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
     false
   end
 })
+
+
+# KantoDex is *only* installed by the isolated Kanto pilot, and relies on
+# the real Essentials regional dex compiler. The National Dex stays native.
+# Never renumber a species, clear seen/owned lists, or change Decades saves.
+module BlueKantoDex
+  def self.manifest
+    return @manifest if defined?(@manifest)
+    path = "Data/blue-kanto-dex.json"
+    @manifest = File.file?(path) ? JSON.parse(File.read(path)) : nil
+  end
+
+  def self.index
+    manifest && manifest["index"]
+  end
+
+  def self.access!(dex)
+    return unless manifest && dex && $player && $player.has_pokedex
+    flags = dex.instance_variable_get(:@unlocked_dexes)
+    return unless flags.is_a?(Array) && defined?(pbLoadRegionalDexes)
+    expected = pbLoadRegionalDexes.length + 1
+    index = self.index
+    return unless index && index >= 0 && index < expected - 1
+
+    if flags.length == expected - 1 && manifest["added"]
+      # v21.1 saves stored National as the final element. Inserting a regional
+      # list moves the National flag right by one without losing any flags.
+      national = flags.pop
+      flags.insert(index, false)
+      flags << national
+    elsif flags.length < expected
+      # Defensive migration for older pilot saves with fewer unlocked slots.
+      national = flags.pop
+      flags.fill(false, flags.length...expected - 1)
+      flags << national
+    end
+    return unless flags.length == expected
+    flags[index] = true
+    flags[-1] = true   # Existing National Pokédex remains selectable.
+
+    if $PokemonGlobal
+      indexes = $PokemonGlobal.pokedexIndex
+      if indexes.is_a?(Array)
+        if manifest["added"] && indexes.length == expected - 1
+          indexes.insert(index, 0)
+        end
+        indexes.fill(0, indexes.length...expected) if indexes.length < expected
+      end
+    end
+  end
+
+  module PokedexAccess
+    def refresh_accessible_dexes
+      BlueKantoDex.access!(self)
+      super
+    end
+  end
+
+  module DexNames
+    def pokedex_names
+      names = super
+      config = BlueKantoDex.manifest
+      return names unless config
+      count = config["previous_regional_count"]
+      result = names.first(count)
+      result.fill(_INTL("Pokédex regional"), result.length...count)
+      if config["added"]
+        result << _INTL("KantoDex")
+      else
+        result[config["index"]] = _INTL("KantoDex")
+      end
+      result << _INTL("Pokédex Nacional")
+      result
+    end
+  end
+
+  module DexMenu
+    def pbStartScreen
+      if $player && $player.has_pokedex
+        BlueKantoDex.access!($player.pokedex)
+        $player.pokedex.refresh_accessible_dexes
+      end
+      super
+    end
+  end
+
+  def self.install
+    return if @installed
+    Settings.singleton_class.prepend(DexNames)
+    Player::Pokedex.prepend(PokedexAccess)
+    PokemonPokedexMenuScreen.prepend(DexMenu)
+    @installed = true
+  end
+end
+BlueKantoDex.install
