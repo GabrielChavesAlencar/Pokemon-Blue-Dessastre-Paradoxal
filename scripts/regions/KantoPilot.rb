@@ -347,10 +347,15 @@ module BlueKantoPilot
     end
   end
 
+  def self.full_power_unlocked?
+    progress.fetch("leagues", []).include?("KANTO") &&
+      BlueRegions.profile(progress, true) == :world_champion_rematch
+  end
+
   def self.full_power_gym(name)
     type = GYM_FULL_POWER[name]
-    return false unless type && progress.fetch("leagues", []).include?("KANTO")
-    return false unless pbConfirmMessage(_INTL("{1}: Enfrentar meu time Full Power de seis Pokémon?", name))
+    return false unless type && full_power_unlocked?
+    return false unless pbConfirmMessage(_INTL("{1}: Enfrentar meu time oficial Full Power?", name))
     setBattleRule("canLose")
     won = BlueStory.with_regional_full_power {
       TrainerBattle.start(type, name, FULL_POWER_OFFSET)
@@ -904,7 +909,11 @@ module BlueKantoPilot
       return false
     end
     completed = progress.fetch("leagues", []).include?("KANTO")
-    if completed && !pbConfirmMessage(_INTL("Desafiar a Elite Four e o Campeão com os times Full Power?"))
+    if completed && !full_power_unlocked?
+      pbMessage(_INTL("Os times oficiais Full Power só ficam disponíveis após concluir todas as Ligas do circuito regional."))
+      return false
+    end
+    if completed && !pbConfirmMessage(_INTL("Desafiar a Elite Four e o Campeão com os times oficiais Full Power?"))
       return false
     end
     progress["pilot_league_full_power"] = completed
