@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3b3a81568d993aecb0784cdb2c944625aa3353f7",
+      "date": "2026-11-14T12:57:51-03:00",
+      "title": "ci(hoenn): validar Meteor Falls, Tabitha, Maxie, Flannery e Heat Badge em Ruby",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "33be3cbc1b471292f02da280458b732f50ef8f4e",
+      "date": "2026-11-14T12:57:40-03:00",
+      "title": "test(hoenn): simular Meteor Falls, teleférico, Magma, Flannery e Heat com save/reload",
+      "category": "Testes"
+    },
+    {
       "sha": "42d763bd2334bac14c65e7e982851a8e29e125c6",
       "date": "2026-11-14T12:56:24-03:00",
       "title": "test(hoenn): contratos 85 mapas, Flannery, Maxie, Tabitha e 11 vents",
