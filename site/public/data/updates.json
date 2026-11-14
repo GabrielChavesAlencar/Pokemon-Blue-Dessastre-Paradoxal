@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f3709406528cb5f4816abccb14bf2390ab337512",
+      "date": "2026-11-14T18:35:00-03:00",
+      "title": "fix(kanto): impedir que CutTree vire sprite ao interagir sem cortar",
+      "category": "Correções"
+    },
+    {
       "sha": "ca9b257f2b280e5bfab3d7dc8d58aa38345bd90a",
       "date": "2026-11-14T18:32:08-03:00",
       "title": "docs(hoenn): QA12 integrated 12/12 technical and 0/12 native PC/JoiPlay acceptance matrix",
