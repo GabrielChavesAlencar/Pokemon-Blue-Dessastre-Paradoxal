@@ -56,7 +56,7 @@ class HoennStage5Tests(unittest.TestCase):
         self.assertNotIn(107, SOURCE_MAPS)
         self.assertNotIn(109, SOURCE_MAPS)
         self.assertNotIn(110, SOURCE_MAPS)
-        self.assertNotIn(113, SOURCE_MAPS)
+        self.assertIn(113, SOURCE_MAPS)  # Route 110 added by Stage 6
 
     def test_granite_cave_encounters_and_brawly_original_team(self):
         self.assertEqual(set(CAVE_ENCOUNTERS_STAGE5), {159, 160, 161, 162})
