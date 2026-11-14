@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1977b732f5e73a4c4d26a1421accac83b015a94c",
+      "date": "2026-11-14T12:52:45-03:00",
+      "title": "feat(site/hoenn): catalogar 85 mapas, Magma, Flannery e Heat Badge como piloto",
+      "category": "Novidades"
+    },
+    {
       "sha": "f629b0f6a2676cc39b4b6c47f770b7be62cd049b",
       "date": "2026-11-14T12:52:02-03:00",
       "title": "test(hoenn): auditar 85 mapas reais após Fallarbor/Mt Chimney/Lavaridge",
