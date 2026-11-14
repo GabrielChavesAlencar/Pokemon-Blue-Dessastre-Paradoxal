@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f35553ba2d70801496c64a0802d9a1728df5cad4",
+      "date": "2026-11-13T22:14:00-03:00",
+      "title": "test(sinnoh): use actual Blue Story plugin directory in synthetic QA baseline and simplify symlink assertion",
+      "category": "Testes"
+    },
+    {
       "sha": "cd882ffbf5255c833f061fe327d0b40c6107723c",
       "date": "2026-11-13T22:13:14-03:00",
       "title": "test(sinnoh): verify isolated save profiles, native compiler gate, startup spawn, SHA and no main-game writes",
