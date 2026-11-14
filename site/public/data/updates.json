@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1c2de40b485fd8a577b2bebd15eada0dc283840b",
+      "date": "2026-11-14T14:10:52-03:00",
+      "title": "feat(hoenn): reservar tipos/IDs PBS para Tate e Liza, Matt e equipes Stage9",
+      "category": "Novidades"
+    },
+    {
       "sha": "dfab96f56cd029e6979554d421a4c67ea23ddd94",
       "date": "2026-11-14T14:09:49-03:00",
       "title": "feat(hoenn): confirmar roubo do submarino com Stern após Groudon",
