@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "727b1e3846bc3221b38bc61d6d9c226511ba0da4",
+      "date": "2026-11-14T20:37:29-03:00",
+      "title": "test(kanto): validar linha interna de Viridian em vez da borda norte",
+      "category": "Testes"
+    },
+    {
       "sha": "e9a51f5be00d13cc2b4b8e7f0583bd904b19c662",
       "date": "2026-11-14T20:37:06-03:00",
       "title": "verify(kanto): validar linha de bloqueio na cidade e ausencia do gate antigo",
