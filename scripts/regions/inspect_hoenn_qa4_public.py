@@ -52,10 +52,14 @@ def load_map(mid:int):
         code=" ".join(scripts)
         category=classify_obstacle(name,code)
         if category is not None:
+            first_graphic=pages[0].attrs.get("@graphic") if pages else None
+            native_sprite=text(first_graphic.attrs.get("@character_name",b"")) if first_graphic else ""
             found.append({"source_map_id":mid,"x":ev.attrs.get("@x"),
                           "y":ev.attrs.get("@y"),"name":name,
                           "kind":category,
                           "pages":len(pages),
+                          "graphic_name":native_sprite[:90],
+                          "graphic_tile_id":first_graphic.attrs.get("@tile_id") if first_graphic else None,
                           "native_script_calls":bool(code)})
     return mid,found,len(obj.attrs.get("@events",{}))
 
