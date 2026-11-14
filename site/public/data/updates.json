@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9e2d3a2537e263bd9dcff0a41e8a811b13cfe220",
+      "date": "2026-11-14T13:03:34-03:00",
+      "title": "test(hoenn): validar 18 itens reais do capítulo Lavaridge/Meteor Falls",
+      "category": "Testes"
+    },
+    {
+      "sha": "f12dff6e8fe7683c9787c5d0f9478b48bfe13de7",
+      "date": "2026-11-14T13:03:22-03:00",
+      "title": "fix(hoenn): conferir 18 pickups reais de Jagged Pass e Meteor Falls no RXDATA",
+      "category": "Correções"
+    },
+    {
       "sha": "07b8e9c01e7eea40bd1a4907a81a398dab76d297",
       "date": "2026-11-14T13:02:23-03:00",
       "title": "test(hoenn): impedir subida antes dos dois bloqueios Magma",
