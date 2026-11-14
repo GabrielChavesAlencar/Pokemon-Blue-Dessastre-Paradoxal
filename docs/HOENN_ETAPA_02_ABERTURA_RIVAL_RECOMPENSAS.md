@@ -43,6 +43,14 @@
 - A rota de recompensa trata falha ao acrescentar cinco Poké Bolas (bolsa cheia): não libera a Pokédex sem conceder a recompensa para um novo save. Repetição e relançamento não duplicam iniciais, Pokédex nem Running Shoes.
 - **Limitação de posicionamento:** uma posição caminhável não garante a encenação visual ideal; o rival precisa bloquear a passagem ou ser encontrado naturalmente. Isso exige sessão real no Game.exe.
 
+### Conferência adicional dos mapas reais (14/11/2026)
+
+O ZIP privado **Data The Pokémon World Project - Hoenn.zip**, recuperado da biblioteca do usuário, foi inspecionado **somente em ambiente de trabalho**, sem publicar RXDATA no GitHub. Os Git blob SHA-1 dos mapas 7, 8, 11, 12, 13, 14, 101, 102 e 103 conferem com a árvore do doador na revisão fixa \`c59233bdbaac4fbfeca6aa01c7f05be628da2a92\`. MapInfos e Tilesets também foram consultados. A inspeção reproduziu a grade de passabilidade RPG Maker XP e o grafo das conexões e warps definidos no gerador.
+
+- **Map 101:** 20×20 tiles, ligação sul com Littleroot pelos pontos (10–11, 19). Os três objetos são planejados para **(6,16), (8,16), (10,16)**, com acesso pelo corredor y=17. A cena de Birch é disparada ao cruzar y=18 e, depois da conversa, não deve mandar o jogador de volta ao sul.
+- **Map 103:** 80×20 tiles. O encontro do rival prioriza **(10,7)**, alcançável a partir da borda sul que conecta Oldale.
+- **Importante:** coordenadas e passabilidade nesta inspeção são evidências de **geometria do pacote privado**, NÃO comprovação de que os eventos importados compilaram, possuem sprite correto ou iniciam a batalha no Game.exe. O gerador ainda recalcula as posições durante o staging; falha segura em vez de instalar pontos inválidos.
+
 ## 4. Como verificar
 
 ### Testes independentes da engine
@@ -60,7 +68,7 @@ ruby tests/hoenn_pilot_runtime.rb scripts/regions/HoennPilot.rb
 2. Seguir [preparação segura do ZIP](HOENN_PREPARACAO_ZIP_E_RECURSOS.md), preservando o pacote original e seus hashes.
 3. Executar o gerador isolado com caminhos que **não** apontem para a instalação principal:
    ~~~powershell
-   py -3 scripts/regions/pilot_hoenn.py --game "game" --source ".blue-work/hoenn-source/PASTA_EXTRAIDA/Data" --inventory ".blue-work/hoenn-source/ARVORE_AUDITADA.json" --output ".blue-work/hoenn-piloto-etapa02"
+   py -3 scripts/regions/pilot_hoenn.py --game "game" --source ".blue-work/hoenn-source/PASTA_EXTRAIDA" --inventory ".blue-work/hoenn-source/ARVORE_AUDITADA.json" --output ".blue-work/hoenn-piloto-etapa02"
    ~~~
    **Os dois caminhos de fonte acima são placeholders** e devem ser substituídos por caminhos reais produzidos pelo inventário do ZIP; não presumir que o \`inventory.json\` local seja uma árvore Git completa. \`--inventory\` exige a árvore Git do commit fixo, com \`revision\`, \`truncated=false\` e blobs \`Data/*\`.
 4. Abrir o **Game.exe** da pasta gerada, compilar os PBS quando solicitado pelo piloto, validar a posição das bolas, derrotas, sprites, portais, encontros, audios e persistência.
