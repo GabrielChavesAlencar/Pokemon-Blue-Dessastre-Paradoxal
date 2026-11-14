@@ -2573,6 +2573,18 @@ module BlueHoennPilot
     BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN").include?("RAIN")
   end
 
+  # QA08: count actual local badges, never the global badge counter.
+  # Reusing Wally's story flag from an older save cannot replace the eight
+  # Hoenn gym victories. The gym events themselves still use Decades scaling.
+  QA8_LEAGUE_BADGES = %w[STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND RAIN].freeze
+  QA8_VICTORY_ROAD = (250..252).freeze
+
+  def self.qa8_league_badges?
+    return false unless state && defined?(BlueRegions)
+    badges = BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN")
+    QA8_LEAGUE_BADGES.all?{|badge| badges.include?(badge)}
+  end
+
   def self.sign_stage10(key)
     return false unless state
     signs = {
@@ -2720,8 +2732,19 @@ module BlueHoennPilot
     end
     # Upper Ever Grande: real Waterfall competency is required; the Rain Badge
     # alone is NOT enough. Other coastal crossings still rely on native Surf.
-    if source_id==91 && dest_id==322
+    if source_id==91 && [250,322].include?(dest_id)
+      # All southern entrances must respect the waterfall field technique.
+      # Exiting Victory Road is not subject to this rule.
       return false unless field_move_ready?(:WATERFALL,true)
+    end
+    if QA8_VICTORY_ROAD.cover?(dest_id) &&
+       !QA8_VICTORY_ROAD.cover?(source_id) && !qa8_league_badges?
+      pbMessage(_INTL("Victory Road exige as oito insígnias de Hoenn."))
+      return false
+    end
+    if source_id==250 && dest_id==322 && !flags["wally_road_defeated"]
+      pbMessage(_INTL("Wally espera você antes da saída de Victory Road."))
+      return false
     end
     # Lock the cave only when ENTERING from another area. Never lock stairs
     # inside the cave or block a retreat from a partially migrated save.
@@ -2757,8 +2780,9 @@ module BlueHoennPilot
       pbMessage(_INTL("O caminho para a Liga exige a Rain Badge de Hoenn."))
       return false
     end
-    if [93,100,94,95,96,97,98,99].include?(dest_id) && !flags["wally_road_defeated"]
-      pbMessage(_INTL("Wally espera você em Victory Road."))
+    if [93,100,94,95,96,97,98,99].include?(dest_id) &&
+       (!flags["wally_road_defeated"] || !qa8_league_badges?)
+      pbMessage(_INTL("A Liga exige as oito insígnias de Hoenn e a vitória sobre Wally em Victory Road."))
       return false
     end
     if (94..97).cover?(dest_id)
@@ -2899,9 +2923,11 @@ module BlueHoennPilot
   def self.wally_victory_road
     flags=state
     return false unless flags && $player && !$player.party.empty?
+    _, maps = metadata
+    return false unless $game_map && $game_map.map_id == maps[250]
     return true if flags["wally_road_defeated"]
-    unless rain_badge?
-      pbMessage(_INTL("Wally: conquiste a oitava insígnia antes do desafio final!"))
+    unless qa8_league_badges?
+      pbMessage(_INTL("Wally: conquiste as oito insígnias de Hoenn antes do desafio final!"))
       return false
     end
     pbMessage(_INTL("Wally: desta vez vou mostrar tudo que aprendi!"))
