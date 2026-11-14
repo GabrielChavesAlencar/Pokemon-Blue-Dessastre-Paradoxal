@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "de192a5e32d35421b495c50a150660a75b1f6d5a",
+      "date": "2026-11-14T00:10:40-03:00",
+      "title": "feat(portal): connect regional trainer-binding evidence to backlog and pilot trainer pages",
+      "category": "Novidades"
+    },
+    {
+      "sha": "db2533faf1a6dd3c33bb2b7827ebb2e037917478",
+      "date": "2026-11-14T00:10:29-03:00",
+      "title": "feat(portal): show 13 mapped source trainers with safe offline/QA status",
+      "category": "Novidades"
+    },
+    {
       "sha": "fd4e3bdaeb99ae464bb448f562c6809b87029815",
       "date": "2026-11-14T00:10:07-03:00",
       "title": "feat(portal): export source-audited early trainer bindings with the static website",
