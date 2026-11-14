@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 6 implementada; execução/aceite pendentes — ▣▣▣▣▣▣□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 7 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -16,7 +16,7 @@
 | 4 | Surf, Dive, Waterfall, Strength e puzzles | **HM e gate regional + rochas simples + auditoria fonte; puzzles nativos pendentes** | ⏳ |
 | 5 | Equipes Aqua/Magma, Seafloor Cavern | **Gates de história e auditoria de eventos implementados; teste real pendente** | ⏳ |
 | 6 | Cave of Origin, clima, Rayquaza | **Gates regionais, auditoria RXDATA e perfil QA06 preparados; cenas nativas pendentes** | ⏳ |
-| 7 | Oito ginásios e insígnias locais | Pendente | ⏳ |
+| 7 | Oito ginásios e insígnias locais | **Nove eventos autorais, oito times PBS e auditoria QA07 preparados; Game.exe pendente** | ⏳ |
 | 8 | Victory Road e Wally | Pendente | ⏳ |
 | 9 | Elite Four e Wallace | Pendente | ⏳ |
 | 10 | Hall of Fame e pós-jogo | Pendente | ⏳ |
@@ -279,3 +279,51 @@ A quantidade **efetivamente instalada** de boulders depende de não haver sobrep
 - [ ] QA Windows e Android/JoiPlay documentados em evidências separadas.
 
 **Limites:** as transições climáticas visuais e a cinemática de Rayquaza permanecem **não implementadas/aprovadas nativamente**; os puzzles originais da torre e a resolução dos caminhos por HMs exigem teste dentro do Game.exe. Os cinco contratos RXDATA e os testes Ruby/Python não provam essas funcionalidades. A barra de aceite permanece **0/12**.
+
+## Fase 07/12 — oito ginásios e insígnias regionais
+
+**Preparação técnica: 7/12. Aprovação jogável nativa: 0/12.** As oito batalhas já existiam no Ruby/PBS de Hoenn; esta fase adiciona **despacho com guarda de mapa** aos eventos reais do piloto e um verificador de todos os ginásios. Não altera o motor de batalha nem congela níveis de treinadores.
+
+### Inventário de líderes e insígnias de Hoenn
+
+| Líder | Mapa original | Insígnia de Hoenn | Movimento de campo relacionado |
+|---|---|---|---|
+| Roxanne / Rustboro | 27 | STONE | Cut |
+| Brawly / Dewford | 31 | KNUCKLE | Flash |
+| Wattson / Mauville | 47 | DYNAMO | Rock Smash |
+| Flannery / Lavaridge | 63 | HEAT | Strength |
+| Norman / Petalburg | 20 | BALANCE | Surf |
+| Winona / Fortree | 68 | FEATHER | Fly |
+| Tate e Liza / Mossdeep | 82 (dois NPCs) | MIND | Dive |
+| Juan / Sootopolis | 87 | RAIN | Waterfall |
+
+**Regras:** são *oito insígnias locais*, não globais. O registro é feito pelo `BlueRegions.award(..., "HOENN", badge)` após vitória real; o nível da batalha fica sob **Blue/Decades**. A tabela de movimentos é um contrato de referência, **não** prova de que os comandos nativos Cut/Flash/Fly/etc. foram liberados corretamente.
+
+### O que foi efetivamente programado
+
+- O novo `BlueHoennPilot.qa7_gym_battle(:INSIGNIA)` usa uma lista fechada dos **oito ginásios** e a conversão real do MapID da cópia isolada. Não aceita ginásio errado, nome arbitrário de função, nem outro save regional. Os scripts originais de cada líder continuam sendo responsáveis pela vitória, flag, TM e acesso às HMs.
+- O gerador `scripts/regions/pilot_hoenn.py` conectou os **nove eventos de NPCs** ao dispatcher: Roxanne, Brawly, Wattson, Flannery, Norman, Winona, **Tate e Liza (dois NPCs, uma batalha dupla)** e Juan. Posições de mapa não são inventadas; são as âncoras autorais já usadas pelo piloto.
+- `scripts/regions/hoenn_qa_phase7.py` confere as nove posições de RXDATA, scripts e triggers de interação, a presença de **oito equipes PBS distintas**, a correspondência das oito insígnias, e se o Ruby protegido foi efetivamente instalado. Falha de evento ausente, fora do mapa, duplicado ou equipe faltante bloqueia a abertura.
+- `TESTAR_HOENN.bat` agora prepara `.blue-work/hoenn-qa-fase07/` com novo perfil de saves **Hoenn QA Fase07** / **Dessastre Paradoxal Hoenn QA07**, sem sobrescrever QA04–QA06 nem a base `game/`. Executa QA01–QA07 antes da abertura do Game.exe.
+- Há testes Python para ausência, sobreposição, posição, trigger e scripts de líderes; um teste Ruby verifica **mapa correto, rota para cada líder, tentativa fora do mapa e troca de região**. A CI mantém os testes históricos de derrota/vitória/TM/recompensa em cada etapa.
+
+### Como verificar localmente
+
+1. Atualize a `main` com o `game/` instalado e o ZIP privado e fixado de Hoenn na raiz; rode **`TESTAR_HOENN.bat`**. Se a cópia da Fase 7 foi criada antes de esta atualização chegar, não a sobrescreva: remova **somente uma cópia QA07 sem save importante**, ou use uma pasta nova via preparador.
+2. Verifique `.blue-work/hoenn-qa-fase07-report.json`: status `EIGHT_GYM_BINDINGS_STATICALLY_VERIFIED`; nove eventos de líder, oito mapas, oito PBS, `native_game_exe_approved=false`.
+3. No Game.exe, enfrente Roxanne → Brawly → Wattson → Flannery → Norman → Winona → Tate e Liza → Juan, respeitando os eventos de história e itens de campo. Uma derrota jamais pode liberar a insígnia.
+4. Teste as peculiaridades dos ginásios, incluindo **portas de Norman, interruptores elétricos de Wattson, saídas de vapor de Flannery, dupla Tate/Liza e gelo em Sootopolis**. Registre MapID, coordenadas, captura e log de qualquer bloqueio.
+5. Confirme a insígnia no estado e no Trainer Card regional, equipe e nível escalonados pelo Blue, TM correta sem duplicação (inclusive Bolsa cheia), save/reload e rematch. No oitavo ginásio, a crise de Rayquaza deve estar resolvida.
+6. Confirme que nenhuma insígnia de Hoenn libera ações indevidas em Decades, Kanto, Johto ou Sinnoh; teste novamente as cópias antigas e Android separadamente.
+
+### Critérios de aceite ainda pendentes no Game.exe
+
+- [ ] Oito ginásios e salas realmente alcançáveis por movimento e colisões de mapa.
+- [ ] Treinadores secundários, puzzles, portas e obstáculos totalmente funcionais (não só inventariados).
+- [ ] Equipes e batalhas corretas com *escalonamento dinâmico de Blue*, incluindo modo de batalha dupla.
+- [ ] Oito vitórias geram oito insígnias locais sem repetição ou recompensa duplicada após salvar/carregar.
+- [ ] Trainer Card exibe corretamente as oito insígnias, e golpes de campo obedecem cada requisito regional.
+- [ ] Sem vazamento de flags, sprites ou saves para Decades, Kanto, Johto e Sinnoh.
+- [ ] Game.exe e Android/JoiPlay verificados com evidências reais, em separado.
+
+**Importante:** a auditoria PY/Ruby prova apenas a estrutura **autoral** e seus contratos, não que uma campanha completa, a interface, os puzzles ou os visuais sejam jogáveis. Por isso o marco de aceite permanece em **0/12**.
