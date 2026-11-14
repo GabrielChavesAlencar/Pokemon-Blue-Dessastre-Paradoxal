@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c95c792630ec297d9e76b5c314da362a61f284bb",
+      "date": "2026-11-14T10:06:29-03:00",
+      "title": "ci(hoenn): executar regressões Ruby da história inicial",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "97f511fc90d268d8611a7a4e32425f450fa8fb94",
+      "date": "2026-11-14T10:06:21-03:00",
+      "title": "test(hoenn): simular resgate, rivais, recompensas e recarga em Ruby puro",
+      "category": "Testes"
+    },
+    {
       "sha": "6c32f2b88e0a747a8e1a13dadcbdea6a005da0de",
       "date": "2026-11-14T10:05:15-03:00",
       "title": "test(hoenn): exigir rival compilado nas três escolhas e dois perfis",
