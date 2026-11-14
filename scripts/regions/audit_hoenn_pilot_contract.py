@@ -15,13 +15,20 @@ from pathlib import Path
 
 from audit_hoenn_baseline import PILOT
 from pilot_hoenn import (
-    BGM, BORDERS, LAND_ENCOUNTERS, MAP_BGM, OUTDOORS, PEOPLE,
+    BGM, BORDERS, LAND_ENCOUNTERS, CAVE_ENCOUNTERS, MAP_BGM, OUTDOORS, PEOPLE,
     ROUTE_102_TRAINERS, RIVAL_NAMES, RIVAL_TEAMS, SOURCE_MAPS, START, UPSTREAM, WARP_PAIRS,
 )
 from hoenn_stage3 import (
     SOURCE_MAPS_STAGE3, OFFSET_BORDERS, LAND_ENCOUNTERS_STAGE3,
     TRAINERS_STAGE3, PICKUPS_STAGE3, SIGNS_STAGE3, NPCS_STAGE3,
     FOREST_AQUA_TRIGGERS, FOREST_AQUA_PBS, FOREST_AQUA_TEAM,
+)
+from hoenn_stage4 import (
+    SOURCE_MAPS_STAGE4, OFFSET_BORDERS_STAGE4, TRAINERS_STAGE4,
+    ROXANNE_PBS, ROXANNE_TEAM, TUNNEL_AQUA_PBS, TUNNEL_AQUA_TEAM,
+    PICKUPS_STAGE4, SIGNS_STAGE4, NPCS_STAGE4, CUT_TREES_STAGE4,
+    RUSTBORO_THEFT_TRIGGERS, TUNNEL_AQUA_EVENT, ROXANNE_EVENT,
+    TUNNEL_VERDANTURF_GATE,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -66,8 +73,17 @@ def audit(root: Path = ROOT) -> dict:
         actual_slots = sorted(tuple(row) for row in actual.get("Grama", []))
         if expected_slots != actual_slots:
             errors.append(f"Map {map_id} ({name}): grass encounter slots differ from native pilot generator")
-        if set(actual) - {"Grama"}:
+        cave_slots = sorted((species, low, high, weight)
+                            for weight, species, low, high in CAVE_ENCOUNTERS.get(map_id, ()))
+        if sorted(tuple(row) for row in actual.get("Caverna", [])) != cave_slots:
+            errors.append(f"Map {map_id} ({name}): cave encounter slots differ from native pilot generator")
+        if set(actual) - {"Grama", "Caverna"}:
             errors.append(f"Map {map_id} ({name}): unsupported encounter method in public catalog")
+    for map_id, encounters in CAVE_ENCOUNTERS.items():
+        if map_id not in source_ids or sum(weight for weight, *_ in encounters) != 100:
+            errors.append(f"Invalid cave encounter weights/map: {map_id}")
+        if any(weight <= 0 or low <= 0 or high < low for weight, _, low, high in encounters):
+            errors.append(f"Invalid cave encounter level/weight bounds: {map_id}")
     for map_id, encounters in LAND_ENCOUNTERS.items():
         if map_id not in source_ids:
             errors.append(f"Encounter route {map_id} has no imported map")
@@ -83,13 +99,19 @@ def audit(root: Path = ROOT) -> dict:
     native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
                             for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE3})
     native_trainers["Recruta"] = (SOURCE_MAPS[156], tuple(FOREST_AQUA_TEAM))
+    native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
+                            for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE4})
+    native_trainers["Roxanne"] = (SOURCE_MAPS[27], tuple(ROXANNE_TEAM))
+    # Recruta appears in both woods and Rusturf. Catalog titles disambiguate
+    # the two identical PBS names (versions 304 and 405).
+    native_trainers["Recruta Aqua (Rusturf)"] = (SOURCE_MAPS[157], tuple(TUNNEL_AQUA_TEAM))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
         errors.append("Duplicate trainers in published Hoenn pilot")
     if set(names_published) != set(native_trainers):
         errors.append(f"Published trainers differ from pilot: {sorted(set(names_published) ^ set(native_trainers))}")
-    if len(native_trainers) != len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) + 1:
+    if len(native_trainers) != len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) + 3:
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -100,20 +122,22 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        if row.get("leader") is not False or row.get("badge") is not None:
-            errors.append(f"Trainer {name}: wrongly advertised as gym leader")
+        expect_leader = (name == "Roxanne")
+        expect_badge = "STONE" if expect_leader else None
+        if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
+            errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
     all_edges = [tuple(pair) for pair in BORDERS]
     if any(a not in source_ids or b not in source_ids for a, _, b, _ in all_edges):
         errors.append("A border connection references an unknown source map")
-    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in OFFSET_BORDERS):
+    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4)):
         errors.append("An offset border references an unknown source map")
     if any(a[0] not in source_ids or b[0] not in source_ids
            for a, _, b, _ in WARP_PAIRS):
         errors.append("A door/ladder references an unknown source map")
     adjacency = {mid: set() for mid in source_ids}
     for a, b in ([(a, b) for a, _, b, _ in BORDERS] +
-                 [(a, b) for a, _, _, b, _, _ in OFFSET_BORDERS]):
+                 [(a, b) for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4)]):
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
@@ -144,6 +168,15 @@ def audit(root: Path = ROOT) -> dict:
         + [(mid, x, y, f"sign:{key}") for mid, x, y, key, _ in SIGNS_STAGE3]
         + [(mid, x, y, f"pickup:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE3]
         + [(mid, x, y, "Aqua trigger") for mid, x, y in FOREST_AQUA_TRIGGERS]
+        + [(mid, x, y, f"trainer4:{name}") for mid, x, y, _, name, _, _, _ in TRAINERS_STAGE4]
+        + [(mid, x, y, f"npc4:{handler}") for mid, x, y, _, handler in NPCS_STAGE4]
+        + [(22, 9, 5, "Rustboro nurse counter"), (23, 4, 5, "Rustboro mart counter")]
+        + [(mid, x, y, f"sign4:{key}") for mid, x, y, key, _ in SIGNS_STAGE4]
+        + [(mid, x, y, f"item4:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE4]
+        + [(mid, x, y, "CutTree") for mid, x, y in CUT_TREES_STAGE4]
+        + [(mid, x, y, "Devon theft trigger") for mid, x, y in RUSTBORO_THEFT_TRIGGERS]
+        + [(*ROXANNE_EVENT, "Roxanne"), (*TUNNEL_AQUA_EVENT, "Aqua"),
+           (*TUNNEL_VERDANTURF_GATE, "blocked Verdanturf exit")]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
            (101, 10, 18, "Birch rescue"), (101, 11, 18, "Birch rescue")]
     )
@@ -161,7 +194,11 @@ def audit(root: Path = ROOT) -> dict:
                 "rival_name", "birch", "mother", "mart", "heal", "clock",
                 "battle", "verify_compilation", "norman_intro", "wally_family",
                 "flower_shop", "briney", "pickup", "sign", "forest_aqua",
-                "battle_stage3"}
+                "battle_stage3", "roxanne", "roxanne_tm", "stone_badge?",
+                "cutter", "cut_tree", "teacher", "rustboro_theft", "peeko",
+                "briney_route116", "rusturf_aqua", "rusturf_goods_reward",
+                "devon_employee", "devon_route116", "mr_stone", "tunnelers",
+                "rusturf_east_gate", "sign_stage4"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -180,16 +217,16 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("Rival must choose counter-starter species")
 
 
-    # Scripts and site inventory are NOT native gameplay acceptance.
+    # Static contracts cannot prove the running game or donor asset rights.
     gaps = [
-        "Abertura visual do caminhão ainda não foi criada.",
-        "A demonstração de Wally capturar Ralts está roteirizada em diálogo, mas não animada no Game.exe.",
-        "Norman é encontrado no ginásio, mas sua luta de quatro insígnias pertence a uma etapa posterior.",
-        "As ligações de borda Petalburg/Route 104 e os três warps da floresta exigem compilação real.",
-        "Recruta Aqua, nove treinadores comuns e seus sprites/PBS exigem prova nativa em cópia isolada.",
-        "Os itens de chão possuem flags e self-switches, mas requerem teste de coleta/reload no Game.exe.",
-        "Cut trees, eventos de berry planting, os outros NPCs e os quebra-cabeças interiores ainda são pendentes.",
-        "Rustboro (saída norte da Route 104) está fora do recorte e não deve ser anunciada jogável.",
+        "Introdução visual do caminhão e captura animada de Wally ainda não foram realizadas.",
+        "Batalha de Roxanne, Stone Badge regional e prêmio Rock Tomb exigem teste real no Game.exe.",
+        "As árvores Cut de Route 116 dependem de sprite nativo e de um Pokémon que saiba Cut.",
+        "Evento Aqua de Rusturf e resgate de Peecko exigem prova visual e save/reload no Game.exe.",
+        "Map 27 no doador devolve a Petalburg; o piloto corrige a saída para Rustboro.",
+        "Devon Corporation, HM Cut, Escola e escadas requerem validação visual das páginas de evento.",
+        "O norte de Rustboro e a saída leste de Rusturf para Verdanturf ainda não são áreas jogáveis.",
+        "Músicas próprias, cutscenes e NPCs secundários exigem etapas de conteúdo separadas.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -203,12 +240,18 @@ def audit(root: Path = ROOT) -> dict:
         "stage3_trainer_presets": len(TRAINERS_STAGE3) + 1,
         "stage3_pickup_events": len(PICKUPS_STAGE3),
         "stage3_source_maps": len(SOURCE_MAPS_STAGE3),
+        "stage4_source_maps": len(SOURCE_MAPS_STAGE4),
+        "stage4_cut_trees": len(CUT_TREES_STAGE4),
+        "stage4_trainer_presets": len(TRAINERS_STAGE4) + 2,
+        "stage4_pickup_events": len(PICKUPS_STAGE4),
+        "stage4_scripted_only": True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
         "rival_route103_event_prepared": True,
         "pokedex_running_shoes_handlers_prepared": True,
         "wild_route_maps": sorted(LAND_ENCOUNTERS),
+        "cave_route_maps": sorted(CAVE_ENCOUNTERS),
         "wild_slots": sum(len(entries) for entries in LAND_ENCOUNTERS.values()),
         "map_graph_connected": seen == source_ids,
         "runtime_handlers_checked": len(required),
