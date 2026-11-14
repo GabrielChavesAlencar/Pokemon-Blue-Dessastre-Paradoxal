@@ -36,6 +36,9 @@ PROFILE = re.compile(r"[a-f0-9]{12}\Z")
 SHA = re.compile(r"[a-f0-9]{64}\Z")
 START_PLUGIN = "Plugins/ZZZZZ Blue Sinnoh QA Start/SinnohQAStart.rb"
 START_META = "Plugins/ZZZZZ Blue Sinnoh QA Start/meta.txt"
+PROBE_PLUGIN = "Plugins/ZZZZZ Blue Sinnoh QA Probe/SinnohQAProbe.rb"
+PROBE_META = "Plugins/ZZZZZ Blue Sinnoh QA Probe/meta.txt"
+ENGINE_REPORT = "Data/blue-sinnoh-qa-engine-check.json"
 QA_META = "Sinnoh qa.json"
 COMPILE_REQUEST = "Data/blue-sinnoh-qa-compile-request.txt"
 COMPILED = "Data/blue-sinnoh-qa-compiled.txt"
@@ -201,6 +204,10 @@ def compile_boot(blob: bytes) -> bytes:
         GameData::Trainer.load
         valid = (0..2).all? { |v| GameData::Trainer.exists?(:BLUE_SINNOH_RIVAL, "Barry", v) }
         raise "Sinnoh QA: tres equipes PBS Barry ausentes" unless valid
+        raise "Sinnoh QA: probe de mapas nao carregada" unless defined?(BlueSinnohQAProbe)
+        report = BlueSinnohQAProbe.run!
+        raise "Sinnoh QA: eventos nao aprovados" unless report["status"] == "NATIVE_STRUCTURAL_CHECK_NOT_GAMEPLAY"
+        File.write("Data/blue-sinnoh-qa-engine-check.json", JSON.pretty_generate(report))
         File.write("Data/blue-sinnoh-qa-compiled.txt",
                    File.read("Data/blue-sinnoh-qa-compile-request.txt").strip)
         File.delete("Data/blue-sinnoh-qa-compile-request.txt")
@@ -283,6 +290,25 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
         }
         if actual != expected:
             fail("Evento/coordenada da especificação mudou após montar overlay")
+    contract = []
+    for row in rows:
+        events = []
+        for event in row["events"]:
+            entry = {field: event[field] for field in ("key", "kind", "x", "y", "trigger")}
+            if event["kind"] == "warp":
+                entry.update(destination=event["destination"],
+                             arrival_x=event["arrival_x"],
+                             arrival_y=event["arrival_y"])
+            else:
+                entry["sprite"] = event["sprite"]
+                if event["kind"] == "handler":
+                    entry["handler"] = event["handler"]
+                else:
+                    entry["species"] = event["species"]
+            events.append(entry)
+        contract.append({"symbol": row["symbol"], "id": row["map_id"], "events": events})
+    if len(contract) != 9 or sum(len(x["events"]) for x in contract) != 24:
+        fail("Contrato para auditoria nativa de eventos incompleto")
     start = spec.get("start")
     if not isinstance(start, dict) or start.get("symbol") != "SINNOH_PLAYER_BEDROOM":
         fail("Spawn deve começar no quarto do jogador")
@@ -326,13 +352,25 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
         b"Essentials = 21.1\nRequires = Blue Sinnoh Intro\n"
         b"Scripts = SinnohQAStart.rb\n"
     )
+    probe_source = project / "scripts/regions/SinnohQAProbe.rb"
+    if probe_source.is_symlink() or not probe_source.is_file():
+        fail("Probe nativa de eventos Sinnoh QA ausente")
+    output[PROBE_PLUGIN] = probe_source.read_bytes()
+    output[PROBE_META] = (
+        b"Name = Blue Sinnoh QA Probe\nVersion = 0.1\n"
+        b"Essentials = 21.1\nRequires = Blue Sinnoh Intro\n"
+        b"Scripts = SinnohQAProbe.rb\n"
+    )
     # Never embed a ready marker in output. Compile request triggers a one-shot
     # native compiler and the compiled proof is generated ONLY by the QA Game.exe.
     token_sha = digest(
         (token + overlay_report["files_sha256"]["Data/MapInfos.rxdata"] +
-         overlay_report["files_sha256"]["PBS/trainers_sinnoh_barry.txt"]).encode("ascii"))
+         overlay_report["files_sha256"]["PBS/trainers_sinnoh_barry.txt"] +
+         digest(json.dumps(contract, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=True).encode("ascii"))).encode("ascii"))
     output[COMPILE_REQUEST] = (token_sha + "\n").encode("ascii")
     protected = {
+        *(f"Data/Map{mid:03d}.rxdata" for mid in overlay_maps),
         "Data/MapInfos.rxdata", "Data/System.rxdata",
         f"Data/Map{start_point[0]:03d}.rxdata",
         "PBS/trainer_types_sinnoh_barry.txt", "PBS/trainers_sinnoh_barry.txt",
@@ -341,6 +379,7 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
         "schema": 1, "kind": "ISOLATED_SINNOH_QA", "region": "SINNOH",
         "profile": profile, "start": start_point,
         "compile_token": token_sha,
+        "event_contract": contract,
         "file_sha256": {p: digest(output[p]) for p in sorted(protected)},
         "geometry_total_maps": len(overlay_maps),
         "intro_maps": 9, "event_count": 24, "warps": 16,
@@ -355,7 +394,7 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
         "note": "Private QA copy; first Game.exe run is compilation only. No Barry ready marker created.",
     }
     output[QA_META] = (json.dumps(meta, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-    if any(key in output for key in (COMPILED, COMPILE_ERROR, BARRY_READY)):
+    if any(key in output for key in (COMPILED, COMPILE_ERROR, ENGINE_REPORT, BARRY_READY)):
         fail("Overlay contém marcador que seria criado prematuramente")
     report = {
         "schema": 1, "region": "SINNOH",
