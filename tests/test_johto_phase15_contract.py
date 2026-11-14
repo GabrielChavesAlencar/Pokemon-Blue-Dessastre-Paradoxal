@@ -94,7 +94,7 @@ class JohtoPhase15Tests(unittest.TestCase):
     def test_site_router_keeps_kanto_decades_and_regional_pilots(self):
         app=(ROOT/"site/src/assets/app.js").read_text("utf-8")
         region=(ROOT/"site/src/assets/regions.js").read_text("utf-8")
-        self.assertIn("['johto','hoenn'].includes(url.searchParams.get('regiao'))",app)
+        self.assertIn("['johto','hoenn','sinnoh'].includes(url.searchParams.get('regiao'))",app)
         self.assertIn("main.innerHTML=pilotIndex(data,route)",app)
         self.assertIn("url.searchParams.get('regiao')==='kanto'",app)
         self.assertIn("['decades','Decades'",region)
