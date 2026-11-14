@@ -155,7 +155,7 @@ Dir.mktmpdir("hoenn-test-warp-") do |tmp|
     $search_text="Mapa de teste 75"
     $selections << 0
     check(BlueHoennPilot.test_search[0]==75,"search by name must select map")
-    $selections << 0
+    $selections += [0,0]
     check(BlueHoennPilot.test_group[0]==1,"group selection invalid")
     $selections += [0,0,5]
     check(BlueHoennPilot.test_menu,"interactive menu fails")
