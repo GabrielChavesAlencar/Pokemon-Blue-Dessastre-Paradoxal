@@ -51,7 +51,7 @@ def main():
                 code=cmd.attrs.get("@code")
                 if code==201:
                     transfers.append("WARP="+repr(cmd.attrs.get("@parameters",[])[:5]))
-            if mid in (76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,181,182,183,184,185,186,187,188,189,205,206,207,208,209,210,211,212,213,215,216,217) or re.search("Door|Exit|Warp|Steven|Gym|Aqua|Magma|Mossdeep|Submarine|Tate|Liza|Space|Grunt",name,re.I):
+            if mid in (141,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,181,182,183,184,185,186,187,188,189,205,206,207,208,209,210,211,212,213,215,216,217) or re.search("Door|Exit|Warp|Steven|Gym|Aqua|Magma|Mossdeep|Submarine|Tate|Liza|Space|Grunt",name,re.I):
                 if len(name)>100: name=name[:100]
                 print("EV",mid,x,y,repr(name), " ".join(transfers)[:170],flush=True)
     print("STAGE9_AUDIT_END",flush=True)
