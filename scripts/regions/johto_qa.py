@@ -21,6 +21,7 @@ from build_johto_elm_lab_v1 import table_values
 from build_johto_bedroom_v1 import tile
 from compile_johto_connections import merge_pbs
 from install_johto import save_report
+from johto_opening import THEMES, GATES, NPCS, PICKUPS, OBSTACLES, repair_opening, rival_house, install_audio
 from package_johto_offline12 import MAP_IDS, RIVAL_PBS, STAGE_PBS, RUNTIME, expected_events
 from pilot import SYSTEM_CLASSES
 from server.ruby_marshal import RubyObject, loads, text
@@ -455,7 +456,7 @@ def repair_new_bark(town, bedroom, home, lab):
             event.attrs["@pages"][0].attrs["@always_on_top"] = True
 
 
-def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict]:
+def plan(base: Path, bundle: Path, root: Path, report: dict, *, audio: Path | None = None) -> tuple[dict, dict]:
     pinned = json.loads((root / "data/regions/johto-source.json").read_text("utf-8"))["source"]["archive_sha256"]
     native = index_base(base)
     report["base_files"] = len(native)
@@ -494,11 +495,28 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
     # Apply authored QA repairs only after validation of the pinned bundle.
     repair_count = 0
     if "Graphics/Characters/doors2.png" in native:
-        paths = [f"Data/Map{mid:03}.rxdata" for mid in (600, start[0], 675, 676)]
-        maps = [loads(files[path]) for path in paths]
-        repair_new_bark(*maps)
-        repair_count = 4
-        files.update({path: serialize(data, EVENT_CLASSES) for path, data in zip(paths, maps)})
+        ids = {600, start[0], 675, 676, *(THEMES.keys() & MAP_IDS), *GATES,
+               *(row[0] for row in (*NPCS, *PICKUPS, *OBSTACLES))}
+        maps = {mid: loads(files[f"Data/Map{mid:03}.rxdata"]) for mid in ids}
+        native_sprites = {Path(path).stem for path in native if path.startswith("Graphics/Characters/")}
+        count = sum(len(m.attrs["@events"]) for m in maps.values())
+        repair_new_bark(*(maps[mid] for mid in (600, start[0], 675, 676)))
+        if "Data/Map682.rxdata" in native:
+            raise ValueError("A casa do vizinho de Johto colide com o mapa 682")
+        infos = loads(files["Data/MapInfos.rxdata"])
+        if 682 in infos:
+            raise ValueError("A casa do vizinho de Johto colide com o MapInfos")
+        infos[682] = ruby("RPG::MapInfo", name=b"Casa vizinha de New Bark", parent_id=600,
+                          order=max(info.attrs["@order"] for info in infos.values()) + 1,
+                          expanded=False, scroll_x=0, scroll_y=0)
+        files["Data/MapInfos.rxdata"] = serialize(infos)
+        maps[682] = rival_house(maps[600], maps[675], native_sprites)
+        repair_opening(maps, native_sprites)
+        repair_count = sum(len(m.attrs["@events"]) for m in maps.values()) - count
+        files.update({f"Data/Map{mid:03}.rxdata": serialize(data, EVENT_CLASSES)
+                      for mid, data in maps.items()})
+    if audio:
+        install_audio(safe_path(audio), files)
     for rel, source in ((f"{STORY}/Economy.rb", "scripts/battle_polish/Economy.rb"),
                         ("Plugins/ZZZZ Blue Music/BlueMusic.rb", "scripts/music/BlueMusic.rb")):
         if rel in native:
@@ -545,7 +563,7 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
         "can_install": False, "archive_sha256": pinned, "start": start,
         "file_hashes": {name: hash_bytes(files[name]) for name in sorted(DATA | PBS | {"Data/System.rxdata"})},
     })
-    report.update(status="QA_COPY_PLANNED", bundle_sha256=bundle_hash, maps=82,
+    report.update(status="QA_COPY_PLANNED", bundle_sha256=bundle_hash, maps=83 if repair_count else 82,
                   events=32 + repair_count, connections=44, trainer_teams=21, start=start)
     return native, files
 
@@ -617,6 +635,7 @@ def main(argv=None) -> int:
     parser.add_argument("--game", type=Path, default=ROOT / "game")
     parser.add_argument("--bundle", type=Path, default=ROOT / ".blue-work/johto-offline12-preview.zip")
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--audio", type=Path, help="Pasta local com os arquivos OGG da trilha HGSS")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true", help="Valida sem criar cópia (padrão)")
     mode.add_argument("--stage-qa", action="store_true")
@@ -640,12 +659,12 @@ def main(argv=None) -> int:
                         raise ValueError("A base não pode conter o workspace nem ser o destino de QA")
                     if (work / TARGET).exists() or (work / TARGET).is_symlink():
                         raise ValueError(f"Já existe {TARGET}; use --rollback antes de montar outro")
-                    native, overlay = plan(base, args.bundle, ROOT, report)
+                    native, overlay = plan(base, args.bundle, ROOT, report, audio=args.audio)
                     publish_copy(work, base, native, overlay, report)
             finally:
                 lock.unlink()
         else:
-            plan(safe_path(args.game), args.bundle, ROOT, report)
+            plan(safe_path(args.game), args.bundle, ROOT, report, audio=args.audio)
     except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError,
             zlib.error, zipfile.BadZipFile) as exc:
         report.update(status="BLOCKED", reason=str(exc))

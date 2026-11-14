@@ -116,7 +116,14 @@ Dir.mktmpdir("blue-johto-violet-") do |folder|
           "Sprout sage can battle twice on the same save")
     check(BlueJohtoViolet.sprout_sage(:JH_SPROUT_SAGE_TROY), "Second Sprout sage missing")
     check(!BlueJohtoViolet.badge_earned?, "Sages incorrectly awarded Zephyr")
-    check(!BlueJohtoViolet.center_clerk, "Unfinished Center should not claim healing")
+    $player = Struct.new(:party, :healed) do
+      def heal_party
+        self.healed = true
+      end
+    end.new([:CHIKORITA], false)
+    def pbSetPokemonCenter; end
+    BlueJohtoViolet.center_clerk
+    check($player.healed, "Violet Center did not heal the party")
     BlueStory.stage = 0
     check(BlueJohtoViolet.sprout_elder, "Elder win not recorded")
     check(!BlueJohtoViolet.sprout_elder, "Elder battle repeated")

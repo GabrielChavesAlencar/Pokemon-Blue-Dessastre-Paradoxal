@@ -188,3 +188,10 @@ Na primeira abertura, a cópia isolada solicita compilação nativa e registra o
 - [Prova de release](../data/regions/johto-release-proof.schema.json)
 
 **Este documento é planejamento operacional. A criação do MD não altera os 12/12, 0/16, 0/13 e 0/13 registrados e não autoriza instalação ou liberação de Johto.**
+
+
+## Correções no piloto local após o teste de 14/11
+
+A revisão do piloto usa os portões existentes do Route 29, Cherrygrove, Route 31 e Violet. As passagens entre os lados do mesmo portão mantêm a fachada e permitem o retorno. A abertura ganhou a entrega do Ovo Misterioso, o assistente de Elm, o guia de Cherrygrove, itens de campo e atendimento do Centro de Violet. Cut, Strength e Rock Smash usam a insígnia local e um Pokémon com o golpe.
+
+Para montar com as músicas locais, informe `--audio PASTA_HGSS` ao [instalador de QA](../scripts/regions/johto_qa.py). O piloto reconhece as faixas loopadas pelo nome original da [biblioteca ENLS](https://www.enls.eu/prelooped/album/?game=HGSS). Os arquivos de áudio ficam na instalação local. As outras etapas da campanha seguem o [detonado](JOHTO_DETONADO_HEARTGOLD_SOULSILVER_REFERENCIA_ORGANIZADA.md).

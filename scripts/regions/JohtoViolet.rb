@@ -72,12 +72,8 @@ module BlueJohtoViolet
     0
   end
 
-  # This is intentionally just a conversation until healer behavior is
-  # installed and tested in a private Game.exe. Never claim to heal a party.
   def self.center_clerk
-    return false unless progress
-    pbMessage(_INTL("Centro Pokémon de Violet: atendimento ainda em preparação no piloto."))
-    false
+    BlueJohtoPilot.heal
   end
 
   def self.sprout_sage(key)

@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "johto",
   "name": "Johto",
-  "note": "Locais da abertura do piloto e equipes compiladas no Windows. Os níveis indicados são os valores-base.",
+  "note": "Abertura do piloto de New Bark a Violet. As equipes e os encontros exibem os níveis-base. A campanha após Violet está em preparação.",
   "locations": [
     {
       "name": "New Bark Town",
@@ -169,6 +169,14 @@
     },
     {
       "name": "Torre Sprout",
+      "encounters": {}
+    },
+    {
+      "name": "Casa vizinha de New Bark",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 32",
       "encounters": {}
     }
   ],
