@@ -1,5 +1,7 @@
 # Hoenn — Etapa 10/10: Sootopolis, Seafloor Cavern, Sky Pillar e Liga Pokémon
 
+> **Continuação após a Etapa 10/10:** [Hoenn — barra de 12 fases de QA jogável](HOENN_QA_PROGRESSO_12_FASES.md). O código da campanha foi publicado, mas nenhuma das 12 fases foi aprovada no Game.exe; a Fase 1 prepara uma cópia local auditável.
+
 **Data:** 14/11/2026  
 **Status:** **implementação técnica em piloto isolado** — **não aprovada como jogável**.  
 **Origem fixa:** `SocomSeal/The-PMon-World-Project@c59233bdbaac4fbfeca6aa01c7f05be628da2a92`.  
