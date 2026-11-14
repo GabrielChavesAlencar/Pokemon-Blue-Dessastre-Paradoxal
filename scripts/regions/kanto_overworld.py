@@ -75,6 +75,8 @@ def source_obstacle(event):
     if page is None:
         return None
     name = text(event.attrs["@name"]).lower()
+    if "cuttree" in name:
+        return "cut"
     if "strengthboulder" in name:
         return "strength"
     if "smashrock" in name:
@@ -140,7 +142,13 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         converted.attrs["@pages"].append(hidden)
         return converted, {"kind": "item", "item": symbol, "quantity": quantity}
     if obstacle:
-        if obstacle == "strength":
+        if obstacle == "cut":
+            # Native Essentials Cut honors the Kanto Cascade badge, HM and
+            # party move. On success the field event is actually erased.
+            commands, trigger = if_scene(b"pbCut", [
+                command(355, b"pbSmashThisEvent", indent=1),
+            ]), 0
+        elif obstacle == "strength":
             commands, trigger = [command(355, b"pbPushThisBoulder")], 1
         else:
             commands, trigger = if_scene(b"pbRockSmash", [
