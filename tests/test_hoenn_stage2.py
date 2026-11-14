@@ -49,7 +49,7 @@ class HoennStage2Tests(unittest.TestCase):
         with patch("pilot_hoenn.open_tile", return_value=True), \
              patch("pilot_hoenn.reachable", return_value=None):
             result = starter_ball_positions(maps, {101: object()}, {}, set())
-        self.assertEqual(result, [(101, 8, 20), (101, 10, 20), (101, 12, 20)])
+        self.assertEqual(result, [(101, 6, 16), (101, 8, 16), (101, 10, 16)])
         with patch("pilot_hoenn.open_tile", return_value=False):
             with self.assertRaisesRegex(ValueError, "maleta|Maleta"):
                 starter_ball_positions(maps, {101: object()}, {}, set())
