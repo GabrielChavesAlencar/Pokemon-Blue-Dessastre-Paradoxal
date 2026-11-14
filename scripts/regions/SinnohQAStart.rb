@@ -47,8 +47,7 @@ module BlueSinnohQAStart
   module Override
     def select_and_prepare(*args)
       return super unless @new_game && defined?($PokemonGlobal) &&
-                          $PokemonGlobal &&
-                          File.file?(BlueSinnohQAStart::CONFIG)
+                          $PokemonGlobal
       start = BlueSinnohQAStart.proof
       raise "Sinnoh QA: compile os tres PBS de Barry antes de Novo Jogo" unless start
       raise "Sinnoh QA: motor regional nao carregado" unless
