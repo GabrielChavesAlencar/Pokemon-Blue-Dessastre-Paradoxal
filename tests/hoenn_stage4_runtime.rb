@@ -181,7 +181,10 @@ assert(BlueHoennPilot.teacher, "Quick Claw missing")
 assert($bag.items[:QUICKCLAW] == 1, "Quick Claw not delivered")
 assert(!BlueHoennPilot.teacher, "Duplicate Quick Claw")
 
-assert(BlueHoennPilot.rustboro_theft, "Devon theft not triggered")
+# A player who misses all Rustboro touch events must still receive the
+# theft scene when talking to the employee on Route 116.
+assert(BlueHoennPilot.devon_route116, "Route116 employee failed to start missed theft")
+assert(flags["devon_theft_seen"], "Theft fallback did not persist")
 assert(!BlueHoennPilot.rustboro_theft, "Devon theft duplicated")
 assert(BlueHoennPilot.briney_route116, "Briney didn't know about Peecko")
 assert(!BlueHoennPilot.rusturf_goods_reward, "Devon goods available before fight")
