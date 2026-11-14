@@ -88,7 +88,10 @@
     "sinnoh_postcompile_engine_probe": "scripts/regions/SinnohQAProbe.rb",
     "sinnoh_postcompile_engine_probe_ruby_tests": "tests/sinnoh_qa_engine_probe_runtime.rb",
     "sinnoh_postcompile_engine_probe_python_tests": "tests/test_sinnoh_qa_install.py",
-    "sinnoh_postcompile_engine_validation_guide": "docs/SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md"
+    "sinnoh_postcompile_engine_validation_guide": "docs/SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md",
+    "sinnoh_real_playtest_evidence_auditor": "scripts/regions/audit_sinnoh_playtest.py",
+    "sinnoh_real_playtest_evidence_tests": "tests/test_sinnoh_playtest_audit.py",
+    "sinnoh_real_playtest_guide": "docs/SINNOH_FASE_02_PLAYTEST_REAL_BARRY_SAVES.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -154,7 +157,12 @@
     "qa_three_barry_teams_validated_on_real_game": false,
     "qa_twenty_four_real_events_checked_in_game": false,
     "qa_native_gameplay_approved": false,
-    "qa_barry_ready_marker_created": false
+    "qa_barry_ready_marker_created": false,
+    "qa_barry_test_authorization_implemented": true,
+    "qa_barry_test_executed_in_game_exe": false,
+    "qa_playtest_case_manifest_code_prepared": true,
+    "qa_playtest_cases_executed_natively": false,
+    "qa_playtest_evidence_reviewed": false
   },
   "progress": {
     "total_phases": 13,
@@ -174,7 +182,9 @@
     "qa_installer_preparation_steps_done": 4,
     "qa_installer_preparation_steps_total": 7,
     "qa_engine_validation_steps_done": 4,
-    "qa_engine_validation_steps_total": 7
+    "qa_engine_validation_steps_total": 7,
+    "qa_native_playtest_prep_steps_done": 4,
+    "qa_native_playtest_prep_steps_total": 7
   },
   "blockers": [
     "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
