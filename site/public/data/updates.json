@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "852eb907b206d7e65d4b931ac92096692b2b9961",
+      "date": "2026-11-13T22:22:03-03:00",
+      "title": "feat(sinnoh): read-only native Essentials structural probe for Twinleaf 24 events, 3 starter balls, 16 warps and Barry PBS",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ab58da193e07f20f46199422a4d18d77a1f86e33",
+      "date": "2026-11-13T22:20:28-03:00",
+      "title": "fix(regions): corrigir pilotos e atualizar o portal [android-kanto-release]",
+      "category": "Correções"
+    },
+    {
       "sha": "7247f65001a734ce644846f7ae3647204a6c6ae9",
       "date": "2026-11-13T22:19:41-03:00",
       "title": "docs(sinnoh): record 134 isolated Python tests after QA coordinate and legacy collision guards",
