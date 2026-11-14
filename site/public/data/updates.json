@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bbfad553390dbad993c09dc1fabf3818d651bc64",
+      "date": "2026-11-13T21:23:28-03:00",
+      "title": "feat(sinnoh): draft Barry's three starter-counter PBS teams from installed Blue learnsets with dynamic-level contract and no ready marker",
+      "category": "Novidades"
+    },
+    {
       "sha": "493aabda09b49c9414248f22ff1d4e60764f250a",
       "date": "2026-11-13T21:18:57-03:00",
       "title": "docs(sinnoh): cite passing isolated 62 Python and Ruby story tests without raising gameplay gates",
