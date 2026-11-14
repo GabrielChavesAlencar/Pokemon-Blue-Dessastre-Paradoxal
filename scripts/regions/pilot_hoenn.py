@@ -237,7 +237,40 @@ def add_opening(maps):
         append_event(maps[101], f"HN_BirchRescue_{x}", x, 18, page)
 
 
+def preflight_route102_trainers(game: Path) -> list[dict]:
+    """Fail closed if any target trainer already exists in the native Blue PBS.
+
+    The version 102 is intentionally namespaced in the Hoenn pilot. Reusing a
+    conflicting trainer block would silently change the NPC's battle party.
+    No source or game files are written by this preflight.
+    """
+    expected = {(kind, name, 102) for _, _, kind, name, _, _ in ROUTE_102_TRAINERS}
+    if len(expected) != len(ROUTE_102_TRAINERS):
+        raise ValueError("Treinadores de Hoenn repetidos na definição do piloto")
+    root = game / "PBS"
+    if not root.is_dir() or root.is_symlink():
+        raise ValueError("PBS nativo de Hoenn indisponível")
+    for path in sorted(root.glob("trainers*.txt")):
+        body = regular(path).read_text("utf-8-sig")
+        for header in re.finditer(r"(?m)^\\s*\\[([^]\\r\\n]+)\\]", body):
+            fields = [v.strip() for v in header[1].split(",")]
+            if len(fields) not in (2, 3):
+                continue
+            if len(fields) == 3 and not fields[2].isdigit():
+                continue
+            identity = (fields[0], fields[1], int(fields[2]) if len(fields) == 3 else 0)
+            if identity in expected:
+                raise ValueError(f"Treinador de Hoenn já existe no PBS nativo: {identity} ({path.name})")
+    return [
+        {"source_map_id": 102, "trainer_type": kind, "name": name,
+         "pbs_version": 102, "event_key": f"HN_{name}", "x": x, "y": y,
+         "compiled": False, "gameplay_verified": False}
+        for x, y, kind, name, _, _ in ROUTE_102_TRAINERS
+    ]
+
+
 def build_overlay(game, source):
+    trainer_bindings = preflight_route102_trainers(game)
     for name in ("Game.exe", "Game.ini", "mkxp.json", f"{STORY}/RegionStart.rb"):
         regular(game / name)
     native_infos = loads(regular(game / "Data/MapInfos.rxdata").read_bytes())
@@ -380,7 +413,9 @@ def build_overlay(game, source):
     ).encode("utf-8")
     overlay["Data/blue-hoenn-compile-request.txt"] = (UPSTREAM + "\n").encode("ascii")
     report = {"region": "HOENN", "kind": "ISOLATED_HOENN_TEST", "source_commit": UPSTREAM,
-              "start": [ids[START[0]], *START[1:]], "maps": ids, "save_profile": PROFILE}
+              "start": [ids[START[0]], *START[1:]], "maps": ids, "save_profile": PROFILE,
+              "trainer_bindings": [{**binding, "destination_map_id": ids[102]}
+                                   for binding in trainer_bindings]}
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())
