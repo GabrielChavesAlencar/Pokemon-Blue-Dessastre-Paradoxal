@@ -237,6 +237,8 @@ def inspect_private_copy(report: dict, registry: dict, copy: Path) -> dict:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument("--scope", choices=("ALL","HOENN","JOHTO","JOHTO_ROUTES","JOHTO_VIOLET"),
+                        default="ALL", help="Check only the specified regional private pilot segment")
     parser.add_argument("--copy", type=Path,
                         help="PRIVATE isolated stage/pilot (read-only inspection; optional)")
     parser.add_argument("--output", type=Path, help="JSON report outside any game copy")
@@ -246,6 +248,14 @@ def main(argv: list[str] | None = None) -> int:
     root = args.root.resolve()
     registry = read_json(root / BINDINGS)
     report = audit_sources(root)
+    if args.scope != "ALL":
+        report["entries"] = [row for row in report["entries"] if (
+            row["region"] == args.scope or
+            (args.scope == "JOHTO_ROUTES" and row["id"].startswith("JH_ROUTE")) or
+            (args.scope == "JOHTO_VIOLET" and row["region"] == "JOHTO" and
+             not row["id"].startswith("JH_ROUTE"))
+        )]
+        report["scope"] = args.scope
     if args.copy:
         copy = args.copy.resolve(strict=True)
         report = inspect_private_copy(report, registry, copy)
