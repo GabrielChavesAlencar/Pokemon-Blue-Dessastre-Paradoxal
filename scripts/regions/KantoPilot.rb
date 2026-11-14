@@ -1153,6 +1153,8 @@ module BlueKantoDex
       if BlueKantoDex.index && $player && $player.has_pokedex
         BlueKantoDex.access!(self)
         BlueKantoDex.ensure_selector!(self)
+        accessible = instance_variable_get(:@accessible_dexes)
+        return accessible if accessible.is_a?(Array)
       end
       super
     end
