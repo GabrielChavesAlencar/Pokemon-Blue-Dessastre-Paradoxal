@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b453e4aa23d770c0fdf936a9c461f411b33b440b",
+      "date": "2026-11-14T17:50:03-03:00",
+      "title": "test(hoenn): stage10 Hall now grants exactly one real regional League completion on Map99",
+      "category": "Testes"
+    },
+    {
       "sha": "b1256540b0a050794680b97dba3f76aafd62c695",
       "date": "2026-11-14T17:49:25-03:00",
       "title": "feat(hoenn): show post-League circuit status on original Ever Grande sign",
