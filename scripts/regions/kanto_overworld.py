@@ -172,6 +172,16 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         if filename:
             converted.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = character
         converted.attrs["@pages"][0].attrs["@through"] = False
+        if obstacle == "cut":
+            # RPG Maker calls lock/turn_toward_player on Action Button events.
+            # Cut-tree charsets use other direction rows for their cutting
+            # frames: turning a blocked tree shows a stump/animation frame.
+            # Keep the standing tree frame untouched until pbCut succeeds;
+            # pbSmashThisEvent remains inside pbCut's success-only branch.
+            page = converted.attrs["@pages"][0].attrs
+            page["@direction_fix"] = True
+            page["@walk_anime"] = False
+            page["@step_anime"] = False
         return converted, {"kind": obstacle}
     converted = new_event(event, dialogue or sign_dialogue, 0, character)
     if sign_dialogue:
