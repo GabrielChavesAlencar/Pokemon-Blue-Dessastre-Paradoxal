@@ -20,6 +20,7 @@ from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    LEAGUE_EVENT_WHITELIST, LEAGUE_NEXT_ROOMS,
                    LEAGUE_TRAINER_SPECS, KANTO_MOONSTONE_CALLBACK)
 from server.ruby_marshal import text
+from kanto_dex import sections, first_151
 
 
 def reachable(edges: dict[int, set[int]], start: int) -> set[int]:
@@ -69,7 +70,37 @@ def inspect(game: Path) -> dict:
         raise ValueError("Unsupported Kanto field inventory schema")
     if field_report.get("preview_maps_untouched") != sorted(preview_only):
         raise ValueError("Kanto field importer touched an unaudited preview")
-    known = {"item", "npc_dialogue", "rock_smash", "strength"}
+    known = {"item", "npc_dialogue", "rock_smash", "strength", "cut"}
+    cut_events = {}
+    for record in field_report["imported"]:
+        if record["kind"] == "cut":
+            cut_events.setdefault(record["source_map"], set()).add(record["event"])
+
+    # Map/Event identities verified from the hash-pinned FRLG source:
+    # "Cut Tree" with native pbCut/pbSmashThisEvent. The compiler must
+    # reconstruct all 17 rather than passing if the count silently drops to 0.
+    required_cut = {
+        10: {20, 21}, 18: {15, 16, 17}, 25: {20}, 39: {2},
+        64: {1}, 114: {1, 2}, 124: {4, 6, 8}, 144: {1, 2, 3, 4},
+    }
+    if cut_events != required_cut:
+        missing_cuts = [(source, sorted(ids - cut_events.get(source, set())))
+                        for source, ids in required_cut.items()
+                        if ids - cut_events.get(source, set())]
+        unexpected_cuts = [(source, sorted(ids - required_cut.get(source, set())))
+                           for source, ids in cut_events.items()
+                           if ids - required_cut.get(source, set())]
+        raise ValueError(f"FRLG Cut Tree mismatch: missing={missing_cuts} unexpected={unexpected_cuts}")
+    by_cut = {(row["source_map"], row["event"]): row for row in
+              field_report["cut_source_candidates"]
+              if row.get("native_cut_script") and row.get("native_smash_script")}
+    for source_id, event_ids in required_cut.items():
+        for eid in event_ids:
+            if (source_id, eid) not in by_cut:
+                raise ValueError(f"Cut Tree {source_id}/{eid} lacks source scripts")
+
+    def allowed_plus_cut(source, base_ids):
+        return set(base_ids) | cut_events.get(source, set())
     seen = set()
     for row in field_report["imported"]:
         source, destination, event_id = row["source_map"], row["map"], row["event"]
@@ -91,6 +122,15 @@ def inspect(game: Path) -> dict:
                     not event.attrs["@pages"][1].attrs["@condition"].attrs["@self_switch_valid"] or
                     not any("BlueKantoPilot.pickup(" in script for script in commands)):
                 raise ValueError("Ground item missing a safe pickup and persistent hide page")
+        if row["kind"] == "cut":
+            if (page["@trigger"] != 0 or page["@through"] or
+                    "cuttree" not in text(event.attrs["@name"]).lower() or
+                    len(event.attrs["@pages"]) != 1 or
+                    not any(op.attrs["@code"] == 111 and
+                            "pbCut" in str(op.attrs["@parameters"])
+                            for op in page["@list"]) or
+                    "pbSmashEvent(get_self)" not in commands):
+                raise ValueError("Cut tree must be a solid native-cut event at source coordinates")
         if row["kind"] == "strength":
             if page["@trigger"] != 1 or page["@through"] or commands != ["pbPushThisBoulder"]:
                 raise ValueError("Source boulder cannot be pushed by native Strength")
@@ -109,6 +149,23 @@ def inspect(game: Path) -> dict:
             raise ValueError("Missing graphic report contains an invalid reason")
         if event_id in maps[destination].attrs["@events"]:
             raise ValueError("Missing graphic imported as an invisible active field event")
+    # Native KantoDex is a second selectable view. Its regional PBS list
+    # must be exactly 151 species (Bulbasaur #001, Mew #151).
+    dex_path = game / "Data/blue-kanto-dex.json"
+    if not dex_path.is_file():
+        raise ValueError("Missing isolated KantoDex manifest")
+    dex_info = json.loads(dex_path.read_text("utf8"))
+    marker = game / "Data/blue-kanto-dex-index.txt"
+    expected_marker = (f'{dex_info["index"]}|{int(dex_info["added"])}|'
+                       f'{dex_info["previous_regional_count"]}')
+    if not marker.is_file() or marker.read_text("ascii").strip() != expected_marker:
+        raise ValueError("KantoDex native ASCII marker does not match audited JSON")
+    pbs = sections((game / "PBS/regional_dexes.txt").read_text("utf-8-sig"))
+    idx = dex_info["index"]
+    if (dex_info["schema"] != 1 or dex_info["length"] != 151 or
+            idx not in pbs or dex_info["national_dex_unchanged"] is not True or
+            [x.upper() for x in pbs[idx]] != [x.upper() for x in first_151(ROOT)]):
+        raise ValueError("KantoDex must contain canonical species #001-#151 without modifying National")
     # Celadon phase 09 is map-terrain only. Not even source self-switches,
     # NPCs, warps or trainer events may slip into these compiled RPG maps.
     for source in preview_only:
@@ -248,9 +305,8 @@ def inspect(game: Path) -> dict:
                 raise ValueError("Forest tunnel must not contain the Oak parcel gate")
 
 
-    # Phase 09 gameplay nucleus: exact Celadon event whitelist.
-    # The source also has Rocket, Game Corner, mansions, item pickups,
-    # cut trees and the department store. None of those may slip in.
+    # Phase 09: strict Celadon whitelist plus only source-proven
+    # CutTree field obstacles. Foreign story/Rocket events stay excluded.
     core_events = {
         114: {3, 20},                     # Celadon -> gym, Center
         115: {1, 2},                     # Center -> Celadon, nurse
@@ -258,8 +314,9 @@ def inspect(game: Path) -> dict:
     }
     for origin, allowed in core_events.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        if actual != allowed:
-            raise ValueError(f"Celadon {origin}: unreviewed events imported: {actual ^ allowed}")
+        allowed_ids = allowed_plus_cut(origin, allowed)
+        if actual != allowed_ids:
+            raise ValueError(f"Celadon {origin}: unreviewed events imported: {actual ^ allowed_ids}")
     for outside, eid, inside, return_event in ((114, 3, 124, 5),
                                                 (114, 20, 115, 1)):
         if mapping[inside] not in event_transfers(outside, eid):
@@ -286,8 +343,9 @@ def inspect(game: Path) -> dict:
     }
     for origin, allowed in fuchsia.items():
         found_ids = set(maps[mapping[origin]].attrs["@events"])
-        if found_ids != allowed:
-            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ allowed}")
+        allowed_ids = allowed_plus_cut(origin, allowed)
+        if found_ids != allowed_ids:
+            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ allowed_ids}")
     fuchsia_returns = (
         (144, 5, 147, 9),
         (144, 17, 145, 1),
@@ -332,8 +390,9 @@ def inspect(game: Path) -> dict:
     }
     for original, whitelist in saffron.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        if actual != whitelist:
-            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ whitelist}")
+        allowed_ids = allowed_plus_cut(original, whitelist)
+        if actual != allowed_ids:
+            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ allowed_ids}")
     saffron_pairs = (
         (168, 6, 171, 10), (168, 10, 178, 1),
         (168, 12, 170, 1), (168, 13, 169, 1),
@@ -415,8 +474,9 @@ def inspect(game: Path) -> dict:
     # and quizzes must NOT be copied into Decades.
     for origin, expected_ids in CINNABAR_EVENTS.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        if actual != set(expected_ids):
-            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ set(expected_ids)}")
+        allowed_ids = allowed_plus_cut(origin, expected_ids)
+        if actual != allowed_ids:
+            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ allowed_ids}")
     cinnabar_pairs = (
         (199, 1, 201, 1), (199, 2, 200, 1),
         (199, 3, 205, 1), (199, 5, 203, 1),
@@ -477,8 +537,9 @@ def inspect(game: Path) -> dict:
     # Stage 13: source Map013 must be safely re-implemented, while keeping
     # the original Map010 entrance and the exact one-way return.
     gym_events = maps[mapping[13]].attrs["@events"]
-    if set(gym_events) != VIRIDIAN_GYM_EVENTS:
-        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ VIRIDIAN_GYM_EVENTS}")
+    viridian_allowed = allowed_plus_cut(13, VIRIDIAN_GYM_EVENTS)
+    if set(gym_events) != viridian_allowed:
+        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ viridian_allowed}")
     if len(TRAINERS[13]) != 9:
         raise ValueError("Viridian Gym must have Giovanni and exactly eight source trainers")
     if mapping[10] not in event_transfers(13, 11):
@@ -513,8 +574,9 @@ def inspect(game: Path) -> dict:
     # completion flags may be executed in the Decades installation.
     for original, allowed in LEAGUE_EVENT_WHITELIST.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        if actual != allowed:
-            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed}")
+        allowed_ids = allowed_plus_cut(original, allowed)
+        if actual != allowed_ids:
+            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed_ids}")
     if maps[mapping[210]].attrs["@events"]:
         raise ValueError("Empty Victory Road Map210 unexpectedly contains source events")
     for original, entries in LEAGUE_BADGE_GATES.items():
@@ -824,6 +886,11 @@ def inspect(game: Path) -> dict:
     return {
         "result": "structural_check_passed",
         "maps": len(maps),
+        "cut_trees_imported": sum(row["kind"] == "cut" for row in field_report["imported"]),
+        "kanto_dex_number": idx,
+        "kanto_dex_length": 151,
+        "kanto_dex_bulbasaur_001": True,
+        "national_dex_preserved": dex_info["national_dex_unchanged"],
         "preview_geometry_only": len(preview_only),
         "phase12_cinnabar_functional_maps": len(CINNABAR_EVENTS),
         "phase12_preview_only": len(preview_only & {190,191,193,194,195,196,197,198}),

@@ -125,6 +125,30 @@ module KantoNativeCheck
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Oak must award exactly five Poke Balls, not the starter event")
     require!($player.has_pokedex, "Oak parcel delivery did not unlock the Pokedex") if $player.respond_to?(:has_pokedex)
+    # Real Essentials 21.1 regional PBS + menu hook, not a mock UI. The
+    # original seen/owned flags are shared between KantoDex and National.
+    dexid = BlueKantoDex.index
+    require!(dexid.is_a?(Integer), "KantoDex native manifest was not loaded")
+    require!(Settings::USE_CURRENT_REGION_DEX == false,
+             "Kanto pilot must show a selectable Dex menu, not only the current region")
+    entries = pbAllRegionalSpecies(dexid)
+    require!(entries.length == 151 && entries.first == :BULBASAUR && entries.last == :MEW,
+             "Native KantoDex is not Bulbasaur #001 through Mew #151")
+    require!(Settings.pokedex_names[dexid] == "KantoDex" &&
+             Settings.pokedex_names.last == "Pokédex Nacional",
+             "Native Pokédex selector does not name KantoDex and National correctly")
+    $player.pokedex.refresh_accessible_dexes
+    require!($player.pokedex.accessible_dexes.include?(dexid) &&
+             $player.pokedex.accessible_dexes.include?(-1),
+             "Native KantoDex and National missing after Oak: " +
+             "index=#{dexid} available=#{$player.pokedex.accessible_dexes.inspect} " +
+             "seen_bulbasaur=#{$player.pokedex.seen?(:BULBASAUR)} " +
+             "seen_regional=#{$player.pokedex.seen_count(dexid)} " +
+             "flags=#{$player.pokedex.instance_variable_get(:@unlocked_dexes).inspect} " +
+             "stored_dexes=#{pbLoadRegionalDexes.length} " +
+             "raw_accessible=#{$player.pokedex.instance_variable_get(:@accessible_dexes).inspect} " +
+             "dex_class=#{$player.pokedex.class} " +
+             "hook=#{$player.pokedex.class.ancestors.include?(BlueKantoDex::PokedexAccess)}")
     BlueKantoPilot.choose_starter
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
@@ -274,10 +298,11 @@ module KantoNativeCheck
     celadon_center = map_for.call("Celadon Center")
     celadon_gym = map_for.call("Erika")
     $map_factory.setup(celadon_city)
-    require!($game_map.events.keys.sort == [3, 20] &&
+    require!($game_map.events.keys.sort == [1, 2, 3, 20] &&
              $game_map.events[3].trigger == 1 &&
-             $game_map.events[20].trigger == 1,
-             "Celadon city must contain only two walk-through core doors")
+             $game_map.events[20].trigger == 1 &&
+             [1, 2].all? { |id| $game_map.events[id].name == "CutTree" },
+             "Celadon city must keep both doors and two source Cut trees")
     require!($game_map.events[3].list.any? { |row|
       row.code == 201 && row.parameters[1] == celadon_gym
     } && $game_map.events[20].list.any? { |row|
@@ -294,8 +319,9 @@ module KantoNativeCheck
     }, "Celadon Center exit target mismatch: current=#{celadon_center} " +
        "city=#{celadon_city} events=#{exit_events.inspect}")
     $map_factory.setup(celadon_gym)
-    require!($game_map.events.keys.sort == [1, 5, 7, 42, 43, 44, 45, 46, 47],
-             "Celadon Gym imported non-whitelisted events")
+    require!($game_map.events.keys.sort == [1, 4, 5, 6, 7, 8, 42, 43, 44, 45, 46, 47] &&
+             [4, 6, 8].all? { |id| $game_map.events[id].name == "CutTree" },
+             "Celadon Gym must keep trainers, exit and three source Cut trees")
     require!($game_map.events[5].list.any? { |row|
       row.code == 201 && row.parameters[1] == celadon_city
     }, "Celadon gym has no return to the city")
@@ -339,8 +365,9 @@ module KantoNativeCheck
     safari_gate = map_for.call("Safari Zone Portao")
     safari_south = map_for.call("Safari Zone Sul")
     $map_factory.setup(fuchsia_city)
-    require!($game_map.events.keys.sort == [5, 17, 18, 24],
-             "Unreviewed Fuchsia city events leaked into core")
+    require!($game_map.events.keys.sort == [1, 2, 3, 4, 5, 17, 18, 24] &&
+             [1, 2, 3, 4].all? { |id| $game_map.events[id].name == "CutTree" },
+             "Fuchsia city must keep core doors and four original Cut trees")
     [[5, fuchsia_gym], [17, fuchsia_center],
      [18, fuchsia_mart], [24, safari_gate]].each do |event_id, target_id|
       ev = $game_map.events[event_id]

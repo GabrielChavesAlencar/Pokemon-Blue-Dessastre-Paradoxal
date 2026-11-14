@@ -75,6 +75,11 @@ def source_obstacle(event):
     if page is None:
         return None
     name = text(event.attrs["@name"]).lower()
+    # The audited FRLG source labels trees "Cut Tree" (with a space), but
+    # Essentials' hidden move and erasure handlers require /cuttree/i.
+    marker = re.sub(r"[\s_\-]+", "", name)
+    if "cuttree" in marker:
+        return "cut"
     if "strengthboulder" in name:
         return "strength"
     if "smashrock" in name:
@@ -140,7 +145,13 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         converted.attrs["@pages"].append(hidden)
         return converted, {"kind": "item", "item": symbol, "quantity": quantity}
     if obstacle:
-        if obstacle == "strength":
+        if obstacle == "cut":
+            # Native Essentials Cut honors the Kanto Cascade badge, HM and
+            # party move. The v21.1 eraser must receive the facing event.
+            commands, trigger = if_scene(b"pbCut", [
+                command(355, b"pbSmashEvent(get_self)", indent=1),
+            ]), 0
+        elif obstacle == "strength":
             commands, trigger = [command(355, b"pbPushThisBoulder")], 1
         else:
             commands, trigger = if_scene(b"pbRockSmash", [
@@ -152,6 +163,10 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         if filename:
             converted.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = character
         converted.attrs["@pages"][0].attrs["@through"] = False
+        if obstacle == "cut":
+            # Source EventID/coordinates/graphics stay unchanged. Only the
+            # runtime event NAME must satisfy Essentials' native /cuttree/i.
+            converted.attrs["@name"] = b"CutTree"
         return converted, {"kind": obstacle}
     return new_event(event, dialogue, 0, character), {"kind": "npc_dialogue"}
 

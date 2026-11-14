@@ -57,6 +57,21 @@ module BlueKantoPilot
           pbMessage(_INTL("Oak: Você trouxe meu pacote de Viridian! Muito obrigado!"))
           if $bag.add(:POKEBALL, 5)
             $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
+            if $player.pokedex
+              # The starter was obtained before Oak issued the Pokédex.
+              # Register currently owned, non-egg party species rather than
+              # forcing an empty KantoDex menu; never clear prior records.
+              $player.party.each do |pkmn|
+                next if pkmn.egg?
+                $player.pokedex.set_seen(pkmn.species, false)
+                $player.pokedex.set_owned(pkmn.species, false)
+              end
+              # Explicit unlock is authoritative after Oak's parcel;
+              # runtime UI hook alone can be bypassed by other engine plugins.
+              BlueKantoDex.access!($player.pokedex) if defined?(BlueKantoDex)
+              $player.pokedex.refresh_accessible_dexes
+              BlueKantoDex.ensure_selector!($player.pokedex) if defined?(BlueKantoDex)
+            end
             progress["pilot_oak_parcel_delivered"] = true
             BlueMusic.kanto_me_play("obtained_item")
             pbMessage(_INTL("Oak: Aqui estão sua Pokédex e 5 Poké Bolas. Agora você pode explorar a Viridian Forest!"))
@@ -1046,3 +1061,150 @@ MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
     false
   end
 })
+
+
+# KantoDex is *only* installed by the isolated Kanto pilot, and relies on
+# the real Essentials regional dex compiler. The National Dex stays native.
+# Never renumber a species, clear seen/owned lists, or change Decades saves.
+module BlueKantoDex
+  def self.manifest
+    return @manifest if defined?(@manifest)
+    path = "Data/blue-kanto-dex-index.txt"
+    @manifest = nil
+    if File.file?(path)
+      parts = File.read(path).strip.split("|")
+      if parts.length == 3 && parts.all? { |s| s.match?(/\A\d+\z/) }
+        @manifest = {
+          "index" => parts[0].to_i,
+          "added" => parts[1] == "1",
+          "previous_regional_count" => parts[2].to_i
+        }
+      end
+    end
+    @manifest
+  end
+
+  def self.index
+    manifest && manifest["index"]
+  end
+
+  def self.access!(dex)
+    return unless manifest && dex && $player && $player.has_pokedex
+    flags = dex.instance_variable_get(:@unlocked_dexes)
+    return unless flags.is_a?(Array) && defined?(pbLoadRegionalDexes)
+    expected = pbLoadRegionalDexes.length + 1
+    index = self.index
+    return unless index && index >= 0 && index < expected - 1
+
+    if flags.length == expected - 1 && manifest["added"]
+      # v21.1 saves stored National as the final element. Inserting a regional
+      # list moves the National flag right by one without losing any flags.
+      national = flags.pop
+      flags.insert(index, false)
+      flags << national
+    elsif flags.length < expected
+      # Defensive migration for older pilot saves with fewer unlocked slots.
+      national = flags.pop
+      flags.fill(false, flags.length...expected - 1)
+      flags << national
+    end
+    return unless flags.length == expected
+    flags[index] = true
+    flags[-1] = true   # Existing National Pokédex remains selectable.
+
+    if $PokemonGlobal
+      indexes = $PokemonGlobal.pokedexIndex
+      if indexes.is_a?(Array)
+        if manifest["added"] && indexes.length == expected - 1
+          indexes.insert(index, 0)
+        end
+        indexes.fill(0, indexes.length...expected) if indexes.length < expected
+      end
+    end
+  end
+
+  # Some versions of Blue override refresh_accessible_dexes and keep only
+  # the current region, even when the native Settings flag is disabled. Add
+  # the two genuinely unlocked/seen native lists after that refresh completes.
+  def self.ensure_selector!(dex)
+    index = self.index
+    return unless index && dex && $player && $player.has_pokedex
+    # Both lists are explicitly issued at Oak, independent of any custom
+    # unlocked?/seen_any? filter implemented by other Blue plugins.
+    accessible = dex.instance_variable_get(:@accessible_dexes)
+    accessible = [] unless accessible.is_a?(Array)
+    accessible << index unless accessible.include?(index)
+    accessible << -1 unless accessible.include?(-1)
+    accessible.sort_by! { |i| i == -1 ? 1_000_000 : i }
+    dex.instance_variable_set(:@accessible_dexes, accessible)
+  end
+
+  module PokedexAccess
+    def refresh_accessible_dexes
+      BlueKantoDex.access!(self)
+      result = super
+      BlueKantoDex.ensure_selector!(self)
+      @blue_kanto_dex_ready = true if BlueKantoDex.index && $player && $player.has_pokedex
+      result
+    end
+
+    # The pause menu queries the array before opening any regional selector.
+    # Support both new and existing pilot saves at that exact point.
+    def accessible_dexes
+      if BlueKantoDex.index && $player && $player.has_pokedex
+        BlueKantoDex.access!(self)
+        BlueKantoDex.ensure_selector!(self)
+        accessible = instance_variable_get(:@accessible_dexes)
+        return accessible if accessible.is_a?(Array)
+      end
+      super
+    end
+  end
+
+  module DexNames
+    def pokedex_names
+      names = super
+      config = BlueKantoDex.manifest
+      return names unless config
+      count = config["previous_regional_count"]
+      # Essentials' original names array ends in National, even when it has
+      # far fewer labels than the installed PBS regional sections. Never
+      # mislabel an existing regional slot as the National Pokédex.
+      result = names.first([names.length - 1, 0].max).first(count)
+      result.fill(_INTL("Pokédex regional"), result.length...count)
+      if config["added"]
+        result << _INTL("KantoDex")
+      else
+        result[config["index"]] = _INTL("KantoDex")
+      end
+      result << _INTL("Pokédex Nacional")
+      result
+    end
+  end
+
+  module DexMenu
+    def pbStartScreen
+      if $player && $player.has_pokedex
+        BlueKantoDex.access!($player.pokedex)
+        $player.pokedex.refresh_accessible_dexes
+      end
+      super
+    end
+  end
+
+  def self.install
+    return if @installed
+    # Decades can force a single current-region dex. The isolated Kanto
+    # pilot needs the native dex selector instead: KantoDex + National.
+    # Settings is mutated ONLY inside the prepared pilot Game.exe.
+    if Settings.const_defined?(:USE_CURRENT_REGION_DEX) && Settings::USE_CURRENT_REGION_DEX
+      Settings.send(:remove_const, :USE_CURRENT_REGION_DEX)
+      Settings.const_set(:USE_CURRENT_REGION_DEX, false)
+    end
+    Settings.singleton_class.prepend(DexNames)
+    Player::Pokedex.prepend(PokedexAccess)
+    PokemonPokedexMenuScreen.prepend(DexMenu)
+    @installed = true
+  end
+end
+BlueKantoDex.install

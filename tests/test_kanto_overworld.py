@@ -102,6 +102,29 @@ class KantoOverworldContracts(unittest.TestCase):
                          [111, 355, 355, 0, 412, 0])
         self.assertEqual(first["@list"][1].attrs["@parameters"][0], b"pbSmashThisEvent")
 
+    def test_cut_trees_import_with_native_cut_and_do_not_block_builder(self):
+        event = fake_event(name=b"Cut Tree", scripts=[command(0)],
+                           graphic=b"Tree")
+        self.assertEqual(source_obstacle(event), "cut")
+        self.assertEqual(event.attrs["@name"], b"Cut Tree")
+        result, meta = adapt(event)
+        self.assertEqual(meta["kind"], "cut")
+        first = result.attrs["@pages"][0].attrs
+        self.assertEqual(result.attrs["@name"], b"CutTree")
+        self.assertEqual((result.attrs["@x"], result.attrs["@y"]), (11, 7))
+        self.assertEqual(first["@trigger"], 0)
+        self.assertFalse(first["@through"])
+        self.assertEqual(first["@graphic"].attrs["@character_name"],
+                         b"FRLG_Pilot_items")
+        self.assertEqual(len(result.attrs["@pages"]), 1)
+        rows = first["@list"]
+        self.assertEqual([r.attrs["@code"] for r in rows],
+                         [111, 355, 0, 412, 0])
+        self.assertEqual(rows[0].attrs["@parameters"][1], b"pbCut")
+        self.assertEqual(rows[1].attrs["@parameters"][0], b"pbSmashEvent(get_self)")
+        # Engine requires the original CutTree marker for field moves.
+        self.assertIsNone(source_npc_dialogue(event))
+
     def test_strength_boulder_uses_native_push_and_stays_solid(self):
         event = fake_event(name=b"StrengthBoulder", scripts=[command(0)])
         result, metadata = adapt(event)
@@ -208,6 +231,8 @@ class KantoOverworldContracts(unittest.TestCase):
         self.assertIn('missing_graphics', script)
         self.assertIn('safely_adapt_source_field_event(', script)
         self.assertIn('scripts/regions/kanto_overworld.py', script)
+        self.assertIn('if source_obstacle(event) == "cut":', script)
+        self.assertIn('scripts/regions/kanto_dex.py', script)
         runtime = (ROOT / "scripts/regions/KantoPilot.rb").read_text("utf8")
         self.assertIn('def self.pickup(item, key, event_id = nil, quantity = 1)', runtime)
         self.assertIn('collected << key', runtime)

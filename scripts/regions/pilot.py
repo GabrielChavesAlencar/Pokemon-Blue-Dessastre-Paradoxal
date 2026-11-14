@@ -16,7 +16,8 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
-from kanto_overworld import MissingActorGraphic, safely_adapt_source_field_event, source_item_ball
+from kanto_overworld import MissingActorGraphic, safely_adapt_source_field_event, source_item_ball, source_obstacle
+from kanto_dex import install_pilot_kantodex
 from kanto_npc_locale import install_npc_locale
 from server.ruby_marshal import RubyObject, text
 from stage import serialize, stage
@@ -30,6 +31,8 @@ PILOT_META = "Kanto pilot.json"
 PILOT_INPUTS = (
     "scripts/regions/pilot.py",
     "scripts/regions/kanto_overworld.py",
+    "scripts/regions/kanto_dex.py",
+    "data/national-species.json",
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/stage.py",
     "scripts/regions/pbs.py",
@@ -716,6 +719,7 @@ def install_events(source, target, mapping):
     preview_only = set(json_file(KANTO).get("preview_only", []))
     catalogue_items = catalogue(target, "items")
     field_inventory, skipped_items, pending_review, missing_graphics = [], [], [], []
+    cut_source_candidates = []
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
@@ -730,6 +734,28 @@ def install_events(source, target, mapping):
                 raise ValueError(f"Phase 09-11 preview map {original} contains foreign events")
             continue
         events = load(source / "Data" / f"Map{original:03}.rxdata").attrs["@events"]
+        for source_event_id, source_event in events.items():
+            label = text(source_event.attrs["@name"])
+            field_scripts = [
+                text(row.attrs["@parameters"][-1])
+                for page in source_event.attrs["@pages"]
+                for row in page.attrs["@list"]
+                if row.attrs["@code"] in (111, 355, 655) and
+                row.attrs["@parameters"] and isinstance(row.attrs["@parameters"][-1], (str, bytes))
+            ]
+            if ("cut" in label.lower() or "tree" in label.lower() or
+                    any("pbCut" in script or "CutTree" in script for script in field_scripts)):
+                cut_source_candidates.append({
+                    "source_map": original,
+                    "event": source_event_id,
+                    "x": source_event.attrs["@x"],
+                    "y": source_event.attrs["@y"],
+                    "name": label,
+                    "graphic": text(source_event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]),
+                    "page_count": len(source_event.attrs["@pages"]),
+                    "native_cut_script": "pbCut" in field_scripts,
+                    "native_smash_script": "pbSmashThisEvent" in field_scripts,
+                })
         dest_file = target / "Data" / f"Map{destination:03}.rxdata"
         map_data = load(dest_file)
         selected = {}
@@ -952,9 +978,36 @@ def install_events(source, target, mapping):
                     event.attrs["@pages"][0].attrs["@graphic"])
                 selected[event_id] = statue
                 continue
-            # Phase 09 selective import: only audited doors, healing, and
-            # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
-            # Cut trees, elevators or untranslated foreign story events.
+            # Pure field obstacle: restore genuine FRLG CutTree objects even
+            # on tightly whitelisted exterior maps (e.g. Celadon, Fuchsia).
+            # This does NOT permit any foreign NPC/quest/elevator event.
+            # Preview-only maps have already exited this loop above.
+            if source_obstacle(event) == "cut":
+                field, missing_graphic = safely_adapt_source_field_event(
+                    event, original, event_id, catalogue_items,
+                    actor, new_event, command, if_scene)
+                if missing_graphic:
+                    missing_graphics.append({
+                        "source_map": original, "map": destination,
+                        "event": event_id, "x": event.attrs["@x"],
+                        "y": event.attrs["@y"], "source_name": text(event.attrs["@name"]),
+                        "graphic": text(event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]),
+                        "reason": missing_graphic,
+                    })
+                    print(f"[KANTO] Arvore Cut sem sprite: mapa {original}, "
+                          f"evento {event_id}: {missing_graphic}", flush=True)
+                elif field:
+                    adapted, detail = field
+                    selected[event_id] = adapted
+                    field_inventory.append({
+                        "source_map": original, "map": destination, "event": event_id,
+                        "x": event.attrs["@x"], "y": event.attrs["@y"],
+                        "source_name": text(event.attrs["@name"]), **detail,
+                    })
+                continue
+            # Phase 09 selective import: only audited doors, healing,
+            # gym battles and source-confirmed Cut trees. Do not leak
+            # Celadon NPCs, items, Rocket, stores or foreign quest scripts.
             if original == 114 and event_id not in (3, 20):
                 continue
             if original == 115 and event_id not in (1, 2):
@@ -1237,8 +1290,13 @@ def install_events(source, target, mapping):
             "skipped_items": skipped_items,
             "pending_review": pending_review,
             "missing_graphics": missing_graphics,
+            "cut_source_candidates": cut_source_candidates,
             "preview_maps_untouched": sorted(preview_only),
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
+    print("[KANTO CUT SOURCE AUDIT] " + json.dumps({
+        "source_candidates": len(cut_source_candidates),
+        "imported": sum(r["kind"] == "cut" for r in field_inventory),
+    }), flush=True)
 
 
 def copy_game(game, target):
@@ -1276,6 +1334,9 @@ def install_pbs(preview, target, mapping):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         metadata.append("")
     (pbs / "map_metadata_kanto.txt").write_text("\n".join(metadata), encoding="utf8")
+    # Essentials' regional dex is compiled from PBS; the National dex is
+    # implicit and remains available with its full existing species order.
+    install_pilot_kantodex(ROOT, target)
 
 
 def install_runtime(target, mapping, game):
