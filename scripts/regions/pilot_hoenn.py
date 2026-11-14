@@ -2187,6 +2187,20 @@ def build_overlay(game, source):
                                              source=source, overlay=overlay)
     for old, x, y, kind, sprite, event_id in qa4_obstacles["new_safe_obstacles"]:
         overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old], EVENT_CLASSES)
+    # Debug teleport destinations come AFTER every authored source event,
+    # treasure and obstacle is installed. Never land on an NPC/door/rock.
+    test_stops = build_test_stops(maps, tiles, ids)
+    stops_raw = serialize_test_stops(test_stops)
+    overlay["Data/blue-hoenn-test-stops.txt"] = stops_raw
+    report["qa_test_stops"] = {
+        "schema": 1, "count": len(test_stops),
+        "sha256": hashlib.sha256(stops_raw).hexdigest(),
+        "file": "Data/blue-hoenn-test-stops.txt",
+        "source_ids": [row[0] for row in test_stops],
+        "real_terrain_walkable": True,
+        "debug_only_no_story_flag_mutation": True,
+        "game_exe_tested": False,
+    }
     report["qa4"] = {
         **qa4_obstacles,
         "field_badges": {
