@@ -102,7 +102,7 @@ echo [OK] Contratos de campo estaticos auditados.
 echo [PENDENTE] Surf, Dive, Waterfall, Strength e gelo exigem QA real.
 echo.
 echo [OK] Pasta de Hoenn preparada e arquivos conferidos.
-echo Perfil de save separado: Hoenn Piloto.
+echo Perfil de save separado: Hoenn QA Fase04.
 echo IMPORTANTE: Na primeira abertura o jogo pode compilar e fechar.
 echo Se isso ocorrer, execute este BAT outra vez.
 echo O Game.exe ainda deve ser testado dentro do jogo.
