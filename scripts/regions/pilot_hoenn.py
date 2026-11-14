@@ -102,6 +102,7 @@ from hoenn_qa_phase3 import (
 )
 from hoenn_qa_phase4 import install_simple_obstacles
 from hoenn_qa_phase5 import audit_generated
+from hoenn_qa_phase6 import audit_generated as audit_climate
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -2128,6 +2129,7 @@ def build_overlay(game, source):
     # script identifiers and click/touch triggers to the expected contracts.
     # Original donor events are used ONLY for a review backlog.
     report["qa5"] = audit_generated(maps, all_original_events)
+    report["qa6"] = audit_climate(maps)
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())
@@ -2194,6 +2196,7 @@ def stage(game: Path, source: Source, output: Path) -> dict:
     qa_profiles = {
         "hoenn-qa-fase04": ("Hoenn QA Fase04", "Dessastre Paradoxal Hoenn QA04"),
         "hoenn-qa-fase05": ("Hoenn QA Fase05", "Dessastre Paradoxal Hoenn QA05"),
+        "hoenn-qa-fase06": ("Hoenn QA Fase06", "Dessastre Paradoxal Hoenn QA06"),
     }
     if output.name in qa_profiles:
         profile, org = qa_profiles[output.name]
