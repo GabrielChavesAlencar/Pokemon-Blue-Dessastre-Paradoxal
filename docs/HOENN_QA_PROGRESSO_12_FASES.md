@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 11 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣▣▣▣□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 12 implementada; execução local/aceite pendentes — ▣▣▣▣▣▣▣▣▣▣▣▣ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -21,7 +21,7 @@
 | 9 | Elite Four e Wallace | **Cinco salas, equipes PBS, ordem de vitórias e auditoria QA09 preparados; Game.exe pendente** | ⏳ |
 | 10 | Hall of Fame e pós-jogo | **Registro da Liga via BlueRegions, Johto/Sinnoh liberados no circuito e QA10 preparados; Game.exe pendente** | ⏳ |
 | 11 | Traduções, placas, áudio e Trainer Card | **199 nomes de mapa, oito insígnias PT-BR, BGM provisória e Trainer Card de Hoenn preparados; Game.exe pendente** | ⏳ |
-| 12 | QA da campanha inteira Windows/Android | Pendente | ⏳ |
+| 12 | QA da campanha inteira Windows/Android | **Portão integrado QA01–QA12 e 30 casos Windows/JoiPlay preparados; execução nativa pendente** | ⏳ |
 
 **Regra:** nenhuma fase muda para "aprovada" só porque a CI ou um simulador Ruby passaram; exige observação real no Game.exe.
 
@@ -510,3 +510,59 @@ A entrada oficial na Liga envolve Map93 e o corredor Map100; Map99 é o **Hall o
 6. Marque como pendente na Fase 12 tudo que exigir assets musicais originais, falas adicionais, sprites autênticos de insígnias, revisões de UI e testes de toda a campanha.
 
 **QA11 pronta para execução técnica, não para aceitação nativa. A Fase 12 é a verificação integral de campanha Windows/Android.**
+
+## Fase 12/12 — Auditoria integrada da campanha Hoenn (Windows + Android/JoiPlay)
+
+**Preparação técnica de ferramentas: 12/12 (100%). Fases jogáveis nativamente aceitas: 0/12 (0%).** Essas métricas **não** devem ser confundidas. Publicar ferramentas e executar testes unitários não comprova que a campanha inteira abre, compila e termina sem bugs no `Game.exe`.
+
+### 1. Portão técnico integrado QA01–QA12
+
+- `scripts/regions/hoenn_qa_phase12.py` é a última validação. Ela exige **11 relatórios QA01–11 no mesmo perfil QA12**, sem nenhum status `BLOCKED`, erro ou alegação de aprovação nativa. O script não aceita um relatório ausente ou de outra região.
+- O verificador confirma cópia privada com **199 MapIDs da fonte fixada**, `Game.exe` idêntico à base Blue instalada, perfil de save único **Hoenn QA Fase12** e arquivos de RXDATA/PBS/Trainer Card/HoennPilot. Gera impressões digitais SHA-256 de `MapInfos`, PBS, plugin, cartão e manifesto.
+- Os contratos de QA07 conferem **8 ginásios**, QA09 confere 4 equipes da Elite + Wallace (5,5,5,5,6 Pokémon de referência), QA10 confere desbloqueio **Johto + Sinnoh**, e QA11 exige 199 rótulos de mapas em português e 199 atribuições de músicas provisórias. Os níveis de batalha reais continuam responsabilidade de Decades.
+- A auditoria mantém visíveis as contagens de **NPCs/treinadores/placas originais ainda não implementados**, **obstáculos com necessidade de revisão** e **sprites provisórios em mapas finais**; esses itens constam no registro `known_blockers` e não são aprovados nem preenchidos artificialmente.
+- `tests/test_hoenn_qa_phase12.py` rejeita relatórios ausentes, resultados anteriores bloqueados, perfil errado, mapa duplicado/desconhecido, perda do inventário de pendências e falsos indicadores de aceite. A CI roda testes unitários e sintaxe Python separadamente.
+- O status de sucesso **`STATIC_QA_01_12_PASSED__NATIVE_ACCEPTANCE_PENDING`** certifica somente a verificação estática dos dados presentes na instalação privada **após execução local**. **Não** certifica jogabilidade.
+
+### 2. Preparação segura de teste
+
+1. Atualize a `main` no computador. Confirme `game/Game.exe` com o Blue instalado e o ZIP exato **`The Pokémon World Project - Hoenn.zip`**. A auditoria não substitui esses insumos por mapas de outro pack.
+2. Com o jogo original fechado, execute **`TESTAR_HOENN.bat`**. A cópia será criada em `.blue-work/hoenn-qa-fase12/`, separada de `game/` e dos perfis QA04–QA11. O script deve falhar de forma explícita se faltar uma fonte ou houver conflito. **Nunca substitua a pasta de um teste anterior sem copiar os saves importantes.**
+3. Verifique os relatórios `.blue-work/hoenn-qa-fase12-prep-report.json` até `.blue-work/hoenn-qa-fase12-interface-report.json`, e por fim **`.blue-work/hoenn-qa-fase12-report.json`**.
+4. Depois do portão estático, o BAT abre a cópia do `Game.exe`. Se a primeira inicialização provocar compilação e fechamento, execute o launcher novamente e confira os logs antes de prosseguir. Não use o save principal do Decades para esses testes.
+5. O script cria, **sem sobrescrever ao executar novamente**, `.blue-work/hoenn-qa-fase12-playtest.json`, com **30 casos reais pendentes:** 15 para Windows Game.exe e 15 para Android/JoiPlay. O preenchimento manual não altera `native_approved` nem cria aceite automático.
+
+### 3. Caminho de teste completo do início até a Liga
+
+| Bloco de jogo | Referências de teste no jogo | Critério jogável |
+|---|---|---|
+| Início | Littleroot → Birch → Rotas 101–103 → Oldale | 3 Poké Bolas, escolha, rival, Pokédex, diálogos em PT-BR e saves |
+| Primeiros ginásios | Petalburg → Rustboro/Roxanne → Dewford/Brawly | Cut/Flash, itens, treinadores, insígnias locais e batalhas |
+| Meio da região | Slateport → Mauville/Wattson → Lavaridge/Flannery → Norman | Aqua/Magma, bicicletas, Rock Smash, Strength, Surf e gates |
+| Reta leste | Fortree/Winona → Lilycove → Mt. Pyre → Mossdeep/Tate & Liza | Surf/Fly, sprites, clima, encontros e avanço da história |
+| Clímax | Esconderijos Aqua/Magma → Seafloor → Sootopolis → Sky Pillar | Dive, Rayquaza, animações, Waterfall, Juan e oito insígnias |
+| Liga | Ever Grande → Victory Road/Wally → Sidney → Phoebe → Glacia → Drake → Wallace | Portas sem softlock, derrota sem flag, escala real e cinco chefes |
+| Pós-jogo | Hall da Fama → circuito Hoenn/Johto/Sinnoh | Registro único, créditos, cartão, save/reload e sem viagem para mapa sem instalação |
+
+A caminhada deve incluir **NPCs novos/antigos, placas, itens no chão, encontros selvagens, rochas e puzzles**, não apenas acessar os destinos via teleportes administrativos. Qualquer mapa sem passagem real ou evento impedindo progresso mantém o bloco sem aceite.
+
+### 4. Testes de regressão obrigatórios
+
+**No Windows:** realize uma nova partida na cópia QA12 e capture evidências de todos os principais bloqueios, lutas, artes dos treinadores, texto, música/loop, controles, batalha selvagem, cartões, jogo salvo e carregado. Valide o retorno ao Hall e a mensagem pós-jogo; os créditos e o Hall animado ainda não possuem prova nativa. Não libere viagem física para outra região sem pontos de chegada reais.
+
+**No Android/JoiPlay:** execute teste independente do início ao Hall, com eventos de mato/batalha, tela de toque, teclas, som, performance, menu, Trainer Card, tilesets e saves. A aprovação do Windows não transfere automaticamente para o Android. Arquivos de instalação e configurações de JoiPlay precisam ser conferidos no dispositivo.
+
+**Regressão multirregional:** reabra e teste Decades, Kanto, Johto e Sinnoh sem migrar nem sobrescrever seus saves. Confirme que a progressão de Hoenn, insígnias, TMs, PC e `complete_league` não destravam conquistas indevidas, não reiniciam história anterior e não alteram os sprites, áudio e cartões das outras regiões.
+
+### 5. Pendências para aprovação real
+
+- [ ] **Compilação e jogo real:** executar `Game.exe` e concluir a aventura do início ao Hall, com saves de vários pontos.
+- [ ] **Cobertura de mundo:** revisar **todos os candidatos NPC/treinador/placa não implementados** e obstáculos pendentes apontados pelo relatório. O inventário é verificável, mas não equivale à implementação.
+- [ ] **Gates e puzzles:** confirmar passabilidade, HM, puzzles de ginásio, Seafloor e Victory Road em todos os cenários legítimos.
+- [ ] **Diálogos e textos:** corrigir qualquer fala em inglês restante, texto ilegível, placa sem tradução, cores/contornos ruins e nomes de mapa incorretos.
+- [ ] **Áudio:** substituir/faixar adequadamente trilhas de chefes/Liga/cenas onde ainda há OGG provisório; conferir música real, fade e loop.
+- [ ] **Gráficos e UI:** validar sprites de líderes/Elite, telas, oito ícones de insígnias, cartões e Hall da Fama em tela real.
+- [ ] **Saves e compatibilidade:** derrotas, vitórias e recompensas sem duplicação; PC, itens, esmeraldas, box de Pokémon e saves de outras regiões intactos.
+- [ ] **Windows e Android separados:** checklist `playtest.json` com evidências reproduzíveis por plataforma, **sem conclusão automática**.
+
+**Conclusão da etapa:** todas as **12/12 ferramentas de preparação/auditoria estão no repositório**, mas não foi executado aqui um jogo completo com os insumos privados de Hoenn. Portanto **aceite nativo: 0/12**, até que testes reais em Windows e Android comprovem o contrário. É normal e correto permanecer com pendências abertas após a etapa técnica final.
