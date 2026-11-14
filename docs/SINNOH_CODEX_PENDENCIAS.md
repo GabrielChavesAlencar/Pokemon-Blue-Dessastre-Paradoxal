@@ -113,6 +113,31 @@ python -m unittest discover -s tests -p "test_sinnoh_remap.py" -v
 
 **Progresso real:** S13 e S14 **parciais**; preparação da introdução **5/8 subetapas**; desenvolvimento geral **8/32 (25%)**; fases técnicas, jogáveis e QA continuam **0/13** até os mapas reais e testes nativos. Relatório central: [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md).
 
+### Barry — I07: gerar times reais PBS sem criar marcador de batalha antecipado
+
+**Já está feito no GitHub; Codex NÃO deve reimplementar:**
+
+- [build_sinnoh_barry_pbs.py](../scripts/regions/build_sinnoh_barry_pbs.py): gera os dois fragmentos `trainer_types_sinnoh_barry.txt` / `trainers_sinnoh_barry.txt` com as três versões exatas de `BLUE_SINNOH_RIVAL,Barry,0/1/2`, a partir dos `trainer_types.txt`, `pokemon.txt` e `moves.txt` nativos. As espécies seguem Turtwig → Chimchar, Chimchar → Piplup, Piplup → Turtwig, e os golpes são aprendidos pelo Pokémon do Blue até nível 5.
+- [verify_sinnoh_barry_pbs.py](../scripts/regions/verify_sinnoh_barry_pbs.py): confirma a integridade do draft, SHA-256 dos PBS de origem, hashes dos dois PBS novos, três versões e contrato **70% normal / 90% Master**. Não cria `Data/blue-sinnoh-rival-ready.txt` em nenhuma circunstância.
+- [Testes do gerador](../tests/test_sinnoh_barry_pbs.py) e [testes do verificador](../tests/test_sinnoh_barry_verify.py) usam apenas PBS sintéticos. No relatório `PBS draft` as flags de instalação, batalha real, compilação, sprite, save e liberação são todas **false**.
+- [SINNOH_FASE_03_BARRY_PBS.md](SINNOH_FASE_03_BARRY_PBS.md): instruções locais completas, integração segura, bloqueios e divergência do piloto antigo.
+
+**Codex: executar apenas após acesso ao `game/PBS` real, sem alterar os arquivos principais:**
+
+```powershell
+python scripts/regions/build_sinnoh_barry_pbs.py --game game --output .blue-work/sinnoh-barry-pbs-v1
+python scripts/regions/verify_sinnoh_barry_pbs.py --game game --draft .blue-work/sinnoh-barry-pbs-v1
+python -m unittest discover -s tests -p "test_sinnoh_barry*.py" -v
+```
+
+**Pontos obrigatórios que permanecem locais:**
+1. Integrar os dois PBS **somente à cópia isolada**, compilar os dados Essentials, conferir sprite e todas as três versões do `GameData::Trainer`.
+2. Conferir no motor que `BlueCampaign.trainer_level` realmente dimensiona ao jogador (70%/90%) conforme estágio, insígnias e nível real, e que a batalha de Barry pode ser perdida, sem importar scripts de origem.
+3. Testar três starters, level cap, save/load e evitar repetição. **Apenas depois** criar o marcador `blue-sinnoh-rival-ready.txt` dentro da instalação de QA, jamais no Blue principal.
+4. Investigar antes de combinar os pilotos: [pilot_sinnoh.py](../scripts/regions/pilot_sinnoh.py) usa IDs **800–805**, sobrepostos a Johto **600–999** no plano compartilhado, enquanto [SinnohPreview.rb](../scripts/regions/SinnohPreview.rb) seleciona starter via diálogo, diferente das três Poké Bolas físicas de [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb). Essas implementações não devem ser mescladas cegamente.
+
+**Progresso sem inflar gameplay:** barra interna Barry **4/6**, introdução **5/8**, geral **8/32**, técnica/jogável/QA **0/13**. I07 ainda **não** aprovada.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
