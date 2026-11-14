@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1977cdde221e2cc06c6f2501a04b39cbbe24eb30",
+      "date": "2026-11-14T11:50:11-03:00",
+      "title": "feat(hoenn): integrar 20 mapas costeiros, Granite Cave, barco e bordas reais",
+      "category": "Novidades"
+    },
+    {
       "sha": "be1d7a6002b46b72df198c4742c754bdd975d15c",
       "date": "2026-11-14T11:49:23-03:00",
       "title": "fix(hoenn): corrigir Protein de Route 106 e impedir evento duplicado Soft Sand",
