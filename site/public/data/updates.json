@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "32ef890e617c69b0ae0b7911e25bc6657af662e6",
+      "date": "2026-11-14T00:15:06-03:00",
+      "title": "fix(hoenn): correct trainer PBS header regex in duplicate preflight",
+      "category": "Correções"
+    },
+    {
       "sha": "f5a1ed7cac30e31a7e0328d8618235f3d35781e8",
       "date": "2026-11-14T00:13:52-03:00",
       "title": "docs(regions): add per-pilot scopes for read-only private RXDATA/PBS verification",
