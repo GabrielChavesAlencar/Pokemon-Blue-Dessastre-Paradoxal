@@ -32,7 +32,9 @@ module TrainerBattle
     attr_reader :history
     def start(*args)
       @history << args
-      $battle_returns_nil ? nil : true
+      return nil if $battle_returns_nil
+      return false if $battle_returns_false
+      true
     end
   end
 end
@@ -177,7 +179,9 @@ Dir.mktmpdir("sinnoh-isolated-runtime-") do |directory|
     check(!BlueSinnohPilot.barry_rival, "QA Barry nil battle result accepted")
     check(!BlueSinnohPilot.rival_fought?, "Nil battle marked as completed")
     $battle_returns_nil = false
-    check(BlueSinnohPilot.barry_rival, "Verified QA Barry battle not available")
+    $battle_returns_false = true
+    check(BlueSinnohPilot.barry_rival, "Verified QA Barry loss not accepted")
+    $battle_returns_false = false
     check(TrainerBattle.history.last == [:BLUE_SINNOH_RIVAL, "Barry", 1],
           "QA rival was not Piplup against Chimchar")
     check(BlueSinnohPilot.rival_fought?, "QA battle win not stored")
