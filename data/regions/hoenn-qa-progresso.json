@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 6,
-    "implementation_preparation_count": 6,
+    "current_phase": 7,
+    "implementation_preparation_count": 7,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -65,8 +65,8 @@
       {
         "phase": 7,
         "name": "Oito ginásios e insígnias regionais",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "eight_gym_map_scoped_events_pbs_and_badge_contract_auditor_prepared",
+        "native_acceptance": "pending_private_copy_game_exe_all_gym_puzzles_and_dynamic_battle_verification",
         "native_approved": false
       },
       {
@@ -145,9 +145,22 @@
       "Verify story flags after save/reload, revisits, battle loss and region change; no extra badges or fixed levels",
       "Visually test actual Game.exe weather graphics, native Sky Pillar puzzle, cutscene, BGM and map transitions",
       "Preserve other Hoenn QA saves and Decades/Kanto/Johto/Sinnoh saves; no source assets in public Git"
+    ],
+    "phase7_requires": [
+      "Create fresh Hoenn QA Fase07 private copy using same pinned donor ZIP and original game/; preserve all previous QA saves",
+      "Audit physical RXDATA of gym source maps 27,31,47,63,20,68,82,87: all nine leader interactions (including both twins) are bound correctly",
+      "Compile all eight unique gym trainer PBS entries; enforce existing Blue/Decades dynamic battle scaling, not static donor party levels",
+      "Win Roxanne/Brawly/Wattson/Flannery/Norman/Winona/Tate & Liza/Juan using real battle engine; loss must not award badge",
+      "Verify STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND RAIN are local HOENN achievements, never duplicated on reinteraction or reload",
+      "Verify each TM reward is pending if move is unregistered or bag full, then delivered once with correct move ID; verify field unlock HMs independently",
+      "Tate & Liza require a proper Double Battle and two usable Pokemon; do not award MIND on cancellation or loss",
+      "Juan requires resolved climate crisis, Rayquaza and Hoenn Mind Badge; no earlier access to eighth gym",
+      "Test native gym puzzles and doors (Wattson switches, Flannery steam, Norman rooms, Sootopolis ice), dialogue/sprites, defeat retry, save/reload",
+      "Verify that region transition cannot use HOENN badge flags outside HOENN; Kanto/Johto/Sinnoh/Decades saves and Android unchanged",
+      "No Game.exe native or Android approval from static Python/Ruby/CI checks"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA6 adds map-local gates for Sootopolis/Cave of Origin/Sky Pillar/Rayquaza, isolated QA06 save profile and static event verifier. Climate VFX, Rayquaza cinematic, tower puzzle and native Game.exe are NOT approved. 0/12 native approved."
+  "last_publication_note": "QA7 binds 8 Hoenn leaders through map-scoped gym dispatcher (9 NPC events for Tate+Liza), audits source RXDATA and PBS in isolated Hoenn QA07 and keeps original Blue/Decades scaling. Native gym puzzles, real battle UI, badges on Trainer Card and Game.exe still unapproved. 0/12 native approved."
 }
