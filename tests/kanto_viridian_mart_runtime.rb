@@ -90,6 +90,21 @@ Dir.mktmpdir("kanto-viridian-mart-") do |dir|
     BlueKantoPilot.progress["achievements"]["KANTO"] = ["BOULDER"]
     assert(BlueKantoPilot.viridian_mart == false, "old badge bypassed parcel delivery")
     assert($mart.length == 2, "badge opened the shop before delivering")
+    # A legacy Boulder+ save without parcel flags must be able to obtain it,
+    # then return to Oak, instead of being permanently excluded from shopping.
+    BlueKantoPilot.progress["pilot_oak_parcel_received"] = false
+    assert(BlueKantoPilot.parcel_pickup_pending?,
+           "legacy Boulder save cannot recover the parcel")
+    assert(BlueKantoPilot.viridian_mart == false,
+           "legacy recovery opened the store before Oak")
+    assert(BlueKantoPilot.progress["pilot_oak_parcel_received"] == true,
+           "legacy save cannot collect the parcel")
+    assert($mart.length == 2, "legacy recovery bypassed shop lock")
+    BlueKantoPilot.choose_starter
+    assert(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
+           "Oak refused legacy parcel delivery")
+    assert(BlueKantoPilot.viridian_mart, "legacy save remained locked after delivery")
+    assert($mart.length == 3, "legacy save did not unlock the shop")
 
     # Map identity is stable and proper names respect the selected locale.
     metadata = GameData::MapMetadata.new(421)
