@@ -1,0 +1,370 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "EVENT_COORDINATES_REQUIRE_REAL_MAP_AUDIT",
+  "purpose": "Plano de eventos ORIGINAIS do Blue para Twinleaf/Verity/Sandgem; nenhum mapa, NPC, sprite ou posição foi verificado.",
+  "approved_for_install": false,
+  "gameplay_verified": false,
+  "starter_selection": "THREE_PHYSICAL_BALL_EVENTS_NOT_ROWAN_DIALOG",
+  "battle_engine": "BLUE_DECADES_ONLY",
+  "start": {
+    "symbol": "SINNOH_PLAYER_BEDROOM",
+    "map_id": null,
+    "x": null,
+    "y": null,
+    "verified_position": false,
+    "passability_verified": false
+  },
+  "maps": [
+    {
+      "symbol": "SINNOH_PLAYER_BEDROOM",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_BEDROOM_TO_1F",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_PLAYER_HOUSE_1F",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_PLAYER_HOUSE_1F",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_NPC_MOTHER",
+          "kind": "handler",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "handler": "mother",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_1F_TO_BEDROOM",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_PLAYER_BEDROOM",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_1F_TO_TWINLEAF",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_TWINLEAF_TOWN",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_TWINLEAF_TOWN",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_TOWN_TO_HOME",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_PLAYER_HOUSE_1F",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_TOWN_TO_BARRY_HOME",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_BARRY_HOUSE",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_TOWN_TO_ROUTE201",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_ROUTE_201",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_BARRY_HOUSE",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_NPC_BARRY_INTRO",
+          "kind": "handler",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "handler": "barry_intro",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_BARRY_HOME_TO_TOWN",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_TWINLEAF_TOWN",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_201",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_ROUTE201_TO_TOWN",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_TWINLEAF_TOWN",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_ROUTE201_TO_LAKE",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_LAKE_VERITY",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_ROUTE201_TO_SANDGEM",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_SANDGEM_TOWN",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_LAKE_VERITY",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_NPC_ROWAN_BRIEFCASE",
+          "kind": "handler",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "handler": "rowan_briefcase",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_BALL_TURTWIG",
+          "kind": "starter_ball",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "species": "TURTWIG",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_BALL_CHIMCHAR",
+          "kind": "starter_ball",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "species": "CHIMCHAR",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_BALL_PIPLUP",
+          "kind": "starter_ball",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "species": "PIPLUP",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_NPC_BARRY_BATTLE",
+          "kind": "handler",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "handler": "barry_rival",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_LAKE_TO_ROUTE201",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_ROUTE_201",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_SANDGEM_TOWN",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_SANDGEM_TO_ROUTE201",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_ROUTE_201",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_SANDGEM_TO_ROWAN_LAB",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        },
+        {
+          "key": "SN_SANDGEM_TO_ROUTE202",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_ROUTE_202",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_NPC_ROWAN_POKEDEX",
+          "kind": "handler",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "handler": "rowan_pokedex",
+          "sprite": null,
+          "verified_sprite": false,
+          "trigger": "action"
+        },
+        {
+          "key": "SN_ROWAN_LAB_TO_TOWN",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_SANDGEM_TOWN",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    },
+    {
+      "symbol": "SINNOH_ROUTE_202",
+      "map_id": null,
+      "map_sha256": null,
+      "events": [
+        {
+          "key": "SN_ROUTE202_TO_SANDGEM",
+          "kind": "warp",
+          "x": null,
+          "y": null,
+          "verified_position": false,
+          "destination": "SINNOH_SANDGEM_TOWN",
+          "arrival_x": null,
+          "arrival_y": null,
+          "verified_arrival": false,
+          "trigger": "touch"
+        }
+      ]
+    }
+  ],
+  "requirements": [
+    "Auditar fonte real licenciada e mapa de Twinleaf interiores e Sandgem",
+    "Compilar em staging separado após checar hashes e coordenadas de sprites/eventos",
+    "Preparar PBS BLUE_SINNOH_RIVAL 3 versões com marcador isolado, jamais inventar equipes",
+    "Testar saves/região após mudanças em Game.exe/JoiPlay"
+  ],
+  "notes": "JSON contém 9 mapas simbólicos, 5 handlers de história, 3 Poké Bolas e 15 portais de planejamento (sem MapIDs e coordenadas); nada disto pode ser instalado sem evidência de mapas reais."
+}
