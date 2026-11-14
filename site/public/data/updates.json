@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bbb8444ff9c3b53bc2d8c65e0d5501e9a4d7ce82",
+      "date": "2026-11-14T19:35:01-03:00",
+      "title": "test(kanto): negar compras antes de Oak e validar anuncio da cidade",
+      "category": "Testes"
+    },
+    {
       "sha": "7be5ac2b51df3dab58f826179204b6a95f67393e",
       "date": "2026-11-14T19:34:26-03:00",
       "title": "fix(kanto): liberar Viridian Mart somente apos Oak e exibir Cidade de Viridian",
