@@ -122,6 +122,27 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertIn("8/32 (25%)", panel)
         self.assertIn("0/13 (0%)", panel)
 
+    def test_legacy_compatibility_qa_is_preparation_not_gameplay(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        step = record["pilot_compat_qa_workstream"]
+        self.assertEqual((step["complete"], step["total"]), (3, 6))
+        self.assertEqual(step["complete"],
+                         sum(bool(item["complete"]) for item in step["substeps"]))
+        self.assertFalse(step["physical_map_ids_verified"])
+        self.assertFalse(step["legacy_800_805_migrated"])
+        self.assertFalse(step["pbs_compiled"])
+        self.assertFalse(step["runtime_verified"])
+        self.assertFalse(step["can_merge_into_multiregion"])
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["phase_gates"]["technically_approved"], 0)
+        self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
+        for item in step["substeps"]:
+            if item["complete"]:
+                self.assertTrue((ROOT / item["evidence"]).is_file())
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("3/6", panel)
+        self.assertIn("8/32", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
