@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ea5f3a8e9d20a54e8b07a09c3dfa08d056112580",
+      "date": "2026-11-14T18:58:28-03:00",
+      "title": "fix(kanto): preservar quadro original da arvore Cut ate o corte autorizado",
+      "category": "Correções"
+    },
+    {
       "sha": "8054ce37d4d46c725fd9570033a6c9a7bf62ed96",
       "date": "2026-11-14T18:53:10-03:00",
       "title": "perf(hoenn): skip costly 199-map rebuild when QA12 debug catalog and plugin are current",
