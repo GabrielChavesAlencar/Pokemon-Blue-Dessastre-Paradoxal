@@ -78,7 +78,7 @@ class HoennStage7Tests(unittest.TestCase):
         self.assertEqual(report["new_maps"],27)
         self.assertEqual(report["trainer_events"],28)
         self.assertEqual(report["cutscene_events"],1)
-        self.assertEqual(report["pickups"],12)
+        self.assertEqual(report["pickups"],18)
         self.assertEqual(report["steam_vent_pairs"],11)
         self.assertFalse(report["magma_graphic_placeholder"])
         self.assertFalse(report["gameplay_verified"])
