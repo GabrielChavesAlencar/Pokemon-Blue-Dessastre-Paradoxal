@@ -15,8 +15,10 @@ module BlueHoennPilot
     maps = values.each_slice(2).to_h
     stage3 = [7, 8, 11, 12, 13, 14, 16, 17, 18, 19, 20, 101, 102, 103, 104, 105, 106, 156]
     stage4 = (stage3 + [21, 22, 23, 24, 25, 26, 27, 130, 131, 157]).sort
+    stage5 = (stage4 + [28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+                        38, 39, 40, 108, 111, 112, 159, 160, 161, 162]).sort
     stage2 = [7, 8, 11, 12, 13, 14, 101, 102, 103]
-    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4].include?(maps.keys.sort) &&
+    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
@@ -88,6 +90,32 @@ module BlueHoennPilot
         raise "Treinadores da Etapa 4 não compilados: Roxanne/Rusturf/Route116"
       end
     end
+    if maps[28] && maps[32] && maps[159]
+      expected_caves = {
+        159 => [:MAKUHITA, :ZUBAT, :ABRA, :GEODUDE],
+        160 => [:ARON, :ZUBAT, :ABRA, :MAKUHITA, :MAWILE, :SABLEYE],
+        161 => [:ARON, :ZUBAT, :ABRA, :MAWILE, :SABLEYE],
+        162 => [:MAKUHITA, :ZUBAT, :ABRA, :ARON]
+      }
+      expected_caves.each do |mid, species|
+        encounters = GameData::Encounter.get(maps.fetch(mid), 0)
+        unless encounters && encounters.types.fetch(:Cave, []).map { |slot| slot[1] }.sort == species.sort
+          raise "Encontros de Granite Cave incompletos: #{mid}"
+        end
+      end
+      encounters = [
+        [:LASS, "Laura", 31], [:YOUNGSTER, "Takao", 31],
+        [:FISHERMAN, "Brenden", 31], [:LASS, "Lilith", 31],
+        [:YOUNGSTER, "Cristian", 31], [:LASS, "Jocelyn", 31],
+        [:FISHERMAN, "Elliot", 108], [:FISHERMAN, "Ned", 108],
+        [:BLUE_HOENN_BRAWLY, "Brawly", 531],
+        [:BLUE_HOENN_AQUA, "Recruta", 539],
+        [:BLUE_HOENN_AQUA, "Recruta", 540]
+      ]
+      unless encounters.all? { |kind, name, version| GameData::Trainer.exists?(kind, name, version) }
+        raise "Treinadores ou Brawly/Museu de Slateport não compilados"
+      end
+    end
     names = ["May", "Brendan"]
     unless names.all? { |name| [210, 211, 212].all? { |version|
              GameData::Trainer.exists?(:RIVAL1, name, version) } }
@@ -105,6 +133,9 @@ module BlueHoennPilot
     end
     if maps[21] && maps[130]
       links.concat([[maps.fetch(104), maps.fetch(21)], [maps.fetch(21), maps.fetch(130)]])
+    end
+    if maps[28] && maps[32]
+      links.concat([[maps.fetch(28), maps.fetch(108)], [maps.fetch(32), maps.fetch(111)]])
     end
     links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
