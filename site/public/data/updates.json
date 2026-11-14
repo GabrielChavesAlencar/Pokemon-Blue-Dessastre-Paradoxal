@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e48c9be0a105a7dcdbccbc9748fd31b8d1c87658",
+      "date": "2026-11-14T11:51:54-03:00",
+      "title": "feat(hoenn): adicionar PBS Brawly, treinadores de Dewford e duas batalhas Aqua Slateport",
+      "category": "Novidades"
+    },
+    {
       "sha": "b4b862fe9283273c55c5fca3d8a20669ead10575",
       "date": "2026-11-14T11:51:15-03:00",
       "title": "feat(hoenn): gerar NPCs, Brawly, Flash, Steven, museu Aqua e barco da etapa 5",
