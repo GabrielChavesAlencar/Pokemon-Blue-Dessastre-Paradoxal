@@ -26,6 +26,21 @@ module BlueRegions
   def self.local_achievements(state,area)
     state.fetch("achievements",{}).fetch(area,[])
   end
+  def self.neighbors(region)
+    return ["JOHTO","SINNOH"] if region=="HOENN"
+    []
+  end
+  def self.unlocked(state)
+    ([state["initial"]] + state.fetch("leagues",[]).flat_map{|region| neighbors(region)}).uniq
+  end
+  def self.complete_league(state,region)
+    return false unless region=="HOENN" && state["current"]==region &&
+                        state["leagues"].is_a?(Array) &&
+                        unlocked(state).include?(region) &&
+                        !state["leagues"].include?(region)
+    state["leagues"] << region
+    true
+  end
   def self.award(state,area,badge)
     return false unless area=="HOENN"&&%w[MIND RAIN].include?(badge)&&
                         state["initial"]=="HOENN"&&state["current"]=="HOENN"
@@ -100,6 +115,7 @@ $scene=Object.new
 # Stage10 story acceptance is simulated only; no Game.exe or source assets.
 $PokemonGlobal.blue_regions={
   "version"=>1,"initial"=>"HOENN","current"=>"HOENN",
+  "leagues"=>[],
   "achievements"=>{"HOENN"=>%w[STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND]},
   "hoenn_pilot"=>{
     "starter"=>"TREECKO","hm_dive_received"=>true,
@@ -178,9 +194,15 @@ assert9(!BlueHoennPilot.champion_wallace,"Champion loss counted")
 assert9(!flags["champion_wallace_defeated"],"Champion flag on loss")
 TrainerBattle.result=true
 assert9(BlueHoennPilot.champion_wallace,"Champion victory")
+assert9(!BlueHoennPilot.hall_of_fame_stage10,"Hall cannot trigger in champion room")
+assert9($PokemonGlobal.blue_regions["leagues"].empty?,"League completed before Hall")
+$game_map.map_id=699 # Hoenn source Hall Map99
 assert9(BlueHoennPilot.hall_of_fame_stage10,"Hoenn Hall")
 assert9(flags["hoenn_hall_of_fame"],"Hoenn Hall flag")
+assert9($PokemonGlobal.blue_regions["leagues"]==["HOENN"],"Circuit completion missing")
+assert9(BlueRegions.unlocked($PokemonGlobal.blue_regions).sort==%w[HOENN JOHTO SINNOH],"Neighbors not unlocked")
 assert9(BlueHoennPilot.hall_of_fame_stage10,"Hall reentry")
+assert9($PokemonGlobal.blue_regions["leagues"]==["HOENN"],"Hall duplicated League")
 $PokemonGlobal.blue_regions=Marshal.load(Marshal.dump($PokemonGlobal.blue_regions))
 assert9(BlueHoennPilot.rain_badge?,"RAIN lost after save/reload")
 assert9(BlueHoennPilot.hall_of_fame_stage10,"Hall flag lost after save")
