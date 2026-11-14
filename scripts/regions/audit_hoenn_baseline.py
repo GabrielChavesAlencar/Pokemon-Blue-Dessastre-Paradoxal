@@ -41,6 +41,12 @@ PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
          47: "Ginásio de Mauville", 113: "Rota 110",
          114: "Cycling Road (Rota 110-C)", 115: "Portaria da Cycling Road"}
 
+# Stage 07 remains a pinned private-source inventory; never upload donor
+# RXDATA or assets to the public repository.
+from hoenn_stage7 import SOURCE_MAPS_STAGE7
+assert not set(PILOT).intersection(SOURCE_MAPS_STAGE7), "MapID donor em conflito"
+PILOT.update(SOURCE_MAPS_STAGE7)
+
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
     infos = read_map_data(data / "MapInfos.rxdata")
