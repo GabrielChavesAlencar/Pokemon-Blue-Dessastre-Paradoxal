@@ -1129,13 +1129,14 @@ module BlueKantoDex
   def self.ensure_selector!(dex)
     index = self.index
     return unless index && dex && $player && $player.has_pokedex
-    return unless dex.unlocked?(index) && dex.unlocked?(-1)
-    return unless dex.seen_any?(index) && dex.seen_any?(-1)
+    # Both lists are explicitly issued at Oak, independent of any custom
+    # unlocked?/seen_any? filter implemented by other Blue plugins.
     accessible = dex.instance_variable_get(:@accessible_dexes)
-    return unless accessible.is_a?(Array)
+    accessible = [] unless accessible.is_a?(Array)
     accessible << index unless accessible.include?(index)
     accessible << -1 unless accessible.include?(-1)
     accessible.sort_by! { |i| i == -1 ? 1_000_000 : i }
+    dex.instance_variable_set(:@accessible_dexes, accessible)
   end
 
   module PokedexAccess
