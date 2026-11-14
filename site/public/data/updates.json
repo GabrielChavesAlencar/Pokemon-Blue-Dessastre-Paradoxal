@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7ca10d344f4dcd93cee3c96427017540a3959f03",
+      "date": "2026-11-13T22:24:03-03:00",
+      "title": "test(sinnoh): require native map event proof before isolated QA New Game and reject invalid warp counts",
+      "category": "Testes"
+    },
+    {
+      "sha": "98e3c3422c87f5a43209b65630afefd83c774f3a",
+      "date": "2026-11-13T22:23:50-03:00",
+      "title": "test(sinnoh): require native structural probe report and reject fake completion, wrong warps, map tampering",
+      "category": "Testes"
+    },
+    {
       "sha": "3dbb69c22de5ac22f00950155d5723cb17b31b2e",
       "date": "2026-11-13T22:23:20-03:00",
       "title": "feat(sinnoh): require engine structural proof and hash every protected map before enabling QA New Game",
