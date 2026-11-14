@@ -221,7 +221,7 @@ A quantidade **efetivamente instalada** de boulders depende de não haver sobrep
 ### Auditoria estática e código
 
 - `scripts/regions/hoenn_qa_phase5.py` confere **9 eventos autorais centrais**, suas coordenadas, handlers e trigger correto, além de **18 eventos de recrutas** (4 Pyre, 7 Magma, 5 Aqua, 2 Centro Espacial). Também confere os PBS de Maxie, Tabitha, Matt e Archie.
-- `scripts/regions/inspect_hoenn_qa5_public.py` consulta **oito mapas RXDATA** da revisão imutável Hoenn, valida SHA-1 Git com `data/regions/hoenn-source.json` e produz apenas metadados dos eventos. Nenhum script, fala ou binário do doador é publicado.
+- `scripts/regions/inspect_hoenn_qa5_public.py` consulta **oito mapas RXDATA** da revisão imutável Hoenn, valida os SHA-1 Git previamente conferidos na subárvore imutável `c3876ecea7545eb3a91b9c8748d7e2b13f07805d` e usa `data/regions/hoenn-source.json` para confirmar a revisão; produz somente metadados de eventos. Nenhum script, fala ou binário do doador é publicado.
 - Os NPCs e treinadores da fonte sem correspondência validada continuam no backlog. **Não** se pode afirmar que todas as equipes e cenas da campanha já estejam completas.
 - `TESTAR_HOENN.bat` usa a nova pasta privada `.blue-work/hoenn-qa-fase05/` e novo perfil mkxp **Hoenn QA Fase05** / **Dessastre Paradoxal Hoenn QA05**; cópias e saves das fases anteriores permanecem separados.
 
