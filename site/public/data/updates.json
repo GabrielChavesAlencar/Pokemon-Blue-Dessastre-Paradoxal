@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b87b49176716f77c053ec1fa3982da0b9f97078c",
+      "date": "2026-11-13T22:27:57-03:00",
+      "title": "test(sinnoh): enforce postcompile validation 4/7 code-only and no premature native/gameplay approval",
+      "category": "Testes"
+    },
+    {
       "sha": "e37e44dd3e3130c98d90c2891658c887bd8dfc95",
       "date": "2026-11-13T22:27:40-03:00",
       "title": "data(sinnoh): register native postcompile structural probe and Ruby tests without claiming real engine execution",
