@@ -132,6 +132,11 @@ def inspect(game: Path) -> dict:
     if not dex_path.is_file():
         raise ValueError("Missing isolated KantoDex manifest")
     dex_info = json.loads(dex_path.read_text("utf8"))
+    marker = game / "Data/blue-kanto-dex-index.txt"
+    expected_marker = (f'{dex_info["index"]}|{int(dex_info["added"])}|'
+                       f'{dex_info["previous_regional_count"]}')
+    if not marker.is_file() or marker.read_text("ascii").strip() != expected_marker:
+        raise ValueError("KantoDex native ASCII marker does not match audited JSON")
     pbs = sections((game / "PBS/regional_dexes.txt").read_text("utf-8-sig"))
     idx = dex_info["index"]
     if (dex_info["schema"] != 1 or dex_info["length"] != 151 or
