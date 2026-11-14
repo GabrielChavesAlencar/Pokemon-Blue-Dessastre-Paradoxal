@@ -11,7 +11,7 @@
 - **`scripts/regions/pilot_hoenn.py`:** passou a criar três eventos físicos de Poké Bola na Route 101, em posições determinadas a partir de **tiles realmente passáveis** do pacote auditado, em vez de depender da lista de seleção de diálogos. O encontro do rival é colocado em uma área alcançável da Route 103, também validada por busca na geometria do mapa. Se nenhuma posição segura existir, o gerador **recusa a montagem**.
 - **`PBS/trainers_hoenn_pilot.txt` da cópia:** além dos quatro treinadores da Route 102, agora cadastra **seis combinações de rival**: May e Brendan, cada qual com três equipes possíveis. O trainer type `RIVAL1` é reutilizado da instalação Blue; o gerador aborta caso o tipo esteja ausente ou os IDs PBS entrem em conflito com treinadores nativos.
 - **`BlueHoennPilot.verify_compilation`:** passa a exigir as seis equipes do rival no PBS compilado antes de aprovar a cópia.
-- **`tests/hoenn_pilot_runtime.rb`:** novo harness Ruby sem engine para simular início, escolha da bola, derrota/vitória, flags regionais, bag cheia, save/reload e migração de estados antigos.
+- **`tests/hoenn_pilot_runtime.rb`:** novo harness Ruby sem engine para simular início, escolha da bola, derrota/vitória, flags regionais, bag cheia, save/reload, migração de estados antigos e o registro de Oldale como centro de retorno.
 - **`tests/test_hoenn_stage2.py`:** testes Python de criação dos eventos, três iniciais, seis variantes e falha segura de geometria.
 - **`scripts/regions/audit_hoenn_pilot_contract.py`:** auditoria estática atualizada com o escopo da Etapa 02. Mantém `native_assets_examined=false`, `game_exe_tested=false` e `android_tested=false`.
 - **`.github/workflows/regression.yml`:** executa a auditoria Python, verificação de sintaxe Ruby e o novo harness Ruby.
@@ -30,6 +30,7 @@
 7. Ganhar ou perder a luta do rival conclui **somente esse marco da história**. A flag `rival_103_done` impede repetição ao voltar ou carregar o save.
 8. Voltar ao laboratório de Birch para receber **Pokédex**. Novos saves também recebem **cinco Poké Bolas** nessa etapa; saves do piloto antigo, que já as receberam ao pegar o inicial, não as recebem novamente.
 9. Conversar com a mãe para obter **Running Shoes**. As flags impedem dupla entrega ao recarregar.
+10. A enfermeira do **Centro Pokémon de Oldale** cura a party e registra esse Centro como local de retorno após derrota, usando a API nativa `pbSetPokemonCenter`.
 
 **Nota:** o piloto usa os níveis históricos/base (nível 5 no duelo do primeiro rival); o balanceamento próprio Blue deve ser conferido no jogo real, e não substituído por níveis fixos no catálogo.
 
