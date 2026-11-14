@@ -52,6 +52,12 @@ def source_item_ball(event):
     codes = {op.attrs["@code"] for op in page["@list"]}
     if codes - {0, 111, 123, 411, 412, 108, 408, 355}:
         return None
+    if any(op.attrs["@code"] == 111 and not (
+            len(op.attrs["@parameters"]) > 1 and
+            op.attrs["@parameters"][0] == 12 and
+            ITEM_SCRIPT.fullmatch(text(op.attrs["@parameters"][1]).strip()))
+           for op in page["@list"]):
+        return None
     if any(op.attrs["@code"] == 355 and op.attrs["@parameters"] and
            not ITEM_SCRIPT.fullmatch(text(op.attrs["@parameters"][0]).strip())
            for op in page["@list"]):
