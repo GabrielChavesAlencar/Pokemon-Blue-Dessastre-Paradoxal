@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9cc04fd5b894c803fddaab893d5bd74314b904d9",
+      "date": "2026-11-14T17:18:04-03:00",
+      "title": "docs(hoenn): QA7 all eight gyms implementation, risks and native acceptance checklist",
+      "category": "Documentação"
+    },
+    {
       "sha": "376b14d9ba2e737fc66ca041f978443ba6b63cee",
       "date": "2026-11-14T17:17:17-03:00",
       "title": "docs(hoenn): QA7 progress 7/12 technically prepared and 0/12 natively certified",
