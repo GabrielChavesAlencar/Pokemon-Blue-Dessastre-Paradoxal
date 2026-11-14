@@ -719,6 +719,7 @@ def install_events(source, target, mapping):
     preview_only = set(json_file(KANTO).get("preview_only", []))
     catalogue_items = catalogue(target, "items")
     field_inventory, skipped_items, pending_review, missing_graphics = [], [], [], []
+    cut_source_candidates = []
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
@@ -733,6 +734,27 @@ def install_events(source, target, mapping):
                 raise ValueError(f"Phase 09-11 preview map {original} contains foreign events")
             continue
         events = load(source / "Data" / f"Map{original:03}.rxdata").attrs["@events"]
+        for source_event_id, source_event in events.items():
+            label = text(source_event.attrs["@name"])
+            field_scripts = [
+                text(row.attrs["@parameters"][-1])
+                for page in source_event.attrs["@pages"]
+                for row in page.attrs["@list"]
+                if row.attrs["@code"] in (111, 355, 655) and
+                row.attrs["@parameters"] and isinstance(row.attrs["@parameters"][-1], (str, bytes))
+            ]
+            if ("cut" in label.lower() or "tree" in label.lower() or
+                    any("pbCut" in script or "CutTree" in script for script in field_scripts)):
+                cut_source_candidates.append({
+                    "source_map": original,
+                    "event": source_event_id,
+                    "x": source_event.attrs["@x"],
+                    "y": source_event.attrs["@y"],
+                    "name": label,
+                    "graphic": text(source_event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]),
+                    "page_count": len(source_event.attrs["@pages"]),
+                    "script_sample": field_scripts[:3],
+                })
         dest_file = target / "Data" / f"Map{destination:03}.rxdata"
         map_data = load(dest_file)
         selected = {}
@@ -1267,8 +1289,10 @@ def install_events(source, target, mapping):
             "skipped_items": skipped_items,
             "pending_review": pending_review,
             "missing_graphics": missing_graphics,
+            "cut_source_candidates": cut_source_candidates,
             "preview_maps_untouched": sorted(preview_only),
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
+    print("[KANTO CUT SOURCE AUDIT] " + json.dumps(cut_source_candidates[:80], ensure_ascii=False), flush=True)
 
 
 def copy_game(game, target):
