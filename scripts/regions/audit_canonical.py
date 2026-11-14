@@ -138,7 +138,8 @@ def audit(source:Path,pilot:Path):
     fp_manifest = json_file(ROOT / "data/kanto-full-power.json")
     expected_full_power = {
         f"BLUE_KANTO_{entry['kind']},{entry['name']},{entry['version']+100}":
-            [f"Pokemon = {ident},70" for ident in entry["species"]]
+            [f"Pokemon = {ident},{level}" for ident,level in
+             zip(entry["species"],entry["levels"])]
         for entry in fp_manifest["teams"]
     }
     if set(actual_trainers)!=set(expected_trainers)|set(expected_full_power):
