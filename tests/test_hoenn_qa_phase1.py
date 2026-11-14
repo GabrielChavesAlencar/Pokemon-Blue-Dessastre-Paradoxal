@@ -161,6 +161,7 @@ class HoennQA01Tests(unittest.TestCase):
                          inventory=self.work/"tree.json", output=self.output,
                          report=self.work/"status.json", prepare=True, offline=True)
         with patch.object(qa, "check_game", return_value={"ok": True}), \
+             patch.object(qa, "require_private_path", side_effect=lambda p: p), \
              patch.object(qa, "stage", side_effect=AssertionError("stage re-run")):
             result = qa.build(args)
         self.assertEqual(result["status"], "COPY_READY_FOR_NATIVE_TEST")
@@ -171,7 +172,8 @@ class HoennQA01Tests(unittest.TestCase):
         args = Namespace(game=self.game, archive=Path(self.tmp.name)/"missing.zip",
                          inventory=self.work/"tree.json", output=self.output,
                          report=self.work/"status.json", prepare=True, offline=True)
-        with patch.object(qa, "check_game", return_value={"ok": True}):
+        with patch.object(qa, "check_game", return_value={"ok": True}), \
+             patch.object(qa, "require_private_path", side_effect=lambda p: p):
             with self.assertRaises(FileNotFoundError):
                 qa.build(args)
         self.assertFalse(self.output.exists())
