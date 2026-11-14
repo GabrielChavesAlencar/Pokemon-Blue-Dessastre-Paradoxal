@@ -104,6 +104,8 @@ def fixture(root: Path):
     write(game, "Data/backup.tmp", b"should not copy")
     shutil.copyfile(ROOT / "scripts/regions/SinnohQAStart.rb",
                     write(root, "scripts/regions/SinnohQAStart.rb", b""))
+    shutil.copyfile(ROOT / "scripts/regions/SinnohQAProbe.rb",
+                    write(root, "scripts/regions/SinnohQAProbe.rb", b""))
     report, blobs = build_overlay(geom, events, spec, draft, game,
                                   project=root)
     root.joinpath(".blue-work").mkdir(exist_ok=True)
@@ -138,6 +140,7 @@ class SinnohQAInstallTests(unittest.TestCase):
         self.assertEqual(profile["dataPathOrg"], "Dessastre-Sinnoh-QA-abcdef123456")
         self.assertNotEqual(profile["dataPathApp"], "Main Blue")
         self.assertIn(START_PLUGIN, files)
+        self.assertIn("Plugins/ZZZZZ Blue Sinnoh QA Probe/SinnohQAProbe.rb", files)
         self.assertIn(COMPILE_REQUEST, files)
         self.assertNotIn(COMPILED, files)
         self.assertNotIn(BARRY_READY, files)
