@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 5,
-    "implementation_preparation_count": 5,
+    "current_phase": 6,
+    "implementation_preparation_count": 6,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -58,8 +58,8 @@
       {
         "phase": 6,
         "name": "Crise do clima, Cave of Origin e Rayquaza",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "map_local_climate_story_gates_and_static_rxdata_auditor_prepared",
+        "native_acceptance": "pending_private_source_game_exe_weather_rayquaza_puzzles",
         "native_approved": false
       },
       {
@@ -135,9 +135,19 @@
       "Seafloor: 10 interior maps, Strength rocks/currents, Archie win/loss, Kyogre awakening, exit and no softlock",
       "Game.exe battle scale, dialogues PT-BR and cutscenes tested; save/reload and returning from cave",
       "Preserve other regional saves and avoid claiming native acceptance from CI"
+    ],
+    "phase6_requires": [
+      "Create separate hoenn-qa-fase06 from exact pinned original ZIP and original Blue game/; verify 199 maps",
+      "Kyogre only after Archie; Sootopolis crisis only after both Groudon and Kyogre and at Sootopolis map 83",
+      "Talk to Wallace at Cave of Origin B1F (map 240) after crisis; do not permit progression out of order",
+      "Wallace must unlock Sky Pillar from exterior (map 241); interior floor entrance is blocked beforehand without trapping existing saves",
+      "Rayquaza summit map 248 resolves crisis only once; Juan remains blocked before resolution",
+      "Verify story flags after save/reload, revisits, battle loss and region change; no extra badges or fixed levels",
+      "Visually test actual Game.exe weather graphics, native Sky Pillar puzzle, cutscene, BGM and map transitions",
+      "Preserve other Hoenn QA saves and Decades/Kanto/Johto/Sinnoh saves; no source assets in public Git"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA5 adds Aqua/Magma/Seafloor story order guards, touch trigger for Groudon and physical event inventory. Native Seafloor puzzles/cutscenes remain pending, 0/12 approved."
+  "last_publication_note": "QA6 adds map-local gates for Sootopolis/Cave of Origin/Sky Pillar/Rayquaza, isolated QA06 save profile and static event verifier. Climate VFX, Rayquaza cinematic, tower puzzle and native Game.exe are NOT approved. 0/12 native approved."
 }
