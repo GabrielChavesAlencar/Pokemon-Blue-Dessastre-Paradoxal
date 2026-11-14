@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "18d65f6f72fabce904da936f3d1f28f1b4716b1c",
+      "date": "2026-11-14T10:08:35-03:00",
+      "title": "docs(hoenn): alinhar auditoria com funções e limites da etapa 2",
+      "category": "Documentação"
+    },
+    {
       "sha": "27d54a156692549643e32e35e4c846c3ecff7e6c",
       "date": "2026-11-14T10:07:33-03:00",
       "title": "test(hoenn): cobrir eventos físicos e seleção segura de coordenadas",
