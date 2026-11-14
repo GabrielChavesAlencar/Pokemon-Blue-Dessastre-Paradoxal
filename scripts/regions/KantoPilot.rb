@@ -1174,6 +1174,13 @@ module BlueKantoDex
 
   def self.install
     return if @installed
+    # Decades can force a single current-region dex. The isolated Kanto
+    # pilot needs the native dex selector instead: KantoDex + National.
+    # Settings is mutated ONLY inside the prepared pilot Game.exe.
+    if Settings.const_defined?(:USE_CURRENT_REGION_DEX) && Settings::USE_CURRENT_REGION_DEX
+      Settings.send(:remove_const, :USE_CURRENT_REGION_DEX)
+      Settings.const_set(:USE_CURRENT_REGION_DEX, false)
+    end
     Settings.singleton_class.prepend(DexNames)
     Player::Pokedex.prepend(PokedexAccess)
     PokemonPokedexMenuScreen.prepend(DexMenu)
