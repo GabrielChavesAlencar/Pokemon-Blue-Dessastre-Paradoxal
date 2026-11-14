@@ -2105,7 +2105,8 @@ def build_overlay(game, source):
     # QA 4/12: source-derived *names and coordinates* only, not donor scripts.
     # Existing script/item locations always win. Any conditional, multipage,
     # ambiguous or non-renderable obstacle goes to the manual audit backlog.
-    qa4_obstacles = install_simple_obstacles(all_original_events, maps, maps, game)
+    qa4_obstacles = install_simple_obstacles(all_original_events, maps, maps, game,
+                                             source=source, overlay=overlay)
     for old, x, y, kind, sprite, event_id in qa4_obstacles["new_safe_obstacles"]:
         overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old], EVENT_CLASSES)
     report["qa4"] = {
