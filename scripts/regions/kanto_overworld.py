@@ -147,9 +147,9 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
     if obstacle:
         if obstacle == "cut":
             # Native Essentials Cut honors the Kanto Cascade badge, HM and
-            # party move. On success the field event is actually erased.
+            # party move. The v21.1 eraser must receive the facing event.
             commands, trigger = if_scene(b"pbCut", [
-                command(355, b"pbSmashThisEvent", indent=1),
+                command(355, b"pbSmashEvent(get_self)", indent=1),
             ]), 0
         elif obstacle == "strength":
             commands, trigger = [command(355, b"pbPushThisBoulder")], 1
