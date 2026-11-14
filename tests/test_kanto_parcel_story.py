@@ -112,6 +112,9 @@ class KantoParcelStoryTests(unittest.TestCase):
         self.assertIn("def self.walk_to_viridian_clerk", runtime)
         self.assertIn("$game_player.passable?", runtime)
         self.assertIn("def self.route2_gate_warning", runtime)
+        self.assertIn("def self.route2_exit_blocked?", runtime)
+        self.assertIn("Game_Player.prepend(BlueKantoPilot::Route2ExitGuard)", runtime)
+        self.assertIn('event.name == "Kanto Viridian Route 2 Parcel Gate"', runtime)
         self.assertIn('BlueMusic.kanto_me_play("healed")', runtime)
         self.assertIn('progress["pilot_oak_parcel_delivered"] = true', runtime)
 
