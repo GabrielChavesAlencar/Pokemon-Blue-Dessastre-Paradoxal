@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7e9b4f1c5dbee03f1b6edf117b4dddef5620ecda",
+      "date": "2026-11-13T23:26:16-03:00",
+      "title": "docs(hoenn): organizar detonado Emerald e contratos de implementação",
+      "category": "Documentação"
+    },
+    {
       "sha": "b14ebfef809253d2627d3f8832938eddc6def35a",
       "date": "2026-11-13T23:18:10-03:00",
       "title": "docs(johto): organizar detonado HGSS e requisitos de adaptacao ao Blue",
