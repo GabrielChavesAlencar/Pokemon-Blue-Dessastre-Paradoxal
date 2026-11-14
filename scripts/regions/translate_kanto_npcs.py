@@ -111,8 +111,14 @@ def run(root: Path, pilot: Path, source: Path, install_model: bool):
         raise ValueError("Existing translations are invalid: " + "; ".join(errors))
     compiled = json.loads((root / "data/pt-br.json").read_text("utf8"))
     originals = compiled.get("translations", {})
+    # Reviewed translations committed with Blue supersede raw machine output.
+    # In particular the screenshot-confirmed Viridian guard must never be
+    # re-translated into an unreviewed Argos version.
+    curated_path = root / "data/kanto-npc-ptbr.json"
+    reviewed = (json.loads(curated_path.read_text("utf8"))
+                .get("translations", {}) if curated_path.is_file() else {})
     pending = [line for line in strings if line not in existing
-               and not originals.get(line)]
+               and not originals.get(line) and not reviewed.get(line)]
     print(f"[KANTO PT-BR] {len(npc_records)} imported NPCs, {len(strings)} "
           f"unique lines, {len(pending)} need author-time localization.", flush=True)
     if not pending:
