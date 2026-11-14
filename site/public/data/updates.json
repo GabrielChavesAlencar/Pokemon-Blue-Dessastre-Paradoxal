@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a2db3c5f144cc910c943fe665c316174e8557d55",
+      "date": "2026-11-14T12:27:12-03:00",
+      "title": "test(hoenn): auditar 58 mapas, Wally/Wattson, rival e Cycling Road com gates",
+      "category": "Testes"
+    },
+    {
       "sha": "2b519c92c1556bcf82ca7b5572f738e83481e532",
       "date": "2026-11-14T12:26:18-03:00",
       "title": "feat(site/hoenn): incluir Mauville, Wattson, Wally, rival 110 e Cycling Road como piloto",
