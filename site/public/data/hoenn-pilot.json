@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Piloto Hoenn até Fallarbor/Mt Chimney/Lavaridge: 85 MapIDs. Escalonamento de nível e esmeraldas fica no Blue/Decades. Teleférico, sequência Magma/meteorito, puzzles das fontes termais e Heat Badge requerem teste real do Game.exe; Stage7 é piloto isolado.",
+  "note": "Piloto isolado de Hoenn (até Lilycove): 110 MapIDs e 144 equipes-base. Badge Balance/Feather usa BlueRegions; Surf/Fly e Castform aguardam testes nativos no Game.exe. A conclusão de Norman, Weather Institute, Winona e rival Lilycove é apenas técnica, não prova jogabilidade completa.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -946,6 +946,337 @@
             33,
             39,
             17
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Verdanturf Town",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Verdanturf",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Verdanturf",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Verdanturf",
+      "encounters": {}
+    },
+    {
+      "name": "Battle Tent de Verdanturf",
+      "encounters": {}
+    },
+    {
+      "name": "Fortree City",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Fortree",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Fortree",
+      "encounters": {}
+    },
+    {
+      "name": "Casas suspensas de Fortree",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Fortree",
+      "encounters": {}
+    },
+    {
+      "name": "Lilycove City",
+      "encounters": {}
+    },
+    {
+      "name": "Porto de Lilycove",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Lilycove",
+      "encounters": {}
+    },
+    {
+      "name": "Department Store de Lilycove",
+      "encounters": {}
+    },
+    {
+      "name": "Casas e motel de Lilycove",
+      "encounters": {}
+    },
+    {
+      "name": "Museu de Lilycove",
+      "encounters": {}
+    },
+    {
+      "name": "Contest Hall de Lilycove",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 117",
+      "encounters": {
+        "Grama": [
+          [
+            "ODDISH",
+            13,
+            14,
+            10
+          ],
+          [
+            "POOCHYENA",
+            13,
+            14,
+            30
+          ],
+          [
+            "MARILL",
+            13,
+            13,
+            10
+          ],
+          [
+            "ROSELIA",
+            13,
+            14,
+            30
+          ],
+          [
+            "ILLUMISE",
+            13,
+            14,
+            9
+          ],
+          [
+            "VOLBEAT",
+            13,
+            14,
+            9
+          ],
+          [
+            "SEEDOT",
+            13,
+            13,
+            1
+          ],
+          [
+            "SURSKIT",
+            13,
+            13,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Day Care da Rota 117",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 118",
+      "encounters": {
+        "Grama": [
+          [
+            "ELECTRIKE",
+            24,
+            26,
+            30
+          ],
+          [
+            "ZIGZAGOON",
+            24,
+            26,
+            30
+          ],
+          [
+            "WINGULL",
+            25,
+            27,
+            19
+          ],
+          [
+            "LINOONE",
+            26,
+            26,
+            10
+          ],
+          [
+            "MANECTRIC",
+            26,
+            26,
+            10
+          ],
+          [
+            "KECLEON",
+            25,
+            25,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Rota 119",
+      "encounters": {
+        "Grama": [
+          [
+            "LINOONE",
+            25,
+            27,
+            30
+          ],
+          [
+            "ODDISH",
+            24,
+            27,
+            30
+          ],
+          [
+            "ZIGZAGOON",
+            25,
+            27,
+            30
+          ],
+          [
+            "TROPIUS",
+            25,
+            27,
+            8
+          ],
+          [
+            "KECLEON",
+            25,
+            25,
+            1
+          ],
+          [
+            "GROVYLE",
+            25,
+            25,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Casas da Rota 119",
+      "encounters": {}
+    },
+    {
+      "name": "Weather Institute",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 120",
+      "encounters": {
+        "Grama": [
+          [
+            "ODDISH",
+            25,
+            27,
+            25
+          ],
+          [
+            "MARILL",
+            25,
+            27,
+            15
+          ],
+          [
+            "MIGHTYENA",
+            25,
+            27,
+            30
+          ],
+          [
+            "POOCHYENA",
+            25,
+            25,
+            19
+          ],
+          [
+            "ABSOL",
+            25,
+            27,
+            8
+          ],
+          [
+            "KECLEON",
+            25,
+            25,
+            1
+          ],
+          [
+            "SEEDOT",
+            25,
+            25,
+            1
+          ],
+          [
+            "SURSKIT",
+            25,
+            25,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Rota 121",
+      "encounters": {
+        "Grama": [
+          [
+            "SHUPPET",
+            26,
+            28,
+            15
+          ],
+          [
+            "DUSKULL",
+            26,
+            28,
+            15
+          ],
+          [
+            "MIGHTYENA",
+            26,
+            28,
+            20
+          ],
+          [
+            "POOCHYENA",
+            26,
+            26,
+            20
+          ],
+          [
+            "ODDISH",
+            26,
+            28,
+            15
+          ],
+          [
+            "GLOOM",
+            28,
+            28,
+            5
+          ],
+          [
+            "WINGULL",
+            26,
+            28,
+            9
+          ],
+          [
+            "KECLEON",
+            25,
+            25,
+            1
           ]
         ]
       }
@@ -2903,6 +3234,1058 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Alexia",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "WIGGLYTUFF",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "George",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SLAKOTH",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jody",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "ZANGOOSE",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Randall",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SWELLOW",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Mary",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "DELCATTY",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Parker",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SPINDA",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Berke",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "VIGOROTH",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Darius",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              30
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Edwardo",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "DODUO",
+              29
+            ],
+            [
+              "PELIPPER",
+              29
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Flint",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SWELLOW",
+              29
+            ],
+            [
+              "XATU",
+              29
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jared",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "DODUO",
+              27
+            ],
+            [
+              "SKARMORY",
+              27
+            ],
+            [
+              "TROPIUS",
+              27
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Ashley",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SWABLU",
+              27
+            ],
+            [
+              "SWABLU",
+              27
+            ],
+            [
+              "SWABLU",
+              27
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Humberto",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SKARMORY",
+              30
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Wade",
+      "area": "Rota 118",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TENTACOOL",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Perry",
+      "area": "Rota 118",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "WINGULL",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Dalton",
+      "area": "Rota 118",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MAGNEMITE",
+              15
+            ],
+            [
+              "WHISMUR",
+              15
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Hugh",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "WINGULL",
+              25
+            ],
+            [
+              "TROPIUS",
+              25
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Takashi",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "NINJASK",
+              25
+            ],
+            [
+              "KOFFING",
+              25
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Dayton",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SLUGMA",
+              25
+            ],
+            [
+              "NUMEL",
+              25
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jackson",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "BRELOOM",
+              27
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Catherine",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "GLOOM",
+              26
+            ],
+            [
+              "ROSELIA",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Rachel",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "GOLDEEN",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Leonel",
+      "area": "Rota 120",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MANECTRIC",
+              30
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Angelica",
+      "area": "Rota 120",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "CASTFORM",
+              30
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Keigo",
+      "area": "Rota 120",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "KOFFING",
+              28
+            ],
+            [
+              "NINJASK",
+              28
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Clarissa",
+      "area": "Rota 120",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "ROSELIA",
+              28
+            ],
+            [
+              "WAILMER",
+              28
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Cale",
+      "area": "Rota 121",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "DUSTOX",
+              29
+            ],
+            [
+              "BEAUTIFLY",
+              29
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tammy",
+      "area": "Rota 121",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "DUSKULL",
+              29
+            ],
+            [
+              "SHUPPET",
+              29
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jessica",
+      "area": "Rota 121",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "KECLEON",
+              29
+            ],
+            [
+              "SEVIPER",
+              29
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Norman",
+      "area": "Ginásio de Petalburg",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SPINDA",
+              27
+            ],
+            [
+              "VIGOROTH",
+              27
+            ],
+            [
+              "LINOONE",
+              29
+            ],
+            [
+              "SLAKING",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "BALANCE"
+    },
+    {
+      "name": "Winona",
+      "area": "Ginásio de Fortree",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SWABLU",
+              29
+            ],
+            [
+              "TROPIUS",
+              29
+            ],
+            [
+              "PELIPPER",
+              30
+            ],
+            [
+              "SKARMORY",
+              31
+            ],
+            [
+              "ALTARIA",
+              33
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "FEATHER"
+    },
+    {
+      "name": "Shelly",
+      "area": "Weather Institute",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "CARVANHA",
+              28
+            ],
+            [
+              "MIGHTYENA",
+              28
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua (Instituto 851)",
+      "area": "Weather Institute",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              27
+            ],
+            [
+              "CARVANHA",
+              27
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua (Instituto 852)",
+      "area": "Weather Institute",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "ZUBAT",
+              27
+            ],
+            [
+              "POOCHYENA",
+              27
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua (Instituto 853)",
+      "area": "Weather Institute",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              26
+            ],
+            [
+              "ZUBAT",
+              26
+            ],
+            [
+              "CARVANHA",
+              26
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua (Instituto 854)",
+      "area": "Weather Institute",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "ZUBAT",
+              27
+            ],
+            [
+              "CARVANHA",
+              27
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Rota 119/Treecko)",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "PELIPPER",
+              29
+            ],
+            [
+              "LOMBRE",
+              29
+            ],
+            [
+              "COMBUSKEN",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Rota 119/Torchic)",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "LOMBRE",
+              29
+            ],
+            [
+              "SLUGMA",
+              29
+            ],
+            [
+              "MARSHTOMP",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Rota 119/Mudkip)",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SLUGMA",
+              29
+            ],
+            [
+              "PELIPPER",
+              29
+            ],
+            [
+              "GROVYLE",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Lilycove/Treecko)",
+      "area": "Lilycove City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              31
+            ],
+            [
+              "PELIPPER",
+              32
+            ],
+            [
+              "LUDICOLO",
+              32
+            ],
+            [
+              "COMBUSKEN",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Lilycove/Torchic)",
+      "area": "Lilycove City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              31
+            ],
+            [
+              "LUDICOLO",
+              32
+            ],
+            [
+              "SLUGMA",
+              32
+            ],
+            [
+              "MARSHTOMP",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Lilycove/Mudkip)",
+      "area": "Lilycove City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              31
+            ],
+            [
+              "SLUGMA",
+              32
+            ],
+            [
+              "PELIPPER",
+              32
+            ],
+            [
+              "GROVYLE",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Rota 119/Treecko)",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "PELIPPER",
+              29
+            ],
+            [
+              "LOMBRE",
+              29
+            ],
+            [
+              "COMBUSKEN",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Rota 119/Torchic)",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "LOMBRE",
+              29
+            ],
+            [
+              "SLUGMA",
+              29
+            ],
+            [
+              "MARSHTOMP",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Rota 119/Mudkip)",
+      "area": "Rota 119",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "SLUGMA",
+              29
+            ],
+            [
+              "PELIPPER",
+              29
+            ],
+            [
+              "GROVYLE",
+              31
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Lilycove/Treecko)",
+      "area": "Lilycove City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              31
+            ],
+            [
+              "PELIPPER",
+              32
+            ],
+            [
+              "LUDICOLO",
+              32
+            ],
+            [
+              "COMBUSKEN",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Lilycove/Torchic)",
+      "area": "Lilycove City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              31
+            ],
+            [
+              "LUDICOLO",
+              32
+            ],
+            [
+              "SLUGMA",
+              32
+            ],
+            [
+              "MARSHTOMP",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Lilycove/Mudkip)",
+      "area": "Lilycove City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TROPIUS",
+              31
+            ],
+            [
+              "SLUGMA",
+              32
+            ],
+            [
+              "PELIPPER",
+              32
+            ],
+            [
+              "GROVYLE",
+              34
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
   ],
   "native_gameplay_verified": false,
@@ -2910,5 +4293,6 @@
   "stage4_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage5_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage6_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
-  "stage7_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
+  "stage7_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
+  "stage8_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
