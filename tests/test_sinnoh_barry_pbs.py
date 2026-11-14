@@ -55,7 +55,7 @@ def fixture(root: Path) -> Path:
     )
     # Builder resolves the Blue's native scaling source inside this fake root.
     src = root / "scripts/battle_polish/Campaign.rb"
-    src.parent.mkdir(parents=True)
+    src.parent.mkdir(parents=True, exist_ok=True)
     src.write_text((
         "module BlueCampaign\n"
         "def self.scaled_level(party,percent); end\n"
