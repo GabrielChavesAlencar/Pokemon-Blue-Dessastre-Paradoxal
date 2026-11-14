@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fca028c2c4074ede00814838899e3eff3aaa32d0",
+      "date": "2026-11-13T21:53:27-03:00",
+      "title": "docs(sinnoh): show 3/6 isolated pilot compatibility/Barry QA preparation bar without changing gameplay gates",
+      "category": "Documentação"
+    },
+    {
       "sha": "6a15a3e41b32f9b2456a699b32abde01c009751b",
       "date": "2026-11-13T21:52:53-03:00",
       "title": "data(sinnoh): track 3/6 compatibility and private QA tasks without inflating 8/32 or 0/13 game gates",
