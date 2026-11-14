@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d1415e68057cd24262c28e1d2151329cdb878d0a",
+      "date": "2026-11-14T11:23:24-03:00",
+      "title": "feat(hoenn): salvar cave encounters de Rusturf e relatório da Etapa 4",
+      "category": "Novidades"
+    },
+    {
       "sha": "a70f513f636effc517a6ed1828848f61b5196462",
       "date": "2026-11-14T11:23:08-03:00",
       "title": "feat(hoenn): definir equipes Roxanne/Aqua e tipos de treinador isolados",
