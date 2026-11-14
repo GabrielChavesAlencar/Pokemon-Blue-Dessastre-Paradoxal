@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4d9ed9fe250bec25a3e093c4fd8200a517863491",
+      "date": "2026-11-14T18:11:11-03:00",
+      "title": "test(kanto): checar HMs sem move-slot e bloquear Surf Cut Fly Strength e demais",
+      "category": "Testes"
+    },
+    {
+      "sha": "1bfa1d21cad83e1f6551863fea464e7df06c2969",
+      "date": "2026-11-14T18:11:06-03:00",
+      "title": "feat(hoenn): QA11 localized 199 map labels, safe BGM fallbacks and isolated Trainer Card",
+      "category": "Novidades"
+    },
+    {
       "sha": "c271e66760c03d11573096ed58d3f6265f384f8d",
       "date": "2026-11-14T18:10:22-03:00",
       "title": "feat(hoenn): QA11 PT-BR map, seven OGG tracks and regional Trainer Card private-copy auditor",
