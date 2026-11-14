@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "84bdaff96306eb22da6e248cb20e95d92ef1dd4e",
+      "date": "2026-11-14T14:11:23-03:00",
+      "title": "feat(hoenn): gerar PBS equipes Tate Liza, Magma/Aqua e Maxie no Centro Espacial",
+      "category": "Novidades"
+    },
+    {
       "sha": "1c2de40b485fd8a577b2bebd15eada0dc283840b",
       "date": "2026-11-14T14:10:52-03:00",
       "title": "feat(hoenn): reservar tipos/IDs PBS para Tate e Liza, Matt e equipes Stage9",
