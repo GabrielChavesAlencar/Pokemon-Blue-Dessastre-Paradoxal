@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8054ce37d4d46c725fd9570033a6c9a7bf62ed96",
+      "date": "2026-11-14T18:53:10-03:00",
+      "title": "perf(hoenn): skip costly 199-map rebuild when QA12 debug catalog and plugin are current",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6b39cd318e438e89e88ae900028b8ee8d3c6e622",
       "date": "2026-11-14T18:51:55-03:00",
       "title": "ci(hoenn): syntax-check in-place QA12 teleport updater and pilot builder",
