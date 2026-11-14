@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f62ff36b41546ec2339edabe1bb0d61fcac19285",
+      "date": "2026-11-14T01:44:55-03:00",
+      "title": "feat(kanto): restore Cut trees and add independent KantoDex 001-151",
+      "category": "Novidades"
+    },
+    {
       "sha": "040727446703cc7caecf158b71395662d3762cf1",
       "date": "2026-11-14T00:55:01-03:00",
       "title": "feat(kanto): translate newly imported NPC dialogue using isolated pt-BR locale",
