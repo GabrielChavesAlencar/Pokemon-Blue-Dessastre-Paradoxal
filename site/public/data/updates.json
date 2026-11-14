@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f6bd5db262b451f3476bec3b1cc8b7568b2747f2",
+      "date": "2026-11-13T21:02:13-03:00",
+      "title": "docs(sinnoh): hand off only actual source/native dependencies after geometry converter implementation",
+      "category": "Documentação"
+    },
+    {
       "sha": "78846304a0f35c404e2cc41353569400221015bf",
       "date": "2026-11-13T21:01:32-03:00",
       "title": "docs(sinnoh): document safe geometry-only preview converter and native/local blockers",
