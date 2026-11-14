@@ -64,6 +64,19 @@ from hoenn_stage8 import (
     NPCS_STAGE8, FUTURE_GATES_STAGE8, SIGNS_STAGE8, PICKUPS_STAGE8,
     NORMAN_GYM_DOORS,
 )
+from hoenn_stage9 import (
+    SOURCE_MAPS_STAGE9, SURF_BORDERS_STAGE9, STAGE9_MAP_GRAPH_EDGES,
+    TATE_LIZA_EVENTS, TATE_LIZA_PBS, TATE_LIZA_TEAM,
+    MATT_PBS, MATT_TEAM, MAXIE_HIDEOUT_PBS, MAXIE_HIDEOUT_TEAM,
+    TABITHA_HIDEOUT_PBS, TABITHA_HIDEOUT_TEAM, MAXIE_SPACE_PBS,
+    MAXIE_SPACE_TEAM, TABITHA_SPACE_PBS, TABITHA_SPACE_TEAM,
+    ARCHIE_ORB_EVENT, MT_PYRE_ARCHIE, MT_PYRE_OLD_LADY,
+    TABITHA_HIDEOUT_EVENT, MAXIE_HIDEOUT_EVENT, GROUDON_CUTSCENE_EVENT,
+    MATT_HIDEOUT_EVENT, SUBMARINE_EVENT, SPACE_MAXIE_EVENT,
+    SPACE_STEVEN_EVENT, SPACE_GRUNT_EVENTS, TRAINERS_STAGE9,
+    PYRE_AQUA_GRUNTS, MAGMA_HIDEOUT_GRUNTS, AQUA_HIDEOUT_GRUNTS,
+    NPCS_STAGE9, SIGNS_STAGE9, MAGMA_HIDEOUT_GATE, AQUA_HIDEOUT_GATE,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -174,6 +187,22 @@ def audit(root: Path = ROOT) -> dict:
         for chosen,(version,team) in RIVAL_LILYCOVE_TEAMS.items():
             native_trainers[f"{name} (Lilycove/{chosen.title()})"] = (
                 SOURCE_MAPS[69],tuple(team))
+    native_trainers.update({name:(SOURCE_MAPS[mid],tuple(team))
+                            for mid,_,_,kind,name,_,team,_ in TRAINERS_STAGE9})
+    for group,title,area in (
+        (PYRE_AQUA_GRUNTS,"Aqua · Mt. Pyre",SOURCE_MAPS[213]),
+        (MAGMA_HIDEOUT_GRUNTS,"Magma · Hideout",None),
+        (AQUA_HIDEOUT_GRUNTS,"Aqua · Hideout",None),
+        (SPACE_GRUNT_EVENTS,"Magma · Space Center",SOURCE_MAPS[81]),
+    ):
+        for mid,x,y,version,team in group:
+            native_trainers[f"Recruta {title} ({version})"] = (SOURCE_MAPS[mid],tuple(team))
+    native_trainers["Tate & Liza"]=(SOURCE_MAPS[82],tuple(TATE_LIZA_TEAM))
+    native_trainers["Matt"]=(SOURCE_MAPS[217],tuple(MATT_TEAM))
+    native_trainers["Maxie (Esconderijo Magma)"]=(SOURCE_MAPS[189],tuple(MAXIE_HIDEOUT_TEAM))
+    native_trainers["Tabitha (Esconderijo Magma)"]=(SOURCE_MAPS[189],tuple(TABITHA_HIDEOUT_TEAM))
+    native_trainers["Maxie (Centro Espacial)"]=(SOURCE_MAPS[81],tuple(MAXIE_SPACE_TEAM))
+    native_trainers["Tabitha (Centro Espacial)"]=(SOURCE_MAPS[81],tuple(TABITHA_SPACE_TEAM))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
@@ -187,7 +216,10 @@ def audit(root: Path = ROOT) -> dict:
                                 len(MUSEUM_AQUA) + len(AQUA_INSTITUTE) +
                                 12 + 2 * (len(RIVAL_110_TEAMS) +
                                           len(RIVAL_119_TEAMS) +
-                                          len(RIVAL_LILYCOVE_TEAMS))):
+                                          len(RIVAL_LILYCOVE_TEAMS)) +
+                                len(TRAINERS_STAGE9) +
+                                len(PYRE_AQUA_GRUNTS)+len(MAGMA_HIDEOUT_GRUNTS)+
+                                len(AQUA_HIDEOUT_GRUNTS)+len(SPACE_GRUNT_EVENTS)+6):
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -198,13 +230,14 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery", "Norman", "Winona")
+        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery", "Norman", "Winona", "Tate & Liza")
         expect_badge = ("STONE" if name == "Roxanne" else
                         "KNUCKLE" if name == "Brawly" else
                         "DYNAMO" if name == "Wattson" else
                         "HEAT" if name == "Flannery" else
                         "BALANCE" if name == "Norman" else
-                        "FEATHER" if name == "Winona" else None)
+                        "FEATHER" if name == "Winona" else
+                        "MIND" if name == "Tate & Liza" else None)
         if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
             errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
@@ -222,6 +255,16 @@ def audit(root: Path = ROOT) -> dict:
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
+    for a,_,_,b,_,_ in SURF_BORDERS_STAGE9:
+        if a in adjacency and b in adjacency:
+            adjacency[a].add(b)
+            adjacency[b].add(a)
+    for a,b in STAGE9_MAP_GRAPH_EDGES:
+        if a not in adjacency or b not in adjacency:
+            errors.append(f"Stage9 graph references unknown source map: {a}/{b}")
+            continue
+        adjacency[a].add(b)
+        adjacency[b].add(a)
     for a, _, b, _ in WARP_PAIRS:
         if a[0] in adjacency and b[0] in adjacency:
             adjacency[a[0]].add(b[0])
@@ -298,7 +341,8 @@ def audit(root: Path = ROOT) -> dict:
         + [(*TABITHA_EVENT, "Tabitha"), (*MAXIE_EVENT, "Maxie"),
            (*FLANNERY_EVENT, "Flannery"), (*METEOR_FALLS_CUTSCENE, "Meteor Falls story"),
            (*METEORITE_MACHINE_EVENT, "Meteorite machine")]
-        + [(mid, x, y, f"future7:{why}") for mid, x, y, why in FUTURE_GATES_STAGE7]
+        + [(mid, x, y, f"future7:{why}") for mid, x, y, why in FUTURE_GATES_STAGE7
+           if why != "MAGMA_HIDEOUT"]
         + [(63, x, y, "Flannery steam fall") for a, b in GYM_STEAM_PAIRS_STAGE7 for x, y in (a,)]
         + [(63, x, y, "Flannery steam launch") for a, b in GYM_STEAM_PAIRS_STAGE7 for x, y in (b,)]
         + [(mid,x,y,f"trainer8:{name}") for mid,x,y,_,name,_,_,_ in TRAINERS_STAGE8]
@@ -317,7 +361,23 @@ def audit(root: Path = ROOT) -> dict:
            (*WEATHER_REWARD_EVENT,"Castform Scientist")]
         + [(mid,x,y,f"Aqua Institute {version}")
            for mid,x,y,version,_ in AQUA_INSTITUTE]
-        + [(mid,x,y,f"future8:{key}") for mid,x,y,key in FUTURE_GATES_STAGE8]
+        + [(mid,x,y,f"future8:{key}") for mid,x,y,key in FUTURE_GATES_STAGE8
+           if key not in ("AQUA_HIDEOUT","MT_PYRE_PIER")]
+        + [(mid,x,y,f"trainer9:{name}") for mid,x,y,_,name,_,_,_ in TRAINERS_STAGE9]
+        + [(mid,x,y,f"npc9:{handler}") for mid,x,y,_,handler in NPCS_STAGE9]
+        + [(77,9,5,"Stage9 center counter"),(78,4,5,"Stage9 Mart counter")]
+        + [(mid,x,y,f"sign9:{key}") for mid,x,y,key,_ in SIGNS_STAGE9]
+        + [(mid,x,y,"Tate and Liza") for mid,x,y in TATE_LIZA_EVENTS]
+        + [(*MT_PYRE_ARCHIE,"Archie"),(*MT_PYRE_OLD_LADY,"Mt Pyre Elder"),
+           (*ARCHIE_ORB_EVENT,"Orb Steal"),(*TABITHA_HIDEOUT_EVENT,"Tabitha Hideout"),
+           (*MAXIE_HIDEOUT_EVENT,"Maxie Hideout"),
+           (*GROUDON_CUTSCENE_EVENT,"Groudon"),
+           (*MATT_HIDEOUT_EVENT,"Matt Hideout"),(*SUBMARINE_EVENT,"Submarine"),
+           (*SPACE_MAXIE_EVENT,"Space Maxie"),(*SPACE_STEVEN_EVENT,"Space Steven"),
+           (*MAGMA_HIDEOUT_GATE,"Magma entrance"),(*AQUA_HIDEOUT_GATE,"Aqua entrance")]
+        + [(mid,x,y,f"Stage9 grunt {ver}") for group in
+           (PYRE_AQUA_GRUNTS,MAGMA_HIDEOUT_GRUNTS,AQUA_HIDEOUT_GRUNTS,SPACE_GRUNT_EVENTS)
+           for mid,x,y,ver,_ in group]
         + [(*ROXANNE_EVENT, "Roxanne"), (*TUNNEL_AQUA_EVENT, "Aqua"),
            (*TUNNEL_VERDANTURF_GATE, "blocked Verdanturf exit")]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
@@ -363,7 +423,18 @@ def audit(root: Path = ROOT) -> dict:
                 "weather_castform", "rival_119_fly", "rival_119",
                 "steven_scope", "kecleon_scope", "winona_tm", "winona",
                 "rival_lilycove", "harbor_stage8", "contest_stage8",
-                "stage8_future_gate"}
+                "stage8_future_gate",
+                "sign_stage9","mind_badge?","stage9_transfer",
+                "stage9_grunt","pyre_aqua_grunt","pyre_archie",
+                "pyre_orb_scene","pyre_elder","enter_magma_hideout",
+                "magma_hideout_grunt","magma_hideout_tabitha",
+                "magma_hideout_maxie","groudon_hideout",
+                "slateport_submarine_news","enter_aqua_hideout",
+                "aqua_hideout_grunt","aqua_hideout_matt","submarine_escape",
+                "tate_liza_tm","tate_liza","space_magma_grunt",
+                "space_center_maxie","space_center_steven",
+                "steven_house_stage9","super_rod_stage9",
+                "mossdeep_space_scientist"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -383,15 +454,15 @@ def audit(root: Path = ROOT) -> dict:
 
 
     gaps = [
-        "Stage8 is an isolated Hoenn pilot; no native Game.exe or Android/JoiPlay acceptance.",
-        "The Norman gym has 24 authored intra-map room doors; visual/collision requires native QA.",
-        "Surf/Fly are awarded only with matching native HMs; actual water/flight field traversal is NOT proven.",
-        "Weather Institute Shelly, four Aqua grunts, Castform gift and rival battles require gameplay QA.",
-        "Devon Scope reveals Kecleon; native Kecleon wild encounters/animation remain incomplete.",
-        "Lilycove Department Store, Contest Hall, museum, harbor and Day Care are only partial.",
-        "Safari Zone, Mt Pyre, Aqua Hideout and Scorched Slab are blocked for later stages.",
-        "Conditional Surf river crossing on Route118 depends on native field move and real collisions.",
-        "Static contracts verify scripts/data, not playable completeness.",
+        "Stage9 is scripted in an isolated Hoenn copy; not tested on Game.exe or Android.",
+        "Static donor warp scanner reauthors direct teleports; ambiguous multi-page and scripted doors are excluded.",
+        "The source Mossdeep Gym's statue/button puzzle is not faithfully reconstructed or approved.",
+        "The original Steven co-op double battle in Space Center remains a guarded sequential-boss fallback.",
+        "Aqua/Magma grunt parties are provisional; exact source event versions remain to be mapped.",
+        "Surf routes and Mossdeep coastal crossings need native field-move collision and water testing.",
+        "Mt Pyre fog/orb cutscenes, Groudon animation and submarine scene are text/flag-only, not native cutscenes.",
+        "MIND badge and HM Dive field activation require Game.exe and region save QA.",
+        "No donor RXDATA, graphics, music or licensed assets are committed.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -437,6 +508,13 @@ def audit(root: Path = ROOT) -> dict:
         "stage8_norman_gym_doors": len(NORMAN_GYM_DOORS),
         "stage8_rival_variants": len(RIVAL_NAMES)*(len(RIVAL_119_TEAMS)+len(RIVAL_LILYCOVE_TEAMS)),
         "stage8_scripted_only": True,
+        "stage9_source_maps": len(SOURCE_MAPS_STAGE9),
+        "stage9_trainer_presets": len(TRAINERS_STAGE9) +
+                                   len(PYRE_AQUA_GRUNTS)+len(MAGMA_HIDEOUT_GRUNTS)+
+                                   len(AQUA_HIDEOUT_GRUNTS)+len(SPACE_GRUNT_EVENTS)+6,
+        "stage9_surf_borders": len(SURF_BORDERS_STAGE9),
+        "stage9_graph_edges": len(STAGE9_MAP_GRAPH_EDGES),
+        "stage9_scripted_only": True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
