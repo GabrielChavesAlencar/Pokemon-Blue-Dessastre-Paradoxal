@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c271e66760c03d11573096ed58d3f6265f384f8d",
+      "date": "2026-11-14T18:10:22-03:00",
+      "title": "feat(hoenn): QA11 PT-BR map, seven OGG tracks and regional Trainer Card private-copy auditor",
+      "category": "Novidades"
+    },
+    {
       "sha": "cfbe4bf2232fb13a7b1f0526ceecab41ba8c381f",
       "date": "2026-11-14T18:09:49-03:00",
       "title": "fix(kanto): incluir validador de HMs na montagem e assinatura do piloto",
