@@ -100,7 +100,7 @@
       {
         "phase": 12,
         "name": "Campanha inteira Windows e Android/JoiPlay",
-        "code_status": "integrated_11_prior_audits_real_source_map_integrity_native_windows_android_checklist_and_blocker_register_prepared",
+        "code_status": "qa12_integrated_static_gate_and_private_199_map_debug_teleporter_prepared",
         "native_acceptance": "pending_real_full_game_exe_and_android_joiplay_end_to_end_with_save_reload_and_cross_region_regression",
         "native_approved": false
       }
@@ -230,9 +230,35 @@
       "Test Android/JoiPlay independently with native controls, engine compatibility, music and save location; do not mark Windows result as Android passed",
       "Manual checklist starts pending_native and cannot create acceptance by editing without repeatable visual gameplay evidence; keep game-exe-approved count at zero until proofs supplied",
       "Status STATIC_QA_01_12_PASSED__NATIVE_ACCEPTANCE_PENDING means technical artifacts verified ONLY, never 12/12 playable acceptance"
-    ]
+    ],
+    "test_hoenn_teleport": {
+      "available_in": "Hoenn QA Fase12 (isolated Game.exe only)",
+      "launcher": "TESTAR_HOENN.bat",
+      "pause_menu": "Testar Hoenn · Teleporte",
+      "source_maps": 199,
+      "choose_by": [
+        "full_paged_list",
+        "source_id_group",
+        "localized_name_search",
+        "original_or_remapped_map_id",
+        "previous_position"
+      ],
+      "safe_landing": "donor_RXDATA_passability_and_authored_event_collision_checked",
+      "updates_existing_qa12_copy_safely": true,
+      "preserves": [
+        "game/",
+        "other_region_profiles",
+        "native_save_profile",
+        "party",
+        "badge_and_crystal_count",
+        "story_flags",
+        "league_results"
+      ],
+      "native_tested": false,
+      "android_tested": false
+    }
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA12 preparation 12/12: combined QA01–11 reports into strict static release gate, 199 real map remaps and Blue Game.exe copy equality, SHA256 artifact fingerprints, catalog of incomplete NPC/sign/trainer and obstacle candidates and sprites, 30 independent Windows and Android/JoiPlay native playtest cases with no automatic pass. QA12 isolated profile and TESTAR_HOENN.bat. No private original game/Game.exe running via GitHub, native approval stays 0/12."
+  "last_publication_note": "Extra QA12 Testar Hoenn: isolated pause-menu teleporter to all 199 real Hoenn maps using validated safe standing tiles, name/MapID/group/page selection, return to prior position. Existing hoenn-qa-fase12 copy refreshes test-only plugin and stop catalog with backup and rollback; original game, other regions, mission/badges/saves untouched. Native Windows/JoiPlay visual test remains pending; 0/12 game approvals."
 }
