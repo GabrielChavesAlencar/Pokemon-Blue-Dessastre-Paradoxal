@@ -11,7 +11,7 @@ import {loadPilotCatalog,pilotIndex} from './regional-pilot.js';
 import {downloadsPage} from './downloads.js';
 import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
-import {loadPendingRegions,pendingBlocks,pendingPage,pendingOnlyRegion} from './pending.js';
+import {loadPendingRegions,loadTrainerBindings,pendingBlocks,pendingPage,pendingOnlyRegion,trainerBindingsPanel} from './pending.js';
 
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
@@ -59,7 +59,8 @@ async function render(scroll=false){
       main.innerHTML=pokemonDetail(model,base,detailData,state,favorites);setPage(base.name);
     }else if(route==='pendencias'){
       const pending=await loadPendingRegions();if(id!==renderId)return;
-      main.innerHTML=pendingPage(pending,(url.searchParams.get('regiao')||'kanto').toUpperCase());
+      const bindings=await loadTrainerBindings();if(id!==renderId)return;
+      main.innerHTML=pendingPage(pending,(url.searchParams.get('regiao')||'kanto').toUpperCase(),bindings);
       setPage('Pendências das regiões');
     }else if(route==='liga'){
       const db=await loadStrongestTeams();if(id!==renderId)return;
@@ -86,6 +87,10 @@ async function render(scroll=false){
         main.innerHTML=pilotIndex(data,route);
         const existing=(route==='localizacoes'?data.locations:data.trainers.filter(row=>row.leader===(route==='chefes'))).map(row=>row.name);
         main.firstElementChild?.insertAdjacentHTML('beforeend',pendingBlocks(pending,region.toUpperCase(),route,{excludeNames:existing}));
+        if(route==='treinadores'){
+          const bindings=await loadTrainerBindings();if(id!==renderId)return;
+          main.firstElementChild?.insertAdjacentHTML('beforeend',trainerBindingsPanel(bindings,region.toUpperCase()));
+        }
       }
       setPage({localizacoes:'Localizações',treinadores:'Treinadores',chefes:'Líderes de ginásio'}[route]+' de '+region[0].toUpperCase()+region.slice(1));
     }else if(['localizacoes','treinadores','chefes'].includes(route) &&
