@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d6e295c9faff626a2d0f964f2184d164dc13525f",
+      "date": "2026-11-13T22:01:59-03:00",
+      "title": "test(sinnoh): exercise private 9-map Twinleaf/3-ball/Barry PBS integration bundle with synthetic geometry and rollback guards",
+      "category": "Testes"
+    },
+    {
+      "sha": "cefcfb3b46b440ece6378154702ebeface22f12a",
+      "date": "2026-11-13T22:01:19-03:00",
+      "title": "fix(sinnoh): support validated Map001..599 filenames and reject Map000 in QA assembly",
+      "category": "Correções"
+    },
+    {
       "sha": "cc9e5062fd16ca7098abebd8e9456de364a83406",
       "date": "2026-11-13T22:00:37-03:00",
       "title": "feat(sinnoh): compose private geometry + authored Twinleaf events + Barry PBS as verified non-playable QA overlay",
