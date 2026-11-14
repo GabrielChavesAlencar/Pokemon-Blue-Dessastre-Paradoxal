@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "559d2f1d3e6ce13d6a219e5f2c04e3d64117005c",
+      "date": "2026-11-13T21:18:00-03:00",
+      "title": "ci(sinnoh): isolate own Python and Ruby tests from unrelated Johto integration failures",
+      "category": "Melhorias"
+    },
+    {
       "sha": "893988fa07e168cedda42bc0dc7af2cf01113470",
       "date": "2026-11-13T21:16:18-03:00",
       "title": "data(sinnoh): register Twinleaf original story infrastructure while keeping real events and PBS unverified",
