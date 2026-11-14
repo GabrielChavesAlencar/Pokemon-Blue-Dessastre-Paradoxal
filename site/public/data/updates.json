@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5e6e1178690116f8321d1cdfce01571511599b56",
+      "date": "2026-11-14T14:02:18-03:00",
+      "title": "feat(hoenn): 28 mapas Stage9 Mossdeep, Mt Pyre, Aqua/Magma, Tate & Liza e Mind",
+      "category": "Novidades"
+    },
+    {
       "sha": "330e34a719506034f9d5777061cf8696d8df38e3",
       "date": "2026-11-14T13:55:22-03:00",
       "title": "chore(hoenn): disparar auditoria remota read-only dos mapas Stage9",
