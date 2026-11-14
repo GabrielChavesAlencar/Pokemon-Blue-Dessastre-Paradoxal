@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "241dfd6ccde4be46fcb14f08b3776df532ea9a6d",
+      "date": "2026-11-13T22:18:40-03:00",
+      "title": "test(sinnoh): assert QA install 4/7 code-only progress and zero real native approvals",
+      "category": "Testes"
+    },
+    {
       "sha": "984a982d368dfef68c0b142e509a2a415aaceb6f",
       "date": "2026-11-13T22:18:22-03:00",
       "title": "test(sinnoh): reject legacy pilot in main game and tampered authored Twinleaf event positions during QA installation",
