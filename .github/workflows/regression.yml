@@ -54,6 +54,20 @@ jobs:
           node --check web/music-editor.js
           node --check tests/browser_music_smoke.cjs
           node --check tests/browser_smoke.cjs
+  sinnoh-offline:
+    name: Sinnoh - contratos isolados (sem ROM)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testar somente Sinnoh em fixtures locais
+        run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
+      - name: Testar Ruby dos eventos autorais de Sinnoh
+        run: |
+          ruby -c scripts/regions/SinnohPilot.rb
+          ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
   smoke-browser:
     name: Navegacao real + salvamento PBS (Chromium)
     needs: python-and-contract
