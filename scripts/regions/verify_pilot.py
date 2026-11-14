@@ -858,6 +858,11 @@ def inspect(game: Path) -> dict:
     return {
         "result": "structural_check_passed",
         "maps": len(maps),
+        "cut_trees_imported": sum(row["kind"] == "cut" for row in field_report["imported"]),
+        "kanto_dex_number": idx,
+        "kanto_dex_length": 151,
+        "kanto_dex_bulbasaur_001": True,
+        "national_dex_preserved": dex_info["national_dex_unchanged"],
         "preview_geometry_only": len(preview_only),
         "phase12_cinnabar_functional_maps": len(CINNABAR_EVENTS),
         "phase12_preview_only": len(preview_only & {190,191,193,194,195,196,197,198}),
