@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "18a980ac4179b75ae473b80dcaa1ce6f214ca576",
+      "date": "2026-11-14T17:27:08-03:00",
+      "title": "test(hoenn): exercise Stage10 Wally only inside Victory Road",
+      "category": "Testes"
+    },
+    {
+      "sha": "a097a0735e9676e247178da75a60dce5d1881fc8",
+      "date": "2026-11-14T17:26:55-03:00",
+      "title": "feat(hoenn): QA8 map-local Wally and Victory Road/League access guards",
+      "category": "Novidades"
+    },
+    {
       "sha": "9cc04fd5b894c803fddaab893d5bd74314b904d9",
       "date": "2026-11-14T17:18:04-03:00",
       "title": "docs(hoenn): QA7 all eight gyms implementation, risks and native acceptance checklist",
