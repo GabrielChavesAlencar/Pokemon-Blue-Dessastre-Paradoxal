@@ -6,8 +6,8 @@ Referência: [KANTO_DETONADO_FIRERED_LEAFGREEN_REFERENCIA_ORGANIZADA.md](KANTO_D
 
 ### Implementação de Cut
 
-- `scripts/regions/kanto_overworld.py` reconhece a convenção Essentials `CutTree` e restaura esses eventos com o **MapID de origem, EventID, X/Y, nome e gráfico originais**. Não cria árvores fictícias.
-- Cada árvore é um obstáculo sólido `Action Button`, com condição nativa `pbCut` e `pbSmashThisEvent` após sucesso. A remoção do evento usa a lógica normal de campo/salvamento; não troca a árvore por um warp nem apaga outros objetos.
+- `scripts/regions/kanto_overworld.py` reconhece a convenção Essentials `CutTree` e restaura esses eventos com o **MapID de origem, EventID, X/Y e gráfico originais**; adapta o nome `Cut Tree` para `CutTree` exigido pela engine. Não cria árvores fictícias.
+- Cada árvore é um obstáculo sólido `Action Button`, com condição nativa `pbCut` e `pbSmashEvent(get_self)` após sucesso. A remoção do evento usa a lógica normal de campo/salvamento; não troca a árvore por um warp nem apaga outros objetos.
 - `scripts/regions/pilot.py` recupera os CutTrees **antes das whitelists** restritivas de Celadon/Fuchsia/Saffron e outros locais ativos. **Outros eventos não aprovados continuam excluídos**. As 45 prévias sem eventos continuam sem árvores artificiais; seu conteúdo será liberado somente com a respectiva fase.
 - Se faltar o sprite de uma árvore, ela entra em `Data/blue-kanto-field-events.json → missing_graphics`, com nome e posição, sem criar um bloqueio invisível ou abortar toda a construção.
 - O capitão já entrega Cut no `BlueKantoPilot.captain`. A autorização continua sujeita ao requisito local de Kanto para Cut (Cascade Badge/HM/uso por Pokémon, segundo `BlueRegionalPolicy`) e não é concedida por atalhos de teste.
