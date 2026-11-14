@@ -390,8 +390,9 @@ def inspect(game: Path) -> dict:
     }
     for original, whitelist in saffron.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        if actual != whitelist:
-            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ whitelist}")
+        expected = whitelist | passive_field_ids(original)
+        if actual != expected:
+            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ expected}")
     saffron_pairs = (
         (168, 6, 171, 10), (168, 10, 178, 1),
         (168, 12, 170, 1), (168, 13, 169, 1),
@@ -473,8 +474,9 @@ def inspect(game: Path) -> dict:
     # and quizzes must NOT be copied into Decades.
     for origin, expected_ids in CINNABAR_EVENTS.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        if actual != set(expected_ids):
-            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ set(expected_ids)}")
+        expected = set(expected_ids) | passive_field_ids(origin)
+        if actual != expected:
+            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ expected}")
     cinnabar_pairs = (
         (199, 1, 201, 1), (199, 2, 200, 1),
         (199, 3, 205, 1), (199, 5, 203, 1),
@@ -535,8 +537,9 @@ def inspect(game: Path) -> dict:
     # Stage 13: source Map013 must be safely re-implemented, while keeping
     # the original Map010 entrance and the exact one-way return.
     gym_events = maps[mapping[13]].attrs["@events"]
-    if set(gym_events) != VIRIDIAN_GYM_EVENTS:
-        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ VIRIDIAN_GYM_EVENTS}")
+    expected_viridian = VIRIDIAN_GYM_EVENTS | passive_field_ids(13)
+    if set(gym_events) != expected_viridian:
+        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ expected_viridian}")
     if len(TRAINERS[13]) != 9:
         raise ValueError("Viridian Gym must have Giovanni and exactly eight source trainers")
     if mapping[10] not in event_transfers(13, 11):
@@ -571,8 +574,9 @@ def inspect(game: Path) -> dict:
     # completion flags may be executed in the Decades installation.
     for original, allowed in LEAGUE_EVENT_WHITELIST.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        if actual != allowed:
-            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed}")
+        expected = allowed | passive_field_ids(original)
+        if actual != expected:
+            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ expected}")
     if maps[mapping[210]].attrs["@events"]:
         raise ValueError("Empty Victory Road Map210 unexpectedly contains source events")
     for original, entries in LEAGUE_BADGE_GATES.items():
