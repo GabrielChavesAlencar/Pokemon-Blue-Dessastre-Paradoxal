@@ -114,6 +114,79 @@ class TestKantoNpcLocale(unittest.TestCase):
             self.assertEqual(npc.attrs["@pages"][0].attrs["@list"][0]
                              .attrs["@parameters"][0], b"Hello there!")
 
+    def test_screenshot_guard_translation_is_built_in_without_external_model(self):
+        # Screenshot: the player selected Portuguese, but this FRLG guard
+        # still said "I absolutely forbid you from going through here!".
+        guard = event_dialogue()
+        guard.attrs["@pages"][0].attrs["@list"] = [
+            command(101, b"I absolutely forbid you from"),
+            command(401, b"going through here!"),
+            command(0),
+        ]
+        inventory = {"schema": 1, "imported": [{
+            "kind": "npc_dialogue", "source_map": 10, "map": 610,
+            "event": 7, "x": 4, "y": 5
+        }]}
+        self.assertEqual(npc_literals(guard.attrs["@pages"][0].attrs["@list"]),
+                         ["I absolutely forbid you from going through here!"])
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "data").mkdir()
+            (root / "data/kanto-npc-ptbr.json").write_bytes(
+                (ROOT / "data/kanto-npc-ptbr.json").read_bytes())
+            source = root / "frlg"
+            (source / "Data").mkdir(parents=True)
+            target = root / "pilot"
+            (target / "Data").mkdir(parents=True)
+            (target / "Data/blue-kanto-field-events.json").write_text(
+                json.dumps(inventory), encoding="utf8")
+            m = RubyObject("RPG::Map", {"@events": {7: guard}})
+            with patch.object(kanto_npc_locale, "load", return_value=m):
+                report = install_npc_locale(root, source, target)
+            result = {text(pair[0]): text(pair[1]) for pair in loads(
+                (target / "Data/blue-pt-br.dat").read_bytes())}
+            self.assertEqual(
+                result["I absolutely forbid you from going through here!"],
+                "Está terminantemente proibido passar por aqui!")
+            self.assertEqual(report["remaining_unique_lines"], 0)
+            self.assertEqual(report["reviewed_project_translations"], 1)
+            # No private Argos package, translator invocation or cache needed.
+            self.assertFalse((root / ".blue-work/kanto-npc-ptbr.json").exists())
+
+    def test_optional_offline_translator_recovers_missing_source_npc_lines(self):
+        npc = event_dialogue()
+        inventory = {"schema": 1, "imported": [{
+            "kind": "npc_dialogue", "source_map": 24, "map": 602,
+            "event": 7, "x": 4, "y": 5
+        }]}
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "source"
+            (source / "Data").mkdir(parents=True)
+            target = root / "pilot"
+            (target / "Data").mkdir(parents=True)
+            (target / "Data/blue-kanto-field-events.json").write_text(
+                json.dumps(inventory), encoding="utf8")
+            m = RubyObject("RPG::Map", {"@events": {7: npc}})
+            with (patch.object(kanto_npc_locale, "load", return_value=m),
+                  patch("translate_kanto_npcs.get_argos_translator",
+                        return_value=FakeTranslator())):
+                report = install_npc_locale(root, source, target)
+            result = {text(pair[0]): text(pair[1]) for pair in loads(
+                (target / "Data/blue-pt-br.dat").read_bytes())}
+            self.assertEqual(result["Hello there! How are you?"],
+                             "Olá! Como você está?")
+            self.assertEqual(report["remaining_unique_lines"], 0)
+            self.assertEqual(len(report["automatic_unreviewed_translations"]), 1)
+
+    def test_pilot_rebuild_refreshes_bundled_locale_and_curated_catalogue(self):
+        pilot = (ROOT / "scripts/regions/pilot.py").read_text("utf8")
+        locale = (ROOT / "scripts/battle_polish/Locale.rb").read_text("utf8")
+        self.assertIn('"data/kanto-npc-ptbr.json"', pilot)
+        self.assertIn('"scripts/battle_polish/Locale.rb"', pilot)
+        self.assertIn('"Locale.rb", "KantoDex.rb"', pilot)
+        self.assertIn("I absolutely forbid you from going through here!", locale)
+
     def test_invalid_local_translation_stays_out_of_game(self):
         fake_map = RubyObject("RPG::Map", {
             "@events": {7: event_dialogue()},
@@ -138,7 +211,8 @@ class TestKantoNpcLocale(unittest.TestCase):
                     "Hello there! How are you?": r"Olá \PN!",
                 },
             }), encoding="utf8")
-            with patch.object(kanto_npc_locale, "load", return_value=fake_map):
+            with (patch.object(kanto_npc_locale, "load", return_value=fake_map),
+                  patch("translate_kanto_npcs.get_argos_translator", return_value=None)):
                 report = install_npc_locale(root, source, target)
             self.assertEqual(report["localized_unique_lines"], 0)
             self.assertEqual(report["remaining_unique_lines"], 1)
