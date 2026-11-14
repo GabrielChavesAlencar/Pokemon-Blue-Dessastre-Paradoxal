@@ -145,7 +145,10 @@ module KantoNativeCheck
              "seen_bulbasaur=#{$player.pokedex.seen?(:BULBASAUR)} " +
              "seen_regional=#{$player.pokedex.seen_count(dexid)} " +
              "flags=#{$player.pokedex.instance_variable_get(:@unlocked_dexes).inspect} " +
-             "stored_dexes=#{pbLoadRegionalDexes.length}")
+             "stored_dexes=#{pbLoadRegionalDexes.length} " +
+             "raw_accessible=#{$player.pokedex.instance_variable_get(:@accessible_dexes).inspect} " +
+             "dex_class=#{$player.pokedex.class} " +
+             "hook=#{$player.pokedex.class.ancestors.include?(BlueKantoDex::PokedexAccess)}")
     BlueKantoPilot.choose_starter
     require!($bag.quantity(:POKEBALL) == starting_balls + 5,
              "Returning to Oak duplicated the parcel reward")
