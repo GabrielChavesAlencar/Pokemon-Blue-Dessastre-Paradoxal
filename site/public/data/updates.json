@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "34fa8d22707239734bb7dbd4976af5a13ca7113c",
+      "date": "2026-11-13T23:51:20-03:00",
+      "title": "feat(kanto): restore source-grounded item balls, simple NPCs and HM rocks",
+      "category": "Novidades"
+    },
+    {
       "sha": "f3868a94c80818f80f07e06aff18a6a84fbcef2b",
       "date": "2026-11-13T23:48:13-03:00",
       "title": "fix(regions): normalize map subtitles before Unicode folding",
