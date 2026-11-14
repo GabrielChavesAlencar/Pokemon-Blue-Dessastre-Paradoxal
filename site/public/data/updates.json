@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "58c7295e2405f8654e0aca631d4ef372d8a9534a",
+      "date": "2026-11-13T21:25:05-03:00",
+      "title": "test(sinnoh): allow resetting synthetic PBS fixture before checking missing move catalogue",
+      "category": "Testes"
+    },
+    {
       "sha": "310e93dc652b1fbc5b84a06eba247a4e0b4c2354",
       "date": "2026-11-13T21:24:31-03:00",
       "title": "test(sinnoh): cover Barry three native-learnset teams, dynamic scaling contract, collisions and disabled marker",
