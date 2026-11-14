@@ -1752,6 +1752,57 @@ def build_overlay(game, source):
                     break
         if key not in stage8_boss_art:
             raise ValueError(f"Sem sprite nativo de batalha Etapa8: {key}")
+    for mid,x,y,kind,name,sprite,team,_double in TRAINERS_STAGE9:
+        trainer_sections.append(
+            f"[{kind},{name},{mid}]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n"
+                    for species,level in team)
+        )
+    for group,kind in (
+        (PYRE_AQUA_GRUNTS,"BLUE_HOENN_AQUA"),
+        (AQUA_HIDEOUT_GRUNTS,"BLUE_HOENN_AQUA"),
+        (MAGMA_HIDEOUT_GRUNTS,"BLUE_HOENN_MAGMA"),
+        (SPACE_GRUNT_EVENTS,"BLUE_HOENN_MAGMA"),
+    ):
+        for mid,x,y,ver,team in group:
+            trainer_sections.append(
+                f"[{kind},Recruta,{ver}]\nLoseText = Vamos recuar!\n" +
+                "".join(f"Pokemon = {species},{level}\n"
+                        for species,level in team)
+            )
+    def stage9_boss(kind_name_ver, team, *, items=()):
+        kind,name,version=kind_name_ver
+        return (f"[{kind},{name},{version}]\n"
+                + (f"Items = {','.join(items)}\n" if items else "")
+                + "LoseText = Voce venceu!\n"
+                + "".join(f"Pokemon = {species},{level}\n"
+                          for species,level in team))
+    trainer_sections.append(stage9_boss(TATE_LIZA_PBS,TATE_LIZA_TEAM,
+                                       items=("HYPERPOTION",)*4))
+    trainer_sections.append(stage9_boss(MATT_PBS,MATT_TEAM,
+                                       items=("SUPERPOTION",)))
+    trainer_sections.append(stage9_boss(TABITHA_HIDEOUT_PBS,TABITHA_HIDEOUT_TEAM))
+    trainer_sections.append(stage9_boss(MAXIE_HIDEOUT_PBS,MAXIE_HIDEOUT_TEAM,
+                                       items=("SUPERPOTION","SUPERPOTION")))
+    trainer_sections.append(stage9_boss(TABITHA_SPACE_PBS,TABITHA_SPACE_TEAM))
+    trainer_sections.append(stage9_boss(MAXIE_SPACE_PBS,MAXIE_SPACE_TEAM))
+    stage9_boss_art={}
+    for kind,choices in (
+        ("BLUE_HOENN_TATE_LIZA",
+         ("RSE_LEADER_TateandLiza","LEADER_TateandLiza","TATEANDLIZA","LASS")),
+        ("BLUE_HOENN_MATT",
+         ("RSE_AQUAADMIN_Matt","MATT","YOUNGSTER")),
+    ):
+        for candidate_name in choices:
+            candidate=game/f"Graphics/Trainers/{candidate_name}.png"
+            if candidate.is_file() and not candidate.is_symlink():
+                data=regular(candidate).read_bytes()
+                if data.startswith(PNG):
+                    overlay[f"Graphics/Trainers/{kind}.png"]=data
+                    stage9_boss_art[kind]=candidate_name
+                    break
+        if kind not in stage9_boss_art:
+            raise ValueError(f"Sem arte nativa Stage9 segura: {kind}")
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
@@ -1864,6 +1915,10 @@ def build_overlay(game, source):
                          "source_map_ids": list(SOURCE_MAPS_STAGE9),
                          "surf_only_borders": list(SURF_BORDERS_STAGE9),
                          "story_reference_levels_not_fixed": True,
+                         "boss_battle_art":stage9_boss_art,
+                         "boss_battle_art_placeholder":{
+                             "tate_liza":stage9_boss_art["BLUE_HOENN_TATE_LIZA"]!="RSE_LEADER_TateandLiza",
+                             "matt":stage9_boss_art["BLUE_HOENN_MATT"]!="RSE_AQUAADMIN_Matt"},
                          "original_partner_battle_pending": True,
                          "native_gameplay_verified": False},
               "native_gameplay_verified": False},
