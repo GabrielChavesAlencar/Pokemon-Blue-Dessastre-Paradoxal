@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ca4baccc7c6a5080266095ba21624e600841ecad",
+      "date": "2026-11-14T14:05:39-03:00",
+      "title": "feat(hoenn): integrar transições/itens RXDATA da Etapa 9 na cópia isolada",
+      "category": "Novidades"
+    },
+    {
       "sha": "d7209b7e832547d8b9db3f77bf1fd54650940fd0",
       "date": "2026-11-14T14:05:10-03:00",
       "title": "feat(hoenn): ler portas, teleportes e itens Stage9 do RXDATA sem copiar scripts do doador",
