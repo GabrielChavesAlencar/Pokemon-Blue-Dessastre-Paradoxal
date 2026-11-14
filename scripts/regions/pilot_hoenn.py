@@ -538,6 +538,65 @@ def add_stage4_events(maps, game):
 
 
 
+
+def add_stage5_events(maps, game):
+    """Author, not copy, Dewford/Slateport events on the 20 stage-5 maps."""
+    for mid, x, y, sprite, handler in NPCS_STAGE5:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite nativo da etapa 5 inválido: {sprite}")
+        append_event(maps[mid], f"HN5_NPC_{mid}_{x}_{y}", x, y,
+                     event_page(script=handler, sprite=sprite))
+        if mid in (29, 34, 35):
+            cx, cy = (9, 5) if mid in (29, 34) else (4, 5)
+            proxy = event_page(script=handler)
+            proxy.attrs["@trigger"] = 0
+            append_event(maps[mid], f"HN5_Counter_{mid}", cx, cy, proxy)
+    for mid, x, y, key, _message in SIGNS_STAGE5:
+        page = event_page(script=f"BlueHoennPilot.sign_stage5(:{key})")
+        append_event(maps[mid], f"HN5_Sign_{key}", x, y, page)
+    for mid, x, y, key, item, visible in PICKUPS_STAGE5:
+        page = event_page(script="nil", sprite="Object_Ball" if visible else "")
+        event_id = append_event(maps[mid], f"HN5_Item_{key}", x, y, page)
+        page.attrs["@list"][0] = command(
+            355, f'BlueHoennPilot.pickup(:{item}, "{key}", {event_id})'.encode("ascii"))
+        done = event_page(script="nil")
+        done.attrs["@condition"].attrs["@self_switch_valid"] = True
+        done.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        done.attrs["@through"] = True
+        done.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(done)
+    for mid, x, y in MUSEUM_FEE_GATE:
+        page = event_page(script="BlueHoennPilot.museum_entry", touch=True)
+        page.attrs["@through"] = True
+        append_event(maps[mid], f"HN5_MuseumFee_{x}", x, y, page)
+    aqua_sprite, aqua_fallback = select_native_character(
+        game, ("NPC_RSE_AquaGrunt", "NPC_ORAS_AquaGrunt", "trainer_YOUNGSTER"),
+        role="Equipe Aqua - Museu de Slateport")
+    for index, (x, y) in enumerate(((35, 7), (37, 7)), 1):
+        page = event_page(script=f"BlueHoennPilot.museum_aqua({index})",
+                          sprite=aqua_sprite)
+        append_event(maps[39], f"HN5_AquaMuseum_{index}", x, y, page)
+    for mid, x, y in SLATEPORT_NORTH_GATE:
+        page = event_page(script="BlueHoennPilot.slateport_north_gate", touch=True)
+        page.attrs["@through"] = True
+        append_event(maps[mid], f"HN5_NorthGate_{x}", x, y, page)
+    for mid, x, y, kind, name, sprite, team, double in TRAINERS_STAGE5:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Treinador Hoenn da etapa 5 sem sprite: {sprite}")
+        script = f'BlueHoennPilot.battle_stage3(:{kind}, "{name}", {mid})'
+        append_event(maps[mid], f"HN5_Trainer_{mid}_{x}_{y}", x, y,
+                     event_page(script=script, sprite=sprite))
+    return {"maps": len(SOURCE_MAPS_STAGE5), "npcs": len(NPCS_STAGE5),
+            "trainers": len(TRAINERS_STAGE5) + len(MUSEUM_AQUA) + 1,
+            "pickup_events": len(PICKUPS_STAGE5),
+            "cave_maps": len(CAVE_ENCOUNTERS_STAGE5),
+            "boat_stops": len(BOAT_POINTS_STAGE5),
+            "museum_aqua_sprite": aqua_sprite,
+            "museum_aqua_sprite_placeholder": aqua_fallback,
+            "gameplay_verified": False}
+
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
@@ -679,6 +738,7 @@ def build_overlay(game, source):
     add_opening(maps, balls, rival, rival_image)
     stage3_counts = add_stage3_events(maps, game)
     stage4_counts = add_stage4_events(maps, game)
+    stage5_counts = add_stage5_events(maps, game)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
