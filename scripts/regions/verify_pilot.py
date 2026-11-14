@@ -390,9 +390,9 @@ def inspect(game: Path) -> dict:
     }
     for original, whitelist in saffron.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        expected = whitelist | passive_field_ids(original)
-        if actual != expected:
-            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ expected}")
+        allowed_with_passive = whitelist | passive_field_ids(original)
+        if actual != allowed_with_passive:
+            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ allowed_with_passive}")
     saffron_pairs = (
         (168, 6, 171, 10), (168, 10, 178, 1),
         (168, 12, 170, 1), (168, 13, 169, 1),
@@ -474,9 +474,9 @@ def inspect(game: Path) -> dict:
     # and quizzes must NOT be copied into Decades.
     for origin, expected_ids in CINNABAR_EVENTS.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        expected = set(expected_ids) | passive_field_ids(origin)
-        if actual != expected:
-            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ expected}")
+        allowed_with_passive = set(expected_ids) | passive_field_ids(origin)
+        if actual != allowed_with_passive:
+            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ allowed_with_passive}")
     cinnabar_pairs = (
         (199, 1, 201, 1), (199, 2, 200, 1),
         (199, 3, 205, 1), (199, 5, 203, 1),
@@ -574,9 +574,9 @@ def inspect(game: Path) -> dict:
     # completion flags may be executed in the Decades installation.
     for original, allowed in LEAGUE_EVENT_WHITELIST.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        expected = allowed | passive_field_ids(original)
-        if actual != expected:
-            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ expected}")
+        allowed_with_passive = allowed | passive_field_ids(original)
+        if actual != allowed_with_passive:
+            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed_with_passive}")
     if maps[mapping[210]].attrs["@events"]:
         raise ValueError("Empty Victory Road Map210 unexpectedly contains source events")
     for original, entries in LEAGUE_BADGE_GATES.items():
