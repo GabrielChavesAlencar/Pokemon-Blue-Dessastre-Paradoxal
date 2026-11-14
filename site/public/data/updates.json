@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "de8c9ca4a9a559e36851ac71615bbaacf69c9fe8",
+      "date": "2026-11-13T21:46:23-03:00",
+      "title": "test(sinnoh): QA-copy PBS integrity, save profiles, plugin conflicts, early markers and no-write preflight",
+      "category": "Testes"
+    },
+    {
       "sha": "80e591366900b52b2427d3b5f1cd28d758aaf0de",
       "date": "2026-11-13T21:45:39-03:00",
       "title": "feat(sinnoh): add read-only QA copy preflight for Barry PBS hashes, separate saves and legacy/new starter plugin detection",
