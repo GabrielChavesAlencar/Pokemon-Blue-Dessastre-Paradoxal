@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a86af6f163c754a180668ec475b0cfd7612d4a9f",
+      "date": "2026-11-14T14:14:09-03:00",
+      "title": "feat(site/hoenn): catálogo 138 mapas, 186 equipes Stage9, Mind Badge e Dive pendentes QA",
+      "category": "Novidades"
+    },
+    {
       "sha": "ab8413f066afbcb06ae691be1a4e41f1f458e1c8",
       "date": "2026-11-14T14:12:52-03:00",
       "title": "test(hoenn): auditar grafo de 28 mapas e remover portão sem posição confirmada",
