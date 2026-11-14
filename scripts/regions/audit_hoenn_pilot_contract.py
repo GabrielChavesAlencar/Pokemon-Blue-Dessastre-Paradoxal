@@ -30,6 +30,12 @@ from hoenn_stage4 import (
     RUSTBORO_THEFT_TRIGGERS, TUNNEL_AQUA_EVENT, ROXANNE_EVENT,
     TUNNEL_VERDANTURF_GATE,
 )
+from hoenn_stage5 import (
+    SOURCE_MAPS_STAGE5, OFFSET_BORDERS_STAGE5, WARP_PAIRS_STAGE5,
+    BOAT_POINTS_STAGE5, CAVE_ENCOUNTERS_STAGE5, TRAINERS_STAGE5,
+    BRAWLY_PBS, BRAWLY_TEAM, MUSEUM_AQUA, NPCS_STAGE5,
+    MUSEUM_FEE_GATE, SLATEPORT_NORTH_GATE, SIGNS_STAGE5, PICKUPS_STAGE5,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -105,13 +111,20 @@ def audit(root: Path = ROOT) -> dict:
     # Recruta appears in both woods and Rusturf. Catalog titles disambiguate
     # the two identical PBS names (versions 304 and 405).
     native_trainers["Recruta Aqua (Rusturf)"] = (SOURCE_MAPS[157], tuple(TUNNEL_AQUA_TEAM))
+    native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
+                            for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE5})
+    native_trainers["Brawly"] = (SOURCE_MAPS[31], tuple(BRAWLY_TEAM))
+    for index, (_, _, _, team) in enumerate(MUSEUM_AQUA, 1):
+        native_trainers[f"Recruta Aqua (Museu {index})"] = (SOURCE_MAPS[39], tuple(team))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
         errors.append("Duplicate trainers in published Hoenn pilot")
     if set(names_published) != set(native_trainers):
         errors.append(f"Published trainers differ from pilot: {sorted(set(names_published) ^ set(native_trainers))}")
-    if len(native_trainers) != len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) + 3:
+    if len(native_trainers) != (len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) +
+                                len(TRAINERS_STAGE4) + len(TRAINERS_STAGE5) +
+                                len(MUSEUM_AQUA) + 4):
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -122,15 +135,15 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        expect_leader = (name == "Roxanne")
-        expect_badge = "STONE" if expect_leader else None
+        expect_leader = name in ("Roxanne", "Brawly")
+        expect_badge = ("STONE" if name == "Roxanne" else "KNUCKLE" if name == "Brawly" else None)
         if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
             errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
     all_edges = [tuple(pair) for pair in BORDERS]
     if any(a not in source_ids or b not in source_ids for a, _, b, _ in all_edges):
         errors.append("A border connection references an unknown source map")
-    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4)):
+    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5)):
         errors.append("An offset border references an unknown source map")
     if any(a[0] not in source_ids or b[0] not in source_ids
            for a, _, b, _ in WARP_PAIRS):
@@ -145,6 +158,10 @@ def audit(root: Path = ROOT) -> dict:
         if a[0] in adjacency and b[0] in adjacency:
             adjacency[a[0]].add(b[0])
             adjacency[b[0]].add(a[0])
+    house, dewford, slateport = BOAT_POINTS_STAGE5
+    for a, b in ((house, dewford), (dewford, slateport)):
+        adjacency[a[0]].add(b[0])
+        adjacency[b[0]].add(a[0])
     seen = {START[0]}
     queue = deque(seen)
     while queue:
@@ -175,6 +192,15 @@ def audit(root: Path = ROOT) -> dict:
         + [(mid, x, y, f"item4:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE4]
         + [(mid, x, y, "CutTree") for mid, x, y in CUT_TREES_STAGE4]
         + [(mid, x, y, "Devon theft trigger") for mid, x, y in RUSTBORO_THEFT_TRIGGERS]
+        + [(mid, x, y, f"trainer5:{name}") for mid, x, y, _, name, _, _, _ in TRAINERS_STAGE5]
+        + [(mid, x, y, f"npc5:{handler}") for mid, x, y, _, handler in NPCS_STAGE5]
+        + [(29, 9, 5, "Dewford Center counter"), (34, 9, 5, "Slateport Center counter"),
+           (35, 4, 5, "Slateport Mart counter")]
+        + [(mid, x, y, f"sign5:{key}") for mid, x, y, key, _ in SIGNS_STAGE5]
+        + [(mid, x, y, f"item5:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE5]
+        + [(mid, x, y, "museum fee") for mid, x, y in MUSEUM_FEE_GATE]
+        + [(mid, x, y, "Slateport north gate") for mid, x, y in SLATEPORT_NORTH_GATE]
+        + [(39, 35, 7, "Aqua museum one"), (39, 37, 7, "Aqua museum two")]
         + [(*ROXANNE_EVENT, "Roxanne"), (*TUNNEL_AQUA_EVENT, "Aqua"),
            (*TUNNEL_VERDANTURF_GATE, "blocked Verdanturf exit")]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
@@ -198,7 +224,11 @@ def audit(root: Path = ROOT) -> dict:
                 "cutter", "cut_tree", "teacher", "rustboro_theft", "peeko",
                 "briney_route116", "rusturf_aqua", "rusturf_goods_reward",
                 "devon_employee", "devon_route116", "mr_stone", "tunnelers",
-                "rusturf_east_gate", "sign_stage4"}
+                "rusturf_east_gate", "sign_stage4",
+                "sign_stage5", "knuckle_badge?", "brawly", "flash_hiker",
+                "steven_letter", "boat_to", "dewford_boat", "slateport_boat",
+                "shipyard", "museum_entry", "museum_aqua", "stern",
+                "slateport_north_gate", "soothe_bell", "soft_sand"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -217,16 +247,17 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("Rival must choose counter-starter species")
 
 
-    # Static contracts cannot prove the running game or donor asset rights.
+    # A passing static audit still does not approve gameplay in Game.exe.
     gaps = [
-        "Introdução visual do caminhão e captura animada de Wally ainda não foram realizadas.",
-        "Batalha de Roxanne, Stone Badge regional e prêmio Rock Tomb exigem teste real no Game.exe.",
-        "As árvores Cut de Route 116 dependem de sprite nativo e de um Pokémon que saiba Cut.",
-        "Evento Aqua de Rusturf e resgate de Peecko exigem prova visual e save/reload no Game.exe.",
-        "Map 27 no doador devolve a Petalburg; o piloto corrige a saída para Rustboro.",
-        "Devon Corporation, HM Cut, Escola e escadas requerem validação visual das páginas de evento.",
-        "O norte de Rustboro e a saída leste de Rusturf para Verdanturf ainda não são áreas jogáveis.",
-        "Músicas próprias, cutscenes e NPCs secundários exigem etapas de conteúdo separadas.",
+        "Dewford, Slateport and Granite Cave scripts were authored without replacing original Blue battle engine.",
+        "Briney's scripted boat skips sea routes 105,107,108 and islands; Surf and water trainers are not imported.",
+        "Brawly KNUCKLE badge, trainer visuals and Bulk Up TM require Windows Game.exe proof.",
+        "Flash HM is awarded in Granite Cave but native darkness/Cut/Flash use still needs field QA.",
+        "Granite Cave B1F cracked-floor puzzle is not yet animated or implemented; ladders are mapped.",
+        "Steven LETTER/Steel Wing and Stern Devon package require save/reload and item identity tests.",
+        "Two museum Aqua battles are scripted with separate PBS and flags; confirm scene and colliders natively.",
+        "Slateport Route 110 is not installed; north exit remains blocked pending the next phase.",
+        "Original local music, crowds, full trainer roster, beach water and all NPCs need later audits.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -245,6 +276,12 @@ def audit(root: Path = ROOT) -> dict:
         "stage4_trainer_presets": len(TRAINERS_STAGE4) + 2,
         "stage4_pickup_events": len(PICKUPS_STAGE4),
         "stage4_scripted_only": True,
+        "stage5_source_maps": len(SOURCE_MAPS_STAGE5),
+        "stage5_boat_stops": len(BOAT_POINTS_STAGE5),
+        "stage5_trainer_presets": len(TRAINERS_STAGE5) + len(MUSEUM_AQUA) + 1,
+        "stage5_pickup_events": len(PICKUPS_STAGE5),
+        "stage5_cave_maps": len(CAVE_ENCOUNTERS_STAGE5),
+        "stage5_scripted_only": True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
