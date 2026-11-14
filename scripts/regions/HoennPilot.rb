@@ -96,69 +96,161 @@ module BlueHoennPilot
     progress["clock_set"] = true
   end
 
+  # Only active inside the separate Hoenn pilot. These flags are kept in the
+  # regional save, never in a global switch shared by Kanto/Johto/Decades.
+  RIVAL_VERSIONS = { TREECKO: 210, TORCHIC: 211, MUDKIP: 212 }.freeze
+  RIVAL_COUNTER = { TREECKO: :TORCHIC, TORCHIC: :MUDKIP,
+                    MUDKIP: :TREECKO }.freeze
+
+  def self.starter
+    flags = state
+    return nil unless flags
+    chosen = flags["starter"]
+    symbol = chosen.to_sym if chosen.is_a?(String) || chosen.is_a?(Symbol)
+    STARTERS.include?(symbol) ? symbol : nil
+  end
+
   def self.mother
-    progress = state
-    return unless progress
-    if !progress["clock_set"]
-      pbMessage(_INTL("Mãe: Chegamos a Littleroot! Suba para acertar o relógio do seu quarto."))
-    else
-      pbMessage(_INTL("Mãe: O Professor Birch saiu para a Rota 101. Procure por ele ao norte da cidade."))
+    flags = state
+    return false unless flags
+    if flags["pokedex_given"] && !flags["running_shoes_given"]
+      unless $player && $player.respond_to?(:has_running_shoes=)
+        pbMessage(_INTL("Mãe: Ainda não consigo entregar seus Tênis de Corrida."))
+        return false
+      end
+      $player.has_running_shoes = true
+      flags["running_shoes_given"] = true
+      pbMessage(_INTL("Mãe: Você recebeu os Tênis de Corrida! Boa viagem por Hoenn!"))
+      return true
     end
-    progress["met_mother"] = true
+    if !flags["clock_set"]
+      pbMessage(_INTL("Mãe: Chegamos a Littleroot! Ajuste o relógio do quarto."))
+    elsif flags["pokedex_given"]
+      pbMessage(_INTL("Mãe: Cuide bem dos seus Pokémon e volte quando quiser!"))
+    else
+      pbMessage(_INTL("Mãe: O Professor Birch está perto da Rota 101."))
+    end
+    flags["met_mother"] = true
+    true
   end
 
   def self.route_birch
-    progress = state
-    return unless progress
-    return if progress["starter"]
-    if !progress["met_mother"] || !progress["clock_set"]
-      pbMessage(_INTL("Ajuste o relógio no quarto e fale com sua mãe antes de sair de Littleroot."))
-      $game_player.moveto($game_player.x, 19) if $game_player.y == 18
-      return
+    flags = state
+    return false unless flags
+    return false if flags["birch_rescued"] || flags["met_birch"]
+    if !flags["met_mother"] || !flags["clock_set"]
+      pbMessage(_INTL("Converse com sua mãe e ajuste o relógio antes de partir."))
+    else
+      flags["birch_rescue_active"] = true
+      pbMessage(_INTL("Birch: Socorro! Um Zigzagoon está me perseguindo! Escolha uma das três Poké Bolas na maleta perto daqui!"))
     end
-    pbMessage(_INTL("Birch: Socorro! Um Zigzagoon me encurralou. Pegue um Pokémon da minha bolsa!"))
-    names = STARTERS.map { |id| GameData::Species.get(id).name }
-    choice = pbMessage(_INTL("Qual Pokémon você vai usar?"), names + [_INTL("Voltar")], names.length)
-    unless choice && choice.between?(0, STARTERS.length - 1) &&
-           choose_starter(STARTERS[choice], rescue_birch: true)
-      $game_player.moveto($game_player.x, 19) if $game_player.y == 18
-      return
+    # The player-touch event guards the northbound passage. Don't allow
+    # walking into the rest of Route 101 without resolving Birch's rescue.
+    $game_player.moveto($game_player.x, 19) if $game_player && $game_player.y == 18
+    true
+  end
+
+  # Kept for the three decorative lab balls in older copies of the pilot.
+  # Only the three real ball EVENTS near Birch may award a starter.
+  def self.choose_starter(species, rescue_birch: false)
+    return false unless state && STARTERS.include?(species)
+    if starter
+      pbMessage(_INTL("Você já tem um Pokémon inicial."))
+    else
+      pbMessage(_INTL("Birch: A maleta está na Rota 101. Primeiro preciso de ajuda!"))
     end
+    false
+  end
+
+  def self.choose_birch_ball(species)
+    flags = state
+    return false unless flags && STARTERS.include?(species)
+    return rescue_birch_battle if starter && !flags["birch_rescued"] &&
+                                  !flags["met_birch"] && flags["birch_rescue_active"]
+    if starter
+      pbMessage(_INTL("Você já escolheu seu Pokémon inicial."))
+      return false
+    end
+    unless flags["birch_rescue_active"]
+      pbMessage(_INTL("Há três Poké Bolas na maleta do Professor Birch."))
+      return false
+    end
+    name = GameData::Species.get(species).name
+    return false unless pbConfirmMessage(_INTL("Escolher {1} para ajudar Birch?", name))
+    return false unless pbAddPokemonSilent(species, 5)
+    flags["starter"] = species.to_s
+    # Older saves from the first Hoenn pilot already received five balls with
+    # the starter. This explicit new flag avoids re-awarding them on migration.
+    flags["balls_at_lab_pending"] = true
+    rescue_birch_battle
+  end
+
+  def self.rescue_birch_battle
+    flags = state
+    return false unless flags && starter && flags["birch_rescue_active"]
+    return false if flags["birch_rescued"] || flags["met_birch"]
     setBattleRule("canLose")
     WildBattle.start(:ZIGZAGOON, 2)
-    progress["met_birch"] = true
-    $player.heal_party
-    pbMessage(_INTL("Birch: Obrigado pela ajuda! Fique com esse Pokémon e passe no meu laboratório."))
+    flags["birch_rescued"] = true
+    flags["met_birch"] = true
+    flags.delete("birch_rescue_active")
+    $player.heal_party if $player && $player.respond_to?(:heal_party)
+    pbMessage(_INTL("Birch: Obrigado! Visite meu laboratório quando puder."))
+    true
+  end
+
+  def self.rival_name
+    return "May" if $player && $player.respond_to?(:gender) && $player.gender == 0
+    "Brendan"
+  end
+
+  def self.rival_103
+    flags = state
+    return false unless flags && starter
+    return false unless flags["birch_rescued"] || flags["met_birch"]
+    return false if flags["rival_103_done"]
+    name = rival_name
+    pbMessage(_INTL("{1}: Vamos testar nossos Pokémon antes de voltar a Littleroot!", name))
+    setBattleRule("canLose")
+    victory = TrainerBattle.start(:RIVAL1, name, RIVAL_VERSIONS.fetch(starter))
+    $player.heal_party if $player && $player.respond_to?(:heal_party)
+    # A canLose result is a completed story battle whether victory or loss.
+    flags["rival_103_done"] = true
+    pbMessage(victory ?
+      _INTL("{1}: Você batalhou muito bem! Volte ao laboratório de Birch.", name) :
+      _INTL("{1}: Foi uma boa batalha! Volte ao laboratório de Birch.", name))
+    true
   end
 
   def self.birch
-    progress = state
-    return unless progress
-    progress["met_birch"] = true
-    if progress["starter"]
-      pbMessage(_INTL("Birch: Siga ao norte pela Rota 101 para chegar a Oldale. Você pode treinar na grama pelo caminho."))
-    else
-      pbMessage(_INTL("Birch está pesquisando os Pokémon da Rota 101."))
+    flags = state
+    return false unless flags
+    unless starter && (flags["birch_rescued"] || flags["met_birch"])
+      pbMessage(_INTL("Birch: Estou pesquisando os Pokémon da Rota 101."))
+      return false
     end
-  end
-
-  def self.choose_starter(species, rescue_birch: false)
-    progress = state
-    return unless progress && STARTERS.include?(species)
-    if progress["starter"]
-      pbMessage(_INTL("Birch: Você já escolheu seu parceiro."))
-      return
+    unless flags["rival_103_done"]
+      pbMessage(_INTL("Birch: Encontre Brendan ou May na Rota 103 e depois volte aqui."))
+      return false
     end
-    unless rescue_birch
-      pbMessage(_INTL("Procure o Professor Birch na Rota 101."))
-      return
+    if flags["pokedex_given"]
+      pbMessage(_INTL("Birch: Continue registrando os Pokémon de Hoenn!"))
+      return false
     end
-    name = GameData::Species.get(species).name
-    return unless pbConfirmMessage(_INTL("Escolher {1} como seu parceiro?", name))
-    return unless pbAddPokemonSilent(species, 5)
-    progress["starter"] = species.to_s
-    $bag.add(:POKEBALL, 5)
-    pbMessage(_INTL("Birch: {1} vai com você. Leve também cinco Poké Bolas para suas primeiras capturas.", name))
+    unless $player && $player.respond_to?(:has_pokedex=)
+      pbMessage(_INTL("Birch: Não foi possível ativar sua Pokédex."))
+      return false
+    end
+    if flags["balls_at_lab_pending"]
+      unless $bag && $bag.add(:POKEBALL, 5)
+        pbMessage(_INTL("Birch: Abra espaço na Bolsa para receber cinco Poké Bolas."))
+        return false
+      end
+      flags.delete("balls_at_lab_pending")
+    end
+    $player.has_pokedex = true
+    flags["pokedex_given"] = true
+    pbMessage(_INTL("Birch: Aqui está sua Pokédex! Volte para falar com sua mãe antes de partir."))
     true
   end
 
