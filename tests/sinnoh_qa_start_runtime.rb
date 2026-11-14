@@ -119,6 +119,8 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
     BlueRegionStart.select_and_prepare
     check($PokemonGlobal.blue_regions["current"] == "SINNOH",
           "Sinnoh region state not initialized")
+    check(BlueSinnohQAStart.barry_test_authorized?,
+          "Validated QA pilot cannot try its own Barry fight")
     check([$data_system.start_map_id, $data_system.start_x, $data_system.start_y] ==
           [500, 10, 11], "wrong safe Twinleaf bedroom spawn")
     check($PokemonGlobal.blue_traditional_starters == true,
@@ -127,9 +129,15 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
     check(BlueCampaign.history == [false], "campaign not initialized")
     check($original_called == 0, "new game invoked old-region selector")
 
+    $PokemonGlobal.blue_regions["current"] = "JOHTO"
+    check(!BlueSinnohQAStart.barry_test_authorized?,
+          "QA Barry leaked into Johto")
+    $PokemonGlobal.blue_regions["current"] = "SINNOH"
     engine_report["warps_inspected"] = 15
     File.write("Data/blue-sinnoh-qa-engine-check.json", JSON.generate(engine_report))
     check(BlueSinnohQAStart.proof.nil?, "invalid native report was accepted")
+    check(!BlueSinnohQAStart.barry_test_authorized?,
+          "QA Barry ignored a changed warp report")
     engine_report["warps_inspected"] = 16
     File.write("Data/blue-sinnoh-qa-engine-check.json", JSON.generate(engine_report))
     check(BlueSinnohQAStart.proof == [500, 10, 11], "fixed report not accepted")
