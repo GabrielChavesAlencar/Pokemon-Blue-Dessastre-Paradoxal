@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f5a1ed7cac30e31a7e0328d8618235f3d35781e8",
+      "date": "2026-11-14T00:13:52-03:00",
+      "title": "docs(regions): add per-pilot scopes for read-only private RXDATA/PBS verification",
+      "category": "Documentação"
+    },
+    {
+      "sha": "73b0b5736f794860df59102929598199f2268ed9",
+      "date": "2026-11-14T00:13:33-03:00",
+      "title": "feat(regions): allow isolated Johto routes/Violet and Hoenn scopes when auditing private pilot bindings",
+      "category": "Novidades"
+    },
+    {
       "sha": "3b3cc33b35c524aa6667edc50944884e701afcc3",
       "date": "2026-11-14T00:13:01-03:00",
       "title": "fix(regions): audit Ruby module handlers through def self.method instead of fabricated full call text",
