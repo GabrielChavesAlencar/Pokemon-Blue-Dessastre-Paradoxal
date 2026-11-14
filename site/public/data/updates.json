@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c66b332a754a0fecabb941ec2a06ac92a1c3dbf5",
+      "date": "2026-11-13T23:46:36-03:00",
+      "title": "docs(regions): specify safe integration of trainers gyms and wild habitats from four walkthroughs",
+      "category": "Documentação"
+    },
+    {
       "sha": "c56f7241be8e71902d96bfd0dc6531294d5d7ba5",
       "date": "2026-11-13T23:44:28-03:00",
       "title": "feat(regions): explicitly report static and scripted encounters separately",
