@@ -34,7 +34,12 @@ PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
          40: "Battle Tent de Slateport", 108: "Rota 106",
          111: "Rota 109", 112: "Casa da Praia",
          159: "Granite Cave 1F", 160: "Granite Cave B1F",
-         161: "Granite Cave B2F", 162: "Sala de Steven em Granite Cave"}
+         161: "Granite Cave B2F", 162: "Sala de Steven em Granite Cave",
+         41: "Mauville City", 42: "Centro Pokémon de Mauville",
+         43: "Poké Mart de Mauville", 44: "Casas de Mauville",
+         45: "Rydel's Cycles", 46: "Mauville Game Corner",
+         47: "Ginásio de Mauville", 113: "Rota 110",
+         114: "Cycling Road (Rota 110-C)", 115: "Portaria da Cycling Road"}
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
