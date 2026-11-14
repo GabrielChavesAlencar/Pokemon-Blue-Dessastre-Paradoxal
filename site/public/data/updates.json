@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6400b9d3e06c782c7bc293b002ba3820988630e3",
+      "date": "2026-11-14T18:46:45-03:00",
+      "title": "test(hoenn): validate 199 safe QA landings, no NPC overlap and donor MapIDs",
+      "category": "Testes"
+    },
+    {
       "sha": "0ba3952dfd7010a8964c0d8190568bffb023c70a",
       "date": "2026-11-14T18:45:58-03:00",
       "title": "ci(hoenn): enforce 199-map test teleport menu and region/save isolation via Ruby fixture",
