@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9419f9554edb33c990aa3e141c8b691d3bccd5ec",
+      "date": "2026-11-14T18:29:55-03:00",
+      "title": "feat(hoenn): TESTAR_HOENN QA12 final gate, private 12th save and PC/Android manual checklist",
+      "category": "Novidades"
+    },
+    {
       "sha": "8d1c7bd4302ce13a7eb511f34a83cf2936670e55",
       "date": "2026-11-14T18:29:31-03:00",
       "title": "test(hoenn): QA12 integrated release gate, 11 reports, native denial and 30 PC/Android scenarios",
