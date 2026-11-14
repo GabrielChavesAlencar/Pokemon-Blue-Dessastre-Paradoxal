@@ -22,8 +22,11 @@ module BlueHoennPilot
                         124,125,126,128,177,178,179,180,191,192]).sort
     stage8 = (stage7 + [48,49,50,51,52,64,65,66,67,68,69,70,71,72,73,74,75,
                         132,133,134,135,136,137,138,139]).sort
+    stage9 = (stage8 + [76,77,78,79,80,81,82,141,144,
+                        182,183,184,185,186,187,188,189,
+                        206,207,208,209,210,211,212,213,215,216,217]).sort
     stage2 = [7, 8, 11, 12, 13, 14, 101, 102, 103]
-    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7, stage8].include?(maps.keys.sort) &&
+    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7, stage8, stage9].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
@@ -214,6 +217,32 @@ module BlueHoennPilot
         end
       end
     end
+    if maps[76] && maps[82] && maps[215]
+      boss_rows=[
+        [:BLUE_HOENN_TATE_LIZA,"Tate & Liza",982],
+        [:BLUE_HOENN_MATT,"Matt",917],
+        [:BLUE_HOENN_TABITHA,"Tabitha",988],
+        [:BLUE_HOENN_MAXIE,"Maxie",989],
+        [:BLUE_HOENN_MAXIE,"Maxie",992],
+        [:BLUE_HOENN_TABITHA,"Tabitha",993]
+      ]
+      grunts=([920,921,922,923,950,951,952,953,954].map{|ver|[:BLUE_HOENN_AQUA,"Recruta",ver]}+
+              [940,941,942,943,944,945,946,991,994].map{|ver|[:BLUE_HOENN_MAGMA,"Recruta",ver]})
+      raise "Chefe ou recruta Stage9 não compilado" unless (boss_rows+grunts).all? do |kind,name,version|
+        GameData::Trainer.exists?(kind,name,version)
+      end
+      %w[Maura Nate Preston Hannah Virgil Macey Blake Samantha Mark Leah
+         Zander William Gabrielle Kayla Tasha Atsushi Cedric Valerie].each do |name|
+        source_map=%w[Maura Nate Preston Hannah Virgil Macey Blake Samantha].include?(name) ? 82 :
+                   %w[Mark Leah Zander].include?(name) ? 207 :
+                   %w[William Gabrielle Kayla].include?(name) ? 208 :
+                   name=="Tasha" ? 209 : name=="Atsushi" ? 210 : 211
+        # The Python stage9 audit is authoritative for actual Blue type aliases.
+        unless [:YOUNGSTER,:LASS].any?{|kind|GameData::Trainer.exists?(kind,name,source_map)}
+          raise "Trainer Stage9 não compilado: #{name}/#{source_map}"
+        end
+      end
+    end
     names = ["May", "Brendan"]
     unless names.all? { |name| [210, 211, 212].all? { |version|
              GameData::Trainer.exists?(:RIVAL1, name, version) } }
@@ -256,6 +285,11 @@ module BlueHoennPilot
                     [maps.fetch(64),maps.fetch(138)],
                     [maps.fetch(138),maps.fetch(139)],
                     [maps.fetch(139),maps.fetch(69)]])
+    end
+    if maps[76] && maps[141] && maps[144]
+      links.concat([[maps.fetch(139),maps.fetch(141)],
+                    [maps.fetch(69),maps.fetch(144)],
+                    [maps.fetch(144),maps.fetch(76)]])
     end
     links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
