@@ -9,6 +9,9 @@ module BlueLocale
     # Screen-confirmed Kanto FRLG NPC guard. Keep this fallback in native
     # runtime even when an old save has not rebuilt its compiled locale.
     'I absolutely forbid you from going through here!'=>'Está terminantemente proibido passar por aqui!',
+    'Clefairy came from the moon.'=>'Clefairy veio da Lua.',
+    "That's what the rumor is."=>'É isso que dizem por aí.',
+    "Clefairy came from the moon. That's what the rumor is."=>'Clefairy veio da Lua. É isso que dizem por aí.',
     'Pink: Selected area · Blue: You'=>'Rosa: Área selecionada · Azul: Você',
     'Habitat complete: {1}! {2} Pokémon × $500 = ${3}.'=>'Habitat completo: {1}! {2} Pokémon × $500 = ${3}.',
     'Trainer Album'=>'Álbum de treinadores','Encountered'=>'Enfrentado','Not encountered'=>'Não enfrentado','Defeated'=>'Derrotado',
@@ -93,6 +96,7 @@ module BlueLocale
     '{1} used {2}!'=>'{1} usou {2}!','Turn {1}'=>'Turno {1}',
     'Language / Idioma'=>'Language / Idioma','English'=>'Inglês','Portuguese (Brazil)'=>'Português (Brasil)',
     'Interface and story language. Pokémon, item and move names stay unchanged.'=>'Traduz interface e história. Mantém nomes de Pokémon, itens e golpes.',
+    'Interface and story language. Pokémon, item, move and ability names stay unchanged.'=>'Traduz interface e história. Mantém nomes de Pokémon, itens, golpes e habilidades.',
     'Text Speed'=>'Velocidade do texto','Battle Scene'=>'Animações de batalha','Battle Style'=>'Estilo de batalha',
     'Music Volume'=>'Volume da música','SE Volume'=>'Volume dos efeitos','Speed Up Settings'=>'Aceleração',
     'Battle Speed'=>'Vel. da batalha','Only Battles'=>'Só nas batalhas','All'=>'Sempre',

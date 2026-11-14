@@ -190,6 +190,43 @@ class TestKantoNpcLocale(unittest.TestCase):
             # No private Argos package, translator invocation or cache needed.
             self.assertFalse((root / ".blue-work/kanto-npc-ptbr.json").exists())
 
+    def test_screenshot_clefairy_phrase_is_translated_without_argos(self):
+        # Actual screenshot: pt-BR is selected but the Pewter NPC says
+        # "Clefairy came from the moon. That's what the rumor is."
+        npc = event_dialogue()
+        npc.attrs["@pages"][0].attrs["@list"] = [
+            command(101, b"Clefairy came from the moon."),
+            command(401, b"That's what the rumor is."),
+            command(0),
+        ]
+        inventory = {"schema": 1, "imported": [{
+            "kind": "npc_dialogue", "source_map": 25, "map": 625,
+            "event": 7, "x": 4, "y": 5
+        }]}
+        english = "Clefairy came from the moon. That's what the rumor is."
+        self.assertEqual(npc_literals(npc.attrs["@pages"][0].attrs["@list"]),
+                         [english])
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "data").mkdir()
+            (root / "data/kanto-npc-ptbr.json").write_bytes(
+                (ROOT / "data/kanto-npc-ptbr.json").read_bytes())
+            source = root / "frlg"
+            (source / "Data").mkdir(parents=True)
+            target = root / "pilot"
+            (target / "Data").mkdir(parents=True)
+            (target / "Data/blue-kanto-field-events.json").write_text(
+                json.dumps(inventory), encoding="utf8")
+            with patch.object(kanto_npc_locale, "load", return_value=RubyObject(
+                    "RPG::Map", {"@events": {7: npc}})):
+                report = install_npc_locale(root, source, target)
+            values = {text(a): text(b) for a, b in loads(
+                (target / "Data/blue-pt-br.dat").read_bytes())}
+            self.assertEqual(values[english],
+                             "Clefairy veio da Lua. É isso que dizem por aí.")
+            self.assertEqual(report["remaining_unique_lines"], 0)
+            self.assertEqual(report["reviewed_project_translations"], 1)
+
     def test_old_automatic_cache_cannot_override_reviewed_guard(self):
         guard = event_dialogue()
         guard.attrs["@pages"][0].attrs["@list"] = [

@@ -35,20 +35,65 @@ module BlueRegionalCards
 
     def write(bitmap, line, x, y, size = 17, color = nil)
       bitmap.font.size = size
-      bitmap.font.color = color || Color.new(238, 248, 255)
+      bitmap.font.color = color || Color.new(40, 68, 67)
       bitmap.draw_text(x, y, Graphics.width - x - 14, 23, line.to_s)
+    end
+
+    # The FireRed-inspired frame is drawn from primitives, without depending on
+    # external artwork or changing the existing, native Decades Trainer Card.
+    def card_frame(bitmap)
+      width, height = Graphics.width, Graphics.height
+      bitmap.fill_rect(0, 0, width, height, Color.new(53, 130, 114))
+      bitmap.fill_rect(5, 5, width - 10, height - 10, Color.new(26, 63, 60))
+      bitmap.fill_rect(11, 11, width - 22, height - 22, Color.new(225, 238, 225))
+      bitmap.fill_rect(16, 16, width - 32, 52, Color.new(64, 106, 102))
+    end
+
+    def trainer_info
+      trainer = $player
+      return ["—", "—", "—", "—", "—"] unless trainer
+      id = trainer.respond_to?(:public_ID) ? trainer.public_ID : "—"
+      money = trainer.respond_to?(:money) ? trainer.money : 0
+      owned = "—"
+      if trainer.respond_to?(:pokedex) && trainer.pokedex &&
+         trainer.pokedex.respond_to?(:owned_count)
+        owned = trainer.pokedex.owned_count.to_s
+      end
+      seconds = (defined?($stats) && $stats && $stats.respond_to?(:play_time)) ?
+                $stats.play_time.to_i : 0
+      hours, minutes = seconds.divmod(3600)
+      [trainer.name.to_s, id.to_s, "$#{money}", owned, "#{hours}h #{minutes / 60}m"]
+    end
+
+    def draw_badges(bitmap, data)
+      width, height = Graphics.width, Graphics.height
+      y = height - 80
+      bitmap.fill_rect(18, y - 11, width - 36, 67, Color.new(184, 212, 198))
+      write(bitmap, "INSÍGNIAS DE KANTO", 24, y - 10, 14)
+      names = data[:milestones].first(8)
+      return if names.empty?
+      step = (width - 75) / 8.0
+      names.each_with_index do |badge, index|
+        x = (32 + step * index).to_i
+        owned = data[:acquired].include?(badge)
+        outline = owned ? Color.new(123, 87, 37) : Color.new(112, 135, 128)
+        fill = owned ? Color.new(252, 218, 102) : Color.new(204, 218, 209)
+        bitmap.fill_rect(x, y + 15, 27, 27, outline)
+        bitmap.fill_rect(x + 3, y + 18, 21, 21, fill)
+        bitmap.fill_rect(x + 8, y + 23, 11, 11,
+                         owned ? Color.new(244, 166, 67) : Color.new(159, 186, 174))
+      end
     end
 
     def draw(data)
       b = @sprites["card"].bitmap
       b.clear
-      b.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(8, 23, 40))
-      b.fill_rect(8, 8, Graphics.width - 16, 50, Color.new(22, 47, 73))
+      card_frame(b)
       pbSetSmallFont(b)
-      label = @page == 0 ? (data[:current] == "KANTO" ? "KANTO · INSÍGNIAS" : "REGIÃO ATUAL") : "TODAS AS REGIÕES"
-      write(b, "CARTÃO DE TREINADOR — #{label}", 18, 16, 19)
-      write(b, "Página #{@page + 1}/2  ·  ←/→ mudar  ·  Voltar: sair", 18, 41, 13,
-            Color.new(166, 202, 230))
+      label = @page == 0 ? (data[:current] == "KANTO" ? "KANTO" : "REGIÃO ATUAL") : "GERAL"
+      write(b, "CARTÃO DE TREINADOR · #{label}", 24, 17, 19, Color.new(255, 253, 217))
+      write(b, "Página #{@page + 1}/2  ·  ←/→ trocar cartão  ·  Voltar: sair", 24, 42, 13,
+            Color.new(231, 242, 235))
       if @page == 0
         draw_local(b, data)
       else
@@ -57,42 +102,35 @@ module BlueRegionalCards
     end
 
     def draw_local(bitmap, data)
-      write(bitmap, data[:current_name], 18, 70, 22, Color.new(137, 204, 251))
-      write(bitmap, "#{data[:local]} insígnias/cristais locais · #{data[:global]} esmeraldas totais",
-            18, 103, 16)
-      write(bitmap, "Dificuldade: #{BlueStory::LABELS[data[:stage]]}  ·  " +
-            (data[:stage] == 3 ? "Nível oponente: 90%" : "Nível oponente: 70%"),
-            18, 131, 15, Color.new(175, 214, 238))
-      if data[:current] == "DECADES"
-        write(bitmap, "Cristais do Decades: #{data[:local]} (contagem nativa).", 18, 180)
-        write(bitmap, "Os cristais conquistados aqui também contam no total.", 18, 210, 15)
-      elsif data[:milestones].empty?
-        write(bitmap, "Essa região ainda não possui insígnias de ginásio.", 18, 184)
-      else
-        data[:milestones].each_with_index do |badge, i|
-          y = 171 + (i / 2) * 42
-          x = 18 + (i % 2) * (Graphics.width / 2)
-          achieved = data[:acquired].include?(badge)
-          bitmap.font.size = 15
-          bitmap.font.color = achieved ? Color.new(140, 235, 180) : Color.new(148, 163, 180)
-          bitmap.draw_text(x, y, Graphics.width / 2 - 25, 27,
-                           "#{achieved ? '✓' : '○'} #{badge.gsub('_', ' ')}")
-        end
-      end
+      name, id, money, pokedex, playtime = trainer_info
+      write(bitmap, "NOME", 27, 82, 15)
+      write(bitmap, name, 152, 82, 18)
+      write(bitmap, "DINHEIRO", 27, 113, 15)
+      write(bitmap, money, 152, 113, 18)
+      write(bitmap, "POKÉDEX", 27, 144, 15)
+      write(bitmap, pokedex, 152, 144, 18)
+      write(bitmap, "TEMPO", 27, 175, 15)
+      write(bitmap, playtime, 152, 175, 18)
+      write(bitmap, "ID: #{id}", 27, 206, 15)
+      draw_badges(bitmap, data)
+      write(bitmap, "#{data[:local]} insígnias · #{data[:global]} esmeraldas totais",
+            24, Graphics.height - 104, 15)
+      write(bitmap, "Dificuldade: #{BlueStory::LABELS[data[:stage]]}", 24,
+            Graphics.height - 22, 14)
     end
 
     def draw_global(bitmap, data)
       write(bitmap, "TOTAL: #{data[:global]} esmeraldas  ·  " +
-            "Dificuldade #{BlueStory::LABELS[data[:stage]]}", 18, 71, 19,
-            Color.new(139, 211, 250))
+            "Dificuldade #{BlueStory::LABELS[data[:stage]]}", 22, 78, 19,
+            Color.new(27, 105, 91))
       write(bitmap, "1 insígnia regional = 1 esmeralda global (sem duplicar).",
-            18, 103, 14, Color.new(171, 205, 234))
+            22, 108, 14, Color.new(55, 98, 88))
       data[:rows].each_with_index do |(key, name, count, limit), index|
         y = 137 + index * 22
         marker = key == data[:current] ? "●" : " "
         text = key == "DECADES" ? "#{count} cristais" : "#{count}/#{limit} insígnias"
-        write(bitmap, "#{marker} #{name}: #{text}", 20, y, 15,
-              key == data[:current] ? Color.new(151, 222, 255) : Color.new(231, 239, 249))
+        write(bitmap, "#{marker} #{name}: #{text}", 25, y, 15,
+              key == data[:current] ? Color.new(23, 121, 94) : Color.new(45, 75, 73))
       end
     end
 
@@ -123,8 +161,27 @@ module BlueRegionalCards
     Scene.new(page).run
   end
 
+  def self.kanto_active?
+    return false unless defined?($PokemonGlobal) && $PokemonGlobal
+    state = BlueRegions.snapshot
+    state && state["current"] == "KANTO" && !BlueBattleOptions.battle_area?
+  end
+
+  # Clicking the game's original Trainer Card must actually open the requested
+  # Kanto/Global pages. Extra pause entries alone were not sufficient.
+  module NativeCard
+    def pbStartScreen(*args)
+      return super unless BlueRegionalCards.kanto_active?
+      BlueRegionalCards.open(0)
+    end
+  end
+
   def self.install
     return if @installed
+    if defined?(PokemonTrainerCardScreen) &&
+       !PokemonTrainerCardScreen.ancestors.include?(NativeCard)
+      PokemonTrainerCardScreen.prepend(NativeCard)
+    end
     MenuHandlers.add(:pause_menu, :blue_regional_trainer_cards, {
       "name" => _INTL("Cartão do treinador · 2 páginas"),
       "order" => 50,
