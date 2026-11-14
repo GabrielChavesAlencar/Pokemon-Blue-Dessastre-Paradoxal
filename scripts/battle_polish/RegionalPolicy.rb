@@ -7,12 +7,29 @@ module BlueRegionalPolicy
     :DIVE=>"DIVE", :ROCKCLIMB=>"ROCK_CLIMB", :DEFOG=>"DEFOG"
   }.freeze
 
+  # HM identity follows the Kanto/FRLG story. Alternate IDs cover
+  # Essentials bases that name the item by its move rather than by number.
+  KANTO_HM_ITEMS = {
+    :CUT=>[:HM01, :HMCUT],
+    :FLY=>[:HM02, :HMFLY],
+    :SURF=>[:HM03, :HMSURF],
+    :STRENGTH=>[:HM04, :HMSTRENGTH],
+    :FLASH=>[:HM05, :HMFLASH],
+    :ROCKSMASH=>[:HM06, :HMROCKSMASH],
+    :WATERFALL=>[:HM07, :HMWATERFALL]
+  }.freeze
+
   def self.state
-    return nil unless defined?(BlueRegionTravel) && BlueRegionTravel.installed?
-    return nil unless $PokemonGlobal && BlueRegions.active?
+    # The separately built "Testar Kanto" has no blue-kanto-install.json:
+    # its Kanto pilot.json is the installation marker instead. Never allow
+    # that missing main-game marker to silently fall back to native HMs.
+    pilot = File.file?("Kanto pilot.json")
+    installed = defined?(BlueRegionTravel) && BlueRegionTravel.installed?
+    return nil unless $PokemonGlobal && (pilot || (installed && BlueRegions.active?))
     stored = $PokemonGlobal.blue_regions
     return nil unless stored.is_a?(Hash) && stored["version"] == 1
     return nil unless BlueRegions.known?(stored["current"])
+    return nil if pilot && stored["current"] != "KANTO"
     # A save that stayed in Decades should never be retroactively locked.
     if stored["current"] == "DECADES"
       history = stored["travel_history"]
@@ -26,16 +43,43 @@ module BlueRegionalPolicy
     BlueRegionTravel.restricted?(pkmn)
   end
 
-  def self.field_result(move)
-    current = state
-    return :native unless current && current["current"] != "DECADES"
-    action = FIELD_MOVES[move.to_s.upcase.to_sym]
-    return :native unless action
-    BlueRegions.field_access(current, current["current"], action, true)
+  # The regional badge/event is checked FIRST. For the isolated Kanto
+  # pilot, the tool is the actual HM item in the Bag, AND an able party
+  # member whose species can learn the move. No move slot is required.
+  def self.hm_owned?(move)
+    ids = KANTO_HM_ITEMS[move.to_s.upcase.to_sym]
+    return false unless ids && $bag && defined?(GameData::Item)
+    ids.any? { |item| GameData::Item.exists?(item) && $bag.has?(item) }
   end
 
-  def self.field_allowed?(move, showmsg = true)
-    outcome = field_result(move)
+  def self.eligible_pokemon?(pkmn, move)
+    return false unless pkmn && $player && $player.party.any? { |member| member.equal?(pkmn) }
+    return false if pkmn.egg? || pkmn.fainted?
+    pkmn.respond_to?(:compatible_with_move?) && pkmn.compatible_with_move?(move.to_s.upcase.to_sym)
+  end
+
+  def self.compatible_pokemon(move)
+    return nil unless $player
+    $player.party.find { |pkmn| eligible_pokemon?(pkmn, move) }
+  end
+
+  def self.field_result(move, selected = nil)
+    current = state
+    return :native unless current && current["current"] != "DECADES"
+    move_id = move.to_s.upcase.to_sym
+    action = FIELD_MOVES[move_id]
+    return :native unless action
+    # Do not change native/tool behavior of other regional pilots here.
+    return BlueRegions.field_access(current, current["current"], action, true) if current["current"] != "KANTO"
+    prerequisite = BlueRegions.field_access(current, "KANTO", action, false)
+    return prerequisite unless prerequisite == :tool
+    return :hm unless hm_owned?(move_id)
+    return :pokemon unless selected ? eligible_pokemon?(selected, move_id) : !!compatible_pokemon(move_id)
+    :allowed
+  end
+
+  def self.field_allowed?(move, showmsg = true, selected = nil)
+    outcome = field_result(move, selected)
     return true if outcome == :native || outcome == :allowed
     if showmsg
       region = state["current"]
@@ -43,12 +87,22 @@ module BlueRegionalPolicy
       explanation = case outcome
       when :badge then _INTL("A insígnia necessária ainda não foi obtida em {1}.", label)
       when :event then _INTL("Conclua primeiro a missão de campo de {1}.", label)
+      when :hm then _INTL("Você precisa obter o HM de {1} e mantê-lo na Bolsa.", move.to_s.upcase)
+      when :pokemon then _INTL("Você precisa de um Pokémon da equipe capaz de aprender {1}.", move.to_s.upcase)
       when :tool then _INTL("Falta a ferramenta ou habilidade para usar este movimento.")
       else _INTL("Este movimento de campo não está disponível em {1}.", label)
       end
       pbMessage(explanation)
     end
     false
+  end
+
+  # The native Essentials field script still searches for a Pokémon that
+  # knows the move. Only while processing an already-authorized Kanto HM
+  # interaction, let it find the compatible party member instead.
+  def self.kanto_field_context?(move)
+    @field_move == move.to_s.upcase.to_sym && field_result(move) == :allowed &&
+      state && state["current"] == "KANTO"
   end
 
   def self.with_field(move)
@@ -111,12 +165,22 @@ module BlueRegionalPolicy
   # v21.1: both party-screen HM commands and map interactions call these.
   module HiddenMoves
     def triggerCanUseMove(move, pkmn, showmsg)
-      return false unless BlueRegionalPolicy.field_allowed?(move, showmsg)
+      return false unless BlueRegionalPolicy.field_allowed?(move, showmsg, pkmn)
       BlueRegionalPolicy.with_field(move) { super }
     end
     def triggerUseMove(move, pkmn)
-      return false unless BlueRegionalPolicy.field_allowed?(move)
+      return false unless BlueRegionalPolicy.field_allowed?(move, true, pkmn)
       BlueRegionalPolicy.with_field(move) { super }
+    end
+  end
+
+  module PartyHMSelection
+    def get_pokemon_with_move(move)
+      if BlueRegionalPolicy.kanto_field_context?(move)
+        candidate = BlueRegionalPolicy.compatible_pokemon(move)
+        return candidate if candidate
+      end
+      super
     end
   end
 
@@ -135,6 +199,20 @@ module BlueRegionalPolicy
         return false unless BlueRegionalPolicy.field_allowed?(move)
         BlueRegionalPolicy.with_field(move) { super(*args, &block) }
       end
+    end
+  end
+
+  # Direct field-effect entry points must not bypass the permission
+  # check (for example a map event calling pbStartSurfing or a boulder event).
+  module DirectFieldEffects
+    def pbStartSurfing(*args, &block)
+      return false unless BlueRegionalPolicy.field_allowed?(:SURF)
+      BlueRegionalPolicy.with_field(:SURF) { super }
+    end
+
+    def pbPushThisBoulder(*args, &block)
+      return false unless BlueRegionalPolicy.field_allowed?(:STRENGTH)
+      BlueRegionalPolicy.with_field(:STRENGTH) { super }
     end
   end
 
@@ -202,6 +280,8 @@ module BlueRegionalPolicy
     HiddenMoveHandlers.singleton_class.prepend(HiddenMoves)
     Object.prepend(BadgeRequirement)
     Object.prepend(FieldInteractions)
+    Object.prepend(DirectFieldEffects)
+    Trainer.prepend(PartyHMSelection)
     Object.prepend(GiftGuard)
     PokemonStorage.prepend(StorageGuard)
     Battle::CatchAndStoreMixin.prepend(CaughtPokemon)
