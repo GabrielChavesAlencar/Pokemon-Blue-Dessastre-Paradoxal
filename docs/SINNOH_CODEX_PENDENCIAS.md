@@ -138,6 +138,24 @@ python -m unittest discover -s tests -p "test_sinnoh_barry*.py" -v
 
 **Progresso sem inflar gameplay:** barra interna Barry **4/6**, introdução **5/8**, geral **8/32**, técnica/jogável/QA **0/13**. I07 ainda **não** aprovada.
 
+### Novo: reconciliação do piloto Sinnoh e pré-verificação PBS de Barry
+
+**Já implementado diretamente na main; não duplicar:**
+
+- [audit_sinnoh_pilot_compat.py](../scripts/regions/audit_sinnoh_pilot_compat.py) e [testes](../tests/test_sinnoh_pilot_compat.py): detectam que o piloto antigo de Sinnoh associa seis mapas aos IDs **800–805**, dentro de **600–999** de Johto. Ele pode ser mantido numa cópia legada totalmente isolada; não mesclar os IDs nem reutilizar saves automaticamente. Também comparam o `SinnohPreview.rb` antigo (iniciais por diálogo) com `SinnohPilot.rb` novo (três Poké Bolas).
+- [preflight_sinnoh_barry_qa.py](../scripts/regions/preflight_sinnoh_barry_qa.py) e [testes](../tests/test_sinnoh_barry_qa.py): conferem **somente leitura** o executável, hashes dos dois fragmentos PBS na pasta QA privada, candidato a sprite, possível conflito físico de MapIDs 800–805 e ausência de marcador prematuro. Não compilam PBS, não liberam Barry nem alteram o game.
+- [SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md](SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md) contém o roteiro e os comandos completos.
+
+**Pendências exclusivamente locais/realmente nativas:**
+
+1. Apresentar auditoria dos MapIDs reais e reservas de mapas ainda não instalados (Kanto/Johto/Hoenn). Nunca inserir 800–805 no multi-regiões só por estarem livres na cópia do piloto antigo.
+2. Montar uma **cópia QA separada** com fonte autorizada. O PBS de Barry deve ser gerado, copiado somente para essa cópia e conferido com `preflight_sinnoh_barry_qa.py --game game --draft .blue-work/sinnoh-barry-pbs-v1 --qa .blue-work/sinnoh-qa`.
+3. No Game.exe da cópia, compilar PBS em três versões, conferir sprite e battle engine, testemunhar escala real normal 70%/Master 90%, salvar/carregar e comprovar não regressão.
+4. Substituir no **piloto novo** o fluxo Rowan por diálogo por três Poké Bolas físicas e eventos autorais, somente depois de posições e gráficos realmente auditados; não misturar plugins `BlueSinnohPreview` e `BlueSinnohPilot` sem migração explicitamente testada.
+5. Só depois de testes nativos completos, habilitar o marcador de Barry **exclusivamente no QA**. Não modificar saves nem a instalação principal.
+
+**Barra específica:** reconciliação/QA **3/6**, Barry **4/6**, introdução **5/8**, geral **8/32**, fases de aprovação **0/13**.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
