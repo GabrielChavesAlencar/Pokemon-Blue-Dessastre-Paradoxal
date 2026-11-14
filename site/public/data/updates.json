@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4a1c3a69d61b41e185edc0aaa9bb264fdab05806",
+      "date": "2026-11-14T17:31:11-03:00",
+      "title": "docs(hoenn): QA08 prepared 8/12 while native Game.exe acceptance stays 0/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "0347009836903080ad888bd618566f738e5def2c",
+      "date": "2026-11-14T17:31:06-03:00",
+      "title": "fix(kanto): reduzir escala do protagonista no overworld do piloto",
+      "category": "Correções"
+    },
+    {
       "sha": "224ca31822c974c4d959f83b3f2c7d0b37f5a80e",
       "date": "2026-11-14T17:30:47-03:00",
       "title": "feat(hoenn): TESTAR_HOENN QA08 isolated Victory Road/Wally inspection",
