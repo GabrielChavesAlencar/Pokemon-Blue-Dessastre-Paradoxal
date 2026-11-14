@@ -36,6 +36,14 @@ from hoenn_stage5 import (
     BRAWLY_PBS, BRAWLY_TEAM, MUSEUM_AQUA, NPCS_STAGE5,
     MUSEUM_FEE_GATE, SLATEPORT_NORTH_GATE, SIGNS_STAGE5, PICKUPS_STAGE5,
 )
+from hoenn_stage6 import (
+    SOURCE_MAPS_STAGE6, OFFSET_BORDERS_STAGE6, WARP_PAIRS_STAGE6,
+    CYCLE_TRANSFERS_STAGE6, LAND_ENCOUNTERS_STAGE6, TRAINERS_STAGE6,
+    WATTSON_PBS, WATTSON_TEAM, WALLY_PBS, WALLY_TEAM,
+    RIVAL_110_TEAMS, RIVAL_110_EVENT, RIVAL_110_TRIGGERS,
+    WALLY_EVENT, WATTSON_EVENT, GYM_GATES_STAGE6, GYM_SWITCHES_STAGE6,
+    NPCS_STAGE6, PICKUPS_STAGE6, SIGNS_STAGE6, MAUVILLE_FUTURE_GATES,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -116,6 +124,14 @@ def audit(root: Path = ROOT) -> dict:
     native_trainers["Brawly"] = (SOURCE_MAPS[31], tuple(BRAWLY_TEAM))
     for index, (_, _, _, team) in enumerate(MUSEUM_AQUA, 1):
         native_trainers[f"Recruta Aqua (Museu {index})"] = (SOURCE_MAPS[39], tuple(team))
+    native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
+                            for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE6})
+    native_trainers["Wattson"] = (SOURCE_MAPS[47], tuple(WATTSON_TEAM))
+    native_trainers["Wally"] = (SOURCE_MAPS[41], tuple(WALLY_TEAM))
+    for name in RIVAL_NAMES:
+        for chosen, (version, team) in RIVAL_110_TEAMS.items():
+            native_trainers[f"{name} (Rota 110/{chosen.title()})"] = (
+                SOURCE_MAPS[113], tuple(team))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
@@ -124,7 +140,8 @@ def audit(root: Path = ROOT) -> dict:
         errors.append(f"Published trainers differ from pilot: {sorted(set(names_published) ^ set(native_trainers))}")
     if len(native_trainers) != (len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) +
                                 len(TRAINERS_STAGE4) + len(TRAINERS_STAGE5) +
-                                len(MUSEUM_AQUA) + 4):
+                                len(TRAINERS_STAGE6) + len(MUSEUM_AQUA) +
+                                6 + 2 * len(RIVAL_110_TEAMS)):
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -135,15 +152,17 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        expect_leader = name in ("Roxanne", "Brawly")
-        expect_badge = ("STONE" if name == "Roxanne" else "KNUCKLE" if name == "Brawly" else None)
+        expect_leader = name in ("Roxanne", "Brawly", "Wattson")
+        expect_badge = ("STONE" if name == "Roxanne" else
+                        "KNUCKLE" if name == "Brawly" else
+                        "DYNAMO" if name == "Wattson" else None)
         if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
             errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
     all_edges = [tuple(pair) for pair in BORDERS]
     if any(a not in source_ids or b not in source_ids for a, _, b, _ in all_edges):
         errors.append("A border connection references an unknown source map")
-    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5)):
+    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6)):
         errors.append("An offset border references an unknown source map")
     if any(a[0] not in source_ids or b[0] not in source_ids
            for a, _, b, _ in WARP_PAIRS):
@@ -162,6 +181,9 @@ def audit(root: Path = ROOT) -> dict:
     for a, b in ((house, dewford), (dewford, slateport)):
         adjacency[a[0]].add(b[0])
         adjacency[b[0]].add(a[0])
+    for src, _ex, _ey, _sx, _sy, dst, _dx, _dy in CYCLE_TRANSFERS_STAGE6:
+        adjacency[src].add(dst)
+        adjacency[dst].add(src)
     seen = {START[0]}
     queue = deque(seen)
     while queue:
@@ -201,6 +223,18 @@ def audit(root: Path = ROOT) -> dict:
         + [(mid, x, y, "museum fee") for mid, x, y in MUSEUM_FEE_GATE]
         + [(mid, x, y, "Slateport north gate") for mid, x, y in SLATEPORT_NORTH_GATE]
         + [(39, 35, 7, "Aqua museum one"), (39, 37, 7, "Aqua museum two")]
+        + [(mid, x, y, f"trainer6:{name}") for mid, x, y, _, name, _, _, _ in TRAINERS_STAGE6]
+        + [(mid, x, y, f"npc6:{handler}") for mid, x, y, _, handler in NPCS_STAGE6]
+        + [(42, 9, 5, "Mauville nurse counter"), (43, 4, 5, "Mauville mart counter")]
+        + [(mid, x, y, f"sign6:{key}") for mid, x, y, key, _ in SIGNS_STAGE6]
+        + [(mid, x, y, f"item6:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE6]
+        + [(*RIVAL_110_EVENT, "Rival Route110"), (*WALLY_EVENT, "Wally Mauville"),
+           (*WATTSON_EVENT, "Wattson")]
+        + [(mid, x, y, "rival Route110 touch") for mid, x, y in RIVAL_110_TRIGGERS]
+        + [(mid, x, y, "Wattson gate") for mid, x, y, _, _ in GYM_GATES_STAGE6]
+        + [(mid, x, y, "Wattson switch") for mid, x, y in GYM_SWITCHES_STAGE6]
+        + [(src, x, y, "Cycling Road gate") for src, x, y, *_ in CYCLE_TRANSFERS_STAGE6]
+        + [(mid, x, y, "future route gate") for mid, x, y in MAUVILLE_FUTURE_GATES]
         + [(*ROXANNE_EVENT, "Roxanne"), (*TUNNEL_AQUA_EVENT, "Aqua"),
            (*TUNNEL_VERDANTURF_GATE, "blocked Verdanturf exit")]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
@@ -228,7 +262,12 @@ def audit(root: Path = ROOT) -> dict:
                 "sign_stage5", "knuckle_badge?", "brawly", "flash_hiker",
                 "steven_letter", "boat_to", "dewford_boat", "slateport_boat",
                 "shipyard", "museum_entry", "museum_aqua", "stern",
-                "slateport_north_gate", "soothe_bell", "soft_sand"}
+                "slateport_north_gate", "soothe_bell", "soft_sand",
+                "sign_stage6", "dynamo_badge?", "rival_110",
+                "rival_110_itemfinder", "wally_mauville", "wally_uncle_mauville",
+                "wattson", "wattson_tm", "rock_smash_teacher",
+                "rydel_bikes", "has_hoenn_bike?", "cycling_gate",
+                "wattson_gate", "wattson_switch", "mauville_future_gate"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -247,17 +286,16 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("Rival must choose counter-starter species")
 
 
-    # A passing static audit still does not approve gameplay in Game.exe.
     gaps = [
-        "Dewford, Slateport and Granite Cave scripts were authored without replacing original Blue battle engine.",
-        "Briney's scripted boat skips sea routes 105,107,108 and islands; Surf and water trainers are not imported.",
-        "Brawly KNUCKLE badge, trainer visuals and Bulk Up TM require Windows Game.exe proof.",
-        "Flash HM is awarded in Granite Cave but native darkness/Cut/Flash use still needs field QA.",
-        "Granite Cave B1F cracked-floor puzzle is not yet animated or implemented; ladders are mapped.",
-        "Steven LETTER/Steel Wing and Stern Devon package require save/reload and item identity tests.",
-        "Two museum Aqua battles are scripted with separate PBS and flags; confirm scene and colliders natively.",
-        "Slateport Route 110 is not installed; north exit remains blocked pending the next phase.",
-        "Original local music, crowds, full trainer roster, beach water and all NPCs need later audits.",
+        "Route 110, Mauville, cycling road and Wattson are in an isolated staging pilot, not installed in Game.exe.",
+        "Rival Route110 has six alternate PBS teams; game battle and event timing require native QA.",
+        "Wattson DYNAMO badge and Rock Smash field permission still require a real Blue/Decades test.",
+        "The original Wattson gym has sprite-sized gates; fallback art and 2-tile collision need visual QA.",
+        "Mach/Acro bikes use native item keys; riding controls, speed and stunt behavior need field tests.",
+        "Cycle gates are item-guarded and not unconditional map warps; avoid any route bypass.",
+        "Trick House, New Mauville, Routes 111/118 and the Mauville Game Corner minigames remain unimplemented.",
+        "Other Emerald NPCs, extra Route110 trainers, unique music and exact regional event art remain pending.",
+        "Passing these Python/Ruby contracts does not prove compiled maps or Windows/Android gameplay.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -282,6 +320,13 @@ def audit(root: Path = ROOT) -> dict:
         "stage5_pickup_events": len(PICKUPS_STAGE5),
         "stage5_cave_maps": len(CAVE_ENCOUNTERS_STAGE5),
         "stage5_scripted_only": True,
+        "stage6_source_maps": len(SOURCE_MAPS_STAGE6),
+        "stage6_trainer_presets": len(TRAINERS_STAGE6) + 2 + len(RIVAL_NAMES) * len(RIVAL_110_TEAMS),
+        "stage6_pickup_events": len(PICKUPS_STAGE6),
+        "stage6_cycling_gates": len(CYCLE_TRANSFERS_STAGE6),
+        "stage6_gym_switches": len(GYM_SWITCHES_STAGE6),
+        "stage6_gym_barriers": len(GYM_GATES_STAGE6),
+        "stage6_scripted_only": True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
