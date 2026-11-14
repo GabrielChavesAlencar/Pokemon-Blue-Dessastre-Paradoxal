@@ -558,6 +558,18 @@ def guarded_forest_transfer(warp):
     ]
 
 
+def mart_counter_approach():
+    """Walk toward the vendor without ghosting through shelves or walls."""
+    route = RubyObject("RPG::MoveRoute", {
+        "@repeat": False, "@skippable": True,
+        "@list": [
+            RubyObject("RPG::MoveCommand", {"@code": step, "@parameters": []})
+            for step in (4, 4, 16, 0)
+        ],
+    })
+    return command(209, -1, route, indent=1)
+
+
 def make_viridian_parcel_intro(events):
     """One-time autorun, anchored to the real shopkeeper, never a fake NPC."""
     clerk = events[find_shopkeeper(events)]
@@ -569,10 +581,9 @@ def make_viridian_parcel_intro(events):
     intro = new_event(intro, [
         *if_scene(b"BlueKantoPilot.parcel_pickup_pending?", [
             command(355, b"BlueKantoPilot.viridian_parcel_call", indent=1),
-            # The player briefly approaches the counter after being called.
-            # The move route is skippable to avoid locking an existing save
-            # if a different tileset blocks either of these two steps.
-            move_actor(-1, 4, 4, 16),
+            # A skippable two-step route respects Mart collisions and
+            # cannot strand the player inside a shelf or another NPC.
+            mart_counter_approach(),
             command(210, indent=1),
             command(355, b"BlueKantoPilot.receive_oak_parcel", indent=1),
         ]),
