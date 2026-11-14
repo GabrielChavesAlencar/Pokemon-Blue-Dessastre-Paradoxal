@@ -70,6 +70,7 @@ module BlueKantoPilot
               # runtime UI hook alone can be bypassed by other engine plugins.
               BlueKantoDex.access!($player.pokedex) if defined?(BlueKantoDex)
               $player.pokedex.refresh_accessible_dexes
+              BlueKantoDex.ensure_selector!($player.pokedex) if defined?(BlueKantoDex)
             end
             progress["pilot_oak_parcel_delivered"] = true
             BlueMusic.kanto_me_play("obtained_item")
@@ -1122,20 +1123,36 @@ module BlueKantoDex
     end
   end
 
+  # Some versions of Blue override refresh_accessible_dexes and keep only
+  # the current region, even when the native Settings flag is disabled. Add
+  # the two genuinely unlocked/seen native lists after that refresh completes.
+  def self.ensure_selector!(dex)
+    index = self.index
+    return unless index && dex && $player && $player.has_pokedex
+    return unless dex.unlocked?(index) && dex.unlocked?(-1)
+    return unless dex.seen_any?(index) && dex.seen_any?(-1)
+    accessible = dex.instance_variable_get(:@accessible_dexes)
+    return unless accessible.is_a?(Array)
+    accessible << index unless accessible.include?(index)
+    accessible << -1 unless accessible.include?(-1)
+    accessible.sort_by! { |i| i == -1 ? 1_000_000 : i }
+  end
+
   module PokedexAccess
     def refresh_accessible_dexes
       BlueKantoDex.access!(self)
+      result = super
+      BlueKantoDex.ensure_selector!(self)
       @blue_kanto_dex_ready = true if BlueKantoDex.index && $player && $player.has_pokedex
-      super
+      result
     end
 
-    # The native pause menu checks accessible_dexes *before* opening the Dex
-    # selector. On a save created before KantoDex existed, migrate here first
-    # so the menu actually offers both KantoDex and National.
+    # The pause menu queries the array before opening any regional selector.
+    # Support both new and existing pilot saves at that exact point.
     def accessible_dexes
-      if BlueKantoDex.index && $player && $player.has_pokedex &&
-         !@blue_kanto_dex_ready
-        refresh_accessible_dexes
+      if BlueKantoDex.index && $player && $player.has_pokedex
+        BlueKantoDex.access!(self)
+        BlueKantoDex.ensure_selector!(self)
       end
       super
     end
