@@ -12,8 +12,8 @@
 ```
 
 - **Concluídas:** 8 entregas de preparação verificáveis no repositório.
-- **Parciais:** 5 (não contam como concluídas até atingirem o próprio critério).
-- **Pendentes:** 19.
+- **Parciais:** 7 (não contam como concluídas até atingirem o próprio critério).
+- **Pendentes:** 17.
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
 - **Restam 24 para a barra de desenvolvimento** (inclui parciais).
 
@@ -32,6 +32,16 @@ As **três subetapas restantes** exigem baseline/reservas de todas as regiões, 
 O conversor [convert_sinnoh_geometry.py](../scripts/regions/convert_sinnoh_geometry.py) e seus [6 testes com mapas sintéticos](../tests/test_sinnoh_geometry_converter.py) já produzem prévias de terreno, tilesets e cópias dos índices de mapa **sem eventos/scripts, encontros ou músicas do jogo doador**, com dry-run e stage opcional em `.blue-work`. Consulte [Fase 01 — prévia de geometria](SINNOH_FASE_01_PREVIA_GEOMETRIA.md).
 
 **Limite:** nenhum ZIP real de Sinnoh foi convertido e ainda não existem portais, NPCs, saves ou mapas jogáveis novos. Por isso **R08 segue incompleto**, S07 segue **6/9**, a Barra A permanece **8/32 (25%)** e as barras técnicas/jogáveis continuam **0/13**.
+
+## Fase 03 — introdução de Twinleaf (preparação parcial)
+
+```text
+███████████████░░░░░░░░░  5/8 (63% das subetapas de preparação)
+```
+
+Os handlers Ruby [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb), a [template dos eventos](../data/regions/sinnoh-twinleaf-events.json) e o [compilador de overlays autorais](../scripts/regions/build_sinnoh_twinleaf_events.py) foram criados. A história prevista cobre 9 mapas, **5 eventos de história**, **3 Poké Bolas físicas** e **16 warps**, com estado exclusivamente de Sinnoh, seleção sem duplicidade e Barry bloqueado até o PBS isolado estar validado. Testes: [Python](../tests/test_sinnoh_twinleaf_events.py) e [Ruby](../tests/sinnoh_pilot_runtime.rb).
+
+**Faltam 3 subetapas:** auditar os nove mapas e sprites reais com coordenadas e spawn, validar as três equipes PBS de Barry, e integrar/testar o piloto no Game.exe e Android. Todos os mapas e posições da template permanecem `null`/`false`. Portanto **S13 e S14 são parciais**, não entregas jogáveis. Veja o [MD detalhado da Fase 03](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md) e o [inventário de 8 subetapas](../data/regions/sinnoh-progress.json).
 
 ## Barra B — fases tecnicamente aprovadas
 
@@ -64,7 +74,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 | 00 | Auditoria de fontes, direitos e baseline | Ferramentas criadas; fonte local pendente | Não |
 | 01 | Importador e remapeamento de mapas | Prévia segura de geometria codificada; fonte real, eventos e instalação pendentes | Não |
 | 02 | Piloto de Sinnoh no menu | Botão no código; faltam piloto e mapas reais | Não |
-| 03 | Twinleaf, Rowan, Barry, Sandgem | Inventário simbólico | Não |
+| 03 | Twinleaf, Rowan, Barry, Sandgem | Handlers próprios + 3 bolas + compilador de eventos prontos; mapas e PBS reais pendentes | Não |
 | 04 | Jubilife, Oreburgh e Roark | Inventário simbólico | Não |
 | 05 | Floaroma, Eterna e Gardenia | Inventário simbólico | Não |
 | 06 | Hearthome, Veilstone e Pastoria | Inventário simbólico | Não |
@@ -90,12 +100,14 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Parcial | S07 | Dry-run, staging, rollback e proposta segura de remapeamento (6/9 subetapas) | [transação](../scripts/regions/sinnoh_staging_transaction.py), [remapeamento](../scripts/regions/plan_sinnoh_remap.py), [testes](../tests/test_sinnoh_remap.py) |
 | Parcial | S08 | Integridade de recursos gráficos e mapas | [auditoria RXDATA](../scripts/regions/audit_sinnoh_rxdata.py) |
 | Concluído | S09 | Botão Testar Sinnoh sem quebrar saves | [menu](../scripts/battle_polish/TitleKanto.rb) |
+| Parcial | S13 | Estrutura autoral de Rowan, Barry e Pokédex | [Ruby](../scripts/regions/SinnohPilot.rb), [MD](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md) |
+| Parcial | S14 | Três iniciais em Poké Bolas físicas, com save isolado | [template](../data/regions/sinnoh-twinleaf-events.json), [compilador](../scripts/regions/build_sinnoh_twinleaf_events.py) |
 | Parcial | S24 | Catálogo musical planejado | [estudo](SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md) |
 | Parcial | S30 | Testes automatizados (escopo parcial) | [testes de grafo](../tests/test_sinnoh_graph.py) |
 | Parcial | S31 | Plano de aceitação Windows/JoiPlay | [plano](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) |
 | Concluído | S32 | Fila de pendências Codex | [backlog](SINNOH_CODEX_PENDENCIAS.md) |
 
-**As demais entregas de S10–S29 não listadas acima seguem pendentes**; veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.
+**As demais entregas de S10–S29 não listadas acima seguem pendentes** (exceto S13 e S14, agora parciais); veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.
 
 ## O que foi feito nesta etapa
 
