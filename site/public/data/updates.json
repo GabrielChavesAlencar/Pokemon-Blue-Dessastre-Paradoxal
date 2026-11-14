@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "51c727e1a4c33d2c2fc0e8a165a81c6eb4612b21",
+      "date": "2026-11-14T13:25:17-03:00",
+      "title": "feat(hoenn): auditar Stage8 Norman, Surf, Fortree, Weather Institute e Lilycove",
+      "category": "Novidades"
+    },
+    {
       "sha": "119c493f7386df9436874c631cf6fdd46001225d",
       "date": "2026-11-14T13:04:05-03:00",
       "title": "docs(hoenn): detalhar os dois bloqueios Magma e 18 pickups auditados",
