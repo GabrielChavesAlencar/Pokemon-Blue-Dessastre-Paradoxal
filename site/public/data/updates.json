@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7f00bb2755463363488fbb7e3fdf6189c9a21687",
+      "date": "2026-11-13T20:59:53-03:00",
+      "title": "test(sinnoh): verify terrain-only conversion excludes donor scripts/audio and stages without touching Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "a2b82b4697825a3e40daa05baf75e782a16aec00",
       "date": "2026-11-13T20:58:58-03:00",
       "title": "feat(sinnoh): create geometry-only RMXP preview converter with native baseline and hashed isolated staging",
