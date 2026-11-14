@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "728a88f5fc077c80dd74009e42c2189633c9b9c9",
+      "date": "2026-11-14T10:35:50-03:00",
+      "title": "fix(hoenn): validar borders com offsets reais de Petalburg/Route 104",
+      "category": "Correções"
+    },
+    {
       "sha": "40fa5d4cf25167532075fa9d5a94b519b598d822",
       "date": "2026-11-14T10:35:25-03:00",
       "title": "feat(hoenn): incluir nove mapas auditados, habitats 104/Woods e conexões da etapa 3",
