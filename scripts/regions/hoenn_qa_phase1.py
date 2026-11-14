@@ -198,6 +198,7 @@ def verify_copy(output: Path, game: Path) -> dict:
         "hoenn-qa-fase09": "Hoenn QA Fase09",
         "hoenn-qa-fase10": "Hoenn QA Fase10",
         "hoenn-qa-fase11": "Hoenn QA Fase11",
+        "hoenn-qa-fase12": "Hoenn QA Fase12",
     }
     expected_profile = expected_profiles.get(output.name, PROFILE)
     if (report.get("kind") != "ISOLATED_HOENN_TEST" or
