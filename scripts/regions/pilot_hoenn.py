@@ -423,6 +423,100 @@ def add_stage3_events(maps, game):
 
 
 
+
+def select_native_character(game: Path, candidates: tuple[str, ...], *, role: str) -> tuple[str, bool]:
+    """Select a real, existing *Blue* character graphic; mark fallbacks."""
+    for index, candidate in enumerate(candidates):
+        path = game / f"Graphics/Characters/{candidate}.png"
+        if path.is_file() and not path.is_symlink() and regular(path).read_bytes().startswith(PNG):
+            return candidate, index > 0
+    raise ValueError(f"Sem sprite nativo seguro para {role}: {', '.join(candidates)}")
+
+
+def add_stage4_events(maps, game):
+    """Rustboro/Rusturf events authored on cleared maps only, with original
+    Emerald source positions. All event assets are from the LOCAL Blue copy.
+    """
+    native_npcs = 0
+    for mid, x, y, sprite, handler in NPCS_STAGE4:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite do NPC da Etapa 4 inválido: {sprite}")
+        append_event(maps[mid], f"HN4_NPC_{mid}_{x}_{y}", x, y,
+                     event_page(script=handler, sprite=sprite))
+        native_npcs += 1
+        if mid in (22, 23):
+            counter_x, counter_y = (9, 5) if mid == 22 else (4, 5)
+            page = event_page(script=handler)
+            page.attrs["@trigger"] = 0
+            append_event(maps[mid], f"HN4_Counter_{mid}", counter_x, counter_y, page)
+    for mid, x, y, key, _message in SIGNS_STAGE4:
+        append_event(maps[mid], f"HN4_Sign_{key}", x, y,
+                     event_page(script=f"BlueHoennPilot.sign_stage4(:{key})"))
+    for mid, x, y, key, item, visible in PICKUPS_STAGE4:
+        page = event_page(script="nil", sprite="Object_Ball" if visible else "")
+        event_id = append_event(maps[mid], f"HN4_Item_{key}", x, y, page)
+        page.attrs["@list"][0] = command(355, f'BlueHoennPilot.pickup(:{item}, "{key}", {event_id})'.encode("ascii"))
+        consumed = event_page(script="nil")
+        consumed.attrs["@condition"].attrs["@self_switch_valid"] = True
+        consumed.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        consumed.attrs["@through"] = True
+        consumed.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(consumed)
+
+    leader_sprite, leader_placeholder = select_native_character(
+        game, ("NPC_ORAS_Roxanne", "NPC_RSE_Roxanne", "trainer_LEADER_Roxanne",
+               "trainer_LASS"), role="Roxanne")
+    aqua_sprite, aqua_placeholder = select_native_character(
+        game, ("NPC_RSE_AquaGrunt", "NPC_ORAS_AquaGrunt", "trainer_YOUNGSTER"),
+        role="recruta Aqua no Rusturf")
+    cut_sprite, cut_placeholder = select_native_character(
+        game, ("Object_CutTree", "Object_Cut_Tree", "Object_CuttableTree",
+               "Object_Cuttable_Tree", "Object_Tree", "Object_Ball"),
+        role="árvore cortável Route 116")
+
+    gx, gy = ROXANNE_EVENT[1:]
+    append_event(maps[27], "HN4_Leader_Roxanne", gx, gy,
+                 event_page(script="BlueHoennPilot.roxanne", sprite=leader_sprite))
+    mid, x, y = TUNNEL_AQUA_EVENT
+    append_event(maps[mid], "HN4_AquaRusturf", x, y,
+                 event_page(script="BlueHoennPilot.rusturf_aqua", sprite=aqua_sprite))
+    for mid, x, y in RUSTBORO_THEFT_TRIGGERS:
+        page = event_page(script="BlueHoennPilot.rustboro_theft", touch=True)
+        page.attrs["@through"] = True
+        append_event(maps[mid], f"HN4_Theft_{x}_{y}", x, y, page)
+    mid, x, y = TUNNEL_VERDANTURF_GATE
+    append_event(maps[mid], "HN4_VerdanturfGate", x, y,
+                 event_page(script="BlueHoennPilot.rusturf_east_gate", touch=True))
+    for mid, x, y in CUT_TREES_STAGE4:
+        page = event_page(script="nil", sprite=cut_sprite)
+        event_id = append_event(maps[mid], f"HN4_CutTree_{x}_{y}", x, y, page)
+        page.attrs["@through"] = False
+        page.attrs["@list"][0] = command(355, f"BlueHoennPilot.cut_tree({event_id})".encode("ascii"))
+        cleared = event_page(script="nil")
+        cleared.attrs["@condition"].attrs["@self_switch_valid"] = True
+        cleared.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        cleared.attrs["@through"] = True
+        cleared.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(cleared)
+    for mid, x, y, kind, name, sprite, team, _double in TRAINERS_STAGE4:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite nativo de treinador Rustboro inválido: {sprite}")
+        script = f'BlueHoennPilot.battle_stage3(:{kind}, "{name}", {mid})'
+        append_event(maps[mid], f"HN4_Trainer_{mid}_{x}_{y}", x, y,
+                     event_page(script=script, sprite=sprite))
+    return {
+        "new_maps": len(SOURCE_MAPS_STAGE4), "npcs": native_npcs,
+        "trainer_battles": len(TRAINERS_STAGE4) + 2,
+        "pickups": len(PICKUPS_STAGE4), "signs": len(SIGNS_STAGE4),
+        "cut_trees": len(CUT_TREES_STAGE4),
+        "roxanne_sprite": leader_sprite, "roxanne_sprite_placeholder": leader_placeholder,
+        "rusturf_aqua_sprite": aqua_sprite, "rusturf_aqua_sprite_placeholder": aqua_placeholder,
+        "cut_tree_sprite": cut_sprite, "cut_tree_sprite_placeholder": cut_placeholder,
+        "gameplay_verified": False,
+    }
+
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
@@ -563,6 +657,7 @@ def build_overlay(game, source):
 
     add_opening(maps, balls, rival, rival_image)
     stage3_counts = add_stage3_events(maps, game)
+    stage4_counts = add_stage4_events(maps, game)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
