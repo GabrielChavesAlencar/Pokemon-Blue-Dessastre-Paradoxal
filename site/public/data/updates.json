@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c5710c31d0fdd0c5bc607eb9a6e2adeeefabfa4",
+      "date": "2026-11-13T21:35:04-03:00",
+      "title": "test(sinnoh): prove Barry PBS publisher cannot write through workspace symlink into game/",
+      "category": "Testes"
+    },
+    {
       "sha": "f4b7a147fa5c5985bb890c94e8dc126d92b33bc7",
       "date": "2026-11-13T21:34:50-03:00",
       "title": "fix(sinnoh): reject symlink ancestry when verifying private Barry PBS drafts",
