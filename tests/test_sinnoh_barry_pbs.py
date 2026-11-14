@@ -193,6 +193,18 @@ class SinnohBarryPBSTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "NOVA"):
             publish(self.game, self.game / "PBS/evil", root=self.root)
 
+    def test_rejects_symlink_escape_from_private_workspace(self):
+        work = self.root / ".blue-work"
+        work.mkdir()
+        redirect = work / "redirect"
+        try:
+            redirect.symlink_to(self.game, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("Symlink creation unavailable")
+        with self.assertRaisesRegex(ValueError, "pasta NOVA"):
+            publish(self.game, redirect / "trainer-pbs", root=self.root)
+        self.assertFalse((self.game / "trainer-pbs").exists())
+
     def test_output_does_not_contain_unverified_levels_as_gameplay_claim(self):
         report, _ = build(self.game, root=self.root)
         self.assertEqual(report["pbs_seed_level"], SEED_LEVEL)
