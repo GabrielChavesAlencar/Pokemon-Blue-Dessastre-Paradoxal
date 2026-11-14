@@ -33,10 +33,10 @@ class HoennStage3Tests(unittest.TestCase):
 
     def test_map_ids_and_connections_match_emerald_scope(self):
         self.assertEqual(set(SOURCE_MAPS_STAGE3), {16, 17, 18, 19, 20, 104, 105, 106, 156})
-        self.assertEqual(len(SOURCE_MAPS), 18)
+        self.assertEqual(len(SOURCE_MAPS), 28)
         self.assertEqual(len(OFFSET_BORDERS), 2)
         self.assertEqual(len(WARP_PAIRS_STAGE3), 11)
-        self.assertEqual(len(WARP_PAIRS), 16)
+        self.assertEqual(len(WARP_PAIRS), 32)
         for a, _, b, _ in WARP_PAIRS_STAGE3:
             self.assertIn(a[0], SOURCE_MAPS)
             self.assertIn(b[0], SOURCE_MAPS)
@@ -95,6 +95,10 @@ class HoennStage3Tests(unittest.TestCase):
             19: (60, 20), 20: (80, 60), 101: (20, 20),
             102: (50, 20), 103: (80, 20), 104: (150, 80),
             105: (20, 20), 106: (20, 20), 156: (58, 46),
+            21: (40, 60), 22: (20, 20), 23: (20, 20),
+            24: (80, 80), 25: (20, 20), 26: (80, 20),
+            27: (20, 40), 130: (100, 20), 131: (20, 20),
+            157: (45, 33),
         }
         maps = {mid: ruby("RPG::Map", width=wh[0], height=wh[1])
                 for mid, wh in dimensions.items()}
