@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Dados-base do piloto isolado de Hoenn até Petalburg Woods. Mapas/eventos nativos ainda exigem teste real no Game.exe; os níveis originais não são fixos no Blue.",
+  "note": "Catálogo experimental de Hoenn até Rusturf/Rota 116. Os níveis são apenas dados-base do Emerald: no jogo Blue devem ser calculados dinamicamente. Os eventos e a Stone Badge dependem de teste real no Game.exe; não usar estes números como níveis fixos.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -237,6 +237,94 @@
             5,
             6,
             5
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Rustboro City",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Rustboro",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Rustboro",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Rustboro",
+      "encounters": {}
+    },
+    {
+      "name": "Escola de Treinadores de Rustboro",
+      "encounters": {}
+    },
+    {
+      "name": "Devon Corporation",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Rustboro",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 116",
+      "encounters": {
+        "Grama": [
+          [
+            "NINCADA",
+            6,
+            7,
+            20
+          ],
+          [
+            "TAILLOW",
+            6,
+            8,
+            20
+          ],
+          [
+            "WHISMUR",
+            6,
+            6,
+            20
+          ],
+          [
+            "POOCHYENA",
+            6,
+            8,
+            28
+          ],
+          [
+            "ABRA",
+            7,
+            7,
+            10
+          ],
+          [
+            "SKITTY",
+            7,
+            8,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Casa dos Escavadores",
+      "encounters": {}
+    },
+    {
+      "name": "Rusturf Tunnel",
+      "encounters": {
+        "Caverna": [
+          [
+            "WHISMUR",
+            5,
+            8,
+            100
           ]
         ]
       }
@@ -528,8 +616,325 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Josh",
+      "area": "Ginásio de Rustboro",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              10
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tommy",
+      "area": "Ginásio de Rustboro",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              8
+            ],
+            [
+              "GEODUDE",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Marc",
+      "area": "Ginásio de Rustboro",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              8
+            ],
+            [
+              "GEODUDE",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Joey",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "MACHOP",
+              9
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jose",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "WURMPLE",
+              8
+            ],
+            [
+              "NINCADA",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Karen",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "SHROOMISH",
+              9
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Janice",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "MARILL",
+              9
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jerry",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "RALTS",
+              9
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Dawson",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              8
+            ],
+            [
+              "POOCHYENA",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Sarah",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "LOTAD",
+              8
+            ],
+            [
+              "ZIGZAGOON",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Johnson",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "SHROOMISH",
+              8
+            ],
+            [
+              "LOTAD",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Clark",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Devan",
+      "area": "Rota 116",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              8
+            ],
+            [
+              "GEODUDE",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Mike",
+      "area": "Rusturf Tunnel",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              16
+            ],
+            [
+              "GEODUDE",
+              16
+            ],
+            [
+              "MACHOP",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Roxanne",
+      "area": "Ginásio de Rustboro",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "GEODUDE",
+              12
+            ],
+            [
+              "GEODUDE",
+              12
+            ],
+            [
+              "NOSEPASS",
+              15
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "STONE"
+    },
+    {
+      "name": "Recruta Aqua (Rusturf)",
+      "area": "Rusturf Tunnel",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis escalonados pelo Blue)",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              11
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
   ],
   "native_gameplay_verified": false,
-  "stage3_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
+  "stage3_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
+  "stage4_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
