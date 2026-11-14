@@ -48,7 +48,7 @@ class HoennPilotContractTests(unittest.TestCase):
         self.assertEqual(report["stage6_gym_barriers"], 7)
         self.assertEqual(report["stage7_source_maps"], 27)
         self.assertEqual(report["stage7_trainer_presets"], 28)
-        self.assertEqual(report["stage7_pickup_events"], 12)
+        self.assertEqual(report["stage7_pickup_events"], 18)
         self.assertEqual(report["stage7_cave_maps"], 3)
         self.assertEqual(report["stage7_cable_stops"], 2)
         self.assertEqual(report["stage7_steam_vent_pairs"], 11)
