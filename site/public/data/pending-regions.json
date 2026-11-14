@@ -4,7 +4,7 @@
   "title": "Pendências de conteúdo regional: áreas, treinadores, ginásios e Liga",
   "updated": "2026-11-13",
   "label": "Ainda não adicionado",
-  "meaning": "Ainda não confirmado como instalado, compilado e funcional no jogo real. Algumas entradas podem já existir como dados ou prévias; revalidar antes de instalar.",
+  "meaning": "A tag “Ainda não adicionado” identifica conteúdo planejado sem integração funcional confirmada. A tag “Em validação” indica conteúdo já presente no piloto ou código experimental, mas ainda sem aceite nativo. Não use a lista como prova de ausência no jogo.",
   "regions": {
     "KANTO": {
       "game": "FireRed/LeafGreen",
@@ -238,54 +238,6 @@
           "catalog_id": "kanto-victory-road-hub"
         },
         {
-          "id": "route1",
-          "name": "Route 1",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route2",
-          "name": "Route 2",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route3",
-          "name": "Route 3",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route4",
-          "name": "Route 4",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route5",
-          "name": "Route 5",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route6",
-          "name": "Route 6",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
           "id": "route8",
           "name": "Route 8",
           "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
@@ -384,22 +336,6 @@
         {
           "id": "route21",
           "name": "Route 21",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route22",
-          "name": "Route 22",
-          "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
-          "scope": "individual_or_map",
-          "status": "not_added",
-          "origin": "detonado-regional"
-        },
-        {
-          "id": "route23",
-          "name": "Route 23",
           "notes": "Guia FRLG; área/recompensa sujeita a inspeção real de mapas, eventos e PBS.",
           "scope": "individual_or_map",
           "status": "not_added",
@@ -745,9 +681,9 @@
         {
           "id": "brock",
           "name": "Brock",
-          "notes": "Ginásio de Pewter · Boulder Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Pewter · Boulder Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Pewter",
           "badge": "Boulder",
@@ -756,9 +692,9 @@
         {
           "id": "misty",
           "name": "Misty",
-          "notes": "Ginásio de Cerulean · Cascade Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Cerulean · Cascade Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Cerulean",
           "badge": "Cascade",
@@ -767,9 +703,9 @@
         {
           "id": "ltsurge",
           "name": "Lt. Surge",
-          "notes": "Ginásio de Vermilion · Thunder Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Vermilion · Thunder Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Vermilion",
           "badge": "Thunder",
@@ -778,9 +714,9 @@
         {
           "id": "erika",
           "name": "Erika",
-          "notes": "Ginásio de Celadon · Rainbow Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Celadon · Rainbow Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Celadon",
           "badge": "Rainbow",
@@ -789,9 +725,9 @@
         {
           "id": "koga",
           "name": "Koga",
-          "notes": "Ginásio de Fuchsia · Soul Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Fuchsia · Soul Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Fuchsia",
           "badge": "Soul",
@@ -800,9 +736,9 @@
         {
           "id": "sabrina",
           "name": "Sabrina",
-          "notes": "Ginásio de Saffron · Marsh Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Saffron · Marsh Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Saffron",
           "badge": "Marsh",
@@ -811,9 +747,9 @@
         {
           "id": "blaine",
           "name": "Blaine",
-          "notes": "Ginásio de Cinnabar · Volcano Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Cinnabar · Volcano Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Cinnabar",
           "badge": "Volcano",
@@ -822,9 +758,9 @@
         {
           "id": "giovanni",
           "name": "Giovanni",
-          "notes": "Ginásio de Viridian · Earth Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Ginásio de Viridian · Earth Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Viridian",
           "badge": "Earth",
@@ -835,36 +771,36 @@
         {
           "id": "lorelei",
           "name": "Lorelei",
-          "notes": "Elite Four de KANTO · batalha 1/4; PBS/arena/flags ainda não certificados.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Elite Four de KANTO · batalha 1/4; PBS/arena/flags ainda não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-elite",
           "order": 1
         },
         {
           "id": "bruno",
           "name": "Bruno",
-          "notes": "Elite Four de KANTO · batalha 2/4; PBS/arena/flags ainda não certificados.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Elite Four de KANTO · batalha 2/4; PBS/arena/flags ainda não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-elite",
           "order": 2
         },
         {
           "id": "agatha",
           "name": "Agatha",
-          "notes": "Elite Four de KANTO · batalha 3/4; PBS/arena/flags ainda não certificados.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Elite Four de KANTO · batalha 3/4; PBS/arena/flags ainda não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-elite",
           "order": 3
         },
         {
           "id": "lance",
           "name": "Lance",
-          "notes": "Elite Four de KANTO · batalha 4/4; PBS/arena/flags ainda não certificados.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Elite Four de KANTO · batalha 4/4; PBS/arena/flags ainda não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-elite",
           "order": 4
         }
@@ -873,9 +809,9 @@
         {
           "id": "blue",
           "name": "Blue",
-          "notes": "Campeão da Liga de KANTO; vitória, Hall of Fame e desbloqueio regional exigem QA.",
+          "notes": "Existe implementação experimental nos scripts de Kanto. Confirmar no Game.exe/JoiPlay, save e batalha antes de marcar como aprovado; não duplicar handlers/PBS. Campeão da Liga de KANTO; vitória, Hall of Fame e desbloqueio regional exigem QA.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-champion"
         }
       ]
@@ -889,9 +825,9 @@
         {
           "id": "cherrygrovecity",
           "name": "Cherrygrove City",
-          "notes": "Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
+          "notes": "Já aparece no piloto de Johto; validar nativamente antes de marcá-lo como jogável. Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "johto-preview",
           "phase": 5,
           "source_manifest": "data/regions/johto-phase05.json"
@@ -899,9 +835,9 @@
         {
           "id": "newbarktown",
           "name": "New Bark Town",
-          "notes": "Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
+          "notes": "Já aparece no piloto de Johto; validar nativamente antes de marcá-lo como jogável. Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "johto-preview",
           "phase": 5,
           "source_manifest": "data/regions/johto-phase05.json"
@@ -909,9 +845,9 @@
         {
           "id": "route29",
           "name": "Route 29",
-          "notes": "Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
+          "notes": "Já aparece no piloto de Johto; validar nativamente antes de marcá-lo como jogável. Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "johto-preview",
           "phase": 5,
           "source_manifest": "data/regions/johto-phase05.json"
@@ -919,9 +855,9 @@
         {
           "id": "route30",
           "name": "Route 30",
-          "notes": "Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
+          "notes": "Já aparece no piloto de Johto; validar nativamente antes de marcá-lo como jogável. Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "johto-preview",
           "phase": 5,
           "source_manifest": "data/regions/johto-phase05.json"
@@ -929,9 +865,9 @@
         {
           "id": "route31",
           "name": "Route 31",
-          "notes": "Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
+          "notes": "Já aparece no piloto de Johto; validar nativamente antes de marcá-lo como jogável. Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "johto-preview",
           "phase": 5,
           "source_manifest": "data/regions/johto-phase05.json"
@@ -949,9 +885,9 @@
         {
           "id": "violetcity",
           "name": "Violet City",
-          "notes": "Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
+          "notes": "Já aparece no piloto de Johto; validar nativamente antes de marcá-lo como jogável. Etapa 5/16 · mapa simbólico; instalação e warps nativos não certificados.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "johto-preview",
           "phase": 5,
           "source_manifest": "data/regions/johto-phase05.json"
@@ -2846,9 +2782,9 @@
         {
           "id": "falkner",
           "name": "Falkner",
-          "notes": "Ginásio de Violet · Zephyr Badge · equipe e evento precisam de prova em jogo.",
+          "notes": "O líder já está listado no catálogo do piloto; equipe/evento requer teste nativo. Ginásio de Violet · Zephyr Badge · equipe e evento precisam de prova em jogo.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-leaders",
           "city": "Violet",
           "badge": "Zephyr",
@@ -2990,25 +2926,25 @@
         {
           "id": "route101",
           "name": "Route 101",
-          "notes": "Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
+          "notes": "Já aparece no piloto de Hoenn; validar nativamente antes de marcá-lo como jogável. Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-regional"
         },
         {
           "id": "route102",
           "name": "Route 102",
-          "notes": "Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
+          "notes": "Já aparece no piloto de Hoenn; validar nativamente antes de marcá-lo como jogável. Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-regional"
         },
         {
           "id": "route103",
           "name": "Route 103",
-          "notes": "Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
+          "notes": "Já aparece no piloto de Hoenn; validar nativamente antes de marcá-lo como jogável. Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-regional"
         },
         {
@@ -3262,17 +3198,17 @@
         {
           "id": "littleroottown",
           "name": "Littleroot Town",
-          "notes": "Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
+          "notes": "Já aparece no piloto de Hoenn; validar nativamente antes de marcá-lo como jogável. Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-regional"
         },
         {
           "id": "oldaletown",
           "name": "Oldale Town",
-          "notes": "Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
+          "notes": "Já aparece no piloto de Hoenn; validar nativamente antes de marcá-lo como jogável. Emerald; apenas regiões e funções referenciadas, não converter nomes de NPCs em equipes sem PBS.",
           "scope": "individual_or_map",
-          "status": "not_added",
+          "status": "native_qa_pending",
           "origin": "detonado-regional"
         },
         {
