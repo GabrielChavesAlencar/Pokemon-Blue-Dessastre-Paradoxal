@@ -35,6 +35,8 @@ PILOT_INPUTS = (
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/stage.py",
     "scripts/regions/pbs.py",
+    "scripts/regions/kanto_full_power.py",
+    "data/kanto-full-power.json",
     "scripts/regions/export_kanto.py",
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
