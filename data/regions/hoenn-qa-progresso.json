@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 11,
-    "implementation_preparation_count": 11,
+    "current_phase": 12,
+    "implementation_preparation_count": 12,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -100,8 +100,8 @@
       {
         "phase": 12,
         "name": "Campanha inteira Windows e Android/JoiPlay",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "integrated_11_prior_audits_real_source_map_integrity_native_windows_android_checklist_and_blocker_register_prepared",
+        "native_acceptance": "pending_real_full_game_exe_and_android_joiplay_end_to_end_with_save_reload_and_cross_region_regression",
         "native_approved": false
       }
     ],
@@ -212,9 +212,27 @@
       "Save/reload with 0, 1, 4, 8 Hoenn badges and after Wallace; cards and text must not change region state, native badges or money",
       "Do not claim full Hoenn soundtrack, all dialogue translated, Android/Windows support or visual approval from static Python/Ruby/CI tests",
       "Full story regression Kanto/Johto/Sinnoh/Decades for language, map labels, native Trainer Card and audio in live Game.exe"
+    ],
+    "phase12_requires": [
+      "Create a fresh private Hoenn QA Fase12 (199 pinned donor map IDs, installed Blue Game.exe, uniquely isolated mkxp save profile); preserve original game/ and QA04–QA11 profiles",
+      "Run QA01 preparation and all 10 prior static audits QA02–QA11 in the same private copy; require 11 actual report artifacts, exact expected statuses, zero errors, no fake native approval",
+      "Run integrated hoenn_qa_phase12.py; compare original Blue Game.exe to the isolated copy, all 199 maps and the complete manifest/provenance; record SHA256 for MapInfos, PBS, plugin, regional cards",
+      "Inventory unresolved original trainer/NPC/sign candidates and conditional/multi-page field obstacles from QA03/QA04; list placeholder battle artwork; never claim all missing content is resolved",
+      "Keep seven OGG-only provisional Hoenn BGM fallbacks; do not claim all authentic Emerald scene music, loop/fade and trainer theme selection is finished",
+      "Generate individual native PC Windows Game.exe and Android JoiPlay manual scenarios including story, gyms, Pokémon, NPCs, signs, items, encounters, HM/puzzles, League and Hall",
+      "Perform fresh gameplay from Littleroot through Oldale, Petalburg, Rustboro, Dewford, Slateport, Mauville, Lavaridge, Fortree, Mossdeep, Sootopolis, Victory Road, Wallace and Hall",
+      "Validate progression gates including eight local badges, Wally victory, League sequence and Hoenn complete_league only from Hall; defeat must not mark wins or unlock early",
+      "Check battle engine scaling, wild species by area/time, trainers and every visited map's collisions/entrances, source NPC dialogue, items and broken puzzles in actual Game.exe",
+      "Visually inspect Portuguese and English NPC messages, signs and dynamic color control, regional Trainer Card and sprites; all reported English residue must be fixed or left open",
+      "Audition original and fallback music, battle/victory, OGG loop/fade, event priority, region switch and Hall; no silence or wrong scope",
+      "Save and reload across progression, verify Hoenn count and Hall idempotency, PC/party, badges, regional field flags, money and original Decades data",
+      "Run explicit regressions Kanto, Johto, Sinnoh, Decades after QA12 native Hoenn; ensure no map ID conflict or overwritten save; note native Kanto workflow can fail due missing FRLG donor archive/hash and is not proof of Hoenn failure",
+      "Test Android/JoiPlay independently with native controls, engine compatibility, music and save location; do not mark Windows result as Android passed",
+      "Manual checklist starts pending_native and cannot create acceptance by editing without repeatable visual gameplay evidence; keep game-exe-approved count at zero until proofs supplied",
+      "Status STATIC_QA_01_12_PASSED__NATIVE_ACCEPTANCE_PENDING means technical artifacts verified ONLY, never 12/12 playable acceptance"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA11: all 199 Hoenn map display labels localized via MapInfos/PBS, 8 badge names in authored Ruby NPC dialogue translated, safe 7-asset provisional OGG map BGM coverage including Stage10, Native Trainer Card shared for Kanto/Hoenn with distinct Hoenn badge tokens and untouched Decades card. Independent QA11 save, Python/Ruby tests and static audit; native text/audio/UI and original NPC completeness remain unverified; 0/12 Game.exe."
+  "last_publication_note": "QA12 preparation 12/12: combined QA01–11 reports into strict static release gate, 199 real map remaps and Blue Game.exe copy equality, SHA256 artifact fingerprints, catalog of incomplete NPC/sign/trainer and obstacle candidates and sprites, 30 independent Windows and Android/JoiPlay native playtest cases with no automatic pass. QA12 isolated profile and TESTAR_HOENN.bat. No private original game/Game.exe running via GitHub, native approval stays 0/12."
 }
