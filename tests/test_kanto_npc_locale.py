@@ -87,7 +87,7 @@ class TestKantoNpcLocale(unittest.TestCase):
                 json.dumps(inventory), encoding="utf8")
             baseline = {"Existing Blue line": "Linha existente do Blue"}
             (game / "Data/blue-pt-br.dat").write_bytes(
-                dumps_simple(sorted(baseline.items())))
+                dumps_simple([[k, v] for k, v in sorted(baseline.items())]))
             locale = root / ".blue-work/kanto-npc-ptbr.json"
             locale.parent.mkdir()
             locale.write_text(json.dumps({
