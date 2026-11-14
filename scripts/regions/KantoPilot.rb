@@ -8,6 +8,26 @@ module BlueKantoPilot
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
 
+  # Passive FRLG dialogue is stored as original text in the isolated pilot.
+  # RPG Maker 101/401 rendering does not reliably traverse _INTL, so resolve
+  # the selected Blue language explicitly at the moment the NPC is spoken to.
+  NPC_DIALOGUE_FILE = "Data/blue-kanto-npc-dialogues.dat".freeze
+
+  def self.npc_dialogue(source_map, source_event, index)
+    @npc_dialogues ||= begin
+      raise "Kanto NPC dialogue table not installed" unless File.file?(NPC_DIALOGUE_FILE)
+      load_data(NPC_DIALOGUE_FILE).each_with_object({}) do |entry, rows|
+        original_map, original_event, lines = entry
+        rows[[original_map, original_event]] = lines
+      end
+    end
+    lines = @npc_dialogues[[source_map, source_event]]
+    message = lines && lines[index]
+    raise "Missing Kanto NPC dialogue #{source_map}/#{source_event}/#{index}" unless message.is_a?(String)
+    translated = defined?(BlueLocale) ? BlueLocale.translate(message) : message
+    pbMessage(translated)
+  end
+
   def self.progress
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
   end

@@ -14,7 +14,7 @@ try:
     import kanto_npc_locale
     from kanto_npc_locale import npc_literals, imported_npc_lines, install_npc_locale
     from translate_kanto_npcs import safe_translate, current_pilot
-    from pilot import command
+    from pilot import command, npc_dialogue_calls
     from server.ruby_marshal import RubyObject, dumps_simple, loads, text
 finally:
     sys.path.remove(str(ROOT / "scripts/regions"))
@@ -56,6 +56,43 @@ class TestKantoNpcLocale(unittest.TestCase):
             command(355, b'pbMessage(_INTL("Nice weather!"))'),
             command(355, b'dangerous_code(:MASTERBALL)'),
         ]), ["Nice weather!"])
+
+    def test_runtime_npc_bridge_preserves_original_source_and_language_choice(self):
+        guard = event_dialogue()
+        guard.attrs["@pages"][0].attrs["@list"] = [
+            command(101, b"I absolutely forbid you from"),
+            command(401, b"going through here!"),
+            command(0),
+        ]
+        from kanto_overworld import source_npc_dialogue
+        literals = npc_literals(source_npc_dialogue(guard))
+        self.assertEqual(literals, ["I absolutely forbid you from going through here!"])
+        commands = npc_dialogue_calls(10, 7, literals)
+        self.assertEqual([c.attrs["@code"] for c in commands], [355, 0])
+        self.assertEqual(commands[0].attrs["@parameters"][0],
+                         b"BlueKantoPilot.npc_dialogue(10, 7, 0)")
+        # The generated Ruby code contains only numeric identifiers, never
+        # external strings that could interpolate or execute arbitrary Ruby.
+        self.assertNotIn(b"forbid", commands[0].attrs["@parameters"][0])
+        decoded = loads(dumps_simple([[10, 7, literals]]))
+        self.assertEqual(text(decoded[0][2][0]), literals[0])
+        self.assertEqual(guard.attrs["@pages"][0].attrs["@list"][0]
+                         .attrs["@parameters"][0],
+                         b"I absolutely forbid you from")
+        runtime = (ROOT / "scripts/regions/KantoPilot.rb").read_text("utf8")
+        self.assertIn("def self.npc_dialogue(source_map, source_event, index)", runtime)
+        self.assertIn("BlueLocale.translate(message)", runtime)
+        pilot = (ROOT / "scripts/regions/pilot.py").read_text("utf8")
+        self.assertIn('Data/blue-kanto-npc-dialogues.dat', pilot)
+        self.assertIn("npc_dialogue_calls(", pilot)
+
+    def test_unsafe_source_dialogue_is_not_bridged(self):
+        from kanto_overworld import source_npc_dialogue
+        malicious = event_dialogue()
+        malicious.attrs["@pages"][0].attrs["@list"] = [
+            command(355, b"pbReceiveItem(:MASTERBALL)"), command(0)
+        ]
+        self.assertIsNone(source_npc_dialogue(malicious))
 
     def test_local_machine_translation_preserves_game_controls(self):
         translator = FakeTranslator()

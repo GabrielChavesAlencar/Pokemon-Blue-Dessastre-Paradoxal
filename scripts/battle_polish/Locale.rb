@@ -170,6 +170,13 @@ module BlueLocale
     return value if proper_names[value]
     direct=MANUAL[value] || translations[value]
     return direct if direct
+    # Imported Essentials events can prefix speech with a literal \b / \r
+    # text-colour control. Preserve that control, but resolve the body against
+    # the exact reviewed catalogue key. Never strip variables or name codes.
+    if (colour=/\A((?:\\[br])+)(.+)\z/m.match(value))
+      translated=translate(colour[2])
+      return colour[1]+translated if translated!=colour[2]
+    end
     dynamic=dynamic_translation(value)
     return dynamic if dynamic!=value
     # Translate before rich-text renderers split their input into individual glyphs.
