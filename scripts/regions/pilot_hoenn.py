@@ -28,6 +28,14 @@ from hoenn_stage3 import (
     SIGNS_STAGE3, NPCS_STAGE3, FOREST_AQUA_TRIGGERS,
     FOREST_AQUA_PBS, FOREST_AQUA_TEAM,
 )
+from hoenn_stage4 import (
+    SOURCE_MAPS_STAGE4, OFFSET_BORDERS_STAGE4, WARP_PAIRS_STAGE4,
+    LAND_ENCOUNTERS_STAGE4, CAVE_ENCOUNTERS_STAGE4, TRAINERS_STAGE4,
+    ROXANNE_PBS, ROXANNE_TEAM, TUNNEL_AQUA_PBS, TUNNEL_AQUA_TEAM,
+    PICKUPS_STAGE4, SIGNS_STAGE4, NPCS_STAGE4, CUT_TREES_STAGE4,
+    RUSTBORO_THEFT_TRIGGERS, TUNNEL_AQUA_EVENT, ROXANNE_EVENT,
+    TUNNEL_VERDANTURF_GATE,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -35,6 +43,7 @@ SOURCE_MAPS = {
     101: "Rota 101", 12: "Oldale Town", 13: "Centro Pokémon de Oldale",
     14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103",
     **SOURCE_MAPS_STAGE3,
+    **SOURCE_MAPS_STAGE4,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -42,7 +51,7 @@ WARP_PAIRS = (
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
     ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
-) + WARP_PAIRS_STAGE3
+) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
     (11, 8, 6, "Birch", "NPC_ORAS_Professor_Birch", "BlueHoennPilot.birch"),
@@ -64,8 +73,11 @@ BGM = {
 MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
            12: "Oldale", 13: "Center", 14: "Oldale", 102: "Route101", 103: "Route101",
            16: "Oldale", 17: "Center", 18: "Oldale", 19: "Oldale", 20: "Birch",
-           104: "Route101", 105: "Oldale", 106: "Oldale", 156: "Route101"}
-OUTDOORS = (7, 12, 16, 101, 102, 103, 104, 156)
+           104: "Route101", 105: "Oldale", 106: "Oldale", 156: "Route101",
+           21: "Oldale", 22: "Center", 23: "Oldale", 24: "Oldale", 25: "Birch",
+           26: "Birch", 27: "Birch", 130: "Route101", 131: "Oldale",
+           157: "Route101"}
+OUTDOORS = (7, 12, 16, 21, 101, 102, 103, 104, 130, 156)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -74,7 +86,9 @@ LAND_ENCOUNTERS = {
           (10, "LOTAD", 3, 4), (10, "SEEDOT", 3, 3), (4, "RALTS", 4, 4), (1, "SURSKIT", 3, 3)),
     103: ((60, "POOCHYENA", 2, 4), (20, "ZIGZAGOON", 3, 4), (20, "WINGULL", 2, 4)),
     **LAND_ENCOUNTERS_STAGE3,
+    **LAND_ENCOUNTERS_STAGE4,
 }
+CAVE_ENCOUNTERS = CAVE_ENCOUNTERS_STAGE4
 ROUTE_102_TRAINERS = (
     (33, 14, "YOUNGSTER", "Calvin", "trainer_YOUNGSTER", (("POOCHYENA", 5),)),
     (25, 15, "BUGCATCHER", "Rick", "trainer_BUGCATCHER", (("WURMPLE", 4), ("WURMPLE", 4))),
@@ -188,6 +202,7 @@ def validate_geometry(maps, tiles):
     for first, edge, off_a, second, other_edge, off_b in (
         *((a, d1, 0, b, d2, 0) for a, d1, b, d2 in BORDERS),
         *OFFSET_BORDERS,
+        *OFFSET_BORDERS_STAGE4,
     ):
         def border(map_id, side):
             w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
