@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bf056092f9f1f149c1f0febc03fb72e98aa59eb",
+      "date": "2026-11-14T20:57:10-03:00",
+      "title": "verify(kanto): auditar sprite real da mae sem obstruir passagem Pewter Rota 3",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "551239e4854ea08202f6cfc70f3149d1f83cd8d1",
+      "date": "2026-11-14T20:56:56-03:00",
+      "title": "test(kanto): confirmar aparicao e retirada do sprite da mae na entrega",
+      "category": "Testes"
+    },
+    {
       "sha": "ee64dc8548e82045394ac5f601be2c1280e1d3ca",
       "date": "2026-11-14T20:56:11-03:00",
       "title": "feat(kanto): exibir sprite real da mae durante entrega de Tenis de Corrida",
