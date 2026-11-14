@@ -96,6 +96,7 @@ module BlueLocale
     '{1} used {2}!'=>'{1} usou {2}!','Turn {1}'=>'Turno {1}',
     'Language / Idioma'=>'Language / Idioma','English'=>'Inglês','Portuguese (Brazil)'=>'Português (Brasil)',
     'Interface and story language. Pokémon, item and move names stay unchanged.'=>'Traduz interface e história. Mantém nomes de Pokémon, itens e golpes.',
+    'Interface and story language. Pokémon, item, move and ability names stay unchanged.'=>'Traduz interface e história. Mantém nomes de Pokémon, itens, golpes e habilidades.',
     'Text Speed'=>'Velocidade do texto','Battle Scene'=>'Animações de batalha','Battle Style'=>'Estilo de batalha',
     'Music Volume'=>'Volume da música','SE Volume'=>'Volume dos efeitos','Speed Up Settings'=>'Aceleração',
     'Battle Speed'=>'Vel. da batalha','Only Battles'=>'Só nas batalhas','All'=>'Sempre',
