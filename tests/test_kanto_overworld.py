@@ -103,9 +103,10 @@ class KantoOverworldContracts(unittest.TestCase):
         self.assertEqual(first["@list"][1].attrs["@parameters"][0], b"pbSmashThisEvent")
 
     def test_cut_trees_import_with_native_cut_and_do_not_block_builder(self):
-        event = fake_event(name=b"CutTree", scripts=[command(0)],
+        event = fake_event(name=b"Cut Tree", scripts=[command(0)],
                            graphic=b"Tree")
         self.assertEqual(source_obstacle(event), "cut")
+        self.assertEqual(event.attrs["@name"], b"Cut Tree")
         result, meta = adapt(event)
         self.assertEqual(meta["kind"], "cut")
         first = result.attrs["@pages"][0].attrs
