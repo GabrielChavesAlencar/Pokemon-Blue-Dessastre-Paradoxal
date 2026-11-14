@@ -1401,6 +1401,279 @@ module BlueHoennPilot
   end
 
 
+
+  # Stage 07 — all story flags remain local to the Hoenn pilot, never to
+  # $player.badges or an existing Decades/Kanto/Johto/other region save.
+  STAGE7_SIGNS = {
+    FALLARBOR: "Fallarbor: cidade tranquila entre cinzas vulcânicas.",
+    LAVARIDGE: "Lavaridge: fontes termais aquecidas pelo vulcão.",
+    LAVARIDGE_GYM: "Ginásio de Flannery: Pokémon do tipo Fogo.",
+    ROUTE111: "Rota 111: cuidado com as pedras e a passagem do deserto.",
+    MT_CHIMNEY: "Mt. Chimney: o teleférico leva ao topo do vulcão.",
+    FALLARBOR_SIGN: "Rota 113: cinzas vulcânicas e a cidade de Fallarbor.",
+    METEOR_FALLS: "Meteor Falls: a Equipe Magma foi avistada na região.",
+    JAGGED_PASS: "Jagged Pass: trilha íngreme que leva a Lavaridge."
+  }.freeze
+
+  GYM_STEAM_COORDINATES = [
+    [12,24],[37,24],[10,15],[35,15],[7,20],[32,20],
+    [2,23],[27,23],[3,20],[28,20],[2,16],[27,16],
+    [2,12],[27,12],[4,9],[29,9],[9,8],[34,8],
+    [14,9],[39,9],[14,18],[39,18]
+  ].freeze
+
+  def self.sign_stage7(key)
+    return false unless state && STAGE7_SIGNS.key?(key)
+    pbMessage(_INTL(STAGE7_SIGNS.fetch(key)))
+    true
+  end
+
+  def self.heat_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions, "HOENN").include?("HEAT")
+  end
+
+  def self.meteor_falls_ambush
+    flags=state
+    return false unless flags
+    unless flags["stern_package_delivered"] && dynamo_badge?
+      pbMessage(_INTL("Um pesquisador estuda meteoritos. Continue sua jornada por Mauville."))
+      return false
+    end
+    if flags["meteorite_stolen"]
+      pbMessage(_INTL("Professor Cozmo: a Equipe Magma levou o meteorito para Mt. Chimney!"))
+      return false
+    end
+    flags["meteorite_stolen"]=true
+    pbMessage(_INTL("Professor Cozmo: os membros da Equipe Magma roubaram um meteorito!"))
+    pbMessage(_INTL("Eles seguiram para Mt. Chimney. Volte à estação do teleférico na Rota 112!"))
+    true
+  end
+
+  def self.magma_blocker(event_id)
+    flags=state
+    return false unless flags && event_id.is_a?(Integer)
+    unless flags["meteorite_stolen"]
+      pbMessage(_INTL("Recruta Magma: o teleférico está interditado. Não entre!"))
+      return false
+    end
+    if $game_self_switches && $game_map && $game_map.events[event_id]
+      $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
+      $game_map.events[event_id].refresh
+    end
+    flags["cable_car_unlocked"]=true
+    pbMessage(_INTL("Recruta Magma: nossa equipe voltou ao cume. O teleférico foi liberado."))
+    true
+  end
+
+  def self.cable_car
+    flags=state
+    return false unless flags && defined?(BlueRegionTravel) &&
+                        BlueRegionTravel.respond_to?(:move_to)
+    unless defined?($game_map) && $game_map &&
+           defined?($game_player) && $game_player &&
+           defined?($game_temp) && $game_temp && !$game_temp.in_battle &&
+           defined?($scene) && $scene
+      pbMessage(_INTL("A viagem de teleférico não está disponível neste ambiente."))
+      return false
+    end
+    _, map_ids=metadata
+    from=$game_map.map_id
+    lower,upper=map_ids[122],map_ids[179]
+    unless [lower,upper].include?(from)
+      pbMessage(_INTL("A estação do teleférico não pertence a este mapa."))
+      return false
+    end
+    if from==lower && !flags["meteorite_stolen"]
+      pbMessage(_INTL("O teleférico está bloqueado. Investigue os eventos de Meteor Falls."))
+      return false
+    end
+    target=from==lower ? [upper,8,9,2] : [lower,8,9,2]
+    return false unless target[0]
+    return false unless pbConfirmMessage(_INTL("Viajar de teleférico para a outra estação?"))
+    prev=[from,$game_player.x,$game_player.y,$game_player.direction]
+    begin
+      pbFadeOutIn { BlueRegionTravel.move_to(target) }
+      flags["mt_chimney_visited"]=true if from==lower
+      true
+    rescue StandardError => error
+      begin
+        pbFadeOutIn { BlueRegionTravel.move_to(prev) } if $game_map.map_id!=prev[0]
+      rescue StandardError
+        # Preserve initial error and never mark the journey complete.
+      end
+      pbMessage(_INTL("O teleférico não conseguiu concluir a travessia: {1}",error.message))
+      false
+    end
+  end
+
+  def self.magma_grunt(index)
+    flags=state
+    return false unless flags && [1,2].include?(index) &&
+                        $player && !$player.party.empty?
+    unless flags["meteorite_stolen"]
+      pbMessage(_INTL("O cume de Mt. Chimney está tranquilo por enquanto."))
+      return false
+    end
+    key="magma_grunt_#{index}_defeated"
+    if flags[key]
+      pbMessage(_INTL("Recruta Magma: não vou enfrentá-lo de novo!"))
+      return false
+    end
+    version=index==1 ? 780 : 781
+    pbMessage(_INTL("Recruta Magma: não se meta em nossos planos!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_MAGMA,"Recruta",version)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags[key]=true
+    pbMessage(_INTL("O recruta Magma foi derrotado."))
+    true
+  end
+
+  def self.tabitha
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    if flags["tabitha_defeated"]
+      pbMessage(_INTL("Tabitha: vou me retirar por enquanto..."))
+      return false
+    end
+    unless flags["meteorite_stolen"] &&
+           flags["magma_grunt_1_defeated"] &&
+           flags["magma_grunt_2_defeated"]
+      pbMessage(_INTL("Tabitha: enfrente nossos recrutas antes de se aproximar de Maxie!"))
+      return false
+    end
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_TABITHA,"Tabitha",778)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["tabitha_defeated"]=true
+    pbMessage(_INTL("Tabitha: você venceu... Mas Maxie não desistirá!"))
+    true
+  end
+
+  def self.maxie
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    if flags["maxie_defeated"]
+      pbMessage(_INTL("Maxie: precisamos rever nossos planos."))
+      return false
+    end
+    unless flags["tabitha_defeated"]
+      pbMessage(_INTL("Maxie: primeiro enfrente Tabitha."))
+      return false
+    end
+    pbMessage(_INTL("Maxie: a Equipe Magma pretende transformar a terra com este meteorito!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_MAXIE,"Maxie",779)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["maxie_defeated"]=true
+    pbMessage(_INTL("Maxie: você foi forte. Recuaremos de Mt. Chimney!"))
+    true
+  end
+
+  def self.meteorite_machine
+    flags=state
+    return false unless flags
+    unless flags["maxie_defeated"]
+      pbMessage(_INTL("A máquina está ligada à Equipe Magma. Afaste Maxie antes de mexer nela."))
+      return false
+    end
+    if flags["meteorite_recovered"]
+      pbMessage(_INTL("O meteorito já foi recuperado."))
+      return false
+    end
+    item=:METEORITE_RSE
+    if GameData::Item.exists?(item)
+      unless $bag && $bag.add(item,1)
+        pbMessage(_INTL("Deixe espaço na Bolsa para retirar o meteorito."))
+        return false
+      end
+    else
+      flags["meteorite_virtual"]=true
+    end
+    flags["meteorite_recovered"]=true
+    pbMessage(_INTL("Você recuperou o meteorito roubado do Professor Cozmo!"))
+    true
+  end
+
+  def self.flannery_tm
+    flags=state
+    return false unless flags && heat_badge?
+    return false if flags["flannery_tm_given"]
+    give_move_tm("flannery_tm_given",:OVERHEAT,[:TM50,:TM050,:TM107],
+                 "Flannery: receba a TM Overheat!")
+  end
+
+  def self.flannery
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return flannery_tm if heat_badge?
+    unless dynamo_badge? && flags["maxie_defeated"] &&
+           flags["meteorite_recovered"]
+      pbMessage(_INTL("Flannery: enfrente a Equipe Magma em Mt. Chimney e recupere o meteorito antes de me desafiar."))
+      return false
+    end
+    pbMessage(_INTL("Flannery: sou a líder de Lavaridge! Mostrarei a força do meu time de Fogo!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_FLANNERY,"Flannery",763)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","HEAT")
+      pbMessage(_INTL("Flannery: erro ao registrar a Heat Badge de Hoenn."))
+      return false
+    end
+    flags["flannery_defeated"]=true
+    pbMessage(_INTL("Você conquistou a Heat Badge de Hoenn! Strength está autorizado nesta região."))
+    flannery_tm
+    true
+  end
+
+  def self.gym_steam_vent(x,y)
+    flags=state
+    return false unless flags && defined?($game_map) && $game_map &&
+                        defined?($game_player) && $game_player
+    _, maps=metadata
+    return false unless $game_map.map_id==maps[63] &&
+                        GYM_STEAM_COORDINATES.include?([x,y])
+    $game_player.moveto(x,y)
+    pbMessage(_INTL("Uma corrente de vapor mudou sua posição no ginásio!"))
+    true
+  end
+
+  def self.glass_workshop
+    return false unless state
+    pbMessage(_INTL("Artesão: consigo fabricar objetos com cinzas vulcânicas. A coleta de cinzas será integrada em outra etapa."))
+    true
+  end
+
+  def self.fossil_house
+    return false unless state
+    pbMessage(_INTL("Fossil Maniac: estudo fósseis. O túnel profundo ainda está bloqueado neste piloto."))
+    true
+  end
+
+  def self.stage7_future_gate(reason)
+    return false unless state
+    messages={
+      MIRAGE_TOWER:"Mirage Tower será adicionada em uma fase futura.",
+      MAGMA_HIDEOUT:"O esconderijo Magma ainda não está disponível.",
+      METEOR_DEEP:"Os andares profundos de Meteor Falls ainda não estão preparados.",
+      METEOR_ROUTE115:"A saída para Rota 115 ainda está bloqueada neste piloto.",
+      FOSSIL_TUNNEL:"O Fossil Maniac ainda está escavando esse túnel."
+    }
+    return false unless messages.key?(reason)
+    pbMessage(_INTL(messages.fetch(reason)))
+    false
+  end
+
+
   def self.heal
     return unless state
     if $player.party.empty?
