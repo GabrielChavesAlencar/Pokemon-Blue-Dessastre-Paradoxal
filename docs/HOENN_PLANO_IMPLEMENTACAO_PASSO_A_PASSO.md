@@ -3,7 +3,7 @@
 **Projeto:** [Pokémon Blue: Dessastre Paradoxal](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal)  
 **Data:** 13/11/2026  
 **Tipo:** roteiro técnico por fases para execução no repositório, com critérios de aceite e matriz de cobertura.  
-**Status real:** **PLANEJAMENTO**. O registro regional de Hoenn existe como **planned**; não há importador, piloto, mapas, eventos ou trilhas Hoenn verificados como instalados nesta entrega.  
+**Status real (atualizado em 14/11/2026):** **PLANEJAMENTO DA CAMPANHA + PILOTO TÉCNICO ISOLADO**. O registro oficial continua **planned**; agora existem scripts para gerar uma cópia de teste com nove mapas, mas não há aprovação de jogabilidade no Game.exe. Consulte [a auditoria da Etapa 01](HOENN_AUDITORIA_PILOTO_ETAPA_01.md).  
 **Meta:** Hoenn de Pokémon Emerald integralmente explorável no mesmo motor de batalha do Blue/Decades, com dados complementares de Ruby/Sapphire e opcionais de ORAS, sem destruir Kanto, Johto, Decades, saves ou músicas.
 
 > **Regra 0:** uma fase documentada, um teste sintético verde, um mapa RXDATA importado ou um botão no menu **não significa que o jogador pode atravessar Hoenn**. Separar a conclusão de engenharia da aprovação no Game.exe real. Não afirmar conteúdo pronto ou 100% sem evidência.
@@ -49,7 +49,7 @@ Antes de começar qualquer fase, ler:
 - **scripts/regions/** contém ferramentas de Kanto e preparação de Johto, que servem de **padrão**, mas não são importadores genéricos de Hoenn.
 - **tests/** contém regressões Python/Ruby/áudio/menu; a pasta local **game/** fica fora do Git.
 
-**Não existem comprovados nesta auditoria:** scripts/regions/audit_hoenn.py, stage_hoenn.py, pilot_hoenn.py, install_hoenn.py, arquivo de origem Hoenn com checksums/MapIDs, mapas Hoenn reais integrados, música Hoenn versionada com direitos, ou um botão Testar Hoenn. Todos são entregáveis futuros.
+**Atualização da Etapa 01 (14/11/2026):** já existem `scripts/regions/audit_hoenn_baseline.py`, `prepare_hoenn_source.py`, `pilot_hoenn.py`, `HoennPilot.rb`, `audit_hoenn_pilot_contract.py` e testes. São recursos de **cópia isolada**, não uma importação de Hoenn ao jogo principal. Ainda não há instalador transacional para a campanha definitiva, mapas Hoenn integrados e testados na instalação principal, comprovação de licença de áudio/mapas para redistribuição, nem aceitação nativa do menu de teste. A lista anterior descrevia o estado da auditoria inicial de 13/11.
 
 **Restrição adicional:** Johto reservou e validou em parte de sua infraestrutura **MapIDs 600–999**. Os mapas existentes de Decades, Kanto e Johto precisam ser enumerados na instalação efetiva. **Não escolher automaticamente 1000+ nem copiar a reserva de Johto**: primeiro confirmar o suporte de leitura/escrita da engine e das ferramentas a MapIDs com quatro ou mais dígitos; caso não suportem, projetar convenção de nomes ou expansão do importador e migrar/testar com segurança.
 
