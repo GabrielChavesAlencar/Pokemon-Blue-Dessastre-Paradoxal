@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4f2efa9d387e4784aa81349f48144e46f493c0f7",
+      "date": "2026-11-14T11:21:55-03:00",
+      "title": "feat(hoenn): criar eventos de Roxanne, Cut, Devon, treinadores e itens em Rustboro/Rusturf",
+      "category": "Novidades"
+    },
+    {
       "sha": "52cab9727f1547620bd9942668e11935e628226c",
       "date": "2026-11-14T11:20:44-03:00",
       "title": "feat(hoenn): anexar dez mapas Rustboro/Rusturf, rotas e encontros da etapa 4 ao piloto",
