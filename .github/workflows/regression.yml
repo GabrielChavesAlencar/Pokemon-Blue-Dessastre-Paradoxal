@@ -68,6 +68,10 @@ jobs:
         run: |
           ruby -c scripts/regions/SinnohPilot.rb
           ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
+      - name: Validar probe Ruby nativa de Barry sem iniciar Game.exe
+        run: |
+          ruby -c scripts/regions/SinnohBarryNativeProbe.rb
+          ruby tests/sinnoh_barry_native_probe_runtime.rb scripts/regions/SinnohBarryNativeProbe.rb
   smoke-browser:
     name: Navegacao real + salvamento PBS (Chromium)
     needs: python-and-contract
