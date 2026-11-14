@@ -37,6 +37,8 @@ PILOT_INPUTS = (
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
     "scripts/battle_polish/Story.rb",
+    "scripts/battle_polish/KantoDex.rb",
+    "scripts/battle_polish/DexControls.rb",
     "scripts/battle_polish/Economy.rb",
     "data/regions/kanto-source.json",
     "data/kanto-music-rules.json",
@@ -1280,7 +1282,7 @@ def install_pbs(preview, target, mapping):
 
 def install_runtime(target, mapping, game):
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
-    for name in ("RegionStart.rb", "Story.rb", "Economy.rb"):
+    for name in ("RegionStart.rb", "Story.rb", "Economy.rb", "KantoDex.rb", "DexControls.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
     plugin.mkdir()

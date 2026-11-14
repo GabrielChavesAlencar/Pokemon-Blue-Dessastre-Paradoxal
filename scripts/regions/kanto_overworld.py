@@ -79,6 +79,8 @@ def source_obstacle(event):
         return "strength"
     if "smashrock" in name:
         return "rock_smash"
+    if "cuttree" in name:
+        return "cut"
     return None
 
 
@@ -142,6 +144,13 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
     if obstacle:
         if obstacle == "strength":
             commands, trigger = [command(355, b"pbPushThisBoulder")], 1
+        elif obstacle == "cut":
+            # Essentials checks the Cut move + regional badge itself.
+            # The native field callback removes only this tree, without
+            # importing arbitrary FRLG story switches or granting HM01.
+            commands, trigger = if_scene(b"pbCut", [
+                command(355, b"pbSmashThisEvent", indent=1),
+            ]), 0
         else:
             commands, trigger = if_scene(b"pbRockSmash", [
                 command(355, b"pbSmashThisEvent", indent=1),

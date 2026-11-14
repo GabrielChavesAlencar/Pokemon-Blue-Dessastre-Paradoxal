@@ -69,7 +69,7 @@ def inspect(game: Path) -> dict:
         raise ValueError("Unsupported Kanto field inventory schema")
     if field_report.get("preview_maps_untouched") != sorted(preview_only):
         raise ValueError("Kanto field importer touched an unaudited preview")
-    known = {"item", "npc_dialogue", "rock_smash", "strength"}
+    known = {"item", "npc_dialogue", "rock_smash", "strength", "cut"}
     seen = set()
     for row in field_report["imported"]:
         source, destination, event_id = row["source_map"], row["map"], row["event"]
@@ -97,6 +97,13 @@ def inspect(game: Path) -> dict:
         if row["kind"] == "rock_smash":
             if page["@trigger"] != 0 or not any("pbSmashThisEvent" in c for c in commands):
                 raise ValueError("SmashRock event does not invoke native Rock Smash")
+        if row["kind"] == "cut":
+            if (page["@trigger"] != 0 or page["@through"] or
+                    not any(c == "pbSmashThisEvent" for c in commands) or
+                    not any(op.attrs["@code"] == 111 and
+                            op.attrs["@parameters"][1] == b"pbCut"
+                            for op in page["@list"] if len(op.attrs["@parameters"]) > 1)):
+                raise ValueError("CutTree does not use native badge-gated Cut")
     # Missing PNGs for *optional* field NPCs must be recorded and omitted,
     # not silently imported as invisible blockers or crash the game builder.
     for row in field_report.get("missing_graphics", []):

@@ -112,6 +112,25 @@ class KantoOverworldContracts(unittest.TestCase):
         self.assertEqual(first["@list"][0].attrs["@parameters"][0],
                          b"pbPushThisBoulder")
 
+    def test_cut_trees_use_native_cut_without_overriding_story(self):
+        tree = fake_event(name=b"CutTree", scripts=[command(0)],
+                          graphic=b"tree")
+        self.assertEqual(source_obstacle(tree), "cut")
+        result, row = adapt(tree)
+        self.assertEqual(row, {"kind": "cut"})
+        self.assertEqual((result.attrs["@id"], result.attrs["@x"],
+                          result.attrs["@y"]), (9, 11, 7))
+        page = result.attrs["@pages"][0].attrs
+        self.assertEqual(page["@trigger"], 0)
+        self.assertFalse(page["@through"])
+        self.assertEqual(page["@list"][0].attrs["@parameters"][1], b"pbCut")
+        self.assertEqual(page["@list"][1].attrs["@parameters"][0],
+                         b"pbSmashThisEvent")
+        self.assertEqual(result.attrs["@name"], b"CutTree")
+        conditional_tree = fake_event(
+            name=b"CutTree", scripts=[command(0)], conditional=True)
+        self.assertIsNone(source_obstacle(conditional_tree))
+
     def test_npc_literal_dialogues_only(self):
         npc = fake_event(name=b"Resident", scripts=[
             command(101, b"Bem-vindo a Viridian!"),

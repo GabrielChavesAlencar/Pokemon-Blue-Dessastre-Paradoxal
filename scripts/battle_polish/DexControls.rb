@@ -85,6 +85,11 @@ module BlueDexControls
   module DexSearch
     def pbStartScene
       super
+      @blue_kanto_dex=false
+      dex_button=BitmapSprite.new(174,28,@viewport)
+      dex_button.x=24;dex_button.y=244;dex_button.z=20
+      @sprites['blueKantoDexButton']=dex_button
+      blue_refresh_dex_button
       button=BitmapSprite.new(174,28,@viewport);button.x=24;button.y=276;button.z=20
       button.bitmap.fill_rect(0,0,174,28,Color.new(24,62,91));pbSetSmallFont(button.bitmap)
       button.bitmap.font.color=Color.new(239,248,255);button.bitmap.draw_text(0,0,174,28,_INTL('Search / Filters [F]'),1)
@@ -92,6 +97,18 @@ module BlueDexControls
     end
     def pbUpdate
       super
+      dex_button=@sprites['blueKantoDexButton']
+      if dex_button
+        dex_button.visible=!@blue_search_open && @sprites['pokedex'].active
+        if dex_button.visible
+          dex_clicked=BlueStartMouse.click? && BlueLabPointer.hit_sprite?(dex_button,BlueLabPointer.position)
+          if dex_clicked || Input.triggerex?(:K)
+            BlueLabPointer.claimed=true if dex_clicked
+            blue_toggle_kanto_dex
+            return
+          end
+        end
+      end
       button=@sprites['blueSearchButton'];return unless button
       button.visible=!@blue_search_open && @sprites['pokedex'].active
       return unless button.visible
@@ -99,6 +116,45 @@ module BlueDexControls
       return unless clicked || Input.triggerex?(:F)
       BlueLabPointer.claimed=true if clicked
       pbDexSearch
+    end
+    def blue_refresh_dex_button
+      button=@sprites['blueKantoDexButton'];return unless button
+      b=button.bitmap;b.clear;b.fill_rect(0,0,174,28,Color.new(24,62,91))
+      pbSetSmallFont(b);b.font.color=Color.new(239,248,255)
+      b.draw_text(0,0,174,28,_INTL(@blue_kanto_dex ? 'National Dex [K]' : 'KantoDex [K]'),1)
+    end
+    def blue_kanto_dex_rows(rows)
+      return rows unless @blue_kanto_dex
+      # Do not use the player's national registration counter as the local
+      # index. Kanto is the original 151 species, starting with Bulbasaur.
+      rows.select { |row| BlueKantoDex.number(row[:species]) }.map do |row|
+        copy=row.dup
+        copy[:number]=BlueKantoDex.number(row[:species])
+        copy
+      end.sort_by { |row| row[:number] }
+    end
+    def blue_toggle_kanto_dex
+      @blue_kanto_dex=!@blue_kanto_dex
+      @blue_filters=nil
+      if @blue_kanto_dex
+        blue_show_kanto_list
+      else
+        @searchResults=false
+        pbRefreshDexList(0)
+      end
+      blue_refresh_dex_button
+    end
+    def blue_show_kanto_list
+      records=blue_kanto_dex_rows(pbGetDexList)
+      if records.empty?
+        pbMessage(_INTL('KantoDex unavailable: the base Pokédex has no Kanto species.'))
+        @blue_kanto_dex=false
+        return
+      end
+      @dexlist=records
+      @searchResults=true
+      window=@sprites['pokedex'];window.commands=records;window.index=0;window.refresh
+      pbRefresh
     end
     def pbCloseSearch
       @blue_filters=nil;super
@@ -117,9 +173,15 @@ module BlueDexControls
     end
     def blue_apply_filters(filters)
       if filters==BlueDexFilters.defaults
-        @blue_filters=filters;@searchResults=false;pbRefreshDexList(0);return true
+        @blue_filters=filters
+        if @blue_kanto_dex
+          blue_show_kanto_list
+        else
+          @searchResults=false;pbRefreshDexList(0)
+        end
+        return true
       end
-      results=BlueDexFilters.apply(pbGetDexList,filters)
+      results=BlueDexFilters.apply(blue_kanto_dex_rows(pbGetDexList),filters)
       if results.empty?;pbMessage(_INTL('No Pokémon match these filters.'));return false;end
       @blue_filters=filters.dup;@dexlist=results;@searchResults=true
       window=@sprites['pokedex'];window.commands=results;window.index=0;window.refresh
