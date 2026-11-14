@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d402a1992b56f82123fa50672b15b4c253863333",
+      "date": "2026-11-14T17:42:15-03:00",
+      "title": "fix(hoenn): QA9 Ruby fixtures use source MapID+600 for League rooms",
+      "category": "Correções"
+    },
+    {
+      "sha": "e488b182c9845224af41386312ef0fb828b50c2a",
+      "date": "2026-11-14T17:42:13-03:00",
+      "title": "fix(hoenn): QA9 Ruby fixtures use source MapID+600 for League rooms",
+      "category": "Correções"
+    },
+    {
       "sha": "40bc1c110b5a8a8a18ec070216db83707da94e7f",
       "date": "2026-11-14T17:41:18-03:00",
       "title": "feat(hoenn): TESTAR_HOENN prepares private QA09 and verifies Elite Four/Wallace",
