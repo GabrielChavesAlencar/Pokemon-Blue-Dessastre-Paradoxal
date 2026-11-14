@@ -134,8 +134,13 @@ assert9(BlueHoennPilot.origin_wallace_stage10,"Wallace origin")
 assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza without tower opening")
 $game_map.map_id=842
 assert9(!BlueHoennPilot.stage10_transfer(242,243,10,10),"Sky Pillar floors before Wallace opens")
+# A migrated save inside the tower may always retreat.
+$game_map.map_id=843
+assert9(BlueHoennPilot.stage10_transfer(243,242,10,10),"Sky Pillar retreat softlocked")
 $game_map.map_id=841
 assert9(BlueHoennPilot.sky_pillar_wallace,"Wallace Sky Pillar")
+$game_map.map_id=842
+assert9(BlueHoennPilot.stage10_transfer(242,243,10,10),"Sky Pillar entrance remained locked")
 assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza outside summit")
 $game_map.map_id=848
 assert9(BlueHoennPilot.rayquaza_stage10,"Rayquaza resolution")
