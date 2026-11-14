@@ -17,7 +17,7 @@ A base original deve ser a pasta **`game/` do projeto**. O instalador recusa ini
 
 Em cada montagem é criado um **identificador aleatório novo**, aplicado aos três controles: `mkxp.json > dataPathApp`, `mkxp.json > dataPathOrg` e `Game.ini > Title`. São diferentes do Blue original e de outras montagens de Sinnoh, seguindo o padrão usado no piloto Johto. Não se reutiliza o perfil dos saves de Decades/Kanto/Johto/Hoenn.
 
-A cópia preserva todos os arquivos válidos do jogo de referência e os substitui **apenas na cópia**, incluindo `MapInfos.rxdata`, `Tilesets.rxdata`, `System.rxdata` (mapa/posição inicial) e `Scripts.rxdata` (bootstrap compilador). Os originais substituídos ficam dentro da cópia em `_sinnoh_qa_originals/`. Saves, `.bak`, logs, temporários, symlinks e diretórios de backup não são copiados.
+A cópia preserva todos os arquivos válidos do jogo de referência e os substitui **apenas na cópia**, incluindo `MapInfos.rxdata`, `Tilesets.rxdata`, `System.rxdata` (mapa/posição inicial) e `Scripts.rxdata` (bootstrap compilador). Os originais substituídos ficam dentro da cópia em `_sinnoh_qa_originals/`. Saves, `.bak`, logs, temporários, symlinks e diretórios de backup não são copiados. A base com um piloto legado de Sinnoh já instalado também é recusada. Os 24 nomes e coordenadas de evento são reconferidos contra o overlay antes de montar a cópia.
 
 **Importante:** a exclusividade efetiva do diretório do save depende do comportamento do `Game.exe`/mkxp na máquina. O teste de código garante que os identificadores sejam distintos; ainda é necessário verificar no Windows/Android os caminhos reais de armazenamento antes de declarar o isolamento nativo aprovado.
 
@@ -43,7 +43,7 @@ Pré-requisitos: uma **fonte Sinnoh real e com direitos**, mapas e posições au
 python scripts/regions/install_sinnoh_qa_copy.py --game game --overlay .blue-work/sinnoh-qa-overlay-v1 --spec .blue-work/sinnoh/twinleaf-events-local.json
 ```
 
-A saída deve informar `ISOLATED_QA_INSTALL_PLAN`, ``copy_only:true`, ``native_compile_required:true`, a identidade do perfil privado e o spawn verificado. Se houver MapIDs 600–999 ou conflito de IDs, a instalação é bloqueada. **Não preencher as coordenadas com valores fictícios para fazer esse comando passar.**
+A saída deve informar `ISOLATED_QA_INSTALL_PLAN`, `copy_only:true`, ``native_compile_required:true`, a identidade do perfil privado e o spawn verificado. Se houver MapIDs 600–999 ou conflito de IDs, a instalação é bloqueada. **Não preencher as coordenadas com valores fictícios para fazer esse comando passar.**
 
 **2. Criar a cópia experimental sem tocar no jogo principal:**
 
