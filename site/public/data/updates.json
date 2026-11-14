@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "87cfae564c61ad05f1624e5790c208f1097423d7",
+      "date": "2026-11-14T18:17:15-03:00",
+      "title": "fix(kanto): exigir HM04 e Pokemon compativel no puzzle de Victory Road",
+      "category": "Correções"
+    },
+    {
       "sha": "6c848409d097ceca1fb596375f8f4da16c6add93",
       "date": "2026-11-14T18:15:57-03:00",
       "title": "docs(hoenn): QA11 199 PT-BR map labels, music fallbacks and regional Trainer Card checklist",
