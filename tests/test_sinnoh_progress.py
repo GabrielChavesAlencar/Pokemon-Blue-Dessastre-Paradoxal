@@ -186,6 +186,29 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertIn("4/7", panel)
         self.assertIn("8/32 (25%)", panel)
 
+    def test_postcompile_engine_probe_only_prepares_native_validation(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        step = record["qa_engine_validation_workstream"]
+        self.assertEqual((step["complete"], step["total"]), (4, 7))
+        self.assertEqual(step["complete"],
+                         sum(bool(row["complete"]) for row in step["substeps"]))
+        self.assertTrue(all(not row["complete"] or
+                            (ROOT / row["evidence"]).is_file()
+                            for row in step["substeps"]))
+        for key in ("source_assets_verified", "real_game_exe_executed",
+                    "real_native_structural_report_generated", "battle_executed",
+                    "level_scaling_observed", "save_reload_observed",
+                    "android_joi_play_tested", "main_game_or_user_saves_modified",
+                    "ready_marker_created", "playable_approved"):
+            self.assertFalse(step[key], key)
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["phase_gates"]["technically_approved"], 0)
+        self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
+        self.assertEqual(record["phase_gates"]["fully_tested_native"], 0)
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("Validação automática pós-compilação", panel)
+        self.assertIn("137 testes Python", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
