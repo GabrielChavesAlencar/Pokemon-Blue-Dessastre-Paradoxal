@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "376b14d9ba2e737fc66ca041f978443ba6b63cee",
+      "date": "2026-11-14T17:17:17-03:00",
+      "title": "docs(hoenn): QA7 progress 7/12 technically prepared and 0/12 natively certified",
+      "category": "Documentação"
+    },
+    {
+      "sha": "fec5ff8e1d4d8c78df68b4309807ae1fda582cb9",
+      "date": "2026-11-14T17:16:48-03:00",
+      "title": "ci(hoenn): run QA7 gym dispatcher and regional isolation Ruby tests",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3510a43048397fa0a26c94c5dfedeea136f88886",
       "date": "2026-11-14T17:16:37-03:00",
       "title": "feat(hoenn): TESTAR_HOENN QA7 separate save and eight gym audit",
