@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 1,
-    "implementation_preparation_count": 1,
+    "current_phase": 2,
+    "implementation_preparation_count": 2,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -30,8 +30,8 @@
       {
         "phase": 2,
         "name": "Revisar mapas e conexões",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "static_map_and_connection_auditor_prepared",
+        "native_acceptance": "pending_private_copy_and_game_exe",
         "native_approved": false
       },
       {
@@ -104,8 +104,15 @@
         "native_acceptance": "pending",
         "native_approved": false
       }
+    ],
+    "phase2_requires": [
+      "game/ plus pinned donor ZIP and full isolated 199-map copy",
+      "read-only RXDATA/PBS topology audit produces zero errors",
+      "field move and event-gated paths manually traversed in Game.exe",
+      "all main Decades and region save slots preserved"
     ]
   },
   "not_gameplay_approval": true,
-  "do_not_publish_donor_assets": true
+  "do_not_publish_donor_assets": true,
+  "last_publication_note": "QA2 script and launcher preparation only; no native gameplay approval recorded"
 }
