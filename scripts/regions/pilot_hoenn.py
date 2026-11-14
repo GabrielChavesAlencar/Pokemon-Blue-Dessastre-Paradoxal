@@ -558,6 +558,59 @@ def build_overlay(game, source):
                 f"[RIVAL1,{name},{version}]\nLoseText = Boa batalha!\n"
                 f"Pokemon = {opponent},5\n"
             )
+    # Fail closed on absent native types/overlapping PBS identities.
+    types = set()
+    for candidate in sorted((game / "PBS").glob("trainer_types*.txt")):
+        body = regular(candidate).read_text("utf-8-sig")
+        types.update(match.group(1).strip() for match in
+                     re.finditer(r"(?m)^\s*\[([^\]\r\n]+)\]", body))
+    needed = {kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE3}
+    missing = needed - types
+    if missing:
+        raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
+    extra_ids = {(kind, name, mid) for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE3}
+    extra_ids.add(FOREST_AQUA_PBS)
+    if len(extra_ids) != len(TRAINERS_STAGE3) + 1:
+        raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
+    for candidate in sorted((game / "PBS").glob("trainers*.txt")):
+        body = regular(candidate).read_text("utf-8-sig")
+        for match in re.finditer(r"(?m)^\s*\[([^\]\r\n]+)\]", body):
+            fields = [v.strip() for v in match.group(1).split(",")]
+            if len(fields) not in (2, 3):
+                continue
+            ver = int(fields[2]) if len(fields) == 3 and fields[2].isdigit() else 0
+            if (fields[0], fields[1], ver) in extra_ids:
+                raise ValueError(f"Treinador Hoenn da etapa 3 já existe: {fields} ({candidate.name})")
+    if "BLUE_HOENN_AQUA" in types:
+        raise ValueError("Tipo BLUE_HOENN_AQUA já existe no PBS nativo")
+    overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
+        "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
+        "BaseMoney = 20\nSkillLevel = 50\n"
+    ).encode("utf-8")
+    # Use only native trainer graphics; a fallback is explicitly NOT a visual
+    # approval for the actual Aqua sprite.
+    aqua_art = None
+    aqua_art_name = None
+    for name in ("RSE_AQUAGRUNT_M", "AQUAGRUNT", "GRUNTMALE", "YOUNGSTER"):
+        path = game / f"Graphics/Trainers/{name}.png"
+        if path.is_file() and not path.is_symlink():
+            blob = regular(path).read_bytes()
+            if blob.startswith(PNG):
+                aqua_art, aqua_art_name = blob, name
+                break
+    if aqua_art is None:
+        raise ValueError("Sem sprite de treinador Aqua/grunt nativo para a cópia; instalar somente após revisão gráfica")
+    overlay["Graphics/Trainers/BLUE_HOENN_AQUA.png"] = aqua_art
+    for mid, x, y, kind, name, sprite, team, is_double in TRAINERS_STAGE3:
+        trainer_sections.append(
+            f"[{kind},{name},{mid}]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+        )
+    kind, name, version = FOREST_AQUA_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{version}]\nLoseText = Recuar!\n" +
+        "".join(f"Pokemon = {species},{level}\n" for species, level in FOREST_AQUA_TEAM)
+    )
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
@@ -603,6 +656,16 @@ def build_overlay(game, source):
               "rival_versions": [{"player_starter": chosen, "rival_species": opponent,
                                   "version": version} for chosen, (opponent, version)
                                  in RIVAL_TEAMS.items()],
+              "stage3": {**stage3_counts, "map_ids": list(SOURCE_MAPS_STAGE3),
+                         "extra_borders": list(OFFSET_BORDERS),
+                         "trainer_bindings": [{"source_map_id": mid, "x": x, "y": y,
+                                               "trainer_type": kind, "name": name,
+                                               "pbs_version": mid, "double": is_double}
+                                              for mid, x, y, kind, name, sprite, team, is_double
+                                              in TRAINERS_STAGE3],
+                         "aqua_sprite_source": aqua_art_name,
+                         "aqua_sprite_placeholder": aqua_art_name != "RSE_AQUAGRUNT_M",
+                         "gameplay_approved": False},
               "native_gameplay_verified": False}
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
