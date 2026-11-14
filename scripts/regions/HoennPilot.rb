@@ -2823,7 +2823,7 @@ module BlueHoennPilot
       pbMessage(_INTL("Vença Sidney, Phoebe, Glacia e Drake antes do Campeão Wallace."))
       return false
     end
-    if dest_id==99 && !flags["champion_wallace_defeated"]
+    if dest_id==99 && (!flags["champion_wallace_defeated"] || !qa9_champion_unlocked?)
       pbMessage(_INTL("Derrote Wallace para entrar no Hall of Fame."))
       return false
     end
@@ -3015,7 +3015,8 @@ module BlueHoennPilot
                         BlueRegions.respond_to?(:complete_league) &&
                         BlueRegions.respond_to?(:unlocked)
     region=$PokemonGlobal.blue_regions
-    region.is_a?(Hash) && region["leagues"].is_a?(Array)
+    region.is_a?(Hash) && region["leagues"].is_a?(Array) &&
+      BlueRegions.unlocked(region).include?("HOENN")
   end
 
   def self.qa10_postgame_status
