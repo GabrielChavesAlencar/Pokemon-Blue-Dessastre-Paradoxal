@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "90ad0ee1aca9290cb1eee99cf351b67a103a2a10",
+      "date": "2026-11-14T12:54:03-03:00",
+      "title": "test(hoenn): validar 85 mapas, Flannery, Magma, calor e teleférico no contrato",
+      "category": "Testes"
+    },
+    {
       "sha": "1977b732f5e73a4c4d26a1421accac83b015a94c",
       "date": "2026-11-14T12:52:45-03:00",
       "title": "feat(site/hoenn): catalogar 85 mapas, Magma, Flannery e Heat Badge como piloto",
