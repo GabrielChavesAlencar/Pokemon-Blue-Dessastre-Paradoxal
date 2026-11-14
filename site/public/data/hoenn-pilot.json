@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Dados do piloto de Littleroot e Oldale. Os níveis indicados são os valores-base.",
+  "note": "Dados-base do piloto isolado de Hoenn até Petalburg Woods. Mapas/eventos nativos ainda exigem teste real no Game.exe; os níveis originais não são fixos no Blue.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -126,6 +126,120 @@
           ]
         ]
       }
+    },
+    {
+      "name": "Petalburg City",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Petalburg",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Petalburg",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Petalburg",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Petalburg",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 104",
+      "encounters": {
+        "Grama": [
+          [
+            "POOCHYENA",
+            4,
+            5,
+            40
+          ],
+          [
+            "MARILL",
+            4,
+            5,
+            20
+          ],
+          [
+            "WURMPLE",
+            4,
+            4,
+            20
+          ],
+          [
+            "TAILLOW",
+            4,
+            5,
+            10
+          ],
+          [
+            "WINGULL",
+            3,
+            5,
+            10
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Casa de Mr. Briney",
+      "encounters": {}
+    },
+    {
+      "name": "Pretty Petal Flower Shop",
+      "encounters": {}
+    },
+    {
+      "name": "Petalburg Woods",
+      "encounters": {
+        "Grama": [
+          [
+            "WURMPLE",
+            5,
+            6,
+            25
+          ],
+          [
+            "POOCHYENA",
+            5,
+            6,
+            30
+          ],
+          [
+            "SHROOMISH",
+            5,
+            6,
+            15
+          ],
+          [
+            "CASCOON",
+            5,
+            5,
+            10
+          ],
+          [
+            "SILCOON",
+            5,
+            5,
+            10
+          ],
+          [
+            "SLAKOTH",
+            5,
+            6,
+            5
+          ],
+          [
+            "TAILLOW",
+            5,
+            6,
+            5
+          ]
+        ]
+      }
     }
   ],
   "trainers": [
@@ -208,6 +322,214 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Billy",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              5
+            ],
+            [
+              "SEEDOT",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Darian",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "MAGIKARP",
+              9
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Cindy",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Winston",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Haley",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "LOTAD",
+              6
+            ],
+            [
+              "SHROOMISH",
+              6
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Gina & Mia",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "SEEDOT",
+              6
+            ],
+            [
+              "LOTAD",
+              6
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Ivan",
+      "area": "Rota 104",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "MAGIKARP",
+              5
+            ],
+            [
+              "MAGIKARP",
+              6
+            ],
+            [
+              "MAGIKARP",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "James",
+      "area": "Petalburg Woods",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "NINCADA",
+              6
+            ],
+            [
+              "NINCADA",
+              6
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Lyle",
+      "area": "Petalburg Woods",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "WURMPLE",
+              3
+            ],
+            [
+              "WURMPLE",
+              3
+            ],
+            [
+              "WURMPLE",
+              3
+            ],
+            [
+              "WURMPLE",
+              3
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta",
+      "area": "Petalburg Woods",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              9
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
-  ]
+  ],
+  "native_gameplay_verified": false,
+  "stage3_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
