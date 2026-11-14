@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a9d100a8c9a0e9a5e43e12ce73bd8980ce46a7d0",
+      "date": "2026-11-14T07:20:15-03:00",
+      "title": "fix(kanto): incluir tradução bilíngue e auditar textos do piloto",
+      "category": "Correções"
+    },
+    {
       "sha": "3bf3c5e514fa4c9eeb1ce1e08fe8f9e16c5ecd73",
       "date": "2026-11-14T07:12:38-03:00",
       "title": "fix(johto): reconstruir interiores iniciais e portas de Cherrygrove",
