@@ -62,8 +62,8 @@ class HoennStage9Tests(unittest.TestCase):
         self.assertIn((141,206),STAGE9_MAP_GRAPH_EDGES)
         self.assertIn((180,182),STAGE9_MAP_GRAPH_EDGES)
         self.assertIn((69,215),STAGE9_MAP_GRAPH_EDGES)
-        self.assertNotIn(83,SOURCE_MAPS)  # Sootopolis is Stage10
-        self.assertNotIn(227,SOURCE_MAPS) # Seafloor Cavern Stage10
+        self.assertIn(83,SOURCE_MAPS)  # Sootopolis added by Stage10
+        self.assertIn(227,SOURCE_MAPS) # Seafloor Cavern added by Stage10
 
     def test_boss_party_and_source_anchor_contract(self):
         self.assertEqual(TATE_LIZA_PBS,("BLUE_HOENN_TATE_LIZA","Tate & Liza",982))
