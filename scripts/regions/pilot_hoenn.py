@@ -252,7 +252,7 @@ def preflight_route102_trainers(game: Path) -> list[dict]:
         raise ValueError("PBS nativo de Hoenn indisponível")
     for path in sorted(root.glob("trainers*.txt")):
         body = regular(path).read_text("utf-8-sig")
-        for header in re.finditer(r"(?m)^\\s*\\[([^]\\r\\n]+)\\]", body):
+        for header in re.finditer(r"(?m)^\s*\[([^\]\r\n]+)\]", body):
             fields = [v.strip() for v in header[1].split(",")]
             if len(fields) not in (2, 3):
                 continue
