@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f4b7a147fa5c5985bb890c94e8dc126d92b33bc7",
+      "date": "2026-11-13T21:34:50-03:00",
+      "title": "fix(sinnoh): reject symlink ancestry when verifying private Barry PBS drafts",
+      "category": "Correções"
+    },
+    {
+      "sha": "fc9cfded1c05435fa28778cf05482d4151c3855c",
+      "date": "2026-11-13T21:34:36-03:00",
+      "title": "fix(sinnoh): reject symlinked staging ancestors to prevent Berry PBS outputs escaping .blue-work",
+      "category": "Correções"
+    },
+    {
       "sha": "dee5372d36a27f3b48627de4bcc5ae27bddf48d0",
       "date": "2026-11-13T21:33:10-03:00",
       "title": "docs(sinnoh): link Barry PBS drafts in Twinleaf story plan and flag legacy pilot migration blockers",
