@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2a91b4f8bdad4a5315e04e837cf11cb0882368df",
+      "date": "2026-11-13T21:31:19-03:00",
+      "title": "docs(sinnoh): assign only native Barry PBS compilation/QA and legacy pilot reconciliation to Codex",
+      "category": "Documentação"
+    },
+    {
       "sha": "53c9c6c7d463f089b392af4e2daa9e6ae6695493",
       "date": "2026-11-13T21:30:20-03:00",
       "title": "docs(sinnoh): add 4/6 Barry PBS progress bar and real QA limitations without increasing completed phases",
