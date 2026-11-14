@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ad6ebc37a4d4fa408b75b4d6405dd1017096fef7",
+      "date": "2026-11-14T17:56:52-03:00",
+      "title": "fix(hoenn): Hall access and finale readiness require entire unlocked League progression",
+      "category": "Correções"
+    },
+    {
       "sha": "1c40f29c197f3a9e59c563c288eb44453da0874a",
       "date": "2026-11-14T17:55:54-03:00",
       "title": "fix(hoenn): QA10 real BlueRegions test must expose Hoenn's eight registry milestones",
