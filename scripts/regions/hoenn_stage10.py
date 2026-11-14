@@ -56,6 +56,7 @@ SURF_BORDERS_STAGE10 = (
     (154,"West",0,155,"East",0),
     (154,"East",0,153,"West",0),
     (148,"South",0,149,"North",0),
+    (150,"West",0,151,"East",0),
 )
 
 # These undirected relationships are either direct donor transfers, PBS
