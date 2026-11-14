@@ -265,6 +265,8 @@ module BlueHoennPilot
       pbMessage(_INTL("Enfermeira: Traga seus Pokémon quando precisar de atendimento."))
       return
     end
+    # Also register Oldale as the respawn Pokémon Center, not only heal HP.
+    pbSetPokemonCenter
     $player.heal_party
     pbMessage(_INTL("Enfermeira: Seus Pokémon estão recuperados. Boa viagem!"))
   end
