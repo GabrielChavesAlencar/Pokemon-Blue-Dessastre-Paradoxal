@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7984bd9746862be8d6dab865c9b1138ef06c8b63",
+      "date": "2026-11-14T14:23:40-03:00",
+      "title": "docs(hoenn): registrar Etapa 09 Mossdeep/Mt Pyre/Magma/Aqua com critérios de aceite",
+      "category": "Documentação"
+    },
+    {
       "sha": "70b7a39f388d6b5a072ef5f0c73465413f4a72b5",
       "date": "2026-11-14T14:22:11-03:00",
       "title": "ci(hoenn): executar testes Ruby Mt Pyre, Submarino, Tate/Liza, Mind e Dive",
