@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5b6788b5bac592619435665f72479117694d51a8",
+      "date": "2026-11-13T21:29:54-03:00",
+      "title": "data(sinnoh): add Barry PBS 4/6 preparation track while preserving overall 8/32 and 0/13 native gates",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0ac499339a2a44a38779d459e5631991acd62241",
       "date": "2026-11-13T21:29:04-03:00",
       "title": "docs(sinnoh): detail Barry's three native PBS drafts, 70/90 scaling and legacy 800-805 pilot conflict",
