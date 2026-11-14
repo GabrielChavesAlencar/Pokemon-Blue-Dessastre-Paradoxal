@@ -8,6 +8,12 @@
       "category": "Correções"
     },
     {
+      "sha": "363f81abcf12ccaf873ff38c9f4bd5c31efdc2ea",
+      "date": "2026-11-14T12:02:48-03:00",
+      "title": "Corrige Safari, trilhas de Kanto e mapas do piloto de Johto",
+      "category": "Correções"
+    },
+    {
       "sha": "7d25870a57d631abe02552da25a9926def310f42",
       "date": "2026-11-14T12:01:43-03:00",
       "title": "fix(test/hoenn): reconhecer fallback Aqua como arte provisória não aprovada",
