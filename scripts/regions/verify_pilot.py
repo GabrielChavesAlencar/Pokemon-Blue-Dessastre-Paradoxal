@@ -58,6 +58,21 @@ def inspect(game: Path) -> dict:
         if not file.is_file():
             raise ValueError(f"Missing {expected[source]} map: {file.name}")
         maps[dest] = load(file)
+    # Pewter -> Route 3 uses a real-source east-edge movement guard.
+    # Reject a missing/cross-region/out-of-bounds rule before launching.
+    pewter_guard = game / "Data/blue-kanto-pewter-route3-gate.txt"
+    if not pewter_guard.is_file():
+        raise ValueError("Missing Pewter Route 3 Brock badge gate")
+    try:
+        pewter_map_id, pewter_width, first_row, last_row = map(
+            int, pewter_guard.read_text("ascii").strip().split("|"))
+    except (OSError, ValueError) as error:
+        raise ValueError("Invalid Pewter Route 3 gate coordinates") from error
+    pewter_map = maps[mapping[25]].attrs
+    if (pewter_map_id != mapping[25] or
+            pewter_width != pewter_map["@width"] or
+            not 0 <= first_row < last_row <= pewter_map["@height"]):
+        raise ValueError("Pewter Route 3 story gate is outside source map edge")
     # Native field objects are generated from their real source EventIDs.
     # Reject invented coordinates, foreign-preview events and malformed
     # one-shot item and physical HM obstacle callbacks.
