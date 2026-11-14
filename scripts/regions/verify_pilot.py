@@ -69,6 +69,22 @@ def inspect(game: Path) -> dict:
         raise ValueError("Unsupported Kanto field inventory schema")
     if field_report.get("preview_maps_untouched") != sorted(preview_only):
         raise ValueError("Kanto field importer touched an unaudited preview")
+    # Check the actual Ruby Marshal bridge table and event callbacks, not just
+    # the translation JSON: only this proves imported NPCs can reach pt-BR.
+    native_file = game / "Data/blue-kanto-npc-dialogues.dat"
+    if not native_file.is_file():
+        raise ValueError("Kanto pilot missing runtime NPC dialogue table")
+    native_rows = load(native_file)
+    if not isinstance(native_rows, list):
+        raise ValueError("Invalid Kanto runtime NPC dialogue format")
+    native_dialogues = {}
+    for source_map, source_event, messages in native_rows:
+        key = (source_map, source_event)
+        if key in native_dialogues or not isinstance(messages, list) or not messages:
+            raise ValueError("Duplicate or empty Kanto runtime NPC dialogue")
+        if any(not text(message).strip() for message in messages):
+            raise ValueError("Blank Kanto runtime NPC dialogue")
+        native_dialogues[key] = messages
     known = {"item", "npc_dialogue", "rock_smash", "strength", "cut"}
     seen = set()
     for row in field_report["imported"]:
@@ -86,6 +102,14 @@ def inspect(game: Path) -> dict:
         page = event.attrs["@pages"][0].attrs
         commands = [text(op.attrs["@parameters"][0]) for op in page["@list"]
                     if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
+        if row["kind"] == "npc_dialogue" and (source, event_id) in native_dialogues:
+            messages = native_dialogues[(source, event_id)]
+            expected_calls = [
+                f"BlueKantoPilot.npc_dialogue({source}, {event_id}, {index})"
+                for index in range(len(messages))
+            ]
+            if page["@trigger"] != 0 or commands != expected_calls:
+                raise ValueError("Kanto NPC does not call the locale bridge at talk time")
         if row["kind"] == "item":
             if (len(event.attrs["@pages"]) != 2 or
                     not event.attrs["@pages"][1].attrs["@condition"].attrs["@self_switch_valid"] or
@@ -104,6 +128,10 @@ def inspect(game: Path) -> dict:
                             op.attrs["@parameters"][1] == b"pbCut"
                             for op in page["@list"] if len(op.attrs["@parameters"]) > 1)):
                 raise ValueError("CutTree does not use native badge-gated Cut")
+    source_npcs = {(r["source_map"], r["event"])
+                   for r in field_report["imported"] if r["kind"] == "npc_dialogue"}
+    if not native_dialogues.keys() <= source_npcs:
+        raise ValueError("Kanto dialogue bridge contains an unapproved source event")
     # Missing PNGs for *optional* field NPCs must be recorded and omitted,
     # not silently imported as invisible blockers or crash the game builder.
     for row in field_report.get("missing_graphics", []):
