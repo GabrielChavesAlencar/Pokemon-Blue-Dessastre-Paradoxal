@@ -83,6 +83,8 @@ O novo montador [prepare_sinnoh_pilot_bundle.py](../scripts/regions/prepare_sinn
 
 **Restam 3 subetapas locais:** auditar a fonte autorizada e os IDs reservados, montar/compilar na cópia real do Game.exe com perfil isolado, testar Windows/Android e a batalha com Barry. O montador fica em **dry-run por padrão**, escreve apenas em pasta nova de `.blue-work` mediante `--publish` e **não cria marcador de batalha**. Portanto a barra geral continua **8/32 (25%)**, as fases técnicas/jogáveis/QA **0/13**, e a compatibilidade do piloto legado permanece **3/6**.
 
+**Validação atualizada de código:** a [CI isolada de Sinnoh, execução 43538522476](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43538522476), aprovou **119 testes Python** e os testes Ruby de introdução e sondagem do Barry em ambiente sintético. A regressão geral permanece com a falha preexistente de Johto `test_ruby_guard_only_accepts_signed_local_pilot` (`[601, 13, 13]` vs `nil`), sem representar falha do montador de Sinnoh. Teste offline não prova Game.exe jogável.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
