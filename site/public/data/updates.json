@@ -2,10 +2,22 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "013b15ee157c33bbed76ad6b009ae1c93f7625c5",
+      "date": "2026-11-13T22:26:35-03:00",
+      "title": "data(sinnoh): record 4/7 post-compile engine validation preparation without native execution or gameplay approval",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1e555f38ab500da9fd06324945021e14d1471eda",
       "date": "2026-11-13T22:26:06-03:00",
       "title": "docs(sinnoh): document post-PBS native engine map/event/Barry inspection and strict non-gameplay evidence contract",
       "category": "Documentação"
+    },
+    {
+      "sha": "b850a3f052555bfdff6b0fa471925b437d41ae32",
+      "date": "2026-11-13T22:25:35-03:00",
+      "title": "fix(johto): conferir integridade do mapa inicial e atualizar regressões",
+      "category": "Correções"
     },
     {
       "sha": "45354c75f58df3a05eb0cf4e02aa703003319b57",
