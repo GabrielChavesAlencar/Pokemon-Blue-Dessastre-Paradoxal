@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c3bbad337d1137f9b00af494537074f9e0a1c842",
+      "date": "2026-11-14T18:45:19-03:00",
+      "title": "test(hoenn): QA12 requires 199-source teleport catalog and rejects false native approvals",
+      "category": "Testes"
+    },
+    {
       "sha": "e0c12b25c716169c4b72d11ac084c5708acabef2",
       "date": "2026-11-14T18:44:59-03:00",
       "title": "test(hoenn): QA12 verify all 199 teleport stops on physical RXDATA tiles and menu installation",
