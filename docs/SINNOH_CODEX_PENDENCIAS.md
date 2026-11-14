@@ -94,6 +94,25 @@ python -m unittest discover -s tests -p "test_sinnoh_remap.py" -v
 - **R08 permanece parcial** porque a fonte Sinnoh verdadeira, permissões, coordenadas de eventos, scripts autorais e QA de mapa não foram auditados. **Não refazer o conversor; use-o somente quando os assets locais reais estiverem disponíveis.**
 - **Barras:** desenvolvimento 8/32 (25%); remapeamento S07 6/9 (67%); técnica, jogável e QA nativa continuam 0/13. Arquivo mestre: [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md).
 
+### Fase 03 — Twinleaf, Rowan, Barry e iniciais: código feito, integrações locais restantes
+
+**Já publicado no GitHub (NÃO reimplementar):**
+
+- [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb): módulo `BlueSinnohPilot` com estado `blue_regions["sinnoh_pilot"]` que opera **somente** com `current == "SINNOH"`, mãe, Barry, Rowan/maleta, três Poké Bolas de Turtwig/Chimchar/Piplup, primeira batalha e concessão de Pokédex. A batalha exige três versões PBS já compiladas e marcador seguro exclusivo da cópia.
+- [sinnoh-twinleaf-events.json](../data/regions/sinnoh-twinleaf-events.json): 9 mapas simbólicos, 5 handlers, 3 Poké Bolas físicas e 16 warps; sem IDs, sprites ou posições inventadas.
+- [build_sinnoh_twinleaf_events.py](../scripts/regions/build_sinnoh_twinleaf_events.py): recompila eventos **do Blue**, exclusivamente sobre stage de geometria anteriormente auditado, hashes de mapa e coordenadas verificadas, gerando apenas overlay local; sem instalar `game/`.
+- [tests/test_sinnoh_twinleaf_events.py](../tests/test_sinnoh_twinleaf_events.py) e [tests/sinnoh_pilot_runtime.rb](../tests/sinnoh_pilot_runtime.rb): segurança de eventos, save isolado, bloqueio de segundo inicial, gating de Barry e Pokédex. A workflow `regression.yml` executa o teste Ruby.
+- [SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md): sequência original de Blue, ferramentas, comandos e critérios obrigatórios de QA.
+
+**Apenas o que depende do Codex / dados locais:**
+1. Conferir fonte real autorizada e identificar os **nove** mapas/interiores/rotas e todos os MapIDs, paredes, colisões, sprites, portais, posicionamentos e início verificável **no quarto** do jogador. Não colocar números hipotéticos na template publicada; trabalhar em cópia dentro de `.blue-work/sinnoh/`.
+2. Reusar `convert_sinnoh_geometry.py` para gerar stage somente da geometria. Conferir o stage e completar a cópia local da template com os dados efetivos. Não copiar eventos originais nem sobrescrever staging existente.
+3. Executar `build_sinnoh_twinleaf_events.py` primeiro sem `--stage` para dry-run e depois `--stage --expected-dry-run SHA_REAL` para uma **nova** sobreposição em `.blue-work/sinnoh-stage/`. O compilador deve rejeitar source MapIDs sem hash, coordenadas não verificadas ou outro tipo de script.
+4. Criar e testar três versões **próprias do Blue** do treinador `BLUE_SINNOH_RIVAL` com inicial de vantagem e level cap/insígnias do Blue; habilitar `Data/blue-sinnoh-rival-ready.txt` **apenas** na cópia isolada depois de todas as equipes PBS terem sido validadas. Nunca conceder um segundo starter nem usar o PBS do doador.
+5. Validar no Windows e JoiPlay: mãe → Barry → Rowan/maleta → clique nas três bolas (uma só é recebida) → Barry (ganhando/perdendo) → Pokédex → rotas/portas e save/reload, além de regressão Decades/Kanto/Johto/Hoenn. Publicar relatório com hashes e evidências sem enviar assets privados.
+
+**Progresso real:** S13 e S14 **parciais**; preparação da introdução **5/8 subetapas**; desenvolvimento geral **8/32 (25%)**; fases técnicas, jogáveis e QA continuam **0/13** até os mapas reais e testes nativos. Relatório central: [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md).
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
