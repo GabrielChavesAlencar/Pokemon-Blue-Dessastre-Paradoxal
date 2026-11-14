@@ -84,11 +84,13 @@ def inspect(game: Path) -> dict:
         64: {1}, 114: {1, 2}, 124: {4, 6, 8}, 144: {1, 2, 3, 4},
     }
     if cut_events != required_cut:
-        raise ValueError(
-            f"FRLG Cut Tree locations missing or unexpected: "
-            f"{[(map_id, sorted(allowed - cut_events.get(map_id, set())))
-                for map_id, allowed in required_cut.items()
-                if allowed - cut_events.get(map_id, set())]}")
+        missing_cuts = [(source, sorted(ids - cut_events.get(source, set())))
+                        for source, ids in required_cut.items()
+                        if ids - cut_events.get(source, set())]
+        unexpected_cuts = [(source, sorted(ids - required_cut.get(source, set())))
+                           for source, ids in cut_events.items()
+                           if ids - required_cut.get(source, set())]
+        raise ValueError(f"FRLG Cut Tree mismatch: missing={missing_cuts} unexpected={unexpected_cuts}")
     by_cut = {(row["source_map"], row["event"]): row for row in
               field_report["cut_source_candidates"]
               if row.get("native_cut_script") and row.get("native_smash_script")}
