@@ -11,7 +11,7 @@ O inventário do piloto passa de **138 para 199 MapIDs** (+61). A auditoria **re
 
 Os MapIDs originais integrados à cópia isolada incluem Sootopolis (83–87), Pacifidlog (88–90), Ever Grande/Liga (91–100 e 322), rotas costeiras 125–134 (146–155), Seafloor Cavern (227–236), Cave of Origin (238–240), Sky Pillar (241–248), Victory Road (250–252) e subconjunto de áreas subaquáticas (255, 258–263, 266). IDs remapeados para o namespace seguro 700–999 na cópia do jogador, sem substituir mapas, PBS ou saves de Decades/Kanto/Johto/Sinnoh.
 
-**Conexões:** 15 bordas externas que realmente aparecem no PBS da fonte foram adicionadas, mas dependem das mecânicas de Surf. O scanner dos eventos RXDATA reutiliza somente teleportes diretos com alvo estático válido e itens inequívocos; descarta destinos ambíguos, condicionais ou fora do mapa. Não inventa coordenadas.
+**Conexões:** 16 bordas externas que realmente aparecem no PBS da fonte foram adicionadas, mas dependem das mecânicas de Surf. O scanner dos eventos RXDATA reutiliza somente teleportes diretos com alvo estático válido e itens inequívocos; descarta destinos ambíguos, condicionais ou fora do mapa. Não inventa coordenadas.
 
 ## 2. História e líderes adicionados
 
