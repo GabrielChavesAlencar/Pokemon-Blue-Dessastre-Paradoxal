@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cc4e50cdc8e59551122c9648756cc563e2f3b602",
+      "date": "2026-11-14T17:04:30-03:00",
+      "title": "docs(hoenn): QA6 progress prepared, 0/12 Game.exe acceptance",
+      "category": "Documentação"
+    },
+    {
       "sha": "b4f12f971638c81d84f40ca39e0fb74b5dfe6854",
       "date": "2026-11-14T17:03:45-03:00",
       "title": "feat(hoenn): TESTAR_HOENN QA6 isolated profile and gated climate verification",
