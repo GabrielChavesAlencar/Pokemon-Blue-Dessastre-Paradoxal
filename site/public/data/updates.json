@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a079df9d31788b35cda9f686302b827da9dc96ec",
+      "date": "2026-11-14T12:46:39-03:00",
+      "title": "feat(hoenn): integrar 27 mapas e passagens reais do capítulo Fallarbor-Lavaridge",
+      "category": "Novidades"
+    },
+    {
       "sha": "ec5616d2d4cca821d1bee060d13a636822491959",
       "date": "2026-11-14T12:45:29-03:00",
       "title": "feat(hoenn): 27 mapas Fallarbor/Lavaridge, Meteor Falls e Mt Chimney auditados",
