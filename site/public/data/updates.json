@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4011033d6b9ad92366cc955f5b45d24e54dda31e",
+      "date": "2026-11-14T18:13:23-03:00",
+      "title": "feat(hoenn): QA11 private profile accepted by previous audits",
+      "category": "Novidades"
+    },
+    {
+      "sha": "5880e218d1e1ac17fa5a914aa347283ce5d2d5bc",
+      "date": "2026-11-14T18:13:20-03:00",
+      "title": "feat(hoenn): QA11 private profile accepted by previous audits",
+      "category": "Novidades"
+    },
+    {
       "sha": "3381d800d4ccf65190299482196de3b6b3dcffde",
       "date": "2026-11-14T18:12:55-03:00",
       "title": "test(regions): adaptar expectativas HM ao inventario e a especie compativel",
