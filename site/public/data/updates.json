@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "69df0f76ddb89af96b5f516412934c6bd3f5e016",
+      "date": "2026-11-14T19:04:15-03:00",
+      "title": "docs(hoenn): implementation backlog after QA12 with evidence, priorities and IMP-1..IMP-5 plan",
+      "category": "Documentação"
+    },
+    {
       "sha": "2492591e8612f211d477ecf844de025db41d4ab9",
       "date": "2026-11-14T19:01:02-03:00",
       "title": "test(kanto): conferir grafico CutTree remapeado pelo fixture",
