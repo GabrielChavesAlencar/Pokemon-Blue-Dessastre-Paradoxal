@@ -5,13 +5,13 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação da fase 1 implementada; execução/aceite pendente — ▣□□□□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 e 2 implementada; execução/aceite pendentes — ▣▣□□□□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
 |---:|---|---|---|
 | 1 | Gerar cópia isolada com 199 mapas e PBS | **Ferramenta preparada, execução local pendente** | ⏳ |
-| 2 | Corrigir conexões e colisões dos mapas | Pendente | ⏳ |
+| 2 | Corrigir conexões e colisões dos mapas | **Auditoria de RXDATA/PBS implementada; execução local pendente** | ⏳ |
 | 3 | Conferir encontros, NPCs, treinadores e itens | Pendente | ⏳ |
 | 4 | Surf, Dive, Waterfall, Strength e puzzles | Pendente | ⏳ |
 | 5 | Equipes Aqua/Magma, Seafloor Cavern | Pendente | ⏳ |
@@ -63,6 +63,47 @@ O primeiro é auditoria de pasta, não instala; `--prepare` usa o ZIP; `--offlin
 - [ ] Logs/relatório e capturas revisados; não há erro bloqueante de compilação.
 - [ ] Direitos/créditos dos assets a distribuir avaliados antes de fazer pacote público.
 
-A auditoria de arquivos e testes sintéticos NÃO executam o Game.exe. A fase 1 só fica **1/12 aprovada** quando houver evidência da execução no computador. A fase seguinte será **2/12 — mapas/conexões**.
+A auditoria de arquivos e testes sintéticos NÃO executam o Game.exe. A fase 1 só fica **1/12 aprovada** quando houver evidência da execução no computador. O preparador de dados da **2/12 — mapas/conexões** está descrito abaixo; os dois aceites nativos seguem pendentes.
 
 **Preservação:** ZIP e arquivos `.rxdata`, áudios, PNG e Game.exe do doador não devem ser enviados à branch pública. Os bugs conhecidos do ginásio de Mossdeep, Steven, Dive, Sky Pillar e Hall of Fame permanecem tarefas das fases seguintes.
+
+
+## Fase 02/12 — mapas e conexões (preparação técnica)
+
+**A barra continua em 0/12 aprovada no Game.exe**. A Fase 2 passou a ter verificação de dados planejada, mas não foi certificada como jogável.
+
+### Código preparado
+
+- [scripts/regions/hoenn_qa_phase2.py](../scripts/regions/hoenn_qa_phase2.py): lê a **cópia gerada na Fase 1**, confere exatamente 199 RXDATA e o MapInfos correspondente; rejeita IDs, eventos e warps nativos inválidos, landing cells fora de limites, scripts de transferência sem origem correta e sobreposição de eventos.
+- Confere as **conexões de borda realmente adicionadas** em PBS, seus dois lados, offsets e a faixa de dimensões. Rejeita uma conexão de Hoenn que inesperadamente aponte para um MapID nativo de Decades/Kanto/Johto.
+- Confere se os destinos das portas da abertura (WARP_PAIRS) coincidem **com as coordenadas** dos destinos originais, não só com o número do mapa.
+- Gera relatório `.blue-work/hoenn-qa-fase02-report.json` com número de eventos e transferências e mapas sem saída *observada* nos scripts de transferência. Ausência de saída observada não prova isolamento: travessias por HM, scripts específicos ou puzzles podem existir.
+- [tests/test_hoenn_qa_phase2.py](../tests/test_hoenn_qa_phase2.py) acrescenta testes sintéticos de integridade, duplicação, remapeamento, posição e proteção de arquivo.
+- [TESTAR_HOENN.bat](../TESTAR_HOENN.bat) agora roda Fase 1, depois a **auditoria read-only da Fase 2** e só abre o Game.exe isolado se ambas as verificações estáticas passarem. O jogo principal não é modificado.
+
+### Como executar
+
+1. Atualize a `main` do repositório.
+2. Com a instalação privada `game/` e seu `The Pokémon World Project - Hoenn.zip` na raiz, execute **`TESTAR_HOENN.bat`**.
+3. Confirme no relatório local da Fase 1 a existência da cópia isolada `.blue-work/hoenn-qa-fase01/`.
+4. Confira o relatório de mapas: `.blue-work/hoenn-qa-fase02-report.json`, cujo campo `status` deve ser `STATIC_MAP_CONNECTIONS_AUDITED`, com `maps_read=199` e `errors=[]`.
+5. Se o relatório apontar MapID, porta ou PBS incorreto, **não substitua os arquivos originais**. Corrija o mapeamento e reconstrua a cópia em nova pasta (nunca sobrescreva uma cópia com save).
+6. Quando abrir o Game.exe, percorra Littleroot, Oldale, Petalburg, Rustboro, Slateport, Mossdeep, rotas Surf, Dive, Sootopolis, Sky Pillar, Victory Road e Liga. Teste ida e volta de portas e passagens, eventos condicionais, batalha, save e retorno.
+7. Registre coordenada, mapa, direção, flag e estado do save de cada falha; valide Decades e outros pilotos separadamente.
+
+O auditor de dados pode ser rodado também de modo independente:
+
+~~~powershell
+py -3 scripts/regions/hoenn_qa_phase2.py --copy ".blue-work/hoenn-qa-fase01"
+~~~
+
+### Aprovação nativa — ainda pendente
+
+- [ ] Cópia privada real gerada e 199 RXDATA carregados.
+- [ ] Relatório `hoenn-qa-fase02-report.json` sem erros de coordenadas, mapa, portais ou PBS.
+- [ ] Game.exe compilou, iniciou e percorreu fisicamente os segmentos da campanha.
+- [ ] Portas de ida/volta, bloqueios por Surf/Dive/Waterfall, escadas e puzzles funcionaram.
+- [ ] Save/reload e instalação original confirmados intactos.
+- [ ] Eventuais falhas anotadas e corrigidas, com nova regressão.
+
+**Aviso:** este auditor lê tabelas e código de eventos sem executá-los. Não demonstra que os gráficos, colisões, HMs, páginas condicionais ou movimentação funcionam na engine. Nenhuma fase foi promovida para "aprovada" somente por CI.
