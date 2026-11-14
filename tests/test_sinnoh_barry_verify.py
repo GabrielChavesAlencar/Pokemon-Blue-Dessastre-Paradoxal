@@ -83,6 +83,16 @@ class SinnohBarryIntegrityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Draft deve estar"):
             inspect(self.root / "unrelated", self.game, root=self.root)
 
+    def test_refuses_symlinked_parent_escape(self):
+        redirect = self.root / ".blue-work/malicious"
+        try:
+            redirect.symlink_to(self.game, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("Symlink creation unavailable")
+        (self.game / "fake-draft").mkdir()
+        with self.assertRaisesRegex(ValueError, "Draft deve estar"):
+            inspect(redirect / "fake-draft", self.game, root=self.root)
+
 
 if __name__ == "__main__":
     unittest.main()
