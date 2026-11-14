@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "108bcbfa89ce2b503d9b7d5bf16eef526187e7a9",
+      "date": "2026-11-13T22:33:03-03:00",
+      "title": "test(sinnoh): exercise QA-only Barry battle permission, reject missing proof and nil battle, preserve other regions",
+      "category": "Testes"
+    },
+    {
       "sha": "9a87410bc886633a7989c18c3912fefc826bd897",
       "date": "2026-11-13T22:32:41-03:00",
       "title": "fix(sinnoh): enable QA-only Barry battle after verified compiled probe, preserve release marker gate in main game",
