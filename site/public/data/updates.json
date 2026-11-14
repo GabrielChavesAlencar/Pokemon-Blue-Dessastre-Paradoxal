@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "21db1e1398910d40db2b5eac85585c8b8603229e",
+      "date": "2026-11-14T18:50:54-03:00",
+      "title": "docs(hoenn): record 199-map test teleporter and isolated-profile safety without native approval",
+      "category": "Documentação"
+    },
+    {
+      "sha": "4d33d0dc793c2133bcfca81bfd1e6250181f3930",
+      "date": "2026-11-14T18:50:42-03:00",
+      "title": "docs(hoenn): explain full 199-map in-game test teleporter, auto-update and safety",
+      "category": "Documentação"
+    },
+    {
       "sha": "f078c1c60e7a560479351ba06bc6e63627f162bb",
       "date": "2026-11-14T18:50:02-03:00",
       "title": "test(hoenn): supply both group and map selection in QA teleport fixture",
