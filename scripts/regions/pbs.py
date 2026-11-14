@@ -324,6 +324,12 @@ def build_drafts(source, game, plan):
                and row["source_id"] not in ENCOUNTER_REVIEW_SOURCE_IDS}
     encounters, count = normalize_encounters(source / "PBS/encounters.txt", mapping, species)
     trainers = trainer_draft(source / "PBS/trainers.txt", species, moves, items)
+    # Separate full-strength rematch versions, generated from an authored
+    # 15-profile manifest. The source first-challenge PBS is never replaced.
+    from kanto_full_power import full_power_draft
+    from audit import ROOT
+    trainers += "\n" + full_power_draft(
+        ROOT / "data/kanto-full-power.json", species, TRAINERS)
     plan["drafts"] = {"encounter_tables": count, "trainer_profiles": len(TRAINERS),
                       "source_policy": "Essentials FRLG 1.1 explicitly listed levels; exact integer-weight conversion; map209 LandDay ambiguous; independent official exclusivities pending"}
     warning = "# REVIEW ONLY. Not loaded by the game. Source: Essentials FRLG 1.1.\n"
