@@ -19,6 +19,22 @@ check(record[:acquired]==%w[BOULDER CASCADE],"local badges retain registry order
 check(record[:rows].find{|row|row[0]=="KANTO"}[2]==2,"world page includes Kanto progress")
 check(record[:rows].find{|row|row[0]=="DECADES"}[2]==1,"world page includes native Decades")
 
+hoenn=BlueRegions.new_state("HOENN")
+check(BlueRegionalCards.data(hoenn,0)[:local]==0,"Hoenn starts without badges")
+%w[STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND RAIN].each do |badge|
+  check(BlueRegions.award(hoenn,"HOENN",badge),"Hoenn #{badge} badge award")
+  check(!BlueRegions.award(hoenn,"HOENN",badge),"Hoenn #{badge} duplicate prevented")
+end
+record=BlueRegionalCards.data(hoenn,1)
+check(record[:current]=="HOENN" && record[:local]==8,"Hoenn page shows eight badges")
+check(record[:acquired]==%w[STONE KNUCKLE DYNAMO HEAT BALANCE FEATHER MIND RAIN],
+      "Hoenn badge order matches registry")
+check(record[:global]==9,"Eight Hoenn + one Decades native crystal")
+check(BlueRegionalCards::HOENN_BADGES.keys==record[:milestones],
+      "Eight Hoenn badge labels correspond exactly to registry")
+check(BlueRegionalCards::HOENN_BADGES.values.uniq.length==8,
+      "Hoenn badge abbreviations must be distinguishable")
+
 decades=BlueRegions.new_state("DECADES")
 record=BlueRegionalCards.data(decades,9)
 check(record[:current]=="DECADES" && record[:local]==9,"Decades local crystals are native")
@@ -57,7 +73,11 @@ BlueRegionalCards.install
 check(PokemonTrainerCardScreen.new.pbStartScreen == [0],
       "Native Trainer Card opens Kanto badge page")
 check($card_pages == [0], "Native card routed to Kanto page zero")
+$PokemonGlobal.blue_regions = hoenn
+check(PokemonTrainerCardScreen.new.pbStartScreen == [0,0],
+      "Native Trainer Card must also open Hoenn's regional badge page")
+check($card_pages == [0,0], "Hoenn uses same two-page screen, no duplicate menu")
 $PokemonGlobal.blue_regions = decades
 check(PokemonTrainerCardScreen.new.pbStartScreen == :native_card,
       "Native Decades Trainer Card remains unchanged")
-puts "Trainer regional/global cards: badge totals, entry point, Decades isolation OK"
+puts "Trainer regional/global cards: Kanto + Hoenn badges, native entry, Decades isolation OK"
