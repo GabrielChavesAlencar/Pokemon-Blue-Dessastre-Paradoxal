@@ -39,7 +39,7 @@ class HoennStage8Tests(unittest.TestCase):
 
     def test_map_and_source_connections(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE8),25)
-        self.assertEqual(len(SOURCE_MAPS),110)
+        self.assertEqual(len(SOURCE_MAPS),138)
         self.assertEqual(len(WARP_PAIRS_STAGE8),39)
         self.assertEqual(len(WARP_PAIRS),130)
         self.assertEqual(len(OFFSET_BORDERS_STAGE8),8)
@@ -48,7 +48,7 @@ class HoennStage8Tests(unittest.TestCase):
         self.assertNotIn((134,"East",0,64,"West",140),OFFSET_BORDERS_STAGE8)
         self.assertIn(((48,8,1),(48,8,2),(157,34,21),(157,34,20)),WARP_PAIRS_STAGE8)
         self.assertNotIn(140,SOURCE_MAPS)  # Safari entrance is not enabled.
-        self.assertNotIn(215,SOURCE_MAPS)  # Aqua Hideout is future stage.
+        self.assertIn(215,SOURCE_MAPS)  # Aqua Hideout is audited in Stage9.
 
     def test_emerald_encounters_and_boss_teams(self):
         self.assertEqual(set(LAND_ENCOUNTERS_STAGE8),{132,134,135,138,139})
