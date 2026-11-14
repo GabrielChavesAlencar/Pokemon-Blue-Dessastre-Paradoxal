@@ -52,7 +52,7 @@ class HoennStage9Tests(unittest.TestCase):
 
     def test_source_inventory_and_coastal_gates(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE9),28)
-        self.assertEqual(len(SOURCE_MAPS),138)
+        self.assertEqual(len(SOURCE_MAPS),199)
         self.assertEqual(len(WARP_PAIRS),130)
         self.assertEqual(set(SURF_BORDERS_STAGE9),{
             (139,"South",20,141,"North",0),
