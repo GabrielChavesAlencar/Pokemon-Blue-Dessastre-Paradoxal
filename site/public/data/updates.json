@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "151b59c95bcc013c9cada110e0b21fc8335d4910",
+      "date": "2026-11-14T11:52:59-03:00",
+      "title": "test(hoenn): validar 48 mapas, Granite Cave, Brawly e Aqua no PBS compilado",
+      "category": "Testes"
+    },
+    {
       "sha": "e48c9be0a105a7dcdbccbc9748fd31b8d1c87658",
       "date": "2026-11-14T11:51:54-03:00",
       "title": "feat(hoenn): adicionar PBS Brawly, treinadores de Dewford e duas batalhas Aqua Slateport",
