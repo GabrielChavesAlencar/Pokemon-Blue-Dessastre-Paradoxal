@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0f6d0fd536e161f4cccf8354cb393bd1d48719d5",
+      "date": "2026-11-14T15:17:47-03:00",
+      "title": "feat(hoenn): QA jogável fase 1/12 e barra de progresso de 12 etapas",
+      "category": "Novidades"
+    },
+    {
       "sha": "cebcecb1f9e4c4728b00e324f3b49cf0af8c2954",
       "date": "2026-11-14T14:54:52-03:00",
       "title": "feat(hoenn): Etapa 10/10 final de Hoenn isolado com QA automatizado",
