@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4f32109a005d2a19f7624b972892e5a32e6f336e",
+      "date": "2026-11-14T17:54:32-03:00",
+      "title": "docs(hoenn): QA10 10/12 prepared, native gameplay still 0/12",
+      "category": "Documentação"
+    },
+    {
       "sha": "4bf097a613290ee09e1ce8b266934f3666c533f3",
       "date": "2026-11-14T17:53:47-03:00",
       "title": "feat(hoenn): TESTAR_HOENN QA10 private Hall copy and complete 01-10 audit chain",
