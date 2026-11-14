@@ -55,7 +55,7 @@ class H7Event
 end
 class H7Map
   attr_accessor :map_id,:events
-  def initialize;@map_id=721;@events={12=>H7Event.new};end
+  def initialize;@map_id=721;@events={12=>H7Event.new,13=>H7Event.new};end
 end
 class H7Avatar
   attr_accessor :x,:y,:direction
@@ -125,9 +125,15 @@ check7(!BlueHoennPilot.flannery,"Flannery fought before Meteorite")
 check7(BlueHoennPilot.meteor_falls_ambush,"Meteor Falls scene didn't mark theft")
 check7(flags["meteorite_stolen"],"Theft flag missing")
 check7(!BlueHoennPilot.meteor_falls_ambush,"Meteor scene duplicated")
-check7(BlueHoennPilot.magma_blocker(12),"Magma blockers did not clear")
-check7($game_self_switches[[721,12,"A"]],"Blocker self switch not set")
-check7(flags["cable_car_unlocked"],"Teleferico unlock not saved")
+$game_map.map_id=722
+check7(!BlueHoennPilot.cable_car,"Cable bypassed the two Magma blockers")
+$game_map.map_id=721
+check7(BlueHoennPilot.magma_blocker(12),"First Magma blocker did not clear")
+check7($game_self_switches[[721,12,"A"]],"First blocker self switch missing")
+check7(!flags["cable_car_unlocked"],"Cable unlocked after only one blocker")
+check7(BlueHoennPilot.magma_blocker(13),"Second Magma blocker did not clear")
+check7($game_self_switches[[721,13,"A"]],"Second blocker self switch missing")
+check7(flags["cable_car_unlocked"],"Cable not unlocked after both blockers")
 $game_map.map_id=722
 check7(BlueHoennPilot.cable_car,"Cable lower station failed")
 check7($game_map.map_id==779,"Cable car arrived wrong summit map")
