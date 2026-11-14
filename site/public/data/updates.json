@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e37e44dd3e3130c98d90c2891658c887bd8dfc95",
+      "date": "2026-11-13T22:27:40-03:00",
+      "title": "data(sinnoh): register native postcompile structural probe and Ruby tests without claiming real engine execution",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "cb06932815a8252097f12c1d8392af56385913ed",
+      "date": "2026-11-13T22:27:31-03:00",
+      "title": "docs(sinnoh): hand off only real QA execution after automatic native events and Barry structural probe",
+      "category": "Documentação"
+    },
+    {
       "sha": "e582cfba5c1269238968961cf2d16f4d2f0e6c8f",
       "date": "2026-11-13T22:27:13-03:00",
       "title": "docs(sinnoh): show 4/7 post-compile engine probe code progress and precise isolated CI evidence",
