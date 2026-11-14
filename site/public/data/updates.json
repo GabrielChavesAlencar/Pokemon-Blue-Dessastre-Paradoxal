@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c06e8e09943035676d0a01799be047cdff6fd37e",
+      "date": "2026-11-14T17:43:46-03:00",
+      "title": "docs(hoenn): QA09 Elite Four/Wallace 9/12 technical track and native playtest checklist",
+      "category": "Documentação"
+    },
+    {
       "sha": "74855c439618c35755446ecb4f8cbaaef660c353",
       "date": "2026-11-14T17:43:30-03:00",
       "title": "test(kanto): NPCs usam texto branco sem controles FRLG em PT-BR e EN",
