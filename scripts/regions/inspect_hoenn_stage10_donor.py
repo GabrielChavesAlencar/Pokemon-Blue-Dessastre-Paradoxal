@@ -49,9 +49,9 @@ def main():
     print("HOENN_STAGE10_SOURCE_PIN", PIN, flush=True)
     for mid, info in sorted(infos.items()):
         name = safe(info.attrs.get("@name", ""))
-        if KEYWORDS.search(name) or mid in list(range(83, 100)) + list(range(146, 156)):
+        if KEYWORDS.search(name) or mid in list(range(83, 101)) + list(range(146, 156)):
             print("S10_MAP", mid, repr(name), flush=True)
-            if KEYWORDS.search(name) or 83 <= mid <= 99:
+            if KEYWORDS.search(name) or 83 <= mid <= 100:
                 chosen[mid] = name
 
     print("S10_EVENT_AUDIT_BEGIN", len(chosen), flush=True)
