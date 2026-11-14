@@ -60,6 +60,20 @@ module BlueSinnohQAStart
     nil
   end
 
+  # Permission to TRY Barry only inside the verified, isolated QA copy.
+  # Not native battle acceptance and never a release-marker substitute.
+  def self.barry_test_authorized?
+    return false unless defined?($PokemonGlobal) && $PokemonGlobal &&
+                        $PokemonGlobal.respond_to?(:blue_regions)
+    current = $PokemonGlobal.blue_regions
+    return false unless current.is_a?(Hash) &&
+                        current["version"] == 1 &&
+                        current["current"] == "SINNOH"
+    !proof.nil?
+  rescue IOError, SystemCallError, ArgumentError, TypeError
+    false
+  end
+
   module Override
     def select_and_prepare(*args)
       return super unless @new_game && defined?($PokemonGlobal) &&
