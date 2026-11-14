@@ -127,6 +127,42 @@ class FieldMoveQA4Tests(unittest.TestCase):
         self.assertEqual(reasons,{"conditional_original","ambiguous_or_multipage",
                                   "no_native_or_pinned_sprite"})
 
+    def test_pinned_donor_boulder_sprite_is_private_and_deduplicated(self):
+        events=self.events(
+            source_event(1,"StrengthBoulder",3,4,"pbStrength"),
+            source_event(2,"StrengthBoulder",5,6,"pbStrength"),
+        )
+        for ev in events[250].values():
+            ev.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]=(
+                b"OBJ_RSE_Strength Boulder")
+        class PinnedSource:
+            def __init__(self):
+                self.paths=[]
+            def read(self,rel):
+                self.paths.append(rel)
+                return b"\x89PNG\r\n\x1a\n" + b"pinned-boulder"
+        source=PinnedSource()
+        overlay={}
+        result=install_simple_obstacles(events,self.donor,self.authored,
+                                        self.game,source=source,overlay=overlay)
+        self.assertEqual(result["new_safe_obstacles_by_type"]["strength"],2)
+        self.assertEqual(result["new_safe_obstacles_by_type"]["private_pinned_sprite_assets"],1)
+        path="Graphics/Characters/BLUE_HOENN_QA4_OBJ_RSE_Strength Boulder.png"
+        self.assertEqual(list(overlay),[path])
+        self.assertEqual(source.paths,["Graphics/Characters/OBJ_RSE_Strength Boulder.png"]*2)
+        self.assertFalse((self.game/path).exists())
+
+    def test_pinned_donor_graphic_hash_mismatch_is_fatal(self):
+        events=self.events(source_event(1,"StrengthBoulder",3,4,"pbStrength"))
+        events[250][1].attrs["@pages"][0].attrs["@graphic"].attrs[
+            "@character_name"]=b"OBJ_RSE_Strength Boulder"
+        class BadDonor:
+            def read(self,path):
+                raise ValueError("Arquivo de origem divergente da revisao")
+        with self.assertRaisesRegex(ValueError,"divergente"):
+            install_simple_obstacles(events,self.donor,self.authored,
+                                     self.game,source=BadDonor(),overlay={})
+
     def test_script_only_identifiers_not_automatically_reauthored(self):
         self.sprites("Object_Rock","Object_Boulder")
         events=self.events(source_event(1,"Gym Controller",3,4,"pbRockSmash"),
