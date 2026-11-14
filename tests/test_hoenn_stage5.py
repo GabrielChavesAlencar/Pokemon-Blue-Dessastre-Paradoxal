@@ -40,9 +40,9 @@ class HoennStage5Tests(unittest.TestCase):
 
     def test_map_inventory_boat_and_original_museum_two_doorway_contract(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE5), 20)
-        self.assertEqual(len(SOURCE_MAPS), 48)
+        self.assertEqual(len(SOURCE_MAPS), 58)
         self.assertEqual(len(WARP_PAIRS_STAGE5), 27)
-        self.assertEqual(len(WARP_PAIRS), 59)
+        self.assertEqual(len(WARP_PAIRS), 68)
         self.assertEqual(OFFSET_BORDERS_STAGE5, (
             (108, "South", 170, 28, "North", 0),
             (111, "North", 0, 32, "South", 0),
@@ -138,6 +138,9 @@ class HoennStage5Tests(unittest.TestCase):
             111:(40,63),112:(20,15),130:(100,20),131:(20,20),
             156:(58,46),157:(45,33),159:(52,22),160:(46,34),
             161:(46,34),162:(23,20),
+            41:(40,20),42:(20,20),43:(20,20),44:(40,20),
+            45:(20,20),46:(40,20),47:(20,40),113:(40,100),
+            114:(44,100),115:(20,30),
         }
         maps = {mid:ruby("RPG::Map", width=w, height=h)
                 for mid,(w,h) in sizes.items()}
