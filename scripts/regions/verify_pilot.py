@@ -132,7 +132,7 @@ def inspect(game: Path) -> dict:
     if not dex_path.is_file():
         raise ValueError("Missing isolated KantoDex manifest")
     dex_info = json.loads(dex_path.read_text("utf8"))
-    pbs = sections((game / "PBS/regional_dexes.txt").read_text("utf8-sig"))
+    pbs = sections((game / "PBS/regional_dexes.txt").read_text("utf-8-sig"))
     idx = dex_info["index"]
     if (dex_info["schema"] != 1 or dex_info["length"] != 151 or
             idx not in pbs or dex_info["national_dex_unchanged"] is not True or
