@@ -1,0 +1,707 @@
+{
+  "schema": 1,
+  "title": "Auditoria conservadora de conteúdo de Kanto, Johto, Hoenn e Sinnoh",
+  "status": "REFERENCE_ONLY_NEVER_AUTO_INSTALL",
+  "created_on": "2026-11-13",
+  "scope": "Amostra verificável de habitats e elenco de líderes a auditar contra os arquivos reais; NÃO é tabela completa de spawns nem prova de jogabilidade.",
+  "rules": [
+    "Nao substituir PBS ou rxdata existentes",
+    "Nao inventar MapIDs, coordenadas, encontros ou taxas",
+    "Nao fixar niveis historicos: preservar escala Blue 70% normal e 90% Master e nivel de selvagens existente",
+    "Nao duplicar treinadores, badges ou encontros",
+    "Validar mapas fisicos e equipes PBS nativos antes de cada inclusao",
+    "Preservar Decades e saves; nao usar status de site como certificacao de jogo"
+  ],
+  "regions": {
+    "KANTO": {
+      "game": "FireRed/LeafGreen",
+      "doc": "docs/KANTO_DETONADO_FIRERED_LEAFGREEN_REFERENCIA_ORGANIZADA.md",
+      "url": "https://www.pokemythology.net/detonados/detonado-firered-leafgreen/",
+      "map_url": null,
+      "leaders": [
+        "Brock",
+        "Misty",
+        "Lt. Surge",
+        "Erika",
+        "Koga",
+        "Sabrina",
+        "Blaine",
+        "Giovanni"
+      ],
+      "elite_four": [
+        "Lorelei",
+        "Bruno",
+        "Agatha",
+        "Lance"
+      ],
+      "champion": "Blue",
+      "areas": [
+        {
+          "area": "Route 22",
+          "reference_species": [
+            "PIDGEY",
+            "MANKEY"
+          ],
+          "note": "Rota inicial e rival opcional",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Viridian Forest",
+          "reference_species": [
+            "PIKACHU",
+            "CATERPIE",
+            "WEEDLE"
+          ],
+          "note": "Encontros em grama; raridade de Pikachu a validar",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 3",
+          "reference_species": [
+            "JIGGLYPUFF"
+          ],
+          "note": "Acesso a Mt. Moon",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Mt. Moon",
+          "reference_species": [
+            "CLEFAIRY",
+            "ZUBAT"
+          ],
+          "note": "Andares e métodos separados",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Diglett's Cave",
+          "reference_species": [
+            "DIGLETT",
+            "DUGTRIO"
+          ],
+          "note": "Caverna",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Safari Zone",
+          "reference_species": [],
+          "note": "Setores/áreas pendentes; não habilitar encontro como batalha comum",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Seafoam Islands",
+          "reference_species": [
+            "ARTICUNO"
+          ],
+          "note": "Encontro fixo, não entrada de grama",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Power Plant",
+          "reference_species": [
+            "ZAPDOS"
+          ],
+          "note": "Encontro fixo, não entrada de grama",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Cerulean Cave",
+          "reference_species": [
+            "MEWTWO"
+          ],
+          "note": "Pós-Liga, encontro fixo",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        }
+      ]
+    },
+    "JOHTO": {
+      "game": "HeartGold/SoulSilver",
+      "doc": "docs/JOHTO_DETONADO_HEARTGOLD_SOULSILVER_REFERENCIA_ORGANIZADA.md",
+      "url": "https://www.pokemythology.net/detonados/detonado-heartgold-soulsilver/",
+      "map_url": "https://rankedboost.com/pokemon/location/heartgold-soulsilver/",
+      "leaders": [
+        "Falkner",
+        "Bugsy",
+        "Whitney",
+        "Morty",
+        "Chuck",
+        "Jasmine",
+        "Pryce",
+        "Clair"
+      ],
+      "elite_four": [
+        "Will",
+        "Koga",
+        "Bruno",
+        "Karen"
+      ],
+      "champion": "Lance",
+      "areas": [
+        {
+          "area": "Route 29",
+          "reference_species": [
+            "PIDGEY",
+            "RATTATA",
+            "SENTRET",
+            "HOOTHOOT"
+          ],
+          "note": "Hoothoot à noite",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 30",
+          "reference_species": [
+            "CATERPIE",
+            "METAPOD",
+            "SPINARAK",
+            "WEEDLE",
+            "KAKUNA",
+            "LEDYBA"
+          ],
+          "note": "Parte exclusiva HG/SS; preservar dia/noite",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 31",
+          "reference_species": [
+            "CATERPIE",
+            "METAPOD",
+            "SPINARAK",
+            "WEEDLE",
+            "KAKUNA",
+            "LEDYBA",
+            "BELLSPROUT"
+          ],
+          "note": "Parte exclusiva HG/SS; preservar dia/noite",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Sprout Tower",
+          "reference_species": [
+            "GASTLY"
+          ],
+          "note": "À noite",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 32",
+          "reference_species": [
+            "MAREEP",
+            "HOPPIP",
+            "WOOPER",
+            "EKANS"
+          ],
+          "note": "Wooper à noite, Ekans de SS",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Union Cave",
+          "reference_species": [
+            "ONIX",
+            "ZUBAT",
+            "GEODUDE",
+            "SANDSHREW",
+            "LAPRAS"
+          ],
+          "note": "Lapras fixo semanal separado do encontro aleatório",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Ilex Forest",
+          "reference_species": [
+            "PARAS",
+            "ODDISH"
+          ],
+          "note": "Oddish noturno; Headbutt separado",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 34",
+          "reference_species": [
+            "DROWZEE",
+            "ABRA",
+            "DITTO"
+          ],
+          "note": "Grama",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 35",
+          "reference_species": [
+            "NIDORANF",
+            "NIDORANM",
+            "YANMA"
+          ],
+          "note": "Yanma raro",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 36",
+          "reference_species": [
+            "GROWLITHE",
+            "VULPIX",
+            "STANTLER",
+            "SUDOWOODO"
+          ],
+          "note": "Sudowoodo fixo, não em tabela de grama",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Burnt Tower",
+          "reference_species": [
+            "KOFFING",
+            "MAGMAR"
+          ],
+          "note": "Raikou/Entei/Suicune em eventos próprios",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 38",
+          "reference_species": [
+            "MAGNEMITE",
+            "RATICATE",
+            "FARFETCHD",
+            "MILTANK",
+            "TAUROS",
+            "SNUBBULL",
+            "MEOWTH"
+          ],
+          "note": "Meowth SS",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 39",
+          "reference_species": [
+            "MAGNEMITE",
+            "RATICATE",
+            "FARFETCHD",
+            "MILTANK",
+            "TAUROS",
+            "SNUBBULL",
+            "MEOWTH"
+          ],
+          "note": "Meowth SS",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 40",
+          "reference_species": [
+            "TENTACOOL",
+            "TENTACRUEL",
+            "MANTINE"
+          ],
+          "note": "Mantine HG",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 41",
+          "reference_species": [
+            "TENTACOOL",
+            "TENTACRUEL",
+            "MANTINE"
+          ],
+          "note": "Mantine HG",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 43",
+          "reference_species": [
+            "GIRAFARIG",
+            "PIDGEOTTO",
+            "NOCTOWL"
+          ],
+          "note": "Noctowl à noite",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Lake of Rage",
+          "reference_species": [
+            "GYARADOS"
+          ],
+          "note": "Red Gyarados fixo shiny",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 44",
+          "reference_species": [
+            "TANGELA",
+            "WEEPINBELL",
+            "LICKITUNG"
+          ],
+          "note": "Conferir grama/água",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Ice Path",
+          "reference_species": [
+            "SWINUB",
+            "JYNX",
+            "DELIBIRD"
+          ],
+          "note": "Delibird SS",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 45",
+          "reference_species": [
+            "GLIGAR",
+            "PHANPY",
+            "TEDDIURSA",
+            "SKARMORY"
+          ],
+          "note": "Exclusivos de versão",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Victory Road",
+          "reference_species": [
+            "RHYHORN",
+            "DONPHAN",
+            "URSARING"
+          ],
+          "note": "Exclusivos de versão",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Ruins of Alph",
+          "reference_species": [
+            "UNOWN"
+          ],
+          "note": "Disponibilidade por quebra-cabeça",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        }
+      ]
+    },
+    "HOENN": {
+      "game": "Emerald",
+      "doc": "docs/HOENN_DETONADO_EMERALD_REFERENCIA_ORGANIZADA.md",
+      "url": "https://www.pokemythology.net/detonados/detonado-emerald/",
+      "map_url": "https://rankedboost.com/pokemon/location/emerald/",
+      "leaders": [
+        "Roxanne",
+        "Brawly",
+        "Wattson",
+        "Flannery",
+        "Norman",
+        "Winona",
+        "Tate & Liza",
+        "Juan"
+      ],
+      "elite_four": [
+        "Sidney",
+        "Phoebe",
+        "Glacia",
+        "Drake"
+      ],
+      "champion": "Wallace",
+      "areas": [
+        {
+          "area": "Route 101",
+          "reference_species": [
+            "ZIGZAGOON",
+            "POOCHYENA",
+            "WURMPLE"
+          ],
+          "note": "Grama inicial",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 102",
+          "reference_species": [
+            "POOCHYENA",
+            "WURMPLE",
+            "LOTAD",
+            "ZIGZAGOON",
+            "RALTS",
+            "SEEDOT"
+          ],
+          "note": "Referência RankedBoost; pesos não devem substituir a distribuição do Blue",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 103",
+          "reference_species": [
+            "POOCHYENA",
+            "ZIGZAGOON",
+            "WINGULL"
+          ],
+          "note": "Abertura; rival em encontro de história separado",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Petalburg Woods",
+          "reference_species": [
+            "WURMPLE",
+            "TAILLOW"
+          ],
+          "note": "Conferir espécie e método com PBS original",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Granite Cave",
+          "reference_species": [
+            "ARON"
+          ],
+          "note": "Caverna e andares separados",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Meteor Falls",
+          "reference_species": [
+            "SOLROCK"
+          ],
+          "note": "Conferir andares e encontros",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Safari Zone",
+          "reference_species": [
+            "RHYHORN"
+          ],
+          "note": "Habitat e regras Safari separados de batalhas normais",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "New Mauville",
+          "reference_species": [
+            "VOLTORB",
+            "ELECTRODE"
+          ],
+          "note": "Interações estáticas separadas da grama",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 119",
+          "reference_species": [
+            "ZIGZAGOON"
+          ],
+          "note": "Conferir áreas, Surf e clima",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        }
+      ]
+    },
+    "SINNOH": {
+      "game": "Platinum",
+      "doc": "docs/SINNOH_DETONADO_PLATINUM_REFERENCIA_ORGANIZADA.md",
+      "url": "https://www.pokemythology.net/detonados/detonado-platinum/",
+      "map_url": "https://rankedboost.com/pokemon/location/platinum/",
+      "leaders": [
+        "Roark",
+        "Gardenia",
+        "Fantina",
+        "Maylene",
+        "Crasher Wake",
+        "Byron",
+        "Candice",
+        "Volkner"
+      ],
+      "elite_four": [
+        "Aaron",
+        "Bertha",
+        "Flint",
+        "Lucian"
+      ],
+      "champion": "Cynthia",
+      "areas": [
+        {
+          "area": "Route 201",
+          "reference_species": [
+            "STARLY",
+            "BIDOOF"
+          ],
+          "note": "Grama inicial; swarm e Poké Radar separados",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 202",
+          "reference_species": [
+            "STARLY",
+            "BIDOOF",
+            "SHINX"
+          ],
+          "note": "Grama inicial",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 203",
+          "reference_species": [
+            "STARLY",
+            "BIDOOF",
+            "SHINX"
+          ],
+          "note": "Grama inicial; rival em evento de história",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Oreburgh Mine",
+          "reference_species": [
+            "GEODUDE",
+            "ONIX"
+          ],
+          "note": "Caverna",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Valley Windworks",
+          "reference_species": [
+            "SHELLOS",
+            "BUIZEL",
+            "PACHIRISU",
+            "DRIFLOON"
+          ],
+          "note": "Drifloon fixo de sexta-feira, evento separado",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Eterna Forest",
+          "reference_species": [
+            "BUNEARY",
+            "GASTLY"
+          ],
+          "note": "Dia/noite e Cheryl",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 206",
+          "reference_species": [
+            "GLIGAR"
+          ],
+          "note": "Conferir método de encontro",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Wayward Cave",
+          "reference_species": [
+            "GIBLE"
+          ],
+          "note": "Entrada escondida",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Mt. Coronet",
+          "reference_species": [
+            "CLEFAIRY",
+            "NOSEPASS"
+          ],
+          "note": "Múltiplos pisos",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 208",
+          "reference_species": [
+            "RALTS",
+            "BIBAREL"
+          ],
+          "note": "Conferir métodos reais",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 209",
+          "reference_species": [
+            "RALTS",
+            "BIBAREL"
+          ],
+          "note": "Conferir métodos reais",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 210",
+          "reference_species": [
+            "SCYTHER",
+            "SWABLU"
+          ],
+          "note": "Defog no norte",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 215",
+          "reference_species": [
+            "SCYTHER",
+            "SWABLU"
+          ],
+          "note": "Conferir métodos reais",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 212",
+          "reference_species": [
+            "QUAGSIRE"
+          ],
+          "note": "Chuva e lama",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 213",
+          "reference_species": [
+            "SHELLOS",
+            "WINGULL",
+            "CHATOT"
+          ],
+          "note": "A região leste de Shellos",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Great Marsh",
+          "reference_species": [
+            "WOOPER",
+            "YANMA",
+            "SKORUPI"
+          ],
+          "note": "Mecânica Safari",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 216",
+          "reference_species": [
+            "SNOVER",
+            "SNORUNT",
+            "SNEASEL",
+            "SWINUB"
+          ],
+          "note": "Neve",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 217",
+          "reference_species": [
+            "SNOVER",
+            "SNORUNT",
+            "SNEASEL",
+            "SWINUB"
+          ],
+          "note": "Neve",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Route 222",
+          "reference_species": [
+            "ELECTABUZZ",
+            "MAGNEMITE",
+            "MAGNETON",
+            "PELIPPER"
+          ],
+          "note": "Após arco Galactic",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Victory Road",
+          "reference_species": [
+            "ONIX",
+            "STEELIX"
+          ],
+          "note": "Caverna, pisos e Surf",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        },
+        {
+          "area": "Old Chateau",
+          "reference_species": [
+            "GASTLY",
+            "HAUNTER",
+            "ROTOM"
+          ],
+          "note": "Rotom fixo/tempo, não spawn normal",
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+        }
+      ]
+    }
+  }
+}
