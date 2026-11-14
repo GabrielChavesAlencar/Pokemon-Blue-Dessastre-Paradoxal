@@ -121,7 +121,7 @@ class KantoOverworldContracts(unittest.TestCase):
         self.assertEqual([r.attrs["@code"] for r in rows],
                          [111, 355, 0, 412, 0])
         self.assertEqual(rows[0].attrs["@parameters"][1], b"pbCut")
-        self.assertEqual(rows[1].attrs["@parameters"][0], b"pbSmashThisEvent")
+        self.assertEqual(rows[1].attrs["@parameters"][0], b"pbSmashEvent(get_self)")
         # Engine requires the original CutTree marker for field moves.
         self.assertIsNone(source_npc_dialogue(event))
 
