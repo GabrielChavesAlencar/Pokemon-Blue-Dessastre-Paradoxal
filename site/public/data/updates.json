@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b1256540b0a050794680b97dba3f76aafd62c695",
+      "date": "2026-11-14T17:49:25-03:00",
+      "title": "feat(hoenn): show post-League circuit status on original Ever Grande sign",
+      "category": "Novidades"
+    },
+    {
       "sha": "a1459ae001bf1bcfc43b4ca645c969ce74a2e76d",
       "date": "2026-11-14T17:48:43-03:00",
       "title": "feat(hoenn): QA10 complete regional league only at Hall, unlock neighboring circuit once",
