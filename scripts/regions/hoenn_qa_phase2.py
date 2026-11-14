@@ -191,6 +191,45 @@ def inspect_connections(contents: str, mapping: dict[int, int],
             "field_moves_tested_in_engine":False}
 
 
+
+def check_required_doors(direct: list[tuple]) -> int:
+    """Verify exact landing coordinates, not just destination map identity."""
+    expected = {}
+    for a, a_arrival, b, b_arrival in WARP_PAIRS:
+        expected[(a[0],a[1],a[2],b[0])] = b_arrival[1:]
+        expected[(b[0],b[1],b[2],a[0])] = a_arrival[1:]
+    physical = {(mid,x,y,dest):(dx,dy)
+                for mid,x,y,dest,dx,dy,kind in direct if kind == "native_201"}
+    for key, landing in expected.items():
+        if key not in physical:
+            raise ValueError(f"Porta nativa obrigatória ausente: {key}")
+        if physical[key] != landing:
+            raise ValueError(
+                f"Porta Hoenn {key} tem destino {physical[key]}, esperado {landing}")
+    return len(expected)
+
+
+def map_link_diagnostics(direct: list[tuple], scripted: list[tuple],
+                         mapping: dict[int,int]) -> dict:
+    """Observe only emitted transfers; never turn the planning graph into proof."""
+    adjacency={src:set() for src in mapping}
+    for mid,_,_,dest,*_ in (*direct,*scripted):
+        if mid in adjacency and dest in adjacency:
+            adjacency[mid].add(dest)
+    for a,_,_,b,_,_ in ALL_BORDERS:
+        if a in adjacency and b in adjacency:
+            adjacency[a].add(b)
+            adjacency[b].add(a)
+    no_outbound = sorted(mid for mid, targets in adjacency.items() if not targets)
+    return {
+        "maps_without_observed_outbound_transfer":no_outbound,
+        "observed_outbound_transfer_map_count":len(mapping)-len(no_outbound),
+        "planned_graph_is_not_physical_proof":True,
+        "custom_field_move_paths_may_not_be_discovered":True,
+    }
+
+
+
 def audit(copy: Path) -> dict:
     """Inspect only an existing generated isolated copy with all 199 maps."""
     copy = require_private_path(copy)
@@ -215,16 +254,8 @@ def audit(copy: Path) -> dict:
         events += data["events"]
         direct.extend(data["direct_warps"])
         scripted.extend(data["script_warps"])
-    expected_direct = {}
-    for index, (a, _, b, _) in enumerate(WARP_PAIRS, 1):
-        expected_direct[(a[0],a[1],a[2],b[0])] = b
-        expected_direct[(b[0],b[1],b[2],a[0])] = a
-    # Check only guaranteed early-native pairs. The warp event lands on
-    # a standing tile adjacent to the reverse door, not necessarily the door.
-    native_pairs = {(mid,x,y,dest) for mid,x,y,dest,*_ in direct}
-    for mid,x,y,other in expected_direct:
-        if (mid,x,y,other) not in native_pairs:
-            raise ValueError(f"Porta nativa obrigatória ausente: {mid}/{x}/{y}->{other}")
+    required_doors = check_required_doors(direct)
+    observed = map_link_diagnostics(direct, scripted, mapping)
     # Stage9/10 source transfer events are authored as BlueHoennPilot
     # stage*_transfer calls; audit only these scripts without executing them.
     counts = inspect_connections(
@@ -239,7 +270,8 @@ def audit(copy: Path) -> dict:
         "maps_read":len(maps), "mapinfo_matches":len(mapping),
         "events_indexed":events, "native_door_transfers":len(direct),
         "audited_stage9_10_transfer_scripts":len(scripted),
-        "required_early_door_pairs":len(expected_direct),
+        "required_early_door_pairs":required_doors,
+        **observed,
         **counts,
         "native_game_exe_approved":False, "android_approved":False,
         "surf_dive_waterfall_proven":False,
