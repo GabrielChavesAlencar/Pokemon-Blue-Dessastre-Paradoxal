@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8e7199c3a2121fd09422661368a79550bb7fda66",
+      "date": "2026-11-13T22:36:16-03:00",
+      "title": "test(sinnoh): confirm losing a QA Barry battle counts as canLose while nil result never advances state",
+      "category": "Testes"
+    },
+    {
+      "sha": "259bfb32d909826d0977cd6c8405e6e939f8f387",
+      "date": "2026-11-13T22:36:07-03:00",
+      "title": "test(sinnoh): verify real QA Barry authorization is tied to native proof and Sinnoh-only state",
+      "category": "Testes"
+    },
+    {
       "sha": "60946af0dcf2de62193d09034e7acfa7d95d8986",
       "date": "2026-11-13T22:35:41-03:00",
       "title": "test(sinnoh): stop pinning changing Python test count in progress documentation",
