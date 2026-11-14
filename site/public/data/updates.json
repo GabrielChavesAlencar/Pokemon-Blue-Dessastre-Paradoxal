@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "40fa5d4cf25167532075fa9d5a94b519b598d822",
+      "date": "2026-11-14T10:35:25-03:00",
+      "title": "feat(hoenn): incluir nove mapas auditados, habitats 104/Woods e conexões da etapa 3",
+      "category": "Novidades"
+    },
+    {
       "sha": "af01be9eba607a58d1696762c3802a1f3e729108",
       "date": "2026-11-14T10:34:34-03:00",
       "title": "feat(hoenn): catalogar mapas e conteúdo Emerald auditado da etapa 3",
