@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b7bbea5066b097c8159cf58c9915a70f106b269a",
+      "date": "2026-11-14T12:04:38-03:00",
+      "title": "Atualiza teste do portal para os mapas ativos da Safari",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b07edde5a7c64ddf32c461c5eccebb2de5e8f146",
       "date": "2026-11-14T12:03:39-03:00",
       "title": "fix(hoenn): impedir repetição do combate Aqua no museu após recarga",
