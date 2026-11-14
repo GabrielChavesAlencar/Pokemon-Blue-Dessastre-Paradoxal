@@ -41,7 +41,7 @@ class KantoOakParcelTests(unittest.TestCase):
         self.assertTrue(first["@through"])
         self.assertEqual(first["@graphic"].attrs["@character_name"], b"")
         ops = first["@list"]
-        self.assertEqual(ops[0].attrs["@parameters"][2],
+        self.assertEqual(ops[0].attrs["@parameters"][1],
                          b"BlueKantoPilot.parcel_pickup_pending?")
         self.assertIn(b"BlueKantoPilot.viridian_parcel_call",
                       [op.attrs["@parameters"][0] for op in ops
@@ -63,7 +63,7 @@ class KantoOakParcelTests(unittest.TestCase):
         guarded = guarded_forest_transfer(transfer)
         self.assertEqual([row.attrs["@code"] for row in guarded],
                          [111, 201, 0, 411, 355, 0, 412])
-        self.assertEqual(guarded[0].attrs["@parameters"][2],
+        self.assertEqual(guarded[0].attrs["@parameters"][1],
                          b"BlueKantoPilot.forest_unlocked?")
         self.assertEqual(guarded[1].attrs["@parameters"],
                          [0, 740, 11, 18, 2, 0])
