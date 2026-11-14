@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "df0823eab41bee4505c145b0537d77368c041ca2",
+      "date": "2026-11-14T17:14:51-03:00",
+      "title": "feat(hoenn): QA7 manifest, private save and compatibility with QA5/6 audits",
+      "category": "Novidades"
+    },
+    {
+      "sha": "22ecf52a9181e722a6ef01508a6ccd068103ed76",
+      "date": "2026-11-14T17:14:49-03:00",
+      "title": "feat(hoenn): QA7 manifest, private save and compatibility with QA5/6 audits",
+      "category": "Novidades"
+    },
+    {
+      "sha": "12f1ea1c1f69bf8f083431063ce7dfc186b36334",
+      "date": "2026-11-14T17:14:46-03:00",
+      "title": "feat(hoenn): QA7 manifest, private save and compatibility with QA5/6 audits",
+      "category": "Novidades"
+    },
+    {
+      "sha": "d09a80dcf96b1f1ba3627beeaccf8aa464642ad1",
+      "date": "2026-11-14T17:14:43-03:00",
+      "title": "feat(hoenn): QA7 manifest, private save and compatibility with QA5/6 audits",
+      "category": "Novidades"
+    },
+    {
       "sha": "58d251861e0eded2dba91a46f40e20f468531499",
       "date": "2026-11-14T17:14:24-03:00",
       "title": "feat(hoenn): QA7 private RXDATA and PBS auditor for eight gym badges",
