@@ -47,6 +47,21 @@ O detonado estabelece que **HM04 Strength** é obtido com o Warden em Fuchsia e 
 - [ ] Auditar eventos especiais das áreas em prévia; traduzir NPCs; liberar as fases de história
 - [ ] Reproduzir testes no Android/JoiPlay e verificar regressão regional
 
+## Correção de inicialização — gráficos opcionais ausentes (14/11/2026)
+
+O erro real reportado na abertura do Testar Kanto foi `ValueError: Missing actor graphic: NPC_Hiker`. Ao restaurar NPCs comuns, o importador começou a exigir sprites de personagens que a fonte FRLG extraída pode não fornecer, interrompendo a criação de toda a cópia antes do `Game.exe` abrir.
+
+O importador agora:
+
+- Verifica primeiramente o sprite do pacote FRLG original; se ele não estiver lá, reutiliza **somente um PNG de mesmo nome já existente na pasta de personagens da instalação do Blue**, nunca um substituto arbitrário.
+- Se um evento **opcional** ainda não possuir gráfico, registra o MapID/EventID/nome/posição em `Data/blue-kanto-field-events.json → missing_graphics`, mostra aviso e deixa esse evento pendente, **sem bloquear a geração do restante de Kanto**.
+- Se faltar sprite de evento de história, treinador obrigatório ou porta, o erro continua explícito; não se mascara falha em fluxo crítico.
+- Testes simulam especificamente o NPC `NPC_Hiker` ausente e garantem que outros erros não sejam engolidos. `verify_pilot.py` rejeita qualquer evento registrado como ausente mas importado como obstáculo invisível.
+
+**Para aplicar o reparo:** atualize a `main` local, feche o piloto e execute `KANTO_JOGAR_EXPERIMENTAL.bat --rebuild`. O piloto antigo é preservado, e a nova cópia terá sua própria pasta `kanto-pilot-revisao-...`. Em caso de falha, consulte o log e o nome exato do próximo sprite ausente.
+
+**Limitação:** não há garantia de que o NPC `NPC_Hiker` aparecerá até existir um PNG válido de mesmo nome; a correção primeiro recupera a abertura do piloto sem inventar sprites.
+
 ## Como testar
 
 1. Usar a **fonte editável FRLG com SHA-256 fixado** em `data/regions/kanto-source.json`, sem substituí-la por outro Map Pack.

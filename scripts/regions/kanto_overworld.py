@@ -15,6 +15,10 @@ ITEM_SCRIPT = re.compile(r"^pbItemBall\(\s*:([A-Za-z0-9_]+)(?:\s*,\s*(\d+))?\s*\
 LITERAL_MESSAGE = re.compile(r'^pbMessage\(_INTL\("(?:(?:\\.)|[^"\\])*"\)\)$')
 
 
+class MissingActorGraphic(ValueError):
+    """An optional overworld actor references a PNG not shipped with FRLG/Blue."""
+
+
 def base_page(event):
     if not event.attrs["@pages"]:
         return None
@@ -150,3 +154,19 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         converted.attrs["@pages"][0].attrs["@through"] = False
         return converted, {"kind": obstacle}
     return new_event(event, dialogue, 0, character), {"kind": "npc_dialogue"}
+
+
+def safely_adapt_source_field_event(event, source_id, event_id, catalogue_items,
+                                    actor, new_event, command, if_scene):
+    """Missing *optional* NPC art must not prevent the entire Kanto pilot boot.
+
+    Do not suppress other failures: source quest/story events still use the
+    strict actor() path in the caller, and unknown conversion errors surface.
+    """
+    try:
+        adapted = adapt_source_field_event(
+            event, source_id, event_id, catalogue_items, actor,
+            new_event, command, if_scene)
+        return adapted, None
+    except MissingActorGraphic as error:
+        return None, str(error)

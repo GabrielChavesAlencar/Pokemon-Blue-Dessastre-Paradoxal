@@ -97,6 +97,18 @@ def inspect(game: Path) -> dict:
         if row["kind"] == "rock_smash":
             if page["@trigger"] != 0 or not any("pbSmashThisEvent" in c for c in commands):
                 raise ValueError("SmashRock event does not invoke native Rock Smash")
+    # Missing PNGs for *optional* field NPCs must be recorded and omitted,
+    # not silently imported as invisible blockers or crash the game builder.
+    for row in field_report.get("missing_graphics", []):
+        source, destination, event_id = row["source_map"], row["map"], row["event"]
+        if (source not in mapping or source in preview_only or
+                mapping[source] != destination):
+            raise ValueError("Missing graphic reported outside active Kanto")
+        if (not row.get("graphic") or
+                not row.get("reason", "").startswith("Missing actor graphic: ")):
+            raise ValueError("Missing graphic report contains an invalid reason")
+        if event_id in maps[destination].attrs["@events"]:
+            raise ValueError("Missing graphic imported as an invisible active field event")
     # Celadon phase 09 is map-terrain only. Not even source self-switches,
     # NPCs, warps or trainer events may slip into these compiled RPG maps.
     for source in preview_only:

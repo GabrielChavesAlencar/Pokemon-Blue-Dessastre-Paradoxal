@@ -16,7 +16,7 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
-from kanto_overworld import adapt_source_field_event, source_item_ball
+from kanto_overworld import MissingActorGraphic, safely_adapt_source_field_event, source_item_ball
 from server.ruby_marshal import RubyObject, text
 from stage import serialize, stage
 
@@ -682,8 +682,17 @@ def install_events(source, target, mapping):
         if not re.fullmatch(r"[\w .()\-]+", name):
             raise ValueError(f"Invalid actor graphic: {name!r}")
         src = event_graphics / (name + ".png")
-        if not src.resolve().is_relative_to(event_graphics.resolve()) or not src.is_file():
-            raise ValueError(f"Missing actor graphic: {name}")
+        if not src.resolve().is_relative_to(event_graphics.resolve()):
+            raise ValueError(f"Invalid actor graphic path: {name}")
+        if not src.is_file():
+            # An optional FRLG NPC may refer to a character sheet installed
+            # by Blue but not shipped in the hash-pinned FRLG archive.
+            # Reuse that exact sprite only when it really exists.
+            local = dest_graphics / (name + ".png")
+            if local.resolve().is_relative_to(dest_graphics.resolve()) and local.is_file():
+                src = local
+            else:
+                raise MissingActorGraphic(f"Missing actor graphic: {name}")
         new_name = "FRLG_Pilot_" + name
         shutil.copyfile(src, dest_graphics / (new_name + ".png"))
         return new_name.encode("utf8")
@@ -694,7 +703,7 @@ def install_events(source, target, mapping):
     mart_intro_event_id = max(mart_events) + 1
     preview_only = set(json_file(KANTO).get("preview_only", []))
     catalogue_items = catalogue(target, "items")
-    field_inventory, skipped_items, pending_review = [], [], []
+    field_inventory, skipped_items, pending_review, missing_graphics = [], [], [], []
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
@@ -1106,9 +1115,22 @@ def install_events(source, target, mapping):
             # Fill the previously empty overworld with events grounded in
             # the real FRLG EventID and coordinates, not guessed item spots.
             # The reviewed story adapters above always take precedence.
-            field = adapt_source_field_event(
+            field, missing_graphic = safely_adapt_source_field_event(
                 event, original, event_id, catalogue_items,
                 actor, new_event, command, if_scene)
+            if missing_graphic:
+                # Source art missing is common in optional vanilla NPCs.
+                # Omit ONLY this optional event, never terminate Testar Kanto.
+                # The report permits a later sprite mapping with no guessing.
+                missing_graphics.append({
+                    "source_map": original, "map": destination,
+                    "event": event_id, "x": event.attrs["@x"],
+                    "y": event.attrs["@y"], "source_name": text(event.attrs["@name"]),
+                    "graphic": text(event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]),
+                    "reason": missing_graphic,
+                })
+                print(f"[KANTO] NPC/item opcional nao importado: mapa {original}, "
+                      f"evento {event_id}: {missing_graphic}", flush=True)
             if field:
                 adapted, detail = field
                 selected[event_id] = adapted
@@ -1202,6 +1224,7 @@ def install_events(source, target, mapping):
             "schema": 1, "imported": field_inventory,
             "skipped_items": skipped_items,
             "pending_review": pending_review,
+            "missing_graphics": missing_graphics,
             "preview_maps_untouched": sorted(preview_only),
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
 
