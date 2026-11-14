@@ -1239,9 +1239,26 @@ end
 
 # Sprite_Character ja posiciona o pivot nos pes e atualiza o frame andando.
 # Reduzimos somente o sprite do player, sem alterar NPCs, imagens ou colisoes.
+# Prevent a CutTree's alternate direction/pattern rows from rendering as
+# a stump while it is merely being interacted with. Do NOT prepend Game_Event
+# refresh/lock/update: that conflicts with Decades event refresh alias chains
+# and raised SystemStackError at KantoPilot.rb:1272 when loading a saved map.
+# Only the visible src_rect is normalized; game state is never modified.
 module BlueKantoPilot::PlayerOverworldScale
   def update
     super
+    if BlueKantoPilot::PILOT_OVERWORLD_SCALE && @character &&
+       BlueKantoPilot.cut_tree_obstacle?(@character) &&
+       !@character.instance_variable_get(:@erased) &&
+       !@character.instance_variable_get(:@blue_kanto_cut_animating) &&
+       @tile_id == 0 && @cw && @ch && @cw > 0 && @ch > 0
+      page = @character.instance_variable_get(:@page)
+      graphic = page && page.graphic
+      if graphic && graphic.direction && graphic.pattern
+        self.src_rect.set(graphic.pattern * @cw,
+                          ((graphic.direction - 2) / 2) * @ch, @cw, @ch)
+      end
+    end
     return unless BlueKantoPilot::PILOT_OVERWORLD_SCALE
     return unless @character && @character.equal?($game_player)
 
@@ -1251,58 +1268,20 @@ module BlueKantoPilot::PlayerOverworldScale
 end
 Sprite_Character.prepend(BlueKantoPilot::PlayerOverworldScale) if defined?(Sprite_Character)
 
-# A CutTree uses direction/pattern rows as visual stages, not NPC facings.
-# Some existing pilot saves retain an altered row after a denied interaction.
-# Freeze the standing graphic from the original event page while the tree is
-# intact; let native pbSmashEvent animate only AFTER a real, authorized Cut.
-module BlueKantoPilot::CutTreeFrameGuard
-  def blue_kanto_restore_tree_frame
-    return unless BlueKantoPilot.cut_tree_obstacle?(self)
-    return if @erased || @blue_kanto_cut_animating
-    original = @page && @page.graphic
-    return unless original
-    @direction_fix = true
-    @walk_anime = false
-    @step_anime = false
-    @direction = original.direction
-    @pattern = original.pattern
-  end
-
-  def refresh
-    super
-    blue_kanto_restore_tree_frame
-  end
-
-  def lock
-    blue_kanto_restore_tree_frame
-    super
-    blue_kanto_restore_tree_frame
-  end
-
-  def update
-    super
-    blue_kanto_restore_tree_frame
-  end
-end
-
-# Essentials' pbSmashEvent animates Cut by rotating the event. Release the
-# frame lock for that animation only; in all other cases the standing tree
-# must not animate, including a failed badge/HM/party check or cancelled Cut.
+# Native Cut is the only path allowed to expose animation frames.
+# No Game_Event methods are overridden; the native method handles the
+# entire move route, erase and save state as before.
 module BlueKantoPilot::CutTreeSmashAnimation
   def pbSmashEvent(event)
     return super unless BlueKantoPilot.cut_tree_obstacle?(event)
     event.instance_variable_set(:@blue_kanto_cut_animating, true)
-    event.instance_variable_set(:@direction_fix, false)
     begin
       super
     ensure
       event.instance_variable_set(:@blue_kanto_cut_animating, false)
-      event.blue_kanto_restore_tree_frame if event.respond_to?(:blue_kanto_restore_tree_frame)
     end
   end
 end
-
-Game_Event.prepend(BlueKantoPilot::CutTreeFrameGuard) if defined?(Game_Event)
 Object.prepend(BlueKantoPilot::CutTreeSmashAnimation)
 
 # The Kanto-only markers ensure this global movement hook is inert on
