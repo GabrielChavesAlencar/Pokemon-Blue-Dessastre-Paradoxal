@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1c40f29c197f3a9e59c563c288eb44453da0874a",
+      "date": "2026-11-14T17:55:54-03:00",
+      "title": "fix(hoenn): QA10 real BlueRegions test must expose Hoenn's eight registry milestones",
+      "category": "Correções"
+    },
+    {
       "sha": "30ff8bd93dbee0df3b77b2cc66371e38f3c32bd0",
       "date": "2026-11-14T17:55:22-03:00",
       "title": "docs(hoenn): QA10 Hall of Fame/Johto Sinnoh unlock 10/12 and native checklist",
