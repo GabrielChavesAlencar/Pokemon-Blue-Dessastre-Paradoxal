@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c868222b4c82994bb53d709f5f15825e1bc56980",
+      "date": "2026-11-13T21:26:19-03:00",
+      "title": "feat(sinnoh): verify Barry PBS trio hashes, native learnsets and 70/90 scaling provenance without issuing battle marker",
+      "category": "Novidades"
+    },
+    {
       "sha": "58c7295e2405f8654e0aca631d4ef372d8a9534a",
       "date": "2026-11-13T21:25:05-03:00",
       "title": "test(sinnoh): allow resetting synthetic PBS fixture before checking missing move catalogue",
