@@ -66,6 +66,9 @@ module BlueKantoPilot
                 $player.pokedex.set_seen(pkmn.species, false)
                 $player.pokedex.set_owned(pkmn.species, false)
               end
+              # Explicit unlock is authoritative after Oak's parcel;
+              # runtime UI hook alone can be bypassed by other engine plugins.
+              BlueKantoDex.access!($player.pokedex) if defined?(BlueKantoDex)
               $player.pokedex.refresh_accessible_dexes
             end
             progress["pilot_oak_parcel_delivered"] = true
