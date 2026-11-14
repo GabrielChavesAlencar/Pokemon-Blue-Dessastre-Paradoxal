@@ -276,6 +276,57 @@ def open_tile(map_data, tileset, x, y):
     return False
 
 
+
+# Source IDs are displayed in the QA menu; native IDs are written only to the
+# PRIVATE installed pilot. Each target is a free standing floor tile, never a
+# donor event, door threshold, water warp or a guessed fixed coordinate.
+def build_test_stops(maps, tiles, mapped_ids):
+    if set(maps) != set(mapped_ids) or len(maps) != 199:
+        raise ValueError("Teleporte Hoenn exige os 199 mapas remapeados originais")
+    stops = []
+    for source_id in sorted(maps):
+        world = maps[source_id]
+        width, height = (world.attrs[k] for k in ("@width", "@height"))
+        occupied = {
+            (event.attrs.get("@x"), event.attrs.get("@y"))
+            for event in world.attrs["@events"].values()
+        }
+        best = None
+        best_score = None
+        preferred = (START[1], START[2]) if source_id == START[0] else (width // 2, height // 2)
+        for y in range(1, height - 1):
+            for x in range(1, width - 1):
+                if (x, y) in occupied or not open_tile(world, tiles[source_id], x, y):
+                    continue
+                neighbors = sum(
+                    1 for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0))
+                    if (x + dx, y + dy) not in occupied
+                    and open_tile(world, tiles[source_id], x + dx, y + dy)
+                )
+                if neighbors == 0:
+                    continue
+                near_event = any(abs(x - ex) + abs(y - ey) <= 2 for ex, ey in occupied)
+                distance = abs(x - preferred[0]) + abs(y - preferred[1])
+                # A 2+ exit standing position beats a centered dead end.
+                score = (min(neighbors, 2), not near_event, -distance, -y, -x)
+                if best_score is None or score > best_score:
+                    best_score, best = score, (x, y)
+        if best is None:
+            raise ValueError(f"Mapa {source_id} sem célula caminhável segura para o teleporte de QA")
+        x, y = best
+        label = localized_map_name(SOURCE_MAPS[source_id])
+        if any(c in label for c in "\\r\\n|") or not label.strip():
+            raise ValueError(f"Nome de destino de teleporte inválido: {source_id}")
+        stops.append((source_id, mapped_ids[source_id], x, y, 2, label))
+    return stops
+
+
+def serialize_test_stops(stops):
+    if len(stops) != 199 or len({r[0] for r in stops}) != 199:
+        raise ValueError("Catálogo de teleporte de Hoenn incompleto")
+    return ("BLUE_HOENN_TEST_STOPS_V1\\n" +
+            "".join("|".join(str(value) for value in row) + "\\n" for row in stops)).encode("utf-8")
+
 def reachable(start, points, tiles, maps, edges, blocked):
     """Conservative 4-way tile check, including physical map borders."""
     def open_point(p):
