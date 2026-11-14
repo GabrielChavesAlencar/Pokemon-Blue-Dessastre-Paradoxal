@@ -188,7 +188,7 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("A door/ladder references an unknown source map")
     adjacency = {mid: set() for mid in source_ids}
     for a, b in ([(a, b) for a, _, b, _ in BORDERS] +
-                 [(a, b) for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6)]):
+                 [(a, b) for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6, *OFFSET_BORDERS_STAGE7)]):
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
