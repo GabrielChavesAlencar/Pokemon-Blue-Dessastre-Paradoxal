@@ -113,6 +113,20 @@ O [verificador Python](../scripts/regions/install_sinnoh_qa_copy.py) exige hashe
 
 **CI isolada comprovada:** [execução 43540748918](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43540748918) — **138 testes Python aprovados** e harnesses Ruby de prova de início, eventos e Barry aprovados. A conclusão **geral** daquela workflow foi falha em testes fora da suíte isolada; não confundir sucesso isolado com pipeline totalmente verde ou gameplay nativo.
 
+## Batalhas e playtest nativo — preparado, execução real pendente
+
+```text
+██████████████░░░░░░░░░░  4/7 (57% das subetapas de instrumentação e QA)
+```
+
+A introdução autoral [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb) agora permite **tentar a batalha com Barry só na cópia QA isolada**, após [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) validar provas de compilação, eventos e hashes dos mapas/PBS. Antes disso, Barry permanece bloqueado; o marcador de publicação `blue-sinnoh-rival-ready.txt` **não é criado nem necessário para o teste experimental**. Resultados nulos não avançam o save; as batalhas de teste aceitam vitória ou derrota (`canLose`), preservando Decades/Kanto/Johto/Hoenn.
+
+O [auditor de playtest](../scripts/regions/audit_sinnoh_playtest.py) prepara um roteiro **local de 44 casos**: três Poké Bolas, 12 batalhas (3 iniciais × Normal/Master × vitória/derrota), 16 warps, cinco NPCs, três verificações de save/reload, quatro regressões e Android/JoiPlay. Ele confronta os **níveis observados** com a regra real de código Blue (70%/90%) e exige capturas/logs locais com SHA-256. O resultado **não aprova o jogo automaticamente**, nem prova que uma pessoa executou os testes — as evidências ainda exigem revisão humana. Veja [guia de execução Windows/Android](SINNOH_FASE_02_PLAYTEST_REAL_BARRY_SAVES.md) e [testes do auditor](../tests/test_sinnoh_playtest_audit.py).
+
+**Pendências reais T05–T07:** executar Game.exe QA sobre mapas legítimos e auditar os 12 combates, fazer os testes de portais/saves/regressões e validar Android/JoiPlay. Nenhuma evidência real foi fornecida nesta conversa; o progresso geral permanece **8/32 (25%)** e a aprovação das 13 fases continua **0/13**.
+
+**CI isolada:** a [execução 43541577474](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43541577474) aprovou **150 testes Python** e verificações Ruby da história, início de Sinnoh e estruturas da engine com fixtures. A conclusão da CI geral é acompanhada separadamente.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
