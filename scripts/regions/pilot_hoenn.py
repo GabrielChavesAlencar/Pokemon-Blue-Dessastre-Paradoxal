@@ -605,7 +605,7 @@ def add_stage4_events(maps, game):
 
     gx, gy = ROXANNE_EVENT[1:]
     append_event(maps[27], "HN4_Leader_Roxanne", gx, gy,
-                 event_page(script="BlueHoennPilot.roxanne", sprite=leader_sprite))
+                 event_page(script="BlueHoennPilot.qa7_gym_battle(:STONE)", sprite=leader_sprite))
     mid, x, y = TUNNEL_AQUA_EVENT
     append_event(maps[mid], "HN4_AquaRusturf", x, y,
                  event_page(script="BlueHoennPilot.rusturf_aqua", sprite=aqua_sprite))
@@ -652,8 +652,9 @@ def add_stage5_events(maps, game):
     for mid, x, y, sprite, handler in NPCS_STAGE5:
         if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
             raise ValueError(f"Sprite nativo da etapa 5 inválido: {sprite}")
+        gym_script = "BlueHoennPilot.qa7_gym_battle(:KNUCKLE)" if (mid == 31 and handler == "BlueHoennPilot.brawly") else handler
         append_event(maps[mid], f"HN5_NPC_{mid}_{x}_{y}", x, y,
-                     event_page(script=handler, sprite=sprite))
+                     event_page(script=gym_script, sprite=sprite))
         if mid in (29, 34, 35):
             cx, cy = (9, 5) if mid in (29, 34) else (4, 5)
             proxy = event_page(script=handler)
@@ -749,7 +750,7 @@ def add_stage6_events(maps, game, rival_image):
                  event_page(script="BlueHoennPilot.wally_mauville", sprite=wally_img))
     x, y = WATTSON_EVENT[1:]
     append_event(maps[47], "HN6_Leader_Wattson", x, y,
-                 event_page(script="BlueHoennPilot.wattson", sprite=wattson_img))
+                 event_page(script="BlueHoennPilot.qa7_gym_battle(:DYNAMO)", sprite=wattson_img))
 
     x, y = RIVAL_110_EVENT[1:]
     append_event(maps[113], "HN6_Rival110", x, y,
@@ -889,7 +890,7 @@ def add_stage7_events(maps, game):
          "BlueHoennPilot.maxie"),
         (*FLANNERY_EVENT,"Flannery",
          ("NPC_RSE_Flannery","NPC_ORAS_Flannery","trainer_LASS"),
-         "BlueHoennPilot.flannery"),
+         "BlueHoennPilot.qa7_gym_battle(:HEAT)"),
     ):
         sprite, placeholder = select_native_character(game,candidates,role=label)
         append_event(maps[mid],f"HN7_Boss_{label}",x,y,
@@ -977,9 +978,9 @@ def add_stage8_events(maps, game, rival_image):
     boss_art={}
     for label,(mid,x,y),choices,handler in (
         ("Norman",NORMAN_EVENT,("NPC_RSE_Norman","NPC_ORAS_Norman","trainer_YOUNGSTER"),
-         "BlueHoennPilot.norman"),
+         "BlueHoennPilot.qa7_gym_battle(:BALANCE)"),
         ("Winona",WINONA_EVENT,("NPC_RSE_Winona","NPC_ORAS_Winona","trainer_LASS"),
-         "BlueHoennPilot.winona"),
+         "BlueHoennPilot.qa7_gym_battle(:FEATHER)"),
         ("Shelly",SHELLY_EVENT,("NPC_RSE_Shelly","NPC_ORAS_Shelly","trainer_LASS"),
          "BlueHoennPilot.weather_shelly"),
     ):
@@ -1165,9 +1166,9 @@ def add_stage9_events(maps,game,source_warps,source_pickups):
     art={}
     for label,candidates,handler,positions in (
         ("Tate",("NPC_RSE_Tate","NPC_ORAS_Tate","trainer_YOUNGSTER"),
-         "BlueHoennPilot.tate_liza",(TATE_LIZA_EVENTS[0],)),
+         "BlueHoennPilot.qa7_gym_battle(:MIND)",(TATE_LIZA_EVENTS[0],)),
         ("Liza",("NPC_RSE_Liza","NPC_ORAS_Liza","trainer_LASS"),
-         "BlueHoennPilot.tate_liza",(TATE_LIZA_EVENTS[1],)),
+         "BlueHoennPilot.qa7_gym_battle(:MIND)",(TATE_LIZA_EVENTS[1],)),
         ("Archie",("NPC_RSE_Archie","NPC_ORAS_Archie","trainer_YOUNGSTER"),
          "BlueHoennPilot.pyre_archie",(MT_PYRE_ARCHIE,)),
         ("Tabitha",("NPC_RSE_Tabitha","NPC_ORAS_Tabitha","trainer_YOUNGSTER"),
@@ -1278,7 +1279,7 @@ def add_stage10_events(maps, game, source_warps, source_pickups):
         page.attrs["@through"]=True
         append_event(maps[mid],f"HN10_Story_{label}",x,y,page)
     bosses=(
-        ("Juan",JUAN_EVENT,"BlueHoennPilot.juan",
+        ("Juan",JUAN_EVENT,"BlueHoennPilot.qa7_gym_battle(:RAIN)",
          ("NPC_RSE_Juan","trainer_YOUNGSTER")),
         ("Archie",(236,14,46),"BlueHoennPilot.seafloor_archie",
          ("NPC_RSE_Archie","trainer_YOUNGSTER")),
