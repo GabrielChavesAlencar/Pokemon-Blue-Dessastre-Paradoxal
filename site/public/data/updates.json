@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c73b2a4ae317fa21a1f1acf104d7fb59ebc2cc59",
+      "date": "2026-11-14T12:01:11-03:00",
+      "title": "ci(hoenn): testar Brawly, KNUCKLE, Flash, barco e Stern no Ruby simulado",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "19eed7802b394de97ba3a27bd08bd9ef5fca1cec",
+      "date": "2026-11-14T12:01:00-03:00",
+      "title": "test(hoenn): simular Brawly, Flash, Steven, Briney, museum e Stern com save/reload",
+      "category": "Testes"
+    },
+    {
       "sha": "1daba71a0cb1862d76f6b580395b9faaf6a55a58",
       "date": "2026-11-14T11:59:20-03:00",
       "title": "fix(hoenn): incluir offsets de Dewford/Slateport no grafo de auditoria",
