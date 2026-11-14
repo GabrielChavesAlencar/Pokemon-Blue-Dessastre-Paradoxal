@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "80029d88a4b5f8b0a6be7d201093eb1a60a60ebc",
+      "date": "2026-11-13T23:55:44-03:00",
+      "title": "feat(portal): label Kanto preview-only map cards as not added",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ed8d6effb47446c32bfff5bb4c2305d9a929e6d6",
+      "date": "2026-11-13T23:55:42-03:00",
+      "title": "feat(portal): support Hoenn and Sinnoh tabs on Elite Four page",
+      "category": "Novidades"
+    },
+    {
       "sha": "7276681b3173ab2f295aae2fef9947c4f9e71ff9",
       "date": "2026-11-13T23:55:29-03:00",
       "title": "feat(portal): expose Sinnoh navigation and missing-content roadmap links",
