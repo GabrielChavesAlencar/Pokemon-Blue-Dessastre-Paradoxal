@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8d1c7bd4302ce13a7eb511f34a83cf2936670e55",
+      "date": "2026-11-14T18:29:31-03:00",
+      "title": "test(hoenn): QA12 integrated release gate, 11 reports, native denial and 30 PC/Android scenarios",
+      "category": "Testes"
+    },
+    {
+      "sha": "d935f1f0597dc9e734d697d6f8bb8d2aca82c6a4",
+      "date": "2026-11-14T18:28:57-03:00",
+      "title": "fix(hoenn): QA12 handle source integer IDs before serialized JSON string keys",
+      "category": "Correções"
+    },
+    {
       "sha": "98a6ce08f8cb60e9521cbf7119527367d7f1e1b8",
       "date": "2026-11-14T18:28:34-03:00",
       "title": "feat(hoenn): accept isolated QA12 profile in audited earlier phases",
