@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b4b862fe9283273c55c5fca3d8a20669ead10575",
+      "date": "2026-11-14T11:51:15-03:00",
+      "title": "feat(hoenn): gerar NPCs, Brawly, Flash, Steven, museu Aqua e barco da etapa 5",
+      "category": "Novidades"
+    },
+    {
       "sha": "1977cdde221e2cc06c6f2501a04b39cbbe24eb30",
       "date": "2026-11-14T11:50:11-03:00",
       "title": "feat(hoenn): integrar 20 mapas costeiros, Granite Cave, barco e bordas reais",
