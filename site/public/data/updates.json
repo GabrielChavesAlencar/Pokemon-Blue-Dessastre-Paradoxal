@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b59b053269310b3755be5f01939ee4b512cfb96e",
+      "date": "2026-11-14T12:20:21-03:00",
+      "title": "feat(hoenn): incorporar Mauville, Route110, Cycling Road e dez mapas ao piloto",
+      "category": "Novidades"
+    },
+    {
       "sha": "cf7c93dce6e250354aa9040c6783e35e9456b05b",
       "date": "2026-11-14T12:18:44-03:00",
       "title": "fix(hoenn): conferir sete pickups exatos da Rota 110/Mauville no RXDATA doador",
