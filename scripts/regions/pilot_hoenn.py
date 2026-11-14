@@ -2180,6 +2180,23 @@ def stage(game: Path, source: Source, output: Path) -> dict:
     if output.exists() or output.is_relative_to(game) or game.is_relative_to(output):
         raise ValueError("Escolha uma nova pasta fora da instalação principal")
     overlay, report = build_overlay(game, source)
+    # QA04 is an additional Windows test installation. A separate folder
+    # alone is not sufficient: mkxp stores saves under dataPathOrg/App.
+    # Rewriting these two keys is allowed ONLY for our opted-in QA04 output.
+    if output.name == "hoenn-qa-fase04":
+        conf = overlay["mkxp.json"].decode("utf-8")
+        substitutions = (
+            ('"dataPathApp": "Hoenn Piloto"', '"dataPathApp": "Hoenn QA Fase04"'),
+            ('"dataPathOrg": "Dessastre Paradoxal Hoenn Testes"',
+             '"dataPathOrg": "Dessastre Paradoxal Hoenn QA04"'),
+        )
+        for before, after in substitutions:
+            if conf.count(before) != 1:
+                raise ValueError(f"Perfil de save QA04 não pôde ser isolado: {before}")
+            conf = conf.replace(before, after)
+        overlay["mkxp.json"] = conf.encode("utf-8")
+        report["save_profile"] = "Hoenn QA Fase04"
+        overlay["Hoenn pilot.json"] = json_bytes(report)
     output.parent.mkdir(parents=True, exist_ok=True)
     target = safe_path(output.parent / f".hoenn-{uuid.uuid4().hex}")
     target.mkdir()
