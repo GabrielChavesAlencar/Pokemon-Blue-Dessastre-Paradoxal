@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6eb0d1daa35ca2f9cd3b33f90140796144a2d902",
+      "date": "2026-11-14T12:48:45-03:00",
+      "title": "feat(hoenn): eventos Magma, Flannery, teleférico e 11 vents do ginásio",
+      "category": "Novidades"
+    },
+    {
       "sha": "b04498efdaa63cbafc6a2f5c58a0cf7718173c3f",
       "date": "2026-11-14T12:47:47-03:00",
       "title": "feat(hoenn): mapear 11 pares reais de vents do ginásio Flannery",
