@@ -11,6 +11,7 @@ import {loadPilotCatalog,pilotIndex} from './regional-pilot.js';
 import {downloadsPage} from './downloads.js';
 import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
+import {loadPendingRegions,pendingBlocks,pendingPage,pendingOnlyRegion} from './pending.js';
 
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
@@ -56,24 +57,45 @@ async function render(scroll=false){
       detailData=await loadDetails();if(id!==renderId)return;
       currentBase=base;const form=state.form?detailData.species[`${base.id},${state.form}`]:null;currentEffective=effectiveDetail(base,form,detailData);
       main.innerHTML=pokemonDetail(model,base,detailData,state,favorites);setPage(base.name);
+    }else if(route==='pendencias'){
+      const pending=await loadPendingRegions();if(id!==renderId)return;
+      main.innerHTML=pendingPage(pending,(url.searchParams.get('regiao')||'kanto').toUpperCase());
+      setPage('Pendências das regiões');
     }else if(route==='liga'){
       const db=await loadStrongestTeams();if(id!==renderId)return;
       if(parts[1]){
         const entry=db.teams.find(t=>t.id===decodeURIComponent(parts[1]));if(!entry)throw new Error('not-found');
         const details=await loadDetails();if(id!==renderId)return;
         main.innerHTML=leagueDetail(model,db,entry,details);setPage(entry.name+' · Liga');
-      }else{main.innerHTML=leagueIndex(model,db,(url.searchParams.get('regiao')||'kanto').toUpperCase());setPage('Elite Four e Campeões');}
+      }else{
+        const region=(url.searchParams.get('regiao')||'kanto').toUpperCase();
+        const pending=await loadPendingRegions();if(id!==renderId)return;
+        main.innerHTML=leagueIndex(model,db,region);
+        main.firstElementChild?.insertAdjacentHTML('beforeend',pendingBlocks(pending,region,'liga'));
+        setPage('Elite Four e Campeões');
+      }
     }
     else if(['localizacoes','treinadores','chefes'].includes(route) &&
-      !parts[1] && ['johto','hoenn'].includes(url.searchParams.get('regiao'))){
-      const data=await loadPilotCatalog(url.searchParams.get('regiao'));if(id!==renderId)return;
-      main.innerHTML=pilotIndex(data,route);
-      setPage({localizacoes:'Localizações',treinadores:'Treinadores',chefes:'Líderes de ginásio'}[route]+' de '+data.name);
+      !parts[1] && ['johto','hoenn','sinnoh'].includes(url.searchParams.get('regiao'))){
+      const region=url.searchParams.get('regiao');
+      const pending=await loadPendingRegions();if(id!==renderId)return;
+      if(region==='sinnoh'){
+        main.innerHTML=pendingOnlyRegion(pending,'SINNOH',route);
+      }else{
+        const data=await loadPilotCatalog(region);if(id!==renderId)return;
+        main.innerHTML=pilotIndex(data,route);
+        const existing=(route==='localizacoes'?data.locations:data.trainers.filter(row=>row.leader===(route==='chefes'))).map(row=>row.name);
+        main.firstElementChild?.insertAdjacentHTML('beforeend',pendingBlocks(pending,region.toUpperCase(),route,{excludeNames:existing}));
+      }
+      setPage({localizacoes:'Localizações',treinadores:'Treinadores',chefes:'Líderes de ginásio'}[route]+' de '+region[0].toUpperCase()+region.slice(1));
     }else if(['localizacoes','treinadores','chefes'].includes(route) &&
       (parts[1]?.startsWith('kanto-') || (!parts[1] && url.searchParams.get('regiao')==='kanto'))){
       const data=await loadKanto();if(id!==renderId)return;
       if(!parts[1]){
         main.innerHTML=kantoIndex(model,data,route);
+        const pending=await loadPendingRegions();if(id!==renderId)return;
+        const existing=(route==='localizacoes'?data.locations:data.trainers.filter(row=>row.leader===(route==='chefes'))).map(row=>row.name);
+        main.firstElementChild?.insertAdjacentHTML('beforeend',pendingBlocks(pending,'KANTO',route,{excludeNames:existing}));
         setPage({localizacoes:'Localizações de Kanto',treinadores:'Treinadores de Kanto',chefes:'Líderes de Kanto'}[route]);
       }else if(route==='localizacoes'){
         const area=data.locations.find(row=>row.id===parts[1]);
