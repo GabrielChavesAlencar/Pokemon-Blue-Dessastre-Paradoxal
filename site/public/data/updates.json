@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c536eec38b04c8f31a0bddace45d487d82b6542b",
+      "date": "2026-11-14T14:03:02-03:00",
+      "title": "fix(hoenn): publicar conexões anteriores PBS e novas bordas Surf até Mossdeep",
+      "category": "Novidades"
+    },
+    {
       "sha": "5e6e1178690116f8321d1cdfce01571511599b56",
       "date": "2026-11-14T14:02:18-03:00",
       "title": "feat(hoenn): 28 mapas Stage9 Mossdeep, Mt Pyre, Aqua/Magma, Tate & Liza e Mind",
