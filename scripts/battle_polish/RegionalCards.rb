@@ -1,6 +1,11 @@
 # Two separate Trainer Card views: local-region badges and global crystals.
 # This is read-only UI: it never edits Decades' native badge switches.
 module BlueRegionalCards
+  HOENN_BADGES = {
+    "STONE"=>"PE", "KNUCKLE"=>"PU", "DYNAMO"=>"DI", "HEAT"=>"CA",
+    "BALANCE"=>"EQ", "FEATHER"=>"PN", "MIND"=>"ME", "RAIN"=>"CH"
+  }.freeze
+
   def self.data(state = nil, native_count = nil, native_badges = nil)
     state ||= BlueRegions.snapshot
     return nil unless state
@@ -69,7 +74,7 @@ module BlueRegionalCards
       width, height = Graphics.width, Graphics.height
       y = height - 80
       bitmap.fill_rect(18, y - 11, width - 36, 67, Color.new(184, 212, 198))
-      write(bitmap, "INSÍGNIAS DE KANTO", 24, y - 10, 14)
+      write(bitmap, "INSÍGNIAS DE #{data[:current_name].to_s.upcase}", 24, y - 10, 14)
       names = data[:milestones].first(8)
       return if names.empty?
       step = (width - 75) / 8.0
@@ -82,6 +87,10 @@ module BlueRegionalCards
         bitmap.fill_rect(x + 3, y + 18, 21, 21, fill)
         bitmap.fill_rect(x + 8, y + 23, 11, 11,
                          owned ? Color.new(244, 166, 67) : Color.new(159, 186, 174))
+        if data[:current] == "HOENN"
+          write(bitmap, HOENN_BADGES.fetch(badge, "??"), x + 5, y + 16, 11,
+                Color.new(37, 69, 60))
+        end
       end
     end
 
@@ -90,7 +99,7 @@ module BlueRegionalCards
       b.clear
       card_frame(b)
       pbSetSmallFont(b)
-      label = @page == 0 ? (data[:current] == "KANTO" ? "KANTO" : "REGIÃO ATUAL") : "GERAL"
+      label = @page == 0 ? (%w[KANTO HOENN].include?(data[:current]) ? data[:current] : "REGIÃO ATUAL") : "GERAL"
       write(b, "CARTÃO DE TREINADOR · #{label}", 24, 17, 19, Color.new(255, 253, 217))
       write(b, "Página #{@page + 1}/2  ·  ←/→ trocar cartão  ·  Voltar: sair", 24, 42, 13,
             Color.new(231, 242, 235))
@@ -161,17 +170,23 @@ module BlueRegionalCards
     Scene.new(page).run
   end
 
-  def self.kanto_active?
+  def self.regional_active?
     return false unless defined?($PokemonGlobal) && $PokemonGlobal
     state = BlueRegions.snapshot
-    state && state["current"] == "KANTO" && !BlueBattleOptions.battle_area?
+    state && %w[KANTO HOENN].include?(state["current"]) &&
+      !BlueBattleOptions.battle_area?
+  end
+
+  # Backward compatibility for existing Kanto callers.
+  def self.kanto_active?
+    regional_active? && BlueRegions.snapshot["current"] == "KANTO"
   end
 
   # Clicking the game's original Trainer Card must actually open the requested
   # Kanto/Global pages. Extra pause entries alone were not sufficient.
   module NativeCard
     def pbStartScreen(*args)
-      return super unless BlueRegionalCards.kanto_active?
+      return super unless BlueRegionalCards.regional_active?
       BlueRegionalCards.open(0)
     end
   end
@@ -187,7 +202,7 @@ module BlueRegionalCards
       "order" => 50,
       "condition" => proc { |_menu|
         state = BlueRegions.snapshot
-        BlueStory.story? && state && state["current"] != "KANTO" &&
+        BlueStory.story? && state && !%w[KANTO HOENN].include?(state["current"]) &&
           !BlueBattleOptions.battle_area?
       },
       "effect" => proc do |menu|
