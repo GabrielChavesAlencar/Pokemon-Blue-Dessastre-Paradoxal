@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d81ee036a56ec105d485c7df39f04ad7e6dd5869",
+      "date": "2026-11-13T22:28:47-03:00",
+      "title": "docs(sinnoh): update isolated Sinnoh CI evidence to latest 138 passing Python and Ruby tests",
+      "category": "Documentação"
+    },
+    {
       "sha": "b87b49176716f77c053ec1fa3982da0b9f97078c",
       "date": "2026-11-13T22:27:57-03:00",
       "title": "test(sinnoh): enforce postcompile validation 4/7 code-only and no premature native/gameplay approval",
