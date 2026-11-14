@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "692ddd60a1f90f589fbe277dc1cf15440b3c25ff",
+      "date": "2026-11-14T14:12:02-03:00",
+      "title": "audit(hoenn): conferir evento único de entrada em Mt Pyre na Rota 122",
+      "category": "Melhorias"
+    },
+    {
       "sha": "84bdaff96306eb22da6e248cb20e95d92ef1dd4e",
       "date": "2026-11-14T14:11:23-03:00",
       "title": "feat(hoenn): gerar PBS equipes Tate Liza, Magma/Aqua e Maxie no Centro Espacial",
