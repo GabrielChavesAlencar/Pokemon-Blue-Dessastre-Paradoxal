@@ -17,6 +17,11 @@ await cp(path.join(root,'public'),output,{recursive:true});
 console.log(`Sprites autorais: ${await extractSprites(root,output)}`);
 console.log(`Cries e pedras autorais: ${await extractExtras(root,output)}`);
 await writeFile(path.join(output,'data/updates.json'),JSON.stringify(generate()));
+const trainerEvidence=JSON.parse(await readFile(path.join(root,'../data/regions/trainer-event-bindings-phase1.json'),'utf8'));
+if(trainerEvidence.schema!==1||trainerEvidence.records.length!==13||
+  trainerEvidence.state!=='NATIVE_AUDIT_PENDING_NOT_GAMEPLAY')throw new Error('regional-trainer-bindings-invalid');
+await writeFile(path.join(output,'data/trainer-event-bindings-phase1.json'),JSON.stringify(trainerEvidence));
+console.log('Vínculos regionais dos pilotos: '+trainerEvidence.records.length+' (não certificados como jogáveis)');
 const readJson=async name=>JSON.parse(await readFile(path.join(root,'public/data',name+'.json'),'utf8'));
 const locationData=await readJson('locations');
 const generatedGuides=generateGuides({catalog:await readJson('catalog'),locations:{...locationData,locations:activeLocations(locationData.locations,await readJson('region-points'))},details:await readJson('details'),editorial:await readJson('guides')});
