@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "855774f8c414235b16fd1edf541dcff3995de901",
+      "date": "2026-11-14T10:51:15-03:00",
+      "title": "fix(hoenn): validar células de chegada e cachear tiles em mapas extensos",
+      "category": "Correções"
+    },
+    {
       "sha": "17e056138bd140a8552037271d40027145e8aac0",
       "date": "2026-11-14T10:50:15-03:00",
       "title": "fix(hoenn): corrigir retornos do atlas Route 104 para tiles de fato passáveis",
