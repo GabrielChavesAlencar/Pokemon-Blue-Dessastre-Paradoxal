@@ -72,6 +72,10 @@ jobs:
         run: |
           ruby -c scripts/regions/SinnohBarryNativeProbe.rb
           ruby tests/sinnoh_barry_native_probe_runtime.rb scripts/regions/SinnohBarryNativeProbe.rb
+      - name: Validar perfil de saves e inicializacao Ruby isolada de Sinnoh
+        run: |
+          ruby -c scripts/regions/SinnohQAStart.rb
+          ruby tests/sinnoh_qa_start_runtime.rb scripts/regions/SinnohQAStart.rb
   smoke-browser:
     name: Navegacao real + salvamento PBS (Chromium)
     needs: python-and-contract
