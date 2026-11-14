@@ -175,7 +175,9 @@ def install_simple_obstacles(events_by_map: dict, donor_maps: dict,
                 rel=f"Graphics/Characters/{original_name}.png"
                 try:
                     blob=source.read(rel)
-                except (OSError,ValueError,FileNotFoundError):
+                except (OSError,FileNotFoundError):
+                    # Missing optional graphics are reported; a Git SHA mismatch
+                    # is fatal and must not be downgraded to a silent fallback.
                     blob=b""
                 if blob.startswith(b"\x89PNG\r\n\x1a\n"):
                     sprite="BLUE_HOENN_QA4_"+original_name
