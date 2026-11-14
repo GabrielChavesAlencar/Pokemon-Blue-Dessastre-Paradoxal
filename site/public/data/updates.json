@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ff90d1ae6267d141b57ccf58f3832bb3e28e984c",
+      "date": "2026-11-13T22:12:20-03:00",
+      "title": "feat(sinnoh): install private QA copy with unique mkxp save profile, hashed start map and one-shot native Barry PBS compiler gate",
+      "category": "Novidades"
+    },
+    {
       "sha": "37d5bf49964c15ff885026a012f76d5a4be573db",
       "date": "2026-11-13T22:10:41-03:00",
       "title": "feat(sinnoh): gate isolated QA new game on compiled PBS proof and hashed Twinleaf spawn with region-scoped state",
