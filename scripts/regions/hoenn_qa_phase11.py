@@ -127,7 +127,7 @@ def verify_copy(copy: Path) -> dict:
     ids, qa = manifest.get("maps"), manifest.get("qa11")
     if (manifest.get("region") != "HOENN" or
         manifest.get("kind") != "ISOLATED_HOENN_TEST" or
-        manifest.get("save_profile") != "Hoenn QA Fase11" or
+        manifest.get("save_profile") not in ("Hoenn QA Fase11", "Hoenn QA Fase12") or
         not isinstance(ids, dict) or len(ids) != 199 or
         not isinstance(qa, dict) or not isinstance(manifest.get("qa10"), dict)):
         raise ValueError("QA11: exige cópia isolada QA11 com 199 mapas e auditoria QA10")
