@@ -58,6 +58,21 @@ def inspect(game: Path) -> dict:
         if not file.is_file():
             raise ValueError(f"Missing {expected[source]} map: {file.name}")
         maps[dest] = load(file)
+    # Pewter -> Route 3 uses a real-source east-edge movement guard.
+    # Reject a missing/cross-region/out-of-bounds rule before launching.
+    pewter_guard = game / "Data/blue-kanto-pewter-route3-gate.txt"
+    if not pewter_guard.is_file():
+        raise ValueError("Missing Pewter Route 3 Brock badge gate")
+    try:
+        pewter_map_id, pewter_width, first_row, last_row = map(
+            int, pewter_guard.read_text("ascii").strip().split("|"))
+    except (OSError, ValueError) as error:
+        raise ValueError("Invalid Pewter Route 3 gate coordinates") from error
+    pewter_map = maps[mapping[25]].attrs
+    if (pewter_map_id != mapping[25] or
+            pewter_width != pewter_map["@width"] or
+            not 0 <= first_row < last_row <= pewter_map["@height"]):
+        raise ValueError("Pewter Route 3 story gate is outside source map edge")
     # Native field objects are generated from their real source EventIDs.
     # Reject invented coordinates, foreign-preview events and malformed
     # one-shot item and physical HM obstacle callbacks.
@@ -85,7 +100,7 @@ def inspect(game: Path) -> dict:
         if any(not text(message).strip() for message in messages):
             raise ValueError("Blank Kanto runtime NPC dialogue")
         native_dialogues[key] = messages
-    known = {"item", "npc_dialogue", "rock_smash", "strength", "cut"}
+    known = {"item", "npc_dialogue", "sign_dialogue", "rock_smash", "strength", "cut"}
     seen = set()
     for row in field_report["imported"]:
         source, destination, event_id = row["source_map"], row["map"], row["event"]
@@ -102,7 +117,7 @@ def inspect(game: Path) -> dict:
         page = event.attrs["@pages"][0].attrs
         commands = [text(op.attrs["@parameters"][0]) for op in page["@list"]
                     if op.attrs["@code"] == 355 and op.attrs["@parameters"]]
-        if row["kind"] == "npc_dialogue" and (source, event_id) in native_dialogues:
+        if row["kind"] in ("npc_dialogue", "sign_dialogue") and (source, event_id) in native_dialogues:
             messages = native_dialogues[(source, event_id)]
             expected_calls = [
                 f"BlueKantoPilot.npc_dialogue({source}, {event_id}, {index})"
@@ -129,7 +144,7 @@ def inspect(game: Path) -> dict:
                             for op in page["@list"] if len(op.attrs["@parameters"]) > 1)):
                 raise ValueError("CutTree does not use native badge-gated Cut")
     source_npcs = {(r["source_map"], r["event"])
-                   for r in field_report["imported"] if r["kind"] == "npc_dialogue"}
+                   for r in field_report["imported"] if r["kind"] in ("npc_dialogue", "sign_dialogue")}
     if not native_dialogues.keys() <= source_npcs:
         raise ValueError("Kanto dialogue bridge contains an unapproved source event")
     # Missing PNGs for *optional* field NPCs must be recorded and omitted,
@@ -283,7 +298,15 @@ def inspect(game: Path) -> dict:
                 raise ValueError("Forest tunnel must not contain the Oak parcel gate")
 
 
-    # Phase 09 gameplay nucleus: exact Celadon event whitelist.
+    # Phase 09/10 story whitelists remain strict for quest, trainers, item
+    # and warp events. Only separately audited passive signs and CutTree
+    # obstacles may be added without changing the underlying core events.
+    def passive_field_ids(origin):
+        return {row["event"] for row in field_report["imported"]
+                if row["source_map"] == origin and
+                   row["kind"] in ("sign_dialogue", "cut")}
+
+    # Phase 09 gameplay nucleus: exact Celadon story whitelist.
     # The source also has Rocket, Game Corner, mansions, item pickups,
     # cut trees and the department store. None of those may slip in.
     core_events = {
@@ -293,8 +316,8 @@ def inspect(game: Path) -> dict:
     }
     for origin, allowed in core_events.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        if actual != allowed:
-            raise ValueError(f"Celadon {origin}: unreviewed events imported: {actual ^ allowed}")
+        if actual != allowed | passive_field_ids(origin):
+            raise ValueError(f"Celadon {origin}: unreviewed events imported: {actual ^ (allowed | passive_field_ids(origin))}")
     for outside, eid, inside, return_event in ((114, 3, 124, 5),
                                                 (114, 20, 115, 1)):
         if mapping[inside] not in event_transfers(outside, eid):
@@ -321,8 +344,8 @@ def inspect(game: Path) -> dict:
     }
     for origin, allowed in fuchsia.items():
         found_ids = set(maps[mapping[origin]].attrs["@events"])
-        if found_ids != allowed:
-            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ allowed}")
+        if found_ids != allowed | passive_field_ids(origin):
+            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ (allowed | passive_field_ids(origin))}")
     fuchsia_returns = (
         (144, 5, 147, 9),
         (144, 17, 145, 1),
@@ -367,8 +390,9 @@ def inspect(game: Path) -> dict:
     }
     for original, whitelist in saffron.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        if actual != whitelist:
-            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ whitelist}")
+        allowed_with_passive = whitelist | passive_field_ids(original)
+        if actual != allowed_with_passive:
+            raise ValueError(f"Saffron {original}: leaked/missing events {actual ^ allowed_with_passive}")
     saffron_pairs = (
         (168, 6, 171, 10), (168, 10, 178, 1),
         (168, 12, 170, 1), (168, 13, 169, 1),
@@ -450,8 +474,9 @@ def inspect(game: Path) -> dict:
     # and quizzes must NOT be copied into Decades.
     for origin, expected_ids in CINNABAR_EVENTS.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        if actual != set(expected_ids):
-            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ set(expected_ids)}")
+        allowed_with_passive = set(expected_ids) | passive_field_ids(origin)
+        if actual != allowed_with_passive:
+            raise ValueError(f"Cinnabar {origin}: leaked/missing source events {actual ^ allowed_with_passive}")
     cinnabar_pairs = (
         (199, 1, 201, 1), (199, 2, 200, 1),
         (199, 3, 205, 1), (199, 5, 203, 1),
@@ -512,8 +537,9 @@ def inspect(game: Path) -> dict:
     # Stage 13: source Map013 must be safely re-implemented, while keeping
     # the original Map010 entrance and the exact one-way return.
     gym_events = maps[mapping[13]].attrs["@events"]
-    if set(gym_events) != VIRIDIAN_GYM_EVENTS:
-        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ VIRIDIAN_GYM_EVENTS}")
+    expected_viridian = VIRIDIAN_GYM_EVENTS | passive_field_ids(13)
+    if set(gym_events) != expected_viridian:
+        raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ expected_viridian}")
     if len(TRAINERS[13]) != 9:
         raise ValueError("Viridian Gym must have Giovanni and exactly eight source trainers")
     if mapping[10] not in event_transfers(13, 11):
@@ -548,8 +574,9 @@ def inspect(game: Path) -> dict:
     # completion flags may be executed in the Decades installation.
     for original, allowed in LEAGUE_EVENT_WHITELIST.items():
         actual = set(maps[mapping[original]].attrs["@events"])
-        if actual != allowed:
-            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed}")
+        allowed_with_passive = allowed | passive_field_ids(original)
+        if actual != allowed_with_passive:
+            raise ValueError(f"League {original}: foreign events or missing local events {actual ^ allowed_with_passive}")
     if maps[mapping[210]].attrs["@events"]:
         raise ValueError("Empty Victory Road Map210 unexpectedly contains source events")
     for original, entries in LEAGUE_BADGE_GATES.items():

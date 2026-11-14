@@ -17,7 +17,8 @@ from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
 from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_event,
-                             source_item_ball, source_npc_dialogue)
+                             source_item_ball, source_npc_dialogue, source_sign_dialogue,
+                             source_obstacle)
 from kanto_npc_locale import install_npc_locale, npc_literals
 from server.ruby_marshal import RubyObject, dumps_simple, text
 from stage import serialize, stage
@@ -34,10 +35,14 @@ PILOT_INPUTS = (
     "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/stage.py",
     "scripts/regions/pbs.py",
+    "scripts/regions/kanto_full_power.py",
+    "data/kanto-full-power.json",
     "scripts/regions/export_kanto.py",
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
     "scripts/battle_polish/Story.rb",
+    "scripts/battle_polish/Balance.rb",
+    "scripts/battle_polish/RegionalCards.rb",
     "scripts/battle_polish/KantoDex.rb",
     "scripts/battle_polish/DexControls.rb",
     "scripts/battle_polish/Economy.rb",
@@ -389,6 +394,8 @@ def cinnabar_event_allowed(source_id, event_id):
 
 
 def saffron_event_allowed(source_id, event_id, event):
+    if source_obstacle(event) == "cut" or source_sign_dialogue(event):
+        return True
     if source_id in SAFFRON_STATIC_EVENTS:
         return event_id in SAFFRON_STATIC_EVENTS[source_id]
     if 178 <= source_id <= 188:
@@ -657,6 +664,49 @@ def make_viridian_route2_gates(events, source, city_map, route_map):
     return gates
 
 
+def pewter_route3_east_rows(source, city_height, route_height):
+    """Find the exact FRLG Pewter(25) <-> Route 3(32) east-west edge."""
+    found = []
+    lines = (source / "PBS/map_connections.txt").read_text(
+        encoding="utf-8-sig").splitlines()
+    for line in lines:
+        row = line.split("#", 1)[0].strip()
+        if not row:
+            continue
+        parts = [part.strip() for part in row.split(",")]
+        if len(parts) != 6:
+            raise ValueError("Malformed FRLG map connection: " + row)
+        a, a_side, a_offset, b, b_side, b_offset = parts
+        if (int(a), int(b)) == (25, 32):
+            city_side, city_offset, route_side, route_offset = (
+                a_side, int(a_offset), b_side, int(b_offset))
+        elif (int(a), int(b)) == (32, 25):
+            city_side, city_offset, route_side, route_offset = (
+                b_side, int(b_offset), a_side, int(a_offset))
+        else:
+            continue
+        if (city_side, route_side) != ("East", "West"):
+            raise ValueError("Pewter -> Route 3 source is not an east-west edge")
+        first = max(0, city_offset - route_offset)
+        last = min(city_height, route_height + city_offset - route_offset)
+        if first >= last:
+            raise ValueError("Pewter -> Route 3 has no overlapping rows")
+        found.append((first, last))
+    if len(found) != 1:
+        raise ValueError("Expected exactly one Pewter to Route 3 source connection")
+    return found[0]
+
+
+def install_pewter_route3_gate(source, target, mapping):
+    """Native movement guard uses real source dimensions, never fake NPCs."""
+    pewter = load(source / "Data/Map025.rxdata").attrs
+    route = load(source / "Data/Map032.rxdata").attrs
+    first, last = pewter_route3_east_rows(
+        source, pewter["@height"], route["@height"])
+    (target / "Data/blue-kanto-pewter-route3-gate.txt").write_text(
+        f"{mapping[25]}|{pewter['@width']}|{first}|{last}\n", encoding="ascii")
+
+
 def make_viridian_parcel_intro(events):
     """One-time autorun, anchored to the real shopkeeper, never a fake NPC."""
     clerk = events[find_shopkeeper(events)]
@@ -840,13 +890,18 @@ def install_events(source, target, mapping):
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            # Read-only signs and source-authored Cut trees are safe optional
+            # objects on functional maps, including reviewed cities/interiors.
+            # This does NOT affect any geometry-only preview region.
+            passive_field = bool(source_sign_dialogue(event)) or (
+                source_obstacle(event) == "cut")
             if not saffron_event_allowed(original, event_id, event):
                 continue
-            if not cinnabar_event_allowed(original, event_id):
+            if not cinnabar_event_allowed(original, event_id) and not passive_field:
                 continue
-            if not viridian_event_allowed(original, event_id):
+            if not viridian_event_allowed(original, event_id) and not passive_field:
                 continue
-            if not league_event_allowed(original, event_id):
+            if not league_event_allowed(original, event_id) and not passive_field:
                 continue
             if original in LEAGUE_BARRIER_GATES and event_id in LEAGUE_BARRIER_GATES[original]:
                 required = LEAGUE_BARRIER_GATES[original][event_id]
@@ -970,23 +1025,25 @@ def install_events(source, target, mapping):
             # Phase 09 selective import: only audited doors, healing, and
             # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
             # Cut trees, elevators or untranslated foreign story events.
-            if original == 114 and event_id not in (3, 20):
+            if original == 114 and event_id not in (3, 20) and not (
+                    source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
-            if original == 115 and event_id not in (1, 2):
+            if original == 115 and event_id not in (1, 2) and not passive_field:
                 continue
-            if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47):
+            if original == 124 and event_id not in (1, 5, 7, 42, 43, 44, 45, 46, 47) and not passive_field:
                 continue
             # Phase 10: exact Fuchsia whitelists, no Warden/Gold Teeth,
             # Safari captures, Park South event transfers or source quests.
-            if original == 144 and event_id not in (5, 17, 18, 24):
+            if original == 144 and event_id not in (5, 17, 18, 24) and not (
+                    source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
-            if original == 145 and event_id not in (1, 2):
+            if original == 145 and event_id not in (1, 2) and not passive_field:
                 continue
-            if original == 146 and event_id not in (1, 2):
+            if original == 146 and event_id not in (1, 2) and not passive_field:
                 continue
-            if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11):
+            if original == 147 and event_id not in (3, 4, 5, 6, 7, 8, 9, 11) and not passive_field:
                 continue
-            if original == 153 and event_id not in (1, 2, 5):
+            if original == 153 and event_id not in (1, 2, 5) and not passive_field:
                 continue
             if 179 <= original <= 188 and text(event.attrs["@name"]) == "Locked Door":
                 peers = silph_locked_group(events, event_id)
@@ -1072,7 +1129,7 @@ def install_events(source, target, mapping):
                     after_win.attrs["@through"] = False
                     after_win.attrs["@direction_fix"] = False
                     after_win.attrs["@list"] = [
-                        command(355, f'BlueKantoPilot.trainer_repeat("{trainer_name}")'.encode()),
+                        command(355, f'BlueKantoPilot.trainer_repeat("{trainer_name}", :BLUE_KANTO_{kind})'.encode()),
                         command(0)]
                     trainer.attrs["@pages"].append(after_win)
                     selected[event_id] = trainer
@@ -1160,12 +1217,14 @@ def install_events(source, target, mapping):
                       f"evento {event_id}: {missing_graphic}", flush=True)
             if field:
                 adapted, detail = field
-                if detail["kind"] == "npc_dialogue":
+                if detail["kind"] in ("npc_dialogue", "sign_dialogue"):
                     # RPG Maker 101/401 and script-generated text can bypass
                     # _INTL/getFromMapHash hooks. Dispatch these *already audited*
                     # passive NPCs to an explicit, locale-aware callback at talk
                     # time. No source Ruby is executed or copied.
-                    literal_commands = source_npc_dialogue(event)
+                    literal_commands = (source_sign_dialogue(event)
+                                        if detail["kind"] == "sign_dialogue"
+                                        else source_npc_dialogue(event))
                     literals = npc_literals(literal_commands) if literal_commands else []
                     if literals:
                         npc_dialogues.append([original, event_id, literals])
@@ -1187,19 +1246,13 @@ def install_events(source, target, mapping):
             warp = extract_warps(event, mapping)
             if warp:
                 name = text(event.attrs["@name"])
-                # Automatic exits and route gateways are floor tiles. Visible doors use action.
+                # Every source-confirmed ordinary map transfer is Player
+                # Touch, including visible house doors in Pewter/Viridian.
+                # Locked/scripted puzzle doors were handled earlier and retain
+                # their authored interaction requirements.
                 graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]
-                # Only explicitly supported source door destinations survive. Import no other commands.
                 character = actor(event) if graphic else b""
-                is_door = "door" in name.lower() and bool(character)
-                # For the audited Celadon entrance doors, keep the original
-                # Player Touch semantics rather than requiring an action key.
-                auto_entry = original == 10 or (original == 5 and event_id in (1, 2, 3)) or (
-                    original == 114 and event_id in (3, 20)) or (
-                    original == 144 and event_id in (5, 17, 18, 24)) or (
-                    original == 168 and event_id in (6, 10, 12, 13, 14)) or (
-                    original == 199 and event_id in (1, 2, 3, 5))
-                trigger = 1 if auto_entry else (0 if is_door else 1)
+                trigger = 1
                 # Viridian City is the TRUE story gate. The Forest buildings
                 # retain their original transfers, without extra tunnel locks.
                 operations = [warp]
@@ -1326,7 +1379,8 @@ def install_pbs(preview, target, mapping):
 
 def install_runtime(target, mapping, game):
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
-    for name in ("RegionStart.rb", "Story.rb", "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
+    for name in ("RegionStart.rb", "Story.rb", "Balance.rb", "RegionalCards.rb",
+                 "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
     plugin.mkdir()
@@ -1478,6 +1532,7 @@ def build(source, game, output):
         for folder in ("Data", "Graphics"):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         install_events(source, target, mapping)
+        install_pewter_route3_gate(source, target, mapping)
         # Merge local Argos/manual translations with BlueLocale in this pilot
         # only. English story text and the Decades installation remain intact.
         install_npc_locale(ROOT, source, target)

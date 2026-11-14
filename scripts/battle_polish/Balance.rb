@@ -84,6 +84,9 @@ module BlueTrainerMoves
     # With no legal candidate the native engine uses Struggle; do not teach an illegal move.
   end
   def self.apply(battle)
+    # The same regional first-boss exception as the BST adapter. Only
+    # certified Full Power rematches re-enable move base-power restrictions.
+    return if battle.instance_variable_get(:@blue_story_regional_exempt)
     cap=CAPS[BlueStory.stage]
     return unless cap
     battle.pbParty(1).each { |p| adjust(p,cap,battle) }

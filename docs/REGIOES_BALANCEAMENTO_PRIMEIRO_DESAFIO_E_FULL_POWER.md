@@ -45,8 +45,8 @@ Em `scripts/battle_polish/Balance.rb`, `BlueTrainerMoves.apply` impõe limites d
 
 1. Identificar pelo tipo de treinador e por **IDs regionais estáveis** cada um dos oito líderes de Kanto, os quatro membros da Elite e o Campeão (com variantes do inicial). Adotar o mesmo padrão ao integrar Johto, Hoenn, Sinnoh etc. Não inventar NPCs ou times sem um catálogo auditado.
 2. Preservar a equipe original em PBS como **versão inicial**. Criar equipe Full Power em **outra versão/identidade explícita**, sem substituir o original nem reatribuir suas vitórias.
-3. Acesso à revanche Full Power somente após as condições de progressão já estabelecidas na região (insígnias/Liga) e quando houver uma equipe Full Power verificada para aquele adversário. **Não liberar por contagem global de esmeraldas isoladamente.**
-4. Full Power: equipe mais completa de até seis Pokémon, cobertura de fraquezas, golpes legais e diversidade, com EV/IV/itens/habilidades válidos; não presumir Mega ou item indisponível. Guardar escolhas e versões em catálogo verificável. **O limite BST/base power solicitado continua ativo nesta modalidade**, portanto espécies/golpes que excedam o estágio podem ser substituídos de forma segura pelo adaptador atual.
+3. Acesso à revanche Full Power somente **após concluir todas as dez Ligas do circuito** (`BlueRegions.profile(state, true) == :world_champion_rematch`), tendo vencido o confronto inicial da região e dispondo de equipe canônica verificada. **Uma única Liga, inclusive Kanto, não desbloqueia Full Power.**
+4. Full Power: usar o **time oficial mais forte documentado por jogo e cargo**, em `docs/ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md` e `docs/KANTO_TIMES_FORTES_IMPLEMENTACAO_PASSO_A_PASSO.md`. Preservar os cinco integrantes quando o oficial tiver cinco, duplicatas canônicas e os níveis de referência, sem misturar elencos de jogos diferentes. O jogo usa escalonamento de nível durante a batalha. **O teto BST/base power solicitado continua ativo nesta modalidade**; qualquer equipe equilibrada derivada deve ser diferenciada da referência oficial.
 5. Durante a batalha, carregar contexto do time **antes** de `Battle.new`/`BlueStory::Teams` e de `BlueTrainerMoves.apply`, e limpar o contexto em bloco `ensure`, inclusive em derrota, fuga permitida, exceção e mudança de mapa.
 6. Vitória inicial entrega a insígnia **uma única vez**; revanche Full Power não entrega segunda insígnia, não reescreve progresso da Liga nem altera a quantidade global de esmeraldas.
 7. Em saves anteriores sem esse estado, o combate inicial permanece inicial; migração não destrutiva e sem zerar derrotas, Pokédex ou conquistas.
@@ -62,6 +62,7 @@ Em `scripts/battle_polish/Balance.rb`, `BlueTrainerMoves.apply` impõe limites d
 
 - Testar primeiro Brock, Misty, Giovanni, Lorelei, Bruno, Agatha, Lance e Blue sem substituir espécies nem reduzir golpes por BST/base power, inclusive com muitas esmeraldas globais.
 - Testar equipes Full Power com todas as faixas de esmeraldas, demonstrando os limites BST 350/450/540/sem limite e base power 60/90/sem limite/sem limite.
+- Confirmar que 1 Liga, 9 Ligas e 10 Ligas geram bloqueio, bloqueio e disponibilidade de revanches Full Power respectivamente; não duplicar Hall of Fame ou insígnias.
 - Testar Kanto com e sem insígnias locais: a região atual é a fonte de classificação, a insígnia só é entregue na vitória inicial e o Full Power só surge após o desbloqueio.
 - Executar provas de regressão de Decades (e dos saves anteriores), Johto e modo Battle Lab, preservando níveis, itens, música, times e flags.
 - Distinguir **testes estáticos de CI**, **teste de engine nativa** e **jogabilidade manual no Windows**. Só registrar aprovação total quando houver evidência de cada camada.

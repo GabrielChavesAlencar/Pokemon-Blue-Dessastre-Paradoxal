@@ -7,6 +7,13 @@ module BlueKantoPilot
   LEAGUE_REQUIRED_BADGES = (VIRIDIAN_REQUIRED_BADGES + ["EARTH"]).freeze
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
+  FULL_POWER_OFFSET = 100
+  GYM_FULL_POWER = {
+    "Brock" => :BLUE_KANTO_LEADER, "Misty" => :BLUE_KANTO_LEADER_MISTY,
+    "Lt. Surge" => :BLUE_KANTO_LEADER_SURGE, "Erika" => :BLUE_KANTO_LEADER_ERIKA,
+    "Koga" => :BLUE_KANTO_LEADER_KOGA, "Sabrina" => :BLUE_KANTO_LEADER_SABRINA,
+    "Blaine" => :BLUE_KANTO_LEADER_BLAINE, "Giovanni" => :BLUE_KANTO_LEADER_GIOVANNI
+  }.freeze
 
   # Passive FRLG dialogue is stored as original text in the isolated pilot.
   # RPG Maker 101/401 rendering does not reliably traverse _INTL, so resolve
@@ -232,6 +239,28 @@ module BlueKantoPilot
     !forest_unlocked?
   end
 
+  # Exact, source-grounded Pewter east boundary compiled by pilot.py.
+  # Only the first Kanto Boulder Badge may open Route 3; crystals earned in
+  # other regions do not unlock it. No second foreign-story switch is needed.
+  def self.pewter_route3_blocked?(player, direction)
+    return false unless player && $game_map && direction == 6
+    gate = "Data/blue-kanto-pewter-route3-gate.txt"
+    return false unless File.file?(gate)
+    @pewter_route3_edge ||= begin
+      pieces = File.read(gate).strip.split("|")
+      pieces.length == 4 ? pieces.map { |value| Integer(value, 10) } : []
+    end
+    map_id, width, first, last = @pewter_route3_edge
+    return false unless map_id && width && first && last
+    return false unless $game_map.map_id == map_id && player.x >= width - 1
+    return false unless player.y >= first && player.y < last
+    !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+  end
+
+  def self.pewter_route3_warning
+    pbMessage(_INTL("A saída leste de Pewter para a Rota 3 está bloqueada. Derrote Brock e conquiste a Boulder Badge primeiro!"))
+  end
+
   def self.rival_done?
     progress["pilot_rival"] == true
   end
@@ -318,6 +347,30 @@ module BlueKantoPilot
     end
   end
 
+  def self.full_power_unlocked?
+    state = BlueRegions.snapshot
+    state && state.fetch("leagues", []).include?("KANTO") &&
+      BlueRegions.profile(state, true) == :world_champion_rematch
+  end
+
+  def self.full_power_gym(name, trainer_type = nil)
+    type = GYM_FULL_POWER[name]
+    return false unless type && trainer_type == type && full_power_unlocked?
+    return false unless pbConfirmMessage(_INTL("{1}: Enfrentar meu time oficial Full Power?", name))
+    setBattleRule("canLose")
+    won = BlueStory.with_regional_full_power {
+      TrainerBattle.start(type, name, FULL_POWER_OFFSET)
+    }
+    if won
+      victories = (progress["pilot_full_power_gym_wins"] ||= [])
+      victories << name unless victories.include?(name)
+      pbMessage(_INTL("Você venceu a revanche Full Power de {1}!", name))
+    else
+      $player.heal_party
+    end
+    true
+  end
+
   def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
     if type == :BLUE_KANTO_LEADER_SABRINA && !progress["pilot_silph_rescued"]
@@ -343,6 +396,7 @@ module BlueKantoPilot
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
     if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
+      return if full_power_gym(name, type)
       pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
       return
     end
@@ -405,7 +459,8 @@ module BlueKantoPilot
     true
   end
 
-  def self.trainer_repeat(name)
+  def self.trainer_repeat(name, type = nil)
+    return if full_power_gym(name, type)
     pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
   end
 
@@ -845,7 +900,8 @@ module BlueKantoPilot
 
   def self.league_active?
     progress["pilot_league_active"] == true && league_badges? &&
-      !progress.fetch("leagues", []).include?("KANTO")
+      (!progress.fetch("leagues", []).include?("KANTO") ||
+       progress["pilot_league_full_power"] == true)
   end
 
   def self.league_begin(map_id, x, y)
@@ -853,10 +909,15 @@ module BlueKantoPilot
       pbMessage(_INTL("A Liga exige as oito insígnias de Kanto, inclusive a Earth Badge."))
       return false
     end
-    if progress.fetch("leagues", []).include?("KANTO")
-      pbMessage(_INTL("Seu título de Campeão de Kanto já está registrado. Revanches completas virão depois."))
+    completed = progress.fetch("leagues", []).include?("KANTO")
+    if completed && !full_power_unlocked?
+      pbMessage(_INTL("Os times oficiais Full Power só ficam disponíveis após concluir todas as Ligas do circuito regional."))
       return false
     end
+    if completed && !pbConfirmMessage(_INTL("Desafiar a Elite Four e o Campeão com os times oficiais Full Power?"))
+      return false
+    end
+    progress["pilot_league_full_power"] = completed
     progress["pilot_league_active"] = true
     progress["pilot_league_wins"] = []
     pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
@@ -886,9 +947,14 @@ module BlueKantoPilot
       end
     end
     setBattleRule("canLose")
-    won = TrainerBattle.start(type, name, version)
+    full_power = progress["pilot_league_full_power"] == true
+    version += FULL_POWER_OFFSET if full_power
+    won = full_power ? BlueStory.with_regional_full_power {
+      TrainerBattle.start(type, name, version)
+    } : TrainerBattle.start(type, name, version)
     unless won
       $player.heal_party
+      progress["pilot_league_full_power"] = false
       progress["pilot_league_active"] = false
       progress["pilot_league_wins"] = []
       pbMessage(_INTL("Você perdeu esta tentativa da Liga. Volte ao saguão para tentar novamente."))
@@ -911,13 +977,17 @@ module BlueKantoPilot
   end
 
   def self.league_finalize(pallet_map)
-    if progress.fetch("leagues", []).include?("KANTO")
-      pbMessage(_INTL("Sua conquista da Liga de Kanto já está registrada."))
-      return false
-    end
     unless league_active? && progress.fetch("pilot_league_wins", []) == LEAGUE_ORDER
       pbMessage(_INTL("Hall of Fame bloqueado: faltam vitórias na Elite Four ou no Campeão."))
       return false
+    end
+    if progress["pilot_league_full_power"] == true
+      progress["pilot_league_full_power"] = false
+      progress["pilot_league_active"] = false
+      progress["pilot_full_power_league_complete"] = true
+      pbMessage(_INTL("Liga Full Power concluída! Nenhuma insígnia foi concedida novamente."))
+      pbFadeOutIn { BlueRegionTravel.move_to([pallet_map, 18, 8, 2]) }
+      return true
     end
     return false unless BlueRegions.complete_league(progress, "KANTO")
     progress["pilot_league_active"] = false
@@ -1039,6 +1109,16 @@ end
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
+    if BlueKantoPilot.pewter_route3_blocked?(self, dir)
+      turn_generic(dir, true) if turn_enabled
+      key = [$game_map.map_id, x, y, :pewter_route3]
+      if @blue_pewter_last_warning != key
+        @blue_pewter_last_warning = key
+        BlueKantoPilot.pewter_route3_warning
+      end
+      return
+    end
+    @blue_pewter_last_warning = nil
     if BlueKantoPilot.route2_exit_blocked?(self, dir)
       turn_generic(dir, true) if turn_enabled
       warning_key = [$game_map.map_id, x, y]

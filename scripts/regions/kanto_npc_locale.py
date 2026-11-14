@@ -11,7 +11,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from audit import ROOT, load
-from kanto_overworld import source_npc_dialogue
+from kanto_overworld import source_npc_dialogue, source_sign_dialogue
 from server.ruby_marshal import dumps_simple, loads, text
 
 LOCALE_FILE = ROOT / ".blue-work/kanto-npc-ptbr.json"
@@ -59,7 +59,7 @@ def npc_literals(commands):
 def imported_npc_lines(source: Path, inventory: dict):
     """Read actual dialogue of NPCs that already passed the Kanto importer."""
     active = [r for r in inventory.get("imported", [])
-              if r["kind"] == "npc_dialogue"]
+              if r["kind"] in ("npc_dialogue", "sign_dialogue")]
     by_map = defaultdict(list)
     for record in active:
         by_map[int(record["source_map"])].append(record)
@@ -72,7 +72,8 @@ def imported_npc_lines(source: Path, inventory: dict):
             if event_id not in source_events:
                 raise ValueError(f"Source NPC vanished: {original_id}/{event_id}")
             original = source_events[event_id]
-            messages = source_npc_dialogue(original)
+            messages = (source_sign_dialogue(original) if row["kind"] == "sign_dialogue"
+                        else source_npc_dialogue(original))
             if messages is None:
                 raise ValueError(f"Source NPC event was modified: {original_id}/{event_id}")
             lines = npc_literals(messages)

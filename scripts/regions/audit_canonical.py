@@ -131,9 +131,25 @@ def audit(source:Path,pilot:Path):
         if target in expected_trainers:
             raise ValueError(f"Trainer ID collision: {old} -> {target}")
         expected_trainers[target]=[line.strip() for line in original_trainers[old]]
-    if set(actual_trainers)!=set(expected_trainers):
-        raise ValueError("Trainer catalog drift: missing "+str(sorted(set(expected_trainers)-set(actual_trainers)))+
-                         "; added "+str(sorted(set(actual_trainers)-set(expected_trainers))))
+    # The original source teams are verified byte-for-byte as before.
+    # Full Power rematches are distinct, explicitly-authored version IDs.
+    # Validate their exact content against the 15-profile manifest instead
+    # of misclassifying these new sections as source-trainer drift.
+    fp_manifest = json_file(ROOT / "data/kanto-full-power.json")
+    expected_full_power = {
+        f"BLUE_KANTO_{entry['kind']},{entry['name']},{entry['version']+100}":
+            [f"Pokemon = {ident},{level}" for ident,level in
+             zip(entry["species"],entry["levels"])]
+        for entry in fp_manifest["teams"]
+    }
+    if set(actual_trainers)!=set(expected_trainers)|set(expected_full_power):
+        raise ValueError("Trainer catalog drift: missing "+
+                         str(sorted((set(expected_trainers)|set(expected_full_power))-set(actual_trainers)))+
+                         "; added "+str(sorted(set(actual_trainers)-
+                         (set(expected_trainers)|set(expected_full_power)))))
+    for header, lines in expected_full_power.items():
+        if [line.strip() for line in actual_trainers[header]] != lines:
+            raise ValueError(f"Full Power team differs from reviewed manifest: [{header}]")
     for header,source_lines in expected_trainers.items():
         if [line.strip() for line in actual_trainers[header]]!=source_lines:
             raise ValueError(f"Trainer species/level/move/item drift: [{header}]")
@@ -178,6 +194,7 @@ def audit(source:Path,pilot:Path):
         "method_tables":dict(sorted(method_counts.items())),
         "source_non_100_relative_weight_tables":source_non_100,
         "trainer_source_rosters_verified_exactly":len(expected_trainers),
+        "author_owned_full_power_rosters_verified":len(expected_full_power),
         "preview_maps_kept_without_encounters":len(preview),
         "source_maps_with_ambiguous_encounters_kept_disabled":sorted(ENCOUNTER_REVIEW_SOURCE_IDS),
         "audited_source_map_tables":dict(sorted(map_counts.items(),key=lambda p:int(p[0]))),

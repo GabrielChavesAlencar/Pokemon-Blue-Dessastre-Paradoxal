@@ -1,0 +1,358 @@
+{
+  "version": 1,
+  "region": "KANTO",
+  "full_power_offset": 100,
+  "note": "Times oficiais de revanche catalogados conforme docs/ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md. Níveis originais registrados para auditoria; o nível efetivo no combate segue a progressão Blue. Perfis de 5 Pokémon preservados, inclusive duplicatas oficiais. Requer todas as Ligas do circuito e revanche válida.",
+  "teams": [
+    {
+      "kind": "LEADER",
+      "name": "Brock",
+      "version": 0,
+      "source_game": "HGSS",
+      "role_at_time": "gym_leader",
+      "species": [
+        "GOLEM",
+        "RELICANTH",
+        "OMASTAR",
+        "KABUTOPS",
+        "RAMPARDOS",
+        "ONIX"
+      ],
+      "levels": [
+        55,
+        54,
+        56,
+        55,
+        57,
+        61
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_MISTY",
+      "name": "Misty",
+      "version": 0,
+      "source_game": "HGSS",
+      "role_at_time": "gym_leader",
+      "species": [
+        "QUAGSIRE",
+        "LAPRAS",
+        "LANTURN",
+        "FLOATZEL",
+        "MILOTIC",
+        "STARMIE"
+      ],
+      "levels": [
+        56,
+        56,
+        54,
+        54,
+        60,
+        60
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_SURGE",
+      "name": "Lt. Surge",
+      "version": 0,
+      "source_game": "HGSS",
+      "role_at_time": "gym_leader",
+      "species": [
+        "MAGNEZONE",
+        "ELECTRODE",
+        "MANECTRIC",
+        "ELECTIVIRE",
+        "PACHIRISU",
+        "RAICHU"
+      ],
+      "levels": [
+        52,
+        52,
+        52,
+        56,
+        58,
+        60
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_ERIKA",
+      "name": "Erika",
+      "version": 0,
+      "source_game": "HGSS",
+      "role_at_time": "gym_leader",
+      "species": [
+        "JUMPLUFF",
+        "VICTREEBEL",
+        "BELLOSSOM",
+        "SHIFTRY",
+        "ROSERADE",
+        "TANGROWTH"
+      ],
+      "levels": [
+        53,
+        56,
+        56,
+        54,
+        55,
+        60
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_KOGA",
+      "name": "Koga",
+      "version": 0,
+      "source_game": "LGPE",
+      "role_at_time": "gym_leader",
+      "species": [
+        "TENTACRUEL",
+        "GOLBAT",
+        "WEEZING",
+        "VENOMOTH",
+        "MUK"
+      ],
+      "levels": [
+        56,
+        56,
+        56,
+        56,
+        57
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_SABRINA",
+      "name": "Sabrina",
+      "version": 0,
+      "source_game": "HGSS",
+      "role_at_time": "gym_leader",
+      "species": [
+        "ESPEON",
+        "MRMIME",
+        "JYNX",
+        "WOBBUFFET",
+        "GALLADE",
+        "ALAKAZAM"
+      ],
+      "levels": [
+        58,
+        56,
+        54,
+        53,
+        53,
+        60
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_BLAINE",
+      "name": "Blaine",
+      "version": 0,
+      "source_game": "HGSS",
+      "role_at_time": "gym_leader",
+      "species": [
+        "TORKOAL",
+        "CAMERUPT",
+        "RAPIDASH",
+        "MAGCARGO",
+        "HOUNDOOM",
+        "MAGMORTAR"
+      ],
+      "levels": [
+        54,
+        57,
+        60,
+        58,
+        54,
+        62
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "LEADER_GIOVANNI",
+      "name": "Giovanni",
+      "version": 0,
+      "source_game": "FRLG",
+      "role_at_time": "gym_leader",
+      "species": [
+        "RHYHORN",
+        "DUGTRIO",
+        "NIDOQUEEN",
+        "NIDOKING",
+        "RHYHORN"
+      ],
+      "levels": [
+        45,
+        42,
+        44,
+        45,
+        50
+      ],
+      "allow_duplicates": true
+    },
+    {
+      "kind": "ELITE_LORELEI",
+      "name": "Lorelei",
+      "version": 0,
+      "source_game": "FRLG",
+      "role_at_time": "elite_four",
+      "species": [
+        "DEWGONG",
+        "CLOYSTER",
+        "PILOSWINE",
+        "JYNX",
+        "LAPRAS"
+      ],
+      "levels": [
+        64,
+        63,
+        63,
+        66,
+        66
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "ELITE_BRUNO",
+      "name": "Bruno",
+      "version": 0,
+      "source_game": "FRLG",
+      "role_at_time": "elite_four",
+      "species": [
+        "STEELIX",
+        "HITMONCHAN",
+        "HITMONLEE",
+        "STEELIX",
+        "MACHAMP"
+      ],
+      "levels": [
+        65,
+        65,
+        65,
+        66,
+        68
+      ],
+      "allow_duplicates": true
+    },
+    {
+      "kind": "ELITE_AGATHA",
+      "name": "Agatha",
+      "version": 0,
+      "source_game": "FRLG",
+      "role_at_time": "elite_four",
+      "species": [
+        "GENGAR",
+        "CROBAT",
+        "MISDREAVUS",
+        "ARBOK",
+        "GENGAR"
+      ],
+      "levels": [
+        66,
+        66,
+        65,
+        68,
+        70
+      ],
+      "allow_duplicates": true
+    },
+    {
+      "kind": "ELITE_LANCE",
+      "name": "Lance",
+      "version": 0,
+      "source_game": "FRLG",
+      "role_at_time": "elite_four",
+      "species": [
+        "GYARADOS",
+        "DRAGONITE",
+        "KINGDRA",
+        "AERODACTYL",
+        "DRAGONITE"
+      ],
+      "levels": [
+        68,
+        66,
+        66,
+        70,
+        72
+      ],
+      "allow_duplicates": true
+    },
+    {
+      "kind": "CHAMPION_BLUE",
+      "name": "Blue",
+      "version": 1,
+      "source_game": "FRLG",
+      "role_at_time": "champion",
+      "species": [
+        "HERACROSS",
+        "ALAKAZAM",
+        "TYRANITAR",
+        "EXEGGUTOR",
+        "GYARADOS",
+        "CHARIZARD"
+      ],
+      "levels": [
+        72,
+        73,
+        72,
+        73,
+        73,
+        75
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "CHAMPION_BLUE",
+      "name": "Blue",
+      "version": 2,
+      "source_game": "FRLG",
+      "role_at_time": "champion",
+      "species": [
+        "HERACROSS",
+        "ALAKAZAM",
+        "TYRANITAR",
+        "ARCANINE",
+        "EXEGGUTOR",
+        "BLASTOISE"
+      ],
+      "levels": [
+        72,
+        73,
+        72,
+        73,
+        73,
+        75
+      ],
+      "allow_duplicates": false
+    },
+    {
+      "kind": "CHAMPION_BLUE",
+      "name": "Blue",
+      "version": 3,
+      "source_game": "FRLG",
+      "role_at_time": "champion",
+      "species": [
+        "HERACROSS",
+        "ALAKAZAM",
+        "TYRANITAR",
+        "GYARADOS",
+        "ARCANINE",
+        "VENUSAUR"
+      ],
+      "levels": [
+        72,
+        73,
+        72,
+        73,
+        73,
+        75
+      ],
+      "allow_duplicates": false
+    }
+  ],
+  "unlock_rule": "BlueRegions.profile(state, verified_rematch) == :world_champion_rematch",
+  "source_document": "docs/ESTUDO_TIMES_MAIS_FORTES_KANTO_LIDERES_ELITE4_CAMPEOES.md"
+}
