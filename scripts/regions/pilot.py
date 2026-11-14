@@ -721,6 +721,36 @@ def add_pewter_guard(selected, source_events):
     selected[21] = event
 
 
+def add_pewter_running_shoes_mom(selected, source_events, source, target, actor):
+    """Stage the real Pallet mother sprite for her one-time Running Shoes scene.
+
+    An always-invisible, through event shares the east-exit area with the
+    existing guard, without changing collision. Ruby displays the graphic
+    only during the post-Brock handoff and hides it afterwards.
+    """
+    mother = load(source / "Data/Map007.rxdata").attrs["@events"].get(13)
+    guard = source_events.get(21)
+    if mother is None or guard is None:
+        raise ValueError("Pallet mother / Pewter guard source events are missing")
+    charset = actor(mother).decode("utf-8")
+    if not charset.startswith("FRLG_Pilot_"):
+        raise ValueError("Unexpected original Kanto mother sprite")
+    event = new_event(mother, [], 0, b"")
+    event.attrs.update({
+        "@id": max(set(source_events) | set(selected)) + 1,
+        "@name": b"Kanto Running Shoes Mom",
+        "@x": guard.attrs["@x"],
+        "@y": guard.attrs["@y"],
+    })
+    page = event.attrs["@pages"][0].attrs
+    page["@through"] = True
+    page["@graphic"].attrs["@character_name"] = b""
+    page["@graphic"].attrs["@tile_id"] = 0
+    selected[event.attrs["@id"]] = event
+    (target / "Data/blue-kanto-pewter-mom-sprite.txt").write_text(
+        charset + "\n", encoding="utf-8")
+
+
 def make_viridian_parcel_intro(events):
     """One-time autorun, anchored to the real shopkeeper, never a fake NPC."""
     clerk = events[find_shopkeeper(events)]
@@ -1293,6 +1323,7 @@ def install_events(source, target, mapping):
             exit_warp.attrs["@parameters"][3:5] = [3, 2]
         if original == 25:
             add_pewter_guard(selected, events)
+            add_pewter_running_shoes_mom(selected, events, source, target, actor)
         if original == 10:
             # Keep Route 2's connected map untouched. Store the internal
             # threshold anchored to source north-house door event 2 instead.
