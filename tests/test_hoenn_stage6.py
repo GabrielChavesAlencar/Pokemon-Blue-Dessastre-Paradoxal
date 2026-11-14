@@ -36,8 +36,8 @@ class HoennStage6Tests(unittest.TestCase):
 
     def test_source_maps_edges_and_bicycle_gate_contracts(self):
         self.assertEqual(set(SOURCE_MAPS_STAGE6), {41,42,43,44,45,46,47,113,114,115})
-        self.assertEqual(len(SOURCE_MAPS), 58)
-        self.assertEqual(len(WARP_PAIRS), 68)
+        self.assertEqual(len(SOURCE_MAPS), 85)
+        self.assertEqual(len(WARP_PAIRS), 91)
         self.assertEqual(len(WARP_PAIRS_STAGE6), 9)
         self.assertEqual(OFFSET_BORDERS_STAGE6, (
             (113, "South", 0, 32, "North", 0),
@@ -48,7 +48,7 @@ class HoennStage6Tests(unittest.TestCase):
                             for src, _, _, _, _, dest, _, _ in CYCLE_TRANSFERS_STAGE6))
         # A guarded bike route never becomes an unconditional warp.
         self.assertFalse(any(a[0] == 114 or b[0] == 114 for a, _, b, _ in WARP_PAIRS_STAGE6))
-        self.assertNotIn(117, SOURCE_MAPS)  # Route 111
+        self.assertIn(117, SOURCE_MAPS)  # Route 111 added by Stage 7
         self.assertNotIn(134, SOURCE_MAPS)  # Route 118
 
     def test_emerald_battles_and_normalized_encounters(self):
