@@ -8,6 +8,16 @@ O piloto de Kanto importa **NPCs simples sem efeitos de missão** das coordenada
 
 A fonte com o texto real está em `.blue-work/frlg-source/Essentials FRLG/Data/MapXXX.rxdata`, no **computador do jogador**. O repositório público não contém transcrições completas desses diálogos. Portanto, não é correto anunciar 100% de tradução antes de gerar os relatórios com a fonte instalada.
 
+## Correção da fala ainda em inglês — guarda de Kanto
+
+O jogo aberto em português ainda mostrava o NPC dizendo: `I absolutely forbid you from going through here!`. A causa era a **ausência dessa chave** no `blue-pt-br.dat` original: o modo Português traduz apenas strings cadastradas; copiar eventos FRLG não traduz as falas automaticamente.
+
+A frase informada foi revisada e adicionada a `data/kanto-npc-ptbr.json` com a tradução **“Está terminantemente proibido passar por aqui!”**. O `Locale.rb` também inclui um fallback de runtime para o caso de um arquivo de mensagens compilado antigo. O piloto agora recopia o `Locale.rb` atual, lê o catálogo português atualizado do projeto e mescla o conjunto revisado **sem precisar executar Argos para essa fala**.
+
+Os diálogos de outros NPCs FRLG que não estão no catálogo continuam identificados em `Data/blue-kanto-npc-translation-audit.json`. Se a máquina já tiver o modelo offline Argos en→pt instalado, **o rebuild agora aproveita esse modelo automaticamente** para preencher as falas simples ainda sem tradução, marcando-as no relatório como `automatic_unreviewed_translations` para revisão. Não instala bibliotecas nem baixa modelos sem ação do usuário.
+
+Para traduzir as demais falas da fonte na primeira vez, use `KANTO_TRADUZIR_NPCS_PTBR.bat`, que instala/baixa o modelo com o fluxo explícito já documentado abaixo. Isso não executa scripts de missões estrangeiros nem altera Decades. Os NPCs de eventos especiais que ainda não são importados como `npc_dialogue` exigem trabalho separado e não podem ser considerados 100% traduzidos.
+
 ## Fluxo recomendado no Windows
 
 1. Atualize a `main` pelo `Blue-Story.exe` e abra uma vez **Testar Kanto** para ter uma cópia válida do piloto.
