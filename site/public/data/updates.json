@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6b73d9554d9e454ca244e1f0698a9e30a338bbf5",
+      "date": "2026-11-14T00:07:19-03:00",
+      "title": "feat(regions): inspect individual Hoenn and Johto NPC/PBS bindings in optional private pilot copy",
+      "category": "Novidades"
+    },
+    {
       "sha": "e6dedd6399409949fe495c56a202a8854b4e8606",
       "date": "2026-11-14T00:06:10-03:00",
       "title": "feat(regions): inventory 13 individually authored trainer event and PBS bindings in Hoenn and Johto",
