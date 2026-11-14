@@ -1055,8 +1055,19 @@ MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
 module BlueKantoDex
   def self.manifest
     return @manifest if defined?(@manifest)
-    path = "Data/blue-kanto-dex.json"
-    @manifest = File.file?(path) ? JSON.parse(File.read(path)) : nil
+    path = "Data/blue-kanto-dex-index.txt"
+    @manifest = nil
+    if File.file?(path)
+      parts = File.read(path).strip.split("|")
+      if parts.length == 3 && parts.all? { |s| s.match?(/\A\d+\z/) }
+        @manifest = {
+          "index" => parts[0].to_i,
+          "added" => parts[1] == "1",
+          "previous_regional_count" => parts[2].to_i
+        }
+      end
+    end
+    @manifest
   end
 
   def self.index
