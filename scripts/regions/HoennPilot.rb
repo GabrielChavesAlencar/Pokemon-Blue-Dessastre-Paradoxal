@@ -2718,6 +2718,13 @@ module BlueHoennPilot
       pbMessage(_INTL("Wallace ainda precisa abrir o caminho para Sky Pillar."))
       return false
     end
+    # QA06: upper Sky Pillar floors require Wallace's permission.
+    # Preserve escape paths for saves already inside the tower.
+    if (243..248).cover?(dest_id) && !(243..248).cover?(source_id) &&
+       !flags["sky_pillar_open"]
+      pbMessage(_INTL("Wallace precisa liberar a entrada de Sky Pillar."))
+      return false
+    end
     if dest_id==87 && !flags["crisis_resolved"]
       pbMessage(_INTL("O ginásio de Juan está fechado durante a crise do clima."))
       return false
@@ -2778,10 +2785,18 @@ module BlueHoennPilot
     true
   end
 
+  # QA06: all climate-story events are bound to their original Hoenn maps.
+  def self.qa6_at_map?(source_id)
+    _,map_ids=metadata
+    $game_map && $game_map.map_id==map_ids[source_id]
+  end
+
   def self.sootopolis_crisis
     flags=state
-    return false unless flags && flags["groudon_awakened"] &&
-                        flags["kyogre_awakened"]
+    return false unless flags && qa6_at_map?(83) &&
+                         flags["groudon_awakened"] &&
+                         flags["kyogre_awakened"] &&
+                         flags["seafloor_archie_defeated"]
     return false if flags["sootopolis_crisis_started"]
     flags["sootopolis_crisis_started"]=true
     pbMessage(_INTL("Steven: Groudon e Kyogre desequilibraram o clima! Procure Wallace na Cave of Origin."))
@@ -2790,7 +2805,7 @@ module BlueHoennPilot
 
   def self.origin_wallace_stage10
     flags=state
-    return false unless flags && flags["sootopolis_crisis_started"]
+    return false unless flags && qa6_at_map?(240) && flags["sootopolis_crisis_started"]
     return true if flags["sky_pillar_task"]
     flags["sky_pillar_task"]=true
     pbMessage(_INTL("Wallace: Rayquaza pode deter a crise. Encontre-me em Sky Pillar!"))
@@ -2799,7 +2814,7 @@ module BlueHoennPilot
 
   def self.sky_pillar_wallace
     flags=state
-    return false unless flags && flags["sky_pillar_task"]
+    return false unless flags && qa6_at_map?(241) && flags["sky_pillar_task"]
     return true if flags["sky_pillar_open"]
     flags["sky_pillar_open"]=true
     pbMessage(_INTL("Wallace: siga até o topo de Sky Pillar para alcançar Rayquaza."))
@@ -2808,7 +2823,12 @@ module BlueHoennPilot
 
   def self.rayquaza_stage10
     flags=state
-    return false unless flags && flags["sky_pillar_open"]
+    return false unless flags && qa6_at_map?(248) &&
+                         flags["sootopolis_crisis_started"] &&
+                         flags["groudon_awakened"] &&
+                         flags["kyogre_awakened"] &&
+                         flags["sky_pillar_task"] &&
+                         flags["sky_pillar_open"]
     return false if flags["crisis_resolved"]
     flags["rayquaza_summoned"]=true
     flags["crisis_resolved"]=true
