@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 5 implementada; execução/aceite pendentes — ▣▣▣▣▣□□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 6 implementada; execução/aceite pendentes — ▣▣▣▣▣▣□□□□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -15,7 +15,7 @@
 | 3 | Conferir encontros, NPCs, treinadores e itens | **Perfis-base, itens simples e catálogo de pendências implementados; QA nativo pendente** | ⏳ |
 | 4 | Surf, Dive, Waterfall, Strength e puzzles | **HM e gate regional + rochas simples + auditoria fonte; puzzles nativos pendentes** | ⏳ |
 | 5 | Equipes Aqua/Magma, Seafloor Cavern | **Gates de história e auditoria de eventos implementados; teste real pendente** | ⏳ |
-| 6 | Cave of Origin, clima, Rayquaza | Pendente | ⏳ |
+| 6 | Cave of Origin, clima, Rayquaza | **Gates regionais, auditoria RXDATA e perfil QA06 preparados; cenas nativas pendentes** | ⏳ |
 | 7 | Oito ginásios e insígnias locais | Pendente | ⏳ |
 | 8 | Victory Road e Wally | Pendente | ⏳ |
 | 9 | Elite Four e Wallace | Pendente | ⏳ |
@@ -245,3 +245,37 @@ A quantidade **efetivamente instalada** de boulders depende de não haver sobrep
 - [ ] Saves Blue/Decades e Kanto/Johto/Sinnoh preservados; Android/JoiPlay testado separadamente.
 
 **Limites:** não foram reproduzidos todos os puzzles, animações lendárias ou o movimento físico do submarino. Fase 6/12 cuidará da crise do clima, Cave of Origin e Rayquaza. A CI não comprova jogabilidade nativa.
+
+## Fase 06/12 — crise climática, Wallace, Cave of Origin e Rayquaza
+
+**Preparação técnica: 6/12. Aprovação nativa Game.exe: 0/12.** Esta fase aprimora os eventos da Etapa 10/10, sem distribuir RXDATA/scripts do doador e sem alterar o motor de batalha Blue/Decades.
+
+### Mudanças no piloto isolado
+
+- A sequência só começa quando **Groudon despertou, Archie foi derrotado e Kyogre despertou**. O evento de Steven em **Sootopolis City (Map83, x32/y33)** só modifica flags no mapa correto.
+- **Cave of Origin** usa os MapIDs de origem 238–240. Wallace na sala B1F (**Map240, x11/y16**) só ativa a busca por Rayquaza após o início da crise, no próprio mapa.
+- **Sky Pillar** usa os MapIDs 241–248. Wallace no exterior (**Map241, x13/y8**) libera o interior; a transferência externa aos andares superiores (243–248) é bloqueada até essa conversa. As saídas e transferências internas **não** prendem o jogador em um save antigo.
+- Rayquaza no topo (**Map248, x15/y15**) só encerra a crise depois da ordem correta, **uma única vez por save regional**. Os flags `rayquaza_summoned` e `crisis_resolved` ficam no estado de Hoenn. Juan continua bloqueado até a resolução, sem introduzir níveis fixos ou insígnias duplicadas.
+- O arquivo `scripts/regions/hoenn_qa_phase6.py` verifica **cinco âncoras de história**, suas coordenadas, scripts e triggers nos RXDATA da **cópia privada**, além de conferir os mapas Cave 238–240, Sky Pillar 241–248, manifesto e guardas Ruby efetivamente instalados.
+- `TESTAR_HOENN.bat` agora prepara `.blue-work/hoenn-qa-fase06/`, com perfil de save **Hoenn QA Fase06** (organização **Dessastre Paradoxal Hoenn QA06**). Roda sequencialmente auditorias QA01–QA06; relatórios ficam exclusivamente em `.blue-work/`. O perfil QA05 e anteriores permanecem inalterados.
+
+### Teste local no Windows
+
+1. Atualize `main`, mantenha sua instalação `game/` e o ZIP original **The Pokémon World Project - Hoenn.zip** sem modificar. Execute `TESTAR_HOENN.bat`.
+2. Confira o relatório `.blue-work/hoenn-qa-fase06-report.json`, com `status=CLIMATE_STORY_STATICALLY_VERIFIED`, cinco cenas verificadas e `native_game_exe_approved=false`. Falha de SHA, mapa, evento ou perfil deve **bloquear a abertura**.
+3. No Game.exe, teste Sootopolis **antes** de derrotar Archie e despertar Kyogre: a crise não pode iniciar. Após ambas as lendas despertarem, converse com Steven e procure Wallace na Cave of Origin.
+4. Antes de falar com Wallace em Cave of Origin, verifique a entrada de Sky Pillar bloqueada. Após a conversa, vá ao exterior da torre; **antes de falar com Wallace no exterior**, teste a transferência para os andares superiores, que deve continuar fechada. Depois da autorização, suba ao topo.
+5. Confirme que Rayquaza só resolve o clima após o passo anterior, que a cena não se repete no mesmo save e que o ginásio de Juan abre somente depois disso. Salve, feche, carregue e tente entrar/sair de Cave of Origin e Sky Pillar novamente.
+6. Verifique visualmente **chuva/sol/clima real, transição, música, sprite/animação de Rayquaza e puzzles**; registre como **pendente** quando houver apenas diálogo/flag. Faça regressão com saves de Decades/Kanto/Johto/Sinnoh e, separadamente, Android/JoiPlay.
+
+### Critérios de aceite nativo — não cumpridos automaticamente
+
+- [ ] Gerar a cópia real QA06, iniciar o Game.exe, compilar e salvar/recarregar.
+- [ ] Clima visível e áudio da crise reproduzidos corretamente, sem afetar outras regiões.
+- [ ] Cave of Origin, Wallace, todas as escadas da torre e topo navegáveis, sem softlock.
+- [ ] Sprite, cinemática, transição de clima e persistência do evento de Rayquaza aprovados.
+- [ ] Juan não abre antes de Rayquaza e continua usando os níveis dinâmicos de Decades.
+- [ ] Teste de replay, derrota/reinício, troca de região e preservação integral dos saves.
+- [ ] QA Windows e Android/JoiPlay documentados em evidências separadas.
+
+**Limites:** as transições climáticas visuais e a cinemática de Rayquaza permanecem **não implementadas/aprovadas nativamente**; os puzzles originais da torre e a resolução dos caminhos por HMs exigem teste dentro do Game.exe. Os cinco contratos RXDATA e os testes Ruby/Python não provam essas funcionalidades. A barra de aceite permanece **0/12**.
