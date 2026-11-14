@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e582cfba5c1269238968961cf2d16f4d2f0e6c8f",
+      "date": "2026-11-13T22:27:13-03:00",
+      "title": "docs(sinnoh): show 4/7 post-compile engine probe code progress and precise isolated CI evidence",
+      "category": "Documentação"
+    },
+    {
       "sha": "013b15ee157c33bbed76ad6b009ae1c93f7625c5",
       "date": "2026-11-13T22:26:35-03:00",
       "title": "data(sinnoh): record 4/7 post-compile engine validation preparation without native execution or gameplay approval",
