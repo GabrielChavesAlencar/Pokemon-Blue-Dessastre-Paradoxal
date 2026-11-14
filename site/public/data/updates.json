@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aa3115a03457653e15f8267650bd31759c44ac60",
+      "date": "2026-11-14T17:02:43-03:00",
+      "title": "feat(hoenn): integrate QA6 isolated copy, climate manifest and prior audits",
+      "category": "Novidades"
+    },
+    {
+      "sha": "5ff976d8dffa4a8e7609442983386f30a2bde031",
+      "date": "2026-11-14T17:02:40-03:00",
+      "title": "feat(hoenn): integrate QA6 isolated copy, climate manifest and prior audits",
+      "category": "Novidades"
+    },
+    {
+      "sha": "4f5231cc37fd6f66ef55015b23a73966951419bb",
+      "date": "2026-11-14T17:02:37-03:00",
+      "title": "feat(hoenn): integrate QA6 isolated copy, climate manifest and prior audits",
+      "category": "Novidades"
+    },
+    {
       "sha": "97e46d136f3f0b5b8f747ba2384d7d88e810b095",
       "date": "2026-11-14T17:02:03-03:00",
       "title": "feat(hoenn): QA6 RXDATA auditor for climate, Cave of Origin, Rayquaza",
