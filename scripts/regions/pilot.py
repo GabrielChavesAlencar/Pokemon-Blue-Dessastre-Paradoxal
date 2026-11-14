@@ -1129,7 +1129,7 @@ def install_events(source, target, mapping):
                     after_win.attrs["@through"] = False
                     after_win.attrs["@direction_fix"] = False
                     after_win.attrs["@list"] = [
-                        command(355, f'BlueKantoPilot.trainer_repeat("{trainer_name}")'.encode()),
+                        command(355, f'BlueKantoPilot.trainer_repeat("{trainer_name}", :BLUE_KANTO_{kind})'.encode()),
                         command(0)]
                     trainer.attrs["@pages"].append(after_win)
                     selected[event_id] = trainer
