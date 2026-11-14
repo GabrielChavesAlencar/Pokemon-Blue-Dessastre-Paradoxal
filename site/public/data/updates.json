@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c9e7ace18b3eabe62ae3d124a276bc2261991ca9",
+      "date": "2026-11-14T13:42:09-03:00",
+      "title": "ci(hoenn): incluir runtime Stage8 Norman, Surf, Weather, Winona e Lilycove",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "4136d10d439064a7dd2b89615f50d3a591e20715",
+      "date": "2026-11-14T13:41:56-03:00",
+      "title": "test(hoenn): simular Norman, Surf, Castform, Weather, Devon Scope, Winona/Fly e rivais",
+      "category": "Testes"
+    },
+    {
       "sha": "c29b35169c6ff144a06440b46d3625bced95e792",
       "date": "2026-11-14T13:40:21-03:00",
       "title": "test(hoenn): 110 mapas, ginásio Norman, Winona, Shelly, Surf/Fly e Stage8 isolada",
