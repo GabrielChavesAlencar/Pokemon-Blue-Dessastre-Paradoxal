@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1e555f38ab500da9fd06324945021e14d1471eda",
+      "date": "2026-11-13T22:26:06-03:00",
+      "title": "docs(sinnoh): document post-PBS native engine map/event/Barry inspection and strict non-gameplay evidence contract",
+      "category": "Documentação"
+    },
+    {
       "sha": "45354c75f58df3a05eb0cf4e02aa703003319b57",
       "date": "2026-11-13T22:24:55-03:00",
       "title": "test(sinnoh): include native QA engine probe in synthetic installer fixture",
