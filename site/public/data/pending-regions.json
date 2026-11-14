@@ -3630,6 +3630,17 @@
       ],
       "trainers": [
         {
+          "id": "hoenn-route103-rival",
+          "name": "Brendan/May — primeira batalha (Route 103)",
+          "notes": "Pendente real do gerador atual: há grama e encontros selvagens na Rota 103, mas não existe evento de batalha do rival Brendan/May nem PBS desse encontro em scripts/regions/pilot_hoenn.py. Exigir posição comprovada, equipe variável conforme inicial e save/reload antes de instalar.",
+          "scope": "individual_scripted_rival",
+          "status": "not_added",
+          "origin": "phase2-source-audit",
+          "area": "Route 103",
+          "source_file": "scripts/regions/pilot_hoenn.py",
+          "native_absence_confirmed": false
+        },
+        {
           "id": "brendanmay",
           "name": "Brendan/May — rival",
           "notes": "Área/requisito: Routes 103, 110, 119 / Lilycove · treinador de referência; equipe/posição ainda não confirmadas.",
