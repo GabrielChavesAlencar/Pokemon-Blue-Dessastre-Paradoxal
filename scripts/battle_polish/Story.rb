@@ -26,6 +26,30 @@ module BlueStory
     end
     badges >= 11 ? 3 : (badges >= 5 ? 2 : (badges >= 2 ? 1 : 0))
   end
+  # Outside Decades, the FIRST regional boss battle uses its authored roster
+  # without BST/base-power caps. The explicitly selected Full Power rematch
+  # restores those limits; ordinary trainers and Decades remain unchanged.
+  REGIONAL_BOSS_TYPE = /\A(?:BLUE_[A-Z0-9]+_)?(?:LEADER|ELITE|ELITEFOUR|CHAMPION)(?:_|\z)/.freeze
+  def self.current_region
+    return "DECADES" unless $PokemonGlobal && $PokemonGlobal.respond_to?(:blue_regions)
+    state = $PokemonGlobal.blue_regions
+    state.is_a?(Hash) ? state.fetch("current", "DECADES") : "DECADES"
+  end
+  def self.regional_first_boss?(trainers)
+    return false if current_region == "DECADES" || @full_power_context
+    Array(trainers).any? { |trainer|
+      trainer && trainer.respond_to?(:trainer_type) &&
+        REGIONAL_BOSS_TYPE.match?(trainer.trainer_type.to_s)
+    }
+  end
+  def self.with_regional_full_power
+    previous = @full_power_context
+    @full_power_context = true
+    yield
+  ensure
+    @full_power_context = previous
+  end
+  def self.regional_full_power?; !!@full_power_context; end
   def self.cap;[350,450,540,nil][stage];end
   def self.bst(data);data.base_stats.values.sum;end
   def self.choose_mode(mode)
@@ -116,7 +140,8 @@ module BlueStory
   end
   module Teams
     def initialize(*args)
-      @blue_story_cap=BlueStory.cap if BlueStory.enabled?
+      @blue_story_regional_exempt = BlueStory.regional_first_boss?(args[4])
+      @blue_story_cap=BlueStory.cap if BlueStory.enabled? && !@blue_story_regional_exempt
       if BlueStory.enabled? && args[4] && !Array(args[4]).empty?
         trainers=Array(args[4])
         if BlueStory.context
