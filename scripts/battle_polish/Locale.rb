@@ -9,6 +9,9 @@ module BlueLocale
     # Screen-confirmed Kanto FRLG NPC guard. Keep this fallback in native
     # runtime even when an old save has not rebuilt its compiled locale.
     'I absolutely forbid you from going through here!'=>'Está terminantemente proibido passar por aqui!',
+    'Clefairy came from the moon.'=>'Clefairy veio da Lua.',
+    "That's what the rumor is."=>'É isso que dizem por aí.',
+    "Clefairy came from the moon. That's what the rumor is."=>'Clefairy veio da Lua. É isso que dizem por aí.',
     'Pink: Selected area · Blue: You'=>'Rosa: Área selecionada · Azul: Você',
     'Habitat complete: {1}! {2} Pokémon × $500 = ${3}.'=>'Habitat completo: {1}! {2} Pokémon × $500 = ${3}.',
     'Trainer Album'=>'Álbum de treinadores','Encountered'=>'Enfrentado','Not encountered'=>'Não enfrentado','Defeated'=>'Derrotado',
