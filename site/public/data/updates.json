@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cc9e5062fd16ca7098abebd8e9456de364a83406",
+      "date": "2026-11-13T22:00:37-03:00",
+      "title": "feat(sinnoh): compose private geometry + authored Twinleaf events + Barry PBS as verified non-playable QA overlay",
+      "category": "Novidades"
+    },
+    {
       "sha": "ed965d7d563e0fa511dcb18ed2542eacff677cb6",
       "date": "2026-11-13T21:54:46-03:00",
       "title": "data(sinnoh): register audited legacy pilot conflict and QA preflight without game install approval",
