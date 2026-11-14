@@ -30,7 +30,7 @@ from sinnoh_staging_transaction import stage_root
 
 ROOT = Path(__file__).resolve().parents[2]
 SHA = re.compile(r"[a-f0-9]{64}\Z")
-MAP = re.compile(r"Data/Map([1-9][0-9]{2})\.rxdata\Z")
+MAP = re.compile(r"Data/Map(0[0-9]{2}|[1-5][0-9]{2})\.rxdata\Z")
 GRAPHIC = re.compile(r"Graphics/(?:Tilesets|Autotiles)/[A-Za-z0-9_. ()-]+\.png\Z")
 PLUGIN_FILE = "Plugins/ZZZZZ Blue Sinnoh Intro/SinnohPilot.rb"
 PLUGIN_META = "Plugins/ZZZZZ Blue Sinnoh Intro/meta.txt"
@@ -92,7 +92,7 @@ def load_stage(project: Path, folder: Path, *, geometry: bool) -> dict[str, byte
                 or rel in records):
             fail("Arquivo duplicado ou hash inválido no stage")
         p = PurePosixPath(rel)
-        if p.is_absolute() or ".." in p.parts or not (
+        if p.is_absolute() or ".." in p.parts or rel == "Data/Map000.rxdata" or not (
             (geometry and (rel in ("Data/MapInfos.rxdata", "Data/Tilesets.rxdata")
                            or MAP.fullmatch(rel) or GRAPHIC.fullmatch(rel)))
             or (not geometry and MAP.fullmatch(rel))
