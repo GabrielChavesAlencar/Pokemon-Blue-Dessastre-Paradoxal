@@ -69,6 +69,7 @@ from hoenn_stage8 import (
     RIVAL_LILYCOVE_TEAMS, TRAINERS_STAGE8, STEVEN_SCOPE_EVENT,
     FORTREE_KECLEON_EVENT, ROUTE120_KECLEON_EVENT, WEATHER_REWARD_EVENT,
     NPCS_STAGE8, FUTURE_GATES_STAGE8, SIGNS_STAGE8, PICKUPS_STAGE8,
+    NORMAN_GYM_DOORS,
 )
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
@@ -889,6 +890,126 @@ def add_stage7_events(maps, game):
 
 
 
+
+def add_stage8_events(maps, game, rival_image):
+    """Author isolated Norman/Fortree/Weather/Lilycove chapter events.
+
+    Donor events are NOT copied: only audited placements and party templates
+    are recreated with Brazilian Portuguese Ruby handlers. Missing graphic
+    candidates use an explicitly unapproved native fallback.
+    """
+    for mid,x,y,sprite,handler in NPCS_STAGE8:
+        asset=game / f"Graphics/Characters/{sprite}.png"
+        if not regular(asset).read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite da Etapa 8 ausente: {sprite}")
+        append_event(maps[mid],f"HN8_NPC_{mid}_{x}_{y}",x,y,
+                     event_page(script=handler,sprite=sprite))
+        if mid in (49,50,65,66,71):
+            cx,cy=(9,5) if mid in (49,65,71) else (4,5)
+            append_event(maps[mid],f"HN8_ServiceCounter_{mid}",cx,cy,
+                         event_page(script=handler))
+    for mid,x,y,key,_msg in SIGNS_STAGE8:
+        append_event(maps[mid],f"HN8_Sign_{key}",x,y,
+                     event_page(script=f"BlueHoennPilot.sign_stage8(:{key})"))
+    for mid,x,y,key,item,visible in PICKUPS_STAGE8:
+        page=event_page(script="nil",sprite="Object_Ball" if visible else "")
+        event_id=append_event(maps[mid],f"HN8_Item_{key}",x,y,page)
+        page.attrs["@list"][0]=command(
+            355,f'BlueHoennPilot.pickup(:{item},"{key}",{event_id})'.encode("ascii"))
+        gone=event_page(script="nil")
+        gone.attrs["@condition"].attrs["@self_switch_valid"]=True
+        gone.attrs["@condition"].attrs["@self_switch_ch"]=b"A"
+        gone.attrs["@through"]=True
+        gone.attrs["@list"]=[command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(gone)
+    for x,y,tx,ty in NORMAN_GYM_DOORS:
+        ev=event_page(script=f"BlueHoennPilot.norman_gym_warp({tx},{ty})",
+                      touch=True)
+        ev.attrs["@through"]=True
+        append_event(maps[20],f"HN8_NormanDoor_{x}_{y}",x,y,ev)
+    for mid,x,y,kind,name,sprite,team,double in TRAINERS_STAGE8:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite de treinador Etapa8 ausente: {sprite}")
+        script=f'BlueHoennPilot.battle_stage3(:{kind},"{name}",{mid})'
+        append_event(maps[mid],f"HN8_Trainer_{mid}_{x}_{y}",x,y,
+                     event_page(script=script,sprite=sprite))
+    boss_art={}
+    for label,(mid,x,y),choices,handler in (
+        ("Norman",NORMAN_EVENT,("NPC_RSE_Norman","NPC_ORAS_Norman","trainer_YOUNGSTER"),
+         "BlueHoennPilot.norman"),
+        ("Winona",WINONA_EVENT,("NPC_RSE_Winona","NPC_ORAS_Winona","trainer_LASS"),
+         "BlueHoennPilot.winona"),
+        ("Shelly",SHELLY_EVENT,("NPC_RSE_Shelly","NPC_ORAS_Shelly","trainer_LASS"),
+         "BlueHoennPilot.weather_shelly"),
+    ):
+        art,placeholder=select_native_character(game,choices,role=label)
+        append_event(maps[mid],f"HN8_Boss_{label}",x,y,
+                     event_page(script=handler,sprite=art))
+        boss_art[label]={"sprite":art,"placeholder":placeholder}
+    aqua_art,aqua_placeholder=select_native_character(
+        game,("NPC_RSE_AquaGrunt","NPC_ORAS_AquaGrunt","trainer_YOUNGSTER"),
+        role="recruta Aqua Weather Institute")
+    for mid,x,y,version,_team in AQUA_INSTITUTE:
+        append_event(maps[mid],f"HN8_AquaInstitute_{version}",x,y,
+                     event_page(script=f"BlueHoennPilot.weather_aqua({version})",
+                                sprite=aqua_art))
+    rival_events=((RIVAL_119_EVENT,"rival_119",True),
+                  (RIVAL_LILYCOVE_EVENT,"rival_lilycove",False))
+    for (mid,x,y),name,touch in rival_events:
+        page=event_page(script=f"BlueHoennPilot.{name}",
+                        sprite="" if touch else rival_image,touch=touch)
+        if touch: page.attrs["@through"]=True
+        append_event(maps[mid],f"HN8_{name}",x,y,page)
+    special=(
+        (WEATHER_REWARD_EVENT,"HN8_WeatherScientist",
+         "BlueHoennPilot.weather_castform",
+         ("NPC_DPP_PokeMart_Man","trainer_YOUNGSTER")),
+        (STEVEN_SCOPE_EVENT,"HN8_StevenScope",
+         "BlueHoennPilot.steven_scope",
+         ("NPC_RSE_Steven","NPC_ORAS_Steven","trainer_YOUNGSTER")),
+    )
+    special_art={}
+    for (mid,x,y),label,script,options in special:
+        sprite,placeholder=select_native_character(game,options,role=label)
+        append_event(maps[mid],label,x,y,
+                     event_page(script=script,sprite=sprite))
+        special_art[label]={"sprite":sprite,"placeholder":placeholder}
+    kc_art,kc_placeholder=select_native_character(
+        game,("NPC_RSE_Kecleon","OBJ_RSE_Kecleon","Object_Ball"),
+        role="Kecleon Fortree/Route120")
+    for (mid,x,y),tag in ((FORTREE_KECLEON_EVENT,"FORTREE"),
+                          (ROUTE120_KECLEON_EVENT,"ROUTE120")):
+        page=event_page(script="nil",sprite=kc_art)
+        event_id=append_event(maps[mid],f"HN8_Kecleon_{tag}",x,y,page)
+        page.attrs["@list"][0]=command(
+            355,f"BlueHoennPilot.kecleon_scope({event_id},:{tag})".encode("ascii"))
+        gone=event_page(script="nil")
+        gone.attrs["@condition"].attrs["@self_switch_valid"]=True
+        gone.attrs["@condition"].attrs["@self_switch_ch"]=b"A"
+        gone.attrs["@through"]=True
+        gone.attrs["@list"]=[command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(gone)
+    for mid,x,y,key in FUTURE_GATES_STAGE8:
+        page=event_page(script=f"BlueHoennPilot.stage8_future_gate(:{key})",
+                        touch=True)
+        page.attrs["@through"]=True
+        append_event(maps[mid],f"HN8_Future_{key}",x,y,page)
+    return {
+        "new_maps":len(SOURCE_MAPS_STAGE8),
+        "ordinary_trainer_events":len(TRAINERS_STAGE8),
+        "aqua_institute_battles":len(AQUA_INSTITUTE)+1,
+        "rival_pbs_variants":(len(RIVAL_119_TEAMS)+len(RIVAL_LILYCOVE_TEAMS))*2,
+        "gym_norman_room_warps":len(NORMAN_GYM_DOORS),
+        "pickup_events":len(PICKUPS_STAGE8),
+        "boss_graphics":boss_art,
+        "aqua_graphic_placeholder":aqua_placeholder,
+        "aux_graphics":special_art,
+        "kecleon_placeholder":kc_placeholder,
+        "native_surf_fly_verified":False,
+        "gameplay_verified":False,
+    }
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
@@ -1033,6 +1154,7 @@ def build_overlay(game, source):
     stage5_counts = add_stage5_events(maps, game)
     stage6_counts = add_stage6_events(maps, game, rival_image)
     stage7_counts = add_stage7_events(maps, game)
+    stage8_counts = add_stage8_events(maps, game, rival_image)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
