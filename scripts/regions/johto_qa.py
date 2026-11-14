@@ -526,7 +526,10 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
     files["Data/System.rxdata"] = serialize(system, SYSTEM_CLASSES)
     files["Data/Scripts.rxdata"] = native_compile_boot((base / "Data/Scripts.rxdata").read_bytes())
     files["Data/blue-johto-qa-compile-request.txt"] = (bundle_hash + "\n").encode("ascii")
-    files["Data/blue-johto-qa-start.txt"] = ("BLUE_JOHTO_QA_START_V1," + ",".join(map(str, start)) + "\n").encode("ascii")
+    start_crc = zlib.crc32(files[f"Data/Map{start[0]:03}.rxdata"])
+    files["Data/blue-johto-qa-start.txt"] = (
+        "BLUE_JOHTO_QA_START_V2," + ",".join(map(str, [*start, start_crc])) + "\n"
+    ).encode("ascii")
     runtime = (*RUNTIME, "JohtoPilotStart.rb")
     files[f"{PLUGIN}/Boot.rb"] = b"\n".join(regular(root / "scripts/regions" / name).read_bytes()
                                              for name in runtime)

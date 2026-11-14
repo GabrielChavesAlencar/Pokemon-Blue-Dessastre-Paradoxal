@@ -91,17 +91,17 @@ class JohtoPhase15Tests(unittest.TestCase):
                 self.assertEqual(trainer["versions"],
                                  match[0].get("versions",[match[0].get("version",0)]))
 
-    def test_site_router_keeps_kanto_decades_and_explicit_johto_preview(self):
+    def test_site_router_keeps_kanto_decades_and_regional_pilots(self):
         app=(ROOT/"site/src/assets/app.js").read_text("utf-8")
         region=(ROOT/"site/src/assets/regions.js").read_text("utf-8")
-        page=(ROOT/"site/src/assets/johto.js").read_text("utf-8")
-        self.assertIn("url.searchParams.get('regiao')==='johto'",app)
-        self.assertIn("main.innerHTML=johtoIndex(data,route)",app)
+        self.assertIn("['johto','hoenn'].includes(url.searchParams.get('regiao'))",app)
+        self.assertIn("main.innerHTML=pilotIndex(data,route)",app)
         self.assertIn("url.searchParams.get('regiao')==='kanto'",app)
         self.assertIn("['decades','Decades'",region)
-        self.assertIn("['johto','Johto · prévia'",region)
-        self.assertIn("preview_only_not_playable",page)
-        self.assertIn("0 mapas instalados, 0 equipes PBS compiladas",page)
+        self.assertIn("['johto','Johto'",region)
+        johto=read("site/public/data/johto-pilot.json")
+        self.assertEqual([row["name"] for row in johto["trainers"] if row["leader"]],["Falkner"])
+        self.assertTrue(any(row["name"]=="Rota 29" and row["encounters"] for row in johto["locations"]))
 
 if __name__=="__main__":
     unittest.main()

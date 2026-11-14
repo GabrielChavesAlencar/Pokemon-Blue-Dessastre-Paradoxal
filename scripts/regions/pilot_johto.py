@@ -14,6 +14,7 @@ import re
 import shutil
 import sys
 import tempfile
+import zlib
 from pathlib import Path
 
 from audit_johto import ROOT, checksum, read_map_data
@@ -309,8 +310,9 @@ def assemble(preview: Path, game: Path, output: Path, spec: dict,
                         "archive_sha256": report["source_archive_sha256"],
                         "save_app": SAVE_APP, "save_org": SAVE_ORG}) + "\n",
             encoding="utf-8")
+        start_crc = zlib.crc32((target / f"Data/Map{mid:03d}.rxdata").read_bytes())
         (target / "Data/blue-johto-qa-start.txt").write_text(
-            f"BLUE_JOHTO_QA_START_V1,{mid},{x},{y}\n", encoding="ascii")
+            f"BLUE_JOHTO_QA_START_V2,{mid},{x},{y},{start_crc}\n", encoding="ascii")
         # NO blue-johto-install.json, NO VERIFIED_PLAYABLE marker,
         # NO blue-johto-rival-ready.txt: test real battles before allowing rival.
         (target / "JOHTO_PILOTO_LEIA-ME.txt").write_text(

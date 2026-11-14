@@ -43,6 +43,10 @@ def pbMessage(message, *args)
   $messages << message
   nil
 end
+def pbConfirmMessage(message)
+  $messages << message
+  true
+end
 def pbAddPokemonSilent(species, level)
   $player.party << [species, level]
   true
