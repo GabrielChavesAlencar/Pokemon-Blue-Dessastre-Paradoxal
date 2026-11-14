@@ -2,6 +2,60 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1678174a5458d0b2087b0700dc670cf2711f3b10",
+      "date": "2026-11-14T06:38:02-03:00",
+      "title": "fix(kanto): traduzir captura e integrar cartões regionais ao menu nativo (#58)",
+      "category": "Correções"
+    },
+    {
+      "sha": "afc563054f65890ae8f19e5e1e9f577c021d3d5b",
+      "date": "2026-11-14T06:35:38-03:00",
+      "title": "test(locale): screenshot-confirmed options description follows Portuguese toggle",
+      "category": "Testes"
+    },
+    {
+      "sha": "dbce1df655818520eb289d74d4a60a6271ef6a81",
+      "date": "2026-11-14T06:35:25-03:00",
+      "title": "fix(locale): translate the exact Language/Idioma help string shown in Kanto settings",
+      "category": "Correções"
+    },
+    {
+      "sha": "a5aa44878aa0c8e73ad415872eed8559ab5f0208",
+      "date": "2026-11-14T06:32:02-03:00",
+      "title": "test(kanto): reproduce and cover screenshot Clefairy dialogue in Portuguese",
+      "category": "Testes"
+    },
+    {
+      "sha": "084d8b939768dabbbb2a113c81ef698e9e39f671",
+      "date": "2026-11-14T06:31:39-03:00",
+      "title": "test(kanto): native Trainer Card opens Kanto page and preserves Decades",
+      "category": "Testes"
+    },
+    {
+      "sha": "f86ab107bba199f6d0bf09883dc54d227abf8be4",
+      "date": "2026-11-14T06:30:56-03:00",
+      "title": "fix(kanto): provide runtime pt-BR fallback for Clefairy NPC",
+      "category": "Correções"
+    },
+    {
+      "sha": "709fee3bb97ce04d32b8c5196a00e02009788dc0",
+      "date": "2026-11-14T06:30:54-03:00",
+      "title": "fix(kanto): review and ship screenshot-confirmed Clefairy dialogue in pt-BR",
+      "category": "Correções"
+    },
+    {
+      "sha": "7cf1a121d83c11abcf25bb2717870a9b42bce0a4",
+      "date": "2026-11-14T06:29:52-03:00",
+      "title": "fix(kanto): avoid recursive card availability check",
+      "category": "Correções"
+    },
+    {
+      "sha": "8cb1c8ac054e8fd3706c45af4f9ae7d88c735523",
+      "date": "2026-11-14T06:29:37-03:00",
+      "title": "fix(kanto): integrate regional cards into native Trainer Card and add FireRed-style badge layout",
+      "category": "Correções"
+    },
+    {
       "sha": "b78433719ec39627b747e968724aa0430a312f61",
       "date": "2026-11-14T03:51:48-03:00",
       "title": "fix(kanto): official Full Power teams, boss caps, doors, signs, Cut, Pewter gate and cards",
