@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f3493cfb647a3d4410bd994233245283dfcc9c37",
+      "date": "2026-11-14T10:43:16-03:00",
+      "title": "ci(hoenn): executar testes de Norman/Wally/Aqua e itens no Ruby isolado",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "477bf8c8e928d72e4379f36920a2e3d7dbd97683",
+      "date": "2026-11-14T10:43:05-03:00",
+      "title": "test(hoenn): validar Norman, Wally, Aqua, coleta, gêmeas e save em Ruby",
+      "category": "Testes"
+    },
+    {
       "sha": "adde90c0485211b8c4b87d7e708e212da3906b43",
       "date": "2026-11-14T10:41:50-03:00",
       "title": "test(hoenn): atualizar expectativas de 18 mapas e 10 treinadores da etapa 3",
