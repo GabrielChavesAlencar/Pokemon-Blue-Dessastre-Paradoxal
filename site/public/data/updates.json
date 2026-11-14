@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9b6db7d5646f61f236c303b5b94558a0c08addb3",
+      "date": "2026-11-14T17:12:59-03:00",
+      "title": "feat(hoenn): QA7 map-local gym dispatcher preserving Decades battle scaling",
+      "category": "Novidades"
+    },
+    {
       "sha": "21ccd783cc0bb2cbd60ab3650a242b7220f31ed8",
       "date": "2026-11-14T17:06:06-03:00",
       "title": "test(hoenn): QA6 Sky Pillar retreat and post-Wallace access",
