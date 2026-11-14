@@ -23,7 +23,7 @@ test('all four regional backlogs have maps, trainers, eight gyms and four elite 
     for(const [category,rows] of Object.entries(region).filter(([key,val])=>Array.isArray(val))){
       const ids=new Set();
       for(const item of rows){
-        assert.equal(item.status,'not_added',name+'/'+category+'/'+item.name);
+        assert.ok(['not_added','native_qa_pending'].includes(item.status),name+'/'+category+'/'+item.name);
         assert.ok(item.name?.trim(),name+'/'+category);
         assert.ok(item.notes?.trim(),name+'/'+category);
         assert.ok(!('map_id' in item) && !('x' in item) && !('y' in item),name+'/'+category+'/'+item.name);
@@ -39,7 +39,7 @@ test('static status appears BELOW names for planned areas, trainers, leaders, El
   for(const region of sourceNames){
     for(const category of ['localizacoes','treinadores','chefes','liga']){
       const html=pendingBlocks(pending,region,category);
-      assert.match(html,/Ainda não adicionado/);
+      assert.match(html,region==='KANTO'&&['chefes','liga'].includes(category)?/Em validação/:/Ainda não adicionado/);
       assert.ok(html.indexOf('<h3>')<html.indexOf('class="content-pending-tag"'));
       assert.match(html,/Sem|pend|MapID|jogo|PBS|treinador|L[ií]ga|local/i);
     }
@@ -72,5 +72,6 @@ test('pending catalog loader checks schema and source',async()=>{
     ok:uri==='/data/pending-regions.json',json:async()=>pending
   }));
   assert.equal(result.regions.KANTO.leaders[0].name,'Brock');
+  assert.equal(result.regions.KANTO.leaders[0].status,'native_qa_pending');
   assert.equal(result.regions.SINNOH.champion[0].name,'Cynthia');
 });
