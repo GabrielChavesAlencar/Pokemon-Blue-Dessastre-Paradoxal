@@ -42,6 +42,15 @@ from hoenn_stage5 import (
     BRAWLY_PBS, BRAWLY_TEAM, MUSEUM_AQUA, NPCS_STAGE5,
     MUSEUM_FEE_GATE, SLATEPORT_NORTH_GATE, SIGNS_STAGE5, PICKUPS_STAGE5,
 )
+from hoenn_stage6 import (
+    SOURCE_MAPS_STAGE6, OFFSET_BORDERS_STAGE6, WARP_PAIRS_STAGE6,
+    CYCLE_TRANSFERS_STAGE6, LAND_ENCOUNTERS_STAGE6, TRAINERS_STAGE6,
+    WATTSON_PBS, WATTSON_TEAM, WALLY_PBS, WALLY_TEAM, RIVAL_110_TEAMS,
+    RIVAL_110_EVENT, RIVAL_110_TRIGGERS, WALLY_EVENT,
+    WALLY_UNCLE_EVENT, WATTSON_EVENT, RYDEL_EVENT, GYM_GATES_STAGE6,
+    GYM_SWITCHES_STAGE6, NPCS_STAGE6, PICKUPS_STAGE6, SIGNS_STAGE6,
+    MAUVILLE_FUTURE_GATES,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -51,6 +60,7 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE3,
     **SOURCE_MAPS_STAGE4,
     **SOURCE_MAPS_STAGE5,
+    **SOURCE_MAPS_STAGE6,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -58,7 +68,7 @@ WARP_PAIRS = (
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
     ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
-) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5
+) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5 + WARP_PAIRS_STAGE6
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
     (11, 8, 6, "Birch", "NPC_ORAS_Professor_Birch", "BlueHoennPilot.birch"),
@@ -89,8 +99,11 @@ MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
            36: "Oldale", 37: "Oldale", 38: "Birch", 39: "Birch",
            40: "Oldale", 108: "Route101", 111: "Route101",
            112: "Oldale", 159: "Route101", 160: "Route101",
-           161: "Route101", 162: "Route101"}
-OUTDOORS = (7, 12, 16, 21, 28, 32, 101, 102, 103, 104, 108, 111, 130, 156)
+           161: "Route101", 162: "Route101",
+           41: "Oldale", 42: "Center", 43: "Oldale", 44: "Oldale",
+           45: "Oldale", 46: "Oldale", 47: "Birch",
+           113: "Route101", 114: "Route101", 115: "Oldale"}
+OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 101, 102, 103, 104, 108, 111, 113, 114, 130, 156)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -100,6 +113,7 @@ LAND_ENCOUNTERS = {
     103: ((60, "POOCHYENA", 2, 4), (20, "ZIGZAGOON", 3, 4), (20, "WINGULL", 2, 4)),
     **LAND_ENCOUNTERS_STAGE3,
     **LAND_ENCOUNTERS_STAGE4,
+    **LAND_ENCOUNTERS_STAGE6,
 }
 CAVE_ENCOUNTERS = {**CAVE_ENCOUNTERS_STAGE4, **CAVE_ENCOUNTERS_STAGE5}
 ROUTE_102_TRAINERS = (
@@ -217,6 +231,7 @@ def validate_geometry(maps, tiles):
         *OFFSET_BORDERS,
         *OFFSET_BORDERS_STAGE4,
         *OFFSET_BORDERS_STAGE5,
+        *OFFSET_BORDERS_STAGE6,
     ):
         def border(map_id, side):
             w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
@@ -245,6 +260,15 @@ def validate_geometry(maps, tiles):
         edges.setdefault(left, []).append(right)
         edges.setdefault(right, []).append(left)
     required.update(BOAT_POINTS_STAGE5)
+    # Cycling Road is reached only through an item-gated event, not a free
+    # physical warp. Include its landing cells for geometry verification.
+    for src, ex, ey, sx, sy, dest, dx, dy in CYCLE_TRANSFERS_STAGE6:
+        if not (open_tile(maps[src], tiles[src], sx, sy) and
+                open_tile(maps[dest], tiles[dest], dx, dy)):
+            raise ValueError(f"Portaria de Cycling Road sem célula passável: {src}/{dest}")
+        edges.setdefault((src, sx, sy), []).append((dest, dx, dy))
+        edges.setdefault((dest, dx, dy), []).append((src, sx, sy))
+        required.update(((src, sx, sy), (dest, dx, dy)))
     reachable(START, required, tiles, maps, edges, blocked)
     return edges, required
 
