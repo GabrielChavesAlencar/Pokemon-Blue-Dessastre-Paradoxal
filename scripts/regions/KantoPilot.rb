@@ -322,7 +322,9 @@ module BlueKantoPilot
   # Exact, source-grounded Pewter east boundary compiled by pilot.py.
   # Only the first Kanto Boulder Badge may open Route 3; crystals earned in
   # other regions do not unlock it. No second foreign-story switch is needed.
-  def self.pewter_route3_blocked?(player, direction)
+  # Match the exact verified east border of Pewter (Map025) towards
+  # Route 3 (Map032). Same coordinates as the existing Brock gate.
+  def self.pewter_route3_crossing?(player, direction)
     return false unless player && $game_map && direction == 6
     gate = "Data/blue-kanto-pewter-route3-gate.txt"
     return false unless File.file?(gate)
@@ -332,9 +334,37 @@ module BlueKantoPilot
     end
     map_id, width, first, last = @pewter_route3_edge
     return false unless map_id && width && first && last
-    return false unless $game_map.map_id == map_id && player.x >= width - 1
-    return false unless player.y >= first && player.y < last
-    !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+    $game_map.map_id == map_id && player.x >= width - 1 &&
+      player.y >= first && player.y < last
+  rescue IOError, SystemCallError, ArgumentError
+    false
+  end
+
+  def self.pewter_route3_blocked?(player, direction)
+    pewter_route3_crossing?(player, direction) &&
+      !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+  end
+
+  # Running Shoes are a native Player ability, not an HM or Bag item.
+  # Mom hands them over on the FIRST successful journey through the
+  # Brock-unlocked Pewter -> Route 3 passage; not at the gym or in Decades.
+  def self.mom_running_shoes_at_route3
+    return false unless PILOT_OVERWORLD_SCALE && $player && $PokemonSystem
+    return false unless BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+    return false if progress["pilot_mom_running_shoes"] == true
+    return false unless $player.respond_to?(:has_running_shoes=) &&
+                        $PokemonSystem.respond_to?(:runstyle=)
+    pbMessage(t("Mom: {1}! I caught up with you at the Route 3 exit. Congratulations on beating Brock!",
+                "Mãe: {1}! Alcancei você na saída para a Rota 3. Parabéns por vencer o Brock!", $player.name))
+    pbMessage(t("Mom: I brought you these Running Shoes. Now you can run on your journey!",
+                "Mãe: Trouxe estes Tênis de Corrida para você. Agora pode correr durante sua jornada!"))
+    $player.has_running_shoes = true
+    $PokemonSystem.runstyle = 1  # Native Essentials default: run without holding a key.
+    progress["pilot_mom_running_shoes"] = true  # Stored on the Kanto regional save.
+    BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic)
+    pbMessage(t("You received the Running Shoes! You'll run automatically from now on.",
+                "Você recebeu os Tênis de Corrida! A partir de agora, correrá automaticamente."))
+    true
   end
 
   def self.pewter_route3_warning
@@ -1377,6 +1407,11 @@ module BlueKantoPilot::Route2ExitGuard
       return
     end
     @blue_route2_last_warning = nil
+    # Give Running Shoes before the east-edge map connection changes maps.
+    # A blocked exit above returns early, so the gift requires Boulder.
+    if BlueKantoPilot.pewter_route3_crossing?(self, dir)
+      BlueKantoPilot.mom_running_shoes_at_route3
+    end
     super
   end
 end
