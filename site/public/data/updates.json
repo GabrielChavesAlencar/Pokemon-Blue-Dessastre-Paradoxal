@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e318f828487bc086e098d949041e22eb757d4acc",
+      "date": "2026-11-14T10:21:23-03:00",
+      "title": "docs(hoenn): registrar validação geométrica do ZIP real e corrigir caminho do staging",
+      "category": "Correções"
+    },
+    {
       "sha": "30c4a056e0d837c1444b755b99332a1989252b7e",
       "date": "2026-11-14T10:20:24-03:00",
       "title": "fix(hoenn): priorizar corredor verificado do rival na Route 103",
