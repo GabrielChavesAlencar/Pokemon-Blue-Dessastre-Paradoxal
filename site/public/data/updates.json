@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5f8fc5a63179a8f0b031b493159b664a59830576",
+      "date": "2026-11-14T12:18:10-03:00",
+      "title": "feat(hoenn): auditar Route110, Mauville, rival, Wattson, bicicletas e Cycling Road",
+      "category": "Novidades"
+    },
+    {
       "sha": "6c9dc69fd0696f6cf6ab279f79a52c482c9b0390",
       "date": "2026-11-14T12:06:14-03:00",
       "title": "docs(hoenn): registrar 20 mapas da Etapa 05 e critérios de QA nativo",
