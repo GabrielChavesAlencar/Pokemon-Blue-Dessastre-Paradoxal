@@ -97,7 +97,7 @@ O plugin [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) exige a prova d
 
 **Restam 3 subetapas reais:** auditar e montar a cópia com os mapas autorizados, compilar/verificar o PBS e os caminhos efetivos de saves no Game.exe Windows, e testar Twinleaf/Barry/saves/Android sem regressões. Por isso a instalação QA ainda **não foi executada com assets reais**, o item do piloto continua **parcial**, o desenvolvimento geral permanece **8/32 (25%)** e as barras de aceite **0/13**. Nenhum save principal foi modificado.
 
-**CI isolada:** [execução de Sinnoh](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43539553514) aprovou **131 testes Python**, sintaxe Ruby e os harnesses de abertura/Barry, inclusive `SINNOH_QA_START_SAVE_AND_PBS_GUARDS_OK`. A suíte geral possui uma falha separada anterior do piloto de Johto; isso não equivale a QA Windows/Android para Sinnoh.
+**CI isolada:** [execução de Sinnoh](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43539553514) aprovou **134 testes Python**, sintaxe Ruby e os harnesses de abertura/Barry, inclusive `SINNOH_QA_START_SAVE_AND_PBS_GUARDS_OK`. A suíte geral possui uma falha separada anterior do piloto de Johto; isso não equivale a QA Windows/Android para Sinnoh.
 
 ## Barra B — fases tecnicamente aprovadas
 
