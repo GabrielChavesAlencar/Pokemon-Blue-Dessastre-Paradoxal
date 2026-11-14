@@ -22,6 +22,8 @@ export function regionsPage(registry){
       (key==='KANTO'?'<a class="text-link" href="/localizacoes?regiao=kanto">Explorar piloto '+icon('arrow')+'</a>':'')+
       (key==='JOHTO'?'<a class="text-link" href="/localizacoes?regiao=johto">Explorar piloto de Johto '+icon('arrow')+'</a>':'')+
       (key==='HOENN'?'<a class="text-link" href="/localizacoes?regiao=hoenn">Explorar piloto de Hoenn '+icon('arrow')+'</a>':'')+
+      (key==='SINNOH'?'<a class="text-link" href="/localizacoes?regiao=sinnoh">Ver pendências de Sinnoh '+icon('arrow')+'</a>':'')+
+      (['KANTO','JOHTO','HOENN','SINNOH'].includes(key)?'<p><a class="text-link" href="/pendencias?regiao='+key.toLowerCase()+'">Próximas fases · Não adicionado '+icon('arrow')+'</a></p>':'')+
       '</article>';
   }).join('');
   return '<div class="container detail-container"><a class="back-link" href="/localizacoes">← Localizações</a>'+
@@ -31,7 +33,7 @@ export function regionsPage(registry){
 }
 
 export function regionPicker(page,region){
-  const choices=[['decades','Decades','/'+page],['kanto','Kanto','/'+page+'?regiao=kanto'],['johto','Johto','/'+page+'?regiao=johto'],['hoenn','Hoenn','/'+page+'?regiao=hoenn']];
+  const choices=[['decades','Decades','/'+page],['kanto','Kanto','/'+page+'?regiao=kanto'],['johto','Johto','/'+page+'?regiao=johto'],['hoenn','Hoenn','/'+page+'?regiao=hoenn'],['sinnoh','Sinnoh','/'+page+'?regiao=sinnoh']];
   return '<nav class="region-picker" aria-label="Selecionar região">'+choices.map(([id,name,href])=>
     '<a class="filter-chip'+(id===region?' active':'')+'" href="'+href+'"'+
     (id===region?' aria-current="page"':'')+'>'+name+'</a>').join('')+'</nav>';
