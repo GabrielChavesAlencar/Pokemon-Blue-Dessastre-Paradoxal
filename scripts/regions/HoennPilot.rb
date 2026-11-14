@@ -145,13 +145,13 @@ module BlueHoennPilot
     return false if flags["birch_rescued"] || flags["met_birch"]
     if !flags["met_mother"] || !flags["clock_set"]
       pbMessage(_INTL("Converse com sua mãe e ajuste o relógio antes de partir."))
-    else
-      flags["birch_rescue_active"] = true
-      pbMessage(_INTL("Birch: Socorro! Um Zigzagoon está me perseguindo! Escolha uma das três Poké Bolas na maleta perto daqui!"))
+      $game_player.moveto($game_player.x, 19) if $game_player && $game_player.y == 18
+      return true
     end
-    # The player-touch event guards the northbound passage. Don't allow
-    # walking into the rest of Route 101 without resolving Birch's rescue.
-    $game_player.moveto($game_player.x, 19) if $game_player && $game_player.y == 18
+    flags["birch_rescue_active"] = true
+    pbMessage(_INTL("Birch: Socorro! Um Zigzagoon me persegue! Escolha uma das três Poké Bolas na maleta logo ao norte!"))
+    # The player must be able to STEP PAST the entrance trigger to reach
+    # the three physical Poké Balls (row 16 in the pinned 20x20 route).
     true
   end
 
