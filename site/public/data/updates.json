@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6a15a3e41b32f9b2456a699b32abde01c009751b",
+      "date": "2026-11-13T21:52:53-03:00",
+      "title": "data(sinnoh): track 3/6 compatibility and private QA tasks without inflating 8/32 or 0/13 game gates",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7d408465400e75ecf10386f3e099bdfe856a501e",
       "date": "2026-11-13T21:52:31-03:00",
       "title": "docs(sinnoh): document legacy 800-805 vs Johto conflict, isolated Barry QA preflight and native blockers",
