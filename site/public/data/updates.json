@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9a88c98dbf4135e2c8bd0fd080c5894e0342b6c2",
+      "date": "2026-11-14T17:53:28-03:00",
+      "title": "ci(hoenn): run QA10 real BlueRegions Hall of Fame unlock Ruby scenarios",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "abca9318b02d4b984d8aac9cdb8951b48c63b850",
+      "date": "2026-11-14T17:53:16-03:00",
+      "title": "test(hoenn): QA10 Hall RXDATA, locked travel status and native-proof fail-closed tests",
+      "category": "Testes"
+    },
+    {
       "sha": "427cd872f87ab1a514d8ff43b0a5dd8c0820102e",
       "date": "2026-11-14T17:52:40-03:00",
       "title": "test(hoenn): QA10 real BlueRegions unlock, Hall only, idempotency and save isolation",
