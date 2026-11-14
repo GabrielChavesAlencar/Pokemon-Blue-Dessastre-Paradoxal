@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7c08bc0eb74bc2a58b8ace7f567efb6ac1389106",
+      "date": "2026-11-14T11:58:37-03:00",
+      "title": "test(hoenn): cobrir Granite Cave, Brawly, barco, museum e bloqueios da Etapa 5",
+      "category": "Testes"
+    },
+    {
       "sha": "ef1d342980d8fd12ae4ac022eac4bf91024e8a48",
       "date": "2026-11-14T11:57:31-03:00",
       "title": "test(hoenn): atualizar expectativas dos contratos de 48 mapas e barco",
