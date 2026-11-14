@@ -21,6 +21,7 @@ jobs:
       - name: Teleporte QA Hoenn 199 mapas - regressao isolada (sem Game.exe)
         run: |
           ruby -c scripts/regions/HoennPilot.rb
+          python -m py_compile scripts/regions/pilot_hoenn.py scripts/regions/hoenn_qa_teleport_upgrade.py scripts/regions/hoenn_qa_phase1.py scripts/regions/hoenn_qa_phase12.py
           ruby tests/hoenn_qa_teleport_runtime.rb scripts/regions/HoennPilot.rb
           python -m unittest discover -s tests -p test_hoenn_qa_teleport.py -v
           python -m unittest discover -s tests -p test_hoenn_qa_phase12.py -v
