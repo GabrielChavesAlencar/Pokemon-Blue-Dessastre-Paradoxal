@@ -18,6 +18,11 @@ from pilot_hoenn import (
     BGM, BORDERS, LAND_ENCOUNTERS, MAP_BGM, OUTDOORS, PEOPLE,
     ROUTE_102_TRAINERS, RIVAL_NAMES, RIVAL_TEAMS, SOURCE_MAPS, START, UPSTREAM, WARP_PAIRS,
 )
+from hoenn_stage3 import (
+    SOURCE_MAPS_STAGE3, OFFSET_BORDERS, LAND_ENCOUNTERS_STAGE3,
+    TRAINERS_STAGE3, PICKUPS_STAGE3, SIGNS_STAGE3, NPCS_STAGE3,
+    FOREST_AQUA_TRIGGERS, FOREST_AQUA_PBS, FOREST_AQUA_TEAM,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -73,22 +78,27 @@ def audit(root: Path = ROOT) -> dict:
         if len({species for _, species, _, _ in encounters}) != len(encounters):
             errors.append(f"Duplicate species slot on map {map_id}")
 
-    native_trainers = {name: tuple(team) for _, _, _, name, _, team in ROUTE_102_TRAINERS}
+    native_trainers = {name: (SOURCE_MAPS[102], tuple(team))
+                       for _, _, _, name, _, team in ROUTE_102_TRAINERS}
+    native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
+                            for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE3})
+    native_trainers["Recruta"] = (SOURCE_MAPS[156], tuple(FOREST_AQUA_TEAM))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
         errors.append("Duplicate trainers in published Hoenn pilot")
     if set(names_published) != set(native_trainers):
         errors.append(f"Published trainers differ from pilot: {sorted(set(names_published) ^ set(native_trainers))}")
-    if len(native_trainers) != len(ROUTE_102_TRAINERS):
-        errors.append("Duplicate trainer definitions in native pilot")
+    if len(native_trainers) != len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) + 1:
+        errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
         if name not in native_trainers:
             continue
         teams = row.get("teams", [])
         party = [tuple(pokemon) for pokemon in teams[0].get("pokemon", [])] if len(teams) == 1 else []
-        if row.get("area") != SOURCE_MAPS[102] or party != list(native_trainers[name]):
+        area, expected_team = native_trainers[name]
+        if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
         if row.get("leader") is not False or row.get("badge") is not None:
             errors.append(f"Trainer {name}: wrongly advertised as gym leader")
@@ -96,11 +106,14 @@ def audit(root: Path = ROOT) -> dict:
     all_edges = [tuple(pair) for pair in BORDERS]
     if any(a not in source_ids or b not in source_ids for a, _, b, _ in all_edges):
         errors.append("A border connection references an unknown source map")
+    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in OFFSET_BORDERS):
+        errors.append("An offset border references an unknown source map")
     if any(a[0] not in source_ids or b[0] not in source_ids
            for a, _, b, _ in WARP_PAIRS):
         errors.append("A door/ladder references an unknown source map")
     adjacency = {mid: set() for mid in source_ids}
-    for a, _, b, _ in BORDERS:
+    for a, b in ([(a, b) for a, _, b, _ in BORDERS] +
+                 [(a, b) for a, _, _, b, _, _ in OFFSET_BORDERS]):
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
