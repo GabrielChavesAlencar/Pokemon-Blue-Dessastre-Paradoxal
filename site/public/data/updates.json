@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6d90210205fd9f7238a8237bb5dd3aa3639bdf63",
+      "date": "2026-11-13T21:15:13-03:00",
+      "title": "test(sinnoh): pin partial Twinleaf story progress 5/8 and preserve zero native gameplay approval",
+      "category": "Testes"
+    },
+    {
+      "sha": "396f55cd9894c008a38650fc8e8418f8c10a0714",
+      "date": "2026-11-13T21:15:08-03:00",
+      "title": "fix(regions): corrigir pilotos de Johto, Hoenn, Sinnoh e Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "e2ef398242d0b2e2614e156fc38fc949021c337f",
       "date": "2026-11-13T21:14:45-03:00",
       "title": "docs(sinnoh): add Twinleaf intro 5/8 subbar and correctly mark S13/S14 partial without claiming game acceptance",
