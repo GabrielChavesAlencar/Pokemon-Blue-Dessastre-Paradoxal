@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e9a51f5be00d13cc2b4b8e7f0583bd904b19c662",
+      "date": "2026-11-14T20:37:06-03:00",
+      "title": "verify(kanto): validar linha de bloqueio na cidade e ausencia do gate antigo",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "62e6b44766bbda46b7d9d2739d7b050399dfac7a",
+      "date": "2026-11-14T20:36:48-03:00",
+      "title": "fix(kanto): bloquear ao cruzar linha interna e limpar gates antigos de saves",
+      "category": "Correções"
+    },
+    {
       "sha": "aaceb278095e4dd2192bc36610f11fb7fa504493",
       "date": "2026-11-14T20:36:28-03:00",
       "title": "fix(kanto): mover bloqueio Rota 2 para linha interna junto a casa norte de Viridian",
