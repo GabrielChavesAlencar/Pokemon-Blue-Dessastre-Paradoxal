@@ -17,8 +17,9 @@ module BlueHoennPilot
     stage4 = (stage3 + [21, 22, 23, 24, 25, 26, 27, 130, 131, 157]).sort
     stage5 = (stage4 + [28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
                         38, 39, 40, 108, 111, 112, 159, 160, 161, 162]).sort
+    stage6 = (stage5 + [41, 42, 43, 44, 45, 46, 47, 113, 114, 115]).sort
     stage2 = [7, 8, 11, 12, 13, 14, 101, 102, 103]
-    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5].include?(maps.keys.sort) &&
+    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
@@ -116,6 +117,36 @@ module BlueHoennPilot
         raise "Treinadores ou Brawly/Museu de Slateport não compilados"
       end
     end
+    if maps[113] && maps[41] && maps[47]
+      route110 = GameData::Encounter.get(maps.fetch(113), 0)
+      species = [:ELECTRIKE, :POOCHYENA, :GULPIN, :ODDISH, :WINGULL,
+                 :PLUSLE, :MINUN]
+      unless route110 && route110.types.fetch(:Land, []).map { |slot| slot[1] }.sort == species.sort
+        raise "Tabela de encontros da Rota 110 não compilada"
+      end
+      expected = [
+        [:BLUE_HOENN_WATTSON, "Wattson", 647],
+        [:BLUE_HOENN_WALLY, "Wally", 641],
+        [:YOUNGSTER, "Edward", 113], [:RICHBOY, "Edwin", 113],
+        [:YOUNGSTER, "Joseph", 113], [:YOUNGSTER, "Timmy", 113],
+        [:LASS, "Jaclyn", 113], [:FISHERMAN, "Dale", 113],
+        [:YOUNGSTER, "Kaleb", 113], [:LASS, "Isabel", 113],
+        [:YOUNGSTER, "Anthony", 114], [:LASS, "Abigail", 114],
+        [:YOUNGSTER, "Benjamin", 114], [:LASS, "Jasmine", 114],
+        [:YOUNGSTER, "Jacob", 114], [:LASS, "Alyssa", 114],
+        [:LASS, "Vivian", 47], [:YOUNGSTER, "Kirk", 47],
+        [:YOUNGSTER, "Ben", 47], [:BUGCATCHER, "Angelo", 47],
+        [:YOUNGSTER, "Shawn", 47]
+      ]
+      unless expected.all? { |kind, name, ver| GameData::Trainer.exists?(kind, name, ver) }
+        raise "Treinadores/Wattson/Wally da Etapa 6 não compilados"
+      end
+      ["May", "Brendan"].each do |name|
+        [610, 611, 612].each do |ver|
+          raise "Rival da Rota 110 não compilado: #{name}/#{ver}" unless GameData::Trainer.exists?(:RIVAL1, name, ver)
+        end
+      end
+    end
     names = ["May", "Brendan"]
     unless names.all? { |name| [210, 211, 212].all? { |version|
              GameData::Trainer.exists?(:RIVAL1, name, version) } }
@@ -136,6 +167,9 @@ module BlueHoennPilot
     end
     if maps[28] && maps[32]
       links.concat([[maps.fetch(28), maps.fetch(108)], [maps.fetch(32), maps.fetch(111)]])
+    end
+    if maps[41] && maps[113]
+      links.concat([[maps.fetch(32), maps.fetch(113)], [maps.fetch(113), maps.fetch(41)]])
     end
     links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
