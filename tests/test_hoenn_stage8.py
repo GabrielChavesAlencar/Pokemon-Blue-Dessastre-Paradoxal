@@ -39,7 +39,7 @@ class HoennStage8Tests(unittest.TestCase):
 
     def test_map_and_source_connections(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE8),25)
-        self.assertEqual(len(SOURCE_MAPS),138)
+        self.assertEqual(len(SOURCE_MAPS),199)
         self.assertEqual(len(WARP_PAIRS_STAGE8),39)
         self.assertEqual(len(WARP_PAIRS),130)
         self.assertEqual(len(OFFSET_BORDERS_STAGE8),8)
