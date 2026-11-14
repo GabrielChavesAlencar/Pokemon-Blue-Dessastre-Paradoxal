@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a69a89f8894f217542723c489419f9a4e3b7fe47",
+      "date": "2026-11-14T13:43:38-03:00",
+      "title": "fix(test/hoenn): fornecer sprite do rival no teste de sobreposição Stage8",
+      "category": "Correções"
+    },
+    {
       "sha": "c9e7ace18b3eabe62ae3d124a276bc2261991ca9",
       "date": "2026-11-14T13:42:09-03:00",
       "title": "ci(hoenn): incluir runtime Stage8 Norman, Surf, Weather, Winona e Lilycove",
