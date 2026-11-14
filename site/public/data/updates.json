@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ed965d7d563e0fa511dcb18ed2542eacff677cb6",
+      "date": "2026-11-13T21:54:46-03:00",
+      "title": "data(sinnoh): register audited legacy pilot conflict and QA preflight without game install approval",
+      "category": "Melhorias"
+    },
+    {
       "sha": "db23ddfa0a4a3ba79932395be8f725fa88b932a7",
       "date": "2026-11-13T21:54:12-03:00",
       "title": "test(sinnoh): keep pilot compatibility and QA preflight partial, preserving original 8/32 and 0/13 gates",
