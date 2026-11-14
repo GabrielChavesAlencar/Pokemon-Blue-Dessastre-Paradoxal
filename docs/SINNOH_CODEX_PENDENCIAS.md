@@ -86,6 +86,14 @@ python scripts/regions/plan_sinnoh_remap.py --audit .blue-work/sinnoh/rxdata-rep
 python -m unittest discover -s tests -p "test_sinnoh_remap.py" -v
 ```
 
+### Implementação de conversão de terreno (R08 — código de prévia preparado)
+
+- **Já implementado aqui:** [scripts/regions/convert_sinnoh_geometry.py](../scripts/regions/convert_sinnoh_geometry.py), com [tests/test_sinnoh_geometry_converter.py](../tests/test_sinnoh_geometry_converter.py). O módulo audita fonte ZIP/pasta real e cópia `game/Data`; revalida o `plan_sha256` do remapeamento, confere hashes e gera em memória `MapNNN.rxdata` de **geometria somente**, índices MapInfos/Tilesets da **cópia**, tileset PNGs prefixados e relatório de hashes dos arquivos nativos.
+- **Segurança garantida pelo código:** `@events={}`, `@encounter_list=[]`, BGM/BGS vazios, nenhum script doador executado, sem NPCs, batalhas ou portais copiados. A saída `--stage` requer SHA-256 de dry-run e grava **somente** na pasta ignorada `.blue-work/sinnoh-stage/`. Não instalar o stage no `game/`: ele não é jogável nem inclui os eventos necessários.
+- **Guia operacional obrigatório:** [SINNOH_FASE_01_PREVIA_GEOMETRIA.md](SINNOH_FASE_01_PREVIA_GEOMETRIA.md), com exemplos Windows, limites de licença e provas de teste.
+- **R08 permanece parcial** porque a fonte Sinnoh verdadeira, permissões, coordenadas de eventos, scripts autorais e QA de mapa não foram auditados. **Não refazer o conversor; use-o somente quando os assets locais reais estiverem disponíveis.**
+- **Barras:** desenvolvimento 8/32 (25%); remapeamento S07 6/9 (67%); técnica, jogável e QA nativa continuam 0/13. Arquivo mestre: [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md).
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
