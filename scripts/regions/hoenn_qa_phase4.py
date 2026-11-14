@@ -30,7 +30,7 @@ OBSTACLE_BOULDER = re.compile(
     r"^(?:Strength[\s_-]*Boulder|Pushable[\s_-]*(?:Rock|Boulder)|"
     r"Strength[\s_-]*Rock|Boulder[\s_-]*Strength)$", re.I)
 OBSTACLE_ICE = re.compile(
-    r"^(?:Ice[\s_-]*(?:Floor|Puzzle|Tile|Cracked)|"
+    r"^(?:Ice[\s_-]*(?:Floor(?:[\s_-]*Puzzle)?|Puzzle|Tile|Cracked)|"
     r"Thin[\s_-]*Ice|Cracked[\s_-]*Ice|Sliding[\s_-]*Ice)$", re.I)
 FIELD_SCRIPT = re.compile(
     r"\b(?:pbRockSmash|pbStrength|pbWaterfall|pbDive|pbSurf)\b")
