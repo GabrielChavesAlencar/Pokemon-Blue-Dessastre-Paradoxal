@@ -126,6 +126,16 @@ class KantoOverworldContracts(unittest.TestCase):
         self.assertEqual(page["@list"][0].attrs["@parameters"][1], b"pbCut")
         self.assertEqual(page["@list"][1].attrs["@parameters"][0],
                          b"pbSmashThisEvent")
+        # CutTree spritesheets have a different frame for every direction.
+        # Action-button interaction makes RPG Maker turn an unlocked event,
+        # showing the stump despite pbCut rejecting the use. Keep it fixed.
+        self.assertTrue(page["@direction_fix"])
+        self.assertFalse(page["@walk_anime"])
+        self.assertFalse(page["@step_anime"])
+        self.assertEqual(page["@graphic"].attrs["@character_name"], b"tree")
+        self.assertEqual(page["@graphic"].attrs["@tile_id"], 0)
+        self.assertEqual([op.attrs["@code"] for op in page["@list"]],
+                         [111, 355, 0, 412, 0])
         self.assertEqual(result.attrs["@name"], b"CutTree")
         conditional_tree = fake_event(
             name=b"CutTree", scripts=[command(0)], conditional=True)
