@@ -132,7 +132,7 @@ class KantoOverworldContracts(unittest.TestCase):
         self.assertTrue(page["@direction_fix"])
         self.assertFalse(page["@walk_anime"])
         self.assertFalse(page["@step_anime"])
-        self.assertEqual(page["@graphic"].attrs["@character_name"], b"tree")
+        self.assertEqual(page["@graphic"].attrs["@character_name"], b"FRLG_Pilot_items")
         self.assertEqual(page["@graphic"].attrs["@tile_id"], 0)
         self.assertEqual([op.attrs["@code"] for op in page["@list"]],
                          [111, 355, 0, 412, 0])
