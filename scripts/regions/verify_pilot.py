@@ -298,7 +298,15 @@ def inspect(game: Path) -> dict:
                 raise ValueError("Forest tunnel must not contain the Oak parcel gate")
 
 
-    # Phase 09 gameplay nucleus: exact Celadon event whitelist.
+    # Phase 09/10 story whitelists remain strict for quest, trainers, item
+    # and warp events. Only separately audited passive signs and CutTree
+    # obstacles may be added without changing the underlying core events.
+    def passive_field_ids(origin):
+        return {row["event"] for row in field_report["imported"]
+                if row["source_map"] == origin and
+                   row["kind"] in ("sign_dialogue", "cut")}
+
+    # Phase 09 gameplay nucleus: exact Celadon story whitelist.
     # The source also has Rocket, Game Corner, mansions, item pickups,
     # cut trees and the department store. None of those may slip in.
     core_events = {
@@ -308,8 +316,8 @@ def inspect(game: Path) -> dict:
     }
     for origin, allowed in core_events.items():
         actual = set(maps[mapping[origin]].attrs["@events"])
-        if actual != allowed:
-            raise ValueError(f"Celadon {origin}: unreviewed events imported: {actual ^ allowed}")
+        if actual != allowed | passive_field_ids(origin):
+            raise ValueError(f"Celadon {origin}: unreviewed events imported: {actual ^ (allowed | passive_field_ids(origin))}")
     for outside, eid, inside, return_event in ((114, 3, 124, 5),
                                                 (114, 20, 115, 1)):
         if mapping[inside] not in event_transfers(outside, eid):
@@ -336,8 +344,8 @@ def inspect(game: Path) -> dict:
     }
     for origin, allowed in fuchsia.items():
         found_ids = set(maps[mapping[origin]].attrs["@events"])
-        if found_ids != allowed:
-            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ allowed}")
+        if found_ids != allowed | passive_field_ids(origin):
+            raise ValueError(f"Fuchsia {origin}: unexpected or missing event IDs {found_ids ^ (allowed | passive_field_ids(origin))}")
     fuchsia_returns = (
         (144, 5, 147, 9),
         (144, 17, 145, 1),
