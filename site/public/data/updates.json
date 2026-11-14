@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "224ca31822c974c4d959f83b3f2c7d0b37f5a80e",
+      "date": "2026-11-14T17:30:47-03:00",
+      "title": "feat(hoenn): TESTAR_HOENN QA08 isolated Victory Road/Wally inspection",
+      "category": "Novidades"
+    },
+    {
       "sha": "26ef0b4927e93bfbafefd3ea5db84f711e6733bf",
       "date": "2026-11-14T17:30:30-03:00",
       "title": "ci(hoenn): run QA8 Ruby Victory Road and Wally safety scenarios",
