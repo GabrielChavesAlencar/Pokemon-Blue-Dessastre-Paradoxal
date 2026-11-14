@@ -80,7 +80,7 @@ class HoennStage4Tests(unittest.TestCase):
         gym_mid, roxanne = by_name["HN4_Leader_Roxanne"]
         self.assertEqual(gym_mid, 27)
         self.assertEqual((roxanne.attrs["@x"], roxanne.attrs["@y"]), (7, 4))
-        self.assertIn("BlueHoennPilot.roxanne",
+        self.assertIn("BlueHoennPilot.qa7_gym_battle(:STONE)",
                       roxanne.attrs["@pages"][0].attrs["@list"][0].attrs["@parameters"][0].decode())
         mid, aqua = by_name["HN4_AquaRusturf"]
         self.assertEqual(mid, 157)
