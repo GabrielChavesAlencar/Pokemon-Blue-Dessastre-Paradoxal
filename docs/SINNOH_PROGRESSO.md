@@ -71,6 +71,18 @@ O [preflight_sinnoh_barry_qa.py](../scripts/regions/preflight_sinnoh_barry_qa.py
 
 Faltam: auditoria física das reservas, montagem do piloto novo com fonte autorizada e testes reais Windows/Android. O avanço de **3/6** é apenas desta etapa de código; desenvolvimento geral **8/32**, fases técnicas/jogáveis/QA **0/13**.
 
+## Novo piloto — montagem privada do overlay (preparação parcial)
+
+```text
+████████████░░░░░░░░░░░░  3/6 (50% das subetapas de integração)
+```
+
+O novo montador [prepare_sinnoh_pilot_bundle.py](../scripts/regions/prepare_sinnoh_pilot_bundle.py) reúne em **.blue-work** o stage de geometria, os **24 eventos próprios do Blue em nove mapas** (incluindo **três Poké Bolas físicas** e 16 warps), as **três versões PBS de Barry** e o plugin autoral `SinnohPilot.rb`. Confere transações, hashes, MapInfos/Tilesets e **todos os IDs presentes na geometria**, além de recompilar os eventos e verificar byte a byte a saída. Não copia o piloto legado, `System.rxdata`, `Scripts.rxdata`, `Game.exe` nem saves.
+
+[Documentação e comandos do piloto](SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md) | [Testes sintéticos de integração](../tests/test_sinnoh_pilot_bundle.py).
+
+**Restam 3 subetapas locais:** auditar a fonte autorizada e os IDs reservados, montar/compilar na cópia real do Game.exe com perfil isolado, testar Windows/Android e a batalha com Barry. O montador fica em **dry-run por padrão**, escreve apenas em pasta nova de `.blue-work` mediante `--publish` e **não cria marcador de batalha**. Portanto a barra geral continua **8/32 (25%)**, as fases técnicas/jogáveis/QA **0/13**, e a compatibilidade do piloto legado permanece **3/6**.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
