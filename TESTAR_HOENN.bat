@@ -4,7 +4,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 echo.
 echo =====================================================
-echo    POKEMON BLUE - TESTAR HOENN - QA FASE 01/12
+echo    POKEMON BLUE - TESTAR HOENN - QA FASES 01-02/12
 echo =====================================================
 echo.
 if not exist "game\Game.exe" (
@@ -42,10 +42,28 @@ if errorlevel 1 (
   exit /b 2
 )
 if not exist ".blue-work\hoenn-qa-fase01\Game.exe" (
-  echo [BLOQUEADO] Cópia isolada nao possui Game.exe.
+  echo [BLOQUEADO] Copia isolada nao possui Game.exe.
   pause
   exit /b 2
 )
+echo.
+echo [HOENN QA 02/12] Conferindo fisicamente as portas e conexoes PBS...
+where py >nul 2>nul
+if not errorlevel 1 (
+  py -3 "scripts\regions\hoenn_qa_phase2.py"
+) else (
+  python "scripts\regions\hoenn_qa_phase2.py"
+)
+if errorlevel 1 (
+  echo.
+  echo [BLOQUEADO] Existe problema estatico de mapas ou conexoes.
+  echo Relatorio: .blue-work\hoenn-qa-fase02-report.json
+  echo Nao alteramos game\, saves ou o perfil original.
+  pause
+  exit /b 2
+)
+echo [OK] 199 mapas e transferencias auditados por dados.
+echo [ATENCAO] Isto NAO equivale a jogar/testar Game.exe.
 echo.
 echo [OK] Pasta de Hoenn preparada e arquivos conferidos.
 echo Perfil de save separado: Hoenn Piloto.
