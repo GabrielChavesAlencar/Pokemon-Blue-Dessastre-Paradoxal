@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "Fase 03 I06–I08: auditar Twinleaf/Lake Verity/Sandgem reais, criar e verificar PBS Barry, piloto isolado e testar Windows/JoiPlay. Código próprio e compilador já publicados.",
+  "next": "Compilar e validar 3 PBS Barry (B05/B06) na cópia isolada, reconciliar piloto legado de Sinnoh 800–805 com reservas Johto, auditar nove mapas e iniciar piloto sem interferir em Decades.",
   "tasks": [
     {
       "id": "S01",
@@ -433,6 +433,63 @@
     "documentation": "docs/SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md",
     "native_verified": false,
     "assets_verified": false,
-    "not_playable": true
+    "not_playable": true,
+    "note": "5/8 subetapas de introdução aprovadas em código. I07 continua pendente apesar de o gerador/verificador dos três PBS de Barry estarem prontos; faltam compilação e batalhas reais."
+  },
+  "barry_pbs_workstream": {
+    "status": "PBS_DRAFT_CODE_READY_NATIVE_QA_PENDING",
+    "complete": 4,
+    "total": 6,
+    "substeps": [
+      {
+        "id": "B01",
+        "name": "Definir os três confrontos Turtwig→Chimchar, Chimchar→Piplup e Piplup→Turtwig e versões 0/1/2",
+        "complete": true,
+        "evidence": "scripts/regions/build_sinnoh_barry_pbs.py"
+      },
+      {
+        "id": "B02",
+        "name": "Gerar PBS autoral com espécies e golpes existentes no Blue, a partir da instalação local",
+        "complete": true,
+        "evidence": "scripts/regions/build_sinnoh_barry_pbs.py"
+      },
+      {
+        "id": "B03",
+        "name": "Validar contrato de nível dinâmico 70%/90% e separar o seed PBS do nível em batalha",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_barry_pbs.py"
+      },
+      {
+        "id": "B04",
+        "name": "Verificador offline de hashes e das três equipes, sem marcador ou gravação no jogo",
+        "complete": true,
+        "evidence": "scripts/regions/verify_sinnoh_barry_pbs.py"
+      },
+      {
+        "id": "B05",
+        "name": "Compilar e testar as três versões PBS e sprite do Barry na cópia experimental real",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "B06",
+        "name": "Validar nível efetivo Normal/Master, battle outcome e save/load no Game.exe e JoiPlay",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "tests": [
+      "tests/test_sinnoh_barry_pbs.py",
+      "tests/test_sinnoh_barry_verify.py"
+    ],
+    "documentation": "docs/SINNOH_FASE_03_BARRY_PBS.md",
+    "pbs_compiled": false,
+    "marker_created": false,
+    "game_playable": false,
+    "legacy_pilot_map_id_overlap": {
+      "observed": "scripts/regions/pilot_sinnoh.py uses 800–805",
+      "reserved_johto_range": "600–999",
+      "resolution": "Verify whether independent QA-only IDs or multi-region integration; no merges before reconciliation"
+    }
   }
 }
