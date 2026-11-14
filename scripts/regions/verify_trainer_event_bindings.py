@@ -116,7 +116,8 @@ def audit_sources(root: Path = ROOT) -> dict:
             trainer["type"],[0,1],npc["sprite"]
         ):
             raise ValueError(f"Violet trainer binding drift: {trainer['name']}")
-        if not npc["handler"].split("(")[0] in violet_rb:
+        method = npc["handler"].split(".")[-1].split("(")[0]
+        if "module BlueJohtoViolet" not in violet_rb or f"def self.{method}" not in violet_rb:
             raise ValueError(f"Violet trainer handler missing: {npc['handler']}")
         found.add(row["id"])
     if found != {r["id"] for r in records}:
