@@ -56,7 +56,7 @@ $PokemonGlobal=QA9Global.new
 $PokemonGlobal.blue_regions={"current"=>"DECADES"}
 $player=QA9Player.new
 $game_map=QA9Map.new
-$game_map.map_id=894
+$game_map.map_id=694
 $game_player=QA9Avatar.new
 
 old=Marshal.dump($PokemonGlobal.blue_regions)
@@ -82,17 +82,17 @@ verify9(!BlueHoennPilot.qa9_elite_unlocked?(1),"Phoebe opened before Sidney")
 
 # A forged Drake flag cannot replace the missing first three victories.
 flags["elite_drake_defeated"]=true
-$game_map.map_id=898
+$game_map.map_id=698
 verify9(!BlueHoennPilot.qa9_champion_unlocked?,"Wallace unlocked via forged Drake flag")
 verify9(!BlueHoennPilot.champion_wallace,"Wallace callable without previous Elite")
 flags.delete("elite_drake_defeated")
 
-$game_map.map_id=900 # League corridor; direct boss call must not work.
+$game_map.map_id=700 # League corridor; direct boss call must not work.
 verify9(!BlueHoennPilot.elite_four(0),"Sidney callable from League lobby")
 verify9(TrainerBattle.calls.empty?,"invalid challenge executed a battle")
 verify9(!BlueHoennPilot.stage10_transfer(100,95,8,7),"Phoebe warp skipped Sidney")
 verify9(BlueHoennPilot.stage10_transfer(100,94,8,7),"Sidney room not accessible")
-verify9($game_map.map_id==894,"Sidney room mapped incorrectly")
+verify9($game_map.map_id==694,"Sidney room mapped incorrectly")
 
 TrainerBattle.result=false
 verify9(!BlueHoennPilot.elite_four(0),"Sidney defeat counted as victory")
@@ -128,7 +128,7 @@ verify9(BlueHoennPilot.champion_wallace,"Wallace interaction replay not idempote
 verify9(TrainerBattle.calls.count([:BLUE_HOENN_CHAMPION,"Wallace",1098])==2,
         "Wallace battled after victory")
 verify9(BlueHoennPilot.stage10_transfer(98,99,9,18),"Hall not reachable after Wallace")
-verify9($game_map.map_id==899,"Hall map ID wrong")
+verify9($game_map.map_id==699,"Hall map ID wrong")
 verify9(!flags["hoenn_hall_of_fame"],"QA09 must not pre-mark Phase10 Hall of Fame")
 verify9(TrainerBattle.calls.length==7,"Wrong number of battle attempts")
 
@@ -137,7 +137,7 @@ verify9(BlueHoennPilot.qa9_champion_unlocked?,"Elite wins lost on save reload")
 verify9(BlueHoennPilot.state["champion_wallace_defeated"],"Wallace win lost on reload")
 $PokemonGlobal.blue_regions["current"]="JOHTO"
 save=Marshal.dump($PokemonGlobal.blue_regions)
-$game_map.map_id=898
+$game_map.map_id=698
 verify9(!BlueHoennPilot.champion_wallace,"Wallace leaked into Johto")
 verify9(!BlueHoennPilot.elite_four(0),"Sidney leaked into Johto")
 verify9(!BlueHoennPilot.stage10_transfer(98,99,9,18),"Hall leaked into Johto")
