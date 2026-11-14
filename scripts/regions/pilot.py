@@ -20,6 +20,7 @@ from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_even
                              source_item_ball, source_npc_dialogue, source_sign_dialogue,
                              source_obstacle)
 from kanto_npc_locale import install_npc_locale, npc_literals
+from kanto_locale_audit import write_audit
 from server.ruby_marshal import RubyObject, dumps_simple, text
 from stage import serialize, stage
 
@@ -33,6 +34,7 @@ PILOT_INPUTS = (
     "scripts/regions/pilot.py",
     "scripts/regions/kanto_overworld.py",
     "scripts/regions/kanto_npc_locale.py",
+    "scripts/regions/kanto_locale_audit.py",
     "scripts/regions/stage.py",
     "scripts/regions/pbs.py",
     "scripts/regions/kanto_full_power.py",
@@ -49,6 +51,7 @@ PILOT_INPUTS = (
     "scripts/battle_polish/Locale.rb",
     "data/pt-br.json",
     "data/kanto-npc-ptbr.json",
+    "data/kanto-event-ptbr.json",
     "data/regions/kanto-source.json",
     "data/kanto-music-rules.json",
     "data/kanto-music.json",
@@ -1533,16 +1536,15 @@ def build(source, game, output):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         install_events(source, target, mapping)
         install_pewter_route3_gate(source, target, mapping)
-        # Merge local Argos/manual translations with BlueLocale in this pilot
-        # only. English story text and the Decades installation remain intact.
-        install_npc_locale(ROOT, source, target)
         install_pbs(preview, target, mapping)
+        install_npc_locale(ROOT, source, target, use_optional_translator=False)
         # Copy approved F2/F3 BGM and six confirmed F4 ME in this isolated pilot.
         # Hash verification and exclusive copy protect the original game audio.
         from scripts.music.compile_kanto_music import approved_audio_track_numbers
         from scripts.music.install_kanto_music import install as install_kanto_audio
         install_kanto_audio(target, apply=True, numbers=approved_audio_track_numbers(ROOT))
         install_runtime(target, mapping, game)
+        write_audit(target, ROOT)
         if output.exists():
             raise ValueError("Another pilot already exists at the output path.")
         target.rename(output)

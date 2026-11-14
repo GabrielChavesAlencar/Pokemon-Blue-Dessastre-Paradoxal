@@ -22,6 +22,8 @@ MOBILE = "Plugins/ZZZZ Blue Battle Lab/Mobile.rb"
 KANTO_PLUGIN = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 REGIONAL_FILES = (
     "Data/blue-kanto-start.txt",
+    "Data/blue-kanto-npc-dialogues.dat",
+    "Data/blue-pt-br.dat",
     "Data/blue-kanto-music.txt",
     "Data/blue-kanto-experimental-stops.txt",
     "Data/blue-kanto-silph-floors.txt",
@@ -29,7 +31,6 @@ REGIONAL_FILES = (
 SHARED_FILES = (
     "Data/blue-trainer-album.dat",
     "Data/blue-hub-presets.dat",
-    "Data/blue-pt-br.dat",
     "Data/blue-music.rxdata",
     "Data/blue-music-categories.rxdata",
     "Data/blue-official-rules.dat",

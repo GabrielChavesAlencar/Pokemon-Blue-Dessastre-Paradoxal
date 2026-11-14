@@ -71,6 +71,8 @@ class KantoJoiPlayPackageTests(unittest.TestCase):
         selected = k.select_files(self.game)
         self.assertIn("Kanto pilot.json", selected)
         self.assertIn("Data/blue-kanto-start.txt", selected)
+        self.assertIn("Data/blue-kanto-npc-dialogues.dat", selected)
+        self.assertIn("Data/blue-pt-br.dat", selected)
         self.assertNotIn("Data/Game.rxdata", selected)
         self.assertNotIn("Saves/Auto 1.rxdata", selected)
         self.assertNotIn("Data/blue-kanto-proof.txt", selected)

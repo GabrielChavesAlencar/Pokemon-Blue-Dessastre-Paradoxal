@@ -15,6 +15,9 @@ try:
     from kanto_npc_locale import npc_literals, imported_npc_lines, install_npc_locale
     from translate_kanto_npcs import safe_translate, current_pilot
     from pilot import command, npc_dialogue_calls
+    from kanto_locale_audit import audit_pilot
+    from stage import serialize
+    from pilot import EVENT_CLASSES
     from server.ruby_marshal import RubyObject, dumps_simple, loads, text
 finally:
     sys.path.remove(str(ROOT / "scripts/regions"))
@@ -292,6 +295,42 @@ class TestKantoNpcLocale(unittest.TestCase):
                              "Olá! Como você está?")
             self.assertEqual(report["remaining_unique_lines"], 0)
             self.assertEqual(len(report["automatic_unreviewed_translations"]), 1)
+
+    def test_audit_reports_new_formatted_sign_and_trainer_via_map_and_pbs(self):
+        event = event_dialogue()
+        event.attrs["@pages"][0].attrs["@list"] = [
+            command(101, rb"\w[signskin]A newly added notice"),
+            command(401, b"on a second row."),
+            command(102, [b"A new choice"], 1), command(0),
+        ]
+        with tempfile.TemporaryDirectory() as folder:
+            game = Path(folder)
+            data = game / "Data"
+            data.mkdir()
+            pbs = game / "PBS"
+            pbs.mkdir()
+            (game / "Kanto pilot.json").write_text('{"maps":{"5":300}}', encoding="utf8")
+            (data / "MapInfos.rxdata").write_bytes(serialize({
+                300: RubyObject("RPG::MapInfo", {"@name": b"Pallet Town"})
+            }))
+            (data / "Map300.rxdata").write_bytes(serialize(RubyObject(
+                "RPG::Map", {"@events": {7: event}}), EVENT_CLASSES))
+            (data / "blue-kanto-npc-dialogues.dat").write_bytes(dumps_simple([]))
+            (data / "blue-pt-br.dat").write_bytes(dumps_simple(
+                [[key, val] for key, val in kanto_npc_locale.BATTLE_TRANSLATIONS.items()]))
+            (pbs / "trainers_kanto.txt").write_text(
+                "[BLUE_KANTO_RIVAL,Test,0]\nLoseText = A new defeat line!\n", encoding="utf8")
+            (game / "data/regions").mkdir(parents=True)
+            (game / "data/regions/kanto-source.json").write_text(
+                '{"maps":{"5":"PALLET"}}', encoding="utf8")
+            (game / "scripts/regions").mkdir(parents=True)
+            (game / "scripts/regions/KantoPilot.rb").write_text("module BlueKantoPilot; end", encoding="utf8")
+            report = audit_pilot(game, game)
+            sign, choice, trainer = report["pending"]
+            self.assertEqual((sign["map"], sign["event"], sign["page"]), (300, 7, 1))
+            self.assertEqual(sign["text"], r"\w[signskin]A newly added notice on a second row.")
+            self.assertEqual(choice["origin"], "event choice")
+            self.assertEqual((trainer["line"], trainer["trainer"]), (2, "[BLUE_KANTO_RIVAL,Test,0]"))
 
     def test_pilot_rebuild_refreshes_bundled_locale_and_curated_catalogue(self):
         pilot = (ROOT / "scripts/regions/pilot.py").read_text("utf8")

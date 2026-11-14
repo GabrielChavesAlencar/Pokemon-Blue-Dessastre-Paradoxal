@@ -5,6 +5,7 @@ Only the audited, passive NPCs in the generated pilot inventory are eligible.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from collections import defaultdict
@@ -16,6 +17,33 @@ from server.ruby_marshal import dumps_simple, loads, text
 
 LOCALE_FILE = ROOT / ".blue-work/kanto-npc-ptbr.json"
 LITERAL_SCRIPT = re.compile(r'^pbMessage\(_INTL\("((?:\\.|[^"\\])*)"\)\)$')
+
+BATTLE_TRANSLATIONS = {
+    "You can't catch a Pokémon that belongs to someone else.":
+        "Você não pode capturar um Pokémon que pertence a outro treinador.",
+    "You can't throw a Poké Ball!":
+        "Você não pode lançar uma Poké Bola!",
+    "There is no room left in the PC!":
+        "Não há mais espaço no PC!",
+    "The Trainer blocked your Poké Ball! Don't be a thief!":
+        "O treinador bloqueou a Poké Bola! Você não pode capturar um Pokémon que pertence a outro treinador.",
+    "It's no good! It's impossible to aim at a Pokémon that's not in sight!":
+        "Não dá para mirar num Pokémon que está fora de vista!",
+    "It's no good! It's impossible to aim when there are two Pokémon!":
+        "Não dá para mirar com dois Pokémon em campo!",
+    "It's no good! It's impossible to aim when there is more than one Pokémon!":
+        "Não dá para mirar com mais de um Pokémon em campo!",
+    r"... \wt[10]... \wt[10]... \wt[10]... \wt[10]Nope! There's no response.":
+        r"... \wt[10]... \wt[10]... \wt[10]... \wt[10]Nada! Nenhuma resposta.",
+    "PP: {1: 2d}/{2: 2d}<br>TYPE/{3:s}": "PP: {1: 2d}/{2: 2d}<br>TIPO/{3:s}",
+    "{1}'s": "de {1}",
+    "Add to your party": "Adicionar à equipe",
+    "Send to a Box": "Enviar para um Box",
+    "Check party": "Ver equipe",
+    "Choose a Pokémon in your party to send to your Boxes.":
+        "Escolha um Pokémon da sua equipe para enviar aos Boxes.",
+    "{1} has been added to your party.": "{1} entrou para a sua equipe.",
+}
 
 
 def npc_literals(commands):
@@ -103,7 +131,19 @@ def read_custom_translations(root: Path = ROOT):
         return {}, [str(error)]
 
 
-def install_npc_locale(root: Path, source: Path, target: Path):
+def trainer_defeat_lines(target):
+    """Read Kanto PBS lose text without altering trainer identities or rosters."""
+    for path in sorted((target / "PBS").glob("trainers_kanto*.txt")):
+        trainer = None
+        for number, line in enumerate(path.read_text("utf-8-sig").splitlines(), 1):
+            if line.startswith("["):
+                trainer = line
+            if line.lstrip().startswith("LoseText") and "=" in line:
+                value = line.partition("=")[2].strip().strip('"')
+                yield path, number, trainer, value
+
+
+def install_npc_locale(root: Path, source: Path, target: Path, *, use_optional_translator=True):
     """Merge only confirmed local NPC translations into the pilot's own locale.
 
     English remains the original source. pt-BR changes only when players
@@ -140,12 +180,25 @@ def install_npc_locale(root: Path, source: Path, target: Path):
         for english, portuguese in curated_data["translations"].items():
             validate(english, portuguese)
             curated[english] = portuguese
+    all_lines = {s for row in rows for s in row["lines"]}
+    reviewed = root / "data/kanto-event-ptbr.json"
+    if reviewed.is_file():
+        catalog = json.loads(reviewed.read_text(encoding="utf-8"))
+        if (catalog.get("version") != 1 or catalog.get("language") != "pt-BR"
+                or not isinstance(catalog.get("translations"), dict)):
+            raise ValueError("Invalid reviewed Kanto event pt-BR catalogue")
+        active_lines = all_lines | {line for _, _, _, line in trainer_defeat_lines(target)}
+        for english in active_lines:
+            key = hashlib.sha256(english.encode("utf-8")).hexdigest()
+            if key in catalog["translations"]:
+                portuguese = catalog["translations"][key]
+                validate(english, portuguese)
+                curated[english] = portuguese
     baseline.update(curated)
 
     # Only the source-confirmed, imported, non-quest NPCs are eligible for
     # optional automatic translation. An already installed OFFLINE Argos
     # model can fill gaps; no network call or package install occurs here.
-    all_lines = {s for row in rows for s in row["lines"]}
     new_locale = {}
     private_path = root / ".blue-work/kanto-npc-ptbr.json"
     automated_cache = False
@@ -173,8 +226,8 @@ def install_npc_locale(root: Path, source: Path, target: Path):
     automatic = {}
     waiting = sorted(s for s in all_lines
                      if (not baseline.get(s) or baseline[s] == s)
-                     and s not in new_locale)
-    if waiting:
+                     and s not in new_locale and s not in curated)
+    if waiting and use_optional_translator:
         try:
             from translate_kanto_npcs import get_argos_translator, safe_translate
             offline_translator = get_argos_translator(False)
@@ -188,14 +241,17 @@ def install_npc_locale(root: Path, source: Path, target: Path):
     baseline.update(automatic)
     # Explicit private corrections always have the final priority.
     baseline.update(new_locale)
+    for english, portuguese in BATTLE_TRANSLATIONS.items():
+        validate(english, portuguese)
+    baseline.update(BATTLE_TRANSLATIONS)
     if baseline:
         path.write_bytes(dumps_simple([[k, v] for k, v in sorted(baseline.items())]))
 
     pending = []
     translated = []
+    covered = {en for en in all_lines if en in curated or baseline.get(en, en) != en}
     for row in rows:
-        missing = [en for en in row["lines"] if en not in baseline or
-                   baseline[en] == en]
+        missing = [en for en in row["lines"] if en not in covered]
         item = {k: row[k] for k in ("source_map", "map", "event", "x", "y")}
         if missing:
             pending.append({**item, "english_lines": missing})
@@ -205,10 +261,8 @@ def install_npc_locale(root: Path, source: Path, target: Path):
         "version": 1, "language": "pt-BR",
         "total_npc_events": len(rows),
         "total_unique_english_lines": len(all_lines),
-        "localized_unique_lines": len([s for s in all_lines
-                                       if s in baseline and baseline[s] != s]),
-        "remaining_unique_lines": len([s for s in all_lines
-                                       if s not in baseline or baseline[s] == s]),
+        "localized_unique_lines": len(covered),
+        "remaining_unique_lines": len(all_lines - covered),
         "npc_events_with_some_portuguese": len(translated),
         "missing_english_lines_by_npc": pending,
         "invalid_local_translations": errors,

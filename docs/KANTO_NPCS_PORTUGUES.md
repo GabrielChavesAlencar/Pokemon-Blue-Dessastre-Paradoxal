@@ -1,5 +1,7 @@
 # Kanto — traduzir NPCs de ambientação para português (pt-BR)
 
+**Atualização:** o Testar Kanto já inclui as traduções revisadas de NPCs, placas e falas de derrota. O procedimento com Argos abaixo é um fluxo opcional de autoria. Consulte a [auditoria atual](KANTO_AUDITORIA_LOCALIZACAO_PTBR.md).
+
 ## Objetivo e limite de escopo
 
 O piloto de Kanto importa **NPCs simples sem efeitos de missão** das coordenadas originais do Essentials FRLG. Os eventos são adaptados por `scripts/regions/kanto_overworld.py`; antes desta etapa, suas falas continuavam em inglês, pois o catálogo normal do Blue não contém necessariamente os textos da fonte FRLG.

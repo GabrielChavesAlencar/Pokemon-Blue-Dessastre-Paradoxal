@@ -20,7 +20,7 @@ end
 module MenuHandlers
   def self.add(*_args); end
 end
-def _INTL(source, *_args); source; end
+def _INTL(source, *args); source.gsub(/\{(\d+)\}/) { args.fetch($1.to_i - 1).to_s }; end
 def load_data(path); Marshal.load(File.binread(path)); end
 
 $shown_dialogues = []
@@ -62,7 +62,13 @@ Dir.mktmpdir("blue-kanto-npc-runtime-") do |path|
     raise "Combined FRLG NPC message was not translated via catalog" unless
       $shown_dialogues.last == "Está terminantemente proibido passar por aqui! Esta é uma propriedade privada!"
 
+    BlueKantoPilot.oak_warning
+    raise "Oak PT-BR line missing" unless $shown_dialogues.last == "Oak: Ei! Espere um pouco!"
+    raise "PT-BR placeholder lost" unless BlueKantoPilot.t("Hello, {1}!", "Olá, {1}!", "Red") == "Olá, Red!"
+
     $PokemonSystem.blue_locale = "en"
+    BlueKantoPilot.oak_warning
+    raise "Oak EN line missing after language change" unless $shown_dialogues.last == "Oak: Hey! Wait a second!"
     BlueKantoPilot.npc_dialogue(10, 7, 0)
     raise "English dialogue was modified" unless $shown_dialogues.last == original
     BlueKantoPilot.npc_dialogue(10, 7, 1)

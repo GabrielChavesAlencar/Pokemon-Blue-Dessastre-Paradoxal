@@ -35,6 +35,14 @@ module BlueKantoPilot
     pbMessage(translated)
   end
 
+  def self.t(english, portuguese, *args)
+    value = defined?(BlueLocale) && BlueLocale.enabled? ? portuguese : english
+    # These paired lines already have their locale selected. The general
+    # catalogue must not replace an authored line or any dynamic value.
+    return _INTL(value, *args) unless defined?(BlueLocale)
+    BlueLocale.with_raw { _INTL(value, *args) }
+  end
+
   def self.progress
     $PokemonGlobal.blue_regions ||= BlueRegions.new_state("KANTO")
   end
@@ -52,12 +60,12 @@ module BlueKantoPilot
   end
 
   def self.meet_mom
-    pbMessage(_INTL("Mãe: {1}, o professor Oak estava procurando por você. Passe no laboratório antes de sair de Pallet.", $player.name))
+    pbMessage(BlueKantoPilot.t("Mom: {1}, Professor Oak was looking for you. Stop by the lab before leaving Pallet.", "Mãe: {1}, o professor Oak estava procurando por você. Passe no laboratório antes de sair de Pallet.", $player.name))
     progress["pilot_met_mom"] = true
   end
 
   def self.oak_warning
-    pbMessage(_INTL("Oak: Ei! Espere um pouco!"))
+    pbMessage(BlueKantoPilot.t("Oak: Hey! Wait a second!", "Oak: Ei! Espere um pouco!"))
   end
 
   def self.show_approaching_oak(visible)
@@ -67,7 +75,7 @@ module BlueKantoPilot
   end
 
   def self.oak_invitation
-    pbMessage(_INTL("Oak: É perigoso entrar na grama alta sem um Pokémon. Venha comigo ao laboratório!"))
+    pbMessage(BlueKantoPilot.t("Oak: It's dangerous to enter tall grass without a Pokémon. Come with me to the lab!", "Oak: É perigoso entrar na grama alta sem um Pokémon. Venha comigo ao laboratório!"))
   end
 
   def self.starter
@@ -81,28 +89,28 @@ module BlueKantoPilot
         # Award the five Poké Balls atomically before committing the delivery,
         # so full-bag retries cannot duplicate the Pokédex or the reward.
         BlueMusic.with_kanto_scene("oak_talk") do
-          pbMessage(_INTL("Oak: Você trouxe meu pacote de Viridian! Muito obrigado!"))
+          pbMessage(BlueKantoPilot.t("Oak: You brought my package from Viridian! Thank you!", "Oak: Você trouxe meu pacote de Viridian! Muito obrigado!"))
           if $bag.add(:POKEBALL, 5)
             $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
             progress["pilot_oak_parcel_delivered"] = true
             BlueMusic.kanto_me_play("obtained_item")
-            pbMessage(_INTL("Oak: Aqui estão sua Pokédex e 5 Poké Bolas. Agora você pode explorar a Viridian Forest!"))
+            pbMessage(BlueKantoPilot.t("Oak: Here's your Pokédex and five Poké Balls. Now you can explore Viridian Forest!", "Oak: Aqui estão sua Pokédex e 5 Poké Bolas. Agora você pode explorar a Viridian Forest!"))
           else
-            pbMessage(_INTL("Oak: Abra espaço na Bolsa para receber as 5 Poké Bolas. O pacote fica comigo até você voltar."))
+            pbMessage(BlueKantoPilot.t("Oak: Make room in your Bag for the five Poké Balls. I'll keep the package until you return.", "Oak: Abra espaço na Bolsa para receber as 5 Poké Bolas. O pacote fica comigo até você voltar."))
           end
         end
       else
-        pbMessage(_INTL("Oak: Cuide bem do seu {1}.", GameData::Species.get(starter).name))
+        pbMessage(BlueKantoPilot.t("Oak: Take good care of your {1}.", "Oak: Cuide bem do seu {1}.", GameData::Species.get(starter).name))
       end
       return
     end
-    pbMessage(_INTL("Oak: Escolha uma das três Poké Bolas sobre a mesa."))
+    pbMessage(BlueKantoPilot.t("Oak: Choose one of the three Poké Balls on the table.", "Oak: Escolha uma das três Poké Bolas sobre a mesa."))
   end
 
   def self.choose_starter_ball(species)
     return if starter || !STARTERS.include?(species)
     name = GameData::Species.get(species).name
-    return unless pbConfirmMessage(_INTL("Escolher {1} como seu parceiro?", name))
+    return unless pbConfirmMessage(BlueKantoPilot.t("Choose {1} as your partner?", "Escolher {1} como seu parceiro?", name))
     return unless pbAddPokemonSilent(species, 5)
     progress["pilot_starter"] = species.to_s
     [18, 19, 20].each do |id|
@@ -112,7 +120,7 @@ module BlueKantoPilot
     BlueMusic.kanto_me_play("obtained_pokemon")
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
-    pbMessage(_INTL("Oak: {1} escolheu você! Visite Viridian e volte ao laboratório quando encontrar meu pacote.", name))
+    pbMessage(BlueKantoPilot.t("Oak: {1} chose you! Visit Viridian and return to the lab when you find my package.", "Oak: {1} escolheu você! Visite Viridian e volte ao laboratório quando encontrar meu pacote.", name))
   end
 
   # A safe, local story step for the first Pallet -> Viridian -> Pallet
@@ -163,7 +171,7 @@ module BlueKantoPilot
       end
     end
     unless destination
-      pbMessage(_INTL("Funcionário: Pode falar comigo daqui mesmo; o balcão está ocupado."))
+      pbMessage(BlueKantoPilot.t("Clerk: You can talk to me from here. The counter is busy.", "Funcionário: Pode falar comigo daqui mesmo; o balcão está ocupado."))
       return false
     end
     steps = []
@@ -192,7 +200,7 @@ module BlueKantoPilot
 
   def self.viridian_parcel_call
     return unless parcel_pickup_pending?
-    pbMessage(_INTL("Funcionário: Ei, você! Pode vir até o balcão um instante?"))
+    pbMessage(BlueKantoPilot.t("Clerk: Hey, you! Could you come over to the counter for a moment?", "Funcionário: Ei, você! Pode vir até o balcão um instante?"))
   end
 
   def self.receive_oak_parcel
@@ -200,7 +208,7 @@ module BlueKantoPilot
     # An isolated Kanto save flag avoids adding a foreign FRLG item ID.
     progress["pilot_oak_parcel_received"] = true
     BlueMusic.kanto_me_play("obtained_item")
-    pbMessage(_INTL("Funcionário: O professor Oak encomendou este pacote. Leve-o ao laboratório em Pallet!"))
+    pbMessage(BlueKantoPilot.t("Clerk: Professor Oak ordered this package. Take it to his lab in Pallet!", "Funcionário: O professor Oak encomendou este pacote. Leve-o ao laboratório em Pallet!"))
     true
   end
 
@@ -211,7 +219,7 @@ module BlueKantoPilot
       receive_oak_parcel
       return
     elsif progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
-      pbMessage(_INTL("Funcionário: Não esqueça de entregar o pacote ao professor Oak, em Pallet."))
+      pbMessage(BlueKantoPilot.t("Clerk: Don't forget to deliver the package to Professor Oak in Pallet.", "Funcionário: Não esqueça de entregar o pacote ao professor Oak, em Pallet."))
     end
     pbPokemonMart(VIRIDIAN_MART_STOCK.dup)
   end
@@ -223,7 +231,7 @@ module BlueKantoPilot
   end
 
   def self.route2_gate_warning
-    pbMessage(_INTL("O caminho norte para a Rota 2 está bloqueado. Primeiro entregue a encomenda do Poké Mart ao Professor Oak em Pallet!"))
+    pbMessage(BlueKantoPilot.t("The northern path to Route 2 is blocked. Deliver the Poké Mart package to Professor Oak in Pallet first!", "O caminho norte para a Rota 2 está bloqueado. Primeiro entregue a encomenda do Poké Mart ao Professor Oak em Pallet!"))
   end
 
   # A connected outdoor map changes before a normal transfer event runs.
@@ -258,7 +266,7 @@ module BlueKantoPilot
   end
 
   def self.pewter_route3_warning
-    pbMessage(_INTL("A saída leste de Pewter para a Rota 3 está bloqueada. Derrote Brock e conquiste a Boulder Badge primeiro!"))
+    pbMessage(BlueKantoPilot.t("The eastern exit from Pewter to Route 3 is blocked. Defeat Brock and earn the Boulder Badge first!", "A saída leste de Pewter para a Rota 3 está bloqueada. Derrote Brock e conquiste a Boulder Badge primeiro!"))
   end
 
   def self.rival_done?
@@ -283,33 +291,33 @@ module BlueKantoPilot
 
   def self.rival_hint
     if rival_done?
-      pbMessage(_INTL("Gary: Continue treinando. Nossa revanche fica para depois!"))
+      pbMessage(BlueKantoPilot.t("Gary: Keep training. We'll have our rematch later!", "Gary: Continue treinando. Nossa revanche fica para depois!"))
     else
-      pbMessage(_INTL("Gary: Quero ver qual Pokémon você vai escolher."))
+      pbMessage(BlueKantoPilot.t("Gary: I want to see which Pokémon you pick.", "Gary: Quero ver qual Pokémon você vai escolher."))
     end
   end
 
   def self.rival
     if !starter
-      pbMessage(_INTL("Gary: Escolha o seu Pokémon primeiro."))
+      pbMessage(BlueKantoPilot.t("Gary: Pick your Pokémon first.", "Gary: Escolha o seu Pokémon primeiro."))
       return
     end
     if rival_done?
-      pbMessage(_INTL("Gary: Continue treinando. Nossa revanche fica para depois!"))
+      pbMessage(BlueKantoPilot.t("Gary: Keep training. We'll have our rematch later!", "Gary: Continue treinando. Nossa revanche fica para depois!"))
       return
     end
     return unless rival_pending?
     BlueMusic.with_kanto_scene("rival_appears") do
-      pbMessage(_INTL("Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
+      pbMessage(BlueKantoPilot.t("Gary: Hey, {1}! Before you go, let's test our Pokémon!", "Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
     end
     setBattleRule("canLose")
     result = TrainerBattle.start(:BLUE_KANTO_RIVAL, "Blue", RIVAL_VERSIONS.fetch(starter))
     $player.heal_party
     progress["pilot_rival"] = true
     if result
-      pbMessage(_INTL("Gary: Você venceu. Vou treinar para a revanche!"))
+      pbMessage(BlueKantoPilot.t("Gary: You won. I'll train for our rematch!", "Gary: Você venceu. Vou treinar para a revanche!"))
     else
-      pbMessage(_INTL("Gary: Essa foi minha. Vá treinar na Rota 1."))
+      pbMessage(BlueKantoPilot.t("Gary: That one was mine. Go train on Route 1.", "Gary: Essa foi minha. Vá treinar na Rota 1."))
     end
   end
 
@@ -327,9 +335,9 @@ module BlueKantoPilot
         BlueRegions.local_achievements(progress, "KANTO").include?(badge)
       end
       if missing.any?
-        pbMessage(_INTL("O Ginásio de Viridian está fechado. Conquiste as sete primeiras insígnias de Kanto (faltam {1}).", missing.length))
+        pbMessage(BlueKantoPilot.t("Viridian Gym is closed. Earn the first seven Kanto badges ({1} left).", "O Ginásio de Viridian está fechado. Conquiste as sete primeiras insígnias de Kanto (faltam {1}).", missing.length))
       else
-        pbMessage(_INTL("O Ginásio só abre após a libertação da Silph Co."))
+        pbMessage(BlueKantoPilot.t("The Gym will open once Silph Co. is free.", "O Ginásio só abre após a libertação da Silph Co."))
       end
       return false
     end
@@ -339,11 +347,11 @@ module BlueKantoPilot
 
   def self.viridian_gym_guide
     if !viridian_access?
-      pbMessage(_INTL("Guia: Giovanni retorna ao ginásio somente após as sete insígnias e a libertação da Silph Co."))
+      pbMessage(BlueKantoPilot.t("Guide: Giovanni will return once you've earned seven badges and freed Silph Co.", "Guia: Giovanni retorna ao ginásio somente após as sete insígnias e a libertação da Silph Co."))
     elsif BlueRegions.local_achievements(progress, "KANTO").include?("EARTH")
-      pbMessage(_INTL("Guia: A Earth Badge é sua! Siga para a Liga Pokémon quando o caminho estiver disponível."))
+      pbMessage(BlueKantoPilot.t("Guide: The Earth Badge is yours! Head to the Pokémon League when the road opens.", "Guia: A Earth Badge é sua! Siga para a Liga Pokémon quando o caminho estiver disponível."))
     else
-      pbMessage(_INTL("Guia: Giovanni é especialista em Pokémon do tipo Terra. Vença para receber a Earth Badge!"))
+      pbMessage(BlueKantoPilot.t("Guide: Giovanni specializes in Ground-type Pokémon. Beat him to earn the Earth Badge!", "Guia: Giovanni é especialista em Pokémon do tipo Terra. Vença para receber a Earth Badge!"))
     end
   end
 
@@ -356,7 +364,7 @@ module BlueKantoPilot
   def self.full_power_gym(name, trainer_type = nil)
     type = GYM_FULL_POWER[name]
     return false unless type && trainer_type == type && full_power_unlocked?
-    return false unless pbConfirmMessage(_INTL("{1}: Enfrentar meu time oficial Full Power?", name))
+    return false unless pbConfirmMessage(BlueKantoPilot.t("{1}: Want to face my official Full Power team?", "{1}: Enfrentar meu time oficial Full Power?", name))
     setBattleRule("canLose")
     won = BlueStory.with_regional_full_power {
       TrainerBattle.start(type, name, FULL_POWER_OFFSET)
@@ -364,7 +372,7 @@ module BlueKantoPilot
     if won
       victories = (progress["pilot_full_power_gym_wins"] ||= [])
       victories << name unless victories.include?(name)
-      pbMessage(_INTL("Você venceu a revanche Full Power de {1}!", name))
+      pbMessage(BlueKantoPilot.t("You won {1}'s Full Power rematch!", "Você venceu a revanche Full Power de {1}!", name))
     else
       $player.heal_party
     end
@@ -374,19 +382,19 @@ module BlueKantoPilot
   def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
     if type == :BLUE_KANTO_LEADER_SABRINA && !progress["pilot_silph_rescued"]
-      pbMessage(_INTL("Sabrina está aguardando a libertação da Silph Co. Derrote Giovanni primeiro."))
+      pbMessage(BlueKantoPilot.t("Sabrina is waiting for Silph Co. to be freed. Defeat Giovanni first.", "Sabrina está aguardando a libertação da Silph Co. Derrote Giovanni primeiro."))
       return
     end
     if type == :BLUE_KANTO_LEADER_GIOVANNI && !viridian_access?
-      pbMessage(_INTL("Giovanni ainda não aceita seu desafio. Conquiste as sete primeiras insígnias e liberte a Silph Co."))
+      pbMessage(BlueKantoPilot.t("Giovanni won't accept your challenge yet. Earn the first seven badges and free Silph Co.", "Giovanni ainda não aceita seu desafio. Conquiste as sete primeiras insígnias e liberte a Silph Co."))
       return
     end
     if type == :BLUE_KANTO_LEADER_BLAINE && !progress["pilot_cinnabar_secret_key"]
-      pbMessage(_INTL("Blaine: Encontre a Secret Key na Pokémon Mansion antes do desafio!"))
+      pbMessage(BlueKantoPilot.t("Blaine: Find the Secret Key in Pokémon Mansion before challenging me!", "Blaine: Encontre a Secret Key na Pokémon Mansion antes do desafio!"))
       return
     end
     if type == :BLUE_KANTO_LEADER_SURGE && !progress["pilot_surge_unlocked"]
-      pbMessage(_INTL("Lt. Surge aguarda atrás das trancas elétricas. Resolva o enigma das lixeiras primeiro."))
+      pbMessage(BlueKantoPilot.t("Lt. Surge is behind the electric locks. Solve the trash can puzzle first.", "Lt. Surge aguarda atrás das trancas elétricas. Resolva o enigma das lixeiras primeiro."))
       return
     end
     wins = (progress["pilot_wins"] ||= [])
@@ -397,12 +405,12 @@ module BlueKantoPilot
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
     if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
       return if full_power_gym(name, type)
-      pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
+      pbMessage(BlueKantoPilot.t("{1}: Good luck on your journey!", "{1}: Boa sorte na sua jornada!", name))
       return
     end
     if type == :BLUE_KANTO_RIVAL_SILPH && name == "Blue"
       BlueMusic.with_kanto_scene("rival_appears") do
-        pbMessage(_INTL("Blue: Vamos ver como você ficou mais forte desde Pallet!"))
+        pbMessage(BlueKantoPilot.t("Blue: Let's see how much stronger you've grown since Pallet!", "Blue: Vamos ver como você ficou mais forte desde Pallet!"))
       end
     end
     setBattleRule("canLose")
@@ -414,31 +422,31 @@ module BlueKantoPilot
     wins << key
     if type == :BLUE_KANTO_LEADER && BlueRegions.award(progress, "KANTO", "BOULDER")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Brock: A Boulder Badge é sua. O caminho para Cerulean está aberto!"))
+      pbMessage(BlueKantoPilot.t("Brock: The Boulder Badge is yours. The road to Cerulean is open!", "Brock: A Boulder Badge é sua. O caminho para Cerulean está aberto!"))
     elsif type == :BLUE_KANTO_LEADER_MISTY && BlueRegions.award(progress, "KANTO", "CASCADE")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Misty: Você conquistou a Cascade Badge! Siga ao sul para Vermilion!"))
+      pbMessage(BlueKantoPilot.t("Misty: You earned the Cascade Badge! Head south to Vermilion!", "Misty: Você conquistou a Cascade Badge! Siga ao sul para Vermilion!"))
     elsif type == :BLUE_KANTO_LEADER_SURGE && BlueRegions.award(progress, "KANTO", "THUNDER")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Lt. Surge: A Thunder Badge é sua! Agora você pode usar Fly em Kanto."))
+      pbMessage(BlueKantoPilot.t("Lt. Surge: The Thunder Badge is yours! You can now use Fly in Kanto.", "Lt. Surge: A Thunder Badge é sua! Agora você pode usar Fly em Kanto."))
     elsif type == :BLUE_KANTO_LEADER_ERIKA && BlueRegions.award(progress, "KANTO", "RAINBOW")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Erika: Você conquistou a Rainbow Badge!"))
+      pbMessage(BlueKantoPilot.t("Erika: You earned the Rainbow Badge!", "Erika: Você conquistou a Rainbow Badge!"))
     elsif type == :BLUE_KANTO_LEADER_KOGA && BlueRegions.award(progress, "KANTO", "SOUL")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Koga: A Soul Badge agora é sua!"))
+      pbMessage(BlueKantoPilot.t("Koga: The Soul Badge is yours now!", "Koga: A Soul Badge agora é sua!"))
     elsif type == :BLUE_KANTO_ROCKETBOSS && name == "Giovanni"
       progress["pilot_silph_rescued"] = true
-      pbMessage(_INTL("Giovanni foi derrotado! A Silph Co. está livre."))
+      pbMessage(BlueKantoPilot.t("Giovanni was defeated! Silph Co. is free.", "Giovanni foi derrotado! A Silph Co. está livre."))
     elsif type == :BLUE_KANTO_LEADER_SABRINA && BlueRegions.award(progress, "KANTO", "MARSH")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Sabrina: Você conquistou a Marsh Badge!"))
+      pbMessage(BlueKantoPilot.t("Sabrina: You earned the Marsh Badge!", "Sabrina: Você conquistou a Marsh Badge!"))
     elsif type == :BLUE_KANTO_LEADER_BLAINE && BlueRegions.award(progress, "KANTO", "VOLCANO")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Blaine: A Volcano Badge é sua!"))
+      pbMessage(BlueKantoPilot.t("Blaine: The Volcano Badge is yours!", "Blaine: A Volcano Badge é sua!"))
     elsif type == :BLUE_KANTO_LEADER_GIOVANNI && BlueRegions.award(progress, "KANTO", "EARTH")
       BlueMusic.kanto_me_play("badge_awarded")
-      pbMessage(_INTL("Giovanni: Você conquistou a Earth Badge! O desafio da Liga está adiante."))
+      pbMessage(BlueKantoPilot.t("Giovanni: You earned the Earth Badge! The League challenge lies ahead.", "Giovanni: Você conquistou a Earth Badge! O desafio da Liga está adiante."))
 
 
     end
@@ -461,7 +469,7 @@ module BlueKantoPilot
 
   def self.trainer_repeat(name, type = nil)
     return if full_power_gym(name, type)
-    pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
+    pbMessage(BlueKantoPilot.t("{1}: Good luck on your journey!", "{1}: Boa sorte na sua jornada!", name))
   end
 
   SURGE_CANS = ([4, 10] + (22..34).to_a).freeze
@@ -486,12 +494,12 @@ module BlueKantoPilot
 
   def self.surge_can(event_id)
     if progress["pilot_surge_unlocked"]
-      pbMessage(_INTL("As duas trancas elétricas já foram desativadas."))
+      pbMessage(BlueKantoPilot.t("Both electric locks have already been disabled.", "As duas trancas elétricas já foram desativadas."))
       return
     end
     possible = surge_pairs
     if possible.empty?
-      pbMessage(_INTL("O mecanismo não está pronto nesta cópia do ginásio."))
+      pbMessage(BlueKantoPilot.t("The mechanism isn't ready in this copy of the Gym.", "O mecanismo não está pronto nesta cópia do ginásio."))
       return
     end
     progress["pilot_surge_solution"] ||= possible.sample
@@ -499,9 +507,9 @@ module BlueKantoPilot
     if !progress["pilot_surge_first"]
       if event_id == target[0]
         progress["pilot_surge_first"] = true
-        pbMessage(_INTL("Você encontrou a primeira chave! Procure outra lixeira próxima."))
+        pbMessage(BlueKantoPilot.t("You found the first key! Check a trash can nearby.", "Você encontrou a primeira chave! Procure outra lixeira próxima."))
       else
-        pbMessage(_INTL("Não há chave nesta lixeira."))
+        pbMessage(BlueKantoPilot.t("There's no key in this trash can.", "Não há chave nesta lixeira."))
       end
     elsif event_id == target[1]
       progress["pilot_surge_unlocked"] = true
@@ -510,16 +518,16 @@ module BlueKantoPilot
         $game_self_switches[[$game_map.map_id, id, "A"]] = true
       end
       $game_map.need_refresh = true
-      pbMessage(_INTL("As duas trancas foram desativadas! Lt. Surge está acessível."))
+      pbMessage(BlueKantoPilot.t("Both locks are disabled! You can now reach Lt. Surge.", "As duas trancas foram desativadas! Lt. Surge está acessível."))
     else
       progress["pilot_surge_first"] = false
       progress.delete("pilot_surge_solution")
-      pbMessage(_INTL("Chave errada! O sistema reiniciou a sequência de lixeiras."))
+      pbMessage(BlueKantoPilot.t("Wrong key! The trash can switches have reset.", "Chave errada! O sistema reiniciou a sequência de lixeiras."))
     end
   end
 
   def self.surge_gate
-    pbMessage(_INTL("A trava elétrica está ativa. Encontre duas chaves nas lixeiras."))
+    pbMessage(BlueKantoPilot.t("The electric lock is active. Find two keys in the trash cans.", "A trava elétrica está ativa. Encontre duas chaves nas lixeiras."))
   end
 
   # TEMPORARY phase 08 story bridge: Bill's canonical S.S. Ticket event is
@@ -527,29 +535,29 @@ module BlueKantoPilot
   # Only players with Cascade may claim a ticket; never award it more than once.
   def self.ticketmaster
     if !BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
-      pbMessage(_INTL("Porto: Primeiro conquiste a Cascade Badge em Cerulean."))
+      pbMessage(BlueKantoPilot.t("Harbor clerk: Earn the Cascade Badge in Cerulean first.", "Porto: Primeiro conquiste a Cascade Badge em Cerulean."))
       return
     end
     if progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
       progress["pilot_ss_ticket"] = true
-      pbMessage(_INTL("Porto: Sua passagem para o S.S. Anne está liberada!"))
+      pbMessage(BlueKantoPilot.t("Harbor clerk: You're cleared to board the S.S. Anne!", "Porto: Sua passagem para o S.S. Anne está liberada!"))
     elsif !GameData::Item.exists?(:SSTICKET)
       # Decades does not guarantee the FRLG ticket item exists. Use a local
       # save-state permit without changing native item PBS or other saves.
       progress["pilot_ss_ticket"] = true
-      pbMessage(_INTL("Acesso experimental: a passagem digital para o S.S. Anne está liberada."))
+      pbMessage(BlueKantoPilot.t("Experimental access: Your digital pass for the S.S. Anne is active.", "Acesso experimental: a passagem digital para o S.S. Anne está liberada."))
     elsif $bag.add(:SSTICKET, 1)
       progress["pilot_ss_ticket"] = true
       BlueMusic.kanto_me_play("obtained_item")
-      pbMessage(_INTL("Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
+      pbMessage(BlueKantoPilot.t("Experimental access: You received the S.S. Ticket. Bill's event will be adapted later.", "Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
     else
-      pbMessage(_INTL("Você precisa liberar espaço na Bolsa para receber o S.S. Ticket."))
+      pbMessage(BlueKantoPilot.t("Make room in your Bag to receive the S.S. Ticket.", "Você precisa liberar espaço na Bolsa para receber o S.S. Ticket."))
     end
   end
 
   def self.harbor_gate(map_id, x, y)
     unless progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
-      pbMessage(_INTL("O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
+      pbMessage(BlueKantoPilot.t("You need the S.S. Ticket to enter the harbor. Speak to the clerk.", "O acesso ao porto exige o S.S. Ticket. Fale com o atendente."))
       return
     end
     pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
@@ -560,21 +568,21 @@ module BlueKantoPilot
   def self.captain
     events = (progress["field_events"]["KANTO"] ||= [])
     if events.include?("SS_ANNE_CAPTAIN")
-      pbMessage(_INTL("Capitão: Use Cut para abrir caminhos onde tiver permissão."))
+      pbMessage(BlueKantoPilot.t("Captain: Use Cut to clear paths where you have permission.", "Capitão: Use Cut para abrir caminhos onde tiver permissão."))
       return
     end
     item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
     unless item
-      pbMessage(_INTL("O HM Cut ainda não está cadastrado nesta versão do Blue."))
+      pbMessage(BlueKantoPilot.t("HM Cut hasn't been added to this version of Blue yet.", "O HM Cut ainda não está cadastrado nesta versão do Blue."))
       return
     end
     unless $bag.add(item, 1)
-      pbMessage(_INTL("Capitão: Libere espaço na Bolsa para receber o HM Cut."))
+      pbMessage(BlueKantoPilot.t("Captain: Make room in your Bag for HM Cut.", "Capitão: Libere espaço na Bolsa para receber o HM Cut."))
       return
     end
     events << "SS_ANNE_CAPTAIN"
     BlueMusic.kanto_me_play("obtained_item")
-    pbMessage(_INTL("O Capitão entregou o HM Cut! A Cascade Badge permite usá-lo em Kanto."))
+    pbMessage(BlueKantoPilot.t("The captain gave you HM Cut! The Cascade Badge lets you use it in Kanto.", "O Capitão entregou o HM Cut! A Cascade Badge permite usá-lo em Kanto."))
   end
 
   # Ground items preserve FRLG EventID and quantity, but all ownership and
@@ -590,15 +598,15 @@ module BlueKantoPilot
       return true
     end
     unless GameData::Item.exists?(item)
-      pbMessage(_INTL("O item não está cadastrado no Blue."))
+      pbMessage(BlueKantoPilot.t("This item isn't registered in Blue.", "O item não está cadastrado no Blue."))
       return false
     end
     unless quantity.between?(1, 99) && (!$bag.respond_to?(:can_add?) || $bag.can_add?(item, quantity))
-      pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
+      pbMessage(BlueKantoPilot.t("Your Bag is full. Make room to pick up this item.", "Sua Bolsa está cheia. Libere espaço para recolher o item."))
       return false
     end
     unless $bag.add(item, quantity)
-      pbMessage(_INTL("Sua Bolsa está cheia. Libere espaço para recolher o item."))
+      pbMessage(BlueKantoPilot.t("Your Bag is full. Make room to pick up this item.", "Sua Bolsa está cheia. Libere espaço para recolher o item."))
       return false
     end
     collected << key
@@ -608,7 +616,7 @@ module BlueKantoPilot
     end
     BlueMusic.kanto_me_play("obtained_item")
     label = GameData::Item.get(item).name
-    pbMessage(_INTL("Encontrou {1}{2}!", quantity == 1 ? "" : "#{quantity}x ", label))
+    pbMessage(BlueKantoPilot.t("Found {1}{2}!", "Encontrou {1}{2}!", quantity == 1 ? "" : "#{quantity}x ", label))
     true
   end
 
@@ -616,19 +624,19 @@ module BlueKantoPilot
   # Silph Card Key: persist locally, never import a foreign item into Decades.
   def self.silph_card_key
     if progress["pilot_silph_card_key"]
-      pbMessage(_INTL("Você já encontrou a Card Key da Silph Co."))
+      pbMessage(BlueKantoPilot.t("You already found the Silph Co. Card Key.", "Você já encontrou a Card Key da Silph Co."))
       return
     end
     progress["pilot_silph_card_key"] = true
     $game_self_switches[[$game_map.map_id, 9, "A"]] = true
     $game_map.need_refresh = true
-    pbMessage(_INTL("Encontrou a Card Key! Agora pode abrir as portas da Silph Co."))
+    pbMessage(BlueKantoPilot.t("You found the Card Key! You can now open the Silph Co. doors.", "Encontrou a Card Key! Agora pode abrir as portas da Silph Co."))
   end
 
   # Adjacent source map event tiles form a single original locked door.
   def self.silph_door(event_ids)
     unless progress["pilot_silph_card_key"]
-      pbMessage(_INTL("Uma trava de segurança. Encontre a Card Key no 5º andar."))
+      pbMessage(BlueKantoPilot.t("A security lock. Find the Card Key on the fifth floor.", "Uma trava de segurança. Encontre a Card Key no 5º andar."))
       return
     end
     event_ids.each do |eid|
@@ -636,7 +644,7 @@ module BlueKantoPilot
       $game_self_switches[[$game_map.map_id, eid, "A"]] = true
     end
     $game_map.need_refresh = true
-    pbMessage(_INTL("A Card Key abriu a porta!"))
+    pbMessage(BlueKantoPilot.t("The Card Key opened the door!", "A Card Key abriu a porta!"))
   end
 
   def self.silph_rival
@@ -648,53 +656,53 @@ module BlueKantoPilot
 
   def self.silph_president
     unless progress["pilot_silph_rescued"]
-      pbMessage(_INTL("Presidente: Giovanni ainda controla o último andar!"))
+      pbMessage(BlueKantoPilot.t("President: Giovanni still controls the top floor!", "Presidente: Giovanni ainda controla o último andar!"))
       return
     end
     if progress["pilot_silph_master_ball"]
-      pbMessage(_INTL("Presidente: Obrigado por libertar a Silph Co.!"))
+      pbMessage(BlueKantoPilot.t("President: Thank you for freeing Silph Co.!", "Presidente: Obrigado por libertar a Silph Co.!"))
       return
     end
     unless GameData::Item.exists?(:MASTERBALL)
-      pbMessage(_INTL("A Master Ball ainda não está cadastrada nesta versão do Blue."))
+      pbMessage(BlueKantoPilot.t("The Master Ball hasn't been added to this version of Blue yet.", "A Master Ball ainda não está cadastrada nesta versão do Blue."))
       return
     end
     unless $bag.add(:MASTERBALL, 1)
-      pbMessage(_INTL("Presidente: Abra espaço na Bolsa para receber a Master Ball."))
+      pbMessage(BlueKantoPilot.t("President: Make room in your Bag for the Master Ball.", "Presidente: Abra espaço na Bolsa para receber a Master Ball."))
       return
     end
     progress["pilot_silph_master_ball"] = true
     BlueMusic.kanto_me_play("obtained_item")
-    pbMessage(_INTL("Recebeu a Master Ball pela libertação da Silph Co.!"))
+    pbMessage(BlueKantoPilot.t("You received the Master Ball for freeing Silph Co.!", "Recebeu a Master Ball pela libertação da Silph Co.!"))
   end
 
   def self.dojo_prize(species, event_id)
     unless progress.fetch("pilot_wins", []).include?("KANTO_172_012")
-      pbMessage(_INTL("Vença primeiro o mestre Koichi para escolher um Pokémon."))
+      pbMessage(BlueKantoPilot.t("Defeat Master Koichi before choosing a Pokémon.", "Vença primeiro o mestre Koichi para escolher um Pokémon."))
       return
     end
     if progress["pilot_dojo_prize"]
-      pbMessage(_INTL("Você já escolheu seu Pokémon no Fighting Dojo."))
+      pbMessage(BlueKantoPilot.t("You've already chosen a Pokémon at the Fighting Dojo.", "Você já escolheu seu Pokémon no Fighting Dojo."))
       return
     end
     if $player.party.length >= 6
-      pbMessage(_INTL("Sua equipe está cheia. Deixe uma vaga para o Pokémon do dojo."))
+      pbMessage(BlueKantoPilot.t("Your party is full. Leave a space for the dojo Pokémon.", "Sua equipe está cheia. Deixe uma vaga para o Pokémon do dojo."))
       return
     end
     return unless GameData::Species.exists?(species)
-    return unless pbConfirmMessage(_INTL("Escolher {1} como prêmio único do dojo?", GameData::Species.get(species).name))
+    return unless pbConfirmMessage(BlueKantoPilot.t("Choose {1} as your one-time dojo prize?", "Escolher {1} como prêmio único do dojo?", GameData::Species.get(species).name))
     return unless pbAddPokemonSilent(species, 25)
     progress["pilot_dojo_prize"] = species.to_s
     BlueMusic.kanto_me_play("obtained_pokemon")
     [1, 2].each { |eid| $game_self_switches[[$game_map.map_id, eid, "A"]] = true }
     $game_map.need_refresh = true
-    pbMessage(_INTL("Prêmio do Fighting Dojo recebido!"))
+    pbMessage(BlueKantoPilot.t("You received your Fighting Dojo prize!", "Prêmio do Fighting Dojo recebido!"))
   end
 
   def self.silph_elevator
     filename = "Data/blue-kanto-silph-floors.txt"
     unless experimental? && File.file?(filename)
-      pbMessage(_INTL("Os controles do elevador não estão disponíveis fora do piloto."))
+      pbMessage(BlueKantoPilot.t("The elevator controls are available inside the pilot.", "Os controles do elevador não estão disponíveis fora do piloto."))
       return
     end
     floors = File.readlines(filename, encoding: "UTF-8").filter_map do |raw|
@@ -709,8 +717,8 @@ module BlueKantoPilot
       [floor, [map_id, x, y, direction]]
     end
     return if floors.empty?
-    choice = pbMessage(_INTL("Silph Co. — escolher andar"),
-                       floors.map { |row| _INTL("Andar {1}F", row[0]) } + [_INTL("Voltar")], -1)
+    choice = pbMessage(BlueKantoPilot.t("Silph Co. — choose a floor", "Silph Co. — escolher andar"),
+                       floors.map { |row| BlueKantoPilot.t("Floor {1}F", "Andar {1}F", row[0]) } + [BlueKantoPilot.t("Back", "Voltar")], -1)
     return unless choice && choice.between?(0, floors.length - 1)
     pbFadeOutIn { BlueRegionTravel.move_to(floors[choice][1]) }
   end
@@ -718,12 +726,12 @@ module BlueKantoPilot
   # Phase 12 uses only Kanto-local progress. The FRLG source contains
   # foreign switches, quiz scripts and rewards; none are executed by Blue.
   CINNABAR_QUIZZES = [
-    [_INTL("Caterpie evolui para Metapod?"), true],
-    [_INTL("Existem nove insígnias oficiais de Kanto?"), false],
-    [_INTL("Poliwag possui três evoluções consecutivas?"), false],
-    [_INTL("Golpes elétricos são supereficazes contra Pokémon Terrestres?"), false],
-    [_INTL("Dois Pokémon da mesma espécie e nível podem ter atributos diferentes?"), true],
-    [_INTL("O TM28 contém o golpe Tombstony?"), false]
+    [["Does Caterpie evolve into Metapod?", "Caterpie evolui para Metapod?"], true],
+    [["Are there nine official Kanto badges?", "Existem nove insígnias oficiais de Kanto?"], false],
+    [["Does Poliwag have three stages of evolution after its initial form?", "Poliwag possui três evoluções consecutivas?"], false],
+    [["Are Electric-type moves super effective against Ground-type Pokémon?", "Golpes elétricos são supereficazes contra Pokémon Terrestres?"], false],
+    [["Can two Pokémon of the same species and level have different stats?", "Dois Pokémon da mesma espécie e nível podem ter atributos diferentes?"], true],
+    [["Does TM28 contain the move Tombstony?", "O TM28 contém o golpe Tombstony?"], false]
   ].freeze
   CINNABAR_GYM_DOORS = {
     1 => [20,21,22,23], 2 => [1,25,26,27],
@@ -733,7 +741,7 @@ module BlueKantoPilot
 
   def self.cinnabar_gym_gate(map_id, x, y)
     unless progress["pilot_cinnabar_secret_key"]
-      pbMessage(_INTL("O ginásio de Cinnabar está trancado. A Secret Key está na Pokémon Mansion."))
+      pbMessage(BlueKantoPilot.t("Cinnabar Gym is locked. The Secret Key is in Pokémon Mansion.", "O ginásio de Cinnabar está trancado. A Secret Key está na Pokémon Mansion."))
       return
     end
     pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
@@ -754,17 +762,17 @@ module BlueKantoPilot
   def self.cinnabar_quiz(group)
     return unless group.between?(1, CINNABAR_QUIZZES.length)
     if progress.fetch("pilot_cinnabar_doors", []).include?(group)
-      pbMessage(_INTL("Essa sala do ginásio já está liberada."))
+      pbMessage(BlueKantoPilot.t("This Gym room is already unlocked.", "Essa sala do ginásio já está liberada."))
       return
     end
     question, answer = CINNABAR_QUIZZES[group - 1]
-    choice = pbMessage(question, [_INTL("Sim"), _INTL("Não"), _INTL("Voltar")], -1)
+    choice = pbMessage(BlueKantoPilot.t(*question), [BlueKantoPilot.t("Yes", "Sim"), BlueKantoPilot.t("No", "Não"), BlueKantoPilot.t("Back", "Voltar")], -1)
     return unless choice == 0 || choice == 1
     if (choice == 0) == answer
       cinnabar_unlock(group)
-      pbMessage(_INTL("Resposta correta! A porta se abriu."))
+      pbMessage(BlueKantoPilot.t("Correct! The door opened.", "Resposta correta! A porta se abriu."))
     else
-      pbMessage(_INTL("Resposta incorreta. Você pode tentar de novo ou enfrentar o treinador da sala."))
+      pbMessage(BlueKantoPilot.t("Incorrect. You can try again or battle the trainer in this room.", "Resposta incorreta. Você pode tentar de novo ou enfrentar o treinador da sala."))
     end
   end
 
@@ -777,7 +785,7 @@ module BlueKantoPilot
     if progress.fetch("pilot_cinnabar_doors", []).include?(group)
       cinnabar_unlock(group)
     else
-      pbMessage(_INTL("A porta está trancada. Responda ao quiz ou vença o treinador da sala."))
+      pbMessage(BlueKantoPilot.t("The door is locked. Answer the quiz or defeat the trainer in this room.", "A porta está trancada. Responda ao quiz ou vença o treinador da sala."))
     end
   end
 
@@ -791,7 +799,7 @@ module BlueKantoPilot
       $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
     end
     $game_map.need_refresh = true
-    pbMessage(_INTL("Uma passagem da Pokémon Mansion foi aberta!"))
+    pbMessage(BlueKantoPilot.t("A passage opened in Pokémon Mansion!", "Uma passagem da Pokémon Mansion foi aberta!"))
   end
 
   def self.mansion_door(source_map, door_ids)
@@ -802,19 +810,19 @@ module BlueKantoPilot
       end
       $game_map.need_refresh = true
     else
-      pbMessage(_INTL("Esta passagem depende de uma estátua próxima."))
+      pbMessage(BlueKantoPilot.t("A nearby statue controls this passage.", "Esta passagem depende de uma estátua próxima."))
     end
   end
 
   def self.mansion_secret_key
     if progress["pilot_cinnabar_secret_key"]
-      pbMessage(_INTL("Você já encontrou a Secret Key da Pokémon Mansion."))
+      pbMessage(BlueKantoPilot.t("You already found the Secret Key in Pokémon Mansion.", "Você já encontrou a Secret Key da Pokémon Mansion."))
       return
     end
     progress["pilot_cinnabar_secret_key"] = true
     $game_self_switches[[$game_map.map_id, 8, "A"]] = true
     $game_map.need_refresh = true
-    pbMessage(_INTL("Você encontrou a Secret Key! O ginásio de Cinnabar foi destrancado."))
+    pbMessage(BlueKantoPilot.t("You found the Secret Key! Cinnabar Gym is unlocked.", "Você encontrou a Secret Key! O ginásio de Cinnabar foi destrancado."))
   end
 
   # Phase 14: use ONLY Kanto-local badges for the league checks. The
@@ -832,7 +840,7 @@ module BlueKantoPilot
     earned = BlueRegions.local_achievements(progress, "KANTO")
     missing = needed.reject { |badge| earned.include?(badge) }
     if missing.any?
-      pbMessage(_INTL("Guarda: Você precisa da insígnia {1} de Kanto para seguir.", missing.first))
+      pbMessage(BlueKantoPilot.t("Guard: You need Kanto's {1} badge to proceed.", "Guarda: Você precisa da insígnia {1} de Kanto para seguir.", missing.first))
       return false
     end
     [guard_id, barrier_id].each do |event_id|
@@ -840,7 +848,7 @@ module BlueKantoPilot
       $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
     end
     $game_map.need_refresh = true
-    pbMessage(_INTL("Guarda: Insígnias verificadas. Pode passar!"))
+    pbMessage(BlueKantoPilot.t("Guard: Your badges check out. You may pass!", "Guarda: Insígnias verificadas. Pode passar!"))
     true
   end
 
@@ -849,7 +857,7 @@ module BlueKantoPilot
     earned = BlueRegions.local_achievements(progress, "KANTO")
     missing = LEAGUE_REQUIRED_BADGES.first(required).reject { |badge| earned.include?(badge) }
     if missing.any?
-      pbMessage(_INTL("O acesso à Liga está bloqueado. Falta a insígnia {1} de Kanto.", missing.first))
+      pbMessage(BlueKantoPilot.t("The road to the League is blocked. You're missing Kanto's {1} badge.", "O acesso à Liga está bloqueado. Falta a insígnia {1} de Kanto.", missing.first))
       return false
     end
     pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
@@ -861,7 +869,7 @@ module BlueKantoPilot
   # The native Strength HM acquisition and exact tile puzzle require manual QA.
   def self.victory_strength(barrier_ids)
     unless BlueRegions.local_achievements(progress, "KANTO").include?("RAINBOW")
-      pbMessage(_INTL("O mecanismo da Victory Road requer a Rainbow Badge de Kanto."))
+      pbMessage(BlueKantoPilot.t("The Victory Road mechanism requires Kanto's Rainbow Badge.", "O mecanismo da Victory Road requer a Rainbow Badge de Kanto."))
       return false
     end
     barrier_ids.each do |event_id|
@@ -869,7 +877,7 @@ module BlueKantoPilot
       $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
     end
     $game_map.need_refresh = true
-    pbMessage(_INTL("O mecanismo de pedras da Victory Road foi ativado (modo experimental)."))
+    pbMessage(BlueKantoPilot.t("The Victory Road boulder mechanism is active (experimental mode).", "O mecanismo de pedras da Victory Road foi ativado (modo experimental)."))
     true
   end
 
@@ -877,7 +885,7 @@ module BlueKantoPilot
     key = "KANTO_213_PAIR"
     wins = (progress["pilot_wins"] ||= [])
     if wins.include?(key)
-      pbMessage(_INTL("Ray e Tyra: Já batalhamos. Boa sorte na Liga!"))
+      pbMessage(BlueKantoPilot.t("Ray and Tyra: We've already battled. Good luck in the League!", "Ray e Tyra: Já batalhamos. Boa sorte na Liga!"))
       return true
     end
     return false unless starter
@@ -906,15 +914,15 @@ module BlueKantoPilot
 
   def self.league_begin(map_id, x, y)
     unless league_badges?
-      pbMessage(_INTL("A Liga exige as oito insígnias de Kanto, inclusive a Earth Badge."))
+      pbMessage(BlueKantoPilot.t("The League requires all eight Kanto badges, including the Earth Badge.", "A Liga exige as oito insígnias de Kanto, inclusive a Earth Badge."))
       return false
     end
     completed = progress.fetch("leagues", []).include?("KANTO")
     if completed && !full_power_unlocked?
-      pbMessage(_INTL("Os times oficiais Full Power só ficam disponíveis após concluir todas as Ligas do circuito regional."))
+      pbMessage(BlueKantoPilot.t("The official Full Power teams unlock after you finish every League in the regional circuit.", "Os times oficiais Full Power só ficam disponíveis após concluir todas as Ligas do circuito regional."))
       return false
     end
-    if completed && !pbConfirmMessage(_INTL("Desafiar a Elite Four e o Campeão com os times oficiais Full Power?"))
+    if completed && !pbConfirmMessage(BlueKantoPilot.t("Challenge the Elite Four and Champion with their official Full Power teams?", "Desafiar a Elite Four e o Campeão com os times oficiais Full Power?"))
       return false
     end
     progress["pilot_league_full_power"] = completed
@@ -927,23 +935,23 @@ module BlueKantoPilot
   def self.league_battle(stage, type, name, lobby_map)
     return false unless LEAGUE_ORDER.include?(stage)
     unless league_active? && starter
-      pbMessage(_INTL("Conquiste as oito insígnias e entre pela porta da Liga para iniciar o desafio."))
+      pbMessage(BlueKantoPilot.t("Earn all eight badges and enter through the League's door to begin the challenge.", "Conquiste as oito insígnias e entre pela porta da Liga para iniciar o desafio."))
       return false
     end
     wins = (progress["pilot_league_wins"] ||= [])
     index = LEAGUE_ORDER.index(stage)
     if wins.include?(stage)
-      pbMessage(_INTL("{1}: Já fui derrotado nesta tentativa.", name))
+      pbMessage(BlueKantoPilot.t("{1}: You've already defeated me on this run.", "{1}: Já fui derrotado nesta tentativa.", name))
       return true
     end
     unless wins.length == index && LEAGUE_ORDER[0,index] == wins
-      pbMessage(_INTL("Você precisa superar a Elite Four na ordem correta."))
+      pbMessage(BlueKantoPilot.t("You must defeat the Elite Four in order.", "Você precisa superar a Elite Four na ordem correta."))
       return false
     end
     version = (stage == "CHAMPION") ? LEAGUE_CHAMPION_VERSIONS.fetch(starter) : 0
     if stage == "CHAMPION" && type == :BLUE_KANTO_CHAMPION_BLUE && name == "Blue"
       BlueMusic.with_kanto_scene("rival_appears") do
-        pbMessage(_INTL("Blue: Você venceu a Elite! Nossa batalha final começa agora."))
+        pbMessage(BlueKantoPilot.t("Blue: You beat the Elite Four! Our final battle starts now.", "Blue: Você venceu a Elite! Nossa batalha final começa agora."))
       end
     end
     setBattleRule("canLose")
@@ -957,19 +965,19 @@ module BlueKantoPilot
       progress["pilot_league_full_power"] = false
       progress["pilot_league_active"] = false
       progress["pilot_league_wins"] = []
-      pbMessage(_INTL("Você perdeu esta tentativa da Liga. Volte ao saguão para tentar novamente."))
+      pbMessage(BlueKantoPilot.t("You lost this League run. Return to the lobby and try again.", "Você perdeu esta tentativa da Liga. Volte ao saguão para tentar novamente."))
       pbFadeOutIn { BlueRegionTravel.move_to([lobby_map, 11, 16, 2]) }
       return false
     end
     wins << stage
-    pbMessage(_INTL("Vitória contra {1}! Progresso da Liga: {2}/5.", name, wins.length))
+    pbMessage(BlueKantoPilot.t("You beat {1}! League progress: {2}/5.", "Vitória contra {1}! Progresso da Liga: {2}/5.", name, wins.length))
     true
   end
 
   def self.league_advance(stage, map_id, x, y)
     wins = progress.fetch("pilot_league_wins", [])
     if !league_active? || !wins.include?(stage)
-      pbMessage(_INTL("A passagem só abre depois de vencer o adversário desta sala."))
+      pbMessage(BlueKantoPilot.t("The passage opens once you defeat the opponent in this room.", "A passagem só abre depois de vencer o adversário desta sala."))
       return false
     end
     pbFadeOutIn { BlueRegionTravel.move_to([map_id, x, y, 2]) }
@@ -978,14 +986,14 @@ module BlueKantoPilot
 
   def self.league_finalize(pallet_map)
     unless league_active? && progress.fetch("pilot_league_wins", []) == LEAGUE_ORDER
-      pbMessage(_INTL("Hall of Fame bloqueado: faltam vitórias na Elite Four ou no Campeão."))
+      pbMessage(BlueKantoPilot.t("Hall of Fame locked: You still need to defeat the Elite Four or Champion.", "Hall of Fame bloqueado: faltam vitórias na Elite Four ou no Campeão."))
       return false
     end
     if progress["pilot_league_full_power"] == true
       progress["pilot_league_full_power"] = false
       progress["pilot_league_active"] = false
       progress["pilot_full_power_league_complete"] = true
-      pbMessage(_INTL("Liga Full Power concluída! Nenhuma insígnia foi concedida novamente."))
+      pbMessage(BlueKantoPilot.t("You completed the Full Power League! No badges were awarded again.", "Liga Full Power concluída! Nenhuma insígnia foi concedida novamente."))
       pbFadeOutIn { BlueRegionTravel.move_to([pallet_map, 18, 8, 2]) }
       return true
     end
@@ -993,7 +1001,7 @@ module BlueKantoPilot
     progress["pilot_league_active"] = false
     progress["pilot_hall_of_fame"] = true
     BlueMusic.with_kanto_scene("hall_of_fame") do
-      pbMessage(_INTL("Hall of Fame: Kanto concluída! Decades e Johto foram liberadas no circuito regional."))
+      pbMessage(BlueKantoPilot.t("Hall of Fame: Kanto complete! Decades and Johto are open in the regional circuit.", "Hall of Fame: Kanto concluída! Decades e Johto foram liberadas no circuito regional."))
     end
     pbFadeOutIn { BlueRegionTravel.move_to([pallet_map, 18, 8, 2]) }
     true
@@ -1003,23 +1011,23 @@ module BlueKantoPilot
   # Lobby's guide is an additional after-League point and uses the same
   # single-save travel service (only destinations with maps can be visited).
   def self.league_champion_npc
-    pbMessage(_INTL("Blue: Vencer a Elite foi só o começo! Quero ver se você supera o Campeão."))
+    pbMessage(BlueKantoPilot.t("Blue: Beating the Elite Four was just the start! Let's see if you can beat the Champion.", "Blue: Vencer a Elite foi só o começo! Quero ver se você supera o Campeão."))
   end
 
   def self.league_oak
     if progress.fetch("leagues", []).include?("KANTO")
-      pbMessage(_INTL("Oak: Seu nome entrou para o Hall of Fame de Kanto!"))
+      pbMessage(BlueKantoPilot.t("Oak: Your name has been entered in the Kanto Hall of Fame!", "Oak: Seu nome entrou para o Hall of Fame de Kanto!"))
     else
-      pbMessage(_INTL("Oak: Primeiro derrote Blue e conclua a jornada no Hall of Fame."))
+      pbMessage(BlueKantoPilot.t("Oak: Defeat Blue first and complete your journey in the Hall of Fame.", "Oak: Primeiro derrote Blue e conclua a jornada no Hall of Fame."))
     end
   end
 
   def self.league_guide
     if progress.fetch("leagues", []).include?("KANTO")
-      pbMessage(_INTL("Guia da Liga: Parabéns, Campeão! Consulte o agente regional aqui ou em Pallet."))
+      pbMessage(BlueKantoPilot.t("League guide: Congratulations, Champion! Speak to the regional agent here or in Pallet.", "Guia da Liga: Parabéns, Campeão! Consulte o agente regional aqui ou em Pallet."))
       BlueRegionTravel.agent(true)
     else
-      pbMessage(_INTL("Guia da Liga: Vença Lorelei, Bruno, Agatha, Lance e Blue em sequência."))
+      pbMessage(BlueKantoPilot.t("League guide: Defeat Lorelei, Bruno, Agatha, Lance and Blue in order.", "Guia da Liga: Vença Lorelei, Bruno, Agatha, Lance e Blue em sequência."))
     end
   end
 
@@ -1048,28 +1056,28 @@ module BlueKantoPilot
   def self.experimental_menu
     return unless experimental?
     unless $player.party.any? { |pkmn| !pkmn.egg? }
-      pbMessage(_INTL("Escolha um Pokémon com Oak antes de usar os teletransportes de teste."))
+      pbMessage(BlueKantoPilot.t("Choose a Pokémon with Oak before using the test warps.", "Escolha um Pokémon com Oak antes de usar os teletransportes de teste."))
       return
     end
     unless $scene && $scene.respond_to?(:transfer_player) && $game_temp && !$game_temp.in_battle
-      pbMessage(_INTL("O transporte de teste não está disponível durante batalhas."))
+      pbMessage(BlueKantoPilot.t("Test travel is unavailable during battles.", "O transporte de teste não está disponível durante batalhas."))
       return
     end
     stops = experimental_stops
     if stops.empty?
-      pbMessage(_INTL("Nenhum destino experimental foi preparado."))
+      pbMessage(BlueKantoPilot.t("No experimental destination is available.", "Nenhum destino experimental foi preparado."))
       return
     end
-    choice = pbMessage(_INTL("Teste experimental: viajar sem concluir a história anterior."),
-                       stops.map(&:first) + [_INTL("Cancelar")], -1)
+    choice = pbMessage(BlueKantoPilot.t("Experimental test: Travel without finishing the previous story.", "Teste experimental: viajar sem concluir a história anterior."),
+                       stops.map(&:first) + [BlueKantoPilot.t("Cancel", "Cancelar")], -1)
     return if !choice || choice < 0 || choice >= stops.length
     label, point = stops[choice]
-    return unless pbConfirmMessage(_INTL("Ir para {1}? Esta opção existe apenas no piloto de testes.", label))
+    return unless pbConfirmMessage(BlueKantoPilot.t("Travel to {1}? This option is available only in the test pilot.", "Ir para {1}? Esta opção existe apenas no piloto de testes.", label))
     begin
       pbFadeOutIn { BlueRegionTravel.move_to(point) }
-      pbMessage(_INTL("Chegou a {1}. Continue jogando e salve no perfil Kanto Piloto.",label))
+      pbMessage(BlueKantoPilot.t("Arrived at {1}. Keep playing and save under Kanto Piloto.", "Chegou a {1}. Continue jogando e salve no perfil Kanto Piloto.",label))
     rescue StandardError => e
-      pbMessage(_INTL("Falha no destino experimental: {1}",e.message))
+      pbMessage(BlueKantoPilot.t("Failed to travel to test destination: {1}", "Falha no destino experimental: {1}",e.message))
     end
   end
 
@@ -1078,8 +1086,10 @@ module BlueKantoPilot
   # limits, Safari Balls and exit restoration have not been audited.
   # Both the gate's counter and its guide use this non-transactional message.
   def self.safari_preview
-    pbMessage(_INTL("Safari Zone: a entrada para captura está em preparação. " +
-                    "Nenhum ingresso, dinheiro ou Safari Ball será consumido nesta versão."))
+    pbMessage(BlueKantoPilot.t(
+      "Safari Zone: The entrance for catching Pokémon is in development. No ticket, money or Safari Ball will be used in this version.",
+      "Safari Zone: a entrada para captura está em preparação. Nenhum ingresso, dinheiro ou Safari Ball será consumido nesta versão."
+    ))
   end
 
   # Local Pallet residents; never run the foreign FRLG quest scripts.
@@ -1087,21 +1097,21 @@ module BlueKantoPilot
     if $player && $player.party.any? { |pkmn| !pkmn.egg? }
       $player.heal_party
       BlueMusic.kanto_me_play("healed")
-      pbMessage(_INTL("Mãe: Descanse um pouco antes de continuar sua aventura por Kanto."))
+      pbMessage(BlueKantoPilot.t("Mom: Rest for a while before continuing your Kanto adventure.", "Mãe: Descanse um pouco antes de continuar sua aventura por Kanto."))
     else
-      pbMessage(_INTL("Mãe: Seu quarto fica no andar de cima. Depois visite Oak no laboratório."))
+      pbMessage(BlueKantoPilot.t("Mom: Your room is upstairs. Visit Oak at his lab afterward.", "Mãe: Seu quarto fica no andar de cima. Depois visite Oak no laboratório."))
     end
   end
 
   def self.daisy
-    pbMessage(_INTL("Daisy: Bem-vindo à casa do Gary! O laboratório de Oak fica ao sul de Pallet."))
+    pbMessage(BlueKantoPilot.t("Daisy: Welcome to Gary's house! Oak's lab is south of Pallet.", "Daisy: Bem-vindo à casa do Gary! O laboratório de Oak fica ao sul de Pallet."))
   end
 
   def self.heal
     $player.heal_party
     pbSetPokemonCenter
     BlueMusic.kanto_me_play("healed")
-    pbMessage(_INTL("Sua equipe está descansada."))
+    pbMessage(BlueKantoPilot.t("Your party is rested.", "Sua equipe está descansada."))
   end
 end
 
@@ -1136,7 +1146,7 @@ Game_Player.prepend(BlueKantoPilot::Route2ExitGuard)
 
 # This menu is visible ONLY in the isolated pilot with its local stop manifest.
 MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
-  "name"=>_INTL("Testes Kanto (experimental)"),
+  "name"=>BlueKantoPilot.t("Kanto Test Mode (experimental)", "Testes Kanto (experimental)"),
   "order"=>71,
   "condition"=>proc { |_menu| BlueKantoPilot.experimental? },
   "effect"=>proc do |menu|
