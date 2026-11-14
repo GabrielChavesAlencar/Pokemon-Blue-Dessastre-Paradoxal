@@ -113,13 +113,24 @@ class Source:
         return blob
 
 
+# Decode each Ruby Marshal table only once. Route 104 alone is 150x80;
+# repeatedly parsing its 3-layer tiles during a BFS is prohibitively slow.
+_TILE_CACHE = {}
+
+
 def open_tile(map_data, tileset, x, y):
-    attrs = map_data.attrs
-    (w, h, depth), cells = table_values(attrs["@data"].data, 3)
+    key = (id(map_data), id(tileset))
+    cached = _TILE_CACHE.get(key)
+    if cached is None:
+        attrs = map_data.attrs
+        dims, cells = table_values(attrs["@data"].data, 3)
+        _, passages = table_values(tileset.attrs["@passages"].data)
+        _, priorities = table_values(tileset.attrs["@priorities"].data)
+        cached = (dims, cells, passages, priorities)
+        _TILE_CACHE[key] = cached
+    (w, h, depth), cells, passages, priorities = cached
     if not (0 <= x < w and 0 <= y < h):
         return False
-    _, passages = table_values(tileset.attrs["@passages"].data)
-    _, priorities = table_values(tileset.attrs["@priorities"].data)
     for layer in reversed(range(depth)):
         tile = cells[x + w * (y + h * layer)]
         if not tile:
@@ -159,9 +170,17 @@ def validate_geometry(maps, tiles):
     edges, required = {}, set()
     blocked = {row[:3] for row in PEOPLE}
     for a, a_arrival, b, b_arrival in WARP_PAIRS:
-        edges[a] = [b_arrival]
-        edges[b] = [a_arrival]
-        required.update((a, a_arrival, b, b_arrival))
+        # A door event can sit on an impassable threshold tile (the donor's
+        # indoor doors do). Validate the STANDING CELLS on either side, not
+        # the blocked event graphics themselves.
+        if a[0] != a_arrival[0] or b[0] != b_arrival[0]:
+            raise ValueError("Warp Hoenn cruza MapID incorreto na origem")
+        if (abs(a[1] - a_arrival[1]) + abs(a[2] - a_arrival[2]) != 1 or
+                abs(b[1] - b_arrival[1]) + abs(b[2] - b_arrival[2]) != 1):
+            raise ValueError(f"Destino do warp não é vizinho da porta: {a}/{b}")
+        edges.setdefault(a_arrival, []).append(b_arrival)
+        edges.setdefault(b_arrival, []).append(a_arrival)
+        required.update((a_arrival, b_arrival))
     # Emerald's Route 102 -> Petalburg and Route 104 -> Petalburg borders
     # have real nonzero offsets. Zip only the overlapping segment.
     for first, edge, off_a, second, other_edge, off_b in (
