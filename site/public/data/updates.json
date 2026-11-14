@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "54f88b09a1ecdfdc133e6d90154cdeb808fb235e",
+      "date": "2026-11-13T23:41:35-03:00",
+      "title": "docs(regions): add conservative four-region encounter and gym audit reference",
+      "category": "Documentação"
+    },
+    {
       "sha": "fcb77a85b400eb972f776e55b7e7b885041a289d",
       "date": "2026-11-13T23:35:54-03:00",
       "title": "docs(sinnoh): adicionar referência organizada do detonado Platinum",
