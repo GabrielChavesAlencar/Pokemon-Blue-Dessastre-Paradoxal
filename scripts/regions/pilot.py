@@ -544,6 +544,53 @@ def update_oak_lab(events, pallet, ball_sprite):
         ]), 1, b"")
 
 
+def guarded_forest_transfer(warp):
+    """Keep the source's native warp, but only after Oak's parcel delivery."""
+    params = warp.attrs["@parameters"]
+    return [
+        command(111, 12, b"BlueKantoPilot.forest_unlocked?"),
+        command(201, *params, indent=1),
+        command(0, indent=1),
+        command(411),
+        command(355, b"BlueKantoPilot.forest_gate_warning", indent=1),
+        command(0, indent=1),
+        command(412),
+    ]
+
+
+def make_viridian_parcel_intro(events):
+    """One-time autorun, anchored to the real shopkeeper, never a fake NPC."""
+    clerk = events[find_shopkeeper(events)]
+    intro = copy.deepcopy(clerk)
+    intro.attrs.update({
+        "@id": max(events) + 1, "@name": b"Kanto Oak Parcel Intro",
+        "@x": clerk.attrs["@x"], "@y": clerk.attrs["@y"],
+    })
+    intro = new_event(intro, [
+        *if_scene(b"BlueKantoPilot.parcel_pickup_pending?", [
+            command(355, b"BlueKantoPilot.viridian_parcel_call", indent=1),
+            # The player briefly approaches the counter after being called.
+            # The move route is skippable to avoid locking an existing save
+            # if a different tileset blocks either of these two steps.
+            move_actor(-1, 4, 4, 16),
+            command(210, indent=1),
+            command(355, b"BlueKantoPilot.receive_oak_parcel", indent=1),
+        ]),
+        command(123, b"A", 0),
+    ], 3, b"")
+    first_page = intro.attrs["@pages"][0].attrs
+    first_page["@through"] = True
+    closed = copy.deepcopy(intro.attrs["@pages"][0])
+    closed.attrs["@condition"].attrs.update({
+        "@self_switch_valid": True, "@self_switch_ch": b"A",
+    })
+    closed.attrs.update({
+        "@trigger": 0, "@through": True, "@list": [command(0)],
+    })
+    intro.attrs["@pages"].append(closed)
+    return intro
+
+
 def find_shopkeeper(events):
     for event_id, event in events.items():
         for page in event.attrs["@pages"]:
@@ -994,7 +1041,18 @@ def install_events(source, target, mapping):
                     original == 168 and event_id in (6, 10, 12, 13, 14)) or (
                     original == 199 and event_id in (1, 2, 3, 5))
                 trigger = 1 if auto_entry else (0 if is_door else 1)
-                selected[event_id] = new_event(event, [warp], trigger, character)
+                # Both Forest Gate buildings must respect the parcel quest.
+                # Preserve the source transfer coordinates and direction.
+                if original != 24 and warp.attrs["@parameters"][1] == mapping[24]:
+                    selected[event_id] = new_event(
+                        event, guarded_forest_transfer(warp), 1, character)
+                else:
+                    selected[event_id] = new_event(event, [warp], trigger, character)
+        if original == 12:
+            intro = make_viridian_parcel_intro(events)
+            if intro.attrs["@id"] in selected:
+                raise ValueError("Oak parcel intro conflicts with an existing event")
+            selected[intro.attrs["@id"]] = intro
         if original == 7:
             profile = new_event(events[4], [
                 command(355, b"BlueKantoPilot.choose_profile"),
