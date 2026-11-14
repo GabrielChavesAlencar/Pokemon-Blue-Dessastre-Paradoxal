@@ -3073,6 +3073,203 @@ module BlueHoennPilot
     pbMessage(_INTL("Enfermeira: Seus Pokémon estão recuperados. Boa viagem!"))
   end
 
+
+  # === TESTAR HOENN: private pilot only, never Decades or another region ===
+  TEST_STOPS_FILE = "Data/blue-hoenn-test-stops.txt".freeze
+
+  def self.test_tools?
+    return false unless File.file?("Hoenn pilot.json") &&
+                        File.file?(MARKER) && File.file?(TEST_STOPS_FILE)
+    return false if File.symlink?(TEST_STOPS_FILE)
+    return false unless $PokemonGlobal && $PokemonGlobal.blue_regions.is_a?(Hash) &&
+                        $PokemonGlobal.blue_regions["current"] == "HOENN"
+    return false unless $game_map && $game_player && $game_temp && $scene &&
+                        $scene.respond_to?(:transfer_player)
+    return false if $game_temp.in_battle || $game_temp.player_transferring ||
+                    $game_temp.transition_processing
+    true
+  end
+
+  # Source MapIDs from the original Emerald donor, not native Blue/Decades IDs.
+  # The installer derives coordinates from ACTUAL tile passages, away from all
+  # authored NPCs, doors, pickups and obstacles. Reject injected/foreign IDs.
+  def self.test_stops
+    return [] unless File.file?(TEST_STOPS_FILE) && !File.symlink?(TEST_STOPS_FILE)
+    return @test_stops if @test_stops
+    rows = File.readlines(TEST_STOPS_FILE, chomp: true, encoding: "UTF-8")
+    return [] unless rows.shift == "BLUE_HOENN_TEST_STOPS_V1"
+    _, mapped = metadata
+    return [] unless rows.length == mapped.length && mapped.length == 199
+    seen = {}
+    stops = []
+    rows.each do |line|
+      parts = line.split("|", 6)
+      return [] unless parts.length == 6 && !parts[5].strip.empty?
+      values = parts[0,5].map { |value| Integer(value, 10) rescue nil }
+      return [] unless values.all? { |value| value.is_a?(Integer) }
+      source_id, native_id, x, y, direction = values
+      return [] unless mapped[source_id] == native_id && !seen[source_id] &&
+                       x >= 0 && y >= 0 && [2,4,6,8].include?(direction) &&
+                       pbRgssExists?(sprintf("Data/Map%03d.rxdata", native_id))
+      seen[source_id] = true
+      stops << [source_id, native_id, x, y, direction, parts[5]]
+    end
+    return [] unless seen.keys.sort == mapped.keys.sort
+    @test_stops = stops.sort_by { |row| row[0] }
+  rescue IOError, SystemCallError, ArgumentError
+    []
+  end
+
+  def self.test_number
+    rows = test_stops
+    return nil if rows.empty?
+    params = ChooseNumberParams.new
+    params.setRange(0, 999)
+    params.setInitialValue(0)
+    params.setCancelValue(0)
+    answer = pbMessageChooseNumber(_INTL("Digite o MapID ORIGINAL de Hoenn ou o ID remapeado (0 cancela)."), params)
+    return nil if !answer || answer == 0
+    rows.find { |row| row[0] == answer || row[1] == answer }
+  end
+
+  def self.test_search
+    return nil unless respond_to?(:pbEnterText, true)
+    word = pbEnterText(_INTL("Buscar mapa pelo nome ou número"), 0, 32)
+    return nil unless word.is_a?(String) && !word.strip.empty?
+    matches = test_stops.select do |row|
+      row[0].to_s == word.strip || row[1].to_s == word.strip ||
+        row[5].downcase.include?(word.strip.downcase)
+    end
+    if matches.empty?
+      pbMessage(_INTL("Nenhum mapa de Hoenn corresponde a essa busca."))
+      return nil
+    end
+    test_page_menu(matches, _INTL("Resultados para: {1}", word.strip))
+  end
+
+  def self.test_page_menu(rows, title = "Mapas de Hoenn")
+    return nil if rows.empty?
+    page = 0
+    page_size = 7
+    loop do
+      pages = (rows.length + page_size - 1) / page_size
+      portion = rows.slice(page * page_size, page_size)
+      options = portion.map { |r| "#{r[0]} · #{r[5]}" }
+      options += [_INTL("◀ Página anterior"), _INTL("Próxima página ▶"), _INTL("Voltar")]
+      selection = pbMessage(_INTL("{1} ({2}/{3})", title, page + 1, pages), options, -1)
+      return nil if !selection || selection < 0 || selection >= options.length ||
+                    selection == portion.length + 2
+      return portion[selection] if selection < portion.length
+      page = (page + (selection == portion.length ? -1 : 1)) % pages
+    end
+  end
+
+  def self.test_group
+    rows = test_stops
+    groups = [
+      [1, 49], [50, 99], [100, 149],
+      [150, 199], [200, 249], [250, 322]
+    ]
+    options = groups.map do |first, last|
+      count = rows.count { |row| (first..last).cover?(row[0]) }
+      "#{first}–#{last} (#{count} mapas)"
+    end
+    options << _INTL("Voltar")
+    selection = pbMessage(_INTL("Selecione uma faixa de MapIDs originais."), options, -1)
+    return nil unless selection && selection >= 0 && selection < groups.length
+    first, last = groups[selection]
+    test_page_menu(rows.select { |row| (first..last).cover?(row[0]) },
+                   "Mapas #{first}–#{last}")
+  end
+
+  # Does NOT modify story flags, badges, money, Pokémon, League progress or
+  # region state; test warps are intentionally outside the official campaign.
+  def self.test_teleport(row)
+    return false unless test_tools? && row.is_a?(Array) && row.length == 6
+    allowed = test_stops.find { |entry| entry[0] == row[0] }
+    return false unless allowed == row
+    unless defined?(BlueRegionTravel) && BlueRegionTravel.respond_to?(:move_to)
+      pbMessage(_INTL("Motor de transferência do Blue não disponível."))
+      return false
+    end
+    if $player.nil? || $player.party.none? { |pokemon| !pokemon.egg? }
+      pbMessage(_INTL("Escolha primeiro um Pokémon inicial antes dos teleportes de teste."))
+      return false
+    end
+    source_id, native_id, x, y, direction, label = allowed
+    return false unless pbConfirmMessage(
+      _INTL("Teste: ir para {1} (mapa original {2})? Isso ignora bloqueios da história; salve em slot de teste.", label, source_id)
+    )
+    before = [$game_map.map_id, $game_player.x, $game_player.y,
+              $game_player.direction]
+    begin
+      pbFadeOutIn { BlueRegionTravel.move_to([native_id,x,y,direction]) }
+      @test_return_point = before
+      pbMessage(_INTL("Teleporte de QA: {1}. Nenhuma insígnia ou missão foi concedida.", label))
+      true
+    rescue StandardError => error
+      begin
+        if $game_map.map_id != before[0]
+          pbFadeOutIn { BlueRegionTravel.move_to(before) }
+        end
+      rescue StandardError
+        # Never hide the original transfer error or grant progress as fallback.
+      end
+      pbMessage(_INTL("Falha no teleporte de Hoenn: {1}", error.message))
+      false
+    end
+  end
+
+  def self.test_return
+    return false unless test_tools? && @test_return_point
+    point = @test_return_point.dup
+    _, mapped = metadata
+    return false unless mapped.value?(point[0])
+    begin
+      old = [$game_map.map_id, $game_player.x, $game_player.y,
+             $game_player.direction]
+      pbFadeOutIn { BlueRegionTravel.move_to(point) }
+      @test_return_point = old
+      true
+    rescue StandardError => error
+      pbMessage(_INTL("Não foi possível voltar ao mapa de origem: {1}", error.message))
+      false
+    end
+  end
+
+  def self.test_menu
+    return false unless test_tools?
+    stops = test_stops
+    if stops.length != 199
+      pbMessage(_INTL("Catálogo de 199 mapas de Hoenn ausente ou inválido. Execute TESTAR_HOENN.bat novamente."))
+      return false
+    end
+    loop do
+      _, mapped = metadata
+      original = mapped.key($game_map.map_id)
+      choices = [
+        _INTL("Lista completa (199 mapas)"),
+        _INTL("Escolher faixa de MapIDs"),
+        _INTL("Pesquisar nome do mapa"),
+        _INTL("Digitar MapID (original/Blue)"),
+        _INTL("Voltar ao mapa anterior"),
+        _INTL("Sair")
+      ]
+      pos = original ? original.to_s : "?"
+      choice = pbMessage(_INTL("Testar Hoenn — mapa atual: {1}. Teleporte não conclui eventos.", pos), choices, -1)
+      break if !choice || choice < 0 || choice == 5
+      selected = case choice
+                 when 0 then test_page_menu(stops)
+                 when 1 then test_group
+                 when 2 then test_search
+                 when 3 then test_number
+                 when 4 then test_return; nil
+                 end
+      test_teleport(selected) if selected
+    end
+    true
+  end
+
   module Music
     private
 
@@ -3115,3 +3312,20 @@ module BlueHoennPilot
     Object.prepend(Music) unless Object.ancestors.include?(Music)
   end)
 end
+
+# Only the isolated test copy installs this pause-menu tool; never register
+# a global Debug menu in the main Blue/Decades, Kanto, Johto or Sinnoh.
+if defined?(MenuHandlers)
+  MenuHandlers.add(:pause_menu, :blue_hoenn_test_teleport, {
+    "name" => _INTL("Testar Hoenn · Teleporte"),
+    "order" => 72,
+    "condition" => proc { |_menu| BlueHoennPilot.test_tools? },
+    "effect" => proc do |menu|
+      menu.pbHideMenu
+      BlueHoennPilot.test_menu
+      menu.pbShowMenu
+      false
+    end
+  })
+end
+
