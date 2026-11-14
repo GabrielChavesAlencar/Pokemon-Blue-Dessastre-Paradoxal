@@ -647,52 +647,27 @@ def route2_north_columns(source, city_width, route_width):
     return found[0]
 
 
-def make_viridian_route2_gates(events, source, city_map, route_map):
-    """Put the physical story barrier on Viridian City's north edge.
+def viridian_route2_block_line(events, city_map):
+    """The red screenshot line is level with Viridian's north house/old man.
 
-    No guard belongs in the Forest Gate building/tunnel. Until Oak receives
-    the parcel, these solid Player Touch events stop the player BEFORE Route 2.
-    Their local self-switch A makes them passable after the quest.
+    Anchor it to the real source Map010 north-house front door (event 2),
+    NOT the connection's y=0 and NOT the Forest Gate. The house is east of
+    the north/south footpath. Cover the entire five-tile corridor immediately
+    west of its entrance. The line is a movement boundary, not spawned events:
+    no overlapping source NPCs or invisible collision events can remain.
     """
+    door = events.get(2)
+    if door is None:
+        raise ValueError("Missing original northern Viridian house doorway")
     width = city_map.attrs["@width"]
     height = city_map.attrs["@height"]
-    if height < 2:
-        raise ValueError("Viridian City is too short for an approach barrier")
-    columns = route2_north_columns(source, width, route_map.attrs["@width"])
-    occupied = {(item.attrs["@x"], item.attrs["@y"]) for item in events.values()}
-    if any((x, 0) in occupied for x in columns):
-        raise ValueError("Viridian Route 2 barrier would overlap an original event")
-    template = next(iter(events.values()))
-    gates = {}
-    next_id = max(events) + 1
-    for offset, x in enumerate(columns):
-        event = copy.deepcopy(template)
-        event.attrs.update({
-            "@id": next_id + offset,
-            "@name": b"Kanto Viridian Route 2 Parcel Gate",
-            "@x": x,
-            "@y": 0,
-        })
-        event = new_event(event, [
-            *if_scene(b"BlueKantoPilot.forest_unlocked?", [
-                command(123, b"A", 0, indent=1),
-            ]),
-            # Warning only while the player still owes the parcel to Oak.
-            *if_scene(b"!BlueKantoPilot.forest_unlocked?", [
-                command(355, b"BlueKantoPilot.route2_gate_warning", indent=1),
-            ]),
-        ], 1, b"")
-        first = event.attrs["@pages"][0].attrs
-        first["@through"] = False  # a solid obstacle, not a skippable floor trigger
-        first["@direction_fix"] = True
-        opened = copy.deepcopy(event.attrs["@pages"][0])
-        opened.attrs["@condition"].attrs.update({
-            "@self_switch_valid": True, "@self_switch_ch": b"A",
-        })
-        opened.attrs.update({"@trigger": 0, "@through": True, "@list": [command(0)]})
-        event.attrs["@pages"].append(opened)
-        gates[event.attrs["@id"]] = event
-    return gates
+    door_x, door_y = door.attrs["@x"], door.attrs["@y"]
+    row = door_y - 1   # red marker: one tile north of the house's entry tile
+    first, last = door_x - 6, door_x - 1  # 5 columns, last exclusive
+    if not (0 < row < height - 1 and 0 <= first < last <= width):
+        raise ValueError("Viridian's internal north path is outside the source map")
+    # The top connection is farther north; do not recreate the old y=0 gate.
+    return row, first, last
 
 
 def pewter_route3_east_rows(source, city_height, route_height):
@@ -1319,11 +1294,12 @@ def install_events(source, target, mapping):
         if original == 25:
             add_pewter_guard(selected, events)
         if original == 10:
-            route2_map = load(source / "Data/Map018.rxdata")
-            gates = make_viridian_route2_gates(events, source, map_data, route2_map)
-            if set(gates).intersection(selected):
-                raise ValueError("Viridian Route 2 barrier overlaps an imported event ID")
-            selected.update(gates)
+            # Keep Route 2's connected map untouched. Store the internal
+            # threshold anchored to source north-house door event 2 instead.
+            row, first, last = viridian_route2_block_line(events, map_data)
+            (target / "Data/blue-kanto-viridian-route2-line.txt").write_text(
+                f"{destination}|{row}|{first}|{last}\n", encoding="ascii"
+            )
         if original == 12:
             intro = make_viridian_parcel_intro(events)
             if intro.attrs["@id"] in selected:
