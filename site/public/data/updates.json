@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9a87410bc886633a7989c18c3912fefc826bd897",
+      "date": "2026-11-13T22:32:41-03:00",
+      "title": "fix(sinnoh): enable QA-only Barry battle after verified compiled probe, preserve release marker gate in main game",
+      "category": "Correções"
+    },
+    {
+      "sha": "f88ca9b7bea621e792f6e97a7aea07fc941f76ec",
+      "date": "2026-11-13T22:32:30-03:00",
+      "title": "feat(sinnoh): allow Barry test only in verified isolated QA without production-ready marker",
+      "category": "Novidades"
+    },
+    {
       "sha": "d81ee036a56ec105d485c7df39f04ad7e6dd5869",
       "date": "2026-11-13T22:28:47-03:00",
       "title": "docs(sinnoh): update isolated Sinnoh CI evidence to latest 138 passing Python and Ruby tests",
