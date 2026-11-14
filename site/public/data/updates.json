@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27d54a156692549643e32e35e4c846c3ecff7e6c",
+      "date": "2026-11-14T10:07:33-03:00",
+      "title": "test(hoenn): cobrir eventos físicos e seleção segura de coordenadas",
+      "category": "Testes"
+    },
+    {
       "sha": "c95c792630ec297d9e76b5c314da362a61f284bb",
       "date": "2026-11-14T10:06:29-03:00",
       "title": "ci(hoenn): executar regressões Ruby da história inicial",
