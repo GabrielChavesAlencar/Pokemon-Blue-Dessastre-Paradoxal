@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "17e056138bd140a8552037271d40027145e8aac0",
+      "date": "2026-11-14T10:50:15-03:00",
+      "title": "fix(hoenn): corrigir retornos do atlas Route 104 para tiles de fato passáveis",
+      "category": "Correções"
+    },
+    {
       "sha": "74fd20efb28b053a32fb7e311ec91801ab2c7b69",
       "date": "2026-11-14T10:46:12-03:00",
       "title": "fix(test/hoenn): simular hooks regionais do motor no teste Ruby da etapa 3",
