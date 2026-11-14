@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "52cab9727f1547620bd9942668e11935e628226c",
+      "date": "2026-11-14T11:20:44-03:00",
+      "title": "feat(hoenn): anexar dez mapas Rustboro/Rusturf, rotas e encontros da etapa 4 ao piloto",
+      "category": "Novidades"
+    },
+    {
       "sha": "fefb5c21f22446ee43c2255e2bf5af1ce0e172c6",
       "date": "2026-11-14T11:18:33-03:00",
       "title": "feat(hoenn): fonte auditada Rustboro, Rota 116, Roxanne, Devon e Rusturf",
