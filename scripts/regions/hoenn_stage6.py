@@ -135,12 +135,15 @@ NPCS_STAGE6 = (
 )
 
 PICKUPS_STAGE6 = (
-    # The original coordinates are the "Item" events in Map041/Map113.
-    # Actual item IDs are checked in the base Blue item database at runtime.
+    # Exact items and coordinates confirmed from the original Map041/113
+    # pbItemBall commands. Each event has a one-time Hoenn self-switch.
     (41, 28, 19, "MAUVILLE_X_SPEED", "XSPEED", True),
-    (113, 30, 69, "ROUTE110_GREAT_BALL", "GREATBALL", True),
-    (113, 26, 47, "ROUTE110_DIRE_HIT", "DIREHIT", True),
-    (113, 6, 38, "ROUTE110_ITEM", "ELIXIR", True),
+    (113, 30, 69, "ROUTE110_DIRE_HIT", "DIREHIT", True),
+    (113, 26, 47, "ROUTE110_RARE_CANDY", "RARECANDY", True),
+    (113, 6, 38, "ROUTE110_ELIXIR", "ELIXIR", True),
+    (113, 37, 67, "ROUTE110_HIDDEN_FULL_HEAL", "FULLHEAL", False),
+    (113, 33, 45, "ROUTE110_HIDDEN_GREAT_BALL", "GREATBALL", False),
+    (113, 35, 39, "ROUTE110_HIDDEN_REVIVE", "REVIVE", False),
 )
 
 SIGNS_STAGE6 = (
