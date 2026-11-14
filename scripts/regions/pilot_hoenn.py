@@ -297,6 +297,7 @@ def append_event(map_data, name, x, y, page):
         raise ValueError(f"Eventos Hoenn se sobrepõem em {(x, y)}")
     n = len(events) + 1
     events[n] = ruby("RPG::Event", id=n, name=name.encode("ascii"), x=x, y=y, pages=[page])
+    return n
 
 
 def add_opening(maps, balls, rival, sprite):
@@ -324,6 +325,66 @@ def add_opening(maps, balls, rival, sprite):
     page = event_page(script="BlueHoennPilot.rival_103",
                       sprite=sprite, touch=True)
     append_event(maps[mid], "HN_Rival_103", x, y, page)
+
+
+
+def add_stage3_events(maps, game):
+    """Author events ONLY onto cleared donor maps, with all coordinates sourced."""
+    sprites_used = set()
+    for mid, x, y, name, script in NPCS_STAGE3:
+        chosen = name
+        if not (game / f"Graphics/Characters/{chosen}.png").is_file():
+            raise ValueError(f"Sprite do NPC Hoenn indisponível: {chosen}")
+        sprites_used.add(chosen)
+        append_event(maps[mid], f"HN3_NPC_{mid}_{x}_{y}", x, y,
+                     event_page(script=script, sprite=chosen))
+    for mid, x, y, script, sprite in (
+        (17, 9, 4, "BlueHoennPilot.heal", "NPC_DPP_PokeCenter_Nurse"),
+        (18, 3, 5, "BlueHoennPilot.mart", "NPC_DPP_PokeMart_Man"),
+    ):
+        if not (game / f"Graphics/Characters/{sprite}.png").is_file():
+            raise ValueError(f"Sprite de Petalburg indisponível: {sprite}")
+        append_event(maps[mid], f"HN3_Service_{mid}", x, y,
+                     event_page(script=script, sprite=sprite))
+        if mid == 17:
+            # Register the healing counter as on Oldale's pilot.
+            append_event(maps[mid], "HN3_HealingCounter", 9, 5,
+                         event_page(script=script))
+    for mid, x, y, name, message in SIGNS_STAGE3:
+        # Portuguese messages live in the Blue Ruby plugin, never injected
+        # into foreign RMXP event scripts or a donor text blob.
+        append_event(maps[mid], f"HN3_Sign_{name}", x, y,
+                     event_page(script=f"BlueHoennPilot.sign(:{name})"))
+    for mid, x, y, key, item, visible in PICKUPS_STAGE3:
+        page = event_page(script="nil", sprite="Object_Ball" if visible else "")
+        event_id = append_event(maps[mid], f"HN3_Item_{key}", x, y, page)
+        call = f'BlueHoennPilot.pickup(:{item}, "{key}", {event_id})'
+        page.attrs["@list"][0] = command(355, call.encode("ascii"))
+        hidden = event_page(script="nil")
+        hidden.attrs["@condition"].attrs["@self_switch_valid"] = True
+        hidden.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        hidden.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(hidden)
+    for mid, x, y in FOREST_AQUA_TRIGGERS:
+        append_event(maps[mid], f"HN3_AquaGrunt_{x}", x, y,
+                     event_page(script="BlueHoennPilot.forest_aqua", touch=True))
+    for mid, x, y, kind, name, sprite, team, double in TRAINERS_STAGE3:
+        if not (game / f"Graphics/Characters/{sprite}.png").is_file():
+            raise ValueError(f"Sprite do treinador da etapa 3 ausente: {sprite}")
+        if double:
+            script = f'BlueHoennPilot.battle_stage3(:{kind}, "{name}", {mid}, true)'
+        else:
+            script = f'BlueHoennPilot.battle_stage3(:{kind}, "{name}", {mid})'
+        append_event(maps[mid], f"HN3_Trainer_{mid}_{x}_{y}", x, y,
+                     event_page(script=script, sprite=sprite))
+    # A second Twins sprite shares the same combat key: no duplicate reward.
+    append_event(maps[104], "HN3_Twins_Mia", 138, 15,
+                 event_page(script='BlueHoennPilot.battle_stage3(:TWINS, "Gina & Mia", 104, true)',
+                            sprite="trainer_LASS"))
+    return {"stage3_npcs": len(NPCS_STAGE3) + 2, "stage3_signs": len(SIGNS_STAGE3),
+            "stage3_pickups": len(PICKUPS_STAGE3),
+            "stage3_trainers": len(TRAINERS_STAGE3), "stage3_aqua_triggers": len(FOREST_AQUA_TRIGGERS)}
+
 
 
 def preflight_route102_trainers(game: Path) -> list[dict]:
@@ -465,6 +526,7 @@ def build_overlay(game, source):
             append_event(maps[mid], f"HN_{name}_counter", px, py, proxy)
 
     add_opening(maps, balls, rival, rival_image)
+    stage3_counts = add_stage3_events(maps, game)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
