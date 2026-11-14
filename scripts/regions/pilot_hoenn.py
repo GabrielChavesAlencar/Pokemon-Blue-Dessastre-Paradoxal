@@ -1270,6 +1270,7 @@ def build_overlay(game, source):
     ids = dict(zip(SOURCE_MAPS, free))
     donor_tiles = loads(source.read("Data/Tilesets.rxdata"))
     maps, tiles, tile_ids, overlay = {}, {}, {}, {}
+    stage9_original_events = {}
     for old in SOURCE_MAPS:
         m = loads(source.read(f"Data/Map{old:03}.rxdata"))
         if not isinstance(m, RubyObject) or m.name != "RPG::Map":
@@ -1299,12 +1300,18 @@ def build_overlay(game, source):
             tile_ids[native_id] = len(native_tiles)
             native_tiles.append(ts)
         maps[old], tiles[old] = m, native_tiles[tile_ids[native_id]]
+        if old in SOURCE_MAPS_STAGE9:
+            stage9_original_events[old] = dict(m.attrs.get("@events", {}))
         m.attrs.update({
             "@tileset_id": tile_ids[native_id], "@events": {}, "@autoplay_bgm": False,
             "@autoplay_bgs": False, "@bgm": ruby("RPG::AudioFile", name=b"", volume=100, pitch=100),
             "@bgs": ruby("RPG::AudioFile", name=b"", volume=100, pitch=100),
             "@encounter_list": [], "@encounter_step": 30,
         })
+    stage9_source_warps, stage9_source_items = scan_stage9_source_events(
+        stage9_original_events, maps)
+    if not stage9_source_warps:
+        raise ValueError("Mapas Stage9 sem warps auditáveis na fonte RXDATA")
     edges, required = validate_geometry(maps, tiles)
     balls = starter_ball_positions(maps, tiles, edges, required)
     rival = rival_position(maps, tiles, edges, required, balls)
@@ -1363,6 +1370,8 @@ def build_overlay(game, source):
     stage6_counts = add_stage6_events(maps, game, rival_image)
     stage7_counts = add_stage7_events(maps, game)
     stage8_counts = add_stage8_events(maps, game, rival_image)
+    stage9_counts = add_stage9_events(
+        maps, game, stage9_source_warps, stage9_source_items)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
@@ -1829,6 +1838,12 @@ def build_overlay(game, source):
                              "norman": stage8_boss_art["BLUE_HOENN_NORMAN"] != "RSE_LEADER_Norman",
                              "winona": stage8_boss_art["BLUE_HOENN_WINONA"] != "RSE_LEADER_Winona",
                              "shelly": stage8_boss_art["BLUE_HOENN_SHELLY"] != "RSE_AQUAADMIN_Shelly"},
+                         "native_gameplay_verified": False},
+              "stage9": {**stage9_counts,
+                         "source_map_ids": list(SOURCE_MAPS_STAGE9),
+                         "surf_only_borders": list(SURF_BORDERS_STAGE9),
+                         "story_reference_levels_not_fixed": True,
+                         "original_partner_battle_pending": True,
                          "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False},
