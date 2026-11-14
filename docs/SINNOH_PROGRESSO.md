@@ -27,6 +27,12 @@ A ferramenta de remapeamento já verifica IDs reais de origem, símbolos, hashes
 
 As **três subetapas restantes** exigem baseline/reservas de todas as regiões, conversão dos dados reais da fonte autorizada e teste nativo isolado. Por isso **S07 continua parcial**, a Barra A permanece em **8/32** e nenhuma das barras de jogabilidade sobe. Os detalhes R01–R09 estão em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 
+### Conversão de geometria — código disponível, mapas reais pendentes
+
+O conversor [convert_sinnoh_geometry.py](../scripts/regions/convert_sinnoh_geometry.py) e seus [6 testes com mapas sintéticos](../tests/test_sinnoh_geometry_converter.py) já produzem prévias de terreno, tilesets e cópias dos índices de mapa **sem eventos/scripts, encontros ou músicas do jogo doador**, com dry-run e stage opcional em `.blue-work`. Consulte [Fase 01 — prévia de geometria](SINNOH_FASE_01_PREVIA_GEOMETRIA.md).
+
+**Limite:** nenhum ZIP real de Sinnoh foi convertido e ainda não existem portais, NPCs, saves ou mapas jogáveis novos. Por isso **R08 segue incompleto**, S07 segue **6/9**, a Barra A permanece **8/32 (25%)** e as barras técnicas/jogáveis continuam **0/13**.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
@@ -56,7 +62,7 @@ Contam somente fases com QA real comprovado no Windows e, quando distribuída pa
 | Fase | Núcleo | Preparação atual | Implementado e testado no jogo |
 |---|---|---|---|
 | 00 | Auditoria de fontes, direitos e baseline | Ferramentas criadas; fonte local pendente | Não |
-| 01 | Importador e remapeamento de mapas | Grafo, staging e prévia de remapeamento prontos; conversão real pendente | Não |
+| 01 | Importador e remapeamento de mapas | Prévia segura de geometria codificada; fonte real, eventos e instalação pendentes | Não |
 | 02 | Piloto de Sinnoh no menu | Botão no código; faltam piloto e mapas reais | Não |
 | 03 | Twinleaf, Rowan, Barry, Sandgem | Inventário simbólico | Não |
 | 04 | Jubilife, Oreburgh e Roark | Inventário simbólico | Não |
