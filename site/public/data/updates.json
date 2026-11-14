@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "00f6e37ebf232dda3e40132c3910ddcc800c4fbb",
+      "date": "2026-11-14T13:35:00-03:00",
+      "title": "test(hoenn): exigir 110 mapas e PBS Norman/Winona/Weather/Rival compilados",
+      "category": "Testes"
+    },
+    {
       "sha": "00214e59c841c26712146084b55a70da989da6d6",
       "date": "2026-11-14T13:34:27-03:00",
       "title": "feat(site/hoenn): documentar 110 mapas, 144 equipes e Stage8 Norman/Winona/Lilycove",
