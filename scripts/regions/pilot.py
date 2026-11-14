@@ -432,6 +432,14 @@ def write_map(path, obj, classes=()):
 def command(code, *params, indent=0):
     return RubyObject("RPG::EventCommand", {"@code": code, "@indent": indent, "@parameters": list(params)})
 
+def npc_dialogue_calls(source_map, event_id, messages):
+    """Safe native callbacks; FRLG text stays in pilot Data, never in script code."""
+    return [
+        command(355, f"BlueKantoPilot.npc_dialogue({source_map}, {event_id}, {index})".encode("ascii"))
+        for index in range(len(messages))
+    ] + [command(0)]
+
+
 
 def extract_warps(event, mapping):
     for page in event.attrs["@pages"]:
@@ -1161,10 +1169,8 @@ def install_events(source, target, mapping):
                     literals = npc_literals(literal_commands) if literal_commands else []
                     if literals:
                         npc_dialogues.append([original, event_id, literals])
-                        adapted.attrs["@pages"][0].attrs["@list"] = [
-                            command(355, f"BlueKantoPilot.npc_dialogue({original}, {event_id}, {index})".encode("ascii"))
-                            for index in range(len(literals))
-                        ] + [command(0)]
+                        adapted.attrs["@pages"][0].attrs["@list"] = npc_dialogue_calls(
+                            original, event_id, literals)
                 selected[event_id] = adapted
                 field_inventory.append({
                     "source_map": original, "map": destination, "event": event_id,
