@@ -519,17 +519,55 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
     pending = (qa / COMPILE_REQUEST).exists()
     if compiled_ok and pending:
         fail("Compilação marcada como concluída mas pedido ainda está pendente")
+    evidence = qa / ENGINE_REPORT
+    checked = False
+    if evidence.exists():
+        if evidence.is_symlink() or not evidence.is_file():
+            fail("Relatório da engine não é arquivo regular")
+        native = json.loads(evidence.read_text("utf-8"))
+        rows = native.get("barry_versions_inspected")
+        intro = native.get("physical_starter_balls_inspected")
+        ids = native.get("map_ids")
+        contract = proof.get("event_contract")
+        if (not compiled_ok or not isinstance(contract, list)
+                or native.get("schema") != 1 or native.get("region") != "SINNOH"
+                or native.get("mode") != "ENGINE_STATIC_INDEX_AND_EVENTS_PROBE_ONLY"
+                or native.get("status") != "NATIVE_STRUCTURAL_CHECK_NOT_GAMEPLAY"
+                or native.get("compile_token") != proof["compile_token"]
+                or native.get("maps_inspected") != 9
+                or native.get("events_inspected") != 24
+                or native.get("warps_inspected") != 16
+                or intro != ["CHIMCHAR", "PIPLUP", "TURTWIG"]
+                or ids != sorted(row["id"] for row in contract)
+                or not isinstance(rows, list) or len(rows) != 3
+                or any(not isinstance(row, dict) or row.get("version") != n
+                       or row.get("player") != player or row.get("opponent") != rival
+                       or row.get("pbs_seed_level_only") != 5
+                       for n, (row, player, rival) in enumerate(zip(
+                           rows,
+                           ("TURTWIG", "CHIMCHAR", "PIPLUP"),
+                           ("CHIMCHAR", "PIPLUP", "TURTWIG"))))
+                or any(native.get(k) is not False for k in (
+                    "battle_executed", "dynamic_level_verified",
+                    "physical_navigation_tested", "save_reload_tested",
+                    "android_verified", "trainer_sprite_rendered",
+                    "barry_ready_marker_created", "gameplay_approved"))):
+            fail("Relatório da engine inconsistente ou marcado como jogável indevidamente")
+        checked = True
+    if compiled_ok and not checked:
+        fail("Compilação sem relatório de eventos/PBS da engine")
     return {
         "region": "SINNOH", "mode": "QA_READ_ONLY_VERIFICATION",
         "save_profile_isolated_in_config": True,
         "compiled_marker_present": compiled_ok,
+        "engine_structural_report_consistent": checked,
         "compile_request_pending": pending,
         "python_verified_trainer_battle": False,
         "starter_events_accepted_in_game": False,
         "gameplay_save_reload_verified": False,
         "android_verified": False,
         "barry_ready_marker_present": False,
-        "ready_to_launch_for_manual_testing": compiled_ok,
+        "ready_to_launch_for_manual_testing": compiled_ok and checked,
         "playable_approved": False,
     }
 
