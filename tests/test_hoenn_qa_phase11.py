@@ -53,6 +53,12 @@ class HoennQA11Tests(unittest.TestCase):
         self.assertEqual(localized_map_name("Rota 101"),"Rota 101")
         self.assertEqual(localized_map_name("Poké Mart de Oldale"),"Poké Mart de Oldale")
         self.assertEqual(localized_map_name("Route 123"),"Rota 123")
+        self.assertEqual(localized_map_name("Petalburg Woods"),"Bosque de Petalburg")
+        self.assertEqual(localized_map_name("Rusturf Tunnel"),"Túnel Rusturf")
+        self.assertEqual(localized_map_name("Granite Cave B1F"),"Caverna de Granito B1F")
+        self.assertEqual(localized_map_name("Mt. Pyre Summit"),"Cume do Monte Pyre")
+        self.assertEqual(localized_map_name("Mauville Game Corner"),"Mauville Salão de Jogos")
+        self.assertEqual(localized_map_name("Cycling Road (Rota 110-C)"),"Ciclovia (Rota 110-C)")
 
     def test_blank_or_multiline_map_names_rejected(self):
         for name in ("", "  ", "X\nY"):
