@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ba3d66b861e5d02c061e5c76e7a5763d80cbf0cc",
+      "date": "2026-11-14T10:58:38-03:00",
+      "title": "fix(hoenn): permitir célula de chegada diagonal adjacente a portas duplas",
+      "category": "Correções"
+    },
+    {
       "sha": "2c46d5192e64dcc20ab9713f7354c9ee5b53fca0",
       "date": "2026-11-14T10:57:54-03:00",
       "title": "docs(hoenn): auditar Etapa 3 e registrar testes/pêndencias nativas",
