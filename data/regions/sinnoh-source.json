@@ -57,7 +57,10 @@
     "explicit_map_remap_planner": "scripts/regions/plan_sinnoh_remap.py",
     "map_remap_tests": "tests/test_sinnoh_remap.py",
     "remap_request_template": "data/regions/sinnoh-remap-request.template.json",
-    "remap_implementation_guide": "docs/SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md"
+    "remap_implementation_guide": "docs/SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md",
+    "geometry_only_preview_converter": "scripts/regions/convert_sinnoh_geometry.py",
+    "geometry_only_preview_tests": "tests/test_sinnoh_geometry_converter.py",
+    "geometry_only_preview_guide": "docs/SINNOH_FASE_01_PREVIA_GEOMETRIA.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -81,7 +84,11 @@
     "id_remap_preview_implemented": true,
     "id_remap_applied_to_game": false,
     "actual_source_map_id_plan_created": false,
-    "gameplay_sinnoh_installed": false
+    "gameplay_sinnoh_installed": false,
+    "geometry_only_preview_code_implemented": true,
+    "geometry_preview_run_against_real_sinnoh": false,
+    "source_scripts_imported": false,
+    "terrain_preview_playable": false
   },
   "progress": {
     "total_phases": 13,
