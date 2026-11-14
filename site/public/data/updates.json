@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d3f72c31a8ca4db0c9ed5a490ec00bbb4492218a",
+      "date": "2026-11-13T21:27:37-03:00",
+      "title": "test(sinnoh): make repeated synthetic Barry PBS fixture setup idempotent",
+      "category": "Testes"
+    },
+    {
       "sha": "f1a9d4dff4adc379ed02fe1345f3ef8c566c4e10",
       "date": "2026-11-13T21:26:54-03:00",
       "title": "test(sinnoh): reject tampered or incomplete Barry PBS and ensure draft verifier never releases marker",
