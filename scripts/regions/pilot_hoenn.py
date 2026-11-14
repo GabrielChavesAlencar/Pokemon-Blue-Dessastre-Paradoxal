@@ -16,6 +16,7 @@ import uuid
 import zlib
 from collections import deque
 from pathlib import Path
+from weakref import ref
 
 from build_johto_elm_lab_v1 import table_values
 from build_johto_events import EVENT_CLASSES, command, event_page, ruby
@@ -278,14 +279,16 @@ def quarantine_underwater_tiles(world, tileset):
 def open_tile(map_data, tileset, x, y):
     key = (id(map_data), id(tileset))
     cached = _TILE_CACHE.get(key)
-    if cached is None:
+    # QA12 reads and drops one map at a time. Python can reuse its object
+    # address for a different map, so IDs alone cannot validate a cache hit.
+    if cached is None or cached[0]() is not map_data or cached[1]() is not tileset:
         attrs = map_data.attrs
         dims, cells = table_values(attrs["@data"].data, 3)
         _, passages = table_values(tileset.attrs["@passages"].data)
         _, priorities = table_values(tileset.attrs["@priorities"].data)
-        cached = (dims, cells, passages, priorities)
+        cached = (ref(map_data), ref(tileset), dims, cells, passages, priorities)
         _TILE_CACHE[key] = cached
-    (w, h, depth), cells, passages, priorities = cached
+    _, _, (w, h, depth), cells, passages, priorities = cached
     if not (0 <= x < w and 0 <= y < h):
         return False
     for layer in reversed(range(depth)):

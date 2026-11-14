@@ -1,6 +1,7 @@
 """Hoenn QA teleport source geometry: 199 tested map stops, never guessed."""
 from __future__ import annotations
 
+import struct
 import sys
 import unittest
 from pathlib import Path
@@ -11,8 +12,9 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/"scripts/regions"))
 
-from pilot_hoenn import SOURCE_MAPS, build_test_stops, serialize_test_stops
+from pilot_hoenn import SOURCE_MAPS, build_test_stops, open_tile, serialize_test_stops
 from hoenn_qa_teleport_upgrade import ensure_test_tools, prepare_updates
+from server.ruby_marshal import RubyData, RubyObject
 
 
 class TeleportSourceTests(unittest.TestCase):
@@ -75,6 +77,21 @@ class TeleportSourceTests(unittest.TestCase):
             serialize_test_stops([(7,700,8,8,2,"Littleroot")])
         with self.assertRaisesRegex(ValueError,"incompleto"):
             serialize_test_stops([(7,700,8,8,2,"Littleroot")]*199)
+
+    def test_loading_a_new_map_with_reused_address_cannot_reuse_its_terrain(self):
+        def table(dim, values):
+            size=len(values)
+            return RubyData("Table",struct.pack("<5I",dim,size,1,1,size)
+                            +struct.pack(f"<{size}H",*values))
+        tiles=RubyObject("RPG::Tileset",{
+            "@passages":table(1,(0,0,15)), "@priorities":table(1,(0,0,0))})
+        # Sequential parsing in the QA verifier can reuse a released map's
+        # memory address. Make that collision deterministic.
+        with patch("pilot_hoenn.id",return_value=-1,create=True):
+            self.assertTrue(open_tile(
+                RubyObject("RPG::Map",{"@data":table(3,(1,))}),tiles,0,0))
+            self.assertFalse(open_tile(
+                RubyObject("RPG::Map",{"@data":table(3,(2,))}),tiles,0,0))
 
 
 if __name__=="__main__":
