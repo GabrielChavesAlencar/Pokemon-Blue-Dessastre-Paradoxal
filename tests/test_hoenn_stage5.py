@@ -85,7 +85,7 @@ class HoennStage5Tests(unittest.TestCase):
             self.assertEqual(len(coords), len(set(coords)), f"overlap on Map {mid}")
             for e in mp.attrs["@events"].values():
                 by_name[e.attrs["@name"].decode()] = (mid, e)
-        for name, expected in (("HN5_NPC_31_6_5", "BlueHoennPilot.brawly"),
+        for name, expected in (("HN5_NPC_31_6_5", "BlueHoennPilot.qa7_gym_battle(:KNUCKLE)"),
                                ("HN5_NPC_162_11_11", "BlueHoennPilot.steven_letter"),
                                ("HN5_NPC_39_43_8", "BlueHoennPilot.stern"),
                                ("HN5_NPC_105_11_5", None)):
