@@ -882,6 +882,8 @@ def add_stage7_events(maps, game):
     append_event(maps[mid],"HN7_MeteoriteMachine",x,y,
                  event_page(script="BlueHoennPilot.meteorite_machine"))
     for mid,x,y,reason in FUTURE_GATES_STAGE7:
+        if reason == "MAGMA_HIDEOUT" and 182 in maps:
+            continue  # Stage9 replaces this closed gate with a guarded entry.
         page=event_page(script=f"BlueHoennPilot.stage7_future_gate(:{reason})",
                         touch=True)
         page.attrs["@through"]=True
@@ -1009,6 +1011,9 @@ def add_stage8_events(maps, game, rival_image):
         gone.attrs["@list"]=[command(0)]
         maps[mid].attrs["@events"][event_id].attrs["@pages"].append(gone)
     for mid,x,y,key in FUTURE_GATES_STAGE8:
+        if (key == "AQUA_HIDEOUT" and 215 in maps or
+            key == "MT_PYRE_PIER" and 141 in maps):
+            continue  # No Stage8 placeholder on an audited Stage9 approach.
         page=event_page(script=f"BlueHoennPilot.stage8_future_gate(:{key})",
                         touch=True)
         page.attrs["@through"]=True
