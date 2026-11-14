@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "38b2a3998d5380c2520919875bc2c010df9949c9",
+      "date": "2026-11-13T22:02:30-03:00",
+      "title": "test(sinnoh): fix ASCII-only bytes literal in synthetic QA fixture",
+      "category": "Testes"
+    },
+    {
       "sha": "d6e295c9faff626a2d0f964f2184d164dc13525f",
       "date": "2026-11-13T22:01:59-03:00",
       "title": "test(sinnoh): exercise private 9-map Twinleaf/3-ball/Barry PBS integration bundle with synthetic geometry and rollback guards",
