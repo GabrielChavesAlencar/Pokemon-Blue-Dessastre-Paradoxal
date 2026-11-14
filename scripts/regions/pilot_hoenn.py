@@ -86,6 +86,17 @@ from hoenn_stage9 import (
     MAGMA_HIDEOUT_GATE, AQUA_HIDEOUT_GATE,
 )
 
+from hoenn_stage10 import (
+    SOURCE_MAPS_STAGE10, SURF_BORDERS_STAGE10, STAGE10_MAP_GRAPH_EDGES,
+    JUAN_EVENT, JUAN_PBS, JUAN_TEAM, ARCHIE_PBS, ARCHIE_TEAM,
+    WALLY_ROAD_PBS, WALLY_ROAD_TEAM, ELITE_EVENTS, ELITE_PBS,
+    ELITE_TEAMS, CHAMPION_EVENT, CHAMPION_PBS, CHAMPION_TEAM,
+    SOOTOPOLIS_CRISIS_EVENT, ORIGIN_WALLACE_EVENT,
+    SKY_PILLAR_WALLACE_EVENT, RAYQUAZA_EVENT,
+    SEAFLOOR_AWAKENING_EVENT, WALLY_VICTORY_ROAD_EVENT,
+    LEAGUE_EXIT_EVENT, HALL_OF_FAME_EVENT, STAGE10_SIGNS,
+)
+
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
     7: "Littleroot Town", 8: "Casa do jogador", 11: "Laboratório do Birch",
@@ -98,6 +109,7 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE7,
     **SOURCE_MAPS_STAGE8,
     **SOURCE_MAPS_STAGE9,
+    **SOURCE_MAPS_STAGE10,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -153,7 +165,8 @@ MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
               for mid in SOURCE_MAPS_STAGE9}}
 OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 53, 58, 101, 102, 103, 104,
             108, 111, 113, 114, 117, 121, 123, 125, 130, 132, 134,
-            135, 138, 139, 141, 144, 156, 178, 180, 212, 213, 48, 64, 69, 76)
+            135, 138, 139, 141, 144, 156, 178, 180, 212, 213, 48, 64, 69, 76,
+            83,88,91,146,147,148,149,150,151,152,153,154,155,241,322)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -1035,7 +1048,7 @@ def add_stage8_events(maps, game, rival_image):
 
 
 
-def scan_stage9_source_events(original_events, maps):
+def scan_stage9_source_events(original_events, maps, allowed_maps=None, strict=True):
     """Extract ONLY simple direct transfers + known pbItemBall from pinned RXDATA.
 
     Reads source event headers to locate original geometry; never copies or
@@ -1043,13 +1056,14 @@ def scan_stage9_source_events(original_events, maps):
     transfer to an uninstalled map are intentionally excluded. Sea borders
     are governed by SURF_BORDERS_STAGE9 in PBS, not land-only graph edges.
     """
-    transfer_names=re.compile(r"door|exit|entrance|stairs|warp tile",re.I)
+    allowed_maps = set(SOURCE_MAPS_STAGE9) if allowed_maps is None else set(allowed_maps)
+    transfer_names=re.compile(r"door|exit|entrance|stairs|ladder|warp tile",re.I)
     item_names=re.compile(r"^(?:HiddenItem|Item)(?:\b|$)",re.I)
     item_call=re.compile(r"\bpb(?:Hidden)?ItemBall\(\s*:([A-Z0-9_]+)\s*[,)]")
     transfers, pickups = [], []
     for mid, events in original_events.items():
-        if mid not in SOURCE_MAPS_STAGE9:
-            raise ValueError(f"Fonte não autoriza eventos Stage9 em Map{mid:03}")
+        if mid not in allowed_maps:
+            raise ValueError(f"Fonte não autoriza eventos no mapa Map{mid:03}")
         mp=maps[mid]
         w,h=mp.attrs["@width"],mp.attrs["@height"]
         for ev in events.values():
@@ -1075,7 +1089,11 @@ def scan_stage9_source_events(original_events, maps):
                     if dst in maps:
                         dw,dh=maps[dst].attrs["@width"],maps[dst].attrs["@height"]
                         if not 0<=dx<dw or not 0<=dy<dh:
-                            raise ValueError(f"Warp RXDATA Stage9 fora de mapa {mid}/{name} -> {dst}/{dx}/{dy}")
+                            if strict:
+                                raise ValueError(f"Warp RXDATA fora de mapa {mid}/{name} -> {dst}/{dx}/{dy}")
+                            # Pinned donor contains some alternate-map warps
+                            # with mismatched target geometry. Never invent a landing.
+                            continue
                         transfers.append((mid,x,y,dst,dx,dy,name))
             if item_names.match(name):
                 identities=set()
@@ -1212,6 +1230,85 @@ def add_stage9_events(maps,game,source_warps,source_pickups):
     }
 
 
+
+def add_stage10_events(maps, game, source_warps, source_pickups):
+    """Reauthor only audited static entrances/items; never run source scripts."""
+    for mid,x,y,dst,dx,dy,_name in source_warps:
+        if mid not in SOURCE_MAPS_STAGE10 or dst not in maps:
+            raise ValueError(f"Stage10 RXDATA entrada inválida {mid}->{dst}")
+        page=event_page(
+            script=f"BlueHoennPilot.stage10_transfer({mid},{dst},{dx},{dy})",
+            touch=True)
+        page.attrs["@through"]=True
+        append_event(maps[mid],f"HN10_Warp_{mid}_{x}_{y}",x,y,page)
+    for mid,x,y,item,visible in source_pickups:
+        key=f"STAGE10_{mid}_{x}_{y}"
+        page=event_page(script="nil",sprite="Object_Ball" if visible else "")
+        event_id=append_event(maps[mid],f"HN10_Item_{mid}_{x}_{y}",x,y,page)
+        page.attrs["@list"][0]=command(
+            355,f'BlueHoennPilot.pickup(:{item},"{key}",{event_id})'.encode("ascii"))
+        cleared=event_page(script="nil")
+        cleared.attrs["@condition"].attrs["@self_switch_valid"]=True
+        cleared.attrs["@condition"].attrs["@self_switch_ch"]=b"A"
+        cleared.attrs["@through"]=True
+        cleared.attrs["@list"]=[command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(cleared)
+    for mid,x,y,key in STAGE10_SIGNS:
+        append_event(maps[mid],f"HN10_Sign_{key}",x,y,
+                     event_page(script=f"BlueHoennPilot.sign_stage10(:{key})"))
+    for mid,x,y,handler,label in (
+        (*SOOTOPOLIS_CRISIS_EVENT,"BlueHoennPilot.sootopolis_crisis","Sootopolis"),
+        (*SEAFLOOR_AWAKENING_EVENT,"BlueHoennPilot.seafloor_awakening","Kyogre"),
+        (*RAYQUAZA_EVENT,"BlueHoennPilot.rayquaza_stage10","Rayquaza"),
+        (*WALLY_VICTORY_ROAD_EVENT,"BlueHoennPilot.wally_victory_road","Wally"),
+        (*LEAGUE_EXIT_EVENT,"BlueHoennPilot.stage10_transfer(98,99,9,18)","ChampionExit"),
+        (*HALL_OF_FAME_EVENT,"BlueHoennPilot.hall_of_fame_stage10","HallOfFame"),
+    ):
+        page=event_page(script=handler,touch=True)
+        page.attrs["@through"]=True
+        append_event(maps[mid],f"HN10_Story_{label}",x,y,page)
+    bosses=(
+        ("Juan",JUAN_EVENT,"BlueHoennPilot.juan",
+         ("NPC_RSE_Juan","trainer_YOUNGSTER")),
+        ("Archie",(236,14,46),"BlueHoennPilot.seafloor_archie",
+         ("NPC_RSE_Archie","trainer_YOUNGSTER")),
+        ("OriginWallace",ORIGIN_WALLACE_EVENT,
+         "BlueHoennPilot.origin_wallace_stage10",
+         ("NPC_RSE_Wallace","trainer_YOUNGSTER")),
+        ("PillarWallace",SKY_PILLAR_WALLACE_EVENT,
+         "BlueHoennPilot.sky_pillar_wallace",
+         ("NPC_RSE_Wallace","trainer_YOUNGSTER")),
+        ("Sidney",ELITE_EVENTS[0],"BlueHoennPilot.elite_four(0)",
+         ("NPC_RSE_Sidney","trainer_YOUNGSTER")),
+        ("Phoebe",ELITE_EVENTS[1],"BlueHoennPilot.elite_four(1)",
+         ("NPC_RSE_Phoebe","trainer_LASS")),
+        ("Glacia",ELITE_EVENTS[2],"BlueHoennPilot.elite_four(2)",
+         ("NPC_RSE_Glacia","trainer_LASS")),
+        ("Drake",ELITE_EVENTS[3],"BlueHoennPilot.elite_four(3)",
+         ("NPC_RSE_Drake","trainer_YOUNGSTER")),
+        ("Wallace",CHAMPION_EVENT,"BlueHoennPilot.champion_wallace",
+         ("NPC_RSE_Wallace","trainer_YOUNGSTER")),
+    )
+    art={}
+    for label,(mid,x,y),handler,candidates in bosses:
+        sprite,placeholder=select_native_character(game,candidates,role=label)
+        art[label]={"sprite":sprite,"placeholder":placeholder}
+        append_event(maps[mid],f"HN10_Boss_{label}",x,y,
+                     event_page(script=handler,sprite=sprite))
+    return {
+        "new_maps":len(SOURCE_MAPS_STAGE10),
+        "original_direct_warps":len(source_warps),
+        "original_audited_item_events":len(source_pickups),
+        "scripted_bosses":8,
+        "boss_graphics":art,
+        "puzzle_ice_native_verified":False,
+        "dive_waterfall_native_verified":False,
+        "rayquaza_cinematic_native_verified":False,
+        "hall_of_fame_ui_native_verified":False,
+        "native_gameplay_verified":False,
+    }
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
@@ -1271,6 +1368,7 @@ def build_overlay(game, source):
     donor_tiles = loads(source.read("Data/Tilesets.rxdata"))
     maps, tiles, tile_ids, overlay = {}, {}, {}, {}
     stage9_original_events = {}
+    stage10_original_events = {}
     for old in SOURCE_MAPS:
         m = loads(source.read(f"Data/Map{old:03}.rxdata"))
         if not isinstance(m, RubyObject) or m.name != "RPG::Map":
@@ -1302,6 +1400,8 @@ def build_overlay(game, source):
         maps[old], tiles[old] = m, native_tiles[tile_ids[native_id]]
         if old in SOURCE_MAPS_STAGE9:
             stage9_original_events[old] = dict(m.attrs.get("@events", {}))
+        if old in SOURCE_MAPS_STAGE10:
+            stage10_original_events[old] = dict(m.attrs.get("@events", {}))
         m.attrs.update({
             "@tileset_id": tile_ids[native_id], "@events": {}, "@autoplay_bgm": False,
             "@autoplay_bgs": False, "@bgm": ruby("RPG::AudioFile", name=b"", volume=100, pitch=100),
@@ -1312,6 +1412,10 @@ def build_overlay(game, source):
         stage9_original_events, maps)
     if not stage9_source_warps:
         raise ValueError("Mapas Stage9 sem warps auditáveis na fonte RXDATA")
+    stage10_source_warps, stage10_source_items = scan_stage9_source_events(
+        stage10_original_events, maps, allowed_maps=SOURCE_MAPS_STAGE10, strict=False)
+    if not stage10_source_warps:
+        raise ValueError("Mapas Stage10 sem transferências de origem verificadas")
     edges, required = validate_geometry(maps, tiles)
     balls = starter_ball_positions(maps, tiles, edges, required)
     rival = rival_position(maps, tiles, edges, required, balls)
@@ -1328,6 +1432,7 @@ def build_overlay(game, source):
         *OFFSET_BORDERS_STAGE7,
         *OFFSET_BORDERS_STAGE8,
         *SURF_BORDERS_STAGE9,
+        *SURF_BORDERS_STAGE10,
     ):
         donor = f"{a},{edge_a},{off_a},{b},{edge_b},{off_b}"
         if donor not in upstream_connections:
@@ -1372,6 +1477,8 @@ def build_overlay(game, source):
     stage8_counts = add_stage8_events(maps, game, rival_image)
     stage9_counts = add_stage9_events(
         maps, game, stage9_source_warps, stage9_source_items)
+    stage10_counts = add_stage10_events(
+        maps, game, stage10_source_warps, stage10_source_items)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
