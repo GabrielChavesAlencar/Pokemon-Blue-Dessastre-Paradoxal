@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f56960923cf5f71c2ef36cf6abb3856e66c87181",
+      "date": "2026-11-14T00:00:34-03:00",
+      "title": "test(regions): update router guard to include Sinnoh backlog alongside pilots",
+      "category": "Testes"
+    },
+    {
+      "sha": "35b616f2cbf3540b513cb714a7cb32ad1dbc736f",
+      "date": "2026-11-14T00:00:30-03:00",
+      "title": "test(portal): recognize pending and validation status class variants",
+      "category": "Testes"
+    },
+    {
       "sha": "44ab63623f4e8b185f872f793a5da8a9b56b12e9",
       "date": "2026-11-13T23:59:47-03:00",
       "title": "docs(regions): describe four-region pending content catalog and native verification workflow",
