@@ -224,6 +224,15 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
             or (project / ".blue-work").is_symlink()):
         fail("Usar somente a base game/ deste projeto; nunca outro piloto")
     native = index_base(base)
+    for forbidden in (
+        "Sinnoh pilot.json", "Data/blue-sinnoh-compiled.txt",
+        "Data/blue-sinnoh-compile-request.txt",
+        "Plugins/ZZZZZ Blue Sinnoh Pilot",
+        "Plugins/ZZZZZ Blue Sinnoh Intro",
+        "Plugins/ZZZZZ Blue Sinnoh QA Start",
+    ):
+        if (base / forbidden).exists() or (base / forbidden).is_symlink():
+            fail("Base contém piloto Sinnoh antigo/novo: usar uma instalação Decades limpa")
     overlay_report, overlay = load_overlay(overlay_dir, project=project)
     if (base / BARRY_READY).exists():
         fail("Marcador Barry já existe em game/ principal")
@@ -249,6 +258,31 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
             fail("Overlay sobrescreveria arquivo já existente: " + rel)
     if (not isinstance(spec, dict) or spec.get("region") != "SINNOH"):
         fail("Especificação local Sinnoh inválida")
+    rows = spec.get("maps")
+    if (not isinstance(rows, list) or len(rows) != 9 or
+            any(not isinstance(row, dict) for row in rows)):
+        fail("Especificação não inclui nove mapas auditados")
+    for row in rows:
+        mid = row.get("map_id")
+        if type(mid) is not int or mid not in overlay_maps:
+            fail("Especificação tem mapa ausente do overlay")
+        native_map = loads(overlay[f"Data/Map{mid:03d}.rxdata"])
+        if not isinstance(native_map, RubyObject) or native_map.name != "RPG::Map":
+            fail("Mapa compilado do overlay inválido")
+        events = native_map.attrs.get("@events")
+        if not isinstance(events, dict) or len(events) != len(row.get("events", [])):
+            fail("Eventos compilados não correspondem à especificação local")
+        expected = {
+            event["key"]: (event["x"], event["y"])
+            for event in row["events"]
+        }
+        actual = {
+            item.attrs["@name"].decode("ascii"):
+                (item.attrs.get("@x"), item.attrs.get("@y"))
+            for item in events.values()
+        }
+        if actual != expected:
+            fail("Evento/coordenada da especificação mudou após montar overlay")
     start = spec.get("start")
     if not isinstance(start, dict) or start.get("symbol") != "SINNOH_PLAYER_BEDROOM":
         fail("Spawn deve começar no quarto do jogador")
