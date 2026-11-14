@@ -1284,7 +1284,7 @@ module BlueHoennPilot
   def self.cycling_gate(dest_source, x, y)
     flags = state
     return false unless flags
-    allowed = [[114, 18, 16], [114, 19, 88], [115, 14, 9], [115, 14, 21]]
+    allowed = [[114, 18, 16], [114, 19, 88], [115, 14, 7], [115, 14, 21]]
     return false unless allowed.include?([dest_source, x, y])
     # Players may ALWAYS leave the cycling route, even if they discarded
     # their bicycle during a legacy save migration.
