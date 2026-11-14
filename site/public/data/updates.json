@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "766f1e7a3edf0418f4e1ec2206421c8b34e9a598",
+      "date": "2026-11-14T10:17:17-03:00",
+      "title": "test(hoenn): espelhar a geometria 20x20 da Route 101",
+      "category": "Testes"
+    },
+    {
+      "sha": "35c8b8cfd6c603e7465fab7ff5ea13571316dd20",
+      "date": "2026-11-14T10:17:06-03:00",
+      "title": "fix(hoenn): permitir chegar às Poké Bolas após o pedido de socorro",
+      "category": "Correções"
+    },
+    {
       "sha": "f8cda430cfabc79b8872907156c0815b962ae48d",
       "date": "2026-11-14T10:16:48-03:00",
       "title": "fix(hoenn): posicionar maleta no interior caminhável da Route 101 real",
