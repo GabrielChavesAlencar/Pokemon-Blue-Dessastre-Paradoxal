@@ -66,7 +66,12 @@
     "twinleaf_event_compiler": "scripts/regions/build_sinnoh_twinleaf_events.py",
     "twinleaf_story_tests": "tests/test_sinnoh_twinleaf_events.py",
     "twinleaf_pure_ruby_runtime_tests": "tests/sinnoh_pilot_runtime.rb",
-    "twinleaf_workflow_guide": "docs/SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md"
+    "twinleaf_workflow_guide": "docs/SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md",
+    "barry_three_team_pbs_builder": "scripts/regions/build_sinnoh_barry_pbs.py",
+    "barry_pbs_draft_verifier": "scripts/regions/verify_sinnoh_barry_pbs.py",
+    "barry_pbs_generator_tests": "tests/test_sinnoh_barry_pbs.py",
+    "barry_pbs_verifier_tests": "tests/test_sinnoh_barry_verify.py",
+    "barry_pbs_qa_handoff": "docs/SINNOH_FASE_03_BARRY_PBS.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -100,7 +105,12 @@
     "twinleaf_event_compiler_exists": true,
     "twinleaf_events_installed_in_game": false,
     "twinleaf_event_positions_verified_with_real_maps": false,
-    "barry_three_pbs_teams_validated": false
+    "barry_three_pbs_teams_validated": false,
+    "barry_pbs_builder_prepared": true,
+    "barry_three_teams_compiled_in_engine": false,
+    "barry_ready_marker_created": false,
+    "barry_actual_level_scaling_tested": false,
+    "legacy_pilot_overlap_johto_range_identified": true
   },
   "progress": {
     "total_phases": 13,
@@ -110,7 +120,9 @@
     "remap_substeps_prepared": 6,
     "remap_substeps_total": 9,
     "twinleaf_story_preparation_steps_done": 5,
-    "twinleaf_story_preparation_steps_total": 8
+    "twinleaf_story_preparation_steps_total": 8,
+    "barry_pbs_prep_steps_done": 4,
+    "barry_pbs_prep_steps_total": 6
   },
   "blockers": [
     "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
