@@ -37,7 +37,11 @@ A partir da raiz do repositório:
 
 Para testar uma cópia privada offline, informar --copy apontando para a pasta de estágio ou piloto, incluindo Data e PBS. A verificação de Hoenn requer também o arquivo Hoenn pilot.json, que contém a tabela de remapeamento da fonte para MapIDs de destino.
 
-    python scripts/regions/verify_trainer_event_bindings.py --copy .blue-work/johto-staging-violet-v1 --output .blue-work/trainer-bindings-private.json
+    python scripts/regions/verify_trainer_event_bindings.py --copy .blue-work/johto-staging-violet-v1 --scope JOHTO --output .blue-work/trainer-bindings-private.json
+    python scripts/regions/verify_trainer_event_bindings.py --copy .blue-work/johto-staging-routes-v1 --scope JOHTO_ROUTES --output .blue-work/trainer-routes.json
+    python scripts/regions/verify_trainer_event_bindings.py --copy .blue-work/hoenn-pilot --scope HOENN --output .blue-work/trainer-hoenn.json
+
+A pasta .blue-work/hoenn-pilot é apenas um exemplo: use o caminho efetivo da cópia privada gerada no ambiente local. Os escopos adicionais são JOHTO_VIOLET e ALL. Escopos menores evitam exigir eventos de outras regiões em um estágio parcial.
 
 Com --strict o auditor retorna código 2 se houver vínculos ausentes em uma cópia informada. O relatório continua a marcar Game.exe e compilação real como **não verificados**, mesmo quando os bytes do mapa e PBS coincidem.
 
