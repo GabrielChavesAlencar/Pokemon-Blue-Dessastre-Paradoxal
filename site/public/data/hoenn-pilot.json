@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Piloto isolado Hoenn: Dewford, Granite Cave e Slateport em desenvolvimento. Dados-base Emerald sem níveis fixos no jogo; barco é uma viagem por evento, não navegação/Surf implementados. Brawly e Stern requerem teste nativo no Game.exe.",
+  "note": "Piloto de Hoenn até Mauville/Route110: 58 MapIDs de referência. Níveis históricos não são fixos; Dynamo Badge usa BlueRegions. Bike/Cycling Road e barreiras elétricas precisam de validação Game.exe. Rota 111/118 e Trick House ainda não estão implementadas.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -534,6 +534,91 @@
           ]
         ]
       }
+    },
+    {
+      "name": "Mauville City",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Mauville",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Mauville",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Mauville",
+      "encounters": {}
+    },
+    {
+      "name": "Rydel's Cycles",
+      "encounters": {}
+    },
+    {
+      "name": "Mauville Game Corner",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Mauville",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 110",
+      "encounters": {
+        "Grama": [
+          [
+            "ELECTRIKE",
+            12,
+            13,
+            30
+          ],
+          [
+            "POOCHYENA",
+            12,
+            12,
+            20
+          ],
+          [
+            "GULPIN",
+            12,
+            13,
+            15
+          ],
+          [
+            "ODDISH",
+            13,
+            13,
+            10
+          ],
+          [
+            "WINGULL",
+            12,
+            12,
+            10
+          ],
+          [
+            "PLUSLE",
+            13,
+            13,
+            8
+          ],
+          [
+            "MINUN",
+            13,
+            13,
+            7
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Cycling Road (Rota 110-C)",
+      "encounters": {}
+    },
+    {
+      "name": "Portaria da Cycling Road",
+      "encounters": {}
     }
   ],
   "trainers": [
@@ -1345,10 +1430,606 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Edward",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ABRA",
+              15
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Edwin",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "LOMBRE",
+              14
+            ],
+            [
+              "NUZLEAF",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Joseph",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ELECTRIKE",
+              14
+            ],
+            [
+              "VOLTORB",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Timmy",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ARON",
+              15
+            ],
+            [
+              "ELECTRIKE",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jaclyn",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ABRA",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Dale",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "TENTACOOL",
+              11
+            ],
+            [
+              "WAILMER",
+              14
+            ],
+            [
+              "TENTACOOL",
+              11
+            ],
+            [
+              "WAILMER",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Kaleb",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MINUN",
+              14
+            ],
+            [
+              "PLUSLE",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Isabel",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "PLUSLE",
+              14
+            ],
+            [
+              "MINUN",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Anthony",
+      "area": "Cycling Road (Rota 110-C)",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MAGNEMITE",
+              14
+            ],
+            [
+              "MAGNEMITE",
+              14
+            ],
+            [
+              "MAGNEMITE",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Abigail",
+      "area": "Cycling Road (Rota 110-C)",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MAGNEMITE",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Benjamin",
+      "area": "Cycling Road (Rota 110-C)",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MAGNEMITE",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jasmine",
+      "area": "Cycling Road (Rota 110-C)",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MAGNEMITE",
+              14
+            ],
+            [
+              "MAGNEMITE",
+              14
+            ],
+            [
+              "VOLTORB",
+              6
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jacob",
+      "area": "Cycling Road (Rota 110-C)",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "VOLTORB",
+              6
+            ],
+            [
+              "VOLTORB",
+              6
+            ],
+            [
+              "MAGNEMITE",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Alyssa",
+      "area": "Cycling Road (Rota 110-C)",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MAGNEMITE",
+              15
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Vivian",
+      "area": "Ginásio de Mauville",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "MEDITITE",
+              17
+            ],
+            [
+              "MEDITITE",
+              17
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Kirk",
+      "area": "Ginásio de Mauville",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ELECTRIKE",
+              17
+            ],
+            [
+              "VOLTORB",
+              17
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Ben",
+      "area": "Ginásio de Mauville",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              17
+            ],
+            [
+              "GULPIN",
+              17
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Angelo",
+      "area": "Ginásio de Mauville",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "ILLUMISE",
+              17
+            ],
+            [
+              "VOLBEAT",
+              17
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Shawn",
+      "area": "Ginásio de Mauville",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "VOLTORB",
+              17
+            ],
+            [
+              "MAGNEMITE",
+              17
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Wally",
+      "area": "Mauville City",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "RALTS",
+              16
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Wattson",
+      "area": "Ginásio de Mauville",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "VOLTORB",
+              20
+            ],
+            [
+              "ELECTRIKE",
+              20
+            ],
+            [
+              "MAGNETON",
+              22
+            ],
+            [
+              "MANECTRIC",
+              24
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "DYNAMO"
+    },
+    {
+      "name": "May (Rota 110/Treecko)",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "WINGULL",
+              18
+            ],
+            [
+              "LOMBRE",
+              18
+            ],
+            [
+              "COMBUSKEN",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Rota 110/Torchic)",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "LOMBRE",
+              18
+            ],
+            [
+              "SLUGMA",
+              18
+            ],
+            [
+              "MARSHTOMP",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "May (Rota 110/Mudkip)",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "SLUGMA",
+              18
+            ],
+            [
+              "WINGULL",
+              18
+            ],
+            [
+              "GROVYLE",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Rota 110/Treecko)",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "WINGULL",
+              18
+            ],
+            [
+              "LOMBRE",
+              18
+            ],
+            [
+              "COMBUSKEN",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Rota 110/Torchic)",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "LOMBRE",
+              18
+            ],
+            [
+              "SLUGMA",
+              18
+            ],
+            [
+              "MARSHTOMP",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brendan (Rota 110/Mudkip)",
+      "area": "Rota 110",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald (níveis são ajustados pelo Blue)",
+          "pokemon": [
+            [
+              "SLUGMA",
+              18
+            ],
+            [
+              "WINGULL",
+              18
+            ],
+            [
+              "GROVYLE",
+              20
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
   ],
   "native_gameplay_verified": false,
   "stage3_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
   "stage4_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
-  "stage5_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
+  "stage5_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
+  "stage6_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
