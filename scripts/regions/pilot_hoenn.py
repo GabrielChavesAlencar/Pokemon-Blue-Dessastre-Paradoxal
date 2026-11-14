@@ -175,8 +175,10 @@ def validate_geometry(maps, tiles):
         # the blocked event graphics themselves.
         if a[0] != a_arrival[0] or b[0] != b_arrival[0]:
             raise ValueError("Warp Hoenn cruza MapID incorreto na origem")
-        if (abs(a[1] - a_arrival[1]) + abs(a[2] - a_arrival[2]) != 1 or
-                abs(b[1] - b_arrival[1]) + abs(b[2] - b_arrival[2]) != 1):
+        def close_to_door(door, landing):
+            dx, dy = abs(door[1] - landing[1]), abs(door[2] - landing[2])
+            return dx <= 1 and dy <= 1 and dx + dy >= 1
+        if not close_to_door(a, a_arrival) or not close_to_door(b, b_arrival):
             raise ValueError(f"Destino do warp não é vizinho da porta: {a}/{b}")
         edges.setdefault(a_arrival, []).append(b_arrival)
         edges.setdefault(b_arrival, []).append(a_arrival)
