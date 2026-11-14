@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d03b68f6b56fe311510fe94393cae776ccd87267",
+      "date": "2026-11-14T10:04:42-03:00",
+      "title": "feat(hoenn): gerar três Poké Bolas e encontro do rival a partir dos mapas reais",
+      "category": "Novidades"
+    },
+    {
       "sha": "3b614de8b26abbeb31a5c8d92b2a20d7b2898093",
       "date": "2026-11-14T10:02:45-03:00",
       "title": "feat(hoenn): implementar resgate, rival 103, Pokédex e tênis em flags regionais",
