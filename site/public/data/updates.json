@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "be1d7a6002b46b72df198c4742c754bdd975d15c",
+      "date": "2026-11-14T11:49:23-03:00",
+      "title": "fix(hoenn): corrigir Protein de Route 106 e impedir evento duplicado Soft Sand",
+      "category": "Correções"
+    },
+    {
       "sha": "a0512ae688e5deca1d1c0da5e89b4047593c1c8d",
       "date": "2026-11-14T11:48:53-03:00",
       "title": "feat(hoenn): catalogar mapas reais de Dewford/Slateport, Granite Cave, Brawly e Stern",
