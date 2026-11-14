@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "44ab63623f4e8b185f872f793a5da8a9b56b12e9",
+      "date": "2026-11-13T23:59:47-03:00",
+      "title": "docs(regions): describe four-region pending content catalog and native verification workflow",
+      "category": "Documentação"
+    },
+    {
       "sha": "4a7279fc72d5e0b3166302dbebc585f4e108b0d5",
       "date": "2026-11-13T23:58:56-03:00",
       "title": "style(portal): distinguish validation status from unadded content",
