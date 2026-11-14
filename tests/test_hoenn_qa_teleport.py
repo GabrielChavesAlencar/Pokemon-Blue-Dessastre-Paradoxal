@@ -12,6 +12,7 @@ sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/"scripts/regions"))
 
 from pilot_hoenn import SOURCE_MAPS, build_test_stops, serialize_test_stops
+from hoenn_qa_teleport_upgrade import ensure_test_tools, prepare_updates
 
 
 class TeleportSourceTests(unittest.TestCase):
@@ -57,6 +58,17 @@ class TeleportSourceTests(unittest.TestCase):
         with patch("pilot_hoenn.open_tile",return_value=False):
             with self.assertRaisesRegex(ValueError,"sem célula"):
                 build_test_stops(self.maps,self.tiles,self.ids)
+
+    def test_upgrader_refuses_foreign_or_unscoped_copies(self):
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory() as temporary:
+            outside = Path(temporary)
+            with self.assertRaisesRegex(ValueError, ".blue-work"):
+                prepare_updates(outside, outside)
+            with self.assertRaisesRegex(ValueError, ".blue-work"):
+                ensure_test_tools(outside, outside)
+        with self.assertRaisesRegex(ValueError, "Fase12"):
+            prepare_updates(ROOT / ".blue-work/hoenn-qa-fase10", ROOT / "game")
 
     def test_all_199_stops_required_for_serialization(self):
         with self.assertRaisesRegex(ValueError,"incompleto"):
