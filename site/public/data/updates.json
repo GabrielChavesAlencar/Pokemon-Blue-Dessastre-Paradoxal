@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7c2c887b77dee28ed87a423aba78bef042c717b2",
+      "date": "2026-11-14T18:48:15-03:00",
+      "title": "feat(hoenn): TESTAR_HOENN auto-upgrades existing QA12 test-only teleport safely",
+      "category": "Novidades"
+    },
+    {
+      "sha": "fc8552025eebb3da40505b686528a9f83c7df3b7",
+      "date": "2026-11-14T18:48:01-03:00",
+      "title": "feat(hoenn): safely refresh existing QA12 test copy with 199 teleports, atomic rollback and backups",
+      "category": "Novidades"
+    },
+    {
       "sha": "6400b9d3e06c782c7bc293b002ba3820988630e3",
       "date": "2026-11-14T18:46:45-03:00",
       "title": "test(hoenn): validate 199 safe QA landings, no NPC overlap and donor MapIDs",
