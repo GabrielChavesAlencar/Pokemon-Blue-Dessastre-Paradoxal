@@ -55,7 +55,7 @@ def inputs(root):
     story_stage = stage(root, "story", story, story_plan["plan_sha256"])
     story_path = root / story_stage["stage_relative_path"]
     game = barry_fixture(root)
-    (game / "Game.exe").write_bytes(b"synthetic—not an executable")
+    (game / "Game.exe").write_bytes(b"synthetic not executable")
     draft = root / ".blue-work/sinnoh-barry-draft"
     publish_barry(game, draft, root=root)
     plugin = root / "scripts/regions/SinnohPilot.rb"
