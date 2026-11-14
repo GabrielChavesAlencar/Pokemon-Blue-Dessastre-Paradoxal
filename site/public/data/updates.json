@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0bf0b16fd2c3a42c257d19058f33252667faeaf6",
+      "date": "2026-11-14T17:37:27-03:00",
+      "title": "test(hoenn): stage10 scenario follows map-local Elite Four and Wallace rooms",
+      "category": "Testes"
+    },
+    {
+      "sha": "b112db8ad45c03771eba92eeed68319f1048dc4e",
+      "date": "2026-11-14T17:37:10-03:00",
+      "title": "feat(hoenn): QA09 require all League victories in order and correct battle room",
+      "category": "Novidades"
+    },
+    {
       "sha": "314571ca531dac01c610417f3caa0f5bc43f8dc8",
       "date": "2026-11-14T17:32:07-03:00",
       "title": "docs(hoenn): Phase 8 Victory Road/Wally progress, gates, private QA and playtest checklist",
