@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "Q05–Q07: fornecer a fonte auditada e as coordenadas reais de Twinleaf/Sandgem, executar a montagem isolada, abrir Game.exe QA somente para compilação, verificar save profiles e então gameplay Windows/JoiPlay. Não ativar Barry sem QA nativa.",
+  "next": "V05–V07: executar na máquina local autorizada a compilação Essentials e a sondagem nativa de 9 mapas/24 eventos/3 versões Barry; depois gameplay/saves Windows e Android. Em GitHub há somente código e CI sintética.",
   "tasks": [
     {
       "id": "S01",
@@ -656,5 +656,70 @@
     "can_launch_as_verified_game": false,
     "actual_main_game_or_saves_modified": false,
     "note": "4/7 concluídas como ferramentas de código. Nova cópia real, compilação no Essentials, save path Windows e gameplay Android ainda dependem de dados locais e QA; não liberar Barry automaticamente."
+  },
+  "qa_engine_validation_workstream": {
+    "status": "POST_COMPILE_NATIVE_PROBE_CODE_READY_REAL_ENGINE_NOT_EXECUTED",
+    "complete": 4,
+    "total": 7,
+    "substeps": [
+      {
+        "id": "V01",
+        "title": "Prova Ruby pós-Compiler.main de 9 mapas, 24 eventos, 16 warps, sprites de eventos e três Poké Bolas",
+        "complete": true,
+        "evidence": "scripts/regions/SinnohQAProbe.rb"
+      },
+      {
+        "id": "V02",
+        "title": "Verificar três GameData::Trainer Barry com espécie de vantagem e seed PBS 5",
+        "complete": true,
+        "evidence": "tests/sinnoh_qa_engine_probe_runtime.rb"
+      },
+      {
+        "id": "V03",
+        "title": "Vincular relatório de sondagem ao token do QA e exigir evidência no verificador Python e Novo Jogo Ruby",
+        "complete": true,
+        "evidence": "scripts/regions/install_sinnoh_qa_copy.py"
+      },
+      {
+        "id": "V04",
+        "title": "Testar alterações maliciosas de warp, scripts, espécie, mapas e relatório com fixtures sintéticas",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_qa_install.py"
+      },
+      {
+        "id": "V05",
+        "title": "Executar Compiler.main + sondagem pós-compilação com os mapas reais autorizados na cópia Game.exe",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "V06",
+        "title": "Executar gameplay real Twinleaf/Barry, conferir nível 70/90, saves do Windows e sprites renderizados",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "V07",
+        "title": "Testar Android/JoiPlay e regressões Decades/Kanto/Johto/Hoenn",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "tests": [
+      "tests/sinnoh_qa_engine_probe_runtime.rb",
+      "tests/test_sinnoh_qa_install.py",
+      "tests/sinnoh_qa_start_runtime.rb"
+    ],
+    "documentation": "docs/SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md",
+    "source_assets_verified": false,
+    "real_game_exe_executed": false,
+    "real_native_structural_report_generated": false,
+    "battle_executed": false,
+    "level_scaling_observed": false,
+    "save_reload_observed": false,
+    "android_joi_play_tested": false,
+    "main_game_or_user_saves_modified": false,
+    "ready_marker_created": false,
+    "playable_approved": false
   }
 }
