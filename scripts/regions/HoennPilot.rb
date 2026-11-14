@@ -25,8 +25,11 @@ module BlueHoennPilot
     stage9 = (stage8 + [76,77,78,79,80,81,82,141,144,
                         182,183,184,185,186,187,188,189,
                         206,207,208,209,210,211,212,213,215,216,217]).sort
+    stage10 = (stage9 + (83..100).to_a + (146..155).to_a +
+               (227..236).to_a + (238..248).to_a + (250..252).to_a +
+               [255,258,259,260,261,262,263,266,322]).sort
     stage2 = [7, 8, 11, 12, 13, 14, 101, 102, 103]
-    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7, stage8, stage9].include?(maps.keys.sort) &&
+    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7, stage8, stage9, stage10].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
@@ -241,6 +244,21 @@ module BlueHoennPilot
         unless [:YOUNGSTER,:LASS].any?{|kind|GameData::Trainer.exists?(kind,name,source_map)}
           raise "Trainer Stage9 não compilado: #{name}/#{source_map}"
         end
+      end
+    end
+    if maps[83] && maps[87] && maps[93]
+      rows = [
+        [:BLUE_HOENN_JUAN,"Juan",1087],
+        [:BLUE_HOENN_ARCHIE,"Archie",1026],
+        [:BLUE_HOENN_WALLY,"Wally",1025],
+        [:BLUE_HOENN_ELITE,"Sidney",1094],
+        [:BLUE_HOENN_ELITE,"Phoebe",1095],
+        [:BLUE_HOENN_ELITE,"Glacia",1096],
+        [:BLUE_HOENN_ELITE,"Drake",1097],
+        [:BLUE_HOENN_CHAMPION,"Wallace",1098]
+      ]
+      raise "Chefes ou campeao Stage10 nao compilados" unless rows.all? do |kind,name,version|
+        GameData::Trainer.exists?(kind,name,version)
       end
     end
     names = ["May", "Brendan"]
@@ -2506,6 +2524,254 @@ module BlueHoennPilot
   def self.mossdeep_space_scientist
     return false unless state
     pbMessage(_INTL("Pesquisador: nosso Centro Espacial estuda foguetes, meteoritos e viagens pelo espaço."))
+    true
+  end
+
+
+  # Stage 10 — Emerald ending in an isolated Hoenn save namespace.
+  # These scripts do NOT reproduce native Dive, Waterfall, ice floors,
+  # Strength puzzles, Legendary weather, Hall of Fame or League UI.
+  STAGE10_ELITE = [
+    [:BLUE_HOENN_ELITE,"Sidney",1094,"sidney"],
+    [:BLUE_HOENN_ELITE,"Phoebe",1095,"phoebe"],
+    [:BLUE_HOENN_ELITE,"Glacia",1096,"glacia"],
+    [:BLUE_HOENN_ELITE,"Drake",1097,"drake"]
+  ].freeze
+
+  def self.rain_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN").include?("RAIN")
+  end
+
+  def self.sign_stage10(key)
+    return false unless state
+    signs = {
+      SOOTOPOLIS_GYM: "Ginásio de Sootopolis: Juan. A crise do clima deve acabar antes do desafio.",
+      LEAGUE_GATE: "Liga Pokémon de Hoenn: são exigidas oito insígnias desta região."
+    }
+    return false unless signs.key?(key)
+    pbMessage(_INTL(signs.fetch(key)))
+    true
+  end
+
+  def self.stage10_transfer(source_id,dest_id,x,y)
+    flags=state
+    return false unless flags && [source_id,dest_id,x,y].all?{|n|n.is_a?(Integer)}
+    _,maps=metadata
+    return false unless maps[source_id] && maps[dest_id] && $game_map &&
+                        $game_map.map_id==maps[source_id]
+    unless mind_badge? && flags["hm_dive_received"]
+      pbMessage(_INTL("Steven: a Mind Badge e o HM Dive são necessários para continuar no mar."))
+      return false
+    end if [255,258,259,260,261,262,263,266,227,228,229,230,231,232,233,234,235,236].include?(dest_id)
+    if (227..236).cover?(dest_id) && !flags["submarine_escaped"]
+      pbMessage(_INTL("O submarino Aqua ainda não chegou à Seafloor Cavern."))
+      return false
+    end
+    if dest_id==238 && !flags["sootopolis_crisis_started"]
+      pbMessage(_INTL("Fale com Steven sobre a crise do clima em Sootopolis."))
+      return false
+    end
+    if (239..240).cover?(dest_id) && !flags["sootopolis_crisis_started"]
+      return false
+    end
+    if (241..248).cover?(dest_id) && !flags["sky_pillar_task"]
+      pbMessage(_INTL("Wallace ainda precisa abrir o caminho para Sky Pillar."))
+      return false
+    end
+    if dest_id==87 && !flags["crisis_resolved"]
+      pbMessage(_INTL("O ginásio de Juan está fechado durante a crise do clima."))
+      return false
+    end
+    if [250,251,252,322,93,100,94,95,96,97,98,99].include?(dest_id) && !rain_badge?
+      pbMessage(_INTL("O caminho para a Liga exige a Rain Badge de Hoenn."))
+      return false
+    end
+    if [93,100,94,95,96,97,98,99].include?(dest_id) && !flags["wally_road_defeated"]
+      pbMessage(_INTL("Wally espera você em Victory Road."))
+      return false
+    end
+    if (94..97).cover?(dest_id)
+      index=dest_id-94
+      if index>0 && !flags["elite_#{STAGE10_ELITE[index-1][3]}_defeated"]
+        pbMessage(_INTL("Vença o membro anterior da Elite Four primeiro."))
+        return false
+      end
+    end
+    if dest_id==98 && !flags["elite_drake_defeated"]
+      pbMessage(_INTL("Enfrente os quatro membros da Elite antes do Campeão."))
+      return false
+    end
+    if dest_id==99 && !flags["champion_wallace_defeated"]
+      pbMessage(_INTL("Derrote Wallace para entrar no Hall of Fame."))
+      return false
+    end
+    stage9_transfer(source_id,dest_id,x,y)
+  end
+
+  def self.seafloor_archie
+    flags=state
+    return false unless flags && mind_badge? && flags["hm_dive_received"] &&
+                        flags["submarine_escaped"] && $player && !$player.party.empty?
+    return true if flags["seafloor_archie_defeated"]
+    pbMessage(_INTL("Archie: o poder de Kyogre será da Equipe Aqua!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_ARCHIE,"Archie",1026)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["seafloor_archie_defeated"]=true
+    pbMessage(_INTL("Archie recuou. O despertar de Kyogre está próximo."))
+    true
+  end
+
+  def self.seafloor_awakening
+    flags=state
+    return false unless flags && flags["seafloor_archie_defeated"]
+    return false if flags["kyogre_awakened"]
+    flags["kyogre_awakened"]=true
+    pbMessage(_INTL("Kyogre despertou! Uma crise climática se espalha por Hoenn."))
+    true
+  end
+
+  def self.sootopolis_crisis
+    flags=state
+    return false unless flags && flags["groudon_awakened"] &&
+                        flags["kyogre_awakened"]
+    return false if flags["sootopolis_crisis_started"]
+    flags["sootopolis_crisis_started"]=true
+    pbMessage(_INTL("Steven: Groudon e Kyogre desequilibraram o clima! Procure Wallace na Cave of Origin."))
+    true
+  end
+
+  def self.origin_wallace_stage10
+    flags=state
+    return false unless flags && flags["sootopolis_crisis_started"]
+    return true if flags["sky_pillar_task"]
+    flags["sky_pillar_task"]=true
+    pbMessage(_INTL("Wallace: Rayquaza pode deter a crise. Encontre-me em Sky Pillar!"))
+    true
+  end
+
+  def self.sky_pillar_wallace
+    flags=state
+    return false unless flags && flags["sky_pillar_task"]
+    return true if flags["sky_pillar_open"]
+    flags["sky_pillar_open"]=true
+    pbMessage(_INTL("Wallace: siga até o topo de Sky Pillar para alcançar Rayquaza."))
+    true
+  end
+
+  def self.rayquaza_stage10
+    flags=state
+    return false unless flags && flags["sky_pillar_open"]
+    return false if flags["crisis_resolved"]
+    flags["rayquaza_summoned"]=true
+    flags["crisis_resolved"]=true
+    pbMessage(_INTL("Rayquaza atendeu ao chamado! A crise climática terminou. Volte ao ginásio de Juan."))
+    true
+  end
+
+  def self.juan_tm
+    flags=state
+    return false unless flags && rain_badge?
+    return false if flags["juan_tm_given"]
+    give_move_tm("juan_tm_given",:WATERPULSE,[:TM03],
+                 "Juan: receba a TM Water Pulse!")
+  end
+
+  def self.juan
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return juan_tm if rain_badge?
+    unless flags["crisis_resolved"] && mind_badge?
+      pbMessage(_INTL("Juan: a paz deve voltar a Sootopolis antes da nossa batalha."))
+      return false
+    end
+    pbMessage(_INTL("Juan: uma batalha de Água definirá o destino da Rain Badge!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_JUAN,"Juan",1087)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","RAIN")
+      pbMessage(_INTL("Não foi possível registrar a Rain Badge regional."))
+      return false
+    end
+    flags["juan_defeated"]=true
+    pbMessage(_INTL("Rain Badge de Hoenn conquistada! Waterfall está autorizado na região."))
+    juan_tm
+    true
+  end
+
+  def self.wally_victory_road
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return true if flags["wally_road_defeated"]
+    unless rain_badge?
+      pbMessage(_INTL("Wally: conquiste a oitava insígnia antes do desafio final!"))
+      return false
+    end
+    pbMessage(_INTL("Wally: desta vez vou mostrar tudo que aprendi!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_WALLY,"Wally",1025)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["wally_road_defeated"]=true
+    pbMessage(_INTL("Wally: boa sorte na Liga Pokémon!"))
+    true
+  end
+
+  def self.elite_four(index)
+    flags=state
+    return false unless flags && index.is_a?(Integer) && (0..3).cover?(index) &&
+                        $player && !$player.party.empty?
+    kind,name,version,key=STAGE10_ELITE[index]
+    completed="elite_#{key}_defeated"
+    return true if flags[completed]
+    return false unless rain_badge? && flags["wally_road_defeated"]
+    if index>0 && !flags["elite_#{STAGE10_ELITE[index-1][3]}_defeated"]
+      pbMessage(_INTL("É preciso vencer a Elite Four na ordem correta."))
+      return false
+    end
+    pbMessage(_INTL("{1}: mostre a força de seu time!",name))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(kind,name,version)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags[completed]=true
+    pbMessage(_INTL("{1}: você venceu! Siga para a próxima sala.",name))
+    true
+  end
+
+  def self.champion_wallace
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return true if flags["champion_wallace_defeated"]
+    return false unless rain_badge? &&
+                        STAGE10_ELITE.all?{|_,_,_,key| flags["elite_#{key}_defeated"]}
+    pbMessage(_INTL("Wallace: você conquistou o direito de me desafiar!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_CHAMPION,"Wallace",1098)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["champion_wallace_defeated"]=true
+    pbMessage(_INTL("Wallace: parabéns! Entre no Hall of Fame e registre sua vitória."))
+    true
+  end
+
+  def self.hall_of_fame_stage10
+    flags=state
+    return false unless flags && flags["champion_wallace_defeated"] &&
+                        STAGE10_ELITE.all?{|_,_,_,key| flags["elite_#{key}_defeated"]}
+    return true if flags["hoenn_hall_of_fame"]
+    flags["hoenn_hall_of_fame"]=true
+    pbMessage(_INTL("Hall of Fame de Hoenn: sua vitória na Liga foi registrada neste save regional!"))
+    # Global credits, region unlock and Hall of Fame UI require separate
+    # engine-verified integration; do not mark them completed here.
     true
   end
 
