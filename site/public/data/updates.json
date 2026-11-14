@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ce171bb4e82b672678e3dbb3e0d6269b00f93f9c",
+      "date": "2026-11-14T12:49:22-03:00",
+      "title": "test(hoenn): validar 85 MapIDs, Flannery, Magma, cavernas e conexão Fallarbor",
+      "category": "Testes"
+    },
+    {
       "sha": "6eb0d1daa35ca2f9cd3b33f90140796144a2d902",
       "date": "2026-11-14T12:48:45-03:00",
       "title": "feat(hoenn): eventos Magma, Flannery, teleférico e 11 vents do ginásio",
