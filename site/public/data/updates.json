@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "64371e382df85ad4d94c2bcd8db45db372660b5d",
+      "date": "2026-11-13T21:12:19-03:00",
+      "title": "ci(sinnoh): run Ruby starter-ball Rowan Barry and save-isolation tests in regressions",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d44c5bfeef2f5264f38074b3b08acc8de4fd304a",
+      "date": "2026-11-13T21:12:08-03:00",
+      "title": "test(sinnoh): resolve Ruby pilot file absolutely in isolated runtime harness",
+      "category": "Testes"
+    },
+    {
       "sha": "83e5c7e4d077682b62ee4fc1be6d56de78186c6a",
       "date": "2026-11-13T21:11:31-03:00",
       "title": "test(sinnoh): validate 9-map authored story overlays on synthetic hashed stages without touching Decades",
