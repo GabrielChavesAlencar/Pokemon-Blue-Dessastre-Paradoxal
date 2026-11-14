@@ -101,6 +101,7 @@ from hoenn_qa_phase3 import (
     reauthor_safe_items_and_audit,
 )
 from hoenn_qa_phase4 import install_simple_obstacles
+from hoenn_qa_phase5 import audit_generated
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -2123,6 +2124,10 @@ def build_overlay(game, source):
         "native_gameplay_verified": False,
         "native_surf_dive_waterfall_puzzles_verified": False,
     }
+    # QA5: compare the authored Aqua/Magma/Seafloor story event positions,
+    # script identifiers and click/touch triggers to the expected contracts.
+    # Original donor events are used ONLY for a review backlog.
+    report["qa5"] = audit_generated(maps, all_original_events)
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())
@@ -2183,22 +2188,27 @@ def stage(game: Path, source: Source, output: Path) -> dict:
     if output.exists() or output.is_relative_to(game) or game.is_relative_to(output):
         raise ValueError("Escolha uma nova pasta fora da instalação principal")
     overlay, report = build_overlay(game, source)
-    # QA04 is an additional Windows test installation. A separate folder
-    # alone is not sufficient: mkxp stores saves under dataPathOrg/App.
-    # Rewriting these two keys is allowed ONLY for our opted-in QA04 output.
-    if output.name == "hoenn-qa-fase04":
+    # A separate folder is NOT enough: mkxp keeps saves in its dataPathOrg/App.
+    # Pin an isolated pair for each selected QA experiment, preserving earlier
+    # test saves and the primary Decades save directory.
+    qa_profiles = {
+        "hoenn-qa-fase04": ("Hoenn QA Fase04", "Dessastre Paradoxal Hoenn QA04"),
+        "hoenn-qa-fase05": ("Hoenn QA Fase05", "Dessastre Paradoxal Hoenn QA05"),
+    }
+    if output.name in qa_profiles:
+        profile, org = qa_profiles[output.name]
         conf = overlay["mkxp.json"].decode("utf-8")
         substitutions = (
-            ('"dataPathApp": "Hoenn Piloto"', '"dataPathApp": "Hoenn QA Fase04"'),
+            ('"dataPathApp": "Hoenn Piloto"', f'"dataPathApp": "{profile}"'),
             ('"dataPathOrg": "Dessastre Paradoxal Hoenn Testes"',
-             '"dataPathOrg": "Dessastre Paradoxal Hoenn QA04"'),
+             f'"dataPathOrg": "{org}"'),
         )
         for before, after in substitutions:
             if conf.count(before) != 1:
-                raise ValueError(f"Perfil de save QA04 não pôde ser isolado: {before}")
+                raise ValueError(f"Perfil de save não pôde ser isolado: {before}")
             conf = conf.replace(before, after)
         overlay["mkxp.json"] = conf.encode("utf-8")
-        report["save_profile"] = "Hoenn QA Fase04"
+        report["save_profile"] = profile
         overlay["Hoenn pilot.json"] = json_bytes(report)
     output.parent.mkdir(parents=True, exist_ok=True)
     target = safe_path(output.parent / f".hoenn-{uuid.uuid4().hex}")
