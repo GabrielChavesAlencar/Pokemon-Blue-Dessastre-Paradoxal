@@ -215,32 +215,107 @@ module BlueJohtoPilot
     end)
   end
 
-  TEST_STOPS = {
-    "New Bark Town" => [600, 10, 26, 2],
-    "Laboratório Elm" => [676, 10, 11, 8],
-    "Rota 29" => [625, 70, 14, 4],
-    "Cherrygrove City" => [601, 63, 24, 4],
-    "Rota 30 / Sr. Pokémon" => [626, 20, 20, 8],
-    "Rota 31" => [627, 39, 35, 4],
-    "Violet City" => [602, 32, 32, 8],
-    "Torre Sprout" => [678, 9, 12, 8],
-    "Ginásio de Violet" => [677, 9, 12, 8],
-    "Rota 36" => [637, 68, 8, 4]
+  TEST_MAP_GROUPS = {
+    "Cidades" => [*(600..609), 618],
+    "Rotas" => [*(619..620), 622, *(625..627), *(629..630), *(634..635),
+                *(637..641), 643, 648, 652, 654, 659, *(661..663), *(665..666)],
+    "Cavernas e andares" => [*(611..613), *(616..617), 621, *(623..624), 628,
+                             *(631..633), *(644..647), *(649..651), *(655..658),
+                             660, *(667..673)],
+    "Casas, lojas e ginásios" => (674..708),
+    "Florestas e áreas especiais" => [610, 614, 615, 636, 642, 653, 664]
   }.freeze
+  TEST_OPENING_MAPS = [600, 674, 675, 676, 682, 683].freeze
+  TEST_PLAYABLE_MAPS = [*(600..602), *(625..627), 629, 637, *(674..708)].freeze
+  TEST_LANDINGS = {
+    600 => [10, 26, 2], 601 => [63, 24, 4], 602 => [32, 32, 8],
+    625 => [70, 14, 4], 626 => [20, 20, 8], 627 => [39, 35, 4],
+    637 => [68, 8, 4], 674 => [6, 7, 2], 675 => [7, 8, 2],
+    676 => [10, 11, 8], 677 => [9, 12, 8], 678 => [9, 12, 8]
+  }.freeze
+  TEST_STEPS = [[0, 1, 2, 8], [-1, 0, 4, 6], [1, 0, 6, 4], [0, -1, 8, 2]].freeze
 
   def self.testing?
     return false unless File.file?("Johto pilot.json") && regional_state
     $scene.is_a?(Scene_Map) && $game_temp && !$game_temp.in_battle
   end
 
+  def self.test_destinations
+    infos = load_data("Data/MapInfos.rxdata")
+    TEST_MAP_GROUPS.transform_values do |ids|
+      ids.filter_map do |id|
+        next unless infos[id] && pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
+        next unless starter || TEST_OPENING_MAPS.include?(id)
+        name = GameData::MapMetadata.try_get(id)&.real_name || infos[id].name
+        name = name.sub(/\A\[Johto (?:preview|DRAFT)\] /, "").sub(/\s+— PREVIEW\z/, "")
+        name = _INTL("{1} (prévia)", name) unless TEST_PLAYABLE_MAPS.include?(id)
+        [id, name]
+      end
+    end.reject { |_, stops| stops.empty? }
+  end
+
+  def self.test_landing(map_id)
+    map = $map_factory.getMapNoAdd(map_id)
+    occupied = {}
+    map.events.each_value do |event|
+      (event.x...(event.x + event.width)).each do |x|
+        ((event.y - event.height + 1)..event.y).each { |y| occupied[[x, y]] = true }
+      end
+    end
+    dry_floor = lambda do |x, y|
+      map.valid?(x, y) && !occupied[[x, y]] && map.data[x, y, 0] >= 48 &&
+        !map.terrain_tag(x, y, true).can_surf && map.passableStrict?(x, y, 2)
+    end
+    can_land = lambda do |x, y|
+      dry_floor.call(x, y) && TEST_STEPS.any? do |dx, dy, direction, reverse|
+        dry_floor.call(x + dx, y + dy) && map.passable?(x, y, direction, $game_player) &&
+          map.passable?(x + dx, y + dy, reverse, $game_player)
+      end
+    end
+    preferred = TEST_LANDINGS[map_id]
+    return [map_id, *preferred] if preferred && can_land.call(*preferred.first(2))
+
+    cx, cy = map.width / 2, map.height / 2
+    # Walk outward from the center until a dry pair of walkable tiles is found.
+    (0..(map.width + map.height)).each do |distance|
+      ([0, cy - distance].max..[map.height - 1, cy + distance].min).each do |y|
+        dx = distance - (y - cy).abs
+        [cx - dx, cx + dx].uniq.each do |x|
+          return [map_id, x, y, 2] if can_land.call(x, y)
+        end
+      end
+    end
+    nil
+  end
+
   def self.teleport_menu
-    return unless testing?
-    stops = TEST_STOPS.select { |_, point| pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0])) }
-    # Keep the starter requirement so the player can return without getting stuck.
-    stops = stops.select { |_, point| [600, 676].include?(point[0]) } unless starter
-    choice = pbMessage(_INTL("Testar Johto / Viagem rápida"), stops.keys + [_INTL("Voltar")], -1)
-    return if !choice || choice < 0 || choice >= stops.length
-    pbFadeOutIn { BlueRegionTravel.move_to(stops.values[choice]) }
+    return false unless testing?
+    destinations = test_destinations
+    categories = destinations.keys
+    back = _INTL("Voltar")
+    title = if starter
+              _INTL("Testar Johto / Viagem rápida")
+            else
+              _INTL("Escolha um inicial para liberar todos os destinos de teste.")
+            end
+    loop do
+      group = pbMessage(title, categories + [back], -1)
+      return false unless group && group.between?(0, categories.length - 1)
+      category = categories[group]
+      stops = destinations.fetch(category)
+      choice = pbMessage(_INTL(category), stops.map(&:last) + [back], -1)
+      next unless choice && choice.between?(0, stops.length - 1)
+      point = test_landing(stops[choice].first)
+      unless point
+        pbMessage(_INTL("Este mapa ainda não tem um ponto de chegada caminhável."))
+        next
+      end
+      pbFadeOutIn do
+        pbCancelVehicles
+        BlueRegionTravel.move_to(point)
+      end
+      return true
+    end
   end
 
   def self.sign(label)
@@ -278,8 +353,9 @@ module BlueJohtoPilot
       "condition" => proc { |_menu| BlueJohtoPilot.testing? },
       "effect" => proc do |menu|
         menu.pbHideMenu
-        BlueJohtoPilot.teleport_menu
-        true
+        traveled = BlueJohtoPilot.teleport_menu
+        menu.pbShowMenu unless traveled
+        traveled
       end
     })
   end
