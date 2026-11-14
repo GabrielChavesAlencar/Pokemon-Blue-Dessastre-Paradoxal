@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "136621fff30a9ec792e97f4dec7f722a3ce8f12a",
+      "date": "2026-11-14T11:32:15-03:00",
+      "title": "ci(hoenn): validar Rustboro/Roxanne e recuperação de Devon em Ruby puro",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1850623319ca6275e09bcf9cd48f2408b8ba38b3",
+      "date": "2026-11-14T11:32:06-03:00",
+      "title": "test(hoenn): validar Stone, Roxanne, HM Cut, Devon, Peecko e recompensas únicas em Ruby",
+      "category": "Testes"
+    },
+    {
       "sha": "5776a4088dcf659de756f1250e0c50adfa2a98ee",
       "date": "2026-11-14T11:30:47-03:00",
       "title": "test(hoenn): proteger warp corrigido de Roxanne, Cut, itens e 16 batalhas da Etapa 4",
