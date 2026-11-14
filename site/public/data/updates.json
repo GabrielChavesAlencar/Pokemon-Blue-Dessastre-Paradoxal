@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cebcecb1f9e4c4728b00e324f3b49cf0af8c2954",
+      "date": "2026-11-14T14:54:52-03:00",
+      "title": "feat(hoenn): Etapa 10/10 final de Hoenn isolado com QA automatizado",
+      "category": "Novidades"
+    },
+    {
       "sha": "f4b574e94a40f46bddc90f00c2e1424aeb6b6ab6",
       "date": "2026-11-14T14:52:01-03:00",
       "title": "Corrige Pokédex, setas de Viridian, Liga e New Bark [android-kanto-release]",
