@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b14ebfef809253d2627d3f8832938eddc6def35a",
+      "date": "2026-11-13T23:18:10-03:00",
+      "title": "docs(johto): organizar detonado HGSS e requisitos de adaptacao ao Blue",
+      "category": "Documentação"
+    },
+    {
       "sha": "6c878f10df84186aa6ee24e1c3cdb8901e789473",
       "date": "2026-11-13T23:09:21-03:00",
       "title": "docs(kanto): organizar detonado FRLG como roteiro factual e matriz de eventos do Blue",
