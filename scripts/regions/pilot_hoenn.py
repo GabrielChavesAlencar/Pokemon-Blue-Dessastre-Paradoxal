@@ -59,7 +59,7 @@ from hoenn_stage7 import (
     MAGMA_GRUNTS_STAGE7, MAGMA_GRUNT_EVENTS, TABITHA_EVENT, MAXIE_EVENT,
     METEORITE_MACHINE_EVENT, METEOR_FALLS_CUTSCENE, FLANNERY_EVENT,
     ROUTE112_MAGMA_BLOCKERS, NPCS_STAGE7, FUTURE_GATES_STAGE7,
-    PICKUPS_STAGE7, SIGNS_STAGE7,
+    PICKUPS_STAGE7, SIGNS_STAGE7, GYM_STEAM_PAIRS_STAGE7,
 )
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
@@ -767,6 +767,111 @@ def add_stage6_events(maps, game, rival_image):
 
 
 
+
+def add_stage7_events(maps, game):
+    """Author chapter-seven event pages, not donor event code.
+
+    All boss sprites use existing native Blue characters or are labelled as
+    placeholders. Source MapIDs are remapped by the isolated installer.
+    """
+    for mid, x, y, sprite, handler in NPCS_STAGE7:
+        path = game / f"Graphics/Characters/{sprite}.png"
+        if not regular(path).read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite de NPC Fallarbor/Lavaridge inválido: {sprite}")
+        append_event(maps[mid], f"HN7_NPC_{mid}_{x}_{y}", x, y,
+                     event_page(script=handler, sprite=sprite))
+        if mid in (54, 55, 59, 60):
+            cx, cy = (9,5) if mid in (54,59) else (4,5)
+            append_event(maps[mid], f"HN7_Counter_{mid}", cx, cy,
+                         event_page(script=handler))
+    for mid,x,y,key,_text in SIGNS_STAGE7:
+        append_event(maps[mid], f"HN7_Sign_{key}", x,y,
+                     event_page(script=f"BlueHoennPilot.sign_stage7(:{key})"))
+    for mid,x,y,key,item,visible in PICKUPS_STAGE7:
+        page = event_page(script="nil", sprite="Object_Ball" if visible else "")
+        event_id = append_event(maps[mid], f"HN7_Item_{key}", x,y,page)
+        page.attrs["@list"][0] = command(
+            355,f'BlueHoennPilot.pickup(:{item},"{key}",{event_id})'.encode("ascii"))
+        cleared = event_page(script="nil")
+        cleared.attrs["@condition"].attrs["@self_switch_valid"] = True
+        cleared.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        cleared.attrs["@through"] = True
+        cleared.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(cleared)
+    for mid,x,y,kind,name,sprite,team,double in TRAINERS_STAGE7:
+        if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
+            raise ValueError(f"Gráfico treinador da etapa 7 ausente: {sprite}")
+        append_event(maps[mid], f"HN7_Trainer_{mid}_{x}_{y}", x,y,
+                     event_page(
+                         script=f'BlueHoennPilot.battle_stage3(:{kind},"{name}",{mid})',
+                         sprite=sprite))
+    magma_sprite, magma_placeholder = select_native_character(
+        game,("NPC_RSE_MagmaGrunt","NPC_ORAS_MagmaGrunt","trainer_YOUNGSTER"),
+        role="Equipe Magma em Mt Chimney")
+    for mid,x,y,index in MAGMA_GRUNT_EVENTS:
+        append_event(maps[mid], f"HN7_MagmaGrunt_{index}", x,y,
+                     event_page(script=f"BlueHoennPilot.magma_grunt({index})",
+                                sprite=magma_sprite))
+    for mid,x,y in ROUTE112_MAGMA_BLOCKERS:
+        page = event_page(script="nil",sprite=magma_sprite)
+        event_id = append_event(maps[mid],f"HN7_CableBlocker_{x}_{y}",x,y,page)
+        page.attrs["@list"][0] = command(
+            355,f"BlueHoennPilot.magma_blocker({event_id})".encode("ascii"))
+        done = event_page(script="nil")
+        done.attrs["@condition"].attrs["@self_switch_valid"] = True
+        done.attrs["@condition"].attrs["@self_switch_ch"] = b"A"
+        done.attrs["@through"] = True
+        done.attrs["@list"] = [command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(done)
+    for mid,x,y,label,candidates,handler in (
+        (*TABITHA_EVENT,"Tabitha",
+         ("NPC_RSE_Tabitha","NPC_ORAS_Tabitha","trainer_YOUNGSTER"),
+         "BlueHoennPilot.tabitha"),
+        (*MAXIE_EVENT,"Maxie",
+         ("NPC_RSE_Maxie","NPC_ORAS_Maxie","trainer_YOUNGSTER"),
+         "BlueHoennPilot.maxie"),
+        (*FLANNERY_EVENT,"Flannery",
+         ("NPC_RSE_Flannery","NPC_ORAS_Flannery","trainer_LASS"),
+         "BlueHoennPilot.flannery"),
+    ):
+        sprite, placeholder = select_native_character(game,candidates,role=label)
+        append_event(maps[mid],f"HN7_Boss_{label}",x,y,
+                     event_page(script=handler,sprite=sprite))
+    mid,x,y = METEOR_FALLS_CUTSCENE
+    page=event_page(script="BlueHoennPilot.meteor_falls_ambush",touch=True)
+    page.attrs["@through"]=True
+    append_event(maps[mid],"HN7_MeteorFalls_Ambush",x,y,page)
+    mid,x,y = METEORITE_MACHINE_EVENT
+    append_event(maps[mid],"HN7_MeteoriteMachine",x,y,
+                 event_page(script="BlueHoennPilot.meteorite_machine"))
+    for mid,x,y,reason in FUTURE_GATES_STAGE7:
+        page=event_page(script=f"BlueHoennPilot.stage7_future_gate(:{reason})",
+                        touch=True)
+        page.attrs["@through"]=True
+        append_event(maps[mid],f"HN7_Future_{reason}",x,y,page)
+    for index,(fall,launch) in enumerate(GYM_STEAM_PAIRS_STAGE7,1):
+        fx,fy=fall; lx,ly=launch
+        p=event_page(script=f"BlueHoennPilot.gym_steam_vent({lx},{ly})",
+                     touch=True)
+        p.attrs["@through"]=True
+        append_event(maps[63],f"HN7_SteamFall_{index}",fx,fy,p)
+        p=event_page(script=f"BlueHoennPilot.gym_steam_vent({fx},{fy})")
+        p.attrs["@through"]=True
+        append_event(maps[63],f"HN7_SteamLaunch_{index}",lx,ly,p)
+    return {
+        "new_maps":len(SOURCE_MAPS_STAGE7),
+        "trainer_events":len(TRAINERS_STAGE7)+len(MAGMA_GRUNT_EVENTS)+3,
+        "cutscene_events":1,
+        "cable_blocker_events":len(ROUTE112_MAGMA_BLOCKERS),
+        "pickups":len(PICKUPS_STAGE7),
+        "steam_vent_pairs":len(GYM_STEAM_PAIRS_STAGE7),
+        "magma_graphic":magma_sprite,
+        "magma_graphic_placeholder":magma_placeholder,
+        "gameplay_verified":False,
+    }
+
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
@@ -910,6 +1015,7 @@ def build_overlay(game, source):
     stage4_counts = add_stage4_events(maps, game)
     stage5_counts = add_stage5_events(maps, game)
     stage6_counts = add_stage6_events(maps, game, rival_image)
+    stage7_counts = add_stage7_events(maps, game)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
