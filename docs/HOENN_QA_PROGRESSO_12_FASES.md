@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 9 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣▣□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 10 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣▣▣□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -19,7 +19,7 @@
 | 7 | Oito ginásios e insígnias locais | **Nove eventos autorais, oito times PBS e auditoria QA07 preparados; Game.exe pendente** | ⏳ |
 | 8 | Victory Road e Wally | **Três mapas, Wally, gates de Waterfall e Liga e auditoria QA08 preparados; Game.exe pendente** | ⏳ |
 | 9 | Elite Four e Wallace | **Cinco salas, equipes PBS, ordem de vitórias e auditoria QA09 preparados; Game.exe pendente** | ⏳ |
-| 10 | Hall of Fame e pós-jogo | Pendente | ⏳ |
+| 10 | Hall of Fame e pós-jogo | **Registro da Liga via BlueRegions, Johto/Sinnoh liberados no circuito e QA10 preparados; Game.exe pendente** | ⏳ |
 | 11 | Traduções, placas, áudio e Trainer Card | Pendente | ⏳ |
 | 12 | QA da campanha inteira Windows/Android | Pendente | ⏳ |
 
@@ -424,3 +424,47 @@ A entrada oficial na Liga envolve Map93 e o corredor Map100; Map99 é o **Hall o
 - [ ] Android/JoiPlay testado independentemente do PC.
 
 **Limite:** Python/Ruby e CI apenas confirmam contratos autorais e fluxos simulados; não executam o `Game.exe`, não verificam a renderização da Liga e não certificam a campanha jogável. Portanto o marcador **0/12 nativo** permanece.
+
+## Fase 10/12 — Hall of Fame e pós-jogo multirregional
+
+**Preparação técnica: 10/12 (83,3%). Aprovação jogável nativa: 0/12.** A conclusão de Hoenn agora utiliza o mesmo núcleo regional autoral que organiza Kanto, Johto e as demais regiões, **sem** modificar insígnias, switches, equipes ou a progressão do Decades.
+
+### Registro do fim da campanha de Hoenn
+
+1. Os eventos anteriores já garantem **oito insígnias regionais**, a vitória sobre Wally em Victory Road, e a ordem **Sidney → Phoebe → Glacia → Drake → Wallace**. A confirmação definitiva é feita **somente no evento original reautorado do Hall of Fame, Map99, (9,18)**.
+2. `BlueHoennPilot.qa10_hall_ready?` exige o **mapa atual correspondente ao original 99**, todas as conquistas, o campeão derrotado, o namespace `HOENN` e o serviço `BlueRegions.complete_league` instalado.
+3. `BlueHoennPilot.hall_of_fame_stage10` chama `BlueRegions.complete_league(region,"HOENN")` apenas quando o circuito ainda não contém Hoenn. O serviço central persiste uma única entrada em `$PokemonGlobal.blue_regions["leagues"]`. Só após o registro confiável a flag local `hoenn_pilot["hoenn_hall_of_fame"]` é definida. Reinterações e saves anteriores corretos não adicionam duplicatas.
+4. No circuito original `Decades – Kanto – Johto – Hoenn – Sinnoh – Unova – Kalos – Alola – Galar – Paldea`, concluir **Hoenn** libera como **regiões vizinhas Johto e Sinnoh**, preservando quaisquer Ligas já conquistadas. Um jogador iniciado em Johto, após concluir Hoenn, também mantém Kanto liberada pelo triunfo anterior.
+5. A ação **não** executa `BlueRegionTravel.travel`, não inventa spawn/portos/PC, não concederá uma nova insígnia nem altera as esmeraldas nativas do Decades. A disponibilidade de viagem depende de **mapas reais e chegada segura** e permanece pendente para regiões ainda não instaladas.
+6. `BlueHoennPilot.qa10_postgame_status` informa o desbloqueio no Hall e no **aviso de Ever Grande Norte (Map322, 23,16)**, somente após conclusão validada e estando no mapa adequado. O resto do mapa usa seu diálogo normal antes do Hall.
+7. Não são ativadas revanches Full Power, Battle Frontier ou desafio de Steven sem confirmar conclusão de todo o circuito ou eventos adicionais e referências oficiais. A lógica de Decades permanece a autoridade para o escalonamento dos times.
+
+### Implementação técnica e isolamento
+
+- `scripts/regions/hoenn_qa_phase10.py`: auditoria estática das âncoras RXDATA de saída do campeão **Map98 (8,4)**, evento do Hall **Map99 (9,18)** e aviso de Ever Grande **Map322 (23,16)**; confere o manifesto, os scripts Ruby autorais e a instalação **`BlueRegions`**. Bloqueia qualquer relatório que marque jogo, créditos ou viagem como verificados sem teste.
+- `tests/test_hoenn_qa_phase10.py`: testes sintéticos de eventos ausentes, alterados, duplicados, gatilhos trocados e inventário do circuito.
+- `tests/hoenn_qa_phase10_runtime.rb`: testes Ruby usando os **métodos reais** do núcleo `scripts/battle_polish/Regions.rb`; cobrem salvamento, oito insígnias, derrota/flags antecipados, map guard, Hoenn inicial, jornada legal Johto→Hoenn, duplicatas e isolamento do Decades.
+- `tests/hoenn_stage10_runtime.rb`: regressão da antiga conclusão, agora exigindo deslocamento para **Map99** após Wallace e conferindo que `leagues` recebe Hoenn uma única vez.
+- `TESTAR_HOENN.bat` passou a preparar **`.blue-work/hoenn-qa-fase10/`**, novo perfil de save **Hoenn QA Fase10 / Dessastre Paradoxal Hoenn QA10** e as dez auditorias QA01–QA10, cada qual com relatório separado. A cópia anterior QA09 e os saves de outras regiões não são sobrescritos.
+
+### Como testar na instalação Windows
+
+1. Atualize a `main`, mantenha a pasta original `game/` instalada e o ZIP de origem fixado. Inicie **`TESTAR_HOENN.bat`**. Nunca substitua a cópia QA10 de um teste anterior sem fazer backup de saves; o preparador requer um destino novo.
+2. Confira `.blue-work/hoenn-qa-fase10-report.json`: status esperado **`HALL_OF_FAME_CIRCUIT_STATICALLY_VERIFIED`**, `native_game_exe_approved=false` e ausência de scripts do doador. O preparador também executa QA01–QA09.
+3. No `Game.exe`, conclua a campanha e vença o campeão Wallace. Antes de acessar o Hall, confirme que ainda **não** foi concedida a conclusão da Liga.
+4. Entre no Hall of Fame, acione o evento real e confira no menu/circuito o registro da Liga, o desbloqueio de Johto e Sinnoh e a manutenção das insígnias e missões de Hoenn. A exibição visual/cinemática e créditos **não** foram implementados nem certificados pelo script simples e exigem avaliação.
+5. Reinteraja com o Hall, salve, feche e carregue novamente. Confira que existe exatamente **uma** entrada `HOENN` em `leagues`; não há nova insígnia, esmeralda, recompensa ou batalha duplicada.
+6. Retorne a Ever Grande, confira a mensagem pós-jogo e navegue por qualquer saída original. **Se houver travamento de saída ou mapa inacessível, registre o MapID e não marque a fase aprovada.**
+7. Teste um save iniciado em Johto que tenha liberado Hoenn legitimamente. Ao concluir Hoenn, Johto, Kanto e Sinnoh permanecem disponíveis no circuito, sem mutações nas quests de Johto. Teste Kanto, Sinnoh, Decades e Android/JoiPlay por separado.
+
+### Limites e aceites pendentes
+
+- [ ] Hall of Fame nativo, animação, créditos, músicas, Trainer Card e retorno pós-Liga exibidos corretamente no **Game.exe**.
+- [ ] Todas as salas/portas desde Wallace até o Hall e a saída de retorno funcionam sem softlocks.
+- [ ] Conclusão de Hoenn concede Johto + Sinnoh **apenas no circuito**, habilitando viagem física **somente** para destinos instalados com chegada validada.
+- [ ] Nenhuma duplicação após save/load, conclusão de outra Liga ou acesso repetido ao Hall.
+- [ ] Regiões externas, Decades, PC, esmeraldas, insígnias e modos de batalha intactos.
+- [ ] Revanches e conteúdo pós-jogo identificados e testados no jogo; não presumir Full Power.
+- [ ] Compatibilidade Windows/Android confirmada com testes nativos reais.
+
+**A fase 10 prepara e protege a conclusão regional, mas não equivale à campanha jogável aprovada. Faltam as fases 11–12 e o aceite real no Game.exe permanece em 0/12.**
