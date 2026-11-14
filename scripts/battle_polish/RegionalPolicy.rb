@@ -281,7 +281,7 @@ module BlueRegionalPolicy
     Object.prepend(BadgeRequirement)
     Object.prepend(FieldInteractions)
     Object.prepend(DirectFieldEffects)
-    Trainer.prepend(PartyHMSelection)
+    Trainer.prepend(PartyHMSelection) if defined?(Trainer)
     Object.prepend(GiftGuard)
     PokemonStorage.prepend(StorageGuard)
     Battle::CatchAndStoreMixin.prepend(CaughtPokemon)
