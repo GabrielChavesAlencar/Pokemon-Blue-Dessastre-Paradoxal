@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ec724321fc9ee6f90342bde770f22cdeb6ee1cf",
+      "date": "2026-11-14T00:27:31-03:00",
+      "title": "fix(kanto): align Mt Moon Moon Stone pickup with pilot verification",
+      "category": "Correções"
+    },
+    {
       "sha": "32ef890e617c69b0ae0b7911e25bc6657af662e6",
       "date": "2026-11-14T00:15:06-03:00",
       "title": "fix(hoenn): correct trainer PBS header regex in duplicate preflight",
