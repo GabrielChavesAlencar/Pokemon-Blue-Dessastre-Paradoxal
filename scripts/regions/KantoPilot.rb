@@ -232,6 +232,28 @@ module BlueKantoPilot
     !forest_unlocked?
   end
 
+  # Exact, source-grounded Pewter east boundary compiled by pilot.py.
+  # Only the first Kanto Boulder Badge may open Route 3; crystals earned in
+  # other regions do not unlock it. No second foreign-story switch is needed.
+  def self.pewter_route3_blocked?(player, direction)
+    return false unless player && $game_map && direction == 6
+    gate = "Data/blue-kanto-pewter-route3-gate.txt"
+    return false unless File.file?(gate)
+    @pewter_route3_edge ||= begin
+      pieces = File.read(gate).strip.split("|")
+      pieces.length == 4 ? pieces.map { |value| Integer(value, 10) } : []
+    end
+    map_id, width, first, last = @pewter_route3_edge
+    return false unless map_id && width && first && last
+    return false unless $game_map.map_id == map_id && player.x >= width - 1
+    return false unless player.y >= first && player.y < last
+    !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+  end
+
+  def self.pewter_route3_warning
+    pbMessage(_INTL("A saída leste de Pewter para a Rota 3 está bloqueada. Derrote Brock e conquiste a Boulder Badge primeiro!"))
+  end
+
   def self.rival_done?
     progress["pilot_rival"] == true
   end
@@ -1039,6 +1061,16 @@ end
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
 module BlueKantoPilot::Route2ExitGuard
   def move_generic(dir, turn_enabled = true)
+    if BlueKantoPilot.pewter_route3_blocked?(self, dir)
+      turn_generic(dir, true) if turn_enabled
+      key = [$game_map.map_id, x, y, :pewter_route3]
+      if @blue_pewter_last_warning != key
+        @blue_pewter_last_warning = key
+        BlueKantoPilot.pewter_route3_warning
+      end
+      return
+    end
+    @blue_pewter_last_warning = nil
     if BlueKantoPilot.route2_exit_blocked?(self, dir)
       turn_generic(dir, true) if turn_enabled
       warning_key = [$game_map.map_id, x, y]
