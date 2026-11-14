@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f988f00af8d802bbbbef528a8ce941259677d4cc",
+      "date": "2026-11-13T21:50:21-03:00",
+      "title": "feat(sinnoh): add read-only Barry PBS integration preflight for private QA copy with no native proof claim",
+      "category": "Novidades"
+    },
+    {
+      "sha": "fdae3efb1483ce73b0c2941459fbdbe49af2e4c1",
+      "date": "2026-11-13T21:49:27-03:00",
+      "title": "test(sinnoh): detect legacy pilot Johto ID overlap without claiming IDs or migrating saves",
+      "category": "Testes"
+    },
+    {
+      "sha": "2781a77047fa5e312b51844d631f710c24087792",
+      "date": "2026-11-13T21:48:53-03:00",
+      "title": "feat(sinnoh): add static read-only reconciliation audit for legacy 800-805 pilot and Johto reservations",
+      "category": "Novidades"
+    },
+    {
       "sha": "de8c9ca4a9a559e36851ac71615bbaacf69c9fe8",
       "date": "2026-11-13T21:46:23-03:00",
       "title": "test(sinnoh): QA-copy PBS integrity, save profiles, plugin conflicts, early markers and no-write preflight",
