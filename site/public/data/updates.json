@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "26ef0b4927e93bfbafefd3ea5db84f711e6733bf",
+      "date": "2026-11-14T17:30:30-03:00",
+      "title": "ci(hoenn): run QA8 Ruby Victory Road and Wally safety scenarios",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a0b199f280f7002414f267826ffd6681fa6a3ded",
+      "date": "2026-11-14T17:30:20-03:00",
+      "title": "test(hoenn): QA08 Wally RXDATA, cave obstacles and PBS failure cases",
+      "category": "Testes"
+    },
+    {
       "sha": "f30cca891a1412f0da89e270e526403dc2ba6014",
       "date": "2026-11-14T17:29:48-03:00",
       "title": "test(hoenn): QA08 Victory Road map gates, Waterfall, Wally and save isolation",
