@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d3bc2e95c801407bf21201d0e7f65c865c03bb10",
+      "date": "2026-11-14T20:58:12-03:00",
+      "title": "test(kanto): incluir premio dos tenis na contagem de ME aprovada",
+      "category": "Testes"
+    },
+    {
       "sha": "458241e568b8b397f898f93180df2ffc65444436",
       "date": "2026-11-14T20:57:33-03:00",
       "title": "test(kanto): evento da mae usa sprite Pallet invisivel ate a entrega de tenis",
