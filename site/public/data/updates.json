@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3bfa3a32a77e4039c8f8ad02ac9f54de98725807",
+      "date": "2026-11-14T10:22:57-03:00",
+      "title": "test(hoenn): validar ponto de retorno ao curar em Oldale",
+      "category": "Testes"
+    },
+    {
+      "sha": "dc59e386d28730b469fcce1f2e2c11fbb103dfec",
+      "date": "2026-11-14T10:22:47-03:00",
+      "title": "fix(hoenn): registrar Oldale como Centro Pokémon de retorno ao curar",
+      "category": "Correções"
+    },
+    {
       "sha": "f42782ffefccb2bdb0ed9e5bac76485653adb84d",
       "date": "2026-11-14T10:21:38-03:00",
       "title": "docs(hoenn): corrigir formatação Markdown da etapa 02",
