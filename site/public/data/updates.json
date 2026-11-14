@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f2b49d6243b4edd5456d29b332cc4233dff157a2",
+      "date": "2026-11-13T23:55:18-03:00",
+      "title": "feat(portal): show regional pending content and four league backlog sections",
+      "category": "Novidades"
+    },
+    {
+      "sha": "a453a05dfd8f5b84ed2754db84fd6b3b84db6709",
+      "date": "2026-11-13T23:54:57-03:00",
+      "title": "feat(portal): reusable pending status cards and full four-region backlog page",
+      "category": "Novidades"
+    },
+    {
       "sha": "292b82af93c642febda978bbc97faea25d7b1fef",
       "date": "2026-11-13T23:53:57-03:00",
       "title": "feat(portal): add missing-content registry for Kanto Johto Hoenn Sinnoh with status tag",
