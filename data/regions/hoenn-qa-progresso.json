@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 9,
-    "implementation_preparation_count": 9,
+    "current_phase": 10,
+    "implementation_preparation_count": 10,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -86,8 +86,8 @@
       {
         "phase": 10,
         "name": "Hall of Fame e pós-jogo multirregional",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "hall_of_fame_regional_league_circuit_unlock_and_private_rxdata_core_auditor_prepared",
+        "native_acceptance": "pending_game_exe_real_hall_ui_credits_warps_region_travel_and_save_reload",
         "native_approved": false
       },
       {
@@ -185,9 +185,23 @@
       "After Wallace victory, access toward Hall of Fame but do not approve credits, multi-region unlock or Hall UI until QA10",
       "Save and reload between battles; test loss, restarts, switching regions and no unintended flags in Kanto Johto Sinnoh Decades",
       "0/12 native Game.exe acceptance until complete real gameplay, do not confuse green CI with playable approval"
+    ],
+    "phase10_requires": [
+      "Create new Hoenn QA Fase10 isolated copy with 199 pinned-source maps, real Blue base and distinct mkxp save paths; keep QA04–QA09 and original game unchanged",
+      "Audit authored Map99 Hall of Fame event at original (9,18), Map98 Champion exit (8,4), and Map322 postgame League sign at (23,16)",
+      "Confirm the actual installed BlueRegions module supports neighbors/unlocked/complete_league, and its circuit maps HOENN to JOHTO and SINNOH",
+      "Hall event only marks HOENN league after 8 distinct regional badges, Wally victory, Sidney Phoebe Glacia Drake flags, Wallace victory, and correct original Hall room; never on battle or warp",
+      "BlueRegions.complete_league called exactly once, persistent shared 'leagues' contains HOENN once; the local hoenn_pilot Hall flag reflects that after successful registration",
+      "Native Decades badges and switches not modified; prior Johto or Kanto completions/achievements and saves retained, and no silent travel or PC transfer",
+      "After Hall, display newly unlocked Johto and Sinnoh; regions with no installed verified arrival point must show preparation rather than travel",
+      "Check native victory cinematic, Hall record screen, champion credits, music, return to League/Hoenn and postgame dialogue in Game.exe; no claim of completion without these",
+      "Test full native save/reload at the Hall and after returning to the field; re-trigger cannot grant a duplicate league, badge, crystal or reward",
+      "Play from a fresh Hoenn-started save AND a legally unlocked Hoenn visited from Johto, plus Kanto/Decades regression; no forced shortcuts",
+      "Verify postgame rematches and Full Power only when genuine circuit-completion criteria are satisfied, not from a single Hoenn league; never mark rematch ready from static checks",
+      "Android/JoiPlay must be tested separately; do not count green Ruby/Python/Windows CI as Game.exe gameplay acceptance"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA09: Map-local Elite Four and Wallace, ordered guards requiring all previous wins and all eight Hoenn badges + Wally, audited 8 League maps, 5 PBS trainers, unique isolated QA09 save, QA1–9 BAT, Ruby and Python tests. Game.exe/battle scaling, sprites, League doors and Hall UI unverified; native acceptance remains 0/12."
+  "last_publication_note": "QA10: Hall final event now calls existing BlueRegions.complete_league('HOENN') once after all 8 badges, Wally, Elite4 and champion at source Map99; this unlocks circuit neighbors Johto/Sinnoh in the same region state, but not automatic travel. QA10 protected status on Ever Grande sign, source RXDATA/core auditor and isolated QA10 save. Real Hall UI, credits, postgame warps, rematches and Game.exe remain unverified. Native acceptance 0/12."
 }
