@@ -4,6 +4,7 @@
 module BlueSinnohQAStart
   CONFIG = "Sinnoh qa.json".freeze
   COMPILED = "Data/blue-sinnoh-qa-compiled.txt".freeze
+  ENGINE_REPORT = "Data/blue-sinnoh-qa-engine-check.json".freeze
   EXPECTED_FILES = %w[Data/MapInfos.rxdata Data/System.rxdata
                        PBS/trainer_types_sinnoh_barry.txt
                        PBS/trainers_sinnoh_barry.txt].freeze
@@ -11,6 +12,7 @@ module BlueSinnohQAStart
   def self.proof
     return nil unless File.file?(CONFIG) && !File.symlink?(CONFIG)
     return nil unless File.file?(COMPILED) && !File.symlink?(COMPILED)
+    return nil unless File.file?(ENGINE_REPORT) && !File.symlink?(ENGINE_REPORT)
     begin
       require "json" unless defined?(JSON)
       require "digest" unless defined?(Digest::SHA256)
@@ -31,10 +33,24 @@ module BlueSinnohQAStart
                       start.all? { |x| x.is_a?(Integer) } &&
                       (1..599).cover?(start[0]) &&
                       start[1] >= 0 && start[2] >= 0
+    native = JSON.parse(File.read(ENGINE_REPORT))
+    return nil unless native.is_a?(Hash) &&
+                      native["region"] == "SINNOH" &&
+                      native["mode"] == "ENGINE_STATIC_INDEX_AND_EVENTS_PROBE_ONLY" &&
+                      native["status"] == "NATIVE_STRUCTURAL_CHECK_NOT_GAMEPLAY" &&
+                      native["compile_token"] == token &&
+                      native["maps_inspected"] == 9 &&
+                      native["events_inspected"] == 24 &&
+                      native["warps_inspected"] == 16 &&
+                      native["physical_starter_balls_inspected"] == %w[CHIMCHAR PIPLUP TURTWIG] &&
+                      native["barry_versions_inspected"].is_a?(Array) &&
+                      native["barry_versions_inspected"].length == 3 &&
+                      native["gameplay_approved"] == false &&
+                      native["barry_ready_marker_created"] == false
     files = data["file_sha256"]
     required = EXPECTED_FILES + [format("Data/Map%03d.rxdata", start[0])]
-    return nil unless files.is_a?(Hash) && required.all? do |file|
-      hash = files[file]
+    return nil unless files.is_a?(Hash) && required.all? { |file| files.key?(file) }
+    return nil unless files.all? do |file, hash|
       hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/) &&
         File.file?(file) && !File.symlink?(file) &&
         Digest::SHA256.file(file).hexdigest == hash
