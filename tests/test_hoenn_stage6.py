@@ -36,7 +36,7 @@ class HoennStage6Tests(unittest.TestCase):
 
     def test_source_maps_edges_and_bicycle_gate_contracts(self):
         self.assertEqual(set(SOURCE_MAPS_STAGE6), {41,42,43,44,45,46,47,113,114,115})
-        self.assertEqual(len(SOURCE_MAPS), 110)
+        self.assertEqual(len(SOURCE_MAPS), 138)
         self.assertEqual(len(WARP_PAIRS), 130)
         self.assertEqual(len(WARP_PAIRS_STAGE6), 9)
         self.assertEqual(OFFSET_BORDERS_STAGE6, (
