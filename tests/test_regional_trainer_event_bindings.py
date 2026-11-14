@@ -17,6 +17,7 @@ from verify_trainer_event_bindings import (  # noqa: E402
 )
 from build_johto_events import EVENT_CLASSES, event_page, ruby  # noqa: E402
 from stage import serialize  # noqa: E402
+from pilot_hoenn import preflight_route102_trainers  # noqa: E402
 
 
 class RegionalTrainerBindingsTests(unittest.TestCase):
@@ -116,6 +117,24 @@ class RegionalTrainerBindingsTests(unittest.TestCase):
             location.write_text(json.dumps(contract),encoding="utf-8")
             with self.assertRaisesRegex(ValueError,"Johto Route trainer drift"):
                 audit_sources(staging)
+
+    def test_hoenn_preflight_rejects_duplicate_pbs_without_changing_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            game = Path(directory)
+            (game / "PBS").mkdir()
+            pbs = game / "PBS/trainers.txt"
+            # A different version is not a collision.
+            pbs.write_text("[YOUNGSTER,Calvin]\nPokemon = RATTATA,5\n", encoding="utf-8")
+            bindings = preflight_route102_trainers(game)
+            self.assertEqual(len(bindings),4)
+            self.assertTrue(all(x["pbs_version"]==102 for x in bindings))
+            self.assertTrue(all(x["gameplay_verified"] is False for x in bindings))
+            pbs.write_text("[YOUNGSTER,Calvin,102]\nPokemon = RATTATA,5\n",
+                           encoding="utf-8")
+            original = pbs.read_bytes()
+            with self.assertRaisesRegex(ValueError,"já existe"):
+                preflight_route102_trainers(game)
+            self.assertEqual(pbs.read_bytes(),original)
 
 
 if __name__ == "__main__":
