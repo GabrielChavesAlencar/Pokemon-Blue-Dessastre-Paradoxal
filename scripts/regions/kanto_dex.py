@@ -68,4 +68,8 @@ def install_pilot_kantodex(project: Path, target: Path):
     }
     (target / "Data/blue-kanto-dex.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
+    # The embedded mkxp Ruby runtime may not ship JSON. Keep a tiny ASCII
+    # marker for runtime access; retain JSON for Python audits only.
+    (target / "Data/blue-kanto-dex-index.txt").write_text(
+        f"{index}|{1 if added else 0}|{len(existing)}\n", encoding="ascii")
     return manifest
