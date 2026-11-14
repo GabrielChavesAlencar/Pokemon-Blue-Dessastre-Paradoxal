@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "351ca66ba9a0dd95730d4636891ec408a54c06bb",
+      "date": "2026-11-14T00:08:36-03:00",
+      "title": "test(regions): check 13 trainer bindings, private RXDATA/PBS inspection and source drift gates",
+      "category": "Testes"
+    },
+    {
       "sha": "0886ecb5c0b83740cfd935664e0afd1198841c9e",
       "date": "2026-11-14T00:08:10-03:00",
       "title": "fix(kanto): handle missing optional NPC_Hiker sprite without aborting Testar Kanto",
