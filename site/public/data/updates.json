@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3bb3847f25933ecbfe1daf0e493eac19acf1b7a4",
+      "date": "2026-11-14T11:27:09-03:00",
+      "title": "feat(site/hoenn): incluir Rustboro, Roxanne, Rota 116 e Rusturf como piloto não aprovado",
+      "category": "Novidades"
+    },
+    {
       "sha": "85ac1046c47968dbd2e5c5b528a1b7c803cc2f56",
       "date": "2026-11-14T11:25:56-03:00",
       "title": "feat(hoenn): Stone Badge regional, Cut, Roxanne, resgate Peecko e Devon em Ruby",
