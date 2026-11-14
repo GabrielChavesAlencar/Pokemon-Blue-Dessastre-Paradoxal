@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7017c74af6ef292fd1f028abecac21243f212d59",
+      "date": "2026-11-14T14:12:21-03:00",
+      "title": "test(hoenn): incluir 28 MapIDs fonte de Mossdeep, Mt Pyre e esconderijos",
+      "category": "Testes"
+    },
+    {
       "sha": "692ddd60a1f90f589fbe277dc1cf15440b3c25ff",
       "date": "2026-11-14T14:12:02-03:00",
       "title": "audit(hoenn): conferir evento único de entrada em Mt Pyre na Rota 122",
