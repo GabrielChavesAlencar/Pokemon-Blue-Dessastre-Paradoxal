@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cfe369ad63e8c918e7da6f6e31f3bfc6129dbd60",
+      "date": "2026-11-14T17:52:01-03:00",
+      "title": "feat(hoenn): allow QA09 physical auditor on isolated QA10 copy",
+      "category": "Novidades"
+    },
+    {
       "sha": "adb033957e03dcef49b61bd8bbf1682ea9f16e95",
       "date": "2026-11-14T17:51:37-03:00",
       "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
