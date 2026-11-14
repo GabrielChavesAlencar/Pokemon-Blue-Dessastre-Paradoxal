@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bcae2363495aaa3c850dcc632745033f42984c9c",
+      "date": "2026-11-13T21:50:57-03:00",
+      "title": "test(sinnoh): cover QA-only Barry PBS hashes, missing graphics, marker prohibition and legacy map overlap",
+      "category": "Testes"
+    },
+    {
       "sha": "f988f00af8d802bbbbef528a8ce941259677d4cc",
       "date": "2026-11-13T21:50:21-03:00",
       "title": "feat(sinnoh): add read-only Barry PBS integration preflight for private QA copy with no native proof claim",
