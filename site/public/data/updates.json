@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e05f31476b0d3056563b61a351837e4f116cde33",
+      "date": "2026-11-13T22:15:06-03:00",
+      "title": "ci(sinnoh): validate Ruby QA new-game gate, save isolation and compiled PBS hash check",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f47376b117ac52e1c33fb35239f905f53e04bc90",
+      "date": "2026-11-13T22:14:53-03:00",
+      "title": "test(sinnoh): pure Ruby QA new-game guards block uncompiled Barry, tampered maps and cross-region save resets",
+      "category": "Testes"
+    },
+    {
       "sha": "f35553ba2d70801496c64a0802d9a1728df5cad4",
       "date": "2026-11-13T22:14:00-03:00",
       "title": "test(sinnoh): use actual Blue Story plugin directory in synthetic QA baseline and simplify symlink assertion",
