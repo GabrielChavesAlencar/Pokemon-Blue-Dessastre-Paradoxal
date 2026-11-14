@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ccdbd416583570bcad25a149c6e9aebc443ce00",
+      "date": "2026-11-14T13:36:34-03:00",
+      "title": "test(hoenn): verificar catálogo 110 mapas, 144 equipes e novas insígnias",
+      "category": "Novidades"
+    },
+    {
       "sha": "00f6e37ebf232dda3e40132c3910ddcc800c4fbb",
       "date": "2026-11-14T13:35:00-03:00",
       "title": "test(hoenn): exigir 110 mapas e PBS Norman/Winona/Weather/Rival compilados",
