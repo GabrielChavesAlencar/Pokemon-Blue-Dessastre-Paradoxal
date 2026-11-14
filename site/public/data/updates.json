@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "701769a0c64714b3826fe4d16cd5a835b91da4f3",
+      "date": "2026-11-13T23:58:39-03:00",
+      "title": "feat(portal): distinguish not-added from experimental content pending native verification",
+      "category": "Novidades"
+    },
+    {
+      "sha": "a0e60250bae979f823a029986f7c168fe2ad4a7e",
+      "date": "2026-11-13T23:58:22-03:00",
+      "title": "fix(portal): distinguish existing Kanto gym/league handlers and pilot content from genuinely pending additions",
+      "category": "Correções"
+    },
+    {
       "sha": "b666e2234ff6887ff3376f215c9787bf94d26976",
       "date": "2026-11-13T23:56:51-03:00",
       "title": "test(portal): cover pending labels, dedup, four regions and prototype-only status",
