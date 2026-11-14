@@ -188,7 +188,7 @@ def audit(root: Path = ROOT) -> dict:
             errors.append(f"Overlapping events on {key}: {occupied[key]} vs {label}")
         occupied[key] = label
 
-    defined = set(re.findall(r"(?m)^\s*def self\.([a-z0-9_]+[!?]?)\b?", plugin))
+    defined = set(re.findall(r"(?m)^\s*def self\.([a-z0-9_]+[!?]?)(?=\s|\(|$)", plugin))
     required = {"state", "choose_profile", "choose_starter", "route_birch",
                 "choose_birch_ball", "rescue_birch_battle", "rival_103",
                 "rival_name", "birch", "mother", "mart", "heal", "clock",
