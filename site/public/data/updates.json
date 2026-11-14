@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "214c66cd064ace46818ce4ffe254ad44e5a0fd90",
+      "date": "2026-11-14T20:54:13-03:00",
+      "title": "ci(kanto): testar desbloqueio de corrida apos Brock e save reload",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "dc622ec71dcc8522a7cf8b182df4804070a73398",
+      "date": "2026-11-14T20:54:03-03:00",
+      "title": "test(kanto): validar entrega unica de Tenis de Corrida pela mae apos Brock",
+      "category": "Testes"
+    },
+    {
       "sha": "c8bcc8433950abe1de75e0dedddf31f5f7c2b9ff",
       "date": "2026-11-14T20:52:25-03:00",
       "title": "feat(kanto): mae entrega Tenis de Corrida apos Brock na saida de Pewter para Rota 3",
