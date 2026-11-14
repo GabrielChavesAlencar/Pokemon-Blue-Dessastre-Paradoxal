@@ -2999,15 +2999,57 @@ module BlueHoennPilot
     true
   end
 
-  def self.hall_of_fame_stage10
+  # QA10: only the authored Hall event on source Map99 may commit Hoenn's
+  # League victory. Never award on Wallace battle, on a source warp or in a
+  # different region; never write native Decades badges/switches.
+  def self.qa10_hall_ready?
     flags=state
-    return false unless flags && flags["champion_wallace_defeated"] &&
-                        STAGE10_ELITE.all?{|_,_,_,key| flags["elite_#{key}_defeated"]}
-    return true if flags["hoenn_hall_of_fame"]
+    return false unless flags && qa9_at_league_map?(99) &&
+                        qa9_champion_unlocked? && flags["champion_wallace_defeated"]
+    return false unless defined?(BlueRegions) &&
+                        BlueRegions.respond_to?(:complete_league) &&
+                        BlueRegions.respond_to?(:unlocked)
+    region=$PokemonGlobal.blue_regions
+    region.is_a?(Hash) && region["leagues"].is_a?(Array)
+  end
+
+  def self.qa10_postgame_status
+    flags=state
+    return false unless flags && flags["hoenn_hall_of_fame"] &&
+                        qa9_champion_unlocked?
+    region=$PokemonGlobal.blue_regions
+    return false unless region.is_a?(Hash) && region["leagues"].is_a?(Array) &&
+                        region["leagues"].include?("HOENN") &&
+                        defined?(BlueRegions) &&
+                        BlueRegions.respond_to?(:neighbors) &&
+                        BlueRegions.respond_to?(:unlocked)
+    _,maps=metadata
+    return false unless $game_map &&
+                        [maps[99],maps[322]].include?($game_map.map_id)
+    neighbors=BlueRegions.neighbors("HOENN")
+    unlocked=BlueRegions.unlocked(region)
+    return false unless neighbors.is_a?(Array) && neighbors.length==2 &&
+                        neighbors.all?{|key| unlocked.include?(key)}
+    pbMessage(_INTL("Circuito regional: Hoenn concluída. Johto e Sinnoh foram liberadas; a viagem só ficará disponível após a instalação e validação dos respectivos mapas."))
+    true
+  end
+
+  def self.hall_of_fame_stage10
+    return false unless qa10_hall_ready?
+    flags=state
+    region=$PokemonGlobal.blue_regions
+    # Old QA saves may have a local flag only. Reconcile it only after
+    # validating every win, badges and the physical Hall map.
+    unless region["leagues"].include?("HOENN")
+      return false unless BlueRegions.complete_league(region,"HOENN")
+    end
+    if flags["hoenn_hall_of_fame"]
+      return qa10_postgame_status
+    end
     flags["hoenn_hall_of_fame"]=true
-    pbMessage(_INTL("Hall of Fame de Hoenn: sua vitória na Liga foi registrada neste save regional!"))
-    # Global credits, region unlock and Hall of Fame UI require separate
-    # engine-verified integration; do not mark them completed here.
+    pbMessage(_INTL("Hall of Fame de Hoenn: sua vitória foi registrada neste save regional!"))
+    qa10_postgame_status
+    # Native Hall of Fame animation, credits and end-screen remain unverified.
     true
   end
 
