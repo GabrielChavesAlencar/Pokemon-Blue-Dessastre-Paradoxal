@@ -267,3 +267,5 @@
 .pending-count strong{color:#e8eff8;font-size:12px}
 @media(max-width:900px){.pending-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.pending-grid{grid-template-columns:1fr;padding:11px}.pending-card{padding:13px}.pending-group summary{padding:13px}}
+
+.content-pending-tag.pending-validation{border-color:#365373;background:#1c2c41;color:#a8c9ed}
