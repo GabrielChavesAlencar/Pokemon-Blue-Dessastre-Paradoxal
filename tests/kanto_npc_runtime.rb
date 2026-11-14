@@ -47,6 +47,9 @@ Dir.mktmpdir("blue-kanto-npc-runtime-") do |path|
       [combined, "Está terminantemente proibido passar por aqui! Esta é uma propriedade privada!"]
     ]))
     $PokemonSystem.blue_locale = "pt-BR"
+    option_help = "Interface and story language. Pokémon, item, move and ability names stay unchanged."
+    raise "Selected Portuguese must translate the actual options help string" unless
+      BlueLocale.translate(option_help) == "Traduz interface e história. Mantém nomes de Pokémon, itens, golpes e habilidades."
     BlueKantoPilot.npc_dialogue(10, 7, 0)
     raise "pt-BR guard was not translated at talk time" unless
       $shown_dialogues.last == "Está terminantemente proibido passar por aqui!"
