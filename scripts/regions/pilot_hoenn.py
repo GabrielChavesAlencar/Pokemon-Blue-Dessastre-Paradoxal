@@ -1574,6 +1574,7 @@ def build_overlay(game, source):
                      for mid,_,_,kind,name,_,_,_ in TRAINERS_STAGE9)
     extra_ids.update((TATE_LIZA_PBS,MATT_PBS,MAXIE_HIDEOUT_PBS,
                       TABITHA_HIDEOUT_PBS,MAXIE_SPACE_PBS,TABITHA_SPACE_PBS))
+    extra_ids.update((JUAN_PBS,ARCHIE_PBS,WALLY_ROAD_PBS,CHAMPION_PBS,*ELITE_PBS))
     for group,kind in (
         (PYRE_AQUA_GRUNTS,"BLUE_HOENN_AQUA"),
         (AQUA_HIDEOUT_GRUNTS,"BLUE_HOENN_AQUA"),
@@ -1589,7 +1590,7 @@ def build_overlay(game, source):
                           len(AQUA_INSTITUTE) + 12 +
                           len(TRAINERS_STAGE9) + len(PYRE_AQUA_GRUNTS) +
                           len(AQUA_HIDEOUT_GRUNTS) + len(MAGMA_HIDEOUT_GRUNTS) +
-                          len(SPACE_GRUNT_EVENTS) + 6):
+                          len(SPACE_GRUNT_EVENTS) + 6 + 8):
         raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
@@ -1604,7 +1605,9 @@ def build_overlay(game, source):
         "BLUE_HOENN_WATTSON", "BLUE_HOENN_WALLY", "BLUE_HOENN_MAGMA",
         "BLUE_HOENN_TABITHA", "BLUE_HOENN_MAXIE", "BLUE_HOENN_FLANNERY",
         "BLUE_HOENN_NORMAN", "BLUE_HOENN_WINONA", "BLUE_HOENN_SHELLY",
-        "BLUE_HOENN_TATE_LIZA", "BLUE_HOENN_MATT"} & types:
+        "BLUE_HOENN_TATE_LIZA", "BLUE_HOENN_MATT",
+        "BLUE_HOENN_JUAN", "BLUE_HOENN_ARCHIE",
+        "BLUE_HOENN_ELITE", "BLUE_HOENN_CHAMPION"} & types:
         raise ValueError("Tipo de chefe Hoenn já existe no PBS nativo")
     overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
         "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
@@ -1635,6 +1638,14 @@ def build_overlay(game, source):
         "BaseMoney = 100\nSkillLevel = 100\n"
         "[BLUE_HOENN_MATT]\nName = Admin Aqua\nGender = Male\n"
         "BaseMoney = 80\nSkillLevel = 85\n"
+        "[BLUE_HOENN_JUAN]\nName = Líder de Ginásio\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_ARCHIE]\nName = Líder Aqua\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_ELITE]\nName = Elite Four\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_CHAMPION]\nName = Campeão\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
     ).encode("utf-8")
     # Use only native trainer graphics; a fallback is explicitly NOT a visual
     # approval for the actual Aqua sprite.
@@ -1893,6 +1904,34 @@ def build_overlay(game, source):
                                        items=("SUPERPOTION","SUPERPOTION")))
     trainer_sections.append(stage9_boss(TABITHA_SPACE_PBS,TABITHA_SPACE_TEAM))
     trainer_sections.append(stage9_boss(MAXIE_SPACE_PBS,MAXIE_SPACE_TEAM))
+
+    # Emerald reference rosters; Blue's scaling replaces source levels.
+    for definition,team,items in (
+        (JUAN_PBS,JUAN_TEAM,("HYPERPOTION","HYPERPOTION")),
+        (ARCHIE_PBS,ARCHIE_TEAM,("SUPERPOTION","SUPERPOTION")),
+        (WALLY_ROAD_PBS,WALLY_ROAD_TEAM,("FULLRESTORE","FULLRESTORE")),
+        *((definition,team,("FULLRESTORE","FULLRESTORE"))
+          for definition,team in zip(ELITE_PBS,ELITE_TEAMS)),
+        (CHAMPION_PBS,CHAMPION_TEAM,("FULLRESTORE",)*4),
+    ):
+        trainer_sections.append(stage9_boss(definition,team,items=items))
+    stage10_boss_art={}
+    for kind,choices in (
+        ("BLUE_HOENN_JUAN",("RSE_LEADER_Juan","JUAN","YOUNGSTER")),
+        ("BLUE_HOENN_ARCHIE",("RSE_AQUALEADER_Archie","ARCHIE","YOUNGSTER")),
+        ("BLUE_HOENN_ELITE",("RSE_ELITEFOUR_Sidney","SIDNEY","YOUNGSTER")),
+        ("BLUE_HOENN_CHAMPION",("RSE_CHAMPION_Wallace","WALLACE","YOUNGSTER")),
+    ):
+        for candidate_name in choices:
+            candidate=game/f"Graphics/Trainers/{candidate_name}.png"
+            if candidate.is_file() and not candidate.is_symlink():
+                data=regular(candidate).read_bytes()
+                if data.startswith(PNG):
+                    overlay[f"Graphics/Trainers/{kind}.png"]=data
+                    stage10_boss_art[kind]=candidate_name
+                    break
+        if kind not in stage10_boss_art:
+            raise ValueError(f"Sem sprite nativo Stage10 seguro: {kind}")
     stage9_boss_art={}
     for kind,choices in (
         ("BLUE_HOENN_TATE_LIZA",
@@ -2028,6 +2067,15 @@ def build_overlay(game, source):
                              "matt":stage9_boss_art["BLUE_HOENN_MATT"]!="RSE_AQUAADMIN_Matt"},
                          "original_partner_battle_pending": True,
                          "native_gameplay_verified": False},
+              "stage10": {**stage10_counts,
+                          "source_map_ids":list(SOURCE_MAPS_STAGE10),
+                          "surf_only_borders":list(SURF_BORDERS_STAGE10),
+                          "boss_battle_art":stage10_boss_art,
+                          "boss_battle_art_placeholder":{
+                              kind:source=="YOUNGSTER"
+                              for kind,source in stage10_boss_art.items()},
+                          "native_puzzles_and_hall_ui_pending":True,
+                          "native_gameplay_verified":False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False}
