@@ -75,7 +75,10 @@ def source_obstacle(event):
     if page is None:
         return None
     name = text(event.attrs["@name"]).lower()
-    if "cuttree" in name:
+    # The audited FRLG source labels trees "Cut Tree" (with a space), but
+    # Essentials' hidden move and erasure handlers require /cuttree/i.
+    marker = re.sub(r"[\s_\-]+", "", name)
+    if "cuttree" in marker:
         return "cut"
     if "strengthboulder" in name:
         return "strength"
@@ -160,6 +163,10 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         if filename:
             converted.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = character
         converted.attrs["@pages"][0].attrs["@through"] = False
+        if obstacle == "cut":
+            # Source EventID/coordinates/graphics stay unchanged. Only the
+            # runtime event NAME must satisfy Essentials' native /cuttree/i.
+            converted.attrs["@name"] = b"CutTree"
         return converted, {"kind": obstacle}
     return new_event(event, dialogue, 0, character), {"kind": "npc_dialogue"}
 
