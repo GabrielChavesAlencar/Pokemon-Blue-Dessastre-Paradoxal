@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dfab96f56cd029e6979554d421a4c67ea23ddd94",
+      "date": "2026-11-14T14:09:49-03:00",
+      "title": "feat(hoenn): confirmar roubo do submarino com Stern após Groudon",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ef2d25d54b338e369689122304c6e5f260637700",
+      "date": "2026-11-14T14:09:34-03:00",
+      "title": "feat(hoenn): implementar Mt Pyre, Magma/Aqua, submarino, Tate/Liza, Mind e Space Center",
+      "category": "Novidades"
+    },
+    {
       "sha": "aaca8384240320229a4fbd3174519068372da947",
       "date": "2026-11-14T14:07:28-03:00",
       "title": "test(hoenn): verificar 138 mapas e equipes Stage9 Tate/Liza/Matt/Maxie",
