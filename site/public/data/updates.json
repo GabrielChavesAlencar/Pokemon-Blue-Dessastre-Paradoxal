@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cf899ae6db175334ca8a66384ded092f8cd4158e",
+      "date": "2026-11-14T12:21:38-03:00",
+      "title": "feat(hoenn): gerar NPCs Mauville, rival110, Wattson, pista ciclista e ginásio elétrico",
+      "category": "Novidades"
+    },
+    {
       "sha": "b59b053269310b3755be5f01939ee4b512cfb96e",
       "date": "2026-11-14T12:20:21-03:00",
       "title": "feat(hoenn): incorporar Mauville, Route110, Cycling Road e dez mapas ao piloto",
