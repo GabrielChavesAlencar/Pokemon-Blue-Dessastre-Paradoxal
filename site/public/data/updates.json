@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d4caeb44df79326be53da7b2f4cce3183958dfa4",
+      "date": "2026-11-14T18:44:31-03:00",
+      "title": "feat(hoenn): in-game Testar Hoenn menu for all 199 maps, search, MapID and safe return",
+      "category": "Novidades"
+    },
+    {
       "sha": "6e859e33d9111400a926461ad002faf6bb107832",
       "date": "2026-11-14T18:44:02-03:00",
       "title": "feat(hoenn): embed 199 safe map teleports after staged NPC/item/obstacle placement",
