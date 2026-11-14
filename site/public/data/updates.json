@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "60c13f839c92a5e78a9abc2bdee8c590e3b5e90f",
+      "date": "2026-11-14T18:17:56-03:00",
+      "title": "test(hoenn): cover early region Portuguese landmarks and preserve route IDs",
+      "category": "Testes"
+    },
+    {
       "sha": "495d872664f9a307f2af60f060e8b581f60b19b5",
       "date": "2026-11-14T18:17:46-03:00",
       "title": "feat(hoenn): localize early-game forests, caves, landmarks and routes in QA11",
