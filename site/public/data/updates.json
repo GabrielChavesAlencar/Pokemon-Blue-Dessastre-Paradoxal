@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6bd2ecbc66b1a2d3e9e3ca49fc681cec787afeea",
+      "date": "2026-11-14T00:01:56-03:00",
+      "title": "feat(portal): label historical strongest league teams as future unadded rematches",
+      "category": "Novidades"
+    },
+    {
+      "sha": "3f71d0534717652062fe915c787211414ae33e14",
+      "date": "2026-11-14T00:01:54-03:00",
+      "title": "feat(portal): mark experimental Kanto gym leader cards as awaiting native QA",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0702360bc2ec922a2578be52185f77460102d7aa",
+      "date": "2026-11-14T00:01:52-03:00",
+      "title": "feat(portal): tag pilot entries as under native review without fixed trainer levels",
+      "category": "Novidades"
+    },
+    {
       "sha": "f56960923cf5f71c2ef36cf6abb3856e66c87181",
       "date": "2026-11-14T00:00:34-03:00",
       "title": "test(regions): update router guard to include Sinnoh backlog alongside pilots",
