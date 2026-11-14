@@ -153,6 +153,46 @@ class TestKantoNpcLocale(unittest.TestCase):
             # No private Argos package, translator invocation or cache needed.
             self.assertFalse((root / ".blue-work/kanto-npc-ptbr.json").exists())
 
+    def test_old_automatic_cache_cannot_override_reviewed_guard(self):
+        guard = event_dialogue()
+        guard.attrs["@pages"][0].attrs["@list"] = [
+            command(101, b"I absolutely forbid you from going through here!"),
+            command(0),
+        ]
+        inventory = {"schema": 1, "imported": [{
+            "kind": "npc_dialogue", "source_map": 10, "map": 610,
+            "event": 7, "x": 4, "y": 5
+        }]}
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "data").mkdir()
+            (root / "data/kanto-npc-ptbr.json").write_bytes(
+                (ROOT / "data/kanto-npc-ptbr.json").read_bytes())
+            source = root / "frlg"
+            (source / "Data").mkdir(parents=True)
+            game = root / "pilot"
+            (game / "Data").mkdir(parents=True)
+            (game / "Data/blue-kanto-field-events.json").write_text(
+                json.dumps(inventory), encoding="utf8")
+            cache = root / ".blue-work/kanto-npc-ptbr.json"
+            cache.parent.mkdir(parents=True)
+            cache.write_text(json.dumps({
+                "version": 1, "language": "pt-BR",
+                "translation_method": "Argos Translate en-pt, automatic/unreviewed",
+                "translations": {
+                    "I absolutely forbid you from going through here!":
+                        "Eu proíbo você absolutamente de passar aqui!"
+                }
+            }), encoding="utf8")
+            fake_map = RubyObject("RPG::Map", {"@events": {7: guard}})
+            with patch.object(kanto_npc_locale, "load", return_value=fake_map):
+                install_npc_locale(root, source, game)
+            translations = {text(pair[0]): text(pair[1]) for pair in loads(
+                (game / "Data/blue-pt-br.dat").read_bytes())}
+            self.assertEqual(
+                translations["I absolutely forbid you from going through here!"],
+                "Está terminantemente proibido passar por aqui!")
+
     def test_optional_offline_translator_recovers_missing_source_npc_lines(self):
         npc = event_dialogue()
         inventory = {"schema": 1, "imported": [{
