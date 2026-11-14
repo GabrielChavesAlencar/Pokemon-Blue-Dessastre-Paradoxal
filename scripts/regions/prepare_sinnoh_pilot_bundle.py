@@ -186,16 +186,21 @@ def build(
         fail("MapIDs de Sinnoh devem ser reais, únicos e menores que 600")
     proposed = {f"Data/Map{mid:03d}.rxdata" for mid in ids}
     geometry_maps = {path for path in geom if MAP.fullmatch(path)}
+    geometry_ids = {int(MAP.fullmatch(name).group(1)) for name in geometry_maps}
     if set(story) != proposed or not proposed.issubset(geometry_maps):
         fail("Stage autoral não corresponde exatamente aos nove mapas verificados")
+    if 0 in geometry_ids:
+        fail("Mapa ID zero não é permitido")
     occupied = native_map_ids(game)
-    if occupied & set(ids):
+    if occupied & geometry_ids:
         fail("MapID Sinnoh já pertence ao game/Data/PBS instalado")
-    # Verify native MapInfos data was not rewritten in the geometry preview.
+    # Validate EVERY new map from the original geometry stage; the donor can
+    # include many more maps than the first nine authored story locations.
     game_infos_path = game / "Data/MapInfos.rxdata"
     existing = loads(game_infos_path.read_bytes())
     merged = loads(geom["Data/MapInfos.rxdata"])
-    if not isinstance(merged, dict) or set(existing) | set(ids) != set(merged):
+    if (not isinstance(merged, dict)
+            or set(merged) != set(existing) | geometry_ids):
         fail("MapInfos da geometria não preserva exatamente os mapas originais")
     for native_id, info in existing.items():
         if serialize(info) != serialize(merged[native_id]):
@@ -251,6 +256,8 @@ def build(
         "mode": "ISOLATED_QA_OVERLAY_DRY_RUN",
         "status": "NOT_PLAYABLE_PBS_NOT_COMPILED",
         "maps": len(ids), "map_ids": sorted(ids),
+        "geometry_total_maps": len(geometry_ids),
+        "geometry_all_map_ids": sorted(geometry_ids),
         "author_events": sum(expected_report["event_counts"].values()),
         "warps": expected_report["warp_count"],
         "physical_starter_balls": expected_report["starter_balls"],
