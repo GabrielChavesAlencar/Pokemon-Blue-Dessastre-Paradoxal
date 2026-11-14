@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ca9b257f2b280e5bfab3d7dc8d58aa38345bd90a",
+      "date": "2026-11-14T18:32:08-03:00",
+      "title": "docs(hoenn): QA12 integrated 12/12 technical and 0/12 native PC/JoiPlay acceptance matrix",
+      "category": "Documentação"
+    },
+    {
       "sha": "553f83789380587ba44bd58e55a02efd5ffff383",
       "date": "2026-11-14T18:30:54-03:00",
       "title": "docs(hoenn): technical QA 12/12 prepared, native 0/12 until actual PC and JoiPlay playtests",
