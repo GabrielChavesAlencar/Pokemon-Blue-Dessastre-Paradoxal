@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aa97b6cb44803f587e96728eccc5ae9f29a81a84",
+      "date": "2026-11-14T17:28:54-03:00",
+      "title": "feat(hoenn): QA08 isolated save profile and stage 1-8 report chain",
+      "category": "Novidades"
+    },
+    {
+      "sha": "199fb2d711eb3c20ebe1034a65b69d7e764e359a",
+      "date": "2026-11-14T17:28:52-03:00",
+      "title": "feat(hoenn): QA08 isolated save profile and stage 1-8 report chain",
+      "category": "Novidades"
+    },
+    {
+      "sha": "050c40c4f2ae0b9ed24856c22a13384d07f014ca",
+      "date": "2026-11-14T17:28:49-03:00",
+      "title": "feat(hoenn): QA08 isolated save profile and stage 1-8 report chain",
+      "category": "Novidades"
+    },
+    {
+      "sha": "96aa8e31743a589a6fbacb7e744edd1f58c93c91",
+      "date": "2026-11-14T17:28:46-03:00",
+      "title": "feat(hoenn): QA08 isolated save profile and stage 1-8 report chain",
+      "category": "Novidades"
+    },
+    {
+      "sha": "953bed6d23bf976b21e13d2cc8334128e3407b06",
+      "date": "2026-11-14T17:28:44-03:00",
+      "title": "feat(hoenn): QA08 isolated save profile and stage 1-8 report chain",
+      "category": "Novidades"
+    },
+    {
       "sha": "b9c72eb02f0a970d42b7096f34446c3732cb2c03",
       "date": "2026-11-14T17:28:24-03:00",
       "title": "feat(hoenn): QA08 Victory Road/Wally private static RXDATA and PBS auditor",
