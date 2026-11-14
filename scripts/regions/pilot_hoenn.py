@@ -1176,6 +1176,9 @@ def build_overlay(game, source):
                   for _, version in RIVAL_TEAMS.values()}
     rival_keys.update((name, version) for name in RIVAL_NAMES
                       for version, _team in RIVAL_110_TEAMS.values())
+    for teams in (RIVAL_119_TEAMS, RIVAL_LILYCOVE_TEAMS):
+        rival_keys.update((name, version) for name in RIVAL_NAMES
+                          for version, _team in teams.values())
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         text_body = regular(candidate).read_text("utf-8-sig")
         for match in re.finditer(r"(?m)^\s*\[RIVAL1,([^,\]\r\n]+),(\d+)\]\s*$", text_body):
@@ -1195,6 +1198,15 @@ def build_overlay(game, source):
                 f"[RIVAL1,{name},{version}]\nLoseText = Nossa jornada continua!\n" +
                 "".join(f"Pokemon = {species},{level}\n" for species, level in team)
             )
+    for event, teams in (("Rota 119", RIVAL_119_TEAMS),
+                         ("Lilycove", RIVAL_LILYCOVE_TEAMS)):
+        for name in RIVAL_NAMES:
+            for chosen, (version, team) in teams.items():
+                trainer_sections.append(
+                    f"# Rival {event}: player starter {chosen}, rival {name}\n"
+                    f"[RIVAL1,{name},{version}]\nLoseText = Nossa jornada continua!\n" +
+                    "".join(f"Pokemon = {species},{level}\n" for species,level in team)
+                )
     # Fail closed on absent native types/overlapping PBS identities.
     types = set()
     for candidate in sorted((game / "PBS").glob("trainer_types*.txt")):
@@ -1206,6 +1218,7 @@ def build_overlay(game, source):
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE5)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE6)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE7)
+    needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE8)
     missing = needed - types
     if missing:
         raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
@@ -1227,10 +1240,16 @@ def build_overlay(game, source):
     extra_ids.update((FLANNERY_PBS, TABITHA_PBS, MAXIE_PBS))
     extra_ids.update((kind, name, version)
                      for kind, name, version, _team in MAGMA_GRUNTS_STAGE7)
+    extra_ids.update((kind, name, mid)
+                     for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE8)
+    extra_ids.update((NORMAN_PBS, WINONA_PBS, SHELLY_PBS))
+    extra_ids.update(("BLUE_HOENN_AQUA", "Recruta", version)
+                     for mid,x,y,version,_team in AQUA_INSTITUTE)
     if len(extra_ids) != (len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) +
                           len(TRAINERS_STAGE5) + len(TRAINERS_STAGE6) +
                           len(TRAINERS_STAGE7) + len(MUSEUM_AQUA) +
-                          len(MAGMA_GRUNTS_STAGE7) + 9):
+                          len(MAGMA_GRUNTS_STAGE7) + len(TRAINERS_STAGE8) +
+                          len(AQUA_INSTITUTE) + 12):
         raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
@@ -1243,7 +1262,8 @@ def build_overlay(game, source):
                 raise ValueError(f"Treinador Hoenn da etapa 3 já existe: {fields} ({candidate.name})")
     if {"BLUE_HOENN_AQUA", "BLUE_HOENN_ROXANNE", "BLUE_HOENN_BRAWLY",
         "BLUE_HOENN_WATTSON", "BLUE_HOENN_WALLY", "BLUE_HOENN_MAGMA",
-        "BLUE_HOENN_TABITHA", "BLUE_HOENN_MAXIE", "BLUE_HOENN_FLANNERY"} & types:
+        "BLUE_HOENN_TABITHA", "BLUE_HOENN_MAXIE", "BLUE_HOENN_FLANNERY",
+        "BLUE_HOENN_NORMAN", "BLUE_HOENN_WINONA", "BLUE_HOENN_SHELLY"} & types:
         raise ValueError("Tipo de chefe Hoenn já existe no PBS nativo")
     overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
         "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
@@ -1264,6 +1284,12 @@ def build_overlay(game, source):
         "BaseMoney = 100\nSkillLevel = 100\n"
         "[BLUE_HOENN_FLANNERY]\nName = Líder de Ginásio\nGender = Female\n"
         "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_NORMAN]\nName = Líder de Ginásio\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_WINONA]\nName = Líder de Ginásio\nGender = Female\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_SHELLY]\nName = Admin Aqua\nGender = Female\n"
+        "BaseMoney = 90\nSkillLevel = 90\n"
     ).encode("utf-8")
     # Use only native trainer graphics; a fallback is explicitly NOT a visual
     # approval for the actual Aqua sprite.
@@ -1437,6 +1463,57 @@ def build_overlay(game, source):
                     break
         if kind not in stage7_boss_art:
             raise ValueError(f"Faltou sprite nativo para chefe do piloto Hoenn: {kind}")
+    for mid,x,y,kind,name,sprite,team,double in TRAINERS_STAGE8:
+        trainer_sections.append(
+            f"[{kind},{name},{mid}]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species,level in team)
+        )
+    for _mid,_x,_y,version,team in AQUA_INSTITUTE:
+        trainer_sections.append(
+            f"[BLUE_HOENN_AQUA,Recruta,{version}]\n"
+            "LoseText = A Equipe Aqua vai recuar!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species,level in team)
+        )
+    kind,name,ver=NORMAN_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{ver}]\nItems = HYPERPOTION,HYPERPOTION\n"
+        "LoseText = Você cresceu como treinador!\n"
+        "Pokemon = SPINDA,27\n    Moves = TEETERDANCE,PSYBEAM,FACADE,ENCORE\n"
+        "Pokemon = VIGOROTH,27\n    Moves = SLASH,FACADE,ENCORE,FEINTATTACK\n"
+        "Pokemon = LINOONE,29\n    Moves = SLASH,BELLYDRUM,FACADE,HEADBUTT\n"
+        "Pokemon = SLAKING,31\n    Moves = COUNTER,YAWN,FACADE,FEINTATTACK\n"
+    )
+    kind,name,ver=WINONA_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{ver}]\nItems = HYPERPOTION,HYPERPOTION\n"
+        "LoseText = Seus Pokémon voaram mais alto!\n"
+        "Pokemon = SWABLU,29\n    Moves = PERISHSONG,MIRRORMOVE,SAFEGUARD,AERIALACE\n"
+        "Pokemon = TROPIUS,29\n    Moves = SUNNYDAY,AERIALACE,SOLARBEAM,SYNTHESIS\n"
+        "Pokemon = PELIPPER,30\n    Moves = WATERGUN,SUPERSONIC,PROTECT,AERIALACE\n"
+        "Pokemon = SKARMORY,31\n    Moves = SANDATTACK,FURYATTACK,STEELWING,AERIALACE\n"
+        "Pokemon = ALTARIA,33\n    Moves = EARTHQUAKE,DRAGONBREATH,DRAGONDANCE,AERIALACE\n"
+    )
+    kind,name,ver=SHELLY_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{ver}]\nLoseText = Precisamos recuar!\n" +
+        "".join(f"Pokemon = {species},{level}\n" for species,level in SHELLY_TEAM)
+    )
+    stage8_boss_art={}
+    for key,choices in (
+        ("BLUE_HOENN_NORMAN",("RSE_LEADER_Norman","NORMAN","YOUNGSTER")),
+        ("BLUE_HOENN_WINONA",("RSE_LEADER_Winona","WINONA","LASS")),
+        ("BLUE_HOENN_SHELLY",("RSE_AQUAADMIN_Shelly","SHELLY","LASS")),
+    ):
+        for candidate_name in choices:
+            candidate=game / f"Graphics/Trainers/{candidate_name}.png"
+            if candidate.is_file() and not candidate.is_symlink():
+                data=regular(candidate).read_bytes()
+                if data.startswith(PNG):
+                    overlay[f"Graphics/Trainers/{key}.png"]=data
+                    stage8_boss_art[key]=candidate_name
+                    break
+        if key not in stage8_boss_art:
+            raise ValueError(f"Sem sprite nativo de batalha Etapa8: {key}")
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
@@ -1534,6 +1611,16 @@ def build_overlay(game, source):
                              "tabitha": stage7_boss_art["BLUE_HOENN_TABITHA"] != "RSE_MAGMAADMIN_Tabitha",
                              "maxie": stage7_boss_art["BLUE_HOENN_MAXIE"] != "RSE_MAGMALEADER_Maxie",
                              "magma": stage7_boss_art["BLUE_HOENN_MAGMA"] != "RSE_MAGMAGRUNT_M"},
+                         "native_gameplay_verified": False},
+              "stage8": {**stage8_counts,
+                         "source_map_ids": list(SOURCE_MAPS_STAGE8),
+                         "original_norman_gym_reused": True,
+                         "surf_fly_native_gameplay_verified": False,
+                         "boss_battle_art": stage8_boss_art,
+                         "battle_art_placeholder": {
+                             "norman": stage8_boss_art["BLUE_HOENN_NORMAN"] != "RSE_LEADER_Norman",
+                             "winona": stage8_boss_art["BLUE_HOENN_WINONA"] != "RSE_LEADER_Winona",
+                             "shelly": stage8_boss_art["BLUE_HOENN_SHELLY"] != "RSE_AQUAADMIN_Shelly"},
                          "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False},
