@@ -111,7 +111,7 @@ O [verificador Python](../scripts/regions/install_sinnoh_qa_copy.py) exige hashe
 
 **Restam 3 subetapas reais:** rodar essa sondagem no Game.exe com mapas autorizados, observar batalha/nível efetivo 70%/90% e saves Windows, e validar o Android/JoiPlay com regressões. **Nenhuma dessas três ocorreu nesta conversa.** Portanto o desenvolvimento geral permanece **8/32 (25%)**, as 13 fases técnicas/jogáveis/nativas permanecem **0/13** e a instalação QA continua **4/7**.
 
-**CI isolada comprovada:** [execução 43540451532](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43540451532) — **137 testes Python aprovados** e harnesses Ruby de prova de início, eventos e Barry aprovados. A conclusão **geral** daquela workflow foi falha em testes fora da suíte isolada; não confundir sucesso isolado com pipeline totalmente verde ou gameplay nativo.
+**CI isolada comprovada:** [execução 43540748918](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43540748918) — **138 testes Python aprovados** e harnesses Ruby de prova de início, eventos e Barry aprovados. A conclusão **geral** daquela workflow foi falha em testes fora da suíte isolada; não confundir sucesso isolado com pipeline totalmente verde ou gameplay nativo.
 
 ## Barra B — fases tecnicamente aprovadas
 
