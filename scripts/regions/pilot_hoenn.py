@@ -71,6 +71,20 @@ from hoenn_stage8 import (
     NPCS_STAGE8, FUTURE_GATES_STAGE8, SIGNS_STAGE8, PICKUPS_STAGE8,
     NORMAN_GYM_DOORS,
 )
+from hoenn_stage9 import (
+    SOURCE_MAPS_STAGE9, SURF_BORDERS_STAGE9,
+    TATE_LIZA_EVENTS, TATE_LIZA_PBS, TATE_LIZA_TEAM,
+    MATT_PBS, MATT_TEAM, MAXIE_HIDEOUT_PBS, MAXIE_HIDEOUT_TEAM,
+    TABITHA_HIDEOUT_PBS, TABITHA_HIDEOUT_TEAM, MAXIE_SPACE_PBS,
+    MAXIE_SPACE_TEAM, TABITHA_SPACE_PBS, TABITHA_SPACE_TEAM,
+    ARCHIE_ORB_EVENT, MT_PYRE_ARCHIE, MT_PYRE_OLD_LADY,
+    TABITHA_HIDEOUT_EVENT, MAXIE_HIDEOUT_EVENT, GROUDON_CUTSCENE_EVENT,
+    MATT_HIDEOUT_EVENT, SUBMARINE_EVENT,
+    SPACE_MAXIE_EVENT, SPACE_STEVEN_EVENT, SPACE_GRUNT_EVENTS,
+    TRAINERS_STAGE9, PYRE_AQUA_GRUNTS, MAGMA_HIDEOUT_GRUNTS,
+    AQUA_HIDEOUT_GRUNTS, NPCS_STAGE9, SIGNS_STAGE9,
+    MAGMA_HIDEOUT_GATE, AQUA_HIDEOUT_GATE,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -83,6 +97,7 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE6,
     **SOURCE_MAPS_STAGE7,
     **SOURCE_MAPS_STAGE8,
+    **SOURCE_MAPS_STAGE9,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -131,10 +146,14 @@ MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
            **{mid: ("Center" if mid in (49, 65, 71) else
                     "Route101" if mid in (132, 134, 135, 138, 139) else
                     "Birch" if mid in (68, 137) else "Oldale")
-              for mid in SOURCE_MAPS_STAGE8}}
+              for mid in SOURCE_MAPS_STAGE8},
+           **{mid: ("Center" if mid == 77 else
+                    "Birch" if mid in (81,82,189,213,217) else
+                    "Route101" if mid in (141,144,212) else "Oldale")
+              for mid in SOURCE_MAPS_STAGE9}}
 OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 53, 58, 101, 102, 103, 104,
             108, 111, 113, 114, 117, 121, 123, 125, 130, 132, 134,
-            135, 138, 139, 156, 178, 180, 48, 64, 69)
+            135, 138, 139, 141, 144, 156, 178, 180, 212, 213, 48, 64, 69, 76)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -1113,6 +1132,12 @@ def build_overlay(game, source):
     for a, edge_a, off_a, b, edge_b, off_b in (
         *((a, d1, 0, b, d2, 0) for a, d1, b, d2 in BORDERS),
         *OFFSET_BORDERS,
+        *OFFSET_BORDERS_STAGE4,
+        *OFFSET_BORDERS_STAGE5,
+        *OFFSET_BORDERS_STAGE6,
+        *OFFSET_BORDERS_STAGE7,
+        *OFFSET_BORDERS_STAGE8,
+        *SURF_BORDERS_STAGE9,
     ):
         donor = f"{a},{edge_a},{off_a},{b},{edge_b},{off_b}"
         if donor not in upstream_connections:
