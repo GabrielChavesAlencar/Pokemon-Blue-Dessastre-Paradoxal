@@ -44,6 +44,16 @@ from hoenn_stage6 import (
     WALLY_EVENT, WATTSON_EVENT, GYM_GATES_STAGE6, GYM_SWITCHES_STAGE6,
     NPCS_STAGE6, PICKUPS_STAGE6, SIGNS_STAGE6, MAUVILLE_FUTURE_GATES,
 )
+from hoenn_stage7 import (
+    SOURCE_MAPS_STAGE7, OFFSET_BORDERS_STAGE7, WARP_PAIRS_STAGE7,
+    CABLE_POINTS_STAGE7, LAND_ENCOUNTERS_STAGE7, CAVE_ENCOUNTERS_STAGE7,
+    TRAINERS_STAGE7, FLANNERY_PBS, FLANNERY_TEAM,
+    TABITHA_PBS, TABITHA_TEAM, MAXIE_PBS, MAXIE_TEAM,
+    MAGMA_GRUNTS_STAGE7, MAGMA_GRUNT_EVENTS, TABITHA_EVENT, MAXIE_EVENT,
+    METEORITE_MACHINE_EVENT, METEOR_FALLS_CUTSCENE, FLANNERY_EVENT,
+    ROUTE112_MAGMA_BLOCKERS, NPCS_STAGE7, FUTURE_GATES_STAGE7,
+    PICKUPS_STAGE7, SIGNS_STAGE7, GYM_STEAM_PAIRS_STAGE7,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -132,6 +142,13 @@ def audit(root: Path = ROOT) -> dict:
         for chosen, (version, team) in RIVAL_110_TEAMS.items():
             native_trainers[f"{name} (Rota 110/{chosen.title()})"] = (
                 SOURCE_MAPS[113], tuple(team))
+    native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
+                            for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE7})
+    native_trainers["Flannery"] = (SOURCE_MAPS[63], tuple(FLANNERY_TEAM))
+    native_trainers["Tabitha"] = (SOURCE_MAPS[178], tuple(TABITHA_TEAM))
+    native_trainers["Maxie"] = (SOURCE_MAPS[178], tuple(MAXIE_TEAM))
+    for index, (_kind, _name, _version, team) in enumerate(MAGMA_GRUNTS_STAGE7, 1):
+        native_trainers[f"Recruta Magma (Mt. Chimney {index})"] = (SOURCE_MAPS[178], tuple(team))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
@@ -140,8 +157,9 @@ def audit(root: Path = ROOT) -> dict:
         errors.append(f"Published trainers differ from pilot: {sorted(set(names_published) ^ set(native_trainers))}")
     if len(native_trainers) != (len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) +
                                 len(TRAINERS_STAGE4) + len(TRAINERS_STAGE5) +
-                                len(TRAINERS_STAGE6) + len(MUSEUM_AQUA) +
-                                6 + 2 * len(RIVAL_110_TEAMS)):
+                                len(TRAINERS_STAGE6) + len(TRAINERS_STAGE7) +
+                                len(MAGMA_GRUNTS_STAGE7) + len(MUSEUM_AQUA) +
+                                9 + 2 * len(RIVAL_110_TEAMS)):
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -152,17 +170,18 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        expect_leader = name in ("Roxanne", "Brawly", "Wattson")
+        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery")
         expect_badge = ("STONE" if name == "Roxanne" else
                         "KNUCKLE" if name == "Brawly" else
-                        "DYNAMO" if name == "Wattson" else None)
+                        "DYNAMO" if name == "Wattson" else
+                        "HEAT" if name == "Flannery" else None)
         if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
             errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
     all_edges = [tuple(pair) for pair in BORDERS]
     if any(a not in source_ids or b not in source_ids for a, _, b, _ in all_edges):
         errors.append("A border connection references an unknown source map")
-    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6)):
+    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6, *OFFSET_BORDERS_STAGE7)):
         errors.append("An offset border references an unknown source map")
     if any(a[0] not in source_ids or b[0] not in source_ids
            for a, _, b, _ in WARP_PAIRS):
@@ -184,6 +203,9 @@ def audit(root: Path = ROOT) -> dict:
     for src, _ex, _ey, _sx, _sy, dst, _dx, _dy in CYCLE_TRANSFERS_STAGE6:
         adjacency[src].add(dst)
         adjacency[dst].add(src)
+    bottom, summit = CABLE_POINTS_STAGE7
+    adjacency[bottom[0]].add(summit[0])
+    adjacency[summit[0]].add(bottom[0])
     seen = {START[0]}
     queue = deque(seen)
     while queue:
@@ -235,6 +257,20 @@ def audit(root: Path = ROOT) -> dict:
         + [(mid, x, y, "Wattson switch") for mid, x, y in GYM_SWITCHES_STAGE6]
         + [(src, x, y, "Cycling Road gate") for src, x, y, *_ in CYCLE_TRANSFERS_STAGE6]
         + [(mid, x, y, "future route gate") for mid, x, y in MAUVILLE_FUTURE_GATES]
+        + [(mid, x, y, f"trainer7:{name}") for mid, x, y, _, name, _, _, _ in TRAINERS_STAGE7]
+        + [(mid, x, y, f"npc7:{handler}") for mid, x, y, _, handler in NPCS_STAGE7]
+        + [(54, 9, 5, "Fallarbor nurse counter"), (55, 4, 5, "Fallarbor mart counter"),
+           (59, 9, 5, "Lavaridge nurse counter"), (60, 4, 5, "Lavaridge mart counter")]
+        + [(mid, x, y, f"sign7:{key}") for mid, x, y, key, _ in SIGNS_STAGE7]
+        + [(mid, x, y, f"item7:{key}") for mid, x, y, key, _, _ in PICKUPS_STAGE7]
+        + [(mid, x, y, "Magma grunt") for mid, x, y, _ in MAGMA_GRUNT_EVENTS]
+        + [(mid, x, y, "Magma blockade") for mid, x, y in ROUTE112_MAGMA_BLOCKERS]
+        + [(*TABITHA_EVENT, "Tabitha"), (*MAXIE_EVENT, "Maxie"),
+           (*FLANNERY_EVENT, "Flannery"), (*METEOR_FALLS_CUTSCENE, "Meteor Falls story"),
+           (*METEORITE_MACHINE_EVENT, "Meteorite machine")]
+        + [(mid, x, y, f"future7:{why}") for mid, x, y, why in FUTURE_GATES_STAGE7]
+        + [(63, x, y, "Flannery steam fall") for a, b in GYM_STEAM_PAIRS_STAGE7 for x, y in (a,)]
+        + [(63, x, y, "Flannery steam launch") for a, b in GYM_STEAM_PAIRS_STAGE7 for x, y in (b,)]
         + [(*ROXANNE_EVENT, "Roxanne"), (*TUNNEL_AQUA_EVENT, "Aqua"),
            (*TUNNEL_VERDANTURF_GATE, "blocked Verdanturf exit")]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
@@ -267,7 +303,12 @@ def audit(root: Path = ROOT) -> dict:
                 "rival_110_itemfinder", "wally_mauville", "wally_uncle_mauville",
                 "wattson", "wattson_tm", "rock_smash_teacher",
                 "rydel_bikes", "has_hoenn_bike?", "cycling_gate",
-                "wattson_gate", "wattson_switch", "mauville_future_gate"}
+                "wattson_gate", "wattson_switch", "mauville_future_gate",
+                "sign_stage7", "heat_badge?", "meteor_falls_ambush",
+                "magma_blocker", "cable_car", "magma_grunt",
+                "tabitha", "maxie", "meteorite_machine",
+                "flannery_tm", "flannery", "gym_steam_vent",
+                "glass_workshop", "fossil_house", "stage7_future_gate"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -287,15 +328,16 @@ def audit(root: Path = ROOT) -> dict:
 
 
     gaps = [
-        "Route 110, Mauville, cycling road and Wattson are in an isolated staging pilot, not installed in Game.exe.",
-        "Rival Route110 has six alternate PBS teams; game battle and event timing require native QA.",
-        "Wattson DYNAMO badge and Rock Smash field permission still require a real Blue/Decades test.",
-        "The original Wattson gym has sprite-sized gates; fallback art and 2-tile collision need visual QA.",
-        "Mach/Acro bikes use native item keys; riding controls, speed and stunt behavior need field tests.",
-        "Cycle gates are item-guarded and not unconditional map warps; avoid any route bypass.",
-        "Trick House, New Mauville, Routes 111/118 and the Mauville Game Corner minigames remain unimplemented.",
-        "Other Emerald NPCs, extra Route110 trainers, unique music and exact regional event art remain pending.",
-        "Passing these Python/Ruby contracts does not prove compiled maps or Windows/Android gameplay.",
+        "Stage 7 is scripted in an isolated Hoenn copy; Game.exe/Android are NOT tested.",
+        "Mt Chimney cable requires the Meteor Falls stolen-meteorite flag; the journey has not been played natively.",
+        "Magma grunts/Tabitha/Maxie and Flannery use Emerald base teams; scale and visual sprites need in-engine proof.",
+        "HEAT badge is regional only; Strength field behavior remains to be verified in actual game.",
+        "The Lavaridge Gym has 11 verified fall/launch pairs; other native vents and movement effects remain incomplete.",
+        "Fiery Path, Meteor Falls and volcanic ash effects are not visually approved.",
+        "Mirage Tower, Magma Hideout, Meteor Falls lower floors, Route115 exit and Fossil Tunnel remain closed.",
+        "Not every NPC, trainer, fossil, meteor event, glass workshop or optional area is yet implemented.",
+        "Static graph tests include cable as a conditional connection, not a freely accessible route.",
+        "The ZIP source cannot be redistributed; no donor RXDATA is committed.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -327,6 +369,13 @@ def audit(root: Path = ROOT) -> dict:
         "stage6_gym_switches": len(GYM_SWITCHES_STAGE6),
         "stage6_gym_barriers": len(GYM_GATES_STAGE6),
         "stage6_scripted_only": True,
+        "stage7_source_maps": len(SOURCE_MAPS_STAGE7),
+        "stage7_trainer_presets": len(TRAINERS_STAGE7) + len(MAGMA_GRUNTS_STAGE7) + 3,
+        "stage7_pickup_events": len(PICKUPS_STAGE7),
+        "stage7_cave_maps": len(CAVE_ENCOUNTERS_STAGE7),
+        "stage7_cable_stops": len(CABLE_POINTS_STAGE7),
+        "stage7_steam_vent_pairs": len(GYM_STEAM_PAIRS_STAGE7),
+        "stage7_scripted_only": True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
