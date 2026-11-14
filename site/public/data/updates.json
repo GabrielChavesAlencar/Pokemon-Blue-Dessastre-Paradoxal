@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d54ddfe2717f919d70b68362f158e230630a9ab3",
+      "date": "2026-11-13T22:05:58-03:00",
+      "title": "test(sinnoh): enforce private QA overlay workstream stays 3/6 without premature native/gameplay approvals",
+      "category": "Testes"
+    },
+    {
       "sha": "5cf953eed2e80f37ac05bb9874628ec8daf6b8fe",
       "date": "2026-11-13T22:05:36-03:00",
       "title": "docs(sinnoh): add 3/6 safe pilot overlay integration subbar without claiming real Game.exe completion",
