@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fefb5c21f22446ee43c2255e2bf5af1ce0e172c6",
+      "date": "2026-11-14T11:18:33-03:00",
+      "title": "feat(hoenn): fonte auditada Rustboro, Rota 116, Roxanne, Devon e Rusturf",
+      "category": "Novidades"
+    },
+    {
       "sha": "ba3d66b861e5d02c061e5c76e7a5763d80cbf0cc",
       "date": "2026-11-14T10:58:38-03:00",
       "title": "fix(hoenn): permitir célula de chegada diagonal adjacente a portas duplas",
