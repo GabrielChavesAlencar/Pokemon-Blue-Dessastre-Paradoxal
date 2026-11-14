@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "85fe016d234fe9d8c158f3900573651b1fe375a2",
+      "date": "2026-11-14T17:43:06-03:00",
+      "title": "fix(kanto): restaurar fonte branca padrao nos dialogos importados de NPCs",
+      "category": "Correções"
+    },
+    {
       "sha": "b3a638820bdd00bad557c6027448465007c65e4a",
       "date": "2026-11-14T17:42:52-03:00",
       "title": "docs(hoenn): QA09 9/12 prepared, Game.exe accepted remains 0/12",
