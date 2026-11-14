@@ -18,7 +18,7 @@ from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    LEAGUE_BADGE_GATES, LEAGUE_BARRIER_GATES,
                    VICTORY_ROAD_BARRIERS, VICTORY_ROAD_BOULDERS,
                    LEAGUE_EVENT_WHITELIST, LEAGUE_NEXT_ROOMS,
-                   LEAGUE_TRAINER_SPECS)
+                   LEAGUE_TRAINER_SPECS, KANTO_MOONSTONE_CALLBACK)
 from server.ruby_marshal import text
 
 
@@ -649,7 +649,7 @@ def inspect(game: Path) -> dict:
         (65, 2): "BlueKantoPilot.heal",
         (64, 7): "BlueKantoPilot.ticketmaster",
         (76, 2): "BlueKantoPilot.captain",
-        (36, 18): 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018")',
+        (36, 18): KANTO_MOONSTONE_CALLBACK,
         (28, 6): 'BlueKantoPilot.battle(:BLUE_KANTO_CAMPER, "Liam", "KANTO_028_006")',
         (28, 7): 'BlueKantoPilot.battle(:BLUE_KANTO_LEADER, "Brock", "KANTO_028_007")',
         (24, 16): 'BlueKantoPilot.battle(:BLUE_KANTO_BUGCATCHER, "Rick", "KANTO_024_016")',
