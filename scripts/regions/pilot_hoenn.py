@@ -162,19 +162,27 @@ def validate_geometry(maps, tiles):
         edges[a] = [b_arrival]
         edges[b] = [a_arrival]
         required.update((a, a_arrival, b, b_arrival))
-    for first, edge, second, other_edge in BORDERS:
+    # Emerald's Route 102 -> Petalburg and Route 104 -> Petalburg borders
+    # have real nonzero offsets. Zip only the overlapping segment.
+    for first, edge, off_a, second, other_edge, off_b in (
+        *((a, d1, 0, b, d2, 0) for a, d1, b, d2 in BORDERS),
+        *OFFSET_BORDERS,
+    ):
         def border(map_id, side):
             w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
             if side in ("North", "South"):
                 return [(map_id, x, 0 if side == "North" else h - 1) for x in range(w)]
             return [(map_id, 0 if side == "West" else w - 1, y) for y in range(h)]
 
-        pairs = [(a, b) for a, b in zip(border(first, edge), border(second, other_edge))
+        pa, pb = border(first, edge), border(second, other_edge)
+        if off_a < 0 or off_b < 0 or off_a >= len(pa) or off_b >= len(pb):
+            raise ValueError(f"Deslocamento da borda Hoenn inválido: {first}/{second}")
+        pairs = [(a, b) for a, b in zip(pa[off_a:], pb[off_b:])
                  if open_tile(maps[first], tiles[first], *a[1:])
                  and open_tile(maps[second], tiles[second], *b[1:])]
         if not pairs:
-            raise ValueError("Borda Hoenn sem cruzamento passável")
-        required.add(pairs[0][1] if first in (7, 12) else pairs[0][0])
+            raise ValueError(f"Borda Hoenn sem cruzamento passável: {first}/{second}")
+        required.update(pairs[0])
         for a, b in pairs:
             edges.setdefault(a, []).append(b)
             edges.setdefault(b, []).append(a)
@@ -418,10 +426,14 @@ def build_overlay(game, source):
 
     upstream_connections = set(source.read("PBS/map_connections.txt").decode("utf-8-sig").splitlines())
     rows = []
-    for a, edge_a, b, edge_b in BORDERS:
-        if f"{a},{edge_a},0,{b},{edge_b},0" not in upstream_connections:
-            raise ValueError(f"Conexão de origem não encontrada: {a}/{b}")
-        rows.append(f"{ids[a]},{edge_a},0,{ids[b]},{edge_b},0")
+    for a, edge_a, off_a, b, edge_b, off_b in (
+        *((a, d1, 0, b, d2, 0) for a, d1, b, d2 in BORDERS),
+        *OFFSET_BORDERS,
+    ):
+        donor = f"{a},{edge_a},{off_a},{b},{edge_b},{off_b}"
+        if donor not in upstream_connections:
+            raise ValueError(f"Conexão de origem não encontrada: {donor}")
+        rows.append(f"{ids[a]},{edge_a},{off_a},{ids[b]},{edge_b},{off_b}")
     connection = "PBS/map_connections.txt"
     if (game / connection).is_file():
         native = regular(game / connection).read_bytes()
