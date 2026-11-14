@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97e46d136f3f0b5b8f747ba2384d7d88e810b095",
+      "date": "2026-11-14T17:02:03-03:00",
+      "title": "feat(hoenn): QA6 RXDATA auditor for climate, Cave of Origin, Rayquaza",
+      "category": "Novidades"
+    },
+    {
       "sha": "07aa89acf70dd0c9eee56b81920c318d12ea14ad",
       "date": "2026-11-14T17:01:00-03:00",
       "title": "test(hoenn): simulate QA6 map-local climate events and Sky Pillar gates",
