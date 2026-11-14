@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 8,
-    "implementation_preparation_count": 8,
+    "current_phase": 9,
+    "implementation_preparation_count": 9,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -79,8 +79,8 @@
       {
         "phase": 9,
         "name": "Elite Four e Campeão Wallace",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "elite_four_all_prior_flags_and_map_scoped_boss_guards_pbs_and_private_rxdata_auditor_prepared",
+        "native_acceptance": "pending_real_game_exe_five_battles_room_warps_balance_and_saves",
         "native_approved": false
       },
       {
@@ -171,9 +171,23 @@
       "Access League map 93 only with eight local badges plus Wally victory; without battle, Level Cap or other region badges cannot bypass",
       "Repeat in original installed Game.exe and save/reload, compare Kanto Johto Sinnoh Decades and Android/JoiPlay separately",
       "NO native, PC or Android approval inferred from synthetic tests/CI; puzzles may still be incomplete"
+    ],
+    "phase9_requires": [
+      "Create Hoenn QA Fase09 as a brand-new isolated copy from pinned original Hoenn ZIP and installed Blue base; preserve QA04-QA08 and Decades/Kanto/Johto/Sinnoh",
+      "Confirm all 8 League original source maps (93-100), remapped RXDATA and physical boss events: Sidney Map94 Phoebe 95 Glacia 96 Drake 97 Wallace 98",
+      "Auditor must locate both hall-entry and champion-exit events but cannot approve real Hall of Fame (reserved for QA10)",
+      "Verify PBS references [BLUE_HOENN_ELITE,<name>,1094..1097] for each of four Elite members with 5 Pokemon, and [BLUE_HOENN_CHAMPION,Wallace,1098] with 6; Blue/Decades decides actual levels",
+      "Eight Hoenn badges and Wally victory required to enter the League; all previous Elite wins required in order before any later room",
+      "Sidney Phoebe Glacia Drake and Wallace events callable only in their correct remapped physical maps; direct event calls from outside fail",
+      "Defeat, cancellation, replay, saved flags, duplicate battles and wrongly forged downstream flags must not bypass prior victories",
+      "Check native League warp links, collision, dialogue, unique battle sprites, items, healing and visual battle sequences in actual Game.exe",
+      "Confirm Wallace's battle has correct roster and scaling for current level-cap; no static donor levels imposed",
+      "After Wallace victory, access toward Hall of Fame but do not approve credits, multi-region unlock or Hall UI until QA10",
+      "Save and reload between battles; test loss, restarts, switching regions and no unintended flags in Kanto Johto Sinnoh Decades",
+      "0/12 native Game.exe acceptance until complete real gameplay, do not confuse green CI with playable approval"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA8: victory road 3 floors, 5-Pokemon Wally reference team, Waterfall and all-eight-badge gating, no Wally/League skip. Separate QA08 save profile and physical RXDATA/PBS/static obstacle auditor; native Game.exe still unapproved; 0/12."
+  "last_publication_note": "QA09: Map-local Elite Four and Wallace, ordered guards requiring all previous wins and all eight Hoenn badges + Wally, audited 8 League maps, 5 PBS trainers, unique isolated QA09 save, QA1–9 BAT, Ruby and Python tests. Game.exe/battle scaling, sprites, League doors and Hall UI unverified; native acceptance remains 0/12."
 }
