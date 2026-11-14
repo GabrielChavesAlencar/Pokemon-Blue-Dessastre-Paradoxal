@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "314571ca531dac01c610417f3caa0f5bc43f8dc8",
+      "date": "2026-11-14T17:32:07-03:00",
+      "title": "docs(hoenn): Phase 8 Victory Road/Wally progress, gates, private QA and playtest checklist",
+      "category": "Documentação"
+    },
+    {
+      "sha": "98bd182fcd301934d921a94421feb72e4ada19b5",
+      "date": "2026-11-14T17:31:45-03:00",
+      "title": "test(kanto): validar zoom somente no protagonista e isolamento do piloto",
+      "category": "Testes"
+    },
+    {
       "sha": "4a1c3a69d61b41e185edc0aaa9bb264fdab05806",
       "date": "2026-11-14T17:31:11-03:00",
       "title": "docs(hoenn): QA08 prepared 8/12 while native Game.exe acceptance stays 0/12",
