@@ -246,3 +246,24 @@
 .johto-preview-list li{display:flex;flex-direction:column;gap:.28rem;padding:.8rem .9rem;background:var(--surface,#151d30);border:1px solid var(--border,rgba(140,160,190,.15));border-radius:12px;min-width:0}
 .johto-preview-list strong{font-size:.9rem;overflow-wrap:anywhere}
 .johto-preview-list span{font-size:.75rem;opacity:.75;overflow-wrap:anywhere}
+
+
+/* Four-region content backlog: documentary records are NOT playable map data. */
+.pending-content{margin-top:42px}
+.pending-content .section-heading{margin-bottom:17px}
+.pending-content .section-heading h2{font-size:29px}
+.pending-content .section-heading p{max-width:920px;margin-top:8px;line-height:1.6}
+.pending-group{margin:14px 0;border:1px solid var(--line);background:#0e1725;border-radius:9px;overflow:hidden}
+.pending-group summary{padding:17px 19px;font-weight:700;font-size:13px;cursor:pointer;color:#d5dfed;background:#131f30;list-style-position:inside}
+.pending-group summary:hover{background:#192a40}
+.pending-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;padding:15px}
+.pending-card{display:flex;flex-direction:column;gap:8px;min-width:0;padding:15px 16px;border-radius:7px;border:1px solid #303a4a;background:#101723}
+.pending-card h3{font-size:14px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.pending-card p{color:var(--muted);font-size:11px;line-height:1.6}
+.content-pending-tag{display:inline-flex;align-items:center;align-self:flex-start;width:max-content;max-width:100%;padding:5px 9px;margin-top:auto;border:1px solid #595262;background:#292630;color:#d6c6d4;border-radius:5px;font-size:10px;line-height:1.3;font-weight:700;letter-spacing:.15px}
+.regular-card>.content-pending-tag{margin:10px 0 8px}
+.pending-counters{display:flex;gap:9px;flex-wrap:wrap;margin:17px 0 29px}
+.pending-count{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--line);background:#131e2f;border-radius:6px;color:#abb9cb;font-size:11px}
+.pending-count strong{color:#e8eff8;font-size:12px}
+@media(max-width:900px){.pending-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.pending-grid{grid-template-columns:1fr;padding:11px}.pending-card{padding:13px}.pending-group summary{padding:13px}}
