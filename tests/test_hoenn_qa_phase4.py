@@ -63,6 +63,7 @@ class FieldMoveQA4Tests(unittest.TestCase):
         self.assertEqual(classify_obstacle("RockSmashRock"),"rock_smash")
         self.assertEqual(classify_obstacle("StrengthBoulder"),"strength")
         self.assertEqual(classify_obstacle("Thin Ice"),"ice")
+        self.assertEqual(classify_obstacle("Ice Floor Puzzle"),"ice")
         self.assertEqual(classify_obstacle("PB", "pbRockSmash()"),"rock_smash")
         self.assertEqual(classify_obstacle("Current", "pbDive()"),"dive")
         self.assertIsNone(classify_obstacle("Nurse Joy"))
@@ -124,7 +125,7 @@ class FieldMoveQA4Tests(unittest.TestCase):
         self.assertEqual(len(result["new_safe_obstacles"]),0)
         reasons={x[-1] for x in result["source_obstacles_needing_review"]}
         self.assertEqual(reasons,{"conditional_original","ambiguous_or_multipage",
-                                  "no_native_sprite"})
+                                  "no_native_or_pinned_sprite"})
 
     def test_script_only_identifiers_not_automatically_reauthored(self):
         self.sprites("Object_Rock","Object_Boulder")
