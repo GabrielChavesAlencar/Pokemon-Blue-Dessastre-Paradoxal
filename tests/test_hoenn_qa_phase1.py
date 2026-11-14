@@ -78,7 +78,7 @@ class HoennQA01Tests(unittest.TestCase):
         result = qa.check_tree(self.make_inventory())
         self.assertEqual(result["source_maps"], 199)
         self.assertEqual(result["revision"], qa.UPSTREAM)
-        self.assertEqual(result["required_pinned_files"], 203 + len(qa.BGM))
+        self.assertEqual(result["required_pinned_files"], 202 + len(qa.BGM))
 
     def test_missing_donor_map_is_blocker(self):
         tree = self.make_inventory()
