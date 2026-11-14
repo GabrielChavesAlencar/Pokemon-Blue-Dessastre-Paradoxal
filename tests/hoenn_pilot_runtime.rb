@@ -124,7 +124,7 @@ def check(condition, message)
   raise "[HOENN] #{message}" unless condition
 end
 
-require ARGV.fetch(0)
+require File.expand_path(ARGV.fetch(0))
 
 Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
   Dir.chdir(dir) do
