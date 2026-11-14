@@ -218,7 +218,7 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("A door/ladder references an unknown source map")
     adjacency = {mid: set() for mid in source_ids}
     for a, b in ([(a, b) for a, _, b, _ in BORDERS] +
-                 [(a, b) for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6, *OFFSET_BORDERS_STAGE7)]):
+                 [(a, b) for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6, *OFFSET_BORDERS_STAGE7, *OFFSET_BORDERS_STAGE8)]):
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
@@ -301,6 +301,23 @@ def audit(root: Path = ROOT) -> dict:
         + [(mid, x, y, f"future7:{why}") for mid, x, y, why in FUTURE_GATES_STAGE7]
         + [(63, x, y, "Flannery steam fall") for a, b in GYM_STEAM_PAIRS_STAGE7 for x, y in (a,)]
         + [(63, x, y, "Flannery steam launch") for a, b in GYM_STEAM_PAIRS_STAGE7 for x, y in (b,)]
+        + [(mid,x,y,f"trainer8:{name}") for mid,x,y,_,name,_,_,_ in TRAINERS_STAGE8]
+        + [(mid,x,y,f"npc8:{handler}") for mid,x,y,_,handler in NPCS_STAGE8]
+        + [(mid,9,5,f"center counter8 {mid}") for mid in (49,65,71)]
+        + [(mid,4,5,f"mart counter8 {mid}") for mid in (50,66)]
+        + [(mid,x,y,f"sign8:{key}") for mid,x,y,key,_ in SIGNS_STAGE8]
+        + [(mid,x,y,f"item8:{key}") for mid,x,y,key,_,_ in PICKUPS_STAGE8]
+        + [(20,x,y,"Norman gym door") for x,y,tx,ty in NORMAN_GYM_DOORS]
+        + [(*NORMAN_EVENT,"Norman"),(*WINONA_EVENT,"Winona"),
+           (*SHELLY_EVENT,"Shelly"),(*RIVAL_119_EVENT,"Rival119"),
+           (*RIVAL_LILYCOVE_EVENT,"RivalLilycove"),
+           (*STEVEN_SCOPE_EVENT,"Steven Devon Scope"),
+           (*FORTREE_KECLEON_EVENT,"Kecleon Fortree"),
+           (*ROUTE120_KECLEON_EVENT,"Kecleon Route120"),
+           (*WEATHER_REWARD_EVENT,"Castform Scientist")]
+        + [(mid,x,y,f"Aqua Institute {version}")
+           for mid,x,y,version,_ in AQUA_INSTITUTE]
+        + [(mid,x,y,f"future8:{key}") for mid,x,y,key in FUTURE_GATES_STAGE8]
         + [(*ROXANNE_EVENT, "Roxanne"), (*TUNNEL_AQUA_EVENT, "Aqua"),
            (*TUNNEL_VERDANTURF_GATE, "blocked Verdanturf exit")]
         + [(8, 25, 6, "profile"), (8, 26, 3, "clock"),
@@ -338,7 +355,15 @@ def audit(root: Path = ROOT) -> dict:
                 "magma_blocker", "cable_car", "magma_grunt",
                 "tabitha", "maxie", "meteorite_machine",
                 "flannery_tm", "flannery", "gym_steam_vent",
-                "glass_workshop", "fossil_house", "stage7_future_gate"}
+                "glass_workshop", "fossil_house", "stage7_future_gate",
+                "sign_stage8", "balance_badge?", "feather_badge?",
+                "norman_gym_warp", "norman_tm", "norman",
+                "surf_from_wally_family", "good_rod_fisherman",
+                "daycare_info", "weather_aqua", "weather_shelly",
+                "weather_castform", "rival_119_fly", "rival_119",
+                "steven_scope", "kecleon_scope", "winona_tm", "winona",
+                "rival_lilycove", "harbor_stage8", "contest_stage8",
+                "stage8_future_gate"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -358,16 +383,15 @@ def audit(root: Path = ROOT) -> dict:
 
 
     gaps = [
-        "Stage 7 is scripted in an isolated Hoenn copy; Game.exe/Android are NOT tested.",
-        "Mt Chimney cable requires the Meteor Falls stolen-meteorite flag; the journey has not been played natively.",
-        "Magma grunts/Tabitha/Maxie and Flannery use Emerald base teams; scale and visual sprites need in-engine proof.",
-        "HEAT badge is regional only; Strength field behavior remains to be verified in actual game.",
-        "The Lavaridge Gym has 11 verified fall/launch pairs; other native vents and movement effects remain incomplete.",
-        "Fiery Path, Meteor Falls and volcanic ash effects are not visually approved.",
-        "Mirage Tower, Magma Hideout, Meteor Falls lower floors, Route115 exit and Fossil Tunnel remain closed.",
-        "Not every NPC, trainer, fossil, meteor event, glass workshop or optional area is yet implemented.",
-        "Static graph tests include cable as a conditional connection, not a freely accessible route.",
-        "The ZIP source cannot be redistributed; no donor RXDATA is committed.",
+        "Stage8 is an isolated Hoenn pilot; no native Game.exe or Android/JoiPlay acceptance.",
+        "The Norman gym has 24 authored intra-map room doors; visual/collision requires native QA.",
+        "Surf/Fly are awarded only with matching native HMs; actual water/flight field traversal is NOT proven.",
+        "Weather Institute Shelly, four Aqua grunts, Castform gift and rival battles require gameplay QA.",
+        "Devon Scope reveals Kecleon; native Kecleon wild encounters/animation remain incomplete.",
+        "Lilycove Department Store, Contest Hall, museum, harbor and Day Care are only partial.",
+        "Safari Zone, Mt Pyre, Aqua Hideout and Scorched Slab are blocked for later stages.",
+        "Conditional Surf river crossing on Route118 depends on native field move and real collisions.",
+        "Static contracts verify scripts/data, not playable completeness.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -406,6 +430,13 @@ def audit(root: Path = ROOT) -> dict:
         "stage7_cable_stops": len(CABLE_POINTS_STAGE7),
         "stage7_steam_vent_pairs": len(GYM_STEAM_PAIRS_STAGE7),
         "stage7_scripted_only": True,
+        "stage8_source_maps": len(SOURCE_MAPS_STAGE8),
+        "stage8_trainer_presets": len(TRAINERS_STAGE8)+len(AQUA_INSTITUTE)+
+                                   3+len(RIVAL_NAMES)*(len(RIVAL_119_TEAMS)+len(RIVAL_LILYCOVE_TEAMS)),
+        "stage8_pickup_events": len(PICKUPS_STAGE8),
+        "stage8_norman_gym_doors": len(NORMAN_GYM_DOORS),
+        "stage8_rival_variants": len(RIVAL_NAMES)*(len(RIVAL_119_TEAMS)+len(RIVAL_LILYCOVE_TEAMS)),
+        "stage8_scripted_only": True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
