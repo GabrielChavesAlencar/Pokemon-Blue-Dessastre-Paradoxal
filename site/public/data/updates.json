@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "53c9c6c7d463f089b392af4e2daa9e6ae6695493",
+      "date": "2026-11-13T21:30:20-03:00",
+      "title": "docs(sinnoh): add 4/6 Barry PBS progress bar and real QA limitations without increasing completed phases",
+      "category": "Documentação"
+    },
+    {
       "sha": "5b6788b5bac592619435665f72479117694d51a8",
       "date": "2026-11-13T21:29:54-03:00",
       "title": "data(sinnoh): add Barry PBS 4/6 preparation track while preserving overall 8/32 and 0/13 native gates",
