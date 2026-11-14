@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "14c5eb336d24f4ede3910fe5e48c23cd0e612b8c",
+      "date": "2026-11-14T17:15:13-03:00",
+      "title": "test(hoenn): preserve historic event contracts with QA7 gym dispatcher",
+      "category": "Testes"
+    },
+    {
+      "sha": "bb9ed0f9aab90056831bad9b086ee8bd1eba7195",
+      "date": "2026-11-14T17:15:11-03:00",
+      "title": "test(hoenn): preserve historic event contracts with QA7 gym dispatcher",
+      "category": "Testes"
+    },
+    {
+      "sha": "32c01c92f11e916fc2a315e62ccade68bcb1961a",
+      "date": "2026-11-14T17:15:08-03:00",
+      "title": "test(hoenn): preserve historic event contracts with QA7 gym dispatcher",
+      "category": "Testes"
+    },
+    {
       "sha": "df0823eab41bee4505c145b0537d77368c041ca2",
       "date": "2026-11-14T17:14:51-03:00",
       "title": "feat(hoenn): QA7 manifest, private save and compatibility with QA5/6 audits",
