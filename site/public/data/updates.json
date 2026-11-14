@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5776a4088dcf659de756f1250e0c50adfa2a98ee",
+      "date": "2026-11-14T11:30:47-03:00",
+      "title": "test(hoenn): proteger warp corrigido de Roxanne, Cut, itens e 16 batalhas da Etapa 4",
+      "category": "Correções"
+    },
+    {
       "sha": "45c0fd16e0f1f984b00aa49d3ba64821522224d6",
       "date": "2026-11-14T11:29:52-03:00",
       "title": "test(hoenn): preservar testes de stage3 sobre os 28 mapas do piloto ampliado",
