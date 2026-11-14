@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07b8e9c01e7eea40bd1a4907a81a398dab76d297",
+      "date": "2026-11-14T13:02:23-03:00",
+      "title": "test(hoenn): impedir subida antes dos dois bloqueios Magma",
+      "category": "Testes"
+    },
+    {
       "sha": "9a1c4313d97f9cb8fe20ee3f5df3e3f47535530d",
       "date": "2026-11-14T13:02:07-03:00",
       "title": "fix(hoenn): exigir derrota dos dois bloqueios Magma antes do teleférico",
