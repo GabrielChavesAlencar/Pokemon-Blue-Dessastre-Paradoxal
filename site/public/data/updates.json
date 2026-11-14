@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "493aabda09b49c9414248f22ff1d4e60764f250a",
+      "date": "2026-11-13T21:18:57-03:00",
+      "title": "docs(sinnoh): cite passing isolated 62 Python and Ruby story tests without raising gameplay gates",
+      "category": "Documentação"
+    },
+    {
       "sha": "559d2f1d3e6ce13d6a219e5f2c04e3d64117005c",
       "date": "2026-11-13T21:18:00-03:00",
       "title": "ci(sinnoh): isolate own Python and Ruby tests from unrelated Johto integration failures",
