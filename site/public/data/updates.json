@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e2ef398242d0b2e2614e156fc38fc949021c337f",
+      "date": "2026-11-13T21:14:45-03:00",
+      "title": "docs(sinnoh): add Twinleaf intro 5/8 subbar and correctly mark S13/S14 partial without claiming game acceptance",
+      "category": "Correções"
+    },
+    {
       "sha": "4c865f55eaf9fa6a80042adc30e279ee6ac0f556",
       "date": "2026-11-13T21:14:23-03:00",
       "title": "data(sinnoh): mark S13/S14 partial and add 5/8 authored story prep without inflating playable bars",
