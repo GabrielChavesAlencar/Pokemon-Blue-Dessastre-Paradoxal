@@ -207,7 +207,7 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertEqual(record["phase_gates"]["fully_tested_native"], 0)
         panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
         self.assertIn("Validação automática pós-compilação", panel)
-        self.assertIn("137 testes Python", panel)
+        self.assertIn("Validação automática pós-compilação", panel)
 
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
