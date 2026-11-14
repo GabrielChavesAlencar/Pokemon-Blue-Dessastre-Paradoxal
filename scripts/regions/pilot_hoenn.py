@@ -448,6 +448,28 @@ def build_overlay(game, source):
             f"[{trainer_type},{name},102]\nLoseText = Boa batalha!\n" +
             "".join(f"Pokemon = {species},{level}\n" for species, level in team)
         )
+    # The class RIVAL1 must already be defined by the native Blue engine.
+    # Refuse a colliding trainer ID instead of silently changing a base team.
+    exists = False
+    for candidate in sorted((game / "PBS").glob("trainer_types*.txt")):
+        text_body = regular(candidate).read_text("utf-8-sig")
+        exists |= bool(re.search(r"(?m)^\s*\[RIVAL1\]\s*$", text_body))
+    if not exists:
+        raise ValueError("Tipo nativo RIVAL1 não encontrado na instalação Blue")
+    rival_keys = {(name, version) for name in RIVAL_NAMES
+                  for _, version in RIVAL_TEAMS.values()}
+    for candidate in sorted((game / "PBS").glob("trainers*.txt")):
+        text_body = regular(candidate).read_text("utf-8-sig")
+        for match in re.finditer(r"(?m)^\s*\[RIVAL1,([^,\]\r\n]+),(\d+)\]\s*$", text_body):
+            if (match[1].strip(), int(match[2])) in rival_keys:
+                raise ValueError(f"Rival Hoenn duplicado em {candidate.name}")
+    for name in RIVAL_NAMES:
+        for chosen, (opponent, version) in RIVAL_TEAMS.items():
+            trainer_sections.append(
+                f"# Inicial do jogador: {chosen}; {name}: {opponent}\n"
+                f"[RIVAL1,{name},{version}]\nLoseText = Boa batalha!\n"
+                f"Pokemon = {opponent},5\n"
+            )
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
@@ -485,7 +507,15 @@ def build_overlay(game, source):
     report = {"region": "HOENN", "kind": "ISOLATED_HOENN_TEST", "source_commit": UPSTREAM,
               "start": [ids[START[0]], *START[1:]], "maps": ids, "save_profile": PROFILE,
               "trainer_bindings": [{**binding, "destination_map_id": ids[102]}
-                                   for binding in trainer_bindings]}
+                                   for binding in trainer_bindings],
+              "starter_ball_coordinates": [list(pos) for pos in balls],
+              "rival_coordinate": list(rival),
+              "rival_sprite": rival_image,
+              "rival_sprite_placeholder": rival_image_fallback,
+              "rival_versions": [{"player_starter": chosen, "rival_species": opponent,
+                                  "version": version} for chosen, (opponent, version)
+                                 in RIVAL_TEAMS.items()],
+              "native_gameplay_verified": False}
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())
