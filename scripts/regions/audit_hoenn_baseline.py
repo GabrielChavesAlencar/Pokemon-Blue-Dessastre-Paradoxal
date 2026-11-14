@@ -14,7 +14,12 @@ from server.ruby_marshal import RubyObject, text
 
 PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
          101: "Rota 101", 12: "Oldale", 13: "Centro Pokémon de Oldale",
-         14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103"}
+         14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103",
+         16: "Petalburg", 17: "Centro Pokémon de Petalburg",
+         18: "Poké Mart de Petalburg", 19: "Casas de Petalburg",
+         20: "Ginásio de Petalburg", 104: "Rota 104",
+         105: "Casa de Briney", 106: "Floricultura Pretty Petal",
+         156: "Petalburg Woods"}
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
