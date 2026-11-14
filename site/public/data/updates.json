@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "02897b2427b2c550e0f76466874630abefe89326",
+      "date": "2026-11-14T11:28:23-03:00",
+      "title": "test(hoenn): auditar 28 mapas, Roxanne, habitats Rusturf e colisões da fase 4",
+      "category": "Testes"
+    },
+    {
       "sha": "3bb3847f25933ecbfe1daf0e493eac19acf1b7a4",
       "date": "2026-11-14T11:27:09-03:00",
       "title": "feat(site/hoenn): incluir Rustboro, Roxanne, Rota 116 e Rusturf como piloto não aprovado",
