@@ -24,7 +24,19 @@ sys.path.insert(0,str(ROOT/"scripts/regions"))
 from pilot_hoenn import SOURCE_MAPS,UPSTREAM
 from server.ruby_marshal import RubyObject,loads,text
 
-MAPS=(81,189,213,217,227,228,235,236)
+# Blob SHA-1 values from immutable upstream Hoenn sub-tree
+# c3876ecea7545eb3a91b9c8748d7e2b13f07805d, verified using GitHub API.
+MAP_BLOBS={
+    81:"1efc2c4e5b30f4d225920b63b06a1c87634edcc8",
+    189:"3ae50ddfcaa2ce879420ec1f2227670f7a0c5c17",
+    213:"86bf365ef73832f2f3350b4db0eef0dda8e6647b",
+    217:"8f477c1fbb852a17a31cac5b797d0fc0518c94d2",
+    227:"f9fdc5475f245c72250c33bb34ab1297263708f1",
+    228:"054f76ff9d1864c6209f97cf9f7d06b3c9b4df1c",
+    235:"34e32b5a7027c4550d4ffd012ddddc2edf13e628",
+    236:"68cb9bb1ec25ae8b3d148a7a37c567cea1cbe869",
+}
+MAPS=tuple(MAP_BLOBS)
 PATTERN=re.compile(r"aqua|magma|grunt|submarine|archie|matt|tabitha|"
                    r"maxie|groudon|kyogre|strength|dive|cavern|orb",re.I)
 BASE=("https://raw.githubusercontent.com/SocomSeal/The-PMon-World-Project/"
@@ -33,10 +45,13 @@ BASE=("https://raw.githubusercontent.com/SocomSeal/The-PMon-World-Project/"
 
 
 def pinned_shas()->dict[str,str]:
+    # Public project summary contains only five pilot audit map hashes,
+    # not the 373-entry source tree. Verify those source identifiers against
+    # Git blob hashes pinned from the immutable upstream subtree instead.
     j=json.loads((ROOT/"data/regions/hoenn-source.json").read_text("utf-8"))
-    if j.get("revision")!=UPSTREAM or j.get("truncated") is not False:
-        raise ValueError("Manifesto original Hoenn incompleto/não fixado")
-    return {r["path"]:r["sha"] for r in j["tree"] if r.get("type")=="blob"}
+    if j.get("source",{}).get("upstream_audit",{}).get("upstream_revision")!=UPSTREAM:
+        raise ValueError("Manifesto local da fonte Hoenn não fixa a revisão correta")
+    return {f"Data/Map{mid:03}.rxdata":sha for mid,sha in MAP_BLOBS.items()}
 
 
 def fetch_one(mid:int,shas:dict[str,str])->tuple[int,list[dict],int]:
