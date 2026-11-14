@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b78433719ec39627b747e968724aa0430a312f61",
+      "date": "2026-11-14T03:51:48-03:00",
+      "title": "fix(kanto): official Full Power teams, boss caps, doors, signs, Cut, Pewter gate and cards",
+      "category": "Correções"
+    },
+    {
       "sha": "a31f4b10b9651efa646c4703d6b49fe423ad5d63",
       "date": "2026-11-14T03:20:08-03:00",
       "title": "docs(regions): define outside-Decades first battle versus Full Power BST and base power rules",
