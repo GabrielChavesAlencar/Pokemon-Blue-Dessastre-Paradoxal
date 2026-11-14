@@ -2088,7 +2088,7 @@ def build_overlay(game, source):
     # on an original Blue event. Other trainer/NPC/sign anchors are inventoried
     # as a *manual QA backlog*, not fictitious events or copied donor dialogue.
     qa3_event_audit = reauthor_safe_items_and_audit(
-        all_original_events, maps, maps)
+        all_original_events, maps, maps, game)
     # The QA3 item injection occurs after stage events; refresh RXDATA for every
     # map whose items were appended before writing the final pilot report.
     # Important: no changes to the native game/ data on disk.
