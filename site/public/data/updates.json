@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f8cda430cfabc79b8872907156c0815b962ae48d",
+      "date": "2026-11-14T10:16:48-03:00",
+      "title": "fix(hoenn): posicionar maleta no interior caminhável da Route 101 real",
+      "category": "Correções"
+    },
+    {
       "sha": "6ca2ddb7193e30d4653969ed1dd5ab64e1d47378",
       "date": "2026-11-14T10:11:47-03:00",
       "title": "fix(hoenn): reconhecer nomes de handler com dígitos, como rival_103",
