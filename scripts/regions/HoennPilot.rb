@@ -1063,8 +1063,10 @@ module BlueHoennPilot
   end
 
   def self.slateport_north_gate
-    return false unless state
-    pbMessage(_INTL("A Rota 110 será liberada numa fase posterior. Volte para o sul de Slateport."))
+    flags = state
+    return false unless flags
+    return true if flags["stern_package_delivered"]
+    pbMessage(_INTL("Antes de ir à Rota 110, conclua a entrega ao Capitão Stern."))
     $game_player.moveto($game_player.x, 2) if $game_player && $game_player.y == 1
     false
   end
@@ -1093,6 +1095,263 @@ module BlueHoennPilot
     flags["soft_sand_given"] = true
     pbMessage(_INTL("Você recebeu Soft Sand!"))
     true
+  end
+
+
+
+  # Hoenn Stage 06 — events are guarded by BlueHoennPilot.state; no Decades,
+  # Kanto, Johto or Sinnoh save data or native badge fields are mutated.
+  STAGE6_SIGNS = {
+    MAUVILLE: "Mauville: cidade dos encontros e da eletricidade.",
+    MAUVILLE_GYM: "Ginásio de Mauville. Líder Wattson, tipo Elétrico.",
+    RYDEL: "Rydel's Cycles: Mach Bike e Acro Bike disponíveis.",
+    CYCLING_SIGN: "Cycling Road: é obrigatório ter uma bicicleta.",
+    CYCLING_NORTH_SIGN: "Cycling Road. Portaria norte.",
+    TRICK_HOUSE: "Trick House: conteúdo em preparação.",
+    SLATEPORT_DIRECTION: "Slateport fica ao sul.",
+    MAUVILLE_DIRECTION: "Mauville fica ao norte."
+  }.freeze
+
+  def self.sign_stage6(key)
+    return false unless state && STAGE6_SIGNS.key?(key)
+    pbMessage(_INTL(STAGE6_SIGNS.fetch(key)))
+    true
+  end
+
+  def self.dynamo_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions, "HOENN").include?("DYNAMO")
+  end
+
+  def self.rival_110_itemfinder
+    flags = state
+    return false unless flags && flags["rival_110_done"] && !flags["rival_110_itemfinder"]
+    unless GameData::Item.exists?(:ITEMFINDER) && $bag && $bag.add(:ITEMFINDER, 1)
+      pbMessage(_INTL("O Itemfinder está reservado. Abra espaço na Bolsa e converse novamente com o rival."))
+      return false
+    end
+    flags["rival_110_itemfinder"] = true
+    pbMessage(_INTL("Você recebeu o Itemfinder do rival!"))
+    true
+  end
+
+  RIVAL_110_VERSIONS = { TREECKO: 610, TORCHIC: 611, MUDKIP: 612 }.freeze
+
+  def self.rival_110
+    flags = state
+    return false unless flags && starter && $player && !$player.party.empty?
+    unless flags["stern_package_delivered"]
+      pbMessage(_INTL("Seu rival está mais ao norte. Primeiro conclua a entrega a Stern."))
+      return false
+    end
+    return rival_110_itemfinder if flags["rival_110_done"]
+    name = rival_name
+    version = RIVAL_110_VERSIONS.fetch(starter)
+    pbMessage(_INTL("{1}: vamos testar o quanto sua equipe cresceu!", name))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:RIVAL1, name, version)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      pbMessage(_INTL("{1}: treine mais e depois me desafie!", name))
+      return false
+    end
+    flags["rival_110_done"] = true
+    pbMessage(_INTL("{1}: você está cada vez mais forte. Siga até Mauville!", name))
+    rival_110_itemfinder
+    true
+  end
+
+  def self.wally_mauville
+    flags = state
+    return false unless flags && $player && !$player.party.empty?
+    unless flags["rival_110_done"] && flags["wally_captured"]
+      pbMessage(_INTL("Wally: vou praticar minhas batalhas e esperar você se preparar."))
+      return false
+    end
+    if flags["wally_mauville_done"]
+      pbMessage(_INTL("Wally: vou continuar treinando para ficar mais forte!"))
+      return false
+    end
+    pbMessage(_INTL("Wally: Ralts e eu queremos desafiá-lo antes de você entrar no ginásio!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_WALLY, "Wally", 641)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      pbMessage(_INTL("Wally: está bem, podemos tentar de novo depois!"))
+      return false
+    end
+    flags["wally_mauville_done"] = true
+    pbMessage(_INTL("Wally: você venceu! Vou continuar meu treinamento com meu tio."))
+    true
+  end
+
+  def self.wally_uncle_mauville
+    flags = state
+    return false unless flags
+    pbMessage(flags["wally_mauville_done"] ?
+      _INTL("Tio de Wally: obrigado por estimular o treinamento dele!") :
+      _INTL("Tio de Wally: Wally quer testar a própria força. Converse com ele!"))
+    true
+  end
+
+  def self.wattson_tm
+    flags = state
+    return false unless flags && dynamo_badge?
+    return false if flags["wattson_tm_given"]
+    give_move_tm("wattson_tm_given", :SHOCKWAVE, [:TM34, :TM039],
+                 "Wattson: receba a TM Shock Wave!")
+  end
+
+  def self.wattson
+    flags = state
+    return false unless flags && $player && !$player.party.empty?
+    return wattson_tm if dynamo_badge?
+    unless knuckle_badge? && flags["stern_package_delivered"] &&
+           flags["rival_110_done"] && flags["wally_mauville_done"]
+      pbMessage(_INTL("Wattson: conclua Slateport, a Rota 110 e a batalha de Wally antes do desafio."))
+      return false
+    end
+    pbMessage(_INTL("Wattson: hahaha! Mostre a energia dos seus Pokémon!"))
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_WATTSON, "Wattson", 647)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions, "HOENN", "DYNAMO")
+      pbMessage(_INTL("Wattson: não foi possível registrar a Dynamo Badge."))
+      return false
+    end
+    flags["wattson_defeated"] = true
+    pbMessage(_INTL("Você conquistou a Dynamo Badge de Hoenn! Rock Smash fica autorizado nesta região."))
+    wattson_tm
+    true
+  end
+
+  def self.rock_smash_teacher
+    flags = state
+    return false unless flags
+    return false if flags["rock_smash_given"]
+    item = [:HM06, :TM94].find do |candidate|
+      GameData::Item.exists?(candidate) &&
+        GameData::Item.get(candidate).respond_to?(:move) &&
+        GameData::Item.get(candidate).move == :ROCKSMASH
+    end
+    unless item && $bag && $bag.add(item, 1)
+      pbMessage(_INTL("Morador: a técnica Rock Smash precisa estar disponível e caber na Bolsa."))
+      return false
+    end
+    flags["rock_smash_given"] = true
+    pbMessage(_INTL("Você recebeu Rock Smash! A Dynamo Badge autoriza seu uso em Hoenn."))
+    true
+  end
+
+  def self.rydel_bikes
+    flags = state
+    return false unless flags && $bag
+    candidates = [:MACHBIKE, :ACROBIKE]
+    unless candidates.all? { |item| GameData::Item.exists?(item) }
+      pbMessage(_INTL("Rydel: faltam os itens Mach Bike ou Acro Bike nesta instalação."))
+      return false
+    end
+    choice = pbMessage(_INTL("Rydel: qual bicicleta deseja usar?"),
+                       [_INTL("Mach Bike"), _INTL("Acro Bike"), _INTL("Cancelar")], -1)
+    return false unless [0, 1].include?(choice)
+    wanted = candidates[choice]
+    if $bag.has?(wanted)
+      pbMessage(_INTL("Rydel: você já possui essa bicicleta."))
+      return false
+    end
+    old = candidates.find { |item| item != wanted && $bag.has?(item) }
+    unless $bag.add(wanted, 1)
+      pbMessage(_INTL("Rydel: abra espaço na Bolsa antes de receber a bicicleta."))
+      return false
+    end
+    if old && !$bag.remove(old, 1)
+      $bag.remove(wanted, 1)
+      pbMessage(_INTL("Rydel: não foi possível trocar. Sua bicicleta anterior foi mantida."))
+      return false
+    end
+    flags["bike_chosen"] = wanted.to_s
+    pbMessage(_INTL("Rydel: você recebeu a {1}! Pode trocar comigo sempre que quiser.",
+                     wanted == :MACHBIKE ? "Mach Bike" : "Acro Bike"))
+    true
+  end
+
+  def self.has_hoenn_bike?
+    flags = state
+    flags && $bag && ([:MACHBIKE, :ACROBIKE].any? { |item|
+      GameData::Item.exists?(item) && $bag.has?(item) })
+  end
+
+  def self.cycling_gate(dest_source, x, y)
+    flags = state
+    return false unless flags
+    allowed = [[114, 18, 16], [114, 19, 88], [115, 14, 9], [115, 14, 21]]
+    return false unless allowed.include?([dest_source, x, y])
+    # Players may ALWAYS leave the cycling route, even if they discarded
+    # their bicycle during a legacy save migration.
+    unless dest_source == 115 || has_hoenn_bike?
+      pbMessage(_INTL("Portaria: você precisa da Mach Bike ou da Acro Bike para entrar."))
+      return false
+    end
+    unless defined?(BlueRegionTravel) && BlueRegionTravel.respond_to?(:move_to) &&
+           defined?($game_temp) && $game_temp && defined?($scene) && $scene &&
+           defined?($game_player) && $game_player && defined?($game_map) && $game_map
+      pbMessage(_INTL("A Cycling Road exige uma transferência segura do jogo."))
+      return false
+    end
+    _, maps = metadata
+    dest_id = maps[dest_source]
+    return false unless dest_id && !$game_temp.in_battle
+    before = [$game_map.map_id, $game_player.x, $game_player.y, $game_player.direction]
+    begin
+      pbFadeOutIn { BlueRegionTravel.move_to([dest_id, x, y, 2]) }
+      flags["cycling_road_visited"] = true if dest_source == 114
+      true
+    rescue StandardError => error
+      begin
+        pbFadeOutIn { BlueRegionTravel.move_to(before) } if $game_map.map_id != before[0]
+      rescue StandardError
+        # Fail safely; do not mark any travel/badge flags on a failed move.
+      end
+      pbMessage(_INTL("Portaria: viagem cancelada ({1}).", error.message))
+      false
+    end
+  end
+
+  def self.wattson_gate
+    return false unless state
+    pbMessage(_INTL("Uma barreira elétrica bloqueia o caminho. Procure os interruptores."))
+    false
+  end
+
+  def self.wattson_switch(blue_ids, pink_ids)
+    flags = state
+    return false unless flags && $game_map && $game_self_switches &&
+                        blue_ids.is_a?(Array) && pink_ids.is_a?(Array)
+    _, maps = metadata
+    return false unless $game_map.map_id == maps[47]
+    flags["wattson_switch_blue_open"] = !flags["wattson_switch_blue_open"]
+    blue_open = flags["wattson_switch_blue_open"]
+    {blue_ids => blue_open, pink_ids => !blue_open}.each do |ids, open|
+      ids.each do |id|
+        next unless id.is_a?(Integer) && $game_map.events[id]
+        $game_self_switches[[$game_map.map_id, id, "A"]] = open
+        $game_map.events[id].refresh
+      end
+    end
+    pbMessage(blue_open ?
+      _INTL("O circuito azul foi desativado e o rosa ficou energizado!") :
+      _INTL("O circuito rosa foi desativado e o azul ficou energizado!"))
+    true
+  end
+
+  def self.mauville_future_gate
+    return false unless state
+    pbMessage(_INTL("Essa saída de Mauville será liberada ao adicionar as próximas rotas de Hoenn."))
+    if $game_player
+      $game_player.moveto(38, $game_player.y) if $game_player.x == 39
+      $game_player.moveto($game_player.x, 1) if $game_player.y == 0
+    end
+    false
   end
 
 
