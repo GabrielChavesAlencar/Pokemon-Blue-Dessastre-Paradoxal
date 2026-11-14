@@ -124,11 +124,20 @@ assert9(flags["seafloor_archie_defeated"],"Archie flag")
 assert9(BlueHoennPilot.seafloor_awakening,"Kyogre awakening")
 assert9(flags["kyogre_awakened"],"Kyogre missing")
 assert9(!BlueHoennPilot.seafloor_awakening,"Kyogre repeated")
+assert9(!BlueHoennPilot.sootopolis_crisis,"Sootopolis crisis outside its city")
+$game_map.map_id=683
 assert9(BlueHoennPilot.sootopolis_crisis,"Sootopolis crisis")
 assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza without Wallace")
+assert9(!BlueHoennPilot.origin_wallace_stage10,"Wallace cannot speak outside Cave of Origin")
+$game_map.map_id=840
 assert9(BlueHoennPilot.origin_wallace_stage10,"Wallace origin")
 assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza without tower opening")
+$game_map.map_id=842
+assert9(!BlueHoennPilot.stage10_transfer(242,243,10,10),"Sky Pillar floors before Wallace opens")
+$game_map.map_id=841
 assert9(BlueHoennPilot.sky_pillar_wallace,"Wallace Sky Pillar")
+assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza outside summit")
+$game_map.map_id=848
 assert9(BlueHoennPilot.rayquaza_stage10,"Rayquaza resolution")
 assert9(flags["crisis_resolved"],"climate still active")
 assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza repeated")
