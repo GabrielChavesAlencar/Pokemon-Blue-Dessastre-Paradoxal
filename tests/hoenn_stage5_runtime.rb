@@ -234,7 +234,7 @@ check(!BlueHoennPilot.soothe_bell,"Soothe Bell repeated")
 check(!BlueHoennPilot.soft_sand,"Soft Sand repeated")
 check($bag.items[:SOOTHEBELL]==1 && $bag.items[:SOFTSAND]==1,
       "Gift counts incorrect")
-check(!BlueHoennPilot.slateport_north_gate,"Premature Route110 unlocked")
+check(BlueHoennPilot.slateport_north_gate,"Route110 remained blocked after Stern")
 check(!BlueHoennPilot.sign_stage5(:UNKNOWN),"Unknown sign accepted")
 check(BlueHoennPilot.sign_stage5(:DEWFORD_GYM),"Dewford Gym sign missing")
 
