@@ -146,8 +146,21 @@ def install_npc_locale(root: Path, source: Path, target: Path):
     # model can fill gaps; no network call or package install occurs here.
     all_lines = {s for row in rows for s in row["lines"]}
     new_locale = {}
+    private_path = root / ".blue-work/kanto-npc-ptbr.json"
+    automated_cache = False
+    if private_path.is_file():
+        try:
+            metadata = json.loads(private_path.read_text(encoding="utf-8"))
+            automated_cache = str(metadata.get("translation_method", "")).startswith(
+                "Argos Translate")
+        except (OSError, ValueError, TypeError):
+            pass
     for english, portuguese in custom.items():
         if english not in all_lines or not portuguese.strip():
+            continue
+        # A preexisting, unreviewed Argos cache must not replace a human-
+        # reviewed translation that has since shipped with the project.
+        if automated_cache and english in curated:
             continue
         try:
             validate(english, portuguese)
