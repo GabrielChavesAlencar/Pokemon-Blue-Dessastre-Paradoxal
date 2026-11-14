@@ -1190,8 +1190,11 @@ def add_stage9_events(maps,game,source_warps,source_pickups):
         (GROUDON_CUTSCENE_EVENT,"BlueHoennPilot.groudon_hideout","Groudon"),
         (SUBMARINE_EVENT,"BlueHoennPilot.submarine_escape","Submarine"),
     ):
-        page=event_page(script=handler,touch=(label in ("PyreOrb","Submarine")))
-        if label in ("PyreOrb","Submarine"):page.attrs["@through"]=True
+        # The Groudon awakening is an invisible story coordinate: require
+        # a player-touch trigger, not an impossible manual talk interaction.
+        automatic = label in ("PyreOrb","Submarine","Groudon")
+        page=event_page(script=handler,touch=automatic)
+        if automatic:page.attrs["@through"]=True
         append_event(maps[mid],f"HN9_Story_{label}",x,y,page)
     aqua_image,aqua_placeholder=select_native_character(
         game,("NPC_RSE_AquaGrunt","NPC_ORAS_AquaGrunt","trainer_YOUNGSTER"),
