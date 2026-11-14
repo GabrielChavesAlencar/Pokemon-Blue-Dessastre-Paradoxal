@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Hoenn até Mossdeep/Mt Pyre/esconderijos: 138 MapIDs e 186 equipes catalogadas. Eventos de BlueRegions Mind, Magma/Aqua, submarino e Dive são provisórios até teste Game.exe. Conexões costeiras requerem Surf; batalhas Magma grunts usam equipes provisórias aguardando comparação por evento; Steven dupla nativa não aprovada.",
+  "note": "Hoenn até Sootopolis, Seafloor Cavern, Rayquaza e Liga: 199 MapIDs e 194 equipes catalogadas. Etapa 10/10 é implementação técnica isolada, NÃO aprovada no Game.exe ou Android. Ice puzzle, Dive, Waterfall, Strength, cenas lendárias, fluxo do Hall of Fame nativo e direitos de assets exigem QA. Times PBS são referência; balanceamento segue Blue/Decades.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -1391,6 +1391,250 @@
     },
     {
       "name": "Esconderijo Aqua B2F",
+      "encounters": {}
+    },
+    {
+      "name": "Sootopolis City",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Sootopolis",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Sootopolis",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Sootopolis",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Sootopolis",
+      "encounters": {}
+    },
+    {
+      "name": "Pacifidlog Town",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Pacifidlog",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Pacifidlog",
+      "encounters": {}
+    },
+    {
+      "name": "Ever Grande City Sul",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Ever Grande",
+      "encounters": {}
+    },
+    {
+      "name": "Liga Pokémon de Hoenn",
+      "encounters": {}
+    },
+    {
+      "name": "Elite Four - Sidney",
+      "encounters": {}
+    },
+    {
+      "name": "Elite Four - Phoebe",
+      "encounters": {}
+    },
+    {
+      "name": "Elite Four - Glacia",
+      "encounters": {}
+    },
+    {
+      "name": "Elite Four - Drake",
+      "encounters": {}
+    },
+    {
+      "name": "Sala do Campeão Wallace",
+      "encounters": {}
+    },
+    {
+      "name": "Hall of Fame de Hoenn",
+      "encounters": {}
+    },
+    {
+      "name": "Corredores da Elite Four",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 125",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 126",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 127",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 128",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 129",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 130",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 131",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 132",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 133",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 134",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern - Entrada",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 1",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 2",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 3",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 4",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 5",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 6",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 7",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 8",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern 9",
+      "encounters": {}
+    },
+    {
+      "name": "Cave of Origin - Entrada",
+      "encounters": {}
+    },
+    {
+      "name": "Cave of Origin 1F",
+      "encounters": {}
+    },
+    {
+      "name": "Cave of Origin B1F",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar - Exterior",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar - Entrada",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar 1F",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar 2F",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar 3F",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar 4F",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar 5F",
+      "encounters": {}
+    },
+    {
+      "name": "Sky Pillar - Topo",
+      "encounters": {}
+    },
+    {
+      "name": "Victory Road 1F",
+      "encounters": {}
+    },
+    {
+      "name": "Victory Road B1F",
+      "encounters": {}
+    },
+    {
+      "name": "Victory Road B2F",
+      "encounters": {}
+    },
+    {
+      "name": "Sootopolis Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 125 Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 126 Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 127 Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 128 Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 129 Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 134 Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Seafloor Cavern Submersa",
+      "encounters": {}
+    },
+    {
+      "name": "Ever Grande City Norte",
       "encounters": {}
     }
   ],
@@ -5266,6 +5510,266 @@
             [
               "GOLBAT",
               40
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Juan",
+      "area": "Ginásio de Sootopolis",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "LUVDISC",
+              41
+            ],
+            [
+              "WHISCASH",
+              41
+            ],
+            [
+              "SEALEO",
+              43
+            ],
+            [
+              "CRAWDAUNT",
+              43
+            ],
+            [
+              "KINGDRA",
+              46
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "RAIN"
+    },
+    {
+      "name": "Archie (Seafloor)",
+      "area": "Seafloor Cavern 9",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              41
+            ],
+            [
+              "CROBAT",
+              41
+            ],
+            [
+              "SHARPEDO",
+              43
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Wally (Victory Road)",
+      "area": "Victory Road 1F",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "ALTARIA",
+              44
+            ],
+            [
+              "DELCATTY",
+              43
+            ],
+            [
+              "ROSELIA",
+              44
+            ],
+            [
+              "MAGNETON",
+              41
+            ],
+            [
+              "GARDEVOIR",
+              45
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Sidney",
+      "area": "Elite Four - Sidney",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "MIGHTYENA",
+              46
+            ],
+            [
+              "SHIFTRY",
+              48
+            ],
+            [
+              "CACTURNE",
+              46
+            ],
+            [
+              "CRAWDAUNT",
+              48
+            ],
+            [
+              "ABSOL",
+              49
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Phoebe",
+      "area": "Elite Four - Phoebe",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "DUSCLOPS",
+              48
+            ],
+            [
+              "BANETTE",
+              49
+            ],
+            [
+              "SABLEYE",
+              50
+            ],
+            [
+              "BANETTE",
+              49
+            ],
+            [
+              "DUSCLOPS",
+              51
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Glacia",
+      "area": "Elite Four - Glacia",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SEALEO",
+              50
+            ],
+            [
+              "GLALIE",
+              50
+            ],
+            [
+              "SEALEO",
+              52
+            ],
+            [
+              "GLALIE",
+              52
+            ],
+            [
+              "WALREIN",
+              53
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Drake",
+      "area": "Elite Four - Drake",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "SHELGON",
+              52
+            ],
+            [
+              "ALTARIA",
+              54
+            ],
+            [
+              "KINGDRA",
+              53
+            ],
+            [
+              "FLYGON",
+              53
+            ],
+            [
+              "SALAMENCE",
+              55
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Wallace (Campeão)",
+      "area": "Sala do Campeão Wallace",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — nível escala Blue/Decades",
+          "pokemon": [
+            [
+              "WAILORD",
+              57
+            ],
+            [
+              "TENTACRUEL",
+              55
+            ],
+            [
+              "LUDICOLO",
+              56
+            ],
+            [
+              "WHISCASH",
+              56
+            ],
+            [
+              "GYARADOS",
+              56
+            ],
+            [
+              "MILOTIC",
+              58
             ]
           ]
         }

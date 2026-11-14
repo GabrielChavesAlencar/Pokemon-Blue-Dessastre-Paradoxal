@@ -77,6 +77,16 @@ from hoenn_stage9 import (
     PYRE_AQUA_GRUNTS, MAGMA_HIDEOUT_GRUNTS, AQUA_HIDEOUT_GRUNTS,
     NPCS_STAGE9, SIGNS_STAGE9, MAGMA_HIDEOUT_GATE, AQUA_HIDEOUT_GATE,
 )
+from hoenn_stage10 import (
+    SOURCE_MAPS_STAGE10, SURF_BORDERS_STAGE10, STAGE10_MAP_GRAPH_EDGES,
+    JUAN_EVENT, JUAN_PBS, JUAN_TEAM, ARCHIE_PBS, ARCHIE_TEAM,
+    WALLY_ROAD_PBS, WALLY_ROAD_TEAM, ELITE_EVENTS, ELITE_PBS,
+    ELITE_TEAMS, CHAMPION_EVENT, CHAMPION_PBS, CHAMPION_TEAM,
+    SOOTOPOLIS_CRISIS_EVENT, ORIGIN_WALLACE_EVENT,
+    SKY_PILLAR_WALLACE_EVENT, RAYQUAZA_EVENT,
+    SEAFLOOR_AWAKENING_EVENT, WALLY_VICTORY_ROAD_EVENT,
+    LEAGUE_EXIT_EVENT, HALL_OF_FAME_EVENT, STAGE10_SIGNS,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -203,6 +213,12 @@ def audit(root: Path = ROOT) -> dict:
     native_trainers["Tabitha (Esconderijo Magma)"]=(SOURCE_MAPS[189],tuple(TABITHA_HIDEOUT_TEAM))
     native_trainers["Maxie (Centro Espacial)"]=(SOURCE_MAPS[81],tuple(MAXIE_SPACE_TEAM))
     native_trainers["Tabitha (Centro Espacial)"]=(SOURCE_MAPS[81],tuple(TABITHA_SPACE_TEAM))
+    native_trainers["Juan"]=(SOURCE_MAPS[87],tuple(JUAN_TEAM))
+    native_trainers["Archie (Seafloor)"]=(SOURCE_MAPS[236],tuple(ARCHIE_TEAM))
+    native_trainers["Wally (Victory Road)"]=(SOURCE_MAPS[250],tuple(WALLY_ROAD_TEAM))
+    for (kind,name,ver),team,evt in zip(ELITE_PBS,ELITE_TEAMS,ELITE_EVENTS):
+        native_trainers[name]=(SOURCE_MAPS[evt[0]],tuple(team))
+    native_trainers["Wallace (Campeão)"]=(SOURCE_MAPS[98],tuple(CHAMPION_TEAM))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
@@ -219,7 +235,7 @@ def audit(root: Path = ROOT) -> dict:
                                           len(RIVAL_LILYCOVE_TEAMS)) +
                                 len(TRAINERS_STAGE9) +
                                 len(PYRE_AQUA_GRUNTS)+len(MAGMA_HIDEOUT_GRUNTS)+
-                                len(AQUA_HIDEOUT_GRUNTS)+len(SPACE_GRUNT_EVENTS)+6):
+                                len(AQUA_HIDEOUT_GRUNTS)+len(SPACE_GRUNT_EVENTS)+6+8):
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -230,14 +246,15 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery", "Norman", "Winona", "Tate & Liza")
+        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery", "Norman", "Winona", "Tate & Liza", "Juan")
         expect_badge = ("STONE" if name == "Roxanne" else
                         "KNUCKLE" if name == "Brawly" else
                         "DYNAMO" if name == "Wattson" else
                         "HEAT" if name == "Flannery" else
                         "BALANCE" if name == "Norman" else
                         "FEATHER" if name == "Winona" else
-                        "MIND" if name == "Tate & Liza" else None)
+                        "MIND" if name == "Tate & Liza" else
+                        "RAIN" if name == "Juan" else None)
         if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
             errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
@@ -255,11 +272,11 @@ def audit(root: Path = ROOT) -> dict:
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
-    for a,_,_,b,_,_ in SURF_BORDERS_STAGE9:
+    for a,_,_,b,_,_ in (*SURF_BORDERS_STAGE9,*SURF_BORDERS_STAGE10):
         if a in adjacency and b in adjacency:
             adjacency[a].add(b)
             adjacency[b].add(a)
-    for a,b in STAGE9_MAP_GRAPH_EDGES:
+    for a,b in (*STAGE9_MAP_GRAPH_EDGES,*STAGE10_MAP_GRAPH_EDGES):
         if a not in adjacency or b not in adjacency:
             errors.append(f"Stage9 graph references unknown source map: {a}/{b}")
             continue
@@ -363,6 +380,16 @@ def audit(root: Path = ROOT) -> dict:
            for mid,x,y,version,_ in AQUA_INSTITUTE]
         + [(mid,x,y,f"future8:{key}") for mid,x,y,key in FUTURE_GATES_STAGE8
            if key not in ("AQUA_HIDEOUT","MT_PYRE_PIER")]
+        + [(mid,x,y,f"stage10 sign:{key}") for mid,x,y,key in STAGE10_SIGNS]
+        + [(*JUAN_EVENT,"Juan"),(*SOOTOPOLIS_CRISIS_EVENT,"Sootopolis crisis"),
+           (*ORIGIN_WALLACE_EVENT,"Wallace Origin"),
+           (*SKY_PILLAR_WALLACE_EVENT,"Wallace Sky Pillar"),
+           (*RAYQUAZA_EVENT,"Rayquaza"),(*SEAFLOOR_AWAKENING_EVENT,"Kyogre"),
+           (*WALLY_VICTORY_ROAD_EVENT,"Wally Victory Road"),
+           (*LEAGUE_EXIT_EVENT,"Champion exit"),(*HALL_OF_FAME_EVENT,"Hoenn Hall")]
+        + [(*point,f"Elite {index}") for index,point in enumerate(ELITE_EVENTS)]
+        + [(*CHAMPION_EVENT,"Wallace Champion")]
+        + [(236,14,46,"Archie Seafloor")]
         + [(mid,x,y,f"trainer9:{name}") for mid,x,y,_,name,_,_,_ in TRAINERS_STAGE9]
         + [(mid,x,y,f"npc9:{handler}") for mid,x,y,_,handler in NPCS_STAGE9]
         + [(77,9,5,"Stage9 center counter"),(78,4,5,"Stage9 Mart counter")]
@@ -434,7 +461,12 @@ def audit(root: Path = ROOT) -> dict:
                 "tate_liza_tm","tate_liza","space_magma_grunt",
                 "space_center_maxie","space_center_steven",
                 "steven_house_stage9","super_rod_stage9",
-                "mossdeep_space_scientist"}
+                "mossdeep_space_scientist",
+                "rain_badge?","sign_stage10","stage10_transfer","seafloor_archie",
+                "seafloor_awakening","sootopolis_crisis","origin_wallace_stage10",
+                "sky_pillar_wallace","rayquaza_stage10","juan_tm","juan",
+                "wally_victory_road","elite_four","champion_wallace",
+                "hall_of_fame_stage10"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -454,7 +486,8 @@ def audit(root: Path = ROOT) -> dict:
 
 
     gaps = [
-        "Stage9 is scripted in an isolated Hoenn copy; not tested on Game.exe or Android.",
+        "Stage9 and Stage10 are scripted in an isolated Hoenn copy; neither is accepted in Game.exe or Android.",
+        "Stage10 Ice puzzle, Dive, Waterfall, Strength, Rayquaza cinema and native Hall of Fame remain unverified.",
         "Static donor warp scanner reauthors direct teleports; ambiguous multi-page and scripted doors are excluded.",
         "The source Mossdeep Gym's statue/button puzzle is not faithfully reconstructed or approved.",
         "The original Steven co-op double battle in Space Center remains a guarded sequential-boss fallback.",
@@ -515,6 +548,11 @@ def audit(root: Path = ROOT) -> dict:
         "stage9_surf_borders": len(SURF_BORDERS_STAGE9),
         "stage9_graph_edges": len(STAGE9_MAP_GRAPH_EDGES),
         "stage9_scripted_only": True,
+        "stage10_source_maps":len(SOURCE_MAPS_STAGE10),
+        "stage10_trainer_presets":8,
+        "stage10_surf_borders":len(SURF_BORDERS_STAGE10),
+        "stage10_graph_edges":len(STAGE10_MAP_GRAPH_EDGES),
+        "stage10_scripted_only":True,
         "stage3_provisional_runtime_only": True,
         "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
         "three_physical_starter_ball_events_prepared": True,
