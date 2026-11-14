@@ -1180,6 +1180,9 @@ module BlueHoennPilot
       return false
     end
     if flags["stern_package_delivered"]
+      if flags["groudon_awakened"] && !flags["slateport_submarine_stolen"]
+        return slateport_submarine_news
+      end
       pbMessage(_INTL("Capitão Stern: os produtos da Devon estão seguros. Obrigado!"))
       return true
     end
