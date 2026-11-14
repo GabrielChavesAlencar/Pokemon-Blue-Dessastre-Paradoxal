@@ -2119,6 +2119,394 @@ module BlueHoennPilot
   end
 
 
+
+  # Stage 09: isolated, regional-only event progression. This does NOT
+  # register a playable certificate for Game.exe or Android.
+  STAGE9_SIGNS = {
+    MOSSDEEP_GYM:"Ginásio de Mossdeep: Tate e Liza desafiam você em dupla!",
+    SPACE_CENTER:"Centro Espacial de Mossdeep: pesquisas e lançamento de foguetes.",
+    MOSSDEEP:"Mossdeep: uma cidade de aventuras marinhas e espaciais."
+  }.freeze
+  STAGE9_GRUNT_PYRE=[920,921,922,923].freeze
+  STAGE9_GRUNT_MAGMA=[940,941,942,943,944,945,946].freeze
+  STAGE9_GRUNT_AQUA=[950,951,952,953,954].freeze
+  STAGE9_GRUNT_SPACE=[991,994].freeze
+
+  def self.sign_stage9(key)
+    return false unless state && STAGE9_SIGNS.key?(key)
+    pbMessage(_INTL(STAGE9_SIGNS.fetch(key)))
+    true
+  end
+
+  def self.mind_badge?
+    return false unless state && defined?(BlueRegions)
+    BlueRegions.local_achievements($PokemonGlobal.blue_regions,"HOENN").include?("MIND")
+  end
+
+  def self.stage9_transfer(source_id,dest_id,x,y)
+    flags=state
+    return false unless flags && [source_id,dest_id,x,y].all?{|v|v.is_a?(Integer)}
+    return false unless defined?(BlueRegionTravel) && BlueRegionTravel.respond_to?(:move_to)
+    _,map_ids=metadata
+    return false unless map_ids[source_id] && map_ids[dest_id]
+    return false unless $game_map && $game_player && $game_map.map_id==map_ids[source_id]
+    # Only the producer of the event may authorize these source routes.
+    if (182..189).cover?(dest_id) && !flags["magma_emblem_received"]
+      pbMessage(_INTL("A entrada para o esconderijo Magma exige o Magma Emblem!"))
+      return false
+    end
+    if (215..217).cover?(dest_id) && !flags["slateport_submarine_stolen"]
+      pbMessage(_INTL("O esconderijo Aqua ainda está bloqueado. Investigue Slateport!"))
+      return false
+    end
+    if (206..213).cover?(dest_id) && !feather_badge?
+      pbMessage(_INTL("Você deve vencer Winona antes de explorar Mt. Pyre."))
+      return false
+    end
+    if dest_id==82 && !flags["submarine_escaped"]
+      pbMessage(_INTL("O ginásio de Mossdeep reabre depois que a Equipe Aqua partir."))
+      return false
+    end
+    destination=[map_ids[dest_id],x,y,2]
+    original=[$game_map.map_id,$game_player.x,$game_player.y,$game_player.direction]
+    begin
+      pbFadeOutIn { BlueRegionTravel.move_to(destination) }
+      true
+    rescue StandardError => err
+      begin
+        pbFadeOutIn { BlueRegionTravel.move_to(original) } if $game_map.map_id!=original[0]
+      rescue StandardError
+      end
+      pbMessage(_INTL("A passagem ainda não pôde ser realizada: {1}",err.message))
+      false
+    end
+  end
+
+  def self.stage9_grunt(kind,version,versions,key_prefix,requirement)
+    flags=state
+    return false unless flags && versions.include?(version) &&
+                        $player && !$player.party.empty?
+    unless requirement
+      pbMessage(_INTL("Você ainda não concluiu a etapa anterior da missão de Hoenn."))
+      return false
+    end
+    key="#{key_prefix}_#{version}_defeated"
+    return false if flags[key]
+    setBattleRule("canLose")
+    unless TrainerBattle.start(kind,"Recruta",version)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags[key]=true
+    pbMessage(_INTL("O recruta foi derrotado!"))
+    true
+  end
+
+  def self.pyre_aqua_grunt(version)
+    stage9_grunt(:BLUE_HOENN_AQUA,version,STAGE9_GRUNT_PYRE,
+                 "pyre_aqua",feather_badge?)
+  end
+
+  def self.pyre_archie
+    flags=state
+    return false unless flags && feather_badge?
+    pbMessage(flags["pyre_orb_stolen"] ?
+      _INTL("Archie: o Red Orb já está com a Equipe Aqua!") :
+      _INTL("Archie, líder Aqua, planeja roubar o Red Orb no cume."))
+    true
+  end
+
+  def self.pyre_orb_scene
+    flags=state
+    return false unless flags && feather_badge?
+    return false if flags["pyre_orb_stolen"]
+    unless STAGE9_GRUNT_PYRE.all?{|v|flags["pyre_aqua_#{v}_defeated"]}
+      pbMessage(_INTL("Quatro recrutas Aqua ainda vigiam o altar de Mt. Pyre."))
+      return false
+    end
+    flags["pyre_orb_stolen"]=true
+    pbMessage(_INTL("Archie roubou o Red Orb! A Equipe Aqua está fugindo para o mar."))
+    pbMessage(_INTL("A senhora de Mt. Pyre precisa conversar com você antes que saia."))
+    true
+  end
+
+  def self.pyre_elder
+    flags=state
+    return false unless flags
+    unless flags["pyre_orb_stolen"]
+      pbMessage(_INTL("Anciã: proteja os orbes de Mt. Pyre."))
+      return false
+    end
+    if flags["magma_emblem_received"]
+      pbMessage(_INTL("Anciã: o Magma Emblem abre a passagem secreta em Jagged Pass."))
+      return true
+    end
+    item=:MAGMAEMBLEM
+    if GameData::Item.exists?(item)
+      unless $bag && $bag.add(item,1)
+        pbMessage(_INTL("Anciã: sua Bolsa precisa de espaço para o Magma Emblem."))
+        return false
+      end
+    else
+      flags["magma_emblem_virtual"]=true
+    end
+    flags["magma_emblem_received"]=true
+    pbMessage(_INTL("Você recebeu o Magma Emblem para investigar o esconderijo Magma!"))
+    true
+  end
+
+  def self.enter_magma_hideout
+    flags=state
+    return false unless flags
+    unless flags["magma_emblem_received"] && heat_badge?
+      pbMessage(_INTL("Uma entrada secreta está selada. Investigue Mt. Pyre primeiro."))
+      return false
+    end
+    stage9_transfer(180,182,15,38)
+  end
+
+  def self.magma_hideout_grunt(version)
+    flags=state
+    stage9_grunt(:BLUE_HOENN_MAGMA,version,STAGE9_GRUNT_MAGMA,
+                 "magma_hideout",flags && flags["magma_emblem_received"])
+  end
+
+  def self.magma_hideout_tabitha
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return false if flags["hideout_tabitha_defeated"]
+    unless [940,941].all?{|v|flags["magma_hideout_#{v}_defeated"]}
+      pbMessage(_INTL("Tabitha: enfrente os primeiros recrutas do esconderijo!"))
+      return false
+    end
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_TABITHA,"Tabitha",988)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["hideout_tabitha_defeated"]=true
+    pbMessage(_INTL("Tabitha: Maxie não vai recuar!"))
+    true
+  end
+
+  def self.magma_hideout_maxie
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return false if flags["hideout_maxie_defeated"]
+    unless flags["hideout_tabitha_defeated"]
+      pbMessage(_INTL("Maxie: Tabitha ainda está protegendo o acesso."))
+      return false
+    end
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_MAXIE,"Maxie",989)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["hideout_maxie_defeated"]=true
+    pbMessage(_INTL("Maxie: tentaremos despertar Groudon, mesmo após esta derrota!"))
+    true
+  end
+
+  def self.groudon_hideout
+    flags=state
+    return false unless flags
+    return false if flags["groudon_awakened"]
+    unless flags["hideout_maxie_defeated"]
+      pbMessage(_INTL("Groudon ainda dorme. Primeiro enfrente o líder Magma."))
+      return false
+    end
+    flags["groudon_awakened"]=true
+    pbMessage(_INTL("Groudon despertou e deixou o esconderijo Magma!"))
+    pbMessage(_INTL("Volte a Slateport e procure o Capitão Stern: a Equipe Aqua está atrás de um submarino."))
+    true
+  end
+
+  def self.slateport_submarine_news
+    flags=state
+    return false unless flags
+    unless flags["groudon_awakened"]
+      pbMessage(_INTL("Stern: o submarino ainda está em segurança."))
+      return false
+    end
+    return false if flags["slateport_submarine_stolen"]
+    flags["slateport_submarine_stolen"]=true
+    pbMessage(_INTL("Stern: a Equipe Aqua roubou o submarino em Slateport!"))
+    pbMessage(_INTL("Investigue o esconderijo Aqua, a leste de Lilycove."))
+    true
+  end
+
+  def self.enter_aqua_hideout
+    flags=state
+    return false unless flags
+    unless flags["slateport_submarine_stolen"]
+      pbMessage(_INTL("O esconderijo Aqua ainda está trancado. Investigue o porto de Slateport."))
+      return false
+    end
+    stage9_transfer(69,215,14,29)
+  end
+
+  def self.aqua_hideout_grunt(version)
+    flags=state
+    stage9_grunt(:BLUE_HOENN_AQUA,version,STAGE9_GRUNT_AQUA,
+                 "aqua_hideout",flags && flags["slateport_submarine_stolen"])
+  end
+
+  def self.aqua_hideout_matt
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return false if flags["aqua_matt_defeated"]
+    unless [950,953].all?{|v|flags["aqua_hideout_#{v}_defeated"]}
+      pbMessage(_INTL("Matt: vença os recrutas nos corredores do esconderijo Aqua!"))
+      return false
+    end
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_MATT,"Matt",917)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["aqua_matt_defeated"]=true
+    pbMessage(_INTL("Matt: Archie já está saindo com o submarino!"))
+    true
+  end
+
+  def self.submarine_escape
+    flags=state
+    return false unless flags
+    return false if flags["submarine_escaped"]
+    unless flags["aqua_matt_defeated"]
+      pbMessage(_INTL("O submarino Aqua está pronto para partir. Matt vigia a passagem."))
+      return false
+    end
+    flags["submarine_escaped"]=true
+    pbMessage(_INTL("O submarino da Equipe Aqua escapou! Siga a leste rumo a Mossdeep."))
+    true
+  end
+
+  def self.tate_liza_tm
+    flags=state
+    return false unless flags && mind_badge?
+    return false if flags["tate_liza_tm_given"]
+    give_move_tm("tate_liza_tm_given",:CALMMIND,[:TM04,:TM129,:TM130],
+                 "Tate e Liza: receba a TM Calm Mind!")
+  end
+
+  def self.tate_liza
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    return tate_liza_tm if mind_badge?
+    unless feather_badge? && flags["submarine_escaped"]
+      pbMessage(_INTL("Tate e Liza: detenha a Equipe Aqua antes de nosso desafio em dupla."))
+      return false
+    end
+    if defined?(pbCanDoubleBattle?) && !pbCanDoubleBattle?
+      pbMessage(_INTL("Tate e Liza: você precisa de dois Pokémon disponíveis para a batalha dupla."))
+      return false
+    end
+    pbMessage(_INTL("Tate e Liza: una suas estratégias e enfrente nosso time Psíquico!"))
+    setBattleRule("double")
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_TATE_LIZA,"Tate & Liza",982)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","MIND")
+      pbMessage(_INTL("O registro da Mind Badge regional falhou."))
+      return false
+    end
+    flags["tate_liza_defeated"]=true
+    pbMessage(_INTL("Você conquistou a Mind Badge de Hoenn! Dive está autorizado nesta região."))
+    tate_liza_tm
+    true
+  end
+
+  def self.space_magma_grunt(version)
+    flags=state
+    stage9_grunt(:BLUE_HOENN_MAGMA,version,STAGE9_GRUNT_SPACE,
+                 "space_magma",flags && mind_badge?)
+  end
+
+  def self.space_center_maxie
+    flags=state
+    return false unless flags
+    pbMessage(flags["space_center_saved"] ?
+      _INTL("Maxie: a Equipe Magma desistiu da invasão do Centro Espacial.") :
+      _INTL("Maxie: queremos o combustível do foguete! Steven está nos enfrentando."))
+    true
+  end
+
+  def self.space_center_steven
+    flags=state
+    return false unless flags && $player && !$player.party.empty?
+    if flags["space_center_saved"]
+      pbMessage(_INTL("Steven: obrigado por defender o Centro Espacial! Procure minha casa para obter Dive."))
+      return true
+    end
+    unless mind_badge? && STAGE9_GRUNT_SPACE.all?{|v|flags["space_magma_#{v}_defeated"]}
+      pbMessage(_INTL("Steven: vença Tate e Liza e afaste os recrutas Magma primeiro."))
+      return false
+    end
+    pbMessage(_INTL("Steven: vamos enfrentar Maxie e Tabitha!"))
+    # This is a provisional guarded SEQUENCE, NOT proof of the Emerald
+    # native Steven+player multi-trainer double battle.
+    unless flags["space_tabitha_defeated"]
+      setBattleRule("canLose")
+      unless TrainerBattle.start(:BLUE_HOENN_TABITHA,"Tabitha",993)
+        $player.heal_party if $player.respond_to?(:heal_party)
+        return false
+      end
+      flags["space_tabitha_defeated"]=true
+    end
+    setBattleRule("canLose")
+    unless TrainerBattle.start(:BLUE_HOENN_MAXIE,"Maxie",992)
+      $player.heal_party if $player.respond_to?(:heal_party)
+      return false
+    end
+    flags["space_center_saved"]=true
+    pbMessage(_INTL("Steven: a Equipe Magma recuou! O Centro Espacial está seguro."))
+    true
+  end
+
+  def self.steven_house_stage9
+    flags=state
+    return false unless flags
+    unless mind_badge? && flags["space_center_saved"]
+      pbMessage(_INTL("Steven: volte à minha casa após defender o Centro Espacial."))
+      return false
+    end
+    return false if flags["hm_dive_received"]
+    item=[:HM08,:HMDIVE].find{|id|
+      GameData::Item.exists?(id) && GameData::Item.get(id).respond_to?(:move) &&
+      GameData::Item.get(id).move==:DIVE
+    }
+    unless item && $bag && $bag.add(item,1)
+      pbMessage(_INTL("Steven: HM Dive precisa estar registrado e sua Bolsa deve ter espaço."))
+      return false
+    end
+    flags["hm_dive_received"]=true
+    pbMessage(_INTL("Steven: receba HM Dive! A Mind Badge permite usar o movimento em Hoenn."))
+    true
+  end
+
+  def self.super_rod_stage9
+    flags=state
+    return false unless flags
+    return false if flags["super_rod_received"]
+    unless GameData::Item.exists?(:SUPERROD) && $bag && $bag.add(:SUPERROD,1)
+      pbMessage(_INTL("Pescador: a Super Rod deve estar cadastrada e caber na Bolsa."))
+      return false
+    end
+    flags["super_rod_received"]=true
+    pbMessage(_INTL("Você recebeu a Super Rod!"))
+    true
+  end
+
+  def self.mossdeep_space_scientist
+    return false unless state
+    pbMessage(_INTL("Pesquisador: nosso Centro Espacial estuda foguetes, meteoritos e viagens pelo espaço."))
+    true
+  end
+
+
   def self.heal
     return unless state
     if $player.party.empty?
