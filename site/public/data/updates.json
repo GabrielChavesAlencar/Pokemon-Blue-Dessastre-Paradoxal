@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2b2d5c08eb86237a6b367c8a01bc33474ce554f8",
+      "date": "2026-11-14T10:36:49-03:00",
+      "title": "feat(hoenn): inserir eventos de Petalburg, Rota 104, Woods e lojas na cópia isolada",
+      "category": "Novidades"
+    },
+    {
       "sha": "728a88f5fc077c80dd74009e42c2189633c9b9c9",
       "date": "2026-11-14T10:35:50-03:00",
       "title": "fix(hoenn): validar borders com offsets reais de Petalburg/Route 104",
