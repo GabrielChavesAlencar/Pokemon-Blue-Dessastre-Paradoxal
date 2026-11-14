@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ee501484fbb56bdf33e206d3a2bd8ad8b8f46f9a",
+      "date": "2026-11-13T21:36:31-03:00",
+      "title": "docs(sinnoh): record passing 82 isolated Python/Ruby tests for Barry PBS draft without claiming engine QA",
+      "category": "Documentação"
+    },
+    {
       "sha": "31e9f4b8dc69954e8171197ecff3141a0f6b8d69",
       "date": "2026-11-13T21:35:20-03:00",
       "title": "test(sinnoh): verify Barry draft inspector rejects symlinked parent to game/",
