@@ -42,8 +42,7 @@ def event_dialogue():
 class FakeTranslator:
     def translate(self, source):
         return {
-            "Hello there!": "Olá!",
-            "How are you?": "Como você está?",
+            "Hello there! How are you?": "Olá! Como você está?",
         }.get(source, source)
 
 
@@ -52,7 +51,7 @@ class TestKantoNpcLocale(unittest.TestCase):
         event = event_dialogue()
         from kanto_overworld import source_npc_dialogue
         cmds = source_npc_dialogue(event)
-        self.assertEqual(npc_literals(cmds), ["Hello there!", "How are you?"])
+        self.assertEqual(npc_literals(cmds), ["Hello there! How are you?"])
         self.assertEqual(npc_literals([
             command(355, b'pbMessage(_INTL("Nice weather!"))'),
             command(355, b'dangerous_code(:MASTERBALL)'),
@@ -60,8 +59,8 @@ class TestKantoNpcLocale(unittest.TestCase):
 
     def test_local_machine_translation_preserves_game_controls(self):
         translator = FakeTranslator()
-        self.assertEqual(safe_translate("Hello there!", translator),
-                         ("Olá!", None))
+        self.assertEqual(safe_translate("Hello there! How are you?", translator),
+                         ("Olá! Como você está?", None))
         pt, reason = safe_translate(r"\PN found a Potion!", translator)
         self.assertIsNone(pt)
         self.assertIn("control", reason)
@@ -94,8 +93,7 @@ class TestKantoNpcLocale(unittest.TestCase):
             locale.write_text(json.dumps({
                 "version": 1, "language": "pt-BR",
                 "translations": {
-                    "Hello there!": "Olá!",
-                    "How are you?": "Como você está?",
+                    "Hello there! How are you?": "Olá! Como você está?",
                     "Not a Kanto NPC": "Não é um NPC de Kanto",
                 }
             }), encoding="utf8")
@@ -107,8 +105,8 @@ class TestKantoNpcLocale(unittest.TestCase):
             }
             self.assertEqual(merged["Existing Blue line"],
                              "Linha existente do Blue")
-            self.assertEqual(merged["Hello there!"], "Olá!")
-            self.assertEqual(merged["How are you?"], "Como você está?")
+            self.assertEqual(merged["Hello there! How are you?"],
+                             "Olá! Como você está?")
             self.assertNotIn("Not a Kanto NPC", merged)
             self.assertEqual(report["total_npc_events"], 1)
             self.assertEqual(report["remaining_unique_lines"], 0)
@@ -137,13 +135,12 @@ class TestKantoNpcLocale(unittest.TestCase):
             local.write_text(json.dumps({
                 "version": 1, "language": "pt-BR",
                 "translations": {
-                    "Hello there!": r"Olá \PN!",
-                    "How are you?": "Como você está?"
+                    "Hello there! How are you?": r"Olá \PN!",
                 },
             }), encoding="utf8")
             with patch.object(kanto_npc_locale, "load", return_value=fake_map):
                 report = install_npc_locale(root, source, target)
-            self.assertEqual(report["localized_unique_lines"], 1)
+            self.assertEqual(report["localized_unique_lines"], 0)
             self.assertEqual(report["remaining_unique_lines"], 1)
             self.assertTrue(report["invalid_local_translations"])
 
