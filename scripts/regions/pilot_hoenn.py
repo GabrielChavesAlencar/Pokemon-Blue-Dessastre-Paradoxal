@@ -100,6 +100,7 @@ from hoenn_qa_phase3 import (
     parse_reference_encounters, assemble_encounters,
     reauthor_safe_items_and_audit,
 )
+from hoenn_qa_phase4 import install_simple_obstacles
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -2100,6 +2101,23 @@ def build_overlay(game, source):
         "source_events": qa3_event_audit,
         "native_gameplay_verified": False,
         "all_trainers_npcs_signs_added": False,
+    }
+    # QA 4/12: source-derived *names and coordinates* only, not donor scripts.
+    # Existing script/item locations always win. Any conditional, multipage,
+    # ambiguous or non-renderable obstacle goes to the manual audit backlog.
+    qa4_obstacles = install_simple_obstacles(all_original_events, maps, maps, game)
+    for old, x, y, kind, sprite, event_id in qa4_obstacles["new_safe_obstacles"]:
+        overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old], EVENT_CLASSES)
+    report["qa4"] = {
+        **qa4_obstacles,
+        "field_badges": {
+            "CUT":"STONE", "FLASH":"KNUCKLE", "ROCKSMASH":"DYNAMO",
+            "STRENGTH":"HEAT", "SURF":"BALANCE",
+            "DIVE":"MIND", "WATERFALL":"RAIN",
+        },
+        "ever_grande_waterfall_entrance": [91,322],
+        "native_gameplay_verified": False,
+        "native_surf_dive_waterfall_puzzles_verified": False,
     }
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
