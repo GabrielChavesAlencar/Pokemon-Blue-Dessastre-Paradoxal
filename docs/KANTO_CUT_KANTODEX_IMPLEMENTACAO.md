@@ -14,6 +14,8 @@ Referência: [KANTO_DETONADO_FIRERED_LEAFGREEN_REFERENCIA_ORGANIZADA.md](KANTO_D
 
 ### Auditoria
 
+**Contagem comprovada na fonte FRLG auditada: 17 Cut Trees nos mapas ativos**, distribuídas em Viridian City (2), Route 2 (3), Pewter City (1), Cerulean City (1), Vermilion City (1), Celadon City/Gym (5) e Fuchsia City (4). Os eventos originais se chamam `Cut Tree` (com espaço); o adaptador preserva MapID/EventID/posição/sprite e converte somente o nome runtime para `CutTree` exigido pela engine. O verificador agora exige todos os 17 eventos e rejeita mapas recompilados sem árvores. O evento não substitui o requisito do HM01 Cut/correspondente insígnia.
+
 Na cópia de Kanto, abrir `Data/blue-kanto-field-events.json` e filtrar `imported[].kind = "cut"`. Isso mostra a quantidade real de árvores adicionadas, por mapa, EventID e posição. `verify_pilot.py` valida se cada árvore é sólida, mantém `CutTree` no nome e usa os comandos nativos. A whitelist especial aceita **somente** os CutTrees que constam desse relatório.
 
 ## 2. KantoDex, além da Nacional
