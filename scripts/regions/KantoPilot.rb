@@ -278,17 +278,45 @@ module BlueKantoPilot
     pbMessage(BlueKantoPilot.t("The northern path to Route 2 is blocked. Deliver the Poké Mart package to Professor Oak in Pallet first!", "O caminho norte para a Rota 2 está bloqueado. Primeiro entregue a encomenda do Poké Mart ao Professor Oak em Pallet!"))
   end
 
-  # A connected outdoor map changes before a normal transfer event runs.
-  # The event markers created on Viridian's actual north edge define where
-  # the route exists. Guard the LAST movement into Route 2 itself, even if an
-  # invisible Player Touch event does not block the preceding tile.
+  # The old gate was on y=0, far beyond Viridian's sleeping old man.
+  # The pilot builder now records the five-tile walkway line marked in the
+  # screenshot, relative to source Map010's northern house doorway.
+  def self.viridian_route2_line
+    return nil unless File.file?("Kanto pilot.json")
+    @viridian_route2_line ||= begin
+      path = "Data/blue-kanto-viridian-route2-line.txt"
+      if File.file?(path)
+        parts = File.read(path).strip.split("|")
+        values = parts.length == 4 ? parts.map { |value| Integer(value, 10) } : []
+        values if values.length == 4 && values[0] > 0 && values[1] > 0 &&
+                  values[2] >= 0 && values[3] > values[2]
+      end
+    end
+  rescue IOError, SystemCallError, ArgumentError
+    nil
+  end
+
+  # Old Kanto saves can retain the original north-edge RPG::Event objects
+  # after the build replaces Map010. Erase ONLY those obsolete event markers.
+  # Don't touch story NPCs, maps from other regions or any quest flags.
+  def self.clear_legacy_viridian_route2_gates
+    line = viridian_route2_line
+    return unless line && $game_map && $game_map.map_id == line[0]
+    $game_map.events.each_value do |event|
+      next unless event.name == "Kanto Viridian Route 2 Parcel Gate"
+      next if event.instance_variable_get(:@erased)
+      event.erase
+    end
+  end
+
   def self.route2_exit_blocked?(player, direction)
-    return false unless player && direction == 8 && player.y == 0 && $game_map
-    return false unless $game_map.events.values.any? { |event|
-      event.name == "Kanto Viridian Route 2 Parcel Gate" &&
-        event.y == 0 && event.x == player.x
-    }
-    !forest_unlocked?
+    return false unless player && $game_map
+    line = viridian_route2_line
+    return false unless line && $game_map.map_id == line[0]
+    clear_legacy_viridian_route2_gates
+    return false unless direction == 8 && !forest_unlocked?
+    _map, row, first, last = line
+    player.y == row + 1 && player.x >= first && player.x < last
   end
 
   # Exact, source-grounded Pewter east boundary compiled by pilot.py.
