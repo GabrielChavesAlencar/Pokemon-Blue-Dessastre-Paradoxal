@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "250633ecf46e9514757449cd2076dc8b0b639d9f",
+      "date": "2026-11-14T19:12:32-03:00",
+      "title": "fix(kanto): eliminar recursao no refresh do save e fixar CutTree apenas no sprite",
+      "category": "Correções"
+    },
+    {
       "sha": "69df0f76ddb89af96b5f516412934c6bd3f5e016",
       "date": "2026-11-14T19:04:15-03:00",
       "title": "docs(hoenn): implementation backlog after QA12 with evidence, priorities and IMP-1..IMP-5 plan",
