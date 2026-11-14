@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 10 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣▣▣□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 11 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣▣▣▣□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -20,7 +20,7 @@
 | 8 | Victory Road e Wally | **Três mapas, Wally, gates de Waterfall e Liga e auditoria QA08 preparados; Game.exe pendente** | ⏳ |
 | 9 | Elite Four e Wallace | **Cinco salas, equipes PBS, ordem de vitórias e auditoria QA09 preparados; Game.exe pendente** | ⏳ |
 | 10 | Hall of Fame e pós-jogo | **Registro da Liga via BlueRegions, Johto/Sinnoh liberados no circuito e QA10 preparados; Game.exe pendente** | ⏳ |
-| 11 | Traduções, placas, áudio e Trainer Card | Pendente | ⏳ |
+| 11 | Traduções, placas, áudio e Trainer Card | **199 nomes de mapa, oito insígnias PT-BR, BGM provisória e Trainer Card de Hoenn preparados; Game.exe pendente** | ⏳ |
 | 12 | QA da campanha inteira Windows/Android | Pendente | ⏳ |
 
 **Regra:** nenhuma fase muda para "aprovada" só porque a CI ou um simulador Ruby passaram; exige observação real no Game.exe.
@@ -468,3 +468,45 @@ A entrada oficial na Liga envolve Map93 e o corredor Map100; Map99 é o **Hall o
 - [ ] Compatibilidade Windows/Android confirmada com testes nativos reais.
 
 **A fase 10 prepara e protege a conclusão regional, mas não equivale à campanha jogável aprovada. Faltam as fases 11–12 e o aceite real no Game.exe permanece em 0/12.**
+
+## Fase 11/12 — Português, placas, músicas e Trainer Card de Hoenn
+
+**Preparação técnica: 11/12 (91,7%). Aprovação jogável nativa: 0/12.** A interface de Hoenn usa os sistemas já existentes no Blue/Decades, sem importar scripts de outros jogos nem reescrever os recursos de Decades.
+
+### Textos em português
+
+- `scripts/regions/hoenn_qa_phase11.py` possui uma tabela fechada de nomes de locais para a apresentação ao jogador. O gerador atualiza os **199 nomes de mapas** em `Data/MapInfos.rxdata` e `PBS/map_metadata_hoenn_pilot.txt` sem mudar MapIDs, scripts de eventos ou identificadores de espécies, itens e golpes.
+- Termos como **Victory Road → Estrada da Vitória**, **Cave of Origin → Caverna da Origem**, **Seafloor Cavern → Caverna Submarina**, **Sky Pillar → Pilar Celeste**, **Hall of Fame → Hall da Fama**, **Elite Four → Elite Quatro**, além de `Town`/`City`, exibem rótulos em PT-BR sem modificar nomes próprios de cidades.
+- As referências aos oito ginásios nos diálogos autorais `HoennPilot.rb` passaram a chamar as insígnias pelos nomes em português: **Pedra, Punho, Dínamo, Calor, Equilíbrio, Pena, Mente e Chuva**. **Os IDs regionais STONE, KNUCKLE, DYNAMO, HEAT, BALANCE, FEATHER, MIND e RAIN não mudam.**
+- A auditoria confirma o handler autoral das placas. **Ela não prova que todos os NPCs e placas de todos os 199 mapas tiveram todas as falas traduzidas.** A revisão de falas não recriadas ou não cadastradas e o comportamento sob as opções de idioma ainda são tarefas manuais importantes da Fase 12.
+
+### Músicas e áudio
+
+- O gerador já possuía sete faixas OGG referenciadas: **Littleroot**, **Birch**, **Route101**, **Oldale**, **Center**, **Wild** e **WildVictory**. Elas são verificadas com `OggS` na cópia de teste, em vez de inventar novas músicas ou enviar assets não confirmados.
+- Agora cada um dos **199 mapas** recebe explicitamente um BGM autoral da lista. Os mapas da etapa 10 — Sootopolis, Victory Road, salas da Elite e Wallace, Ever Grande e Hall of Fame — usam uma **seleção provisória** dessas faixas já presentes. O auditor marca os 61 MapIDs finais como **pendentes de trilha autêntica e audição nativa**; a música provisória não representa a trilha definitiva de Emerald/ORAS.
+- O BGM de encontros selvagens e vitória usa os handlers existentes de `BlueHoennPilot::Music`, exclusivamente dentro de Hoenn. A engine original ainda controla batalha contra treinadores, eventos especiais, fades, prioridades, looping e restauração após trocas de mapa; tudo isso exige teste no Game.exe e não está certificado.
+
+### Cartão do treinador
+
+- `scripts/battle_polish/RegionalCards.rb` agora reconhece **Hoenn e Kanto** no ponto de abertura nativo do Trainer Card. Em Hoenn, a página 1 exibe o nome **Hoenn**, a contagem local e as oito insígnias; a página 2 mostra as esmeraldas totais do circuito sem duplicar a contagem. Os badges exibem abreviações diferentes (**PE, PU, DI, CA, EQ, PN, ME, CH**) em vez de depender de imagens não verificadas.
+- Kanto mantém seu mesmo cartão regional; **Decades mantém o Trainer Card original**, sem interceptação. O conteúdo e as insígnias são leitura pura do estado regional, sem conceder marcos, atualizar a Pokédex ou alterar saves.
+- A cópia de Hoenn leva o arquivo atualizado `RegionalCards.rb` no plugin de apresentação do Blue. A auditoria verifica sua presença, a lista de oito insígnias e os controles de escopo. **O layout real, tamanho da fonte e cores precisam ser conferidos visualmente no jogo** e no Android.
+
+### Auditoria e testes
+
+- `scripts/regions/hoenn_qa_phase11.py`: relê **199 mapas RXDATA**, `MapInfos`, PBS de nomes, sete arquivos OGG, o `RegionalCards.rb` instalado e as assinaturas dos handlers de Hoenn, comparando com o manifesto autoral `qa11` e bloqueando divergências.
+- `tests/test_hoenn_qa_phase11.py`: testes sintéticos de 199 mapas, tradução de nomes, áudio ausente/inválido, volume, manifesto e proibição de aceite nativo automático.
+- `tests/region_cards_runtime.rb`: regressão Ruby ampliada com 8 insígnias de Hoenn, Kanto, abertura do Trainer Card nativo e isolamento visual/funcional do cartão de Decades. A CI também faz `ruby -c` em `RegionalCards.rb`.
+- `TESTAR_HOENN.bat` prepara **`.blue-work/hoenn-qa-fase11`**, usa o perfil isolado **Hoenn QA Fase11 / Dessastre Paradoxal Hoenn QA11** e executa auditorias 1–11. Os relatórios QA01–QA10 são conservados com nomes próprios e QA11 escreve **`.blue-work/hoenn-qa-fase11-report.json`**.
+- Espera-se o status estático `PTBR_SIGNS_MUSIC_TRAINER_CARD_STATICALLY_VERIFIED` se os insumos originais, a compilação e os arquivos realmente conferirem. Esse status **não é aprovação do Game.exe**.
+
+### Teste nativo obrigatório — pendente
+
+1. Atualize a `main` e mantenha o ZIP Hoenn original fixado e a pasta `game/` da base Decades. Execute **`TESTAR_HOENN.bat`** para gerar a cópia QA11 (não sobrescrever um save anterior sem backup).
+2. No `Game.exe`, selecione português, percorra **Littleroot, Oldale, Rustboro, Dewford, Mauville, Fortree, Mossdeep, Sootopolis, Victory Road e Liga**. Leia NPCs, diálogos condicionais, placas, cidades, rotas, anúncios, ginásios e as insígnias. Anote qualquer texto inglês residual ou controle de cor ilegível, sem marcar tradução completa automaticamente.
+3. Abra o **Trainer Card original** em Hoenn com 0, 1, 4 e 8 insígnias. Verifique todas as abreviações e duas páginas; compare com Kanto e com o Trainer Card original do Decades. Teste retorno ao menu e save/load.
+4. Ouça música de início, cidades, rotas, Centros Pokémon, cavernas, Victory Road, Elite, Wallace e Hall, verificando ausência de silêncio/cortes, prioridade em batalha, vitória, volume, loops e retorno da música após portas e viagem regional.
+5. Repita em Android/JoiPlay. A resolução e renderização de textos/insígnias, BGM e controles de áudio podem diferir do Windows.
+6. Marque como pendente na Fase 12 tudo que exigir assets musicais originais, falas adicionais, sprites autênticos de insígnias, revisões de UI e testes de toda a campanha.
+
+**QA11 pronta para execução técnica, não para aceitação nativa. A Fase 12 é a verificação integral de campanha Windows/Android.**
