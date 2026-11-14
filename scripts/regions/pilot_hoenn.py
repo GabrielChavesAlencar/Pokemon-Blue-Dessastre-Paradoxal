@@ -206,8 +206,10 @@ def rival_position(maps, tiles, edges, required, balls):
     """Place the Route 103 rival on a reachable northern approach."""
     width, height = (maps[103].attrs[key] for key in ("@width", "@height"))
     blocked = {row[:3] for row in PEOPLE} | set(balls)
-    for y in range(max(2, height // 4), height - 2):
-        for x in sorted(range(1, width - 1), key=lambda v: abs(v - width // 2)):
+    # Pinned Map103 is 80x20, with its main approach near (10,7).
+    # Prefer the canonical player-facing path instead of a distant side branch.
+    for y in sorted(range(2, height - 2), key=lambda v: abs(v - 7)):
+        for x in sorted(range(1, width - 1), key=lambda v: abs(v - 10)):
             if not (open_tile(maps[103], tiles[103], x, y)
                     and open_tile(maps[103], tiles[103], x, y + 1)):
                 continue
