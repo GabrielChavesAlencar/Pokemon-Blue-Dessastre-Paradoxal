@@ -27,8 +27,10 @@ OFFSET_BORDERS = (
 
 # For each door: (outside event, outside return standing cell,
 #                 inside event, inside return standing cell).
-# The three different woods entrances are present in original Emerald maps;
-# one leads back into another part of the shared Route 104 atlas.
+# The three woods entrance EVENTS match the donor source. The donor's
+# return arrival x=5..32 on Route 104 is blocked/unreachable in the pinned
+# atlas. This isolated pilot intentionally chooses passable cells immediately
+# south of the matching entrance (x=115..142); Game.exe still needs QA.
 WARP_PAIRS_STAGE3 = (
     ((16, 20, 16), (16, 20, 17), (17, 8, 11), (17, 9, 10)),
     ((16, 25, 12), (16, 25, 13), (18, 5, 10), (18, 5, 9)),
@@ -36,11 +38,11 @@ WARP_PAIRS_STAGE3 = (
     ((16, 20, 24), (16, 20, 25), (19, 23, 10), (19, 23, 9)),
     ((16, 10, 19), (16, 10, 20), (19, 5, 11), (19, 5, 10)),
     ((16, 15, 8), (16, 15, 9), (20, 6, 26), (20, 6, 25)),
-    ((104, 127, 50), (104, 17, 50), (105, 7, 11), (105, 7, 10)),
-    ((104, 115, 18), (104, 5, 18), (106, 4, 11), (106, 4, 10)),
-    ((104, 120, 38), (104, 10, 38), (156, 20, 39), (156, 20, 38)),
-    ((104, 142, 42), (104, 32, 42), (156, 40, 39), (156, 40, 38)),
-    ((104, 120, 30), (104, 10, 30), (156, 18, 6), (156, 18, 7)),
+    ((104, 127, 50), (104, 127, 51), (105, 7, 11), (105, 7, 10)),
+    ((104, 115, 18), (104, 115, 19), (106, 4, 11), (106, 4, 10)),
+    ((104, 120, 38), (104, 120, 39), (156, 20, 39), (156, 20, 38)),
+    ((104, 142, 42), (104, 142, 43), (156, 40, 39), (156, 40, 38)),
+    ((104, 120, 30), (104, 120, 31), (156, 18, 6), (156, 18, 7)),
 )
 
 # Percentages + base levels are Emerald data ONLY; Blue battle scaling wins.
