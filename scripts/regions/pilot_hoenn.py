@@ -1066,6 +1066,7 @@ def build_overlay(game, source):
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE4)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE5)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE6)
+    needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE7)
     missing = needed - types
     if missing:
         raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
@@ -1082,9 +1083,15 @@ def build_overlay(game, source):
     extra_ids.update((kind, name, mid)
                      for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE6)
     extra_ids.update((WATTSON_PBS, WALLY_PBS))
+    extra_ids.update((kind, name, mid)
+                     for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE7)
+    extra_ids.update((FLANNERY_PBS, TABITHA_PBS, MAXIE_PBS))
+    extra_ids.update((kind, name, version)
+                     for kind, name, version, _team in MAGMA_GRUNTS_STAGE7)
     if len(extra_ids) != (len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) +
                           len(TRAINERS_STAGE5) + len(TRAINERS_STAGE6) +
-                          len(MUSEUM_AQUA) + 6):
+                          len(TRAINERS_STAGE7) + len(MUSEUM_AQUA) +
+                          len(MAGMA_GRUNTS_STAGE7) + 9):
         raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
@@ -1096,7 +1103,8 @@ def build_overlay(game, source):
             if (fields[0], fields[1], ver) in extra_ids:
                 raise ValueError(f"Treinador Hoenn da etapa 3 já existe: {fields} ({candidate.name})")
     if {"BLUE_HOENN_AQUA", "BLUE_HOENN_ROXANNE", "BLUE_HOENN_BRAWLY",
-        "BLUE_HOENN_WATTSON", "BLUE_HOENN_WALLY"} & types:
+        "BLUE_HOENN_WATTSON", "BLUE_HOENN_WALLY", "BLUE_HOENN_MAGMA",
+        "BLUE_HOENN_TABITHA", "BLUE_HOENN_MAXIE", "BLUE_HOENN_FLANNERY"} & types:
         raise ValueError("Tipo de chefe Hoenn já existe no PBS nativo")
     overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
         "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
@@ -1109,6 +1117,14 @@ def build_overlay(game, source):
         "BaseMoney = 100\nSkillLevel = 100\n"
         "[BLUE_HOENN_WALLY]\nName = Treinador\nGender = Male\n"
         "BaseMoney = 20\nSkillLevel = 70\n"
+        "[BLUE_HOENN_MAGMA]\nName = Equipe Magma\nGender = Male\n"
+        "BaseMoney = 20\nSkillLevel = 50\n"
+        "[BLUE_HOENN_TABITHA]\nName = Admin Magma\nGender = Male\n"
+        "BaseMoney = 80\nSkillLevel = 85\n"
+        "[BLUE_HOENN_MAXIE]\nName = Líder Magma\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_FLANNERY]\nName = Líder de Ginásio\nGender = Female\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
     ).encode("utf-8")
     # Use only native trainer graphics; a fallback is explicitly NOT a visual
     # approval for the actual Aqua sprite.
@@ -1233,6 +1249,55 @@ def build_overlay(game, source):
                     break
         if key not in boss_art_sources:
             raise ValueError(f"Sprite nativo de batalha indisponível: {key}")
+    for mid, _, _, kind, name, sprite, team, _double in TRAINERS_STAGE7:
+        trainer_sections.append(
+            f"[{kind},{name},{mid}]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n"
+                    for species, level in team)
+        )
+    for kind, name, version, team in MAGMA_GRUNTS_STAGE7:
+        trainer_sections.append(
+            f"[{kind},{name},{version}]\nLoseText = Vamos recuar!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+        )
+    kind,name,version=TABITHA_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{version}]\nLoseText = Derrota provisória...\n" +
+        "".join(f"Pokemon = {species},{level}\n" for species, level in TABITHA_TEAM)
+    )
+    kind,name,version=MAXIE_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{version}]\nItems = SUPERPOTION,SUPERPOTION\n"
+        "LoseText = Nossa energia foi interrompida!\n" +
+        "".join(f"Pokemon = {species},{level}\n" for species, level in MAXIE_TEAM)
+    )
+    kind,name,version=FLANNERY_PBS
+    trainer_sections.append(
+        f"[{kind},{name},{version}]\nItems = HYPERPOTION,HYPERPOTION\n"
+        "LoseText = Você dominou as chamas de Lavaridge!\n"
+        "Pokemon = NUMEL,24\n    Moves = OVERHEAT,TAKEDOWN,MAGNITUDE,SUNNYDAY\n"
+        "Pokemon = SLUGMA,24\n    Moves = OVERHEAT,SMOG,LIGHTSCREEN,SUNNYDAY\n"
+        "Pokemon = CAMERUPT,26\n    Moves = OVERHEAT,TACKLE,SUNNYDAY,ATTRACT\n"
+        "Pokemon = TORKOAL,29\n    Moves = OVERHEAT,SUNNYDAY,BODYSLAM,ATTRACT\n"
+        "    Item = WHITEHERB\n"
+    )
+    stage7_boss_art={}
+    for kind, candidates in (
+        ("BLUE_HOENN_FLANNERY",("RSE_LEADER_Flannery","LEADER_FLANNERY","FLANNERY","LASS")),
+        ("BLUE_HOENN_TABITHA",("RSE_MAGMAADMIN_Tabitha","TABITHA","YOUNGSTER")),
+        ("BLUE_HOENN_MAXIE",("RSE_MAGMALEADER_Maxie","MAXIE","YOUNGSTER")),
+        ("BLUE_HOENN_MAGMA",("RSE_MAGMAGRUNT_M","MAGMAGRUNT","GRUNTMALE","YOUNGSTER")),
+    ):
+        for candidate_name in candidates:
+            candidate=game / f"Graphics/Trainers/{candidate_name}.png"
+            if candidate.is_file() and not candidate.is_symlink():
+                data=regular(candidate).read_bytes()
+                if data.startswith(PNG):
+                    overlay[f"Graphics/Trainers/{kind}.png"]=data
+                    stage7_boss_art[kind]=candidate_name
+                    break
+        if kind not in stage7_boss_art:
+            raise ValueError(f"Faltou sprite nativo para chefe do piloto Hoenn: {kind}")
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
@@ -1319,6 +1384,17 @@ def build_overlay(game, source):
                          "boss_battle_art_placeholder": {
                              "wattson": boss_art_sources["BLUE_HOENN_WATTSON"] != "RSE_LEADER_Wattson",
                              "wally": boss_art_sources["BLUE_HOENN_WALLY"] != "RSE_POKEMONTRAINER_Wally"},
+                         "native_gameplay_verified": False},
+              "stage7": {**stage7_counts,
+                         "source_map_ids": list(SOURCE_MAPS_STAGE7),
+                         "conditional_cable_points": list(CABLE_POINTS_STAGE7),
+                         "base_team_levels_not_game_levels": True,
+                         "boss_battle_art": stage7_boss_art,
+                         "boss_battle_art_placeholder": {
+                             "flannery": stage7_boss_art["BLUE_HOENN_FLANNERY"] != "RSE_LEADER_Flannery",
+                             "tabitha": stage7_boss_art["BLUE_HOENN_TABITHA"] != "RSE_MAGMAADMIN_Tabitha",
+                             "maxie": stage7_boss_art["BLUE_HOENN_MAXIE"] != "RSE_MAGMALEADER_Maxie",
+                             "magma": stage7_boss_art["BLUE_HOENN_MAGMA"] != "RSE_MAGMAGRUNT_M"},
                          "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False},
