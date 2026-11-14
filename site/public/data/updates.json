@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "292b82af93c642febda978bbc97faea25d7b1fef",
+      "date": "2026-11-13T23:53:57-03:00",
+      "title": "feat(portal): add missing-content registry for Kanto Johto Hoenn Sinnoh with status tag",
+      "category": "Novidades"
+    },
+    {
       "sha": "34fa8d22707239734bb7dbd4976af5a13ca7113c",
       "date": "2026-11-13T23:51:20-03:00",
       "title": "feat(kanto): restore source-grounded item balls, simple NPCs and HM rocks",
