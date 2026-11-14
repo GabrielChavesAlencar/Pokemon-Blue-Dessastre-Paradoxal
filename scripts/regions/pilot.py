@@ -1253,6 +1253,21 @@ def install_events(source, target, mapping):
                     "source_name": label,
                     "reason": "requires quest/NPC/field event review",
                 })
+        # Later authored story adapters may replace a passive source NPC.
+        # Keep only runtime translations whose exact native callbacks survive
+        # in the final serialized map. Never override the authored scene.
+        active_bridges = set()
+        for native_id, native_event in selected.items():
+            for op in native_event.attrs["@pages"][0].attrs["@list"]:
+                if (op.attrs["@code"] == 355 and op.attrs["@parameters"] and
+                        text(op.attrs["@parameters"][0]).startswith(
+                            f"BlueKantoPilot.npc_dialogue({original}, {native_id},")):
+                    active_bridges.add(native_id)
+                    break
+        npc_dialogues = [
+            entry for entry in npc_dialogues
+            if entry[0] != original or entry[1] in active_bridges
+        ]
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
     # Native Ruby Marshal table: only the pilot receives original, audited
