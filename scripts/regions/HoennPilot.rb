@@ -323,6 +323,12 @@ module BlueHoennPilot
     region["hoenn_pilot"] ||= {}
   end
 
+  def self.localized(english, portuguese, *args)
+    use_english=$PokemonSystem && $PokemonSystem.respond_to?(:blue_locale) &&
+                $PokemonSystem.blue_locale=="en"
+    _INTL(use_english ? english : portuguese,*args)
+  end
+
   def self.choose_profile
     progress = state
     return unless progress && progress["profile_pending"]
@@ -595,6 +601,24 @@ module BlueHoennPilot
     pbMessage(_INTL("Mr. Briney: obrigado por ajudar Peecko! Posso levá-lo a Dewford."))
     return false unless pbConfirmMessage(_INTL("Viajar para Dewford agora?"))
     boat_to(28)
+  end
+
+  def self.route_sign(direction, source_id)
+    return false unless state && $game_map
+    _, maps = metadata
+    target = maps[source_id]
+    return false unless target && maps.value?($game_map.map_id)
+    label = pbGetMapNameFromId(target)
+    return false if !label || label.empty?
+    message = case direction
+              when :up    then localized("North: {1}", "Norte: {1}", label)
+              when :down  then localized("South: {1}", "Sul: {1}", label)
+              when :left  then localized("West: {1}", "Oeste: {1}", label)
+              when :right then localized("East: {1}", "Leste: {1}", label)
+              end
+    return false unless message
+    pbMessage(message)
+    true
   end
 
   def self.pickup(item, key, event_id)
@@ -2863,6 +2887,7 @@ module BlueHoennPilot
   # QA06: all climate-story events are bound to their original Hoenn maps.
   def self.qa6_at_map?(source_id)
     _,map_ids=metadata
+    crisis_flash(88, 150, 224)
     $game_map && $game_map.map_id==map_ids[source_id]
   end
 
@@ -2873,6 +2898,70 @@ module BlueHoennPilot
                          flags["kyogre_awakened"] &&
                          flags["seafloor_archie_defeated"]
     return false if flags["sootopolis_crisis_started"]
+  # The storm is a map rendering effect. Do not write Game_Screen weather:
+  # the battle engine and map encounter abilities also read that value.
+  def self.crisis_storm_visible?
+    flags=state
+    flags && flags["sootopolis_crisis_started"] && !flags["crisis_resolved"] &&
+      qa6_at_map?(83)
+  end
+
+  def self.crisis_flash(red, green, blue)
+    return unless defined?(Color) && $game_screen && $game_screen.respond_to?(:start_flash)
+    $game_screen.start_flash(Color.new(red,green,blue,138),18)
+  end
+
+  def self.on_ice_cell?(event_id,x,y)
+    state && qa6_at_map?(87) && $game_self_switches && $game_player &&
+      $game_player.x==x && $game_player.y==y && $game_map.events[event_id]
+  end
+
+  def self.crack_ice(event_id,x,y)
+    return false unless on_ice_cell?(event_id,x,y)
+    $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
+    $game_map.need_refresh=true
+    true
+  end
+
+  def self.fall_through_ice(event_id,x,y,landing_x)
+    return false unless on_ice_cell?(event_id,x,y) && landing_x==x+24
+    return false unless $game_self_switches[[$game_map.map_id,event_id,"A"]]
+    map_id=$game_map.map_id
+    pbFadeOutIn { BlueRegionTravel.move_to([map_id,landing_x,y,2]) }
+    $game_self_switches[[map_id,event_id,"B"]]=true
+    $game_map.need_refresh=true
+    true
+  end
+
+  module CrisisSprites
+    def update
+      super
+      if BlueHoennPilot.crisis_storm_visible? && $game_screen.weather_type==:None
+        unless @blue_hoenn_storm
+          @blue_hoenn_storm=RPG::Weather.new(Spriteset_Map.viewport)
+          @blue_hoenn_storm.fade_in(:Storm, 34, 1)
+        end
+        @blue_hoenn_storm.ox=($game_map.display_x / Game_Map::X_SUBPIXELS).round
+        @blue_hoenn_storm.oy=($game_map.display_y / Game_Map::Y_SUBPIXELS).round
+        @blue_hoenn_storm.update
+      else
+        blue_hoenn_dispose_storm
+      end
+    end
+
+    def dispose
+      blue_hoenn_dispose_storm
+      super
+    end
+
+    private
+
+    def blue_hoenn_dispose_storm
+      @blue_hoenn_storm&.dispose
+      @blue_hoenn_storm=nil
+    end
+  end
+
     flags["sootopolis_crisis_started"]=true
     pbMessage(_INTL("Steven: Groudon e Kyogre desequilibraram o clima! Procure Wallace na Cave of Origin."))
     true
@@ -2881,6 +2970,7 @@ module BlueHoennPilot
   def self.origin_wallace_stage10
     flags=state
     return false unless flags && qa6_at_map?(240) && flags["sootopolis_crisis_started"]
+    crisis_flash(150, 183, 227)
     return true if flags["sky_pillar_task"]
     flags["sky_pillar_task"]=true
     pbMessage(_INTL("Wallace: Rayquaza pode deter a crise. Encontre-me em Sky Pillar!"))
@@ -2914,6 +3004,7 @@ module BlueHoennPilot
   def self.juan_tm
     flags=state
     return false unless flags && rain_badge?
+    crisis_flash(155, 234, 187)
     return false if flags["juan_tm_given"]
     give_move_tm("juan_tm_given",:WATERPULSE,[:TM03],
                  "Juan: receba a TM Water Pulse!")
@@ -3327,5 +3418,9 @@ if defined?(MenuHandlers)
       false
     end
   })
+end
+
+if defined?(Spriteset_Global)
+  Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)
 end
 

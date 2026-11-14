@@ -9,6 +9,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import uuid
@@ -20,7 +21,7 @@ from build_johto_elm_lab_v1 import table_values
 from build_johto_events import EVENT_CLASSES, command, event_page, ruby
 from compile_johto_connections import merge_pbs
 from johto_qa import SAVE, SYSTEM_CLASSES, Marshal, RubyString, dump, json_bytes, regular, safe_path
-from server.ruby_marshal import RubyObject, loads, text
+from server.ruby_marshal import RubyData, RubyObject, loads, text
 from stage import ROOT, serialize
 from hoenn_stage3 import (
     SOURCE_MAPS_STAGE3, OFFSET_BORDERS, WARP_PAIRS_STAGE3,
@@ -98,9 +99,10 @@ from hoenn_stage10 import (
 )
 from hoenn_qa_phase3 import (
     parse_reference_encounters, assemble_encounters,
-    reauthor_safe_items_and_audit,
+    reauthor_safe_items_and_audit, install_imp1_events,
 )
 from hoenn_qa_phase4 import install_simple_obstacles
+from hoenn_imp2_ice import install_sootopolis_ice
 from hoenn_qa_phase5 import audit_generated
 from hoenn_qa_phase6 import audit_generated as audit_climate
 from hoenn_qa_phase7 import audit_generated as audit_gyms
@@ -252,6 +254,27 @@ class Source:
 _TILE_CACHE = {}
 
 
+def quarantine_underwater_tiles(world, tileset):
+    """Known Map255 source mismatch: reserve unknown IDs as impassable."""
+    _,cells=table_values(world.attrs["@data"].data,3)
+    fields={"@passages":15,"@priorities":0,"@terrain_tags":0}
+    definitions={key:table_values(tileset.attrs[key].data,1)[1] for key in fields}
+    lower=min(map(len,definitions.values()))
+    invalid=[tile for tile in cells if tile>=lower]
+    if not invalid:
+        return None
+    upper=max(invalid)+1
+    if upper>2048:
+        raise ValueError("Tiles inéditos fora da faixa auditada em Sootopolis Submersa")
+    for key, pad in fields.items():
+        previous=definitions[key]
+        values=previous+(pad,)*max(upper-len(previous),0)
+        payload=struct.pack("<5I",1,len(values),1,1,len(values))+struct.pack(f"<{len(values)}H",*values)
+        tileset.attrs[key]=RubyData("Table",payload)
+    return {"source_map_id":255,"tile_references":len(invalid),
+            "tile_ids":sorted(set(invalid)),"passability":"blocked_pending_source_tileset"}
+
+
 def open_tile(map_data, tileset, x, y):
     key = (id(map_data), id(tileset))
     cached = _TILE_CACHE.get(key)
@@ -269,6 +292,8 @@ def open_tile(map_data, tileset, x, y):
         tile = cells[x + w * (y + h * layer)]
         if not tile:
             continue
+        if tile>=len(passages) or tile>=len(priorities):
+            return False
         if passages[tile] & 15:
             return False
         if priorities[tile] == 0:
@@ -327,7 +352,7 @@ def serialize_test_stops(stops):
     return ("BLUE_HOENN_TEST_STOPS_V1\n" +
             "".join("|".join(str(value) for value in row) + "\n" for row in stops)).encode("utf-8")
 
-def reachable(start, points, tiles, maps, edges, blocked):
+def reachable(start, points, tiles, maps, edges, blocked, *, exhaust=False):
     """Conservative 4-way tile check, including physical map borders."""
     def open_point(p):
         mid, x, y = p
@@ -338,7 +363,7 @@ def reachable(start, points, tiles, maps, edges, blocked):
     remaining = set(points) - {start}
     visited = {start}
     queue = deque([start])
-    while queue and remaining:
+    while queue and (remaining or exhaust):
         mid, x, y = queue.popleft()
         neighbors = [(mid, x + dx, y + dy) for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0))]
         neighbors.extend(edges.get((mid, x, y), ()))
@@ -349,10 +374,11 @@ def reachable(start, points, tiles, maps, edges, blocked):
                 queue.append(point)
     if remaining:
         raise ValueError(f"Pontos do piloto sem caminho estático: {sorted(remaining)}")
+    return visited
 
 
-def validate_geometry(maps, tiles):
-    edges, required = {}, set()
+def validate_geometry(maps, tiles, *, audit=None):
+    edges, required, boundaries = {}, set(), []
     blocked = {row[:3] for row in PEOPLE}
     for a, a_arrival, b, b_arrival in WARP_PAIRS:
         # A door event can sit on an impassable threshold tile (the donor's
@@ -365,6 +391,9 @@ def validate_geometry(maps, tiles):
             return dx <= 1 and dy <= 1 and dx + dy >= 1
         if not close_to_door(a, a_arrival) or not close_to_door(b, b_arrival):
             raise ValueError(f"Destino do warp não é vizinho da porta: {a}/{b}")
+        if audit is not None and any(not open_tile(maps[p[0]], tiles[p[0]], *p[1:])
+                                     for p in (a_arrival,b_arrival)):
+            raise ValueError(f"Célula de chegada Hoenn bloqueada: {a_arrival}/{b_arrival}")
         edges.setdefault(a_arrival, []).append(b_arrival)
         edges.setdefault(b_arrival, []).append(a_arrival)
         required.update((a_arrival, b_arrival))
@@ -393,7 +422,9 @@ def validate_geometry(maps, tiles):
                  and open_tile(maps[second], tiles[second], *b[1:])]
         if not pairs:
             raise ValueError(f"Borda Hoenn sem cruzamento passável: {first}/{second}")
-        required.update(pairs[0])
+        if audit is None:
+            required.update(pairs[0])
+        boundaries.append((first, second, pairs))
         for a, b in pairs:
             edges.setdefault(a, []).append(b)
             edges.setdefault(b, []).append(a)
@@ -425,8 +456,31 @@ def validate_geometry(maps, tiles):
     edges.setdefault(lower, []).append(upper)
     edges.setdefault(upper, []).append(lower)
     required.update((lower, upper))
-    reachable(START, required, tiles, maps, edges, blocked)
-    return edges, required
+    if audit is None:
+        reachable(START, required, tiles, maps, edges, blocked)
+        return edges, required
+    # This BFS models ordinary walking only; disconnected cases are tracked
+    # for native Surf/ledge/gate QA and cannot certify later story access.
+    opening = set(maps) - (set(SOURCE_MAPS_STAGE7) | set(SOURCE_MAPS_STAGE8) |
+                            set(SOURCE_MAPS_STAGE9) | set(SOURCE_MAPS_STAGE10))
+    visited = reachable(START, set(), tiles, maps, edges, blocked, exhaust=True)
+    missing = required - visited
+    strict = {p for p in missing if p[0] in opening}
+    missing_boundaries=[]
+    for first, second, candidates in boundaries:
+        pair=next(((left,right) for left,right in candidates if left in visited and right in visited),None)
+        if pair:
+            required.update(pair)
+        else:
+            missing_boundaries.append([first,second])
+    if strict or any(first in opening and second in opening for first,second in missing_boundaries):
+        raise ValueError(f"Abertura de Hoenn sem conexão estática: {sorted(strict)} / {missing_boundaries}")
+    audit.update(ground_reachable_checkpoint_count=len(required & visited),
+                 no_ground_path_checkpoint_positions=sorted(missing),
+                 boundaries_without_ground_path=missing_boundaries,
+                 gameplay_certified=False)
+    # Opening cutscenes may not invalidate access to earlier walkable points.
+    return edges, required & visited
 
 
 def starter_ball_positions(maps, tiles, edges, required):
@@ -1453,6 +1507,7 @@ def build_overlay(game, source):
     stage9_original_events = {}
     stage10_original_events = {}
     all_original_events = {}
+    underwater_quarantine=None
     for old in SOURCE_MAPS:
         m = loads(source.read(f"Data/Map{old:03}.rxdata"))
         if not isinstance(m, RubyObject) or m.name != "RPG::Map":
@@ -1482,6 +1537,8 @@ def build_overlay(game, source):
             tile_ids[native_id] = len(native_tiles)
             native_tiles.append(ts)
         maps[old], tiles[old] = m, native_tiles[tile_ids[native_id]]
+        if old==255:
+            underwater_quarantine=quarantine_underwater_tiles(m,tiles[old])
         # Keep only decoded source events in memory for read-only QA inventory.
         # No donor scripts or dialogue are copied into the new Blue map.
         all_original_events[old] = dict(m.attrs.get("@events", {}))
@@ -1503,7 +1560,8 @@ def build_overlay(game, source):
         stage10_original_events, maps, allowed_maps=SOURCE_MAPS_STAGE10, strict=False)
     if not stage10_source_warps:
         raise ValueError("Mapas Stage10 sem transferências de origem verificadas")
-    edges, required = validate_geometry(maps, tiles)
+    geometry_audit={}
+    edges, required = validate_geometry(maps, tiles, audit=geometry_audit)
     balls = starter_ball_positions(maps, tiles, edges, required)
     rival = rival_position(maps, tiles, edges, required, balls)
     rival_image, rival_image_fallback = rival_sprite(game)
@@ -1620,10 +1678,14 @@ def build_overlay(game, source):
                 )
     # Fail closed on absent native types/overlapping PBS identities.
     types = set()
+    rich_boy_definition = None
     for candidate in sorted((game / "PBS").glob("trainer_types*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
         types.update(match.group(1).strip() for match in
                      re.finditer(r"(?m)^\s*\[([^\]\r\n]+)\]", body))
+        match=re.search(r"(?ms)^\[HOENNIAN_ORAS_RICH_BOY\][ \t]*\r?\n(.*?)(?=^\[|\Z)",body)
+        if match:
+            rich_boy_definition=match.group(1)
     needed = {kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE3}
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE4)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE5)
@@ -1632,6 +1694,17 @@ def build_overlay(game, source):
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE8)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE9)
     missing = needed - types
+    if "RICHBOY" in missing and rich_boy_definition is not None:
+        # Keep existing Hoenn event/PBS identities. The alias uses precisely
+        # the installed Blue class's rules and changes no native PBS section.
+        overlay["PBS/trainer_types_hoenn_compat.txt"]=(
+            "[RICHBOY]\n"+rich_boy_definition.strip()+"\n").encode("utf-8")
+        path=game/"Graphics/Trainers/HOENNIAN_ORAS_RICH_BOY.png"
+        if path.is_file() and not path.is_symlink():
+            art=regular(path).read_bytes()
+            if art.startswith(PNG):
+                overlay["Graphics/Trainers/RICHBOY.png"]=art
+        missing.remove("RICHBOY")
     if missing:
         raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
     extra_ids = {(kind, name, mid) for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE3}
@@ -2003,12 +2076,24 @@ def build_overlay(game, source):
     ):
         trainer_sections.append(stage9_boss(definition,team,items=items))
     stage10_boss_art={}
+    imp3_donor_boss_art={}
     for kind,choices in (
         ("BLUE_HOENN_JUAN",("RSE_LEADER_Juan","JUAN","YOUNGSTER")),
         ("BLUE_HOENN_ARCHIE",("RSE_AQUALEADER_Archie","ARCHIE","YOUNGSTER")),
         ("BLUE_HOENN_ELITE",("RSE_ELITEFOUR_Sidney","SIDNEY","YOUNGSTER")),
         ("BLUE_HOENN_CHAMPION",("RSE_CHAMPION_Wallace","WALLACE","YOUNGSTER")),
     ):
+        if kind in {"BLUE_HOENN_JUAN","BLUE_HOENN_ARCHIE","BLUE_HOENN_CHAMPION"}:
+            name=choices[0]
+            path=f"Graphics/Trainers/{name}.png"
+            if path in source.blobs:
+                data=source.read(path)
+                if not data.startswith(PNG):
+                    raise ValueError(f"Arte original Hoenn inválida: {path}")
+                overlay[f"Graphics/Trainers/{kind}.png"]=data
+                stage10_boss_art[kind]=name
+                imp3_donor_boss_art[kind]=name
+                continue
         for candidate_name in choices:
             candidate=game/f"Graphics/Trainers/{candidate_name}.png"
             if candidate.is_file() and not candidate.is_symlink():
@@ -2043,6 +2128,11 @@ def build_overlay(game, source):
         if not blob.startswith(b"OggS"):
             raise ValueError(f"Áudio inválido: {source_path}")
         overlay[f"Audio/BGM/BLUE_HOENN_{label}.ogg"] = blob
+    credit_track="Audio/BGM/ORAS Misc - Hall of Fame (The Hall of Fame).ogg"
+    blob=source.read(credit_track)
+    if not blob.startswith(b"OggS"):
+        raise ValueError(f"Áudio inválido: {credit_track}")
+    overlay["Audio/BGM/BLUE_HOENN_HallCredits.ogg"]=blob
     for old, label in MAP_BGM.items():
         maps[old].attrs["@autoplay_bgm"] = True
         maps[old].attrs["@bgm"] = ruby("RPG::AudioFile", name=f"BLUE_HOENN_{label}".encode(),
@@ -2163,11 +2253,22 @@ def build_overlay(game, source):
               "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False}
-    # Reauthor only simple unconditional source pickups not already located
-    # on an original Blue event. Other trainer/NPC/sign anchors are inventoried
-    # as a *manual QA backlog*, not fictitious events or copied donor dialogue.
+    report["ground_geometry_audit"]=geometry_audit
+    report["imp2_underwater_tile_quarantine"]=underwater_quarantine
+    report["imp3_local_media"]={"trainer_art":imp3_donor_boss_art,
+                                "hall_credits_ogg":True,"audition_verified":False}
+    # Freeze IDs of previously supported pickups and of QA4 field events.
+    # The new, proven pickup/sign cases are appended after both passes.
+    sign_destinations={}
+    for mid,name in SOURCE_MAPS.items():
+        route=re.fullmatch(r"(?:Route|Rota) (\d+)",name)
+        if route:
+            sign_destinations[f"route {route.group(1)}"]=mid
+            sign_destinations[f"rota {route.group(1)}"]=mid
+        elif re.fullmatch(r"[A-Za-z ]+ (?:Town|City)",name):
+            sign_destinations[name.casefold()]=mid
     qa3_event_audit = reauthor_safe_items_and_audit(
-        all_original_events, maps, maps, game)
+        all_original_events,maps,maps,game,route_names=sign_destinations)
     # The QA3 item injection occurs after stage events; refresh RXDATA for every
     # map whose items were appended before writing the final pilot report.
     # Important: no changes to the native game/ data on disk.
@@ -2187,6 +2288,12 @@ def build_overlay(game, source):
                                              source=source, overlay=overlay)
     for old, x, y, kind, sprite, event_id in qa4_obstacles["new_safe_obstacles"]:
         overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old], EVENT_CLASSES)
+    for old in install_imp1_events(qa3_event_audit,maps,ids):
+        overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old],EVENT_CLASSES)
+    report["imp2_sootopolis_ice"] = install_sootopolis_ice(
+        all_original_events[87],maps[87],tiles[87],ids[87],open_tile,append_event)
+    if report["imp2_sootopolis_ice"]["installed"]:
+        overlay[f"Data/Map{ids[87]:03}.rxdata"] = serialize(maps[87],EVENT_CLASSES)
     # Debug teleport destinations come AFTER every authored source event,
     # treasure and obstacle is installed. Never land on an NPC/door/rock.
     test_stops = build_test_stops(maps, tiles, ids)
@@ -2298,6 +2405,7 @@ def stage(game: Path, source: Source, output: Path) -> dict:
         "hoenn-qa-fase10": ("Hoenn QA Fase10", "Dessastre Paradoxal Hoenn QA10"),
         "hoenn-qa-fase11": ("Hoenn QA Fase11", "Dessastre Paradoxal Hoenn QA11"),
         "hoenn-qa-fase12": ("Hoenn QA Fase12", "Dessastre Paradoxal Hoenn QA12"),
+        "hoenn-imp-qa": ("Hoenn Implementacao", "Dessastre Paradoxal Hoenn IMP"),
     }
     if output.name in qa_profiles:
         profile, org = qa_profiles[output.name]

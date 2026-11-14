@@ -22,6 +22,9 @@ METHOD = re.compile(r"^([A-Za-z][A-Za-z0-9]*)(?:,(\d+))?$")
 SPECIES = re.compile(r"^[A-Z][A-Z0-9_]*$")
 ITEM_NAME = re.compile(r"^(?:Item|HiddenItem)(?:\b|$)", re.I)
 ITEM_CALL = re.compile(r"\bpb(?:Hidden)?ItemBall\(\s*:([A-Z0-9_]+)\s*[,)]")
+PLAIN_PICKUP = re.compile(r"pb(?:Hidden)?ItemBall\(\s*:([A-Z0-9_]+)\s*\)")
+ROUTE_SIGN = re.compile(r"(?:Route|Rota) (\d+) +sign\b|Route sign\b", re.I)
+DIRECTION = re.compile(r"<icon=(UP|DOWN|LEFT|RIGHT)_ARROW>\s*([^<\\\r\n]+)", re.I)
 SIGN_NAME = re.compile(r"sign|notice|placa|board|trainer tips|signpost", re.I)
 TRAINER_NAME = re.compile(
     r"\b(?:trainer|youngster|lass|bug ?catcher|hiker|fisherman|"
@@ -222,28 +225,89 @@ def native_item_ids(game: Path) -> set[str]:
     return names
 
 
+def _commands(page):
+    return [(c.attrs.get("@code"), c.attrs.get("@indent", 0), c.attrs.get("@parameters", []))
+            for c in page.attrs.get("@list", [])
+            if isinstance(c, RubyObject) and c.name == "RPG::EventCommand"]
+
+
+def _unconditional(page):
+    cond = page.attrs.get("@condition")
+    return cond is not None and not any(cond.attrs.get(k, False) for k in UNSAFE_CONDITIONS)
+
+
+def _pickup_identity(pages):
+    if not pages or len(pages) > 2 or not _unconditional(pages[0]):
+        return None
+    first = pages[0]
+    if first.attrs.get("@trigger") != 0 or first.attrs.get("@move_type") != 0:
+        return None
+    ops = [(code, indent, params) for code, indent, params in _commands(first)
+           if code != 0]
+    if len(ops) == 1 and ops[0][:2] == (355, 0) and len(ops[0][2]) == 1:
+        match = PLAIN_PICKUP.fullmatch(text(ops[0][2][0]).strip())
+    elif (len(pages) == 2 and len(ops) == 3 and ops[0][:2] == (111, 0)
+          and len(ops[0][2]) == 2 and ops[0][2][0] == 12
+          and ops[1] in ((123, 1, [b"A", 0]), (123, 1, ["A", 0]))
+          and ops[2] == (412, 0, [])):
+        match = PLAIN_PICKUP.fullmatch(text(ops[0][2][1]).strip())
+    else:
+        return None
+    if len(pages) == 2:
+        clear = pages[1]
+        cond = clear.attrs.get("@condition")
+        graphic = clear.attrs.get("@graphic")
+        if (cond is None or not cond.attrs.get("@self_switch_valid")
+                or text(cond.attrs.get("@self_switch_ch", b"")) != "A"
+                or any(cond.attrs.get(k, False) for k in UNSAFE_CONDITIONS if k != "@self_switch_valid")
+                or graphic is None or graphic.attrs.get("@tile_id", 0)
+                or graphic.attrs.get("@character_name")
+                or _commands(clear) != [(0, 0, [])]):
+            return None
+    return match.group(1) if match else None
+
+
+def _direction_sign(name, pages, supported_names):
+    if len(pages) != 1 or not ROUTE_SIGN.fullmatch(name) or not _unconditional(pages[0]):
+        return None
+    page = pages[0]
+    graphic = page.attrs.get("@graphic")
+    if (page.attrs.get("@trigger") not in (0, 1) or page.attrs.get("@move_type") != 0
+            or graphic is None or graphic.attrs.get("@tile_id", 0)
+            or graphic.attrs.get("@character_name")):
+        return None
+    ops = _commands(page)
+    if (not ops or ops[0][0] != 101 or ops[-1] != (0, 0, [])
+            or any(code not in (101, 401) or depth != 0 or len(params) != 1
+                   for code, depth, params in ops[:-1])):
+        return None
+    lines = " ".join(text(params[0]) for _, _, params in ops[:-1])
+    match = DIRECTION.search(lines)
+    if not match or len(DIRECTION.findall(lines)) != 1:
+        return None
+    dest = supported_names.get(match[2].strip().casefold())
+    if dest is None:
+        return None
+    return match[1].lower(), dest
+
+
 def _safe_events(original_events: dict, source_maps: dict,
                  authored_maps: dict, add_event, event_page, command, ruby,
-                 item_ids: set[str] | None = None) -> dict:
-    """Adds only unconditional Item/HiddenItem sources not already authored.
-
-    Maintains source map original ids; does not copy donor commands or NPC text.
-    All other source signs, people and trainer scripts are *review candidates*.
-    """
+                 item_ids: set[str] | None = None, route_names=None) -> dict:
+    """Install proven pickups and signs; record source and final event IDs for review."""
     stats=Counter()
     backlog=[]
     inserted=[]
+    inventory={}
+    deferred=[]
     for mid,events in original_events.items():
         authored=authored_maps[mid]
-        occupied={(ev.attrs["@x"],ev.attrs["@y"]) for ev in authored.attrs["@events"].values()}
+        occupied={(ev.attrs["@x"],ev.attrs["@y"]): eid
+                  for eid, ev in authored.attrs["@events"].items()}
         size=source_maps[mid].attrs
-        for ev in events.values():
+        for source_eid, ev in events.items():
             name=text(ev.attrs.get("@name",b""))
             x,y=ev.attrs.get("@x"),ev.attrs.get("@y")
-            if not (isinstance(x,int) and isinstance(y,int) and
-                    0<=x<size["@width"] and 0<=y<size["@height"]):
-                stats["donor_event_out_of_bounds"]+=1
-                continue
             pages=ev.attrs.get("@pages",[])
             statements=[]
             for page in pages:
@@ -268,30 +332,49 @@ def _safe_events(original_events: dict, source_maps: dict,
             if not potential:
                 continue
             stats["source_"+potential]+=1
+            entry={"source_event_id":source_eid, "position":[x,y], "kind":potential,
+                   "pages":len(pages)}
+            inventory.setdefault(str(mid), []).append(entry)
+
+            def pending(reason, status="FALTANDO"):
+                entry.update(status=status, reason=reason)
+                backlog.append([mid,x,y,potential,reason])
+
+            if not (type(x) is int and type(y) is int and
+                    0<=x<size["@width"] and 0<=y<size["@height"]):
+                stats["donor_event_out_of_bounds"]+=1
+                pending("out_of_bounds","BLOQUEADO_DEPENDENCIA")
+                continue
             if (x,y) in occupied:
                 stats["position_already_authored"]+=1
+                entry["final_event_id"]=occupied[x,y]
+                item=_pickup_identity(pages) if potential=="item" else None
+                authored_event=authored.attrs["@events"][occupied[x,y]]
+                if item and any(
+                        code==355 and len(params)==1 and
+                        re.match(rf"BlueHoennPilot\.pickup\(\s*:{re.escape(item)}\s*,",text(params[0]))
+                        for page in authored_event.attrs["@pages"] for code,_,params in _commands(page)):
+                    entry.update(status="DUPLICADO",reason="same_blue_pickup",item=item)
+                    continue
+                pending("position_occupied_equivalence_unverified","PENDENTE_FONTES")
                 continue
             if potential=="item":
-                identities=set(ITEM_CALL.findall(scripting))
-                if len(identities)!=1 or not pages:
+                item=_pickup_identity(pages)
+                if item is None:
                     stats["items_need_manual_review"]+=1
-                    backlog.append([mid,x,y,"item","conditional_or_unrecognized"])
+                    pending("conditional_or_unrecognized","PENDENTE_FONTES")
                     continue
-                first_cond=pages[0].attrs.get("@condition")
-                if first_cond is None or any(first_cond.attrs.get(k,False) for k in UNSAFE_CONDITIONS):
-                    stats["items_need_manual_review"]+=1
-                    backlog.append([mid,x,y,"item","conditional"])
-                    continue
-                item=next(iter(identities))
+                entry["item"]=item
+                entry["visible"]=name.lower()=="item"
                 if item_ids is not None and item not in item_ids:
                     stats["items_need_manual_review"]+=1
-                    backlog.append([mid,x,y,"item","item_not_in_blue_pbs"])
+                    pending("item_not_in_blue_pbs","BLOQUEADO_DEPENDENCIA")
                     continue
-                if not SPECIES.fullmatch(item):
-                    stats["items_need_manual_review"]+=1
-                    backlog.append([mid,x,y,"item","invalid_item_id"])
+                # Existing generated pickups keep their original sequence;
+                # newly supported RMXP conditional pickup shapes are deferred.
+                if item not in ITEM_CALL.findall(scripting):
+                    deferred.append((mid,source_eid,entry))
                     continue
-                # Never shadow a trainer/door/story anchor; occupied check above.
                 key=f"QA3_{mid}_{x}_{y}"
                 page=event_page(script="nil",sprite="Object_Ball" if name.lower()=="item" else "")
                 eid=add_event(authored,f"HN_QA3_Pickup_{mid}_{x}_{y}",x,y,page)
@@ -303,15 +386,24 @@ def _safe_events(original_events: dict, source_maps: dict,
                 cleared.attrs["@through"]=True
                 cleared.attrs["@list"]=[command(0)]
                 authored.attrs["@events"][eid].attrs["@pages"].append(cleared)
-                occupied.add((x,y))
+                occupied[x,y]=eid
+                entry.update(status="IMPLEMENTADO",reason="blue_pickup",final_event_id=eid)
                 stats["source_items_newly_authored"]+=1
                 inserted.append([mid,x,y,item])
                 continue
+            if potential=="sign" and route_names:
+                sign=_direction_sign(name,pages,route_names)
+                if sign:
+                    entry["direction"],entry["destination"]=sign
+                    deferred.append((mid,source_eid,entry))
+                    continue
             stats["pending_"+potential]+=1
-            backlog.append([mid,x,y,potential,"source_event_not_copied"])
+            pending("source_event_not_copied")
     return {
         "source_event_counts":dict(sorted(stats.items())),
         "new_item_positions":inserted,
+        "imp1_inventory_by_source_map":inventory,
+        "imp1_deferred":deferred,
         "unimplemented_source_event_candidates":backlog,
         "candidate_classifier_not_exhaustive":True,
         "source_dialogue_or_scripts_executed":False,
@@ -320,13 +412,59 @@ def _safe_events(original_events: dict, source_maps: dict,
 
 
 def reauthor_safe_items_and_audit(original_events: dict, source_maps: dict,
-                                  authored_maps: dict, game: Path) -> dict:
+                                  authored_maps: dict, game: Path, route_names=None) -> dict:
     # Late imports avoid import cycles: pilot_hoenn imports this module.
     from build_johto_events import event_page,command,ruby
     from pilot_hoenn import append_event
     return _safe_events(original_events,source_maps,authored_maps,
                         append_event,event_page,command,ruby,
-                        item_ids=native_item_ids(game))
+                        item_ids=native_item_ids(game),route_names=route_names)
+
+
+def install_imp1_events(audit, maps, ids):
+    """Append new events after QA4, keeping all previous native event IDs."""
+    from build_johto_events import command, event_page
+    from pilot_hoenn import append_event
+
+    changed=set()
+    extra=[]
+    for mid, source_eid, entry in audit.pop("imp1_deferred"):
+        world=maps[mid]
+        x,y=entry["position"]
+        existing=next((eid for eid, event in world.attrs["@events"].items()
+                       if (event.attrs["@x"],event.attrs["@y"])==(x,y)),None)
+        if existing is not None:
+            reason="position_occupied_after_obstacles"
+            entry.update(status="PENDENTE_FONTES",reason=reason,final_event_id=existing)
+            audit["unimplemented_source_event_candidates"].append([mid,x,y,entry["kind"],reason])
+            continue
+        name=f"HN_IMP1_{mid}_{source_eid}"
+        if entry["kind"]=="item":
+            page=event_page(script="nil",sprite="Object_Ball" if entry["visible"] else "")
+            eid=append_event(world,name,x,y,page)
+            key=f"QA3_{mid}_{x}_{y}"
+            page.attrs["@list"][0]=command(
+                355,f'BlueHoennPilot.pickup(:{entry["item"]},"{key}",{eid})'.encode("ascii"))
+            clear=event_page(script="nil")
+            clear.attrs["@condition"].attrs["@self_switch_valid"]=True
+            clear.attrs["@through"]=True
+            clear.attrs["@list"]=[command(0)]
+            world.attrs["@events"][eid].attrs["@pages"].append(clear)
+        else:
+            page=event_page(script=f'BlueHoennPilot.route_sign(:{entry["direction"]},{entry["destination"]})')
+            eid=append_event(world,name,x,y,page)
+        entry.update(status="IMPLEMENTADO",reason="blue_pickup" if entry["kind"]=="item"
+                     else "blue_direction_sign",final_event_id=eid)
+        extra.append((mid,source_eid,eid))
+        changed.add(mid)
+    audit["imp1_added_events"]=extra
+    audit["imp1_classification_counts"]=dict(Counter(
+        item["status"] for candidates in audit["imp1_inventory_by_source_map"].values()
+        for item in candidates))
+    for mid,candidates in audit["imp1_inventory_by_source_map"].items():
+        for item in candidates:
+            item["final_map_id"]=ids[int(mid)]
+    return changed
 
 
 def parse_compiled_encounters(body: str, allowed_ids: set[int]) -> dict:

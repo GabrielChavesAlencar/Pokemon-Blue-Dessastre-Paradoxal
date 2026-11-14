@@ -12,7 +12,7 @@ sys.path.insert(0,str(ROOT/"scripts/regions"))
 from build_johto_events import ruby,command,event_page
 from hoenn_qa_phase3 import (
     parse_reference_encounters,assemble_encounters,parse_compiled_encounters,
-    _safe_events,native_item_ids,
+    _safe_events,native_item_ids,install_imp1_events,
 )
 from pilot_hoenn import append_event,LAND_ENCOUNTERS,CAVE_ENCOUNTERS,SOURCE_MAPS
 
@@ -183,6 +183,39 @@ class HoennQA3Tests(unittest.TestCase):
             self.assertEqual(result["source_event_counts"]["source_items_newly_authored"],1)
             self.assertEqual(result["source_event_counts"]["items_need_manual_review"],1)
             self.assertEqual(len(authored[101].attrs["@events"]),1)
+
+    def test_pinned_self_switch_pickup_and_route_sign_keep_existing_game_ids(self):
+        def indent(cmd, level):
+            cmd.attrs["@indent"]=level
+            return cmd
+
+        good = self.synthetic_event("Item",10,10,(
+            command(111,12,b"pbItemBall(:PPUP)"),
+            indent(command(123,b"A",0),1), command(412), command(0)))
+        cleared=event_page(script="nil")
+        cleared.attrs["@condition"].attrs["@self_switch_valid"]=True
+        cleared.attrs["@list"]=[command(0)]
+        good.attrs["@pages"].append(cleared)
+        bait=self.synthetic_event("Item",11,10,(command(0),))
+        bait.attrs["@pages"].append(self.synthetic_event(
+            "Item",11,10,(command(355,b"pbItemBall(:MASTERBALL)"),),True).attrs["@pages"][0])
+        sign = self.synthetic_event("Route sign",9,9,(
+            command(101,b"Route 103\\n<icon=DOWN_ARROW>"),command(401,b"Oldale Town"),command(0)))
+        src={103:{3:good,8:bait,11:sign}}
+        donor={103:ruby("RPG::Map",width=30,height=30,events=src[103])}
+        authored={103:ruby("RPG::Map",width=30,height=30,events={
+            1:self.synthetic_event("HN_Existing",2,2)})}
+        audit=_safe_events(src,donor,authored,append_event,event_page,command,ruby,
+                            item_ids={"PPUP","MASTERBALL"},route_names={"oldale town":12})
+        obstacle=append_event(authored[103],"HN_QA4_Test",7,7,event_page(script="nil"))
+        self.assertEqual(install_imp1_events(audit,authored,{103:723}),{103})
+        self.assertEqual(audit["imp1_added_events"],[(103,3,3),(103,11,4)])
+        self.assertEqual(authored[103].attrs["@events"][obstacle].attrs["@name"],b"HN_QA4_Test")
+        self.assertEqual(audit["imp1_inventory_by_source_map"]["103"][1]["status"],
+                         "PENDENTE_FONTES")
+        generated=authored[103].attrs["@events"]
+        script=generated[4].attrs["@pages"][0].attrs["@list"][0].attrs["@parameters"][0]
+        self.assertEqual(script,b"BlueHoennPilot.route_sign(:down,12)")
 
     def test_missing_native_item_pbs_aborts_instead_of_guessing(self):
         with tempfile.TemporaryDirectory() as tmp:
