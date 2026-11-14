@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3657cdd2418110954a930cebd7b9276e2e4cc0d0",
+      "date": "2026-11-13T22:24:42-03:00",
+      "title": "ci(sinnoh): add offline Ruby native-structure probe tests for three starters, 16 warps, Barry trainer counter matches",
+      "category": "Melhorias"
+    },
+    {
       "sha": "88af553cb1f1a10b7fe8f02bdbd4bcc835840990",
       "date": "2026-11-13T22:24:31-03:00",
       "title": "test(sinnoh): Ruby fake Essentials probe exercises 9 maps, 24 events, 3 balls, 16 warps, 3 Barry variants and fail-closed cases",
