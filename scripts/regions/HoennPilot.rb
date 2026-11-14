@@ -988,7 +988,10 @@ module BlueHoennPilot
     flags = state
     return false unless flags && [1, 2].include?(index)
     key = "museum_aqua_#{index}_defeated"
-    return true if flags[key]
+    if flags[key]
+      pbMessage(_INTL("Recruta Aqua: você já me venceu. Estou recuando!"))
+      return false
+    end
     unless flags["stern_delivery_ready"] && flags["museum_fee_paid"]
       pbMessage(_INTL("Recruta Aqua: ainda não é hora de batalhar."))
       return false
