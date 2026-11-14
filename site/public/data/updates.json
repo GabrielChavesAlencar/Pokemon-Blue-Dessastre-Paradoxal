@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "525c6dc109d751a92d1f90a49276774fd3f814b1",
+      "date": "2026-11-14T20:55:37-03:00",
+      "title": "feat(kanto): preparar aparicao visual da mae em Pewter com sprite original",
+      "category": "Novidades"
+    },
+    {
       "sha": "214c66cd064ace46818ce4ffe254ad44e5a0fd90",
       "date": "2026-11-14T20:54:13-03:00",
       "title": "ci(kanto): testar desbloqueio de corrida apos Brock e save reload",
