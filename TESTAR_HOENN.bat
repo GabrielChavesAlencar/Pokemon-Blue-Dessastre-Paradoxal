@@ -4,7 +4,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 echo.
 echo =====================================================
-echo    POKEMON BLUE - TESTAR HOENN - QA FASES 01-07/12
+echo    POKEMON BLUE - TESTAR HOENN - QA FASES 01-08/12
 echo =====================================================
 echo.
 if not exist "game\Game.exe" (
@@ -13,7 +13,7 @@ if not exist "game\Game.exe" (
   pause
   exit /b 2
 )
-if not exist ".blue-work\hoenn-qa-fase07\Game.exe" (
+if not exist ".blue-work\hoenn-qa-fase08\Game.exe" (
   if not exist "The Pokémon World Project - Hoenn.zip" (
     echo [BLOQUEADO] ZIP original nao encontrado na raiz do projeto.
     echo Esperado: The Pokémon World Project - Hoenn.zip
@@ -24,7 +24,7 @@ if not exist ".blue-work\hoenn-qa-fase07\Game.exe" (
 )
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase1.py" --prepare --output ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-prep-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase1.py" --prepare --output ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-prep-report.json"
 ) else (
   where python >nul 2>nul
   if errorlevel 1 (
@@ -32,16 +32,16 @@ if not errorlevel 1 (
     pause
     exit /b 2
   )
-  python "scripts\regions\hoenn_qa_phase1.py" --prepare --output ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-prep-report.json"
+  python "scripts\regions\hoenn_qa_phase1.py" --prepare --output ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-prep-report.json"
 )
 if errorlevel 1 (
   echo.
-  echo [BLOQUEADO] Leia o relatorio em .blue-work\hoenn-qa-fase07-prep-report.json
+  echo [BLOQUEADO] Leia o relatorio em .blue-work\hoenn-qa-fase08-prep-report.json
   echo A instalacao game\ e os saves originais permanecem intactos.
   pause
   exit /b 2
 )
-if not exist ".blue-work\hoenn-qa-fase07\Game.exe" (
+if not exist ".blue-work\hoenn-qa-fase08\Game.exe" (
   echo [BLOQUEADO] Copia isolada nao possui Game.exe.
   pause
   exit /b 2
@@ -50,14 +50,14 @@ echo.
 echo [HOENN QA 02/12] Conferindo fisicamente as portas e conexoes PBS...
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase2.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-mapas-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase2.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-mapas-report.json"
 ) else (
-  python "scripts\regions\hoenn_qa_phase2.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-mapas-report.json"
+  python "scripts\regions\hoenn_qa_phase2.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-mapas-report.json"
 )
 if errorlevel 1 (
   echo.
   echo [BLOQUEADO] Existe problema estatico de mapas ou conexoes.
-  echo Relatorio: .blue-work\hoenn-qa-fase07-mapas-report.json
+  echo Relatorio: .blue-work\hoenn-qa-fase08-mapas-report.json
   echo Nao alteramos game\, saves ou o perfil original.
   pause
   exit /b 2
@@ -68,14 +68,14 @@ echo.
 echo [HOENN QA 03/12] Conferindo encontros, itens e pendencias de NPCs...
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase3.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-encontros-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase3.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-encontros-report.json"
 ) else (
-  python "scripts\regions\hoenn_qa_phase3.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-encontros-report.json"
+  python "scripts\regions\hoenn_qa_phase3.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-encontros-report.json"
 )
 if errorlevel 1 (
   echo.
   echo [BLOQUEADO] Falha em encontros ou o piloto foi gerado numa fase antiga.
-  echo Relatorio: .blue-work\hoenn-qa-fase07-encontros-report.json
+  echo Relatorio: .blue-work\hoenn-qa-fase08-encontros-report.json
   echo Os saves antigos e a copia de Hoenn da fase anterior ficam intactos.
   pause
   exit /b 2
@@ -86,14 +86,14 @@ echo.
 echo [HOENN QA 04/12] Conferindo HMs regionais e obstaculos da fonte...
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase4.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-campo-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase4.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-campo-report.json"
 ) else (
-  python "scripts\regions\hoenn_qa_phase4.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-campo-report.json"
+  python "scripts\regions\hoenn_qa_phase4.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-campo-report.json"
 )
 if errorlevel 1 (
   echo.
   echo [BLOQUEADO] Auditoria de field moves e obstaculos falhou.
-  echo Relatorio: .blue-work\hoenn-qa-fase07-campo-report.json
+  echo Relatorio: .blue-work\hoenn-qa-fase08-campo-report.json
   echo Os saves das fases anteriores permanecem intactos.
   pause
   exit /b 2
@@ -104,14 +104,14 @@ echo.
 echo [HOENN QA 05/12] Conferindo Aqua, Magma, Archie e Seafloor...
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase5.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-story-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase5.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-story-report.json"
 ) else (
-  python "scripts\regions\hoenn_qa_phase5.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-story-report.json"
+  python "scripts\regions\hoenn_qa_phase5.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-story-report.json"
 )
 if errorlevel 1 (
   echo.
   echo [BLOQUEADO] Inconsistencia de evento, batalha ou RXDATA da historia.
-  echo Relatorio: .blue-work\hoenn-qa-fase07-story-report.json
+  echo Relatorio: .blue-work\hoenn-qa-fase08-story-report.json
   echo Nenhum save original foi alterado.
   pause
   exit /b 2
@@ -122,14 +122,14 @@ echo.
 echo [HOENN QA 06/12] Conferindo Sootopolis, Cave of Origin e Rayquaza...
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase6.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-clima-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase6.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-clima-report.json"
 ) else (
-  python "scripts\regions\hoenn_qa_phase6.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-clima-report.json"
+  python "scripts\regions\hoenn_qa_phase6.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-clima-report.json"
 )
 if errorlevel 1 (
   echo.
   echo [BLOQUEADO] Contratos de crise climatica, Wallace ou Rayquaza falharam.
-  echo Relatorio: .blue-work\hoenn-qa-fase07-clima-report.json
+  echo Relatorio: .blue-work\hoenn-qa-fase08-clima-report.json
   echo As copias anteriores e seus saves permanecem intactos.
   pause
   exit /b 2
@@ -140,14 +140,14 @@ echo.
 echo [HOENN QA 07/12] Conferindo 8 ginasios e 8 insignias de Hoenn...
 where py >nul 2>nul
 if not errorlevel 1 (
-  py -3 "scripts\regions\hoenn_qa_phase7.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-report.json"
+  py -3 "scripts\regions\hoenn_qa_phase7.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-ginasios-report.json"
 ) else (
-  python "scripts\regions\hoenn_qa_phase7.py" --copy ".blue-work\hoenn-qa-fase07" --report ".blue-work\hoenn-qa-fase07-report.json"
+  python "scripts\regions\hoenn_qa_phase7.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-ginasios-report.json"
 )
 if errorlevel 1 (
   echo.
   echo [BLOQUEADO] Um lider, evento, insignia ou treinador PBS esta ausente ou incorreto.
-  echo Relatorio: .blue-work\hoenn-qa-fase07-report.json
+  echo Relatorio: .blue-work\hoenn-qa-fase08-ginasios-report.json
   echo Os saves e as copias de Hoenn anteriores permanecem intactos.
   pause
   exit /b 2
@@ -155,10 +155,28 @@ if errorlevel 1 (
 echo [OK] Nove eventos de lideres e oito equipes PBS auditados estaticamente.
 echo [PENDENTE] Batalhas, insignias, puzzles, time dinamico e Game.exe ainda requerem QA real.
 echo.
+echo [HOENN QA 08/12] Conferindo Victory Road, Wally, pedras e acesso a Liga...
+where py >nul 2>nul
+if not errorlevel 1 (
+  py -3 "scripts\regions\hoenn_qa_phase8.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-report.json"
+) else (
+  python "scripts\regions\hoenn_qa_phase8.py" --copy ".blue-work\hoenn-qa-fase08" --report ".blue-work\hoenn-qa-fase08-report.json"
+)
+if errorlevel 1 (
+  echo.
+  echo [BLOQUEADO] Wally, entrada da Liga, PBS ou inventario RXDATA diverge da fase 8.
+  echo Relatorio: .blue-work\hoenn-qa-fase08-report.json
+  echo Copias e saves da QA07 e das regioes anteriores nao foram alterados.
+  pause
+  exit /b 2
+)
+echo [OK] Wally, 3 andares de Victory Road, pedras seguras e gatilhos auditados.
+echo [PENDENTE] Mapas travessaveis, Boulder/Waterfall, batalha e Game.exe real.
+echo.
 echo [OK] Pasta de Hoenn preparada e arquivos conferidos.
-echo Perfil de save separado: Hoenn QA Fase07.
+echo Perfil de save separado: Hoenn QA Fase08.
 echo IMPORTANTE: Na primeira abertura o jogo pode compilar e fechar.
 echo Se isso ocorrer, execute este BAT outra vez.
 echo O Game.exe ainda deve ser testado dentro do jogo.
-start "" /D "%CD%\.blue-work\hoenn-qa-fase07" "%CD%\.blue-work\hoenn-qa-fase07\Game.exe"
+start "" /D "%CD%\.blue-work\hoenn-qa-fase08" "%CD%\.blue-work\hoenn-qa-fase08\Game.exe"
 exit /b 0
