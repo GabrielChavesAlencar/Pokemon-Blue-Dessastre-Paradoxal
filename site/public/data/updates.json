@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aaceb278095e4dd2192bc36610f11fb7fa504493",
+      "date": "2026-11-14T20:36:28-03:00",
+      "title": "fix(kanto): mover bloqueio Rota 2 para linha interna junto a casa norte de Viridian",
+      "category": "Correções"
+    },
+    {
       "sha": "3f8aa01212549d5ee64526fd3a72b0054074eb2a",
       "date": "2026-11-14T20:03:32-03:00",
       "title": "fix(hoenn): validar o terreno dos 199 destinos compilados",
