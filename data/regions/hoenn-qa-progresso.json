@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 10,
-    "implementation_preparation_count": 10,
+    "current_phase": 11,
+    "implementation_preparation_count": 11,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -93,8 +93,8 @@
       {
         "phase": 11,
         "name": "Tradução, áudio, Trainer Card e interface",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "ptbr_map_names_badge_dialogue_seven_ogg_fallbacks_regional_trainer_card_and_private_qa11_auditor_prepared",
+        "native_acceptance": "pending_real_game_exe_ptbr_full_npc_sign_dialogue_audio_loops_card_visuals_and_save_protection",
         "native_approved": false
       },
       {
@@ -199,9 +199,22 @@
       "Play from a fresh Hoenn-started save AND a legally unlocked Hoenn visited from Johto, plus Kanto/Decades regression; no forced shortcuts",
       "Verify postgame rematches and Full Power only when genuine circuit-completion criteria are satisfied, not from a single Hoenn league; never mark rematch ready from static checks",
       "Android/JoiPlay must be tested separately; do not count green Ruby/Python/Windows CI as Game.exe gameplay acceptance"
+    ],
+    "phase11_requires": [
+      "Create separate Hoenn QA Fase11 from pinned donor ZIP and installed Blue game; do not overwrite base or previous QA save profiles",
+      "Validate PT-BR display labels in all 199 MapInfos and PBS map metadata while preserving canonical map IDs, sprites, species, TM/moves and original map source data",
+      "Review newly translated eight badge names and all authored road/gym/League signs in Hoenn's Ruby dialogue; imported donor NPC English lines must never be treated as translated without visual inspection",
+      "Verify all 199 maps have explicit safe provisional Hoenn BGM references from seven genuine pinned OGG assets, headers and paths valid; stage10 needs final scene-specific music verification",
+      "Play a full map entry/exit sequence in Game.exe and audit that BGM changes and resumes correctly at doors, trainer battles, victory, Surf/Dive, credits and region switching; check volume and looping",
+      "Native Trainer Card for Hoenn must route to two-page regional UI, display all eight unique Hoenn badges in source order and global crystals once; Kanto's card still works, Decades original remains untouched",
+      "Verify text legibility of Hoenn Trainer Card, names, UI and badge abbreviations at original Windows resolution and Android/JoiPlay scale; do not accept synthetic card data as visual proof",
+      "Switch language between English and Portuguese in Blue options; ensure Hoenn authored Portuguese dialogue still appears legibly, and untranslated NPC signs/dialogue are listed for QA12 rather than marked complete",
+      "Save/reload with 0, 1, 4, 8 Hoenn badges and after Wallace; cards and text must not change region state, native badges or money",
+      "Do not claim full Hoenn soundtrack, all dialogue translated, Android/Windows support or visual approval from static Python/Ruby/CI tests",
+      "Full story regression Kanto/Johto/Sinnoh/Decades for language, map labels, native Trainer Card and audio in live Game.exe"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA10: Hall final event now calls existing BlueRegions.complete_league('HOENN') once after all 8 badges, Wally, Elite4 and champion at source Map99; this unlocks circuit neighbors Johto/Sinnoh in the same region state, but not automatic travel. QA10 protected status on Ever Grande sign, source RXDATA/core auditor and isolated QA10 save. Real Hall UI, credits, postgame warps, rematches and Game.exe remain unverified. Native acceptance 0/12."
+  "last_publication_note": "QA11: all 199 Hoenn map display labels localized via MapInfos/PBS, 8 badge names in authored Ruby NPC dialogue translated, safe 7-asset provisional OGG map BGM coverage including Stage10, Native Trainer Card shared for Kanto/Hoenn with distinct Hoenn badge tokens and untouched Decades card. Independent QA11 save, Python/Ruby tests and static audit; native text/audio/UI and original NPC completeness remain unverified; 0/12 Game.exe."
 }
