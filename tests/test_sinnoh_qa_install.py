@@ -27,6 +27,40 @@ import johto_qa as qa
 
 PROFILE = "abcdef123456"
 
+def synthetic_engine_report(meta):
+    rows = [
+        {"version": i, "player": player, "opponent": rival,
+         "pbs_seed_level_only": 5}
+        for i, (player, rival) in enumerate((
+            ("TURTWIG", "CHIMCHAR"), ("CHIMCHAR", "PIPLUP"),
+            ("PIPLUP", "TURTWIG")
+        ))
+    ]
+    return {
+        "schema": 1, "region": "SINNOH",
+        "mode": "ENGINE_STATIC_INDEX_AND_EVENTS_PROBE_ONLY",
+        "status": "NATIVE_STRUCTURAL_CHECK_NOT_GAMEPLAY",
+        "compile_token": meta["compile_token"],
+        "maps_inspected": 9, "events_inspected": 24, "warps_inspected": 16,
+        "physical_starter_balls_inspected": ["CHIMCHAR", "PIPLUP", "TURTWIG"],
+        "barry_versions_inspected": rows,
+        "map_ids": sorted(row["id"] for row in meta["event_contract"]),
+        "battle_executed": False, "dynamic_level_verified": False,
+        "physical_navigation_tested": False, "save_reload_tested": False,
+        "android_verified": False, "trainer_sprite_rendered": False,
+        "barry_ready_marker_created": False, "gameplay_approved": False,
+    }
+
+
+def simulate_native_report(dest):
+    """Fixture simulates a report; never claims Game.exe executed."""
+    meta = json.loads((dest / QA_META).read_text("utf-8"))
+    (dest / "Data/blue-sinnoh-qa-engine-check.json").write_text(
+        json.dumps(synthetic_engine_report(meta)), encoding="utf-8",
+    )
+    return meta
+
+
 
 def write(parent: Path, filename: str, data: bytes):
     path = parent / filename
@@ -157,6 +191,8 @@ class SinnohQAInstallTests(unittest.TestCase):
         src = zlib.decompress(rows[0][2]).decode("utf-8")
         self.assertIn("blue-sinnoh-qa-compiled.txt", src)
         self.assertIn("GameData::Trainer.exists?(:BLUE_SINNOH_RIVAL", src)
+        self.assertIn("BlueSinnohQAProbe.run!", src)
+        self.assertIn("blue-sinnoh-qa-engine-check.json", src)
         self.assertNotIn("blue-sinnoh-rival-ready.txt", src)
         self.assertIn("PluginManager.runPlugins", src)
         self.assertEqual(before, (self.game / "Data/Scripts.rxdata").read_bytes())
@@ -167,15 +203,62 @@ class SinnohQAInstallTests(unittest.TestCase):
         report, blobs, native = self.planned()
         dest = self.root / ".blue-work/game-sinnoh-qa-abcdef123456"
         install(self.root, self.game, dest, report, blobs, native)
-        token = json.loads((dest / QA_META).read_text("utf-8"))["compile_token"]
+        meta = simulate_native_report(dest)
+        token = meta["compile_token"]
         (dest / COMPILED).write_text(token + "\n", encoding="ascii")
         (dest / COMPILE_REQUEST).unlink()
         result = verify(dest, project=self.root)
         self.assertTrue(result["compiled_marker_present"])
+        self.assertTrue(result["engine_structural_report_consistent"])
         self.assertTrue(result["ready_to_launch_for_manual_testing"])
         self.assertFalse(result["playable_approved"])
         self.assertFalse(result["python_verified_trainer_battle"])
         self.assertFalse(result["android_verified"])
+
+    def test_compiled_token_alone_cannot_bypass_native_event_checks(self):
+        report, blobs, native = self.planned()
+        dest = self.root / ".blue-work/game-sinnoh-qa-abcdef123456"
+        install(self.root, self.game, dest, report, blobs, native)
+        meta = json.loads((dest / QA_META).read_text("utf-8"))
+        (dest / COMPILED).write_text(meta["compile_token"], encoding="ascii")
+        (dest / COMPILE_REQUEST).unlink()
+        with self.assertRaisesRegex(ValueError, "sem relatório"):
+            verify(dest, project=self.root)
+
+    def test_tampered_or_falsely_approved_native_report_is_rejected(self):
+        report, blobs, native = self.planned()
+        dest = self.root / ".blue-work/game-sinnoh-qa-abcdef123456"
+        install(self.root, self.game, dest, report, blobs, native)
+        meta = simulate_native_report(dest)
+        (dest / COMPILED).write_text(meta["compile_token"], encoding="ascii")
+        (dest / COMPILE_REQUEST).unlink()
+        proof = dest / "Data/blue-sinnoh-qa-engine-check.json"
+        result = json.loads(proof.read_text("utf-8"))
+        result["warps_inspected"] = 15
+        proof.write_text(json.dumps(result), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "inconsistente"):
+            verify(dest, project=self.root)
+        result["warps_inspected"] = 16
+        result["gameplay_approved"] = True
+        proof.write_text(json.dumps(result), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "inconsistente"):
+            verify(dest, project=self.root)
+        result["gameplay_approved"] = False
+        result["compile_token"] = "0"*64
+        proof.write_text(json.dumps(result), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "inconsistente"):
+            verify(dest, project=self.root)
+
+    def test_all_nine_maps_are_protected_against_post_compile_tampering(self):
+        report, blobs, native = self.planned()
+        dest = self.root / ".blue-work/game-sinnoh-qa-abcdef123456"
+        install(self.root, self.game, dest, report, blobs, native)
+        meta = simulate_native_report(dest)
+        (dest / COMPILED).write_text(meta["compile_token"], encoding="ascii")
+        (dest / COMPILE_REQUEST).unlink()
+        (dest / "Data/Map508.rxdata").write_bytes(b"tampered")
+        with self.assertRaisesRegex(ValueError, "protegido"):
+            verify(dest, project=self.root)
 
     def test_rejects_compiled_token_mismatch_and_barry_ready(self):
         report, blobs, native = self.planned()
