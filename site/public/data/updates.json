@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f629b0f6a2676cc39b4b6c47f770b7be62cd049b",
+      "date": "2026-11-14T12:52:02-03:00",
+      "title": "test(hoenn): auditar 85 mapas reais após Fallarbor/Mt Chimney/Lavaridge",
+      "category": "Testes"
+    },
+    {
+      "sha": "992ceaa3775b49bcbf033e0f7eae88d2fae00b75",
+      "date": "2026-11-14T12:51:39-03:00",
+      "title": "feat(hoenn): adicionar PBS Tabitha, Maxie, Flannery, Recrutas Magma e 23 treinadores",
+      "category": "Novidades"
+    },
+    {
       "sha": "046f656640fccd7d656285edfd5776ebce421046",
       "date": "2026-11-14T12:50:55-03:00",
       "title": "feat(hoenn): meteorito, teleférico, Magma, Flannery e Heat Badge com saves regionais",
