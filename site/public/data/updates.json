@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3dbb69c22de5ac22f00950155d5723cb17b31b2e",
+      "date": "2026-11-13T22:23:20-03:00",
+      "title": "feat(sinnoh): require engine structural proof and hash every protected map before enabling QA New Game",
+      "category": "Novidades"
+    },
+    {
       "sha": "bc506aa8a8497c48869e581aeee23a98d74b16b0",
       "date": "2026-11-13T22:22:58-03:00",
       "title": "feat(sinnoh): verify local native probe report token and all 9-map/24-event/3-Barry evidence before next manual launch",
