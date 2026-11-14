@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "26a1d069d5ec603117e66870aee9c5fa484c1968",
+      "date": "2026-11-14T20:38:09-03:00",
+      "title": "ci(kanto): regredir bloqueio interno Viridian e saves antigos",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "fd43b507cd8f1b65dd4db22f4ddb61d5a5bc7e7d",
+      "date": "2026-11-14T20:38:00-03:00",
+      "title": "test(kanto): simular linha do homem deitado e remover gate antigo dos saves",
+      "category": "Testes"
+    },
+    {
       "sha": "727b1e3846bc3221b38bc61d6d9c226511ba0da4",
       "date": "2026-11-14T20:37:29-03:00",
       "title": "test(kanto): validar linha interna de Viridian em vez da borda norte",
