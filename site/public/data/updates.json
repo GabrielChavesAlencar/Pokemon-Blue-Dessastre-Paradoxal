@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9027f5aa78471d3a79608d871b1a5e33ff511e78",
+      "date": "2026-11-13T22:04:53-03:00",
+      "title": "fix(sinnoh): validate every donor geometry MapID and allow additional maps beyond nine intro areas",
+      "category": "Correções"
+    },
+    {
       "sha": "f63b0b5edd0add7af2b8658ea132aaf1d70d49d7",
       "date": "2026-11-13T22:04:02-03:00",
       "title": "docs(sinnoh): document private multi-input integration overlay and safe Windows QA procedure",
