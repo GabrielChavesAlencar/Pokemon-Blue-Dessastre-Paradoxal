@@ -189,8 +189,11 @@ def verify_copy(output: Path, game: Path) -> dict:
     path = output / "Hoenn pilot.json"
     report = json.loads(path.read_text("utf-8"))
     maps = report.get("maps", {})
-    expected_profile = ("Hoenn QA Fase04" if output.name == "hoenn-qa-fase04"
-                        else PROFILE)
+    expected_profiles = {
+        "hoenn-qa-fase04": "Hoenn QA Fase04",
+        "hoenn-qa-fase05": "Hoenn QA Fase05",
+    }
+    expected_profile = expected_profiles.get(output.name, PROFILE)
     if (report.get("kind") != "ISOLATED_HOENN_TEST" or
             report.get("source_commit") != UPSTREAM or
             report.get("save_profile") != expected_profile or
