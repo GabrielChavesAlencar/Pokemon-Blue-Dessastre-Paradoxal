@@ -204,6 +204,25 @@ O `--verify` do instalador valida esse relatório e os hashes dos mapas da cópi
 
 **Barra de código da sondagem:** `4/7`. **Desenvolvimento geral** `8/32`. **Fases aprovadas** `0/13`; os mapas e a engine reais ainda não foram executados aqui.
 
+### Playtest completo de Sinnoh — acesso de QA ao Barry + roteiro de 44 casos
+
+**Já implementei no GitHub:**
+
+- [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb) agora permite **tentar** a batalha de Barry sem marcador de publicação, mas **exclusivamente** quando [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) autoriza a cópia QA com compilação/eventos/hashes válidos e a região atual é Sinnoh. No jogo principal Barry mantém o bloqueio. Batalha com resultado `nil` nunca altera o save; teste de vitória/derrota respeita `canLose`.
+- [audit_sinnoh_playtest.py](../scripts/regions/audit_sinnoh_playtest.py) cria/verifica roteiro local de **44 cenários**: três iniciais e bloqueio de segunda Poké Bola; 12 batalhas de Barry em Normal 70% e Master 90% com vitória/derrota; 16 transições; cinco NPCs; save/load para cada inicial; regressões Decades/Kanto/Johto/Hoenn; JoiPlay. Exige captura/log com SHA256 por caso e confere nível observado, tipo rival, versão PBS, destino do warp e saves declarados. **Não cria marcador nem aprova a região automaticamente.**
+- Testes: [test_sinnoh_playtest_audit.py](../tests/test_sinnoh_playtest_audit.py), [sinnoh_pilot_runtime.rb](../tests/sinnoh_pilot_runtime.rb) e [sinnoh_qa_start_runtime.rb](../tests/sinnoh_qa_start_runtime.rb).
+- Passo a passo: [SINNOH_FASE_02_PLAYTEST_REAL_BARRY_SAVES.md](SINNOH_FASE_02_PLAYTEST_REAL_BARRY_SAVES.md).
+
+**Falta executar somente onde existem dados/jogo reais:**
+1. Gerar mapa/fonte de Sinnoh autorizada e instalação QA isolada; verificar `engine_structural_report_consistent:true` no Game.exe compilado e nunca instalar o QA em `game/`.
+2. Rodar `python scripts/regions/audit_sinnoh_playtest.py --qa .blue-work/game-sinnoh-qa-PERFIL_REAL --create`, que gera o roteiro **não preenchido**. Não marcar casos que não foram executados.
+3. No Game.exe QA real, fazer os três iniciais, tentar segundo starter, executar 12 variações de Barry (Normal/Master × vitória/derrota), registrar nível mais alto do jogador, nível da equipe rival observado, espécie/versão e quantidade de membros (a equipe Master pode ser expandida conforme a regra Blue).
+4. Percorrer e validar **os 16 portais**, cinco NPCs, save/load dos três iniciais com **perfis de save de QA realmente distintos**, e executar regressões Decades/Kanto/Johto/Hoenn na própria instalação não modificada.
+5. Registrar screenshot ou log real por caso em `qa-evidence/` dentro do QA privado, preencher o SHA-256 na checklist, realizar teste Android/JoiPlay separadamente e executar o auditor em modo `--audit`. Examinar capturas/manualmente; não publicar arquivos privados no GitHub.
+6. Somente após análise integral das evidências humanas e verificação de direitos de material externo, discutir a aprovação de fases nativas; o script jamais cria `blue-sinnoh-rival-ready.txt`.
+
+**Barras:** playtest/QA `4/7` em código; geral `8/32`; fases técnicas/jogáveis/Android `0/13`.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
