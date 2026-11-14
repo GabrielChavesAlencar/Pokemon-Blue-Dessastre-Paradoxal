@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "963f049710e9d63dda91846d2fecfb15b85c8864",
+      "date": "2026-11-14T18:30:18-03:00",
+      "title": "ci(hoenn): enforce QA12 fail-closed static audit and native approval separation",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9419f9554edb33c990aa3e141c8b691d3bccd5ec",
       "date": "2026-11-14T18:29:55-03:00",
       "title": "feat(hoenn): TESTAR_HOENN QA12 final gate, private 12th save and PC/Android manual checklist",
