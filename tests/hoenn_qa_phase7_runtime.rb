@@ -17,10 +17,6 @@ qa7_assert(mapping.size == 8, "eight gym records required")
 qa7_assert(mapping.keys == [:STONE, :KNUCKLE, :DYNAMO, :HEAT,
                             :BALANCE, :FEATHER, :MIND, :RAIN],
            "gym badge order differs from expected Hoenn")
-BlueHoennPilot.define_singleton_method(:metadata) do
-  [[708, 25, 6], mapping.transform_values { |source_id, _| source_id + 600 }
-                     .each_with_object({}) { |(_key, _value), _| } ]
-end
 # Stub only the mapping; exercise the REAL QA07 routing method.
 BlueHoennPilot.define_singleton_method(:metadata) do
   [[708,25,6], Hash[mapping.values.map { |source_id, _| [source_id, source_id + 600] }]]
