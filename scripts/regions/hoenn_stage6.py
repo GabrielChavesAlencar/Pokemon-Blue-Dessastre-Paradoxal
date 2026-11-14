@@ -38,16 +38,16 @@ WARP_PAIRS_STAGE6 = (
     ((41, 35, 5), (41, 35, 6), (45, 5, 11), (45, 5, 10)),
     ((41, 8, 13), (41, 8, 14), (46, 13, 13), (46, 13, 12)),
     ((41, 8, 5), (41, 8, 6), (47, 6, 23), (47, 6, 22)),
-    ((113, 15, 16), (113, 15, 17), (115, 3, 8), (115, 3, 9)),
+    ((113, 15, 16), (113, 15, 17), (115, 3, 8), (115, 3, 7)),
     ((113, 16, 88), (113, 16, 89), (115, 3, 22), (115, 3, 21)),
 )
 
 # (source MapID, event x,y, landing x,y, destination MapID, destination x,y)
 # Optional cycling route is never an unconditional warp.
 CYCLE_TRANSFERS_STAGE6 = (
-    (115, 14, 8, 13, 8, 114, 18, 16),    # gate north -> cycle road
-    (115, 14, 22, 13, 22, 114, 19, 88),  # gate south -> cycle road
-    (114, 18, 16, 18, 17, 115, 14, 9),   # bike route -> north office
+    (115, 14, 8, 14, 7, 114, 18, 16),    # gate north -> cycle road
+    (115, 14, 22, 14, 21, 114, 19, 88),  # gate south -> cycle road
+    (114, 18, 16, 18, 17, 115, 14, 7),   # bike route -> north office
     (114, 19, 88, 19, 89, 115, 14, 21),  # bike route -> south office
 )
 
