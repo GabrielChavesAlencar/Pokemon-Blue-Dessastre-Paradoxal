@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a1459ae001bf1bcfc43b4ca645c969ce74a2e76d",
+      "date": "2026-11-14T17:48:43-03:00",
+      "title": "feat(hoenn): QA10 complete regional league only at Hall, unlock neighboring circuit once",
+      "category": "Novidades"
+    },
+    {
       "sha": "12169a0b602e099a2c82f154381565ca3bcebec5",
       "date": "2026-11-14T17:45:01-03:00",
       "title": "docs(kanto): documentar fonte branca nos NPCs e reteste visual",
