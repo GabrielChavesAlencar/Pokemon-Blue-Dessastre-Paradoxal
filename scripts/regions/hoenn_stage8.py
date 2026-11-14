@@ -104,6 +104,19 @@ LAND_ENCOUNTERS_STAGE8 = {
           (9,"WINGULL",26,28),(1,"KECLEON",25,25)),
 }
 
+# Original map020 internal one-way room doors. Destination standing tiles
+# were inspected for passability; preserves the original room topology.
+# Outside exit (6,26) remains handled by the Stage3 warp; the donor's
+# automatic post-battle cutscene at 6,1 is replaced by a saved story flag.
+NORMAN_GYM_DOORS=(
+    (46,3,9,8),(52,35,54,24),(43,19,46,8),(42,26,46,36),
+    (54,19,52,8),(46,42,9,20),(46,10,43,20),(3,19,35,40),
+    (25,26,29,36),(3,10,35,4),(29,35,26,24),(54,26,52,36),
+    (9,19,46,40),(29,10,26,20),(51,10,54,20),(35,35,37,24),
+    (26,19,29,8),(37,26,35,36),(8,10,46,4),(35,3,3,8),
+    (46,35,43,24),(37,19,35,8),(34,42,3,20),(34,10,37,20),
+)
+
 # Existing Norman gym is Map020 from Stage3 — never duplicate donor map.
 NORMAN_EVENT = (20,6,4)
 NORMAN_PBS = ("BLUE_HOENN_NORMAN","Norman",820)
