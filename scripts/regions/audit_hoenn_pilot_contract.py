@@ -16,7 +16,7 @@ from pathlib import Path
 from audit_hoenn_baseline import PILOT
 from pilot_hoenn import (
     BGM, BORDERS, LAND_ENCOUNTERS, MAP_BGM, OUTDOORS, PEOPLE,
-    ROUTE_102_TRAINERS, SOURCE_MAPS, START, UPSTREAM, WARP_PAIRS,
+    ROUTE_102_TRAINERS, RIVAL_NAMES, RIVAL_TEAMS, SOURCE_MAPS, START, UPSTREAM, WARP_PAIRS,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -137,7 +137,9 @@ def audit(root: Path = ROOT) -> dict:
 
     defined = set(re.findall(r"(?m)^\s*def self\.([a-z_]+)\b", plugin))
     required = {"state", "choose_profile", "choose_starter", "route_birch",
-                "birch", "mother", "mart", "heal", "clock", "battle", "verify_compilation"}
+                "choose_birch_ball", "rescue_birch_battle", "rival_103",
+                "rival_name", "birch", "mother", "mart", "heal", "clock",
+                "battle", "verify_compilation"}
     required.update(re.match(r"BlueHoennPilot\.([a-z_]+)", handler).group(1)
                     for *_, handler in PEOPLE)
     if missing := required - defined:
@@ -148,15 +150,22 @@ def audit(root: Path = ROOT) -> dict:
         errors.append("Regional BGM refers to an unknown pilot track alias")
     if not set(OUTDOORS).issubset(source_ids):
         errors.append("Outdoor metadata refers to missing maps")
+    if set(RIVAL_TEAMS) != {"TREECKO", "TORCHIC", "MUDKIP"} or set(RIVAL_NAMES) != {"May", "Brendan"}:
+        errors.append("Wrong rival starter/gender variants")
+    if len({version for _, version in RIVAL_TEAMS.values()}) != 3:
+        errors.append("Duplicate rival trainer PBS versions")
+    if any(starter == enemy for starter, (enemy, _) in RIVAL_TEAMS.items()):
+        errors.append("Rival must choose counter-starter species")
 
-    # These gaps are about the intentionally limited pilot, NOT entire game.
+
+    # Prepared scripts are not a substitute for a Game.exe proof.
     gaps = [
-        "Abertura do caminhão ausente: o piloto inicia diretamente na casa.",
-        "Resgate do Birch existe, mas o inicial é escolhido por menu de diálogo, não por três Poké Balls na maleta.",
-        "Rota 103 não tem batalha contra Brendan/May implementada no plugin do piloto.",
-        "Pokédex, Running Shoes e retorno ao laboratório após a batalha do rival não estão implementados no plugin.",
-        "Rota 102 termina o recorte: Petalburg, Wally e Norman ainda não fazem parte dos nove mapas.",
-        "Eventos completos, posições/linhas de visão, itens de chão, placas e falas secundárias exigem auditoria dos RXDATA reais.",
+        "Caminhão/introdução visual de Emerald ainda não construídos; spawn é na casa.",
+        "Posições das três Poké Bolas e rival exigem geometria RXDATA da cópia isolada e teste real.",
+        "Rival 103 depende de seis variantes RIVAL1 compiladas e sprite nativo auditado.",
+        "Pokédex, cinco Poké Bolas e Tênis de Corrida têm lógica Ruby; save/reload nativo exige teste.",
+        "Rota 102 termina o recorte: Petalburg, Wally e Norman não fazem parte dos nove mapas.",
+        "Placas, itens de chão e NPCs secundários não foram auditados nos RXDATA reais.",
     ]
     return {
         "schema": AUDIT_VERSION,
@@ -167,6 +176,10 @@ def audit(root: Path = ROOT) -> dict:
         "source_ids": list(SOURCE_MAPS),
         "public_catalog_locations": len(locations),
         "route_102_trainers": len(ROUTE_102_TRAINERS),
+        "rival_pbs_variants_prepared": len(RIVAL_NAMES) * len(RIVAL_TEAMS),
+        "three_physical_starter_ball_events_prepared": True,
+        "rival_route103_event_prepared": True,
+        "pokedex_running_shoes_handlers_prepared": True,
         "wild_route_maps": sorted(LAND_ENCOUNTERS),
         "wild_slots": sum(len(entries) for entries in LAND_ENCOUNTERS.values()),
         "map_graph_connected": seen == source_ids,
