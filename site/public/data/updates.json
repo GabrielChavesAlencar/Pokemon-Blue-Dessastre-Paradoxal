@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e6dedd6399409949fe495c56a202a8854b4e8606",
+      "date": "2026-11-14T00:06:10-03:00",
+      "title": "feat(regions): inventory 13 individually authored trainer event and PBS bindings in Hoenn and Johto",
+      "category": "Novidades"
+    },
+    {
       "sha": "6bd2ecbc66b1a2d3e9e3ca49fc681cec787afeea",
       "date": "2026-11-14T00:01:56-03:00",
       "title": "feat(portal): label historical strongest league teams as future unadded rematches",
