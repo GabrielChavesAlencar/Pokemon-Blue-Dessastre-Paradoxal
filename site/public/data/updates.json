@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4709a1fe56cc2d802f4462b11b01495eba1de679",
+      "date": "2026-11-14T18:49:21-03:00",
+      "title": "feat(hoenn): TESTAR_HOENN.bat shows in-game 199-map teleport instructions and save caveat",
+      "category": "Novidades"
+    },
+    {
       "sha": "d8cac674cda25cc8feedf0b07aa42afcd7ab234b",
       "date": "2026-11-14T18:48:51-03:00",
       "title": "ci(hoenn): run isolated 199-map Ruby/QA teleport tests before unrelated Kanto suite",
