@@ -45,7 +45,7 @@ jobs:
           ruby tests/kanto_music_me.rb
           ruby tests/kanto_music_scenes.rb
           ruby -c scripts/regions/KantoPilot.rb
-          ruby tests/kanto_npc_runtime.rb scripts/regions/KantoPilot.rb
+          ruby tests/kanto_npc_runtime.rb scripts/regions/KantoPilot.rb scripts/battle_polish/Locale.rb
       - name: Validar sintaxe JavaScript
         run: |
           node --check web/app.js
