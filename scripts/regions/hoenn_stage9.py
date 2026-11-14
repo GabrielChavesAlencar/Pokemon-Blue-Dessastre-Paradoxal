@@ -140,8 +140,16 @@ SIGNS_STAGE9=(
     (76,66,16,"SPACE_CENTER","Centro Espacial de Mossdeep: pesquisas e foguetes."),
     (76,25,16,"MOSSDEEP","Mossdeep City: porto espacial de Hoenn."),
 )
-FUTURE_GATES_STAGE9=(
-    (215,10,6,"AQUA_DEEP"), # unverified inner-side continuation, disabled
+# Read-only audit proves this undirected map graph; it does NOT prove all
+# room geometry, locks, story conditions, water traversal, or native gameplay.
+STAGE9_MAP_GRAPH_EDGES = (
+    (76,77),(76,78),(76,79),(76,80),(76,81),(76,82),
+    (139,141),(69,144),(144,76),(141,206),
+    (206,207),(207,208),(208,209),(209,210),(210,211),
+    (206,212),(212,213),
+    (180,182),(182,183),(182,184),(182,185),
+    (183,186),(185,188),(186,187),(186,189),(188,189),
+    (69,215),(215,216),(216,217),
 )
 # Actual source-owned item events (pbItemBall) are discovered by read-only
 # scanner in pilot_hoenn.py rather than hardcoding unverified item identities.
