@@ -209,6 +209,30 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertIn("Validação automática pós-compilação", panel)
         self.assertIn("Validação automática pós-compilação", panel)
 
+    def test_qa_only_barry_native_playtest_prep_cannot_approve_game(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        stage = record["native_playtest_workstream"]
+        self.assertEqual((stage["complete"], stage["total"]), (4, 7))
+        self.assertEqual(stage["complete"],
+                         sum(bool(step["complete"]) for step in stage["substeps"]))
+        for step in stage["substeps"]:
+            if step["complete"]:
+                self.assertTrue((ROOT / step["evidence"]).is_file())
+        for key in ("real_game_exe_playtest", "battle_level_70_90_observed",
+                    "win_loss_tested_natively", "save_reload_tested_natively",
+                    "region_regression_tested_natively", "android_joi_play_tested",
+                    "manual_evidence_accepted", "ready_marker_created",
+                    "native_qa_approved", "main_game_or_user_saves_modified"):
+            self.assertFalse(stage[key], key)
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["phase_gates"]["technically_approved"], 0)
+        self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
+        self.assertEqual(record["phase_gates"]["fully_tested_native"], 0)
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("Batalhas e playtest nativo", panel)
+        self.assertIn("44 casos", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
