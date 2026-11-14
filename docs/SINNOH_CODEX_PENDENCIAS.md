@@ -156,6 +156,23 @@ python -m unittest discover -s tests -p "test_sinnoh_barry*.py" -v
 
 **Barra específica:** reconciliação/QA **3/6**, Barry **4/6**, introdução **5/8**, geral **8/32**, fases de aprovação **0/13**.
 
+### Nova Fase 02 — montador do piloto com eventos autorais e PBS de Barry
+
+**Já foi implementado no GitHub:** [prepare_sinnoh_pilot_bundle.py](../scripts/regions/prepare_sinnoh_pilot_bundle.py) e [testes sintéticos](../tests/test_sinnoh_pilot_bundle.py) combinam o stage auditado de geometria, o stage de eventos autorais dos nove mapas de Twinleaf/Sandgem e os dois PBS de Barry, além do próprio `SinnohPilot.rb`. Revalidam todos os SHA-256 de stage, os índices nativos MapInfos/Tilesets, MapIDs também das outras áreas presentes no stage, os 24 eventos gerados, os 16 warps e as três Poké Bolas físicas. O pacote permanece **privado, não jogável e sem marcador Barry**, e não contém Game.exe, System, Scripts ou saves.
+
+**Leia o roteiro completo:** [SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md](SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md) antes de utilizar a ferramenta.
+
+**Use somente com fonte Sinnoh autorizada e coordinates/MapIDs reais validados.** O modo sem `--publish` é dry-run e não escreve. Quando a auditoria passar, `--publish` permite apenas **novo diretório em `.blue-work`**, nunca `game/`. A template pública de Twinleaf está bloqueada por campos `null` intencionalmente.
+
+**Não refazer o montador. Pendências Codex/local restantes:**
+1. Auditar todos os MapIDs/reservas (incluindo futuros de Hoenn/Johto), direitos/licenças de cada asset, coords/sprites dos 9 mapas e garantir spawn no quarto.
+2. Executar a integração com os dados verdadeiros e conferir os arquivos gerados apenas em `.blue-work`. Não usar os IDs 800–805 do piloto legado no multi-regional.
+3. Montar **instalação QA completa separada**, com Game.exe e saves próprios, integrar o plugin BlueSinnohPilot e os dois PBS e compilar no Essentials real.
+4. Testar os 3 iniciais em Poké Bolas, Barry versões 0/1/2, 16 warps, níveis 70%/90%, save/load e JoiPlay; só então conferir gates e eventual marcador no QA.
+5. **Não publicar fontes não autorizadas, maps/tilesets privados ou o pacote QA no repositório.**
+
+**Progresso honesto:** pacote de integração **3/6 subetapas de preparação**, geral **8/32**, fase técnica/jogável/QA **0/13**. Os scripts isolados, por si sós, não certificam gameplay.
+
 ## 3. Pendências organizadas para o Codex
 
 | ID | Dono | Fase | Situação inicial | Condição objetiva de aceite |
