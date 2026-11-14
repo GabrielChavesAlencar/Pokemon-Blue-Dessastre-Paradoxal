@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d1417987d9107414415872393f9c3005e414e23c",
+      "date": "2026-11-13T21:40:31-03:00",
+      "title": "feat(sinnoh): audit legacy standalone 800-805 pilot vs Johto reservation and new three-ball workflow without merging",
+      "category": "Novidades"
+    },
+    {
       "sha": "ee501484fbb56bdf33e206d3a2bd8ad8b8f46f9a",
       "date": "2026-11-13T21:36:31-03:00",
       "title": "docs(sinnoh): record passing 82 isolated Python/Ruby tests for Barry PBS draft without claiming engine QA",
