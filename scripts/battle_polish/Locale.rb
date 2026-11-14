@@ -6,6 +6,9 @@ end
 module BlueLocale
   NAME_TYPES=[1,4,5,7,8,14,18,19,21,27,28,29,30,MessageTypes::ABILITY_NAMES].uniq.freeze
   MANUAL={
+    # Screen-confirmed Kanto FRLG NPC guard. Keep this fallback in native
+    # runtime even when an old save has not rebuilt its compiled locale.
+    'I absolutely forbid you from going through here!'=>'Está terminantemente proibido passar por aqui!',
     'Pink: Selected area · Blue: You'=>'Rosa: Área selecionada · Azul: Você',
     'Habitat complete: {1}! {2} Pokémon × $500 = ${3}.'=>'Habitat completo: {1}! {2} Pokémon × $500 = ${3}.',
     'Trainer Album'=>'Álbum de treinadores','Encountered'=>'Enfrentado','Not encountered'=>'Não enfrentado','Defeated'=>'Derrotado',
