@@ -19,21 +19,42 @@ LITERAL_SCRIPT = re.compile(r'^pbMessage\(_INTL\("((?:\\.|[^"\\])*)"\)\)$')
 
 
 def npc_literals(commands):
-    """Return display literals only. Do not execute/evaluate Ruby from FRLG."""
+    """Return precisely the message strings assembled by Essentials' 101/401.
+
+    Essentials' Interpreter.command_101 concatenates successive 401 commands
+    with a space, then sends the *whole sentence* to _MAPINTL/pbMessage.
+    Translating isolated 401 fragments would miss that runtime lookup.
+    """
     messages = []
+    current = None
+
+    def flush():
+        nonlocal current
+        if current is not None and current.strip():
+            messages.append(current)
+        current = None
+
     for op in commands:
         code, params = op.attrs["@code"], op.attrs["@parameters"]
-        if code in (101, 401) and params:
-            messages.append(text(params[0]))
-        elif code == 355 and params:
+        if code == 101 and params:
+            flush()
+            current = text(params[0])
+            continue
+        if code == 401 and params and current is not None:
+            chunk = text(params[0])
+            if chunk and current and not current.endswith(" "):
+                current += " "
+            current += chunk
+            continue
+        flush()
+        if code == 355 and params:
             found = LITERAL_SCRIPT.fullmatch(text(params[0]))
             if found:
-                # Strings with Ruby escapes must be reviewed before converting
-                # back to an in-game literal or a localization key.
-                if "\\" not in found[1]:
+                # Ruby escapes need review before becoming locale keys.
+                if "\\" not in found[1] and found[1].strip():
                     messages.append(found[1])
-    return [s for s in messages if s.strip()]
-
+    flush()
+    return messages
 
 def imported_npc_lines(source: Path, inventory: dict):
     """Read actual dialogue of NPCs that already passed the Kanto importer."""
