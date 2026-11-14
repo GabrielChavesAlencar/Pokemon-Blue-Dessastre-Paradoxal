@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "70b7a39f388d6b5a072ef5f0c73465413f4a72b5",
+      "date": "2026-11-14T14:22:11-03:00",
+      "title": "ci(hoenn): executar testes Ruby Mt Pyre, Submarino, Tate/Liza, Mind e Dive",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d5192a3480a5953351c94aea9c3854086198bc35",
+      "date": "2026-11-14T14:22:00-03:00",
+      "title": "fix(test/hoenn): validar efetivamente fuga do submarino Aqua",
+      "category": "Correções"
+    },
+    {
       "sha": "794a6a956d10f9bed159fa81c933bc7db635a144",
       "date": "2026-11-14T14:19:57-03:00",
       "title": "test(hoenn): Ruby Mt Pyre, Magma, Aqua, submarino, dupla Tate/Liza, Mind e Dive",
