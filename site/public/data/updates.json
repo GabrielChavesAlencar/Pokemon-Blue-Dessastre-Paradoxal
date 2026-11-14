@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0395c5afd3b4081d87beb169306569c06dc7d7cd",
+      "date": "2026-11-13T22:38:22-03:00",
+      "title": "data(sinnoh): register private 44-case playtest evidence auditor and QA-only Barry test permission without native approval",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1aa0b188e1301eecee1fe17187a8853d02f14857",
+      "date": "2026-11-13T22:38:12-03:00",
+      "title": "docs(sinnoh): hand off only real Windows/Android gameplay cases with QA-only Barry battle gate and screenshot evidence audit",
+      "category": "Documentação"
+    },
+    {
       "sha": "a922006a3765475c052c97655511f3cc84e64ebe",
       "date": "2026-11-13T22:37:52-03:00",
       "title": "docs(sinnoh): add QA-only Barry test access and 44-case real playtest checklist subbar 4/7",
