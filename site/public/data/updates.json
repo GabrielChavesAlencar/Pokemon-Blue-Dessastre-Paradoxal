@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9720ebfb4799da11b3b7b5b64ad54bd7a1a12667",
+      "date": "2026-11-14T02:08:03-03:00",
+      "title": "fix(kanto): translate English-speaking guard NPC in Portuguese mode",
+      "category": "Correções"
+    },
+    {
       "sha": "f62ff36b41546ec2339edabe1bb0d61fcac19285",
       "date": "2026-11-14T01:44:55-03:00",
       "title": "feat(kanto): restore Cut trees and add independent KantoDex 001-151",
