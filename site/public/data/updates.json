@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "09b0d5c06c337d27ff1eae94268130fb371ece7b",
+      "date": "2026-11-14T19:35:39-03:00",
+      "title": "ci(kanto): testar loja de Viridian e nomes de mapa PT-BR/EN",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "164a74be1228479ae148e2f61bbfa3460a2985d4",
+      "date": "2026-11-14T19:35:25-03:00",
+      "title": "test(kanto): travar Viridian Mart ate entregar pacote ao Oak e validar nome da cidade",
+      "category": "Testes"
+    },
+    {
       "sha": "bbb8444ff9c3b53bc2d8c65e0d5501e9a4d7ce82",
       "date": "2026-11-14T19:35:01-03:00",
       "title": "test(kanto): negar compras antes de Oak e validar anuncio da cidade",
