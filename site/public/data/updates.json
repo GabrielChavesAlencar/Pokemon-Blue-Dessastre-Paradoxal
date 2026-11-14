@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f31cd34c73985f2671f5fd5c5d27875063c94ce4",
+      "date": "2026-11-14T00:09:35-03:00",
+      "title": "test(hoenn): ensure native trainer PBS preflight fails closed on duplicate identities",
+      "category": "Testes"
+    },
+    {
+      "sha": "edbd3e1138aa0d23cd51526a8767b11c471e2ee4",
+      "date": "2026-11-14T00:09:14-03:00",
+      "title": "fix(hoenn): reject preexisting trainer PBS identities and report remapped Route102 NPC event bindings",
+      "category": "Correções"
+    },
+    {
       "sha": "351ca66ba9a0dd95730d4636891ec408a54c06bb",
       "date": "2026-11-14T00:08:36-03:00",
       "title": "test(regions): check 13 trainer bindings, private RXDATA/PBS inspection and source drift gates",
