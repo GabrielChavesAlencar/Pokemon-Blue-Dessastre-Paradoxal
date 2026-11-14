@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f4b574e94a40f46bddc90f00c2e1424aeb6b6ab6",
+      "date": "2026-11-14T14:52:01-03:00",
+      "title": "Corrige Pokédex, setas de Viridian, Liga e New Bark [android-kanto-release]",
+      "category": "Correções"
+    },
+    {
       "sha": "79ca73ac187ce524dd0a740fa9bead12dd0a94cf",
       "date": "2026-11-14T14:37:30-03:00",
       "title": "audit(hoenn): incluir corredor Map100 da Liga no inventário Stage10",
