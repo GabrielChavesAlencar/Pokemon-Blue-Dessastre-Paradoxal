@@ -185,6 +185,12 @@ O workflow [Hoenn QA 03 - auditar fonte original de encontros](../.github/workfl
 5. Teste **gelo de Sootopolis**, pedras e correntes de Seafloor Cavern e **Victory Road**. Um gráfico ou script inventariado não significa puzzle funcional. Registre MapID, coordenadas, insígnia, golpe no time e se é possível continuar/voltar.
 6. Teste troca de região e saves Decades/Kanto/Johto/Sinnoh. Não renomeie nem recopie os assets do doador ao jogo principal.
 
+### Resultado auditado da origem fixa (GitHub Actions)
+
+A leitura de **32 mapas reais do doador** na revisão fixada identificou **39 eventos StrengthBoulder** (Seafloor Cavern e Victory Road), **64 eventos Ice Floor Puzzle** (ginásio de Sootopolis), **3 eventos Dive** e **1 bloqueador relacionado a Waterfall**. Esses 64 eventos de gelo usam **três páginas** na fonte e, por segurança, não foram copiados como se o puzzle estivesse concluído. Os eventos exatos Strength usam o sprite `OBJ_RSE_Strength Boulder`, disponível no ZIP original. Se não houver sprite nativo do Blue, somente a **cópia local isolada** recebe o PNG desse nome, após confirmação de hash da revisão; nenhum asset é enviado ao GitHub público.
+
+A quantidade **efetivamente instalada** de boulders depende de não haver sobreposição de eventos e da integridade de sua cópia privada. Consulte `qa4.new_safe_obstacles` e `qa4.source_obstacles_needing_review` em `Hoenn pilot.json`. A fonte não demonstrou rochas Rock Smash nesses 32 mapas selecionados; o construtor verifica os 199 mapas na montagem local, sem presumir que elas não existam em outras áreas.
+
 ### Critérios de aceite nativo — pendentes
 
 - [ ] Cópia fase 4 gerada com ZIP pinado, 199 mapas reais e relatórios sem bloqueio.
