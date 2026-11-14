@@ -315,7 +315,7 @@ def build_test_stops(maps, tiles, mapped_ids):
             raise ValueError(f"Mapa {source_id} sem célula caminhável segura para o teleporte de QA")
         x, y = best
         label = localized_map_name(SOURCE_MAPS[source_id])
-        if any(c in label for c in "\\r\\n|") or not label.strip():
+        if any(c in label for c in "\r\n|") or not label.strip():
             raise ValueError(f"Nome de destino de teleporte inválido: {source_id}")
         stops.append((source_id, mapped_ids[source_id], x, y, 2, label))
     return stops
@@ -324,8 +324,8 @@ def build_test_stops(maps, tiles, mapped_ids):
 def serialize_test_stops(stops):
     if len(stops) != 199 or len({r[0] for r in stops}) != 199:
         raise ValueError("Catálogo de teleporte de Hoenn incompleto")
-    return ("BLUE_HOENN_TEST_STOPS_V1\\n" +
-            "".join("|".join(str(value) for value in row) + "\\n" for row in stops)).encode("utf-8")
+    return ("BLUE_HOENN_TEST_STOPS_V1\n" +
+            "".join("|".join(str(value) for value in row) + "\n" for row in stops)).encode("utf-8")
 
 def reachable(start, points, tiles, maps, edges, blocked):
     """Conservative 4-way tile check, including physical map borders."""
