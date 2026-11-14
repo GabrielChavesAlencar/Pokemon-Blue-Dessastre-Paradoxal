@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "03e3db3923aba26cd12629a94bc842cd3638e463",
+      "date": "2026-11-14T12:22:34-03:00",
+      "title": "feat(hoenn): inserir Wattson, Wally, 6 variantes do rival e 19 treinadores no PBS",
+      "category": "Novidades"
+    },
+    {
       "sha": "cf899ae6db175334ca8a66384ded092f8cd4158e",
       "date": "2026-11-14T12:21:38-03:00",
       "title": "feat(hoenn): gerar NPCs Mauville, rival110, Wattson, pista ciclista e ginásio elétrico",
