@@ -39,6 +39,8 @@ Cada ZIP completo inclui `Data/blue-update.json` com canal, SHA-40 de revisão, 
 
 O atualizador consulta `releases/latest` (Decades) ou a prerelease `kanto-android-*` mais recente dentre as 100 releases (Kanto), sem confundir os downloads. Confere SHA-256, tamanhos, nomes dos arquivos, origem/destino, inventário local e possíveis modificações do usuário. Nunca aplica caminhos fora das pastas permitidas e proíbe arquivos de save, logs e backup. Mantém os arquivos substituídos em `.blue-android-update-backups/<revisão-antiga>-to-<nova>/` e tenta restaurá-los se ocorrer falha durante a aplicação. Antes da atualização, **também faça uma cópia manual do seu save**: backups de arquivos do jogo não substituem backup de progresso.
 
+No Piloto Kanto, abra **Downloads → Pilotos no Android** no site e confira a revisão publicada. Use a pasta **Pokemon-Blue-Kanto-Android** no Termux. As correções de mapas, eventos e Pokédex chegam por esse canal após a publicação do novo ZIP ou patch. Para alternar a Pokédex, use **K** no teclado ou toque no botão da lista quando os toques do JoiPlay estiverem habilitados.
+
 O patch atual é **de uma revisão publicada para a próxima**, não um sincronizador arbitrário de qualquer versão antiga. Se não houver patch adequado, o programa oferece o link do ZIP completo e não altera a instalação. Não há promessa de atualização em segundo plano, APK próprio, autoatualização do JoiPlay ou teste aprovado em aparelho físico.
 
 ## Publicação e testes

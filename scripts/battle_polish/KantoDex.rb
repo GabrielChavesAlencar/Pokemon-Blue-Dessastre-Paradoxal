@@ -158,13 +158,13 @@ module BlueKantoDex
 
   def self.number(species)
     return nil if species.nil?
-    id=species.is_a?(Symbol) ? species : species.to_s.upcase.to_sym
+    id=species.to_s.upcase.to_sym
     number=NUMBERS[id]
     return number if number
     # A regional/form entry is displayed under its base species when available.
     begin
       base=GameData::Species.get(species).species
-      NUMBERS[base]
+      NUMBERS[base.to_s.upcase.to_sym]
     rescue
       nil
     end

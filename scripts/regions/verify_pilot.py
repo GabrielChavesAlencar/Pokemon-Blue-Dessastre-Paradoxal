@@ -14,7 +14,7 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, load
 from pilot import (PILOT_META, TRAINERS, CINNABAR_EVENTS, CINNABAR_GYM_DOORS,
                    CINNABAR_GYM_QUIZZES, CINNABAR_GYM_TRAINER_GROUPS,
-                   MANSION_DOORS, MANSION_STATUES, VIRIDIAN_GYM_EVENTS,
+                   MANSION_DOORS, MANSION_STATUES, VIRIDIAN_GYM_EVENTS, add_viridian_spin_tiles,
                    LEAGUE_BADGE_GATES, LEAGUE_BARRIER_GATES,
                    VICTORY_ROAD_BARRIERS, VICTORY_ROAD_BOULDERS,
                    LEAGUE_EVENT_WHITELIST, LEAGUE_NEXT_ROOMS,
@@ -542,11 +542,21 @@ def inspect(game: Path) -> dict:
     # Stage 13: source Map013 must be safely re-implemented, while keeping
     # the original Map010 entrance and the exact one-way return.
     gym_events = maps[mapping[13]].attrs["@events"]
-    expected_viridian = VIRIDIAN_GYM_EVENTS | passive_field_ids(13)
+    spin_events = {eid: event for eid, event in gym_events.items()
+                   if event.attrs["@name"] == b"Kanto Spin Tile"}
+    anchors = {eid: event for eid, event in gym_events.items() if eid not in spin_events}
+    add_viridian_spin_tiles(maps[mapping[13]], anchors)
+    if anchors != gym_events or not spin_events:
+        raise ValueError("Viridian gym spin tiles do not match the authored floor")
+    expected_viridian = VIRIDIAN_GYM_EVENTS | passive_field_ids(13) | spin_events.keys()
     if set(gym_events) != expected_viridian:
         raise ValueError(f"Viridian Gym whitelist changed: {set(gym_events) ^ expected_viridian}")
     if len(TRAINERS[13]) != 9:
         raise ValueError("Viridian Gym must have Giovanni and exactly eight source trainers")
+    return_event = maps[mapping[209]].attrs["@events"][1].attrs["@pages"][0].attrs["@list"]
+    if not any(op.attrs["@code"] == 201 and op.attrs["@parameters"][:5] ==
+               [0, mapping[17], 7, 3, 2] for op in return_event):
+        raise ValueError("Route 23 return must spawn south of the first badge barrier")
     if mapping[10] not in event_transfers(13, 11):
         raise ValueError("Viridian gym has no return to its city")
     exit_event = gym_events[11].attrs["@pages"][0].attrs

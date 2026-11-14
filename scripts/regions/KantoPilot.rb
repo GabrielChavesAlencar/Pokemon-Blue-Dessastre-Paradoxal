@@ -839,6 +839,35 @@ module BlueKantoPilot
     LEAGUE_REQUIRED_BADGES.all? { |badge| earned.include?(badge) }
   end
 
+  SPIN_DIRECTIONS = [2, 4, 8, 6].freeze
+  SPIN_TILES = {919 => 4, 927 => 6, 935 => 8, 943 => 2}.freeze
+  SPIN_STOP_TILE = 951
+
+  def self.viridian_spin(direction)
+    return unless SPIN_DIRECTIONS.include?(direction)
+    player = $game_player
+    map = $game_map
+    visited = {}
+    loop do
+      state = [player.x, player.y, direction]
+      break if visited[state] || !player.can_move_in_direction?(direction, true)
+      visited[state] = true
+      player.move_generic(direction, false)
+      break if [player.x, player.y] == state.first(2)
+      # The interpreter owns input until the tile finishes the forced step.
+      turns = SPIN_DIRECTIONS.rotate(SPIN_DIRECTIONS.index(direction))
+      turns.each do |facing|
+        player.turn_generic(facing, true)
+        pbWait(0.035)
+      end
+      pbWait(0.02) while player.moving?
+      break if $game_map != map
+      tiles = [2, 1, 0].map { |layer| map.data[player.x, player.y, layer] }
+      break if tiles.include?(SPIN_STOP_TILE)
+      direction = tiles.filter_map { |tile| SPIN_TILES[tile] }.first || direction
+    end
+  end
+
   def self.league_badge_check(required, guard_id, barrier_id)
     unless required.between?(1, LEAGUE_REQUIRED_BADGES.length)
       return false
@@ -847,6 +876,14 @@ module BlueKantoPilot
     earned = BlueRegions.local_achievements(progress, "KANTO")
     missing = needed.reject { |badge| earned.include?(badge) }
     if missing.any?
+      # Older pilots could leave a save standing on the blocking event after
+      # coming back from Route 23. Move that exact position one step south.
+      gate = $game_map.events[barrier_id]
+      if required == 1 && barrier_id == 5 && gate &&
+         [$game_player.x, $game_player.y] == [gate.x, gate.y]
+        $game_player.moveto(gate.x, gate.y + 1)
+        $game_player.turn_down
+      end
       pbMessage(BlueKantoPilot.t("Guard: You need Kanto's {1} badge to proceed.", "Guarda: Você precisa da insígnia {1} de Kanto para seguir.", missing.first))
       return false
     end

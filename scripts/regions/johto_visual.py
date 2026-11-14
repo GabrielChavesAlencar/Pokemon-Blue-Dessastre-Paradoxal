@@ -107,26 +107,26 @@ def extend_tileset(sets, source_id, name, png, chips, flags):
 
 
 def rug_tiles(color, edge):
-    """Nine transparent tiles forming a 3x3 oval with a woven border."""
-    result = []
-    for ty in range(3):
-        for tx in range(3):
-            chip = []
-            for y in range(32):
-                row = bytearray()
-                for x in range(32):
-                    px, py = tx * 32 + x, ty * 32 + y
-                    radius = ((px - 47.5) / 46) ** 2 + ((py - 47.5) / 39) ** 2
-                    if radius >= 1:
-                        row.extend((0, 0, 0, 0))
-                    elif radius >= 0.79:
-                        row.extend((*edge, 255))
-                    else:
-                        grain = 8 if ((px + py) // 6 + (px - py) // 6) % 2 else 0
-                        row.extend((*(value + grain for value in color), 255))
-                chip.append(bytes(row))
-            result.append(chip)
-    return result
+    """Make a nine-tile woven rug with rounded corners and a diamond pattern."""
+    size = 96
+    rows = []
+    for y in range(size):
+        pixels = bytearray()
+        for x in range(size):
+            dx = max(12 - x, x - 83, 0)
+            dy = max(12 - y, y - 83, 0)
+            if dx * dx + dy * dy > 12 * 12:
+                pixels.extend((0, 0, 0, 0))
+                continue
+            if min(x, y, 95 - x, 95 - y) < 4 or dx * dx + dy * dy > 9 * 9:
+                pixels.extend((*edge, 255))
+                continue
+            diamond = abs(x % 24 - 12) + abs(y % 24 - 12) <= 9
+            shade = (10 if diamond else 0) + (3 if (x + y) % 2 == 0 else 0)
+            pixels.extend((*[min(255, value + shade) for value in color], 255))
+        rows.append(bytes(pixels))
+    return [[row[column * 128:(column + 1) * 128] for row in rows[y * 32:(y + 1) * 32]]
+            for y in range(3) for column in range(3)]
 
 
 def prop(source_rows, tile_id):
@@ -204,7 +204,7 @@ def style_interiors(maps, sets, assets, read_graphic):
         maps[mid].attrs["@tileset_id"] = tid
     _, teal, teal_alt, mat = (first + i for i in range(4))
 
-    def oval(x, y, offset):
+    def rug(x, y, offset):
         return [(x + dx, y + dy, 1, first + offset + dy * 3 + dx)
                 for dy in range(3) for dx in range(3)]
 
@@ -213,17 +213,21 @@ def style_interiors(maps, sets, assets, read_graphic):
     set_tiles(room, furniture(2, 6, 275, 0, 2, 3)
               + furniture(2, 1, 280, 4, 3, 2) + furniture(8, 1, 297, 0, 1, 2)
               + furniture(10, 1, 279, 2, 2, 1) + furniture(5, 1, 198, 6, 2, 1)
-              + furniture(12, 8, 270, 3, 1, 2) + oval(5, 5, 4))
+              + furniture(11, 3, 296, 0, 1, 2)
+              + furniture(12, 6, 270, 3, 1, 2) + rug(5, 5, 4)
+              + [(7, 1, 2, tile(204, 4))])
 
     set_tiles(home, floor_area(1, 2, 14, 10, tile(88, 0), tile(88, 1)))
     set_tiles(home, [(x, y, 2, 0) for x in range(1, 15) for y in range(2, 12)
                      if (x, y) not in {(12, 8), (13, 8), (12, 9), (13, 9)}])
-    set_tiles(home, furniture(2, 1, 257, 0, 4, 3) + furniture(11, 1, 251, 4, 3, 3)
-              + furniture(8, 2, 297, 0, 1, 2) + oval(6, 5, 13)
+    set_tiles(home, furniture(2, 1, 257, 0, 4, 3)
+              + furniture(12, 1, 251, 4, 3, 3)
+              + furniture(8, 1, 296, 0, 1, 2) + furniture(6, 1, 198, 6, 2, 1)
+              + rug(6, 5, 13)
               + furniture(7, 6, 275, 4, 2, 1) + furniture(6, 6, 276, 6, 1, 2)
               + furniture(9, 6, 276, 7, 1, 2)
               + furniture(1, 8, 270, 3, 1, 2) + furniture(14, 8, 270, 3, 1, 2)
-              + [(7, 9, 1, mat)])
+              + [(x, y, 1, mat) for x in (6, 7, 8) for y in (9, 10)])
 
     lab = maps[676]
     set_tiles(lab, floor_area(1, 2, 18, 13, teal, teal_alt))
@@ -351,9 +355,15 @@ def revise_connections(blob):
 
 def johto_metadata(maps, infos):
     rows = []
-    for mid in sorted(set(maps) & {*range(600, 674), *NEW_MAPS}):
+    rooms = {*range(674, 682), *NEW_MAPS}
+    for mid in sorted(set(maps) & (set(range(600, 674)) | rooms)):
         label = text(infos[mid].attrs["@name"]).removeprefix("[Johto preview] ")
-        rows += [f"[{mid:03}]", f"Name = {label}", "ShowArea = true", "SnapEdges = true", ""]
+        label = {674: "Quarto do jogador", 675: "Casa do jogador", 676: "Laboratório do Professor Elm"}.get(mid, label)
+        rows += [f"[{mid:03}]", f"Name = {label}"]
+        # These rooms have doors and no map connections. Connected maps need
+        # signed offsets or Route 27 is rendered on top of New Bark.
+        rows += ["SnapEdges = true"] if mid in rooms else ["ShowArea = true"]
+        rows.append("")
     return "\n".join(rows).encode("utf-8")
 
 

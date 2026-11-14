@@ -84,8 +84,10 @@ module BlueDexControls
   end
   module DexSearch
     def pbStartScene
+      state = $PokemonGlobal&.blue_regions
+      @blue_kanto_default = state.is_a?(Hash) && state["current"] == "KANTO"
+      @blue_kanto_dex = @blue_kanto_default
       super
-      @blue_kanto_dex=false
       dex_button=BitmapSprite.new(174,28,@viewport)
       dex_button.x=24;dex_button.y=244;dex_button.z=20
       @sprites['blueKantoDexButton']=dex_button
@@ -121,7 +123,20 @@ module BlueDexControls
       button=@sprites['blueKantoDexButton'];return unless button
       b=button.bitmap;b.clear;b.fill_rect(0,0,174,28,Color.new(24,62,91))
       pbSetSmallFont(b);b.font.color=Color.new(239,248,255)
-      b.draw_text(0,0,174,28,_INTL(@blue_kanto_dex ? 'National Dex [K]' : 'KantoDex [K]'),1)
+      label = if @blue_kanto_dex
+                _INTL('National Dex [K]')
+              else
+                _INTL('KantoDex [K]')
+              end
+      b.draw_text(0,0,174,28,label,1)
+    end
+    def pbGetPokedexRegion
+      return -1 if @blue_kanto_default
+      super
+    end
+    def pbGetDexList
+      rows = super
+      @blue_kanto_default ? blue_kanto_dex_rows(rows) : rows
     end
     def blue_kanto_dex_rows(rows)
       return rows unless @blue_kanto_dex
@@ -130,13 +145,14 @@ module BlueDexControls
       rows.select { |row| BlueKantoDex.number(row[:species]) }.map do |row|
         copy=row.dup
         copy[:number]=BlueKantoDex.number(row[:species])
+        copy[:shift]=false
         copy
       end.sort_by { |row| row[:number] }
     end
     def blue_toggle_kanto_dex
       @blue_kanto_dex=!@blue_kanto_dex
       @blue_filters=nil
-      if @blue_kanto_dex
+      if @blue_kanto_dex && !@blue_kanto_default
         blue_show_kanto_list
       else
         @searchResults=false
@@ -159,6 +175,17 @@ module BlueDexControls
     def pbCloseSearch
       @blue_filters=nil;super
     end
+    def pbSearchDexList(params)
+      return blue_dex_filter_results if @blue_filters && @blue_filters != BlueDexFilters.defaults
+      super
+    end
+    def blue_dex_filter_results
+      BlueDexFilters.apply(blue_dex_filter_rows, @blue_filters)
+    end
+    def blue_dex_filter_rows
+      rows = pbGetDexList
+      @blue_kanto_default ? rows : blue_kanto_dex_rows(rows)
+    end
     def pbDexSearch
       return super if @blue_advanced_search
       @blue_search_open=true
@@ -174,14 +201,14 @@ module BlueDexControls
     def blue_apply_filters(filters)
       if filters==BlueDexFilters.defaults
         @blue_filters=filters
-        if @blue_kanto_dex
+        if @blue_kanto_dex && !@blue_kanto_default
           blue_show_kanto_list
         else
           @searchResults=false;pbRefreshDexList(0)
         end
         return true
       end
-      results=BlueDexFilters.apply(blue_kanto_dex_rows(pbGetDexList),filters)
+      results=BlueDexFilters.apply(blue_dex_filter_rows,filters)
       if results.empty?;pbMessage(_INTL('No Pokémon match these filters.'));return false;end
       @blue_filters=filters.dup;@dexlist=results;@searchResults=true
       window=@sprites['pokedex'];window.commands=results;window.index=0;window.refresh

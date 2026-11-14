@@ -630,7 +630,10 @@ module KantoNativeCheck
     BlueKantoPilot.progress["pilot_silph_rescued"] = true
     require!(BlueKantoPilot.viridian_access?, "Viridian Gym stayed locked after requirements")
     $map_factory.setup(viridian_gym)
-    require!(whitelisted_core?($game_map.events, [2,3,4,5,6,7,8,9,10,11,16]),
+    arrows = $game_map.events.values.select { |event| event.name == "Kanto Spin Tile" }
+    require!(!arrows.empty? && arrows.all? { |event| event.trigger == 1 && event.through },
+             "Viridian Gym arrows are not native player-touch floor events")
+    require!(whitelisted_core?($game_map.events, [2,3,4,5,6,7,8,9,10,11,16], arrows.map(&:id)),
              "Viridian gym imported unsanctioned source events")
     require!([2,3,5,6,7,8,9,10].all? { |eid| $game_map.events[eid].trigger==2 } &&
              $game_map.events[4].trigger==0,

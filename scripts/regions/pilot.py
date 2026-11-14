@@ -8,6 +8,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import tempfile
 from datetime import datetime, timezone
@@ -486,6 +487,30 @@ def new_event(event, ops, trigger, character):
     page["@direction_fix"] = trigger == 1
     page["@list"] = ops + [command(0)]
     return clone
+
+
+VIRIDIAN_SPIN_TILES = {919: 4, 927: 6, 935: 8, 943: 2}
+
+
+def add_viridian_spin_tiles(map_data, events):
+    """Bind the four directional tiles on the pinned FRLG gym floor."""
+    table = map_data.attrs["@data"].data
+    _, width, height, depth, count = struct.unpack_from("<5I", table)
+    cells = struct.unpack_from(f"<{count}H", table, 20)
+    next_id = max(events) + 1
+    for y in range(height):
+        for x in range(width):
+            tile_ids = (cells[x + width * (y + height * z)] for z in reversed(range(depth)))
+            direction = next((VIRIDIAN_SPIN_TILES[tile] for tile in tile_ids
+                              if tile in VIRIDIAN_SPIN_TILES), None)
+            if direction is None:
+                continue
+            anchor = copy.deepcopy(events[11])
+            anchor.attrs.update({"@id": next_id, "@x": x, "@y": y, "@name": b"Kanto Spin Tile"})
+            events[next_id] = new_event(anchor, [
+                command(355, f"BlueKantoPilot.viridian_spin({direction})".encode("ascii"))
+            ], 1, b"")
+            next_id += 1
 
 
 def move_actor(event_id, *steps):
@@ -1282,6 +1307,14 @@ def install_events(source, target, mapping):
                         warp,
                     ]
                 selected[event_id] = new_event(event, operations, trigger, character)
+        if original == 13:
+            add_viridian_spin_tiles(map_data, selected)
+        if original == 209:
+            # The source relies on its scripted guard move route. In this
+            # pilot the gate stays fixed, so return to the south of it.
+            commands = selected[1].attrs["@pages"][0].attrs["@list"]
+            exit_warp = next(op for op in commands if op.attrs["@code"] == 201)
+            exit_warp.attrs["@parameters"][3:5] = [3, 2]
         if original == 25:
             add_pewter_guard(selected, events)
         if original == 10:
