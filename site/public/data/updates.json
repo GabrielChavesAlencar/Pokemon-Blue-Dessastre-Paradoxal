@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "70c3380ec1f1f6b8e2f69520679724c061eb8c23",
+      "date": "2026-11-13T22:17:09-03:00",
+      "title": "docs(sinnoh): show 4/7 QA installation/save isolation subbar without inflating native or gameplay approvals",
+      "category": "Documentação"
+    },
+    {
+      "sha": "7a5965f2b52149baa97ffac71d3d4f2f1d2931ab",
+      "date": "2026-11-13T22:16:52-03:00",
+      "title": "data(sinnoh): track QA installer and native PBS compile gate as code-only 4/7, keep 8/32 and 0/13",
+      "category": "Melhorias"
+    },
+    {
       "sha": "47ccc6a62ac8297a59365ef05b4e53b0f040c899",
       "date": "2026-11-13T22:16:09-03:00",
       "title": "docs(sinnoh): publish Windows guide for isolated QA Game.exe copy, per-profile saves and one-shot Barry compilation",
