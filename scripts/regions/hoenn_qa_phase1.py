@@ -189,9 +189,11 @@ def verify_copy(output: Path, game: Path) -> dict:
     path = output / "Hoenn pilot.json"
     report = json.loads(path.read_text("utf-8"))
     maps = report.get("maps", {})
+    expected_profile = ("Hoenn QA Fase04" if output.name == "hoenn-qa-fase04"
+                        else PROFILE)
     if (report.get("kind") != "ISOLATED_HOENN_TEST" or
             report.get("source_commit") != UPSTREAM or
-            report.get("save_profile") != PROFILE or
+            report.get("save_profile") != expected_profile or
             len(maps) != EXPECTED_MAPS or
             set(maps) != {str(mid) for mid in SOURCE_MAPS}):
         raise ValueError("Relatório da cópia não corresponde ao piloto de 199 mapas")
@@ -225,13 +227,13 @@ def verify_copy(output: Path, game: Path) -> dict:
                  "[BLUE_HOENN_CHAMPION,Wallace,1098]"):
         if name not in trainers:
             raise ValueError(f"Treinador final de Hoenn não encontrado: {name}")
-    if PROFILE not in (output / "mkxp.json").read_text("utf-8-sig"):
+    if expected_profile not in (output / "mkxp.json").read_text("utf-8-sig"):
         raise ValueError("Perfil de save isolado de Hoenn não configurado")
     if (output / "Game.exe").read_bytes() != (game / "Game.exe").read_bytes():
         raise ValueError("Game.exe da cópia é diferente da base local Blue")
     return {
         "isolated_copy_prepared": True, "maps_present": EXPECTED_MAPS,
-        "trainer_boss_pbs_entries": 8, "distinct_save_profile": PROFILE,
+        "trainer_boss_pbs_entries": 8, "distinct_save_profile": expected_profile,
         "compile_request_pending": (output / "Data/blue-hoenn-compile-request.txt").exists(),
         "compiled_marker_present": (output / "Data/blue-hoenn-compiled.txt").is_file(),
         "game_exe_tested": False, "gameplay_accepted": False,

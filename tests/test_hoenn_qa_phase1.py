@@ -122,6 +122,23 @@ class HoennQA01Tests(unittest.TestCase):
         self.assertEqual((self.game / "Game.exe").read_bytes(), before)
         self.assertEqual(len(maps), 199)
 
+    def test_qa4_copy_uses_a_separate_save_profile(self):
+        self.make_copy()
+        destination=self.work / "hoenn-qa-fase04"
+        self.output.rename(destination)
+        manifest=destination / "Hoenn pilot.json"
+        data=json.loads(manifest.read_text("utf8"))
+        data["save_profile"]="Hoenn QA Fase04"
+        manifest.write_text(json.dumps(data),encoding="utf8")
+        config=destination / "mkxp.json"
+        config.write_text('{"dataPathApp": "Hoenn QA Fase04"}',encoding="utf8")
+        result=qa.verify_copy(destination,self.game)
+        self.assertEqual(result["distinct_save_profile"],"Hoenn QA Fase04")
+        self.assertFalse(result["game_exe_tested"])
+        config.write_text('{"dataPathApp": "Hoenn Piloto"}',encoding="utf8")
+        with self.assertRaisesRegex(ValueError,"Perfil"):
+            qa.verify_copy(destination,self.game)
+
     def test_missing_remapped_map_fails_closed(self):
         maps = self.make_copy()
         (self.output / f"Data/Map{maps['83']:03}.rxdata").unlink()

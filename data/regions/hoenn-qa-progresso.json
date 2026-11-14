@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 3,
-    "implementation_preparation_count": 3,
+    "current_phase": 4,
+    "implementation_preparation_count": 4,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -44,8 +44,8 @@
       {
         "phase": 4,
         "name": "Movimentos de campo e quebra-cabeças",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "regional_hm_checks_rock_strength_obstacle_scanner_and_native_qa_scripts_prepared",
+        "native_acceptance": "pending_original_source_and_game_exe_ice_puzzles_surf_routes",
         "native_approved": false
       },
       {
@@ -117,9 +117,18 @@
       "native field encounters: Land Cave Surf OldRod GoodRod SuperRod RockSmash",
       "read-only source event backlog of trainers NPC signs and conditional items reviewed",
       "physical captures and trainer battles, save reload and regional isolation validated"
+    ],
+    "phase4_requires": [
+      "Build private hoenn-qa-fase04 copy using exact donor and Blue base",
+      "Audit rock/Strength source events and inspect gate report for skipped conditional obstacles",
+      "Test Hoenn badge + HM + party learned move; no unlocked field move in other regions",
+      "Waterfall to Ever Grande upper area; Dive into and out of underwater routes",
+      "Surf coastal crossings and free movement, Strength push collision, Rock Smash and encounter",
+      "Sootopolis ice puzzle, Seafloor currents/strength and Victory Road field move puzzles with actual Game.exe",
+      "Save/reload, no save collision, unchanged Decades/Kanto/Johto/Sinnoh"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "QA3 prepares pinned donor encounter defaults, conservative source item placement and backlog. Existing game copy and saves unchanged; native approval remains 0/12."
+  "last_publication_note": "Fase 4 implemented as conservative gated obstacle overlay and audits; native field moves and tileset ice puzzles still unapproved."
 }
