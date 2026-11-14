@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "04d8fc5c09a47c3fe2d002099c50d3bbeba4e98b",
+      "date": "2026-11-14T12:58:51-03:00",
+      "title": "fix(hoenn): conectar Fallarbor e Lavaridge ao grafo auditado da Etapa 7",
+      "category": "Correções"
+    },
+    {
       "sha": "3b3a81568d993aecb0784cdb2c944625aa3353f7",
       "date": "2026-11-14T12:57:51-03:00",
       "title": "ci(hoenn): validar Meteor Falls, Tabitha, Maxie, Flannery e Heat Badge em Ruby",
