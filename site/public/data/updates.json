@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bc506aa8a8497c48869e581aeee23a98d74b16b0",
+      "date": "2026-11-13T22:22:58-03:00",
+      "title": "feat(sinnoh): verify local native probe report token and all 9-map/24-event/3-Barry evidence before next manual launch",
+      "category": "Novidades"
+    },
+    {
       "sha": "c8b57eb31be1fab53d9173789167adddc62842a0",
       "date": "2026-11-13T22:22:40-03:00",
       "title": "feat(sinnoh): integrate native engine event/PBS probe into isolated first-run compiler and bind nine-map contract to QA proof",
