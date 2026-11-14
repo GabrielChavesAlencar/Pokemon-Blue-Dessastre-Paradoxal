@@ -98,6 +98,30 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertIn("5/8", panel)
         self.assertGreaterEqual(panel.count("0/13 (0%)"), 3)
 
+    def test_barry_pbs_is_prepared_but_starter_battle_is_still_locked(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        barry = record["barry_pbs_workstream"]
+        self.assertEqual(barry["status"], "PBS_DRAFT_CODE_READY_NATIVE_QA_PENDING")
+        self.assertEqual((barry["complete"], barry["total"]), (4, 6))
+        self.assertEqual(barry["complete"],
+                         sum(bool(item["complete"]) for item in barry["substeps"]))
+        self.assertFalse(barry["pbs_compiled"])
+        self.assertFalse(barry["marker_created"])
+        self.assertFalse(barry["game_playable"])
+        for item in barry["substeps"]:
+            if item["complete"]:
+                self.assertTrue(item["evidence"])
+                self.assertTrue((ROOT / item["evidence"]).is_file())
+        self.assertEqual(record["intro_workstream"]["complete"], 5)
+        self.assertFalse(record["intro_workstream"]["substeps"][6]["complete"])
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("4/6", panel)
+        self.assertIn("8/32 (25%)", panel)
+        self.assertIn("0/13 (0%)", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
