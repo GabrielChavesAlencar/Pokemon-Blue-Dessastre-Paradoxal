@@ -17,6 +17,7 @@ from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
 from kanto_overworld import MissingActorGraphic, safely_adapt_source_field_event, source_item_ball
+from kanto_npc_locale import install_npc_locale
 from server.ruby_marshal import RubyObject, text
 from stage import serialize, stage
 
@@ -29,6 +30,7 @@ PILOT_META = "Kanto pilot.json"
 PILOT_INPUTS = (
     "scripts/regions/pilot.py",
     "scripts/regions/kanto_overworld.py",
+    "scripts/regions/kanto_npc_locale.py",
     "scripts/regions/stage.py",
     "scripts/regions/pbs.py",
     "scripts/regions/export_kanto.py",
@@ -51,6 +53,12 @@ def build_signature():
         path = ROOT / relative
         digest.update(relative.encode("utf-8") + b"\0")
         digest.update(hashlib.sha256(path.read_bytes()).digest())
+    # The private NPC translation catalog is optional and never committed.
+    # Changing it invalidates only the isolated Kanto pilot build.
+    local = ROOT / ".blue-work/kanto-npc-ptbr.json"
+    digest.update(b"kanto-npc-ptbr.json\0")
+    digest.update(hashlib.sha256(local.read_bytes()).digest()
+                  if local.is_file() else b"no-local-catalog")
     return digest.hexdigest()
 
 
@@ -1424,6 +1432,9 @@ def build(source, game, output):
         for folder in ("Data", "Graphics"):
             shutil.copytree(preview / folder, target / folder, dirs_exist_ok=True)
         install_events(source, target, mapping)
+        # Merge local Argos/manual translations with BlueLocale in this pilot
+        # only. English story text and the Decades installation remain intact.
+        install_npc_locale(ROOT, source, target)
         install_pbs(preview, target, mapping)
         # Copy approved F2/F3 BGM and six confirmed F4 ME in this isolated pilot.
         # Hash verification and exclusive copy protect the original game audio.
