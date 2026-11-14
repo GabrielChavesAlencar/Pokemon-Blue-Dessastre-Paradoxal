@@ -24,6 +24,13 @@ module BlueKantoPilot
   # the selected Blue language explicitly at the moment the NPC is spoken to.
   NPC_DIALOGUE_FILE = "Data/blue-kanto-npc-dialogues.dat".freeze
 
+  # Removes only old source font/color overrides from imported FRLG NPC text.
+  # Do not alter the underlying localization catalog, other regions, or signs'
+  # window skins; this runs only when the isolated Kanto NPC bridge is called.
+  def self.standard_npc_text(message)
+    message.gsub(/\\(?:fn|fs|font|c)\[[^\]]*\]/i, "").gsub(/\\[br]/i, "")
+  end
+
   def self.npc_dialogue(source_map, source_event, index)
     @npc_dialogues ||= begin
       raise "Kanto NPC dialogue table not installed" unless File.file?(NPC_DIALOGUE_FILE)
@@ -36,9 +43,10 @@ module BlueKantoPilot
     message = lines && lines[index]
     raise "Missing Kanto NPC dialogue #{source_map}/#{source_event}/#{index}" unless message.is_a?(String)
     translated = defined?(BlueLocale) ? BlueLocale.translate(message) : message
-    # Old FRLG messages can carry font overrides that depend on its own fonts.
-    # Keep colours, windowskins and variables while using Blue's dialogue font.
-    pbMessage(translated.gsub(/\\(?:fn|fs|font)\[[^\]]*\]/i, ""))
+    # Blue/Decades uses readable white dialogue text by default. FRLG\b and
+    # FRLG\r force blue/red letters with pale outlines on the dark textbox.
+    # Keep sign skins (\\w[signskin]), pauses, newlines and substitutions.
+    pbMessage(standard_npc_text(translated))
   end
 
   def self.t(english, portuguese, *args)
