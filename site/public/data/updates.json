@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2d82149416d8ce63224f148e7b42e4b213c4fbaf",
+      "date": "2026-11-14T11:55:10-03:00",
+      "title": "fix(hoenn): mapear as duas entradas reais do Museu Oceânico",
+      "category": "Correções"
+    },
+    {
       "sha": "084355006db6c39049e87a19a7f4072e7a2ed59e",
       "date": "2026-11-14T11:54:17-03:00",
       "title": "feat(hoenn): Knuckle Badge, Brawly, Flash, Steven, Briney e Stern com progresso persistente",
