@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6ca2ddb7193e30d4653969ed1dd5ab64e1d47378",
+      "date": "2026-11-14T10:11:47-03:00",
+      "title": "fix(hoenn): reconhecer nomes de handler com dígitos, como rival_103",
+      "category": "Correções"
+    },
+    {
       "sha": "dd6a50b367f59ddc3538096432939f9945f59332",
       "date": "2026-11-14T10:11:16-03:00",
       "title": "docs(hoenn): relatar implementação da etapa 02 e critérios de QA nativo",
