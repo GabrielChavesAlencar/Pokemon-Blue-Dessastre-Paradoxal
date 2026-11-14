@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7af85c2c6fa83df4692867b5b3bcbc7467ccad40",
+      "date": "2026-11-14T17:16:07-03:00",
+      "title": "test(hoenn): QA7 Ruby gym dispatcher, map gates and regional isolation",
+      "category": "Testes"
+    },
+    {
+      "sha": "381b62113a7f600e7dd9e178c70b8270a27a4178",
+      "date": "2026-11-14T17:15:46-03:00",
+      "title": "test(hoenn): QA7 eight gym event contracts and failure scenarios",
+      "category": "Testes"
+    },
+    {
       "sha": "14c5eb336d24f4ede3910fe5e48c23cd0e612b8c",
       "date": "2026-11-14T17:15:13-03:00",
       "title": "test(hoenn): preserve historic event contracts with QA7 gym dispatcher",
