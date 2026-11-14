@@ -69,6 +69,35 @@ class SinnohProgressTests(unittest.TestCase):
         panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
         self.assertIn("6/9", panel)
 
+    def test_twinleaf_story_prepared_but_never_counted_playable(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        phase = record["intro_workstream"]
+        self.assertEqual(phase["status"], "ORIGINAL_EVENTS_PREPARED_NOT_PLAYABLE")
+        self.assertEqual(phase["complete"], 5)
+        self.assertEqual(phase["total"], 8)
+        self.assertEqual(phase["complete"],
+                         sum(bool(item["complete"]) for item in phase["substeps"]))
+        self.assertFalse(phase["native_verified"])
+        self.assertFalse(phase["assets_verified"])
+        self.assertTrue(phase["not_playable"])
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["development"]["pending"], 17)
+        self.assertEqual(record["development"]["percent_complete"], 25)
+        self.assertEqual({row["id"]: row["status"] for row in record["tasks"]
+                          if row["id"] in ("S13", "S14")},
+                         {"S13": "partial", "S14": "partial"})
+        self.assertTrue(all(not row["complete"] or (
+            row["evidence"] and (ROOT / row["evidence"]).is_file()
+        ) for row in phase["substeps"]))
+        spec = json.loads((ROOT / "data/regions/sinnoh-twinleaf-events.json").read_text("utf-8"))
+        self.assertFalse(spec["approved_for_install"])
+        self.assertFalse(spec["gameplay_verified"])
+        self.assertTrue(all(m["map_id"] is None for m in spec["maps"]))
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("5/8", panel)
+        self.assertGreaterEqual(panel.count("0/13 (0%)"), 3)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
