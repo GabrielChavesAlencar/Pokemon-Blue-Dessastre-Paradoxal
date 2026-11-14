@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7276681b3173ab2f295aae2fef9947c4f9e71ff9",
+      "date": "2026-11-13T23:55:29-03:00",
+      "title": "feat(portal): expose Sinnoh navigation and missing-content roadmap links",
+      "category": "Novidades"
+    },
+    {
       "sha": "f2b49d6243b4edd5456d29b332cc4233dff157a2",
       "date": "2026-11-13T23:55:18-03:00",
       "title": "feat(portal): show regional pending content and four league backlog sections",
