@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f42782ffefccb2bdb0ed9e5bac76485653adb84d",
+      "date": "2026-11-14T10:21:38-03:00",
+      "title": "docs(hoenn): corrigir formatação Markdown da etapa 02",
+      "category": "Correções"
+    },
+    {
       "sha": "e318f828487bc086e098d949041e22eb757d4acc",
       "date": "2026-11-14T10:21:23-03:00",
       "title": "docs(hoenn): registrar validação geométrica do ZIP real e corrigir caminho do staging",
