@@ -27,6 +27,7 @@ jobs:
           ruby tests/hoenn_pilot_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_stage3_runtime.rb scripts/regions/HoennPilot.rb
           ruby tests/hoenn_stage4_runtime.rb scripts/regions/HoennPilot.rb
+          ruby tests/hoenn_stage5_runtime.rb scripts/regions/HoennPilot.rb
       - name: Auditar contratos de Sinnoh sem instalar mapas
         run: python scripts/regions/audit_sinnoh_source.py
       - name: Validar historia isolada de Sinnoh no Ruby (sem game)
