@@ -76,6 +76,27 @@ def inspect(game: Path) -> dict:
         if record["kind"] == "cut":
             cut_events.setdefault(record["source_map"], set()).add(record["event"])
 
+    # Map/Event identities verified from the hash-pinned FRLG source:
+    # "Cut Tree" with native pbCut/pbSmashThisEvent. The compiler must
+    # reconstruct all 17 rather than passing if the count silently drops to 0.
+    required_cut = {
+        10: {20, 21}, 18: {15, 16, 17}, 25: {20}, 39: {2},
+        64: {1}, 114: {1, 2}, 124: {4, 6, 8}, 144: {1, 2, 3, 4},
+    }
+    if cut_events != required_cut:
+        raise ValueError(
+            f"FRLG Cut Tree locations missing or unexpected: "
+            f"{[(map_id, sorted(allowed - cut_events.get(map_id, set())))
+                for map_id, allowed in required_cut.items()
+                if allowed - cut_events.get(map_id, set())]}")
+    by_cut = {(row["source_map"], row["event"]): row for row in
+              field_report["cut_source_candidates"]
+              if row.get("native_cut_script") and row.get("native_smash_script")}
+    for source_id, event_ids in required_cut.items():
+        for eid in event_ids:
+            if (source_id, eid) not in by_cut:
+                raise ValueError(f"Cut Tree {source_id}/{eid} lacks source scripts")
+
     def allowed_plus_cut(source, base_ids):
         return set(base_ids) | cut_events.get(source, set())
     seen = set()
