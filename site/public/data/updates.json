@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0c4b596ed6c8bfce39ce647674da7fccfe85c518",
+      "date": "2026-11-14T09:54:00-03:00",
+      "title": "docs(hoenn): atualizar plano com estado real do piloto isolado",
+      "category": "Documentação"
+    },
+    {
       "sha": "7bb845356f0512e90943b02e2eea317b925c69c0",
       "date": "2026-11-14T09:53:08-03:00",
       "title": "docs(hoenn): registrar auditoria real da etapa 01 e pendências nativas",
