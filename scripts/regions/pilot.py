@@ -15,7 +15,8 @@ from pathlib import Path
 
 from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
-from pbs import read_blocks
+from pbs import catalogue, read_blocks
+from kanto_overworld import adapt_source_field_event, source_item_ball
 from server.ruby_marshal import RubyObject, text
 from stage import serialize, stage
 
@@ -27,6 +28,7 @@ PILOT_META = "Kanto pilot.json"
 # Changes to any of these inputs require a new isolated pilot build.
 PILOT_INPUTS = (
     "scripts/regions/pilot.py",
+    "scripts/regions/kanto_overworld.py",
     "scripts/regions/stage.py",
     "scripts/regions/pbs.py",
     "scripts/regions/export_kanto.py",
@@ -691,6 +693,8 @@ def install_events(source, target, mapping):
     mart_events = load(source / "Data/Map012.rxdata").attrs["@events"]
     mart_intro_event_id = max(mart_events) + 1
     preview_only = set(json_file(KANTO).get("preview_only", []))
+    catalogue_items = catalogue(target, "items")
+    field_inventory, skipped_items = [], []
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
@@ -1099,6 +1103,27 @@ def install_events(source, target, mapping):
                 ])
                 selected[event_id] = new_event(event, [warp, *arrival], 1, b"")
                 continue
+            # Fill the previously empty overworld with events grounded in
+            # the real FRLG EventID and coordinates, not guessed item spots.
+            # The reviewed story adapters above always take precedence.
+            field = adapt_source_field_event(
+                event, original, event_id, catalogue_items,
+                actor, new_event, command, if_scene)
+            if field:
+                adapted, detail = field
+                selected[event_id] = adapted
+                field_inventory.append({
+                    "source_map": original, "map": destination, "event": event_id,
+                    "x": event.attrs["@x"], "y": event.attrs["@y"],
+                    "source_name": text(event.attrs["@name"]), **detail,
+                })
+                continue
+            item_candidate = source_item_ball(event)
+            if item_candidate and item_candidate[0] not in catalogue_items:
+                skipped_items.append({
+                    "source_map": original, "event": event_id,
+                    "item": item_candidate[0], "reason": "missing Blue item ID",
+                })
             warp = extract_warps(event, mapping)
             if warp:
                 name = text(event.attrs["@name"])
@@ -1152,6 +1177,14 @@ def install_events(source, target, mapping):
             update_oak_lab(selected, mapping[5], actor(events[18]))
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
+    # The generated report is reproducible for the same audited source and
+    # lets testers identify exactly which field events were really installed.
+    (target / "Data/blue-kanto-field-events.json").write_text(
+        json.dumps({
+            "schema": 1, "imported": field_inventory,
+            "skipped_items": skipped_items,
+            "preview_maps_untouched": sorted(preview_only),
+        }, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
 
 
 def copy_game(game, target):
