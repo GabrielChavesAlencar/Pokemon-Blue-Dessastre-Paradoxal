@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f078c1c60e7a560479351ba06bc6e63627f162bb",
+      "date": "2026-11-14T18:50:02-03:00",
+      "title": "test(hoenn): supply both group and map selection in QA teleport fixture",
+      "category": "Testes"
+    },
+    {
       "sha": "4709a1fe56cc2d802f4462b11b01495eba1de679",
       "date": "2026-11-14T18:49:21-03:00",
       "title": "feat(hoenn): TESTAR_HOENN.bat shows in-game 199-map teleport instructions and save caveat",
