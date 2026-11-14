@@ -16,9 +16,10 @@ from pathlib import Path
 from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
-from kanto_overworld import MissingActorGraphic, safely_adapt_source_field_event, source_item_ball
-from kanto_npc_locale import install_npc_locale
-from server.ruby_marshal import RubyObject, text
+from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_event,
+                             source_item_ball, source_npc_dialogue)
+from kanto_npc_locale import install_npc_locale, npc_literals
+from server.ruby_marshal import RubyObject, dumps_simple, text
 from stage import serialize, stage
 
 SAVE_ORG = "Dessastre Paradoxal Kanto Testes"
@@ -721,6 +722,7 @@ def install_events(source, target, mapping):
     preview_only = set(json_file(KANTO).get("preview_only", []))
     catalogue_items = catalogue(target, "items")
     field_inventory, skipped_items, pending_review, missing_graphics = [], [], [], []
+    npc_dialogues = []  # FRLG source text stays only in the locally built pilot.
     if preview_only - mapping.keys():
         raise ValueError("Preview-only map ID is missing from the source manifest")
     for original, destination in mapping.items():
@@ -1150,6 +1152,19 @@ def install_events(source, target, mapping):
                       f"evento {event_id}: {missing_graphic}", flush=True)
             if field:
                 adapted, detail = field
+                if detail["kind"] == "npc_dialogue":
+                    # RPG Maker 101/401 and script-generated text can bypass
+                    # _INTL/getFromMapHash hooks. Dispatch these *already audited*
+                    # passive NPCs to an explicit, locale-aware callback at talk
+                    # time. No source Ruby is executed or copied.
+                    literal_commands = source_npc_dialogue(event)
+                    literals = npc_literals(literal_commands) if literal_commands else []
+                    if literals:
+                        npc_dialogues.append([original, event_id, literals])
+                        adapted.attrs["@pages"][0].attrs["@list"] = [
+                            command(355, f"BlueKantoPilot.npc_dialogue({original}, {event_id}, {index})".encode("ascii"))
+                            for index in range(len(literals))
+                        ] + [command(0)]
                 selected[event_id] = adapted
                 field_inventory.append({
                     "source_map": original, "map": destination, "event": event_id,
@@ -1234,6 +1249,11 @@ def install_events(source, target, mapping):
                 })
         map_data.attrs["@events"] = selected
         write_map(dest_file, map_data, EVENT_CLASSES)
+    # Native Ruby Marshal table: only the pilot receives original, audited
+    # dialogue. Avoid injecting source text into Ruby script literals or Git.
+    (target / "Data/blue-kanto-npc-dialogues.dat").write_bytes(
+        dumps_simple(npc_dialogues)
+    )
     # The generated report is reproducible for the same audited source and
     # lets testers identify exactly which field events were really installed.
     (target / "Data/blue-kanto-field-events.json").write_text(
