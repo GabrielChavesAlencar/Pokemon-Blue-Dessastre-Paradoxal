@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bb845356f0512e90943b02e2eea317b925c69c0",
+      "date": "2026-11-14T09:53:08-03:00",
+      "title": "docs(hoenn): registrar auditoria real da etapa 01 e pendências nativas",
+      "category": "Documentação"
+    },
+    {
       "sha": "f032a41dc388c8ff0e5c5c4759c0c06c7f7c28b5",
       "date": "2026-11-14T09:51:02-03:00",
       "title": "fix(hoenn): reconhecer handlers Ruby com argumentos na auditoria",
