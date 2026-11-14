@@ -45,7 +45,7 @@ module BlueRegionalCards
       b.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(8, 23, 40))
       b.fill_rect(8, 8, Graphics.width - 16, 50, Color.new(22, 47, 73))
       pbSetSmallFont(b)
-      label = @page == 0 ? "REGIÃO ATUAL" : "TODAS AS REGIÕES"
+      label = @page == 0 ? (data[:current] == "KANTO" ? "KANTO · INSÍGNIAS" : "REGIÃO ATUAL") : "TODAS AS REGIÕES"
       write(b, "CARTÃO DE TREINADOR — #{label}", 18, 16, 19)
       write(b, "Página #{@page + 1}/2  ·  ←/→ mudar  ·  Voltar: sair", 18, 41, 13,
             Color.new(166, 202, 230))
@@ -128,10 +128,45 @@ module BlueRegionalCards
     MenuHandlers.add(:pause_menu, :blue_regional_trainer_cards, {
       "name" => _INTL("Cartão do treinador · 2 páginas"),
       "order" => 50,
-      "condition" => proc { |_menu| BlueStory.story? && !BlueBattleOptions.battle_area? },
+      "condition" => proc { |_menu|
+        state = BlueRegions.snapshot
+        BlueStory.story? && state && state["current"] != "KANTO" &&
+          !BlueBattleOptions.battle_area?
+      },
       "effect" => proc do |menu|
         menu.pbHideMenu
         pbFadeOutIn { BlueRegionalCards.open }
+        menu.pbShowMenu
+        menu.pbRefresh
+        false
+      end
+    })
+    # The Kanto pilot does not necessarily use the Decades Story Mode
+    # switch. Expose BOTH real cards directly, each with its own initial page.
+    # No change to the native Decades Trainer Card or badge switches.
+    MenuHandlers.add(:pause_menu, :blue_kanto_trainer_card, {
+      "name" => _INTL("Cartão de Kanto · insígnias"), "order" => 49,
+      "condition" => proc { |_menu|
+        state = BlueRegions.snapshot
+        state && state["current"] == "KANTO" && !BlueBattleOptions.battle_area?
+      },
+      "effect" => proc do |menu|
+        menu.pbHideMenu
+        pbFadeOutIn { BlueRegionalCards.open(0) }
+        menu.pbShowMenu
+        menu.pbRefresh
+        false
+      end
+    })
+    MenuHandlers.add(:pause_menu, :blue_global_trainer_card, {
+      "name" => _INTL("Cartão global · esmeraldas"), "order" => 50,
+      "condition" => proc { |_menu|
+        state = BlueRegions.snapshot
+        state && state["current"] != "DECADES" && !BlueBattleOptions.battle_area?
+      },
+      "effect" => proc do |menu|
+        menu.pbHideMenu
+        pbFadeOutIn { BlueRegionalCards.open(1) }
         menu.pbShowMenu
         menu.pbRefresh
         false
