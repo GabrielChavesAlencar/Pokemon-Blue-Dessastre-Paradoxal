@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "adb033957e03dcef49b61bd8bbf1682ea9f16e95",
+      "date": "2026-11-14T17:51:37-03:00",
+      "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
+      "category": "Novidades"
+    },
+    {
+      "sha": "37fbbb0d541c58d394e93e3bfe4f8714141dcc9d",
+      "date": "2026-11-14T17:51:34-03:00",
+      "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
+      "category": "Novidades"
+    },
+    {
+      "sha": "dd1adb6c0494cffb6fcb434c84ca2ce870d25b00",
+      "date": "2026-11-14T17:51:32-03:00",
+      "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
+      "category": "Novidades"
+    },
+    {
+      "sha": "7e87e9b52279f518f3015130d7cc306b7b3b1396",
+      "date": "2026-11-14T17:51:29-03:00",
+      "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
+      "category": "Novidades"
+    },
+    {
+      "sha": "4475c9a44e1c3c8a2a19cd9a738c8fa24d250939",
+      "date": "2026-11-14T17:51:27-03:00",
+      "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c7e705d221ff6e64d5b4c52d9bc7f59f89a110fa",
+      "date": "2026-11-14T17:51:24-03:00",
+      "title": "feat(hoenn): QA10 isolated Hall manifest, save profile and QA05-09 compatibility",
+      "category": "Novidades"
+    },
+    {
       "sha": "1ea086ad66022dbaad6ae2a00d1de8f003d87824",
       "date": "2026-11-14T17:50:51-03:00",
       "title": "feat(hoenn): QA10 static Hall, region circuit and native-gated travel auditor",
