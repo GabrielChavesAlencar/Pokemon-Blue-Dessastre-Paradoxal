@@ -14,9 +14,9 @@ const loc=id=>kanto.locations.find(v=>v.id===id);
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
   assert.equal(kanto.locations.length,142);
   assert.equal(kanto.trainers.length,144);
-  assert.equal(kanto.locations.filter(x=>x.status==='preview').length,45);
+  assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
-  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,96);
+  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,106);
   assert.ok(kanto.locations.filter(x=>x.status==='preview').every(x=>!x.methods.length&&!x.trainers.length));
   const route23=kantoLocation(model,kanto,loc('kanto-route-23'));
   assert.match(route23,/Encontros temporariamente suspensos/);
