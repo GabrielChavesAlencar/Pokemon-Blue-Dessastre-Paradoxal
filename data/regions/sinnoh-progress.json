@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "S07 R07 - validar reservas físicas e planejadas de todas as regiões com game/Data local; R08 conversão do conteúdo autorizado; R09 piloto e testes nativos. Em paralelo, desenvolver S08 sem tocar em saves.",
+  "next": "Executar conversor de geometria somente com ZIP/pasta real auditada e direitos, validar assets, acrescentar eventos autorais e QA isolado; Code-only R08 ainda parcial.",
   "tasks": [
     {
       "id": "S01",
@@ -349,6 +349,30 @@
         "evidence": null
       }
     ],
-    "note": "6/9 subetapas de preparação do S07; continua parcial, sem importar mapas reais, e não conta para fases técnicas/jogáveis."
+    "note": "6/9 etapas aprovadas no S07. R08 tem conversor de geometria próprio escrito e testado só em fixtures; não inclui mapas reais, eventos de gameplay, fonte licenciada, nem teste Game.exe. Não incrementar fase.",
+    "geometry_preview": {
+      "status": "CODE_COMPLETE_WITH_SYNTHETIC_TESTS_ONLY",
+      "code": "scripts/regions/convert_sinnoh_geometry.py",
+      "tests": "tests/test_sinnoh_geometry_converter.py",
+      "outputs": [
+        "Data/MapNNN.rxdata",
+        "Data/MapInfos.rxdata",
+        "Data/Tilesets.rxdata",
+        "Graphics/Tilesets/*.png",
+        "Graphics/Autotiles/*.png"
+      ],
+      "guarantees": [
+        "No donor event, script, encounter or music copied",
+        "No game/ or save writes",
+        "Hash pinned source and plan",
+        "Dry run by default and optional isolated stage"
+      ],
+      "still_missing": [
+        "Source ZIP / folder with actual rights",
+        "Audited real MapIDs and future reservations of Johto/Hoenn",
+        "Native Game.exe/JoiPlay testing"
+      ],
+      "counts_as_completed_R08": false
+    }
   }
 }
