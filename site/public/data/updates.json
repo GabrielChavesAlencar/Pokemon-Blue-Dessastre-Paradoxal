@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "125c5e5cb6dcf0c7f03c82b9d9008fbcf3076d6c",
+      "date": "2026-11-13T21:03:10-03:00",
+      "title": "data(sinnoh): register safe geometry converter and keep real-source/native approval disabled",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "879d32c7e73a4f8ce5ea32ed3a6d76dedb0513cb",
+      "date": "2026-11-13T21:02:57-03:00",
+      "title": "docs(sinnoh): show geometry conversion code under R08 without advancing native or gameplay bars",
+      "category": "Documentação"
+    },
+    {
       "sha": "f6bd5db262b451f3476bec3b1cc8b7568b2747f2",
       "date": "2026-11-13T21:02:13-03:00",
       "title": "docs(sinnoh): hand off only actual source/native dependencies after geometry converter implementation",
