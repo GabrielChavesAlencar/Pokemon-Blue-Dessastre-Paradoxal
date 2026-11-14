@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5cf953eed2e80f37ac05bb9874628ec8daf6b8fe",
+      "date": "2026-11-13T22:05:36-03:00",
+      "title": "docs(sinnoh): add 3/6 safe pilot overlay integration subbar without claiming real Game.exe completion",
+      "category": "Documentação"
+    },
+    {
+      "sha": "6abc112185a0e7af577b5399b89ef2d16c9425eb",
+      "date": "2026-11-13T22:05:22-03:00",
+      "title": "data(sinnoh): track new private nine-map/PBS QA overlay assembler as 3/6 code-only tasks",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9027f5aa78471d3a79608d871b1a5e33ff511e78",
       "date": "2026-11-13T22:04:53-03:00",
       "title": "fix(sinnoh): validate every donor geometry MapID and allow additional maps beyond nine intro areas",
