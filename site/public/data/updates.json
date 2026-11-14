@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0886ecb5c0b83740cfd935664e0afd1198841c9e",
+      "date": "2026-11-14T00:08:10-03:00",
+      "title": "fix(kanto): handle missing optional NPC_Hiker sprite without aborting Testar Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "6b73d9554d9e454ca244e1f0698a9e30a338bbf5",
       "date": "2026-11-14T00:07:19-03:00",
       "title": "feat(regions): inspect individual Hoenn and Johto NPC/PBS bindings in optional private pilot copy",
