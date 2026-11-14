@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dd6a50b367f59ddc3538096432939f9945f59332",
+      "date": "2026-11-14T10:11:16-03:00",
+      "title": "docs(hoenn): relatar implementação da etapa 02 e critérios de QA nativo",
+      "category": "Documentação"
+    },
+    {
       "sha": "18aeccc5672fb61267cc574fffb536ebf62242cb",
       "date": "2026-11-14T10:09:00-03:00",
       "title": "fix(hoenn): carregar plugin por caminho absoluto no teste Ruby",
