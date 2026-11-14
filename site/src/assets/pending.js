@@ -26,6 +26,46 @@ export async function loadPendingRegions(fetcher=fetch){
   return cached;
 }
 
+let bindingCache;
+export async function loadTrainerBindings(fetcher=fetch){
+  if(!bindingCache){
+    const response=await fetcher('/data/trainer-event-bindings-phase1.json');
+    if(!response.ok)throw new Error('regional-trainer-bindings-unavailable');
+    const data=await response.json();
+    if(data.schema!==1||data.state!=='NATIVE_AUDIT_PENDING_NOT_GAMEPLAY'||
+       !Array.isArray(data.records)||data.records.length!==13||
+       data.records.some(row=>row.gameplay_verified!==false))
+      throw new Error('regional-trainer-bindings-invalid');
+    bindingCache=data;
+  }
+  return bindingCache;
+}
+
+export function trainerBindingsPanel(data,region){
+  const rows=(data?.records||[]).filter(row=>row.region===region);
+  if(!rows.length)return '';
+  const cards=rows.map(row=>{
+    const mid=row.map_stage_id;
+    const mapped=mid==null?'ID 102 da fonte · destino definido no piloto':
+      'Map'+String(mid).padStart(3,'0')+' · etapa offline';
+    const evidence=row.region==='HOENN'?'Evento previsto no gerador Hoenn':
+      'Evento e PBS preparados em cópia offline';
+    return '<article class="pending-card"><h3>'+esc(row.trainer_name)+'</h3>'+
+      '<p>'+esc(row.area)+' · '+esc(mapped)+'</p>'+
+      '<p>Posição de referência ('+esc(row.x)+', '+esc(row.y)+') · '+esc(row.trainer_type)+'</p>'+
+      '<p>'+esc(evidence)+' · '+esc(row.versions.join(' / '))+' (versões PBS)</p>'+
+      '<p>Chave de evento: <code>'+esc(row.event_key)+'</code></p>'+
+      pendingLabel('native_qa_pending')+'</article>';
+  }).join('');
+  return '<section class="section pending-content" aria-label="Vínculos individuais auditados">'+
+    '<span class="eyebrow">FASE 02 · VÍNCULOS NO CÓDIGO</span>'+
+    '<h2>Treinadores individuais identificados: '+rows.length+'</h2>'+
+    '<p class="data-note">MapIDs e coordenadas correspondem ao gerador ou staging privado. '+
+    'A presença de scripts não prova que estes NPCs funcionam no jogo instalado. '+
+    'Somente após verificar RXDATA, PBS compilado e batalha real o status poderá mudar.</p>'+
+    '<div class="pending-grid">'+cards+'</div></section>';
+}
+
 export const pendingLabel=(status='not_added')=>'<span class="content-pending-tag'+
   (status==='native_qa_pending'?' pending-validation':'')+'">'+
   (status==='native_qa_pending'?'Em validação':'Ainda não adicionado')+'</span>';
@@ -64,7 +104,7 @@ export function pendingBlocks(db,region,route,{excludeNames=[]}={}){
     'target="_blank" rel="noopener noreferrer">Acompanhar implantação por etapas</a>.</p></section>';
 }
 
-export function pendingPage(db,requested='KANTO'){
+export function pendingPage(db,requested='KANTO',bindings=null){
   const region=db.regions[requested]?requested:'KANTO';
   const tabs=Object.entries(titleCase).map(([key,name])=>
     '<a class="filter-chip'+(key===region?' active':'')+'" href="/pendencias?regiao='+key.toLowerCase()+
@@ -84,6 +124,7 @@ export function pendingPage(db,requested='KANTO'){
     '<div class="pending-counters">'+counts+'</div>'+
     pendingBlocks(db,region,'localizacoes')+
     pendingBlocks(db,region,'treinadores')+
+    trainerBindingsPanel(bindings,region)+
     pendingBlocks(db,region,'chefes')+
     pendingBlocks(db,region,'liga')+
     '<p class="data-note">Referência: '+esc(r.doc)+' · '+esc(r.game)+
