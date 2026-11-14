@@ -1436,6 +1436,7 @@ def build_overlay(game, source):
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE6)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE7)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE8)
+    needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE9)
     missing = needed - types
     if missing:
         raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
@@ -1462,11 +1463,26 @@ def build_overlay(game, source):
     extra_ids.update((NORMAN_PBS, WINONA_PBS, SHELLY_PBS))
     extra_ids.update(("BLUE_HOENN_AQUA", "Recruta", version)
                      for mid,x,y,version,_team in AQUA_INSTITUTE)
+    extra_ids.update((kind,name,mid)
+                     for mid,_,_,kind,name,_,_,_ in TRAINERS_STAGE9)
+    extra_ids.update((TATE_LIZA_PBS,MATT_PBS,MAXIE_HIDEOUT_PBS,
+                      TABITHA_HIDEOUT_PBS,MAXIE_SPACE_PBS,TABITHA_SPACE_PBS))
+    for group,kind in (
+        (PYRE_AQUA_GRUNTS,"BLUE_HOENN_AQUA"),
+        (AQUA_HIDEOUT_GRUNTS,"BLUE_HOENN_AQUA"),
+        (MAGMA_HIDEOUT_GRUNTS,"BLUE_HOENN_MAGMA"),
+        (SPACE_GRUNT_EVENTS,"BLUE_HOENN_MAGMA"),
+    ):
+        extra_ids.update((kind,"Recruta",version)
+                         for mid,x,y,version,team in group)
     if len(extra_ids) != (len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) +
                           len(TRAINERS_STAGE5) + len(TRAINERS_STAGE6) +
                           len(TRAINERS_STAGE7) + len(MUSEUM_AQUA) +
                           len(MAGMA_GRUNTS_STAGE7) + len(TRAINERS_STAGE8) +
-                          len(AQUA_INSTITUTE) + 12):
+                          len(AQUA_INSTITUTE) + 12 +
+                          len(TRAINERS_STAGE9) + len(PYRE_AQUA_GRUNTS) +
+                          len(AQUA_HIDEOUT_GRUNTS) + len(MAGMA_HIDEOUT_GRUNTS) +
+                          len(SPACE_GRUNT_EVENTS) + 6):
         raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
@@ -1480,7 +1496,8 @@ def build_overlay(game, source):
     if {"BLUE_HOENN_AQUA", "BLUE_HOENN_ROXANNE", "BLUE_HOENN_BRAWLY",
         "BLUE_HOENN_WATTSON", "BLUE_HOENN_WALLY", "BLUE_HOENN_MAGMA",
         "BLUE_HOENN_TABITHA", "BLUE_HOENN_MAXIE", "BLUE_HOENN_FLANNERY",
-        "BLUE_HOENN_NORMAN", "BLUE_HOENN_WINONA", "BLUE_HOENN_SHELLY"} & types:
+        "BLUE_HOENN_NORMAN", "BLUE_HOENN_WINONA", "BLUE_HOENN_SHELLY",
+        "BLUE_HOENN_TATE_LIZA", "BLUE_HOENN_MATT"} & types:
         raise ValueError("Tipo de chefe Hoenn já existe no PBS nativo")
     overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
         "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
@@ -1507,6 +1524,10 @@ def build_overlay(game, source):
         "BaseMoney = 100\nSkillLevel = 100\n"
         "[BLUE_HOENN_SHELLY]\nName = Admin Aqua\nGender = Female\n"
         "BaseMoney = 90\nSkillLevel = 90\n"
+        "[BLUE_HOENN_TATE_LIZA]\nName = Lideres de Ginasio\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_MATT]\nName = Admin Aqua\nGender = Male\n"
+        "BaseMoney = 80\nSkillLevel = 85\n"
     ).encode("utf-8")
     # Use only native trainer graphics; a fallback is explicitly NOT a visual
     # approval for the actual Aqua sprite.
