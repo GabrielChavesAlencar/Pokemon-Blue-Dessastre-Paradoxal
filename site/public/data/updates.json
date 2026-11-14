@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "00214e59c841c26712146084b55a70da989da6d6",
+      "date": "2026-11-14T13:34:27-03:00",
+      "title": "feat(site/hoenn): documentar 110 mapas, 144 equipes e Stage8 Norman/Winona/Lilycove",
+      "category": "Novidades"
+    },
+    {
       "sha": "6505e3d4bafc175916a1f69f6eafd84306c7897c",
       "date": "2026-11-14T13:33:03-03:00",
       "title": "test(hoenn): auditar baseline da fonte 110 mapas até Lilycove",
