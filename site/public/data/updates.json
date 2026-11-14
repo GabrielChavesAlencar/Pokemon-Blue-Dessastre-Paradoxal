@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f032a41dc388c8ff0e5c5c4759c0c06c7f7c28b5",
+      "date": "2026-11-14T09:51:02-03:00",
+      "title": "fix(hoenn): reconhecer handlers Ruby com argumentos na auditoria",
+      "category": "Correções"
+    },
+    {
       "sha": "949692af001da5a7c55e0e67cf1e3cf819ca5266",
       "date": "2026-11-14T09:50:16-03:00",
       "title": "ci(hoenn): verificar auditoria e sintaxe Ruby do piloto",
