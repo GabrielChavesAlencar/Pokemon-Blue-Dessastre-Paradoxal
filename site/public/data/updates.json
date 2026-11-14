@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "06b44323b8c1b19b3557a3396cc5d2de9beb7957",
+      "date": "2026-11-14T18:28:16-03:00",
+      "title": "feat(hoenn): accept isolated QA12 profile in audited earlier phases",
+      "category": "Novidades"
+    },
+    {
+      "sha": "5711e7c3686d1be8236faab10a0917f22fb3f801",
+      "date": "2026-11-14T18:28:00-03:00",
+      "title": "feat(hoenn): QA12 integrated static manifest and dedicated Windows/Android save profile",
+      "category": "Novidades"
+    },
+    {
       "sha": "8c73d12014b72738ec1c924897d6fdda365eebd3",
       "date": "2026-11-14T18:27:36-03:00",
       "title": "feat(hoenn): QA12 integrated 11-phase evidence gate, native PC/Android checklists and blocker inventory",
