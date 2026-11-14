@@ -1453,16 +1453,23 @@ module BlueHoennPilot
   def self.magma_blocker(event_id)
     flags=state
     return false unless flags && event_id.is_a?(Integer)
+    _, maps=metadata
+    return false unless $game_map && $game_map.map_id==maps[121] &&
+                        $game_self_switches && $game_map.events[event_id]
     unless flags["meteorite_stolen"]
       pbMessage(_INTL("Recruta Magma: o teleférico está interditado. Não entre!"))
       return false
     end
-    if $game_self_switches && $game_map && $game_map.events[event_id]
-      $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
-      $game_map.events[event_id].refresh
+    flags["magma_blockers_cleared"] ||= []
+    unless flags["magma_blockers_cleared"].include?(event_id)
+      flags["magma_blockers_cleared"] << event_id
     end
-    flags["cable_car_unlocked"]=true
-    pbMessage(_INTL("Recruta Magma: nossa equipe voltou ao cume. O teleférico foi liberado."))
+    $game_self_switches[[$game_map.map_id,event_id,"A"]]=true
+    $game_map.events[event_id].refresh
+    flags["cable_car_unlocked"]=true if flags["magma_blockers_cleared"].size>=2
+    pbMessage(flags["cable_car_unlocked"] ?
+      _INTL("Os dois recrutas Magma recuaram. O teleférico foi liberado!") :
+      _INTL("Um recruta recuou, mas o outro ainda bloqueia o teleférico."))
     true
   end
 
@@ -1484,8 +1491,8 @@ module BlueHoennPilot
       pbMessage(_INTL("A estação do teleférico não pertence a este mapa."))
       return false
     end
-    if from==lower && !flags["meteorite_stolen"]
-      pbMessage(_INTL("O teleférico está bloqueado. Investigue os eventos de Meteor Falls."))
+    if from==lower && (!flags["meteorite_stolen"] || !flags["cable_car_unlocked"])
+      pbMessage(_INTL("O teleférico está bloqueado. Investigue Meteor Falls e afaste os dois recrutas Magma."))
       return false
     end
     target=from==lower ? [upper,8,9,2] : [lower,8,9,2]
