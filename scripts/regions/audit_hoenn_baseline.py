@@ -24,7 +24,17 @@ PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
          23: "Poké Mart de Rustboro", 24: "Casas de Rustboro",
          25: "Escola de Treinadores de Rustboro", 26: "Devon Corporation",
          27: "Ginásio de Rustboro", 130: "Rota 116",
-         131: "Casa dos Escavadores", 157: "Rusturf Tunnel"}
+         131: "Casa dos Escavadores", 157: "Rusturf Tunnel",
+         28: "Dewford Town", 29: "Centro Pokémon de Dewford",
+         30: "Casas de Dewford", 31: "Ginásio de Dewford",
+         32: "Slateport City", 33: "Porto de Slateport",
+         34: "Centro Pokémon de Slateport", 35: "Poké Mart de Slateport",
+         36: "Casas de Slateport", 37: "Pokémon Fan Club",
+         38: "Estaleiro do Capitão Stern", 39: "Museu Oceânico",
+         40: "Battle Tent de Slateport", 108: "Rota 106",
+         111: "Rota 109", 112: "Casa da Praia",
+         159: "Granite Cave 1F", 160: "Granite Cave B1F",
+         161: "Granite Cave B2F", 162: "Sala de Steven em Granite Cave"}
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
