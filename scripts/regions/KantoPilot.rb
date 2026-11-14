@@ -199,6 +199,19 @@ module BlueKantoPilot
     pbMessage(_INTL("O caminho norte para a Rota 2 está bloqueado. Primeiro entregue a encomenda do Poké Mart ao Professor Oak em Pallet!"))
   end
 
+  # A connected outdoor map changes before a normal transfer event runs.
+  # The event markers created on Viridian's actual north edge define where
+  # the route exists. Guard the LAST movement into Route 2 itself, even if an
+  # invisible Player Touch event does not block the preceding tile.
+  def self.route2_exit_blocked?(player, direction)
+    return false unless player && direction == 8 && player.y == 0 && $game_map
+    return false unless $game_map.events.values.any? { |event|
+      event.name == "Kanto Viridian Route 2 Parcel Gate" &&
+        event.y == 0 && event.x == player.x
+    }
+    !forest_unlocked?
+  end
+
   def self.rival_done?
     progress["pilot_rival"] == true
   end
@@ -981,6 +994,25 @@ module BlueKantoPilot
     pbMessage(_INTL("Sua equipe está descansada."))
   end
 end
+
+# The Kanto-only markers ensure this global movement hook is inert on
+# Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
+module BlueKantoPilot::Route2ExitGuard
+  def move_generic(dir, turn_enabled = true)
+    if BlueKantoPilot.route2_exit_blocked?(self, dir)
+      turn_generic(dir, true) if turn_enabled
+      warning_key = [$game_map.map_id, x, y]
+      if @blue_route2_last_warning != warning_key
+        @blue_route2_last_warning = warning_key
+        BlueKantoPilot.route2_gate_warning
+      end
+      return
+    end
+    @blue_route2_last_warning = nil
+    super
+  end
+end
+Game_Player.prepend(BlueKantoPilot::Route2ExitGuard)
 
 # This menu is visible ONLY in the isolated pilot with its local stop manifest.
 MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
