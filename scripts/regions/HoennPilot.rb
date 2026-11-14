@@ -564,7 +564,7 @@ module BlueHoennPilot
       pbMessage(_INTL("Norman: Muito bem, Wally! Continue sua jornada até Rustboro."))
       return true
     end
-    pbMessage(heat_badge? ? _INTL("Norman: você está pronto para o desafio da Balance Badge. Venha ao fundo do ginásio!") :
+    pbMessage(heat_badge? ? _INTL("Norman: você está pronto para o desafio da Insígnia do Equilíbrio. Venha ao fundo do ginásio!") :
       _INTL("Norman: Volte quando tiver quatro insígnias de Hoenn. Então batalharemos!"))
     true
   end
@@ -663,7 +663,7 @@ module BlueHoennPilot
   end
 
 
-  # Stage 4 remains completely save-scoped to "HOENN", with one Stone Badge
+  # Stage 4 remains completely save-scoped to "HOENN", with one Insígnia da Pedra
   # awarded by the existing regional registry. No native badge or global
   # crystal count is overwritten.
   STAGE4_SIGNS = {
@@ -757,11 +757,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions, "HOENN", "STONE")
-      pbMessage(_INTL("Roxanne: Erro ao registrar a Stone Badge. Verifique o estado regional."))
+      pbMessage(_INTL("Roxanne: Erro ao registrar a Insígnia da Pedra. Verifique o estado regional."))
       return false
     end
     flags["roxanne_defeated"] = true
-    pbMessage(_INTL("Você conquistou a Stone Badge de Hoenn! A técnica Cut está liberada nesta região."))
+    pbMessage(_INTL("Você conquistou a Insígnia da Pedra de Hoenn! A técnica Cut está liberada nesta região."))
     roxanne_tm
     true
   end
@@ -770,7 +770,7 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     if flags["hm_cut_given"]
-      pbMessage(_INTL("Especialista: Ensine Cut a um Pokémon. A Stone Badge libera seu uso em Hoenn."))
+      pbMessage(_INTL("Especialista: Ensine Cut a um Pokémon. A Insígnia da Pedra libera seu uso em Hoenn."))
       return false
     end
     item = [:HM01, :HMCUT].find { |candidate| GameData::Item.exists?(candidate) }
@@ -783,7 +783,7 @@ module BlueHoennPilot
       return false
     end
     flags["hm_cut_given"] = true
-    pbMessage(_INTL("Você recebeu HM Cut! Precisa da Stone Badge para usá-lo em Hoenn."))
+    pbMessage(_INTL("Você recebeu HM Cut! Precisa da Insígnia da Pedra para usá-lo em Hoenn."))
     true
   end
 
@@ -798,7 +798,7 @@ module BlueHoennPilot
       return true
     end
     unless stone_badge?
-      pbMessage(_INTL("Uma árvore pequena bloqueia a passagem. A Stone Badge de Hoenn é necessária."))
+      pbMessage(_INTL("Uma árvore pequena bloqueia a passagem. A Insígnia da Pedra de Hoenn é necessária."))
       return false
     end
     unless $bag && [:HM01, :HMCUT].any? { |item|
@@ -889,10 +889,10 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     # Recover from a missed city touch trigger instead of trapping a save:
-    # the Stone Badge is still mandatory, and the report is unique.
+    # the Insígnia da Pedra is still mandatory, and the report is unique.
     rustboro_theft if stone_badge? && !flags["devon_theft_seen"]
     unless flags["devon_theft_seen"] && stone_badge?
-      pbMessage(_INTL("O túnel está silencioso. Investigue Rustboro após conquistar a Stone Badge."))
+      pbMessage(_INTL("O túnel está silencioso. Investigue Rustboro após conquistar a Insígnia da Pedra."))
       return false
     end
     if flags["rusturf_aqua_defeated"]
@@ -975,12 +975,12 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     unless flags["rusturf_aqua_defeated"] && dynamo_badge?
-      pbMessage(_INTL("Escavador: primeiro ajude em Rusturf Tunnel e conquiste a Dynamo Badge."))
+      pbMessage(_INTL("Escavador: primeiro ajude em Rusturf Tunnel e conquiste a Insígnia do Dínamo."))
       return false
     end
     return field_hm_reward(:STRENGTH, [:HM04, :HMSTRENGTH],
                            "hm_strength_received",
-                           "Escavador: receba Strength! A Heat Badge permite mover pedras em Hoenn.")
+                           "Escavador: receba Strength! A Insígnia do Calor permite mover pedras em Hoenn.")
   end
 
   def self.rusturf_east_gate
@@ -996,7 +996,7 @@ module BlueHoennPilot
   STAGE5_SIGNS = {
     DEWFORD_GYM: "Ginásio de Dewford. Brawly utiliza Pokémon Lutadores.",
     DEWFORD_TOWN: "Dewford: uma ilha tranquila ao lado de Granite Cave.",
-    BRAWLY_GYM: "Knuckle Badge: permite usar Flash em Hoenn.",
+    BRAWLY_GYM: "Insígnia do Punho: permite usar Flash em Hoenn.",
     SLATEPORT_CITY: "Slateport: cidade portuária e centro de pesquisa marinha.",
     SLATEPORT_SHIPYARD: "Estaleiro Stern: converse com a equipe para localizar o capitão.",
     SLATEPORT_HARBOR: "Porto de Slateport. Mais viagens estão em preparação.",
@@ -1057,11 +1057,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions, "HOENN", "KNUCKLE")
-      pbMessage(_INTL("Brawly: erro ao registrar a Knuckle Badge regional."))
+      pbMessage(_INTL("Brawly: erro ao registrar a Insígnia do Punho regional."))
       return false
     end
     flags["brawly_defeated"] = true
-    pbMessage(_INTL("Você conquistou a Knuckle Badge de Hoenn! Flash está liberado nesta região."))
+    pbMessage(_INTL("Você conquistou a Insígnia do Punho de Hoenn! Flash está liberado nesta região."))
     give_move_tm("brawly_tm_given", :BULKUP, [:TM08, :TM064, :TM0640],
                  "Brawly: receba Bulk Up!")
     true
@@ -1071,7 +1071,7 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     if flags["hm_flash_received"]
-      pbMessage(_INTL("Montanhista: com a Knuckle Badge você pode usar Flash em Hoenn."))
+      pbMessage(_INTL("Montanhista: com a Insígnia do Punho você pode usar Flash em Hoenn."))
       return false
     end
     hm = [:HM05, :HMFLASH].find { |item| GameData::Item.exists?(item) }
@@ -1084,7 +1084,7 @@ module BlueHoennPilot
       return false
     end
     flags["hm_flash_received"] = true
-    pbMessage(_INTL("Você recebeu HM Flash! A Knuckle Badge libera seu uso em Hoenn."))
+    pbMessage(_INTL("Você recebeu HM Flash! A Insígnia do Punho libera seu uso em Hoenn."))
     true
   end
 
@@ -1393,11 +1393,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions, "HOENN", "DYNAMO")
-      pbMessage(_INTL("Wattson: não foi possível registrar a Dynamo Badge."))
+      pbMessage(_INTL("Wattson: não foi possível registrar a Insígnia do Dínamo."))
       return false
     end
     flags["wattson_defeated"] = true
-    pbMessage(_INTL("Você conquistou a Dynamo Badge de Hoenn! Rock Smash fica autorizado nesta região."))
+    pbMessage(_INTL("Você conquistou a Insígnia do Dínamo de Hoenn! Rock Smash fica autorizado nesta região."))
     wattson_tm
     true
   end
@@ -1416,7 +1416,7 @@ module BlueHoennPilot
       return false
     end
     flags["rock_smash_given"] = true
-    pbMessage(_INTL("Você recebeu Rock Smash! A Dynamo Badge autoriza seu uso em Hoenn."))
+    pbMessage(_INTL("Você recebeu Rock Smash! A Insígnia do Dínamo autoriza seu uso em Hoenn."))
     true
   end
 
@@ -1764,11 +1764,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","HEAT")
-      pbMessage(_INTL("Flannery: erro ao registrar a Heat Badge de Hoenn."))
+      pbMessage(_INTL("Flannery: erro ao registrar a Insígnia do Calor de Hoenn."))
       return false
     end
     flags["flannery_defeated"]=true
-    pbMessage(_INTL("Você conquistou a Heat Badge de Hoenn! Strength está autorizado nesta região."))
+    pbMessage(_INTL("Você conquistou a Insígnia do Calor de Hoenn! Strength está autorizado nesta região."))
     flannery_tm
     true
   end
@@ -1884,11 +1884,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","BALANCE")
-      pbMessage(_INTL("Norman: não foi possível registrar a Balance Badge."))
+      pbMessage(_INTL("Norman: não foi possível registrar a Insígnia do Equilíbrio."))
       return false
     end
     flags["norman_defeated"]=true
-    pbMessage(_INTL("Você recebeu a Balance Badge de Hoenn! Surf foi liberado nesta região."))
+    pbMessage(_INTL("Você recebeu a Insígnia do Equilíbrio de Hoenn! Surf foi liberado nesta região."))
     norman_tm
     true
   end
@@ -1910,7 +1910,7 @@ module BlueHoennPilot
       return false
     end
     flags["hm_surf_received"]=true
-    pbMessage(_INTL("Você recebeu HM Surf! A Balance Badge permite usá-lo em Hoenn."))
+    pbMessage(_INTL("Você recebeu HM Surf! A Insígnia do Equilíbrio permite usá-lo em Hoenn."))
     true
   end
 
@@ -2021,7 +2021,7 @@ module BlueHoennPilot
       return false
     end
     flags["hm_fly_received"]=true
-    pbMessage(_INTL("Você recebeu HM Fly! A Feather Badge permitirá usá-lo."))
+    pbMessage(_INTL("Você recebeu HM Fly! A Insígnia da Pena permitirá usá-lo."))
     true
   end
 
@@ -2112,11 +2112,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","FEATHER")
-      pbMessage(_INTL("Winona: não foi possível registrar a Feather Badge."))
+      pbMessage(_INTL("Winona: não foi possível registrar a Insígnia da Pena."))
       return false
     end
     flags["winona_defeated"]=true
-    pbMessage(_INTL("Você conquistou a Feather Badge de Hoenn! Fly está liberado nesta região."))
+    pbMessage(_INTL("Você conquistou a Insígnia da Pena de Hoenn! Fly está liberado nesta região."))
     winona_tm
     true
   end
@@ -2461,11 +2461,11 @@ module BlueHoennPilot
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","MIND")
-      pbMessage(_INTL("O registro da Mind Badge regional falhou."))
+      pbMessage(_INTL("O registro da Insígnia da Mente regional falhou."))
       return false
     end
     flags["tate_liza_defeated"]=true
-    pbMessage(_INTL("Você conquistou a Mind Badge de Hoenn! Dive está autorizado nesta região."))
+    pbMessage(_INTL("Você conquistou a Insígnia da Mente de Hoenn! Dive está autorizado nesta região."))
     tate_liza_tm
     true
   end
@@ -2534,7 +2534,7 @@ module BlueHoennPilot
       return false
     end
     flags["hm_dive_received"]=true
-    pbMessage(_INTL("Steven: receba HM Dive! A Mind Badge permite usar o movimento em Hoenn."))
+    pbMessage(_INTL("Steven: receba HM Dive! A Insígnia da Mente permite usar o movimento em Hoenn."))
     true
   end
 
@@ -2697,7 +2697,7 @@ module BlueHoennPilot
     flags=state
     return false unless flags && rain_badge?
     field_hm_reward(:WATERFALL,[:HM07,:HMWATERFALL],"hm_waterfall_received",
-                    "Juan: receba HM Waterfall! A Rain Badge libera seu uso em Hoenn.")
+                    "Juan: receba HM Waterfall! A Insígnia da Chuva libera seu uso em Hoenn.")
   end
 
   def self.rock_smash_obstacle(event_id)
@@ -2760,7 +2760,7 @@ module BlueHoennPilot
        !([255,258,259,260,261,262,263,266,227,228,229,230,231,232,233,234,235,236].include?(source_id))
       return false unless field_move_ready?(:DIVE,true)
     end
-    # Upper Ever Grande: real Waterfall competency is required; the Rain Badge
+    # Upper Ever Grande: real Waterfall competency is required; the Insígnia da Chuva
     # alone is NOT enough. Other coastal crossings still rely on native Surf.
     if source_id==91 && [250,322].include?(dest_id)
       # All southern entrances must respect the waterfall field technique.
@@ -2780,7 +2780,7 @@ module BlueHoennPilot
     # inside the cave or block a retreat from a partially migrated save.
     if SEAFLOOR_INTERIORS.cover?(dest_id) && !SEAFLOOR_INTERIORS.cover?(source_id)
       unless seafloor_story_ready?
-        pbMessage(_INTL("A Seafloor Cavern exige a fuga do submarino, a defesa do Centro Espacial e Dive com a Mind Badge."))
+        pbMessage(_INTL("A Seafloor Cavern exige a fuga do submarino, a defesa do Centro Espacial e Dive com a Insígnia da Mente."))
         return false
       end
     end
@@ -2807,7 +2807,7 @@ module BlueHoennPilot
       return false
     end
     if [250,251,252,322,93,100,94,95,96,97,98,99].include?(dest_id) && !rain_badge?
-      pbMessage(_INTL("O caminho para a Liga exige a Rain Badge de Hoenn."))
+      pbMessage(_INTL("O caminho para a Liga exige a Insígnia da Chuva de Hoenn."))
       return false
     end
     if [93,100,94,95,96,97,98,99].include?(dest_id) &&
@@ -2930,18 +2930,18 @@ module BlueHoennPilot
       pbMessage(_INTL("Juan: a paz deve voltar a Sootopolis antes da nossa batalha."))
       return false
     end
-    pbMessage(_INTL("Juan: uma batalha de Água definirá o destino da Rain Badge!"))
+    pbMessage(_INTL("Juan: uma batalha de Água definirá o destino da Insígnia da Chuva!"))
     setBattleRule("canLose")
     unless TrainerBattle.start(:BLUE_HOENN_JUAN,"Juan",1087)
       $player.heal_party if $player.respond_to?(:heal_party)
       return false
     end
     unless BlueRegions.award($PokemonGlobal.blue_regions,"HOENN","RAIN")
-      pbMessage(_INTL("Não foi possível registrar a Rain Badge regional."))
+      pbMessage(_INTL("Não foi possível registrar a Insígnia da Chuva regional."))
       return false
     end
     flags["juan_defeated"]=true
-    pbMessage(_INTL("Rain Badge de Hoenn conquistada! Waterfall está autorizado na região."))
+    pbMessage(_INTL("Insígnia da Chuva de Hoenn conquistada! Waterfall está autorizado na região."))
     waterfall_from_juan
     juan_tm
     true
