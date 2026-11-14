@@ -183,8 +183,9 @@ def install_simple_obstacles(events_by_map: dict, donor_maps: dict,
                     if (game/target).exists() or (target in overlay and overlay[target]!=blob):
                         skipped.append([mid,x,y,kind,"sprite_name_collision"])
                         continue
+                    if target not in overlay:
+                        counts["private_pinned_sprite_assets"]+=1
                     overlay[target]=blob
-                    counts["private_pinned_sprite_assets"]+=1
         if sprite is None:
             skipped.append([mid,x,y,kind,"no_native_or_pinned_sprite"])
             continue
