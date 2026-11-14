@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c362fa0e57a4d8e11f1026152e68c002ad2d677d",
+      "date": "2026-11-14T18:12:25-03:00",
+      "title": "test(hoenn): validate 8 local badges and native Trainer Card, keep Decades original",
+      "category": "Testes"
+    },
+    {
+      "sha": "a7cc322fc509b9b3785c6960e57cedc02e06a346",
+      "date": "2026-11-14T18:12:14-03:00",
+      "title": "fix(kanto): manter instalacao de politica regional em testes sem Trainer carregado",
+      "category": "Correções"
+    },
+    {
       "sha": "c27b3305c3f91ed148b21ea3eddb86c1ec8ebd56",
       "date": "2026-11-14T18:11:36-03:00",
       "title": "feat(hoenn): translate eight gym badge names across authored NPCs and sign dialogue",
