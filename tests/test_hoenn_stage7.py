@@ -91,7 +91,7 @@ class HoennStage7Tests(unittest.TestCase):
             for e in obj.attrs["@events"].values():
                 events[e.attrs["@name"].decode()]=(mid,e)
         for name,mid,handler in (
-            ("HN7_Boss_Flannery",63,"BlueHoennPilot.flannery"),
+            ("HN7_Boss_Flannery",63,"BlueHoennPilot.qa7_gym_battle(:HEAT)"),
             ("HN7_Boss_Tabitha",178,"BlueHoennPilot.tabitha"),
             ("HN7_Boss_Maxie",178,"BlueHoennPilot.maxie"),
             ("HN7_MeteoriteMachine",178,"BlueHoennPilot.meteorite_machine"),
