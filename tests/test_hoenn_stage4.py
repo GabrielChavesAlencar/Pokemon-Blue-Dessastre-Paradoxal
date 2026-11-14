@@ -25,7 +25,7 @@ class HoennStage4Tests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.game = Path(self.temp.name)
         self.maps = {mid: ruby("RPG::Map", events={}) for mid in SOURCE_MAPS_STAGE4}
-        needed = {row[4] for row in NPCS_STAGE4} | {row[5] for row in TRAINERS_STAGE4}
+        needed = {row[3] for row in NPCS_STAGE4} | {row[5] for row in TRAINERS_STAGE4}
         needed.update(["NPC_ORAS_Roxanne", "NPC_RSE_AquaGrunt", "Object_CutTree"])
         for name in needed:
             p = self.game / "Graphics/Characters" / f"{name}.png"
