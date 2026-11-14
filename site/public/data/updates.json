@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "55ff105bb107060a94f85df3638df8adabcf2d28",
+      "date": "2026-11-14T11:28:55-03:00",
+      "title": "test(hoenn): atualizar contratos de mapa, eventos e habitat para 28 áreas",
+      "category": "Testes"
+    },
+    {
+      "sha": "1f3d8916be4b6861fa3f8286b62319e03efc1b7a",
+      "date": "2026-11-14T11:28:43-03:00",
+      "title": "test(hoenn): verificar 28 mapas RXDATA de origem no piloto da etapa 4",
+      "category": "Testes"
+    },
+    {
       "sha": "02897b2427b2c550e0f76466874630abefe89326",
       "date": "2026-11-14T11:28:23-03:00",
       "title": "test(hoenn): auditar 28 mapas, Roxanne, habitats Rusturf e colisões da fase 4",
