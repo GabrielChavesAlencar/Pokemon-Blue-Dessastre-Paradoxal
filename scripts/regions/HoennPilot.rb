@@ -13,7 +13,7 @@ module BlueHoennPilot
     values = lines.flat_map { |line| line.split(",") }.map { |part| Integer(part, 10) }
     start = values.shift(3)
     maps = values.each_slice(2).to_h
-    expected = [7, 8, 11, 12, 13, 101]
+    expected = [7, 8, 11, 12, 13, 14, 16, 17, 18, 19, 20, 101, 102, 103, 104, 105, 106, 156]
     raise "Mapas do piloto de Hoenn inválidos." unless [expected, [7, 8, 11, 12, 13, 14, 101, 102, 103]].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
@@ -41,6 +41,26 @@ module BlueHoennPilot
                       [:YOUNGSTER, "Allen"], [:LASS, "Tiana"]].all? { |kind, name| GameData::Trainer.exists?(kind, name, 102) }
       raise "Treinadores da Rota 102 incompletos"
     end
+    if maps[104] && maps[156]
+      {104 => [:POOCHYENA, :MARILL, :WURMPLE, :TAILLOW, :WINGULL],
+       156 => [:WURMPLE, :POOCHYENA, :SHROOMISH, :CASCOON, :SILCOON,
+               :SLAKOTH, :TAILLOW]}.each do |source_id, species|
+        encounter = GameData::Encounter.get(maps.fetch(source_id), 0)
+        unless encounter && encounter.types.fetch(:Land, []).map { |slot| slot[1] }.sort == species.sort
+          raise "Encontros da etapa 3 ausentes no mapa #{source_id}"
+        end
+      end
+      expected_trainers = [
+        [:YOUNGSTER, "Billy", 104], [:FISHERMAN, "Darian", 104],
+        [:LADY, "Cindy", 104], [:RICHBOY, "Winston", 104],
+        [:LASS, "Haley", 104], [:TWINS, "Gina & Mia", 104],
+        [:FISHERMAN, "Ivan", 104], [:BUGCATCHER, "James", 156],
+        [:BUGCATCHER, "Lyle", 156], [:BLUE_HOENN_AQUA, "Recruta", 304]
+      ]
+      unless expected_trainers.all? { |kind, name, ver| GameData::Trainer.exists?(kind, name, ver) }
+        raise "Treinadores da Rota 104/Petalburg Woods ou Recruta Aqua incompletos"
+      end
+    end
     names = ["May", "Brendan"]
     unless names.all? { |name| [210, 211, 212].all? { |version|
              GameData::Trainer.exists?(:RIVAL1, name, version) } }
@@ -52,6 +72,9 @@ module BlueHoennPilot
       next unless maps[source_id]
       raise "Encontros ausentes na Rota #{source_id}" unless GameData::Encounter.exists?(maps[source_id], 0)
       links << [maps.fetch(12), maps.fetch(source_id)]
+    end
+    if maps[104] && maps[16]
+      links.concat([[maps.fetch(102), maps.fetch(16)], [maps.fetch(16), maps.fetch(104)]])
     end
     links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
@@ -256,6 +279,141 @@ module BlueHoennPilot
     $player.has_pokedex = true
     flags["pokedex_given"] = true
     pbMessage(_INTL("Birch: Aqui está sua Pokédex! Volte para falar com sua mãe antes de partir."))
+    true
+  end
+
+
+  STAGE3_SIGNS = {
+    PETALBURG_CITY: "Petalburg: cidade de encontro entre pessoas e natureza.",
+    PETALBURG_GYM: "Ginásio de Petalburg. Líder Norman, tipo Normal.",
+    WALLY_HOUSE: "Casa de Wally.",
+    ROUTE104_SOUTH: "Rota 104: Petalburg fica a leste.",
+    ROUTE104_NORTH: "Rota 104: Rustboro fica ao norte, ainda em preparação neste piloto.",
+    BRINEY_HOUSE: "Casa do marinheiro Mr. Briney.",
+    FLOWER_SHOP: "Floricultura Pretty Petal.",
+    WOODS_TIPS_PP: "Os movimentos têm PP. Procure um Centro Pokémon para recuperar sua equipe.",
+    WOODS_TIPS_EXP: "Pokémon que participam da batalha recebem experiência."
+  }.freeze
+
+  def self.sign(symbol)
+    return false unless state
+    message = STAGE3_SIGNS[symbol]
+    return false unless message
+    pbMessage(_INTL(message))
+    true
+  end
+
+  def self.wally_family
+    flags = state
+    return false unless flags
+    pbMessage(flags["wally_captured"] ?
+      _INTL("Família de Wally: Nosso filho está animado por ter capturado seu primeiro Pokémon.") :
+      _INTL("Família de Wally: Ele quer conhecer melhor os Pokémon. Visite o ginásio de Norman."))
+    true
+  end
+
+  def self.norman_intro
+    flags = state
+    return false unless flags
+    unless flags["pokedex_given"]
+      pbMessage(_INTL("Norman: Primeiro conclua seu treinamento com o Professor Birch."))
+      return false
+    end
+    unless flags["wally_captured"]
+      pbMessage(_INTL("Norman: Wally quer aprender a capturar Pokémon. Vamos ajudá-lo!"))
+      pbMessage(_INTL("Wally encontrou um Ralts, lançou uma Poké Bola e conseguiu capturá-lo!"))
+      flags["wally_captured"] = true
+      pbMessage(_INTL("Norman: Muito bem, Wally! Continue sua jornada até Rustboro."))
+      return true
+    end
+    pbMessage(_INTL("Norman: Volte quando tiver quatro insígnias de Hoenn. Então batalharemos!"))
+    true
+  end
+
+  def self.flower_shop
+    flags = state
+    return false unless flags
+    if flags["wailmer_pail_received"]
+      pbMessage(_INTL("Floricultura: Plante suas Berries e regue com o Wailmer Pail!"))
+      return false
+    end
+    unless $bag && $bag.add(:WAILMERPAIL, 1)
+      pbMessage(_INTL("Floricultura: Abra espaço na Bolsa para receber o regador Wailmer Pail."))
+      return false
+    end
+    flags["wailmer_pail_received"] = true
+    pbMessage(_INTL("Você recebeu o Wailmer Pail para cuidar das Berries!"))
+    true
+  end
+
+  def self.briney
+    return false unless state
+    pbMessage(_INTL("Mr. Briney: Peecko está desaparecida. Preciso encontrá-la antes de zarpar!"))
+    false
+  end
+
+  def self.pickup(item, key, event_id)
+    flags = state
+    return false unless flags && item.is_a?(Symbol) && key.is_a?(String)
+    storage = "pickup_#{key}"
+    return false if flags[storage]
+    unless $bag && $bag.add(item, 1)
+      pbMessage(_INTL("Sua Bolsa está cheia."))
+      return false
+    end
+    flags[storage] = true
+    if $game_map && $game_self_switches && event_id.is_a?(Integer)
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+      $game_map.events[event_id]&.refresh
+    end
+    pbMessage(_INTL("Você encontrou {1}!", item.to_s))
+    true
+  end
+
+  def self.battle_stage3(kind, name, version, double = false)
+    flags = state
+    return false unless flags && $player && !$player.party.empty?
+    key = "trainer_#{version}_#{kind}_#{name}"
+    if flags[key]
+      pbMessage(_INTL("{1}: Você está treinando bastante!", name))
+      return false
+    end
+    if double && (defined?(pbCanDoubleBattle?) && !pbCanDoubleBattle?)
+      pbMessage(_INTL("As gêmeas só batalham quando você possui dois Pokémon disponíveis."))
+      return false
+    end
+    pbMessage(_INTL("{1}: Vamos batalhar?", name))
+    setBattleRule("double") if double
+    won = TrainerBattle.start(kind, name, version)
+    flags[key] = true if won
+    won
+  end
+
+  def self.forest_aqua
+    flags = state
+    return false unless flags
+    unless flags["pokedex_given"] && flags["wally_captured"]
+      pbMessage(_INTL("Um funcionário da Devon precisa de ajuda na floresta. Primeiro fale com Norman em Petalburg."))
+      return false
+    end
+    unless flags["forest_aqua_defeated"]
+      pbMessage(_INTL("Recruta Aqua: Esse documento é da Devon! Não se intrometa!"))
+      setBattleRule("canLose")
+      won = TrainerBattle.start(:BLUE_HOENN_AQUA, "Recruta", 304)
+      unless won
+        pbMessage(_INTL("O recruta continua no caminho. Cure sua equipe e volte a enfrentá-lo."))
+        return false
+      end
+      flags["forest_aqua_defeated"] = true
+      pbMessage(_INTL("Funcionário Devon: Obrigado! Afugentamos a Equipe Aqua."))
+    end
+    return false if flags["forest_greatball_received"]
+    unless $bag && $bag.add(:GREATBALL, 1)
+      pbMessage(_INTL("Funcionário Devon: Guarde espaço na Bolsa para sua Great Ball!"))
+      return false
+    end
+    flags["forest_greatball_received"] = true
+    pbMessage(_INTL("Funcionário Devon: Receba esta Great Ball como agradecimento!"))
     true
   end
 
