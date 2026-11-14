@@ -86,6 +86,36 @@ def prepare_updates(copy: Path, game: Path) -> dict[str, bytes]:
 
 def ensure_test_tools(copy: Path, game: Path = ROOT / "game") -> dict:
     copy = require_private_path(copy)
+    if copy.name != "hoenn-qa-fase12":
+        raise ValueError("Atualização disponível somente no piloto privado QA12")
+    # Normal restart: the catalog/plugin are already current. Skip scanning
+    # hundreds of RXDATA maps again; QA01 and QA12 still independently verify
+    # copy identity and every landing when the BAT continues.
+    manifest_path, stops_path, plugin_path = (
+        copy / MANIFEST, copy / STOPS, copy / PLUGIN
+    )
+    current_plugin = ROOT / "scripts/regions/HoennPilot.rb"
+    if (manifest_path.is_file() and stops_path.is_file()
+        and plugin_path.is_file() and current_plugin.is_file()
+        and not any(p.is_symlink() for p in
+                    (manifest_path, stops_path, plugin_path, current_plugin))):
+        try:
+            saved = json.loads(manifest_path.read_text("utf-8"))
+            catalog = saved.get("qa_test_stops", {})
+            native = saved.get("qa12", {})
+            digest = hashlib.sha256(stops_path.read_bytes()).hexdigest()
+            if (saved.get("region") == "HOENN" and
+                saved.get("save_profile") == "Hoenn QA Fase12" and
+                saved.get("source_commit") == UPSTREAM and
+                catalog.get("count") == 199 and
+                catalog.get("sha256") == digest and
+                native.get("debug_teleport_catalog_sha256") == digest and
+                plugin_path.read_bytes() == current_plugin.read_bytes()):
+                return {"status": "ALREADY_CURRENT", "files_updated": 0,
+                        "stops": 199, "saves_touched": False,
+                        "native_tested": False}
+        except (OSError, ValueError, TypeError, KeyError):
+            pass
     desired = prepare_updates(copy, game)
     changes = {}
     for relative, content in desired.items():
