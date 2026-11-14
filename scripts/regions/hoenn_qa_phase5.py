@@ -165,7 +165,7 @@ def verify_copy(copy:Path) -> dict:
     maps=report.get("maps",{})
     if (report.get("region")!="HOENN" or
             report.get("kind")!="ISOLATED_HOENN_TEST" or
-            report.get("save_profile") not in ("Hoenn QA Fase05","Hoenn QA Fase06") or
+            report.get("save_profile") not in ("Hoenn QA Fase05","Hoenn QA Fase06","Hoenn QA Fase07") or
             not isinstance(maps,dict) or len(maps)!=199):
         raise ValueError("Não é a cópia isolada de Hoenn QA05 com 199 mapas e save próprio")
     if (not isinstance(qa5,dict) or
