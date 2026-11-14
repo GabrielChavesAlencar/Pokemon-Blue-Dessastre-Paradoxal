@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1daba71a0cb1862d76f6b580395b9faaf6a55a58",
+      "date": "2026-11-14T11:59:20-03:00",
+      "title": "fix(hoenn): incluir offsets de Dewford/Slateport no grafo de auditoria",
+      "category": "Correções"
+    },
+    {
       "sha": "7c08bc0eb74bc2a58b8ace7f567efb6ac1389106",
       "date": "2026-11-14T11:58:37-03:00",
       "title": "test(hoenn): cobrir Granite Cave, Brawly, barco, museum e bloqueios da Etapa 5",
