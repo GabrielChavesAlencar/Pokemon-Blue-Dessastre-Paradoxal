@@ -40,7 +40,7 @@ class HoennStage5Tests(unittest.TestCase):
 
     def test_map_inventory_boat_and_original_museum_two_doorway_contract(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE5), 20)
-        self.assertEqual(len(SOURCE_MAPS), 138)
+        self.assertEqual(len(SOURCE_MAPS), 199)
         self.assertEqual(len(WARP_PAIRS_STAGE5), 27)
         self.assertEqual(len(WARP_PAIRS), 130)
         self.assertEqual(OFFSET_BORDERS_STAGE5, (
