@@ -1,0 +1,41 @@
+name: Hoenn QA 04 - auditar obstaculos de campo do doador
+on:
+  pull_request:
+    paths:
+      - 'scripts/regions/inspect_hoenn_qa4_public.py'
+      - 'scripts/regions/hoenn_qa_phase4.py'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'scripts/regions/HoennPilot.rb'
+      - 'tests/test_hoenn_qa_phase4.py'
+      - 'tests/hoenn_qa_phase4_runtime.rb'
+      - '.github/workflows/hoenn_qa4_source_audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/inspect_hoenn_qa4_public.py'
+      - 'scripts/regions/hoenn_qa_phase4.py'
+      - 'scripts/regions/pilot_hoenn.py'
+      - 'scripts/regions/HoennPilot.rb'
+      - 'tests/test_hoenn_qa_phase4.py'
+      - 'tests/hoenn_qa_phase4_runtime.rb'
+      - '.github/workflows/hoenn_qa4_source_audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-field-source:
+    name: Event IDs de HM e puzzles (origem pinned, sem Game.exe)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditar mapas de cavernas e ginasio (dados originais somente leitura)
+        run: python scripts/regions/inspect_hoenn_qa4_public.py
+      - name: Cobertura de campo e auditoria 4/12
+        run: |
+          python -m unittest discover -s tests -p 'test_hoenn_qa_phase4.py' -v
+          ruby -c scripts/regions/HoennPilot.rb
+          ruby tests/hoenn_qa_phase4_runtime.rb scripts/regions/HoennPilot.rb
