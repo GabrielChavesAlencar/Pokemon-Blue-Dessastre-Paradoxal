@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7d408465400e75ecf10386f3e099bdfe856a501e",
+      "date": "2026-11-13T21:52:31-03:00",
+      "title": "docs(sinnoh): document legacy 800-805 vs Johto conflict, isolated Barry QA preflight and native blockers",
+      "category": "Documentação"
+    },
+    {
+      "sha": "d20d1c1f5b341d2dc525d8c4675de80bb27f5d38",
+      "date": "2026-11-13T21:51:23-03:00",
+      "title": "test(sinnoh): align expected legacy pilot guard wording with audit error",
+      "category": "Testes"
+    },
+    {
       "sha": "bcae2363495aaa3c850dcc632745033f42984c9c",
       "date": "2026-11-13T21:50:57-03:00",
       "title": "test(sinnoh): cover QA-only Barry PBS hashes, missing graphics, marker prohibition and legacy map overlap",
