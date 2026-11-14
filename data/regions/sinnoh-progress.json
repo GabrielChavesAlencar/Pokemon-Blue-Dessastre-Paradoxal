@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "P04–P06: auditar a fonte real, direitos, MapIDs reservados ainda não físicos, integrar os stages na cópia do Game.exe com saves isolados e verificar Barry/Twinleaf Windows/JoiPlay. O montador do overlay em .blue-work foi publicado, mas não instala o jogo.",
+  "next": "Q05–Q07: fornecer a fonte auditada e as coordenadas reais de Twinleaf/Sandgem, executar a montagem isolada, abrir Game.exe QA somente para compilação, verificar save profiles e então gameplay Windows/JoiPlay. Não ativar Barry sem QA nativa.",
   "tasks": [
     {
       "id": "S01",
@@ -593,5 +593,68 @@
     "native_qa_approved": false,
     "main_game_modified": false,
     "can_install": false
+  },
+  "qa_install_workstream": {
+    "status": "ISOLATED_QA_INSTALLER_CODE_COMPLETE_NATIVE_PENDING",
+    "complete": 4,
+    "total": 7,
+    "substeps": [
+      {
+        "id": "Q01",
+        "title": "Copiar base Blue exclusivamente para novo diretório privado com backups e sem copiar saves",
+        "complete": true,
+        "evidence": "scripts/regions/install_sinnoh_qa_copy.py"
+      },
+      {
+        "id": "Q02",
+        "title": "Criar perfis mkxp/Game.ini exclusivos para cada cópia e configurar spawn auditado no quarto",
+        "complete": true,
+        "evidence": "scripts/regions/install_sinnoh_qa_copy.py"
+      },
+      {
+        "id": "Q03",
+        "title": "Primeira execução QA prepara compilação PBS e checagem das três versões de Barry sem liberar batalha",
+        "complete": true,
+        "evidence": "scripts/regions/install_sinnoh_qa_copy.py"
+      },
+      {
+        "id": "Q04",
+        "title": "Bloquear Novo Jogo até prova de compilação com hashes, preservar saves de regiões existentes",
+        "complete": true,
+        "evidence": "scripts/regions/SinnohQAStart.rb"
+      },
+      {
+        "id": "Q05",
+        "title": "Executar com fonte real autorizada, mapas e coordenadas verificadas, montar uma cópia QA",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "Q06",
+        "title": "Verificar compilação nativa PBS, Battle/level cap e paths reais dos saves no Windows",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "Q07",
+        "title": "Validar eventos/portas, save/load, Android/JoiPlay e nenhuma regressão Decades/Kanto/Johto/Hoenn",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "tests": [
+      "tests/test_sinnoh_qa_install.py",
+      "tests/sinnoh_qa_start_runtime.rb"
+    ],
+    "documentation": "docs/SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md",
+    "compiled_pbs_in_qa": false,
+    "qa_copy_built_with_real_assets": false,
+    "verified_save_paths_on_windows": false,
+    "native_playability_verified": false,
+    "android_verified": false,
+    "source_assets_rights_verified": false,
+    "can_launch_as_verified_game": false,
+    "actual_main_game_or_saves_modified": false,
+    "note": "4/7 concluídas como ferramentas de código. Nova cópia real, compilação no Essentials, save path Windows e gameplay Android ainda dependem de dados locais e QA; não liberar Barry automaticamente."
   }
 }
