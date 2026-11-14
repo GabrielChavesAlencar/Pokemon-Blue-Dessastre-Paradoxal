@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d7710014d2b51c56623852aefd3fc592798ed8ef",
+      "date": "2026-11-14T00:12:26-03:00",
+      "title": "docs(regions): describe phase 02 trainer binding audit and next playable native lots",
+      "category": "Documentação"
+    },
+    {
       "sha": "7e0b9636220c3d07049fa75824376089221ae048",
       "date": "2026-11-14T00:11:13-03:00",
       "title": "test(portal): verify individual trainer audit records and pending Hoenn rival are never shown as playable",
