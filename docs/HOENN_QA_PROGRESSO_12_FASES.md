@@ -5,7 +5,7 @@
 **Acompanhe as DUAS barras separadamente:**
 
 - **Etapas de código existentes:** 10/10 — ██████████ (concluídas e publicadas, sem certificar Game.exe).
-- **Fases jogáveis 1–12:** preparação das fases 1 a 8 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣□□□□ (▣ = ferramenta pronta; NÃO = jogável).
+- **Fases jogáveis 1–12:** preparação das fases 1 a 9 implementada; execução/aceite pendentes — ▣▣▣▣▣▣▣▣▣□□□ (▣ = ferramenta pronta; NÃO = jogável).
 - **Fases nativamente aprovadas:** 0/12 — □□□□□□□□□□□□ (sem testes reais completos).
 
 | # | Etapa | Preparação | Aceite Game.exe |
@@ -18,7 +18,7 @@
 | 6 | Cave of Origin, clima, Rayquaza | **Gates regionais, auditoria RXDATA e perfil QA06 preparados; cenas nativas pendentes** | ⏳ |
 | 7 | Oito ginásios e insígnias locais | **Nove eventos autorais, oito times PBS e auditoria QA07 preparados; Game.exe pendente** | ⏳ |
 | 8 | Victory Road e Wally | **Três mapas, Wally, gates de Waterfall e Liga e auditoria QA08 preparados; Game.exe pendente** | ⏳ |
-| 9 | Elite Four e Wallace | Pendente | ⏳ |
+| 9 | Elite Four e Wallace | **Cinco salas, equipes PBS, ordem de vitórias e auditoria QA09 preparados; Game.exe pendente** | ⏳ |
 | 10 | Hall of Fame e pós-jogo | Pendente | ⏳ |
 | 11 | Traduções, placas, áudio e Trainer Card | Pendente | ⏳ |
 | 12 | QA da campanha inteira Windows/Android | Pendente | ⏳ |
@@ -376,3 +376,51 @@ A quantidade **efetivamente instalada** de boulders depende de não haver sobrep
 - [ ] Windows **e** Android/JoiPlay aprovados com evidência real.
 
 **Aprovação jogável ainda é 0/12.** O auditor prova que arquivos e scripts foram preparados e conferidos estaticamente, não que o jogo completo já foi jogado.
+
+## Fase 09/12 — Elite Four e Campeão Wallace
+
+**Preparação técnica: 9/12 (75%). Aceite jogável nativo: 0/12.** Esta fase reforça a Liga Pokémon de Hoenn já presente no piloto, utilizando **mapas originais da fonte fixada** e eventos autorais; não incorpora código, falas nem scripts originais do doador ao GitHub. A equipe real e o escalonamento de níveis continuam responsabilidade do Blue/Decades.
+
+### Ordem obrigatória da Liga
+
+| Ordem | Líder | MapID original | PBS autoral | Pokémon na referência |
+|---|---|---:|---|---:|
+| 1 | Sidney | 94 | `BLUE_HOENN_ELITE,Sidney,1094` | 5 |
+| 2 | Phoebe | 95 | `BLUE_HOENN_ELITE,Phoebe,1095` | 5 |
+| 3 | Glacia | 96 | `BLUE_HOENN_ELITE,Glacia,1096` | 5 |
+| 4 | Drake | 97 | `BLUE_HOENN_ELITE,Drake,1097` | 5 |
+| 5 | Campeão Wallace | 98 | `BLUE_HOENN_CHAMPION,Wallace,1098` | 6 |
+
+A entrada oficial na Liga envolve Map93 e o corredor Map100; Map99 é o **Hall of Fame** (integração jogável deixada para a fase 10). **Os MapIDs são da fonte** e são remapeados para o intervalo privado da cópia Blue. O mapa de destino é conferido em cada chamada de batalha.
+
+### Alterações realizadas
+
+- O Ruby `BlueHoennPilot.qa9_at_league_map?` impede chamar líderes por outro mapa/fora da região.
+- `qa9_elite_unlocked?(index)` exige **as oito insígnias locais de Hoenn**, a vitória contra Wally e **todas as vitórias anteriores**. Não basta existir um flag do líder imediatamente anterior: saves com flags posteriores faltando anteriores não passam.
+- `qa9_champion_unlocked?` exige os **quatro** flags da Elite Four, além do progresso regional correto. O acesso aos mapas internos e ao Campeão aplica os mesmos critérios.
+- As cinco batalhas continuam em `TrainerBattle.start`, com `setBattleRule("canLose")`: **perder não grava vitória**, e refalar após vencer não repete a luta. Não introduzemos níveis fixos.
+- `scripts/regions/hoenn_qa_phase9.py` inspeciona **oito mapas (93–100)**, cinco eventos de chefes, a saída do Campeão e a entrada no Hall of Fame; compara os **cinco PBS completos** com a referência técnica. Confere ainda se os guardas Ruby novos foram instalados fisicamente no piloto.
+- A saída do Campeão para o Hall exige vitória. **Não** marca créditos, telas nativas do Hall, pós-jogo ou liberação de regiões: essas ações pertencem à **Fase 10/12**.
+- `TESTAR_HOENN.bat` executa auditorias das **fases 1–9**, cada uma com seu relatório; prepara exclusivamente `.blue-work/hoenn-qa-fase09` com save **Hoenn QA Fase09** / **Dessastre Paradoxal Hoenn QA09**, sem sobrescrever os perfis anteriores.
+- `tests/test_hoenn_qa_phase9.py` cobre mapas faltantes, script/trigger incorreto, evento duplicado, times e identidade PBS ausentes/distorcidos. `tests/hoenn_qa_phase9_runtime.rb` testa isolamento, derrota e repetição, progressão de cada sala, flags adulterados, bloqueio do campeão e save/load. A CI também executa os cenários Ruby existentes de Hoenn.
+
+### Teste de jogabilidade real pendente
+
+1. Atualize a `main`. Mantenha o ZIP Hoenn original fixado na raiz e a base Blue instalada em `game/`. Execute `TESTAR_HOENN.bat`. Se a pasta QA09 já existir de uma execução anterior, **não a sobrescreva**: faça backup dos saves e recrie apenas uma cópia QA09 sem dados importantes.
+2. Inspecione `.blue-work/hoenn-qa-fase09-report.json`: deve indicar `LEAGUE_ELITE_CHAMPION_STATICALLY_VERIFIED` e `native_game_exe_approved=false`. Os relatórios das fases anteriores também são executados em sequência.
+3. No `Game.exe`, obtenha as oito insígnias, vença Wally, vá à Liga e percorra Sidney → Phoebe → Glacia → Drake → Wallace. Em cada sala, confira colisões, portas, texto, sprite correto, itens da equipe, movimentos, batalha e **escalonamento nativo de Decades**.
+4. Provoque **derrota** e repita o desafio de um membro. Verifique que o próximo mapa continua fechado até a vitória real. Reentre em uma sala completada e confirme que a batalha não é reiniciada indevidamente. Teste tentativa de salto de salas e acesso prematuro a Wallace.
+5. Salve e recarregue depois de cada vitória, inclusive após Drake. Confira que os flags pertencem **somente a Hoenn**, sem sobrescrever ou liberar progresso em Decades, Kanto, Johto ou Sinnoh.
+6. Após vencer Wallace, confira somente **a passagem** para o Hall of Fame. A animação e os créditos do Hall, o pós-jogo, a liberação de regiões e o Android/JoiPlay **não** recebem aceite nesta fase.
+
+### Critérios de aceite — ainda NÃO aprovados
+
+- [ ] Cinco líderes com batalhas realmente executadas no `Game.exe` e times completos, sem níveis fixos impostos.
+- [ ] Quatro salas e o campeão na ordem certa, sem saltos por portas ou eventos, com animação e itens corretos.
+- [ ] Derrotas não gravam vitória; refalar após vitória não repete batalha de forma indevida.
+- [ ] Sprites individuais dos quatro membros da Elite conferidos visualmente (o tipo compartilhado `BLUE_HOENN_ELITE` exige atenção específica para evitar arte repetida).
+- [ ] Corredores, portas, música, colisões e entradas/saídas jogáveis; save/reload sem travamento.
+- [ ] Desafios fora de Hoenn bloqueados e saves das outras regiões preservados.
+- [ ] Android/JoiPlay testado independentemente do PC.
+
+**Limite:** Python/Ruby e CI apenas confirmam contratos autorais e fluxos simulados; não executam o `Game.exe`, não verificam a renderização da Liga e não certificam a campanha jogável. Portanto o marcador **0/12 nativo** permanece.
