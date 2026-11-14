@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "322776f9a4171eece0a0c2fd0e8bc832f3e80202",
+      "date": "2026-11-14T15:33:16-03:00",
+      "title": "feat(hoenn): QA 2/12 auditoria de mapas, warps e conexões",
+      "category": "Novidades"
+    },
+    {
       "sha": "0f6d0fd536e161f4cccf8354cb393bd1d48719d5",
       "date": "2026-11-14T15:17:47-03:00",
       "title": "feat(hoenn): QA jogável fase 1/12 e barra de progresso de 12 etapas",
