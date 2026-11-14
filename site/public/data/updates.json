@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "883e83ca3c32a01ff031ed0476c50f95f9d27c1b",
+      "date": "2026-11-14T18:08:23-03:00",
+      "title": "feat(hoenn): local Hoenn Trainer Card with distinct badge abbreviations and native entry point",
+      "category": "Novidades"
+    },
+    {
       "sha": "ad6ebc37a4d4fa408b75b4d6405dd1017096fef7",
       "date": "2026-11-14T17:56:52-03:00",
       "title": "fix(hoenn): Hall access and finale readiness require entire unlocked League progression",
