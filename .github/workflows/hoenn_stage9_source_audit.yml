@@ -1,0 +1,20 @@
+name: Hoenn Stage 09 - auditoria read-only doador
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/regions/inspect_hoenn_stage9_donor.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspecionar RXDATA público, somente leitura e nenhum download persistido
+        run: python scripts/regions/inspect_hoenn_stage9_donor.py
