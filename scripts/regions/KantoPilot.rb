@@ -8,6 +8,10 @@ module BlueKantoPilot
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
+  # O personagem do Blue usa um charset maior que os NPCs FRLG.
+  # Este zoom so existe na instalacao isolada do piloto de Kanto.
+  PLAYER_OVERWORLD_ZOOM = 0.75
+  PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
   GYM_FULL_POWER = {
     "Brock" => :BLUE_KANTO_LEADER, "Misty" => :BLUE_KANTO_LEADER_MISTY,
     "Lt. Surge" => :BLUE_KANTO_LEADER_SURGE, "Erika" => :BLUE_KANTO_LEADER_ERIKA,
@@ -1216,6 +1220,20 @@ module BlueKantoPilot
     pbMessage(BlueKantoPilot.t("Your party is rested.", "Sua equipe está descansada."))
   end
 end
+
+# Sprite_Character ja posiciona o pivot nos pes e atualiza o frame andando.
+# Reduzimos somente o sprite do player, sem alterar NPCs, imagens ou colisoes.
+module BlueKantoPilot::PlayerOverworldScale
+  def update
+    super
+    return unless BlueKantoPilot::PILOT_OVERWORLD_SCALE
+    return unless @character && @character.equal?($game_player)
+
+    self.zoom_x = BlueKantoPilot::PLAYER_OVERWORLD_ZOOM
+    self.zoom_y = BlueKantoPilot::PLAYER_OVERWORLD_ZOOM
+  end
+end
+Sprite_Character.prepend(BlueKantoPilot::PlayerOverworldScale) if defined?(Sprite_Character)
 
 # The Kanto-only markers ensure this global movement hook is inert on
 # Decades, Johto, Hoenn and Sinnoh, even when those maps share a level cap.
