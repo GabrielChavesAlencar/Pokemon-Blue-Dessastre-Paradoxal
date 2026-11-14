@@ -26,7 +26,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
             self.add_music(number)
         data, report = self.compile()
         lines = data.decode("utf-8").splitlines()
-        self.assertEqual(report["active_map_bindings"],49)
+        self.assertEqual(report["active_map_bindings"],50)
         self.assertEqual(report["active_transport_bindings"],2)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["default_global_pool_signatures"],3)
@@ -64,7 +64,7 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
             if number!=53:
                 self.add_music(number)
         data,report=self.compile()
-        self.assertEqual(report["active_map_bindings"],49)
+        self.assertEqual(report["active_map_bindings"],50)
         self.assertEqual(report["active_battle_bindings"],7)
         self.assertIn("Kanto/1-53. Battle! (Legendary Pokémon).mp3",report["missing_audio"])
         self.assertNotIn("BATTLE\tlegendary\t",data.decode("utf-8"))

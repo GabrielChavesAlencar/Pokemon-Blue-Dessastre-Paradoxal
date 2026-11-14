@@ -165,6 +165,9 @@ module BlueMusic
         when 'transport' then transports[key.to_s]
         else battles[key.to_s]
         end
+    if kind == 'map' && scope[map_id.to_i][0] == 'VIRIDIAN_CITY'
+      row ||= maps.find { |id, _| scope[id] && scope[id][0] == 'PEWTER_CITY' }&.last
+    end
     return nil unless row && valid_track?(row[0])
     RPG::AudioFile.new(row[0],row[1],row[2])
   end

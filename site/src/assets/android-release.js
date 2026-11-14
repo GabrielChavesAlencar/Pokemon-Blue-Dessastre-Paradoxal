@@ -2,6 +2,9 @@ import {esc} from './utils.js';
 const repo='GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal';
 const api=`https://api.github.com/repos/${repo}`;
 let cached;
+const pilotRegions={kanto:'Kanto',johto:'Johto',hoenn:'Hoenn'};
+const assetName=(region,platform)=>`Blue-${platform==='android'?'Android':'Windows'}-${pilotRegions[region]}-Piloto.zip`;
+const uploaded=(release,name)=>release.assets?.find(a=>a.name===name&&a.state==='uploaded'&&a.size>0);
 export async function androidReleaseStatus(fetcher=fetch){
   const [releaseResult,runsResult]=await Promise.allSettled([
     fetcher(`${api}/releases/latest`).then(r=>{if(!r.ok)throw Error('release');return r.json();}),
@@ -16,32 +19,30 @@ export async function androidReleaseStatus(fetcher=fetch){
   return {state:pending?(run.status==='completed'?'outdated':'building'):'published',buildKnown:!!run,
     tag:release.tag_name,revision:release.target_commitish,date:release.published_at,
     bytes:asset.size,digest:asset.digest??'',runId:run?.id,
-    pilots:{
-      kanto:!!release.assets?.some(x=>x.name==='Blue-Android-Kanto-Piloto.zip'&&x.state==='uploaded'&&x.size>0),
-      johto:!!release.assets?.some(x=>x.name==='Blue-Android-Johto-Piloto.zip'&&x.state==='uploaded'&&x.size>0)
-    }};
+    pilots:Object.fromEntries(Object.keys(pilotRegions).map(key=>[key,!!uploaded(release,assetName(key,'android'))]))};
 }
 
-export async function regionalAndroidReleases(fetcher=fetch){
+export async function regionalPilotReleases(fetcher=fetch,platform='android'){
   let releases;
   try{
     const response=await fetcher(api+'/releases?per_page=100');
     if(!response.ok)throw new Error('releases');
     releases=await response.json();
-  }catch{return {kanto:null,johto:null};}
-  if(!Array.isArray(releases))return {kanto:null,johto:null};
+  }catch{releases=[];}
+  if(!Array.isArray(releases))releases=[];
   const find=(kind,file)=>{
     for(const release of releases){
-      if(typeof release.tag_name!=='string'||!release.tag_name.startsWith(kind+'-android-')
+      if(typeof release.tag_name!=='string'||!release.tag_name.startsWith(kind+'-'+platform+'-')
           ||!/^[a-f0-9]{40}$/.test(release.target_commitish??''))continue;
-      const asset=release.assets?.find(a=>a.name===file&&a.state==='uploaded'&&a.size>0);
+      const asset=uploaded(release,file);
       if(asset)return {tag:release.tag_name,revision:release.target_commitish,bytes:asset.size};
     }
     return null;
   };
-  return {kanto:find('kanto','Blue-Android-Kanto-Piloto.zip'),
-          johto:find('johto','Blue-Android-Johto-Piloto.zip')};
+  return Object.fromEntries(Object.keys(pilotRegions).map(key=>[key,find(key,assetName(key,platform))]));
 }
+
+export const regionalAndroidReleases=fetcher=>regionalPilotReleases(fetcher);
 
 export function androidReleaseHtml(status){
   if(status.state==='unavailable')return '<p>Não foi possível consultar a revisão agora. Confira a linha <code>Revision:</code> no arquivo <code>LEIA-ME-ANDROID.txt</code> do ZIP.</p>';
@@ -50,22 +51,19 @@ export function androidReleaseHtml(status){
   return `${warning?`<p class="android-release-warning">${esc(warning)}</p>`:''}<p><strong>Pacote publicado:</strong> <a href="${href}" target="_blank" rel="noopener noreferrer">${esc(status.tag)}</a><br>Revisão <code>${esc(status.revision)}</code>${Number.isFinite(status.bytes)?` · ${(status.bytes/1e9).toFixed(2).replace('.',',')} GB`:''}</p><p>Depois de extrair, compare essa revisão com <code>LEIA-ME-ANDROID.txt</code>. Se um evento falhar, o diagnóstico fica em <code>Data/blue-android-event-error.txt</code>.</p>${status.buildKnown?'':'<p>Estado da compilação mais recente indisponível.</p>'}`;
 }
 
-const androidPilots=[
-  {id:'kanto',region:'Kanto',asset:'Blue-Android-Kanto-Piloto.zip',note:'Experimento isolado a partir de Pallet Town; saves separados do jogo principal.'},
-  {id:'johto',region:'Johto',asset:'Blue-Android-Johto-Piloto.zip',note:'Experimento isolado a partir de New Bark; mapas, eventos e QA próprios.'}
-];
-export function androidPilotsHtml(status){
-  return androidPilots.map(p=>{
+export function androidPilotsHtml(status,platform='android'){
+  return Object.entries(pilotRegions).map(([id,region])=>{
+    const p={id,region,asset:assetName(id,platform)};
     const regional=status.regional?.[p.id];
-    const regular=status.state!=='unavailable'&&status.pilots?.[p.id]===true&&typeof status.tag==='string'&&status.tag.length>0;
+    const regular=platform==='android'&&status.state!=='unavailable'&&status.pilots?.[p.id]===true&&typeof status.tag==='string'&&status.tag.length>0;
     const enabled=!!regional||regular;
     const tag=regional?.tag||status.tag;
     const href=enabled?'https://github.com/'+repo+'/releases/download/'+encodeURIComponent(tag)+'/'+p.asset:'';
     return '<article class="android-pilot-card"><span class="eyebrow">PILOTO '+esc(p.region.toUpperCase())+'</span>'+
-      '<h4>'+esc(p.region)+'</h4><p>'+esc(p.note)+'</p>'+
+      '<h4>'+esc(p.region)+'</h4><p>'+esc(platform==='android'?'Perfil de save próprio no JoiPlay.':'Cópia isolada com perfil de save próprio.')+'</p>'+
       (enabled?'<a class="button button-secondary" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">Baixar piloto '+esc(p.region)+' · .zip</a>':
       '<span class="button button-secondary android-pilot-disabled" aria-disabled="true">Piloto '+esc(p.region)+' · indisponível</span>')+
-      '<small>'+(enabled?'Arquivo independente publicado na release '+esc(tag)+'. Adicione Game.exe desta pasta ao JoiPlay.':
+      '<small>'+(enabled?'Arquivo independente publicado na release '+esc(tag)+(platform==='android'?'. Adicione Game.exe desta pasta ao JoiPlay.':'. Extraia o ZIP e abra Game.exe.'):
         'Ainda não existe ZIP regional publicado e verificado. O ZIP geral não substitui este piloto.')+'</small></article>';
   }).join('');
 }
@@ -73,10 +71,12 @@ export function androidPilotsHtml(status){
 export async function bindAndroidRelease(container){
   const target=container.querySelector('[data-android-release]');
   const pilots=container.querySelector('[data-android-pilots]');
-  if(!target&&!pilots)return;
-  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:Promise.all([androidReleaseStatus(),regionalAndroidReleases()])};
-  const [status,regional]=await cached.promise;
+  const windows=container.querySelector('[data-windows-pilots]');
+  if(!target&&!pilots&&!windows)return;
+  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:Promise.all([androidReleaseStatus(),regionalAndroidReleases(),regionalPilotReleases(fetch,'windows')])};
+  const [status,regional,windowsRegional]=await cached.promise;
   status.regional=regional;
   if(target?.isConnected)target.innerHTML=androidReleaseHtml(status);
   if(pilots?.isConnected)pilots.innerHTML=androidPilotsHtml(status);
+  if(windows?.isConnected)windows.innerHTML=androidPilotsHtml({regional:windowsRegional},'windows');
 }

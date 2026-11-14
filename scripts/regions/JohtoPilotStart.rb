@@ -16,6 +16,15 @@ module BlueJohtoPilotStart
   end
 
   module IsolatedOverride
+    def select_and_prepare
+      super
+      return unless @new_game && BlueJohtoPilot.progress && File.file?("Johto pilot.json")
+      pbChangePlayer(3)
+      $game_player.refresh_charset
+      $game_player.transparent = false
+      BlueJohtoPilot.progress["profile_pending"] = true
+    end
+
     def johto_spawn
       BlueJohtoPilotStart.spawn || super
     end

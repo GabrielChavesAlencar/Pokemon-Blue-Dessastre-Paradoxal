@@ -55,7 +55,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         lines = content.decode().splitlines()
         self.assertEqual(report["source_maps"], 142)
         self.assertEqual(report["preview_maps"], 45)
-        self.assertEqual(report["staged_map_rules"], 51)
+        self.assertEqual(report["staged_map_rules"], 52)
         self.assertEqual(report["staged_battles"], 8)
         self.assertEqual(report["staged_events"], 14)
         self.assertEqual(report["staged_scenes"], 13)

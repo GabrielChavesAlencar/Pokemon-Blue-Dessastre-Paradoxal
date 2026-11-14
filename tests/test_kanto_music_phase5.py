@@ -28,7 +28,7 @@ class PhaseFiveMusicTests(KantoMusicPhaseOneTests):
         scenes=[row.split("\t") for row in lines if row.startswith("SCENE\t")]
         self.assertEqual(report["source_maps"],142)
         self.assertEqual(report["preview_maps"],45)
-        self.assertEqual(report["active_map_bindings"],49)
+        self.assertEqual(report["active_map_bindings"],50)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["active_transport_bindings"],2)
         self.assertEqual(report["active_me_bindings"],6)
@@ -51,7 +51,7 @@ class PhaseFiveMusicTests(KantoMusicPhaseOneTests):
                 self.add_music(number)
         data,report=self.compile()
         self.assertEqual(report["active_scene_bindings"],4)
-        self.assertEqual(report["active_map_bindings"],49)
+        self.assertEqual(report["active_map_bindings"],50)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["active_me_bindings"],6)
         self.assertIn("Kanto/1-03. Title Screen.mp3",report["missing_audio"])

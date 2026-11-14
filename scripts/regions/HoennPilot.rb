@@ -13,8 +13,9 @@ module BlueHoennPilot
     values = lines.flat_map { |line| line.split(",") }.map { |part| Integer(part, 10) }
     start = values.shift(3)
     maps = values.each_slice(2).to_h
-    raise "Mapas do piloto de Hoenn inválidos." unless maps.keys.sort == [7, 8, 11, 12, 13, 101] &&
-                                                         maps.values.uniq.length == 6 &&
+    expected = [7, 8, 11, 12, 13, 101]
+    raise "Mapas do piloto de Hoenn inválidos." unless [expected, [7, 8, 11, 12, 13, 14, 101, 102, 103]].include?(maps.keys.sort) &&
+                                                         maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
     @metadata = [start, maps]
@@ -23,6 +24,7 @@ module BlueHoennPilot
   def self.verify_compilation
     GameData::Encounter.load
     GameData::MapMetadata.load
+    GameData::Trainer.load
     _, maps = metadata
     route = maps.fetch(101)
     table = GameData::Encounter.get(route, 0)
@@ -35,8 +37,18 @@ module BlueHoennPilot
         raise "Mapa ou metadados de Hoenn ausentes: #{id}"
       end
     end
+    if maps[102] && ![[:YOUNGSTER, "Calvin"], [:BUGCATCHER, "Rick"],
+                      [:YOUNGSTER, "Allen"], [:LASS, "Tiana"]].all? { |kind, name| GameData::Trainer.exists?(kind, name, 102) }
+      raise "Treinadores da Rota 102 incompletos"
+    end
     connections = load_data("Data/map_connections.dat")
-    [[maps.fetch(7), route], [maps.fetch(12), route]].each do |first, second|
+    links = [[maps.fetch(7), route], [maps.fetch(12), route]]
+    [102, 103].each do |source_id|
+      next unless maps[source_id]
+      raise "Encontros ausentes na Rota #{source_id}" unless GameData::Encounter.exists?(maps[source_id], 0)
+      links << [maps.fetch(12), maps.fetch(source_id)]
+    end
+    links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
         raise "Conexão de Hoenn não compilada: #{first}/#{second}"
       end
@@ -57,6 +69,23 @@ module BlueHoennPilot
     $game_player.refresh_charset
     $game_player.transparent = false
     progress.delete("profile_pending")
+  end
+
+  def self.battle(trainer_type, name)
+    progress = state
+    return unless progress && !$player.party.empty?
+    key = "route102_#{name}"
+    if progress[key]
+      pbMessage(_INTL("{1}: Boa sorte na jornada!", name))
+      return
+    end
+    pbMessage(_INTL("{1}: Vamos batalhar?", name))
+    progress[key] = true if TrainerBattle.start(trainer_type, name, 102)
+  end
+
+  def self.mart
+    return unless state
+    pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])
   end
 
   def self.clock

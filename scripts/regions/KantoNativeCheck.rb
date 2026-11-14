@@ -91,6 +91,7 @@ module KantoNativeCheck
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
     mart_visits = []
     Object.send(:define_method, :pbPokemonMart) do |stock|
+      stock.delete_if { false }
       mart_visits << stock
       true
     end

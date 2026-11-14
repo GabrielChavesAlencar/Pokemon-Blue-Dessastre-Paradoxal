@@ -94,7 +94,7 @@ module BlueKantoPilot
     elsif progress["pilot_oak_parcel_received"] && !completed
       pbMessage(_INTL("Funcionário: O pacote é para o professor Oak, em Pallet."))
     end
-    pbPokemonMart(VIRIDIAN_MART_STOCK)
+    pbPokemonMart(VIRIDIAN_MART_STOCK.dup)
   end
 
   def self.rival_done?
@@ -109,10 +109,12 @@ module BlueKantoPilot
     !starter && !progress["pilot_oak_lab_seen"] && ($game_player.x == 6 && $game_player.y == 12)
   end
 
-  def self.hide_escort_oak
+  def self.position_lab_oak
+    $game_map.events[15].moveto(6, 11)
+  end
+
+  def self.finish_lab_escort
     progress["pilot_oak_lab_seen"] = true
-    $game_self_switches[[$game_map.map_id, 17, "A"]] = true
-    $game_map.events[17]&.refresh
   end
 
   def self.rival_hint

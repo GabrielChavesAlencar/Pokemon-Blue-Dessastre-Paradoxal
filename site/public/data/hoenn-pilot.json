@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "region": "hoenn",
+  "name": "Hoenn",
+  "note": "Dados do piloto de Littleroot e Oldale. Os níveis indicados são os valores-base.",
+  "locations": [
+    {
+      "name": "Littleroot Town",
+      "encounters": {}
+    },
+    {
+      "name": "Casa do jogador",
+      "encounters": {}
+    },
+    {
+      "name": "Laboratório do Birch",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 101",
+      "encounters": {
+        "Grama": [
+          [
+            "ZIGZAGOON",
+            2,
+            3,
+            45
+          ],
+          [
+            "POOCHYENA",
+            2,
+            3,
+            35
+          ],
+          [
+            "WURMPLE",
+            2,
+            3,
+            20
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Oldale Town",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Oldale",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Oldale",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 102",
+      "encounters": {
+        "Grama": [
+          [
+            "POOCHYENA",
+            3,
+            4,
+            30
+          ],
+          [
+            "ZIGZAGOON",
+            3,
+            4,
+            15
+          ],
+          [
+            "WURMPLE",
+            3,
+            4,
+            30
+          ],
+          [
+            "LOTAD",
+            3,
+            4,
+            10
+          ],
+          [
+            "SEEDOT",
+            3,
+            3,
+            10
+          ],
+          [
+            "RALTS",
+            4,
+            4,
+            4
+          ],
+          [
+            "SURSKIT",
+            3,
+            3,
+            1
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Rota 103",
+      "encounters": {
+        "Grama": [
+          [
+            "POOCHYENA",
+            2,
+            4,
+            60
+          ],
+          [
+            "ZIGZAGOON",
+            3,
+            4,
+            20
+          ],
+          [
+            "WINGULL",
+            2,
+            4,
+            20
+          ]
+        ]
+      }
+    }
+  ],
+  "trainers": [
+    {
+      "name": "Calvin",
+      "area": "Rota 102",
+      "teams": [
+        {
+          "label": "Equipe",
+          "pokemon": [
+            [
+              "POOCHYENA",
+              5
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Rick",
+      "area": "Rota 102",
+      "teams": [
+        {
+          "label": "Equipe",
+          "pokemon": [
+            [
+              "WURMPLE",
+              4
+            ],
+            [
+              "WURMPLE",
+              4
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Allen",
+      "area": "Rota 102",
+      "teams": [
+        {
+          "label": "Equipe",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              4
+            ],
+            [
+              "TAILLOW",
+              4
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Tiana",
+      "area": "Rota 102",
+      "teams": [
+        {
+          "label": "Equipe",
+          "pokemon": [
+            [
+              "ZIGZAGOON",
+              4
+            ],
+            [
+              "SHROOMISH",
+              4
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    }
+  ]
+}

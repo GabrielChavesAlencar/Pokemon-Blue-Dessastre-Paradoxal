@@ -33,6 +33,7 @@ PILOT_INPUTS = (
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
     "scripts/battle_polish/Story.rb",
+    "scripts/battle_polish/Economy.rb",
     "data/regions/kanto-source.json",
     "data/kanto-music-rules.json",
     "data/kanto-music.json",
@@ -503,20 +504,16 @@ def update_oak_lab(events, pallet, ball_sprite):
     replace_event(14, [command(355, b"BlueKantoPilot.rival_hint")], 0)
     replace_event(15, [command(355, b"BlueKantoPilot.choose_starter")], 0)
 
-    oak = copy.deepcopy(events[15])
-    oak.attrs.update({"@id": 17, "@name": b"Kanto Escort Oak", "@x": 6, "@y": 11})
-    oak = new_event(oak, [], 0, oak.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"])
-    oak.attrs["@pages"][0].attrs["@through"] = True
-    hidden_page(oak)
-    events[17] = oak
+    events.pop(17, None)  # Remove the old escort duplicate when patching an installed pilot.
     intro = copy.deepcopy(events[1])
     intro.attrs.update({"@id": 28, "@name": b"Kanto Lab Escort", "@x": 6, "@y": 12})
     intro = new_event(intro, if_scene(b"BlueKantoPilot.lab_escort_pending?", [
-        move_actor(17, *([4] * 6), 16),
-        move_actor(-1, *([4] * 6), 16),
+        command(355, b"BlueKantoPilot.position_lab_oak", indent=1),
+        move_actor(15, *([4] * 8), 16),
+        move_actor(-1, *([4] * 8), 16),
         command(210, indent=1),
         command(355, b"BlueKantoPilot.choose_starter", indent=1),
-    ]) + [command(355, b"BlueKantoPilot.hide_escort_oak")], 3, b"")
+    ]) + [command(355, b"BlueKantoPilot.finish_lab_escort")], 3, b"")
     intro.attrs["@pages"][0].attrs["@through"] = True
     # Complete the autorun after the first visit to the entrance.
     intro.attrs["@pages"][0].attrs["@list"][-1:-1] = [command(123, b"A", 0)]
@@ -991,7 +988,7 @@ def install_events(source, target, mapping):
                 is_door = "door" in name.lower() and bool(character)
                 # For the audited Celadon entrance doors, keep the original
                 # Player Touch semantics rather than requiring an action key.
-                auto_entry = (original == 5 and event_id in (1, 2, 3)) or (
+                auto_entry = original == 10 or (original == 5 and event_id in (1, 2, 3)) or (
                     original == 114 and event_id in (3, 20)) or (
                     original == 144 and event_id in (5, 17, 18, 24)) or (
                     original == 168 and event_id in (6, 10, 12, 13, 14)) or (
@@ -1056,7 +1053,7 @@ def install_pbs(preview, target, mapping):
 
 def install_runtime(target, mapping, game):
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
-    for name in ("RegionStart.rb", "Story.rb"):
+    for name in ("RegionStart.rb", "Story.rb", "Economy.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
     plugin.mkdir()

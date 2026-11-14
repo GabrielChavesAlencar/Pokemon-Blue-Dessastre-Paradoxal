@@ -15,7 +15,7 @@ module KantoMusicNativeProbe
     music = BlueMusic.kanto_data
     require!(music[0].length == 142, "Compiled MapID coverage not 142")
     require!([music[1].length,music[2].length,music[3].length,music[4].length,
-              music[5].length,music[6].length] == [49,8,2,3,6,5],
+              music[5].length,music[6].length] == [50,8,2,3,6,5],
              "Kanto manifest category counts do not match approved rules")
     map_id=$game_map.map_id
     require!(music[0].key?(map_id) && !music[0][map_id][1] &&
@@ -71,7 +71,7 @@ module KantoMusicNativeProbe
              "Music probe changed current region or map")
     File.write("Data/blue-kanto-music-native-#{label}.txt",
                "STATUS=PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE\n" +
-               "SCOPE=142;MAP=49;BATTLE=8;TRANSPORT=2;ME=6;SCENE=5\n" +
+               "SCOPE=142;MAP=50;BATTLE=8;TRANSPORT=2;ME=6;SCENE=5\n" +
                "DECODER=SEPARATE_FFMPEG_CI;LOOP_FADE_SPEAKER=BLOCKED_ENV\n")
     puts "KANTO_MUSIC_NATIVE_F6=#{label}|PASS_NATIVE_AUDIOFILE_DISPATCH_NOT_AUDIBLE"
     true

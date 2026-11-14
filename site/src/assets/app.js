@@ -7,7 +7,7 @@ import {regularIndex,regularResults,regularTrainerById,regularDetail} from './re
 import {changesPage} from './changes.js';
 import {loadRegions,regionsPage,regionPicker} from './regions.js';
 import {loadKanto,kantoIndex,kantoLocation,kantoTrainer} from './kanto.js';
-import {loadJohtoPreview,johtoIndex} from './johto.js';
+import {loadPilotCatalog,pilotIndex} from './regional-pilot.js';
 import {downloadsPage} from './downloads.js';
 import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
@@ -65,11 +65,10 @@ async function render(scroll=false){
       }else{main.innerHTML=leagueIndex(model,db,(url.searchParams.get('regiao')||'kanto').toUpperCase());setPage('Elite Four e Campeões');}
     }
     else if(['localizacoes','treinadores','chefes'].includes(route) &&
-      !parts[1] && url.searchParams.get('regiao')==='johto'){
-      const data=await loadJohtoPreview();if(id!==renderId)return;
-      main.innerHTML=johtoIndex(data,route);
-      setPage({localizacoes:'Localizações de Johto · prévia',treinadores:'Treinadores de Johto · prévia',
-        chefes:'Líderes e Elite de Johto · prévia'}[route]);
+      !parts[1] && ['johto','hoenn'].includes(url.searchParams.get('regiao'))){
+      const data=await loadPilotCatalog(url.searchParams.get('regiao'));if(id!==renderId)return;
+      main.innerHTML=pilotIndex(data,route);
+      setPage({localizacoes:'Localizações',treinadores:'Treinadores',chefes:'Líderes de ginásio'}[route]+' de '+data.name);
     }else if(['localizacoes','treinadores','chefes'].includes(route) &&
       (parts[1]?.startsWith('kanto-') || (!parts[1] && url.searchParams.get('regiao')==='kanto'))){
       const data=await loadKanto();if(id!==renderId)return;

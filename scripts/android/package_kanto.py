@@ -164,11 +164,37 @@ def select_files(game: Path) -> dict[str, Path]:
         elif name in REGIONAL_FILES or name == "Kanto pilot.json":
             raise ValueError(f"Mandatory regional metadata was not found: {name}")
     for item in list(selected):
+        if re.fullmatch(r"Data/(?:File [A-H]|Auto [1-3])\.rxdata", item, re.IGNORECASE):
+            del selected[item]
+            continue
         if item.startswith("Data/blue-kanto-proof") or item.lower().endswith((".log", ".bak")):
             raise ValueError("Diagnostic or backup selected for distribution: " + item)
     if not set(CORE_FILES).issubset(selected):
         raise ValueError("The pilot archive is missing the Kanto runtime or metadata.")
     return selected
+
+def build_windows(game: Path, output: Path, revision: str) -> None:
+    if not re.fullmatch(r"[a-f0-9]{40}", revision):
+        raise ValueError("A full Git commit hash is mandatory for published Windows builds.")
+    _metadata(game)
+    files = select_files(game)
+    compiled_kanto((game / "Data/PluginScripts.rxdata").read_bytes(), (game / KANTO_PLUGIN).read_bytes())
+    prefix = "Pokemon-Blue-Kanto-Windows/"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED, compresslevel=3) as archive:
+        for name, file in sorted(files.items()):
+            archive.write(file, prefix + name)
+        archive.writestr(prefix + "LEIA-ME.txt",
+                         "Extraia o ZIP e abra Game.exe. Use Novo Jogo para iniciar o piloto.\n"
+                         "Os saves usam o perfil separado Kanto Piloto.\nRevision: " + revision + "\n")
+    with zipfile.ZipFile(output) as archive:
+        damaged = archive.testzip()
+        if damaged:
+            raise ValueError("Windows ZIP corrompido: " + damaged)
+    with output.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    output.with_suffix(".zip.sha256").write_text(f"{digest}  {output.name}\n", "ascii")
+
 
 def build(game: Path, output: Path, revision: str) -> dict:
     if not re.fullmatch(r"[a-f0-9]{40}", revision):
@@ -257,8 +283,12 @@ def main() -> None:
     parser.add_argument("--revision", required=False, default="")
     parser.add_argument("--request-compile", action="store_true")
     parser.add_argument("--verify", action="store_true")
+    parser.add_argument("--windows", action="store_true")
     args = parser.parse_args()
-    if args.request_compile:
+    if args.windows:
+        output = args.output if args.output.name != ASSET else args.output.with_name("Blue-Windows-Kanto-Piloto.zip")
+        build_windows(args.game_dir, output, args.revision)
+    elif args.request_compile:
         _metadata(args.game_dir)
         request_compile(args.game_dir)
         print("Kanto JoiPlay native compilation requested.")

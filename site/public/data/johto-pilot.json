@@ -1,0 +1,590 @@
+{
+  "schema": 1,
+  "region": "johto",
+  "name": "Johto",
+  "note": "Locais da abertura do piloto e equipes compiladas no Windows. Os níveis indicados são os valores-base.",
+  "locations": [
+    {
+      "name": "New Bark Town",
+      "encounters": {}
+    },
+    {
+      "name": "Quarto do jogador",
+      "encounters": {}
+    },
+    {
+      "name": "Casa do jogador",
+      "encounters": {}
+    },
+    {
+      "name": "Laboratório do Professor Elm",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 29",
+      "encounters": {
+        "Grama": [
+          [
+            "PIDGEY",
+            2,
+            4,
+            50
+          ],
+          [
+            "SENTRET",
+            2,
+            4,
+            30
+          ],
+          [
+            "RATTATA",
+            2,
+            4,
+            20
+          ]
+        ],
+        "Grama à noite": [
+          [
+            "HOOTHOOT",
+            2,
+            4,
+            50
+          ],
+          [
+            "RATTATA",
+            2,
+            4,
+            30
+          ],
+          [
+            "SPINARAK",
+            2,
+            3,
+            20
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Cherrygrove City",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 30",
+      "encounters": {
+        "Grama": [
+          [
+            "PIDGEY",
+            3,
+            5,
+            40
+          ],
+          [
+            "CATERPIE",
+            3,
+            5,
+            30
+          ],
+          [
+            "WEEDLE",
+            3,
+            5,
+            30
+          ]
+        ],
+        "Grama à noite": [
+          [
+            "HOOTHOOT",
+            3,
+            5,
+            40
+          ],
+          [
+            "SPINARAK",
+            3,
+            5,
+            30
+          ],
+          [
+            "RATTATA",
+            3,
+            5,
+            30
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Rota 31",
+      "encounters": {
+        "Grama": [
+          [
+            "BELLSPROUT",
+            4,
+            6,
+            40
+          ],
+          [
+            "PIDGEY",
+            4,
+            6,
+            30
+          ],
+          [
+            "CATERPIE",
+            4,
+            5,
+            30
+          ]
+        ],
+        "Grama à noite": [
+          [
+            "HOOTHOOT",
+            4,
+            6,
+            40
+          ],
+          [
+            "SPINARAK",
+            4,
+            6,
+            30
+          ],
+          [
+            "RATTATA",
+            4,
+            6,
+            30
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Violet City",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Violet",
+      "encounters": {}
+    },
+    {
+      "name": "Torre Sprout",
+      "encounters": {}
+    }
+  ],
+  "trainers": [
+    {
+      "name": "Silver",
+      "area": "Rota 29",
+      "teams": [
+        {
+          "label": "Se escolheu Chikorita",
+          "pokemon": [
+            [
+              "CYNDAQUIL",
+              5
+            ]
+          ]
+        },
+        {
+          "label": "Se escolheu Cyndaquil",
+          "pokemon": [
+            [
+              "TOTODILE",
+              5
+            ]
+          ]
+        },
+        {
+          "label": "Se escolheu Totodile",
+          "pokemon": [
+            [
+              "CHIKORITA",
+              5
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Johto Mikey",
+      "area": "Rota 29",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "RATTATA",
+              5
+            ],
+            [
+              "SENTRET",
+              5
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "RATTATA",
+              5
+            ],
+            [
+              "SENTRET",
+              5
+            ],
+            [
+              "PIDGEY",
+              5
+            ],
+            [
+              "HOOTHOOT",
+              5
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Johto Joey",
+      "area": "Rota 30",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "RATTATA",
+              6
+            ],
+            [
+              "PIDGEY",
+              6
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "RATTATA",
+              6
+            ],
+            [
+              "PIDGEY",
+              6
+            ],
+            [
+              "SENTRET",
+              6
+            ],
+            [
+              "HOOTHOOT",
+              6
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Johto Don",
+      "area": "Rota 30",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "CATERPIE",
+              6
+            ],
+            [
+              "WEEDLE",
+              6
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "CATERPIE",
+              6
+            ],
+            [
+              "WEEDLE",
+              6
+            ],
+            [
+              "SPINARAK",
+              6
+            ],
+            [
+              "LEDYBA",
+              6
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Johto Wade",
+      "area": "Rota 31",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "CATERPIE",
+              7
+            ],
+            [
+              "WEEDLE",
+              7
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "CATERPIE",
+              7
+            ],
+            [
+              "WEEDLE",
+              7
+            ],
+            [
+              "SPINARAK",
+              7
+            ],
+            [
+              "LEDYBA",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Johto Ian",
+      "area": "Rota 31",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              7
+            ],
+            [
+              "PIDGEY",
+              7
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              7
+            ],
+            [
+              "PIDGEY",
+              7
+            ],
+            [
+              "RATTATA",
+              7
+            ],
+            [
+              "SENTRET",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Falkner",
+      "area": "Ginásio de Violet",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "PIDGEY",
+              9
+            ],
+            [
+              "PIDGEOTTO",
+              11
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "PIDGEY",
+              11
+            ],
+            [
+              "PIDGEOTTO",
+              11
+            ],
+            [
+              "HOOTHOOT",
+              11
+            ],
+            [
+              "SPEAROW",
+              11
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "Zephyr"
+    },
+    {
+      "name": "Li",
+      "area": "Torre Sprout",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              8
+            ],
+            [
+              "HOOTHOOT",
+              10
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              10
+            ],
+            [
+              "HOOTHOOT",
+              10
+            ],
+            [
+              "HOPPIP",
+              10
+            ],
+            [
+              "SPEAROW",
+              10
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Nico",
+      "area": "Torre Sprout",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              7
+            ],
+            [
+              "HOOTHOOT",
+              7
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              7
+            ],
+            [
+              "HOOTHOOT",
+              7
+            ],
+            [
+              "RATTATA",
+              7
+            ],
+            [
+              "HOPPIP",
+              7
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Troy",
+      "area": "Torre Sprout",
+      "teams": [
+        {
+          "label": "Normal",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              8
+            ],
+            [
+              "HOPPIP",
+              8
+            ]
+          ]
+        },
+        {
+          "label": "Master",
+          "pokemon": [
+            [
+              "BELLSPROUT",
+              8
+            ],
+            [
+              "HOPPIP",
+              8
+            ],
+            [
+              "HOOTHOOT",
+              8
+            ],
+            [
+              "PIDGEY",
+              8
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    }
+  ]
+}

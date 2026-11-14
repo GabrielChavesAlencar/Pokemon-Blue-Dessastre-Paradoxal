@@ -102,6 +102,10 @@ def inspect(game: Path) -> dict:
                     results.add(args[1])
         return results
 
+    for eid in (1, 2, 3, 4, 5):
+        door = maps[mapping[10]].attrs["@events"][eid]
+        if door.attrs["@pages"][0].attrs["@trigger"] != 1:
+            raise ValueError(f"Viridian building {eid} must open on touch")
     for eid in (1, 2, 3):
         pallet_event = maps[mapping[5]].attrs["@events"][eid]
         if pallet_event.attrs["@pages"][0].attrs["@trigger"] != 1:
@@ -537,7 +541,7 @@ def inspect(game: Path) -> dict:
         (6, 18): "BlueKantoPilot.choose_starter_ball(:BULBASAUR)",
         (6, 19): "BlueKantoPilot.choose_starter_ball(:SQUIRTLE)",
         (6, 20): "BlueKantoPilot.choose_starter_ball(:CHARMANDER)",
-        (6, 28): "BlueKantoPilot.hide_escort_oak",
+        (6, 28): "BlueKantoPilot.finish_lab_escort",
         (6, 35): "BlueKantoPilot.rival",
         (6, 36): "BlueKantoPilot.rival",
         (6, 37): "BlueKantoPilot.rival",

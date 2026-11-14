@@ -9,18 +9,19 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   const html=downloadsPage();
   assert.doesNotMatch(html,/\.bat|RUN\.bat|archive\/refs\/heads/);
   assert.ok(html.includes(androidDownload));
-  assert.ok(html.includes('Testar Kanto (experimental)'));assert.match(html,/Android reais/);
+  assert.ok(html.includes('Testar Kanto · Testar Johto · Testar Hoenn'));assert.match(html,/Android reais/);
   assert.equal(joiplayDownload,'https://www.joiplay.net/');
   assert.ok(html.includes(`href="${joiplayDownload}"`));
   assert.ok(html.includes('Baixar JoiPlay · site oficial'));
   assert.ok(html.includes('android-download-actions'));
-  assert.match(html,/Testar Kanto ou Johto no Android/);
+  assert.match(html,/Pilotos no Android/);
   assert.match(html,/data-android-pilots/);
+  assert.match(html,/data-windows-pilots/);
   assert.doesNotMatch(html,/href="[^"]*Blue-Android-(Kanto|Johto)-Piloto[.]zip"/);
 
   assert.ok(html.includes('RPG Maker Plugin'));
   assert.match(html,/Python ou Git/);assert.match(html,/cópias portáteis verificadas/);
-  assert.equal((html.match(/<ol>/g)||[]).length,2);
+  assert.equal((html.match(/<ol(?:\s[^>]*)?>/g)||[]).length,3);
   assert.ok(html.includes('130 times prontos'));
   assert.match(html,/Configurações → Teclas → Editar/);
   assert.match(html,/WASD funciona/);

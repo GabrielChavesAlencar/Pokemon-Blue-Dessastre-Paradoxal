@@ -8,6 +8,7 @@ import os
 import re
 import shutil
 import stat
+import struct
 import sys
 import uuid
 import zlib
@@ -15,7 +16,9 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 from audit_johto import ROOT, checksum
-from build_johto_events import event_page
+from build_johto_events import EVENT_CLASSES, event_page, ruby
+from build_johto_elm_lab_v1 import table_values
+from build_johto_bedroom_v1 import tile
 from compile_johto_connections import merge_pbs
 from install_johto import save_report
 from package_johto_offline12 import MAP_IDS, RIVAL_PBS, STAGE_PBS, RUNTIME, expected_events
@@ -413,6 +416,45 @@ def native_compile_boot(blob: bytes) -> bytes:
     return b"\x04\x08" + dump(rows)
 
 
+def repair_new_bark(town, bedroom, home, lab):
+    # Retain the existing room footprints and warps while using a continuous
+    # wood wall face in place of the repeated corner tile.
+    for room in (bedroom, home):
+        data = room.attrs["@data"]
+        (w, h, _), original = table_values(data.data, 3)
+        cells = list(original)
+        for x in range(1, w - 1):
+            cells[x + w * (1 + h)] = tile(191, 4)
+            cells[x + w * (h - 1)] = tile(192, 4)
+        data.data = data.data[:20] + struct.pack(f"<{len(cells)}H", *cells)
+    events = town.attrs["@events"]
+    events = {id: event for id, event in events.items() if event.attrs["@name"] != b"JH_ROUTE29_GUARD"}
+    town.attrs["@events"] = events
+    for event_id in (1, 2):
+        events[event_id].attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = b"doors2"
+    # The Route 29 connection uses the west edge at y=26–28.
+    for y in range(26, 29):
+        event_id = max(events) + 1
+        events[event_id] = ruby("RPG::Event", id=event_id, name=b"JH_ROUTE29_GUARD", x=0, y=y,
+                                pages=[event_page(script="BlueJohtoPilot.guard_route", touch=True)])
+    events = {id: event for id, event in bedroom.attrs["@events"].items()
+              if event.attrs["@name"] != b"JH_NEW_GAME_PROFILE"}
+    bedroom.attrs["@events"] = events
+    event_id = max(events) + 1
+    page = event_page(script="BlueJohtoPilot.choose_profile", touch=True)
+    page.attrs["@trigger"] = 3
+    page.attrs["@list"].insert(1, ruby("RPG::EventCommand", code=123, indent=0, parameters=[b"A", 0]))
+    done = event_page(script="nil", touch=True)
+    done.attrs["@trigger"] = 0
+    done.attrs["@condition"].attrs["@self_switch_valid"] = True
+    events[event_id] = ruby("RPG::Event", id=event_id, name=b"JH_NEW_GAME_PROFILE", x=6, y=7,
+                            pages=[page, done])
+    for event in lab.attrs["@events"].values():
+        if text(event.attrs["@name"]).startswith("JH_STARTER_"):
+            event.attrs["@y"] = 6
+            event.attrs["@pages"][0].attrs["@always_on_top"] = True
+
+
 def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict]:
     pinned = json.loads((root / "data/regions/johto-source.json").read_text("utf-8"))["source"]["archive_sha256"]
     native = index_base(base)
@@ -448,6 +490,19 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
         files[rel] = regular(base / source).read_bytes()
         if not files[rel].startswith(PNG):
             raise ValueError(f"Sprite de batalha inválido: {source}")
+
+    # Apply authored QA repairs only after validation of the pinned bundle.
+    repair_count = 0
+    if "Graphics/Characters/doors2.png" in native:
+        paths = [f"Data/Map{mid:03}.rxdata" for mid in (600, start[0], 675, 676)]
+        maps = [loads(files[path]) for path in paths]
+        repair_new_bark(*maps)
+        repair_count = 4
+        files.update({path: serialize(data, EVENT_CLASSES) for path, data in zip(paths, maps)})
+    for rel, source in ((f"{STORY}/Economy.rb", "scripts/battle_polish/Economy.rb"),
+                        ("Plugins/ZZZZ Blue Music/BlueMusic.rb", "scripts/music/BlueMusic.rb")):
+        if rel in native:
+            files[rel] = regular(root / source).read_bytes()
 
     app = f"Johto QA {uuid.uuid4().hex[:12]}"
     config_text = (base / "mkxp.json").read_text("utf-8-sig")
@@ -488,7 +543,7 @@ def plan(base: Path, bundle: Path, root: Path, report: dict) -> tuple[dict, dict
         "file_hashes": {name: hash_bytes(files[name]) for name in sorted(DATA | PBS | {"Data/System.rxdata"})},
     })
     report.update(status="QA_COPY_PLANNED", bundle_sha256=bundle_hash, maps=82,
-                  events=32, connections=44, trainer_teams=21, start=start)
+                  events=32 + repair_count, connections=44, trainer_teams=21, start=start)
     return native, files
 
 

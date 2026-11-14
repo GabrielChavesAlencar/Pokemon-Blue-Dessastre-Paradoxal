@@ -38,6 +38,20 @@ module BlueJohtoPilot
     STARTERS.include?(valid) ? valid : nil
   end
 
+  def self.choose_profile
+    flags = progress
+    return unless flags && flags.delete("profile_pending")
+    pbCharacterSelect
+    $game_player.refresh_charset
+    $game_player.transparent = false
+  end
+
+  def self.guard_route
+    return unless progress && !starter && $player.party.empty?
+    pbMessage(_INTL("Elm: A Rota 29 é perigosa sem um Pokémon. Passe no meu laboratório primeiro."))
+    $game_player.moveto(2, $game_player.y)
+  end
+
   def self.mother
     flags = progress
     return false unless flags
@@ -78,6 +92,8 @@ module BlueJohtoPilot
       pbMessage(_INTL("Elm: Converse comigo antes de escolher uma das Poké Bolas."))
       return false
     end
+    name = GameData::Species.get(requested).name
+    return false unless pbConfirmMessage(_INTL("Escolher {1} como seu parceiro?", name))
     # Only mark the save after the engine actually succeeds in granting it.
     return false unless pbAddPokemonSilent(requested, 5)
     flags["starter"] = requested.to_s

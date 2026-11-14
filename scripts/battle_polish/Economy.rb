@@ -138,6 +138,7 @@ module BlueCampaign
         game_map.events[event.id]=Game_Event.new(game_map.map_id,replacement,game_map)
       end
     end
+    return unless ($PokemonGlobal&.blue_regions || {}).fetch("current", "DECADES") == "DECADES"
     nurses=map.events.values.select { |e| nurse?(e) }
     nurses.each do |nurse|
       name='Blue Shop / '+nurse.id.to_s

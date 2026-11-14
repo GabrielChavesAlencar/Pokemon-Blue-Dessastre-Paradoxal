@@ -27,12 +27,14 @@ UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
     7: "Littleroot Town", 8: "Casa do jogador", 11: "Laboratório do Birch",
     101: "Rota 101", 12: "Oldale Town", 13: "Centro Pokémon de Oldale",
+    14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103",
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
     ((8, 10, 4), (8, 10, 5), (8, 28, 3), (8, 28, 4)),
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
+    ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
 )
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
@@ -40,7 +42,8 @@ PEOPLE = (
     (11, 7, 5, "Treecko", "Object_Ball", "BlueHoennPilot.choose_starter(:TREECKO)"),
     (11, 8, 5, "Torchic", "Object_Ball", "BlueHoennPilot.choose_starter(:TORCHIC)"),
     (11, 9, 5, "Mudkip", "Object_Ball", "BlueHoennPilot.choose_starter(:MUDKIP)"),
-    (13, 9, 6, "Enfermeira", "NPC_DPP_PokeCenter_Nurse", "BlueHoennPilot.heal"),
+    (13, 9, 4, "Enfermeira", "NPC_DPP_PokeCenter_Nurse", "BlueHoennPilot.heal"),
+    (14, 3, 5, "Mart", "NPC_DPP_PokeMart_Man", "BlueHoennPilot.mart"),
 )
 BGM = {
     "Littleroot": "City - Littleroot (Littleroot Town)",
@@ -51,8 +54,23 @@ BGM = {
     "Wild": "Battle Music - Wild Pokemon (Battle! (Wild Pokemon))",
     "WildVictory": "Battle Victory - Wild Pokemon (Victory! (Wild Pokemon))",
 }
-MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101", 12: "Oldale", 13: "Center"}
-BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"))
+MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
+           12: "Oldale", 13: "Center", 14: "Oldale", 102: "Route101", 103: "Route101"}
+OUTDOORS = (7, 12, 101, 102, 103)
+BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
+           (102, "East", 12, "West"), (103, "South", 12, "North"))
+LAND_ENCOUNTERS = {
+    101: ((45, "ZIGZAGOON", 2, 3), (35, "POOCHYENA", 2, 3), (20, "WURMPLE", 2, 3)),
+    102: ((30, "POOCHYENA", 3, 4), (15, "ZIGZAGOON", 3, 4), (30, "WURMPLE", 3, 4),
+          (10, "LOTAD", 3, 4), (10, "SEEDOT", 3, 3), (4, "RALTS", 4, 4), (1, "SURSKIT", 3, 3)),
+    103: ((60, "POOCHYENA", 2, 4), (20, "ZIGZAGOON", 3, 4), (20, "WINGULL", 2, 4)),
+}
+ROUTE_102_TRAINERS = (
+    (33, 14, "YOUNGSTER", "Calvin", "trainer_YOUNGSTER", (("POOCHYENA", 5),)),
+    (25, 15, "BUGCATCHER", "Rick", "trainer_BUGCATCHER", (("WURMPLE", 4), ("WURMPLE", 4))),
+    (19, 4, "YOUNGSTER", "Allen", "trainer_YOUNGSTER", (("ZIGZAGOON", 4), ("TAILLOW", 4))),
+    (8, 7, "LASS", "Tiana", "trainer_LASS", (("ZIGZAGOON", 4), ("SHROOMISH", 4))),
+)
 START = (8, 25, 6)
 PROFILE = "Hoenn Piloto"
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot"
@@ -130,22 +148,24 @@ def validate_geometry(maps, tiles):
         edges[a] = [b_arrival]
         edges[b] = [a_arrival]
         required.update((a, a_arrival, b, b_arrival))
-    for first, edge, second, _ in BORDERS:
-        if maps[first].attrs["@width"] != maps[second].attrs["@width"]:
-            raise ValueError("Borda Hoenn diverge da largura auditada")
-        y = 0 if edge == "North" else maps[first].attrs["@height"] - 1
-        other_y = maps[second].attrs["@height"] - 1 if edge == "North" else 0
-        pairs = [((first, x, y), (second, x, other_y))
-                 for x in range(maps[first].attrs["@width"])
-                 if open_tile(maps[first], tiles[first], x, y)
-                 and open_tile(maps[second], tiles[second], x, other_y)]
+    for first, edge, second, other_edge in BORDERS:
+        def border(map_id, side):
+            w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
+            if side in ("North", "South"):
+                return [(map_id, x, 0 if side == "North" else h - 1) for x in range(w)]
+            return [(map_id, 0 if side == "West" else w - 1, y) for y in range(h)]
+
+        pairs = [(a, b) for a, b in zip(border(first, edge), border(second, other_edge))
+                 if open_tile(maps[first], tiles[first], *a[1:])
+                 and open_tile(maps[second], tiles[second], *b[1:])]
         if not pairs:
             raise ValueError("Borda Hoenn sem cruzamento passável")
+        required.add(pairs[0][1] if first in (7, 12) else pairs[0][0])
         for a, b in pairs:
             edges.setdefault(a, []).append(b)
             edges.setdefault(b, []).append(a)
     # Test the exact standing cells used to interact with the NPCs and Poké Balls.
-    required.update(((8, 4, 9), (11, 8, 7), (11, 7, 6), (11, 9, 6), (13, 9, 7)))
+    required.update(((8, 4, 9), (11, 8, 7), (11, 7, 6), (11, 9, 6), (13, 9, 6), (14, 5, 5)))
     reachable(START, required, tiles, maps, edges, blocked)
 
 
@@ -306,9 +326,26 @@ def build_overlay(game, source):
     for mid, x, y, name, sprite, handler in PEOPLE:
         if not regular(game / f"Graphics/Characters/{sprite}.png").read_bytes().startswith(PNG):
             raise ValueError(f"Sprite nativo inválido: {sprite}")
-        append_event(maps[mid], f"HN_{name}", x, y, event_page(script=handler, sprite=sprite))
+        page = event_page(script=handler, sprite=sprite)
+        append_event(maps[mid], f"HN_{name}", x, y, page)
+        if mid in (13, 14):
+            # The original counter tile sits between the player and the attendant.
+            px, py = (9, 5) if mid == 13 else (4, 5)
+            proxy = event_page(script=handler, touch=True)
+            proxy.attrs["@trigger"] = 0
+            append_event(maps[mid], f"HN_{name}_counter", px, py, proxy)
 
     add_opening(maps)
+    trainer_sections = []
+    for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
+        regular(game / f"Graphics/Characters/{sprite}.png")
+        page = event_page(script=f'BlueHoennPilot.battle(:{trainer_type}, "{name}")', sprite=sprite)
+        append_event(maps[102], f"HN_{name}", x, y, page)
+        trainer_sections.append(
+            f"[{trainer_type},{name},102]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+        )
+    overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
         blob = source.read(source_path)
@@ -332,12 +369,13 @@ def build_overlay(game, source):
     system.attrs.update({"@start_map_id": ids[START[0]], "@start_x": START[1], "@start_y": START[2]})
     overlay["Data/System.rxdata"] = serialize(system, SYSTEM_CLASSES)
     overlay["Data/Scripts.rxdata"] = startup(regular(game / "Data/Scripts.rxdata").read_bytes())
-    overlay["PBS/encounters_hoenn_pilot.txt"] = (
-        f"[{ids[101]}]\nLand,21\n"
-        "    45,ZIGZAGOON,2,3\n    35,POOCHYENA,2,3\n    20,WURMPLE,2,3\n"
+    overlay["PBS/encounters_hoenn_pilot.txt"] = "".join(
+        f"[{ids[mid]}]\nLand,{21 if mid == 101 else 11}\n" +
+        "".join(f"    {chance},{species},{low},{high}\n" for chance, species, low, high in entries)
+        for mid, entries in LAND_ENCOUNTERS.items()
     ).encode("ascii")
     overlay["PBS/map_metadata_hoenn_pilot.txt"] = "".join(
-        f"[{ids[mid]}]\nName = {name}\n" + ("Outdoor = true\n" if mid in (7, 12, 101) else "")
+        f"[{ids[mid]}]\nName = {name}\n" + ("Outdoor = true\nSnapEdges = true\n" if mid in OUTDOORS else "")
         for mid, name in SOURCE_MAPS.items()
     ).encode("utf-8")
     overlay["Data/blue-hoenn-compile-request.txt"] = (UPSTREAM + "\n").encode("ascii")
@@ -355,6 +393,9 @@ def build_overlay(game, source):
     music = "Plugins/ZZZZ Blue Music/BlueMusic.rb"
     if (game / music).is_file():
         overlay[music] = regular(ROOT / "scripts/music/BlueMusic.rb").read_bytes()
+    economy = f"{STORY}/Economy.rb"
+    if (game / economy).is_file():
+        overlay[economy] = regular(ROOT / "scripts/battle_polish/Economy.rb").read_bytes()
     ini, count = re.subn(r"(?m)^Title=[^\r\n]*", "Title=Hoenn Piloto",
                          regular(game / "Game.ini").read_text("utf-8-sig"))
     if count != 1:

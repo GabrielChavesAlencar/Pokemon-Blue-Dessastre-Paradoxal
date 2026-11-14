@@ -116,6 +116,11 @@
       "enabled": true
     },
     {
+      "map": "VIRIDIAN_CITY",
+      "track": 15,
+      "enabled": true
+    },
+    {
       "map": "PEWTER_CITY",
       "track": 15,
       "enabled": true

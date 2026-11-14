@@ -48,6 +48,10 @@ def pbMessage(message, choices = nil, default = nil)
   $messages << message
   choices ? $questions.shift : nil
 end
+def pbConfirmMessage(message)
+  $messages << message
+  $confirm_starter != false
+end
 def pbAddPokemonSilent(species, level)
   return false unless $give_pokemon
   $player.party << [species, level]
@@ -93,6 +97,9 @@ Dir.mktmpdir("johto-pilot-test-") do |dir|
     check(!BlueJohtoPilot.choose_starter_from_ball(:CYNDAQUIL), "Failed party add was marked successful")
     check(BlueJohtoPilot.starter.nil?, "Failed starter persisted")
     $give_pokemon = true
+    $confirm_starter = false
+    check(!BlueJohtoPilot.choose_starter_from_ball(:CYNDAQUIL), "Declining a ball must not grant it")
+    $confirm_starter = true
     check(BlueJohtoPilot.choose_starter_from_ball(:CYNDAQUIL), "Cyndaquil ball did not grant starter")
     check($player.party == [[:CYNDAQUIL, 5]], "Wrong starter or level")
     check(BlueJohtoPilot.starter == :CYNDAQUIL, "Starter not saved")

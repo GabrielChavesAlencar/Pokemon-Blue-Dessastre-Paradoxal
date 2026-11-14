@@ -32,7 +32,7 @@ test('pilotos só têm link quando os ZIPs regionais existem de verdade',async()
   const html=androidPilotsHtml(published);
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Kanto-Piloto\.zip/);
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Johto-Piloto\.zip/);
-  assert.doesNotMatch(html,/indisponível/);
+  assert.match(html,/Piloto Hoenn · indisponível/);
   assert.doesNotMatch(androidPilotsHtml({state:'unavailable'}),/href=/);
 });
 
