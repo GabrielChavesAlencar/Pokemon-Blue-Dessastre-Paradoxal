@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "66ada3e41dfe504cff0e8b0939fc7eb6af61c7fd",
+      "date": "2026-11-14T13:00:26-03:00",
+      "title": "docs(hoenn): Etapa 07 Fallarbor/Maxie/Flannery, 85 mapas e QA Game.exe",
+      "category": "Documentação"
+    },
+    {
       "sha": "04d8fc5c09a47c3fe2d002099c50d3bbeba4e98b",
       "date": "2026-11-14T12:58:51-03:00",
       "title": "fix(hoenn): conectar Fallarbor e Lavaridge ao grafo auditado da Etapa 7",
