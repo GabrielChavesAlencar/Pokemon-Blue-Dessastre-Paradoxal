@@ -46,6 +46,9 @@ PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
 from hoenn_stage7 import SOURCE_MAPS_STAGE7
 assert not set(PILOT).intersection(SOURCE_MAPS_STAGE7), "MapID donor em conflito"
 PILOT.update(SOURCE_MAPS_STAGE7)
+from hoenn_stage8 import SOURCE_MAPS_STAGE8
+assert not set(PILOT).intersection(SOURCE_MAPS_STAGE8), "Stage8 source MapID duplicado"
+PILOT.update(SOURCE_MAPS_STAGE8)
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
