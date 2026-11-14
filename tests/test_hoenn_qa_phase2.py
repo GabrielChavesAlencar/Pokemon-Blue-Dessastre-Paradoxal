@@ -130,6 +130,32 @@ class HoennQAMapConnectionsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"fora dos limites"):
             qa.audit_map(83,self.maps[83],self.maps,self.mapping)
 
+
+    def test_original_door_landing_must_be_exact(self):
+        physical=[]
+        for a,a_arrival,b,b_arrival in qa.WARP_PAIRS:
+            physical.append((a[0],a[1],a[2],b[0],
+                             b_arrival[1],b_arrival[2],"native_201"))
+            physical.append((b[0],b[1],b[2],a[0],
+                             a_arrival[1],a_arrival[2],"native_201"))
+        self.assertEqual(qa.check_required_doors(physical),len(qa.WARP_PAIRS)*2)
+        corrupted=list(physical)
+        item=corrupted[0]
+        corrupted[0]=(*item[:4],item[4]+1,item[5],item[6])
+        with self.assertRaisesRegex(ValueError,"destino"):
+            qa.check_required_doors(corrupted)
+        with self.assertRaisesRegex(ValueError,"ausente"):
+            qa.check_required_doors(physical[1:])
+
+    def test_observed_route_graph_is_not_gameplay_approval(self):
+        report=qa.map_link_diagnostics(
+            [(7,5,5,101,12,12,"native_201")],
+            [(83,3,3,87,5,5,"stage10_transfer")],self.mapping)
+        self.assertTrue(report["planned_graph_is_not_physical_proof"])
+        self.assertTrue(report["custom_field_move_paths_may_not_be_discovered"])
+        self.assertIn(99,report["maps_without_observed_outbound_transfer"])
+        self.assertNotIn(7,report["maps_without_observed_outbound_transfer"])
+
     def test_marker_has_exact_physical_map_remap(self):
         copy=self.path
         (copy/"Data").mkdir()
