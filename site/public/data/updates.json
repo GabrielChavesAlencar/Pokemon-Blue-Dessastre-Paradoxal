@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b4f12f971638c81d84f40ca39e0fb74b5dfe6854",
+      "date": "2026-11-14T17:03:45-03:00",
+      "title": "feat(hoenn): TESTAR_HOENN QA6 isolated profile and gated climate verification",
+      "category": "Novidades"
+    },
+    {
       "sha": "933e5dd53aee27fc2f89f9eec777f17d4f6b25d3",
       "date": "2026-11-14T17:03:08-03:00",
       "title": "test(hoenn): QA6 static climate event contracts, rejection and isolation",
