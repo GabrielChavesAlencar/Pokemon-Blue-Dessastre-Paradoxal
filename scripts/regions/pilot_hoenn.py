@@ -902,6 +902,8 @@ def build_overlay(game, source):
         raise ValueError("Tipo nativo RIVAL1 não encontrado na instalação Blue")
     rival_keys = {(name, version) for name in RIVAL_NAMES
                   for _, version in RIVAL_TEAMS.values()}
+    rival_keys.update((name, version) for name in RIVAL_NAMES
+                      for version, _team in RIVAL_110_TEAMS.values())
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         text_body = regular(candidate).read_text("utf-8-sig")
         for match in re.finditer(r"(?m)^\s*\[RIVAL1,([^,\]\r\n]+),(\d+)\]\s*$", text_body):
@@ -914,6 +916,13 @@ def build_overlay(game, source):
                 f"[RIVAL1,{name},{version}]\nLoseText = Boa batalha!\n"
                 f"Pokemon = {opponent},5\n"
             )
+    for name in RIVAL_NAMES:
+        for chosen, (version, team) in RIVAL_110_TEAMS.items():
+            trainer_sections.append(
+                f"# Rival Rota 110: player starter {chosen}, rival {name}\n"
+                f"[RIVAL1,{name},{version}]\nLoseText = Nossa jornada continua!\n" +
+                "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+            )
     # Fail closed on absent native types/overlapping PBS identities.
     types = set()
     for candidate in sorted((game / "PBS").glob("trainer_types*.txt")):
@@ -923,6 +932,7 @@ def build_overlay(game, source):
     needed = {kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE3}
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE4)
     needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE5)
+    needed.update(kind for _, _, _, kind, _, _, _, _ in TRAINERS_STAGE6)
     missing = needed - types
     if missing:
         raise ValueError(f"Tipos de treinador não existentes na engine Blue: {sorted(missing)}")
@@ -936,8 +946,12 @@ def build_overlay(game, source):
     extra_ids.update((kind, name, version)
                      for kind, name, version, _ in MUSEUM_AQUA)
     extra_ids.add(BRAWLY_PBS)
+    extra_ids.update((kind, name, mid)
+                     for mid, _, _, kind, name, _, _, _ in TRAINERS_STAGE6)
+    extra_ids.update((WATTSON_PBS, WALLY_PBS))
     if len(extra_ids) != (len(TRAINERS_STAGE3) + len(TRAINERS_STAGE4) +
-                          len(TRAINERS_STAGE5) + len(MUSEUM_AQUA) + 4):
+                          len(TRAINERS_STAGE5) + len(TRAINERS_STAGE6) +
+                          len(MUSEUM_AQUA) + 6):
         raise ValueError("Treinadores da etapa 3 duplicados no catálogo")
     for candidate in sorted((game / "PBS").glob("trainers*.txt")):
         body = regular(candidate).read_text("utf-8-sig")
@@ -948,7 +962,8 @@ def build_overlay(game, source):
             ver = int(fields[2]) if len(fields) == 3 and fields[2].isdigit() else 0
             if (fields[0], fields[1], ver) in extra_ids:
                 raise ValueError(f"Treinador Hoenn da etapa 3 já existe: {fields} ({candidate.name})")
-    if {"BLUE_HOENN_AQUA", "BLUE_HOENN_ROXANNE", "BLUE_HOENN_BRAWLY"} & types:
+    if {"BLUE_HOENN_AQUA", "BLUE_HOENN_ROXANNE", "BLUE_HOENN_BRAWLY",
+        "BLUE_HOENN_WATTSON", "BLUE_HOENN_WALLY"} & types:
         raise ValueError("Tipo de chefe Hoenn já existe no PBS nativo")
     overlay["PBS/trainer_types_hoenn_pilot.txt"] = (
         "[BLUE_HOENN_AQUA]\nName = Equipe Aqua\nGender = Male\n"
@@ -957,6 +972,10 @@ def build_overlay(game, source):
         "BaseMoney = 100\nSkillLevel = 100\n"
         "[BLUE_HOENN_BRAWLY]\nName = Líder de Ginásio\nGender = Male\n"
         "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_WATTSON]\nName = Líder de Ginásio\nGender = Male\n"
+        "BaseMoney = 100\nSkillLevel = 100\n"
+        "[BLUE_HOENN_WALLY]\nName = Treinador\nGender = Male\n"
+        "BaseMoney = 20\nSkillLevel = 70\n"
     ).encode("utf-8")
     # Use only native trainer graphics; a fallback is explicitly NOT a visual
     # approval for the actual Aqua sprite.
@@ -1044,6 +1063,43 @@ def build_overlay(game, source):
     if brawly_art is None:
         raise ValueError("Sem sprite de batalha Brawly nem fallback nativo seguro")
     overlay["Graphics/Trainers/BLUE_HOENN_BRAWLY.png"] = brawly_art
+    for mid, _, _, kind, name, sprite, team, _double in TRAINERS_STAGE6:
+        trainer_sections.append(
+            f"[{kind},{name},{mid}]\nLoseText = Boa batalha!\n" +
+            "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+        )
+    for kind, name, version, team in (
+        (*WALLY_PBS, WALLY_TEAM), (*WATTSON_PBS, WATTSON_TEAM)
+    ):
+        if kind == WALLY_PBS[0]:
+            trainer_sections.append(
+                f"[{kind},{name},{version}]\nLoseText = Preciso treinar mais!\n" +
+                "".join(f"Pokemon = {species},{level}\n" for species, level in team)
+            )
+        else:
+            trainer_sections.append(
+                f"[{kind},{name},{version}]\nItems = SUPERPOTION,SUPERPOTION\n"
+                "LoseText = Você desligou minha energia!\n"
+                "Pokemon = VOLTORB,20\n    Moves = ROLLOUT,SPARK,SELFDESTRUCT,SHOCKWAVE\n"
+                "Pokemon = ELECTRIKE,20\n    Moves = SHOCKWAVE,LEER,QUICKATTACK,HOWL\n"
+                "Pokemon = MAGNETON,22\n    Moves = SUPERSONIC,SHOCKWAVE,THUNDERWAVE,SONICBOOM\n"
+                "Pokemon = MANECTRIC,24\n    Moves = QUICKATTACK,THUNDERWAVE,SHOCKWAVE,HOWL\n"
+            )
+    boss_art_sources = {}
+    for key, choices in (
+        ("BLUE_HOENN_WATTSON", ("RSE_LEADER_Wattson", "LEADER_WATTSON", "WATTSON", "YOUNGSTER")),
+        ("BLUE_HOENN_WALLY", ("RSE_POKEMONTRAINER_Wally", "WALLY", "YOUNGSTER")),
+    ):
+        for candidate_name in choices:
+            candidate = game / f"Graphics/Trainers/{candidate_name}.png"
+            if candidate.is_file() and not candidate.is_symlink():
+                blob = regular(candidate).read_bytes()
+                if blob.startswith(PNG):
+                    overlay[f"Graphics/Trainers/{key}.png"] = blob
+                    boss_art_sources[key] = candidate_name
+                    break
+        if key not in boss_art_sources:
+            raise ValueError(f"Sprite nativo de batalha indisponível: {key}")
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
     for label, track in BGM.items():
         source_path = f"Audio/BGM/ORAS {track}.ogg"
@@ -1121,7 +1177,17 @@ def build_overlay(game, source):
                          "bridge_borders": list(OFFSET_BORDERS_STAGE5),
                          "brawly_battle_art": brawly_art_source,
                          "brawly_battle_art_placeholder": brawly_art_source != "RSE_LEADER_Brawly",
+                         "stage6": {**stage6_counts,
+                         "source_map_ids": list(SOURCE_MAPS_STAGE6),
+                         "new_border_connections": list(OFFSET_BORDERS_STAGE6),
+                         "cycling_transfers": list(CYCLE_TRANSFERS_STAGE6),
+                         "rival_versions": [version for version, _ in RIVAL_110_TEAMS.values()],
+                         "boss_battle_art": boss_art_sources,
+                         "boss_battle_art_placeholder": {
+                             "wattson": boss_art_sources["BLUE_HOENN_WATTSON"] != "RSE_LEADER_Wattson",
+                             "wally": boss_art_sources["BLUE_HOENN_WALLY"] != "RSE_POKEMONTRAINER_Wally"},
                          "native_gameplay_verified": False},
+              "native_gameplay_verified": False},
               "native_gameplay_verified": False},
               "native_gameplay_verified": False}
     overlay["Hoenn pilot.json"] = json_bytes(report)
