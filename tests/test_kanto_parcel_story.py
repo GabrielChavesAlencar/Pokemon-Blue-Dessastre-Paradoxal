@@ -2,6 +2,7 @@
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -9,7 +10,7 @@ sys.path.insert(0, str(ROOT / "scripts/regions"))
 try:
     from pilot import (
         command, route2_north_columns, viridian_route2_block_line,
-        make_viridian_parcel_intro,
+        make_viridian_parcel_intro, add_pewter_running_shoes_mom,
     )
     from server.ruby_marshal import RubyObject
 finally:
@@ -35,6 +36,33 @@ def example_clerk():
 
 
 class KantoParcelStoryTests(unittest.TestCase):
+    def test_pewter_mother_is_hidden_until_the_one_time_running_shoes_scene(self):
+        guard = example_clerk()
+        guard.attrs["@id"], guard.attrs["@x"], guard.attrs["@y"] = 21, 13, 7
+        mother = example_clerk()
+        mother.attrs["@id"] = 13
+        mother_map = RubyObject("RPG::Map", {"@events": {13: mother}})
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp)
+            (target / "Data").mkdir()
+            selected = {21: guard}
+            with patch("pilot.load", return_value=mother_map):
+                add_pewter_running_shoes_mom(
+                    selected, {21: guard}, target, target,
+                    lambda event: b"FRLG_Pilot_Pallet_Mom",
+                )
+            self.assertEqual(set(selected), {21, 22})
+            event = selected[22]
+            self.assertEqual(event.attrs["@name"], b"Kanto Running Shoes Mom")
+            self.assertEqual((event.attrs["@x"], event.attrs["@y"]), (13, 7))
+            self.assertEqual(len(event.attrs["@pages"]), 1)
+            page = event.attrs["@pages"][0].attrs
+            self.assertTrue(page["@through"])
+            self.assertEqual(page["@trigger"], 0)
+            self.assertEqual(page["@graphic"].attrs["@character_name"], b"")
+            self.assertEqual((target / "Data/blue-kanto-pewter-mom-sprite.txt").read_text(),
+                             "FRLG_Pilot_Pallet_Mom\n")
+
     def test_mart_autorun_routes_player_to_the_real_clerk(self):
         clerk = example_clerk()
         intro = make_viridian_parcel_intro({2: clerk})
