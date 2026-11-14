@@ -277,17 +277,27 @@ def inspect(game: Path) -> dict:
     if not any("BlueKantoPilot.prepare_viridian_mart_visit(" in script
                for script in entrance_scripts):
         raise ValueError("Viridian Mart door does not rearm pending parcel saves")
-    # Real exterior block is on City 10 -> Route 2 (18), NOT Forest Gate.
-    gates = [ev for ev in maps[mapping[10]].attrs["@events"].values()
-             if text(ev.attrs["@name"]) == "Kanto Viridian Route 2 Parcel Gate"]
-    if not gates or any(
-            ev.attrs["@y"] != 0 or
-            ev.attrs["@pages"][0].attrs["@trigger"] != 1 or
-            ev.attrs["@pages"][0].attrs["@through"] or
-            len(ev.attrs["@pages"]) != 2 or
-            not ev.attrs["@pages"][1].attrs["@through"]
-            for ev in gates):
-        raise ValueError("Viridian Route 2 must have solid north-border parcel gates")
+    # The screenshot places the block at the sleeping man/north house,
+    # not at the north edge y=0 and not inside a Forest Gate tunnel.
+    line_file = game / "Data/blue-kanto-viridian-route2-line.txt"
+    if not line_file.is_file():
+        raise ValueError("Missing in-city Viridian Route 2 threshold")
+    parts = line_file.read_text(encoding="ascii").strip().split("|")
+    if len(parts) != 4:
+        raise ValueError("Invalid Viridian Route 2 threshold format")
+    map_id, row, first, last = map(int, parts)
+    city = maps[mapping[10]]
+    northern_house = city.attrs["@events"][2]
+    if (map_id != mapping[10] or row <= 0 or
+            row != northern_house.attrs["@y"] - 1 or
+            first != northern_house.attrs["@x"] - 6 or
+            last != northern_house.attrs["@x"] - 1 or
+            not (0 <= first < last <= city.attrs["@width"]) or
+            row >= city.attrs["@height"] - 1):
+        raise ValueError("Viridian Route 2 gate is not on the red-marked interior line")
+    if any(text(ev.attrs["@name"]) == "Kanto Viridian Route 2 Parcel Gate"
+           for ev in city.attrs["@events"].values()):
+        raise ValueError("Obsolete north-edge event gate survived the rebuild")
     for source_id in (19, 20):
         for event in maps[mapping[source_id]].attrs["@events"].values():
             scripts = [text(op.attrs["@parameters"][0])
