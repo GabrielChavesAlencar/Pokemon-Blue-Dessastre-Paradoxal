@@ -262,6 +262,11 @@ def build(args) -> dict:
     # Audit the native base before creating any donor source artifacts.
     result["base"] = check_game(args.game)
     if args.output.exists():
+        if args.output.name == "hoenn-qa-fase12":
+            # Update ONLY the existing isolated QA12 test tools, with private
+            # backups and rollback. Never overwrite maps, saves or game/.
+            from hoenn_qa_teleport_upgrade import ensure_test_tools
+            result["test_teleport_update"] = ensure_test_tools(args.output, args.game)
         result["copy"] = verify_copy(args.output, args.game)
         result["status"] = "COPY_READY_FOR_NATIVE_TEST"
         return result
