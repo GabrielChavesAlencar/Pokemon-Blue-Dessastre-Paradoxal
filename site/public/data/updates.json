@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5777ea55f457a3d7ec5055e3a940617979355613",
+      "date": "2026-11-13T23:43:02-03:00",
+      "title": "test(regions): protect reference-only audit and avoid claiming untested content",
+      "category": "Testes"
+    },
+    {
       "sha": "e450a04b57a75b9f083281802d98aa57b2c8eab4",
       "date": "2026-11-13T23:42:39-03:00",
       "title": "feat(regions): add read-only four-region habitat and gym roster gap audit",
