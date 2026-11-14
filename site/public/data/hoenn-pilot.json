@@ -2,7 +2,7 @@
   "schema": 1,
   "region": "hoenn",
   "name": "Hoenn",
-  "note": "Catálogo experimental de Hoenn até Rusturf/Rota 116. Os níveis são apenas dados-base do Emerald: no jogo Blue devem ser calculados dinamicamente. Os eventos e a Stone Badge dependem de teste real no Game.exe; não usar estes números como níveis fixos.",
+  "note": "Piloto isolado Hoenn: Dewford, Granite Cave e Slateport em desenvolvimento. Dados-base Emerald sem níveis fixos no jogo; barco é uma viagem por evento, não navegação/Surf implementados. Brawly e Stern requerem teste nativo no Game.exe.",
   "locations": [
     {
       "name": "Littleroot Town",
@@ -325,6 +325,212 @@
             5,
             8,
             100
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Dewford Town",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Dewford",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Dewford",
+      "encounters": {}
+    },
+    {
+      "name": "Ginásio de Dewford",
+      "encounters": {}
+    },
+    {
+      "name": "Slateport City",
+      "encounters": {}
+    },
+    {
+      "name": "Porto de Slateport",
+      "encounters": {}
+    },
+    {
+      "name": "Centro Pokémon de Slateport",
+      "encounters": {}
+    },
+    {
+      "name": "Poké Mart de Slateport",
+      "encounters": {}
+    },
+    {
+      "name": "Casas de Slateport",
+      "encounters": {}
+    },
+    {
+      "name": "Pokémon Fan Club",
+      "encounters": {}
+    },
+    {
+      "name": "Estaleiro do Capitão Stern",
+      "encounters": {}
+    },
+    {
+      "name": "Museu Oceânico",
+      "encounters": {}
+    },
+    {
+      "name": "Battle Tent de Slateport",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 106",
+      "encounters": {}
+    },
+    {
+      "name": "Rota 109",
+      "encounters": {}
+    },
+    {
+      "name": "Casa da Praia",
+      "encounters": {}
+    },
+    {
+      "name": "Granite Cave 1F",
+      "encounters": {
+        "Caverna": [
+          [
+            "MAKUHITA",
+            6,
+            10,
+            50
+          ],
+          [
+            "ZUBAT",
+            7,
+            8,
+            30
+          ],
+          [
+            "ABRA",
+            8,
+            8,
+            10
+          ],
+          [
+            "GEODUDE",
+            6,
+            9,
+            10
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Granite Cave B1F",
+      "encounters": {
+        "Caverna": [
+          [
+            "ARON",
+            9,
+            11,
+            40
+          ],
+          [
+            "ZUBAT",
+            9,
+            10,
+            30
+          ],
+          [
+            "ABRA",
+            9,
+            9,
+            10
+          ],
+          [
+            "MAKUHITA",
+            10,
+            10,
+            10
+          ],
+          [
+            "MAWILE",
+            9,
+            11,
+            5
+          ],
+          [
+            "SABLEYE",
+            9,
+            11,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Granite Cave B2F",
+      "encounters": {
+        "Caverna": [
+          [
+            "ARON",
+            10,
+            12,
+            40
+          ],
+          [
+            "ZUBAT",
+            10,
+            11,
+            30
+          ],
+          [
+            "ABRA",
+            10,
+            10,
+            10
+          ],
+          [
+            "MAWILE",
+            10,
+            12,
+            10
+          ],
+          [
+            "SABLEYE",
+            10,
+            11,
+            10
+          ]
+        ]
+      }
+    },
+    {
+      "name": "Sala de Steven em Granite Cave",
+      "encounters": {
+        "Caverna": [
+          [
+            "MAKUHITA",
+            6,
+            10,
+            50
+          ],
+          [
+            "ZUBAT",
+            7,
+            8,
+            30
+          ],
+          [
+            "ABRA",
+            8,
+            8,
+            10
+          ],
+          [
+            "ARON",
+            7,
+            8,
+            10
           ]
         ]
       }
@@ -932,9 +1138,217 @@
       ],
       "leader": false,
       "badge": null
+    },
+    {
+      "name": "Laura",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MEDITITE",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Takao",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MACHOP",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brenden",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MACHOP",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Lilith",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MEDITITE",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Cristian",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MAKUHITA",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Jocelyn",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MEDITITE",
+              13
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Elliot",
+      "area": "Rota 106",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MAGIKARP",
+              10
+            ],
+            [
+              "TENTACOOL",
+              7
+            ],
+            [
+              "MAGIKARP",
+              10
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Ned",
+      "area": "Rota 106",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "TENTACOOL",
+              11
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Brawly",
+      "area": "Ginásio de Dewford",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "MACHOP",
+              16
+            ],
+            [
+              "MEDITITE",
+              16
+            ],
+            [
+              "MAKUHITA",
+              19
+            ]
+          ]
+        }
+      ],
+      "leader": true,
+      "badge": "KNUCKLE"
+    },
+    {
+      "name": "Recruta Aqua (Museu 1)",
+      "area": "Museu Oceânico",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "CARVANHA",
+              15
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
+    },
+    {
+      "name": "Recruta Aqua (Museu 2)",
+      "area": "Museu Oceânico",
+      "teams": [
+        {
+          "label": "Equipe-base Emerald — escala Blue/Decades",
+          "pokemon": [
+            [
+              "ZUBAT",
+              14
+            ],
+            [
+              "CARVANHA",
+              14
+            ]
+          ]
+        }
+      ],
+      "leader": false,
+      "badge": null
     }
   ],
   "native_gameplay_verified": false,
   "stage3_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
-  "stage4_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
+  "stage4_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED",
+  "stage5_status": "SCRIPTED_ISOLATED_PILOT_NOT_GAMEPLAY_APPROVED"
 }
