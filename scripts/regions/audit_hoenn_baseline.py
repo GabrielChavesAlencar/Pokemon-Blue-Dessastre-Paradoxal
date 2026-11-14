@@ -13,7 +13,8 @@ from prepare_hoenn_source import inspect_zip
 from server.ruby_marshal import RubyObject, text
 
 PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
-         12: "Oldale", 101: "Rota 101"}
+         101: "Rota 101", 12: "Oldale", 13: "Centro Pokémon de Oldale",
+         14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103"}
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
