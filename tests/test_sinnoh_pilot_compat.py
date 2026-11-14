@@ -67,7 +67,7 @@ class SinnohPilotCompatibilityTests(unittest.TestCase):
 
     def test_missing_legacy_or_new_event_handlers_block_audit(self):
         old, preview, title, new = sources()
-        with self.assertRaisesRegex(ValueError, "piloto antigo"):
+        with self.assertRaisesRegex(ValueError, "Piloto antigo"):
             audit_compat(old.replace("BlueSinnohPreview.rowan",
                                      "UnverifiedForeignScript.rowan"),
                          preview, title, new)
