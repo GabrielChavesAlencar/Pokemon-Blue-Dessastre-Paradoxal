@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2c46d5192e64dcc20ab9713f7354c9ee5b53fca0",
+      "date": "2026-11-14T10:57:54-03:00",
+      "title": "docs(hoenn): auditar Etapa 3 e registrar testes/pêndencias nativas",
+      "category": "Documentação"
+    },
+    {
       "sha": "7226de42c218605020a4b984e606c60a0cb1f939",
       "date": "2026-11-14T10:54:30-03:00",
       "title": "test(hoenn): checar offsets e portas em tiles bloqueados com geometria sintética",
