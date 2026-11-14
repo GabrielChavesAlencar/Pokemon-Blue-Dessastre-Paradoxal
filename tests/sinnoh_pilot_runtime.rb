@@ -62,7 +62,7 @@ def check(value, label)
   raise label unless value
 end
 
-require ARGV.fetch(0)
+require File.expand_path(ARGV.fetch(0))
 Dir.mktmpdir("sinnoh-isolated-runtime-") do |directory|
   Dir.chdir(directory) do
     Dir.mkdir("Data")
