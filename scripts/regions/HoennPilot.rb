@@ -1816,9 +1816,16 @@ module BlueHoennPilot
   end
 
   def self.fossil_house
-    return false unless state
-    pbMessage(_INTL("Fossil Maniac: estudo fósseis. O túnel profundo ainda está bloqueado neste piloto."))
-    true
+    flags=state
+    return false unless flags && qa6_at_map?(126)
+    if flags["fossil_house_dig_given"]
+      pbMessage(_INTL("Meu irmão adora escavar. Em algumas cavernas, Dig ajuda a voltar à entrada."))
+      return true
+    end
+    # The donor's TM028 teaches Dig in its own catalog. Blue's TM028 can
+    # teach Bulldoze, so resolve by the move and only grant one Blue TM.
+    give_move_tm("fossil_house_dig_given",:DIG,[:TM28,:TM055],
+                 "Irmão do Fossil Maniac: esta TM ensina Dig. Fique com ela!")
   end
 
   def self.stage7_future_gate(reason)
@@ -2880,6 +2887,7 @@ module BlueHoennPilot
     return false unless $game_map && $game_map.map_id==map_ids[236]
     return false if flags["kyogre_awakened"]
     flags["kyogre_awakened"]=true
+    crisis_flash(88, 150, 224)
     pbMessage(_INTL("Kyogre despertou! Uma crise climática se espalha por Hoenn."))
     true
   end
@@ -2887,17 +2895,9 @@ module BlueHoennPilot
   # QA06: all climate-story events are bound to their original Hoenn maps.
   def self.qa6_at_map?(source_id)
     _,map_ids=metadata
-    crisis_flash(88, 150, 224)
     $game_map && $game_map.map_id==map_ids[source_id]
   end
 
-  def self.sootopolis_crisis
-    flags=state
-    return false unless flags && qa6_at_map?(83) &&
-                         flags["groudon_awakened"] &&
-                         flags["kyogre_awakened"] &&
-                         flags["seafloor_archie_defeated"]
-    return false if flags["sootopolis_crisis_started"]
   # The storm is a map rendering effect. Do not write Game_Screen weather:
   # the battle engine and map encounter abilities also read that value.
   def self.crisis_storm_visible?
@@ -2962,7 +2962,15 @@ module BlueHoennPilot
     end
   end
 
+  def self.sootopolis_crisis
+    flags=state
+    return false unless flags && qa6_at_map?(83) &&
+                         flags["groudon_awakened"] &&
+                         flags["kyogre_awakened"] &&
+                         flags["seafloor_archie_defeated"]
+    return false if flags["sootopolis_crisis_started"]
     flags["sootopolis_crisis_started"]=true
+    crisis_flash(150, 183, 227)
     pbMessage(_INTL("Steven: Groudon e Kyogre desequilibraram o clima! Procure Wallace na Cave of Origin."))
     true
   end
@@ -2970,7 +2978,6 @@ module BlueHoennPilot
   def self.origin_wallace_stage10
     flags=state
     return false unless flags && qa6_at_map?(240) && flags["sootopolis_crisis_started"]
-    crisis_flash(150, 183, 227)
     return true if flags["sky_pillar_task"]
     flags["sky_pillar_task"]=true
     pbMessage(_INTL("Wallace: Rayquaza pode deter a crise. Encontre-me em Sky Pillar!"))
@@ -2997,6 +3004,7 @@ module BlueHoennPilot
     return false if flags["crisis_resolved"]
     flags["rayquaza_summoned"]=true
     flags["crisis_resolved"]=true
+    crisis_flash(155, 234, 187)
     pbMessage(_INTL("Rayquaza atendeu ao chamado! A crise climática terminou. Volte ao ginásio de Juan."))
     true
   end
@@ -3004,7 +3012,6 @@ module BlueHoennPilot
   def self.juan_tm
     flags=state
     return false unless flags && rain_badge?
-    crisis_flash(155, 234, 187)
     return false if flags["juan_tm_given"]
     give_move_tm("juan_tm_given",:WATERPULSE,[:TM03],
                  "Juan: receba a TM Water Pulse!")
@@ -3128,8 +3135,101 @@ module BlueHoennPilot
     return false unless neighbors.is_a?(Array) &&
                         neighbors.sort==%w[JOHTO SINNOH] &&
                         neighbors.all?{|key| unlocked.include?(key)}
-    pbMessage(_INTL("Circuito regional: Hoenn concluída. Johto e Sinnoh foram liberadas; a viagem só ficará disponível após a instalação e validação dos respectivos mapas."))
+    title=localized(
+      "Hoenn League complete. Johto and Sinnoh are unlocked in the regional circuit.",
+      "Liga de Hoenn concluída. Johto e Sinnoh foram liberadas no circuito regional.")
+    destinations=neighbors.map do |key|
+      name=key.capitalize
+      if defined?(BlueRegionTravel) && BlueRegionTravel.respond_to?(:destination) &&
+         BlueRegionTravel.destination(region,key)
+        localized(
+          "{1}: arrival point detected. Travel from this Hoenn pilot still needs validation.",
+          "{1}: ponto de chegada detectado. A viagem a partir deste piloto ainda precisa ser validada.",name)
+      else
+        localized(
+          "{1}: no verified arrival point in this installation.",
+          "{1}: esta instalação não tem um ponto de chegada verificado.",name)
+      end
+    end
+    pbMessage(([title]+destinations).join("\n"))
     true
+  end
+
+  # Reuse the game's champion animation without writing Decades' Hall record,
+  # native Hall statistics or the main credits/title scene.
+  if defined?(HallOfFame_Scene) && defined?(HallOfFameScreen)
+    class RegionalHallScene < HallOfFame_Scene
+      def saveHallEntry
+        @hallEntry = $player.party.filter_map do |pkmn|
+          pkmn.clone if !pkmn.egg? || self.class::ALLOW_EGGS
+        end
+      end
+
+      def writeWelcome
+        overlay = @sprites["overlay"].bitmap
+        overlay.clear
+        pbDrawTextPositions(overlay, [[BlueHoennPilot.localized("Hoenn Hall of Fame","Hall da Fama de Hoenn"),
+          Graphics.width/2, Graphics.height-68, :center, self.class::TEXT_BASE_COLOR,
+          self.class::TEXT_SHADOW_COLOR]])
+      end
+
+      def writeTrainerData
+        @sprites["msgwindow"] ||= pbCreateMessageWindow(@viewport)
+        pbMessageDisplay(@sprites["msgwindow"],
+                         BlueHoennPilot.localized("Congratulations, {1}! You won the Hoenn League.",
+                           "Parabéns, {1}! Você conquistou a Liga de Hoenn.",$player.name) + "\\^")
+      end
+    end
+  end
+
+  def self.present_regional_hall
+    return false unless defined?(RegionalHallScene) && $player && !$player.party.empty?
+    pbFadeOutIn do
+      HallOfFameScreen.new(RegionalHallScene.new).pbStartScreenEntry
+      regional_credits
+    end
+    true
+  end
+
+  def self.regional_credits
+    if $game_system && File.file?("Audio/BGM/BLUE_HOENN_HallCredits.ogg")
+      previous_bgm=$game_system.getPlayingBGM
+      pbBGMPlay("BLUE_HOENN_HallCredits")
+      changed_bgm=true
+    end
+    viewport=Viewport.new(0,0,Graphics.width,Graphics.height)
+    viewport.z=99999
+    card=BitmapSprite.new(Graphics.width,Graphics.height,viewport)
+    bitmap=card.bitmap
+    pbSetSystemFont(bitmap)
+    pages=[
+      [localized("Hoenn League","Liga de Hoenn"),"Pokémon Blue: Dessastre Paradoxal"],
+      [localized("Hoenn maps","Mapas de Hoenn"),"The Pokémon World Project","SocomSeal"],
+      [localized("Game engine","Motor do jogo"),"Pokémon Essentials • mkxp-z","Pokémon © Nintendo / Game Freak"]
+    ]
+    fg=Color.new(248,248,248)
+    shadow=Color.new(12,29,48)
+    pages.each do |lines|
+      bitmap.fill_rect(0,0,Graphics.width,Graphics.height,Color.new(12,29,48))
+      y=(Graphics.height-lines.length*30)/2
+      text=lines.each_with_index.map{|line,i| [line,Graphics.width/2,y+i*30,:center,fg,shadow]}
+      text << [localized("Confirm: next   Cancel: return","Confirmar: avançar   Cancelar: voltar"),
+               Graphics.width/2,Graphics.height-42,:center,fg,shadow]
+      pbDrawTextPositions(bitmap,text)
+      started=System.uptime
+      loop do
+        Graphics.update
+        Input.update
+        return if Input.trigger?(Input::BACK)
+        break if Input.trigger?(Input::USE) || System.uptime-started>=4.0
+      end
+    end
+  ensure
+    card&.dispose
+    viewport&.dispose
+    if changed_bgm
+      previous_bgm ? pbBGMPlay(previous_bgm) : pbBGMStop
+    end
   end
 
   def self.hall_of_fame_stage10
@@ -3142,12 +3242,18 @@ module BlueHoennPilot
       return false unless BlueRegions.complete_league(region,"HOENN")
     end
     if flags["hoenn_hall_of_fame"]
+      if !flags["hoenn_hall_presentation_seen"] && defined?(RegionalHallScene) &&
+         pbConfirmMessage(localized("Watch the Hoenn Hall of Fame presentation?",
+                                    "Quer ver a apresentação do Hall da Fama de Hoenn?"))
+        flags["hoenn_hall_presentation_seen"]=true if present_regional_hall
+      end
       return qa10_postgame_status
     end
     flags["hoenn_hall_of_fame"]=true
+    flags["hoenn_hall_presentation_seen"]=true if present_regional_hall
     pbMessage(_INTL("Hall of Fame de Hoenn: sua vitória foi registrada neste save regional!"))
     qa10_postgame_status
-    # Native Hall of Fame animation, credits and end-screen remain unverified.
+    # Credits and presentation in the full private copy are validated separately.
     true
   end
 
@@ -3404,6 +3510,10 @@ module BlueHoennPilot
   end)
 end
 
+if defined?(Spriteset_Global)
+  Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)
+end
+
 # Only the isolated test copy installs this pause-menu tool; never register
 # a global Debug menu in the main Blue/Decades, Kanto, Johto or Sinnoh.
 if defined?(MenuHandlers)
@@ -3418,9 +3528,5 @@ if defined?(MenuHandlers)
       false
     end
   })
-end
-
-if defined?(Spriteset_Global)
-  Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)
 end
 

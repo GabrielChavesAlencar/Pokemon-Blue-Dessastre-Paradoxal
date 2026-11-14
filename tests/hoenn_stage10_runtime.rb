@@ -17,7 +17,8 @@ end
 module GameData
   module Item
     Row=Struct.new(:move)
-    @data={MAGMAEMBLEM:nil,TM04: :CALMMIND,HM08: :DIVE,SUPERROD:nil}
+    @data={MAGMAEMBLEM:nil,TM04: :CALMMIND,HM08: :DIVE,SUPERROD:nil,
+           TM028: :BULLDOZE, TM055: :DIG}
     def self.exists?(id);@data.key?(id);end
     def self.get(id);Row.new(@data.fetch(id));end
   end
@@ -61,8 +62,9 @@ module TrainerBattle
   end
 end
 class H9Map
-  attr_accessor :map_id
-  def initialize;@map_id=780;end
+  attr_accessor :map_id,:need_refresh
+  attr_reader :events
+  def initialize;@map_id=780;@events={};end
 end
 class H9Avatar
   attr_accessor :x,:y,:direction
@@ -124,6 +126,26 @@ $PokemonGlobal.blue_regions={
   }
 }
 flags=BlueHoennPilot.state
+$game_map.map_id=726
+$bag.can_add=false
+assert9(!BlueHoennPilot.fossil_house,"Dig granted without bag space")
+assert9(!flags["fossil_house_dig_given"],"failed item delivery consumed reward")
+$bag.can_add=true
+assert9(BlueHoennPilot.fossil_house,"Dig reward missing")
+assert9(BlueHoennPilot.fossil_house,"Dig reward follow-up missing")
+assert9($bag.items[:TM055]==1 && $bag.items[:TM028]==0,"Dig duplicated or wrong catalog")
+$game_map.map_id=687
+$game_map.events[55]=Object.new
+$game_player.moveto(9,10)
+assert9(!BlueHoennPilot.crack_ice(55,10,10),"ice cracked from adjacent tile")
+$game_player.moveto(10,10)
+assert9(!BlueHoennPilot.fall_through_ice(55,10,10,34),"fell through uncracked ice")
+assert9(BlueHoennPilot.crack_ice(55,10,10),"ice did not crack on step")
+assert9(!BlueHoennPilot.fall_through_ice(55,10,10,35),"fell at an altered landing")
+assert9(BlueHoennPilot.fall_through_ice(55,10,10,34),"cracked floor did not transfer")
+assert9([$game_player.x,$game_player.y]==[34,10] &&
+        $game_self_switches[[687,55,"B"]],"fall landing or local self-switch wrong")
+$game_player.moveto(16,19)
 $game_map.map_id=836  # isolated original Seafloor Map236 mapped to 836 in fixture
 assert9(!BlueHoennPilot.sootopolis_crisis,"crisis before Kyogre")
 assert9(!BlueHoennPilot.juan,"Juan before Rayquaza")
@@ -143,6 +165,7 @@ assert9(!BlueHoennPilot.seafloor_awakening,"Kyogre repeated")
 assert9(!BlueHoennPilot.sootopolis_crisis,"Sootopolis crisis outside its city")
 $game_map.map_id=683
 assert9(BlueHoennPilot.sootopolis_crisis,"Sootopolis crisis")
+assert9(BlueHoennPilot.crisis_storm_visible?,"Sootopolis crisis render did not activate")
 assert9(!BlueHoennPilot.rayquaza_stage10,"Rayquaza without Wallace")
 assert9(!BlueHoennPilot.origin_wallace_stage10,"Wallace cannot speak outside Cave of Origin")
 $game_map.map_id=840

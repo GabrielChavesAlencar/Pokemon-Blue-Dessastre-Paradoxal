@@ -2194,13 +2194,15 @@ def build_overlay(game, source):
                                               in TRAINERS_STAGE4],
                          "roxanne_trainer_art": leader_art_name,
                          "roxanne_battle_art_placeholder": leader_art_name != "RSE_LEADER_Roxanne",
-                         "stage5": {**stage5_counts,
+                         "native_gameplay_verified": False},
+              "stage5": {**stage5_counts,
                          "source_map_ids": list(SOURCE_MAPS_STAGE5),
                          "boat_points": [list(point) for point in BOAT_POINTS_STAGE5],
                          "bridge_borders": list(OFFSET_BORDERS_STAGE5),
                          "brawly_battle_art": brawly_art_source,
                          "brawly_battle_art_placeholder": brawly_art_source != "RSE_LEADER_Brawly",
-                         "stage6": {**stage6_counts,
+                         "native_gameplay_verified": False},
+              "stage6": {**stage6_counts,
                          "source_map_ids": list(SOURCE_MAPS_STAGE6),
                          "new_border_connections": list(OFFSET_BORDERS_STAGE6),
                          "cycling_transfers": list(CYCLE_TRANSFERS_STAGE6),
@@ -2250,8 +2252,6 @@ def build_overlay(game, source):
                               for kind,source in stage10_boss_art.items()},
                           "native_puzzles_and_hall_ui_pending":True,
                           "native_gameplay_verified":False},
-              "native_gameplay_verified": False},
-              "native_gameplay_verified": False},
               "native_gameplay_verified": False}
     report["ground_geometry_audit"]=geometry_audit
     report["imp2_underwater_tile_quarantine"]=underwater_quarantine
@@ -2292,8 +2292,12 @@ def build_overlay(game, source):
         overlay[f"Data/Map{ids[old]:03}.rxdata"] = serialize(maps[old],EVENT_CLASSES)
     report["imp2_sootopolis_ice"] = install_sootopolis_ice(
         all_original_events[87],maps[87],tiles[87],ids[87],open_tile,append_event)
-    if report["imp2_sootopolis_ice"]["installed"]:
+    ice_cells={tuple(row["xy"]) for row in report["imp2_sootopolis_ice"]["installed"]}
+    if ice_cells:
         overlay[f"Data/Map{ids[87]:03}.rxdata"] = serialize(maps[87],EVENT_CLASSES)
+        qa4_obstacles["source_obstacles_needing_review"]=[
+            row for row in qa4_obstacles["source_obstacles_needing_review"]
+            if not (row[0]==87 and row[3]=="ice" and tuple(row[1:3]) in ice_cells)]
     # Debug teleport destinations come AFTER every authored source event,
     # treasure and obstacle is installed. Never land on an NPC/door/rock.
     test_stops = build_test_stops(maps, tiles, ids)

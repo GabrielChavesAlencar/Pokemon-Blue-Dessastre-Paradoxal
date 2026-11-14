@@ -60,15 +60,17 @@ Acompanhe a barra **separada do QA 12/12**, sem converter número de arquivos ou
 
 | Fase | Entregáveis e ordem sugerida | Dependências | Status |
 |---|---|---|---|
-| **IMP-1 — Mundo e encontros** | Resolver H-01 e H-11: extrair candidatos QA03, cruzar por MapID com RXDATA final, repor NPCs/itens/placas/treinadores faltantes, encontros e recompensas, deduplicar eventos, produzir inventário por mapa. | Inventário de ZIP privado + `pilot_hoenn.py` + PBS Blue | **Pendente** |
-| **IMP-2 — Obstáculos, puzzles e história** | Resolver H-02 a H-04: gelo de Sootopolis, rochas/Strength, Dive/Surf/Waterfall, correntes, ginásios, Seafloor/Sky Pillar, cenas climáticas e Rayquaza. Corrigir gates e estado sem teleporte de QA. | IMP-1 e regras de `HoennPilot.rb` | **Pendente** |
-| **IMP-3 — Liga, apresentações e multimídia** | Resolver H-05, H-07 e H-08: Hall/créditos, artes definitivas disponíveis, áudio contextual, batalha em dupla e apresentação dos chefes. | Progressão IMP-2 | **Pendente** |
-| **IMP-4 — Conteúdo opcional** | Resolver H-10 e conteúdo Emerald secundário por prioridade, sem interferir no percurso principal (Safari Zone, Contests, Mirage Tower, fósseis, Workshop, Scorched Slab). | IMP-1 a IMP-3 estáveis | **Pendente** |
-| **IMP-5 — Tradução e integração regional** | Resolver H-06 e H-09 e fechar as pendências transversais: PT-BR integral do conteúdo **realmente instalado**, interfaces, viagem regional condicionada à instalação, estado/save/PC e revisão final do inventário. | IMP-1 a IMP-4 | **Pendente** |
+| **IMP-1 — Mundo e encontros** | Resolver H-01 e H-11: extrair candidatos QA03, cruzar por MapID com RXDATA final, repor NPCs/itens/placas/treinadores faltantes, encontros e recompensas, deduplicar eventos, produzir inventário por mapa. | Inventário de ZIP privado + `pilot_hoenn.py` + PBS Blue | **Parcial** |
+| **IMP-2 — Obstáculos, puzzles e história** | Resolver H-02 a H-04: gelo de Sootopolis, rochas/Strength, Dive/Surf/Waterfall, correntes, ginásios, Seafloor/Sky Pillar, cenas climáticas e Rayquaza. Corrigir gates e estado sem teleporte de QA. | IMP-1 e regras de `HoennPilot.rb` | **Parcial** |
+| **IMP-3 — Liga, apresentações e multimídia** | Resolver H-05, H-07 e H-08: Hall/créditos, artes definitivas disponíveis, áudio contextual, batalha em dupla e apresentação dos chefes. | Progressão IMP-2 | **Parcial** |
+| **IMP-4 — Conteúdo opcional** | Resolver H-10 e conteúdo Emerald secundário por prioridade, sem interferir no percurso principal (Safari Zone, Contests, Mirage Tower, fósseis, Workshop, Scorched Slab). | IMP-1 a IMP-3 estáveis | **Parcial** |
+| **IMP-5 — Tradução e integração regional** | Resolver H-06 e H-09 e fechar as pendências transversais: PT-BR integral do conteúdo **realmente instalado**, interfaces, viagem regional condicionada à instalação, estado/save/PC e revisão final do inventário. | IMP-1 a IMP-4 | **Parcial** |
 
 **Barra de implementação (não confundir com QA):**
 
-`IMP-1 [ ]  IMP-2 [ ]  IMP-3 [ ]  IMP-4 [ ]  IMP-5 [ ]`
+`IMP-1 [~]  IMP-2 [~]  IMP-3 [~]  IMP-4 [~]  IMP-5 [~]` — **0/5 encerradas**, `~` indica avanço de implementação com pendências.
+
+**Barra de jogabilidade (QA):** **0/12 aprovada**. Verificação de hash, montagem, compilação ou simulação Ruby não aprovam uma etapa jogável.
 
 Conclusão significa **código + dados instaláveis + cobertura específica das alterações**, não execução nativa. O aceite real do jogo continua sendo registrado apenas no documento de QA.
 
@@ -107,4 +109,23 @@ A implementação pode ser marcada **100% concluída** somente quando:
 - Os progressos de Kanto, Johto, Sinnoh, Decades e as regras de battle/level cap permanecerem preservados.
 - A documentação `HOENN_QA_PROGRESSO_12_FASES.md` continuar registrando o **aceite nativo de forma independente**.
 
-**Próxima ação:** começar pela **IMP-1**, abrir o backlog `qa3.source_events.unimplemented_source_event_candidates` da cópia privada e implementar as lacunas verificáveis na ordem geográfica da história. Depois avançar para os obstáculos, cenas, multimídia, opcionais e integração.
+## 8. Implementação iniciada em 14/11/2026
+
+Fonte de trabalho: arquivos extraídos do ZIP do upstream na revisão `c59233bdbaac4fbfeca6aa01c7f05be628da2a92`. Os hashes dos 199 mapas foram conferidos com a árvore fixada. O relatório local guarda os IDs originais, os IDs remapeados e as dependências. A montagem usa o perfil separado **Hoenn Implementacao**.
+
+**Verificação da cópia:** 199 RXDATA remapeados presentes, 199 pontos de inspeção gerados e perfil de save isolado. A auditoria estática confirmou 241 pontos de caminhada. Outros 76 pontos e sete bordas ainda precisam de validação com as mecânicas reais de campo. O manifesto corrigiu o aninhamento dos capítulos para que QA12 encontre as evidências na raiz.
+
+- **IMP-1:** inventário com 2.059 candidatos em 184 mapas; 7 placas e 5 itens gerados, 12 duplicatas de itens com equivalente confirmado. Restam 2.035 candidatos em revisão (1.518 sem equivalente identificado e 517 com implementação ou origem ainda ambígua). A cópia preserva 25 tabelas de encontros autorais e gera 194 tabelas padrão por método. A classe `RICHBOY` usa os dados equivalentes já presentes no Blue sem modificar o PBS original, preservando IDs e times.
+- **IMP-2:** 62 dos 64 pisos de gelo auditados foram gerados no mapa original 87. Os eventos originais 19 e 20 continuam fora porque o ponto de pouso está bloqueado no RXDATA. No mapa original 255, 246 referências a 16 IDs sem dados completos foram isoladas como bloqueadas. É preciso verificar o tileset correto antes de liberar essas casas.
+- **IMP-3:** arte de batalha de Juan, Archie e Wallace instalada na cópia privada com hashes conferidos; a classe de arte compartilhada da Elite continua pendente. Não houve audição manual das faixas.
+- **Testes automatizados:** 185 testes focados de Hoenn e 17 verificações Ruby. A suíte Python geral executou 1.055 casos, com 46 ignorados e sem falhas. Nenhuma etapa de jogabilidade foi promovida; Windows e Android seguem sem aceite de campanha.
+
+| Fase | Implementação e arquivos | Pendências e próximo passo |
+|---|---|---|
+| IMP-1 | `hoenn_qa_phase3.py`, `pilot_hoenn.py`, `HoennPilot.rb`: inventário QA03 com IDs e classificação; pickups limitados a interações e recompensas reconhecidas; placas direcionais reescritas em posições comprovadas. Coincidência de posição só é marcada como duplicata quando há equivalente reconhecido. As tabelas de encontros prioritárias do Blue foram preservadas. | Conferir equivalência dos NPCs e treinadores em posições ocupadas; revisar recompensas com páginas condicionais ou efeitos colaterais e variantes de encontros. |
+| IMP-2 | `hoenn_imp2_ice.py`, `pilot_hoenn.py`, `HoennPilot.rb`: piso de Sootopolis com rachadura e queda na segunda passagem, apenas onde o retorno e a chegada são verificáveis. A tempestade da crise é visual e some após Rayquaza. A verificação estática aceita uma travessia válida por borda e registra pontos que ainda não comprova a pé. | Tratar pisos com pouso bloqueado; confirmar solução integral do ginásio, obstáculos condicionais, Surf/Dive/Waterfall, correntes e cenas no jogo. |
+| IMP-3 | `HoennPilot.rb`, `pilot_hoenn.py`: apresentação nativa adaptada para Hoenn, créditos próprios e retorno ao mapa; não grava o Hall global de Decades. Arte correta de Juan, Archie e Wallace e faixa de créditos copiadas apenas para a instalação privada, após verificação de hash. | Testar apresentação, áudio e save no jogo; concluir artes individuais da Elite Four, trilhas contextuais e a batalha em dupla com Steven. |
+| IMP-4 | `HoennPilot.rb`: o NPC existente na casa do Fossil Maniac (origem 126, evento 3) entrega uma TM que ensina Dig. O item é conferido pelo golpe e registrado somente quando entra na Bolsa. | Túnel, Mirage Tower, Safari, concursos e oficina de cinzas seguem abertos; não liberar destinos que estão fora da instalação atual. |
+| IMP-5 | `HoennPilot.rb`: placas direcionais, apresentação e disponibilidade pós-Liga usam o idioma selecionado; o painel diferencia região liberada de chegada verificada na instalação. Nenhuma viagem foi adicionada por teleporte de QA. | Auditar e traduzir as falas restantes; implementar transporte de ida e volta após validar as duas regiões no mesmo pacote e conferir preservação de equipe, PC e progresso. |
+
+**Próxima ação:** fechar a classificação dos eventos da IMP-1 no inventário gerado e percorrer no jogo os acessos registrados sem caminho de caminhada demonstrado (começando por Lavaridge e Rota 118 → Rota 119).
