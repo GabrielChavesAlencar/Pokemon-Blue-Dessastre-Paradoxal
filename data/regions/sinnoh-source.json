@@ -60,7 +60,13 @@
     "remap_implementation_guide": "docs/SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md",
     "geometry_only_preview_converter": "scripts/regions/convert_sinnoh_geometry.py",
     "geometry_only_preview_tests": "tests/test_sinnoh_geometry_converter.py",
-    "geometry_only_preview_guide": "docs/SINNOH_FASE_01_PREVIA_GEOMETRIA.md"
+    "geometry_only_preview_guide": "docs/SINNOH_FASE_01_PREVIA_GEOMETRIA.md",
+    "twinleaf_original_story_handlers": "scripts/regions/SinnohPilot.rb",
+    "twinleaf_event_template": "data/regions/sinnoh-twinleaf-events.json",
+    "twinleaf_event_compiler": "scripts/regions/build_sinnoh_twinleaf_events.py",
+    "twinleaf_story_tests": "tests/test_sinnoh_twinleaf_events.py",
+    "twinleaf_pure_ruby_runtime_tests": "tests/sinnoh_pilot_runtime.rb",
+    "twinleaf_workflow_guide": "docs/SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md"
   },
   "paths_proposed_not_yet_created": {
     "source": ".blue-work/sinnoh-source/",
@@ -88,7 +94,13 @@
     "geometry_only_preview_code_implemented": true,
     "geometry_preview_run_against_real_sinnoh": false,
     "source_scripts_imported": false,
-    "terrain_preview_playable": false
+    "terrain_preview_playable": false,
+    "twinleaf_original_ruby_code_prepared": true,
+    "twinleaf_event_template_only": true,
+    "twinleaf_event_compiler_exists": true,
+    "twinleaf_events_installed_in_game": false,
+    "twinleaf_event_positions_verified_with_real_maps": false,
+    "barry_three_pbs_teams_validated": false
   },
   "progress": {
     "total_phases": 13,
@@ -96,7 +108,9 @@
     "native_playable_approved": 0,
     "phase_00_status": "PARTIAL_REPOSITORY_ONLY",
     "remap_substeps_prepared": 6,
-    "remap_substeps_total": 9
+    "remap_substeps_total": 9,
+    "twinleaf_story_preparation_steps_done": 5,
+    "twinleaf_story_preparation_steps_total": 8
   },
   "blockers": [
     "Obter fonte Sinnoh com arquivos reais e direitos aplicáveis ou criar mapas próprios",
