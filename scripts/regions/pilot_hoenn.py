@@ -1034,6 +1034,184 @@ def add_stage8_events(maps, game, rival_image):
     }
 
 
+
+def scan_stage9_source_events(original_events, maps):
+    """Extract ONLY simple direct transfers + known pbItemBall from pinned RXDATA.
+
+    Reads source event headers to locate original geometry; never copies or
+    runs third-party Ruby commands. Multi-page/ambiguous warp events and any
+    transfer to an uninstalled map are intentionally excluded. Sea borders
+    are governed by SURF_BORDERS_STAGE9 in PBS, not land-only graph edges.
+    """
+    transfer_names=re.compile(r"door|exit|entrance|stairs|warp tile",re.I)
+    item_names=re.compile(r"^(?:HiddenItem|Item)(?:\b|$)",re.I)
+    item_call=re.compile(r"\bpb(?:Hidden)?ItemBall\(\s*:([A-Z0-9_]+)\s*[,)]")
+    transfers, pickups = [], []
+    for mid, events in original_events.items():
+        if mid not in SOURCE_MAPS_STAGE9:
+            raise ValueError(f"Fonte não autoriza eventos Stage9 em Map{mid:03}")
+        mp=maps[mid]
+        w,h=mp.attrs["@width"],mp.attrs["@height"]
+        for ev in events.values():
+            name=text(ev.attrs["@name"])
+            x,y=ev.attrs["@x"],ev.attrs["@y"]
+            if not (0<=x<w and 0<=y<h):
+                raise ValueError(f"Evento RXDATA Stage9 fora de limites: {mid}/{name}")
+            pages=ev.attrs.get("@pages",[])
+            raw_cmds=[cmd for page in pages
+                      for cmd in page.attrs.get("@list",[])
+                      if isinstance(cmd,RubyObject) and cmd.name=="RPG::EventCommand"]
+            if transfer_names.search(name) and "activate" not in name.lower():
+                choices=set()
+                for cmd in raw_cmds:
+                    if cmd.attrs.get("@code")!=201:
+                        continue
+                    ps=cmd.attrs.get("@parameters",[])
+                    if (len(ps)>=4 and ps[0]==0 and
+                        all(isinstance(v,int) for v in ps[1:4])):
+                        choices.add(tuple(ps[1:4]))
+                if len(choices)==1:
+                    dst,dx,dy=next(iter(choices))
+                    if dst in maps:
+                        dw,dh=maps[dst].attrs["@width"],maps[dst].attrs["@height"]
+                        if not 0<=dx<dw or not 0<=dy<dh:
+                            raise ValueError(f"Warp RXDATA Stage9 fora de mapa {mid}/{name} -> {dst}/{dx}/{dy}")
+                        transfers.append((mid,x,y,dst,dx,dy,name))
+            if item_names.match(name):
+                identities=set()
+                for cmd in raw_cmds:
+                    if cmd.attrs.get("@code") not in (355,655):continue
+                    for p in cmd.attrs.get("@parameters",[]):
+                        if isinstance(p,(bytes,str)):
+                            match=item_call.search(text(p))
+                            if match:identities.add(match.group(1))
+                if len(identities)==1:
+                    item=next(iter(identities))
+                    pickups.append((mid,x,y,item,name=="Item"))
+    return transfers,pickups
+
+
+def add_stage9_events(maps,game,source_warps,source_pickups):
+    """Remap audited source locations into safe, original Blue Ruby events."""
+    from_stage9=set(SOURCE_MAPS_STAGE9)
+    used_items=set()
+    for mid,x,y,dst,dx,dy,_original_name in source_warps:
+        if mid not in from_stage9 or dst not in maps:
+            raise ValueError(f"Warp Stage9 desconhecido {mid}->{dst}")
+        page=event_page(
+            script=f"BlueHoennPilot.stage9_transfer({mid},{dst},{dx},{dy})",
+            touch=True)
+        page.attrs["@through"]=True
+        append_event(maps[mid],f"HN9_SourceWarp_{mid}_{x}_{y}",x,y,page)
+    for mid,x,y,item,visible in source_pickups:
+        key=f"STAGE9_{mid}_{x}_{y}"
+        if key in used_items:raise ValueError("Item RXDATA Stage9 duplicado")
+        used_items.add(key)
+        page=event_page(script="nil",sprite="Object_Ball" if visible else "")
+        event_id=append_event(maps[mid],f"HN9_SourceItem_{mid}_{x}_{y}",x,y,page)
+        page.attrs["@list"][0]=command(
+            355,f'BlueHoennPilot.pickup(:{item},"{key}",{event_id})'.encode("ascii"))
+        cleared=event_page(script="nil")
+        cleared.attrs["@condition"].attrs["@self_switch_valid"]=True
+        cleared.attrs["@condition"].attrs["@self_switch_ch"]=b"A"
+        cleared.attrs["@through"]=True
+        cleared.attrs["@list"]=[command(0)]
+        maps[mid].attrs["@events"][event_id].attrs["@pages"].append(cleared)
+    for mid,x,y,sprite,handler in NPCS_STAGE9:
+        asset=game/f"Graphics/Characters/{sprite}.png"
+        if not regular(asset).read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite de NPC Mossdeep inválido {sprite}")
+        append_event(maps[mid],f"HN9_NPC_{mid}_{x}_{y}",x,y,
+                     event_page(script=handler,sprite=sprite))
+        if mid in (77,78):
+            cx,cy=(9,5) if mid==77 else (4,5)
+            append_event(maps[mid],f"HN9_ServiceCounter_{mid}",cx,cy,
+                         event_page(script=handler))
+    for mid,x,y,key,_message in SIGNS_STAGE9:
+        append_event(maps[mid],f"HN9_Sign_{key}",x,y,
+                     event_page(script=f"BlueHoennPilot.sign_stage9(:{key})"))
+    for mid,x,y,kind,name,sprite,team,double in TRAINERS_STAGE9:
+        path=game/f"Graphics/Characters/{sprite}.png"
+        if not regular(path).read_bytes().startswith(PNG):
+            raise ValueError(f"Sprite do treinador Stage9 inválido {sprite}")
+        script=f'BlueHoennPilot.battle_stage3(:{kind},"{name}",{mid})'
+        append_event(maps[mid],f"HN9_Trainer_{mid}_{x}_{y}",x,y,
+                     event_page(script=script,sprite=sprite))
+    art={}
+    for label,candidates,handler,positions in (
+        ("Tate",("NPC_RSE_Tate","NPC_ORAS_Tate","trainer_YOUNGSTER"),
+         "BlueHoennPilot.tate_liza",(TATE_LIZA_EVENTS[0],)),
+        ("Liza",("NPC_RSE_Liza","NPC_ORAS_Liza","trainer_LASS"),
+         "BlueHoennPilot.tate_liza",(TATE_LIZA_EVENTS[1],)),
+        ("Archie",("NPC_RSE_Archie","NPC_ORAS_Archie","trainer_YOUNGSTER"),
+         "BlueHoennPilot.pyre_archie",(MT_PYRE_ARCHIE,)),
+        ("Tabitha",("NPC_RSE_Tabitha","NPC_ORAS_Tabitha","trainer_YOUNGSTER"),
+         "BlueHoennPilot.magma_hideout_tabitha",(TABITHA_HIDEOUT_EVENT,)),
+        ("Maxie",("NPC_RSE_Maxie","NPC_ORAS_Maxie","trainer_YOUNGSTER"),
+         "BlueHoennPilot.magma_hideout_maxie",(MAXIE_HIDEOUT_EVENT,)),
+        ("Matt",("NPC_RSE_Matt","NPC_ORAS_Matt","trainer_YOUNGSTER"),
+         "BlueHoennPilot.aqua_hideout_matt",(MATT_HIDEOUT_EVENT,)),
+        ("SpaceMaxie",("NPC_RSE_Maxie","NPC_ORAS_Maxie","trainer_YOUNGSTER"),
+         "BlueHoennPilot.space_center_maxie",(SPACE_MAXIE_EVENT,)),
+        ("SpaceSteven",("NPC_RSE_Steven","NPC_ORAS_Steven","trainer_YOUNGSTER"),
+         "BlueHoennPilot.space_center_steven",(SPACE_STEVEN_EVENT,)),
+    ):
+        image,placeholder=select_native_character(game,candidates,role=label)
+        art[label]={"sprite":image,"placeholder":placeholder}
+        for mid,x,y in positions:
+            append_event(maps[mid],f"HN9_Boss_{label}",x,y,
+                         event_page(script=handler,sprite=image))
+    for (mid,x,y),handler,label in (
+        (ARCHIE_ORB_EVENT,"BlueHoennPilot.pyre_orb_scene","PyreOrb"),
+        (MT_PYRE_OLD_LADY,"BlueHoennPilot.pyre_elder","PyreElder"),
+        (GROUDON_CUTSCENE_EVENT,"BlueHoennPilot.groudon_hideout","Groudon"),
+        (SUBMARINE_EVENT,"BlueHoennPilot.submarine_escape","Submarine"),
+    ):
+        page=event_page(script=handler,touch=(label in ("PyreOrb","Submarine")))
+        if label in ("PyreOrb","Submarine"):page.attrs["@through"]=True
+        append_event(maps[mid],f"HN9_Story_{label}",x,y,page)
+    aqua_image,aqua_placeholder=select_native_character(
+        game,("NPC_RSE_AquaGrunt","NPC_ORAS_AquaGrunt","trainer_YOUNGSTER"),
+        role="Aqua Pyre/Hideout")
+    magma_image,magma_placeholder=select_native_character(
+        game,("NPC_RSE_MagmaGrunt","NPC_ORAS_MagmaGrunt","trainer_YOUNGSTER"),
+        role="Magma Hideout/Space")
+    for group,image,handler in (
+        (PYRE_AQUA_GRUNTS,aqua_image,"pyre_aqua_grunt"),
+        (AQUA_HIDEOUT_GRUNTS,aqua_image,"aqua_hideout_grunt"),
+        (MAGMA_HIDEOUT_GRUNTS,magma_image,"magma_hideout_grunt"),
+        (SPACE_GRUNT_EVENTS,magma_image,"space_magma_grunt"),
+    ):
+        for mid,x,y,version,_team in group:
+            append_event(maps[mid],f"HN9_Grunt_{version}",x,y,
+                         event_page(script=f"BlueHoennPilot.{handler}({version})",
+                                    sprite=image))
+    # Replace previously gated cave/harbor entrances, not their original
+    # donor map events. These remain closed until correct story flags.
+    for (mid,x,y),label,script in (
+        (MAGMA_HIDEOUT_GATE,"MagmaEntry","BlueHoennPilot.enter_magma_hideout"),
+        (AQUA_HIDEOUT_GATE,"AquaEntry","BlueHoennPilot.enter_aqua_hideout"),
+    ):
+        page=event_page(script=script,touch=True)
+        page.attrs["@through"]=True
+        append_event(maps[mid],f"HN9_Gate_{label}",x,y,page)
+    return {
+        "new_maps":len(SOURCE_MAPS_STAGE9),
+        "auto_source_warp_events":len(source_warps),
+        "auto_source_item_events":len(source_pickups),
+        "ordinary_trainers":len(TRAINERS_STAGE9),
+        "aqua_grunts":len(PYRE_AQUA_GRUNTS)+len(AQUA_HIDEOUT_GRUNTS),
+        "magma_grunts":len(MAGMA_HIDEOUT_GRUNTS)+len(SPACE_GRUNT_EVENTS),
+        "source_battle_party_levels_only":True,
+        "boss_graphics":art,
+        "aqua_placeholder":aqua_placeholder,
+        "magma_placeholder":magma_placeholder,
+        "native_gym_switch_puzzle_approved":False,
+        "native_space_partner_battle_approved":False,
+        "native_gameplay_verified":False,
+    }
+
+
 def preflight_route102_trainers(game: Path) -> list[dict]:
     """Fail closed if any target trainer already exists in the native Blue PBS.
 
