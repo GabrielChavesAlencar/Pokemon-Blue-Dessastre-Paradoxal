@@ -19,7 +19,12 @@ PILOT = {7: "Littleroot", 8: "Casa do jogador", 11: "Laboratório do Birch",
          18: "Poké Mart de Petalburg", 19: "Casas de Petalburg",
          20: "Ginásio de Petalburg", 104: "Rota 104",
          105: "Casa de Briney", 106: "Floricultura Pretty Petal",
-         156: "Petalburg Woods"}
+         156: "Petalburg Woods",
+         21: "Rustboro", 22: "Centro Pokémon de Rustboro",
+         23: "Poké Mart de Rustboro", 24: "Casas de Rustboro",
+         25: "Escola de Treinadores de Rustboro", 26: "Devon Corporation",
+         27: "Ginásio de Rustboro", 130: "Rota 116",
+         131: "Casa dos Escavadores", 157: "Rusturf Tunnel"}
 
 
 def inspect_map_data(data: Path) -> tuple[dict, list]:
