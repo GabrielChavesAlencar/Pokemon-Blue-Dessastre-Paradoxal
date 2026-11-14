@@ -352,9 +352,9 @@ module BlueKantoPilot
       BlueRegions.profile(progress, true) == :world_champion_rematch
   end
 
-  def self.full_power_gym(name)
+  def self.full_power_gym(name, trainer_type = nil)
     type = GYM_FULL_POWER[name]
-    return false unless type && full_power_unlocked?
+    return false unless type && trainer_type == type && full_power_unlocked?
     return false unless pbConfirmMessage(_INTL("{1}: Enfrentar meu time oficial Full Power?", name))
     setBattleRule("canLose")
     won = BlueStory.with_regional_full_power {
@@ -395,7 +395,7 @@ module BlueKantoPilot
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
     if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
-      return if full_power_gym(name)
+      return if full_power_gym(name, type)
       pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
       return
     end
@@ -458,8 +458,8 @@ module BlueKantoPilot
     true
   end
 
-  def self.trainer_repeat(name)
-    return if full_power_gym(name)
+  def self.trainer_repeat(name, type = nil)
+    return if full_power_gym(name, type)
     pbMessage(_INTL("{1}: Boa sorte na sua jornada!", name))
   end
 
