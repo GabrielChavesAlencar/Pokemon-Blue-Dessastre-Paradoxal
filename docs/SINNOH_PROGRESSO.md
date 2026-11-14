@@ -99,6 +99,20 @@ O plugin [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) exige a prova d
 
 **CI isolada:** [execução de Sinnoh](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43539553514) aprovou **134 testes Python**, sintaxe Ruby e os harnesses de abertura/Barry, inclusive `SINNOH_QA_START_SAVE_AND_PBS_GUARDS_OK`. A suíte geral possui uma falha separada anterior do piloto de Johto; isso não equivale a QA Windows/Android para Sinnoh.
 
+## Validação automática pós-compilação do piloto — preparada em código
+
+```text
+██████████████░░░░░░░░░░  4/7 (57% das subetapas da sondagem nativa)
+```
+
+O módulo [SinnohQAProbe.rb](../scripts/regions/SinnohQAProbe.rb), incluído apenas na cópia QA, está pronto para executar **após o `Compiler.main` no Game.exe experimental**. Ele confere `GameData::Trainer` nas três versões de Barry e carrega os nove mapas da introdução para auditar **24 eventos, 16 portais, três Poké Bolas físicas, cinco handlers Blue, nomes, sprites de eventos, gatilhos e coordenadas**. A prova estrutural é registrada em `Data/blue-sinnoh-qa-engine-check.json`, separada do token de compilação. Falhas impedem a liberação de `Novo Jogo` e nenhum script cria `blue-sinnoh-rival-ready.txt`.
+
+O [verificador Python](../scripts/regions/install_sinnoh_qa_copy.py) exige hashes de **todos** os mapas preparados e confere o novo relatório. O [plugin de inicialização QA](../scripts/regions/SinnohQAStart.rb) não autoriza `Novo Jogo` com token sozinho. [Testes Python](../tests/test_sinnoh_qa_install.py), [testes Ruby da sondagem](../tests/sinnoh_qa_engine_probe_runtime.rb) e [início Ruby](../tests/sinnoh_qa_start_runtime.rb) usam só arquivos e equipes **sintéticos**. Detalhes no [guia de validação pós-compilação](SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md).
+
+**Restam 3 subetapas reais:** rodar essa sondagem no Game.exe com mapas autorizados, observar batalha/nível efetivo 70%/90% e saves Windows, e validar o Android/JoiPlay com regressões. **Nenhuma dessas três ocorreu nesta conversa.** Portanto o desenvolvimento geral permanece **8/32 (25%)**, as 13 fases técnicas/jogáveis/nativas permanecem **0/13** e a instalação QA continua **4/7**.
+
+**CI isolada comprovada:** [execução 43540451532](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43540451532) — **137 testes Python aprovados** e harnesses Ruby de prova de início, eventos e Barry aprovados. A conclusão **geral** daquela workflow foi falha em testes fora da suíte isolada; não confundir sucesso isolado com pipeline totalmente verde ou gameplay nativo.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
