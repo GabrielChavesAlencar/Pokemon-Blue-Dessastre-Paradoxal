@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f1f4dd125a8de391da51bef64717a9ae06ee7b4d",
+      "date": "2026-11-13T22:38:33-03:00",
+      "title": "test(sinnoh): lock manual playtest progress to 4/7 and maintain zero approved native phases",
+      "category": "Documentação"
+    },
+    {
       "sha": "0395c5afd3b4081d87beb169306569c06dc7d7cd",
       "date": "2026-11-13T22:38:22-03:00",
       "title": "data(sinnoh): register private 44-case playtest evidence auditor and QA-only Barry test permission without native approval",
