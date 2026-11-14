@@ -1,4 +1,4 @@
-"""Phase 4: all fourteen ME catalogued, six triggered by verified success paths."""
+"""Phase 4: fourteen ME catalogued; Running Shoes reuse an approved item fanfare."""
 from __future__ import annotations
 import unittest
 from pathlib import Path
@@ -95,7 +95,9 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
         src=(ROOT/"scripts/regions/KantoPilot.rb").read_text(encoding="utf-8")
         self.assertEqual(src.count('BlueMusic.kanto_me_play("badge_awarded")'),8)
         self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_pokemon")'),2)
-        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_item")'),6)
+        # Running Shoes are a seventh, story-gated item receipt after Brock.
+        # They reuse the approved obtained_item ME, not an unreviewed track.
+        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_item")'),7)
         self.assertEqual(src.count('BlueMusic.kanto_me_play("healed")'),2)
         self.assertIn('return unless pbAddPokemonSilent(species, 5)',src)
         self.assertIn('return unless pbAddPokemonSilent(species, 25)',src)
