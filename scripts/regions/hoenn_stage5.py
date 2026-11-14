@@ -148,7 +148,6 @@ SIGNS_STAGE5 = (
 
 # Visible/hidden items; one-time regional flags prevent duplication.
 PICKUPS_STAGE5 = (
-    (108, 139, 14, "ROUTE106_PEARL", "PEARL", True),
+    (108, 139, 14, "ROUTE106_PROTEIN", "PROTEIN", True),
     (159, 22, 10, "GRANITE_1F_ESCAPE_ROPE", "ESCAPEROPE", True),
-    (111, 25, 18, "ROUTE109_SOFT_SAND", "SOFTSAND", False),
 )
