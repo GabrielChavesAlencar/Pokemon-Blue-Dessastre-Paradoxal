@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c56f7241be8e71902d96bfd0dc6531294d5d7ba5",
+      "date": "2026-11-13T23:44:28-03:00",
+      "title": "feat(regions): explicitly report static and scripted encounters separately",
+      "category": "Novidades"
+    },
+    {
+      "sha": "5bbf50545bc27b8cf0e445e1946df8151dfcd206",
+      "date": "2026-11-13T23:44:12-03:00",
+      "title": "test(regions): assert correct Route 22 reference without Pidgey",
+      "category": "Correções"
+    },
+    {
+      "sha": "4ccadda10912dd90b2200a2097ccf1df3c9a09d1",
+      "date": "2026-11-13T23:44:10-03:00",
+      "title": "docs(kanto): correct Route 22 wild species to FRLG reference",
+      "category": "Correções"
+    },
+    {
+      "sha": "58cd99e5752a9b8c16831ec8d6d20d8ab741f1be",
+      "date": "2026-11-13T23:44:07-03:00",
+      "title": "fix(regions): correct FRLG Route 22 and separate static encounters from wild tables",
+      "category": "Correções"
+    },
+    {
       "sha": "5777ea55f457a3d7ec5055e3a940617979355613",
       "date": "2026-11-13T23:43:02-03:00",
       "title": "test(regions): protect reference-only audit and avoid claiming untested content",
