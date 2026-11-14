@@ -125,7 +125,7 @@ O [auditor de playtest](../scripts/regions/audit_sinnoh_playtest.py) prepara um 
 
 **Pendências reais T05–T07:** executar Game.exe QA sobre mapas legítimos e auditar os 12 combates, fazer os testes de portais/saves/regressões e validar Android/JoiPlay. Nenhuma evidência real foi fornecida nesta conversa; o progresso geral permanece **8/32 (25%)** e a aprovação das 13 fases continua **0/13**.
 
-**CI isolada:** a [execução 43541577474](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43541577474) aprovou **150 testes Python** e verificações Ruby da história, início de Sinnoh e estruturas da engine com fixtures. A conclusão da CI geral é acompanhada separadamente.
+**CI isolada:** a [execução 43541798458](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43541798458) aprovou **151 testes Python** e verificações Ruby da história, início de Sinnoh e estruturas da engine com fixtures. A conclusão da CI geral é acompanhada separadamente.
 
 ## Barra B — fases tecnicamente aprovadas
 
