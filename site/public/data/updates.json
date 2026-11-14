@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7d3993e0f599a540e4c6b61e8c0004b13302c41f",
+      "date": "2026-11-13T22:06:26-03:00",
+      "title": "data(sinnoh): register private QA pilot assembly tool while keeping real assets and native acceptance blocked",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "49762119859531aa88453ad42f8bb4d94322d1b8",
+      "date": "2026-11-13T22:06:17-03:00",
+      "title": "docs(sinnoh): hand off real-source and native-only tasks after private QA integration overlay builder",
+      "category": "Documentação"
+    },
+    {
       "sha": "d54ddfe2717f919d70b68362f158e230630a9ab3",
       "date": "2026-11-13T22:05:58-03:00",
       "title": "test(sinnoh): enforce private QA overlay workstream stays 3/6 without premature native/gameplay approvals",
