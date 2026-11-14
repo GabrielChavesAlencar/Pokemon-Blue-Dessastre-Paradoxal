@@ -17,7 +17,7 @@
       "game": "FireRed/LeafGreen",
       "doc": "docs/KANTO_DETONADO_FIRERED_LEAFGREEN_REFERENCIA_ORGANIZADA.md",
       "url": "https://www.pokemythology.net/detonados/detonado-firered-leafgreen/",
-      "map_url": null,
+      "map_url": "https://rankedboost.com/pokemon/location/firered-leafgreen/",
       "leaders": [
         "Brock",
         "Misty",
@@ -39,10 +39,11 @@
         {
           "area": "Route 22",
           "reference_species": [
-            "PIDGEY",
-            "MANKEY"
+            "RATTATA",
+            "MANKEY",
+            "SPEAROW"
           ],
-          "note": "Rota inicial e rival opcional",
+          "note": "FRLG: Rattata/Mankey/Spearow. O MD anterior citava Pidgey incorretamente; evitar esse spawn na Rota 22.",
           "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
         },
         {
@@ -89,27 +90,30 @@
         },
         {
           "area": "Seafoam Islands",
-          "reference_species": [
-            "ARTICUNO"
-          ],
+          "reference_species": [],
           "note": "Encontro fixo, não entrada de grama",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "ARTICUNO"
+          ]
         },
         {
           "area": "Power Plant",
-          "reference_species": [
-            "ZAPDOS"
-          ],
+          "reference_species": [],
           "note": "Encontro fixo, não entrada de grama",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "ZAPDOS"
+          ]
         },
         {
           "area": "Cerulean Cave",
-          "reference_species": [
-            "MEWTWO"
-          ],
+          "reference_species": [],
           "note": "Pós-Liga, encontro fixo",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "MEWTWO"
+          ]
         }
       ]
     },
@@ -199,11 +203,13 @@
             "ONIX",
             "ZUBAT",
             "GEODUDE",
-            "SANDSHREW",
-            "LAPRAS"
+            "SANDSHREW"
           ],
           "note": "Lapras fixo semanal separado do encontro aleatório",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "LAPRAS"
+          ]
         },
         {
           "area": "Ilex Forest",
@@ -239,11 +245,13 @@
           "reference_species": [
             "GROWLITHE",
             "VULPIX",
-            "STANTLER",
-            "SUDOWOODO"
+            "STANTLER"
           ],
           "note": "Sudowoodo fixo, não em tabela de grama",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "SUDOWOODO"
+          ]
         },
         {
           "area": "Burnt Tower",
@@ -314,11 +322,12 @@
         },
         {
           "area": "Lake of Rage",
-          "reference_species": [
-            "GYARADOS"
-          ],
+          "reference_species": [],
           "note": "Red Gyarados fixo shiny",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "GYARADOS"
+          ]
         },
         {
           "area": "Route 44",
@@ -463,11 +472,13 @@
         {
           "area": "New Mauville",
           "reference_species": [
-            "VOLTORB",
-            "ELECTRODE"
+            "VOLTORB"
           ],
           "note": "Interações estáticas separadas da grama",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "ELECTRODE"
+          ]
         },
         {
           "area": "Route 119",
@@ -545,11 +556,13 @@
           "reference_species": [
             "SHELLOS",
             "BUIZEL",
-            "PACHIRISU",
-            "DRIFLOON"
+            "PACHIRISU"
           ],
           "note": "Drifloon fixo de sexta-feira, evento separado",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "DRIFLOON"
+          ]
         },
         {
           "area": "Eterna Forest",
@@ -695,11 +708,13 @@
           "area": "Old Chateau",
           "reference_species": [
             "GASTLY",
-            "HAUNTER",
-            "ROTOM"
+            "HAUNTER"
           ],
           "note": "Rotom fixo/tempo, não spawn normal",
-          "verification": "REFERENCE_NOT_NATIVE_VERIFIED"
+          "verification": "REFERENCE_NOT_NATIVE_VERIFIED",
+          "special_encounters": [
+            "ROTOM"
+          ]
         }
       ]
     }
