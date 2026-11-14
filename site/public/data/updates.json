@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c9dc69fd0696f6cf6ab279f79a52c482c9b0390",
+      "date": "2026-11-14T12:06:14-03:00",
+      "title": "docs(hoenn): registrar 20 mapas da Etapa 05 e critérios de QA nativo",
+      "category": "Documentação"
+    },
+    {
       "sha": "b7bbea5066b097c8159cf58c9915a70f106b269a",
       "date": "2026-11-14T12:04:38-03:00",
       "title": "Atualiza teste do portal para os mapas ativos da Safari",
