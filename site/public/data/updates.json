@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b666e2234ff6887ff3376f215c9787bf94d26976",
+      "date": "2026-11-13T23:56:51-03:00",
+      "title": "test(portal): cover pending labels, dedup, four regions and prototype-only status",
+      "category": "Testes"
+    },
+    {
       "sha": "c0d574e60a4a892e611368f0c1d74f6617f77232",
       "date": "2026-11-13T23:56:04-03:00",
       "title": "style(portal): add mobile-friendly pending-content cards with not-added status tags",
