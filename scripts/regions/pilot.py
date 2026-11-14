@@ -17,7 +17,8 @@ from audit import KANTO, ROOT, json_file, load
 from export_kanto import LOCATION_NAMES
 from pbs import catalogue, read_blocks
 from kanto_overworld import (MissingActorGraphic, safely_adapt_source_field_event,
-                             source_item_ball, source_npc_dialogue)
+                             source_item_ball, source_npc_dialogue, source_sign_dialogue,
+                             source_obstacle)
 from kanto_npc_locale import install_npc_locale, npc_literals
 from server.ruby_marshal import RubyObject, dumps_simple, text
 from stage import serialize, stage
@@ -389,6 +390,8 @@ def cinnabar_event_allowed(source_id, event_id):
 
 
 def saffron_event_allowed(source_id, event_id, event):
+    if source_obstacle(event) == "cut" or source_sign_dialogue(event):
+        return True
     if source_id in SAFFRON_STATIC_EVENTS:
         return event_id in SAFFRON_STATIC_EVENTS[source_id]
     if 178 <= source_id <= 188:
@@ -970,7 +973,8 @@ def install_events(source, target, mapping):
             # Phase 09 selective import: only audited doors, healing, and
             # gym battles. Do not leak Celadon NPCs, items, Rocket, stores,
             # Cut trees, elevators or untranslated foreign story events.
-            if original == 114 and event_id not in (3, 20):
+            if original == 114 and event_id not in (3, 20) and not (
+                    source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
             if original == 115 and event_id not in (1, 2):
                 continue
@@ -978,7 +982,8 @@ def install_events(source, target, mapping):
                 continue
             # Phase 10: exact Fuchsia whitelists, no Warden/Gold Teeth,
             # Safari captures, Park South event transfers or source quests.
-            if original == 144 and event_id not in (5, 17, 18, 24):
+            if original == 144 and event_id not in (5, 17, 18, 24) and not (
+                    source_obstacle(event) == "cut" or source_sign_dialogue(event)):
                 continue
             if original == 145 and event_id not in (1, 2):
                 continue
@@ -1160,12 +1165,14 @@ def install_events(source, target, mapping):
                       f"evento {event_id}: {missing_graphic}", flush=True)
             if field:
                 adapted, detail = field
-                if detail["kind"] == "npc_dialogue":
+                if detail["kind"] in ("npc_dialogue", "sign_dialogue"):
                     # RPG Maker 101/401 and script-generated text can bypass
                     # _INTL/getFromMapHash hooks. Dispatch these *already audited*
                     # passive NPCs to an explicit, locale-aware callback at talk
                     # time. No source Ruby is executed or copied.
-                    literal_commands = source_npc_dialogue(event)
+                    literal_commands = (source_sign_dialogue(event)
+                                        if detail["kind"] == "sign_dialogue"
+                                        else source_npc_dialogue(event))
                     literals = npc_literals(literal_commands) if literal_commands else []
                     if literals:
                         npc_dialogues.append([original, event_id, literals])
@@ -1187,19 +1194,13 @@ def install_events(source, target, mapping):
             warp = extract_warps(event, mapping)
             if warp:
                 name = text(event.attrs["@name"])
-                # Automatic exits and route gateways are floor tiles. Visible doors use action.
+                # Every source-confirmed ordinary map transfer is Player
+                # Touch, including visible house doors in Pewter/Viridian.
+                # Locked/scripted puzzle doors were handled earlier and retain
+                # their authored interaction requirements.
                 graphic = event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"]
-                # Only explicitly supported source door destinations survive. Import no other commands.
                 character = actor(event) if graphic else b""
-                is_door = "door" in name.lower() and bool(character)
-                # For the audited Celadon entrance doors, keep the original
-                # Player Touch semantics rather than requiring an action key.
-                auto_entry = original == 10 or (original == 5 and event_id in (1, 2, 3)) or (
-                    original == 114 and event_id in (3, 20)) or (
-                    original == 144 and event_id in (5, 17, 18, 24)) or (
-                    original == 168 and event_id in (6, 10, 12, 13, 14)) or (
-                    original == 199 and event_id in (1, 2, 3, 5))
-                trigger = 1 if auto_entry else (0 if is_door else 1)
+                trigger = 1
                 # Viridian City is the TRUE story gate. The Forest buildings
                 # retain their original transfers, without extra tunnel locks.
                 operations = [warp]
