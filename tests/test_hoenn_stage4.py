@@ -34,9 +34,9 @@ class HoennStage4Tests(unittest.TestCase):
 
     def test_ten_new_maps_and_emulated_warps(self):
         self.assertEqual(len(SOURCE_MAPS_STAGE4), 10)
-        self.assertEqual(len(SOURCE_MAPS), 85)
+        self.assertEqual(len(SOURCE_MAPS), 110)
         self.assertEqual(len(WARP_PAIRS_STAGE4), 16)
-        self.assertEqual(len(WARP_PAIRS), 91)
+        self.assertEqual(len(WARP_PAIRS), 130)
         self.assertEqual(OFFSET_BORDERS_STAGE4, (
             (104, "North", 110, 21, "South", 0),
             (130, "West", 0, 21, "East", 0),
@@ -110,7 +110,7 @@ class HoennStage4Tests(unittest.TestCase):
 
     def test_rusturf_woods_graph_remains_isolated_from_verdanturf(self):
         # Map 48 is Verdanturf, not part of this isolated pilot.
-        self.assertNotIn(48, SOURCE_MAPS)
+        self.assertIn(48, SOURCE_MAPS)  # Stage 8 Verdanturf
         self.assertIn(157, SOURCE_MAPS)
         self.assertFalse(any(a[0] == 157 and b[0] == 48
                              for a, _, b, _ in WARP_PAIRS))
