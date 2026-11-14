@@ -70,7 +70,7 @@ class KantoOverworldContracts(unittest.TestCase):
             "@self_switch_valid"])
 
     def test_item_ball_quantity_and_missing_items_are_not_fabricated(self):
-        mult = fake_event(name=b"Item:RARECANDYx2",
+        mult = fake_event(name=b"Item:RARECANDY x2",
                           scripts=[command(111, 12, b"pbItemBall(:RARECANDY, 2)")])
         self.assertEqual(source_item_ball(mult), ("RARECANDY", 2))
         self.assertEqual(adapt(mult)[1]["quantity"], 2)
