@@ -51,6 +51,10 @@ class KantoOakParcelTests(unittest.TestCase):
                        if op.attrs["@code"] == 355])
         player_route = next(op for op in ops if op.attrs["@code"] == 209)
         self.assertEqual(player_route.attrs["@parameters"][0], -1)
+        moves = player_route.attrs["@parameters"][1].attrs["@list"]
+        self.assertEqual([m.attrs["@code"] for m in moves], [4, 4, 16, 0])
+        self.assertTrue(player_route.attrs["@parameters"][1].attrs["@skippable"])
+        self.assertNotIn(37, [m.attrs["@code"] for m in moves])
         self.assertEqual(ops[-1].attrs["@code"], 123)
         self.assertTrue(closed["@condition"].attrs["@self_switch_valid"])
         self.assertEqual(closed["@condition"].attrs["@self_switch_ch"], b"A")
