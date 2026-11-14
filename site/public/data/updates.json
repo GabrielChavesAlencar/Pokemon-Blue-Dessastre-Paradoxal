@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db23ddfa0a4a3ba79932395be8f725fa88b932a7",
+      "date": "2026-11-13T21:54:12-03:00",
+      "title": "test(sinnoh): keep pilot compatibility and QA preflight partial, preserving original 8/32 and 0/13 gates",
+      "category": "Testes"
+    },
+    {
+      "sha": "695336e08031f4e3b721464e305fa9101bd42f73",
+      "date": "2026-11-13T21:53:55-03:00",
+      "title": "docs(sinnoh): hand off only real MapID reconciliation, QA PBS compile, trainer sprite and native testing",
+      "category": "Documentação"
+    },
+    {
       "sha": "fca028c2c4074ede00814838899e3eff3aaa32d0",
       "date": "2026-11-13T21:53:27-03:00",
       "title": "docs(sinnoh): show 3/6 isolated pilot compatibility/Barry QA preparation bar without changing gameplay gates",
