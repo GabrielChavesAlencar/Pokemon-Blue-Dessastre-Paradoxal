@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a70f513f636effc517a6ed1828848f61b5196462",
+      "date": "2026-11-14T11:23:08-03:00",
+      "title": "feat(hoenn): definir equipes Roxanne/Aqua e tipos de treinador isolados",
+      "category": "Novidades"
+    },
+    {
       "sha": "4f2efa9d387e4784aa81349f48144e46f493c0f7",
       "date": "2026-11-14T11:21:55-03:00",
       "title": "feat(hoenn): criar eventos de Roxanne, Cut, Devon, treinadores e itens em Rustboro/Rusturf",
