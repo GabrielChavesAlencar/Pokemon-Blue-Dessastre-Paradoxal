@@ -54,6 +54,9 @@ class TestKantoDex(unittest.TestCase):
                 (target / "Data/blue-kanto-dex.json").read_text("utf8"))["first"],
                 "BULBASAUR")
             self.assertNotIn("[National]", pbs.read_text("utf8"))
+            self.assertEqual(
+                (target / "Data/blue-kanto-dex-index.txt").read_text("ascii").strip(),
+                "2|1|2")
         finally:
             temp.cleanup()
 
@@ -91,6 +94,8 @@ class TestKantoDex(unittest.TestCase):
     def test_native_pokedex_menu_and_save_migration_contract(self):
         script = (ROOT / "scripts/regions/KantoPilot.rb").read_text("utf8")
         self.assertIn("module BlueKantoDex", script)
+        self.assertIn('Data/blue-kanto-dex-index.txt', script)
+        self.assertNotIn("JSON.parse", script)
         self.assertIn("PokemonPokedexMenuScreen.prepend(DexMenu)", script)
         self.assertIn("Player::Pokedex.prepend(PokedexAccess)", script)
         self.assertIn("flags.insert(index, false)", script)
