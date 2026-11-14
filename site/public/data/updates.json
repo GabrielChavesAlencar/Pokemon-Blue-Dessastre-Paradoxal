@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c848409d097ceca1fb596375f8f4da16c6add93",
+      "date": "2026-11-14T18:15:57-03:00",
+      "title": "docs(hoenn): QA11 199 PT-BR map labels, music fallbacks and regional Trainer Card checklist",
+      "category": "Documentação"
+    },
+    {
       "sha": "f348a17514f33fdb74202e42fcbb51a5d2c4284b",
       "date": "2026-11-14T18:15:10-03:00",
       "title": "docs(hoenn): QA11 11/12 prepared, native Game.exe remains 0/12",
