@@ -348,8 +348,9 @@ module BlueKantoPilot
   end
 
   def self.full_power_unlocked?
-    progress.fetch("leagues", []).include?("KANTO") &&
-      BlueRegions.profile(progress, true) == :world_champion_rematch
+    state = BlueRegions.snapshot
+    state && state.fetch("leagues", []).include?("KANTO") &&
+      BlueRegions.profile(state, true) == :world_champion_rematch
   end
 
   def self.full_power_gym(name, trainer_type = nil)
