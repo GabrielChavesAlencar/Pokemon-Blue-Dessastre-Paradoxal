@@ -79,19 +79,24 @@ def source_obstacle(event):
         return "strength"
     if "smashrock" in name:
         return "rock_smash"
-    if "cuttree" in name:
+    # Use audited SOURCE event markers, never generate trees from terrain.
+    if re.search(r"(?i)cut[ _-]*tree|cuttable[ _-]*tree", name):
         return "cut"
     return None
 
 
-def source_npc_dialogue(event):
+def source_npc_dialogue(event, sign=False):
     """Allow read-only literal talk, no choices, scripts, switches or rewards."""
     page = base_page(event)
     if page is None or page["@trigger"] != 0:
         return None
-    if not page["@graphic"].attrs["@character_name"]:
-        return None
     name = text(event.attrs["@name"])
+    character = page["@graphic"].attrs["@character_name"]
+    if not character and not (sign and re.search(
+            r"(?i)(?:sign|notice|placard|plaque|board|poster|billboard|placa)", name)):
+        return None
+    if sign and character:
+        return None
     if re.search(r"(?i)(Trainer\(|Sight\(|Item:|SmashRock|StrengthBoulder|CutTree)", name):
         return None
     commands = page["@list"]
@@ -108,13 +113,19 @@ def source_npc_dialogue(event):
     return None
 
 
+def source_sign_dialogue(event):
+    """Only explicitly named sign/notice events with safe literal speech."""
+    return source_npc_dialogue(event, sign=True)
+
+
 def adapt_source_field_event(event, source_id, event_id, catalogue_items,
                              actor, new_event, command, if_scene):
     """Convert strictly approved events, preserving original EventID/XY."""
     item = source_item_ball(event)
     obstacle = source_obstacle(event) if not item else None
     dialogue = source_npc_dialogue(event) if not item and not obstacle else None
-    if not item and not obstacle and not dialogue:
+    sign_dialogue = source_sign_dialogue(event) if not item and not obstacle and not dialogue else None
+    if not item and not obstacle and not dialogue and not sign_dialogue:
         return None
     graphic = event.attrs["@pages"][0].attrs["@graphic"]
     filename = graphic.attrs["@character_name"]
@@ -162,7 +173,13 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
             converted.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = character
         converted.attrs["@pages"][0].attrs["@through"] = False
         return converted, {"kind": obstacle}
-    return new_event(event, dialogue, 0, character), {"kind": "npc_dialogue"}
+    converted = new_event(event, dialogue or sign_dialogue, 0, character)
+    if sign_dialogue:
+        # Keep an existing tile graphic (e.g. wall sign). This is always
+        # Action Button, never a collision or automatic map transition.
+        converted.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(graphic)
+        return converted, {"kind": "sign_dialogue"}
+    return converted, {"kind": "npc_dialogue"}
 
 
 def safely_adapt_source_field_event(event, source_id, event_id, catalogue_items,
