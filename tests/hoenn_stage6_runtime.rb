@@ -219,7 +219,7 @@ verify($game_map.map_id==714,"Cycling gate arrived in wrong map")
 verify(flags["cycling_road_visited"],"Cycling visit not saved")
 $bag.remove(:ACROBIKE,1)
 verify(!BlueHoennPilot.cycling_gate(114,19,88),"Bike road bypassed item check")
-verify(BlueHoennPilot.cycling_gate(115,14,9),"Cycling road exit blocked without bike")
+verify(BlueHoennPilot.cycling_gate(115,14,7),"Cycling road exit blocked without bike")
 verify($game_map.map_id==715,"Wrong cycling gate return")
 BlueRegionTravel.failure=true
 current=[$game_map.map_id,$game_player.x,$game_player.y]
