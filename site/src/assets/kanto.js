@@ -61,6 +61,7 @@ function areaCard(area){
   if(area.status==='encounter_review') summary.push('Encontros sob revisão');
   return '<a class="regular-card" href="'+locationLink(area)+'"><h3>'+esc(area.name)+'</h3>'+
     (summary.length?'<p>'+esc(summary.join(' · '))+'</p>':'')+
+    (area.status==='preview'?'<span class="content-pending-tag">Ainda não adicionado</span>':'')+
     '<span class="regular-card-action">Ver local '+icon('arrow')+'</span></a>';
 }
 
