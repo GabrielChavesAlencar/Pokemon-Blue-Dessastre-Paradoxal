@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dee5372d36a27f3b48627de4bcc5ae27bddf48d0",
+      "date": "2026-11-13T21:33:10-03:00",
+      "title": "docs(sinnoh): link Barry PBS drafts in Twinleaf story plan and flag legacy pilot migration blockers",
+      "category": "Documentação"
+    },
+    {
       "sha": "603346dabac8c691e613ecb4cf3341fe22b3e072",
       "date": "2026-11-13T21:32:25-03:00",
       "title": "data(sinnoh): register Barry PBS builder/verifier but keep trainer QA and ready marker disabled",
