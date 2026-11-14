@@ -9,14 +9,14 @@
 3. O protagonista **caminha automaticamente até uma casa adjacente ao vendedor**, seguindo uma rota calculada com a passabilidade real do mapa; aguarda o movimento e inicia o diálogo do pacote. Não é necessário interagir manualmente nem o personagem atravessa prateleiras.
 4. Ao receber a encomenda, registra `pilot_oak_parcel_received`; nessa primeira entrega **a loja não abre compras**. Interações seguintes permitem compras normalmente.
 5. Em Pallet, Oak recebe o pacote, ativa Pokédex e concede **cinco Poké Bolas**. Registrar `pilot_oak_parcel_delivered` somente após conseguir dar a recompensa, impedindo duplicação e permitindo recuperar Bolsa cheia.
-6. O **bloqueio é a saída NORTE de Viridian City antes de entrar na Rota 2**, na conexão real `10 ↔ 18`, e não os túneis/portarias da Viridian Forest. A barreira usa eventos locais sólidos de `Player Touch` nas colunas exatas da conexão e páginas livres após a entrega. Os transfers entre portarias e Viridian Forest permanecem intactos.
+6. O **bloqueio é a saída NORTE de Viridian City antes de entrar na Rota 2**, na conexão real `10 ↔ 18`, e não os túneis/portarias da Viridian Forest. A barreira usa eventos locais de `Player Touch` nas colunas exatas da conexão, com uma **segunda proteção no movimento para o norte** ao atravessar a borda: mesmo se um evento invisível não colidir, o jogador não muda de mapa antes da entrega. Os transfers entre portarias e Viridian Forest permanecem intactos.
 7. O Centro Pokémon de Kanto mantém sua vinheta `healed` e retorno à BGM.
 
 ## Segurança e compatibilidade
 
 - O mapeamento lê o arquivo `PBS/map_connections.txt` da fonte FRLG previamente auditada. Se a conexão `10↔18` não existir ou não for a conexão norte/sul, o gerador **falha** em vez de colocar barreira no mapa errado.
 - A barreira só acrescenta eventos no mapa **Viridian City**, sem trocar MapIDs, tilesets, encontros, música, Johto, Sinnoh ou saves de Decades.
-- A barreira fica sólida antes da entrega. Quando o jogador toca nela após a entrega, o self-switch A local abre a passagem; ao tentar novamente, atravessa normalmente.
+- A barreira possui dois mecanismos: eventos sólidos com mensagem no limite da cidade e uma interceptação de movimento exclusivamente sobre os marcadores da saída norte, para impedir passagem por conexão direta. Após a entrega, a interceptação fica inativa e o self-switch A local abre a passagem; ao tentar novamente, atravessa normalmente.
 - A entrada normal do Mart rearma o autorun somente se o pacote ainda estiver pendente, recuperando saves anteriores em que era preciso conversar manualmente.
 - Atalhos do menu **Testes Kanto (experimental)** podem teleportar para além do bloqueio, propositalmente, apenas para QA; isso não conta como progressão.
 - O algoritmo de caminho limita a busca a 1024 casas; se não encontrar um percurso, o funcionário entrega o pacote à distância sem prender o jogo. Esta exceção deve ser revisada em teste de movimento real.
