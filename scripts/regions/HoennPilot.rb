@@ -18,8 +18,10 @@ module BlueHoennPilot
     stage5 = (stage4 + [28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
                         38, 39, 40, 108, 111, 112, 159, 160, 161, 162]).sort
     stage6 = (stage5 + [41, 42, 43, 44, 45, 46, 47, 113, 114, 115]).sort
+    stage7 = (stage6 + [53,54,55,56,57,58,59,60,61,62,63,117,118,120,121,122,123,
+                        124,125,126,128,177,178,179,180,191,192]).sort
     stage2 = [7, 8, 11, 12, 13, 14, 101, 102, 103]
-    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6].include?(maps.keys.sort) &&
+    raise "Mapas do piloto de Hoenn inválidos." unless [stage2, stage3, stage4, stage5, stage6, stage7].include?(maps.keys.sort) &&
                                                          maps.values.uniq.length == maps.length &&
                                                          maps.values.all? { |id| (700..999).cover?(id) } &&
                                                          start == [maps.fetch(8), 25, 6]
@@ -147,6 +149,41 @@ module BlueHoennPilot
         end
       end
     end
+    if maps[53] && maps[58] && maps[178]
+      {
+        117 => [:SANDSHREW,:TRAPINCH,:BALTOY,:CACNEA],
+        121 => [:NUMEL,:MARILL],
+        123 => [:SPINDA,:SLUGMA,:SKARMORY],
+        125 => [:SWABLU,:LOTAD,:SEEDOT,:LOMBRE,:NUZLEAF,
+                :SEVIPER,:ZANGOOSE,:SURSKIT],
+        180 => [:NUMEL,:MACHOP,:SPOINK,:COMBUSKEN]
+      }.each do |source_id, species|
+        table = GameData::Encounter.get(maps.fetch(source_id),0)
+        unless table && table.types.fetch(:Land,[]).map{|row|row[1]}.sort == species.sort
+          raise "Encontros da Etapa 7 não compilados: #{source_id}"
+        end
+      end
+      {
+        177 => [:NUMEL,:GRIMER,:KOFFING,:MACHOP,:SLUGMA,:TORKOAL],
+        191 => [:ZUBAT,:LUNATONE,:SOLROCK],
+        192 => [:GOLBAT,:LUNATONE,:SOLROCK]
+      }.each do |source_id,species|
+        table=GameData::Encounter.get(maps.fetch(source_id),0)
+        unless table && table.types.fetch(:Cave,[]).map{|row|row[1]}.sort == species.sort
+          raise "Encontros Cave da Etapa 7 não compilados: #{source_id}"
+        end
+      end
+      bosses=[
+        [:BLUE_HOENN_FLANNERY,"Flannery",763],
+        [:BLUE_HOENN_TABITHA,"Tabitha",778],
+        [:BLUE_HOENN_MAXIE,"Maxie",779],
+        [:BLUE_HOENN_MAGMA,"Recruta",780],
+        [:BLUE_HOENN_MAGMA,"Recruta",781]
+      ]
+      unless bosses.all?{|kind,name,version|GameData::Trainer.exists?(kind,name,version)}
+        raise "Chefe/treinadores Magma da Etapa 7 não compilados"
+      end
+    end
     names = ["May", "Brendan"]
     unless names.all? { |name| [210, 211, 212].all? { |version|
              GameData::Trainer.exists?(:RIVAL1, name, version) } }
@@ -170,6 +207,15 @@ module BlueHoennPilot
     end
     if maps[41] && maps[113]
       links.concat([[maps.fetch(32), maps.fetch(113)], [maps.fetch(113), maps.fetch(41)]])
+    end
+    if maps[53] && maps[58] && maps[178]
+      links.concat([[maps.fetch(41),maps.fetch(117)],
+                    [maps.fetch(117),maps.fetch(121)],
+                    [maps.fetch(123),maps.fetch(117)],
+                    [maps.fetch(123),maps.fetch(53)],
+                    [maps.fetch(125),maps.fetch(53)],
+                    [maps.fetch(121),maps.fetch(58)],
+                    [maps.fetch(123),maps.fetch(121)]])
     end
     links.each do |first, second|
       unless connections.any? { |row| [row[0], row[3]].sort == [first, second].sort }
