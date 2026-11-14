@@ -36,6 +36,12 @@ from hoenn_stage4 import (
     RUSTBORO_THEFT_TRIGGERS, TUNNEL_AQUA_EVENT, ROXANNE_EVENT,
     TUNNEL_VERDANTURF_GATE,
 )
+from hoenn_stage5 import (
+    SOURCE_MAPS_STAGE5, OFFSET_BORDERS_STAGE5, WARP_PAIRS_STAGE5,
+    BOAT_POINTS_STAGE5, CAVE_ENCOUNTERS_STAGE5, TRAINERS_STAGE5,
+    BRAWLY_PBS, BRAWLY_TEAM, MUSEUM_AQUA, NPCS_STAGE5,
+    MUSEUM_FEE_GATE, SLATEPORT_NORTH_GATE, SIGNS_STAGE5, PICKUPS_STAGE5,
+)
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -44,6 +50,7 @@ SOURCE_MAPS = {
     14: "Poké Mart de Oldale", 102: "Rota 102", 103: "Rota 103",
     **SOURCE_MAPS_STAGE3,
     **SOURCE_MAPS_STAGE4,
+    **SOURCE_MAPS_STAGE5,
 }
 WARP_PAIRS = (
     ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
@@ -51,7 +58,7 @@ WARP_PAIRS = (
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
     ((12, 14, 6), (12, 14, 7), (14, 5, 9), (14, 5, 8)),
-) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4
+) + WARP_PAIRS_STAGE3 + WARP_PAIRS_STAGE4 + WARP_PAIRS_STAGE5
 PEOPLE = (
     (8, 4, 8, "Mae", "NPC_GSC_Mom", "BlueHoennPilot.mother"),
     (11, 8, 6, "Birch", "NPC_ORAS_Professor_Birch", "BlueHoennPilot.birch"),
@@ -76,8 +83,14 @@ MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
            104: "Route101", 105: "Oldale", 106: "Oldale", 156: "Route101",
            21: "Oldale", 22: "Center", 23: "Oldale", 24: "Oldale", 25: "Birch",
            26: "Birch", 27: "Birch", 130: "Route101", 131: "Oldale",
-           157: "Route101"}
-OUTDOORS = (7, 12, 16, 21, 101, 102, 103, 104, 130, 156)
+           157: "Route101",
+           28: "Oldale", 29: "Center", 30: "Oldale", 31: "Birch",
+           32: "Oldale", 33: "Oldale", 34: "Center", 35: "Oldale",
+           36: "Oldale", 37: "Oldale", 38: "Birch", 39: "Birch",
+           40: "Oldale", 108: "Route101", 111: "Route101",
+           112: "Oldale", 159: "Route101", 160: "Route101",
+           161: "Route101", 162: "Route101"}
+OUTDOORS = (7, 12, 16, 21, 28, 32, 101, 102, 103, 104, 108, 111, 130, 156)
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -88,7 +101,7 @@ LAND_ENCOUNTERS = {
     **LAND_ENCOUNTERS_STAGE3,
     **LAND_ENCOUNTERS_STAGE4,
 }
-CAVE_ENCOUNTERS = CAVE_ENCOUNTERS_STAGE4
+CAVE_ENCOUNTERS = {**CAVE_ENCOUNTERS_STAGE4, **CAVE_ENCOUNTERS_STAGE5}
 ROUTE_102_TRAINERS = (
     (33, 14, "YOUNGSTER", "Calvin", "trainer_YOUNGSTER", (("POOCHYENA", 5),)),
     (25, 15, "BUGCATCHER", "Rick", "trainer_BUGCATCHER", (("WURMPLE", 4), ("WURMPLE", 4))),
@@ -203,6 +216,7 @@ def validate_geometry(maps, tiles):
         *((a, d1, 0, b, d2, 0) for a, d1, b, d2 in BORDERS),
         *OFFSET_BORDERS,
         *OFFSET_BORDERS_STAGE4,
+        *OFFSET_BORDERS_STAGE5,
     ):
         def border(map_id, side):
             w, h = (maps[map_id].attrs[key] for key in ("@width", "@height"))
@@ -224,6 +238,13 @@ def validate_geometry(maps, tiles):
             edges.setdefault(b, []).append(a)
     # Test the exact standing cells used to interact with the NPCs and Poké Balls.
     required.update(((8, 4, 9), (11, 8, 7), (11, 7, 6), (11, 9, 6), (13, 9, 6), (14, 5, 5)))
+    # The ferry is a controlled story-only transfer between Route104 house,
+    # Dewford and Slateport beach, using passable pinned donor landing tiles.
+    house, dewford, beach = BOAT_POINTS_STAGE5
+    for left, right in ((house, dewford), (dewford, beach)):
+        edges.setdefault(left, []).append(right)
+        edges.setdefault(right, []).append(left)
+    required.update(BOAT_POINTS_STAGE5)
     reachable(START, required, tiles, maps, edges, blocked)
     return edges, required
 
