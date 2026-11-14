@@ -5,6 +5,7 @@ import tempfile
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
@@ -14,7 +15,7 @@ from hoenn_stage3 import (
     TRAINERS_STAGE3, LAND_ENCOUNTERS_STAGE3, PICKUPS_STAGE3,
     SIGNS_STAGE3, NPCS_STAGE3, FOREST_AQUA_TRIGGERS,
 )
-from pilot_hoenn import SOURCE_MAPS, WARP_PAIRS, add_stage3_events
+from pilot_hoenn import SOURCE_MAPS, WARP_PAIRS, START, add_stage3_events, validate_geometry
 
 
 class HoennStage3Tests(unittest.TestCase):
@@ -85,6 +86,35 @@ class HoennStage3Tests(unittest.TestCase):
             self.assertIn("BlueHoennPilot.pickup", script)
         for x in (30, 31):
             self.assertEqual(records[f"HN3_AquaGrunt_{x}"][1].attrs["@pages"][0].attrs["@trigger"], 1)
+
+    def test_geometry_uses_walkable_arrivals_not_blocked_door_tiles(self):
+        dimensions = {
+            7: (20, 20), 8: (40, 40), 11: (20, 20),
+            12: (20, 20), 13: (20, 20), 14: (20, 20),
+            16: (30, 30), 17: (20, 20), 18: (20, 20),
+            19: (60, 20), 20: (80, 60), 101: (20, 20),
+            102: (50, 20), 103: (80, 20), 104: (150, 80),
+            105: (20, 20), 106: (20, 20), 156: (58, 46),
+        }
+        maps = {mid: ruby("RPG::Map", width=wh[0], height=wh[1])
+                for mid, wh in dimensions.items()}
+        # Door event coordinates can be blocked tiles; return cells must
+        # remain independently walkable and graph-connected.
+        blocked_events = {point for first, _, second, _ in WARP_PAIRS
+                          for point in (first, second)}
+        def passable(map_data, tile_data, x, y):
+            mid = next(k for k, v in maps.items() if v is map_data)
+            w, h = dimensions[mid]
+            return 0 <= x < w and 0 <= y < h and (mid, x, y) not in blocked_events
+
+        with patch("pilot_hoenn.open_tile", side_effect=passable):
+            edges, required = validate_geometry(
+                maps, {mid: object() for mid in maps})
+        self.assertIn((104, 120, 39), required)
+        self.assertIn((156, 18, 7), required)
+        self.assertNotIn((17, 8, 11), required)  # blocked Center door
+        self.assertIn((16, 29, 16), edges)       # Petalburg east edge
+        self.assertIn((104, 149, 62), edges)     # Route 104 east edge
 
     def test_missing_native_character_sprite_aborts_before_commit(self):
         missing = self.game / "Graphics/Characters/trainer_FISHERMAN.png"
