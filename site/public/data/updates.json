@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "794a6a956d10f9bed159fa81c933bc7db635a144",
+      "date": "2026-11-14T14:19:57-03:00",
+      "title": "test(hoenn): Ruby Mt Pyre, Magma, Aqua, submarino, dupla Tate/Liza, Mind e Dive",
+      "category": "Testes"
+    },
+    {
       "sha": "3f7617ef0e41a554147cce6f41640de4a0267903",
       "date": "2026-11-14T14:18:31-03:00",
       "title": "test(hoenn): Stage9 138 mapas, warps lidos do RXDATA, Magma/Aqua e Tate/Liza",
