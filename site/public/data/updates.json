@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "040727446703cc7caecf158b71395662d3762cf1",
+      "date": "2026-11-14T00:55:01-03:00",
+      "title": "feat(kanto): translate newly imported NPC dialogue using isolated pt-BR locale",
+      "category": "Novidades"
+    },
+    {
       "sha": "4ec724321fc9ee6f90342bde770f22cdeb6ee1cf",
       "date": "2026-11-14T00:27:31-03:00",
       "title": "fix(kanto): align Mt Moon Moon Stone pickup with pilot verification",
