@@ -252,5 +252,11 @@ echo Perfil de save separado: Hoenn QA Fase12.
 echo IMPORTANTE: Na primeira abertura o jogo pode compilar e fechar.
 echo Se isso ocorrer, execute este BAT outra vez.
 echo O Game.exe e o Android/JoiPlay precisam ser testados dentro do jogo.
+echo.
+echo [NOVO] DENTRO DO JOGO: abra o MENU ^> Testar Hoenn - Teleporte.
+echo [NOVO] Escolha qualquer um dos 199 mapas por nome, faixa ou MapID.
+echo [NOVO] Tambem ha a opcao de retornar ao ultimo local.
+echo [AVISO] O teleporte pula os bloqueios da historia, mas nao concede insignias nem completa eventos.
+echo [SAVES] Somente o perfil de testes Hoenn QA Fase12 e utilizado.
 start "" /D "%CD%\.blue-work\hoenn-qa-fase12" "%CD%\.blue-work\hoenn-qa-fase12\Game.exe"
 exit /b 0
