@@ -204,8 +204,27 @@ def assemble_encounters(reference: dict, mapping: dict[int,int],
     }
 
 
+
+def native_item_ids(game: Path) -> set[str]:
+    """Only create source items that exist in native Blue PBS, never donor IDs."""
+    pbs = game / "PBS"
+    names = set()
+    files = sorted(pbs.glob("items*.txt"))
+    if not files:
+        raise ValueError("Itens Blue não encontrados em game/PBS/items*.txt")
+    for path in files:
+        if path.is_symlink():
+            raise ValueError(f"PBS nativo por link simbólico: {path}")
+        contents = path.read_text("utf-8-sig")
+        names.update(re.findall(r"(?m)^\s*\[([A-Z0-9_]+)\]\s*(?:#.*)?$", contents))
+    if not names:
+        raise ValueError("PBS nativo de itens não contém identificadores válidos")
+    return names
+
+
 def _safe_events(original_events: dict, source_maps: dict,
-                 authored_maps: dict, add_event, event_page, command, ruby) -> dict:
+                 authored_maps: dict, add_event, event_page, command, ruby,
+                 item_ids: set[str] | None = None) -> dict:
     """Adds only unconditional Item/HiddenItem sources not already authored.
 
     Maintains source map original ids; does not copy donor commands or NPC text.
@@ -264,6 +283,10 @@ def _safe_events(original_events: dict, source_maps: dict,
                     backlog.append([mid,x,y,"item","conditional"])
                     continue
                 item=next(iter(identities))
+                if item_ids is not None and item not in item_ids:
+                    stats["items_need_manual_review"]+=1
+                    backlog.append([mid,x,y,"item","item_not_in_blue_pbs"])
+                    continue
                 if not SPECIES.fullmatch(item):
                     stats["items_need_manual_review"]+=1
                     backlog.append([mid,x,y,"item","invalid_item_id"])
@@ -297,12 +320,13 @@ def _safe_events(original_events: dict, source_maps: dict,
 
 
 def reauthor_safe_items_and_audit(original_events: dict, source_maps: dict,
-                                  authored_maps: dict) -> dict:
+                                  authored_maps: dict, game: Path) -> dict:
     # Late imports avoid import cycles: pilot_hoenn imports this module.
     from build_johto_events import event_page,command,ruby
     from pilot_hoenn import append_event
     return _safe_events(original_events,source_maps,authored_maps,
-                        append_event,event_page,command,ruby)
+                        append_event,event_page,command,ruby,
+                        item_ids=native_item_ids(game))
 
 
 def parse_compiled_encounters(body: str, allowed_ids: set[int]) -> dict:
