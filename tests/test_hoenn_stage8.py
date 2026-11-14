@@ -117,7 +117,7 @@ class HoennStage8Tests(unittest.TestCase):
         self.maps[137].attrs["@events"][1]=ruby(
             "RPG::Event",id=1,name=b"EXISTING",x=34,y=8,pages=[])
         with self.assertRaisesRegex(ValueError,"sobrepõem"):
-            add_stage8_events(self.maps,self.game)
+            add_stage8_events(self.maps,self.game,"trainer_LASS")
 
 
 if __name__=="__main__":
