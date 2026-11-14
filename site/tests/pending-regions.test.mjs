@@ -40,7 +40,7 @@ test('static status appears BELOW names for planned areas, trainers, leaders, El
     for(const category of ['localizacoes','treinadores','chefes','liga']){
       const html=pendingBlocks(pending,region,category);
       assert.match(html,region==='KANTO'&&['chefes','liga'].includes(category)?/Em validação/:/Ainda não adicionado/);
-      assert.ok(html.indexOf('<h3>')<html.indexOf('class="content-pending-tag"'));
+      assert.ok(html.indexOf('<h3>')<html.indexOf('class="content-pending-tag'));
       assert.match(html,/Sem|pend|MapID|jogo|PBS|treinador|L[ií]ga|local/i);
     }
   }
