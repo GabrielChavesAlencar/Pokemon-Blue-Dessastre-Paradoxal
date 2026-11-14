@@ -10,8 +10,8 @@
   "qa_phases": {
     "total": 12,
     "native_approved": 0,
-    "current_phase": 4,
-    "implementation_preparation_count": 4,
+    "current_phase": 5,
+    "implementation_preparation_count": 5,
     "platforms_approved": [],
     "phase1_requires": [
       "local Blue game/ with Game.exe",
@@ -51,8 +51,8 @@
       {
         "phase": 5,
         "name": "Eventos Aqua/Magma e Seafloor",
-        "code_status": "todo",
-        "native_acceptance": "pending",
+        "code_status": "aqua_magma_story_guard_and_seafloor_rxdata_auditor_prepared",
+        "native_acceptance": "pending_private_source_game_exe_and_seafloor_puzzles",
         "native_approved": false
       },
       {
@@ -126,9 +126,18 @@
       "Surf coastal crossings and free movement, Strength push collision, Rock Smash and encounter",
       "Sootopolis ice puzzle, Seafloor currents/strength and Victory Road field move puzzles with actual Game.exe",
       "Save/reload, no save collision, unchanged Decades/Kanto/Johto/Sinnoh"
+    ],
+    "phase5_requires": [
+      "Generate separate hoenn-qa-fase05 copy from pinned original Hoenn ZIP; source SHA and 199 maps",
+      "Validate trigger positions of Pyre Orb, Magma Groudon, Aqua submarine, Archie and Kyogre in physical RXDATA",
+      "Story order: stolen orbs, Magma Emblem, Mt Chimney, Magma Hideout Groudon, Slateport submarine theft, Aqua Hideout Matt, submarine escape",
+      "Win Mind Badge, defend Space Center, receive Dive, then enter Seafloor Cavern via underwater route",
+      "Seafloor: 10 interior maps, Strength rocks/currents, Archie win/loss, Kyogre awakening, exit and no softlock",
+      "Game.exe battle scale, dialogues PT-BR and cutscenes tested; save/reload and returning from cave",
+      "Preserve other regional saves and avoid claiming native acceptance from CI"
     ]
   },
   "not_gameplay_approval": true,
   "do_not_publish_donor_assets": true,
-  "last_publication_note": "Fase 4 implemented as conservative gated obstacle overlay and audits; native field moves and tileset ice puzzles still unapproved."
+  "last_publication_note": "QA5 adds Aqua/Magma/Seafloor story order guards, touch trigger for Groudon and physical event inventory. Native Seafloor puzzles/cutscenes remain pending, 0/12 approved."
 }
