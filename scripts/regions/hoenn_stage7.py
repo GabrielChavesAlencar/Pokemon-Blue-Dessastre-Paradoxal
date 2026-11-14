@@ -138,6 +138,19 @@ ROUTE112_MAGMA_BLOCKERS = ((121,26,30),(121,27,30))
 
 # The selected safe sprites are from user's native Blue game. If missing,
 # no item, map or foreign art is copied into the repository.
+# Source-matched floor / steam launch pairs (all 22 landing tiles checked
+# passable). Touching Fall teleports to Launch; returning is action-only to
+# prevent two touch events from endlessly bouncing the player.
+# Unpaired donor vents C/J/L/M/O remain a native-acceptance gap.
+GYM_STEAM_PAIRS_STAGE7 = (
+    ((12,24),(37,24)), ((10,15),(35,15)),
+    ((7,20),(32,20)), ((2,23),(27,23)),
+    ((3,20),(28,20)), ((2,16),(27,16)),
+    ((2,12),(27,12)), ((4,9),(29,9)),
+    ((9,8),(34,8)), ((14,9),(39,9)),
+    ((14,18),(39,18)),
+)
+
 NPCS_STAGE7 = (
     (54,9,4,"NPC_DPP_PokeCenter_Nurse","BlueHoennPilot.heal"),
     (55,3,5,"NPC_DPP_PokeMart_Man","BlueHoennPilot.mart"),
