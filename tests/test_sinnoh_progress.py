@@ -143,6 +143,27 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertIn("3/6", panel)
         self.assertIn("8/32", panel)
 
+    def test_private_qa_pilot_overlay_is_only_code_preparation(self):
+        record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        bundle = record["pilot_bundle_workstream"]
+        self.assertEqual((bundle["complete"], bundle["total"]), (3, 6))
+        self.assertEqual(bundle["complete"],
+                         sum(bool(row["complete"]) for row in bundle["substeps"]))
+        self.assertFalse(bundle["real_map_pack_processed"])
+        self.assertFalse(bundle["pilot_built_in_game_exe"])
+        self.assertFalse(bundle["pbs_compiled_in_game"])
+        self.assertFalse(bundle["native_qa_approved"])
+        self.assertFalse(bundle["main_game_modified"])
+        self.assertFalse(bundle["can_install"])
+        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
+        self.assertTrue(all(not t["complete"] or (ROOT / t["evidence"]).is_file()
+                            for t in bundle["substeps"]))
+        panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
+        self.assertIn("3/6", panel)
+        self.assertIn("8/32 (25%)", panel)
+
     def test_planned_region_and_unverified_source_remain_blocked(self):
         registry = json.loads((ROOT / "site/public/data/regions.json").read_text("utf-8"))
         provenance = json.loads((ROOT / "data/regions/sinnoh-source.json").read_text("utf-8"))
