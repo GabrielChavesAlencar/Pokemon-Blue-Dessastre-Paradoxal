@@ -1,5 +1,7 @@
 # Hoenn — ZIP recebido e preparação segura da fonte de mapas
 
+> **ATUALIZAÇÃO 14/11/2026:** este documento descreve o piloto inicial histórico, de poucos mapas. Para o piloto atual de **199 MapIDs**, use [a barra de progresso e o preparador QA das 12 fases](HOENN_QA_PROGRESSO_12_FASES.md) e o atalho TESTAR_HOENN.bat. Não reutilize como atuais os passos antigos para montar apenas seis/nove mapas.
+
 **Data:** 13/11/2026  
 **Referências:** [plano de 16 fases](HOENN_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) · [fontes de mapas e músicas](HOENN_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md).  
 **Estado:** fonte pública e instalação local auditadas para a Fase 01; ZIP privado e direitos por recurso ainda pendentes. Nenhum arquivo de mapa Hoenn foi instalado no jogo.
