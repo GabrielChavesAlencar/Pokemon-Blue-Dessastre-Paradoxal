@@ -54,6 +54,16 @@ from hoenn_stage7 import (
     ROUTE112_MAGMA_BLOCKERS, NPCS_STAGE7, FUTURE_GATES_STAGE7,
     PICKUPS_STAGE7, SIGNS_STAGE7, GYM_STEAM_PAIRS_STAGE7,
 )
+from hoenn_stage8 import (
+    SOURCE_MAPS_STAGE8, OFFSET_BORDERS_STAGE8, WARP_PAIRS_STAGE8,
+    LAND_ENCOUNTERS_STAGE8, NORMAN_EVENT, NORMAN_PBS, NORMAN_TEAM,
+    WINONA_EVENT, WINONA_PBS, WINONA_TEAM, SHELLY_EVENT, SHELLY_PBS, SHELLY_TEAM,
+    AQUA_INSTITUTE, RIVAL_119_EVENT, RIVAL_LILYCOVE_EVENT, RIVAL_119_TEAMS,
+    RIVAL_LILYCOVE_TEAMS, TRAINERS_STAGE8, STEVEN_SCOPE_EVENT,
+    FORTREE_KECLEON_EVENT, ROUTE120_KECLEON_EVENT, WEATHER_REWARD_EVENT,
+    NPCS_STAGE8, FUTURE_GATES_STAGE8, SIGNS_STAGE8, PICKUPS_STAGE8,
+    NORMAN_GYM_DOORS,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "site/public/data/hoenn-pilot.json"
@@ -149,6 +159,21 @@ def audit(root: Path = ROOT) -> dict:
     native_trainers["Maxie"] = (SOURCE_MAPS[178], tuple(MAXIE_TEAM))
     for index, (_kind, _name, _version, team) in enumerate(MAGMA_GRUNTS_STAGE7, 1):
         native_trainers[f"Recruta Magma (Mt. Chimney {index})"] = (SOURCE_MAPS[178], tuple(team))
+    native_trainers.update({name: (SOURCE_MAPS[mid], tuple(team))
+                            for mid, _, _, kind, name, _, team, _ in TRAINERS_STAGE8})
+    native_trainers["Norman"] = (SOURCE_MAPS[20], tuple(NORMAN_TEAM))
+    native_trainers["Winona"] = (SOURCE_MAPS[68], tuple(WINONA_TEAM))
+    native_trainers["Shelly"] = (SOURCE_MAPS[137], tuple(SHELLY_TEAM))
+    for mid,x,y,version,team in AQUA_INSTITUTE:
+        native_trainers[f"Recruta Aqua (Instituto {version})"] = (
+            SOURCE_MAPS[137], tuple(team))
+    for name in RIVAL_NAMES:
+        for chosen,(version,team) in RIVAL_119_TEAMS.items():
+            native_trainers[f"{name} (Rota 119/{chosen.title()})"] = (
+                SOURCE_MAPS[135],tuple(team))
+        for chosen,(version,team) in RIVAL_LILYCOVE_TEAMS.items():
+            native_trainers[f"{name} (Lilycove/{chosen.title()})"] = (
+                SOURCE_MAPS[69],tuple(team))
     published = catalog.get("trainers", [])
     names_published = [row.get("name") for row in published]
     if len(names_published) != len(set(names_published)):
@@ -158,8 +183,11 @@ def audit(root: Path = ROOT) -> dict:
     if len(native_trainers) != (len(ROUTE_102_TRAINERS) + len(TRAINERS_STAGE3) +
                                 len(TRAINERS_STAGE4) + len(TRAINERS_STAGE5) +
                                 len(TRAINERS_STAGE6) + len(TRAINERS_STAGE7) +
-                                len(MAGMA_GRUNTS_STAGE7) + len(MUSEUM_AQUA) +
-                                9 + 2 * len(RIVAL_110_TEAMS)):
+                                len(TRAINERS_STAGE8) + len(MAGMA_GRUNTS_STAGE7) +
+                                len(MUSEUM_AQUA) + len(AQUA_INSTITUTE) +
+                                12 + 2 * (len(RIVAL_110_TEAMS) +
+                                          len(RIVAL_119_TEAMS) +
+                                          len(RIVAL_LILYCOVE_TEAMS))):
         errors.append("Duplicate trainer definitions in native Hoenn pilot")
     for row in published:
         name = row.get("name")
@@ -170,18 +198,20 @@ def audit(root: Path = ROOT) -> dict:
         area, expected_team = native_trainers[name]
         if row.get("area") != area or party != list(expected_team):
             errors.append(f"Trainer {name}: team/area differs from pilot generator")
-        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery")
+        expect_leader = name in ("Roxanne", "Brawly", "Wattson", "Flannery", "Norman", "Winona")
         expect_badge = ("STONE" if name == "Roxanne" else
                         "KNUCKLE" if name == "Brawly" else
                         "DYNAMO" if name == "Wattson" else
-                        "HEAT" if name == "Flannery" else None)
+                        "HEAT" if name == "Flannery" else
+                        "BALANCE" if name == "Norman" else
+                        "FEATHER" if name == "Winona" else None)
         if row.get("leader") is not expect_leader or row.get("badge") != expect_badge:
             errors.append(f"Trainer {name}: incorrect gym leader/badge metadata")
 
     all_edges = [tuple(pair) for pair in BORDERS]
     if any(a not in source_ids or b not in source_ids for a, _, b, _ in all_edges):
         errors.append("A border connection references an unknown source map")
-    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6, *OFFSET_BORDERS_STAGE7)):
+    if any(a not in source_ids or b not in source_ids for a, _, _, b, _, _ in (*OFFSET_BORDERS, *OFFSET_BORDERS_STAGE4, *OFFSET_BORDERS_STAGE5, *OFFSET_BORDERS_STAGE6, *OFFSET_BORDERS_STAGE7, *OFFSET_BORDERS_STAGE8)):
         errors.append("An offset border references an unknown source map")
     if any(a[0] not in source_ids or b[0] not in source_ids
            for a, _, b, _ in WARP_PAIRS):
