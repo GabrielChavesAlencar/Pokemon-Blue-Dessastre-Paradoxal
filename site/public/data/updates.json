@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6e859e33d9111400a926461ad002faf6bb107832",
+      "date": "2026-11-14T18:44:02-03:00",
+      "title": "feat(hoenn): embed 199 safe map teleports after staged NPC/item/obstacle placement",
+      "category": "Novidades"
+    },
+    {
       "sha": "6944762138fc9c3828c62d1c9096f377e9135e3c",
       "date": "2026-11-14T18:42:58-03:00",
       "title": "fix(hoenn): write actual newline-delimited safe destination catalog",
