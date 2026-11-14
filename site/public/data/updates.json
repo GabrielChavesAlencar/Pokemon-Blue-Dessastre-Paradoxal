@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "603346dabac8c691e613ecb4cf3341fe22b3e072",
+      "date": "2026-11-13T21:32:25-03:00",
+      "title": "data(sinnoh): register Barry PBS builder/verifier but keep trainer QA and ready marker disabled",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0f7b6c7b96b78dd8bb71717359f5cf81cf32080b",
+      "date": "2026-11-13T21:32:10-03:00",
+      "title": "test(sinnoh): guard Barry 4/6 draft progress and prohibit false playable approval",
+      "category": "Testes"
+    },
+    {
       "sha": "2a91b4f8bdad4a5315e04e837cf11cb0882368df",
       "date": "2026-11-13T21:31:19-03:00",
       "title": "docs(sinnoh): assign only native Barry PBS compilation/QA and legacy pilot reconciliation to Codex",
