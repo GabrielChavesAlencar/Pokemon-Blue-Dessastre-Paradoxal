@@ -164,7 +164,7 @@ module BlueRegionalCards
   def self.kanto_active?
     return false unless defined?($PokemonGlobal) && $PokemonGlobal
     state = BlueRegions.snapshot
-    BlueRegionalCards.kanto_active?
+    state && state["current"] == "KANTO" && !BlueBattleOptions.battle_area?
   end
 
   # Clicking the game's original Trainer Card must actually open the requested
