@@ -71,6 +71,10 @@ ROUTE_102_TRAINERS = (
     (19, 4, "YOUNGSTER", "Allen", "trainer_YOUNGSTER", (("ZIGZAGOON", 4), ("TAILLOW", 4))),
     (8, 7, "LASS", "Tiana", "trainer_LASS", (("ZIGZAGOON", 4), ("SHROOMISH", 4))),
 )
+# Native RIVAL1 class; versions cannot overlap the four Route 102 trainers.
+RIVAL_TEAMS = {"TREECKO": ("TORCHIC", 210), "TORCHIC": ("MUDKIP", 211),
+               "MUDKIP": ("TREECKO", 212)}
+RIVAL_NAMES = ("May", "Brendan")
 START = (8, 25, 6)
 PROFILE = "Hoenn Piloto"
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot"
@@ -167,6 +171,61 @@ def validate_geometry(maps, tiles):
     # Test the exact standing cells used to interact with the NPCs and Poké Balls.
     required.update(((8, 4, 9), (11, 8, 7), (11, 7, 6), (11, 9, 6), (13, 9, 6), (14, 5, 5)))
     reachable(START, required, tiles, maps, edges, blocked)
+    return edges, required
+
+
+def starter_ball_positions(maps, tiles, edges, required):
+    """Locate three separate Poké Ball objects on pinned Route 101 geometry.
+
+    Never use invented coordinates: require all approaches reachable on actual
+    map tiles before constructing a private pilot.
+    """
+    width, height = (maps[101].attrs[key] for key in ("@width", "@height"))
+    blocked = {row[:3] for row in PEOPLE}
+    for y in sorted(range(19, min(height - 2, 30)), key=lambda v: abs(v - 20)):
+        for x in sorted(range(2, width - 5), key=lambda v: abs(v + 2 - 10)):
+            balls = [(101, x + dx, y) for dx in (0, 2, 4)]
+            approach = [(101, px, y + 1) for _, px, _ in balls]
+            if not all(open_tile(maps[101], tiles[101], px, py)
+                       for _, px, py in balls + approach):
+                continue
+            if set(balls) & (blocked | {(101, 10, 18), (101, 11, 18)}):
+                continue
+            try:
+                reachable(START, required | set(approach), tiles, maps, edges,
+                          blocked | set(balls))
+            except ValueError:
+                continue
+            return balls
+    raise ValueError("Maleta Birch: três Poké Bolas sem posições caminháveis verificadas")
+
+
+def rival_position(maps, tiles, edges, required, balls):
+    """Place the Route 103 rival on a reachable northern approach."""
+    width, height = (maps[103].attrs[key] for key in ("@width", "@height"))
+    blocked = {row[:3] for row in PEOPLE} | set(balls)
+    for y in range(max(2, height // 4), height - 2):
+        for x in sorted(range(1, width - 1), key=lambda v: abs(v - width // 2)):
+            if not (open_tile(maps[103], tiles[103], x, y)
+                    and open_tile(maps[103], tiles[103], x, y + 1)):
+                continue
+            try:
+                reachable(START, required | {(103, x, y), (103, x, y + 1)},
+                          tiles, maps, edges, blocked)
+            except ValueError:
+                continue
+            return (103, x, y)
+    raise ValueError("Rota 103: nenhum ponto acessível para o encontro do rival")
+
+
+def rival_sprite(game: Path) -> tuple[str, bool]:
+    """Prefer a native rival sprite; fall back to a verified native class."""
+    for candidate in ("NPC_ORAS_May", "NPC_ORAS_Brendan",
+                      "NPC_RSE_May", "NPC_RSE_Brendan"):
+        path = game / f"Graphics/Characters/{candidate}.png"
+        if path.is_file() and not path.is_symlink() and path.read_bytes().startswith(PNG):
+            return candidate, False
+    return "trainer_LASS", True
 
 
 def startup(blob: bytes, *, region="hoenn", module="BlueHoennPilot") -> bytes:
@@ -218,7 +277,7 @@ def append_event(map_data, name, x, y, page):
     events[n] = ruby("RPG::Event", id=n, name=name.encode("ascii"), x=x, y=y, pages=[page])
 
 
-def add_opening(maps):
+def add_opening(maps, balls, rival, sprite):
     # Trigger profile once on a new save. The self switch also works for
     # existing saves with no pending profile.
     profile = event_page(script="BlueHoennPilot.choose_profile")
@@ -235,6 +294,14 @@ def add_opening(maps):
     for x in (10, 11):
         page = event_page(script="BlueHoennPilot.route_birch", touch=True)
         append_event(maps[101], f"HN_BirchRescue_{x}", x, 18, page)
+    for (mid, x, y), species in zip(balls, ("TREECKO", "TORCHIC", "MUDKIP")):
+        page = event_page(script=f"BlueHoennPilot.choose_birch_ball(:{species})",
+                          sprite="Object_Ball")
+        append_event(maps[mid], f"HN_BirchBag_{species}", x, y, page)
+    mid, x, y = rival
+    page = event_page(script="BlueHoennPilot.rival_103",
+                      sprite=sprite, touch=True)
+    append_event(maps[mid], "HN_Rival_103", x, y, page)
 
 
 def preflight_route102_trainers(game: Path) -> list[dict]:
@@ -330,7 +397,10 @@ def build_overlay(game, source):
             "@bgs": ruby("RPG::AudioFile", name=b"", volume=100, pitch=100),
             "@encounter_list": [], "@encounter_step": 30,
         })
-    validate_geometry(maps, tiles)
+    edges, required = validate_geometry(maps, tiles)
+    balls = starter_ball_positions(maps, tiles, edges, required)
+    rival = rival_position(maps, tiles, edges, required, balls)
+    rival_image, rival_image_fallback = rival_sprite(game)
 
     upstream_connections = set(source.read("PBS/map_connections.txt").decode("utf-8-sig").splitlines())
     rows = []
@@ -368,7 +438,7 @@ def build_overlay(game, source):
             proxy.attrs["@trigger"] = 0
             append_event(maps[mid], f"HN_{name}_counter", px, py, proxy)
 
-    add_opening(maps)
+    add_opening(maps, balls, rival, rival_image)
     trainer_sections = []
     for x, y, trainer_type, name, sprite, team in ROUTE_102_TRAINERS:
         regular(game / f"Graphics/Characters/{sprite}.png")
