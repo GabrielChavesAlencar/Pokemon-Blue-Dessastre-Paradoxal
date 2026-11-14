@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4c865f55eaf9fa6a80042adc30e279ee6ac0f556",
+      "date": "2026-11-13T21:14:23-03:00",
+      "title": "data(sinnoh): mark S13/S14 partial and add 5/8 authored story prep without inflating playable bars",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2e459508ddb3004bf3fd27416cfb8ea94b920aab",
       "date": "2026-11-13T21:13:50-03:00",
       "title": "docs(sinnoh): document original Twinleaf Verity Sandgem introduction and safe local event compilation steps",
