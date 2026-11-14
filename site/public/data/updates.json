@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b29d2ec95408b3aeb2854cb566f8908e75cbebc5",
+      "date": "2026-11-13T21:10:37-03:00",
+      "title": "feat(sinnoh): compile authored Twinleaf starter-ball Barry and Rowan event overlays only on verified local geometry stage",
+      "category": "Novidades"
+    },
+    {
       "sha": "d6862eb36aa2ac2dfbfac6cddbb2783fab18572e",
       "date": "2026-11-13T21:09:11-03:00",
       "title": "test(sinnoh): pure Ruby story state, starter balls, Barry PBS marker and save isolation",
