@@ -59,6 +59,18 @@ O [gerador de PBS do Barry](../scripts/regions/build_sinnoh_barry_pbs.py) prepar
 
 **Atenção:** existe um piloto legado de Sinnoh com MapIDs 800–805, na faixa 600–999 protegida no plano de Johto. Os dois modelos precisam ser conciliados antes de uma integração compartilhada; não mesclar os mapas automaticamente.
 
+## Conciliação do piloto e QA de Barry — nova etapa
+
+```text
+████████████░░░░░░░░░░░░  3/6 (50% do subtrabalho de compatibilidade e pré-verificação)
+```
+
+A auditoria [audit_sinnoh_pilot_compat.py](../scripts/regions/audit_sinnoh_pilot_compat.py) identifica os MapIDs **800–805** do piloto legado de Sinnoh dentro da faixa **600–999 protegida para Johto**. Ela distingue uma cópia experimental **totalmente independente** de uma instalação **multi-regional**: no segundo cenário, não permite mesclar esses IDs automaticamente. Também registra que [SinnohPreview.rb](../scripts/regions/SinnohPreview.rb) oferece iniciais pelo diálogo, diferentemente das **três Poké Bolas físicas** do [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb).
+
+O [preflight_sinnoh_barry_qa.py](../scripts/regions/preflight_sinnoh_barry_qa.py) confere os dois PBS de Barry **já copiados para uma instalação QA separada**, a partir dos hashes do draft, e registra o sprite candidato, o executável e a ausência de marcador prematuro. **Não compila PBS e não executa a batalha**, logo o trabalho permanece parcial. Veja [guia de reconciliação e QA](SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md).
+
+Faltam: auditoria física das reservas, montagem do piloto novo com fonte autorizada e testes reais Windows/Android. O avanço de **3/6** é apenas desta etapa de código; desenvolvimento geral **8/32**, fases técnicas/jogáveis/QA **0/13**.
+
 ## Barra B — fases tecnicamente aprovadas
 
 ```text
