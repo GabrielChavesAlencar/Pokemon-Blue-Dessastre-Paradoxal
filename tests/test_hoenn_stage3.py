@@ -33,7 +33,7 @@ class HoennStage3Tests(unittest.TestCase):
 
     def test_map_ids_and_connections_match_emerald_scope(self):
         self.assertEqual(set(SOURCE_MAPS_STAGE3), {16, 17, 18, 19, 20, 104, 105, 106, 156})
-        self.assertEqual(len(SOURCE_MAPS), 138)
+        self.assertEqual(len(SOURCE_MAPS), 199)
         self.assertEqual(len(OFFSET_BORDERS), 2)
         self.assertEqual(len(WARP_PAIRS_STAGE3), 11)
         self.assertEqual(len(WARP_PAIRS), 130)
