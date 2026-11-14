@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3b614de8b26abbeb31a5c8d92b2a20d7b2898093",
+      "date": "2026-11-14T10:02:45-03:00",
+      "title": "feat(hoenn): implementar resgate, rival 103, Pokédex e tênis em flags regionais",
+      "category": "Novidades"
+    },
+    {
       "sha": "0c4b596ed6c8bfce39ce647674da7fccfe85c518",
       "date": "2026-11-14T09:54:00-03:00",
       "title": "docs(hoenn): atualizar plano com estado real do piloto isolado",
