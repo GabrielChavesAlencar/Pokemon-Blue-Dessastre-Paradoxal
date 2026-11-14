@@ -115,6 +115,9 @@ def adapt_source_field_event(event, source_id, event_id, catalogue_items,
         callback = f'BlueKantoPilot.pickup(:{symbol}, "{key}", {event_id}, {quantity})'
         converted = new_event(event, [command(355, callback.encode())], 0, character)
         converted.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(graphic)
+        # Hidden ground pickups must retain the source walk-over collision,
+        # whereas visible balls stay solid until collected.
+        converted.attrs["@pages"][0].attrs["@through"] = event.attrs["@pages"][0].attrs["@through"]
         if filename:
             converted.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] = character
         hidden = copy.deepcopy(converted.attrs["@pages"][0])
