@@ -37,6 +37,16 @@ class Stage3Map
     @events = {3 => Stage3Event.new}
   end
 end
+module BlueRegionStart
+  def self.select_and_prepare
+    false
+  end
+end
+module EventHandlers
+  def self.add(*_args)
+    true
+  end
+end
 module TrainerBattle
   @history = []
   class << self
