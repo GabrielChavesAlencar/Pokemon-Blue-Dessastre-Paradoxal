@@ -1,6 +1,6 @@
 """Read-only discovery of endgame Hoenn map IDs, event anchors and static warps.
 
-Pinned donor revision only; neither source binaries nor third-party scripts
+Triggered by its dedicated CI workflow. Pinned donor revision only; neither source binaries nor third-party scripts
 are committed, distributed, installed or executed in the game. Logs are
 planning evidence, NOT proof of playable Game.exe acceptance.
 """
