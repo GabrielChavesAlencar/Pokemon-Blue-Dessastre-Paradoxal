@@ -88,6 +88,8 @@ module KantoNativeCheck
     BlueKantoPilot.choose_starter_ball(:BULBASAUR)
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
     require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before Oak's parcel")
+    require!(Game_Player.ancestors.include?(BlueKantoPilot::Route2ExitGuard),
+             "Viridian Route 2 outdoor boundary hook was not installed")
     starting_balls = $bag.quantity(:POKEBALL)
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
