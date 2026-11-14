@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "046f8e9a3f60a8046ad5e5eac0e15d461755aab4",
+      "date": "2026-11-14T12:24:45-03:00",
+      "title": "feat(hoenn): rival 110, Wally, Dynamo Badge, Wattson, Rock Smash, Rydel e Cycling Road",
+      "category": "Novidades"
+    },
+    {
       "sha": "7fe821c77d60e05cd3c616487a09b41a2d37e603",
       "date": "2026-11-14T12:23:30-03:00",
       "title": "test(hoenn): exigir 58 mapas e equipes da Rota 110, Wattson, Wally e rival compilados",
