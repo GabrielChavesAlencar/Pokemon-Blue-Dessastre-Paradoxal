@@ -160,15 +160,19 @@ TrainerBattle.result=false
 assert9(!BlueHoennPilot.wally_victory_road,"Wally loss counted")
 TrainerBattle.result=true
 assert9(BlueHoennPilot.wally_victory_road,"Wally win")
+$game_map.map_id=895 # Phoebe cannot fight before Sidney
 assert9(!BlueHoennPilot.elite_four(1),"Elite skipped Sidney")
+$game_map.map_id=894 # Sidney correct room
 TrainerBattle.result=false
 assert9(!BlueHoennPilot.elite_four(0),"Sidney loss counted")
 assert9(!flags["elite_sidney_defeated"],"Sidney flag on loss")
 TrainerBattle.result=true
 for index in 0..3
+  $game_map.map_id=894+index
   assert9(BlueHoennPilot.elite_four(index),"Elite index #{index} failed")
   assert9(BlueHoennPilot.elite_four(index),"Elite index #{index} replay not idempotent")
 end
+$game_map.map_id=898 # Wallace is only interactable inside the champion room
 TrainerBattle.result=false
 assert9(!BlueHoennPilot.champion_wallace,"Champion loss counted")
 assert9(!flags["champion_wallace_defeated"],"Champion flag on loss")
