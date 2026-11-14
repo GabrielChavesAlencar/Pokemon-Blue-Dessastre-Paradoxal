@@ -155,6 +155,7 @@ assert9(BlueHoennPilot.juan,"Juan victory")
 assert9(BlueHoennPilot.rain_badge?,"RAIN not granted")
 assert9(!flags["juan_tm_given"],"TM granted while mock TM unavailable")
 assert9(!BlueHoennPilot.elite_four(0),"Elite before Wally")
+$game_map.map_id=850 # source Victory Road 1F (250) remapped in this fixture
 TrainerBattle.result=false
 assert9(!BlueHoennPilot.wally_victory_road,"Wally loss counted")
 TrainerBattle.result=true
