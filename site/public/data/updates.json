@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "40ea9b6cf81631aa39d11b2c94b630d6eaf29f2b",
+      "date": "2026-11-14T13:55:09-03:00",
+      "title": "ci(hoenn): auditar metadata e warps do doador Mossdeep sem persistir RXDATA",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b919e3239948063857f8a30643c7e396fd69ac10",
+      "date": "2026-11-14T13:54:59-03:00",
+      "title": "chore(hoenn): adicionar auditor de nomes/portas RXDATA fonte Mossdeep e esconderijos",
+      "category": "Novidades"
+    },
+    {
       "sha": "3ca3195492da1572202ef99e52a44da2503beee5",
       "date": "2026-11-14T13:45:38-03:00",
       "title": "docs(hoenn): registrar Etapa 08 Norman, Surf, Weather Institute e Winona com QA",
