@@ -22,6 +22,10 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Auditar contratos de Sinnoh sem instalar mapas
         run: python scripts/regions/audit_sinnoh_source.py
+      - name: Validar historia isolada de Sinnoh no Ruby (sem game)
+        run: |
+          ruby -c scripts/regions/SinnohPilot.rb
+          ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
       - name: Validar integridade dos 64 MP3 de Kanto
         run: python scripts/music/install_kanto_music.py --audit
       - name: Fase 6 - decodificar as 64 musicas MP3 completas sem reproduzir audio
