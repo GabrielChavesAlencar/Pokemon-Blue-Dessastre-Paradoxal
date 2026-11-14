@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "893988fa07e168cedda42bc0dc7af2cf01113470",
+      "date": "2026-11-13T21:16:18-03:00",
+      "title": "data(sinnoh): register Twinleaf original story infrastructure while keeping real events and PBS unverified",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e03572cdb0ac1d51d4ca5244448f7a609d6bd375",
       "date": "2026-11-13T21:15:53-03:00",
       "title": "docs(sinnoh): record completed authored opening code and Codex-only real Twinleaf integration/QA tasks",
