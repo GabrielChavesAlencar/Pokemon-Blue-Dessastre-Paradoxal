@@ -719,10 +719,23 @@ module KantoNativeCheck
              $game_self_switches[[route23,19,"A"]],
              "Route 23 eighth badge barrier/guard did not open")
     $map_factory.setup(road1)
-    BlueKantoPilot.victory_strength([14,15])
+    require!(!BlueKantoPilot.victory_strength([14,15]) &&
+             !$game_self_switches[[road1,14,"A"]] &&
+             !$game_self_switches[[road1,15,"A"]],
+             "Victory Road incorrectly activated Strength without HM04")
+    # This is a disposable native CI proof, not a real player save. Give the
+    # item and a compatible party member before trying the simplified puzzle.
+    require!($bag.add(:HM04), "Native test could not add HM04")
+    strength_user = Pokemon.new(:MACHOP, 15)
+    require!(strength_user.compatible_with_move?(:STRENGTH),
+             "Native Pokémon compatibility rejects the Strength test user")
+    $player.party << strength_user
+    require!(BlueKantoPilot.victory_strength([14,15]),
+             "Victory Road Strength remains blocked after HM + badge + party")
     require!($game_self_switches[[road1,14,"A"]] &&
              $game_self_switches[[road1,15,"A"]],
              "Victory Road adapted Strength barriers did not open")
+    $player.party.delete(strength_user)
     $map_factory.setup(road2)
     require!([9,11,13,14,16].all? { |event_id| $game_map.events[event_id].trigger == 2 },
              "Victory Road has missing source sight trainers")
