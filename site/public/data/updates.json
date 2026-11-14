@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3f8aa01212549d5ee64526fd3a72b0054074eb2a",
+      "date": "2026-11-14T20:03:32-03:00",
+      "title": "fix(hoenn): validar o terreno dos 199 destinos compilados",
+      "category": "Correções"
+    },
+    {
       "sha": "da7cad29a91468ee72ec8927edeab7d22a6cabba",
       "date": "2026-11-14T19:53:57-03:00",
       "title": "feat(hoenn): apresentar Hall regional, entregar Dig e registrar pendencias",
