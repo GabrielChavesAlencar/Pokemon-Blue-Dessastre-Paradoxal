@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c8b57eb31be1fab53d9173789167adddc62842a0",
+      "date": "2026-11-13T22:22:40-03:00",
+      "title": "feat(sinnoh): integrate native engine event/PBS probe into isolated first-run compiler and bind nine-map contract to QA proof",
+      "category": "Novidades"
+    },
+    {
       "sha": "852eb907b206d7e65d4b931ac92096692b2b9961",
       "date": "2026-11-13T22:22:03-03:00",
       "title": "feat(sinnoh): read-only native Essentials structural probe for Twinleaf 24 events, 3 starter balls, 16 warps and Barry PBS",
