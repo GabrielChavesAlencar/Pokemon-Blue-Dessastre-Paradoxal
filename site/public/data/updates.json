@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d7209b7e832547d8b9db3f77bf1fd54650940fd0",
+      "date": "2026-11-14T14:05:10-03:00",
+      "title": "feat(hoenn): ler portas, teleportes e itens Stage9 do RXDATA sem copiar scripts do doador",
+      "category": "Novidades"
+    },
+    {
       "sha": "bc89127a7527f43148d3a0a1796a7c6a3fbcad12",
       "date": "2026-11-14T14:03:45-03:00",
       "title": "feat(hoenn): trocar portões futuros Magma/Aqua/Mt Pyre por acesso Stage9 controlado",
