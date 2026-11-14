@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "310e93dc652b1fbc5b84a06eba247a4e0b4c2354",
+      "date": "2026-11-13T21:24:31-03:00",
+      "title": "test(sinnoh): cover Barry three native-learnset teams, dynamic scaling contract, collisions and disabled marker",
+      "category": "Testes"
+    },
+    {
       "sha": "bbfad553390dbad993c09dc1fabf3818d651bc64",
       "date": "2026-11-13T21:23:28-03:00",
       "title": "feat(sinnoh): draft Barry's three starter-counter PBS teams from installed Blue learnsets with dynamic-level contract and no ready marker",
