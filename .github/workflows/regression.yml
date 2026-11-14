@@ -18,6 +18,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Teleporte QA Hoenn 199 mapas - regressao isolada (sem Game.exe)
+        run: |
+          ruby -c scripts/regions/HoennPilot.rb
+          ruby tests/hoenn_qa_teleport_runtime.rb scripts/regions/HoennPilot.rb
+          python -m unittest discover -s tests -p test_hoenn_qa_teleport.py -v
+          python -m unittest discover -s tests -p test_hoenn_qa_phase12.py -v
       - name: Testes unitarios e API (sem ROM)
         run: python -m unittest discover -s tests -v
       - name: QA12 Hoenn - portao tecnico final (NUNCA aprova Game.exe)
