@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1797f8d3a31a799065e47ba3c9ffd944c9a0ba4d",
+      "date": "2026-11-14T03:14:37-03:00",
+      "title": "fix(kanto): translate imported NPC dialogue when spoken",
+      "category": "Correções"
+    },
+    {
       "sha": "b0c428c154a2ce0eb3e521d4e4b41bdc1f61f526",
       "date": "2026-11-14T02:09:37-03:00",
       "title": "fix(johto): ligar portões, ativar trilha HGSS e restaurar eventos da abertura",
