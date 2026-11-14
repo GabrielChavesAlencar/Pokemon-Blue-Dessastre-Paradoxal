@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4bf097a613290ee09e1ce8b266934f3666c533f3",
+      "date": "2026-11-14T17:53:47-03:00",
+      "title": "feat(hoenn): TESTAR_HOENN QA10 private Hall copy and complete 01-10 audit chain",
+      "category": "Novidades"
+    },
+    {
       "sha": "9a88c98dbf4135e2c8bd0fd080c5894e0342b6c2",
       "date": "2026-11-14T17:53:28-03:00",
       "title": "ci(hoenn): run QA10 real BlueRegions Hall of Fame unlock Ruby scenarios",
