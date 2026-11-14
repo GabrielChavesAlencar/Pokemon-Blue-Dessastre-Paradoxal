@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "83e5c7e4d077682b62ee4fc1be6d56de78186c6a",
+      "date": "2026-11-13T21:11:31-03:00",
+      "title": "test(sinnoh): validate 9-map authored story overlays on synthetic hashed stages without touching Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "b29d2ec95408b3aeb2854cb566f8908e75cbebc5",
       "date": "2026-11-13T21:10:37-03:00",
       "title": "feat(sinnoh): compile authored Twinleaf starter-ball Barry and Rowan event overlays only on verified local geometry stage",
