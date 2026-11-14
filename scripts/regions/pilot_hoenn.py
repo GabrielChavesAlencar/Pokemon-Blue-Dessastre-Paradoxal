@@ -108,6 +108,7 @@ from hoenn_qa_phase8 import audit_generated as audit_road
 from hoenn_qa_phase9 import audit_generated as audit_league
 from hoenn_qa_phase10 import audit_generated as audit_hall
 from hoenn_qa_phase11 import audit_generated as audit_presentation, localized_map_name
+from hoenn_qa_phase12 import audit_generated as audit_integrated
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
 SOURCE_MAPS = {
@@ -2156,6 +2157,7 @@ def build_overlay(game, source):
     report["qa9"] = audit_league(maps)
     report["qa10"] = audit_hall(maps)
     report["qa11"] = audit_presentation(maps, SOURCE_MAPS, MAP_BGM, set(SOURCE_MAPS_STAGE10))
+    report["qa12"] = audit_integrated(report)
     overlay["Hoenn pilot.json"] = json_bytes(report)
     marker_rows = ["BLUE_HOENN_PILOT_V1", ",".join(map(str, report["start"]))]
     marker_rows.extend(f"{old},{new}" for old, new in ids.items())
@@ -2230,6 +2232,7 @@ def stage(game: Path, source: Source, output: Path) -> dict:
         "hoenn-qa-fase09": ("Hoenn QA Fase09", "Dessastre Paradoxal Hoenn QA09"),
         "hoenn-qa-fase10": ("Hoenn QA Fase10", "Dessastre Paradoxal Hoenn QA10"),
         "hoenn-qa-fase11": ("Hoenn QA Fase11", "Dessastre Paradoxal Hoenn QA11"),
+        "hoenn-qa-fase12": ("Hoenn QA Fase12", "Dessastre Paradoxal Hoenn QA12"),
     }
     if output.name in qa_profiles:
         profile, org = qa_profiles[output.name]
