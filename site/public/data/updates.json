@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c8bcc8433950abe1de75e0dedddf31f5f7c2b9ff",
+      "date": "2026-11-14T20:52:25-03:00",
+      "title": "feat(kanto): mae entrega Tenis de Corrida apos Brock na saida de Pewter para Rota 3",
+      "category": "Novidades"
+    },
+    {
       "sha": "48c28d88ad5eebc528b64b79ee5a45e1d0d57f90",
       "date": "2026-11-14T20:38:42-03:00",
       "title": "test(kanto): verificar posicao interna do bloqueio no Game.exe nativo",
