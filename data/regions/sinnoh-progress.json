@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "Completar C04–C06: reconciliar reservas de mapas usando fonte e game/Data locais, preparar QA isolado com PBS compilados, testar Ruby/Essentials e Android. Não instalar o piloto legado na malha multirregional.",
+  "next": "P04–P06: auditar a fonte real, direitos, MapIDs reservados ainda não físicos, integrar os stages na cópia do Game.exe com saves isolados e verificar Barry/Twinleaf Windows/JoiPlay. O montador do overlay em .blue-work foi publicado, mas não instala o jogo.",
   "tasks": [
     {
       "id": "S01",
@@ -541,5 +541,57 @@
     "pbs_compiled": false,
     "runtime_verified": false,
     "can_merge_into_multiregion": false
+  },
+  "pilot_bundle_workstream": {
+    "status": "PRIVATE_OVERLAY_PREPARATION_CODE_ONLY",
+    "complete": 3,
+    "total": 6,
+    "substeps": [
+      {
+        "id": "P01",
+        "title": "Verificar transações de geometria/eventos, hashes, MapInfos/Tilesets e TODOS os MapIDs",
+        "complete": true,
+        "evidence": "scripts/regions/prepare_sinnoh_pilot_bundle.py"
+      },
+      {
+        "id": "P02",
+        "title": "Recompilar 24 eventos autorais e comparar byte a byte com o stage recebido",
+        "complete": true,
+        "evidence": "tests/test_sinnoh_pilot_bundle.py"
+      },
+      {
+        "id": "P03",
+        "title": "Reunir nove mapas iniciais, PBS Barry e plugin Blue próprio em overlay privado e atômico",
+        "complete": true,
+        "evidence": "scripts/regions/prepare_sinnoh_pilot_bundle.py"
+      },
+      {
+        "id": "P04",
+        "title": "Auditar direitos, mapas reais, posições, sprites e reservas futuras de todas as regiões",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "P05",
+        "title": "Instalar na cópia Game.exe com save isolado e compilar três PBS Barry",
+        "complete": false,
+        "evidence": null
+      },
+      {
+        "id": "P06",
+        "title": "Aceitar eventos, níveis 70/90, batalha, save/load e Android sem regressões",
+        "complete": false,
+        "evidence": null
+      }
+    ],
+    "documentation": "docs/SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md",
+    "tests": "tests/test_sinnoh_pilot_bundle.py",
+    "uses_only_synthetic_test_assets": true,
+    "real_map_pack_processed": false,
+    "pilot_built_in_game_exe": false,
+    "pbs_compiled_in_game": false,
+    "native_qa_approved": false,
+    "main_game_modified": false,
+    "can_install": false
   }
 }
