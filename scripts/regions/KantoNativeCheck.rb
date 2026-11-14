@@ -87,6 +87,8 @@ module KantoNativeCheck
     end
     BlueKantoPilot.choose_starter_ball(:BULBASAUR)
     require!($player.party.first&.species == :BULBASAUR, "Starter was not given")
+    require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before Oak's parcel")
+    starting_balls = $bag.quantity(:POKEBALL)
     # Stage 03: the Pallet -> Viridian -> Pallet Oak parcel loop is local to
     # Kanto, delivered once, and never creates an invalid FRLG item in Decades.
     mart_visits = []
@@ -100,13 +102,19 @@ module KantoNativeCheck
              "Viridian Mart did not register Oak's parcel")
     require!(!BlueKantoPilot.progress["pilot_oak_parcel_delivered"],
              "Oak's parcel delivered without returning to the laboratory")
+    require!(!BlueKantoPilot.forest_unlocked?, "Forest opened before parcel delivery")
     BlueKantoPilot.viridian_mart
     require!(mart_visits.length == 2, "Oak parcel interaction disabled Mart shopping")
     BlueKantoPilot.choose_starter
     require!(BlueKantoPilot.progress["pilot_oak_parcel_delivered"] == true,
              "Oak did not accept the parcel upon return")
+    require!(BlueKantoPilot.forest_unlocked?, "Forest remained blocked after parcel delivery")
+    require!($bag.quantity(:POKEBALL) == starting_balls + 5,
+             "Oak must award exactly five Poke Balls, not the starter event")
     require!($player.has_pokedex, "Oak parcel delivery did not unlock the Pokedex") if $player.respond_to?(:has_pokedex)
     BlueKantoPilot.choose_starter
+    require!($bag.quantity(:POKEBALL) == starting_balls + 5,
+             "Returning to Oak duplicated the parcel reward")
     BlueKantoPilot.viridian_mart
     require!(mart_visits.length == 3 &&
              BlueKantoPilot.progress["pilot_oak_parcel_delivered"],

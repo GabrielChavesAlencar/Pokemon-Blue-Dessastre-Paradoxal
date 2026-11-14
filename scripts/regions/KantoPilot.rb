@@ -50,12 +50,19 @@ module BlueKantoPilot
   def self.choose_starter
     if starter
       if progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
-        # Record the parcel's delivery in the region-specific save instead of
-        # creating an unknown FRLG quest item in the Decades item catalogue.
-        progress["pilot_oak_parcel_delivered"] = true
-        $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
+        # The parcel is a Kanto-only quest flag, never a foreign Decades item.
+        # Award the five Poké Balls atomically before committing the delivery,
+        # so full-bag retries cannot duplicate the Pokédex or the reward.
         BlueMusic.with_kanto_scene("oak_talk") do
-          pbMessage(_INTL("Oak: O pacote chegou de Viridian! Sua Pokédex está pronta. Obrigado!"))
+          pbMessage(_INTL("Oak: Você trouxe meu pacote de Viridian! Muito obrigado!"))
+          if $bag.add(:POKEBALL, 5)
+            $player.has_pokedex = true if $player.respond_to?(:has_pokedex=)
+            progress["pilot_oak_parcel_delivered"] = true
+            BlueMusic.kanto_me_play("obtained_item")
+            pbMessage(_INTL("Oak: Aqui estão sua Pokédex e 5 Poké Bolas. Agora você pode explorar a Viridian Forest!"))
+          else
+            pbMessage(_INTL("Oak: Abra espaço na Bolsa para receber as 5 Poké Bolas. O pacote fica comigo até você voltar."))
+          end
         end
       else
         pbMessage(_INTL("Oak: Cuide bem do seu {1}.", GameData::Species.get(starter).name))
@@ -76,25 +83,52 @@ module BlueKantoPilot
       $game_map.events[id]&.refresh
     end
     BlueMusic.kanto_me_play("obtained_pokemon")
-    $bag.add(:POKEBALL, 5)
     $bag.add(:POTION, 2)
     pbSetPokemonCenter
-    pbMessage(_INTL("Oak: {1} escolheu você! Leve estas Poké Bolas com você.", name))
+    pbMessage(_INTL("Oak: {1} escolheu você! Visite Viridian e volte ao laboratório quando encontrar meu pacote.", name))
   end
 
   # A safe, local story step for the first Pallet -> Viridian -> Pallet
   # loop. The source item need not exist in Decades; state is saved only in
   # the active Kanto campaign. Existing Boulder+ saves skip the new quest.
+  def self.parcel_pickup_pending?
+    starter && !progress["pilot_oak_parcel_received"] &&
+      !progress["pilot_oak_parcel_delivered"] &&
+      !BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+  end
+
+  def self.viridian_parcel_call
+    return unless parcel_pickup_pending?
+    pbMessage(_INTL("Funcionário: Ei, você! Pode vir até o balcão um instante?"))
+  end
+
+  def self.receive_oak_parcel
+    return false unless parcel_pickup_pending?
+    # An isolated Kanto save flag avoids adding a foreign FRLG item ID.
+    progress["pilot_oak_parcel_received"] = true
+    BlueMusic.kanto_me_play("obtained_item")
+    pbMessage(_INTL("Funcionário: O professor Oak encomendou este pacote. Leve-o ao laboratório em Pallet!"))
+    true
+  end
+
   def self.viridian_mart
-    completed = progress["pilot_oak_parcel_delivered"]
-    advanced = BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
-    if starter && !completed && !progress["pilot_oak_parcel_received"] && !advanced
-      progress["pilot_oak_parcel_received"] = true
-      pbMessage(_INTL("Funcionário: Oak pediu que você leve este pacote até seu laboratório em Pallet."))
-    elsif progress["pilot_oak_parcel_received"] && !completed
-      pbMessage(_INTL("Funcionário: O pacote é para o professor Oak, em Pallet."))
+    if parcel_pickup_pending?
+      # Fallback for saves whose one-shot entrance event was already consumed.
+      receive_oak_parcel
+    elsif progress["pilot_oak_parcel_received"] && !progress["pilot_oak_parcel_delivered"]
+      pbMessage(_INTL("Funcionário: Não esqueça de entregar o pacote ao professor Oak, em Pallet."))
     end
     pbPokemonMart(VIRIDIAN_MART_STOCK.dup)
+  end
+
+  def self.forest_unlocked?
+    progress["pilot_oak_parcel_delivered"] == true ||
+      # Existing Kanto saves with a badge must not be stranded by this patch.
+      BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
+  end
+
+  def self.forest_gate_warning
+    pbMessage(_INTL("Antes de entrar na Viridian Forest, entregue o pacote do Poké Mart ao professor Oak em Pallet."))
   end
 
   def self.rival_done?
@@ -875,6 +909,7 @@ module BlueKantoPilot
   def self.heal
     $player.heal_party
     pbSetPokemonCenter
+    BlueMusic.kanto_me_play("healed")
     pbMessage(_INTL("Sua equipe está descansada."))
   end
 end
