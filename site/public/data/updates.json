@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "63d4ce2e5eca41daed2eb789cddaa7a51cfc2150",
+      "date": "2026-11-15T13:11:51-03:00",
+      "title": "test(johto): alinhar contrato historico a viagem livre por NPC",
+      "category": "Testes"
+    },
+    {
+      "sha": "86258c71e2ef36890d6bbd35b36a4f1a3979fdb1",
+      "date": "2026-11-15T13:11:40-03:00",
+      "title": "fix(native QA): consultar circuito regional pela API existente BlueRegions.circuit",
+      "category": "Correções"
+    },
+    {
+      "sha": "cf4cbaccd19b05e2635710361ab672701decbfcc",
+      "date": "2026-11-15T13:11:37-03:00",
+      "title": "fix(native QA): consultar circuito regional pela API existente BlueRegions.circuit",
+      "category": "Correções"
+    },
+    {
       "sha": "ae0a33fe45c41d89c1b1b229dcd01f2565106626",
       "date": "2026-11-15T13:10:43-03:00",
       "title": "test(kanto Gary): exibir a excecao nativa e preservar save",
