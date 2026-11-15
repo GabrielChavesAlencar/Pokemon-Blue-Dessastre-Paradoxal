@@ -56,9 +56,12 @@ module BlueRegionalPolicy
       GameData::Item.exists?(item) && $bag.has?(item)
     }
     return false unless GameData::Item.respond_to?(:each)
-    GameData::Item.each.any? { |item|
-      item.is_HM? && item.move == move_id && $bag.has?(item.id)
-    }
+    # Use the block form: some Essentials registry iterators return nil
+    # rather than an Enumerator when called without a block.
+    GameData::Item.each do |item|
+      return true if item.is_HM? && item.move == move_id && $bag.has?(item.id)
+    end
+    false
   end
 
   def self.eligible_pokemon?(pkmn, move)
