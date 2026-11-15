@@ -199,7 +199,12 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     end
     FileUtils.mkdir_p("Plugins/ZZZZZ Blue Kanto Pilot")
     File.write("Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb", "# mock native plugin")
-    mapping = (1..13).map { |n| [n.to_s, n == 7 ? 321 : (n == 5 ? 713 : 400+n)] }.to_h
+    %w[blue-kanto-locale.dat blue-kanto-npc-dialogues.dat
+       blue-kanto-pewter-route3-gate.txt blue-kanto-pewter-mom-sprite.txt
+       blue-kanto-viridian-route2-line.txt blue-kanto-silph-floors.txt].each do |name|
+      File.write("Data/#{name}", "mock Kanto data")
+    end
+    mapping = (1..142).map { |n| [n.to_s, n == 7 ? 321 : (n == 5 ? 713 : 400+n)] }.to_h
     install = {"schema"=>1, "source"=>"Essentials FRLG 21.1", "maps"=>mapping}
     File.write("Data/blue-kanto-install.json", JSON.generate(install))
     check(BlueRegionStart.kanto_integrated?, "Audited main Kanto install was not recognized")
