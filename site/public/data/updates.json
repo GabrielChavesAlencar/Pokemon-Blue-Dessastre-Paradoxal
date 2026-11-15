@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4a1c6cb9faa56358f37fa2731d8f3294398ff33c",
+      "date": "2026-11-15T12:18:22-03:00",
+      "title": "test(travel): cobrir viagem livre por NPC, Pallet, New Bark, PC e rollback",
+      "category": "Testes"
+    },
+    {
       "sha": "a40ff1a4158552a17bec985481328539fe928aef",
       "date": "2026-11-15T12:16:43-03:00",
       "title": "fix(travel): exigir NPC e mapa da cidade inicial antes de teletransportar",
