@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c1fc3566a047cf96aa92782e7ce84521d1984a95",
+      "date": "2026-11-15T15:25:54-03:00",
+      "title": "feat(site): explicar regras distintas de líderes Elite e campeão Kanto na Liga",
+      "category": "Novidades"
+    },
+    {
       "sha": "7ce6ed03ea7e461eb351a158503d5c23e4ab906e",
       "date": "2026-11-15T15:25:29-03:00",
       "title": "feat(site): habilitar rota do guia de balanceamento regional Kanto",
