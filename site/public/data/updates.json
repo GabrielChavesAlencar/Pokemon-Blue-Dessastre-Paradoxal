@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4b1ba20845b538c99dea0c5e6a27ff6d6bcef346",
+      "date": "2026-11-15T12:22:15-03:00",
+      "title": "test(site): transporte livre e instalacao comprovada no guia das regioes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "dfca48791edd982b87c86307f74e3e68664323e0",
+      "date": "2026-11-15T12:22:04-03:00",
+      "title": "site(regioes): documentar transporte livre por NPC sem bloqueio pela Liga",
+      "category": "Melhorias"
+    },
+    {
       "sha": "7ece5a6664f4f68eab5a43ad8a1b6b5b84aefde6",
       "date": "2026-11-15T12:20:32-03:00",
       "title": "test(npc): gerar NPC em Cherryhill Pallet New Bark sem alterar RXDATA ou saves",
