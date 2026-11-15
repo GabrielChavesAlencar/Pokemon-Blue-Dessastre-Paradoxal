@@ -30,6 +30,43 @@ module BlueKantoTitle
     ordered
   end
 
+  # New Game on the MAIN Decades title: choose a starting region first.
+  # Until a unified multi-region campaign exists, regional entries open their
+  # own independently built pilot and NEVER write to the Decades save profile.
+  START_REGIONS = [
+    ["Decades", :decades],
+    ["Kanto (piloto experimental)", :kanto],
+    ["Johto (piloto experimental)", :johto],
+    ["Hoenn (piloto experimental)", :hoenn],
+    ["Sinnoh (piloto experimental)", :sinnoh],
+    ["Unova (indisponível)", :unavailable],
+    ["Kalos (indisponível)", :unavailable],
+    ["Alola (indisponível)", :unavailable],
+    ["Galar (indisponível)", :unavailable],
+    ["Paldea (indisponível)", :unavailable],
+    ["Hisui (indisponível)", :unavailable],
+    ["Voltar ao menu", :cancel]
+  ].freeze
+
+  def self.choose_start_region
+    loop do
+      names = START_REGIONS.map { |name, _| _INTL(name) }
+      choice = pbMessage(_INTL("Em qual região deseja começar um novo jogo?"), names, 0)
+      return :cancel unless choice.is_a?(Integer) && (0...START_REGIONS.length).cover?(choice)
+      region = START_REGIONS[choice][1]
+      case region
+      when :decades then return :decades
+      when :cancel then return :cancel
+      when :unavailable
+        pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
+      else
+        # Existing Windows launchers check their own pilot installation and
+        # prompt before opening. Failed/unavailable launches return here.
+        return :launched if public_send("launch_#{region}")
+      end
+    end
+  end
+
   def self.launcher
     # The main executable must run from the installed Blue game directory.
     # Never run a launcher from an untrusted/current arbitrary directory.
@@ -220,6 +257,7 @@ module BlueKantoTitle
         end
       end
       @blue_kanto_quit = commands.index(_INTL("Quit Game"))
+      @blue_kanto_new_game = commands.index(_INTL("New Game"))
       super(@blue_kanto_commands, show_continue, trainer, stats, map_id)
     end
 
@@ -236,6 +274,17 @@ module BlueKantoTitle
                     end
         return selection if selection.nil? || selection < 0
         original = @blue_kanto_order[selection]
+        if !BlueKantoTitle.pilot? && original == @blue_kanto_new_game
+          # Let Decades' ORIGINAL New Game branch initialize its own save.
+          # All other choices either open a separate regional pilot or return
+          # to the title without writing a save or advancing story flags.
+          return original unless @blue_kanto_quit
+          case BlueKantoTitle.choose_start_region
+          when :decades then return original
+          when :launched then return @blue_kanto_quit
+          end
+          next
+        end
         if [:blue_test_kanto, :blue_test_johto, :blue_test_hoenn, :blue_test_sinnoh].include?(original)
           launched = case original
                      when :blue_test_kanto then BlueKantoTitle.launch
