@@ -12,6 +12,7 @@ on:
       - 'scripts/install_game.py'
       - 'tests/test_hoenn_main_integration.py'
       - 'tests/hoenn_main_gate_runtime.rb'
+      - 'tests/hoenn_main_travel_runtime.rb'
       - '.github/workflows/hoenn-main-integration.yml'
   workflow_dispatch:
 permissions:
@@ -37,6 +38,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_hoenn_main_integration.py' -v
       - name: Hoenn New Game release gate
         run: ruby tests/hoenn_main_gate_runtime.rb scripts/battle_polish/RegionStart.rb
+      - name: Main Hoenn travel and Littleroot NPC
+        run: ruby tests/hoenn_main_travel_runtime.rb scripts/battle_polish/RegionTravel.rb
       - name: Existing region and title regressions
         run: |
           ruby -I . tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
