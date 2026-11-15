@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "141879ddb96b63650f2a7ade27b5ac653db17762",
+      "date": "2026-11-15T12:31:57-03:00",
+      "title": "ci(regions): validar sintaxe do transporte e regras regionais livres",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "26511d46bd52042b6b65e23136f2385a7b34ea49",
+      "date": "2026-11-15T12:31:45-03:00",
+      "title": "test(region start): esclarecer que chegada Decades esta disponivel antes da Liga",
+      "category": "Testes"
+    },
+    {
       "sha": "2294a95ae7068dc7c4cb6368fadcf0024053fccd",
       "date": "2026-11-15T12:31:27-03:00",
       "title": "fix(travel): viagem livre Johto/regionais para Decades usando ponto nativo verificado",
