@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "73835d3e5ddaafe7f234d1ec711daf27007fc94d",
+      "date": "2026-11-15T10:47:24-03:00",
+      "title": "test(regions): guardar ponto inicial real de Decades no save que comeca em Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "312b76ba7602f717f85af53cf489566159a1e9a9",
       "date": "2026-11-15T10:46:58-03:00",
       "title": "test(travel): Kanto primeira campanha so acessa Decades apos Hall no mesmo save",
