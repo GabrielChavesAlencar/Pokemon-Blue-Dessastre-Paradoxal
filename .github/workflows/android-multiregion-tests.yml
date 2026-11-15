@@ -6,6 +6,7 @@ on:
       - 'scripts/battle_polish/RegionStart.rb'
       - 'tests/region_start_android_no_json_runtime.rb'
       - 'tests/test_android_multiregion.py'
+      - 'tests/test_android_updates.py'
       - 'site/tests/android-release.test.mjs'
       - 'site/src/assets/android-release.js'
       - 'site/src/assets/downloads.js'
@@ -30,6 +31,8 @@ jobs:
         run: python -m py_compile scripts/android/package.py scripts/android/update_client.py scripts/android/publish_updates.py
       - name: Testar ZIP compartilhado, mapas e canais isolados
         run: python -m unittest discover -s tests -p test_android_multiregion.py -v
+      - name: Testar atualizacao Android incremental e ZIP completo com backups
+        run: python -m unittest discover -s tests -p test_android_updates.py -v
       - name: Reproduzir Novo Jogo no runtime JoiPlay sem JSON
         run: |
           ruby -c scripts/battle_polish/RegionStart.rb
