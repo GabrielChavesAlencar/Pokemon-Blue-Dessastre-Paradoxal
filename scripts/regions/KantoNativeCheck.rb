@@ -815,7 +815,7 @@ module KantoNativeCheck
     # Traveling no longer requires League completion. The Hall of Fame must
     # grant only Kanto's completion flag; the independent travel catalogue is
     # already free (physical destinations still require installed maps).
-    require!(BlueRegions.unlocked(BlueKantoPilot.progress) == BlueRegionData::CIRCUIT,
+    require!(BlueRegions.unlocked(BlueKantoPilot.progress) == BlueRegions.circuit,
              "League incorrectly restricted the free regional travel catalogue")
     require!(!BlueKantoPilot.league_finalize(pallet),
              "Hall of Fame duplicated completion")
