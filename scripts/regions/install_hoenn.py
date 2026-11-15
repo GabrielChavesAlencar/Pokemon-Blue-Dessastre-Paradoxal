@@ -207,7 +207,16 @@ def validated_local_source(archive: Path, inventory: Path) -> tuple[Source, str]
     archive = Path(archive)
     if archive.is_symlink():
         raise ValueError("ZIP de Hoenn por link simbólico recusado.")
-    tree = check_tree(load_tree(inventory, offline=not archive.is_file()))
+    staged = ROOT / ".blue-work" / "hoenn-source"
+    if not archive.is_file() and not staged.is_dir():
+        raise ValueError(
+            "Fonte Hoenn ausente: coloque 'The Pokémon World Project - Hoenn.zip' "
+            "na mesma pasta de TESTAR_HOENN.bat ou execute TESTAR_HOENN.bat para "
+            "preparar a fonte. Nenhum mapa ou save foi alterado."
+        )
+    # Even with only the local staged data, obtain the pinned PUBLIC Git
+    # inventory when absent; never infer hashes from a forged local manifest.
+    check_tree(load_tree(inventory, offline=False))
     if archive.is_file():
         extracted = inspect_zip(archive, extract=True, include_audio=True)
         source = Source(ROOT / extracted["local_stage"], inventory)
