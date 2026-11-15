@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5c511d402fd0bc7f76f283c59c8cf7d79aef2e6a",
+      "date": "2026-11-14T21:00:40-03:00",
+      "title": "test(kanto): injetar game_player global no mock da cena da mae",
+      "category": "Testes"
+    },
+    {
       "sha": "c2cbe07f8dd1fed1734d0024016613a5c743a645",
       "date": "2026-11-14T21:00:07-03:00",
       "title": "fix(kanto): novo jogo nao começa com tenis antes da entrega pela mae",
