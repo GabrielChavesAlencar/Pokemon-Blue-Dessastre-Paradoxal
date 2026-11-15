@@ -74,7 +74,7 @@ module BlueKantoTitle
            BlueRegionStart.request_initial("KANTO")
           return :integrated
         end
-        pbMessage(_INTL("Kanto ainda não foi instalado no jogo principal. Feche o jogo e execute KANTO_INSTALAR_NO_JOGO.bat na pasta do projeto. Seus saves serão preservados."))
+        pbMessage(_INTL("Kanto não foi instalado. Feche o jogo e abra novamente o Blue-Story.exe: ele tentará baixar e integrar Kanto automaticamente. Se a instalação falhar, consulte o diagnóstico em .blue-work/kanto-install-status.json. Seus saves serão preservados."))
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
