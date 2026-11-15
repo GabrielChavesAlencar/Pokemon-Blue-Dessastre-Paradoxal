@@ -37,7 +37,8 @@ $game_map=QA10Map.new
 $game_map.map_id=699
 flags=BlueHoennPilot.state
 region=$PokemonGlobal.blue_regions
-assert10(BlueRegions.unlocked(region)==["HOENN"],"Initial Hoenn is not exclusive")
+assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+         "Free transport catalogue still requires a League")
 assert10(!BlueHoennPilot.qa10_hall_ready?,"Hall open without badges, Wally and Elite")
 assert10(!BlueHoennPilot.hall_of_fame_stage10,"Hall completed too early")
 assert10(!flags["hoenn_hall_of_fame"],"Local flag given before Champion")
@@ -57,15 +58,15 @@ assert10(!BlueHoennPilot.qa10_postgame_status,"Status available before finale")
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Hall completion not recorded")
 assert10(flags["hoenn_hall_of_fame"],"Local Hall flag missing")
 assert10(region["leagues"]==["HOENN"],"Hoenn completion missing or duplicated")
-assert10(BlueRegions.unlocked(region).sort==%w[HOENN JOHTO SINNOH],"Johto/Sinnoh not unlocked")
-assert10(!BlueRegions.unlocked(region).include?("KANTO"),"Kanto incorrectly unlocked")
+assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+         "Hall improperly changed the already-free transport catalogue")
 assert10(!region.key?("decades_return"),"Travel happened automatically")
-assert10($messages.any?{|s|s.include?("Johto e Sinnoh")},"Post-game status not shown")
+assert10($messages.any?{|s|s.include?("viagem pelo NPC")},"Post-game transport notice not shown")
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Hall should allow safe reinteraction")
 assert10(region["leagues"]==["HOENN"],"Reentry granted another League")
 $game_map.map_id=922
 assert10(BlueHoennPilot.sign_stage10(:LEAGUE_GATE),"Postgame League sign unavailable")
-assert10($messages.last.include?("Johto e Sinnoh"),"Sign no postgame status")
+assert10($messages.last.include?("viagem pelo NPC"),"Sign no postgame status")
 assert10(region["leagues"]==["HOENN"],"Sign mutates League state")
 $game_map.map_id=699
 
@@ -73,7 +74,8 @@ $game_map.map_id=699
 $PokemonGlobal.blue_regions=Marshal.load(Marshal.dump($PokemonGlobal.blue_regions))
 region=$PokemonGlobal.blue_regions
 flags=BlueHoennPilot.state
-assert10(BlueRegions.unlocked(region).sort==%w[HOENN JOHTO SINNOH],"Neighbors lost on reload")
+assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+         "Free region catalogue was lost on reload")
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Hall progression lost on reload")
 assert10(region["leagues"]==["HOENN"],"Save reload duplicated League")
 
@@ -104,19 +106,20 @@ flags["champion_wallace_defeated"]=true
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Started Johto, Hoenn victory not registered")
 assert10(region["leagues"]==["JOHTO","HOENN"],"Johto League overwritten")
 assert10(region["achievements"]["JOHTO"]==["ZEPHYR"],"Johto badges overwritten")
-assert10(BlueRegions.unlocked(region).sort==%w[HOENN JOHTO KANTO SINNOH],"Circuit unlock from Johto wrong")
+assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+         "Johto's previous League must not restrict free transport")
 
-# Tampered save cannot complete Hoenn if current region was not earned.
+# A completed League cannot be awarded by an event outside its region.
+# Starting in Kanto is valid; the player must actually travel to Hoenn.
 $PokemonGlobal.blue_regions=BlueRegions.new_state("KANTO")
 region=$PokemonGlobal.blue_regions
-region["current"]="HOENN"
 region["achievements"]["HOENN"]=BlueHoennPilot::QA8_LEAGUE_BADGES.dup
 flags=BlueHoennPilot.state
 flags["wally_road_defeated"]=true
 flags["champion_wallace_defeated"]=true
 %w[sidney phoebe glacia drake].each{|key|flags["elite_#{key}_defeated"]=true}
-assert10(!BlueHoennPilot.hall_of_fame_stage10,"Locked Hoenn allowed direct circuit completion")
-assert10(region["leagues"].empty? && !flags["hoenn_hall_of_fame"],"Locked region saved fake Hall")
+assert10(!BlueHoennPilot.hall_of_fame_stage10,"Hoenn Hall awarded while current region was Kanto")
+assert10(region["leagues"].empty? && !flags["hoenn_hall_of_fame"],"Wrong-region Hall saved a victory")
 
 region["current"]="DECADES"
 before=Marshal.dump(region)
