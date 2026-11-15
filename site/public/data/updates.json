@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "10b66e5d4ebdc1a9999a4f427358cb3811e2db8e",
+      "date": "2026-11-14T22:09:36-03:00",
+      "title": "feat(exp): experiencia compartilhada moderna nas batalhas de campanha",
+      "category": "Novidades"
+    },
+    {
       "sha": "9becf7c7c9c7b7ed04fe0f8fb58fda4a5b2273cb",
       "date": "2026-11-14T21:33:17-03:00",
       "title": "docs(kanto): documentar blackout nativo e protecao da progressao",
