@@ -243,7 +243,7 @@ def apply(game: Path, archive: Path, inventory: Path, commit: bool = False) -> d
         atomic(game / "Data/blue-compile-request.txt", b"compile")
         atomic(game / MANIFEST, (json.dumps(proof, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
         atomic(game / READY_MARKER,
-               f"BLUE_HOENN_READY_V1,199,{proof['start'][0]},{proof['town'][0]}\n".encode("ascii"))
+               f"BLUE_HOENN_READY_V1,199,{proof['start'][0]},{','.join(map(str,proof['town']))}\n".encode("ascii"))
         # LAST write is the actual title/menu gate.
         atomic(game / START_MARKER,
                f"BLUE_HOENN_START_V1,HOENN,{proof['start'][0]},25,6\n".encode("ascii"))
