@@ -33,7 +33,7 @@ def compiled_region(cache, name, source):
         for item_name, compressed in plugin[2]:
             if item_name == name.encode('ascii') and zlib.decompress(compressed).replace(b'\r\n', b'\n') == expected:
                 return hashlib.sha256(expected).hexdigest()
-    raise ValueError('Regional script is missing or stale in Android plugin cache: '+name.decode() if isinstance(name,bytes) else name)
+    raise ValueError('Regional script is missing or stale in Android plugin cache: '+str(name))
 
 def verify_regions(game):
     if any((game / name).is_file() for name in ("Kanto pilot.json", "Hoenn pilot.json")):
