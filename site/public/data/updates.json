@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8dc0aee124a088a72173795467cdae2721125f8f",
+      "date": "2026-11-15T16:52:19-03:00",
+      "title": "docs(hoenn): Blue-Story instala fonte pública automaticamente sem exigir ZIP nem BAT",
+      "category": "Documentação"
+    },
+    {
       "sha": "d225d84225b5d17a19fc86e959e9cb844277e629",
       "date": "2026-11-15T16:51:06-03:00",
       "title": "test(hoenn): NPC informa download automático em vez de ZIP manual",
