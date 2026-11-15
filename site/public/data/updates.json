@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "14e25246f37595d0edda52f75f7e7aa520c2e1b7",
+      "date": "2026-11-15T13:24:50-03:00",
+      "title": "test(kanto music): simular Ruby sem SHA256 e BGM seguro em manifesto antigo e atualizado",
+      "category": "Testes"
+    },
+    {
       "sha": "51d67925bc5d583f222a23292adb851e0aa42896",
       "date": "2026-11-15T13:24:01-03:00",
       "title": "fix(kanto music): validar tabs e barras reais sem rejeitar nomes legitimos de trilhas",
