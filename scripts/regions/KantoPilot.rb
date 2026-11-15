@@ -8,11 +8,18 @@ module BlueKantoPilot
   LEAGUE_ORDER = %w[LORELEI BRUNO AGATHA LANCE CHAMPION].freeze
   LEAGUE_CHAMPION_VERSIONS = {BULBASAUR: 1, CHARMANDER: 2, SQUIRTLE: 3}.freeze
   FULL_POWER_OFFSET = 100
-  # O personagem do Blue usa um charset maior que os NPCs FRLG.
-  # Este zoom so existe na instalacao isolada do piloto de Kanto.
-  PLAYER_OVERWORLD_ZOOM = 0.75
+  # The Blue protagonist charset can be taller than FRLG NPC frames.
+  # Scale ONLY the player in the separately built Kanto pilot; a fixed 75%
+  # still looked oversized with the larger charset selected after loading.
+  PLAYER_OVERWORLD_ZOOM = 0.60
+  PLAYER_OVERWORLD_MAX_HEIGHT = 30
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
   INTEGRATED_KANTO = !PILOT_OVERWORLD_SCALE && File.file?("Data/blue-kanto-install.json")
+
+  def self.player_overworld_zoom(frame_height)
+    return PLAYER_OVERWORLD_ZOOM unless frame_height.is_a?(Numeric) && frame_height > 0
+    [PLAYER_OVERWORLD_ZOOM, PLAYER_OVERWORLD_MAX_HEIGHT.to_f / frame_height].min
+  end
 
   # Shared runtime is active ONLY while the current regional save is in Kanto.
   # Never apply Kanto-specific field rules to Decades maps or other regions.
@@ -1502,8 +1509,11 @@ module BlueKantoPilot::PlayerOverworldScale
     return unless BlueKantoPilot::PILOT_OVERWORLD_SCALE
     return unless @character && @character.equal?($game_player)
 
-    self.zoom_x = BlueKantoPilot::PLAYER_OVERWORLD_ZOOM
-    self.zoom_y = BlueKantoPilot::PLAYER_OVERWORLD_ZOOM
+    # @ch is the live frame height, refreshed by Sprite_Character#update
+    # when the player changes avatar or loads a different save.
+    zoom = BlueKantoPilot.player_overworld_zoom(@ch)
+    self.zoom_x = zoom
+    self.zoom_y = zoom
   end
 end
 Sprite_Character.prepend(BlueKantoPilot::PlayerOverworldScale) if defined?(Sprite_Character)
