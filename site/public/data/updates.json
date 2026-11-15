@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6c0c95b83eae46a6919305912804eafed3fed5a0",
+      "date": "2026-11-15T18:39:34-03:00",
+      "title": "docs(site): passo simples do Termux para corrigir New Game da edicao Decades Kanto Hoenn",
+      "category": "Correções"
+    },
+    {
       "sha": "37cbdd675a021d77e8563961cbe5dc46e67184cc",
       "date": "2026-11-15T18:38:21-03:00",
       "title": "test(android): validar Novo Jogo sem JSON no JoiPlay em CI",
