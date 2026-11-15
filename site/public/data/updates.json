@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9acb0f4a58daca5e00ea7f317ad3be2f25fdc6c4",
+      "date": "2026-11-15T11:44:27-03:00",
+      "title": "test(kanto): validar criacao do proof ASCII e runtime sync sem tocar saves",
+      "category": "Testes"
+    },
+    {
       "sha": "d242448598f3a45306a2bd0101c3bdc47c6a14c7",
       "date": "2026-11-15T11:43:51-03:00",
       "title": "fix(kanto): normalizar encoding do marcador de instalacao validada",
