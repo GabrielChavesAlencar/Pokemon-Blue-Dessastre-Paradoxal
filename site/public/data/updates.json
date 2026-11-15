@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cf22add7a0716e2755fbcc9499f13156f13b07ca",
+      "date": "2026-11-15T11:39:21-03:00",
+      "title": "fix(installer): separar etapas no log persistente de Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "5ffacc21ecd7cfc7b5d5fbbbe2edddb2f23949e3",
       "date": "2026-11-15T11:38:56-03:00",
       "title": "fix(launcher): mostrar causa e relatorio de Kanto ausente na tela do instalador",
