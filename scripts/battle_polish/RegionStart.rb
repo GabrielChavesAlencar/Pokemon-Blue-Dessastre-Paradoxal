@@ -20,8 +20,8 @@ module BlueRegionStart
   def self.hoenn_compact_manifest
     return nil unless File.file?(HOENN_READY) && File.file?(HOENN_PILOT_METADATA)
     body = File.read(HOENN_INSTALL)
-    return nil unless body.include?("\"source_commit\": \"#{HOENN_REVISION}\"") &&
-      body.include?("\"status\": \"INTEGRATED_FILES_READY_FOR_NATIVE_QA\"")
+    return nil unless body.match?(/"source_commit"\s*:\s*"#{HOENN_REVISION}"/) &&
+      body.match?(/"status"\s*:\s*"INTEGRATED_FILES_READY_FOR_NATIVE_QA"/)
     entries = File.readlines(HOENN_PILOT_METADATA, chomp: true)
     return nil unless entries.shift == "BLUE_HOENN_PILOT_V1"
     home = entries.shift.to_s.split(",").map { |n| Integer(n, 10) rescue nil }
