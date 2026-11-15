@@ -40,6 +40,21 @@ Distribuição sugerida e implementada **dentro dos slots da mesma família**, n
 
 Para Rattata, o limiar é 25 (nível natural de evolução 20 + 5). Com progresso 30, **aproximadamente 30% dos slots originalmente de Rattata podem se tornar Raticate**; os demais continuam Rattata. O Raticate gerado respeita nível mínimo 25, sem ultrapassar o progresso de referência. Em uma cadeia de dois estágios, cada estágio exige um sorteio válido.
 
+### Pedra, troca e felicidade nos encontros selvagens (mesma regra dos treinadores)
+
+As **mesmas condições e os mesmos limiares usados para os treinadores comuns** já são compartilhados pelo seletor de encontros selvagens: **pedra/item simples a partir do progresso 30; troca (com ou sem item) a partir do 40; felicidade a partir do 45**. Não é necessário ter ou gastar pedra, fazer troca nem elevar a felicidade de um Pokémon encontrado na natureza: esses são limites de aparecimento da forma final, não uma evolução do Pokémon da equipe do jogador.
+
+| Slot selvagem original | Antes do limite | Quando o progresso alcança o limite |
+|---|---|---|
+| Pikachu → Raichu (pedra) | Pikachu | Raichu pode aparecer a partir do nível 30 |
+| Kadabra → Alakazam (troca) | Kadabra | Alakazam pode aparecer a partir do nível 40 |
+| Golbat → Crobat (felicidade) | Golbat | Crobat pode aparecer a partir do nível 45 |
+
+O progresso corresponde ao **maior nível não-ovo da equipe**, não ao nível aleatório original de cada slot. A chance é 15% no exato limiar e cresce progressivamente até o teto de 60%, conforme a tabela acima; **a forma básica permanece possível**. A forma evoluída usa no mínimo o nível de liberação da evolução. Só são acrescentadas evoluções com destino único e requisitos verificáveis: ramificações como Eevee e condições especiais sem verificação segura permanecem protegidas. A consulta do Habitat Dex segue os mesmos limiares.
+
+A regressão `tests/evolution_scaling_runtime.rb` verifica os três métodos **separadamente para treinadores e selvagens**, tanto antes quanto no limite, a chance de manter a forma básica e a integração no seletor real de encontros (`PokemonEncounters.choose_wild_pokemon`).
+
+
 Um encontro estático/evento especial, lendário fixo, inicial ou Pokémon presente na equipe não é modificado pelo seletor de encontros normais.
 
 ### Proteções de compatibilidade
