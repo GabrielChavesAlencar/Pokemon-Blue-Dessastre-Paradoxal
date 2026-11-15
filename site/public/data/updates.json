@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a57259e94d7414717c5acccc0fad3e205fe073f8",
+      "date": "2026-11-15T17:37:37-03:00",
+      "title": "docs(android): documentar ZIP conjunto e distribuição segura por canal independente",
+      "category": "Documentação"
+    },
+    {
       "sha": "81b350fed73aea20d2f767e6ce4e1b80740e82d8",
       "date": "2026-11-15T17:35:37-03:00",
       "title": "test(android): localizar módulos reais de instalação regional nos mocks",
