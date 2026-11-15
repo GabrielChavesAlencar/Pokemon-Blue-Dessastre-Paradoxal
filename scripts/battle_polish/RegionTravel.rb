@@ -155,12 +155,85 @@ module BlueRegionTravel
     slots
   end
 
+  # Essentials v21.1: Key Items have the KeyItem flag, and HM machines
+  # have field_use=4. TM/TR items, consumables and held Mega Stones stay
+  # global. This deliberately uses GameData metadata rather than a list of
+  # item names, so new regions and translated items work automatically.
+  def self.regional_item?(item)
+    return false unless defined?(GameData::Item) && GameData::Item.respond_to?(:try_get)
+    data = GameData::Item.try_get(item)
+    !!data && (data.is_key_item? || data.is_HM?)
+  end
+
+  def self.local_bag_contents(bag)
+    raise "Bolsa regional indisponível" unless
+      bag && bag.respond_to?(:pockets) && bag.respond_to?(:registered_items)
+    items = []
+    bag.pockets.each do |pocket|
+      Array(pocket).each do |entry|
+        next unless entry.is_a?(Array) && regional_item?(entry[0])
+        raise "Quantidade inválida de item regional" unless
+          entry[1].is_a?(Integer) && entry[1] > 0
+        items << [entry[0], entry[1]]
+      end
+    end
+    registered = bag.registered_items.select { |id| regional_item?(id) }
+    {"items" => items, "registered" => registered}
+  end
+
+  def self.stage_local_bag(state, destination)
+    raise "Não foi possível ler a Bolsa regional" unless $bag
+    staged = Marshal.load(Marshal.dump($bag))
+    source_contents = local_bag_contents(staged)
+    vault = state["region_key_items"] || {}
+    raise "Registro de itens regionais inválido" unless vault.is_a?(Hash)
+    target_contents = vault[destination] || {"items" => [], "registered" => []}
+    raise "Registro de destino inválido" unless
+      target_contents.is_a?(Hash) &&
+      target_contents["items"].is_a?(Array) &&
+      target_contents["registered"].is_a?(Array)
+    target_items = target_contents["items"]
+    seen = {}
+    target_items.each do |entry|
+      raise "Item regional inválido no save" unless
+        entry.is_a?(Array) && entry.length == 2 &&
+        regional_item?(entry[0]) && entry[1].is_a?(Integer) &&
+        entry[1] > 0 && !seen[entry[0]]
+      seen[entry[0]] = true
+    end
+    target_contents["registered"].each do |id|
+      raise "Atalho regional inválido no save" unless
+        seen[id] && !target_contents["registered"].each_with_index.any? { |v,i|
+          v == id && target_contents["registered"].index(v) != i
+        }
+    end
+    source_contents["items"].each do |id, qty|
+      raise "Falha ao guardar itens da região atual" unless staged.remove_all(id, qty)
+    end
+    target_items.each do |id, qty|
+      raise "Sem espaço para os itens-chave/HMs da região de destino" unless
+        staged.add_all(id, qty)
+    end
+    staged.registered_items.delete_if { |id| regional_item?(id) }
+    target_contents["registered"].each { |id| staged.register(id) }
+    [staged, source_contents]
+  end
+
   def self.preview(state, key)
     return [:locked, []] unless destination(state, key)
     forbidden = BlueRegions.allow_specials?(state, key, $player.badges) ? [] :
                 $player.party.select { |pkmn| special?(pkmn) }
     slots = free_storage_slots(forbidden.length)
-    BlueRegions.transfer_plan(state, key, $player.party, slots, $player.badges) { |pkmn| special?(pkmn) }
+    status, reservations = BlueRegions.transfer_plan(state, key, $player.party,
+      slots, $player.badges) { |pkmn| special?(pkmn) }
+    return [status, reservations] unless status == :ok
+    begin
+      stage_local_bag(state, key)
+    rescue StandardError => error
+      @last_bag_error = error.message
+      return [:bag, []]
+    end
+    [:ok, reservations]
   end
 
   def self.message_for(status)
@@ -168,6 +241,7 @@ module BlueRegionTravel
     when :locked then _INTL("Essa região ainda está bloqueada ou não tem ponto seguro de chegada.")
     when :no_usable_party then _INTL("Sua equipe ficaria sem um Pokémon comum capaz de batalhar. Organize o PC antes de viajar.")
     when :box_full then _INTL("Não há vagas suficientes nas Boxes. Libere espaço antes de viajar.")
+    when :bag then _INTL("Viagem cancelada: {1}", @last_bag_error || "Bolsa regional indisponível.")
     else _INTL("Não foi possível concluir a viagem. Nenhum Pokémon foi perdido.")
     end
   end
@@ -196,10 +270,14 @@ module BlueRegionTravel
     old_party = $player.party.dup
     old_slots = reservations.map { |pkmn, pos| [pos, $PokemonStorage[pos[0],pos[1]]] }
     old_mechanics = $PokemonGlobal.blue_campaign_mechanics
+    old_bag = Marshal.load(Marshal.dump($bag))
+    staged_bag, source_items = stage_local_bag(state, key)
     # Preserve the player's actual choices independently for each region.
     # The first Decades arrival uses all mechanics except Dynamax, and later
     # returns restore any changes the player made while in Decades.
     next_state = Marshal.load(Marshal.dump(state))
+    next_state["region_key_items"] ||= {}
+    next_state["region_key_items"][state["current"]] = source_items
     next_state["mechanics_by_region"] ||= {}
     if old_mechanics.is_a?(Hash)
       next_state["mechanics_by_region"][state["current"]] = old_mechanics.dup
@@ -223,11 +301,17 @@ module BlueRegionTravel
       end
       $PokemonGlobal.blue_regions = next_state
       $PokemonGlobal.blue_campaign_mechanics = new_mechanics.dup
+      # Keep the exact same Bag object: native item/ready-menu screens may
+      # retain references to it. Only replace its serialized contents.
+      $bag.pockets.replace(staged_bag.pockets)
+      $bag.registered_items.replace(staged_bag.registered_items)
       pbFadeOutIn { move_to(point) }
       true
     rescue StandardError => error
       $PokemonGlobal.blue_regions = old_state
       $PokemonGlobal.blue_campaign_mechanics = old_mechanics
+      $bag.pockets.replace(old_bag.pockets)
+      $bag.registered_items.replace(old_bag.registered_items)
       $player.party.replace(old_party)
       old_slots.each { |pos, previous| $PokemonStorage[pos[0],pos[1]] = previous }
       if $game_map.map_id != before[0] || $game_player.x != before[1] || $game_player.y != before[2]
