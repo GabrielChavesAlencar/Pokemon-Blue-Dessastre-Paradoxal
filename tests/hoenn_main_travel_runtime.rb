@@ -92,10 +92,10 @@ Dir.mktmpdir("hoenn-npc-diagnostic") do |dir|
   Dir.chdir(dir) do
     Dir.mkdir("Data")
     message = BlueRegionTravel.hoenn_pending_message
-    check(message.include?("não está instalada"), "missing status was shown as installed")
+    check(message.include?("ainda não está integrada"), "missing status was shown as installed")
     File.write("Data/blue-hoenn-install-status.txt", "awaiting_local_source\n")
     message = BlueRegionTravel.hoenn_pending_message
-    check(message.include?("ZIP original"), "missing source did not explain required ZIP")
+    check(message.include?("baixa automaticamente"), "missing source did not explain automatic installer")
     File.write("Data/blue-hoenn-install-status.txt", "integration_blocked\n")
     message = BlueRegionTravel.hoenn_pending_message
     check(message.include?("falhou"), "failed merge did not show diagnostic")
@@ -104,4 +104,4 @@ Dir.mktmpdir("hoenn-npc-diagnostic") do |dir|
     check(message.include?("incompleta"), "partial install did not warn player")
   end
 end
-puts "PASS: Hoenn travel/NPC and clear missing-source, blocked or partial-install diagnostics"
+puts "PASS: Hoenn travel/NPC and automatic updater diagnostics"
