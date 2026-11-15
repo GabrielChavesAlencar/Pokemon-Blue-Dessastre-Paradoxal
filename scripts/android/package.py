@@ -173,6 +173,7 @@ def build(game,output,revision,channel='decades'):
         if channel == 'multiregion':
             readme += (
                 'EDICAO MULTIRREGIONAL: DECADES + KANTO + HOENN no mesmo jogo e perfil de saves.\n'
+                'Correcao JoiPlay: Novo Jogo sem biblioteca JSON, sem travar RegionStart.rb.\n'
                 'Pacote separado do Decades puro; nao instale patch do canal decades.\n'
                 'A disponibilidade da viagem depende tambem do progresso no jogo.\n'
                 'Nao instale sobre os arquivos de outro canal sem backup dos saves.\n')
