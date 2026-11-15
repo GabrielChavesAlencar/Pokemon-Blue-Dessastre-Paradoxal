@@ -44,7 +44,23 @@ def install(project,game,hub_only=False):
         run([sys.executable,'scripts/battle_lab/launch.py','--game-dir',game,'--install-only'],project,env)
         print('[OK] Hub instalado. Abra HUB_DE_BATALHA.bat para jogar contra a IA.')
     else:
+        # The website's Blue-Story.exe invokes this same installer after every
+        # online update. First prepare Blue plugins so the Kanto map builder
+        # can safely compile against the native Decades game.
         run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
+        import importlib.util
+        kanto_path=project/'scripts/regions/auto_integrate_kanto.py'
+        if kanto_path.is_file():
+            spec=importlib.util.spec_from_file_location('blue_auto_integrate_kanto',kanto_path)
+            auto=importlib.util.module_from_spec(spec);spec.loader.exec_module(auto)
+            result=auto.integrate(project,game)
+            print('[KANTO AUTO] Resultado:',result['status'],flush=True)
+            if result['changed']:
+                # Rebuild/merge the new regional PBS/plugin and reviewed pt-BR
+                # overlay after the importer has committed its marker LAST.
+                run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
+        else:
+            print('[KANTO AUTO] Codigo de integracao indisponivel nesta revisao.',flush=True)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')
 
