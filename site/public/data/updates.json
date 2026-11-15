@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "279cd23785d4a8cf707009c65beee66108f580cc",
+      "date": "2026-11-15T10:43:27-03:00",
+      "title": "docs(kanto): detalhar integracao segura de 142 mapas ao Decades e limites de QA",
+      "category": "Documentação"
+    },
+    {
       "sha": "006280665d5727ae5e3b4257ebe5c69671ac1c80",
       "date": "2026-11-15T10:41:47-03:00",
       "title": "test(locale): proteger traducoes Decades ao carregar Kanto integrado",
