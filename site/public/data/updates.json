@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2dc9b7820a33ad5e088602bd4523e404fd03ce8f",
+      "date": "2026-11-15T16:50:47-03:00",
+      "title": "fix(hoenn): NPC orienta apenas atualização automática pelo Blue-Story.exe",
+      "category": "Correções"
+    },
+    {
       "sha": "877b3476bdf77e70382c23cbcdab2ea2f086fd2e",
       "date": "2026-11-15T16:49:47-03:00",
       "title": "test(hoenn): simular cache em pasta temporária permitida pelo validador",
