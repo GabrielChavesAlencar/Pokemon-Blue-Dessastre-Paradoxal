@@ -22,6 +22,16 @@ DATA_NAMES = ("MapInfos.rxdata", "Tilesets.rxdata")
 PLUGIN = Path("Plugins/ZZZZZ Blue Kanto Pilot")
 MARKER = Path("Data/blue-kanto-start.txt")
 PORTRAITS = tuple(f"BLUE_KANTO_{kind}.png" for kind in TYPES)
+# Runtime-only files referenced by the authored Kanto plugin/events. The
+# experimental teleport list and independent save profile are NOT integrated.
+KANTO_RUNTIME_DATA = (
+    "blue-kanto-npc-dialogues.dat",
+    "blue-kanto-pewter-route3-gate.txt",
+    "blue-kanto-pewter-mom-sprite.txt",
+    "blue-kanto-viridian-route2-line.txt",
+    "blue-kanto-silph-floors.txt",
+)
+KANTO_LOCALE = Path("Data/blue-kanto-locale.dat")
 
 
 def trainer_portraits(pilot):
@@ -80,6 +90,13 @@ def manifest(pilot, game):
     # Generated-only regional audio manifest: MapIDs come from the pilot.
     music_file = Path("Data/blue-kanto-music.txt")
     files[music_file] = pilot / music_file
+    for name in KANTO_RUNTIME_DATA:
+        relative = Path("Data") / name
+        files[relative] = pilot / relative
+    # Keep Kanto's reviewed NPC/plate locale as an isolated overlay. The
+    # regular Blue plugin installer merges it without overwriting existing
+    # Decades translations on every future ABRIR_JOGO.bat run.
+    files[KANTO_LOCALE] = pilot / "Data/blue-pt-br.dat"
     # Import approved Kanto BGM and ME only. Already-identical user MP3s are
     # untouched; conflicting files abort before any map is installed.
     from scripts.music.compile_kanto_music import approved_audio_track_numbers
