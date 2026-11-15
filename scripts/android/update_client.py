@@ -444,7 +444,7 @@ def main(argv=None):
     root = args.game_dir.expanduser().resolve()
     info = read_installed(root)
     release, manifest = remote_update(info)
-    if info["revision"] == manifest["revision"]:
+    if info["revision"] == manifest["revision"] and not args.full:
         print("O jogo ja esta atualizado:", info["revision"])
         return 0
     print("Versao instalada:", info["revision"])
