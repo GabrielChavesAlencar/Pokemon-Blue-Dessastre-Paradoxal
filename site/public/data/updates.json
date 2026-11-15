@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "911244c9d6676a760777291003e7e5c9be242ff2",
+      "date": "2026-11-15T08:37:17-03:00",
+      "title": "fix(site): servir guias regionais como arquivos estaticos",
+      "category": "Correções"
+    },
+    {
       "sha": "e11ab230d7e6aac6edd531ca282d842811b175f0",
       "date": "2026-11-15T08:33:32-03:00",
       "title": "feat(site): oferecer guias e ferramentas para Johto e Hoenn",
