@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b2402fc5018f15db5cd16272b44490db8f4c2ffe",
+      "date": "2026-11-15T19:08:32-03:00",
+      "title": "Run full Android updater regression suite on CI",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0dd2f022273506868a97ec148d327097d1da3b4f",
+      "date": "2026-11-15T19:08:30-03:00",
+      "title": "Update site with Termux fallback and migration instructions",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "794d6ba2bbaede5a6a29977840cc19f1b8d7a6f5",
+      "date": "2026-11-15T19:08:28-03:00",
+      "title": "Document full Android update fallback and one-time bootstrap",
+      "category": "Melhorias"
+    },
+    {
       "sha": "69165062bec798a090b876233cb04174eefefff1",
       "date": "2026-11-15T19:06:25-03:00",
       "title": "Test safe Android full-reinstall fallback, saves, corruption and CLI",
