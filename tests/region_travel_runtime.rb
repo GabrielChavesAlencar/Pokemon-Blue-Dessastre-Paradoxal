@@ -275,6 +275,21 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $bag.add(:POKEFLUTE)
     $bag.add(:HM03)
     $bag.register(:POKEFLUTE)
+    # The same save must round-trip to Kanto and back before the legacy
+    # scenario below intentionally resets regional state to nil.
+    check(BlueRegionTravel.travel("KANTO",true),
+          "Original Kanto save could not revisit its own region")
+    check($bag.has?(:OAKSPARCEL) && $bag.has?(:HM01) &&
+          !$bag.has?(:POKEFLUTE) && !$bag.has?(:HM03),
+          "Original Kanto save did not restore Kanto key items/HMs")
+    check($bag.registered_items.include?(:OAKSPARCEL) &&
+          !$bag.registered_items.include?(:POKEFLUTE),
+          "Regional registered shortcuts did not switch back to Kanto")
+    check(BlueRegionTravel.travel("DECADES",true),
+          "Original Kanto save could not return to Decades")
+    check($bag.has?(:POKEFLUTE) && $bag.has?(:HM03) &&
+          !$bag.has?(:OAKSPARCEL) && !$bag.has?(:HM01),
+          "Original Kanto save did not restore Decades key items/HMs")
     # Changes made in Decades must survive visits to another region.
     $PokemonGlobal.blue_campaign_mechanics["zmove"]=false
     $PokemonGlobal.blue_regions = nil
@@ -312,12 +327,12 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Current region not updated")
     check($PokemonGlobal.blue_regions["decades_return"] == decades_arrival,
           "Return coords lost")
-    check($bag.has?(:OAKSPARCEL) && $bag.has?(:HM01) &&
-          !$bag.has?(:POKEFLUTE) && !$bag.has?(:HM03),
-          "Return to Kanto did not restore only Kanto's local items")
-    check($bag.registered_items.include?(:OAKSPARCEL) &&
-          !$bag.registered_items.include?(:POKEFLUTE),
-          "Key-item shortcut selection leaked across regions")
+    # A legacy Decades save with no regional vault cannot conjure items
+    # earned by a different character in the prior synthetic test scenario.
+    check(!$bag.has?(:POKEFLUTE) && !$bag.has?(:HM03),
+          "Legacy Decades items remained usable after traveling to Kanto")
+    check(!$bag.registered_items.include?(:POKEFLUTE),
+          "Legacy Decades shortcut leaked into Kanto")
     check($PokemonGlobal.blue_campaign_mechanics["dynamax"] == true,
           "Kanto mechanics were overwritten by Decades preferences")
 
