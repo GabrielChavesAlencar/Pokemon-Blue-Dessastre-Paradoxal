@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "da4a6217b97562e80253077e1ed7ae6e053215c3",
+      "date": "2026-11-15T19:40:17-03:00",
+      "title": "feat(site): add editorial introduction page for Dessastre Paradoxal",
+      "category": "Novidades"
+    },
+    {
       "sha": "d784c33aaf5ae6443e433b5f2930caf5f68cb536",
       "date": "2026-11-15T19:39:24-03:00",
       "title": "Fix newline escaping in JoiPlay Kanto startup regression fixtures",
