@@ -297,27 +297,10 @@ module BlueRegionStart
       "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
     ]
     return false unless required.all? { |name| File.file?(name) }
-    # The verified compact reader is deliberately also used when JSON works:
-    # both Android and Windows must validate the same 142 *physical* maps.
-    maps = kanto_compact_maps(spawn)
-    return false unless maps
-    begin
-      require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)
-    rescue LoadError, NameError
-      return true
-    end
-    return true unless defined?(::JSON) && ::JSON.respond_to?(:parse)
-    begin
-      info = ::JSON.parse(File.read(KANTO_INSTALL))
-      return false unless info.is_a?(Hash) && info["schema"] == 1 &&
-                          info["source"] == "Essentials FRLG 21.1" &&
-                          info["maps"].is_a?(Hash) && info["maps"] == maps
-    rescue StandardError
-      # Incomplete/broken JoiPlay JSON is not grounds to hide a fully
-      # audited installed Kanto. The strict 142-map reader already passed.
-      return true
-    end
-    true
+    # No Ruby JSON dependency here: JoiPlay may expose a partial JSON
+    # implementation which reports success but returns unusable data. The
+    # 142-map scan above is stricter and is tied to the installer ready gate.
+    !kanto_compact_maps(spawn).nil?
   rescue StandardError
     false
   end
