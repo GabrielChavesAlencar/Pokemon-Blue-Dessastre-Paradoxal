@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9d1c1d5e58685a1395e2f49764b9cd5e6aa62a18",
+      "date": "2026-11-15T17:27:17-03:00",
+      "title": "feat(android): canal de atualizacoes independente para Decades Kanto Hoenn",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ecf1bc59122185db5480c22e5123bb1e6c54a148",
+      "date": "2026-11-15T17:27:14-03:00",
+      "title": "feat(android): canal de atualizacoes independente para Decades Kanto Hoenn",
+      "category": "Novidades"
+    },
+    {
+      "sha": "a1f9072161ff5b20b905b6065a570e8cc330b533",
+      "date": "2026-11-15T17:27:11-03:00",
+      "title": "feat(android): canal de atualizacoes independente para Decades Kanto Hoenn",
+      "category": "Novidades"
+    },
+    {
       "sha": "3f6130f15f17e0acae248e913fcb955374c7dc74",
       "date": "2026-11-15T17:06:41-03:00",
       "title": "docs(hoenn): registrar causa real do log e correção de sprites de Strength Boulder",
