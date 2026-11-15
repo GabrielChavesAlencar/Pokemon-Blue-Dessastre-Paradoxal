@@ -69,16 +69,32 @@ module BlueRegionTravel
     nil
   end
 
+  # Keep Map077 as the proven default, but resolve the real native
+  # Cherryhill City from MapInfos when a Decades build has reordered maps.
+  # Never choose a bedroom or map with a merely similar substring.
+  def self.decades_city_map_id
+    infos = defined?($data_mapinfos) && $data_mapinfos
+    if infos && infos.respond_to?(:each_with_index)
+      infos.each_with_index do |info, id|
+        next unless id > 0 && info && info.respond_to?(:name)
+        next unless info.name.to_s.strip.match?(/\A(?:Cherryhill(?: City)?|Cidade(?: de)? Cherryhill)\z/i)
+        return id if pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
+      end
+    end
+    DECADES_AGENT_MAP
+  end
+
   # A native Decades New Game starts on the introduction/character-selection
   # map, not in Cherryhill. Entering from another region MUST use a walkable
   # tile on Map077, near the real travel NPC, and NEVER restart that intro.
   # Resolve from the installed native map; do not forge coordinates on an
   # unknown or non-passable tile.
   def self.decades_town_point
-    return nil unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", DECADES_AGENT_MAP))
+    city_id = decades_city_map_id
+    return nil unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", city_id))
     return nil unless defined?(Game_Map)
     town = Game_Map.new
-    town.setup(DECADES_AGENT_MAP)
+    town.setup(city_id)
     return nil unless town.respond_to?(:events) && town.events.is_a?(Hash)
     # Game_Map#setup may already have injected the regional agent when
     # the current save is Decades, but not when it is Kanto. Exclude ONLY
@@ -98,7 +114,7 @@ module BlueRegionTravel
     return nil unless safe.length >= 2
     nearby = safe[1..-1].find { |x,y| (x-safe[0][0]).abs+(y-safe[0][1]).abs <= 4 }
     return nil unless nearby
-    [DECADES_AGENT_MAP, nearby[0], nearby[1], 2]
+    [city_id, nearby[0], nearby[1], 2]
   rescue StandardError
     nil
   end
@@ -121,11 +137,12 @@ module BlueRegionTravel
       # The NPC is on Cherryhill Map077; any recorded return must be on that
       # same verified town map, not in Decades' introduction or elsewhere.
       position = state["decades_return"]
+      city_id = decades_city_map_id
       if position.is_a?(Array) && position.length == 4 &&
-         position[0] == DECADES_AGENT_MAP &&
+         position[0] == city_id &&
          position.all? { |v| v.is_a?(Integer) } && position[1] >= 0 &&
          position[2] >= 0 && [2,4,6,8].include?(position[3]) &&
-         pbRgssExists?(sprintf("Data/Map%03d.rxdata", DECADES_AGENT_MAP))
+         pbRgssExists?(sprintf("Data/Map%03d.rxdata", city_id))
         return position
       end
       decades_town_point
@@ -375,7 +392,7 @@ module BlueRegionTravel
   def self.at_departure_town?(state)
     return false unless state && $game_map
     case state["current"]
-    when "DECADES" then $game_map.map_id == DECADES_AGENT_MAP
+    when "DECADES" then $game_map.map_id == decades_city_map_id
     when "KANTO"
       town = kanto_town_point
       !!town && $game_map.map_id == town[0]
@@ -508,10 +525,10 @@ module BlueRegionTravel
   DECADES_AGENT_NAME = "Agente Regional Blue".freeze
 
   def self.attach_decades_agent(map)
-    return unless installed? && map && map.map_id == DECADES_AGENT_MAP
+    return unless installed? && map && map.map_id == decades_city_map_id
     state = $PokemonGlobal && $PokemonGlobal.blue_regions
-    return unless BlueRegions.active? && (state.nil? ||
-      (state.is_a?(Hash) && state["version"] == 1 && state["current"] == "DECADES"))
+    return unless state.nil? || (state.is_a?(Hash) &&
+      state["version"] == 1 && state["current"] == "DECADES")
     return unless map.events.is_a?(Hash)
     return if map.events.values.any? { |event| event.name == DECADES_AGENT_NAME }
     return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
@@ -535,7 +552,7 @@ module BlueRegionTravel
       RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
       RPG::EventCommand.new(0,0,[])
     ]
-    map.events[event.id] = Game_Event.new(map.map_id, event)
+    map.events[event.id] = Game_Event.new(map.map_id, event, map)
   end
 
   # Johto's real New Bark point comes from its verified install manifest.
@@ -563,7 +580,7 @@ module BlueRegionTravel
       RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
       RPG::EventCommand.new(0,0,[])
     ]
-    map.events[event.id] = Game_Event.new(map.map_id,event)
+    map.events[event.id] = Game_Event.new(map.map_id,event,map)
   end
 
   # Pallet Town (source Map005), after merge into Decades, gets the same
@@ -603,22 +620,51 @@ module BlueRegionTravel
       RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
       RPG::EventCommand.new(0,0,[])
     ]
-    map.events[event.id] = Game_Event.new(map.map_id,event)
+    map.events[event.id] = Game_Event.new(map.map_id,event,map)
+  end
+
+  # Map setup is not always repeated after loading an existing save.
+  # Populate events BEFORE Spriteset_Map builds its character sprites, so a
+  # player already standing in Cherryhill can see the NPC on first load.
+  def self.attach_agents(map)
+    return unless map
+    attach_decades_agent(map)
+    attach_kanto_agent(map)
+    attach_johto_agent(map)
   end
 
   module DecadesTownAgent
     def setup(*args)
       result = super
-      BlueRegionTravel.attach_decades_agent(self)
-      BlueRegionTravel.attach_kanto_agent(self)
-      BlueRegionTravel.attach_johto_agent(self)
+      BlueRegionTravel.attach_agents(self)
       result
+    end
+  end
+
+  module VisibleAgentsOnLoad
+    def createSpritesets(*args)
+      if defined?($map_factory) && $map_factory &&
+         $map_factory.respond_to?(:maps)
+        $map_factory.maps.each { |map| BlueRegionTravel.attach_agents(map) }
+      else
+        BlueRegionTravel.attach_agents($game_map) if defined?($game_map)
+      end
+      super
+    end
+
+    def createSingleSpriteset(*args)
+      if defined?($map_factory) && $map_factory && args[0].is_a?(Integer)
+        BlueRegionTravel.attach_agents($map_factory.maps[args[0]])
+      end
+      super
     end
   end
 
   def self.install
     return if @installed
     Game_Map.prepend(DecadesTownAgent) if defined?(Game_Map) && !Game_Map.ancestors.include?(DecadesTownAgent)
+    Scene_Map.prepend(VisibleAgentsOnLoad) if defined?(Scene_Map) &&
+      !Scene_Map.ancestors.include?(VisibleAgentsOnLoad)
     PokemonStorageScreen.prepend(StorageRules)
     # Travel is deliberately NOT registered in the pause menu. Interact with
     # the NPC in Pallet, Cherryhill or New Bark instead.
