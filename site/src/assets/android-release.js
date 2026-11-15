@@ -85,15 +85,19 @@ const integratedReleasePrefix='android-multiregion-';
 // No static latest/download URL: the combined Android file does not exist
 // until a release really uploads a validated, compiled ZIP.
 export async function combinedAndroidRelease(fetcher=fetch){
+  // GitHub API ordering is not guaranteed to match publication chronology.
+  // In practice the API returned Android build 9 before newer build 15.
+  // Check the whole list so Downloads never offers a known stale ZIP.
+  let newest=null;
   for(let page=1;page<=3;page++){
     let releases;
     try{
       const url=api+'/releases?per_page=100'+(page>1?'&page='+page:'');
       const response=await fetcher(url);
-      if(!response.ok)return {state:'unavailable'};
+      if(!response.ok)return newest?.status??{state:'unavailable'};
       releases=await response.json();
-    }catch{return {state:'unavailable'};}
-    if(!Array.isArray(releases))return {state:'unavailable'};
+    }catch{return newest?.status??{state:'unavailable'};}
+    if(!Array.isArray(releases))return newest?.status??{state:'unavailable'};
     for(const release of releases){
       if(!release.tag_name?.startsWith(integratedReleasePrefix) || release.draft ||
          !/^[a-f0-9]{40}$/.test(release.target_commitish??''))continue;
@@ -102,12 +106,15 @@ export async function combinedAndroidRelease(fetcher=fetch){
       const prefix='https://github.com/'+repo+'/releases/download/';
       if(!asset.browser_download_url.startsWith(prefix) ||
          !asset.browser_download_url.endsWith('/'+integratedAsset))continue;
-      return {state:'published',tag:release.tag_name,revision:release.target_commitish,
-        bytes:asset.size,url:asset.browser_download_url};
+      const when=Date.parse(release.published_at||release.created_at||'')||0;
+      if(!newest || when>newest.when){
+        newest={when,status:{state:'published',tag:release.tag_name,
+          revision:release.target_commitish,bytes:asset.size,url:asset.browser_download_url}};
+      }
     }
     if(releases.length<100)break;
   }
-  return {state:'pending'};
+  return newest?.status??{state:'pending'};
 }
 
 export function combinedAndroidHtml(status){
