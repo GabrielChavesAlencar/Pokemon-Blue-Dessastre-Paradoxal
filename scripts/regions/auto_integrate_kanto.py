@@ -155,6 +155,26 @@ def integrate(project: Path = ROOT, game: Path | None = None,
     try:
         print("[KANTO AUTO] Preparando os mapas verificados de Kanto "
               "automaticamente no Decades...", flush=True)
+        # Prefer a previously audited Kanto pilot when present. The importer
+        # itself checks the full revision signature, Decades MapInfos/Tilesets
+        # hashes and the real map/PBS files BEFORE writing to game/. This
+        # helps existing players who have a local pilot but lost the RAR or
+        # cannot reach the author's Google Drive on the updater's first run.
+        cached = project / ".blue-work/kanto-pilot/Kanto pilot.json"
+        if cached.is_file():
+            try:
+                print("[KANTO AUTO] Conferindo piloto local ja preparado...", flush=True)
+                invoke(KANTO_IMPORTER, "--game", str(game), "--apply")
+                invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
+                return _persist(project, {"status": "integrated", "changed": True,
+                                          "source": "cached_verified_pilot"})
+            except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as cached_error:
+                print("[KANTO AUTO] Piloto em cache nao reutilizavel:", cached_error,
+                      flush=True)
+                if detect_existing(game) != "absent":
+                    raise RuntimeError(
+                        "Tentativa com cache deixou arquivos regionais parciais. "
+                        "Nao vou importar outra copia por cima.") from cached_error
         # Existing author-hosted source is hash-pinned and extracted as data
         # only by ensure_source.py (no downloaded executable/script is run).
         invoke(KANTO_SOURCE_BOOTSTRAP)
