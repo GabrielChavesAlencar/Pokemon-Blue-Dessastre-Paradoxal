@@ -269,3 +269,24 @@
 @media(max-width:580px){.pending-grid{grid-template-columns:1fr;padding:11px}.pending-card{padding:13px}.pending-group summary{padding:13px}}
 
 .content-pending-tag.pending-validation{border-color:#365373;background:#1c2c41;color:#a8c9ed}
+
+
+/* Kanto: read-only guide for dynamic balance and encounters. */
+.kanto-balance-page{display:flex;flex-direction:column;gap:6px}
+.kanto-balance-page>.section{margin:28px 0 12px}
+.kanto-balance-page h2{font-size:clamp(26px,3vw,34px);margin:0 0 14px}
+.kanto-balance-page h3{font:600 20px 'Barlow Condensed',sans-serif;margin:20px 0 12px}
+.kanto-balance-page .section>p{margin:13px 0;line-height:1.8;color:#aabbd0}
+.kanto-balance-page .section>p strong{color:#dceafd}
+.kanto-balance-page .panel{display:flex;flex-direction:column;gap:10px}
+.kanto-balance-page .panel p{color:#aabbd0;font-size:12px;line-height:1.75}
+.kanto-balance-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+.kanto-balance-table{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
+.kanto-balance-table th{padding:13px 15px;color:#c0dafa;background:#16253a;font-size:11px;white-space:nowrap}
+.kanto-balance-table td{padding:12px 15px;vertical-align:top;border-top:1px solid var(--line);color:#abbdd3}
+.kanto-balance-table td:first-child{color:#e7f1ff;font-weight:600}
+.kanto-balance-note{margin:17px 0 22px;line-height:1.75}
+.kanto-balance-note strong{color:#e7f1ff}
+.kanto-balance-note p{margin-top:12px}
+.kanto-balance-page .regular-grid{margin-top:20px}
+@media(max-width:650px){.kanto-balance-page>.section{margin:20px 0 9px}.kanto-balance-table{font-size:11px}.kanto-balance-table th,.kanto-balance-table td{padding:10px 11px}}
