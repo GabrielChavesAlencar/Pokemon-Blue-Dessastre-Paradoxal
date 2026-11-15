@@ -13,7 +13,7 @@ Ambos continuam sendo jogos RPG Maker XP para **JoiPlay + RPG Maker Plugin**, n�
 
 A geração anterior dos ZIPs **não contém o atualizador nem o inventário de arquivos**, portanto precisa fazer **uma instalação completa** do próximo ZIP distribuído pelo canal correto. **Não extraia a nova instalação por cima da anterior.** Faça backup dos saves usando a opção `Onde fica meu save?` no Decades; no Kanto, respeite o perfil Kanto Piloto. Mantenha cópias dos arquivos `File A-H.rxdata`, `Auto 1-3.rxdata`, `Game.rxdata` e `.bak` existentes, inclusive se estiverem no diretório de saves configurado no JoiPlay.
 
-Após essa migração, alterações dos próximos builds poderão ser baixadas de forma incremental quando houver patch direto compatível. Se pular uma ou mais versões, ou se ocorrer alteração do executável, configuração mkxp ou outro arquivo crítico, o atualizador pedirá um **ZIP completo** — não fará uma atualização potencialmente perigosa.
+Após essa migração, alterações dos próximos builds poderão ser baixadas de forma incremental quando houver patch direto compatível. Se pular versões ou mudar arquivos críticos, o cliente novo instalará pelo Termux o **ZIP completo validado**, com backup da instalação antiga. Clientes antigos ainda precisam da migração descrita no fim do guia.
 
 ## No Android: verificar e instalar
 
@@ -27,11 +27,11 @@ Após essa migração, alterações dos próximos builds poderão ser baixadas d
 # Exemplo Decades; para Kanto troque a pasta por Pokemon-Blue-Kanto-Android.
 cd ~/storage/shared/Download/Pokemon-Blue-Android
 python ATUALIZAR-ANDROID.py
-# Se o patch for oferecido:
+# Para instalar patch ou ZIP completo pelo cliente novo:
 python ATUALIZAR-ANDROID.py --update
 ```
 
-O primeiro comando consulta a versão disponível; o segundo baixa o patch e aplica somente se o canal, a revisão de origem e o inventário coincidirem. Abra depois o mesmo `Game.exe` no JoiPlay.
+O primeiro comando consulta a versão disponível. O segundo baixa o patch compatível ou, sem ele, baixa e aplica o ZIP completo validado, preservando a pasta anterior e os saves locais. Abra depois o mesmo `Game.exe` no JoiPlay.
 
 ## Como funciona tecnicamente
 
@@ -111,7 +111,7 @@ python ATUALIZAR-ANDROID.py --update
 ```
 
 4. O atualizador valida o canal `multiregion`, hash, tamanho, versão de origem, arquivos protegidos e faz backups antes de aplicar. Se houver patch direto compatível, baixa apenas as diferenças. **Não** use o atualizador ou pacote `decades` puro nesta pasta.
-5. Reabra o mesmo jogo no JoiPlay e teste **New Game → Decades / Kanto / Hoenn**. Se não existir patch direto, baixe o ZIP da edição integrada mais recente e extraia em pasta nova após copiar os saves. **Nunca** sobrescreva a instalação antiga sem backup.
+5. Reabra o mesmo jogo no JoiPlay e teste **New Game → Decades / Kanto / Hoenn**. Se não houver patch direto, use o cliente novo do Termux para aplicar o ZIP completo. O jogo antigo permanecerá numa pasta de backup. No atualizador antigo, siga antes a migração indicada no fim deste documento.
 
 O workflow `android-multiregion.yml` consulta a última release integrada válida antes de gerar nova versão, tenta produzir um `Blue-Android-Decades-Kanto-Hoenn.patch.zip` e o publica se a atualização for segura e menor que o ZIP completo. O site mostra a release completa; o Termux escolhe o patch compatível automaticamente.
 
