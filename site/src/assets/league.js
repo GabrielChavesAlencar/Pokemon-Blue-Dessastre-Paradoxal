@@ -1,6 +1,6 @@
 import {esc,icon,sprite} from './utils.js';
 import {teamPokemon} from './story.js';
-import {kantoBalanceNote,kantoBalanceLink} from './kanto-balance.js';
+import {kantoBalanceNote} from './kanto-balance.js';
 
 let cache;
 export async function loadStrongestTeams(fetcher=fetch){
