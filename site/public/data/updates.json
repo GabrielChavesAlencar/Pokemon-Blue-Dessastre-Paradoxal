@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "144f942168717e73bf307751a90ba1c2c6797255",
+      "date": "2026-11-15T13:44:46-03:00",
+      "title": "feat(decades): Mega Z-Move Tera ligados e Dynamax desligado por padrao sem menu inicial",
+      "category": "Novidades"
+    },
+    {
       "sha": "6917371e3c6799aa8701c8457138be2941e025f3",
       "date": "2026-11-15T13:42:44-03:00",
       "title": "fix(travel): chegar a Cherryhill sem reiniciar introducao/menus Decades e rejeitar ponto antigo Map001",
