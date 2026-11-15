@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "889f9cdfab5e87ac9d3562c196c9a5837b0d334a",
+      "date": "2026-11-15T12:46:56-03:00",
+      "title": "fix(installer): corrigir escape do selo de compilacao e evitar recompilar a cada abertura",
+      "category": "Correções"
+    },
+    {
       "sha": "d967f7e6f693527856270530e308dddfdc0b5d91",
       "date": "2026-11-15T12:46:36-03:00",
       "title": "fix(installer): recompilar trainers_kanto no Blue-Story para carregar equipes Gary",
