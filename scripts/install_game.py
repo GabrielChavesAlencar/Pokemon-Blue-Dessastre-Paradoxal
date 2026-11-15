@@ -73,6 +73,23 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
             if not allow_kanto_missing:
                 raise RuntimeError('Modulo automatico de Kanto nao foi baixado pela revisao atual.')
             print('[KANTO AUTO] Modulo regional ausente. Iniciando apenas Decades.',flush=True)
+        # Hoenn is an OPTIONAL local, audited import. Never prevent Decades/Kanto
+        # startup when the private donor ZIP is absent, incompatible or unverified.
+        # Build the 199 Hoenn maps against the CURRENT (possibly Kanto-integrated)
+        # MapInfos/Tilesets, rather than copying an isolated QA game's save profile.
+        if skip_kanto:
+            print('[HOENN AUTO] Ignorado na preparação de QA/CI.',flush=True)
+        else:
+            hoenn_path=project/'scripts/regions/auto_integrate_hoenn.py'
+            if hoenn_path.is_file():
+                spec=importlib.util.spec_from_file_location('blue_auto_integrate_hoenn',hoenn_path)
+                hoenn=importlib.util.module_from_spec(spec);spec.loader.exec_module(hoenn)
+                result=hoenn.integrate(project,game)
+                print('[HOENN AUTO] Resultado:',result['status'],flush=True)
+                if not result['ready']:
+                    print('[HOENN AUTO] Acesso no Game.exe principal permanece bloqueado:',result['reason'],flush=True)
+                if result['changed']:
+                    run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')
 
