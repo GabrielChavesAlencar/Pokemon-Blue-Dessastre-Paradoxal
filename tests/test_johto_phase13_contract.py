@@ -104,7 +104,9 @@ class JohtoPhase13ContractTests(unittest.TestCase):
         self.assertTrue('when "DECADES"' in self.travel_runtime)
         self.assertIn('source_valid?(state) && %w[DECADES KANTO JOHTO]', self.travel_runtime)
         self.assertIn('johto_installed?', self.travel_runtime)
-        self.assertIn('state["leagues"].include?("JOHTO")', self.travel_runtime)
+        # The old phase-13 document preserves its historical league exits,
+        # but the current transport policy is free at the starting-town NPC.
+        self.assertNotIn('state["leagues"].include?("JOHTO")', self.travel_runtime)
         self.assertIn('BlueRegions.unlocked(state) & ["KANTO", "HOENN"]',
                       self.script)
 
