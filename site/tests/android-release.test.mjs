@@ -23,7 +23,7 @@ test('falha da API não inventa revisão e dados externos são escapados',async(
 test('pilotos só têm link quando os ZIPs regionais existem de verdade',async()=>{
   const status=await androidReleaseStatus(fetcher({path:'.github/workflows/battle-hub-release.yml',head_sha:sha,status:'completed'}));
   assert.match(androidPilotsHtml(status),/Piloto Kanto · indisponível/);
-  assert.match(androidPilotsHtml(status),/href="\/pilotos\/johto-android\.txt" download/);
+  assert.match(androidPilotsHtml(status),/href="\/data\/pilotos\/johto-android\.txt" download/);
   assert.doesNotMatch(androidPilotsHtml(status),/\/releases\/download\//);
   const releaseWithPilots={...release,assets:[...release.assets,
     {name:'Blue-Android-Kanto-Piloto.zip',state:'uploaded',size:3000},
@@ -33,7 +33,7 @@ test('pilotos só têm link quando os ZIPs regionais existem de verdade',async()
   const html=androidPilotsHtml(published);
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Kanto-Piloto\.zip/);
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Johto-Piloto\.zip/);
-  assert.match(html,/href="\/pilotos\/hoenn-android\.txt" download/);
+  assert.match(html,/href="\/data\/pilotos\/hoenn-android\.txt" download/);
   assert.doesNotMatch(androidPilotsHtml({state:'unavailable'}),/\/releases\/download\//);
 });
 
@@ -47,7 +47,7 @@ test('Kanto tem release experimental própria; download não depende do ZIP gera
   assert.equal(regional.johto,null);
   const html=androidPilotsHtml({state:'unavailable',regional});
   assert.match(html,/releases\/download\/kanto-android-512-abc1234\/Blue-Android-Kanto-Piloto\.zip/);
-  assert.match(html,/\/pilotos\/johto-android\.txt/);
+  assert.match(html,/\/data\/pilotos\/johto-android\.txt/);
   assert.doesNotMatch(html,/href="[^"]*Blue-Android-Johto-Piloto\.zip"/);
   const malformed=await regionalAndroidReleases(async()=>({ok:true,json:async()=>[
     {...release,target_commitish:'not-sha'},
@@ -79,14 +79,14 @@ test('pilotos publicados na página 2 ainda são descobertos e Johto não usa o 
   assert.equal(regional.johto.tag,johto.tag_name);
   const html=androidPilotsHtml({regional});
   assert.match(html,/Blue-Android-Johto-Piloto[.]zip/);
-  assert.match(html,/\/pilotos\/hoenn-android\.txt/);
+  assert.match(html,/\/data\/pilotos\/hoenn-android\.txt/);
 });
 
 test('guias regionais existem para Windows e Android enquanto não há ZIP completo',()=>{
   for(const platform of ['windows','android']){
     const html=androidPilotsHtml({state:'unavailable',regional:{}},platform);
     for(const region of ['johto','hoenn']){
-      const guide=`/pilotos/${region}-${platform}.txt`;
+      const guide=`/data/pilotos/${region}-${platform}.txt`;
       assert.ok(existsSync(new URL('../public'+guide,import.meta.url)));
       assert.ok(html.includes(`href="${guide}" download`));
     }

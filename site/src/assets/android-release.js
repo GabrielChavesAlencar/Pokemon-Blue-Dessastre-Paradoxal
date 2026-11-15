@@ -97,7 +97,7 @@ export function androidPilotsHtml(status,platform='android'){
     const href=enabled?'https://github.com/'+repo+'/releases/download/'+encodeURIComponent(tag)+'/'+asset:'';
     const hasSetup=!enabled&&(id==='johto'||id==='hoenn');
     const windowsAlternative=!enabled&&!hasSetup&&platform==='windows';
-    const setupHref=hasSetup?`/pilotos/${id}-${platform==='android'?'android':'windows'}.txt`:'';
+    const setupHref=hasSetup?`/data/pilotos/${id}-${platform==='android'?'android':'windows'}.txt`:'';
     const label=enabled?'Baixar piloto '+region+' · .zip':windowsAlternative?'Baixar História · testar '+region:'Piloto '+region+' · indisponível';
     const action=hasSetup?
       `<a class="button button-secondary" href="${setupHref}" download>Baixar guia de montagem · .txt</a>`+
