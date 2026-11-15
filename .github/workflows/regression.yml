@@ -83,6 +83,7 @@ jobs:
           ruby tests/kanto_viridian_route2_runtime.rb scripts/regions/KantoPilot.rb
           ruby tests/kanto_running_shoes_runtime.rb scripts/regions/KantoPilot.rb
           ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
+          ruby tests/party_experience_runtime.rb scripts/battle_polish/PartyExperience.rb
           ruby tests/kanto_hm_gate_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionalPolicy.rb site/public/data/regions.json
           ruby -c scripts/battle_polish/Story.rb
           ruby -c scripts/regions/KantoPilot.rb
