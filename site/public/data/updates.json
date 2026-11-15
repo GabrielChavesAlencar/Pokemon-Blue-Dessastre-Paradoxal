@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f4871651121c7f7b48d633b19fe92de7f143f060",
+      "date": "2026-11-15T16:17:39-03:00",
+      "title": "fix(hoenn): sincronizar marcador real e validar manifesto compacto",
+      "category": "Correções"
+    },
+    {
+      "sha": "1d38507d8a2b95a89d5cc12f3dc733db14954cdc",
+      "date": "2026-11-15T16:17:36-03:00",
+      "title": "fix(hoenn): sincronizar marcador real e validar manifesto compacto",
+      "category": "Correções"
+    },
+    {
+      "sha": "d377367fee0c1cb5fd358521c8250f2675eada0c",
+      "date": "2026-11-15T16:17:33-03:00",
+      "title": "fix(hoenn): sincronizar marcador real e validar manifesto compacto",
+      "category": "Correções"
+    },
+    {
       "sha": "41a2fd6d3156405e1618315995b2bd17148d2084",
       "date": "2026-11-15T16:15:24-03:00",
       "title": "fix(hoenn): incluir posicao auditada de Littleroot no marcador runtime",
