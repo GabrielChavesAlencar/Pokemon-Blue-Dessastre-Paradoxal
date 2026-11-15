@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9d469a66b1e31b390d5f6ee211b2e2dc1862d644",
+      "date": "2026-11-15T13:12:55-03:00",
+      "title": "ci(kanto): criar regressao independente para Gary sem bloqueio por testes regionais antigos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "63d4ce2e5eca41daed2eb789cddaa7a51cfc2150",
       "date": "2026-11-15T13:11:51-03:00",
       "title": "test(johto): alinhar contrato historico a viagem livre por NPC",
