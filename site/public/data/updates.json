@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "42ef8065c4441bd21b981acebeaba611b5b2bed0",
+      "date": "2026-11-15T15:45:25-03:00",
+      "title": "test(regions): derrota após troca de região volta ao Centro local sem duplicar cura",
+      "category": "Testes"
+    },
+    {
       "sha": "bad9aed5f646da9dadffc5f7b5339be1b40a07a1",
       "date": "2026-11-15T15:43:49-03:00",
       "title": "fix(regions): carregar proteção regional de checkpoint no jogo e pilotos",
