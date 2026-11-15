@@ -41,6 +41,7 @@ class MultiRegionPackagingTests(unittest.TestCase):
         self._write(mobile.MOBILE, b"fixture mobile")
         self._write(mobile.KANTO_PLUGIN, b"fixture kanto")
         self._write(mobile.HOENN_PLUGIN, b"fixture hoenn")
+        self._write(mobile.REGION_START_PLUGIN, b"fixture RegionStart")
         for rel in mobile.REGIONAL_FILES:
             self._write(rel, b"required regional metadata")
         self._write("Data/blue-kanto-install.json", b'{"maps": {"7": 701}}')
@@ -64,9 +65,12 @@ class MultiRegionPackagingTests(unittest.TestCase):
     def test_compiled_plugin_must_match_actual_ruby(self):
         valid=zlib.compress(b"def self.test; true; end")
         corrupt=zlib.compress(b"def self.test; false; end")
-        records=[(None,None,[(b"HoennPilot.rb",valid),(b"KantoPilot.rb",corrupt)])]
+        records=[(None,None,[(b"HoennPilot.rb",valid),
+                                   (b"RegionStart.rb",valid),
+                                   (b"KantoPilot.rb",corrupt)])]
         with patch.object(mobile,"loads",return_value=records):
             mobile.compiled_region(b"fixture", "HoennPilot.rb", b"def self.test; true; end")
+            mobile.compiled_region(b"fixture", "RegionStart.rb", b"def self.test; true; end")
             with self.assertRaisesRegex(ValueError,"KantoPilot"):
                 mobile.compiled_region(b"fixture", "KantoPilot.rb", b"def self.test; true; end")
 
@@ -80,7 +84,8 @@ class MultiRegionPackagingTests(unittest.TestCase):
         with zipfile.ZipFile(self.output) as archive:
             root="Pokemon-Blue-Android/"
             names=set(archive.namelist())
-            for rel in (mobile.KANTO_PLUGIN,mobile.HOENN_PLUGIN,*mobile.REGIONAL_FILES,
+            for rel in (mobile.KANTO_PLUGIN,mobile.HOENN_PLUGIN,
+                        mobile.REGION_START_PLUGIN,*mobile.REGIONAL_FILES,
                         "Data/Map700.rxdata","Data/Map701.rxdata"):
                 self.assertIn(root+rel,names)
             self.assertNotIn(root+"Saves/File A.rxdata",names)
