@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "58b5afa21661578366911e0a1fc980b082488407",
+      "date": "2026-11-15T17:35:10-03:00",
+      "title": "test(android): ZIP compartilhado exige Kanto Hoenn compilados e canal separado",
+      "category": "Testes"
+    },
+    {
       "sha": "5bceb967ba3840fb3b108254c930e4a3d6a7b7b3",
       "date": "2026-11-15T17:34:15-03:00",
       "title": "fix(site): explicar que Android multirregional ainda exige testes em aparelho real",
