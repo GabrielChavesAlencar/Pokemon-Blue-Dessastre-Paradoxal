@@ -8,13 +8,22 @@ Abra [Downloads](https://pokemondessastreparadosal.vercel.app/downloads) e escol
 
 Os dois EXEs usam uma instalação compartilhada. Em um PC novo, ela fica em `%LOCALAPPDATA%/PokemonBlueDessastreParadoxal`. Quando o inicializador está dentro de uma instalação existente, reconhece a pasta do projeto. Feche o jogo antes de atualizar. Saves, equipes, `game/` e ferramentas privadas são preservados na atualização do código; arquivos substituídos recebem backup.
 
-## Testar Kanto pelo EXE do Modo História
+## Kanto automático no instalador do site (Windows)
 
-O **`Blue-Story.exe`** do site instala/atualiza o jogo. Quando a janela principal `game/Game.exe` abrir, o menu de slots terá as opções **Continuar → Novo Jogo → Testar Kanto** (nessa ordem quando houver save). O novo comando **Testar Kanto** usa o lançador experimental que vem com a mesma instalação, sem exigir que você abra arquivos BAT.
+O **Blue-Story.exe** da página de downloads confere a `main` ao abrir e executa o instalador normal `scripts/install_game.py --apply`. **Esse fluxo agora integra automaticamente Kanto ao Decades principal**; não é preciso executar `KANTO_INSTALAR_NO_JOGO.bat` manualmente.
 
-A primeira execução do teste pode baixar a **fonte FRLG original fixada** e preparar uma cópia isolada do piloto com o Python portátil já incluído pelo instalador. São verificados o SHA-256 do pacote e os destinos dos mapas; nenhum arquivo de save da campanha normal é sobrescrito. O jogo principal fecha seu menu depois de abrir o piloto em outro processo, e o relatório de jogabilidade fica em `.blue-work/kanto-gui-reports`. Se o servidor de origem estiver indisponível, o teste mostra uma mensagem de erro sem apagar saves.
+Na primeira instalação com internet, após preparar a base Decades/Blue, o instalador:
 
-A opção é adicionada por [`TitleKanto.rb`](../scripts/battle_polish/TitleKanto.rb) e não exige trocar o `Game.exe` original por um binário modificado. [Veja o roteiro de testes da fase 07](KANTO_TESTE_EXPERIMENTAL.md).
+1. Obtém a fonte editável FRLG no endereço do autor original, a partir da versão fixada no manifesto. Valida o **SHA-256 antes de extrair** e só aceita mapas, PBS e gráficos permitidos (nunca executáveis/scripts da fonte).
+2. Monta e audita o **pacote atual com 142 mapas catalogados** em `.blue-work`, preservando IDs e recusando colisões; grava os arquivos regionais em `game/` com backup/rollback.
+3. Atualiza os plugins Blue, mescla as traduções de Kanto com as originais de Decades e solicita recompilação dos dados do Essentials.
+4. Abre o **mesmo Game.exe**. Em **Novo Jogo**, selecione **Kanto** para começar na casa de Pallet ou **Decades** para manter a campanha original. Os saves existentes não são migrados nem excluídos.
+
+**Em atualizações posteriores**, o instalador reconhece o pacote já integrado, verifica seus arquivos e pode atualizar o **plugin Ruby próprio de Kanto** quando o hash corresponder ao instalado anteriormente. Jamais substitui mapas/MapIDs ou alterações locais de terceiros automaticamente. O procedimento de migração de instalações antigas com 13/25 mapas continua bloqueado, para não corromper saves.
+
+**Falha de download/offline?** A falta da fonte FRLG ou um importador incompleto não impede iniciar **Decades**: Kanto aparecerá como **instalação necessária**, ou o instalador imprimirá um aviso de migração manual. Consulte o log `.blue-work/launcher.log` e [KANTO_INTEGRACAO_DECADES.md](KANTO_INTEGRACAO_DECADES.md). O pacote Android/JoiPlay permanece separado e não recebe essa montagem automática do EXE Windows.
+
+A opção **Testar Kanto** continua disponível para o piloto isolado, com saves separados. A integração automática não equivale a uma aprovação jogável dos mapas/eventos: a campanha principal ainda precisa passar por testes reais no Game.exe.
 
 ## Conteúdo instalado
 
