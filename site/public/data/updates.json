@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7fbdf9a15e19502aeddf82eb9547feaa9ce61000",
+      "date": "2026-11-15T16:08:46-03:00",
+      "title": "ci(hoenn): testar importador, novo jogo e regressoes regionais",
+      "category": "Novidades"
+    },
+    {
+      "sha": "0c6e1157eed26c38b2bbdf296da9c1eede67f47f",
+      "date": "2026-11-15T16:08:33-03:00",
+      "title": "test(hoenn): menu principal exige manifesto regional e MapIDs coerentes",
+      "category": "Testes"
+    },
+    {
       "sha": "f4e8d17eff2f7001025bb702260265740efd7da2",
       "date": "2026-11-15T16:07:48-03:00",
       "title": "test(hoenn): proteger maps Kanto e saves do Decades na integracao",
