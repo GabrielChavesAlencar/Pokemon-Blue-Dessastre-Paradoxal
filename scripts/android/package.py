@@ -168,6 +168,7 @@ def build(game,output,revision,channel='decades'):
             'Atualizacoes: feche o JoiPlay e execute ATUALIZAR-ANDROID.py no Termux com Python.\n'
             'Verifique primeiro com: python ATUALIZAR-ANDROID.py\n'
             'Para baixar e instalar: python ATUALIZAR-ANDROID.py --update\n'
+            'Se nao houver patch, Termux instala o ZIP inteiro com backup dos saves.\n'
             'Guia: docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md no GitHub.\n'
             'Ainda requer validacao em aparelhos Android reais.\nRevision: '+revision+'\n')
         if channel == 'multiregion':
