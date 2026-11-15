@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "76c847f7fb17384c81745caee80a3c3f064bd7e5",
+      "date": "2026-11-15T10:50:13-03:00",
+      "title": "docs(start): diferenciar Kanto integrado dos pilotos Johto Hoenn Sinnoh",
+      "category": "Documentação"
+    },
+    {
       "sha": "1112105d513be5a084b0e887c1096fdbef57f648",
       "date": "2026-11-15T10:49:09-03:00",
       "title": "ci(kanto): testar integracao novo jogo, traducao e viagem pos-Liga",
