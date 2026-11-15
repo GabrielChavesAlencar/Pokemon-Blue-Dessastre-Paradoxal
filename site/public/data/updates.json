@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bd7510507929439916db1e4ef478818d43d70970",
+      "date": "2026-11-15T19:11:05-03:00",
+      "title": "Allow forced Android full reinstall to repair even same revision",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c5fc153bf86f235c7bb55690fa4ee21d536b69d7",
       "date": "2026-11-15T19:10:32-03:00",
       "title": "Clarify full install is only needed on first setup or channel change",
