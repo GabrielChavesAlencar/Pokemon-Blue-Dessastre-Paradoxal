@@ -26,3 +26,21 @@ Todos os confrontos **da campanha controlados por `BlueKantoPilot`** (rival inic
 6. Recarregue o save e repita: não pode aparecer na posição da derrota nem em mapa inexistente.
 
 Os testes Ruby verificam contrato e estado simulado, **não substituem** uma partida no `Game.exe`. Só declarar aprovação jogável após teste visual.
+
+
+## Atualização 15/11/2026 — derrota após viagem entre regiões
+
+A regra anterior, de retornar ao último Centro registrado, permanece válida **quando esse Centro pertence à região atual**. O problema adicional era o campo nativo `$PokemonGlobal.pokecenterMapId` continuar apontando para outra região depois de uma viagem.
+
+O módulo `scripts/battle_polish/RegionalRespawn.rb`, carregado por `Story.rb`, observa `pbSetPokemonCenter` e prepara o checkpoint **antes** do `pbStartOver` nativo. Ele não recupera HP, executa teleporte extra nem altera a progressão. O mesmo save mantém um registro de Centros visitados **por região**, atualizado pelas enfermeiras reais; Oak em Pallet não é classificado incorretamente como Centro Pokémon.
+
+Na derrota:
+
+1. Um checkpoint nativo já pertencente à região atual continua em uso, inclusive em saves antigos. Um Centro da mesma região visitado mais recentemente prevalece.
+2. Se o último checkpoint é de **outra região**, recupera-se o último Centro confirmado da região atual.
+3. Se ainda não há Centro regional salvo, utiliza-se um ponto local real: **Viridian** em Kanto (Pallet não possui Centro), o ponto de recuperação de **Cherryhill** em Decades, e o centro indicado por metadados de **Cherrygrove** em Johto (New Bark não possui Centro). Em cópia isolada de Hoenn, a fonte é Oldale. Se a fonte ainda não disponibiliza um Centro verificado, só se usa a chegada segura regional já instalada; não são criados mapas nem interiores fictícios.
+4. Se o checkpoint regional não puder ser verificado, o módulo não grava coordenadas inventadas. O motor nativo continua sendo responsável pelo blackout; a ausência da fonte precisa ser investigada no Game.exe.
+
+**Regressão automatizada:** `ruby tests/regional_respawn_runtime.rb scripts/battle_polish/RegionalRespawn.rb`. Simula Kanto → Decades → Kanto, Kanto → Johto e retornos; visita a enfermeiras distintas; revive saves legados sem metadados; rejeita IDs inexistentes; exige uma única cura e uma única chamada ao `pbStartOver`. Continua independente do teste `tests/kanto_blackout_runtime.rb`.
+
+**Teste real pendente (Windows/Android):** visitar Centro de Kanto, trocar para Decades, perder sem curar, confirmar recuperação em Cherryhill; curar em Decades, voltar para Kanto e perder sem curar, confirmar o Centro de Kanto, sem carregar um mapa de Decades. Repetir após salvar/recarregar e, quando o instalador de Johto estiver validado, testar New Bark → Cherrygrove. O Centro inicial deve existir e ter tile de respawn passável no pacote instalado. Essa QA visual não foi afirmada como concluída.
