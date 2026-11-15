@@ -276,7 +276,7 @@ module Compiler
     alias blue_presentation_original_main main
     def main
       blue_presentation_original_main
-      BluePresentation.install;BlueStory.install
+      BluePresentation.install;BlueStory.install;BluePartyExperience.install
       BlueCampaign.install;BlueRegions.install;BlueRegionStart.install;BlueRegionTravel.install;BlueRegionalPolicy.install
       BlueJourney.install
       BlueBattleUI.install;BlueLocale.install
