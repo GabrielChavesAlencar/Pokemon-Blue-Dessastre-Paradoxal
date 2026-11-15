@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f98dbcb54d8ce9c2556f55994d99d53cc4581d6a",
+      "date": "2026-11-15T16:19:18-03:00",
+      "title": "test(hoenn): validar manifesto compacto em ambiente sem JSON no Essentials",
+      "category": "Testes"
+    },
+    {
+      "sha": "8f4612b535c49325298da88c0aa893a5e5eed573",
+      "date": "2026-11-15T16:19:16-03:00",
+      "title": "test(hoenn): impedir interceptação do menu Novo Jogo principal pelo piloto",
+      "category": "Novidades"
+    },
+    {
       "sha": "7ccaf82e5e07e48114958fea145e89ec1a8dd4ca",
       "date": "2026-11-15T16:18:54-03:00",
       "title": "fix(hoenn): impedir plugin do piloto de sobrescrever Novo Jogo Decades/Kanto",
