@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2776b5ea468abe6fa9755b16eafd46118c959fea",
+      "date": "2026-11-15T11:08:33-03:00",
+      "title": "fix(test): alinhar expressao do guia de Kanto automatico",
+      "category": "Correções"
+    },
+    {
       "sha": "3a34383dd3324666b7ccbe2def464ad3e18ad9c8",
       "date": "2026-11-15T11:08:11-03:00",
       "title": "test(site): validar orientacao de Kanto automatico no instalador de Historia",
