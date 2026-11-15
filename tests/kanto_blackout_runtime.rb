@@ -26,6 +26,16 @@ module BlueRegions
   def self.snapshot; $PokemonGlobal.blue_regions; end
   def self.profile(_state,_full); :world_champion_rematch; end
 end
+# This fixture tests blackout semantics, not Kanto PBS compilation.
+# The production Gary test checks all three real trainer registry versions.
+module GameData
+  class TrainerType
+    def self.exists?(_type); true; end
+  end
+  class Trainer
+    def self.exists?(_type, _name, _version); true; end
+  end
+end
 module BlueMusic
   def self.kanto_me_play(*_args); end
   def self.with_kanto_scene(_scene); yield; end
