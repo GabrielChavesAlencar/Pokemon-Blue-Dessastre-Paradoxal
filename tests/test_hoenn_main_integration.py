@@ -250,6 +250,11 @@ class HoennVerifiedPublicDownloaderTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.stage = Path(self.tmp.name) / "staged"
         self.stage.mkdir()
+        # The fake stage is inside a temporary fixture, not the actual
+        # repository. Keep the production path boundary in place.
+        root_patch = patch.object(downloader, "ROOT", Path(self.tmp.name))
+        root_patch.start()
+        self.addCleanup(root_patch.stop)
         self.body = b"Audited donor data; never run this as code."
         self.rel = "PBS/encounters.txt"
         self.digest = hashlib.sha1(
