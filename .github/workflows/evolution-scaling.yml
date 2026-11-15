@@ -1,0 +1,35 @@
+name: Evolucao dinamica - encontros e treinadores
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/battle_polish/EvolutionScaling.rb'
+      - 'scripts/battle_polish/Campaign.rb'
+      - 'scripts/battle_polish/Story.rb'
+      - 'scripts/battle_polish/Habitat.rb'
+      - 'scripts/battle_polish/install.py'
+      - 'scripts/battle_polish/meta.txt'
+      - 'tests/evolution_scaling_runtime.rb'
+      - 'tests/evolution_battle_runtime.rb'
+      - '.github/workflows/evolution-scaling.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ruby-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxe e integracao
+        run: |
+          ruby -c scripts/battle_polish/EvolutionScaling.rb
+          ruby -c scripts/battle_polish/Campaign.rb
+          ruby -c scripts/battle_polish/Story.rb
+          ruby -c scripts/battle_polish/Habitat.rb
+          python -m py_compile scripts/battle_polish/install.py
+          ruby -c tests/evolution_scaling_runtime.rb
+          ruby -c tests/evolution_battle_runtime.rb
+      - name: Evolucoes de nivel pedra troca felicidade e habitats
+        run: ruby tests/evolution_scaling_runtime.rb scripts/battle_polish/EvolutionScaling.rb
+      - name: Integracao com equipes e cap BST/70/90
+        run: ruby tests/evolution_battle_runtime.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Story.rb scripts/battle_polish/Campaign.rb
