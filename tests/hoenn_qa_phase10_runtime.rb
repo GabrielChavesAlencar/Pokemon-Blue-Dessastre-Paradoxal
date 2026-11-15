@@ -114,7 +114,10 @@ assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
 $PokemonGlobal.blue_regions=BlueRegions.new_state("KANTO")
 region=$PokemonGlobal.blue_regions
 region["achievements"]["HOENN"]=BlueHoennPilot::QA8_LEAGUE_BADGES.dup
-flags=BlueHoennPilot.state
+# The Hoenn plugin correctly returns nil for its active state while standing
+# in Kanto, even when old Hoenn milestone flags exist in this shared save.
+flags=region["hoenn_pilot"]={}
+assert10(BlueHoennPilot.state.nil?, "Hoenn event script ran in Kanto")
 flags["wally_road_defeated"]=true
 flags["champion_wallace_defeated"]=true
 %w[sidney phoebe glacia drake].each{|key|flags["elite_#{key}_defeated"]=true}
