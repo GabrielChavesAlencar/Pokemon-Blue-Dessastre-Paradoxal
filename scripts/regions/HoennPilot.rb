@@ -3479,6 +3479,29 @@ module BlueHoennPilot
     true
   end
 
+  module ConnectedMapDisplay
+    def display_x=(value)
+      return super unless blue_hoenn_neighbor_display?
+      @display_x = value
+    end
+
+    def display_y=(value)
+      return super unless blue_hoenn_neighbor_display?
+      @display_y = value
+    end
+
+    private
+
+    def blue_hoenn_neighbor_display?
+      # The map factory positions neighbors relative to the current map.
+      # SnapEdges clamps the current camera, but clamping a neighbor's
+      # world offset makes its tiles and events overlap the current map.
+      return false if !$game_map || equal?($game_map)
+      maps = BlueHoennPilot.metadata[1]
+      maps.value?(map_id) && maps.value?($game_map.map_id)
+    end
+  end
+
   module Music
     private
 
@@ -3521,6 +3544,8 @@ module BlueHoennPilot
     Object.prepend(Music) unless Object.ancestors.include?(Music)
   end)
 end
+
+Game_Map.prepend(BlueHoennPilot::ConnectedMapDisplay) if defined?(Game_Map)
 
 if defined?(Spriteset_Global)
   Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)

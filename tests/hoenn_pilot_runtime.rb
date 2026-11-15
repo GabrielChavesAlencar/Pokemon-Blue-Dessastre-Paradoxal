@@ -5,6 +5,24 @@ class PokemonGlobalMetadata
   attr_accessor :blue_regions
 end
 
+# The native setters clamp offsets on a map with SnapEdges.
+class Game_Map
+  attr_accessor :map_id
+  attr_reader :display_x, :display_y
+
+  def initialize(id)
+    @map_id = id
+  end
+
+  def display_x=(value)
+    @display_x = value.clamp(0, 640)
+  end
+
+  def display_y=(value)
+    @display_y = value.clamp(0, 640)
+  end
+end
+
 class HoennDummyPlayer
   attr_accessor :has_pokedex, :has_running_shoes, :gender
   attr_reader :party, :healed
@@ -148,7 +166,25 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
 
     $PokemonGlobal.blue_regions["current"] = "HOENN"
     BlueHoennPilot.define_singleton_method(:metadata) { [[701,25,6],{7=>700,8=>701,101=>703}] }
-    $game_map = Struct.new(:map_id).new(701)
+    $game_map = Game_Map.new(700)
+    route = Game_Map.new(703)
+    $game_map.display_x = -128
+    $game_map.display_y = 3008
+    route.display_x = -128
+    route.display_y = 3008
+    check([$game_map.display_x, $game_map.display_y] == [0, 640], "Town camera must snap")
+    check([route.display_x, route.display_y] == [-128, 3008], "Neighbor offset snapped into town")
+    town = $game_map
+    $game_map = route
+    route.display_y = 3008
+    town.display_y = -1920
+    check(route.display_y == 640, "Route camera must snap after entering it")
+    check(town.display_y == -1920, "Town snapped into the route after crossing the border")
+    $game_map = Game_Map.new(1)
+    route.display_y = 3008
+    check(route.display_y == 640, "Unrelated map must retain the native offset behavior")
+
+    $game_map = Game_Map.new(701)
     check(!BlueHoennPilot.home_exit_allowed?, "Player can leave without clock or mother")
     check(BlueHoennPilot.mother, "Intro with mother missing")
     check(!BlueHoennPilot.home_exit_allowed?, "Mother alone opens the home door")

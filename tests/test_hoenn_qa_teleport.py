@@ -13,7 +13,7 @@ sys.path.insert(0,str(ROOT))
 sys.path.insert(0,str(ROOT/"scripts/regions"))
 
 from pilot_hoenn import SOURCE_MAPS, build_test_stops, open_tile, serialize_test_stops
-from hoenn_qa_teleport_upgrade import ensure_test_tools, prepare_updates
+from hoenn_qa_teleport_upgrade import COMPILE_REQUEST, PLUGIN, ensure_test_tools, prepare_updates
 from server.ruby_marshal import RubyData, RubyObject
 
 
@@ -71,6 +71,27 @@ class TeleportSourceTests(unittest.TestCase):
                 ensure_test_tools(outside, outside)
         with self.assertRaisesRegex(ValueError, "Fase12"):
             prepare_updates(ROOT / ".blue-work/hoenn-qa-fase10", ROOT / "game")
+
+    def test_refreshing_the_pilot_script_schedules_native_recompilation(self):
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            copy = root / "hoenn-qa-fase12"
+            installed = copy / PLUGIN
+            installed.parent.mkdir(parents=True)
+            installed.write_bytes(b"old plugin")
+            observed = {PLUGIN: b"hoenn map display fix"}
+            with patch("hoenn_qa_teleport_upgrade.ROOT", root), \
+                 patch("hoenn_qa_teleport_upgrade.require_private_path", side_effect=lambda path: path), \
+                 patch("hoenn_qa_teleport_upgrade.prepare_updates", side_effect=lambda *_: observed.copy()):
+                result = ensure_test_tools(copy, root / "game")
+                self.assertEqual(result["files_updated"], 2)
+                self.assertEqual(installed.read_bytes(), observed[PLUGIN])
+                request = copy / COMPILE_REQUEST
+                self.assertTrue(request.is_file())
+                request.unlink()  # The successful native compiler clears the request.
+                self.assertEqual(ensure_test_tools(copy, root / "game")["files_updated"], 0)
+                self.assertFalse(request.exists())
 
     def test_all_199_stops_required_for_serialization(self):
         with self.assertRaisesRegex(ValueError,"incompleto"):

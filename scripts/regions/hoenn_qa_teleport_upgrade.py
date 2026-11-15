@@ -3,8 +3,8 @@
 
 Older QA12 copies did not include Data/blue-hoenn-test-stops.txt or the in-game
 test menu. Recreate the 199 landing coordinates from the actual staged RXDATA,
-back up existing pilot script/manifest, and atomically replace ONLY these QA
-tool files. No donor ZIP or ROM is required to refresh an existing copy.
+back up and refresh the pilot script/manifest, and request recompilation when
+the script changes. No donor ZIP or ROM is required to refresh an existing copy.
 """
 from __future__ import annotations
 
@@ -23,6 +23,7 @@ from hoenn_qa_phase1 import require_private_path, verify_copy as base_verify_cop
 STOPS = "Data/blue-hoenn-test-stops.txt"
 PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
 MANIFEST = "Hoenn pilot.json"
+COMPILE_REQUEST = "Data/blue-hoenn-compile-request.txt"
 
 
 def atomic_write(path: Path, content: bytes) -> None:
@@ -117,6 +118,10 @@ def ensure_test_tools(copy: Path, game: Path = ROOT / "game") -> dict:
         except (OSError, ValueError, TypeError, KeyError):
             pass
     desired = prepare_updates(copy, game)
+    # Release mode reads PluginScripts.rxdata. Updating the Ruby source alone
+    # would leave the old plugin active in an already compiled copy.
+    if not plugin_path.is_file() or plugin_path.read_bytes() != desired[PLUGIN]:
+        desired[COMPILE_REQUEST] = (UPSTREAM + "\n").encode("ascii")
     changes = {}
     for relative, content in desired.items():
         path = copy / relative
