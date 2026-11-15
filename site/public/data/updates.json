@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "653f9cebc7832a0867a892b375eb1deea1ec1e3e",
+      "date": "2026-11-15T10:18:59-03:00",
+      "title": "docs(readme): informar seletor de região no Novo Jogo",
+      "category": "Novidades"
+    },
+    {
       "sha": "1371f3fb668a0ab0e13bbe8c7348321231be0387",
       "date": "2026-11-15T10:18:30-03:00",
       "title": "docs(title): explicar Novo Jogo por região e limites da campanha unificada",
