@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "daaf277f40dc4e41930d04387ab8bd5415a94a88",
+      "date": "2026-11-15T15:52:44-03:00",
+      "title": "fix(kanto): reduzir sprite do jogador e limitar altura no overworld",
+      "category": "Correções"
+    },
+    {
       "sha": "f751670874a9f081a27d4f9e97d0ec194159a192",
       "date": "2026-11-15T15:47:34-03:00",
       "title": "docs(regions): registrar regra de checkpoint local em derrotas após viagem",
