@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aadff8088ff7c9ae692cd90d3215d937c38dece6",
+      "date": "2026-11-15T15:27:18-03:00",
+      "title": "fix(site): links corretos e diferença entre rivais e líderes Kanto",
+      "category": "Correções"
+    },
+    {
+      "sha": "ea81cfd6014724e71fece89ce99ecf3eb0364d5a",
+      "date": "2026-11-15T15:27:15-03:00",
+      "title": "fix(site): links corretos e diferença entre rivais e líderes Kanto",
+      "category": "Correções"
+    },
+    {
+      "sha": "a02c2a514622252aafaca767a2dd4b876eab4070",
+      "date": "2026-11-15T15:27:13-03:00",
+      "title": "fix(site): links corretos e diferença entre rivais e líderes Kanto",
+      "category": "Correções"
+    },
+    {
+      "sha": "800d30a84f2592b3aecf2597eb9dd069da037abc",
+      "date": "2026-11-15T15:27:10-03:00",
+      "title": "fix(site): links corretos e diferença entre rivais e líderes Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "c7f4166770ff9a42ad5c05ead27c9de8edaae365",
       "date": "2026-11-15T15:26:36-03:00",
       "title": "style(site): tabelas responsivas para guia de balanceamento Kanto",
