@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "959df9f956a052ea4a059daa45edbc74ed9df197",
+      "date": "2026-11-15T16:06:22-03:00",
+      "title": "feat(hoenn): atualizar Blue-Story com importação local opcional de Hoenn",
+      "category": "Novidades"
+    },
+    {
+      "sha": "6024d36dc4fe0b2c43943db6aec3619f337baeb5",
+      "date": "2026-11-15T16:06:04-03:00",
+      "title": "feat(hoenn): integração opcional na atualização Blue-Story sem bloquear Decades",
+      "category": "Novidades"
+    },
+    {
       "sha": "b329c2d5e8cc5b2b7d6a1b82b8cbc61e74a410c7",
       "date": "2026-11-15T16:05:16-03:00",
       "title": "feat(hoenn): instalador transacional de 199 mapas na build compartilhada",
