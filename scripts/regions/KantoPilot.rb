@@ -349,7 +349,8 @@ module BlueKantoPilot
   # Mom hands them over on the FIRST successful journey through the
   # Brock-unlocked Pewter -> Route 3 passage; not at the gym or in Decades.
   def self.mom_running_shoes_at_route3
-    return false unless PILOT_OVERWORLD_SCALE && $player && $PokemonSystem
+    return false unless PILOT_OVERWORLD_SCALE && File.file?("Kanto pilot.json")
+    return false unless $player && $PokemonSystem && progress["current"] == "KANTO"
     return false unless BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
     return false if progress["pilot_mom_running_shoes"] == true
     return false unless $player.respond_to?(:has_running_shoes=) &&
