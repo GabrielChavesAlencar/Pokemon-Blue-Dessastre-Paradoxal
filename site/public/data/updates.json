@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "34dd1a9acba89090719c76d5c3f3f6a2e3960dd2",
+      "date": "2026-11-15T12:26:58-03:00",
+      "title": "docs(travel): alinhar regra de NPC livre com progresso de Liga independente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "aacb44e0c3d4aef0c2e97988baaf37d4556693c7",
+      "date": "2026-11-15T12:26:55-03:00",
+      "title": "docs(travel): alinhar regra de NPC livre com progresso de Liga independente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "d4f72213cf8d590b71d7fb143ba42665a5d1c35a",
+      "date": "2026-11-15T12:26:53-03:00",
+      "title": "docs(travel): alinhar regra de NPC livre com progresso de Liga independente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "11b98d568ec908c513e0a499679c6a5ee09a1a59",
+      "date": "2026-11-15T12:26:50-03:00",
+      "title": "docs(travel): alinhar regra de NPC livre com progresso de Liga independente",
+      "category": "Documentação"
+    },
+    {
       "sha": "ae7efffc6c4f575a3c63dd66685e9732517fe6b6",
       "date": "2026-11-15T12:26:06-03:00",
       "title": "docs(plan): registrar que viagem por NPC e livre, sem precisar da Liga",
