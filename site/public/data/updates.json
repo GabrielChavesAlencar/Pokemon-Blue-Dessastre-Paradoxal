@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "530d67e1dace20c7dfbf830fc28d6c44e3864e25",
+      "date": "2026-11-15T16:03:02-03:00",
+      "title": "feat(hoenn): oferecer Hoenn no Novo Jogo compartilhado após instalação verificada",
+      "category": "Novidades"
+    },
+    {
+      "sha": "1290f12164f9f40af1fd9a2a4b0aad7197c4e085",
+      "date": "2026-11-15T16:02:41-03:00",
+      "title": "feat(hoenn): autorizar inicio na build principal somente com 199 mapas verificados",
+      "category": "Novidades"
+    },
+    {
       "sha": "552dc5cd2efbf62e8719501009f7d6c5d9b75782",
       "date": "2026-11-15T15:53:29-03:00",
       "title": "ci(kanto): regressão da escala do protagonista no piloto",
