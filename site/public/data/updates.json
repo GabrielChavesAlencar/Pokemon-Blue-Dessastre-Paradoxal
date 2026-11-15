@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b03930e28bab5c9244219044648942a84f7c4262",
+      "date": "2026-11-15T10:36:36-03:00",
+      "title": "feat(locale): mesclar traducoes de Kanto sem substituir catalogo Decades",
+      "category": "Novidades"
+    },
+    {
       "sha": "ce0b78269152a4b16325989be0c88b9b6afd4640",
       "date": "2026-11-15T10:36:02-03:00",
       "title": "fix(kanto): incluir recursos dos eventos e traducoes no importador principal",
