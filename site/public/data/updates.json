@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cf061dd49cad3f97dc7d458645cd3c2dfb47c512",
+      "date": "2026-11-15T12:44:22-03:00",
+      "title": "fix(kanto): recuperar equipe real de Gary no PBS e evitar EventScriptError no laboratorio",
+      "category": "Correções"
+    },
+    {
       "sha": "141879ddb96b63650f2a7ade27b5ac653db17762",
       "date": "2026-11-15T12:31:57-03:00",
       "title": "ci(regions): validar sintaxe do transporte e regras regionais livres",
