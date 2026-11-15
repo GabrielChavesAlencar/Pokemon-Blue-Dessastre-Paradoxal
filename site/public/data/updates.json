@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c96fd60711259750f1ba9fdf041632c38d85c918",
+      "date": "2026-11-15T14:22:30-03:00",
+      "title": "test(regions): garantir isolamento de itens/HMs no PC de itens, restauracao e rollback",
+      "category": "Testes"
+    },
+    {
       "sha": "4560127a4b27dacbea9784e8d513ad1cd1f96a8a",
       "date": "2026-11-15T14:21:51-03:00",
       "title": "feat(regions): isolar tambem HMs e itens-chave do PC de itens por regiao, com rollback",
