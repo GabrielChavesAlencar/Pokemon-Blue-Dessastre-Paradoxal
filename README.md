@@ -49,7 +49,7 @@ O projeto possui um [guia de catálogo e tradução dos diálogos FireRed](docs/
 
 ## Novo Jogo por região
 
-O **Novo Jogo** da tela inicial do Decades principal agora apresenta a escolha de região. **Decades** mantém a campanha original. **Kanto/Johto/Hoenn/Sinnoh** iniciam pilotos experimentais separados somente quando a instalação local estiver preparada, sem alterar o save principal. Outras regiões aparecem como indisponíveis. Isso **não significa que todas as regiões já estejam unificadas em um único save**. [Como usar, limitações e testes](docs/NOVO_JOGO_SELECAO_REGIONAL.md).
+O **Novo Jogo** da tela inicial do Decades principal apresenta a escolha de região. **Decades** mantém a campanha original. **Kanto** agora pode começar **no mesmo Game.exe e sistema de saves**, depois de integrar localmente os **142 mapas do piloto atual** com `KANTO_INSTALAR_NO_JOGO.bat` e recompilar pelo `ABRIR_JOGO.bat`. O importador usa a fonte FRLG local, backups e verificações; se a integração não existir, Kanto informa **instalação necessária**, sem iniciar outro processo. **Johto, Hoenn e Sinnoh** continuam em pilotos separados até a integração futura. Outras regiões não estão disponíveis. **Kanto integrado ainda requer teste visual e de campanha no Windows**. [Guia de instalação e QA](docs/KANTO_INTEGRACAO_DECADES.md) · [Seleção regional](docs/NOVO_JOGO_SELECAO_REGIONAL.md).
 
 ## Continuidade do projeto
 
