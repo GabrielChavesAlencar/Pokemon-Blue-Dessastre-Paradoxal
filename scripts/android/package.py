@@ -11,6 +11,49 @@ from scripts.android.early_input import install as install_early_input, verify a
 
 MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 
+# A multiregional Android ZIP must be the ACTUAL shared Decades build, not
+# the independent Kanto/Hoenn pilots or a page pointing at the base ZIP.
+KANTO_PLUGIN = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
+HOENN_PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
+REGIONAL_FILES = (
+    "Data/blue-kanto-install.json", "Data/blue-kanto-start.txt",
+    "Data/blue-kanto-ready.txt", "Data/blue-kanto-music.txt",
+    "Data/blue-kanto-locale.dat", "Data/blue-kanto-npc-dialogues.dat",
+    "Data/blue-kanto-pewter-route3-gate.txt",
+    "Data/blue-kanto-pewter-mom-sprite.txt",
+    "Data/blue-kanto-viridian-route2-line.txt",
+    "Data/blue-kanto-silph-floors.txt",
+    "Data/blue-hoenn-install.json", "Data/blue-hoenn-start.txt",
+    "Data/blue-hoenn-ready.txt", "Data/blue-hoenn-pilot.txt",
+)
+
+def compiled_region(cache, name, source):
+    expected = source.replace(b'\r\n', b'\n')
+    for plugin in loads(cache):
+        for item_name, compressed in plugin[2]:
+            if item_name == name.encode('ascii') and zlib.decompress(compressed).replace(b'\r\n', b'\n') == expected:
+                return hashlib.sha256(expected).hexdigest()
+    raise ValueError('Regional script is missing or stale in Android plugin cache: '+name.decode() if isinstance(name,bytes) else name)
+
+def verify_regions(game):
+    if any((game / name).is_file() for name in ("Kanto pilot.json", "Hoenn pilot.json")):
+        raise ValueError('The Android shared build cannot use isolated pilot save profiles.')
+    sys.path.insert(0, str(ROOT / 'scripts/regions'))
+    from install_kanto import verify_installed as kanto
+    from install_hoenn import verify_installed as hoenn
+    kp, hp = kanto(game), hoenn(game)
+    if not kp.get("maps", 0) > 100 or hp.get("maps") != 199:
+        raise ValueError('Shared Kanto/Hoenn regional map counts not verified.')
+    for name in REGIONAL_FILES:
+        p = game / name
+        if not p.is_file() or p.is_symlink() or p.stat().st_size == 0:
+            raise ValueError('Missing mandatory Android shared region file: '+name)
+    compiled = (game/'Data/PluginScripts.rxdata').read_bytes()
+    for item in (KANTO_PLUGIN, HOENN_PLUGIN):
+        compiled_region(compiled, Path(item).name, (game/item).read_bytes())
+    return kp, hp
+
+
 def compiled_mobile(cache,source):
     expected=source.replace(b'\r\n',b'\n')
     for plugin in loads(cache):
@@ -19,7 +62,7 @@ def compiled_mobile(cache,source):
                 return hashlib.sha256(expected).hexdigest()
     raise ValueError('Compiled Mobile.rb differs from the Android source. Recompile before publishing.')
 
-def verify_archive(output,revision,source_sha=None):
+def verify_archive(output,revision,source_sha=None,channel='decades'):
     with zipfile.ZipFile(output) as archive:
         base='Pokemon-Blue-Android/'
         info=dict(line.split(': ',1) for line in archive.read(base+'Data/blue-mobile-build.txt').decode('utf8').splitlines() if ': ' in line)
@@ -28,8 +71,19 @@ def verify_archive(output,revision,source_sha=None):
         actual=compiled_mobile(archive.read(base+'Data/PluginScripts.rxdata'),source)
         if info.get('Mobile-SHA256')!=actual or (source_sha and source_sha!=actual):raise ValueError('Android ZIP compatibility source checksum mismatch.')
         if 'Revision: '+revision+'\n' not in archive.read(base+'LEIA-ME-ANDROID.txt').decode('utf8'):raise ValueError('Android README revision mismatch.')
-        verify_manifest(archive,base,'decades',revision)
+        verify_manifest(archive,base,channel,revision)
         verify_early_input(archive.read(base+'Data/Scripts.rxdata'))
+        if channel == 'multiregion':
+            kanto=json.loads(archive.read(base+'Data/blue-kanto-install.json'))
+            hoenn=json.loads(archive.read(base+'Data/blue-hoenn-install.json'))
+            if len(kanto.get('maps',{}))<=100 or len(hoenn.get('maps',{}))!=199:
+                raise ValueError('Android ZIP does not contain both verified regional mappings.')
+            for name in REGIONAL_FILES:
+                if not archive.getinfo(base+name).file_size:
+                    raise ValueError('Empty Android region runtime: '+name)
+            cache=archive.read(base+'Data/PluginScripts.rxdata')
+            for name in (KANTO_PLUGIN,HOENN_PLUGIN):
+                compiled_region(cache,Path(name).name,archive.read(base+name))
     return {'revision':revision,'mobileSha256':actual}
 
 def fingerprint(game):
@@ -74,7 +128,9 @@ def allowed(path):
         return (name.endswith(('.dat','.rxdata')) and not name.startswith(('blue-mp','blue-route-captures','blue-campaign-reference','blue-')))
     return len(parts)==1 and name in ('game.exe','game.ini','mkxp.json','preload.rb','rgss104e.dll','x64-msvcrt-ruby310.dll','zlib1.dll','soundfont.sf2','credits.txt')
 
-def build(game,output,revision):
+def build(game,output,revision,channel='decades'):
+    if channel not in ('decades','multiregion'):raise ValueError('Unknown Android History build channel.')
+    if channel=='multiregion':verify_regions(game)
     marker=game/'Data/blue-android-compiled.txt'
     if not marker.is_file():raise ValueError('The native compiler did not produce its completion marker. No Android download can be published.')
     if marker.read_text()!=fingerprint(game):raise ValueError('The native compiler completion marker is stale for the current plugins. No Android download can be published.')
@@ -85,6 +141,11 @@ def build(game,output,revision):
     for name in own:
         file=game/'Data'/name
         if file.is_file():plans['Data/'+name]=file
+    if channel=='multiregion':
+        # Package the proof files the generic Decades filter intentionally
+        # excludes (blue-*.json/txt/dat), or Hoenn stays "em preparação".
+        for name in REGIONAL_FILES:
+            plans[name]=game/name
     output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
         for name,file in sorted(plans.items()):archive.write(file,'Pokemon-Blue-Android/'+name)
@@ -100,6 +161,12 @@ def build(game,output,revision):
             'Para baixar e instalar: python ATUALIZAR-ANDROID.py --update\n'
             'Guia: docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md no GitHub.\n'
             'Ainda requer validacao em aparelhos Android reais.\nRevision: '+revision+'\n')
+        if channel == 'multiregion':
+            readme += (
+                'EDICAO MULTIRREGIONAL: DECADES + KANTO + HOENN no mesmo jogo e perfil de saves.\n'
+                'Pacote separado do Decades puro; nao instale patch do canal decades.\n'
+                'A disponibilidade da viagem depende tambem do progresso no jogo.\n'
+                'Nao instale sobre os arquivos de outro canal sem backup dos saves.\n')
         archive.writestr('Pokemon-Blue-Android/LEIA-ME-ANDROID.txt', readme)
         # Inventory is checked by the release publisher and the Android updater.
         extras={
@@ -109,18 +176,18 @@ def build(game,output,revision):
                 '\nPlugins-SHA256: '+fingerprint(game)+'\n').encode('utf8')
         }
         archive.writestr('Pokemon-Blue-Android/Data/blue-update.json',
-                         installed_manifest('decades',revision,{**plans,**extras,
+                         installed_manifest(channel,revision,{**plans,**extras,
                                                                'ATUALIZAR-ANDROID.py':
                                                                (ROOT/'scripts/android/update_client.py').read_bytes(),
                                                                'LEIA-ME-ANDROID.txt': readme.encode('utf8')}))
         archive.writestr('Pokemon-Blue-Android/ATUALIZAR-ANDROID.py',
                          (ROOT/'scripts/android/update_client.py').read_bytes())
-    verify_archive(output,revision,mobile_sha)
+    verify_archive(output,revision,mobile_sha,channel)
     with output.open('rb') as stream:digest=hashlib.file_digest(stream,'sha256').hexdigest()
     output.with_suffix('.zip.sha256').write_text(digest+'  '+output.name+'\n','ascii')
     return {'revision':revision,'mobileSha256':mobile_sha,'files':len(plans)+3,'bytes':output.stat().st_size,'sha256':digest}
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--request-compile',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--revision',default='local');parser.add_argument('--output',type=Path,default=ROOT/'dist/Blue-Android-JoiPlay.zip');a=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--request-compile',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--revision',default='local');parser.add_argument('--channel',choices=('decades','multiregion'),default='decades');parser.add_argument('--output',type=Path,default=ROOT/'dist/Blue-Android-JoiPlay.zip');a=parser.parse_args()
     if a.request_compile:request_compile(a.game_dir);print('Native Android compilation requested.')
-    elif a.verify:print(json.dumps(verify_archive(a.output,a.revision,hashlib.sha256((ROOT/'scripts/battle_lab/Mobile.rb').read_bytes().replace(b'\r\n',b'\n')).hexdigest())))
-    else:print(json.dumps(build(a.game_dir,a.output,a.revision)))
+    elif a.verify:print(json.dumps(verify_archive(a.output,a.revision,hashlib.sha256((ROOT/'scripts/battle_lab/Mobile.rb').read_bytes().replace(b'\r\n',b'\n')).hexdigest()),channel=a.channel)))
+    else:print(json.dumps(build(a.game_dir,a.output,a.revision,a.channel)))
