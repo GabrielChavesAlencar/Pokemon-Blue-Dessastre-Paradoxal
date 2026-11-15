@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8d038b11e1aff535bf5da7eb449b0947fa100a11",
+      "date": "2026-11-15T12:47:49-03:00",
+      "title": "test(installer): recompilar PBS de Gary uma vez e preservar dados de Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "e76d54f148fdccb6699d844b7e49bc5404c82f4c",
       "date": "2026-11-15T12:47:27-03:00",
       "title": "test(kanto): manter blackout nativo com fixture de treinador Gary compilado",
