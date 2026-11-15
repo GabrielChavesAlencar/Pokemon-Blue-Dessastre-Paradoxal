@@ -46,13 +46,16 @@ class PhaseThreeMusicTests(KantoMusicPhaseOneTests):
     def test_decades_global_defaults_signatures_match_real_factory_config(self):
         self.add_music(18)
         manifest,_=self.compile()
-        rows={line.split("\t")[1]:line.split("\t")[2] for line in
+        rows={line.split("\t")[1]:line.split("\t")[2:] for line in
               manifest.decode("utf-8").splitlines() if line.startswith("BASEPOOL\t")}
         defaults=self.read("data/shared-music.json")["config"]["global"]
         for key in ("wild","trainer","gym"):
             self.assertEqual(defaults[key]["mode"],"random")
             payload=[str(defaults[key]["volume"]),str(defaults[key]["pitch"]),*defaults[key]["tracks"]]
-            self.assertEqual(rows[key],hashlib.sha256("\n".join(payload).encode("utf-8")).hexdigest())
+            signature=hashlib.sha256("\n".join(payload).encode("utf-8")).hexdigest()
+            # Python still audits SHA-256; Ruby compares exact volume/pitch
+            # and track order without needing digest/sha2 in Game.exe.
+            self.assertEqual(rows[key],[signature,*payload])
         user=self.game/"Data/blue-music.rxdata"
         user.write_bytes(b"custom user config must never be mutated")
         out,_=self.compile()
