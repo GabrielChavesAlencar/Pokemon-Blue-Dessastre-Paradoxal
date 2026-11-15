@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "abdad4f380f913707c05fcec91fb8067a241b244",
+      "date": "2026-11-15T14:58:16-03:00",
+      "title": "test(evolution): validar hooks reais do Battle, 70/90%, BST inicial e preservacao dos chefes",
+      "category": "Testes"
+    },
+    {
       "sha": "ca1795b3491fecbc20cab28e090d1eddb0962435",
       "date": "2026-11-15T14:57:35-03:00",
       "title": "test(evolution): testar thresholds, familias, selvagens misturados e protecao de formas especiais",
