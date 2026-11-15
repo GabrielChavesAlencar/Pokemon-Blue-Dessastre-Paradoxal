@@ -254,9 +254,44 @@ def apply_install(game, pilot, commit=False):
     return plan
 
 
+def verify_installed(game):
+    """Read-only check for the CURRENT integrated Kanto, not a gameplay test."""
+    marker = game / MARKER
+    proof_file = game / "Data/blue-kanto-install.json"
+    if not marker.is_file() or not proof_file.is_file():
+        raise ValueError("Kanto not installed in the main Decades game.")
+    proof = json.loads(proof_file.read_text(encoding="utf-8"))
+    mapping = proof.get("maps")
+    expected = len(json_file(KANTO)["maps"])
+    if proof.get("schema") != 1 or proof.get("source") != "Essentials FRLG 21.1":
+        raise ValueError("Unknown or incomplete Kanto main installation.")
+    if not isinstance(mapping, dict) or len(mapping) != expected:
+        raise ValueError(f"Older Kanto installation: {len(mapping) if isinstance(mapping,dict) else 0}/{expected} maps. Do not overwrite saves or merge IDs automatically.")
+    if len(set(mapping.values())) != expected:
+        raise ValueError("Duplicated Kanto map IDs.")
+    start = marker.read_text(encoding="ascii").strip()
+    if start != f"BLUE_KANTO_START_V1,KANTO,{mapping['7']},25,7":
+        raise ValueError("Kanto start marker does not match its installed mapping.")
+    files = [game / "Data/MapInfos.rxdata", game / "Data/Tilesets.rxdata",
+             game / "Data/blue-kanto-music.txt", game / KANTO_LOCALE,
+             game / PLUGIN / "KantoPilot.rb"]
+    files.extend(game / "Data" / name for name in KANTO_RUNTIME_DATA)
+    files.extend(game / "PBS" / name for name in PBS_NAMES)
+    files.extend(game / "Data" / f"Map{map_id:03}.rxdata"
+                 for map_id in mapping.values())
+    missing = [str(p.relative_to(game)) for p in files if not p.is_file()]
+    if missing:
+        raise ValueError(f"Kanto main installation missing {len(missing)} files; first: {missing[:5]}")
+    return {"status": "integrated_files_ready_for_native_QA",
+            "maps": expected, "kanto_start": [mapping["7"],25,7],
+            "decades_save_modified": False, "game_exe_tested": False}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--verify-installed", action="store_true",
+                        help="Check main Kanto mapping/resources without changing files")
     parser.add_argument("--repair-portraits", action="store_true",
                         help="Only repair missing Kanto trainer images in an already installed game")
     parser.add_argument("--game", type=Path, default=ROOT / "game")
@@ -269,6 +304,9 @@ def main():
         parser.error("Destino fora de game/ e .blue-work")
     if not pilot.is_relative_to(work):
         parser.error("Piloto fora de .blue-work")
+    if args.verify_installed:
+        print(json.dumps(verify_installed(game), ensure_ascii=False, indent=2))
+        return
     if args.repair_portraits:
         print(json.dumps(repair_portraits(game, args.apply), indent=2))
         return
