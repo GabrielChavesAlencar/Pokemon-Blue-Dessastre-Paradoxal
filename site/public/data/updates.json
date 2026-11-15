@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7aac121780948ac118e86238647e60a9ff5260ef",
+      "date": "2026-11-15T10:40:01-03:00",
+      "title": "fix(kanto): ativar bloqueios, Cut e tenis de corrida no Kanto integrado sem alterar Decades",
+      "category": "Correções"
+    },
+    {
       "sha": "ce6d6f2f2cf266fe9b4050189206733a013df09b",
       "date": "2026-11-15T10:38:34-03:00",
       "title": "feat(kanto): verificar integracao principal e bloquear pacotes legados incompletos",
