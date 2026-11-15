@@ -571,9 +571,15 @@ module BlueKantoPilot
     rescue StandardError => error
       log_rival_failure(error, version, "battle")
       $game_temp.clear_battle_rules if $game_temp && $game_temp.respond_to?(:clear_battle_rules)
+      # Generic error messages concealed the REAL native failure and caused
+      # repeated blind downloads. Show the exception type and first message
+      # line in-game so a screenshot alone can diagnose the root cause.
+      detail = "#{error.class}: #{error.message.to_s.lines.first.to_s.strip}"
+      detail = detail.gsub(/[[:cntrl:]]/, " ")[0, 175]
       pbMessage(BlueKantoPilot.t(
-        "Gary: The battle could not start. Reopen Blue-Story.exe to update and try again. Details: Data/blue-kanto-rival-error.log.",
-        "Gary: Não foi possível iniciar a batalha. Atualize pelo Blue-Story.exe e tente novamente. Detalhes: Data/blue-kanto-rival-error.log."
+        "Gary: The battle could not start ({1}). Your save is preserved. Send the error and Data/blue-kanto-rival-error.log.",
+        "Gary: A batalha não iniciou ({1}). Seu save está preservado. Envie o erro e Data/blue-kanto-rival-error.log.",
+        detail
       ))
       return false
     end
