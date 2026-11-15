@@ -62,7 +62,8 @@ module BlueKantoTitle
       else
         # Existing Windows launchers check their own pilot installation and
         # prompt before opening. Failed/unavailable launches return here.
-        return :launched if public_send("launch_#{region}")
+        launcher_method = region == :kanto ? :launch : :"launch_#{region}"
+        return :launched if public_send(launcher_method)
       end
     end
   end
