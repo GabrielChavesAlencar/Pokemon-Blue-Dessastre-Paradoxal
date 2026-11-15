@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7fb3ec1e865c4679f325862eeaf5e8eeddc57e57",
+      "date": "2026-11-15T10:45:29-03:00",
+      "title": "feat(regions): registrar inicio nativo de Decades para viagem apos Liga Kanto",
+      "category": "Novidades"
+    },
+    {
       "sha": "279cd23785d4a8cf707009c65beee66108f580cc",
       "date": "2026-11-15T10:43:27-03:00",
       "title": "docs(kanto): detalhar integracao segura de 142 mapas ao Decades e limites de QA",
