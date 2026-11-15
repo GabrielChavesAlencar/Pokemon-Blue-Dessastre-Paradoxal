@@ -47,9 +47,18 @@ module BlueRegionalPolicy
   # pilot, the tool is the actual HM item in the Bag, AND an able party
   # member whose species can learn the move. No move slot is required.
   def self.hm_owned?(move)
-    ids = KANTO_HM_ITEMS[move.to_s.upcase.to_sym]
-    return false unless ids && $bag && defined?(GameData::Item)
-    ids.any? { |item| GameData::Item.exists?(item) && $bag.has?(item) }
+    move_id = move.to_s.upcase.to_sym
+    return false unless $bag && defined?(GameData::Item)
+    # Support FRLG HM01...HM07 as well as the Decades/other-region HMs
+    # using GameData's canonical Move metadata (Rock Climb, Defog, Dive).
+    ids = KANTO_HM_ITEMS.fetch(move_id, [])
+    return true if ids.any? { |item|
+      GameData::Item.exists?(item) && $bag.has?(item)
+    }
+    return false unless GameData::Item.respond_to?(:each)
+    GameData::Item.each.any? { |item|
+      item.is_HM? && item.move == move_id && $bag.has?(item.id)
+    }
   end
 
   def self.eligible_pokemon?(pkmn, move)
@@ -65,12 +74,23 @@ module BlueRegionalPolicy
 
   def self.field_result(move, selected = nil)
     current = state
-    return :native unless current && current["current"] != "DECADES"
+    return :native unless current
     move_id = move.to_s.upcase.to_sym
     action = FIELD_MOVES[move_id]
     return :native unless action
-    # Do not change native/tool behavior of other regional pilots here.
-    return BlueRegions.field_access(current, current["current"], action, true) if current["current"] != "KANTO"
+    # Decades retains its own native badge/event checks; the only additional
+    # restriction for a shared regional save is obtaining the HM HERE.
+    # Untravelled legacy Decades saves still return :native from state=nil.
+    if current["current"] == "DECADES"
+      return hm_owned?(move_id) ? :native : :hm
+    end
+    # Every integrated region must obtain its own HM, regardless of whether
+    # a party Pokémon already knows the move from a different region.
+    if current["current"] != "KANTO"
+      prerequisite = BlueRegions.field_access(current, current["current"], action, false)
+      return prerequisite unless [:tool, :allowed].include?(prerequisite)
+      return hm_owned?(move_id) ? :allowed : :hm
+    end
     prerequisite = BlueRegions.field_access(current, "KANTO", action, false)
     return prerequisite unless prerequisite == :tool
     return :hm unless hm_owned?(move_id)
