@@ -46,6 +46,33 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         self.assertIn("--apply", self.calls[1])
         self.assertIn("--verify-installed", self.calls[2])
 
+    def test_uses_cached_verified_pilot_without_redownloading_source(self):
+        cache = self.project / ".blue-work/kanto-pilot/Kanto pilot.json"
+        cache.parent.mkdir(parents=True)
+        cache.write_text('{"region":"KANTO"}', encoding="utf8")
+        result = auto.integrate(self.project, self.game, run=self.run)
+        self.assertEqual(result["status"], "integrated")
+        self.assertEqual(result["source"], "cached_verified_pilot")
+        self.assertTrue(result["ready"])
+        self.assertEqual([x[1] for x in self.calls],
+                         [auto.KANTO_IMPORTER, auto.KANTO_IMPORTER])
+        self.assertIn("--apply", self.calls[0])
+        self.assertNotIn(auto.KANTO_SOURCE_BOOTSTRAP, [x[1] for x in self.calls])
+
+    def test_invalid_cached_pilot_falls_back_to_pinned_source(self):
+        cache = self.project / ".blue-work/kanto-pilot/Kanto pilot.json"
+        cache.parent.mkdir(parents=True)
+        cache.write_text('{"obsolete":true}', encoding="utf8")
+        def runner(argv, project, env):
+            self.calls.append(argv)
+            if len(self.calls) == 1:
+                raise subprocess.CalledProcessError(1, argv)
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertEqual(result["status"], "integrated")
+        self.assertEqual([x[1] for x in self.calls],
+                         [auto.KANTO_IMPORTER, auto.KANTO_SOURCE_BOOTSTRAP,
+                          auto.KANTO_IMPORTER, auto.KANTO_IMPORTER])
+
     def test_already_installed_only_verifies_and_never_reinstalls(self):
         (self.game / auto.KANTO_MARKER).write_text("BLUE_KANTO_START_V1,KANTO,300,25,7\n")
         result = auto.integrate(self.project, self.game, run=self.run)
