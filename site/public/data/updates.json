@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ad573b4fee86d3c2e2b33528a2fa62c0b3964f97",
+      "date": "2026-11-15T15:03:27-03:00",
+      "title": "ci(evolution): conferir distribuição automática do módulo pelo instalador Blue-Story.exe",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "7dda5550ffd9fe4b289edc32e1a5f95a0d94cd00",
+      "date": "2026-11-15T15:03:14-03:00",
+      "title": "docs(evolution): regras do cap, taxas e limites da evolução dinâmica para treinadores e selvagens",
+      "category": "Documentação"
+    },
+    {
       "sha": "573f2c94492a647d8e3dfead734f5db063b4cf39",
       "date": "2026-11-15T15:02:01-03:00",
       "title": "test(installer): garantir que Blue-Story.exe instale o módulo dinamico e preserve save/PBS",
