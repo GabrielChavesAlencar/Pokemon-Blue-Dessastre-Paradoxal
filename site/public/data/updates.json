@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4746b87b4c6dc4aab99ff17e7c33d62becd88f3b",
+      "date": "2026-11-15T13:07:01-03:00",
+      "title": "fix(tests): fixture Decades isolado nao exige mapas Kanto durante setup",
+      "category": "Correções"
+    },
+    {
+      "sha": "9c207aef804f323c53f9febc588f6419b1c572e6",
+      "date": "2026-11-15T13:06:50-03:00",
+      "title": "fix(test): nao sobrescrever unittest.TestCase.run no teste do instalador Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "412af0c45a674900cd1120cbeb5e60f994614e05",
       "date": "2026-11-15T12:52:51-03:00",
       "title": "docs(kanto): alinhar comando QA Gary com teste Python executavel diretamente",
