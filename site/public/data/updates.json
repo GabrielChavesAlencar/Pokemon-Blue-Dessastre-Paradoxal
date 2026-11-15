@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8f3e29f48c3d693586ff9bf1ee22e0f78e1ee616",
+      "date": "2026-11-15T16:47:28-03:00",
+      "title": "fix(hoenn): Blue-Story baixa fonte pública fixada e instala sem ZIP ou BAT manual",
+      "category": "Correções"
+    },
+    {
       "sha": "f7ee7c85df9c5e2f3056401aacf9a0f519ec0e47",
       "date": "2026-11-15T16:46:12-03:00",
       "title": "feat(hoenn): baixar automaticamente 199 mapas e recursos originais com hashes fixos",
