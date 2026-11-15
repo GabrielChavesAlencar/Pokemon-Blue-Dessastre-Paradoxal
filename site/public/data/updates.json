@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b1ba6047c5231bbc9f17ce5528d6910acfd060c6",
+      "date": "2026-11-15T16:34:28-03:00",
+      "title": "test(hoenn): reusar pasta Data criada pela nova fixture do status",
+      "category": "Novidades"
+    },
+    {
       "sha": "a7fbf8e20cff6cae5fad934921b29d1b646583df",
       "date": "2026-11-15T16:34:04-03:00",
       "title": "test(hoenn): diagnosticar no Agente Regional ZIP ausente e instalação bloqueada",
