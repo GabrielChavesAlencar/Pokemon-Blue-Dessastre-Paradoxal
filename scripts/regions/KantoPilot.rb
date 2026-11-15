@@ -442,15 +442,15 @@ module BlueKantoPilot
     BlueMusic.with_kanto_scene("rival_appears") do
       pbMessage(BlueKantoPilot.t("Gary: Hey, {1}! Before you go, let's test our Pokémon!", "Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
     end
-    setBattleRule("canLose")
+    setBattleRule("cannotLose")
     result = TrainerBattle.start(:BLUE_KANTO_RIVAL, "Blue", RIVAL_VERSIONS.fetch(starter))
-    $player.heal_party
+    # Native Essentials blacks out and transfers to the last healing center
+    # when defeated. Never mark the tutorial rival as finished on a loss.
+    return false unless result
+    $player.heal_party  # Preserve the original tutorial victory recovery only.
     progress["pilot_rival"] = true
-    if result
-      pbMessage(BlueKantoPilot.t("Gary: You won. I'll train for our rematch!", "Gary: Você venceu. Vou treinar para a revanche!"))
-    else
-      pbMessage(BlueKantoPilot.t("Gary: That one was mine. Go train on Route 1.", "Gary: Essa foi minha. Vá treinar na Rota 1."))
-    end
+    pbMessage(BlueKantoPilot.t("Gary: You won. I'll train for our rematch!", "Gary: Você venceu. Vou treinar para a revanche!"))
+    true
   end
 
   # The gate uses local Kanto badges, not the global crystal total. A
@@ -497,7 +497,7 @@ module BlueKantoPilot
     type = GYM_FULL_POWER[name]
     return false unless type && trainer_type == type && full_power_unlocked?
     return false unless pbConfirmMessage(BlueKantoPilot.t("{1}: Want to face my official Full Power team?", "{1}: Enfrentar meu time oficial Full Power?", name))
-    setBattleRule("canLose")
+    setBattleRule("cannotLose")
     won = BlueStory.with_regional_full_power {
       TrainerBattle.start(type, name, FULL_POWER_OFFSET)
     }
@@ -505,8 +505,6 @@ module BlueKantoPilot
       victories = (progress["pilot_full_power_gym_wins"] ||= [])
       victories << name unless victories.include?(name)
       pbMessage(BlueKantoPilot.t("You won {1}'s Full Power rematch!", "Você venceu a revanche Full Power de {1}!", name))
-    else
-      $player.heal_party
     end
     true
   end
@@ -545,12 +543,11 @@ module BlueKantoPilot
         pbMessage(BlueKantoPilot.t("Blue: Let's see how much stronger you've grown since Pallet!", "Blue: Vamos ver como você ficou mais forte desde Pallet!"))
       end
     end
-    setBattleRule("canLose")
+    # canLose suppresses Essentials' blackout and respawn. Kanto story
+    # battles must use the engine's last Pokémon Center checkpoint.
+    setBattleRule("cannotLose")
     won = TrainerBattle.start(type, name, version)
-    unless won
-      $player.heal_party
-      return
-    end
+    return false unless won
     wins << key
     if type == :BLUE_KANTO_LEADER && BlueRegions.award(progress, "KANTO", "BOULDER")
       BlueMusic.kanto_me_play("badge_awarded")
@@ -1061,13 +1058,10 @@ module BlueKantoPilot
       return true
     end
     return false unless starter
-    setBattleRule("canLose")
+    setBattleRule("cannotLose")
     setBattleRule("double")
     won = TrainerBattle.start(:BLUE_KANTO_COOLCOUPLE, "Ray & Tyra")
-    unless won
-      $player.heal_party
-      return false
-    end
+    return false unless won
     wins << key
     [15, 16].each do |event_id|
       ekey = sprintf("KANTO_213_%03d", event_id)
@@ -1126,19 +1120,18 @@ module BlueKantoPilot
         pbMessage(BlueKantoPilot.t("Blue: You beat the Elite Four! Our final battle starts now.", "Blue: Você venceu a Elite! Nossa batalha final começa agora."))
       end
     end
-    setBattleRule("canLose")
+    setBattleRule("cannotLose")
     full_power = progress["pilot_league_full_power"] == true
     version += FULL_POWER_OFFSET if full_power
     won = full_power ? BlueStory.with_regional_full_power {
       TrainerBattle.start(type, name, version)
     } : TrainerBattle.start(type, name, version)
     unless won
-      $player.heal_party
+      # The engine has already blacked out at the last healing checkpoint.
+      # Reset ONLY the current League attempt, never badges or story rewards.
       progress["pilot_league_full_power"] = false
       progress["pilot_league_active"] = false
       progress["pilot_league_wins"] = []
-      pbMessage(BlueKantoPilot.t("You lost this League run. Return to the lobby and try again.", "Você perdeu esta tentativa da Liga. Volte ao saguão para tentar novamente."))
-      pbFadeOutIn { BlueRegionTravel.move_to([lobby_map, 11, 16, 2]) }
       return false
     end
     wins << stage
