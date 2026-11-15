@@ -81,6 +81,7 @@ scene.queue = [2]
 require_check(scene.pbChoose(original, 0) == 3, "Pilot success did not cleanly quit main game")
 BlueKantoTitle.define_singleton_method(:launch) { false }
 scene.queue = [2, 1]
+$region_choices = [0] # Choose Decades after returning from unavailable pilot
 require_check(scene.pbChoose(original, 0) == 1, "Pilot failure must return to normal title")
 
 # Johto uses the fourth option and must never hijack Kanto or save-slot indexes.
@@ -89,6 +90,7 @@ scene.queue = [3]
 require_check(scene.pbChoose(original, 0) == 3, "Johto pilot success did not cleanly quit main game")
 BlueKantoTitle.define_singleton_method(:launch_johto) { false }
 scene.queue = [3, 1]
+$region_choices = [0] # Choose Decades after returning from unavailable pilot
 require_check(scene.pbChoose(original, 0) == 1, "Johto unavailable must return to normal title")
 
 # Hoenn occupies the slot between Johto and Sinnoh.
@@ -97,6 +99,7 @@ scene.queue = [4]
 require_check(scene.pbChoose(original, 0) == 3, "Hoenn success did not cleanly quit main game")
 BlueKantoTitle.define_singleton_method(:launch_hoenn) { false }
 scene.queue = [4, 1]
+$region_choices = [0] # Choose Decades after returning from unavailable pilot
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable Hoenn must return to title")
 
 # Sinnoh is the sixth option and must keep the original Quit/New Game indices.
@@ -105,6 +108,7 @@ scene.queue = [5]
 require_check(scene.pbChoose(original, 0) == 3, "Sinnoh pilot success did not cleanly quit main game")
 BlueKantoTitle.define_singleton_method(:launch_sinnoh) { false }
 scene.queue = [5, 1]
+$region_choices = [0] # Choose Decades after returning from unavailable pilot
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return to title")
 
 # New Game must choose a region BEFORE touching SaveData. The old shortcuts
