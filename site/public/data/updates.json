@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ea75ef4f9f93b907ef4f0c0a3559b562a22b0396",
+      "date": "2026-11-15T11:46:59-03:00",
+      "title": "site(downloads): avisar quando Kanto bloqueia conclusao do instalador, sem esconder erro",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1f02f8070ea322778bc095973091bf4af9004497",
+      "date": "2026-11-15T11:46:40-03:00",
+      "title": "test(region start): conferir prova de Kanto em Ruby sem exigir biblioteca JSON",
+      "category": "Testes"
+    },
+    {
       "sha": "5ecad09524d9c8299b0d92442bd17de7e624f5ab",
       "date": "2026-11-15T11:45:54-03:00",
       "title": "test(source): provar origem fixa e SHA256 em ambos endpoints FRLG",
