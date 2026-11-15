@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "77d3daf52c0371fe0cb71744beb9cd15b6298e90",
+      "date": "2026-11-15T11:47:14-03:00",
+      "title": "docs(instalacao): explicar falha visivel e diagnosticos automaticos do Kanto",
+      "category": "Documentação"
+    },
+    {
       "sha": "ea75ef4f9f93b907ef4f0c0a3559b562a22b0396",
       "date": "2026-11-15T11:46:59-03:00",
       "title": "site(downloads): avisar quando Kanto bloqueia conclusao do instalador, sem esconder erro",
