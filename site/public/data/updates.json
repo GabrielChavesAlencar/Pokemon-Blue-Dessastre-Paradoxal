@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9bd068e4a64b3f9fdc336a570ac6f2fcb7efebdc",
+      "date": "2026-11-15T10:51:21-03:00",
+      "title": "docs(kanto): corrigir roteiro de escolha inicial do Decades principal",
+      "category": "Correções"
+    },
+    {
       "sha": "8c9c4384fbfa2c873c911bc21eb384cd609bda27",
       "date": "2026-11-15T10:50:52-03:00",
       "title": "docs(readme): informar Kanto em Decades com instalacao auditada de 142 mapas",
