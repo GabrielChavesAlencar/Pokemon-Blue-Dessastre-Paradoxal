@@ -78,6 +78,10 @@ def integrate(project: Path = ROOT, game: Path | None = None,
     if state == "unverified":
         try:
             invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
+            # New releases also refresh Kanto's OWN Ruby runtime, but only
+            # when its current SHA-256 matches the manifest of the old import.
+            # The runtime updater never replaces maps, PBS, saves or user edits.
+            invoke(KANTO_IMPORTER, "--game", str(game), "--sync-runtime", "--apply")
             return {"status": "already_integrated", "changed": False}
         except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
             print("[KANTO AUTO] Instalacao antiga/parcial ou verificacao falhou:", err, flush=True)
