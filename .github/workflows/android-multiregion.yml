@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'tests/region_start_android_no_json_runtime.rb'
       - 'scripts/android/package.py'
       - 'scripts/android/build_manifest.py'
       - 'scripts/android/update_client.py'
@@ -89,7 +91,21 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pacote Android incompleto.'}
           python scripts/android/package.py --verify --revision '${{ github.sha }}' --channel multiregion --output dist/Blue-Android-Decades-Kanto-Hoenn.zip
           if($LASTEXITCODE -ne 0){throw 'Verificacao do ZIP falhou.'}
-          python scripts/android/publish_updates.py --channel multiregion --full-zip dist/Blue-Android-Decades-Kanto-Hoenn.zip
+          # Reuse the last verified multiregional manifest: if runtime EXE
+          # and JoiPlay save-profile files are unchanged, publish a small delta
+          # instead of making Android users re-download ~1.4 GB.
+          $previous = @(gh release list --limit 100 --json tagName,isDraft,publishedAt | ConvertFrom-Json |
+            Where-Object { -not $_.isDraft -and $_.tagName -match '^android-multiregion-' } |
+            Sort-Object publishedAt -Descending | Select-Object -First 1)
+          $args=@('--channel','multiregion','--full-zip','dist/Blue-Android-Decades-Kanto-Hoenn.zip')
+          if($previous.Count -gt 0){
+            $old=Join-Path 'dist' 'previous'
+            New-Item -ItemType Directory -Force -Path $old | Out-Null
+            gh release download $previous[0].tagName --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $old
+            if($LASTEXITCODE -ne 0){throw 'Nao foi possivel verificar a release anterior para gerar patch.'}
+            $args+=@('--previous-manifest',(Join-Path $old 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
+          }
+          python scripts/android/publish_updates.py @args
           if($LASTEXITCODE -ne 0){throw 'Manifesto do canal multirregional falhou.'}
           if((Get-Item dist/Blue-Android-Decades-Kanto-Hoenn.zip).Length -gt 2147483648){throw 'Asset excede 2 GiB do GitHub.'}
       - name: Publicar release experimental apenas apos sucesso integral
@@ -104,5 +120,11 @@ jobs:
           Nao instalar por cima de outro canal; fazer backup dos saves antes da migracao.
           Compatibilidade em dispositivo Android real ainda requer teste manual.
           '@ | Set-Content -Path dist/android-multiregion-notes.txt -Encoding utf8
-          gh release create $tag 'dist/Blue-Android-Decades-Kanto-Hoenn.zip' 'dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256' 'dist/Blue-Android-Decades-Kanto-Hoenn.update.json' --target '${{ github.sha }}' --title 'Pokemon Blue - Decades + Kanto + Hoenn (Android experimental)' --notes-file dist/android-multiregion-notes.txt --prerelease
+          $assets=@('dist/Blue-Android-Decades-Kanto-Hoenn.zip',
+            'dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256',
+            'dist/Blue-Android-Decades-Kanto-Hoenn.update.json')
+          if(Test-Path 'dist/Blue-Android-Decades-Kanto-Hoenn.patch.zip'){
+            $assets+='dist/Blue-Android-Decades-Kanto-Hoenn.patch.zip'
+          }
+          gh release create $tag $assets --target '${{ github.sha }}' --title 'Pokemon Blue - Decades + Kanto + Hoenn (Android experimental)' --notes-file dist/android-multiregion-notes.txt --prerelease
           if($LASTEXITCODE -ne 0){throw 'Falha ao publicar pacote multirregional no GitHub.'}
