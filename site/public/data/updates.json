@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b024538bf76a48f7205625235f8fa6d96933cbf3",
+      "date": "2026-11-14T22:31:02-03:00",
+      "title": "style(site): organizar três pilotos regionais no Windows",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "e50a1b3f06faa45437bdf90234979841c1f9133c",
+      "date": "2026-11-14T22:30:54-03:00",
+      "title": "test(site): validar releases recentes, paginação e instalador Windows de testes",
+      "category": "Testes"
+    },
+    {
       "sha": "cc08f67670f94cb6e8f75748c9ea927cd6519021",
       "date": "2026-11-14T22:30:08-03:00",
       "title": "site: identificar corretamente as opções Kanto Johto Hoenn por plataforma",
