@@ -171,8 +171,8 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
             if (preset.get("mode") != "random" or
                     not isinstance(tracks, list) or not tracks or
                     any(not isinstance(name, str) or not name or
-                        any(char in name for char in "\\t\\r\\n") or
-                        "\\\\" in name or name.startswith("/") or
+                        any(char in name for char in "\t\r\n") or
+                        "\\" in name or name.startswith("/") or
                         ".." in name.split("/") for name in tracks)):
                 raise ValueError("Invalid Decades baseline pool " + pool_key)
             volume, pitch = preset.get("volume", 100), preset.get("pitch", 100)
