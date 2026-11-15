@@ -51,3 +51,37 @@ Se o integrador detectar arquivos parciais/modificados, ele bloqueia a importaç
 - Carregar saves antigos de Decades/Kanto e verificar que as cópias QA continuam independentes. Testar também no Android/JoiPlay.
 
 **Status de QA:** o GitHub Actions valida código e regressões em ambientes simulados. A execução nativa e a aceitação das 12 fases Hoenn não foram confirmadas. Para lacunas da campanha, consultar HOENN_PENDENCIAS_IMPLEMENTACAO.md.
+ 
+
+## Correção da opção "Hoenn (em preparação)" — 15/11/2026
+
+**Sintoma real:** no Agente de Transporte Regional, Decades/Kanto disponíveis e Hoenn marcada `em preparação` mesmo depois de atualizar o código. A lista só ativa Hoenn quando a instalação privada dos mapas está presente em `game/` e passou nas verificações. Atualizar apenas a main não instala RXDATA/PNG/OGG de origem que não são distribuídos no GitHub.
+
+**Falha identificada:** o integrador automático anterior verificava exclusivamente `The Pokémon World Project - Hoenn.zip` na raiz e ignorava a fonte já extraída e auditada por `TESTAR_HOENN.bat`. Além disso, o NPC não mostrava a razão do bloqueio.
+
+**Ajustes aplicados:**
+- `install_hoenn.py`: reutiliza a fonte em `.blue-work/hoenn-source/<prefixo SHA-256>` somente após conferir a árvore Git fixada, os hashes dos mapas, gráficos e áudios e os 199 MapIDs. Não utiliza mapas inventados, não importa executável do doador e não usa a cópia `Hoenn pilot.json` como prova da instalação principal.
+- `auto_integrate_hoenn.py`: tenta a importação quando há o ZIP ou uma fonte local previamente preparada. Grava o status detalhado em `.blue-work/hoenn-main-install-status.json` e um status simples em `game/Data/blue-hoenn-install-status.txt` para os diálogos dentro do jogo.
+- `RegionTravel.rb`: ao escolher Hoenn indisponível, explica se falta a fonte, se a importação foi bloqueada ou se há uma instalação parcial. Não libera a viagem sem mapas.
+- `INTEGRAR_HOENN_DECADES.bat`: instalador manual para o Windows com verificação do manifesto, backups e solicitação de recompilação dos PBS/plugins.
+
+### Como resolver no Windows
+
+1. Feche o jogo e atualize a `main`. Faça backup dos seus saves.
+2. Se você já executou `TESTAR_HOENN.bat` **neste mesmo clone**, pode existir uma cópia de fonte auditada em `.blue-work/hoenn-source/`. Não é necessário repetir a extração caso todos os arquivos permaneçam presentes e os hashes sejam válidos.
+3. Se não houver fonte local, coloque o ZIP original `The Pokémon World Project - Hoenn.zip` **na raiz deste clone** (mesma pasta do novo BAT). Alternativamente, **arraste o ZIP para cima do arquivo `INTEGRAR_HOENN_DECADES.bat`**, para fornecer seu caminho exato sem precisar movê-lo.
+4. Execute `INTEGRAR_HOENN_DECADES.bat` com o jogo fechado. Quando ele informar `[OK]`, a montagem, verificação e solicitação de recompilação estão concluídas.
+5. Abra o Game.exe **da pasta principal game/** novamente (se compilar e fechar, abra de novo) e converse com o Agente Regional. Hoenn deverá mostrar `viajar` em vez de `em preparação`.
+6. Se o BAT mostrar `[BLOQUEADO]`, **não edite os marcadores manualmente**. Copie a mensagem de erro da janela e, quando houver, envie os arquivos `.blue-work/hoenn-main-install-status.json` e `.blue-work/hoenn-main-install.log`. O menu continuará bloqueando o transporte até a instalação ser válida.
+
+### Verificação direta
+
+Com Python instalado e o terminal na raiz do projeto:
+
+```powershell
+py -3 scripts/regions/install_hoenn.py --verify-installed
+```
+
+O comando deve informar `"maps": 199`, `"shared_save": true` e `"status": "integrated_files_ready_for_native_QA"`. Se retornar `HOENN BLOQUEADA`, o problema **é local e está nos arquivos da instalação**; a presença do nome no menu não confirma um mapa jogável.
+
+**O que continua pendente:** teste real de viagem, save, retorno, eventos e batalha dentro do Game.exe Windows/JoiPlay. CI não acessa os arquivos privados do seu computador; teste sintético bem-sucedido não deve ser apresentado como instalação concluída.
