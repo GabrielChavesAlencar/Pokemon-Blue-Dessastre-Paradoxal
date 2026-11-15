@@ -39,6 +39,6 @@ jobs:
         run: ruby tests/hoenn_main_gate_runtime.rb scripts/battle_polish/RegionStart.rb
       - name: Existing region and title regressions
         run: |
-          ruby tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
-          ruby tests/title_kanto_runtime.rb scripts/battle_polish/TitleKanto.rb
-          ruby tests/region_travel_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+          ruby -I . tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
+          ruby -I . tests/title_kanto_runtime.rb scripts/battle_polish/TitleKanto.rb
+          ruby -I . tests/region_travel_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
