@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "30715c6aef195837c733418a077e5fc6d684fa52",
+      "date": "2026-11-15T16:10:10-03:00",
+      "title": "ci(hoenn): resolver caminhos de require nos testes de regressao Ruby",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0dc90d76fedcbdf0a2219840bf5c48dbb08f11a1",
       "date": "2026-11-15T16:09:30-03:00",
       "title": "fix(hoenn): exigir 199 RXDATA e completar fixture do marcador",
