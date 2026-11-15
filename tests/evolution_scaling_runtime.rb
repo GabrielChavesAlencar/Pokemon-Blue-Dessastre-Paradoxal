@@ -99,6 +99,32 @@ check(BlueEvolutionScaling.options(:KADABRA,39).empty?,"Trade too early")
 check(BlueEvolutionScaling.options(:KADABRA,40)[0][0]==:ALAKAZAM,"Trade at 40 missing")
 check(BlueEvolutionScaling.options(:GOLBAT,44).empty?,"Happiness too early")
 check(BlueEvolutionScaling.options(:GOLBAT,45)[0][0]==:CROBAT,"Happiness at 45 missing")
+
+# The same stone/trade/friendship levels must be used for wild slots.
+# Wild encounters keep a chance of the original species, unlike trainers.
+[
+  [:PIKACHU, :RAICHU, 30, "stone"],
+  [:KADABRA, :ALAKAZAM, 40, "trade"],
+  [:GOLBAT, :CROBAT, 45, "friendship"]
+].each do |base, evolved, minimum, method|
+  [:trainer, :wild].each do |kind|
+    check(BlueEvolutionScaling.options(base, minimum-1, kind).empty?,
+          "#{method} #{kind} available below level #{minimum}")
+    check(BlueEvolutionScaling.options(base, minimum, kind)[0][0]==evolved,
+          "#{method} #{kind} not available at level #{minimum}")
+  end
+  check(BlueEvolutionScaling.wild_option(base, 5, minimum-1, proc { 0 })==[base,5],
+        "#{method} wild evolved early")
+  check(BlueEvolutionScaling.wild_option(base, 5, minimum, proc { 0 })==[evolved,minimum],
+        "#{method} wild failed to evolve with eligible roll")
+  check(BlueEvolutionScaling.wild_option(base, 5, minimum, proc { 99 })==[base,5],
+        "#{method} wild removed base species")
+  check(BlueEvolutionScaling.available_wild_species(base,minimum-1)==[base],
+        "#{method} Habitat Dex lists locked evolution")
+  check(BlueEvolutionScaling.available_wild_species(base,minimum)==[base,evolved],
+        "#{method} Habitat Dex fails to list unlocked evolution")
+end
+
 check(BlueEvolutionScaling.options(:EEVEE,50).empty?,"Branching Eevee silently picked a form")
 check(BlueEvolutionScaling.options(:PARADOX,99).empty?,"Paradox evolved")
 check(BlueEvolutionScaling.options(:REGIONAL,99).empty?,"Regional nonzero form evolved")
@@ -134,6 +160,25 @@ raticates=upgraded.select { |s,l| s==:RATICATE }
 check(raticates.length.between?(70,230),"Wild mixture changed to all-base/all-evolved")
 check(raticates.all? { |s,l| l==25 },"Evolved wild under natural level threshold")
 check(upgraded.any? { |s,l| s==:RATTATA && l==6 },"Original land slot species lost")
+# End-to-end PokemonEncounters prepend coverage for the non-level methods.
+srand(20261115)
+[
+  [:PIKACHU,:RAICHU,30],
+  [:KADABRA,:ALAKAZAM,40],
+  [:GOLBAT,:CROBAT,45]
+].each do |base, evolved, cap|
+  enc.species=base
+  $player.party[0].level=cap-1
+  check(Array.new(40) {enc.choose_wild_pokemon(:Land)}.all? { |row| row==[base,6] },
+        "Normal encounter #{base} evolved below the gate")
+  $player.party[0].level=cap
+  generated=Array.new(120) {enc.choose_wild_pokemon(:Land)}
+  check(generated.any? { |row| row==[evolved,cap] },
+        "Normal encounter #{base} never produced #{evolved} at the gate")
+  check(generated.any? { |row| row==[base,6] },
+        "Normal encounter #{base} lost its original slots")
+end
+$player.party[0].level=30
 enc.species=:EEVEE
 check(Array.new(30){enc.choose_wild_pokemon(:Land)}.all?{|s,l|s==:EEVEE},
       "Branching Eevee corrupted in wild encounters")
@@ -148,4 +193,4 @@ check(BlueHabitat.species([[55,:RATTATA,3,6]])==[:RATTATA,:RATICATE],
 $player.party[0].level=10
 check(BlueHabitat.species([[55,:RATTATA,3,6]])==[:RATTATA],
       "Habitat Dex showed an unavailable evolved species before cap")
-puts "PASS: native evolution rules, 3-stage families, trainer grace, stone/trade/happiness, wild mixture, Habitat Dex"
+puts "PASS: shared trainer/wild thresholds (stone 30, trade 40, happiness 45), live normal encounter selection, 3-stage families, Habitat Dex"
