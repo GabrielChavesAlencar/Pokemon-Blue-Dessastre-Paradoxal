@@ -109,13 +109,19 @@ confere encontros e equipes e verifica save e recarga. A verificação
 automatiza a escolha do inicial e fornece os resultados das batalhas.
 
 
-## 4. Integrar o piloto de Kanto à nova partida (opt-in)
+## 4. Integrar Kanto ao jogo principal (fluxo atual em 15/11/2026)
 
-A [etapa 04](KANTO_ESCOLHA_REGIAO.md) acrescentou o seletor regional ao início de **Nova partida** e um importador de conteúdo para a instalação local do jogo-mestre. O seletor preserva a introdução do Decades e **só oferece Kanto quando seus mapas foram instalados**. As demais regiões aparecem como em preparação.
+O seletor da **tela inicial → Novo Jogo** oferece **Decades** e **Kanto**. Diferentemente do piloto de teste, Kanto agora pode começar **no mesmo Game.exe e na mesma estrutura de saves/PC** quando o pacote atual tiver sido integrado localmente à instalação Decades. A escolha é armazenada apenas durante a criação do novo jogo; iniciar Decades mantém o spawn e história nativos e não repete o seletor no Story Mode.
 
-Para integrar o piloto no jogo principal, com o jogo fechado e a fonte FRLG extraída, execute `KANTO_INSTALAR_NO_JOGO.bat`. O atalho mostra a prévia e solicita confirmação; [`install_kanto.py`](../scripts/regions/install_kanto.py) usa cópia separada, hashes da base, backups e rollback. Após a importação, use `ABRIR_JOGO.bat` para compilar o conteúdo e selecionar Decades ou Kanto numa nova partida. Saves já existentes não passam pela seleção.
+**Instalação:** `KANTO_INSTALAR_NO_JOGO.bat` prepara e audita a fonte FRLG fixada, apresenta um dry-run, exige confirmação, instala os **142 mapas catalogados**, PBS, tilesets, NPCs, dependências de eventos e overlay de traduções no `game/` local. `ABRIR_JOGO.bat` atualiza plugins/idioma e solicita compilação dos arquivos Essentials. Não copia executáveis, `System.rxdata`, scripts da fonte nem saves. A verificação `python scripts/regions/install_kanto.py --verify-installed` confirma integridade de arquivos, **não** gameplay.
 
-**Importante:** o conteúdo integrado cobre apenas **Pallet Town a Pewter City e Brock**; a viagem entre regiões, as oito insígnias e a Liga ainda não estão completos. Não distribuir a cópia local de mapas e gráficos de terceiros a partir deste repositório. A validação final de interface, movimentação e batalhas reais depende do checklist Windows. O [contador de Kanto](KANTO_ETAPAS.md) distingue etapa em desenvolvimento de etapas plenamente aprovadas.
+O código de início guarda o ponto nativo de Decades como futura chegada de quem começa em Kanto. A **Liga de Kanto** libera Decades e Johto no catálogo; o transporte ao primeiro destino depende da conclusão real do Hall, de save seguro e de mapa nativo existente. Johto não fica viajável sem integração própria. As regras de insígnias/esmeraldas, HMs, especiais, proteção da Box e motor de batalha Blue permanecem as do [Plano v2](PLANO_REGIOES_DESSASTRE_V2.md).
+
+**Migração:** instalações antigas com só 13/25 mapas são recusadas pelo verificador; não apagar marcadores ou copiar arquivos do piloto sobre `game/` para contornar bloqueios, pois MapIDs e saves podem divergir. Preserve a instalação e use nova cópia de teste até existir um migrador comprovado.
+
+**Status real:** infraestrutura publicada no GitHub, mas o teste ponta a ponta em `Game.exe` principal e JoiPlay ainda precisa ser comprovado. O projeto tem mapas `preview_only`; a barra de aceitação de Kanto não deve subir por mera presença de arquivos ou sucesso em CI.
+
+Passo a passo e testes: [KANTO_INTEGRACAO_DECADES.md](KANTO_INTEGRACAO_DECADES.md).
 
 ## 5. Expansão experimental Pallet → Mt. Moon → Cerulean (fase 07)
 
