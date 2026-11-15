@@ -25,7 +25,7 @@ READY_GATE = Path("Data/blue-kanto-ready.txt")
 
 
 def ready_gate_bytes(mapping):
-    return f"BLUE_KANTO_READY_V1,{len(mapping)},{mapping[7]}\\n".encode("ascii")
+    return f"BLUE_KANTO_READY_V1,{len(mapping)},{mapping[7]}\n".encode("ascii")
 
 PORTRAITS = tuple(f"BLUE_KANTO_{kind}.png" for kind in TYPES)
 # Runtime-only files referenced by the authored Kanto plugin/events. The
