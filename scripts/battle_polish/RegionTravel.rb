@@ -82,10 +82,15 @@ module BlueRegionTravel
       BlueRegionStart.johto_town_point
     elsif key == "DECADES"
       position = state["decades_return"]
-      # Kanto starters may visit Decades BEFORE their first League. This
-      # real native start point was captured when the new game was created.
-      # Never invent fallback coordinates in a foreign map.
-      position ||= state["decades_first_arrival"] if state["current"] == "KANTO"
+      # Any integrated-region starter can visit Decades before its first
+      # League. This point is captured from native System.rxdata on New Game.
+      # For an older regional save without the new field, use the same native
+      # System-derived point, NEVER hard-coded guessed town coordinates.
+      position ||= state["decades_first_arrival"]
+      if !position && defined?(BlueRegionStart) &&
+         BlueRegionStart.respond_to?(:native_decades_start)
+        position = BlueRegionStart.native_decades_start
+      end
       return nil unless position.is_a?(Array) && position.length == 4
       return nil unless position.all? { |v| v.is_a?(Integer) } && position[0] > 0 &&
                         position[1] >= 0 && position[2] >= 0 && [2,4,6,8].include?(position[3])
