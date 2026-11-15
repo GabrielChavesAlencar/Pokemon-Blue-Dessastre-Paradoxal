@@ -4,7 +4,13 @@ require "tmpdir"
 require "fileutils"
 
 def _INTL(text, *); text; end
-def pbMessage(*); $notices += 1; end
+$region_choices = []
+$last_region_options = nil
+def pbMessage(message, choices=nil, default=nil)
+  $notices += 1
+  $last_region_options = choices if choices
+  choices ? $region_choices.shift : nil
+end
 def pbConfirmMessage(*); true; end
 def require_check(condition, label)
   raise(label) unless condition
@@ -31,6 +37,7 @@ BlueKantoTitle.install
 original = [" <- My Save -> ", "New Game", "Options", "Quit Game"]
 scene = PokemonLoad_Scene.new
 scene.queue = [1]
+$region_choices = [0] # Novo Jogo -> Decades
 scene.pbStartScene(original, true, nil, nil, 0)
 require_check(scene.displayed == [" <- My Save -> ", "New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Testar Sinnoh", "Options", "Quit Game"],
               "Kanto/Johto test options have wrong positions after Continue")
@@ -49,6 +56,7 @@ require_check(scene.pbChoose(original, 0) == -2, "Next save-slot arrow changed")
 gift = [" <- Save 2 -> ", "Mystery Gift", "New Game", "Options", "Quit Game"]
 scene2 = PokemonLoad_Scene.new
 scene2.queue = [1, 6]
+$region_choices = [0] # Preserve original New Game handler after Mystery Gift reordering
 scene2.pbStartScene(gift, true, nil, nil, 0)
 require_check(scene2.displayed == [" <- Save 2 -> ", "New Game", "Testar Kanto", "Testar Johto",
                                    "Testar Hoenn", "Testar Sinnoh", "Mystery Gift", "Options", "Quit Game"],
@@ -60,6 +68,7 @@ require_check(scene2.pbChoose(gift, 0) == 1, "Mystery Gift handler no longer map
 fresh = ["New Game", "Options", "Quit Game"]
 scene3 = PokemonLoad_Scene.new
 scene3.queue = [0]
+$region_choices = [0]
 scene3.pbStartScene(fresh, false, nil, nil, 0)
 require_check(scene3.displayed == ["New Game", "Testar Kanto", "Testar Johto", "Testar Hoenn", "Testar Sinnoh", "Options", "Quit Game"],
               "No-save title order is invalid")
@@ -97,6 +106,37 @@ require_check(scene.pbChoose(original, 0) == 3, "Sinnoh pilot success did not cl
 BlueKantoTitle.define_singleton_method(:launch_sinnoh) { false }
 scene.queue = [5, 1]
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return to title")
+
+# New Game must choose a region BEFORE touching SaveData. The old shortcuts
+# remain available and may not change Continue / Mystery Gift navigation.
+require_check(BlueKantoTitle::START_REGIONS.map(&:first) == [
+  "Decades", "Kanto (piloto experimental)", "Johto (piloto experimental)",
+  "Hoenn (piloto experimental)", "Sinnoh (piloto experimental)",
+  "Unova (indisponível)", "Kalos (indisponível)",
+  "Alola (indisponível)", "Galar (indisponível)",
+  "Paldea (indisponível)", "Hisui (indisponível)", "Voltar ao menu"
+], "Region picker omitted an announced region")
+[[:launch, 1], [:launch_johto, 2], [:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
+  BlueKantoTitle.define_singleton_method(method) { true }
+  $region_choices = [choice]
+  scene.queue = [1]
+  require_check(scene.pbChoose(original, 0) == 3, "#{method} must exit after starting isolated pilot")
+  require_check($last_region_options.length == 12, "Region list was not displayed")
+end
+BlueKantoTitle.define_singleton_method(:launch_johto) { false }
+$region_choices = [2, 0] # Failed Johto must not implicitly start Decades
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Unavailable Johto did not ask again")
+$region_choices = [5, 0] # Unova is not a playable pilot; show warning and re-prompt
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Future region silently started")
+$region_choices = [11] # Voltar: return to title, not New Game
+scene.queue = [1, 6]
+require_check(scene.pbChoose(original, 0) == 2, "Cancel region choice did not return to title")
+$region_choices = [-1]
+scene.queue = [1, 7]
+require_check(scene.pbChoose(original, 0) == 3, "Close region picker did not return to title")
+# A pilot must still open its OWN New Game directly with no nested selector.
 
 # Isolated pilot cannot spawn itself recursively from its own Game.exe.
 Dir.mktmpdir("blue-title-") do |folder|
