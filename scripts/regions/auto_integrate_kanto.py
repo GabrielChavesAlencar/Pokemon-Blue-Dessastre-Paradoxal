@@ -84,7 +84,7 @@ def _default_run(argv: list[str], project: Path, env: dict[str, str]) -> None:
     command = " ".join(argv[1:])
     print("[KANTO AUTO] >", command, flush=True)
     with log_path.open("a", encoding="utf-8") as log:
-        log.write("\\n=== " + datetime.now(timezone.utc).isoformat() + " " + command + " ===\\n")
+        log.write("\n=== " + datetime.now(timezone.utc).isoformat() + " " + command + " ===\n")
         log.flush()
         tail = []
         with subprocess.Popen(argv, cwd=project, env=env, stdout=subprocess.PIPE,
