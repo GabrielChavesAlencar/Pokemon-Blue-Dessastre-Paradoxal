@@ -189,6 +189,45 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check($messages == 0, "Johto pilot unexpectedly opened region picker")
     File.delete("Johto pilot.json")
 
+    # The MAIN Decades executable must not accept a standalone Kanto marker:
+    # require the audited, merged map manifest, PBS and runtime plugin.
+    check(!BlueRegionStart.kanto_integrated?, "Stray Kanto marker enabled main campaign")
+    check(!BlueRegionStart.request_initial("KANTO"), "Uninstalled Kanto could start")
+    FileUtils.mkdir_p("PBS")
+    %w[encounters trainers trainer_types map_metadata map_connections].each do |name|
+      File.write("PBS/#{name}_kanto.txt", "[KANTO]\n")
+    end
+    FileUtils.mkdir_p("Plugins/ZZZZZ Blue Kanto Pilot")
+    File.write("Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb", "# mock native plugin")
+    mapping = (1..13).map { |n| [n.to_s, n == 7 ? 321 : (n == 5 ? 713 : 400+n)] }.to_h
+    install = {"schema"=>1, "source"=>"Essentials FRLG 21.1", "maps"=>mapping}
+    File.write("Data/blue-kanto-install.json", JSON.generate(install))
+    check(BlueRegionStart.kanto_integrated?, "Audited main Kanto install was not recognized")
+    install["schema"] = 99
+    File.write("Data/blue-kanto-install.json", JSON.generate(install))
+    check(!BlueRegionStart.kanto_integrated?, "Malformed Kanto installation was accepted")
+    install["schema"] = 1
+    File.write("Data/blue-kanto-install.json", JSON.generate(install))
+    check(BlueRegionStart.request_initial("KANTO"), "Integrated Kanto title selection blocked")
+    $game_temp.begun_new_game = true
+    Game.start_new
+    check(Game.seen == [321,28,14], "Integrated Kanto did not start in Pallet home")
+    check($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto initial region missing")
+    check($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region missing")
+    check($PokemonGlobal.blue_regions["pilot_profile_pending"], "Kanto profile scene skipped")
+    check($PokemonGlobal.blue_campaign_departure == false, "Kanto starter bag cleared")
+    check([$data_system.start_map_id,$data_system.start_x,$data_system.start_y] == [4,7,8],
+          "Main Decades start in System was modified permanently")
+    check(BlueRegionStart.choose_initial == "DECADES", "Kanto choice leaked into next new game")
+
+    # Choosing Decades on the title must not display the second, old Story
+    # Mode region picker. It must keep Decades coordinates and save context.
+    check(BlueRegionStart.request_initial("DECADES"), "Decades title selection rejected")
+    Game.start_new
+    check(Game.seen == [4,7,8], "Decades start was displaced by Kanto")
+    check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Decades original save altered")
+    check(BlueRegionStart.story_spawn.nil?, "Decades got a duplicate region prompt")
+
     old_save = {"version"=>1,"initial"=>"DECADES","current"=>"DECADES","leagues"=>["DECADES"]}
     # A load must never start a new game, irrespective of the last tested
     # regional spawn. Johto tests above intentionally changed Game.seen.
