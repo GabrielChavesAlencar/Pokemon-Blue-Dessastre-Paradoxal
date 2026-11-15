@@ -228,8 +228,14 @@ jobs:
           $originalConfig=(Get-FileHash 'game/mkxp.json' -Algorithm SHA256).Hash
           python scripts/regions/install_kanto.py --game game --pilot .blue-work/kanto-pilot
           if($LASTEXITCODE -ne 0){throw 'Kanto import dry-run failed'}
-          python scripts/regions/install_kanto.py --apply --game game --pilot .blue-work/kanto-pilot
-          if($LASTEXITCODE -ne 0){throw 'Kanto transaction failed'}
+          # This must be the SAME automatic entry point called by the site's
+          # Blue-Story.exe, never a hand-executed BAT or a special CI shortcut.
+          python scripts/regions/auto_integrate_kanto.py
+          if($LASTEXITCODE -ne 0){throw 'Blue-Story automatic Kanto integration failed'}
+          $status=Get-Content '.blue-work/kanto-install-status.json' -Raw | ConvertFrom-Json
+          if($status.status -ne 'integrated' -or -not $status.ready){throw 'Automatic installation falsely reported Kanto ready'}
+          python scripts/regions/install_kanto.py --verify-installed --game game
+          if($LASTEXITCODE -ne 0){throw 'Kanto files not verifiable after auto installer'}
           if(-not (Test-Path 'game/Data/blue-kanto-music.txt')){throw 'Regional music manifest missing from integrated Kanto'}
           python scripts/music/compile_kanto_music.py --game game
           if($LASTEXITCODE -ne 0){throw 'Installed Kanto music MapIDs failed to compile'}
