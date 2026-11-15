@@ -31,6 +31,19 @@ class PokemonLoad_Scene
 end
 
 $notices = 0
+# Isolated UI fixture: no game saves are created by the title picker.
+module BlueRegionStart
+  class << self
+    attr_accessor :integrated
+    attr_reader :requests
+    def request_initial(region)
+      return false if region == "KANTO" && !integrated
+      (@requests ||= []) << region
+      true
+    end
+    def kanto_integrated?; !!integrated; end
+  end
+end
 require ARGV.fetch(0)
 BlueKantoTitle.install
 
@@ -114,13 +127,30 @@ require_check(scene.pbChoose(original, 0) == 1, "Unavailable Sinnoh must return 
 # New Game must choose a region BEFORE touching SaveData. The old shortcuts
 # remain available and may not change Continue / Mystery Gift navigation.
 require_check(BlueKantoTitle::START_REGIONS.map(&:first) == [
-  "Decades", "Kanto (piloto experimental)", "Johto (piloto experimental)",
+  "Decades", "Kanto", "Johto (piloto experimental)",
   "Hoenn (piloto experimental)", "Sinnoh (piloto experimental)",
   "Unova (indisponível)", "Kalos (indisponível)",
   "Alola (indisponível)", "Galar (indisponível)",
   "Paldea (indisponível)", "Hisui (indisponível)", "Voltar ao menu"
 ], "Region picker omitted an announced region")
-[[:launch, 1], [:launch_johto, 2], [:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
+# Kanto must start in the ORIGINAL Game.start_new branch, not spawn a new
+# process or switch profiles as the old pilot-only selector did.
+BlueRegionStart.integrated = true
+$region_choices = [1]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Integrated Kanto did not use native New Game")
+require_check(BlueRegionStart.requests.last == "KANTO", "Kanto session choice not recorded")
+require_check($last_region_options[1] == "Kanto", "Installed Kanto not shown as available")
+BlueRegionStart.integrated = false
+$region_choices = [1, 0]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Missing Kanto silently opened its pilot")
+require_check($last_region_options[1].include?("instalação necessária"),
+              "Missing main Kanto install was advertised as ready")
+require_check(BlueRegionStart.requests.last == "DECADES", "Decades fallback was not explicit")
+
+# All other region pilots retain separate save profiles and original launchers.
+[[:launch_johto, 2], [:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
   BlueKantoTitle.define_singleton_method(method) { true }
   $region_choices = [choice]
   scene.queue = [1]
@@ -128,13 +158,13 @@ require_check(BlueKantoTitle::START_REGIONS.map(&:first) == [
   require_check($last_region_options.length == 12, "Region list was not displayed")
 end
 BlueKantoTitle.define_singleton_method(:launch_johto) { false }
-$region_choices = [2, 0] # Failed Johto must not implicitly start Decades
+$region_choices = [2, 0]
 scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Unavailable Johto did not ask again")
-$region_choices = [5, 0] # Unova is not a playable pilot; show warning and re-prompt
+$region_choices = [5, 0]
 scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Future region silently started")
-$region_choices = [11] # Voltar: return to title, not New Game
+$region_choices = [11]
 scene.queue = [1, 6]
 require_check(scene.pbChoose(original, 0) == 2, "Cancel region choice did not return to title")
 $region_choices = [-1]
