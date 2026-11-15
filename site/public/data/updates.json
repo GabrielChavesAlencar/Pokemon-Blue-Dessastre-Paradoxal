@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c0e25d998712f3f30bd958528819b1900afd0d05",
+      "date": "2026-11-15T14:15:06-03:00",
+      "title": "refactor(regions): validar atalhos locais sem verificacao duplicada quadratica",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2e0c077e822cd978a286c0ad7dc96b1256c80244",
       "date": "2026-11-15T14:13:52-03:00",
       "title": "fix(hm): exigir HM obtido na regiao atual mesmo com golpe aprendido em outra, manter badges nativos Decades",
