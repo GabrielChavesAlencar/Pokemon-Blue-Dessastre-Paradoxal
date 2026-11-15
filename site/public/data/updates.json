@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3b800342c2e7c37e35053243f25a3b2fa7d02c1f",
+      "date": "2026-11-15T11:05:53-03:00",
+      "title": "docs(kanto): documentar atualizador automatico do site, hash e falhas nao bloqueantes",
+      "category": "Documentação"
+    },
+    {
+      "sha": "610815d92bf38340382041b7fa5a0960df4cde07",
+      "date": "2026-11-15T11:05:33-03:00",
+      "title": "docs(instalacao): Kanto automatico no Blue Story exe sem BAT separado",
+      "category": "Documentação"
+    },
+    {
       "sha": "12abcdc738527f71fc5a279e1361d563146c966c",
       "date": "2026-11-15T11:04:53-03:00",
       "title": "test(installer): verificar sincronizacao segura do runtime em instalacao existente",
