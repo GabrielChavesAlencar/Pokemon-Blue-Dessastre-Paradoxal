@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "25ff5cec234588c2bc3c2a4e4ce839e89d7ef2d5",
+      "date": "2026-11-15T11:04:33-03:00",
+      "title": "feat(updater): sincronizar apenas runtime de Kanto com SHA256 nas atualizacoes",
+      "category": "Novidades"
+    },
+    {
       "sha": "4e06992ecb2b0295609e1e6d952539169cc2adb6",
       "date": "2026-11-15T11:04:15-03:00",
       "title": "feat(kanto): atualizar plugin integrado por hash e backup nas proximas versoes",
