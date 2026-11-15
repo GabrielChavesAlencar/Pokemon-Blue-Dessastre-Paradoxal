@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b522eaf606370f062c47bd15e3450a2330d966b7",
+      "date": "2026-11-14T21:01:58-03:00",
+      "title": "fix(kanto): limitar presente da mae ao piloto ativo e regiao atual Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "5c511d402fd0bc7f76f283c59c8cf7d79aef2e6a",
       "date": "2026-11-14T21:00:40-03:00",
       "title": "test(kanto): injetar game_player global no mock da cena da mae",
