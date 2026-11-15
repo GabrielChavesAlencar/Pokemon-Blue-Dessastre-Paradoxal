@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ec7169125e29907c75be969344fe9f1d8a2c0c87",
+      "date": "2026-11-15T18:40:00-03:00",
+      "title": "docs(android): corrigir NameError de JSON e instruir patch via Termux sem reinstalar",
+      "category": "Correções"
+    },
+    {
       "sha": "6c0c95b83eae46a6919305912804eafed3fed5a0",
       "date": "2026-11-15T18:39:34-03:00",
       "title": "docs(site): passo simples do Termux para corrigir New Game da edicao Decades Kanto Hoenn",
