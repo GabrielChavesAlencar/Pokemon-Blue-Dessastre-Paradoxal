@@ -5,7 +5,10 @@ on:
     branches: [main]
     paths:
       - 'scripts/battle_polish/RegionStart.rb'
+      - 'scripts/battle_polish/TitleKanto.rb'
       - 'tests/region_start_android_no_json_runtime.rb'
+      - 'tests/test_android_multiregion.py'
+      - 'tests/test_android_updates.py'
       - 'scripts/android/package.py'
       - 'scripts/android/build_manifest.py'
       - 'scripts/android/update_client.py'
