@@ -29,7 +29,7 @@ termux-setup-storage</code></pre></li>
       <li><strong>Verifique a atualização e depois instale.</strong><p>Execute o primeiro comando para comparar a versão local com a release publicada. Só execute o segundo para instalar, depois de fechar o JoiPlay e conferir o backup.</p>
         <pre><code>python ATUALIZAR-ANDROID.py
 python ATUALIZAR-ANDROID.py --update</code></pre>
-        <p>O patch é validado por versão, tamanho e SHA-256. Sem patch compatível, o cliente novo instala o ZIP integral validado, preserva saves locais e mantém o jogo anterior como backup. Isso exige espaço para baixar e extrair o pacote completo.</p></li>
+        <p>O patch é validado por versão, tamanho e SHA-256. Mesmo sem patch direto compatível, o cliente novo instala o ZIP integral validado, preserva saves locais e mantém o jogo anterior como backup. Isso exige espaço para baixar e extrair o pacote completo.</p></li>
       <li><strong>Reabra o mesmo jogo no JoiPlay.</strong><p>Confirme o menu, os comandos de toque, a movimentação e o carregamento do save. Se não houver patch direto ou você pular versões, o cliente novo usa o ZIP integral pelo Termux. Confira o backup e os saves antes de apagar qualquer arquivo.</p></li>
     </ol>
     <div class="android-update-note"><strong>Erro “Input.mouse_in_window” ao tocar?</strong><p>Isso indica uma incompatibilidade do script de entrada com o plugin JoiPlay. A correção precisa estar dentro de <code>Data/Scripts.rxdata</code> do pacote Android mais recente; não basta atualizar o aplicativo. Se sua versão ainda exibir esse erro, use uma release corrigida depois de sua publicação e teste em uma pasta nova. Preserve os saves.</p></div>
