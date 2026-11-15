@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f1cc8cb04eb91f92b7a3d253cd924cfcb1152780",
+      "date": "2026-11-15T12:19:37-03:00",
+      "title": "test(travel): restaurar isolamento do contexto NPC e validar viagem antes da Liga",
+      "category": "Testes"
+    },
+    {
       "sha": "4a1c6cb9faa56358f37fa2731d8f3294398ff33c",
       "date": "2026-11-15T12:18:22-03:00",
       "title": "test(travel): cobrir viagem livre por NPC, Pallet, New Bark, PC e rollback",
