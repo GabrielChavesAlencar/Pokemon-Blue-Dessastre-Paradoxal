@@ -812,9 +812,13 @@ module KantoNativeCheck
              "Kanto clear did not unlock exactly the eligible adjacent regions")
     require!(league_ci_transfers.last == [pallet,18,8,2],
              "Hall of Fame did not return to Pallet Town")
-    require!(!BlueRegions.unlocked(BlueKantoPilot.progress).include?("HOENN") &&
-             !BlueKantoPilot.league_finalize(pallet),
-             "Hall of Fame duplicated completion or unlocked extra regions")
+    # Traveling no longer requires League completion. The Hall of Fame must
+    # grant only Kanto's completion flag; the independent travel catalogue is
+    # already free (physical destinations still require installed maps).
+    require!(BlueRegions.unlocked(BlueKantoPilot.progress) == BlueRegionData::CIRCUIT,
+             "League incorrectly restricted the free regional travel catalogue")
+    require!(!BlueKantoPilot.league_finalize(pallet),
+             "Hall of Fame duplicated completion")
 
     # Keep the legacy reload-map assertion stable while proving the gym
     # can be loaded and the puzzle flags persist across the same save.
