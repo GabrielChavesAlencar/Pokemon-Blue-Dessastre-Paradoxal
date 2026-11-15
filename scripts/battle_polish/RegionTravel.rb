@@ -69,6 +69,34 @@ module BlueRegionTravel
     nil
   end
 
+  # A native Decades New Game starts on the introduction/character-selection
+  # map, not in Cherryhill. Entering from another region MUST use a walkable
+  # tile on Map077, near the real travel NPC, and NEVER restart that intro.
+  # Resolve from the installed native map; do not forge coordinates on an
+  # unknown or non-passable tile.
+  def self.decades_town_point
+    return nil unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", DECADES_AGENT_MAP))
+    return nil unless defined?(Game_Map)
+    town = Game_Map.new
+    town.setup(DECADES_AGENT_MAP)
+    return nil unless town.respond_to?(:events) && town.events.is_a?(Hash)
+    occupied = town.events.values.map { |event| [event.x, event.y] }
+    positions = (18..31).flat_map { |y| (10..35).map { |x| [x,y] } }
+    positions.sort_by! { |x,y| [(x-24).abs+(y-24).abs,y,x] }
+    safe = positions.select do |x,y|
+      !occupied.include?([x,y]) && (town.valid?(x,y) rescue false) &&
+        (town.passable?(x,y,2) rescue false)
+    end
+    # When the game switches to Decades it creates the NPC on the first free
+    # central tile. Choose a DIFFERENT nearby passable point for the player.
+    return nil unless safe.length >= 2
+    nearby = safe[1..-1].find { |x,y| (x-safe[0][0]).abs+(y-safe[0][1]).abs <= 4 }
+    return nil unless nearby
+    [DECADES_AGENT_MAP, nearby[0], nearby[1], 2]
+  rescue StandardError
+    nil
+  end
+
   def self.destination(state, key)
     return nil unless state && BlueRegions.unlocked(state).include?(key)
     return nil if key == state["current"]
@@ -81,21 +109,20 @@ module BlueRegionTravel
       return nil unless johto_installed?
       BlueRegionStart.johto_town_point
     elsif key == "DECADES"
+      # Previous releases mistakenly saved System.rxdata's native INTRO as
+      # decades_first_arrival. Ignore it, even for an old Kanto save: visiting
+      # Decades must not show character/story/mechanics setup a second time.
+      # The NPC is on Cherryhill Map077; any recorded return must be on that
+      # same verified town map, not in Decades' introduction or elsewhere.
       position = state["decades_return"]
-      # Any integrated-region starter can visit Decades before its first
-      # League. This point is captured from native System.rxdata on New Game.
-      # For an older regional save without the new field, use the same native
-      # System-derived point, NEVER hard-coded guessed town coordinates.
-      position ||= state["decades_first_arrival"]
-      if !position && defined?(BlueRegionStart) &&
-         BlueRegionStart.respond_to?(:native_decades_start)
-        position = BlueRegionStart.native_decades_start
+      if position.is_a?(Array) && position.length == 4 &&
+         position[0] == DECADES_AGENT_MAP &&
+         position.all? { |v| v.is_a?(Integer) } && position[1] >= 0 &&
+         position[2] >= 0 && [2,4,6,8].include?(position[3]) &&
+         pbRgssExists?(sprintf("Data/Map%03d.rxdata", DECADES_AGENT_MAP))
+        return position
       end
-      return nil unless position.is_a?(Array) && position.length == 4
-      return nil unless position.all? { |v| v.is_a?(Integer) } && position[0] > 0 &&
-                        position[1] >= 0 && position[2] >= 0 && [2,4,6,8].include?(position[3])
-      return nil unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", position[0]))
-      position
+      decades_town_point
     end
   end
 
