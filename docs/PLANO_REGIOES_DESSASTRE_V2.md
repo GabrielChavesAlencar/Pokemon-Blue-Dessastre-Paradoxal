@@ -1,5 +1,8 @@
 # Plano técnico — integrar todas as regiões ao Pokémon Blue: Dessastre Paradoxal
 
+> **ATUALIZAÇÃO DE REGRA — 15/11/2026:** a passagem entre regiões integradas ao **mesmo Game.exe** agora é **livre desde o começo**, exclusivamente pelo NPC da cidade inicial de cada jogo/região. **Não precisa vencer nenhuma Liga para viajar.** Esta decisão substitui as antigas regras de liberar duas regiões vizinhas após a Liga (itens 2, 3 e 11 da seção 1, seção 3 e referências equivalentes neste plano histórico). **As Ligas, oito insígnias locais para especiais, HMs, balanço, PC e pós-jogo continuam exigindo seus critérios próprios.** Regiões que ainda só existam como pilotos isolados não são destinos do jogo principal. Implementação e QA: [VIAGEM_REGIONAL_LIVRE_NPC.md](VIAGEM_REGIONAL_LIVRE_NPC.md).
+
+
 **Tipo:** especificação funcional e técnica de implementação  
 **Data:** 11/11/2026  
 **Projeto:** [Pokémon Blue: Dessastre Paradoxal](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal)  
