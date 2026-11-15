@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3875aaaaba8977d1d8be212964d109bfde969de5",
+      "date": "2026-11-15T18:37:20-03:00",
+      "title": "test(android): reproduzir NameError de RegionStart.rb sem JSON do JoiPlay",
+      "category": "Testes"
+    },
+    {
       "sha": "6510a8a88495153a74eb575156df8805d76d36d7",
       "date": "2026-11-15T18:36:27-03:00",
       "title": "fix(android): Novo Jogo sem JSON no JoiPlay usa manifesto ASCII verificado de Hoenn",
