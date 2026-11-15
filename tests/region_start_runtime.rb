@@ -294,7 +294,7 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     interpreter.parameters=[["Battle Mode","Story Mode"]]
     interpreter.command_102
     check(interpreter.branch[0]==1 && $native_intro_menus==0,
-          "Decades introduction asked for the game mode")
+          "Decades introduction asked for the game mode: branch=#{interpreter.branch.inspect} native=#{$native_intro_menus} state=#{BlueRegionStart.decades_auto_intro?} map=#{$game_map.map_id} start=#{$data_system.start_map_id}")
     interpreter.parameters=[["Any Pokémon","Traditional Starters","Cancel"]]
     interpreter.command_102
     check(interpreter.branch[0]==1 && $native_intro_menus==0,
