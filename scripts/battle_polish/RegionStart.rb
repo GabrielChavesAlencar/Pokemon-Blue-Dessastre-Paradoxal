@@ -13,12 +13,46 @@ module BlueRegionStart
 
   # A start marker is never permission to enter Hoenn. The main Decades
   # game needs the complete, installed 199-map manifest and authored plugin.
+  # mkxp variants can lack Ruby's optional JSON gem. The installer
+  # commits a compact marker LAST, plus a separate 199-map registry used
+  # already by BlueHoennPilot. Validate both instead of silently hiding
+  # Hoenn from a correctly installed Windows/Android build.
+  def self.hoenn_compact_manifest
+    return nil unless File.file?(HOENN_READY) && File.file?(HOENN_PILOT_METADATA)
+    body = File.read(HOENN_INSTALL)
+    return nil unless body.include?("\"source_commit\": \"#{HOENN_REVISION}\"") &&
+      body.include?("\"status\": \"INTEGRATED_FILES_READY_FOR_NATIVE_QA\"")
+    entries = File.readlines(HOENN_PILOT_METADATA, chomp: true)
+    return nil unless entries.shift == "BLUE_HOENN_PILOT_V1"
+    home = entries.shift.to_s.split(",").map { |n| Integer(n, 10) rescue nil }
+    return nil unless home.length == 3 && home.all? { |n| n.is_a?(Integer) }
+    maps = {}
+    entries.each do |line|
+      a,b = line.split(",").map { |n| Integer(n, 10) rescue nil }
+      return nil unless a.is_a?(Integer) && b.is_a?(Integer) &&
+        (700..999).include?(b) && !maps.key?(a.to_s)
+      maps[a.to_s] = b
+    end
+    return nil unless maps.length == 199 && maps.values.uniq.length == 199 &&
+      home == [maps["8"],25,6]
+    gate = File.read(HOENN_READY).strip.split(",")
+    return nil unless gate.length == 7 &&
+      gate.first(4) == ["BLUE_HOENN_READY_V1","199",home[0].to_s,maps["7"].to_s]
+    xy_dir = gate[4,3].map { |n| Integer(n,10) rescue nil }
+    return nil unless xy_dir.all? { |n| n.is_a?(Integer) }
+    {"schema"=>1,"region"=>"HOENN","source_commit"=>HOENN_REVISION,
+     "status"=>"INTEGRATED_FILES_READY_FOR_NATIVE_QA","maps"=>maps,
+     "start"=>home+[2],"town"=>[maps["7"],*xy_dir]}
+  rescue IOError, SystemCallError
+    nil
+  end
+
   def self.hoenn_manifest
     return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)
     begin
       require "json" unless defined?(JSON)
     rescue LoadError
-      return nil
+      return hoenn_compact_manifest
     end
     data = JSON.parse(File.read(HOENN_INSTALL))
     return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
@@ -67,7 +101,7 @@ module BlueRegionStart
     return false unless File.read(HOENN_START).strip ==
       "BLUE_HOENN_START_V1,HOENN,#{home[0]},25,6"
     return false unless File.read(HOENN_READY).strip ==
-      "BLUE_HOENN_READY_V1,199,#{home[0]},#{town[0]}"
+      "BLUE_HOENN_READY_V1,199,#{home[0]},#{town.join(',')}"
     required = %w[Data/MapInfos.rxdata Data/Tilesets.rxdata
       PBS/trainers_hoenn_pilot.txt PBS/trainer_types_hoenn_pilot.txt
       PBS/encounters_hoenn_pilot.txt PBS/map_metadata_hoenn_pilot.txt
