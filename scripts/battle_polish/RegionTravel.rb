@@ -86,6 +86,13 @@ module BlueRegionTravel
       BlueRegionStart.johto_town_point
     elsif key == "DECADES"
       position = state["decades_return"]
+      # Players who STARTED in Kanto have never visited Decades. Its original
+      # start point was captured from native System data before the Kanto spawn
+      # was applied; grant that first arrival ONLY after the genuine Kanto Hall.
+      if !position && state["current"] == "KANTO" &&
+         state["leagues"].is_a?(Array) && state["leagues"].include?("KANTO")
+        position = state["decades_first_arrival"]
+      end
       return nil unless position.is_a?(Array) && position.length == 4
       return nil unless position.all? { |v| v.is_a?(Integer) } && position[0] > 0 &&
                         position[1] >= 0 && position[2] >= 0 && [2,4,6,8].include?(position[3])
