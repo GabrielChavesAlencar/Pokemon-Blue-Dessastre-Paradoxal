@@ -42,7 +42,7 @@ def ensure_rival_compilation(project: Path, game: Path) -> bool:
         return False
     signature = hashlib.sha256()
     for path in files:
-        signature.update(path.name.encode("ascii") + b"\\0")
+        signature.update(path.name.encode("ascii") + b"\0")
         signature.update(hashlib.sha256(path.read_bytes()).digest())
     value = signature.hexdigest()
     stamp = project / RIVAL_COMPILER_STAMP
@@ -56,7 +56,7 @@ def ensure_rival_compilation(project: Path, game: Path) -> bool:
     request.parent.mkdir(parents=True, exist_ok=True)
     request.write_text("compile", encoding="ascii")
     stamp.parent.mkdir(parents=True, exist_ok=True)
-    stamp.write_text(value + "\\n", encoding="ascii")
+    stamp.write_text(value + "\n", encoding="ascii")
     print("[KANTO AUTO] Recompilacao nativa requisitada para os "
           "3 times de Gary, treinador e tipos Kanto.", flush=True)
     return True
