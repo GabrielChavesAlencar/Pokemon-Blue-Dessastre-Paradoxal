@@ -4,6 +4,10 @@ on:
     branches: [main]
     paths:
       - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/music/BlueMusic.rb'
+      - 'scripts/music/compile_kanto_music.py'
+      - 'tests/kanto_music_battles.rb'
+      - 'tests/test_kanto_music_phase3.py'
       - 'scripts/regions/auto_integrate_kanto.py'
       - 'tests/kanto_gary_battle_runtime.rb'
       - 'tests/kanto_blackout_runtime.rb'
@@ -31,3 +35,9 @@ jobs:
         run: ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
       - name: Atualizador de PBS Kanto
         run: python tests/test_kanto_auto_integrate.py
+      - name: Batalha Kanto sem Digest SHA256 no Ruby embarcado
+        run: |
+          ruby -c scripts/music/BlueMusic.rb
+          python -m py_compile scripts/music/compile_kanto_music.py
+          ruby tests/kanto_music_battles.rb
+          python tests/test_kanto_music_phase3.py
