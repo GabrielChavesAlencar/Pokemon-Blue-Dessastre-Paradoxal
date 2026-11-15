@@ -4,6 +4,15 @@
 
 Este documento substitui as antigas regras de **desbloqueio por Liga** do plano v2. Em 15/11/2026, também foi acrescentada a regra **itens-chave e HMs independentes por região**. Insígnias, esmeraldas, progressão dos eventos locais, restrições de Pokémon especiais, vitórias e pós-jogo global continuam independentes.
 
+## Correção do NPC ausente em Cherryhill (15/11/2026)
+
+- **Causa no código anterior:** eventos regionais eram instanciados com `Game_Event.new(map_id,event)`, mas o **Essentials v21.1** exige `Game_Event.new(map_id,event,game_map)`. A simulação anterior aceitava incorretamente dois argumentos.
+- **Correção:** os NPCs de Cherryhill, Pallet e New Bark agora recebem seu `Game_Map` proprietário ao serem criados. Para saves que **já estavam na cidade ao carregar**, `Scene_Map#createSpritesets` adiciona os NPCs **antes** de renderizar os sprites, sem precisar sair e entrar na cidade.
+- **Mapa correto:** usa Cherryhill City identificada em `MapInfos` quando disponível (Map077 como referência nativa original); evita colocar o NPC em outra cidade quando a instalação reorganiza os IDs.
+- **Compatibilidade:** um NPC já criado não é duplicado; os mapas RXDATA e saves originais não são modificados. O agente mantém a viagem livre por conversa, sem menu de teleporte direto, respeitando a separação local de itens-chave/HMs.
+- **Teste isolado:** `tests/region_travel_runtime.rb` verifica a assinatura de três argumentos, a presença antes da criação do Spriteset, o reaproveitamento em save já carregado, o mapa alternativo identificado pelo nome, não duplicação, viagem e rollback. Executado em [Decades — regressão de viagem](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/decades-regional-start.yml).
+- **Pendente:** validar visualmente o NPC no `Game.exe` do Windows, após atualização pelo `Blue-Story.exe`. Não é necessário começar outro save.
+
 ## Cidades iniciais e NPCs
 
 | Origem | Mapa do NPC | Regra |
