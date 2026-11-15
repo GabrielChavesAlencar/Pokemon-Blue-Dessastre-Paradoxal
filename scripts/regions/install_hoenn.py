@@ -195,6 +195,51 @@ def prepare_overlay(game: Path, source: Source) -> tuple[dict[str, bytes], dict]
     return files, proof
 
 
+
+def validated_local_source(archive: Path, inventory: Path) -> tuple[Source, str]:
+    """Reuse pinned Hoenn data already staged by TESTAR_HOENN.bat.
+
+    A private archive isn't necessary for a second import if the original
+    staged files AND their SHA-pinned inventory still exist. This never
+    trusts an isolated Game.exe, save, or Hoenn pilot.json for source data.
+    """
+    from hoenn_qa_phase1 import load_tree
+    archive = Path(archive)
+    if archive.is_symlink():
+        raise ValueError("ZIP de Hoenn por link simbólico recusado.")
+    tree = check_tree(load_tree(inventory, offline=not archive.is_file()))
+    if archive.is_file():
+        extracted = inspect_zip(archive, extract=True, include_audio=True)
+        source = Source(ROOT / extracted["local_stage"], inventory)
+        check_source(source)
+        return source, "audited_private_zip"
+
+    staged = ROOT / ".blue-work" / "hoenn-source"
+    if staged.is_symlink():
+        raise ValueError("Pasta da fonte Hoenn por link simbólico recusada.")
+    if staged.is_dir():
+        candidates = sorted(
+            p for p in staged.iterdir()
+            if p.is_dir() and not p.is_symlink() and re.fullmatch(r"[a-f0-9]{16}", p.name)
+        )
+        problems = []
+        for directory in candidates:
+            try:
+                source = Source(directory, inventory)
+                check_source(source)
+                return source, "audited_staged_source"
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                problems.append(f"{directory.name}: {error}")
+        if problems:
+            raise ValueError("Fonte Hoenn local não passou na conferência de hashes: " +
+                             " | ".join(problems[:2]))
+    raise ValueError(
+        "Fonte Hoenn ausente: coloque 'The Pokémon World Project - Hoenn.zip' "
+        "na mesma pasta de TESTAR_HOENN.bat ou prepare a fonte com TESTAR_HOENN.bat. "
+        "Não é possível liberar viagem sem os 199 mapas reais."
+    )
+
+
 def apply(game: Path, archive: Path, inventory: Path, commit: bool = False) -> dict:
     game = game.resolve()
     if game != MAIN or not (game / "Game.exe").is_file():
@@ -205,17 +250,12 @@ def apply(game: Path, archive: Path, inventory: Path, commit: bool = False) -> d
         return verify_installed(game)
     if status == "partial":
         raise ValueError("Hoenn parcial/antiga detectada. Revisão manual obrigatória; IDs não serão migrados.")
-    from hoenn_qa_phase1 import load_tree
-    check_tree(load_tree(inventory, offline=not archive.is_file()))
-    if not archive.is_file() or archive.is_symlink():
-        raise ValueError("ZIP original de Hoenn ausente. O jogo principal foi preservado.")
-    extracted = inspect_zip(archive, extract=True, include_audio=True)
-    source = Source(ROOT / extracted["local_stage"], inventory)
-    check_source(source)  # Git blob SHA + source assets/tilesets/audio.
+    source, origin = validated_local_source(archive, inventory)
     files, proof = prepare_overlay(game, source)
     result = {"status": "dry_run", "maps": 199, "files": len(files),
               "start": proof["start"], "town": proof["town"],
-              "shared_save": True, "native_qa_approved": False}
+              "shared_save": True, "native_qa_approved": False,
+              "source_kind": origin}
     if not commit:
         return result
     # No donor run scripts or binary assets ever leave the local machine.
