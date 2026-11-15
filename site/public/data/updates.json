@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8fd2820c97d93c622d5ab235c1564f6d607b845d",
+      "date": "2026-11-15T17:05:37-03:00",
+      "title": "test(hoenn): reproduzir sprite Strength Boulder ausente no download automatico",
+      "category": "Testes"
+    },
+    {
       "sha": "6991a1e9109c570cb2903c043006fc268d0929d3",
       "date": "2026-11-15T17:05:13-03:00",
       "title": "fix(hoenn): baixar sprites de pedras e rochas dos eventos antes de instalar 199 mapas",
