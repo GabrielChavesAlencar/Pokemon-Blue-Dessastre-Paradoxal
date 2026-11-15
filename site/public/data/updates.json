@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "46388d74ff67c68cc939d179dd8f18923f3392f8",
+      "date": "2026-11-15T16:11:09-03:00",
+      "title": "fix(hoenn): preservar opcao Testar Hoenn quando importacao main nao existe",
+      "category": "Correções"
+    },
+    {
       "sha": "30715c6aef195837c733418a077e5fc6d684fa52",
       "date": "2026-11-15T16:10:10-03:00",
       "title": "ci(hoenn): resolver caminhos de require nos testes de regressao Ruby",
