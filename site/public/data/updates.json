@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "236646015dc7cca2a89db5b5d729480a3e2d2775",
+      "date": "2026-11-15T14:55:51-03:00",
+      "title": "feat(habitat): mostrar especies originais e formas evoluidas que podem aparecer pelo cap",
+      "category": "Novidades"
+    },
+    {
       "sha": "27e2426b2ceb11db43d3a9334d233ab3e0a22160",
       "date": "2026-11-15T14:54:59-03:00",
       "title": "feat(plugins): carregar evolução dinâmica no Blue Story em todas as instalações",
