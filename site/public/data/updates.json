@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9dd27804754fab35f3165320bce329fe348089df",
+      "date": "2026-11-15T13:45:05-03:00",
+      "title": "feat(travel): aplicar padrao Mega/Z/Tera sem Dynamax ao entrar Decades, guardar preferencias por regiao e rollback",
+      "category": "Novidades"
+    },
+    {
       "sha": "144f942168717e73bf307751a90ba1c2c6797255",
       "date": "2026-11-15T13:44:46-03:00",
       "title": "feat(decades): Mega Z-Move Tera ligados e Dynamax desligado por padrao sem menu inicial",
