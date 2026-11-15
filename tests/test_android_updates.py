@@ -11,7 +11,8 @@ from scripts.android.build_manifest import installed_manifest
 from scripts.android.publish_updates import publish
 from scripts.android.update_client import (apply_patch, apply_full_archive,
                                            main, read_installed, safe_path,
-                                           sha256_bytes)
+                                           sha256_bytes, release_for,
+                                           verify_forward_revision)
 
 
 class AndroidUpdatesTest(unittest.TestCase):
@@ -231,10 +232,99 @@ class AndroidUpdatesTest(unittest.TestCase):
         with (patch("scripts.android.update_client.remote_update",
                     return_value=(release, manifest)),
               patch("scripts.android.update_client.download",
-                    side_effect=fake_download)):
+                    side_effect=fake_download),
+              patch("scripts.android.update_client.verify_forward_revision")
+                    as ancestry):
             self.assertEqual(main(["--game-dir", str(game), "--update"]), 0)
+            ancestry.assert_called_once_with(self.a, self.b)
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
         self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
+
+
+    def _release(self, tag, published, revision=None, draft=False):
+        name = "Blue-Android-Decades-Kanto-Hoenn"
+        url = ("https://github.com/GabrielChavesAlencar/"
+               "Pokemon-Blue-Dessastre-Paradoxal/releases/download/" +
+               tag + "/")
+        return {"tag_name": tag, "published_at": published,
+                "draft": draft, "target_commitish": revision or self.a,
+                "assets": [
+                    {"name": name + ".zip", "state": "uploaded",
+                     "browser_download_url": url + name + ".zip"},
+                    {"name": name + ".update.json", "state": "uploaded",
+                     "browser_download_url": url + name + ".update.json"},
+                ]}
+
+    def test_multiregion_release_chooses_newest_not_first_in_api(self):
+        # Actual Nov 15 response order was 9, 3, 15. 9 is OLDER than 15.
+        releases = [
+            self._release("android-multiregion-9-af0c494",
+                          "2026-11-15T21:52:28Z"),
+            self._release("android-multiregion-3-7893358",
+                          "2026-11-15T20:42:52Z"),
+            self._release("android-multiregion-15-125155e",
+                          "2026-11-15T22:19:12Z"),
+        ]
+        with patch("scripts.android.update_client.get_json",
+                   return_value=releases):
+            best = release_for("multiregion")
+        self.assertEqual(best["tag_name"], "android-multiregion-15-125155e")
+
+    def test_release_selector_ignores_drafts_and_missing_manifest(self):
+        releases = [
+            self._release("android-multiregion-20-draft",
+                          "2026-11-15T23:00:00Z", draft=True),
+            self._release("android-multiregion-19-incomplete",
+                          "2026-11-15T22:45:00Z"),
+            self._release("android-multiregion-15-valid",
+                          "2026-11-15T22:19:12Z"),
+        ]
+        releases[1]["assets"] = releases[1]["assets"][:1]
+        with patch("scripts.android.update_client.get_json",
+                   return_value=releases):
+            best = release_for("multiregion")
+        self.assertEqual(best["tag_name"], "android-multiregion-15-valid")
+
+    def test_github_ancestry_blocks_downgrade_before_any_download(self):
+        # The candidate may be published but a stale API entry may still
+        # target an older commit. Never trust tag numbers alone.
+        for status in ("behind", "diverged", "identical", None):
+            with self.subTest(status=status):
+                with patch("scripts.android.update_client.get_json",
+                           return_value={"status": status}):
+                    with self.assertRaisesRegex(ValueError,
+                                                "Atualizacao BLOQUEADA"):
+                        verify_forward_revision(self.b, self.a)
+
+    def test_github_ancestry_allows_ahead_and_same_revision(self):
+        with patch("scripts.android.update_client.get_json",
+                   return_value={"status": "ahead"}) as request:
+            verify_forward_revision(self.a, self.b)
+            request.assert_called_once_with(
+                "https://api.github.com/repos/"
+                "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/"
+                "compare/" + self.a + "..." + self.b)
+        with patch("scripts.android.update_client.get_json",
+                   side_effect=RuntimeError("No API call allowed")):
+            verify_forward_revision(self.a, self.a)
+
+    def test_termux_refuses_downgrade_before_downloading_zip(self):
+        game, _ = self.installed_full_fixture()
+        manifest = {
+            "schema": 1, "channel": "kanto", "revision": self.b,
+            "files": {}, "immutable": {}, "patch": None,
+            "full": {"asset": "Blue-Android-Kanto-Piloto.zip",
+                     "size": 100, "sha256": "0" * 64},
+        }
+        with (patch("scripts.android.update_client.remote_update",
+                    return_value=({"assets": []}, manifest)),
+              patch("scripts.android.update_client.get_json",
+                    return_value={"status": "behind"}),
+              patch("scripts.android.update_client.download") as download):
+            with self.assertRaisesRegex(ValueError, "Atualizacao BLOQUEADA"):
+                main(["--game-dir", str(game), "--update"])
+            download.assert_not_called()
+        self.assertEqual(read_installed(game)["revision"], self.a)
 
 if __name__ == "__main__":
     unittest.main()
