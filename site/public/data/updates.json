@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5408daa9f5c3784769233285562e1c86234b9e91",
+      "date": "2026-11-15T17:29:13-03:00",
+      "title": "feat(site): separar download Android completo dos pilotos e do Decades puro",
+      "category": "Novidades"
+    },
+    {
       "sha": "5c06c15963f2e4e33a6507d1c4c5d82bfd63075f",
       "date": "2026-11-15T17:28:50-03:00",
       "title": "feat(site): mostrar download multirregional Android apenas com release confirmada",
