@@ -7,6 +7,7 @@ a nonfatal Kanto failure, never a reason to block the native Decades game.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -26,6 +27,40 @@ KANTO_MANIFEST = Path("Data/blue-kanto-install.json")
 STATUS_FILE = Path(".blue-work/kanto-install-status.json")
 LOG_FILE = Path(".blue-work/kanto-install.log")
 READY = frozenset({"already_integrated", "integrated", "already_integrated_runtime_preserved"})
+RIVAL_COMPILER_STAMP = Path(".blue-work/kanto-gary-pbs-v1.sha256")
+
+
+def ensure_rival_compilation(project: Path, game: Path) -> bool:
+    """Request one normal Essentials recompilation after updating Gary's PBS.
+
+    The previous launcher could show Kanto as installed while the compiled
+    trainer data was from an older Decades build. This uses the existing
+    compile marker, not direct changes to any trainer/PC/save files.
+    """
+    files = [game / "PBS/trainers_kanto.txt", game / "PBS/trainer_types_kanto.txt"]
+    if any(not path.is_file() for path in files):
+        return False
+    signature = hashlib.sha256()
+    for path in files:
+        signature.update(path.name.encode("ascii") + b"\\0")
+        signature.update(hashlib.sha256(path.read_bytes()).digest())
+    value = signature.hexdigest()
+    stamp = project / RIVAL_COMPILER_STAMP
+    prior = stamp.read_text(encoding="ascii").strip() if stamp.is_file() else ""
+    compiled = game / "Data/trainers.dat"
+    stale = (not compiled.is_file() or
+             compiled.stat().st_mtime < max(path.stat().st_mtime for path in files))
+    if prior == value and not stale:
+        return False
+    request = game / "Data/blue-compile-request.txt"
+    request.parent.mkdir(parents=True, exist_ok=True)
+    request.write_text("compile", encoding="ascii")
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    stamp.write_text(value + "\\n", encoding="ascii")
+    print("[KANTO AUTO] Recompilacao nativa requisitada para os "
+          "3 times de Gary, treinador e tipos Kanto.", flush=True)
+    return True
+
 
 
 def _persist(project: Path, info: dict) -> dict:
@@ -148,9 +183,13 @@ def integrate(project: Path = ROOT, game: Path | None = None,
             # never clobber a hand-edited runtime.
             reason = _failure("Atualizacao opcional do plugin Kanto", err)
             print("[KANTO AUTO]", reason, flush=True)
+            recompiling = ensure_rival_compilation(project, game)
             return _persist(project, {"status": "already_integrated_runtime_preserved",
-                                      "changed": False, "reason": reason})
-        return _persist(project, {"status": "already_integrated", "changed": False})
+                                      "changed": False, "reason": reason,
+                                      "rival_compile_requested": recompiling})
+        recompiling = ensure_rival_compilation(project, game)
+        return _persist(project, {"status": "already_integrated", "changed": False,
+                                  "rival_compile_requested": recompiling})
 
     try:
         print("[KANTO AUTO] Preparando os mapas verificados de Kanto "
@@ -166,8 +205,10 @@ def integrate(project: Path = ROOT, game: Path | None = None,
                 print("[KANTO AUTO] Conferindo piloto local ja preparado...", flush=True)
                 invoke(KANTO_IMPORTER, "--game", str(game), "--apply")
                 invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
+                recompiling = ensure_rival_compilation(project, game)
                 return _persist(project, {"status": "integrated", "changed": True,
-                                          "source": "cached_verified_pilot"})
+                                          "source": "cached_verified_pilot",
+                                          "rival_compile_requested": recompiling})
             except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as cached_error:
                 print("[KANTO AUTO] Piloto em cache nao reutilizavel:", cached_error,
                       flush=True)
@@ -184,7 +225,9 @@ def integrate(project: Path = ROOT, game: Path | None = None,
         invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
         print("[KANTO AUTO] Kanto integrado. O motor ainda precisa compilar PBS.",
               flush=True)
-        return _persist(project, {"status": "integrated", "changed": True})
+        recompiling = ensure_rival_compilation(project, game)
+        return _persist(project, {"status": "integrated", "changed": True,
+                                  "rival_compile_requested": recompiling})
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
         reason = _failure("Download/montagem/instalacao de Kanto", err)
         print("[KANTO AUTO]", reason, flush=True)
