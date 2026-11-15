@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b37a6767e52df288c05b95b05cffc8a3be22bb5c",
+      "date": "2026-11-15T12:14:38-03:00",
+      "title": "feat(regions): liberar regioes sem Liga e restringir teleporte ao NPC da cidade inicial",
+      "category": "Novidades"
+    },
+    {
       "sha": "77d3daf52c0371fe0cb71744beb9cd15b6298e90",
       "date": "2026-11-15T11:47:14-03:00",
       "title": "docs(instalacao): explicar falha visivel e diagnosticos automaticos do Kanto",
