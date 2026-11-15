@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "012c8ce49d00e485e099223b0acea1f42b93511a",
+      "date": "2026-11-15T14:36:49-03:00",
+      "title": "test(cherryhill): simular Game_Event v21.1 com 3 argumentos, sprite em save carregado e ID real do mapa",
+      "category": "Testes"
+    },
+    {
       "sha": "00a4cb83e354256c068c8e916cc492dc20cafa44",
       "date": "2026-11-15T14:36:08-03:00",
       "title": "fix(cherryhill): criar NPC com assinatura real do Game_Event v21.1 e carregar sprite em saves existentes",
