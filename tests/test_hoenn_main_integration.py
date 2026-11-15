@@ -216,7 +216,7 @@ class HoennAutoInstallTests(unittest.TestCase):
         self.assertTrue(result["changed"])
 
     def test_existing_invalid_install_is_not_automatically_overwritten(self):
-        (self.game / auto.PROOF).parent.mkdir()
+        (self.game / auto.PROOF).parent.mkdir(exist_ok=True)
         (self.game / auto.PROOF).write_text("{}")
         with patch.object(auto,"invoke",side_effect=RuntimeError("bad proof")):
             result=auto.integrate(self.root,self.game)
