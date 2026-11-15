@@ -87,7 +87,7 @@ jobs:
           ruby tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
           ruby -c scripts/battle_polish/RegionTravel.rb
           ruby tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
-          python -m py_compile scripts/regions/install_kanto.py scripts/localization/install.py
+          python -m py_compile scripts/regions/install_kanto.py scripts/regions/auto_integrate_kanto.py scripts/install_game.py scripts/localization/install.py
           ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
           ruby tests/party_experience_runtime.rb scripts/battle_polish/PartyExperience.rb
           ruby tests/kanto_hm_gate_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionalPolicy.rb site/public/data/regions.json
