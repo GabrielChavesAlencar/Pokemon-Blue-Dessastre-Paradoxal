@@ -1,0 +1,33 @@
+name: Kanto Gary - regressao isolada
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/regions/auto_integrate_kanto.py'
+      - 'tests/kanto_gary_battle_runtime.rb'
+      - 'tests/kanto_blackout_runtime.rb'
+      - 'tests/test_kanto_auto_integrate.py'
+      - '.github/workflows/kanto-gary-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gary:
+    name: Gary - 3 iniciais e recuperacao da batalha
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar sintaxe de runtime
+        run: |
+          ruby -c scripts/regions/KantoPilot.rb
+          python -m py_compile scripts/regions/auto_integrate_kanto.py
+      - name: Batalha Gary - dados nativos e diagnostico
+        run: ruby tests/kanto_gary_battle_runtime.rb scripts/regions/KantoPilot.rb
+      - name: Blackout e preservacao de progresso
+        run: ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
+      - name: Atualizador de PBS Kanto
+        run: python tests/test_kanto_auto_integrate.py
