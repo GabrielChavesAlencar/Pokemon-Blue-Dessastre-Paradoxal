@@ -102,6 +102,7 @@ BlueRegionStart.install
 Dir.mktmpdir("blue-region-start-") do |folder|
   Dir.chdir(folder) do
     Dir.mkdir("Data")
+    File.binwrite("Data/Map004.rxdata", "native Decades opening")
     $data_system = FakeSystem.new
     $game_map = Struct.new(:map_id).new(4)
     $game_temp = Struct.new(:begun_new_game).new(true)
@@ -219,6 +220,8 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check(Game.seen == [321,28,14], "Integrated Kanto did not start in Pallet home")
     check($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto initial region missing")
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region missing")
+    check($PokemonGlobal.blue_regions["decades_first_arrival"] == [4,7,8,2],
+          "Native Decades arrival point was not preserved for Kanto League")
     check($PokemonGlobal.blue_regions["pilot_profile_pending"], "Kanto profile scene skipped")
     check($PokemonGlobal.blue_campaign_departure == false, "Kanto starter bag cleared")
     check([$data_system.start_map_id,$data_system.start_x,$data_system.start_y] == [4,7,8],
