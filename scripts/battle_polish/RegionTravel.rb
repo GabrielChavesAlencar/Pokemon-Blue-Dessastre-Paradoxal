@@ -41,13 +41,13 @@ module BlueRegionTravel
              end
     case status
     when "awaiting_local_source"
-      _INTL("Hoenn ainda não foi instalada. Coloque o ZIP original 'The Pokémon World Project - Hoenn.zip' na pasta do projeto e execute o Blue-Story.exe novamente. Se você já testou Hoenn, os recursos preparados também podem ser reutilizados.")
+      _INTL("Hoenn ainda não está instalada. Feche o jogo e abra o Blue-Story.exe atualizado: ele agora baixa automaticamente os mapas e recursos verificados, sem precisar colocar ZIP ou executar outro instalador.")
     when "existing_install_needs_review"
-      _INTL("Foi detectada uma instalação incompleta ou modificada de Hoenn. A viagem foi bloqueada para proteger seu save. Consulte .blue-work/hoenn-main-install.log e não substitua mapas manualmente.")
+      _INTL("Foi detectada uma instalação incompleta ou modificada de Hoenn. A viagem está bloqueada para proteger o save. Consulte o resultado do Blue-Story.exe em .blue-work/hoenn-main-install-status.json.")
     when "integration_blocked"
-      _INTL("A instalação dos mapas de Hoenn falhou. Veja o motivo em .blue-work/hoenn-main-install-status.json e no log hoenn-main-install.log. A viagem foi bloqueada para proteger o save.")
+      _INTL("A instalação automática de Hoenn falhou ou não concluiu o download. Feche o jogo e atualize pelo Blue-Story.exe novamente. Consulte .blue-work/hoenn-main-install-status.json para identificar a causa; seu save foi protegido.")
     else
-      _INTL("Hoenn não está instalada na build principal. Execute a integração de Hoenn no atualizador do projeto; não basta ter o piloto de teste ou atualizar apenas o código.")
+      _INTL("Hoenn ainda não está integrada neste Game.exe. Feche o jogo e execute o Blue-Story.exe atualizado para baixar e instalar a região automaticamente. Não é necessário usar ZIP ou BAT separado.")
     end
   rescue IOError, SystemCallError
     _INTL("Hoenn não está instalada na build principal. Verifique o instalador antes de viajar.")
