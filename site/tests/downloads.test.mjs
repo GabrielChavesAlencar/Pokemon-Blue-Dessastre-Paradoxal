@@ -10,7 +10,7 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.doesNotMatch(html,/\.bat|RUN\.bat|archive\/refs\/heads/);
   assert.ok(html.includes(androidDownload));
   assert.match(html,/Novo Jogo/);assert.match(html,/Kanto/);
-  assert.match(html,/integrar automaticamente os mapas de Kanto/);
+  assert.match(html,/integrar automaticamente Kanto e Hoenn/);
   assert.match(html,/Testar Kanto, Johto, Hoenn e Sinnoh/);
   assert.match(html,/instalação antiga incompatível/);
   assert.match(html,/Android reais/);
@@ -19,6 +19,9 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.ok(html.includes('Baixar JoiPlay · site oficial'));
   assert.ok(html.includes('android-download-actions'));
   assert.match(html,/Baixar pilotos · Android/);
+  assert.match(html,/data-android-multiregion/);
+  assert.match(html,/Decades \+ Kanto \+ Hoenn/);
+  assert.doesNotMatch(html,/href="[^"]*Blue-Android-Decades-Kanto-Hoenn\.zip"/);
   assert.match(html,/data-android-pilots/);
   assert.match(html,/data-windows-pilots/);
   assert.doesNotMatch(html,/href="[^"]*Blue-Android-(Kanto|Johto)-Piloto[.]zip"/);
