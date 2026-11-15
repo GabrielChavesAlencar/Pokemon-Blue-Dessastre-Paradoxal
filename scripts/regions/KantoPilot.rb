@@ -543,10 +543,21 @@ module BlueKantoPilot
       return
     end
     return unless rival_pending?
-    BlueMusic.with_kanto_scene("rival_appears") do
-      pbMessage(BlueKantoPilot.t("Gary: Hey, {1}! Before you go, let's test our Pokémon!", "Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
-    end
     version = RIVAL_VERSIONS.fetch(starter)
+    announced = false
+    begin
+      BlueMusic.with_kanto_scene("rival_appears") do
+        pbMessage(BlueKantoPilot.t("Gary: Hey, {1}! Before you go, let's test our Pokémon!", "Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
+        announced = true
+      end
+    rescue StandardError => error
+      # A missing/corrupt optional Kanto rival BGM must NOT prevent Gary's
+      # first mandatory battle. Keep the original exception for diagnosis.
+      log_rival_failure(error, version, "intro_audio")
+      unless announced
+        pbMessage(BlueKantoPilot.t("Gary: Let's test our Pokémon!", "Gary: Vamos testar nossos Pokémon!"))
+      end
+    end
     unless ensure_lab_rival_trainer(version)
       pbMessage(BlueKantoPilot.t(
         "Gary: My battle team wasn't loaded. Reopen Blue-Story.exe to repair Kanto's battle data. Your progress is safe.",
