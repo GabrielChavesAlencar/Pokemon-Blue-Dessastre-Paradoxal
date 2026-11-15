@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a921f8788f864b3c68c9a443fed3a18b7767422a",
+      "date": "2026-11-15T13:07:56-03:00",
+      "title": "test(native Kanto): instanciar 3 equipes Gary via GameData::Trainer.to_trainer no Game.exe integrado",
+      "category": "Testes"
+    },
+    {
       "sha": "b473202157e757936d067897721deb083068cbe8",
       "date": "2026-11-15T13:07:25-03:00",
       "title": "test(native): atualizar prova do Kanto para viagem livre sem bloqueio de Liga",
