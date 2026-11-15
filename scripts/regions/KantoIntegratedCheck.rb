@@ -85,6 +85,28 @@ module KantoIntegratedCheck
     require!([$data_system.start_map_id, $data_system.start_x, $data_system.start_y] == original,
              "Native Decades System.rxdata start coordinates were changed")
 
+    # These are the three Oak Lab versions used by BlueKantoPilot.rival.
+    # Tests must instantiate the *real compiled Essentials NPCTrainer*, not
+    # only assert that a row exists. This exercises type, species, level,
+    # move/ability fields, trainer construction and trainer Pokémon data.
+    stage("gary_native_trainer_preflight")
+    [:BULBASAUR, :CHARMANDER, :SQUIRTLE].zip([11,12,13]).each do |starter,version|
+      require!(GameData::TrainerType.exists?(:BLUE_KANTO_RIVAL),
+               "Gary type missing from compiled trainer_types_kanto")
+      require!(GameData::Trainer.exists?(:BLUE_KANTO_RIVAL,"Blue",version),
+               "Gary version #{version} missing from compiled trainers_kanto")
+      pokemon_data=GameData::Trainer.get(:BLUE_KANTO_RIVAL,"Blue",version)
+      require!(pokemon_data.pokemon.is_a?(Array) && !pokemon_data.pokemon.empty?,
+               "Gary version #{version} has empty roster")
+      begin
+        trainer=pokemon_data.to_trainer
+      rescue StandardError => error
+        raise "Gary #{starter}/#{version} cannot build native NPCTrainer: #{error.class}: #{error.message}"
+      end
+      require!(trainer.is_a?(NPCTrainer) && trainer.party.length==pokemon_data.pokemon.length,
+               "Gary #{version} native team is not battle-ready")
+    end
+
     stage("regional_policy_start")
     require!(defined?(BlueRegionalPolicy), "Regional policy plugin was not loaded")
     current_state = $PokemonGlobal.blue_regions
