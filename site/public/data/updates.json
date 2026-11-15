@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cd689c524c8514ebe895a5289b6b4acce7836fcd",
+      "date": "2026-11-15T15:00:42-03:00",
+      "title": "fix(evolution): evolucao com varios metodos para mesma forma nao deve ser tratada como ramificacao",
+      "category": "Correções"
+    },
+    {
       "sha": "c7af53713386454cb991a20c4aee1eab0cc01b88",
       "date": "2026-11-15T14:58:41-03:00",
       "title": "ci(evolution): validar evolucoes dinamicas de selvagens e treinadores sem alterar mapas ou saves",
