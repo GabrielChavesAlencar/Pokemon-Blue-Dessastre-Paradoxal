@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f7ee7c85df9c5e2f3056401aacf9a0f519ec0e47",
+      "date": "2026-11-15T16:46:12-03:00",
+      "title": "feat(hoenn): baixar automaticamente 199 mapas e recursos originais com hashes fixos",
+      "category": "Novidades"
+    },
+    {
       "sha": "904cd1896b8856eb773e49baa5ed4d74f2840820",
       "date": "2026-11-15T16:35:51-03:00",
       "title": "docs(hoenn): resolver Hoenn em preparação com cache auditado e BAT direto",
