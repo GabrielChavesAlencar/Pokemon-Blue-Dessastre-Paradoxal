@@ -242,7 +242,18 @@ module BlueRegionStart
             end
     region = "DECADES" unless region == "DECADES" || spawn
     if region == "DECADES"
-      $PokemonGlobal.blue_regions = BlueRegions.new_state(region)
+      # New Game's REGION choice is the only setup menu. Keep Decades' native
+      # intro/events and their story flags, but silently take the standard
+      # character, Story Mode and traditional starters instead of reopening
+      # its legacy character/mode/mechanics configuration screens.
+      prepare_regional_story(region)
+      $PokemonGlobal.blue_regions["decades_auto_intro"] = true
+      $PokemonGlobal.blue_regions["decades_auto_starter_index"] = 0
+      if $game_player && defined?(pbChangePlayer)
+        pbChangePlayer(0)
+        $game_player.transparent = false if $game_player.respond_to?(:transparent=)
+        $game_player.refresh_charset if $game_player.respond_to?(:refresh_charset)
+      end
       return
     end
 
@@ -285,6 +296,88 @@ module BlueRegionStart
     @requested_initial = nil
   end
 
+  # Only the first, genuine Decades New Game introduction is automated.
+  # Loaded saves, Kanto/Johto profiles and inter-region arrival NPCs remain
+  # untouched. The title screen REGION picker still belongs to the player.
+  def self.decades_auto_intro?
+    state = $PokemonGlobal && $PokemonGlobal.blue_regions
+    state.is_a?(Hash) && state["initial"] == "DECADES" &&
+      state["current"] == "DECADES" && state["decades_auto_intro"] &&
+      $game_map && $data_system && $game_map.map_id == $data_system.start_map_id
+  end
+
+  def self.default_decades_intro_choice(labels)
+    # Use original event choice indices, not reordered display indices:
+    # RPG Maker's command_402 checks these indices to run the correct branch.
+    preferred = [
+      /\\A(?:Story Mode|Begin Story Mode|Modo Hist[oó]ria|Come[cç]ar Hist[oó]ria)\\z/i,
+      /Traditional Starters|Iniciais Tradicionais/i,
+      /Intended Soundtrack|Trilha Sonora Original/i,
+      /Yes|Sim/i
+    ]
+    preferred.each do |pattern|
+      index = labels.index { |text| text.to_s.match?(pattern) }
+      return index if index
+    end
+    # A new game without manual setup uses its first affirmative option;
+    # never choose Cancel/Back/No as an accidental default.
+    labels.index { |text| text.to_s !~ /\\A(?:Cancel|Back|No|Voltar|N[aã]o)\\z/i } || 0
+  end
+
+  module DecadesAutoChoices
+    def command_102
+      if BlueRegionStart.decades_auto_intro? && @map_id == $data_system.start_map_id &&
+         @parameters && @parameters[0].is_a?(Array) && !@parameters[0].empty?
+        options = @parameters[0]
+        choice = BlueRegionStart.default_decades_intro_choice(options)
+        @branch ||= {}
+        @branch[@list[@index].indent] = choice
+        return true
+      end
+      super
+    end
+  end
+
+  module DecadesAutoProfile
+    def pbCharacterSelect(*args)
+      return super unless BlueRegionStart.decades_auto_intro?
+      pbChangePlayer(0)
+      $game_player.transparent = false if $game_player.respond_to?(:transparent=)
+      $game_player.refresh_charset if $game_player.respond_to?(:refresh_charset)
+      true
+    end
+
+    def pbPokemonSelection(list, must_choose=true, settings=nil)
+      return super unless BlueRegionStart.decades_auto_intro?
+      # Preserve Decades' native event flow: it will add the returned Pokemon
+      # normally. Choose conventional starters with no selection UI, once
+      # per call, rather than placing fabricated Pokemon directly in storage.
+      return super unless list.to_s.match?(/\\A(?:Traditional_Starters|All_Starters)\\z/i)
+      state = $PokemonGlobal.blue_regions
+      roster = [:BULBASAUR, :CHARMANDER, :SQUIRTLE]
+      index = state["decades_auto_starter_index"].to_i
+      species = roster[index % roster.length]
+      return super unless defined?(GameData::Species) &&
+                          GameData::Species.exists?(species) && defined?(Pokemon)
+      pokemon = Pokemon.new(species, 5, $player)
+      state["decades_auto_starter_index"] = index + 1
+      pokemon
+    end
+  end
+
+  module DecadesIntroExit
+    def setup(*args)
+      result = super
+      state = $PokemonGlobal && $PokemonGlobal.blue_regions
+      if state.is_a?(Hash) && state["decades_auto_intro"] && $data_system &&
+         map_id != $data_system.start_map_id
+        state.delete("decades_auto_intro")
+        state.delete("decades_auto_starter_index")
+      end
+      result
+    end
+  end
+
   module NewGame
     def start_new(*args)
       BlueRegionStart.with_new_game { super }
@@ -303,6 +396,11 @@ module BlueRegionStart
     return if @installed
     Game.singleton_class.prepend(NewGame)
     SaveData.singleton_class.prepend(SaveValues)
+    Interpreter.prepend(DecadesAutoChoices) if defined?(Interpreter) &&
+      !Interpreter.ancestors.include?(DecadesAutoChoices)
+    Object.prepend(DecadesAutoProfile) unless Object.ancestors.include?(DecadesAutoProfile)
+    Game_Map.prepend(DecadesIntroExit) if defined?(Game_Map) &&
+      !Game_Map.ancestors.include?(DecadesIntroExit)
     @installed = true
   end
 end
