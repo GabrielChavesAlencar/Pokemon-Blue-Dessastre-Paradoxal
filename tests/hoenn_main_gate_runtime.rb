@@ -33,9 +33,12 @@ Dir.mktmpdir("hoenn-main-title") do |tmp|
      "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"].each do |file|
       File.write(file,"synthetic structure")
     end
-    [start[0],town[0]].each do |id|
+    ids.values.each do |id|
       File.write(sprintf("Data/Map%03d.rxdata",id),"verified map")
     end
+    File.write("Data/blue-hoenn-pilot.txt",
+               "BLUE_HOENN_PILOT_V1\n#{start[0]},25,6\n" +
+               ids.map { |source, dest| "#{source},#{dest}\n" }.join)
     proof = {"schema"=>1,"region"=>"HOENN","source_commit"=>BlueRegionStart::HOENN_REVISION,
              "status"=>"INTEGRATED_FILES_READY_FOR_NATIVE_QA",
              "maps"=>ids,"start"=>start,"town"=>town}
