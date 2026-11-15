@@ -10,7 +10,7 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.doesNotMatch(html,/\.bat|RUN\.bat|archive\/refs\/heads/);
   assert.ok(html.includes(androidDownload));
   assert.match(html,/Novo Jogo/);assert.match(html,/Kanto/);
-  assert.match(html,/integra automaticamente os mapas de Kanto/);
+  assert.match(html,/integrar automaticamente os mapas de Kanto/);
   assert.match(html,/Testar Kanto, Johto, Hoenn e Sinnoh/);
   assert.match(html,/instalação antiga incompatível/);
   assert.match(html,/Android reais/);
