@@ -243,12 +243,45 @@ module BlueRegionStart
     false
   end
 
+  # The JoiPlay Ruby runtime can have no JSON gem *or* a JSON constant
+  # without a working .parse method. Read the audited installer's exact
+  # 142-map registry from its JSON text if the native parser is unavailable.
+  # Never unlock Kanto from just a ready marker or a few sample maps.
+  def self.kanto_compact_maps(spawn)
+    return nil unless kanto_ready_gate?(spawn) && File.file?(KANTO_INSTALL) &&
+                      !File.symlink?(KANTO_INSTALL)
+    raw = File.read(KANTO_INSTALL)
+    return nil unless raw.match?(/"schema"\s*:\s*1\s*,/) &&
+                      raw.match?(/"source"\s*:\s*"Essentials FRLG 21\.1"/)
+    section = raw[/"maps"\s*:\s*\{([^}]*)\}/m, 1]
+    return nil unless section
+    pairs = section.scan(/"(\d+)"\s*:\s*(\d+)/)
+    # Reject junk/partial entries instead of accepting a few regex matches.
+    rest = section.gsub(/"(\d+)"\s*:\s*(\d+)/, "").gsub(/[\s,]/, "")
+    return nil unless rest.empty? && pairs.length == 142
+    maps = {}
+    pairs.each do |src, dst|
+      id = Integer(dst, 10)
+      return nil unless id > 0 && id < 1000 && !maps.key?(src)
+      maps[src] = id
+    end
+    return nil unless maps.values.uniq.length == 142 &&
+                      maps["7"] == spawn[0] && maps["5"].is_a?(Integer)
+    return nil unless maps.values.all? { |id|
+      pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
+    }
+    maps
+  rescue IOError, SystemCallError, ArgumentError
+    nil
+  end
+
   # Kanto must be genuinely merged into the MAIN installation before its
   # New Game option can start within the Decades executable. A standalone
-  # "Kanto pilot.json" or a stray start marker is never sufficient.
+  # pilot or a stray start marker is never sufficient.
   def self.kanto_integrated?
-    return false if File.file?("Kanto pilot.json") || File.file?("Johto pilot.json") ||
-                    File.file?("Hoenn pilot.json") || File.file?("Sinnoh pilot.json")
+    return false if %w[Kanto Johto Hoenn Sinnoh].any? { |name|
+      File.file?("#{name} pilot.json")
+    }
     spawn = kanto_spawn
     return false unless spawn && File.file?(KANTO_INSTALL) && !File.symlink?(KANTO_INSTALL)
     required = [
@@ -264,19 +297,26 @@ module BlueRegionStart
       "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
     ]
     return false unless required.all? { |name| File.file?(name) }
+    # The verified compact reader is deliberately also used when JSON works:
+    # both Android and Windows must validate the same 142 *physical* maps.
+    maps = kanto_compact_maps(spawn)
+    return false unless maps
     begin
-      require "json" unless defined?(JSON)
-    rescue LoadError
-      return kanto_ready_gate?(spawn)
+      require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)
+    rescue LoadError, NameError
+      return true
     end
-    info = JSON.parse(File.read(KANTO_INSTALL))
-    return false unless info.is_a?(Hash) && info["schema"] == 1 &&
-                        info["source"] == "Essentials FRLG 21.1" &&
-                        info["maps"].is_a?(Hash) && info["maps"].length >= 142
-    maps = info["maps"]
-    return false unless maps["7"] == spawn[0] && maps["5"].is_a?(Integer) &&
-                        maps.values.uniq.length == maps.length &&
-                        pbRgssExists?(sprintf("Data/Map%03d.rxdata", maps["5"]))
+    return true unless defined?(::JSON) && ::JSON.respond_to?(:parse)
+    begin
+      info = ::JSON.parse(File.read(KANTO_INSTALL))
+      return false unless info.is_a?(Hash) && info["schema"] == 1 &&
+                          info["source"] == "Essentials FRLG 21.1" &&
+                          info["maps"].is_a?(Hash) && info["maps"] == maps
+    rescue StandardError
+      # Incomplete/broken JoiPlay JSON is not grounds to hide a fully
+      # audited installed Kanto. The strict 142-map reader already passed.
+      return true
+    end
     true
   rescue StandardError
     false
