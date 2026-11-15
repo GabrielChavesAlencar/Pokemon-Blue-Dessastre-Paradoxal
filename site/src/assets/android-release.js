@@ -78,6 +78,57 @@ const withVerifiedFallback=(found,platform)=>Object.fromEntries(Object.keys(pilo
   return Date.parse(current.publishedAt||'')>=Date.parse(known.publishedAt)?[key,current]:[key,known];
 }));
 
+
+const integratedAsset='Blue-Android-Decades-Kanto-Hoenn.zip';
+const integratedReleasePrefix='android-multiregion-';
+
+// No static latest/download URL: the combined Android file does not exist
+// until a release really uploads a validated, compiled ZIP.
+export async function combinedAndroidRelease(fetcher=fetch){
+  for(let page=1;page<=3;page++){
+    let releases;
+    try{
+      const url=api+'/releases?per_page=100'+(page>1?'&page='+page:'');
+      const response=await fetcher(url);
+      if(!response.ok)return {state:'unavailable'};
+      releases=await response.json();
+    }catch{return {state:'unavailable'};}
+    if(!Array.isArray(releases))return {state:'unavailable'};
+    for(const release of releases){
+      if(!release.tag_name?.startsWith(integratedReleasePrefix) || release.draft ||
+         !/^[a-f0-9]{40}$/.test(release.target_commitish??''))continue;
+      const asset=uploaded(release,integratedAsset);
+      if(!asset || typeof asset.browser_download_url!=='string')continue;
+      const prefix='https://github.com/'+repo+'/releases/download/';
+      if(!asset.browser_download_url.startsWith(prefix) ||
+         !asset.browser_download_url.endsWith('/'+integratedAsset))continue;
+      return {state:'published',tag:release.tag_name,revision:release.target_commitish,
+        bytes:asset.size,url:asset.browser_download_url};
+    }
+    if(releases.length<100)break;
+  }
+  return {state:'pending'};
+}
+
+export function combinedAndroidHtml(status){
+  if(status.state!=='published'){
+    const detail=status.state==='unavailable'
+      ?'Não foi possível conferir a publicação no GitHub agora.'
+      :'O pacote conjunto ainda não foi publicado com compilação e verificação aprovadas.';
+    return '<div class="android-combined-panel"><h3>Decades + Kanto + Hoenn · Android</h3>'+
+      '<p>'+esc(detail)+' O ZIP normal do JoiPlay continua sendo a versão Decades, sem garantia de Kanto e Hoenn instalados.</p>'+
+      '<span class="button button-secondary android-pilot-disabled" aria-disabled="true">Versão conjunta · aguardando publicação</span></div>';
+  }
+  return '<div class="android-combined-panel"><h3>Decades + Kanto + Hoenn · Android</h3>'+
+    '<p>Jogue na mesma instalação e perfil de saves pelo JoiPlay. '+
+    'Pacote experimental compilado, sem garantia de teste em aparelho físico. '+
+    'Extraia em uma nova pasta e preserve seus saves antes de migrar.</p>'+
+    '<a class="button button-primary" href="'+esc(status.url)+
+    '" target="_blank" rel="noopener noreferrer">Baixar Decades + Kanto + Hoenn · ZIP</a>'+
+    '<small>Release '+esc(status.tag)+' · '+(status.bytes/1e9).toFixed(2).replace('.',',')+
+    ' GB · revisão '+esc(status.revision.slice(0,10))+'</small></div>';
+}
+
 export const regionalAndroidReleases=fetcher=>regionalPilotReleases(fetcher);
 
 export function androidReleaseHtml(status){
@@ -120,17 +171,20 @@ export async function bindAndroidRelease(container){
   const target=container.querySelector('[data-android-release]');
   const pilots=container.querySelector('[data-android-pilots]');
   const windows=container.querySelector('[data-windows-pilots]');
-  if(!target&&!pilots&&!windows)return;
+  const integrated=container.querySelector('[data-android-multiregion]');
+  if(!target&&!pilots&&!windows&&!integrated)return;
+  if(integrated?.isConnected)integrated.innerHTML=combinedAndroidHtml({state:'pending'});
   // Local guides remain usable while GitHub is still answering.
   if(pilots?.isConnected)pilots.innerHTML=androidPilotsHtml({
     state:'unavailable',regional:withVerifiedFallback(null,'android')});
   if(windows?.isConnected)windows.innerHTML=androidPilotsHtml({
     regional:withVerifiedFallback(null,'windows')},'windows');
-  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:Promise.all([androidReleaseStatus(),regionalPilotIndex()])};
-  const [status,index]=await cached.promise;
+  if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:Promise.all([androidReleaseStatus(),regionalPilotIndex(),combinedAndroidRelease()])};
+  const [status,index,combined]=await cached.promise;
   status.regional=withVerifiedFallback(index.android,'android');
   const windowsRegional=withVerifiedFallback(index.windows,'windows');
   if(target?.isConnected)target.innerHTML=androidReleaseHtml(status);
+  if(integrated?.isConnected)integrated.innerHTML=combinedAndroidHtml(combined);
   if(pilots?.isConnected)pilots.innerHTML=androidPilotsHtml(status);
   if(windows?.isConnected)windows.innerHTML=androidPilotsHtml({regional:windowsRegional},'windows');
 }
