@@ -57,7 +57,28 @@ internal static class Bootstrap {
                             string game=Path.Combine(Root,"game");var process=Process.Start(new ProcessStartInfo(Path.Combine(game,"Game.exe")){WorkingDirectory=game,UseShellExecute=true});
                             form.WindowState=FormWindowState.Minimized;
                             await Task.Run(delegate { process.WaitForExit(); });form.Close();
-                        } catch(Exception error) { bar.Style=ProgressBarStyle.Continuous;title.Text="A instalacao precisa de atencao";info.Text=error.Message+"\nLog: "+LogPath;MessageBox.Show(form,info.Text,"Pokemon Blue"); }
+                        } catch(Exception error) {
+                            bar.Style=ProgressBarStyle.Continuous;
+                            title.Text=Hub?"A instalacao precisa de atencao":"A instalacao nao terminou";
+                            info.Text=error.Message+"\nLog: "+LogPath;
+                            // Never claim "ready" when optional Kanto did not import:
+                            // inspect the status emitted by the downloaded Python.
+                            if(!Hub) {
+                                string regional=Path.Combine(Root,".blue-work","kanto-install-status.json");
+                                try {
+                                    if(File.Exists(regional)) {
+                                        var proof=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(regional,Encoding.UTF8));
+                                        if(proof.ContainsKey("ready") && proof["ready"] is bool && !(bool)proof["ready"]) {
+                                            string reason=proof.ContainsKey("reason")?Convert.ToString(proof["reason"]):"Veja o log.";
+                                            info.Text="Kanto NAO instalado: "+reason+"\nRelatorio: "+regional+
+                                                "\nAbra Blue-Story.exe novamente para tentar instalar automaticamente.";
+                                        }
+                                    }
+                                } catch(Exception) { /* Show the original error on invalid diagnostic. */ }
+                            }
+                            MessageBox.Show(form,info.Text,"Pokemon Blue - instalacao incompleta",
+                                            MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                        }
                     };
                     Application.Run(form);
                 }
