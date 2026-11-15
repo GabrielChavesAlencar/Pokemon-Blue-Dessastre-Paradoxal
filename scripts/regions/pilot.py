@@ -1445,7 +1445,7 @@ def install_pbs(preview, target, mapping):
 
 def install_runtime(target, mapping, game):
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
-    for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "Title.rb", "Story.rb", "Balance.rb", "RegionalCards.rb",
+    for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "Title.rb", "Story.rb", "PartyExperience.rb", "Balance.rb", "RegionalCards.rb",
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
