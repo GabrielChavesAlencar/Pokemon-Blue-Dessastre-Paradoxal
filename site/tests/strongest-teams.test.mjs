@@ -32,7 +32,7 @@ test('fichas de Liga mostram espécies e regra de nível sem valor fixo',()=>{
 test('Kanto separa primeira Liga e Full Power sem prometer revanche jogável',()=>{
   const index=leagueIndex(model,db,'KANTO');
   assert.match(index,/Elite Four e campeão de Kanto/);
-  assert.match(index,/Primeiro confronto/);
+  assert.match(index,/primeiro confronto/i);
   assert.match(index,/revanche/i);
   assert.match(index,/balanceamento\?regiao=kanto/);
   const blue=db.teams.find(t=>t.id==='kanto-blue-champion');
