@@ -287,11 +287,79 @@ def verify_installed(game):
             "decades_save_modified": False, "game_exe_tested": False}
 
 
+
+def sync_runtime(game, commit=False):
+    """Refresh only the author's Kanto plugin after a verified integration.
+
+    MapIDs, PBS, NPC events, System.rxdata and saves are NEVER rewritten.
+    A manually edited plugin or an unknown installation manifest blocks the
+    update instead of being replaced silently.
+    """
+    verify_installed(game)
+    rel = PLUGIN / "KantoPilot.rb"
+    target = game / rel
+    source = ROOT / "scripts/regions/KantoPilot.rb"
+    proof_path = game / "Data/blue-kanto-install.json"
+    old_proof_bytes = proof_path.read_bytes()
+    proof = json.loads(old_proof_bytes.decode("utf-8"))
+    recorded = proof.get("installed_sha256", {}).get(str(rel))
+    if not isinstance(recorded, str) or len(recorded) != 64:
+        raise ValueError("Kanto runtime has no original checksum; refusing automatic update.")
+    current = digest(target)
+    if current != recorded:
+        raise ValueError("Kanto runtime was edited locally; refusing overwrite.")
+    wanted = digest(source)
+    if wanted == current:
+        return {"status": "runtime_current", "changed": False}
+    if not commit:
+        return {"status": "runtime_update_preview", "changed": False}
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    backup = ROOT / ".blue-backups" / ("kanto-runtime-" + stamp)
+    backup.mkdir(parents=True, exist_ok=False)
+    prior = target.read_bytes()
+    compiled = game / "Data/PluginScripts.rxdata"
+    trigger = game / "Data/blue-compile-request.txt"
+    compiled_before = compiled.read_bytes() if compiled.is_file() else None
+    trigger_before = trigger.read_bytes() if trigger.is_file() else None
+    atomic(backup / rel, prior)
+    atomic(backup / "Data/blue-kanto-install.json", old_proof_bytes)
+    if compiled_before is not None:
+        atomic(backup / "Data/PluginScripts.rxdata", compiled_before)
+    if trigger_before is not None:
+        atomic(backup / "Data/blue-compile-request.txt", trigger_before)
+    try:
+        atomic(target, source.read_bytes())
+        if digest(target) != wanted:
+            raise IOError("Failed verifying new Kanto runtime")
+        proof["installed_sha256"][str(rel)] = wanted
+        atomic(proof_path, (json.dumps(proof, indent=2) + "\n").encode("utf-8"))
+        compiled.unlink(missing_ok=True)
+        atomic(trigger, b"compile")
+    except BaseException:
+        atomic(target, prior)
+        atomic(proof_path, old_proof_bytes)
+        if compiled_before is None:
+            compiled.unlink(missing_ok=True)
+        else:
+            atomic(compiled, compiled_before)
+        if trigger_before is None:
+            trigger.unlink(missing_ok=True)
+        else:
+            atomic(trigger, trigger_before)
+        raise
+    return {"status": "runtime_updated", "changed": True,
+            "backup": str(backup)}
+
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify-installed", action="store_true",
                         help="Check main Kanto mapping/resources without changing files")
+    parser.add_argument("--sync-runtime", action="store_true",
+                        help="Safely update the installed Kanto plugin without overwriting maps or saves")
     parser.add_argument("--repair-portraits", action="store_true",
                         help="Only repair missing Kanto trainer images in an already installed game")
     parser.add_argument("--game", type=Path, default=ROOT / "game")
@@ -306,6 +374,9 @@ def main():
         parser.error("Piloto fora de .blue-work")
     if args.verify_installed:
         print(json.dumps(verify_installed(game), ensure_ascii=False, indent=2))
+        return
+    if args.sync_runtime:
+        print(json.dumps(sync_runtime(game, args.apply), ensure_ascii=False, indent=2))
         return
     if args.repair_portraits:
         print(json.dumps(repair_portraits(game, args.apply), indent=2))
