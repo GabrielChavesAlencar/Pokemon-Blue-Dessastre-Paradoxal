@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1371f3fb668a0ab0e13bbe8c7348321231be0387",
+      "date": "2026-11-15T10:18:30-03:00",
+      "title": "docs(title): explicar Novo Jogo por região e limites da campanha unificada",
+      "category": "Novidades"
+    },
+    {
       "sha": "27b93e0929f9822f99d9223c30982b4eaa83364f",
       "date": "2026-11-15T10:17:29-03:00",
       "title": "test(title): escolher Decades ao voltar dos atalhos experimentais indisponíveis",
