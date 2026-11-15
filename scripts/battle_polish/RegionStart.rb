@@ -49,12 +49,17 @@ module BlueRegionStart
 
   def self.hoenn_manifest
     return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)
+    # Some JoiPlay/mkxp Ruby builds do not ship JSON at all. An exception
+    # handler mentioning JSON::ParserError would itself raise NameError
+    # while the player presses New Game. Use the verified ASCII marker
+    # instead; never create a fake Hoenn destination from missing files.
     begin
-      require "json" unless defined?(JSON)
-    rescue LoadError
+      require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)
+    rescue LoadError, NameError
       return hoenn_compact_manifest
     end
-    data = JSON.parse(File.read(HOENN_INSTALL))
+    return hoenn_compact_manifest unless defined?(::JSON) && ::JSON.respond_to?(:parse)
+    data = ::JSON.parse(File.read(HOENN_INSTALL))
     return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
       data["region"] == "HOENN" && data["source_commit"] == HOENN_REVISION &&
       data["status"] == "INTEGRATED_FILES_READY_FOR_NATIVE_QA" &&
@@ -63,7 +68,9 @@ module BlueRegionStart
     return nil unless ids.all? { |id| id.is_a?(Integer) && (700..999).include?(id) } &&
       ids.uniq.size == 199 && data["maps"].key?("7") && data["maps"].key?("8")
     data
-  rescue IOError, SystemCallError, JSON::ParserError
+  rescue StandardError
+    # Includes JSON::ParserError without referencing the JSON constant.
+    # An invalid real manifest is rejected (no fallback to corrupt JSON).
     nil
   end
 
@@ -150,12 +157,15 @@ module BlueRegionStart
     # impedir o menu e os mapas de Kanto/Decades de abrir. O gate de Johto
     # permanece fechado quando não puder validar a prova completa.
     begin
-      require "json" unless defined?(JSON)
-      require "digest" unless defined?(Digest::SHA256)
-    rescue LoadError
+      require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)
+      require "digest" unless defined?(::Digest::SHA256)
+    rescue LoadError, NameError
       return nil
     end
-    data = JSON.parse(File.read(JOHTO_INSTALL))
+    # Johto remains locked without both libraries: no unverified travel.
+    return nil unless defined?(::JSON) && ::JSON.respond_to?(:parse) &&
+                      defined?(::Digest::SHA256)
+    data = ::JSON.parse(File.read(JOHTO_INSTALL))
     return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
                       data["region"] == "JOHTO" &&
                       data["status"] == "VERIFIED_PLAYABLE" &&
@@ -188,7 +198,8 @@ module BlueRegionStart
                           Digest::SHA256.file(name).hexdigest == hash
                       }
     data
-  rescue JSON::ParserError, IOError, SystemCallError, ArgumentError
+  rescue StandardError
+    # No constant lookup for JSON::ParserError on limited Android Ruby.
     nil
   end
 
