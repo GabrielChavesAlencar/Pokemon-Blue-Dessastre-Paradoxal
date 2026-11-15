@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7d1397dfa59af503d80f7d47b775ef6f40b560c5",
+      "date": "2026-11-15T10:16:41-03:00",
+      "title": "ci(title): validar seletor de região e fluxo nativo de Novo Jogo",
+      "category": "Novidades"
+    },
+    {
       "sha": "c2b7e02b05aab63fad466c95ebf43e849539e821",
       "date": "2026-11-15T10:16:15-03:00",
       "title": "test(title): cobrir seleção regional no Novo Jogo e isolamento de saves",
