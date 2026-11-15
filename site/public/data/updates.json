@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0ea149b566f441c43ad4bf0523f01dd26f77e0a3",
+      "date": "2026-11-15T10:15:37-03:00",
+      "title": "fix(title): usar lançador existente de Kanto na escolha inicial",
+      "category": "Correções"
+    },
+    {
+      "sha": "ee15f8bf6ab6497f927ea4874b21dd189b558756",
+      "date": "2026-11-15T10:15:25-03:00",
+      "title": "feat(title): escolher região inicial em Novo Jogo preservando Decades e pilotos isolados",
+      "category": "Novidades"
+    },
+    {
       "sha": "acd62d648a29a394bb2e09de2b9c593745b7d3cf",
       "date": "2026-11-15T09:39:21-03:00",
       "title": "fix(hoenn): restaurar desafios, trilhas e transicoes do piloto",
