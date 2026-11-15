@@ -40,4 +40,4 @@ jobs:
           ruby -c scripts/music/BlueMusic.rb
           python -m py_compile scripts/music/compile_kanto_music.py
           ruby tests/kanto_music_battles.rb
-          python tests/test_kanto_music_phase3.py
+          PYTHONPATH=. python tests/test_kanto_music_phase3.py
