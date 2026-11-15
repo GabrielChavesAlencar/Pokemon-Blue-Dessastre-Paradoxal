@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ba056b35d768dcdea7db10bfe451990ea4962be9",
+      "date": "2026-11-15T18:44:09-03:00",
+      "title": "test(android): exigir RegionStart corrigido como fonte e plugin compilado no ZIP",
+      "category": "Correções"
+    },
+    {
       "sha": "0b4cd310e9a124fcc48dcbbad65e6199635f7939",
       "date": "2026-11-15T18:43:51-03:00",
       "title": "fix(android): garantir RegionStart.rb corrigido dentro do cache compilado do JoiPlay",
