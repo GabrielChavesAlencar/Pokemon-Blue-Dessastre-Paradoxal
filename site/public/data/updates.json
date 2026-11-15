@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e76d54f148fdccb6699d844b7e49bc5404c82f4c",
+      "date": "2026-11-15T12:47:27-03:00",
+      "title": "test(kanto): manter blackout nativo com fixture de treinador Gary compilado",
+      "category": "Testes"
+    },
+    {
       "sha": "889f9cdfab5e87ac9d3562c196c9a5837b0d334a",
       "date": "2026-11-15T12:46:56-03:00",
       "title": "fix(installer): corrigir escape do selo de compilacao e evitar recompilar a cada abertura",
