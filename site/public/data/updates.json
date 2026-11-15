@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b8b5457ce378510d9bdedd3dd897af0d1fa0faf7",
+      "date": "2026-11-15T10:38:03-03:00",
+      "title": "test(regions): simular a instalacao completa de Kanto com 142 mapas",
+      "category": "Testes"
+    },
+    {
+      "sha": "ca5fb8686ae88e45f142fe08a4ff92b01af01bfb",
+      "date": "2026-11-15T10:37:48-03:00",
+      "title": "fix(regions): exigir pacote atual de 142 mapas e dados nativos antes de liberar Kanto",
+      "category": "Correções"
+    },
+    {
       "sha": "b03930e28bab5c9244219044648942a84f7c4262",
       "date": "2026-11-15T10:36:36-03:00",
       "title": "feat(locale): mesclar traducoes de Kanto sem substituir catalogo Decades",
