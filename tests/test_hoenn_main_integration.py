@@ -30,6 +30,14 @@ class HoennMainIntegrationTests(unittest.TestCase):
         self.start = [self.maps["8"], 25, 6, 2]
         self.town = [self.maps["7"], 5, 10, 2]
 
+    def test_isolated_hoenn_plugin_must_not_override_main_new_game(self):
+        ruby = (ROOT / "scripts/regions/HoennPilot.rb").read_text(encoding="utf-8")
+        start = ruby.split("  module Start", 1)[1].split(
+            "  BlueRegionStart.singleton_class.prepend(Start)", 1)[0]
+        self.assertIn('File.file?("Hoenn pilot.json")', start)
+        self.assertIn("return super unless @new_game", start)
+        self.assertIn("BlueHoennPilot::MARKER", start)
+
     def test_contract_excludes_pilot_boot_and_save_settings(self):
         required = {"Data/System.rxdata", "Data/Scripts.rxdata",
                     "Game.ini", "mkxp.json", "Hoenn pilot.json"}
