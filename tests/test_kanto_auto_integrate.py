@@ -77,11 +77,11 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         trainers = self.game / "PBS/trainers_kanto.txt"
         kinds = self.game / "PBS/trainer_types_kanto.txt"
         trainers.write_text(
-            "[BLUE_KANTO_RIVAL,Blue,11]\\nPokemon = CHARMANDER,5\\n"
-            "[BLUE_KANTO_RIVAL,Blue,12]\\nPokemon = SQUIRTLE,5\\n"
-            "[BLUE_KANTO_RIVAL,Blue,13]\\nPokemon = BULBASAUR,5\\n",
+            "[BLUE_KANTO_RIVAL,Blue,11]\nPokemon = CHARMANDER,5\n"
+            "[BLUE_KANTO_RIVAL,Blue,12]\nPokemon = SQUIRTLE,5\n"
+            "[BLUE_KANTO_RIVAL,Blue,13]\nPokemon = BULBASAUR,5\n",
             encoding="utf8")
-        kinds.write_text("[BLUE_KANTO_RIVAL]\\nName = Rival\\n", encoding="utf8")
+        kinds.write_text("[BLUE_KANTO_RIVAL]\nName = Rival\n", encoding="utf8")
         compiled = self.game / "Data/trainers.dat"
         compiled.write_bytes(b"old synthetic Decades data")
         first = auto.ensure_rival_compilation(self.project, self.game)
@@ -98,7 +98,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         (self.game / "Data/blue-compile-request.txt").unlink()
         self.assertFalse(auto.ensure_rival_compilation(self.project, self.game))
         self.assertFalse((self.game / "Data/blue-compile-request.txt").exists())
-        trainers.write_text(trainers.read_text("utf8") + "\\n# new source revision",
+        trainers.write_text(trainers.read_text("utf8") + "\n# new source revision",
                             encoding="utf8")
         self.assertTrue(auto.ensure_rival_compilation(self.project, self.game))
         self.assertEqual(compiled.read_bytes(), b"old synthetic Decades data")
