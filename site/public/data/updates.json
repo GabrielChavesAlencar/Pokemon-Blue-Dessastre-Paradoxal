@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c782cb64ad6646677f4a4df2454b3c5b2f73e682",
+      "date": "2026-11-15T13:53:23-03:00",
+      "title": "ci(decades): incluir raiz no LOAD_PATH dos testes Ruby do inicio regional",
+      "category": "Melhorias"
+    },
+    {
       "sha": "74ebea2a30904b650a4acff7f4d430875b33b8ef",
       "date": "2026-11-15T13:52:47-03:00",
       "title": "ci(decades): validar novo jogo sem menus e chegada regional Cherryhill com mecanicas padrao",
