@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "110d51270a9f25f17198bc1d18044e8b4ceaa531",
+      "date": "2026-11-15T12:48:40-03:00",
+      "title": "test(kanto): validar Gary mesmo com falha de audio opcional",
+      "category": "Testes"
+    },
+    {
+      "sha": "c22f5dbb01ff60ef8f80f23fba67f0de1b68f716",
+      "date": "2026-11-15T12:48:24-03:00",
+      "title": "fix(kanto): nao deixar falha opcional de musica impedir a primeira batalha de Gary",
+      "category": "Correções"
+    },
+    {
       "sha": "8d038b11e1aff535bf5da7eb449b0947fa100a11",
       "date": "2026-11-15T12:47:49-03:00",
       "title": "test(installer): recompilar PBS de Gary uma vez e preservar dados de Decades",
