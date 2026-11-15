@@ -11,6 +11,7 @@ on:
       - 'scripts/battle_polish/meta.txt'
       - 'tests/evolution_scaling_runtime.rb'
       - 'tests/evolution_battle_runtime.rb'
+      - 'tests/test_evolution_install_contract.py'
       - '.github/workflows/evolution-scaling.yml'
   workflow_dispatch:
 permissions:
@@ -33,3 +34,5 @@ jobs:
         run: ruby tests/evolution_scaling_runtime.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Habitat.rb
       - name: Integracao com equipes e cap BST/70/90
         run: ruby tests/evolution_battle_runtime.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Story.rb scripts/battle_polish/Campaign.rb
+      - name: Blue-Story.exe entrega o novo plugin sem sobrescrever PBS
+        run: python tests/test_evolution_install_contract.py
