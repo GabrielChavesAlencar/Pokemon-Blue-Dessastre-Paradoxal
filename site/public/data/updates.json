@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "41a2fd6d3156405e1618315995b2bd17148d2084",
+      "date": "2026-11-15T16:15:24-03:00",
+      "title": "fix(hoenn): incluir posicao auditada de Littleroot no marcador runtime",
+      "category": "Correções"
+    },
+    {
+      "sha": "7a3c12f362b4da3177d1dc8981cab43078d3d5c5",
+      "date": "2026-11-15T16:15:22-03:00",
+      "title": "fix(hoenn): incluir posicao auditada de Littleroot no marcador runtime",
+      "category": "Correções"
+    },
+    {
+      "sha": "846f081ab9c1a3660641a6a4d3a562ecc32baedf",
+      "date": "2026-11-15T16:15:19-03:00",
+      "title": "fix(hoenn): incluir posicao auditada de Littleroot no marcador runtime",
+      "category": "Correções"
+    },
+    {
       "sha": "f2aa1d0835c18fbe9763abbf32859a5cf563e94b",
       "date": "2026-11-15T16:14:58-03:00",
       "title": "fix(hoenn): permitir gate verificado sem gem JSON no runtime Essentials",
