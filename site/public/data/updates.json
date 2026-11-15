@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a6da187d39e6ba2f06dfee43552ba1ac4deb2f12",
+      "date": "2026-11-15T14:24:00-03:00",
+      "title": "test(regions): duas copias independentes do mesmo HM e mochila lotada cancelando sem perder progresso",
+      "category": "Testes"
+    },
+    {
       "sha": "6a54c88600de219721a46b4f13b7b13d46310495",
       "date": "2026-11-15T14:22:58-03:00",
       "title": "fix(hm): usar iterador GameData::Item.each compatível com Ruby embutido Essentials",
