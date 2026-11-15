@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "537b2053a9957a16915cb0200f1ced77736ba19d",
+      "date": "2026-11-15T20:33:08-03:00",
+      "title": "Rebuild integrated Android ZIP on Kanto gate and updater regression changes",
+      "category": "Melhorias"
+    },
+    {
       "sha": "89e0c7d1dd0fba2727dfb08ec899a4fdd07e5da7",
       "date": "2026-11-15T20:13:04-03:00",
       "title": "Document Android downgrade regression, safe recovery, and verified updater bootstrap",
