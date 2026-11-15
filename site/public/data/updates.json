@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7ece5a6664f4f68eab5a43ad8a1b6b5b84aefde6",
+      "date": "2026-11-15T12:20:32-03:00",
+      "title": "test(npc): gerar NPC em Cherryhill Pallet New Bark sem alterar RXDATA ou saves",
+      "category": "Testes"
+    },
+    {
       "sha": "f1cc8cb04eb91f92b7a3d253cd924cfcb1152780",
       "date": "2026-11-15T12:19:37-03:00",
       "title": "test(travel): restaurar isolamento do contexto NPC e validar viagem antes da Liga",
