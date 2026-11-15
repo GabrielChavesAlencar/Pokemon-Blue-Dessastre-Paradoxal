@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1112105d513be5a084b0e887c1096fdbef57f648",
+      "date": "2026-11-15T10:49:09-03:00",
+      "title": "ci(kanto): testar integracao novo jogo, traducao e viagem pos-Liga",
+      "category": "Novidades"
+    },
+    {
       "sha": "bffc66afb9e065d2f512502cb1c870ca23699c8a",
       "date": "2026-11-15T10:48:39-03:00",
       "title": "test(regions): fixture segura para validar viagem Kanto-Decades",
