@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "19884698fca1a56410e05b0fb49a046f97247ab0",
+      "date": "2026-11-15T14:18:48-03:00",
+      "title": "ci(regions): testar separacao dos itens e HMs, licencas locais e saves legados",
+      "category": "Melhorias"
+    },
+    {
       "sha": "81904e5f5b54432399c2a27ed6b25b3f39ab551b",
       "date": "2026-11-15T14:18:32-03:00",
       "title": "test(hm): simular pacote integrado real no contrato de HM Kanto Decades",
