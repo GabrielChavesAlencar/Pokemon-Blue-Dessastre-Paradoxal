@@ -23,7 +23,17 @@ Kanto ↔ Decades é o primeiro trecho efetivo desse circuito; Johto só aparece
 4. A regra de **oito conquistas locais para Pokémon especiais** continua valendo na região de destino. Quando necessário, o sistema pré-reserva vagas do PC e deposita os especiais antes de transferir; não pode deixar a party sem Pokémon apto, nem viajar com Box cheia. Falha de transferência faz rollback de região, equipe, PC e posição.
 5. Cada região mantém seus próprios eventos, HMs, badges e elite; viajar cedo **não** concede automaticamente iniciais, insígnias ou vitórias em Ligas. O jogador pode voltar à região anterior para continuar seu progresso local.
 6. A Liga é mantida no estado `leagues` apenas para conquistas, pós-jogo e rematches Full Power; não desbloqueia transporte. O nome `unlocked` no código passa a significar destinos do circuito disponíveis conceitualmente; **disponibilidade física** exige instalador e prova local.
-7. Saves Decades antigos sem `blue_regions` podem encontrar o NPC, e o primeiro deslocamento cria o estado regional sem migrar ou apagar sua campanha original. Saves de Kanto já criados utilizam o ponto de chegada nativo de Decades registrado no início, sem depender da Liga.
+7. Saves Decades antigos sem `blue_regions` podem encontrar o NPC, e o primeiro deslocamento cria o estado regional sem migrar ou apagar sua campanha original. Em saves antigos iniciados em Kanto, o destino capturado de `System.rxdata` podia apontar à **introdução** de Decades e reabrir o seletor de personagem. Agora essa coordenada antiga **não é usada para viajar**: a entrada ocorre em um ponto passável da **Cherryhill City (Map077)**, próximo ao Agente Regional, sem repetir a introdução.
+
+## Decades sem menus duplicados e mecânicas padrão
+
+- **Troca Kanto → Decades:** preserva o avatar e equipe da partida. O transporte entra diretamente em Cherryhill City e não reexecuta seleção de personagem, modo História, iniciais ou preferências de batalha.
+- **Novo Jogo → Decades:** preserva apenas o menu necessário de **escolha de região na tela inicial**. A introdução nativa prossegue pelos seus eventos, mas as opções de modo História, perfil padrão e iniciais tradicionais são escolhidas automaticamente sem menus adicionais. O perfil padrão é 0; quando o evento solicitar iniciais tradicionais, os dois primeiros padrões automáticos são Bulbasaur e Charmander.
+- **Mecânicas da campanha Decades:** `mega=true`, `zmove=true`, `tera=true`, `dynamax=false`. O padrão é aplicado na criação da campanha e na primeira viagem para Decades. As preferências alteradas depois são guardadas separadamente para cada região.
+- **Segurança:** antigas coordenadas de chegada gravadas com mapa da introdução são ignoradas. O destino novo é calculado a partir de tiles passáveis de Map077, sem editar o RXDATA nem supor um ponto que possa estar ocupado pelo NPC. A transação mantém rollback de equipe, PC, posição e opções regionais.
+- O sistema não distribui Mega Rings, Z-Rings ou Tera Orbs automaticamente: as permissões ficam habilitadas, mas Pokémon e equipamentos continuam sujeitos às regras do jogo.
+
+**QA automatizada:** [Decades - entrada sem menus e transporte](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/workflows/decades-regional-start.yml). A campanha completa no `Game.exe` ainda precisa de verificação jogável, sobretudo a atribuição dos iniciais e a continuidade dos eventos nativos da introdução de Decades.
 
 ## Arquivos de implementação
 
