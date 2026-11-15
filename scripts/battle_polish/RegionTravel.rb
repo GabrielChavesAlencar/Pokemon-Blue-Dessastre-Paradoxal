@@ -19,6 +19,17 @@ module BlueRegionTravel
       BlueRegionStart.johto_agent_point
   end
 
+  def self.hoenn_installed?
+    return false unless installed? && defined?(BlueRegionStart) &&
+      BlueRegionStart.respond_to?(:hoenn_integrated?) &&
+      BlueRegionStart.respond_to?(:hoenn_town_point)
+    !!BlueRegionStart.hoenn_integrated? && !!BlueRegionStart.hoenn_town_point
+  end
+
+  def self.hoenn_town_point
+    hoenn_installed? ? BlueRegionStart.hoenn_town_point : nil
+  end
+
   def self.safe_context?
     return false unless BlueRegions.active? && $player && $game_map && $game_player && $scene
     return false unless $game_temp && !$game_temp.in_battle && !$game_temp.player_transferring
@@ -43,6 +54,7 @@ module BlueRegionTravel
     when "DECADES" then installed?
     when "KANTO" then installed?
     when "JOHTO" then !!johto_installed?
+    when "HOENN" then !!hoenn_installed?
     else false
     end
   end
@@ -50,7 +62,7 @@ module BlueRegionTravel
   def self.available?(state = nil)
     return false unless safe_context? && installed?
     state ||= BlueRegions.snapshot
-    source_valid?(state) && %w[DECADES KANTO JOHTO].include?(state["current"])
+    source_valid?(state) && %w[DECADES KANTO JOHTO HOENN].include?(state["current"])
   end
 
   # A new adventure begins upstairs at home, but returning from another
@@ -126,6 +138,11 @@ module BlueRegionTravel
       # The regional NPC is at Pallet, not in the initial bedroom.
       return nil unless installed?
       kanto_town_point
+    elsif key == "HOENN"
+      # New Game begins in Littleroot's bedroom. Regional travel goes to a
+      # vetted passable outdoor tile in Littleroot, never to that bedroom.
+      return nil unless hoenn_installed?
+      hoenn_town_point
     elsif key == "JOHTO"
       # Never use Kanto's maps or Johto's bedroom as an arrival fallback.
       return nil unless johto_installed?
@@ -399,6 +416,9 @@ module BlueRegionTravel
     when "JOHTO"
       point = johto_installed? && BlueRegionStart.johto_agent_point
       !!point && $game_map.map_id == point[0]
+    when "HOENN"
+      point = hoenn_town_point
+      !!point && $game_map.map_id == point[0]
     else false
     end
   end
@@ -623,6 +643,43 @@ module BlueRegionTravel
     map.events[event.id] = Game_Event.new(map.map_id,event,map)
   end
 
+  # The same physical travel agent appears in Littleroot only after the
+  # 199-map installation has passed its native file/proof gate. Keep the
+  # source event table untouched and never occupy the travel-arrival tile.
+  HOENN_AGENT_NAME = "Agente Regional Hoenn".freeze
+  def self.attach_hoenn_agent(map)
+    return unless hoenn_installed? && map && map.events.is_a?(Hash)
+    town = hoenn_town_point
+    return unless town && map.map_id == town[0]
+    state = $PokemonGlobal && $PokemonGlobal.blue_regions
+    return unless state.is_a?(Hash) && state["version"] == 1 &&
+      state["current"] == "HOENN"
+    return if map.events.values.any? { |event| event.name == HOENN_AGENT_NAME }
+    return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
+    occupied = map.events.values.map { |event| [event.x, event.y] }
+    x0, y0 = town[1,2]
+    positions = (1..5).flat_map do |distance|
+      (-distance..distance).flat_map do |dx|
+        dy = distance - dx.abs
+        (dy == 0 ? [0] : [-dy, dy]).map { |offset| [x0+dx, y0+offset] }
+      end
+    end.uniq
+    point = positions.find { |x,y| !occupied.include?([x,y]) &&
+      (map.valid?(x,y) rescue false) && (map.passable?(x,y,2) rescue false) }
+    return unless point
+    event = RPG::Event.new(point[0], point[1])
+    event.id = (map.events.keys.max || 0) + 1
+    event.name = HOENN_AGENT_NAME
+    page = event.pages.first
+    page.graphic.character_name = DECADES_AGENT_GRAPHIC
+    page.trigger = 0
+    page.list = [
+      RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
+      RPG::EventCommand.new(0,0,[])
+    ]
+    map.events[event.id] = Game_Event.new(map.map_id, event, map)
+  end
+
   # Map setup is not always repeated after loading an existing save.
   # Populate events BEFORE Spriteset_Map builds its character sprites, so a
   # player already standing in Cherryhill can see the NPC on first load.
@@ -631,6 +688,7 @@ module BlueRegionTravel
     attach_decades_agent(map)
     attach_kanto_agent(map)
     attach_johto_agent(map)
+    attach_hoenn_agent(map)
   end
 
   module DecadesTownAgent
@@ -667,7 +725,7 @@ module BlueRegionTravel
       !Scene_Map.ancestors.include?(VisibleAgentsOnLoad)
     PokemonStorageScreen.prepend(StorageRules)
     # Travel is deliberately NOT registered in the pause menu. Interact with
-    # the NPC in Pallet, Cherryhill or New Bark instead.
+    # the NPC in Pallet, Cherryhill, New Bark or Littleroot instead.
     @installed = true
   end
 end
