@@ -77,6 +77,44 @@ module BlueRegionStart
   def self.enable_johto; @johto_ready = true; end
   def self.disable_johto; @johto_ready = false; end
 end
+# Minimal RPG event mocks prove that NPCs are generated in-memory without
+# altering Decades RXDATA, source Map IDs or the player's save file.
+module RPG
+  class EventCommand
+    attr_reader :code, :parameters
+    def initialize(code, _indent, params); @code, @parameters = code, params; end
+  end
+  class Event
+    attr_accessor :x, :y, :id, :name, :pages
+    class Page
+      attr_accessor :graphic, :trigger, :list
+      def initialize
+        @graphic = Struct.new(:character_name).new("")
+        @list = []
+      end
+    end
+    def initialize(x, y)
+      @x, @y = x, y
+      @pages = [Page.new]
+    end
+  end
+end
+class Game_Event
+  attr_reader :name, :x, :y
+  def initialize(_map_id, event)
+    @name, @x, @y = event.name, event.x, event.y
+  end
+end
+class MockAgentMap
+  attr_accessor :map_id, :events
+  def initialize(id)
+    @map_id = id
+    @events = {}
+  end
+  def valid?(x, y); (0..48).include?(x) && (0..48).include?(y); end
+  def passable?(_x, _y, _d); true; end
+end
+
 class PokemonStorageScreen
   def initialize(storage); @storage=storage; end
   def pbWithdraw(selected, heldpoke); :withdrawn; end
@@ -284,6 +322,45 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Unverified Johto origin allowed travel")
     check($game_map.map_id == 713, "Denied travel after revoked proof moved player")
     BlueRegionTravel.instance_variable_set(:@npc_event_context,false)
+
+    # A native Decades player (including an older save without regional state)
+    # sees an interactable agent in Cherryhill before finishing any League.
+    $PokemonGlobal.blue_regions = nil
+    decades_map = MockAgentMap.new(77)
+    decades_file = File.binread("Data/Map077.rxdata")
+    BlueRegionTravel.attach_decades_agent(decades_map)
+    check(decades_map.events.size == 1 &&
+          decades_map.events.values.first.name == BlueRegionTravel::DECADES_AGENT_NAME,
+          "Missing native Decades starting-town NPC")
+    BlueRegionTravel.attach_decades_agent(decades_map)
+    check(decades_map.events.size == 1, "Repeated map setup duplicated Decades NPC")
+    check(File.binread("Data/Map077.rxdata") == decades_file,
+          "Generated NPC modified native Decades map on disk")
+
+    # Kanto NPC appears in the true Pallet Town map, without blocking the
+    # audited destination tile and without creating a second copy on reload.
+    $PokemonGlobal.blue_regions = BlueRegions.new_state("KANTO")
+    pallet = MockAgentMap.new(300)
+    original_map = File.binread("Data/Map300.rxdata")
+    BlueRegionTravel.attach_kanto_agent(pallet)
+    check(pallet.events.size == 1 &&
+          pallet.events.values.first.name == BlueRegionTravel::KANTO_AGENT_NAME,
+          "Pallet Town is missing the travel NPC")
+    actor = pallet.events.values.first
+    check([actor.x,actor.y] != [18,8], "Kanto NPC obstructed the town arrival")
+    BlueRegionTravel.attach_kanto_agent(pallet)
+    check(pallet.events.size == 1, "Repeated Pallet entry duplicated Kanto NPC")
+    check(File.binread("Data/Map300.rxdata") == original_map,
+          "Kanto NPC overwrote the FRLG map")
+
+    BlueRegionStart.enable_johto
+    $PokemonGlobal.blue_regions = BlueRegions.new_state("JOHTO")
+    new_bark = MockAgentMap.new(713)
+    BlueRegionTravel.attach_johto_agent(new_bark)
+    check(new_bark.events.size == 1 &&
+          new_bark.events.values.first.name == BlueRegionTravel::JOHTO_AGENT_NAME,
+          "New Bark transport required the Johto Hall of Fame")
+    BlueRegionStart.disable_johto
   end
 end
 puts "Regional travel, restricted PC, rollback, single save and return OK"
