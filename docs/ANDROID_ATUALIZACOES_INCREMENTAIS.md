@@ -41,7 +41,7 @@ O atualizador consulta `releases/latest` (Decades) ou a prerelease `kanto-androi
 
 No Piloto Kanto, abra **Downloads → Pilotos no Android** no site e confira a revisão publicada. Use a pasta **Pokemon-Blue-Kanto-Android** no Termux. As correções de mapas, eventos e Pokédex chegam por esse canal após a publicação do novo ZIP ou patch. Para alternar a Pokédex, use **K** no teclado ou toque no botão da lista quando os toques do JoiPlay estiverem habilitados.
 
-O patch atual é **de uma revisão publicada para a próxima**, não um sincronizador arbitrário de qualquer versão antiga. Se não houver patch adequado, o programa oferece o link do ZIP completo e não altera a instalação. Não há promessa de atualização em segundo plano, APK próprio, autoatualização do JoiPlay ou teste aprovado em aparelho físico.
+Patches incrementais exigem origem e inventário compatíveis. O atualizador novo faz fallback para baixar o ZIP integral diretamente no Termux, preservando a pasta antiga e os saves; a versão antiga do script requer a migração descrita no fim deste documento. Não há promessa de atualização em segundo plano, APK próprio, autoatualização do JoiPlay ou teste aprovado em aparelho físico.
 
 ## Publicação e testes
 
@@ -114,3 +114,30 @@ python ATUALIZAR-ANDROID.py --update
 5. Reabra o mesmo jogo no JoiPlay e teste **New Game → Decades / Kanto / Hoenn**. Se não existir patch direto, baixe o ZIP da edição integrada mais recente e extraia em pasta nova após copiar os saves. **Nunca** sobrescreva a instalação antiga sem backup.
 
 O workflow `android-multiregion.yml` consulta a última release integrada válida antes de gerar nova versão, tenta produzir um `Blue-Android-Decades-Kanto-Hoenn.patch.zip` e o publica se a atualização for segura e menor que o ZIP completo. O site mostra a release completa; o Termux escolhe o patch compatível automaticamente.
+
+
+## 15/11/2026 — Atualização pelo próprio Termux, mesmo sem patch
+
+O atualizador agora tem **dois caminhos** nos canais Decades, Kanto e multiregion:
+
+- **Patch incremental**, quando existe uma diferença compatível. Baixa apenas os arquivos alterados.
+- **Instalação completa assistida**, quando a release não tem patch, há alterações em arquivos imutáveis ou a instalação pulou revisões. O Termux baixa o ZIP inteiro, valida SHA-256 e tamanho pelo manifesto da release, valida também cada arquivo extraído, prepara a nova versão em pasta temporária e troca a instalação mantendo o **mesmo caminho do Game.exe**. A pasta anterior fica como backup no mesmo diretório pai.
+
+O caminho completo preserva automaticamente saves locais conhecidos (File A–H.rxdata, Auto 1–3.rxdata, Game.rxdata e backups .bak). Perfis externos do JoiPlay não são modificados. Arquivos personalizados não reconhecidos ficam na cópia integral da pasta antiga, não sendo transportados para a nova versão. Faça backup dos saves antes, feche o JoiPlay, confira espaço suficiente para download e extração e teste o save após a atualização.
+
+Comandos da versão nova:
+
+    cd ~/storage/shared/Download/Pokemon-Blue-Android
+    python ATUALIZAR-ANDROID.py                 # consultar
+    python ATUALIZAR-ANDROID.py --update        # instalar patch ou ZIP integral
+    python ATUALIZAR-ANDROID.py --full --update # forçar ZIP integral
+
+**Instalações antigas:** o arquivo ATUALIZAR-ANDROID.py dentro dos ZIPs anteriores não ganha o fallback sozinho. Para ativar esta função **uma vez**, use o Termux na pasta instalada, sem substituir o script antigo:
+
+    cd ~/storage/shared/Download/Pokemon-Blue-Android
+    python -c 'import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/main/scripts/android/update_client.py", "ATUALIZAR-ANDROID-NOVO.py")'
+    python ATUALIZAR-ANDROID-NOVO.py --game-dir . --update
+
+Depois de atualizar para um ZIP que já inclui o cliente novo, retome o comando padrão ATUALIZAR-ANDROID.py. Se faltar Data/blue-update.json, a primeira instalação segue exigindo um ZIP completo em pasta nova e cópia segura dos saves.
+
+**Limites:** a atualização depende de release íntegra disponível, internet, espaço suficiente, permissão de armazenamento e JoiPlay fechado. Falhas de download ou verificação deixam a pasta original intacta. A troca de diretórios tenta rollback se falhar; não apague o backup antes de testar. Mudança entre canais (Decades puro e Decades + Kanto + Hoenn, por exemplo) continua exigindo migração explícita, nunca automática.
