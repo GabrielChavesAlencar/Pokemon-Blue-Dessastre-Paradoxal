@@ -28,13 +28,13 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         (self.game / "PBS/pokemon.txt").write_text("[BULBASAUR]\n")
         self.calls = []
 
-    def run(self, argv, project, env):
+    def invoke(self, argv, project, env):
         self.assertEqual(project, self.project)
         self.assertEqual(env["BLUE_GAME_DIR"], str(self.game))
         self.calls.append(argv)
 
     def test_fresh_install_bootstraps_pinned_source_then_imports_then_verifies(self):
-        result = auto.integrate(self.project, self.game, run=self.run)
+        result = auto.integrate(self.project, self.game, run=self.invoke)
         self.assertEqual(result["status"], "integrated")
         self.assertTrue(result["ready"])
         self.assertTrue(result["changed"])
@@ -50,7 +50,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         cache = self.project / ".blue-work/kanto-pilot/Kanto pilot.json"
         cache.parent.mkdir(parents=True)
         cache.write_text('{"region":"KANTO"}', encoding="utf8")
-        result = auto.integrate(self.project, self.game, run=self.run)
+        result = auto.integrate(self.project, self.game, run=self.invoke)
         self.assertEqual(result["status"], "integrated")
         self.assertEqual(result["source"], "cached_verified_pilot")
         self.assertTrue(result["ready"])
@@ -105,7 +105,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
 
     def test_already_installed_only_verifies_and_never_reinstalls(self):
         (self.game / auto.KANTO_MARKER).write_text("BLUE_KANTO_START_V1,KANTO,300,25,7\n")
-        result = auto.integrate(self.project, self.game, run=self.run)
+        result = auto.integrate(self.project, self.game, run=self.invoke)
         self.assertEqual(result["status"], "already_integrated")
         self.assertTrue(result["ready"])
         self.assertFalse(result["changed"])
@@ -165,7 +165,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         first = auto.integrate(self.project, self.game, run=fail)
         self.assertEqual(first["status"], "kanto_unavailable")
         self.assertIn("403", first["reason"])
-        second = auto.integrate(self.project, self.game, run=self.run)
+        second = auto.integrate(self.project, self.game, run=self.invoke)
         self.assertEqual(second["status"], "integrated")
         self.assertTrue(second["ready"])
         self.assertEqual(__import__("json").loads(
@@ -175,10 +175,10 @@ class KantoAutoIntegrationTests(unittest.TestCase):
     def test_foreign_path_or_missing_decades_skips(self):
         foreign = self.project / "other-game"
         foreign.mkdir()
-        self.assertEqual(auto.integrate(self.project, foreign, run=self.run)["status"],
+        self.assertEqual(auto.integrate(self.project, foreign, run=self.invoke)["status"],
                          "skipped_foreign_path")
         (self.game / "Game.exe").unlink()
-        self.assertEqual(auto.integrate(self.project, self.game, run=self.run)["status"],
+        self.assertEqual(auto.integrate(self.project, self.game, run=self.invoke)["status"],
                          "skipped_no_game")
         self.assertEqual(self.calls, [])
 
