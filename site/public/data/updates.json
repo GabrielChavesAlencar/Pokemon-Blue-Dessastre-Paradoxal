@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dda46298b1b188a339a8c82c51ffa156d32513fc",
+      "date": "2026-11-15T11:37:09-03:00",
+      "title": "test(installer): validar status persistente, erro de download e retry sem falso positivo",
+      "category": "Testes"
+    },
+    {
       "sha": "739f48b25fab1bd54f072f8432ffe272b74e76d6",
       "date": "2026-11-15T11:36:30-03:00",
       "title": "ci(kanto): testar o mesmo auto-instalador usado pelo Blue-Story.exe no Windows",
