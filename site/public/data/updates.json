@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "89e0c7d1dd0fba2727dfb08ec899a4fdd07e5da7",
+      "date": "2026-11-15T20:13:04-03:00",
+      "title": "Document Android downgrade regression, safe recovery, and verified updater bootstrap",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ffcf2ecbe87c08e114a896d3c4cad21b5a2deddb",
       "date": "2026-11-15T20:10:23-03:00",
       "title": "Test Android release ordering and prevent GitHub updater downgrade before download",
