@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4560127a4b27dacbea9784e8d513ad1cd1f96a8a",
+      "date": "2026-11-15T14:21:51-03:00",
+      "title": "feat(regions): isolar tambem HMs e itens-chave do PC de itens por regiao, com rollback",
+      "category": "Novidades"
+    },
+    {
       "sha": "cb40276509c69a52d23e31dfced44587b84c9187",
       "date": "2026-11-15T14:19:50-03:00",
       "title": "fix(regions): nao transferir atalhos de itens-chave consumidos e impedir bloqueio de save antigo",
