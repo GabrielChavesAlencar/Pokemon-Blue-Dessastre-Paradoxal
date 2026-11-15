@@ -53,3 +53,14 @@ Se o resultado for `integration_blocked`, confirme conexão de internet e o moti
 6. Testes de ginásios, Surf/Dive/Waterfall, Aqua/Magma, Liga/Wallace, Hall da Fama, gráficos, música, localização PT-BR e Windows/Android/JoiPlay.
 
 A integração **não é declarada jogável** somente porque os testes Python/Ruby/GitHub Actions passaram.
+
+
+## Correção de dependência gráfica — 15/11/2026
+
+O primeiro log real do Blue-Story.exe mostrou que a **aquisição pública já tinha sido concluída**: 199 mapas, 296 arquivos baixados, 38 gráficos de tilesets/autotiles e 52 áudios, totalizando 117.486.084 bytes. A etapa seguinte (montagem do overlay Hoenn) falhou com o arquivo obrigatório `Graphics/Characters/OBJ_RSE_Strength Boulder.png`.
+
+A falha não exigia reinstalar o launcher, baixar outra versão completa ou fornecer ZIP manual. O downloader original descobria gráficos dos *tilesets* e três artes de chefes, mas não as imagens que o módulo `hoenn_qa_phase4.install_simple_obstacles` lê dos eventos originais para criar pedras de Rock Smash/Strength.
+
+**Correção na main:** `scripts/regions/ensure_hoenn_source.py` agora varre os 199 mapas já baixados, identifica apenas os eventos de obstáculos do escopo conservador da Fase 4, resolve o nome da imagem de cada evento e baixa esses `Graphics/Characters/*.png` pela mesma revisão fixa, com hash Git verificado. Não carrega scripts de eventos do projeto doador nem solicita todas as imagens dos NPCs. Inclui regressão específica para `OBJ_RSE_Strength Boulder.png` e `OBJ_RSE_RockSmash Rock.png`.
+
+**Repetição após atualizar:** fechar o Game.exe e executar **o mesmo Blue-Story.exe**, conectado à internet. Os 296 arquivos já íntegros permanecem no cache `.blue-work/hoenn-source/`, e apenas novas dependências são adquiridas. O instalador tenta novamente gerar Hoenn e só libera a viagem após integração e verificações locais. Se houver outra falha, analisar o trecho final de `.blue-work/hoenn-main-install.log`; não marcar Hoenn como jogável antes de um teste real no Game.exe.
