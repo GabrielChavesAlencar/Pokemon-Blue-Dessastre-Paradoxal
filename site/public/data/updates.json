@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7e96444eea19eae53b91d692f6ab1e1e5a226cc0",
+      "date": "2026-11-15T14:17:59-03:00",
+      "title": "test(hm): bloquear Surf importado de Kanto em Decades sem HM local, preservar badges e saves legados",
+      "category": "Testes"
+    },
+    {
       "sha": "bf8e3ea7ef7c9d74a42f3b81ac8248149daecc13",
       "date": "2026-11-15T14:17:20-03:00",
       "title": "test(regions): diferenciar round-trip original e migracao de save Decades antigo",
