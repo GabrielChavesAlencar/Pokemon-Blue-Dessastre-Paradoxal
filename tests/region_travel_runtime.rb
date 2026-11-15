@@ -2,7 +2,7 @@
 require "tmpdir"
 def check(v, name); raise name unless v; end
 class PokemonGlobalMetadata
-  attr_accessor :blue_regions, :blue_campaign_mechanics
+  attr_accessor :blue_regions, :blue_campaign_mechanics, :pcItemStorage
 end
 FakeSpeciesData = Struct.new(:flags, :form)
 class FakePokemon
@@ -31,6 +31,29 @@ class FakeStorage
   def [](box,slot); @slots[[box,slot]]; end
   def []=(box,slot,mon); @slots[[box,slot]]=mon; end
 end
+class FakePCItemStorage
+  attr_reader :items
+  def initialize; @items=[];@capacity=12; end
+  def quantity(id)
+    row=@items.find { |entry| entry[0]==id }
+    row ? row[1] : 0
+  end
+  def add(id,qty=1)
+    return false unless GameData::Item.try_get(id) && qty>0
+    row=@items.find { |entry| entry[0]==id }
+    return false if !row && @items.size>=@capacity
+    row ? row[1]+=qty : @items << [id,qty]
+    true
+  end
+  def remove(id,qty=1)
+    row=@items.find { |entry| entry[0]==id }
+    return false unless row && row[1]>=qty
+    row[1]-=qty
+    @items.delete(row) if row[1]==0
+    true
+  end
+end
+
 class FakePlayerSprite
   attr_accessor :x,:y,:direction
   def initialize; @x=5; @y=8; @direction=2; end
@@ -218,6 +241,8 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $PokemonStorage=FakeStorage.new
     $PokemonGlobal=PokemonGlobalMetadata.new
     $PokemonGlobal.blue_campaign_mechanics=BlueCampaign.default_mechanics_for("KANTO")
+    $PokemonGlobal.pcItemStorage=FakePCItemStorage.new
+    [:OAKSPARCEL,:HM01,:POTION].each { |id| $PokemonGlobal.pcItemStorage.add(id) }
     $bag=FakeBag.new
     [:OAKSPARCEL,:HM01,:POTION,:TM01,:MEGASTONE].each { |id| $bag.add(id) }
     $bag.register(:OAKSPARCEL)
@@ -270,11 +295,17 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Ordinary items, TMs or Mega Stones disappeared on travel")
     check(($bag.registered_items & [:OAKSPARCEL,:HM01]).empty?,
           "Registered Kanto-only items leaked into Decades quick access")
+    check($PokemonGlobal.pcItemStorage.quantity(:OAKSPARCEL)==0 &&
+          $PokemonGlobal.pcItemStorage.quantity(:HM01)==0 &&
+          $PokemonGlobal.pcItemStorage.quantity(:POTION)==1,
+          "Kanto HMs/key items leaked through the shared item PC")
     check($PokemonGlobal.blue_regions["region_key_items"]["KANTO"]["items"].length==2,
           "Kanto key items and HMs were not backed up in the regional save")
     $bag.add(:POKEFLUTE)
     $bag.add(:HM03)
     $bag.register(:POKEFLUTE)
+    $PokemonGlobal.pcItemStorage.add(:POKEFLUTE)
+    $PokemonGlobal.pcItemStorage.add(:HM03)
     # The same save must round-trip to Kanto and back before the legacy
     # scenario below intentionally resets regional state to nil.
     check(BlueRegionTravel.travel("KANTO",true),
@@ -285,11 +316,20 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($bag.registered_items.include?(:OAKSPARCEL) &&
           !$bag.registered_items.include?(:POKEFLUTE),
           "Regional registered shortcuts did not switch back to Kanto")
+    check($PokemonGlobal.pcItemStorage.quantity(:OAKSPARCEL)==1 &&
+          $PokemonGlobal.pcItemStorage.quantity(:HM01)==1 &&
+          $PokemonGlobal.pcItemStorage.quantity(:POKEFLUTE)==0 &&
+          $PokemonGlobal.pcItemStorage.quantity(:HM03)==0,
+          "Kanto item PC did not restore local key items/HMs")
     check(BlueRegionTravel.travel("DECADES",true),
           "Original Kanto save could not return to Decades")
     check($bag.has?(:POKEFLUTE) && $bag.has?(:HM03) &&
           !$bag.has?(:OAKSPARCEL) && !$bag.has?(:HM01),
           "Original Kanto save did not restore Decades key items/HMs")
+    check($PokemonGlobal.pcItemStorage.quantity(:POKEFLUTE)==1 &&
+          $PokemonGlobal.pcItemStorage.quantity(:HM03)==1 &&
+          $PokemonGlobal.pcItemStorage.quantity(:HM01)==0,
+          "Decades item PC leaked Kanto's stored HM")
     # Changes made in Decades must survive visits to another region.
     $PokemonGlobal.blue_campaign_mechanics["zmove"]=false
     $PokemonGlobal.blue_regions = nil
@@ -360,7 +400,10 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $scene.fail_once=true
     prior_state=Marshal.dump($PokemonGlobal.blue_regions)
     prior_bag=Marshal.dump([$bag.pockets,$bag.registered_items])
+    prior_pc=Marshal.dump($PokemonGlobal.pcItemStorage.items)
     check(!BlueRegionTravel.travel("KANTO",true), "Failed map transfer reported success")
+    check(Marshal.dump($PokemonGlobal.pcItemStorage.items)==prior_pc,
+          "Failed teleport lost key items/HMs deposited in the item PC")
     check(Marshal.dump([$bag.pockets,$bag.registered_items])==prior_bag,
           "Failed map transfer lost or duplicated HMs/key items")
     check($game_map.map_id == 77 && $game_player.x == decades_arrival[1],
