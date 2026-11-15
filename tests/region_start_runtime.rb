@@ -4,7 +4,8 @@ require "fileutils"
 
 class PokemonGlobalMetadata
   attr_accessor :blue_regions, :blue_story_mode, :blue_traditional_starters,
-                :blue_campaign_started, :blue_campaign_departure
+                :blue_campaign_started, :blue_campaign_departure,
+                :blue_campaign_mechanics
 end
 
 class FakeSystem
@@ -57,7 +58,42 @@ module BlueCampaign
   def self.begin_journey(prompt=true)
     $PokemonGlobal.blue_campaign_started = true
     $PokemonGlobal.blue_campaign_departure = true
+    $PokemonGlobal.blue_campaign_mechanics={
+      "tera"=>true,"mega"=>true,"zmove"=>true,"dynamax"=>
+        ($PokemonGlobal.blue_regions["current"]!="DECADES")
+    }
   end
+end
+module GameData
+  module Species
+    def self.exists?(species); [:BULBASAUR,:CHARMANDER,:SQUIRTLE].include?(species); end
+  end
+end
+class Pokemon
+  attr_reader :species,:level
+  def initialize(species,level,_owner);@species,@level=species,level;end
+end
+class Interpreter
+  attr_accessor :map_id,:parameters,:list,:index,:branch
+  def initialize
+    @map_id=4;@index=0;@branch={}
+    @list=[Struct.new(:indent).new(0)]
+  end
+  def command_102
+    $native_intro_menus ||= 0
+    $native_intro_menus += 1
+    true
+  end
+end
+def pbCharacterSelect
+  $native_profile_menus ||= 0
+  $native_profile_menus += 1
+  true
+end
+def pbPokemonSelection(*_args)
+  $native_starter_menus ||= 0
+  $native_starter_menus += 1
+  nil
 end
 
 def pbRgssExists?(path)
@@ -71,7 +107,7 @@ class FakePlayer
   attr_accessor :character_id, :transparent
   attr_reader :visible
   def refresh_charset
-    @visible = character_id == 1 && !transparent
+    @visible = [0,1].include?(character_id) && !transparent
   end
 end
 
@@ -244,6 +280,38 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check(Game.seen == [4,7,8], "Decades start was displaced by Kanto")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Decades original save altered")
     check(BlueRegionStart.story_spawn.nil?, "Decades got a duplicate region prompt")
+    check($PokemonGlobal.blue_story_mode == :story, "Decades new game did not auto-start Story Mode")
+    check($PokemonGlobal.blue_campaign_mechanics ==
+          {"tera"=>true,"mega"=>true,"zmove"=>true,"dynamax"=>false},
+          "Decades new game did not disable only Dynamax")
+    check(BlueRegionStart.decades_auto_intro?, "Decades native intro did not use auto setup")
+    $native_profile_menus=0
+    pbCharacterSelect
+    check($native_profile_menus==0 && $game_player.character_id==0,
+          "Decades new game reopened the character menu")
+    $native_intro_menus=0
+    interpreter=Interpreter.new
+    interpreter.parameters=[["Battle Mode","Story Mode"]]
+    interpreter.command_102
+    check(interpreter.branch[0]==1 && $native_intro_menus==0,
+          "Decades introduction asked for the game mode")
+    interpreter.parameters=[["Any Pokémon","Traditional Starters","Cancel"]]
+    interpreter.command_102
+    check(interpreter.branch[0]==1 && $native_intro_menus==0,
+          "Decades introduction asked for the starter-selection mode")
+    $native_starter_menus=0
+    $player=Object.new
+    selected=[pbPokemonSelection(:Traditional_Starters),
+              pbPokemonSelection(:Traditional_Starters)]
+    check(selected.map(&:species)==[:BULBASAUR,:CHARMANDER] &&
+          $native_starter_menus==0,
+          "Decades native traditional starters reopened their selection UI")
+    $game_map.map_id=77
+    check(!BlueRegionStart.decades_auto_intro?, "Decades setup leaked into Cherryhill")
+    pbCharacterSelect
+    check($native_profile_menus==1,
+          "Loaded maps outside Decades intro had profile UI intercepted")
+    $game_map.map_id=4
 
     old_save = {"version"=>1,"initial"=>"DECADES","current"=>"DECADES","leagues"=>["DECADES"]}
     # A load must never start a new game, irrespective of the last tested
