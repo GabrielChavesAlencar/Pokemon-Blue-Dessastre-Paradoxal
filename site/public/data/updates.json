@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6991a1e9109c570cb2903c043006fc268d0929d3",
+      "date": "2026-11-15T17:05:13-03:00",
+      "title": "fix(hoenn): baixar sprites de pedras e rochas dos eventos antes de instalar 199 mapas",
+      "category": "Correções"
+    },
+    {
       "sha": "8dc0aee124a088a72173795467cdae2721125f8f",
       "date": "2026-11-15T16:52:19-03:00",
       "title": "docs(hoenn): Blue-Story instala fonte pública automaticamente sem exigir ZIP nem BAT",
