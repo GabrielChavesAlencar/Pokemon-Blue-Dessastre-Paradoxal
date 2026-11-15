@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "552dc5cd2efbf62e8719501009f7d6c5d9b75782",
+      "date": "2026-11-15T15:53:29-03:00",
+      "title": "ci(kanto): regressão da escala do protagonista no piloto",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a731cbc885c2821d16ceefaf29831e1be94f9c6e",
       "date": "2026-11-15T15:53:08-03:00",
       "title": "test(kanto): validar limite de 30px e zoom adaptativo do protagonista",
