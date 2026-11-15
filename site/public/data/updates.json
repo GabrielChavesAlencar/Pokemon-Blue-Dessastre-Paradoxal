@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "006280665d5727ae5e3b4257ebe5c69671ac1c80",
+      "date": "2026-11-15T10:41:47-03:00",
+      "title": "test(locale): proteger traducoes Decades ao carregar Kanto integrado",
+      "category": "Testes"
+    },
+    {
       "sha": "ac821000184e9a03a617b5812cafc9aaca2401a7",
       "date": "2026-11-15T10:41:10-03:00",
       "title": "fix(kanto): preservar testes e eventos Cut do piloto isolado ao integrar Decades",
