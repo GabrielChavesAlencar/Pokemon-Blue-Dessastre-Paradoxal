@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "321316df526b4487dec16a32fde7727d0139cc9e",
+      "date": "2026-11-14T22:12:46-03:00",
+      "title": "docs(exp): regras modernas da experiencia de equipe e reteste no Game.exe",
+      "category": "Documentação"
+    },
+    {
       "sha": "9dc7fa0a3a72349e70260135c4feec38828ad244",
       "date": "2026-11-14T22:11:20-03:00",
       "title": "ci(exp): executar regressao compartilhamento moderno de EXP",
