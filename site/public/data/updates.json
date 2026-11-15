@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c67d90665610e86e0d6bfbe9cc3c252e10b69cdf",
+      "date": "2026-11-15T13:46:23-03:00",
+      "title": "feat(decades): automatizar perfil story e iniciais na introducao de novo jogo, sem menus extras",
+      "category": "Novidades"
+    },
+    {
       "sha": "9dd27804754fab35f3165320bce329fe348089df",
       "date": "2026-11-15T13:45:05-03:00",
       "title": "feat(travel): aplicar padrao Mega/Z/Tera sem Dynamax ao entrar Decades, guardar preferencias por regiao e rollback",
