@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "58cfbb9be9cf6317ff82c94d5331512e8a053f60",
+      "date": "2026-11-15T11:42:43-03:00",
+      "title": "fix(kanto): finalizar marker ASCII com quebra de linha normal",
+      "category": "Correções"
+    },
+    {
+      "sha": "60deb8ccfd90c6347cdf6c615fa20b42098ab3e3",
+      "date": "2026-11-15T11:42:29-03:00",
+      "title": "fix(kanto runtime): gerar prova simples de 142 mapas para motor Ruby sem JSON",
+      "category": "Correções"
+    },
+    {
       "sha": "d34e8f499f62a1f491f461d6ec707037bd2aff19",
       "date": "2026-11-15T11:40:58-03:00",
       "title": "fix(kanto source): tentar endpoint alternativo oficial com SHA256 identico no instalador",
