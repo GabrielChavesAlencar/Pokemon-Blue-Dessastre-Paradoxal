@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b473202157e757936d067897721deb083068cbe8",
+      "date": "2026-11-15T13:07:25-03:00",
+      "title": "test(native): atualizar prova do Kanto para viagem livre sem bloqueio de Liga",
+      "category": "Testes"
+    },
+    {
       "sha": "4746b87b4c6dc4aab99ff17e7c33d62becd88f3b",
       "date": "2026-11-15T13:07:01-03:00",
       "title": "fix(tests): fixture Decades isolado nao exige mapas Kanto durante setup",
