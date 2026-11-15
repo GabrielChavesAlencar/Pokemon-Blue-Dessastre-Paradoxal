@@ -30,6 +30,29 @@ module BlueRegionTravel
     hoenn_installed? ? BlueRegionStart.hoenn_town_point : nil
   end
 
+  # The installer writes a simple status inside game/Data so the travel NPC
+  # does not hide a missing source behind a vague "em preparação" label.
+  # Never treat this message as proof of installation; destination() still
+  # requires the independently verified 199 maps and regional manifest.
+  HOENN_INSTALL_STATUS = "Data/blue-hoenn-install-status.txt".freeze
+  def self.hoenn_pending_message
+    status = if File.file?(HOENN_INSTALL_STATUS) && !File.symlink?(HOENN_INSTALL_STATUS)
+               File.read(HOENN_INSTALL_STATUS, 80).strip
+             end
+    case status
+    when "awaiting_local_source"
+      _INTL("Hoenn ainda não foi instalada. Coloque o ZIP original 'The Pokémon World Project - Hoenn.zip' na pasta do projeto e execute o Blue-Story.exe novamente. Se você já testou Hoenn, os recursos preparados também podem ser reutilizados.")
+    when "existing_install_needs_review"
+      _INTL("Foi detectada uma instalação incompleta ou modificada de Hoenn. A viagem foi bloqueada para proteger seu save. Consulte .blue-work/hoenn-main-install.log e não substitua mapas manualmente.")
+    when "integration_blocked"
+      _INTL("A instalação dos mapas de Hoenn falhou. Veja o motivo em .blue-work/hoenn-main-install-status.json e no log hoenn-main-install.log. A viagem foi bloqueada para proteger o save.")
+    else
+      _INTL("Hoenn não está instalada na build principal. Execute a integração de Hoenn no atualizador do projeto; não basta ter o piloto de teste ou atualizar apenas o código.")
+    end
+  rescue IOError, SystemCallError
+    _INTL("Hoenn não está instalada na build principal. Verifique o instalador antes de viajar.")
+  end
+
   def self.safe_context?
     return false unless BlueRegions.active? && $player && $game_map && $game_player && $scene
     return false unless $game_temp && !$game_temp.in_battle && !$game_temp.player_transferring
@@ -485,7 +508,11 @@ module BlueRegionTravel
         elsif destination(state,key)
           break if travel(key)
         else
-          pbMessage(message_for(:locked))
+          if key == "HOENN"
+            pbMessage(hoenn_pending_message)
+          else
+            pbMessage(message_for(:locked))
+          end
         end
       else
         break
