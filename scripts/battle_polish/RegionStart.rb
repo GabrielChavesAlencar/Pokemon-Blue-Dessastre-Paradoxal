@@ -188,6 +188,18 @@ module BlueRegionStart
     destinations.values[choice]
   end
 
+  # Use the REAL Decades System.rxdata start coordinates, not a guessed
+  # town or a copied FRLG location. Store only as a future destination,
+  # unlocked by the authentic Kanto League event.
+  def self.native_decades_start
+    return nil unless $data_system
+    point = [$data_system.start_map_id, $data_system.start_x, $data_system.start_y]
+    return nil unless point.all? { |v| v.is_a?(Integer) } &&
+                      point[0] > 0 && point[1] >= 0 && point[2] >= 0
+    return nil unless pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0]))
+    point + [2]
+  end
+
   def self.prepare_regional_story(region)
     $PokemonGlobal.blue_regions = BlueRegions.new_state(region)
     BlueStory.choose_mode(:story)
@@ -222,7 +234,11 @@ module BlueRegionStart
       return
     end
 
+    # Capture native Decades start *before* temporary map-switching changes
+    # $data_system. It is never a pre-League travel unlock.
+    decades_start = native_decades_start if region == "KANTO" && !File.file?("Kanto pilot.json")
     prepare_regional_story(region)
+    $PokemonGlobal.blue_regions["decades_first_arrival"] = decades_start if decades_start
     if region == "KANTO"
       # Both integrated Kanto and the isolated pilot start walking. Mom gives
       # Running Shoes only after the authored Brock / Route 3 scene.
