@@ -246,9 +246,12 @@ module BlueRegionStart
       return
     end
 
-    # Capture native Decades start *before* temporary map-switching changes
-    # $data_system. It is never a pre-League travel unlock.
-    decades_start = native_decades_start if region == "KANTO" && !File.file?("Kanto pilot.json")
+    # A campaign started in ANY integrated region must be able to visit
+    # Decades without winning a League. Capture its real native start while
+    # System.rxdata still contains Decades coordinates. Isolated pilot copies
+    # must never forge a shared Decades destination.
+    isolated = %w[Kanto Johto Hoenn Sinnoh].any? { |name| File.file?("#{name} pilot.json") }
+    decades_start = native_decades_start unless isolated
     prepare_regional_story(region)
     $PokemonGlobal.blue_regions["decades_first_arrival"] = decades_start if decades_start
     if region == "KANTO"
