@@ -47,6 +47,7 @@ end
 def check(value,msg)
   raise "HOENN_MAIN_TRAVEL: #{msg}" unless value
 end
+def _INTL(text,*args); text; end
 load File.expand_path(ARGV.fetch(0))
 module BlueRegionTravel
   # Isolate the policy under test from engine UI/transfers; the production
@@ -86,4 +87,21 @@ check(!BlueRegionTravel.at_departure_town?(state),
       "Hoenn agent usable outside initial town")
 BlueRegionStart.ready=false
 check(!BlueRegionTravel.hoenn_installed?,"Hoenn remained available after proof revocation")
-puts "PASS: verified Hoenn -> Littleroot shared travel/NPC, no fake destinations or duplicate agents"
+require "tmpdir"
+Dir.mktmpdir("hoenn-npc-diagnostic") do |dir|
+  Dir.chdir(dir) do
+    Dir.mkdir("Data")
+    message = BlueRegionTravel.hoenn_pending_message
+    check(message.include?("não está instalada"), "missing status was shown as installed")
+    File.write("Data/blue-hoenn-install-status.txt", "awaiting_local_source\n")
+    message = BlueRegionTravel.hoenn_pending_message
+    check(message.include?("ZIP original"), "missing source did not explain required ZIP")
+    File.write("Data/blue-hoenn-install-status.txt", "integration_blocked\n")
+    message = BlueRegionTravel.hoenn_pending_message
+    check(message.include?("falhou"), "failed merge did not show diagnostic")
+    File.write("Data/blue-hoenn-install-status.txt", "existing_install_needs_review\n")
+    message = BlueRegionTravel.hoenn_pending_message
+    check(message.include?("incompleta"), "partial install did not warn player")
+  end
+end
+puts "PASS: Hoenn travel/NPC and clear missing-source, blocked or partial-install diagnostics"
