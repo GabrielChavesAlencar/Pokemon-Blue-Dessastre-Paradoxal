@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c2b7e02b05aab63fad466c95ebf43e849539e821",
+      "date": "2026-11-15T10:16:15-03:00",
+      "title": "test(title): cobrir seleção regional no Novo Jogo e isolamento de saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "0ea149b566f441c43ad4bf0523f01dd26f77e0a3",
       "date": "2026-11-15T10:15:37-03:00",
       "title": "fix(title): usar lançador existente de Kanto na escolha inicial",
