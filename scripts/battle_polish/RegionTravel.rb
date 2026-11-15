@@ -201,11 +201,10 @@ module BlueRegionTravel
         entry[1] > 0 && !seen[entry[0]]
       seen[entry[0]] = true
     end
+    raise "Atalhos regionais duplicados no save" unless
+      target_contents["registered"].uniq.length == target_contents["registered"].length
     target_contents["registered"].each do |id|
-      raise "Atalho regional inválido no save" unless
-        seen[id] && !target_contents["registered"].each_with_index.any? { |v,i|
-          v == id && target_contents["registered"].index(v) != i
-        }
+      raise "Atalho regional inválido no save" unless seen[id]
     end
     source_contents["items"].each do |id, qty|
       raise "Falha ao guardar itens da região atual" unless staged.remove_all(id, qty)
