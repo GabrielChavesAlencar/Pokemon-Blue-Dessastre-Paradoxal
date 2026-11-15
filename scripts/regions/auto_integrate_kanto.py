@@ -7,9 +7,11 @@ a nonfatal Kanto failure, never a reason to block the native Decades game.
 """
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
@@ -21,6 +23,29 @@ KANTO_IMPORTER = "scripts/regions/install_kanto.py"
 KANTO_SOURCE_BOOTSTRAP = "scripts/regions/ensure_source.py"
 KANTO_MARKER = Path("Data/blue-kanto-start.txt")
 KANTO_MANIFEST = Path("Data/blue-kanto-install.json")
+STATUS_FILE = Path(".blue-work/kanto-install-status.json")
+LOG_FILE = Path(".blue-work/kanto-install.log")
+READY = frozenset({"already_integrated", "integrated", "already_integrated_runtime_preserved"})
+
+
+def _persist(project: Path, info: dict) -> dict:
+    """Publish the REAL result before the installer decides whether to launch."""
+    payload = {**info, "ready": info["status"] in READY,
+               "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+               "log": str(project / LOG_FILE)}
+    target = project / STATUS_FILE
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(temporary, target)
+    return payload
+
+
+def _failure(phase: str, err: Exception) -> str:
+    # The original bootstrap showed a false 'everything is ready' message;
+    # always expose which operation failed and the log location.
+    description = str(err).strip() or type(err).__name__
+    return f"{phase}: {description}"
 
 
 def detect_existing(game: Path) -> str:
@@ -49,8 +74,36 @@ def detect_existing(game: Path) -> str:
 
 
 def _default_run(argv: list[str], project: Path, env: dict[str, str]) -> None:
-    print("[KANTO AUTO] >", " ".join(argv[1:]), flush=True)
-    subprocess.run(argv, cwd=project, env=env, check=True)
+    """Stream subprocess output to both launcher and a persistent log.
+
+    A failing child script previously surfaced only exit code 1. Its actual
+    cause (source 403, missing assets, old maps, etc.) must be diagnosable.
+    """
+    log_path = project / LOG_FILE
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    command = " ".join(argv[1:])
+    print("[KANTO AUTO] >", command, flush=True)
+    with log_path.open("a", encoding="utf-8") as log:
+        log.write("\\n=== " + datetime.now(timezone.utc).isoformat() + " " + command + " ===\\n")
+        log.flush()
+        tail = []
+        with subprocess.Popen(argv, cwd=project, env=env, stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT, text=True, encoding="utf-8",
+                              errors="replace", bufsize=1) as process:
+            for line in process.stdout:
+                print(line, end="", flush=True)
+                log.write(line)
+                log.flush()
+                if line.strip():
+                    tail.append(line.strip())
+                    tail = tail[-5:]
+            returncode = process.wait()
+        if returncode:
+            detail = " | ".join(tail[-2:])
+            raise RuntimeError(
+                f"Etapa falhou (codigo {returncode}): {detail}. "
+                f"Log: {log_path}"
+            )
 
 
 def integrate(project: Path = ROOT, game: Path | None = None,
@@ -64,9 +117,11 @@ def integrate(project: Path = ROOT, game: Path | None = None,
     game = Path(game if game is not None else project / "game").resolve()
     # Both installer and source bootstrap assume the project's own game/.
     if game != (project / "game").resolve():
-        return {"status": "skipped_foreign_path", "changed": False}
+        return _persist(project, {"status": "skipped_foreign_path", "changed": False,
+                                  "reason": "Instalacao fora da pasta gerenciada."})
     if not (game / "Game.exe").is_file() or not (game / "PBS/pokemon.txt").is_file():
-        return {"status": "skipped_no_game", "changed": False}
+        return _persist(project, {"status": "skipped_no_game", "changed": False,
+                                  "reason": "Base Decades incompleta."})
 
     run = run or _default_run
     env = {**os.environ, "BLUE_GAME_DIR": str(game), "PYTHONUTF8": "1"}
@@ -78,16 +133,24 @@ def integrate(project: Path = ROOT, game: Path | None = None,
     if state == "unverified":
         try:
             invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
-            # New releases also refresh Kanto's OWN Ruby runtime, but only
-            # when its current SHA-256 matches the manifest of the old import.
-            # The runtime updater never replaces maps, PBS, saves or user edits.
-            invoke(KANTO_IMPORTER, "--game", str(game), "--sync-runtime", "--apply")
-            return {"status": "already_integrated", "changed": False}
         except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
-            print("[KANTO AUTO] Instalacao antiga/parcial ou verificacao falhou:", err, flush=True)
-            print("[KANTO AUTO] Nao sobrescrevi mapas nem saves. Consulte "
-                  "docs/KANTO_INTEGRACAO_DECADES.md para migracao segura.", flush=True)
-            return {"status": "manual_migration_required", "changed": False}
+            reason = _failure("Verificacao de Kanto existente", err)
+            print("[KANTO AUTO]", reason, flush=True)
+            print("[KANTO AUTO] Nao sobrescrevi mapas nem saves. O instalador "
+                  "nao fara migracao de MapIDs automaticamente.", flush=True)
+            return _persist(project, {"status": "manual_migration_required",
+                                      "changed": False, "reason": reason})
+        try:
+            invoke(KANTO_IMPORTER, "--game", str(game), "--sync-runtime", "--apply")
+        except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
+            # An optional script patch is NOT proof that the map installation
+            # failed. Keep the already-verified Kanto available as-is, and
+            # never clobber a hand-edited runtime.
+            reason = _failure("Atualizacao opcional do plugin Kanto", err)
+            print("[KANTO AUTO]", reason, flush=True)
+            return _persist(project, {"status": "already_integrated_runtime_preserved",
+                                      "changed": False, "reason": reason})
+        return _persist(project, {"status": "already_integrated", "changed": False})
 
     try:
         print("[KANTO AUTO] Preparando os mapas verificados de Kanto "
@@ -99,18 +162,20 @@ def integrate(project: Path = ROOT, game: Path | None = None,
         # checks all map IDs, and atomically commits files into game/.
         invoke(KANTO_IMPORTER, "--game", str(game), "--apply")
         invoke(KANTO_IMPORTER, "--game", str(game), "--verify-installed")
-        print("[KANTO AUTO] Kanto integrado. A compilacao nativa ainda sera "
-              "conferida ao abrir Game.exe.", flush=True)
-        return {"status": "integrated", "changed": True}
+        print("[KANTO AUTO] Kanto integrado. O motor ainda precisa compilar PBS.",
+              flush=True)
+        return _persist(project, {"status": "integrated", "changed": True})
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as err:
-        print("[KANTO AUTO] Nao foi possivel concluir Kanto:", err, flush=True)
-        print("[KANTO AUTO] Decades continua disponivel. O instalador "
-              "nao removeu saves nem forçou a migracao de mapas.", flush=True)
-        return {"status": "kanto_unavailable", "changed": False}
+        reason = _failure("Download/montagem/instalacao de Kanto", err)
+        print("[KANTO AUTO]", reason, flush=True)
+        print("[KANTO AUTO] Decades permanece intacto; NAO e correto dizer "
+              "que a instalacao regional terminou.", flush=True)
+        return _persist(project, {"status": "kanto_unavailable", "changed": False,
+                                  "reason": reason})
 
 
 if __name__ == "__main__":
     import json
     result = integrate()
     print(json.dumps(result, ensure_ascii=False))
-    # No failure exit: missing third-party Kanto assets must not block Decades.
+    raise SystemExit(0 if result["ready"] else 2)
