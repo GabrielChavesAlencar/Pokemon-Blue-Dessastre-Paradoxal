@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5bceb967ba3840fb3b108254c930e4a3d6a7b7b3",
+      "date": "2026-11-15T17:34:15-03:00",
+      "title": "fix(site): explicar que Android multirregional ainda exige testes em aparelho real",
+      "category": "Correções"
+    },
+    {
+      "sha": "d1e5908e1fe5d5b544761b759df9a5e233c02e30",
+      "date": "2026-11-15T17:34:12-03:00",
+      "title": "fix(android): corrigir sintaxe da validacao do pacote multirregional",
+      "category": "Correções"
+    },
+    {
       "sha": "dc25880d15ed22929703a42a2c6029c25ae80702",
       "date": "2026-11-15T17:32:59-03:00",
       "title": "test(site): impedir links falsos e buscar ZIP Android conjunto em releases reais",
