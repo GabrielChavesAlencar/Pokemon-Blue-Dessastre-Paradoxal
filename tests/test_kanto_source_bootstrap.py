@@ -42,6 +42,14 @@ class KantoSourceBootstrapTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "inseguro"):
             ensure_source.selected_members("\n".join(names))
 
+    def test_both_author_drive_urls_refer_to_same_pinned_archive(self):
+        self.assertIn("id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI", ensure_source.SOURCE_URL)
+        self.assertIn("id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI",
+                      ensure_source.SOURCE_FALLBACK)
+        self.assertTrue(ensure_source.SOURCE_URL.startswith("https://"))
+        self.assertTrue(ensure_source.SOURCE_FALLBACK.startswith("https://"))
+        self.assertNotEqual(ensure_source.SOURCE_URL, ensure_source.SOURCE_FALLBACK)
+
     def test_existing_archive_with_wrong_hash_is_not_overwritten(self):
         with tempfile.TemporaryDirectory() as temp:
             archive = Path(temp) / "FRLG.rar"
