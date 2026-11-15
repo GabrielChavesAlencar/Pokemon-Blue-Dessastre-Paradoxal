@@ -148,8 +148,7 @@ module BlueRegionTravel
 
   def self.perform(state, key, plan = nil)
     # Validate again at the final mutating boundary, not only in travel().
-    raise "Fale com o NPC na cidade inicial para viajar." unless
-      @npc_event_context && at_departure_town?(state)
+    raise "Fale com o NPC na cidade inicial para viajar." unless @npc_event_context && at_departure_town?(state)
     raise "Viagem indisponível" unless available?(state) && destination(state, key)
     status, reservations = preview(state, key)
     raise message_for(status) unless status == :ok
