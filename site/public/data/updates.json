@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6917371e3c6799aa8701c8457138be2941e025f3",
+      "date": "2026-11-15T13:42:44-03:00",
+      "title": "fix(travel): chegar a Cherryhill sem reiniciar introducao/menus Decades e rejeitar ponto antigo Map001",
+      "category": "Correções"
+    },
+    {
       "sha": "e72e2382cb9e6c04000017759c72081ea63d8e07",
       "date": "2026-11-15T13:26:57-03:00",
       "title": "docs(kanto Gary): registrar causa confirmada Digest::SHA256 e correcao no audio Blue Music",
