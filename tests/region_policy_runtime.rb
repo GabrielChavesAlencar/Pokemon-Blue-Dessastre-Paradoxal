@@ -15,6 +15,7 @@ module BlueBattleOptions
 end
 module BlueRegionStart
   def self.kanto_spawn; [300,28,14]; end
+  def self.kanto_integrated?; true; end
 end
 module GameData
   module Species
