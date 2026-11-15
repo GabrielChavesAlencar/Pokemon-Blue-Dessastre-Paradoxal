@@ -311,7 +311,7 @@ def sync_runtime(game, commit=False):
     # divergent marker. This operation does not touch maps or saves.
     ready_path = game / READY_GATE
     ready_text = (f"BLUE_KANTO_READY_V1,{verified['maps']},"
-                  f"{verified['kanto_start'][0]}\\n").encode("ascii")
+                  f"{verified['kanto_start'][0]}\n").encode("ascii")
     if ready_path.is_symlink():
         raise ValueError("Kanto ready gate is a symlink.")
     if ready_path.exists():
