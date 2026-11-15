@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0b4cd310e9a124fcc48dcbbad65e6199635f7939",
+      "date": "2026-11-15T18:43:51-03:00",
+      "title": "fix(android): garantir RegionStart.rb corrigido dentro do cache compilado do JoiPlay",
+      "category": "Correções"
+    },
+    {
+      "sha": "3241cd49a1b9ff690884c2c3763f641c259e5664",
+      "date": "2026-11-15T18:43:36-03:00",
+      "title": "ci(android): autenticar busca da ultima release para publicar patch incremental",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ec7169125e29907c75be969344fe9f1d8a2c0c87",
       "date": "2026-11-15T18:40:00-03:00",
       "title": "docs(android): corrigir NameError de JSON e instruir patch via Termux sem reinstalar",
