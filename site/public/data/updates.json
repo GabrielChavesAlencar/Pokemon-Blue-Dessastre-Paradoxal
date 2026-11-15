@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "af0c4947cb006b26cc680b0ea33bea19d98c459c",
+      "date": "2026-11-15T18:46:54-03:00",
+      "title": "fix(android): incluir correcao New Game sem JSON na release JoiPlay compilada",
+      "category": "Correções"
+    },
+    {
+      "sha": "61c141f2044085f0817e81457332f3d6887946d3",
+      "date": "2026-11-15T18:46:40-03:00",
+      "title": "ci(android): descartar builds multirregionais antigas e publicar so a revisao nova",
+      "category": "Novidades"
+    },
+    {
       "sha": "c46b86542198fd3418574a755bf29dcc781cd8c5",
       "date": "2026-11-15T18:46:18-03:00",
       "title": "ci(android): patch direto da primeira release com crash JSON para atualizar sem 1.4 GB",
