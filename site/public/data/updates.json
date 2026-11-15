@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fee0b8e54a980dfbd818ba4d75c1725efee275df",
+      "date": "2026-11-15T16:49:09-03:00",
+      "title": "ci(hoenn): validar downloader público fixado e instalação automática",
+      "category": "Melhorias"
+    },
+    {
       "sha": "21ae3de9738dd846488107f5b0ae23395c058c3b",
       "date": "2026-11-15T16:48:46-03:00",
       "title": "test(hoenn): baixar fonte fixada automaticamente e rejeitar blobs alterados",
