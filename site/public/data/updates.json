@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3a34383dd3324666b7ccbe2def464ad3e18ad9c8",
+      "date": "2026-11-15T11:08:11-03:00",
+      "title": "test(site): validar orientacao de Kanto automatico no instalador de Historia",
+      "category": "Testes"
+    },
+    {
       "sha": "8cd0528b06b3095aee4a8a298286c9081e49b00f",
       "date": "2026-11-15T11:07:56-03:00",
       "title": "fix(site): manter download apenas EXE sem instruir uso de BAT",
