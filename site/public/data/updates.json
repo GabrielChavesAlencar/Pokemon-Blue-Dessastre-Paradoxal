@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bffc66afb9e065d2f512502cb1c870ca23699c8a",
+      "date": "2026-11-15T10:48:39-03:00",
+      "title": "test(regions): fixture segura para validar viagem Kanto-Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "73835d3e5ddaafe7f234d1ec711daf27007fc94d",
       "date": "2026-11-15T10:47:24-03:00",
       "title": "test(regions): guardar ponto inicial real de Decades no save que comeca em Kanto",
