@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9f7a293f269391156ffeaad54646eccb5435468d",
+      "date": "2026-11-15T15:45:49-03:00",
+      "title": "ci(regions): validar blackout local, migração e regressão Kanto",
+      "category": "Melhorias"
+    },
+    {
       "sha": "42ef8065c4441bd21b981acebeaba611b5b2bed0",
       "date": "2026-11-15T15:45:25-03:00",
       "title": "test(regions): derrota após troca de região volta ao Centro local sem duplicar cura",
