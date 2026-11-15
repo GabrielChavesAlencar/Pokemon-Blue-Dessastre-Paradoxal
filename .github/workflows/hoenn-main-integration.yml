@@ -41,4 +41,4 @@ jobs:
         run: |
           ruby -I . tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
           ruby -I . tests/title_kanto_runtime.rb scripts/battle_polish/TitleKanto.rb
-          ruby -I . tests/region_travel_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+          ruby -I . tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
