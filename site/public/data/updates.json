@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fee37822936e4d2978e1ad00c98fd7283de81b8e",
+      "date": "2026-11-15T12:50:24-03:00",
+      "title": "docs(kanto): detalhar correcao do EventScriptError na primeira luta Gary e QA no Windows",
+      "category": "Correções"
+    },
+    {
       "sha": "62c83cfa5879b4ce769e6c4d9407d73096b961f7",
       "date": "2026-11-15T12:49:19-03:00",
       "title": "ci(kanto): testar Gary nos tres iniciais, recuperacao PBS e compilador do atualizador",
