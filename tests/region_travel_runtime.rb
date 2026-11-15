@@ -301,18 +301,33 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Kanto HMs/key items leaked through the shared item PC")
     check($PokemonGlobal.blue_regions["region_key_items"]["KANTO"]["items"].length==2,
           "Kanto key items and HMs were not backed up in the regional save")
+    # Bag pocket full during travel must reject BEFORE altering the save,
+    # trainer party, item PC or either region's inventory.
+    full_before=Marshal.dump([$PokemonGlobal.blue_regions,$bag.pockets,
+                              $bag.registered_items,$PokemonGlobal.pcItemStorage.items])
+    $bag.instance_variable_set(:@capacity,0)
+    check(BlueRegionTravel.preview($PokemonGlobal.blue_regions,"KANTO")[0]==:bag,
+          "Full destination key-item/HM pocket was not detected")
+    check(!BlueRegionTravel.travel("KANTO",true),
+          "Region travel ignored the full Key Item/HM pocket")
+    check(Marshal.dump([$PokemonGlobal.blue_regions,$bag.pockets,
+                        $bag.registered_items,$PokemonGlobal.pcItemStorage.items])==full_before,
+          "Bag capacity error corrupted regional inventory or save")
+    $bag.instance_variable_set(:@capacity,16)
     $bag.add(:POKEFLUTE)
     $bag.add(:HM03)
+    $bag.add(:HM01) # Distinct HM01 copy collected in Decades too.
     $bag.register(:POKEFLUTE)
     $PokemonGlobal.pcItemStorage.add(:POKEFLUTE)
     $PokemonGlobal.pcItemStorage.add(:HM03)
+    $PokemonGlobal.pcItemStorage.add(:HM01)
     # The same save must round-trip to Kanto and back before the legacy
     # scenario below intentionally resets regional state to nil.
     check(BlueRegionTravel.travel("KANTO",true),
           "Original Kanto save could not revisit its own region")
-    check($bag.has?(:OAKSPARCEL) && $bag.has?(:HM01) &&
+    check($bag.has?(:OAKSPARCEL) && $bag.quantity(:HM01)==1 &&
           !$bag.has?(:POKEFLUTE) && !$bag.has?(:HM03),
-          "Original Kanto save did not restore Kanto key items/HMs")
+          "Original Kanto save did not restore its ONE independent HM01")
     check($bag.registered_items.include?(:OAKSPARCEL) &&
           !$bag.registered_items.include?(:POKEFLUTE),
           "Regional registered shortcuts did not switch back to Kanto")
@@ -324,12 +339,16 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(BlueRegionTravel.travel("DECADES",true),
           "Original Kanto save could not return to Decades")
     check($bag.has?(:POKEFLUTE) && $bag.has?(:HM03) &&
-          !$bag.has?(:OAKSPARCEL) && !$bag.has?(:HM01),
-          "Original Kanto save did not restore Decades key items/HMs")
+          !$bag.has?(:OAKSPARCEL) && $bag.quantity(:HM01)==1,
+          "Decades' separate copy of HM01 was lost or duplicated")
     check($PokemonGlobal.pcItemStorage.quantity(:POKEFLUTE)==1 &&
           $PokemonGlobal.pcItemStorage.quantity(:HM03)==1 &&
-          $PokemonGlobal.pcItemStorage.quantity(:HM01)==0,
-          "Decades item PC leaked Kanto's stored HM")
+          $PokemonGlobal.pcItemStorage.quantity(:HM01)==1,
+          "Decades item PC did not restore its OWN copy of HM01")
+    # The rest of the legacy fixture starts without regional data. Remove
+    # these test-only extra copies before intentionally resetting the vault.
+    $bag.remove(:HM01)
+    $PokemonGlobal.pcItemStorage.remove(:HM01)
     # Changes made in Decades must survive visits to another region.
     $PokemonGlobal.blue_campaign_mechanics["zmove"]=false
     $PokemonGlobal.blue_regions = nil
