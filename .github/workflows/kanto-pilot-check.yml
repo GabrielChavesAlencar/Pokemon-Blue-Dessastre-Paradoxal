@@ -27,7 +27,7 @@ jobs:
       - name: Preparar Blue e a fonte editável de Kanto
         shell: powershell
         run: |
-          python scripts/install_game.py --apply
+          python scripts/install_game.py --apply --skip-kanto
           if($LASTEXITCODE -ne 0){throw 'Blue installation failed'}
           $ProgressPreference='SilentlyContinue'
           $source=New-Item -ItemType Directory -Force '.blue-work/frlg-source'
