@@ -102,7 +102,8 @@ class MultiRegionPackagingTests(unittest.TestCase):
         releases=[{"tag_name":"battle-hub-legacy","assets":[]},
                   {"tag_name":"android-multiregion-5-abc1234","target_commitish":self.revision,
                    "assets":[{"name":"Blue-Android-Decades-Kanto-Hoenn.zip",
-                              "state":"uploaded","size":1024}]}]
+                              "state":"uploaded","size":1024,
+                              "browser_download_url":"https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/download/android-multiregion-5-abc1234/Blue-Android-Decades-Kanto-Hoenn.zip"}]}]
         with patch("scripts.android.update_client.get_json",return_value=releases):
             result=release_for("multiregion")
         self.assertEqual(result["tag_name"],"android-multiregion-5-abc1234")
