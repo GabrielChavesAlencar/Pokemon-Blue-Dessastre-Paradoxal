@@ -73,6 +73,36 @@ class KantoAutoIntegrationTests(unittest.TestCase):
                          [auto.KANTO_IMPORTER, auto.KANTO_SOURCE_BOOTSTRAP,
                           auto.KANTO_IMPORTER, auto.KANTO_IMPORTER])
 
+    def test_gary_three_variants_request_exactly_one_native_recompile(self):
+        trainers = self.game / "PBS/trainers_kanto.txt"
+        kinds = self.game / "PBS/trainer_types_kanto.txt"
+        trainers.write_text(
+            "[BLUE_KANTO_RIVAL,Blue,11]\\nPokemon = CHARMANDER,5\\n"
+            "[BLUE_KANTO_RIVAL,Blue,12]\\nPokemon = SQUIRTLE,5\\n"
+            "[BLUE_KANTO_RIVAL,Blue,13]\\nPokemon = BULBASAUR,5\\n",
+            encoding="utf8")
+        kinds.write_text("[BLUE_KANTO_RIVAL]\\nName = Rival\\n", encoding="utf8")
+        compiled = self.game / "Data/trainers.dat"
+        compiled.write_bytes(b"old synthetic Decades data")
+        first = auto.ensure_rival_compilation(self.project, self.game)
+        self.assertTrue(first)
+        self.assertEqual(
+            (self.game / "Data/blue-compile-request.txt").read_text("ascii"),
+            "compile")
+        sig = self.project / auto.RIVAL_COMPILER_STAMP
+        self.assertEqual(len(sig.read_text("ascii").strip()), 64)
+        # The native game recompiled after first launch: no second request.
+        import os
+        from time import time
+        os.utime(compiled, (time() + 100, time() + 100))
+        (self.game / "Data/blue-compile-request.txt").unlink()
+        self.assertFalse(auto.ensure_rival_compilation(self.project, self.game))
+        self.assertFalse((self.game / "Data/blue-compile-request.txt").exists())
+        trainers.write_text(trainers.read_text("utf8") + "\\n# new source revision",
+                            encoding="utf8")
+        self.assertTrue(auto.ensure_rival_compilation(self.project, self.game))
+        self.assertEqual(compiled.read_bytes(), b"old synthetic Decades data")
+
     def test_already_installed_only_verifies_and_never_reinstalls(self):
         (self.game / auto.KANTO_MARKER).write_text("BLUE_KANTO_START_V1,KANTO,300,25,7\n")
         result = auto.integrate(self.project, self.game, run=self.run)
