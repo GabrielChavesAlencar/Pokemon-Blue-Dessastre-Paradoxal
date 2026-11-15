@@ -4,6 +4,7 @@ module BlueRegionStart
   MARKER = "Data/blue-kanto-start.txt".freeze
   JOHTO_MARKER = "Data/blue-johto-start.txt".freeze
   JOHTO_INSTALL = "Data/blue-johto-install.json".freeze
+  KANTO_INSTALL = "Data/blue-kanto-install.json".freeze
   def self.kanto_spawn
     return nil unless File.file?(MARKER)
     # Created only by install_kanto.py after committing an integrated map set.
@@ -105,6 +106,50 @@ module BlueRegionStart
     proof["npc_point"]
   end
 
+  # Kanto must be genuinely merged into the MAIN installation before its
+  # New Game option can start within the Decades executable. A standalone
+  # "Kanto pilot.json" or a stray start marker is never sufficient.
+  def self.kanto_integrated?
+    return false if File.file?("Kanto pilot.json") || File.file?("Johto pilot.json") ||
+                    File.file?("Hoenn pilot.json") || File.file?("Sinnoh pilot.json")
+    spawn = kanto_spawn
+    return false unless spawn && File.file?(KANTO_INSTALL) && !File.symlink?(KANTO_INSTALL)
+    required = [
+      "Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
+      "PBS/encounters_kanto.txt", "PBS/trainers_kanto.txt",
+      "PBS/trainer_types_kanto.txt", "PBS/map_metadata_kanto.txt",
+      "PBS/map_connections_kanto.txt",
+      "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
+    ]
+    return false unless required.all? { |name| File.file?(name) }
+    begin
+      require "json" unless defined?(JSON)
+    rescue LoadError
+      return false
+    end
+    info = JSON.parse(File.read(KANTO_INSTALL))
+    return false unless info.is_a?(Hash) && info["schema"] == 1 &&
+                        info["source"] == "Essentials FRLG 21.1" &&
+                        info["maps"].is_a?(Hash) && info["maps"].length >= 13
+    maps = info["maps"]
+    return false unless maps["7"] == spawn[0] && maps["5"].is_a?(Integer) &&
+                        maps.values.uniq.length == maps.length &&
+                        pbRgssExists?(sprintf("Data/Map%03d.rxdata", maps["5"]))
+    true
+  rescue StandardError
+    false
+  end
+
+  # This is an in-memory request, not a save flag: the game only commits the
+  # chosen starting region after the native new-game values are initialized.
+  def self.request_initial(region)
+    return false unless ["DECADES", "KANTO"].include?(region)
+    return false if region == "KANTO" && !kanto_integrated?
+    @requested_initial = region
+    @title_region_chosen = true
+    true
+  end
+
   def self.playable?(region)
     region == "DECADES" ||
       (region == "KANTO" && !kanto_spawn.nil?) ||
@@ -114,10 +159,14 @@ module BlueRegionStart
   def self.choose_initial
     return "KANTO" if File.file?("Kanto pilot.json") && kanto_spawn
     return "JOHTO" if File.file?("Johto pilot.json") && johto_spawn
+    return "KANTO" if @requested_initial == "KANTO" && kanto_integrated?
     "DECADES"
   end
 
   def self.story_spawn
+    # The title screen already asked which region to start in. Never ask
+    # again during the Decades Story Mode introduction.
+    return nil if @title_region_chosen
     return nil unless $game_temp&.begun_new_game && $game_map.map_id == $data_system.start_map_id
     return nil unless BlueRegions.snapshot&.fetch("initial", nil) == "DECADES"
 
@@ -169,13 +218,15 @@ module BlueRegionStart
     end
 
     prepare_regional_story(region)
-    if region == "KANTO" && File.file?("Kanto pilot.json")
-      # A fresh Kanto story starts walking; Mom grants the native Running
-      # Shoes only after Brock on the Pewter -> Route 3 passage. This hook
-      # runs for new games only and never changes existing saves/Decades.
-      $player.has_running_shoes = false if $player.respond_to?(:has_running_shoes=)
-      pbChangePlayer(1)
-      $game_player.refresh_charset
+    if region == "KANTO"
+      # Both integrated Kanto and the isolated pilot start walking. Mom gives
+      # Running Shoes only after the authored Brock / Route 3 scene.
+      # These changes affect only the newly created Kanto save.
+      $player.has_running_shoes = false if $player && $player.respond_to?(:has_running_shoes=)
+      if $game_player
+        pbChangePlayer(1)
+        $game_player.refresh_charset
+      end
       $PokemonGlobal.blue_regions["pilot_profile_pending"] = true
     end
     $data_system.start_map_id, $data_system.start_x, $data_system.start_y = spawn
@@ -195,6 +246,7 @@ module BlueRegionStart
       $data_system.start_map_id, $data_system.start_x, $data_system.start_y = original
     end
     @new_game = false
+    @requested_initial = nil
   end
 
   module NewGame
