@@ -91,3 +91,26 @@ O arquivo da edição conjunta chama-se `Blue-Android-Decades-Kanto-Hoenn.zip`, 
 **Instalação Android:** use JoiPlay + RPG Maker Plugin; extraia o ZIP conjunto em uma **nova pasta**, selecione `Game.exe` e preserve cópias de seus saves antes de testar. A edição compartilhada usa o perfil do Decades, não os perfis isolados. O `ATUALIZAR-ANDROID.py` reconhece `multiregion` e não aplica um patch do Decades puro para apagar mapas ou metadados de Kanto/Hoenn.
 
 **Status de qualidade:** o workflow confirma instalação e compilação em runner Windows, mas não garante jogabilidade no aparelho Android. Testar no JoiPlay em celular real: novo jogo, viagens via NPC Decades ↔ Kanto ↔ Hoenn, salvar/recarregar, Centro Pokémon após derrota, batalhas e cenas com toques. A presença de uma release é prova da geração do ZIP, não prova de todas as histórias e eventos.
+
+
+## 15/11/2026 — Corrigir erro de New Game no JoiPlay (edição integrada)
+
+**Erro reproduzido no celular:** `[Blue Battle Presentation and Story] RegionStart.rb line 66: NameError uninitialized constant BlueRegionStart::JSON`. O runtime Ruby usado pelo RPG Maker Plugin pode não fornecer a biblioteca `JSON`. O handler de exceção anterior referenciava `JSON::ParserError` diretamente e causava outro `NameError` durante a avaliação do `rescue`.
+
+**Correção:** `RegionStart.rb` verifica a presença de `::JSON.parse` antes de usá-lo e, quando indisponível, consulta o manifesto compacto dos 199 mapas, o registro do instalador e os marcadores finais já verificados de Hoenn. Removidas referências a `JSON::ParserError` em handlers de Hoenn/Johto. Johto permanece fechado se a auditoria não puder ser feita. Os saves, Game.exe e os dados de combate não foram alterados. O teste `tests/region_start_android_no_json_runtime.rb` executa `New Game` sem nenhuma biblioteca JSON/Digest no Ruby simulado.
+
+**Atualização simplificada no celular (sem reinstalação, quando existir patch):**
+
+1. Feche o JoiPlay completamente e copie seus saves para um diretório seguro.
+2. Abra o Termux já configurado com Python e armazenamento. Se ainda não instalou, execute `pkg install python` e `termux-setup-storage` e conceda permissão.
+3. Entre na pasta em que o ZIP **multirregional** foi extraído (o caminho abaixo é apenas um exemplo):
+
+```sh
+cd ~/storage/shared/Download/Pokemon-Blue-Android
+python ATUALIZAR-ANDROID.py --update
+```
+
+4. O atualizador valida o canal `multiregion`, hash, tamanho, versão de origem, arquivos protegidos e faz backups antes de aplicar. Se houver patch direto compatível, baixa apenas as diferenças. **Não** use o atualizador ou pacote `decades` puro nesta pasta.
+5. Reabra o mesmo jogo no JoiPlay e teste **New Game → Decades / Kanto / Hoenn**. Se não existir patch direto, baixe o ZIP da edição integrada mais recente e extraia em pasta nova após copiar os saves. **Nunca** sobrescreva a instalação antiga sem backup.
+
+O workflow `android-multiregion.yml` consulta a última release integrada válida antes de gerar nova versão, tenta produzir um `Blue-Android-Decades-Kanto-Hoenn.patch.zip` e o publica se a atualização for segura e menor que o ZIP completo. O site mostra a release completa; o Termux escolhe o patch compatível automaticamente.
