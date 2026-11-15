@@ -1,6 +1,7 @@
 import {esc,icon,sprite} from './utils.js';
 import {teamPokemon} from './story.js';
 import {regionPicker} from './regions.js';
+import {kantoBalancePage,kantoBalanceNote,kantoBalanceLink} from './kanto-balance.js';
 
 let catalog;
 export async function loadKanto(){
@@ -15,7 +16,8 @@ export async function loadKanto(){
 const pages={
   localizacoes:'Localizações',
   treinadores:'Treinadores',
-  chefes:'Líderes de ginásio'
+  chefes:'Líderes de ginásio',
+  balanceamento:'Balanceamento'
 };
 const methods={
   Land:'Grama',LandDay:'Grama durante o dia',LandNight:'Grama à noite',LandMorning:'Grama pela manhã',
@@ -40,7 +42,7 @@ const displayPokemon=(model,p)=>pokemonFor(model,p.species)?.id && !model.byId.h
 function layout(data,page,title,body,detail=false){
   const header='<header class="article-heading"><span class="eyebrow">KANTO · PILOTO</span><h1>'+esc(title)+'</h1>'+
     '<p>Catálogo experimental de '+data.locations.length+' locais e '+data.trainers.length+
-    ' treinadores de Kanto. Mapas, batalhas e encontros vêm da fonte Essentials FRLG; QA manual Windows/JoiPlay e eventos de história ainda estão pendentes.</p></header>';
+    ' treinadores de Kanto. Mapas, batalhas e encontros vêm da fonte Essentials FRLG; o balanceamento do Blue é aplicado durante a partida. QA manual Windows/JoiPlay e eventos de história ainda estão pendentes.</p></header>';
   const tabs='<nav class="region-picker" aria-label="Catálogo de Kanto">'+Object.entries(pages).map(([key,name])=>
     '<a class="text-link" href="/'+key+'?regiao=kanto"'+(key===page?' aria-current="page"':'')+'>'+name+'</a>').join('')+'</nav>';
   const source='<p class="data-note">Fonte: <a href="'+esc(data.source.url)+'" target="_blank" rel="noopener noreferrer">'+
@@ -78,10 +80,12 @@ function trainerCard(model,data,trainer){
 }
 
 export function kantoIndex(model,data,page){
-  if(page==='localizacoes') return layout(data,page,'Localizações de Kanto',cards(data.locations,areaCard));
+  if(page==='balanceamento') return layout(data,page,'Balanceamento de Kanto',kantoBalancePage());
+  if(page==='localizacoes') return layout(data,page,'Localizações de Kanto',kantoBalanceNote('wild')+cards(data.locations,areaCard));
   const leaders=page==='chefes';
   const trainers=data.trainers.filter(row=>row.leader===leaders);
-  return layout(data,page,leaders?'Líderes de Kanto':'Treinadores de Kanto',(leaders?'<p class="data-note">'+link('/liga?regiao=kanto','Ver Elite Four, campeões e revanches mais fortes')+'</p>':'')+cards(trainers,row=>trainerCard(model,data,row)));
+  const summary=kantoBalanceNote(leaders?'boss':'trainer');
+  return layout(data,page,leaders?'Líderes de Kanto':'Treinadores de Kanto',summary+(leaders?'<p class="data-note">'+link('/liga?regiao=kanto','Ver Elite Four, campeão e revanches mais fortes')+'</p>':'')+cards(trainers,row=>trainerCard(model,data,row)));
 }
 
 function encounterTable(model,method){
@@ -93,14 +97,14 @@ function encounterTable(model,method){
     return '<tr><td>'+(pokemon?'<a href="'+target+'">'+name+'</a>':name)+'</td><td>'+esc(level)+'</td><td>'+esc(slot.chance)+'%</td></tr>';
   }).join('');
   return '<section class="panel kanto-encounters"><h3>'+esc(methods[method.id]||method.id)+'</h3>'+
-    '<table><thead><tr><th scope="col">Pokémon</th><th scope="col">Nível</th><th scope="col">Chance</th></tr></thead>'+
+    '<table><thead><tr><th scope="col">Pokémon base</th><th scope="col">Faixa do PBS</th><th scope="col">Chance do slot</th></tr></thead>'+
     '<tbody>'+slots+'</tbody></table></section>';
 }
 
 export function kantoLocation(model,data,area){
   const trainers=area.trainers.map(id=>data.trainers.find(row=>row.id===id));
   const encounters=area.methods.length
-    ? '<section class="section"><h2>Encontros</h2><div class="region-entries">'+area.methods.map(method=>encounterTable(model,method)).join('')+'</div></section>'
+    ? '<section class="section"><h2>Encontros</h2>'+kantoBalanceNote('wild')+'<div class="region-entries">'+area.methods.map(method=>encounterTable(model,method)).join('')+'</div></section>'
     : '<p class="data-note">'+(area.status==='preview'
       ? 'Somente cenário: eventos, treinadores e encontros ainda não estão liberados.'
       : area.status==='encounter_review'
@@ -119,8 +123,9 @@ export function kantoTrainer(model,data,trainer,details){
     return '<section class="section"><h2>'+esc(title)+'</h2><div class="story-team-grid">'+
       variant.team.map(pokemon=>teamPokemon({...displayPokemon(model,pokemon),dynamicLevel:true},model,details)).join('')+'</div></section>';
   }).join('');
+  const rule=trainer.leader?'boss':(/Rival|Campeão|Elite|Chefe/i.test(trainer.role)?'league':'trainer');
   return layout(data,trainer.leader?'chefes':'treinadores',trainer.name,
-    '<p>'+esc(trainer.role)+' · '+link(locationLink(area),area.name)+'</p>'+
+    '<p>'+esc(trainer.role)+' · '+link(locationLink(area),area.name)+'</p>'+kantoBalanceNote(rule)+
     (trainer.leader&&KANTO_GYM_REWARDS[trainer.name]
       ? '<p>Recompensa: '+esc(KANTO_GYM_REWARDS[trainer.name])+' Badge (somente após vitória)</p>'
       : '')+(trainer.leader?'<p class="data-note">'+link('/liga?regiao=kanto','Consultar times mais fortes documentados')+'</p>':'')+variants,true);
