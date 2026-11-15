@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e72e2382cb9e6c04000017759c72081ea63d8e07",
+      "date": "2026-11-15T13:26:57-03:00",
+      "title": "docs(kanto Gary): registrar causa confirmada Digest::SHA256 e correcao no audio Blue Music",
+      "category": "Correções"
+    },
+    {
       "sha": "30bf1b825c52b026e124e55745ac2fb11feb9598",
       "date": "2026-11-15T13:26:19-03:00",
       "title": "ci(kanto): incluir raiz no PYTHONPATH e testar manifesto de audio sem SHA256 no runtime",
