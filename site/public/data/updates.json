@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f02633a9311287fb2bd56f28de7073090ff4f68e",
+      "date": "2026-11-15T10:45:53-03:00",
+      "title": "feat(travel): permitir Kanto campeao ir a Decades no mesmo save com ponto nativo verificado",
+      "category": "Novidades"
+    },
+    {
       "sha": "7fb3ec1e865c4679f325862eeaf5e8eeddc57e57",
       "date": "2026-11-15T10:45:29-03:00",
       "title": "feat(regions): registrar inicio nativo de Decades para viagem apos Liga Kanto",
