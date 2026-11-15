@@ -93,12 +93,13 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pacote Android incompleto.'}
           python scripts/android/package.py --verify --revision '${{ github.sha }}' --channel multiregion --output dist/Blue-Android-Decades-Kanto-Hoenn.zip
           if($LASTEXITCODE -ne 0){throw 'Verificacao do ZIP falhou.'}
-          # Reuse the last verified multiregional manifest: if runtime EXE
-          # and JoiPlay save-profile files are unchanged, publish a small delta
-          # instead of making Android users re-download ~1.4 GB.
+          # This bugfix is for players who downloaded the FIRST combined
+          # Android ZIP (android-multiregion-3). Derive its one-hop patch from
+          # the oldest published integrated baseline, not a newer intermediate
+          # release, so the old Termux updater can apply it directly.
           $previous = @(gh release list --limit 100 --json tagName,isDraft,publishedAt | ConvertFrom-Json |
             Where-Object { -not $_.isDraft -and $_.tagName -match '^android-multiregion-' } |
-            Sort-Object publishedAt -Descending | Select-Object -First 1)
+            Sort-Object publishedAt | Select-Object -First 1)
           $args=@('--channel','multiregion','--full-zip','dist/Blue-Android-Decades-Kanto-Hoenn.zip')
           if($previous.Count -gt 0){
             $old=Join-Path 'dist' 'previous'
