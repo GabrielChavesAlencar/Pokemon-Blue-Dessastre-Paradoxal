@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ec81e9042767650115660615bba8496edc8b4f9d",
+      "date": "2026-11-15T17:38:32-03:00",
+      "title": "test(android): incluir URL de release realista no mock do canal conjunto",
+      "category": "Testes"
+    },
+    {
       "sha": "7893358efcc6548ff0d675f432d217cd9e1d39eb",
       "date": "2026-11-15T17:38:07-03:00",
       "title": "fix(android): resolver game/ absoluto antes da verificacao de Hoenn",
