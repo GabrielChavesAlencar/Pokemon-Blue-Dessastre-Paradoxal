@@ -48,7 +48,7 @@ Se `game/Data/blue-kanto-start.txt` já existe, o atalho **não recria nem sobre
 5. Os Tênis de Corrida são entregues pela mãe **somente após Brock, na passagem para a Rota 3**, uma vez por save regional; não são dados ao começar.
 6. O progresso de Kanto fica em `$PokemonGlobal.blue_regions`. **A viagem deixou de depender da Liga:** o agente em **Pallet Town** leva a **Decades**, e o agente em **Cherryhill City** permite voltar a Kanto, mantendo o mesmo save. O NPC de **New Bark Town** fica disponível quando Johto estiver realmente integrada ao jogo principal; pilotos separados não são destinos. As Ligas continuam valendo para conquistas, balanceamento e pós-jogo. Veja [VIAGEM_REGIONAL_LIVRE_NPC.md](VIAGEM_REGIONAL_LIVRE_NPC.md).
 7. A regra dos especiais é **oito insígnias locais para a região atual**, não oito esmeraldas globais. Os especiais bloqueados precisam ser depositados com reserva segura de Box ao viajar.
-8. Preservar equipe/PC/inventário/saves e a campanha de Decades; antes de disponibilizar uma distribuição integrada, repetir o QA em uma instalação descartável e em save antigo.
+8. Preservar equipe, Boxes, itens comuns, TMs, dinheiro, saves e campanha de Decades. **Itens-chave e HMs são locais de cada região:** ao viajar, ficam guardados no registro de origem (inclusive os depositados no PC de itens), e voltam com seus atalhos quando o jogador regressa. HMs aprendidos em Pokémon só podem funcionar fora da batalha com o HM e as autorizações locais. Antes de distribuir, repetir o QA em uma instalação descartável e em save antigo. Ver [VIAGEM_REGIONAL_LIVRE_NPC.md](VIAGEM_REGIONAL_LIVRE_NPC.md).
 
 ## Verificação técnica reproduzível
 
