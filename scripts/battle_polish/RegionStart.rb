@@ -170,6 +170,10 @@ module BlueRegionStart
 
     prepare_regional_story(region)
     if region == "KANTO" && File.file?("Kanto pilot.json")
+      # A fresh Kanto story starts walking; Mom grants the native Running
+      # Shoes only after Brock on the Pewter -> Route 3 passage. This hook
+      # runs for new games only and never changes existing saves/Decades.
+      $player.has_running_shoes = false if $player.respond_to?(:has_running_shoes=)
       pbChangePlayer(1)
       $game_player.refresh_charset
       $PokemonGlobal.blue_regions["pilot_profile_pending"] = true
