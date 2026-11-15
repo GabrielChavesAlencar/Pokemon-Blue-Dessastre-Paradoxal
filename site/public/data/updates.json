@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6510a8a88495153a74eb575156df8805d76d36d7",
+      "date": "2026-11-15T18:36:27-03:00",
+      "title": "fix(android): Novo Jogo sem JSON no JoiPlay usa manifesto ASCII verificado de Hoenn",
+      "category": "Novidades"
+    },
+    {
       "sha": "97978f05206902530e5bf33f5d988293ce8c5e00",
       "date": "2026-11-15T17:39:05-03:00",
       "title": "ci(android): regressão rápida da versão conjunta e links de download antes de publicar",
