@@ -137,4 +137,15 @@ check(upgraded.any? { |s,l| s==:RATTATA && l==6 },"Original land slot species lo
 enc.species=:EEVEE
 check(Array.new(30){enc.choose_wild_pokemon(:Land)}.all?{|s,l|s==:EEVEE},
       "Branching Eevee corrupted in wild encounters")
-puts "PASS: native evolution rules, 3-stage families, trainer grace, stone/trade/happiness, wild mixture, special forms"
+# The Habitat Dex must use the same availability predicate as encounters,
+# while not flagging unseen species as caught (handled separately by entries).
+module BlueStory
+  def self.cap;nil;end
+end
+load File.expand_path(ARGV.fetch(1))
+check(BlueHabitat.species([[55,:RATTATA,3,6]])==[:RATTATA,:RATICATE],
+      "Habitat Dex did not list both forms at cap30")
+$player.party[0].level=10
+check(BlueHabitat.species([[55,:RATTATA,3,6]])==[:RATTATA],
+      "Habitat Dex showed an unavailable evolved species before cap")
+puts "PASS: native evolution rules, 3-stage families, trainer grace, stone/trade/happiness, wild mixture, Habitat Dex"
