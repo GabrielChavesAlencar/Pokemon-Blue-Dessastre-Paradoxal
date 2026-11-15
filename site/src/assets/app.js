@@ -62,6 +62,10 @@ async function render(scroll=false){
       const bindings=await loadTrainerBindings();if(id!==renderId)return;
       main.innerHTML=pendingPage(pending,(url.searchParams.get('regiao')||'kanto').toUpperCase(),bindings);
       setPage('Pendências das regiões');
+    }else if(route==='balanceamento'){
+      const data=await loadKanto();if(id!==renderId)return;
+      main.innerHTML=kantoIndex(model,data,'balanceamento');
+      setPage('Balanceamento de Kanto');
     }else if(route==='liga'){
       const db=await loadStrongestTeams();if(id!==renderId)return;
       if(parts[1]){
