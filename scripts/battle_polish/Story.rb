@@ -150,7 +150,18 @@ module BlueStory
         if @blue_story_cap
           trainers=trainers.map do |t|
             copy=t.clone
-            copy.party=t.party.map { |p| BlueStory.adjust(p,@blue_story_cap) }
+            copy.party=t.party.map do |p|
+              # A legitimate, level-appropriate evolution may exceed the
+              # current 350/450/540 BST tier, but only within its original
+              # family. Keep caps for all other strong/author-made species.
+              if defined?(BlueEvolutionScaling) &&
+                 defined?(BlueCampaign) && !BlueCampaign.boss?(t) &&
+                 BlueEvolutionScaling.legitimate_trainer_form?(p)
+                Marshal.load(Marshal.dump(p))
+              else
+                BlueStory.adjust(p,@blue_story_cap)
+              end
+            end
             copy
           end
           args[4]=trainers;args[2]=trainers.flat_map(&:party)
