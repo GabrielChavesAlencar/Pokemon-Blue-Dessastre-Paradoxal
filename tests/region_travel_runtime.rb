@@ -122,6 +122,27 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $player.party=[normal,special]
     before=$player.party.dup
 
+    # A new save which STARTED in Kanto has no previous Decades position.
+    # Store an actual native start point, but do not unlock travel until the
+    # real Kanto Hall of Fame completes. It must remain the SAME save/PC.
+    kanto_first = BlueRegions.new_state("KANTO")
+    kanto_first["decades_first_arrival"] = [1,5,8,2]
+    check(BlueRegionTravel.destination(kanto_first, "DECADES").nil?,
+          "Kanto first start bypassed its League")
+    kanto_first["leagues"] << "KANTO"
+    check(BlueRegionTravel.destination(kanto_first, "DECADES") == [1,5,8,2],
+          "Kanto champion did not unlock native Decades start")
+    $PokemonGlobal.blue_regions = kanto_first
+    $game_map.map_id = 300
+    $player.party = [normal]
+    check(BlueRegionTravel.travel("DECADES", true), "Kanto champion could not enter Decades")
+    check($PokemonGlobal.blue_regions["initial"] == "KANTO" &&
+          $PokemonGlobal.blue_regions["current"] == "DECADES",
+          "One-save Kanto origin was lost after travel")
+    check($game_map.map_id == 1 && $game_player.x == 5, "Kanto to Decades wrong spawn")
+    $PokemonGlobal.blue_regions = nil
+    $player.party = [normal,special]
+
     # A fresh Kanto save, before its League, must not see the agent.
     check(!BlueRegionTravel.available?(BlueRegions.new_state("KANTO")),
           "Kanto travel agent appeared before a League or prior visit")
