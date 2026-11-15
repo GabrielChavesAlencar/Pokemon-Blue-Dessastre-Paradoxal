@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "63f16c4c910cd4a5a4e79079e6bc7cc7135b7d96",
+      "date": "2026-11-15T20:09:54-03:00",
+      "title": "Keep multiregion release test aligned with required manifest asset",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a4534207779a22c666f83f44a9f528257ea309f5",
       "date": "2026-11-15T20:09:14-03:00",
       "title": "Prevent Android JoiPlay updater downgrade: sort releases by publication and verify commit ancestry",
