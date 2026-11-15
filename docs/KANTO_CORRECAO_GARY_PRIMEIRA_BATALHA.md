@@ -1,6 +1,6 @@
 # Kanto integrado — erro EventScriptError na primeira batalha contra Gary
 
-**Atualizado:** 15/11/2026. **Situação:** correção preventiva de runtime, sincronização do instalador e testes Ruby enviados à `main`; **ainda depende de reprodução no Game.exe real**.
+**Atualizado:** 15/11/2026. **Situação:** o usuário reproduziu novamente a falha usando o Blue-Story.exe do build 986. O aviso genérico confirma uma exceção durante `TrainerBattle.start`, após o carregamento da equipe. A causa raiz **continua não identificada sem `Data/blue-kanto-rival-error.log`**. O runtime passou a exibir `ClasseDaExceção: mensagem` no diálogo; os testes isolados de Gary, blackout e instalador passaram na execução [43734207804](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43734207804), mas a batalha jogável no Game.exe segue **não aprovada**.
 
 ## Sintoma recebido
 
@@ -30,6 +30,10 @@ A chamada de roteiro está em `scripts/regions/KantoPilot.rb`, `BlueKantoPilot.r
 5. Teste os três iniciais em **saves novos separados**; após vencer, Gary não deve desafiar novamente. Ao perder, deve retornar ao último Centro Pokémon e manter o rival como pendente.
 
 ### Se o erro persistir
+
+**Novo teste após o relato do build 986:** abra o Blue-Story.exe para atualizar a `main`, continue o save e acione Gary. A mensagem agora mostrará o **tipo da exceção e seu texto**; uma nova captura da tela já permite investigar. Para diagnóstico completo, use `Win + R` no Windows e abra `%LOCALAPPDATA%\\PokemonBlueDessastreParadoxal\\game\\Data`, caso use o diretório padrão do launcher, e envie `blue-kanto-rival-error.log`. **A instalação não deve apagar saves ou abrir uma campanha nova para esse teste.**
+
+
 
 Anexe o conteúdo do arquivo **`game/Data/blue-kanto-rival-error.log`** após tentar novamente. Se ele não existir, procure **`errorlog.txt`**, geralmente na pasta do jogo ou na pasta de dados/saves do Essentials, e inclua o trecho mais recente com `Exception`, `Message`, `Full script` e `Backtrace`. Não é necessário enviar saves pessoais.
 
