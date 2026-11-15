@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1eebad17c7176e05ae6df77808072cb2e679e57d",
+      "date": "2026-11-15T11:34:06-03:00",
+      "title": "fix(title): orientar instalar Kanto pelo Blue Story sem BAT manual",
+      "category": "Correções"
+    },
+    {
       "sha": "c84ebf8739051ab80b93ce27dde57c31dcb0473e",
       "date": "2026-11-15T11:33:36-03:00",
       "title": "fix(story installer): parar falsa instalacao completa e registrar motivo de Kanto ausente",
