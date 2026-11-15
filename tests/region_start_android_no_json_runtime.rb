@@ -108,6 +108,9 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     Object.const_set(:JSON, Module.new)
     check(BlueRegionStart.kanto_integrated?,
           "Kanto blocked by incomplete JoiPlay JSON constant")
+    ::JSON.define_singleton_method(:parse) { |_raw| nil }
+    check(BlueRegionStart.kanto_integrated?,
+          "Kanto blocked when JoiPlay JSON returns nil")
     ::JSON.define_singleton_method(:parse) { |_raw| raise NoMethodError, "broken JSON" }
     check(BlueRegionStart.kanto_integrated?,
           "Kanto blocked when JoiPlay JSON parser raises")
