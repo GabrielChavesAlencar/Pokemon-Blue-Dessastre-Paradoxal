@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "877b3476bdf77e70382c23cbcdab2ea2f086fd2e",
+      "date": "2026-11-15T16:49:47-03:00",
+      "title": "test(hoenn): simular cache em pasta temporária permitida pelo validador",
+      "category": "Testes"
+    },
+    {
       "sha": "fee0b8e54a980dfbd818ba4d75c1725efee275df",
       "date": "2026-11-15T16:49:09-03:00",
       "title": "ci(hoenn): validar downloader público fixado e instalação automática",
