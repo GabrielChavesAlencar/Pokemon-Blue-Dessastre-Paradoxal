@@ -139,7 +139,12 @@ module BlueCampaign
         trainers=Array(args[4]).map do |trainer|
           copy=trainer.clone
           copy.party=trainer.party.map do |original|
-            pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level;pkmn.calc_stats;pkmn.heal;pkmn
+            pkmn=Marshal.load(Marshal.dump(original));pkmn.level=level;pkmn.calc_stats;pkmn.heal
+            # Adjust species after the final 70% / 90% trainer level.
+            # Authored bosses/League/Champions retain their intended teams.
+            BlueEvolutionScaling.upgrade_trainer!(pkmn) if
+              defined?(BlueEvolutionScaling) && !BlueCampaign.boss?(trainer)
+            pkmn
           end
           copy
         end
