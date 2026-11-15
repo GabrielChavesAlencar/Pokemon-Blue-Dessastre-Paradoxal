@@ -182,9 +182,11 @@ module RPG
   end
 end
 class Game_Event
-  attr_reader :name, :x, :y
-  def initialize(_map_id, event)
-    @name, @x, @y = event.name, event.x, event.y
+  attr_reader :name, :x, :y, :map
+  def initialize(map_id, event, map)
+    raise "Essentials v21.1 requires owner Game_Map" unless
+      map && map.map_id == map_id
+    @name, @x, @y, @map = event.name, event.x, event.y, map
   end
 end
 class MockAgentMap
@@ -200,6 +202,19 @@ end
 class Game_Map < MockAgentMap
   def initialize; super(77); end
   def setup(id); @map_id=id; end
+end
+class Scene_Map
+  attr_reader :rendered_agents
+  def createSpritesets
+    @rendered_agents = $map_factory.maps.flat_map { |map|
+      map.events.values.map(&:name)
+    }
+    :sprites_built
+  end
+  def createSingleSpriteset(index)
+    @rendered_agents = $map_factory.maps[index].events.values.map(&:name)
+    :single_sprite_built
+  end
 end
 
 class PokemonStorageScreen
@@ -530,6 +545,38 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(decades_map.events.size == 1, "Repeated map setup duplicated Decades NPC")
     check(File.binread("Data/Map077.rxdata") == decades_file,
           "Generated NPC modified native Decades map on disk")
+
+    # Real regression: loading an old save already on Cherryhill does not
+    # call Game_Map#setup again. The NPC must exist before sprites are built.
+    $PokemonGlobal.blue_regions = BlueRegions.new_state("DECADES")
+    loaded = MockAgentMap.new(77)
+    $map_factory = Struct.new(:maps).new([loaded])
+    scene = Scene_Map.new
+    check(scene.createSpritesets == :sprites_built &&
+          scene.rendered_agents.include?(BlueRegionTravel::DECADES_AGENT_NAME),
+          "Loaded Cherryhill save did not render its regional travel NPC")
+    check(loaded.events.values.first.map.equal?(loaded),
+          "Generated Game_Event has no owner map (v21.1 constructor)")
+    scene.createSpritesets
+    check(loaded.events.size == 1,
+          "Reloading sprites duplicated the regional travel NPC")
+
+    # Confirm a Decades build with a different native MapInfo ID also puts
+    # the agent into the actual city, not the old hard-coded map 77.
+    MapInfo = Struct.new(:name) unless defined?(MapInfo)
+    $data_mapinfos = Array.new(80)
+    $data_mapinfos[77] = MapInfo.new("Some other location")
+    $data_mapinfos[79] = MapInfo.new("Cherryhill City")
+    File.binwrite("Data/Map079.rxdata", "native verified alternate Cherryhill")
+    check(BlueRegionTravel.decades_city_map_id == 79,
+          "Native Cherryhill map name was ignored after map IDs changed")
+    actual_city = MockAgentMap.new(79)
+    BlueRegionTravel.attach_decades_agent(actual_city)
+    check(actual_city.events.size == 1,
+          "Cherryhill alternative map ID did not get its NPC")
+    check(BlueRegionTravel.at_departure_town?($PokemonGlobal.blue_regions) == false,
+          "Travel allowed from the wrong (old) map ID")
+    $data_mapinfos = nil
 
     # Kanto NPC appears in the true Pallet Town map, without blocking the
     # audited destination tile and without creating a second copy on reload.
