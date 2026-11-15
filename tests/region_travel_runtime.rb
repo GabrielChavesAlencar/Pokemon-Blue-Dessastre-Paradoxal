@@ -2,7 +2,7 @@
 require "tmpdir"
 def check(v, name); raise name unless v; end
 class PokemonGlobalMetadata
-  attr_accessor :blue_regions
+  attr_accessor :blue_regions, :blue_campaign_mechanics
 end
 FakeSpeciesData = Struct.new(:flags, :form)
 class FakePokemon
@@ -64,6 +64,11 @@ module GameData
 end
 module BlueCampaign
   def self.active?; true; end
+  def self.default_mechanics_for(region)
+    value={"tera"=>true,"mega"=>true,"zmove"=>true,"dynamax"=>true}
+    value["dynamax"]=false if region=="DECADES"
+    value
+  end
 end
 module BlueBattleOptions
   def self.battle_area?; false; end
@@ -115,6 +120,11 @@ class MockAgentMap
   def passable?(_x, _y, _d); true; end
 end
 
+class Game_Map < MockAgentMap
+  def initialize; super(77); end
+  def setup(id); @map_id=id; end
+end
+
 class PokemonStorageScreen
   def initialize(storage); @storage=storage; end
   def pbWithdraw(selected, heldpoke); :withdrawn; end
@@ -146,12 +156,14 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     File.write("Data/blue-kanto-install.json", '{"maps":{"5":300}}')
     File.write("Data/Map300.rxdata", "dummy")
     File.write("Data/Map077.rxdata", "native Decades opening town")
+    File.write("Data/Map001.rxdata", "native Decades INTRO; never a regional arrival")
     $game_map=FakeGameMap.new
     $game_player=FakePlayerSprite.new
     $game_temp=FakeTemp.new
     $scene=FakeScene.new
     $PokemonStorage=FakeStorage.new
     $PokemonGlobal=PokemonGlobalMetadata.new
+    $PokemonGlobal.blue_campaign_mechanics=BlueCampaign.default_mechanics_for("KANTO")
     $player=FakePlayer.new
     $game_switches=Hash.new(false)
     $player.badges[18]=true
@@ -172,10 +184,15 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     # Its authentic native Decades destination works before Hall of Fame,
     # keeping the same party, PC and save.
     kanto_first = BlueRegions.new_state("KANTO")
-    # Verified native Decades town coordinates in this synthetic fixture.
-    kanto_first["decades_first_arrival"] = [77,5,8,2]
-    check(BlueRegionTravel.destination(kanto_first, "DECADES") == [77,5,8,2],
-          "Kanto traveler must access installed Decades without a League")
+    # Simulate old saves: they stored the native INTRO map, which must NEVER
+    # run again when arriving via the regional transportation NPC.
+    kanto_first["decades_first_arrival"] = [1,5,8,2]
+    decades_arrival = BlueRegionTravel.decades_town_point
+    check(decades_arrival && decades_arrival[0] == 77 &&
+          decades_arrival[1,2] != [24,24],
+          "Cherryhill arrival must be safe and avoid the generated travel NPC")
+    check(BlueRegionTravel.destination(kanto_first, "DECADES") == decades_arrival,
+          "Kanto visit reopened native Decades character-selection intro")
     check(kanto_first["leagues"].empty?, "Travel awarded a League victory")
     $PokemonGlobal.blue_regions = kanto_first
     $game_map.map_id = 300
@@ -184,7 +201,13 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($PokemonGlobal.blue_regions["initial"] == "KANTO" &&
           $PokemonGlobal.blue_regions["current"] == "DECADES",
           "One-save Kanto origin was lost after travel")
-    check($game_map.map_id == 77 && $game_player.x == 5, "Kanto to Decades wrong spawn")
+    check($game_map.map_id == 77 && $game_player.x == decades_arrival[1],
+          "Kanto to Decades used the intro map instead of Cherryhill")
+    check($PokemonGlobal.blue_campaign_mechanics ==
+          {"tera"=>true,"mega"=>true,"zmove"=>true,"dynamax"=>false},
+          "Decades arrival did not enable Mega/Z/Tera and disable Dynamax")
+    # Changes made in Decades must survive visits to another region.
+    $PokemonGlobal.blue_campaign_mechanics["zmove"]=false
     $PokemonGlobal.blue_regions = nil
     $player.party = [normal,special]
 
@@ -218,13 +241,20 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Native PC pbPlace signature changed")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Initial region overwritten")
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Current region not updated")
-    check($PokemonGlobal.blue_regions["decades_return"] == [77,5,8,2], "Return coords lost")
+    check($PokemonGlobal.blue_regions["decades_return"] == decades_arrival,
+          "Return coords lost")
+    check($PokemonGlobal.blue_campaign_mechanics["dynamax"] == true,
+          "Kanto mechanics were overwritten by Decades preferences")
 
     saved=Marshal.load(Marshal.dump([$PokemonGlobal.blue_regions,$player.party,$PokemonStorage]))
     check(saved[0]["current"] == "KANTO" && saved[1].size == 1 && saved[2][0,0],
           "Regional trip state cannot be marshalled into a single save")
     check(BlueRegionTravel.travel("DECADES",true), "Could not return to Decades")
-    check($game_map.map_id == 77 && $game_player.x == 5, "Wrong Decades return")
+    check($game_map.map_id == 77 && $game_player.x == decades_arrival[1],
+          "Wrong Decades return")
+    check($PokemonGlobal.blue_campaign_mechanics["dynamax"] == false &&
+          $PokemonGlobal.blue_campaign_mechanics["zmove"] == false,
+          "Returning to Decades lost its mechanics preferences")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Return changed initial region")
     check($PokemonStorage[0,0] == special, "PC was cleared after return")
     check($player.party == [normal], "Party was unexpectedly refilled")
@@ -234,7 +264,10 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $scene.fail_once=true
     prior_state=Marshal.dump($PokemonGlobal.blue_regions)
     check(!BlueRegionTravel.travel("KANTO",true), "Failed map transfer reported success")
-    check($game_map.map_id == 77 && $game_player.x == 5, "Rollback did not restore origin")
+    check($game_map.map_id == 77 && $game_player.x == decades_arrival[1],
+          "Rollback did not restore origin")
+    check($PokemonGlobal.blue_campaign_mechanics["zmove"] == false,
+          "Failed regional transfer corrupted preferences")
     check(Marshal.dump($PokemonGlobal.blue_regions) == prior_state, "Failed travel wrote progress")
     check($PokemonStorage[0,0] == special, "Rollback lost stored special")
 
