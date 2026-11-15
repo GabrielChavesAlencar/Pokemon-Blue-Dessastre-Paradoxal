@@ -1,0 +1,11 @@
+POKÉMON BLUE — HOENN NO WINDOWS
+Guia de montagem local do piloto. Este arquivo não contém o jogo.
+
+1. Baixe as ferramentas do projeto na página Downloads e extraia em um caminho curto.
+2. Instale a base do Blue em game/ e tenha o ZIP original The Pokémon World Project - Hoenn.zip, da revisão fixada pelo projeto.
+3. No PowerShell aberto na raiz do projeto, prepare a cópia com Python 3.11 ou posterior:
+   python scripts/regions/hoenn_qa_phase1.py --prepare --archive "CAMINHO_DO_ZIP" --output .blue-work/hoenn-imp-qa --report .blue-work/hoenn-imp-relatorio.json
+4. Abra .blue-work/hoenn-imp-qa/Game.exe. A primeira abertura compila a cópia; abra novamente quando a compilação terminar.
+
+O piloto usa saves próprios. Use Novo Jogo para começar em Hoenn. O menu de pausa oferece Testar Hoenn · Teleporte para inspecionar mapas.
+Não há ZIP completo de Hoenn publicado neste momento.

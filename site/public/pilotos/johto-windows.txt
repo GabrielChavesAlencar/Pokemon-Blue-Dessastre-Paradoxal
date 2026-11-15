@@ -1,0 +1,11 @@
+POKÉMON BLUE — JOHTO NO WINDOWS
+Guia de montagem local do piloto. Este arquivo não contém o jogo.
+
+1. Baixe as ferramentas do projeto na página Downloads e extraia em um caminho curto.
+2. Instale a base do Blue em game/ e tenha o ZIP privado johto-offline12-preview.zip.
+3. No PowerShell aberto na raiz do projeto, monte a cópia com Python 3:
+   python scripts/regions/johto_qa.py --bundle "CAMINHO_DO_ZIP" --stage-qa
+4. Abra .blue-work/game-johto-qa/Game.exe. A primeira abertura compila a cópia; abra novamente se ela fechar ao terminar.
+
+O piloto tem pasta e saves próprios. Se o comando apontar arquivos ou verificação pendentes, siga o diagnóstico em vez de substituir a instalação principal.
+Não há ZIP completo de Johto publicado neste momento.

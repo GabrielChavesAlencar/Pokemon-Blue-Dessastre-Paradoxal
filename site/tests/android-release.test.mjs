@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {existsSync} from 'node:fs';
 import {androidReleaseStatus,androidReleaseHtml,androidPilotsHtml,regionalAndroidReleases} from '../src/assets/android-release.js';
 const sha='a'.repeat(40),next='b'.repeat(40);
 const release={tag_name:'build-1',target_commitish:sha,assets:[{name:'Blue-Android-JoiPlay.zip',state:'uploaded',size:1200000000}]};
@@ -22,8 +23,8 @@ test('falha da API não inventa revisão e dados externos são escapados',async(
 test('pilotos só têm link quando os ZIPs regionais existem de verdade',async()=>{
   const status=await androidReleaseStatus(fetcher({path:'.github/workflows/battle-hub-release.yml',head_sha:sha,status:'completed'}));
   assert.match(androidPilotsHtml(status),/Piloto Kanto · indisponível/);
-  assert.match(androidPilotsHtml(status),/Piloto Johto · indisponível/);
-  assert.doesNotMatch(androidPilotsHtml(status),/href=/);
+  assert.match(androidPilotsHtml(status),/href="\/pilotos\/johto-android\.txt" download/);
+  assert.doesNotMatch(androidPilotsHtml(status),/\/releases\/download\//);
   const releaseWithPilots={...release,assets:[...release.assets,
     {name:'Blue-Android-Kanto-Piloto.zip',state:'uploaded',size:3000},
     {name:'Blue-Android-Johto-Piloto.zip',state:'uploaded',size:4000}]};
@@ -32,8 +33,8 @@ test('pilotos só têm link quando os ZIPs regionais existem de verdade',async()
   const html=androidPilotsHtml(published);
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Kanto-Piloto\.zip/);
   assert.match(html,/releases\/download\/build-1\/Blue-Android-Johto-Piloto\.zip/);
-  assert.match(html,/Piloto Hoenn · indisponível/);
-  assert.doesNotMatch(androidPilotsHtml({state:'unavailable'}),/href=/);
+  assert.match(html,/href="\/pilotos\/hoenn-android\.txt" download/);
+  assert.doesNotMatch(androidPilotsHtml({state:'unavailable'}),/\/releases\/download\//);
 });
 
 test('Kanto tem release experimental própria; download não depende do ZIP geral',async()=>{
@@ -46,7 +47,7 @@ test('Kanto tem release experimental própria; download não depende do ZIP gera
   assert.equal(regional.johto,null);
   const html=androidPilotsHtml({state:'unavailable',regional});
   assert.match(html,/releases\/download\/kanto-android-512-abc1234\/Blue-Android-Kanto-Piloto\.zip/);
-  assert.match(html,/Piloto Johto · indisponível/);
+  assert.match(html,/\/pilotos\/johto-android\.txt/);
   assert.doesNotMatch(html,/href="[^"]*Blue-Android-Johto-Piloto\.zip"/);
   const malformed=await regionalAndroidReleases(async()=>({ok:true,json:async()=>[
     {...release,target_commitish:'not-sha'},
@@ -78,14 +79,19 @@ test('pilotos publicados na página 2 ainda são descobertos e Johto não usa o 
   assert.equal(regional.johto.tag,johto.tag_name);
   const html=androidPilotsHtml({regional});
   assert.match(html,/Blue-Android-Johto-Piloto[.]zip/);
-  assert.match(html,/Piloto Hoenn · indisponível/);
+  assert.match(html,/\/pilotos\/hoenn-android\.txt/);
 });
 
-test('Windows usa a História apenas como alternativa explícita, sem inventar ZIPs de Johto e Hoenn',()=>{
-  const html=androidPilotsHtml({regional:{}},'windows');
-  assert.match(html,/Baixar História · testar Johto/);
-  assert.match(html,/Baixar História · testar Hoenn/);
-  assert.ok(html.includes('releases/latest/download/Blue-Story.exe'));
-  assert.ok(!html.includes('Blue-Windows-Johto-Piloto.zip'));
-  assert.ok(!html.includes('Blue-Windows-Hoenn-Piloto.zip'));
+test('guias regionais existem para Windows e Android enquanto não há ZIP completo',()=>{
+  for(const platform of ['windows','android']){
+    const html=androidPilotsHtml({state:'unavailable',regional:{}},platform);
+    for(const region of ['johto','hoenn']){
+      const guide=`/pilotos/${region}-${platform}.txt`;
+      assert.ok(existsSync(new URL('../public'+guide,import.meta.url)));
+      assert.ok(html.includes(`href="${guide}" download`));
+    }
+    assert.ok(html.includes('/archive/refs/heads/main.zip'));
+    assert.match(html,/O ZIP do jogo ainda não foi publicado/);
+    assert.doesNotMatch(html,/testar (Johto|Hoenn)|Blue-(Windows|Android)-(Johto|Hoenn)-Piloto\.zip/);
+  }
 });

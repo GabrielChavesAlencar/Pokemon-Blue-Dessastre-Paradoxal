@@ -1,0 +1,12 @@
+POKÉMON BLUE — JOHTO NO ANDROID
+Guia de preparação. Este arquivo não contém o jogo.
+
+Para jogar, será necessário um ZIP próprio de Johto, compilado e preparado para JoiPlay. O pacote geral do Blue não inclui o piloto, e o ZIP privado johto-offline12-preview.zip é material de montagem do Windows, sem Game.exe.
+
+Quando o pacote regional estiver disponível na página Downloads:
+1. Instale JoiPlay e RPG Maker Plugin de https://www.joiplay.net/.
+2. Extraia todo o ZIP de Johto em uma pasta nova.
+3. No JoiPlay, escolha + → Add Game e selecione Game.exe da pasta de Johto.
+4. Inicie pelo Novo Jogo da entrada regional. Mantenha os saves em uma entrada separada de Decades.
+
+O pacote Android de Johto ainda não foi publicado ou confirmado em aparelho real.

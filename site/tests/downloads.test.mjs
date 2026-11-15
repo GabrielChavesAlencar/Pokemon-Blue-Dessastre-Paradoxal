@@ -14,7 +14,7 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.ok(html.includes(`href="${joiplayDownload}"`));
   assert.ok(html.includes('Baixar JoiPlay · site oficial'));
   assert.ok(html.includes('android-download-actions'));
-  assert.match(html,/Pilotos no Android/);
+  assert.match(html,/Baixar pilotos · Android/);
   assert.match(html,/data-android-pilots/);
   assert.match(html,/data-windows-pilots/);
   assert.doesNotMatch(html,/href="[^"]*Blue-Android-(Kanto|Johto)-Piloto[.]zip"/);

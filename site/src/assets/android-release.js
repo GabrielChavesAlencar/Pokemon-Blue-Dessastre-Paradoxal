@@ -4,6 +4,7 @@ const repo='GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal';
 const api=`https://api.github.com/repos/${repo}`;
 let cached;
 const pilotRegions={kanto:'Kanto',johto:'Johto',hoenn:'Hoenn'};
+const sourceKit=`https://github.com/${repo}/archive/refs/heads/main.zip`;
 const assetName=(region,platform)=>`Blue-${platform==='android'?'Android':'Windows'}-${pilotRegions[region]}-Piloto.zip`;
 const uploaded=(release,name)=>release.assets?.find(a=>a.name===name&&a.state==='uploaded'&&a.size>0);
 export async function androidReleaseStatus(fetcher=fetch){
@@ -94,13 +95,19 @@ export function androidPilotsHtml(status,platform='android'){
     const enabled=!!regional||regular;
     const tag=regional?.tag||status.tag;
     const href=enabled?'https://github.com/'+repo+'/releases/download/'+encodeURIComponent(tag)+'/'+asset:'';
-    const windowsAlternative=!enabled&&platform==='windows';
+    const hasSetup=!enabled&&(id==='johto'||id==='hoenn');
+    const windowsAlternative=!enabled&&!hasSetup&&platform==='windows';
+    const setupHref=hasSetup?`/pilotos/${id}-${platform==='android'?'android':'windows'}.txt`:'';
     const label=enabled?'Baixar piloto '+region+' · .zip':windowsAlternative?'Baixar História · testar '+region:'Piloto '+region+' · indisponível';
-    const action=enabled||windowsAlternative?
+    const action=hasSetup?
+      `<a class="button button-secondary" href="${setupHref}" download>Baixar guia de montagem · .txt</a>`+
+      `<a class="text-link" href="${sourceKit}" target="_blank" rel="noopener noreferrer">Baixar ferramentas do projeto · .zip</a>`:
+      enabled||windowsAlternative?
       '<a class="button button-secondary" href="'+esc(enabled?href:gameDownload)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>':
       '<span class="button button-secondary android-pilot-disabled" aria-disabled="true">'+esc(label)+'</span>';
     const detail=enabled?'ZIP regional independente na release '+tag+(regional?.fallback?' (última publicação confirmada)':'')+
       (platform==='android'?'. Extraia em uma pasta própria e adicione o Game.exe ao JoiPlay.':'. Extraia o ZIP e abra Game.exe.'):
+      hasSetup?'O ZIP do jogo ainda não foi publicado. O guia e as ferramentas não contêm o jogo e exigem a instalação e os arquivos de origem locais.':
       windowsAlternative?'Ainda não há ZIP próprio de '+region+'. O instalador abre o modo História com a opção Testar '+region+'; a montagem regional pode exigir arquivos locais e ainda não equivale a um piloto aprovado.':
       'Ainda não existe ZIP Android independente e verificado para '+region+'. O pacote geral do JoiPlay não substitui o piloto.';
     return '<article class="android-pilot-card"><span class="eyebrow">PILOTO '+esc(region.toUpperCase())+'</span>'+
@@ -114,6 +121,11 @@ export async function bindAndroidRelease(container){
   const pilots=container.querySelector('[data-android-pilots]');
   const windows=container.querySelector('[data-windows-pilots]');
   if(!target&&!pilots&&!windows)return;
+  // Local guides remain usable while GitHub is still answering.
+  if(pilots?.isConnected)pilots.innerHTML=androidPilotsHtml({
+    state:'unavailable',regional:withVerifiedFallback(null,'android')});
+  if(windows?.isConnected)windows.innerHTML=androidPilotsHtml({
+    regional:withVerifiedFallback(null,'windows')},'windows');
   if(!cached||Date.now()-cached.time>60000)cached={time:Date.now(),promise:Promise.all([androidReleaseStatus(),regionalPilotIndex()])};
   const [status,index]=await cached.promise;
   status.regional=withVerifiedFallback(index.android,'android');
