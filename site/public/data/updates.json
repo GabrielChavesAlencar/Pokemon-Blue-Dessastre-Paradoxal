@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cc08f67670f94cb6e8f75748c9ea927cd6519021",
+      "date": "2026-11-14T22:30:08-03:00",
+      "title": "site: identificar corretamente as opções Kanto Johto Hoenn por plataforma",
+      "category": "Melhorias"
+    },
+    {
       "sha": "38adea99c352d63317fc1900b4fb70677cd686fa",
       "date": "2026-11-14T22:29:43-03:00",
       "title": "site: atualizar descoberta e links verificados dos pilotos regionais",
