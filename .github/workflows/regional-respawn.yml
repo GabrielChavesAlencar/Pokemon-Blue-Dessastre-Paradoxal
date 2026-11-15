@@ -1,0 +1,33 @@
+name: Retorno ao Centro Pokemon da regiao atual
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/battle_polish/RegionalRespawn.rb'
+      - 'scripts/battle_polish/Story.rb'
+      - 'scripts/battle_polish/meta.txt'
+      - 'scripts/battle_polish/install.py'
+      - 'scripts/regions/pilot.py'
+      - 'tests/regional_respawn_runtime.rb'
+      - 'tests/kanto_blackout_runtime.rb'
+      - '.github/workflows/regional-respawn.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxe do hook e fixtures
+        run: |
+          ruby -c scripts/battle_polish/RegionalRespawn.rb
+          ruby -c scripts/battle_polish/Story.rb
+          ruby -c tests/regional_respawn_runtime.rb
+          python -m py_compile scripts/battle_polish/install.py scripts/regions/pilot.py
+      - name: Blackout depois de trocar Kanto Decades Johto
+        run: ruby tests/regional_respawn_runtime.rb scripts/battle_polish/RegionalRespawn.rb
+      - name: Regressao das derrotas no piloto Kanto
+        run: ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
+      - name: Validar contrato do instalador
+        run: python tests/test_evolution_install_contract.py
