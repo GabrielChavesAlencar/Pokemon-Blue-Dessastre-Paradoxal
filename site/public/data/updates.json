@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bf8e3ea7ef7c9d74a42f3b81ac8248149daecc13",
+      "date": "2026-11-15T14:17:20-03:00",
+      "title": "test(regions): diferenciar round-trip original e migracao de save Decades antigo",
+      "category": "Testes"
+    },
+    {
       "sha": "97da69a2e79236ce3a323c518b769c19fd108ee0",
       "date": "2026-11-15T14:16:08-03:00",
       "title": "test(regions): verificar itens-chave e HMs locais por regiao, TMs globais e rollback de atalhos",
