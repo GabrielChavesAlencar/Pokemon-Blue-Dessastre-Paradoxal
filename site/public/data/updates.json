@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d8227e591eb2d5f1cbd447a60c903f969e8ba056",
+      "date": "2026-11-15T17:32:38-03:00",
+      "title": "style(site): botão de pacote multirregional Android responsivo",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "1a1a3630ff39a56e4fcc4403d24ef2e55d6b6c4c",
+      "date": "2026-11-15T17:32:24-03:00",
+      "title": "test(site): opção Decades Kanto Hoenn somente quando ZIP Android existe",
+      "category": "Testes"
+    },
+    {
       "sha": "2c9017ea21feddc63772dab01be00f52e1c8fa42",
       "date": "2026-11-15T17:31:36-03:00",
       "title": "ci(android): compilar e publicar Decades Kanto Hoenn somente após auditorias e prova JoiPlay",
