@@ -179,6 +179,8 @@ Dir.mktmpdir("kanto-gary-regression-") do |folder|
                   "Mock battle engine failed during transition"),
                 "Real underlying battle exception not logged")
     assert_gary($game_temp.clear_count > 0, "Failed battle rules not reset")
+    assert_gary($messages.last.include?("Mock battle engine failed"),
+                "Original battle exception was hidden from the player")
     $raise_battle = false
     assert_gary(BlueKantoPilot.rival == true, "Gary could not retry after error")
 
