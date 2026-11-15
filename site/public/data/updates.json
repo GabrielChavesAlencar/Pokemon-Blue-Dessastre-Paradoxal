@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2c9017ea21feddc63772dab01be00f52e1c8fa42",
+      "date": "2026-11-15T17:31:36-03:00",
+      "title": "ci(android): compilar e publicar Decades Kanto Hoenn somente após auditorias e prova JoiPlay",
+      "category": "Melhorias"
+    },
+    {
       "sha": "50a7037dd9e03ca9dbfff8239b281c92628aeb34",
       "date": "2026-11-15T17:29:41-03:00",
       "title": "fix(android): exceção clara para plugin regional ausente no cache de JoiPlay",
