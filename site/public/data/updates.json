@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2e0c077e822cd978a286c0ad7dc96b1256c80244",
+      "date": "2026-11-15T14:13:52-03:00",
+      "title": "fix(hm): exigir HM obtido na regiao atual mesmo com golpe aprendido em outra, manter badges nativos Decades",
+      "category": "Correções"
+    },
+    {
       "sha": "29ee73c17fbc7718f118607885c760979bcfa111",
       "date": "2026-11-15T14:13:11-03:00",
       "title": "feat(regions): separar itens-chave e HMs na Bolsa por regiao com restauracao, atalho e rollback transacional",
