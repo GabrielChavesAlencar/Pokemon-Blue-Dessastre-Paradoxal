@@ -187,6 +187,24 @@ module BlueRegionTravel
     {"items" => items, "registered" => registered}
   end
 
+  # The vanilla Essentials item PC is separate from Pokémon Boxes but is
+  # shared by all regions. Isolate local Key Items/HMs there as well, so a
+  # player cannot deposit a Kanto HM and withdraw it in Decades.
+  def self.local_pc_contents(storage)
+    return [] unless storage
+    raise "PC de itens inválido" unless
+      storage.respond_to?(:items) && storage.respond_to?(:add) &&
+      storage.respond_to?(:remove)
+    local = []
+    storage.items.each do |entry|
+      next unless entry.is_a?(Array) && regional_item?(entry[0])
+      raise "Quantidade de item inválida no PC" unless
+        entry[1].is_a?(Integer) && entry[1] > 0
+      local << [entry[0],entry[1]]
+    end
+    local
+  end
+
   def self.stage_local_bag(state, destination)
     raise "Não foi possível ler a Bolsa regional" unless $bag
     staged = Marshal.load(Marshal.dump($bag))
@@ -199,14 +217,21 @@ module BlueRegionTravel
       target_contents["items"].is_a?(Array) &&
       target_contents["registered"].is_a?(Array)
     target_items = target_contents["items"]
-    seen = {}
-    target_items.each do |entry|
-      raise "Item regional inválido no save" unless
-        entry.is_a?(Array) && entry.length == 2 &&
-        regional_item?(entry[0]) && entry[1].is_a?(Integer) &&
-        entry[1] > 0 && !seen[entry[0]]
-      seen[entry[0]] = true
+    target_pc_items = target_contents.fetch("pc_items", [])
+    raise "Itens do PC regional inválidos no save" unless target_pc_items.is_a?(Array)
+    validate_items = lambda do |rows|
+      seen = {}
+      rows.each do |entry|
+        raise "Item regional inválido no save" unless
+          entry.is_a?(Array) && entry.length == 2 &&
+          regional_item?(entry[0]) && entry[1].is_a?(Integer) &&
+          entry[1] > 0 && !seen[entry[0]]
+        seen[entry[0]] = true
+      end
+      seen
     end
+    seen = validate_items.call(target_items)
+    validate_items.call(target_pc_items)
     raise "Atalhos regionais duplicados no save" unless
       target_contents["registered"].uniq.length == target_contents["registered"].length
     target_contents["registered"].each do |id|
@@ -221,7 +246,21 @@ module BlueRegionTravel
     end
     staged.registered_items.delete_if { |id| regional_item?(id) }
     target_contents["registered"].each { |id| staged.register(id) }
-    [staged, source_contents]
+    pc = $PokemonGlobal.respond_to?(:pcItemStorage) ?
+           $PokemonGlobal.pcItemStorage : nil
+    source_contents["pc_items"] = local_pc_contents(pc)
+    raise "PC de itens de destino indisponível" if !pc && !target_pc_items.empty?
+    staged_pc = pc && Marshal.load(Marshal.dump(pc))
+    if staged_pc
+      source_contents["pc_items"].each do |id, qty|
+        raise "Falha ao guardar itens do PC local" unless staged_pc.remove(id,qty)
+      end
+      target_pc_items.each do |id, qty|
+        raise "Sem espaço no PC de itens da região de destino" unless
+          staged_pc.add(id,qty)
+      end
+    end
+    [staged, source_contents, staged_pc]
   end
 
   def self.preview(state, key)
@@ -276,7 +315,10 @@ module BlueRegionTravel
     old_slots = reservations.map { |pkmn, pos| [pos, $PokemonStorage[pos[0],pos[1]]] }
     old_mechanics = $PokemonGlobal.blue_campaign_mechanics
     old_bag = Marshal.load(Marshal.dump($bag))
-    staged_bag, source_items = stage_local_bag(state, key)
+    pc_storage = $PokemonGlobal.respond_to?(:pcItemStorage) ?
+                   $PokemonGlobal.pcItemStorage : nil
+    old_pc_items = pc_storage && Marshal.load(Marshal.dump(pc_storage.items))
+    staged_bag, source_items, staged_pc = stage_local_bag(state, key)
     # Preserve the player's actual choices independently for each region.
     # The first Decades arrival uses all mechanics except Dynamax, and later
     # returns restore any changes the player made while in Decades.
@@ -310,6 +352,7 @@ module BlueRegionTravel
       # retain references to it. Only replace its serialized contents.
       $bag.pockets.replace(staged_bag.pockets)
       $bag.registered_items.replace(staged_bag.registered_items)
+      pc_storage.items.replace(staged_pc.items) if pc_storage && staged_pc
       pbFadeOutIn { move_to(point) }
       true
     rescue StandardError => error
@@ -317,6 +360,7 @@ module BlueRegionTravel
       $PokemonGlobal.blue_campaign_mechanics = old_mechanics
       $bag.pockets.replace(old_bag.pockets)
       $bag.registered_items.replace(old_bag.registered_items)
+      pc_storage.items.replace(old_pc_items) if pc_storage && old_pc_items
       $player.party.replace(old_party)
       old_slots.each { |pos, previous| $PokemonStorage[pos[0],pos[1]] = previous }
       if $game_map.map_id != before[0] || $game_player.x != before[1] || $game_player.y != before[2]
