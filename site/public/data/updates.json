@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b53c7870883d56ef5bd461d913c8818eb4094ca3",
+      "date": "2026-11-15T16:12:10-03:00",
+      "title": "ci(hoenn): carregar fixture regional em teste de viagem legado",
+      "category": "Melhorias"
+    },
+    {
       "sha": "46388d74ff67c68cc939d179dd8f18923f3392f8",
       "date": "2026-11-15T16:11:09-03:00",
       "title": "fix(hoenn): preservar opcao Testar Hoenn quando importacao main nao existe",
