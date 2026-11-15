@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4e06992ecb2b0295609e1e6d952539169cc2adb6",
+      "date": "2026-11-15T11:04:15-03:00",
+      "title": "feat(kanto): atualizar plugin integrado por hash e backup nas proximas versoes",
+      "category": "Novidades"
+    },
+    {
       "sha": "5196eecb2e3f2660beb3d12291b5e89a94be2c9c",
       "date": "2026-11-15T11:02:43-03:00",
       "title": "site(downloads): explicar instalacao automatica de Kanto pelo Blue-Story.exe",
