@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c7af53713386454cb991a20c4aee1eab0cc01b88",
+      "date": "2026-11-15T14:58:41-03:00",
+      "title": "ci(evolution): validar evolucoes dinamicas de selvagens e treinadores sem alterar mapas ou saves",
+      "category": "Melhorias"
+    },
+    {
       "sha": "abdad4f380f913707c05fcec91fb8067a241b244",
       "date": "2026-11-15T14:58:16-03:00",
       "title": "test(evolution): validar hooks reais do Battle, 70/90%, BST inicial e preservacao dos chefes",
