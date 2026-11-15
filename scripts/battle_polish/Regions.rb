@@ -24,10 +24,13 @@ module BlueRegions
   end
 
   def self.unlocked(state)
-    available = [state["initial"]] + state["leagues"].flat_map { |key| neighbors(key) }
+    # Regional journeys are no longer gated by League victory. League records
+    # still determine world-champion/rematch progress, never transport access.
+    # The special Hisui chapter keeps its own quest requirement; it also needs
+    # a separately verified install before it can become a physical destination.
+    available = circuit.dup
     hisui = BlueRegionData::REGISTRY["hisui"]
-    available.concat(hisui["startExits"]) if state["initial"] == "HISUI" && state["hisui_complete"]
-    available << "HISUI" if state["hisui_quest"] && available.include?(hisui["questRegion"])
+    available << "HISUI" if state["initial"] == "HISUI" || state["hisui_quest"]
     available.uniq
   end
 
@@ -127,44 +130,24 @@ module BlueRegions
     state
   end
 
+  # The pause menu is informational only: to switch regions the player MUST
+  # speak to the physical agent in the initial town of the current region.
   def self.menu
     state = snapshot
     return unless state
-    ready = unlocked(state)
-    loop do
-      keys = circuit + ["HISUI"]
-      options = keys.map do |key|
-        name = info(key)["name"]
-        if key == state["current"]
-          _INTL("{1} · atual",name)
-        elsif ready.include?(key) && defined?(BlueRegionTravel) &&
-              BlueRegionTravel.available?(state) && BlueRegionTravel.destination(state,key)
-          _INTL("{1} · viajar",name)
-        elsif ready.include?(key)
-          _INTL("{1} · mapa em preparação",name)
-        else
-          _INTL("{1} · bloqueada",name)
-        end
-      end
-      choice = pbMessage(_INTL("Circuito de regiões"),options + [_INTL("Voltar")],-1)
-      break if !choice || choice < 0 || choice >= keys.length
-      key = keys[choice]
-      if key != state["current"] && defined?(BlueRegionTravel) &&
-         BlueRegionTravel.available?(state) && BlueRegionTravel.destination(state,key)
-        break if BlueRegionTravel.travel(key)
-      elsif key == "DECADES"
-        amount = local_achievements(state,key,$player.badges).length
-        ending = state["leagues"].include?(key) ? _INTL("Final registrado") : _INTL("Final pendente")
-        pbMessage(_INTL("Decades: {1}/8 marcos regionais. {2}.",amount,ending))
-      elsif ready.include?(key)
-        pbMessage(_INTL("{1} foi desbloqueada. A viagem ficará disponível quando a campanha estiver pronta.",info(key)["name"]))
-      elsif key == "HISUI"
-        pbMessage(_INTL("Jornada especial. O acesso por Sinnoh depende da missão temporal."))
+    keys = circuit + ["HISUI"]
+    options = keys.map do |key|
+      name = info(key)["name"]
+      if key == state["current"]
+        _INTL("{1} · atual", name)
+      elsif defined?(BlueRegionTravel) && BlueRegionTravel.destination(state, key)
+        _INTL("{1} · disponível no NPC", name)
       else
-        names = neighbors(key).map { |region| info(region)["name"] }
-        pbMessage(_INTL("Conclua a Liga em {1} ou {2} para liberar {3}.",names[0],names[1],info(key)["name"]))
+        _INTL("{1} · em preparação", name)
       end
     end
+    pbMessage(_INTL("Regiões · viagem somente pelo NPC na cidade inicial"),
+              options + [_INTL("Voltar")], -1)
   end
 
   module PauseIcon
