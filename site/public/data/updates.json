@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db422b4d40dee58a20e8bc14241515fe3e10a4fe",
+      "date": "2026-11-15T19:13:02-03:00",
+      "title": "Explain full ZIP backup fallback in Android packaged readme",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "681be71392d655b4a773cc2139bc049a2f09d8d8",
+      "date": "2026-11-15T19:13:00-03:00",
+      "title": "Report download/extraction progress during Android Termux fallback",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bd7510507929439916db1e4ef478818d43d70970",
       "date": "2026-11-15T19:11:05-03:00",
       "title": "Allow forced Android full reinstall to repair even same revision",
