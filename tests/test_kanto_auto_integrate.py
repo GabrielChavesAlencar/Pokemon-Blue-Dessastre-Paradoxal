@@ -46,8 +46,10 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         result = auto.integrate(self.project, self.game, run=self.run)
         self.assertEqual(result["status"], "already_integrated")
         self.assertFalse(result["changed"])
-        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(len(self.calls), 2)
         self.assertIn("--verify-installed", self.calls[0])
+        self.assertIn("--sync-runtime", self.calls[1])
+        self.assertIn("--apply", self.calls[1])
 
     def test_old_install_blocked_and_decades_keeps_running(self):
         (self.game / auto.KANTO_MARKER).write_text("old Kanto 25 maps\n")
