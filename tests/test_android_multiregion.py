@@ -4,6 +4,7 @@ No source maps, proprietary game binary, network or user saves are needed.
 """
 import json
 import tempfile
+import sys
 import unittest
 import zipfile
 import zlib
@@ -11,6 +12,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.android import package as mobile
+sys.path.insert(0,str(mobile.ROOT/'scripts/regions'))
 from scripts.android.build_manifest import installed_manifest
 from scripts.android.publish_updates import from_archive
 from scripts.android.update_client import CHANNELS, release_for
