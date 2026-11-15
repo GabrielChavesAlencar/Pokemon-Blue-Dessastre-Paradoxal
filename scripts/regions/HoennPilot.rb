@@ -3178,8 +3178,8 @@ module BlueHoennPilot
                         neighbors.sort==%w[JOHTO SINNOH] &&
                         neighbors.all?{|key| unlocked.include?(key)}
     title=localized(
-      "Hoenn League complete. Johto and Sinnoh are unlocked in the regional circuit.",
-      "Liga de Hoenn concluída. Johto e Sinnoh foram liberadas no circuito regional.")
+      "Hoenn League complete. Travel by starting-town NPC is already free for installed regions.",
+      "Liga de Hoenn concluída. A viagem pelo NPC das cidades iniciais é livre entre regiões instaladas.")
     destinations=neighbors.map do |key|
       name=key.capitalize
       if defined?(BlueRegionTravel) && BlueRegionTravel.respond_to?(:destination) &&
