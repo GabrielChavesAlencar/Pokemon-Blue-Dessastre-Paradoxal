@@ -20,6 +20,7 @@ MARKER = "Data/blue-update.json"
 CHANNELS = {
     "decades": ("Blue-Android-JoiPlay.zip", "Blue-Android-JoiPlay.update.json"),
     "kanto": ("Blue-Android-Kanto-Piloto.zip", "Blue-Android-Kanto-Piloto.update.json"),
+    "multiregion": ("Blue-Android-Decades-Kanto-Hoenn.zip", "Blue-Android-Decades-Kanto-Hoenn.update.json"),
 }
 ALLOWED_ROOTS = {"Audio", "Graphics", "Fonts", "PBS", "Plugins", "Data"}
 FORBIDDEN = {"mkxp.json", "Game.ini", "ATUALIZAR-ANDROID.py", MARKER}
@@ -79,10 +80,21 @@ def release_for(channel):
         if not str(release.get("tag_name", "")).startswith("battle-hub-"):
             raise ValueError("The latest release is not the Decades distribution.")
         return release
-    for release in get_json(API + "/releases?per_page=100"):
-        if str(release.get("tag_name", "")).startswith("kanto-android-"):
-            return release
-    raise ValueError("No Kanto Android release found among the 100 most recent releases.")
+    prefix = "kanto-android-" if channel == "kanto" else "android-multiregion-"
+    # These special releases are independent prereleases. In particular the
+    # Decades-only "latest" patch must never delete Kanto/Hoenn maps.
+    for page in range(1, 4):
+        url = API + "/releases?per_page=100" + ("&page=" + str(page) if page > 1 else "")
+        entries = get_json(url)
+        if not isinstance(entries, list):
+            break
+        for release in entries:
+            if (str(release.get("tag_name", "")).startswith(prefix) and
+                    asset_url(release, CHANNELS[channel][0])):
+                return release
+        if len(entries) < 100:
+            break
+    raise ValueError("No verified Android release found for channel: " + channel)
 
 
 def asset_url(release, name):
