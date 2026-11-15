@@ -54,3 +54,38 @@ test('Kanto tem release experimental própria; download não depende do ZIP gera
   ]}));
   assert.equal(malformed.kanto,null);
 });
+
+
+test('pilotos escolhem a publicação mais recente pela data, não pela ordem da API',async()=>{
+  const older={tag_name:'kanto-android-local-old',target_commitish:sha,published_at:'2026-11-14T05:27:26Z',
+    assets:[{name:'Blue-Android-Kanto-Piloto.zip',state:'uploaded',size:1200}]};
+  const newer={tag_name:'kanto-android-1205-new',target_commitish:next,published_at:'2026-11-14T18:05:55Z',
+    assets:[{name:'Blue-Android-Kanto-Piloto.zip',state:'uploaded',size:1300}]};
+  const fetcher=async()=>({ok:true,json:async()=>[older,newer]});
+  const regional=await regionalAndroidReleases(fetcher);
+  assert.equal(regional.kanto.tag,newer.tag_name);
+  assert.equal(regional.kanto.bytes,1300);
+});
+
+test('pilotos publicados na página 2 ainda são descobertos e Johto não usa o ZIP geral',async()=>{
+  const firstPage=Array.from({length:100},(_,i)=>({
+    tag_name:'battle-hub-'+i,target_commitish:sha,assets:[]
+  }));
+  const johto={tag_name:'johto-android-1-sample',target_commitish:next,published_at:'2026-11-14T21:00:00Z',
+    assets:[{name:'Blue-Android-Johto-Piloto.zip',state:'uploaded',size:9000}]};
+  const fetcher=async url=>({ok:true,json:async()=>url.includes('page=2')?[johto]:firstPage});
+  const regional=await regionalAndroidReleases(fetcher);
+  assert.equal(regional.johto.tag,johto.tag_name);
+  const html=androidPilotsHtml({regional});
+  assert.match(html,/Blue-Android-Johto-Piloto[.]zip/);
+  assert.match(html,/Piloto Hoenn · indisponível/);
+});
+
+test('Windows usa a História apenas como alternativa explícita, sem inventar ZIPs de Johto e Hoenn',()=>{
+  const html=androidPilotsHtml({regional:{}},'windows');
+  assert.match(html,/Baixar História · testar Johto/);
+  assert.match(html,/Baixar História · testar Hoenn/);
+  assert.ok(html.includes('releases/latest/download/Blue-Story.exe'));
+  assert.ok(!html.includes('Blue-Windows-Johto-Piloto.zip'));
+  assert.ok(!html.includes('Blue-Windows-Hoenn-Piloto.zip'));
+});
