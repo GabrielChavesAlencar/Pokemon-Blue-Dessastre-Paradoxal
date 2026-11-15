@@ -136,18 +136,29 @@ module BlueRegions
     state = snapshot
     return unless state
     keys = circuit + ["HISUI"]
-    options = keys.map do |key|
-      name = info(key)["name"]
+    loop do
+      options = keys.map do |key|
+        name = info(key)["name"]
+        if key == state["current"]
+          _INTL("{1} · atual", name)
+        elsif defined?(BlueRegionTravel) && BlueRegionTravel.destination(state, key)
+          _INTL("{1} · disponível no NPC", name)
+        else
+          _INTL("{1} · em preparação", name)
+        end
+      end
+      choice = pbMessage(_INTL("Regiões · informação de viagem"),
+                         options + [_INTL("Voltar")], -1)
+      break if choice.nil? || choice < 0 || choice >= keys.length
+      key = keys[choice]
       if key == state["current"]
-        _INTL("{1} · atual", name)
-      elsif defined?(BlueRegionTravel) && BlueRegionTravel.destination(state, key)
-        _INTL("{1} · disponível no NPC", name)
+        pbMessage(_INTL("Você está em {1}.",info(key)["name"]))
+      elsif defined?(BlueRegionTravel) && BlueRegionTravel.destination(state,key)
+        pbMessage(_INTL("Para ir a {1}, converse com o Agente Regional na cidade inicial da sua região. Não é necessário vencer a Liga.",info(key)["name"]))
       else
-        _INTL("{1} · em preparação", name)
+        pbMessage(_INTL("{1} ainda não está integrada a este jogo. Não é possível viajar até lá.",info(key)["name"]))
       end
     end
-    pbMessage(_INTL("Regiões · viagem somente pelo NPC na cidade inicial"),
-              options + [_INTL("Voltar")], -1)
   end
 
   module PauseIcon
