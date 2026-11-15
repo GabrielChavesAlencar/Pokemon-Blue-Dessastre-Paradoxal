@@ -35,7 +35,12 @@ class KantoAutoIntegrationTests(unittest.TestCase):
 
     def test_fresh_install_bootstraps_pinned_source_then_imports_then_verifies(self):
         result = auto.integrate(self.project, self.game, run=self.run)
-        self.assertEqual(result, {"status": "integrated", "changed": True})
+        self.assertEqual(result["status"], "integrated")
+        self.assertTrue(result["ready"])
+        self.assertTrue(result["changed"])
+        self.assertEqual(result["log"], str(self.project / auto.LOG_FILE))
+        self.assertEqual(result, __import__("json").loads(
+            (self.project / auto.STATUS_FILE).read_text(encoding="utf8")))
         self.assertEqual([argv[1] for argv in self.calls], [
             auto.KANTO_SOURCE_BOOTSTRAP, auto.KANTO_IMPORTER, auto.KANTO_IMPORTER])
         self.assertIn("--apply", self.calls[1])
@@ -45,6 +50,7 @@ class KantoAutoIntegrationTests(unittest.TestCase):
         (self.game / auto.KANTO_MARKER).write_text("BLUE_KANTO_START_V1,KANTO,300,25,7\n")
         result = auto.integrate(self.project, self.game, run=self.run)
         self.assertEqual(result["status"], "already_integrated")
+        self.assertTrue(result["ready"])
         self.assertFalse(result["changed"])
         self.assertEqual(len(self.calls), 2)
         self.assertIn("--verify-installed", self.calls[0])
@@ -58,7 +64,9 @@ class KantoAutoIntegrationTests(unittest.TestCase):
             raise subprocess.CalledProcessError(2, argv)
         result = auto.integrate(self.project, self.game, run=broken)
         self.assertEqual(result["status"], "manual_migration_required")
+        self.assertFalse(result["ready"])
         self.assertFalse(result["changed"])
+        self.assertIn("Verificacao", result["reason"])
         self.assertEqual(len(self.calls), 1)
         self.assertTrue((self.game / auto.KANTO_MARKER).is_file())
 
@@ -77,9 +85,35 @@ class KantoAutoIntegrationTests(unittest.TestCase):
             raise subprocess.CalledProcessError(1, argv)
         result = auto.integrate(self.project, self.game, run=offline)
         self.assertEqual(result["status"], "kanto_unavailable")
+        self.assertFalse(result["ready"])
         self.assertFalse(result["changed"])
+        self.assertIn("Download/montagem", result["reason"])
         self.assertEqual(len(self.calls), 1)
         self.assertTrue((self.game / "Game.exe").is_file())
+
+    def test_verified_kanto_still_playable_when_optional_runtime_sync_fails(self):
+        (self.game / auto.KANTO_MARKER).write_text("BLUE_KANTO_START_V1,KANTO,300,25,7\\n")
+        def runner(argv, project, env):
+            self.calls.append(argv)
+            if "--sync-runtime" in argv:
+                raise subprocess.CalledProcessError(7, argv)
+        result = auto.integrate(self.project, self.game, run=runner)
+        self.assertEqual(result["status"], "already_integrated_runtime_preserved")
+        self.assertTrue(result["ready"])
+        self.assertEqual(len(self.calls), 2)
+
+    def test_status_is_rewritten_on_every_attempt(self):
+        def fail(argv, project, env):
+            raise RuntimeError("Fonte FRLG indisponivel: HTTP 403")
+        first = auto.integrate(self.project, self.game, run=fail)
+        self.assertEqual(first["status"], "kanto_unavailable")
+        self.assertIn("403", first["reason"])
+        second = auto.integrate(self.project, self.game, run=self.run)
+        self.assertEqual(second["status"], "integrated")
+        self.assertTrue(second["ready"])
+        self.assertEqual(__import__("json").loads(
+            (self.project / auto.STATUS_FILE).read_text(encoding="utf8"))["status"],
+            "integrated")
 
     def test_foreign_path_or_missing_decades_skips(self):
         foreign = self.project / "other-game"
