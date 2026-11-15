@@ -6,7 +6,7 @@ from scripts.android.update_client import safe_path
 
 
 def installed_manifest(channel, revision, files):
-    if channel not in ("decades", "kanto"):
+    if channel not in ("decades", "kanto", "multiregion"):
         raise ValueError("Unknown Android update channel.")
     assets = {}
     immutable = {}
