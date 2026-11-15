@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0dc90d76fedcbdf0a2219840bf5c48dbb08f11a1",
+      "date": "2026-11-15T16:09:30-03:00",
+      "title": "fix(hoenn): exigir 199 RXDATA e completar fixture do marcador",
+      "category": "Correções"
+    },
+    {
+      "sha": "19b7fd21cf1ed94d9b0c2d990e494c4654ebdff0",
+      "date": "2026-11-15T16:09:28-03:00",
+      "title": "fix(hoenn): exigir 199 RXDATA e completar fixture do marcador",
+      "category": "Correções"
+    },
+    {
       "sha": "7fbdf9a15e19502aeddf82eb9547feaa9ce61000",
       "date": "2026-11-15T16:08:46-03:00",
       "title": "ci(hoenn): testar importador, novo jogo e regressoes regionais",
