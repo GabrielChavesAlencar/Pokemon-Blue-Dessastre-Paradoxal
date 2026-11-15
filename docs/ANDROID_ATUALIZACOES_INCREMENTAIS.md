@@ -73,3 +73,21 @@ O workflow da versão principal Decades deve publicar `Blue-Android-JoiPlay.zip`
 As instruções `LEIA-ME-ANDROID*.txt` e, apenas no canal Kanto, `Kanto pilot.json` são dados **atualizáveis**. Seus hashes devem constar na lista `files`, porque a revisão muda a cada compilação; não são configurações de saves. O atualizador, `mkxp.json`, `Game.exe` e outros binários permanecem protegidos. A primeira migração entre inventários de formatos diferentes poderá exigir ZIP completo; isso deve ser informado ao usuário, nunca mascarado com patch de canal errado.
 
 A verificação do Android Decades compilado teve sucesso na CI; uma tentativa antiga de publicação no GitHub foi recusada com HTTP 403 depois de mudanças posteriores em workflows. A publicação deve seguir a revisão atual da `main`, sem alterar indevidamente os hashes ou apontar `target_commitish` para outra revisão. Disponibilidade dos ZIPs deve ser confirmada na release pública.
+
+
+## Nova edição compartilhada: Decades + Kanto + Hoenn
+
+**Objetivo:** oferecer, na seção Android do site, um ZIP com as três regiões no **mesmo** `Game.exe` e perfil de saves principal. Não confundir com os pilotos isolados Kanto/Hoenn.
+
+O arquivo da edição conjunta chama-se `Blue-Android-Decades-Kanto-Hoenn.zip`, com pasta interna `Pokemon-Blue-Android/`, e possui **canal próprio** `multiregion`. Ele é publicado em uma release `android-multiregion-*` somente quando o workflow `.github/workflows/android-multiregion.yml` conclui todas as etapas:
+
+1. Instala a base Decades e integra Kanto e Hoenn na `game/` da build principal, sem arquivos de saves dos pilotos.
+2. Revalida a prova de todos os mapas de Kanto e de **199 mapas de Hoenn** antes e depois da compilação.
+3. Compila PBS e plugins com o `Game.exe` no Windows (incluindo `KantoPilot.rb`, `HoennPilot.rb` e `Mobile.rb`).
+4. Inclui os arquivos de prova de instalação da região em `Data/`. O empacotador Decades puro normalmente omite metadados `blue-*.json/txt`; sem esses arquivos, Hoenn apareceria incorretamente como "em preparação" no JoiPlay.
+5. Confere ZIP, plugins e inventário SHA-256 de arquivos e somente então publica o asset e o manifesto de atualização. Se faltar qualquer fonte, compilação ou mapa, **não publica** um ZIP falso.
+6. A página de downloads consulta as **releases reais** antes de exibir o botão de download da edição multirregional; o arquivo do canal `decades` nunca é usado como substituto.
+
+**Instalação Android:** use JoiPlay + RPG Maker Plugin; extraia o ZIP conjunto em uma **nova pasta**, selecione `Game.exe` e preserve cópias de seus saves antes de testar. A edição compartilhada usa o perfil do Decades, não os perfis isolados. O `ATUALIZAR-ANDROID.py` reconhece `multiregion` e não aplica um patch do Decades puro para apagar mapas ou metadados de Kanto/Hoenn.
+
+**Status de qualidade:** o workflow confirma instalação e compilação em runner Windows, mas não garante jogabilidade no aparelho Android. Testar no JoiPlay em celular real: novo jogo, viagens via NPC Decades ↔ Kanto ↔ Hoenn, salvar/recarregar, Centro Pokémon após derrota, batalhas e cenas com toques. A presença de uma release é prova da geração do ZIP, não prova de todas as histórias e eventos.
