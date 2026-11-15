@@ -47,6 +47,10 @@ Para aplicar essas faixas **automaticamente por etapas aqui no ChatGPT**, veja o
 
 O projeto possui um [guia de catálogo e tradução dos diálogos FireRed](docs/Guia_Dialogos_Pokemon_FireRed_EN_PT.md), o [passo a passo de adaptação para o Dessastre Paradoxal](docs/FIRERED_DIALOGOS_PASSO_A_PASSO.md) e um [extrator local EN/PT-BR](scripts/localization/extrair_traduzir_dialogos_firered.py). O extrator funciona sobre uma fonte de referência local e não inclui o roteiro original. **Esta documentação não instala diálogos nem altera eventos**; novas cenas exigem autorização e testes no piloto isolado de Kanto.
 
+## Novo Jogo por região
+
+O **Novo Jogo** da tela inicial do Decades principal agora apresenta a escolha de região. **Decades** mantém a campanha original. **Kanto/Johto/Hoenn/Sinnoh** iniciam pilotos experimentais separados somente quando a instalação local estiver preparada, sem alterar o save principal. Outras regiões aparecem como indisponíveis. Isso **não significa que todas as regiões já estejam unificadas em um único save**. [Como usar, limitações e testes](docs/NOVO_JOGO_SELECAO_REGIONAL.md).
+
 ## Continuidade do projeto
 
 [Próximos passos do jogo, de Kanto e do portal](docs/PROXIMOS_PASSOS.md) · [Plano Codex de testes reais para a Barra 2](docs/KANTO_CODEX_TESTES_E2E.md) · [Prompt pronto para Codex](docs/KANTO_CODEX_PROMPT.md)
