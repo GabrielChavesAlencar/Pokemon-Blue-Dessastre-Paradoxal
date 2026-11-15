@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "81b350fed73aea20d2f767e6ce4e1b80740e82d8",
+      "date": "2026-11-15T17:35:37-03:00",
+      "title": "test(android): localizar módulos reais de instalação regional nos mocks",
+      "category": "Testes"
+    },
+    {
       "sha": "58b5afa21661578366911e0a1fc980b082488407",
       "date": "2026-11-15T17:35:10-03:00",
       "title": "test(android): ZIP compartilhado exige Kanto Hoenn compilados e canal separado",
