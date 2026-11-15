@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ae0a33fe45c41d89c1b1b229dcd01f2565106626",
+      "date": "2026-11-15T13:10:43-03:00",
+      "title": "test(kanto Gary): exibir a excecao nativa e preservar save",
+      "category": "Testes"
+    },
+    {
       "sha": "1910806631602940d5ccf9701f97336663d719e7",
       "date": "2026-11-15T13:10:14-03:00",
       "title": "fix(kanto Gary): mostrar excecao real no jogo em vez de mensagem generica apos falha na batalha",
