@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9cf0e162c1324496becc09d18b64ba935613842c",
+      "date": "2026-11-15T16:14:13-03:00",
+      "title": "docs(hoenn): instalar Hoenn no mesmo Decades com seguranca e QA nativa pendente",
+      "category": "Documentação"
+    },
+    {
       "sha": "b53c7870883d56ef5bd461d913c8818eb4094ca3",
       "date": "2026-11-15T16:12:10-03:00",
       "title": "ci(hoenn): carregar fixture regional em teste de viagem legado",
