@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "624bedb4ccc8c30deb44ef1726b8f54d9f1cde75",
+      "date": "2026-11-15T15:24:37-03:00",
+      "title": "feat(site): painel de balanceamento Kanto com evoluções, níveis e Full Power",
+      "category": "Novidades"
+    },
+    {
       "sha": "0fd2b459855c328a94b98a4d2d8e64fbea7546b4",
       "date": "2026-11-15T15:15:08-03:00",
       "title": "docs(evolution): detalhar os mesmos limites para selvagens e treinadores",
