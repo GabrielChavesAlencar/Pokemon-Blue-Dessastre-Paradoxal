@@ -167,14 +167,24 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
         shared = load_json(project / "data/shared-music.json")["config"]["global"]
         for pool_key in ("wild", "trainer", "gym"):
             preset = shared.get(pool_key, {})
+            tracks = preset.get("tracks")
             if (preset.get("mode") != "random" or
-                    not isinstance(preset.get("tracks"), list) or
-                    not all(isinstance(name, str) for name in preset["tracks"])):
+                    not isinstance(tracks, list) or not tracks or
+                    any(not isinstance(name, str) or not name or
+                        any(char in name for char in "\\t\\r\\n") or
+                        "\\\\" in name or name.startswith("/") or
+                        ".." in name.split("/") for name in tracks)):
                 raise ValueError("Invalid Decades baseline pool " + pool_key)
-            payload = [str(preset.get("volume", 100)),
-                       str(preset.get("pitch", 100)), *preset["tracks"]]
+            volume, pitch = preset.get("volume", 100), preset.get("pitch", 100)
+            if (type(volume) is not int or not 0 <= volume <= 100 or
+                    type(pitch) is not int or not 50 <= pitch <= 150):
+                raise ValueError("Invalid Decades factory pool volume/pitch")
+            payload = [str(volume), str(pitch), *tracks]
             signature = hashlib.sha256("\n".join(payload).encode("utf-8")).hexdigest()
-            lines.append(f"BASEPOOL\t{pool_key}\t{signature}")
+            # SHA256 stays in this audit manifest, computed by Python only.
+            # RGSS cannot assume digest/sha2 exists at battle runtime, so
+            # append exact baseline settings/tracks for safe Ruby comparison.
+            lines.append("\t".join(["BASEPOOL", pool_key, signature, *payload]))
             report["default_global_pool_signatures"] += 1
     seen.clear()
     for row in rules.get("battles", []):
