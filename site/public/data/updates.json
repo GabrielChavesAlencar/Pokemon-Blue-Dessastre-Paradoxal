@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9dc7fa0a3a72349e70260135c4feec38828ad244",
+      "date": "2026-11-14T22:11:20-03:00",
+      "title": "ci(exp): executar regressao compartilhamento moderno de EXP",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "812082df3185ca0263ef2b8cd58c78d3adfb6a60",
+      "date": "2026-11-14T22:11:02-03:00",
+      "title": "test(exp): comprovar partilha nativa 100/50 sem duplicar ou alterar saves",
+      "category": "Testes"
+    },
+    {
       "sha": "187ace674a8a631ac46a7fa88eee9a45e612c57a",
       "date": "2026-11-14T22:10:16-03:00",
       "title": "feat(kanto): copiar PartyExperience para o plugin do piloto",
