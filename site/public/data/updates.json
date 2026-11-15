@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "751b62834d1b73b5526ffdec30796da504abcc5c",
+      "date": "2026-11-15T19:42:26-03:00",
+      "title": "feat(site): wire Apresentação route into portal navigation",
+      "category": "Novidades"
+    },
+    {
       "sha": "c5f1156d2a3f382882379d26717890dd6e9d67d8",
       "date": "2026-11-15T19:42:17-03:00",
       "title": "feat(site): add Apresentação between Início and Downloads",
