@@ -30,9 +30,8 @@ module BlueKantoTitle
     ordered
   end
 
-  # New Game on the MAIN Decades title: choose a starting region first.
-  # Until a unified multi-region campaign exists, regional entries open their
-  # own independently built pilot and NEVER write to the Decades save profile.
+  # Main Decades New Game: verified Kanto and Hoenn installations share the
+  # native game and save profile. Unverified pilots remain isolated.
   START_REGIONS = [
     ["Decades", :decades],
     ["Kanto", :kanto],
@@ -49,10 +48,19 @@ module BlueKantoTitle
   ].freeze
 
   def self.start_region_names
-    installed = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:kanto_integrated?) &&
-                BlueRegionStart.kanto_integrated?
+    kanto = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:kanto_integrated?) &&
+            BlueRegionStart.kanto_integrated?
+    hoenn = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:hoenn_integrated?) &&
+            BlueRegionStart.hoenn_integrated?
     START_REGIONS.map do |name, region|
-      _INTL(region == :kanto && !installed ? "Kanto (instalação necessária)" : name)
+      label = if region == :kanto && !kanto
+                "Kanto (instalação necessária)"
+              elsif region == :hoenn && hoenn
+                "Hoenn"
+              else
+                name
+              end
+      _INTL(label)
     end
   end
 
@@ -75,6 +83,12 @@ module BlueKantoTitle
           return :integrated
         end
         pbMessage(_INTL("Kanto não foi instalado. Feche o jogo e abra novamente o Blue-Story.exe: ele tentará baixar e integrar Kanto automaticamente. Se a instalação falhar, consulte o diagnóstico em .blue-work/kanto-install-status.json. Seus saves serão preservados."))
+      when :hoenn
+        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:request_initial) &&
+           BlueRegionStart.request_initial("HOENN")
+          return :integrated
+        end
+        pbMessage(_INTL("Hoenn ainda não está integrada nesta instalação. Use a ferramenta de integração local com a fonte auditada; até lá, Testar Hoenn continua com save separado. Seus saves de Decades/Kanto não foram modificados."))
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
