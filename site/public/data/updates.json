@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5ecad09524d9c8299b0d92442bd17de7e624f5ab",
+      "date": "2026-11-15T11:45:54-03:00",
+      "title": "test(source): provar origem fixa e SHA256 em ambos endpoints FRLG",
+      "category": "Testes"
+    },
+    {
+      "sha": "9b254f5b5ac97cd2eef4167d473cffa4594217f1",
+      "date": "2026-11-15T11:45:40-03:00",
+      "title": "ci(release): recompilar Blue Story sem misturar importacao Kanto no pacote Android",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9acb0f4a58daca5e00ea7f317ad3be2f25fdc6c4",
       "date": "2026-11-15T11:44:27-03:00",
       "title": "test(kanto): validar criacao do proof ASCII e runtime sync sem tocar saves",
