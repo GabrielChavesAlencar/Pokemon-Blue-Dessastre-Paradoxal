@@ -85,8 +85,11 @@ def release_for(channel):
             raise ValueError("The latest release is not the Decades distribution.")
         return release
     prefix = "kanto-android-" if channel == "kanto" else "android-multiregion-"
-    # These special releases are independent prereleases. In particular the
-    # Decades-only "latest" patch must never delete Kanto/Hoenn maps.
+    # GitHub's global release list is NOT ordered by publication time across
+    # all workflow types. On 15/11/2026 it returned multiregion-9 BEFORE
+    # multiregion-15 and the previous client downgraded the installed game.
+    # Examine every retrieved page and choose the newest *published* release.
+    candidates = []
     for page in range(1, 4):
         url = API + "/releases?per_page=100" + ("&page=" + str(page) if page > 1 else "")
         entries = get_json(url)
@@ -94,11 +97,18 @@ def release_for(channel):
             break
         for release in entries:
             if (str(release.get("tag_name", "")).startswith(prefix) and
-                    asset_url(release, CHANNELS[channel][0])):
-                return release
+                    not release.get("draft", False) and
+                    asset_url(release, CHANNELS[channel][0]) and
+                    asset_url(release, CHANNELS[channel][1])):
+                candidates.append(release)
         if len(entries) < 100:
             break
-    raise ValueError("No verified Android release found for channel: " + channel)
+    if not candidates:
+        raise ValueError("No verified Android release found for channel: " + channel)
+    # published_at is authoritative: tag numbers and GitHub result order are not.
+    return max(candidates, key=lambda r: (r.get("published_at") or
+                                          r.get("created_at") or "",
+                                          str(r.get("tag_name", ""))))
 
 
 def asset_url(release, name):
@@ -133,6 +143,28 @@ def remote_update(info):
             or not isinstance(manifest.get("files"), dict)):
         raise ValueError("Release manifest does not match its channel/revision.")
     return release, manifest
+
+
+def verify_forward_revision(installed_revision, candidate_revision):
+    """Fail closed if the server offers an older or divergent build.
+
+    A newer publication timestamp is not proof of newer source code.
+    Use GitHub's commit ancestry comparison before any patch/full download.
+    """
+    if installed_revision == candidate_revision:
+        return
+    for revision in (installed_revision, candidate_revision):
+        if (not isinstance(revision, str) or len(revision) != 40 or
+                any(char not in "0123456789abcdef" for char in revision.lower())):
+            raise ValueError("Invalid Android release revision; update refused.")
+    comparison = get_json(API + "/compare/" + installed_revision + "..." +
+                          candidate_revision)
+    status = comparison.get("status") if isinstance(comparison, dict) else None
+    if status != "ahead":
+        raise ValueError(
+            "Atualizacao BLOQUEADA: a versao oferecida nao e posterior "
+            "a instalada (GitHub: {}). Nenhum arquivo foi alterado.".format(
+                status or "inconclusivo"))
 
 
 def download(url, destination, expected_sha, expected_size, max_bytes=MAX_PATCH_BYTES):
@@ -450,6 +482,9 @@ def main(argv=None):
     root = args.game_dir.expanduser().resolve()
     info = read_installed(root)
     release, manifest = remote_update(info)
+    # Even a full reinstall must never downgrade or jump to a diverged
+    # history. Same-revision --full is permitted for repairing broken files.
+    verify_forward_revision(info["revision"], manifest["revision"])
     if info["revision"] == manifest["revision"] and not args.full:
         print("O jogo ja esta atualizado:", info["revision"])
         return 0
