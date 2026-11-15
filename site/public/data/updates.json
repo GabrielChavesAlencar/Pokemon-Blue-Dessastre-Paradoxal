@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e11ab230d7e6aac6edd531ca282d842811b175f0",
+      "date": "2026-11-15T08:33:32-03:00",
+      "title": "feat(site): oferecer guias e ferramentas para Johto e Hoenn",
+      "category": "Novidades"
+    },
+    {
+      "sha": "da2ec36d8c49dbb48f9d3c8ebe00a92070921e96",
+      "date": "2026-11-15T08:33:31-03:00",
+      "title": "fix(game): acertar abertura de Hoenn e voltar ao menu pela pausa",
+      "category": "Correções"
+    },
+    {
       "sha": "b024538bf76a48f7205625235f8fa6d96933cbf3",
       "date": "2026-11-14T22:31:02-03:00",
       "title": "style(site): organizar três pilotos regionais no Windows",
