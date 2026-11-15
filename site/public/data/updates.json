@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5fc153bf86f235c7bb55690fa4ee21d536b69d7",
+      "date": "2026-11-15T19:10:32-03:00",
+      "title": "Clarify full install is only needed on first setup or channel change",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "d9dbec5468f26bb161a9b61d801c7d67d4d963a7",
+      "date": "2026-11-15T19:10:30-03:00",
+      "title": "Block multiregion Android releases when updater regression tests fail",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "2539ca7f2915453c7ccf3ed8c99374a9e2718076",
+      "date": "2026-11-15T19:10:28-03:00",
+      "title": "Clarify patch or automatic full ZIP Android update flow",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b2402fc5018f15db5cd16272b44490db8f4c2ffe",
       "date": "2026-11-15T19:08:32-03:00",
       "title": "Run full Android updater regression suite on CI",
