@@ -24,7 +24,7 @@ Dir.mktmpdir("hoenn-main-title") do |tmp|
     File.write("Data/blue-hoenn-start.txt",
                "BLUE_HOENN_START_V1,HOENN,#{start[0]},25,6\n")
     File.write("Data/blue-hoenn-ready.txt",
-               "BLUE_HOENN_READY_V1,199,#{start[0]},#{town[0]}\n")
+               "BLUE_HOENN_READY_V1,199,#{start[0]},#{town.join(\',\')}\n")
     check(!BlueRegionStart.request_initial("HOENN"),
           "start and ready markers alone unlocked Hoenn")
     ["Data/MapInfos.rxdata","Data/Tilesets.rxdata",
