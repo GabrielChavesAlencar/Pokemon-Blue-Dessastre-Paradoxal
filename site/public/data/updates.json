@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "df694005c01b30a53ab95104d0f1029b55e58478",
+      "date": "2026-11-15T19:44:21-03:00",
+      "title": "Exercise incomplete and broken JoiPlay JSON behavior in Kanto regression",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c660ca1cc818c2e6c4c6b487f3fc396d2b7f4c2b",
+      "date": "2026-11-15T19:44:10-03:00",
+      "title": "Use strict JSON-free 142-map Kanto gate on JoiPlay and Windows",
+      "category": "Melhorias"
+    },
+    {
       "sha": "2d7ba3052c92f1f559b61a75292e0f4a4df042f7",
       "date": "2026-11-15T19:43:14-03:00",
       "title": "test(site): cover presentation navigation, gallery, and mobile layout",
