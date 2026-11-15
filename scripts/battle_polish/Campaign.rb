@@ -8,13 +8,27 @@ module BlueCampaign
     BlueStory.story? && !(defined?(BlueBattleLab) && BlueBattleLab::ACTIVE)
   end
   def self.bulk_setup?;!!@bulk_setup;end
+
+  # Story-mode defaults are regional, not lab/battle-mode defaults. Decades
+  # starts with Mega Evolution, Z-Moves and Terastal on, but Dynamax off.
+  # Players may change these afterwards in BLUE / Jornada as before.
+  def self.default_mechanics_for(region)
+    rules = BlueBattleOptions.defaults
+    rules["dynamax"] = false if region == "DECADES"
+    rules
+  end
+
   def self.begin_journey(prompt=true)
     return if $PokemonGlobal.blue_campaign_started
     $PokemonGlobal.blue_campaign_started=true
     $PokemonGlobal.blue_campaign_departure=true
-    $PokemonGlobal.blue_campaign_mechanics=BlueBattleOptions.defaults
+    region = defined?(BlueStory) && BlueStory.respond_to?(:current_region) ?
+             BlueStory.current_region : "DECADES"
+    $PokemonGlobal.blue_campaign_mechanics=default_mechanics_for(region)
     $bag.clear
-    BlueBattleOptions.mechanics_menu(:campaign) if prompt
+    # Story setup should not interrupt the player's adventure with a
+    # configuration menu. It remains accessible through BLUE / Jornada.
+    BlueBattleOptions.mechanics_menu(:campaign) if prompt && region != "DECADES"
   end
   def self.depart
     return unless active? && $PokemonGlobal.blue_campaign_departure && $game_map.map_id!=1
