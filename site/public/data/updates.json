@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6ce7604b648410c3868b7b54cc44923d59b75339",
+      "date": "2026-11-15T09:01:07-03:00",
+      "title": "fix(hoenn): manter Littleroot visivel na saida de casa",
+      "category": "Correções"
+    },
+    {
       "sha": "911244c9d6676a760777291003e7e5c9be242ff2",
       "date": "2026-11-15T08:37:17-03:00",
       "title": "fix(site): servir guias regionais como arquivos estaticos",
