@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "71a165eae5e9dbe54d383e771ed9498c3b088bbb",
+      "date": "2026-11-15T13:54:15-03:00",
+      "title": "fix(decades): corrigir ancora Ruby para selecionar Story Mode e iniciais automaticamente",
+      "category": "Correções"
+    },
+    {
       "sha": "c782cb64ad6646677f4a4df2454b3c5b2f73e682",
       "date": "2026-11-15T13:53:23-03:00",
       "title": "ci(decades): incluir raiz no LOAD_PATH dos testes Ruby do inicio regional",
