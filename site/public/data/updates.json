@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ae7efffc6c4f575a3c63dd66685e9732517fe6b6",
+      "date": "2026-11-15T12:26:06-03:00",
+      "title": "docs(plan): registrar que viagem por NPC e livre, sem precisar da Liga",
+      "category": "Documentação"
+    },
+    {
+      "sha": "fe8d7b7b5c47f14a9e852beeb51534022cd4f04d",
+      "date": "2026-11-15T12:25:51-03:00",
+      "title": "docs(regions): nova regra de viagem livre entre regioes integradas usando NPC inicial",
+      "category": "Novidades"
+    },
+    {
       "sha": "87ef4d3254b4c868e3ac0239c3d3ca4aa4ff2d62",
       "date": "2026-11-15T12:24:24-03:00",
       "title": "fix(travel): validar NPC e cidade inicial tambem no ponto que altera o save",
