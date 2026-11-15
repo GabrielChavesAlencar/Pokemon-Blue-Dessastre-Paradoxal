@@ -230,7 +230,7 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     check($PokemonGlobal.blue_regions["initial"] == "KANTO", "Kanto initial region missing")
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Kanto current region missing")
     check($PokemonGlobal.blue_regions["decades_first_arrival"] == [4,7,8,2],
-          "Native Decades arrival point was not preserved for Kanto League")
+          "Native Decades arrival point was not preserved for free early travel")
     check($PokemonGlobal.blue_regions["pilot_profile_pending"], "Kanto profile scene skipped")
     check($PokemonGlobal.blue_campaign_departure == false, "Kanto starter bag cleared")
     check([$data_system.start_map_id,$data_system.start_x,$data_system.start_y] == [4,7,8],
