@@ -5,6 +5,8 @@ on:
     paths:
       - 'scripts/battle_polish/RegionStart.rb'
       - 'scripts/battle_polish/RegionTravel.rb'
+      - 'scripts/battle_polish/RegionalPolicy.rb'
+      - 'tests/region_policy_runtime.rb'
       - 'scripts/battle_polish/Campaign.rb'
       - 'tests/region_start_runtime.rb'
       - 'tests/region_travel_runtime.rb'
@@ -22,6 +24,7 @@ jobs:
         run: |
           ruby -c scripts/battle_polish/RegionStart.rb
           ruby -c scripts/battle_polish/RegionTravel.rb
+          ruby -c scripts/battle_polish/RegionalPolicy.rb
           ruby -c scripts/battle_polish/Campaign.rb
       - name: Novo Jogo Decades - sem menus iniciais
         run: ruby -I. tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
@@ -29,3 +32,5 @@ jobs:
         run: ruby -I. tests/decades_mechanics_runtime.rb scripts/battle_polish/Campaign.rb
       - name: Viagem Kanto Decades - chegada Cherryhill e mecanicas
         run: ruby -I. tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+      - name: HM - obtencao local obrigatoria e badge nativo
+        run: ruby -I. tests/region_policy_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb scripts/battle_polish/RegionalPolicy.rb
