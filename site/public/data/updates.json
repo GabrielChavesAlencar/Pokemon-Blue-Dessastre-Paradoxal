@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97da69a2e79236ce3a323c518b769c19fd108ee0",
+      "date": "2026-11-15T14:16:08-03:00",
+      "title": "test(regions): verificar itens-chave e HMs locais por regiao, TMs globais e rollback de atalhos",
+      "category": "Testes"
+    },
+    {
       "sha": "c0e25d998712f3f30bd958528819b1900afd0d05",
       "date": "2026-11-15T14:15:06-03:00",
       "title": "refactor(regions): validar atalhos locais sem verificacao duplicada quadratica",
