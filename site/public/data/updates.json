@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "df9e91b85ac27d2a8f3e8a446f757f819d27f41c",
+      "date": "2026-11-15T16:21:19-03:00",
+      "title": "ci(hoenn): conferir viagem e NPC de Littleroot no motor regional",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "b3a5703f71da76c3bdc55d3695f02ac6d0f3e39c",
+      "date": "2026-11-15T16:21:09-03:00",
+      "title": "test(hoenn): testar chegada em Littleroot e NPC de viagem regional",
+      "category": "Testes"
+    },
+    {
       "sha": "f98dbcb54d8ce9c2556f55994d99d53cc4581d6a",
       "date": "2026-11-15T16:19:18-03:00",
       "title": "test(hoenn): validar manifesto compacto em ambiente sem JSON no Essentials",
