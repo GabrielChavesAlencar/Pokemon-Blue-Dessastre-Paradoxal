@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "125155eaf256fcc3e5bfa9880585e9d07ce22618",
+      "date": "2026-11-15T19:13:52-03:00",
+      "title": "Clarify shell folder needs re-entry after full Android installation swap",
+      "category": "Melhorias"
+    },
+    {
       "sha": "db422b4d40dee58a20e8bc14241515fe3e10a4fe",
       "date": "2026-11-15T19:13:02-03:00",
       "title": "Explain full ZIP backup fallback in Android packaged readme",
