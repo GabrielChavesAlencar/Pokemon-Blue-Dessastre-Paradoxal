@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e2b397d9ec78c46dc794df6e10bd70f236216104",
+      "date": "2026-11-15T17:28:12-03:00",
+      "title": "feat(android): empacotar Decades Kanto e Hoenn com provas e plugins compilados",
+      "category": "Novidades"
+    },
+    {
       "sha": "9d1c1d5e58685a1395e2f49764b9cd5e6aa62a18",
       "date": "2026-11-15T17:27:17-03:00",
       "title": "feat(android): canal de atualizacoes independente para Decades Kanto Hoenn",
