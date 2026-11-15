@@ -8,6 +8,7 @@ import json
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -270,6 +271,36 @@ class HoennVerifiedPublicDownloaderTests(unittest.TestCase):
         self.download.written = 0
         self.download.reused = 0
         self.download.bytes_downloaded = 0
+
+    def test_obstacle_sprites_are_discovered_from_pinned_map_events(self):
+        # The exact image named in the real Hoenn installer failure must be
+        # discovered even when it is not part of the map's tileset graphics.
+        def source_event(name, graphic, *, conditional=False, pages=1):
+            condition = SimpleNamespace(attrs={"@switch1_valid": conditional})
+            page = SimpleNamespace(attrs={
+                "@graphic": SimpleNamespace(attrs={"@character_name": graphic.encode()}),
+                "@condition": condition,
+            })
+            return SimpleNamespace(attrs={
+                "@name": name.encode(), "@pages": [page] * pages,
+            })
+        world = SimpleNamespace(attrs={"@events": {
+            1: source_event("Strength Boulder", "OBJ_RSE_Strength Boulder"),
+            2: source_event("RockSmash Rock", "OBJ_RSE_RockSmash Rock"),
+            3: source_event("NPC", "NPC_ORAS_Birch"),
+            4: source_event("Strength Boulder", "Ignored conditional", conditional=True),
+            5: source_event("Pushable Rock", "Ignored multipage", pages=2),
+            6: source_event("Strength Rock", "../unsafe"),
+        }})
+        self.assertEqual(downloader.obstacle_character_paths(world), {
+            "Graphics/Characters/OBJ_RSE_Strength Boulder.png",
+            "Graphics/Characters/OBJ_RSE_RockSmash Rock.png",
+        })
+        self.assertNotIn("Graphics/Characters/OBJ_RSE_Strength Boulder.png",
+                         downloader.BOSS_SPRITES)
+        # The inventory must provide a pinned SHA for anything selected.
+        self.assertTrue(all(item.startswith("Graphics/Characters/") for item in
+                            downloader.obstacle_character_paths(world)))
 
     def test_fixed_revision_and_upstream_raw_url(self):
         self.assertEqual(downloader.UPSTREAM, hoenn.UPSTREAM)
