@@ -1,13 +1,17 @@
 """Offline tests of channel isolation, delta generation and safe installation."""
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 import zipfile
 
 from scripts.android.build_manifest import installed_manifest
 from scripts.android.publish_updates import publish
-from scripts.android.update_client import apply_patch, read_installed, safe_path, sha256_bytes
+from scripts.android.update_client import (apply_patch, apply_full_archive,
+                                           main, read_installed, safe_path,
+                                           sha256_bytes)
 
 
 class AndroidUpdatesTest(unittest.TestCase):
@@ -148,6 +152,89 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertIsNone(result["patch"])
         self.assertFalse((self.root / "Blue-Android-Kanto-Piloto.patch.zip").exists())
 
+
+    def full_zip_fixture(self, revision, map_content, exe_content):
+        """A minimal real-channel ZIP with immutable root and update manifest."""
+        prefix = "Pokemon-Blue-Kanto-Android/"
+        files = {"Data/Map001.rxdata": map_content,
+                 "Game.exe": exe_content,
+                 "ATUALIZAR-ANDROID.py": b"# updater\n"}
+        manifest = json.loads(installed_manifest("kanto", revision, files))
+        target = self.root / "Blue-Android-Kanto-Piloto.zip"
+        with zipfile.ZipFile(target, "w") as archive:
+            for name, content in files.items():
+                archive.writestr(prefix + name, content)
+            archive.writestr(prefix + "Data/blue-update.json",
+                             json.dumps(manifest))
+        return target, manifest
+
+    def installed_full_fixture(self):
+        game = self.root / "installed"
+        (game / "Data").mkdir(parents=True)
+        (game / "Data/Map001.rxdata").write_bytes(b"OLD MAP")
+        (game / "Game.exe").write_bytes(b"OLD EXE")
+        (game / "ATUALIZAR-ANDROID.py").write_bytes(b"# updater\n")
+        previous = json.loads(installed_manifest("kanto", self.a, {
+            "Data/Map001.rxdata": b"OLD MAP",
+            "Game.exe": b"OLD EXE",
+            "ATUALIZAR-ANDROID.py": b"# updater\n",
+        }))
+        (game / "Data/blue-update.json").write_text(json.dumps(previous))
+        (game / "Data/File A.rxdata").write_bytes(b"IMPORTANT SAVE")
+        (game / "Game.rxdata.bak").write_bytes(b"OTHER SAVE BACKUP")
+        (game / "personal-note.txt").write_text("old user data")
+        return game, previous
+
+    def test_full_zip_fallback_keeps_saves_and_original_game(self):
+        game, old = self.installed_full_fixture()
+        archive, _ = self.full_zip_fixture(self.b, b"NEW MAP", b"NEW EXE")
+        public = publish(archive, "kanto")
+        self.assertIsNone(public["patch"])
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        backup, saved = apply_full_archive(game, old, manifest, archive)
+        self.assertEqual(saved, 2)
+        self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
+        self.assertEqual((game / "Game.exe").read_bytes(), b"NEW EXE")
+        self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
+        self.assertEqual((game / "Game.rxdata.bak").read_bytes(), b"OTHER SAVE BACKUP")
+        self.assertEqual(read_installed(game)["revision"], self.b)
+        self.assertEqual((backup / "Data/Map001.rxdata").read_bytes(), b"OLD MAP")
+        self.assertEqual((backup / "personal-note.txt").read_text(), "old user data")
+
+    def test_rejects_corrupted_full_zip_without_affecting_installed_game(self):
+        game, old = self.installed_full_fixture()
+        archive, _ = self.full_zip_fixture(self.b, b"NEW MAP", b"NEW EXE")
+        publish(archive, "kanto")
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        with zipfile.ZipFile(archive, "a") as destination:
+            destination.writestr("Pokemon-Blue-Kanto-Android/../../unsafe.txt", "BAD")
+        with self.assertRaisesRegex(ValueError, "Unsafe|Invalid"):
+            apply_full_archive(game, old, manifest, archive)
+        self.assertEqual(read_installed(game)["revision"], self.a)
+        self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
+
+    def test_termux_update_automatically_uses_full_zip_when_no_patch(self):
+        game, _ = self.installed_full_fixture()
+        archive, _ = self.full_zip_fixture(self.b, b"NEW MAP", b"NEW EXE")
+        publish(archive, "kanto")
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        asset_name = "Blue-Android-Kanto-Piloto.zip"
+        url = ("https://github.com/GabrielChavesAlencar/"
+               "Pokemon-Blue-Dessastre-Paradoxal/releases/download/"
+               "kanto-android-test/" + asset_name)
+        release = {"assets": [{"name": asset_name, "state": "uploaded",
+                               "browser_download_url": url}]}
+        def fake_download(_url, destination, sha, size, **kwargs):
+            self.assertEqual(size, archive.stat().st_size)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(archive, destination)
+        with (patch("scripts.android.update_client.remote_update",
+                    return_value=(release, manifest)),
+              patch("scripts.android.update_client.download",
+                    side_effect=fake_download)):
+            self.assertEqual(main(["--game-dir", str(game), "--update"]), 0)
+        self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
+        self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
 
 if __name__ == "__main__":
     unittest.main()
