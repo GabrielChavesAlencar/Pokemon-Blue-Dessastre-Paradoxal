@@ -8,6 +8,7 @@ import {changesPage} from './changes.js';
 import {loadRegions,regionsPage,regionPicker} from './regions.js';
 import {loadKanto,kantoIndex,kantoLocation,kantoTrainer} from './kanto.js';
 import {loadPilotCatalog,pilotIndex} from './regional-pilot.js';
+import {presentationPage} from './presentation.js';
 import {downloadsPage} from './downloads.js';
 import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
@@ -124,6 +125,7 @@ async function render(scroll=false){
       main.innerHTML=regionsPage(registry);setPage('Circuito de regiões');
     }else if(route==='atualizacoes'){main.innerHTML=updates(model,state);setPage('Atualizações');}
     else if(route==='o-que-mudou'){main.innerHTML=changesPage();setPage('O que mudou');}
+    else if(route==='apresentacao'){main.innerHTML=presentationPage(model);setPage('Apresentação');}
     else if(route==='downloads'){main.innerHTML=downloadsPage();setPage('Downloads');void bindAndroidRelease(main);}
     else if(route==='historia'){main.innerHTML=storyIndex(model);setPage('Guia da História');}
     else if(route==='treinadores'){
