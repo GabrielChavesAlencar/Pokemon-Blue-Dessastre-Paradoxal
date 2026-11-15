@@ -310,7 +310,7 @@ module BlueRegionStart
     # Use original event choice indices, not reordered display indices:
     # RPG Maker's command_402 checks these indices to run the correct branch.
     preferred = [
-      /\\A(?:Story Mode|Begin Story Mode|Modo Hist[oó]ria|Come[cç]ar Hist[oó]ria)\\z/i,
+      /\A(?:Story Mode|Begin Story Mode|Modo Hist[oó]ria|Come[cç]ar Hist[oó]ria)\z/i,
       /Traditional Starters|Iniciais Tradicionais/i,
       /Intended Soundtrack|Trilha Sonora Original/i,
       /Yes|Sim/i
@@ -321,7 +321,7 @@ module BlueRegionStart
     end
     # A new game without manual setup uses its first affirmative option;
     # never choose Cancel/Back/No as an accidental default.
-    labels.index { |text| text.to_s !~ /\\A(?:Cancel|Back|No|Voltar|N[aã]o)\\z/i } || 0
+    labels.index { |text| text.to_s !~ /\A(?:Cancel|Back|No|Voltar|N[aã]o)\z/i } || 0
   end
 
   module DecadesAutoChoices
@@ -352,7 +352,7 @@ module BlueRegionStart
       # Preserve Decades' native event flow: it will add the returned Pokemon
       # normally. Choose conventional starters with no selection UI, once
       # per call, rather than placing fabricated Pokemon directly in storage.
-      return super unless list.to_s.match?(/\\A(?:Traditional_Starters|All_Starters)\\z/i)
+      return super unless list.to_s.match?(/\A(?:Traditional_Starters|All_Starters)\z/i)
       state = $PokemonGlobal.blue_regions
       roster = [:BULBASAUR, :CHARMANDER, :SQUIRTLE]
       index = state["decades_auto_starter_index"].to_i
