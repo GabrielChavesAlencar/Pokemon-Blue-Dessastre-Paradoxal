@@ -1,4 +1,4 @@
-"""Kanto standalone protagonist: smaller field sprite without changing NPCs or Decades."""
+"""Kanto standalone protagonist: adaptive smaller sprite without changing NPCs or Decades."""
 from __future__ import annotations
 
 import shutil
@@ -46,14 +46,25 @@ end
 File.write("Kanto pilot.json", "{}")
 load ARGV.fetch(0)
 check(BlueKantoPilot::PILOT_OVERWORLD_SCALE, "isolated pilot marker ignored")
-check(BlueKantoPilot::PLAYER_OVERWORLD_ZOOM == 0.75, "unexpected zoom value")
+check(BlueKantoPilot::PLAYER_OVERWORLD_ZOOM == 0.60, "unexpected zoom value")
+check(BlueKantoPilot::PLAYER_OVERWORLD_MAX_HEIGHT == 30, "unexpected max rendered height")
 
 $game_player = Game_Player.new
 sprite = Sprite_Character.new($game_player)
+sprite.instance_variable_set(:@ch, 48)
 sprite.update
-check(sprite.zoom_x == 0.75 && sprite.zoom_y == 0.75, "player not smaller")
+check(sprite.zoom_x == 0.60 && sprite.zoom_y == 0.60, "player not smaller")
+check(sprite.zoom_x * 48 <= 30, "player taller than FRLG reference")
+sprite.instance_variable_set(:@ch, 80)
+sprite.update
+check(sprite.zoom_x == 0.375 && sprite.zoom_y == 0.375, "tall avatar not limited to 30 pixels")
+sprite.instance_variable_set(:@ch, 20)
+sprite.update
+check(sprite.zoom_x == 0.60 && sprite.zoom_y == 0.60, "small avatar was enlarged")
+sprite.instance_variable_set(:@ch, 48)
+sprite.update
 check(sprite.ox == 16 && sprite.oy == 32, "feet pivot changed")
-check(sprite.base_updates == 1, "native character animation update skipped")
+check(sprite.base_updates == 4, "native character animation update skipped")
 
 npc = Sprite_Character.new(Object.new)
 npc.update
@@ -66,7 +77,7 @@ sprite.update
 check(sprite.zoom_x == 1.0 && sprite.zoom_y == 1.0, "previous player still scaled")
 new_sprite = Sprite_Character.new($game_player)
 2.times { new_sprite.update }
-check(new_sprite.zoom_x == 0.75 && new_sprite.zoom_y == 0.75, "new player scale unstable")
+check(new_sprite.zoom_x == 0.60 && new_sprite.zoom_y == 0.60, "new player scale unstable")
 check(new_sprite.base_updates == 2, "native updates lost")
 
 # The shared Decades game never has the pilot marker at boot.
@@ -75,7 +86,7 @@ BlueKantoPilot.const_set(:PILOT_OVERWORLD_SCALE, false)
 new_sprite.update
 check(new_sprite.zoom_x == 1.0 && new_sprite.zoom_y == 1.0, "Decades wrongly scaled")
 
-puts "PASS: Kanto player at 75%; NPCs, pivots, and Decades unchanged"
+puts "PASS: Kanto player at max 60% and 30px; NPCs, pivots, and Decades unchanged"
 """
 
 
@@ -101,7 +112,7 @@ class KantoOverworldPlayerScaleTests(unittest.TestCase):
                 cwd=tmp, capture_output=True, text=True, timeout=20, check=False,
             )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("PASS: Kanto player at 75%", result.stdout)
+        self.assertIn("PASS: Kanto player at max 60% and 30px", result.stdout)
 
 
 if __name__ == "__main__":
