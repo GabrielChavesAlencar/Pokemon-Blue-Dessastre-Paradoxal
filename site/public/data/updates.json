@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "87ef4d3254b4c868e3ac0239c3d3ca4aa4ff2d62",
+      "date": "2026-11-15T12:24:24-03:00",
+      "title": "fix(travel): validar NPC e cidade inicial tambem no ponto que altera o save",
+      "category": "Correções"
+    },
+    {
       "sha": "7bca2e6115e9065ebda350492c9afee2395a079d",
       "date": "2026-11-15T12:24:02-03:00",
       "title": "fix(hoenn): remover aviso antigo de viagem desbloqueada apos Liga",
