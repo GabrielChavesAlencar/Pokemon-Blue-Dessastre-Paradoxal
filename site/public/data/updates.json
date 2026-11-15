@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c98ea9c1a6cf4595adb4d7f10a91fe9144537f55",
+      "date": "2026-11-15T16:03:32-03:00",
+      "title": "feat(hoenn): conectar Littleroot ao transporte regional e saves compartilhados",
+      "category": "Novidades"
+    },
+    {
       "sha": "530d67e1dace20c7dfbf830fc28d6c44e3864e25",
       "date": "2026-11-15T16:03:02-03:00",
       "title": "feat(hoenn): oferecer Hoenn no Novo Jogo compartilhado após instalação verificada",
