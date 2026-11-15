@@ -1,0 +1,33 @@
+name: Kanto - escala do protagonista
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/regions/pilot.py'
+      - 'tests/test_kanto_player_scale.py'
+      - '.github/workflows/kanto-player-scale.yml'
+  pull_request:
+    paths:
+      - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/regions/pilot.py'
+      - 'tests/test_kanto_player_scale.py'
+      - '.github/workflows/kanto-player-scale.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  player-overworld:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Ruby syntax
+        run: ruby -c scripts/regions/KantoPilot.rb
+      - name: Player scale regression
+        run: python -m unittest discover -s tests -p test_kanto_player_scale.py -v
