@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/regions/install_hoenn.py'
       - 'scripts/regions/auto_integrate_hoenn.py'
+      - 'scripts/regions/ensure_hoenn_source.py'
       - 'scripts/regions/HoennPilot.rb'
       - 'scripts/battle_polish/RegionStart.rb'
       - 'scripts/battle_polish/RegionTravel.rb'
@@ -33,7 +34,7 @@ jobs:
           ruby -c scripts/battle_polish/RegionStart.rb
           ruby -c scripts/battle_polish/RegionTravel.rb
           ruby -c scripts/battle_polish/TitleKanto.rb
-          python -m py_compile scripts/regions/install_hoenn.py scripts/regions/auto_integrate_hoenn.py scripts/install_game.py
+          python -m py_compile scripts/regions/install_hoenn.py scripts/regions/auto_integrate_hoenn.py scripts/regions/ensure_hoenn_source.py scripts/install_game.py
       - name: Hoenn integrated installer safety tests
         run: python -m unittest discover -s tests -p 'test_hoenn_main_integration.py' -v
       - name: Hoenn New Game release gate
