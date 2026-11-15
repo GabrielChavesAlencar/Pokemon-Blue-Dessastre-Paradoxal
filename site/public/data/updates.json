@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bad9aed5f646da9dadffc5f7b5339be1b40a07a1",
+      "date": "2026-11-15T15:43:49-03:00",
+      "title": "fix(regions): carregar proteção regional de checkpoint no jogo e pilotos",
+      "category": "Correções"
+    },
+    {
+      "sha": "6735f9036373d46db2aac205cdb5cffd371f2a80",
+      "date": "2026-11-15T15:43:46-03:00",
+      "title": "fix(regions): carregar proteção regional de checkpoint no jogo e pilotos",
+      "category": "Correções"
+    },
+    {
+      "sha": "03e3f1e6b7060f059394937d894b2a864eecfb58",
+      "date": "2026-11-15T15:43:43-03:00",
+      "title": "fix(regions): carregar proteção regional de checkpoint no jogo e pilotos",
+      "category": "Correções"
+    },
+    {
+      "sha": "fda90bd35f52e9401648316f3183954302d97351",
+      "date": "2026-11-15T15:43:41-03:00",
+      "title": "fix(regions): carregar proteção regional de checkpoint no jogo e pilotos",
+      "category": "Correções"
+    },
+    {
       "sha": "b9b01a69c40768a7425dc1cdcb141b23c2a8b51e",
       "date": "2026-11-15T15:42:50-03:00",
       "title": "fix(regions): evitar blackout em Centro Pokémon de outra região",
