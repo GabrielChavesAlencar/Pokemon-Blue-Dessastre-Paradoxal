@@ -119,6 +119,11 @@ module BlueRegionStart
       "PBS/encounters_kanto.txt", "PBS/trainers_kanto.txt",
       "PBS/trainer_types_kanto.txt", "PBS/map_metadata_kanto.txt",
       "PBS/map_connections_kanto.txt",
+      "Data/blue-kanto-locale.dat", "Data/blue-kanto-npc-dialogues.dat",
+      "Data/blue-kanto-pewter-route3-gate.txt",
+      "Data/blue-kanto-pewter-mom-sprite.txt",
+      "Data/blue-kanto-viridian-route2-line.txt",
+      "Data/blue-kanto-silph-floors.txt",
       "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
     ]
     return false unless required.all? { |name| File.file?(name) }
@@ -130,7 +135,7 @@ module BlueRegionStart
     info = JSON.parse(File.read(KANTO_INSTALL))
     return false unless info.is_a?(Hash) && info["schema"] == 1 &&
                         info["source"] == "Essentials FRLG 21.1" &&
-                        info["maps"].is_a?(Hash) && info["maps"].length >= 13
+                        info["maps"].is_a?(Hash) && info["maps"].length >= 142
     maps = info["maps"]
     return false unless maps["7"] == spawn[0] && maps["5"].is_a?(Integer) &&
                         maps.values.uniq.length == maps.length &&
