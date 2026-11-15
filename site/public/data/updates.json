@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5f1156d2a3f382882379d26717890dd6e9d67d8",
+      "date": "2026-11-15T19:42:17-03:00",
+      "title": "feat(site): add Apresentação between Início and Downloads",
+      "category": "Novidades"
+    },
+    {
+      "sha": "e24560d8b4cf241b92502b95156ae1ca941ef7d8",
+      "date": "2026-11-15T19:42:01-03:00",
+      "title": "style(site): add responsive presentation page layout",
+      "category": "Melhorias"
+    },
+    {
       "sha": "da4a6217b97562e80253077e1ed7ae6e053215c3",
       "date": "2026-11-15T19:40:17-03:00",
       "title": "feat(site): add editorial introduction page for Dessastre Paradoxal",
