@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8cd0528b06b3095aee4a8a298286c9081e49b00f",
+      "date": "2026-11-15T11:07:56-03:00",
+      "title": "fix(site): manter download apenas EXE sem instruir uso de BAT",
+      "category": "Correções"
+    },
+    {
       "sha": "e2433f84142536dfe22052ed5695e8fba59fe1db",
       "date": "2026-11-15T11:06:59-03:00",
       "title": "test(installer): validar hash backup e protecao de saves ao atualizar runtime Kanto",
