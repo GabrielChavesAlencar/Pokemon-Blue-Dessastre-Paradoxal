@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f2aa1d0835c18fbe9763abbf32859a5cf563e94b",
+      "date": "2026-11-15T16:14:58-03:00",
+      "title": "fix(hoenn): permitir gate verificado sem gem JSON no runtime Essentials",
+      "category": "Correções"
+    },
+    {
       "sha": "9cf0e162c1324496becc09d18b64ba935613842c",
       "date": "2026-11-15T16:14:13-03:00",
       "title": "docs(hoenn): instalar Hoenn no mesmo Decades com seguranca e QA nativa pendente",
