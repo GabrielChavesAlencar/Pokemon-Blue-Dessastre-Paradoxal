@@ -23,10 +23,14 @@ module BlueHabitat
     end.sort_by { |area| [area[:name],area[:map]] }
   end
   def self.species(slots)
-    slots.map do |slot|
+    slots.flat_map do |slot|
       data=GameData::Species.get(slot[1])
       data=BlueStory.replacement(data,BlueStory.cap) if BlueStory.enabled? && BlueStory.cap
-      data.species
+      if defined?(BlueEvolutionScaling) && BlueEvolutionScaling.active?
+        BlueEvolutionScaling.available_wild_species(data.species, BlueEvolutionScaling.progress_level)
+      else
+        [data.species]
+      end
     end.uniq
   end
   def self.entries(slots)
