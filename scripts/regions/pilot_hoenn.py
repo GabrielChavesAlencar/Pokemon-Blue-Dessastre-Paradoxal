@@ -127,8 +127,12 @@ SOURCE_MAPS = {
     **SOURCE_MAPS_STAGE9,
     **SOURCE_MAPS_STAGE10,
 }
+HOME_OUTSIDE = (7, 5, 9)
+HOME_INSIDE = (8, 10, 10)
+HOME_EXIT_Y = 11
+HOME_EXIT_X = (10, 11)  # Source Map008 event 1: Exit size(2,1).
 WARP_PAIRS = (
-    ((7, 5, 8), (7, 5, 9), (8, 10, 10), (8, 10, 9)),
+    ((7, 5, 8), HOME_OUTSIDE, (8, HOME_EXIT_X[0], HOME_EXIT_Y), HOME_INSIDE),
     ((8, 10, 4), (8, 10, 5), (8, 28, 3), (8, 28, 4)),
     ((7, 7, 16), (7, 7, 17), (11, 8, 14), (11, 8, 13)),
     ((12, 6, 16), (12, 6, 17), (13, 8, 10), (13, 8, 9)),
@@ -594,7 +598,20 @@ def append_event(map_data, name, x, y, page):
     return n
 
 
-def add_opening(maps, balls, rival, sprite):
+def home_exit_page(town_id, x):
+    page = event_page(warp=(town_id, *HOME_OUTSIDE[1:]), touch=True)
+    warp = page.attrs["@list"][0]
+    warp.attrs["@indent"] = 1
+    denied = command(355, f"BlueHoennPilot.home_exit_blocked({x})".encode("ascii"))
+    denied.attrs["@indent"] = 1
+    page.attrs["@list"] = [
+        command(111, 12, b"BlueHoennPilot.home_exit_allowed?"), warp,
+        command(411), denied, command(412), command(0),
+    ]
+    return page
+
+
+def add_opening(maps, balls, rival, sprite, town_id):
     # Trigger profile once on a new save. The self switch also works for
     # existing saves with no pending profile.
     profile = event_page(script="BlueHoennPilot.choose_profile")
@@ -606,6 +623,8 @@ def add_opening(maps, balls, rival, sprite):
     off.attrs.update({"@trigger": 0, "@list": [command(0)]})
     maps[8].attrs["@events"][len(maps[8].attrs["@events"])].attrs["@pages"].append(off)
     append_event(maps[8], "HN_Clock", 26, 3, event_page(script="BlueHoennPilot.clock"))
+    x = HOME_EXIT_X[1]
+    append_event(maps[8], "HN_HomeExit_Right", x, HOME_EXIT_Y, home_exit_page(town_id, x))
     # These two cells are the complete width of the northbound Rota 101
     # entrance. The invisible player-touch event starts the rescue scene.
     for x in (10, 11):
@@ -1601,7 +1620,8 @@ def build_overlay(game, source):
         for source_point, arrival, suffix in ((a, b_arrival, "A"), (b, a_arrival, "B")):
             mid, x, y = source_point
             dest, dest_x, dest_y = arrival
-            page = event_page(warp=(ids[dest], dest_x, dest_y), touch=True)
+            page = (home_exit_page(ids[dest], x) if index == 1 and suffix == "B"
+                    else event_page(warp=(ids[dest], dest_x, dest_y), touch=True))
             append_event(maps[mid], f"HN_DOOR_{index}_{suffix}", x, y, page)
 
     for mid, x, y, name, sprite, handler in PEOPLE:
@@ -1616,7 +1636,7 @@ def build_overlay(game, source):
             proxy.attrs["@trigger"] = 0
             append_event(maps[mid], f"HN_{name}_counter", px, py, proxy)
 
-    add_opening(maps, balls, rival, rival_image)
+    add_opening(maps, balls, rival, rival_image, ids[7])
     stage3_counts = add_stage3_events(maps, game)
     stage4_counts = add_stage4_events(maps, game)
     stage5_counts = add_stage5_events(maps, game)

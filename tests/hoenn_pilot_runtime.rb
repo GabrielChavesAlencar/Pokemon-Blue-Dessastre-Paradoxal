@@ -147,13 +147,23 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check(Marshal.dump($PokemonGlobal.blue_regions) == old, "Other regional save modified")
 
     $PokemonGlobal.blue_regions["current"] = "HOENN"
+    BlueHoennPilot.define_singleton_method(:metadata) { [[701,25,6],{7=>700,8=>701,101=>703}] }
+    $game_map = Struct.new(:map_id).new(701)
+    check(!BlueHoennPilot.home_exit_allowed?, "Player can leave without clock or mother")
     check(BlueHoennPilot.mother, "Intro with mother missing")
-    check(BlueHoennPilot.route_birch, "Intro guard not triggered")
-    check(!BlueHoennPilot.state["birch_rescue_active"], "Clock guard bypassed")
-    check($game_player.y == 19, "Player was not kept south of Birch")
+    check(!BlueHoennPilot.home_exit_allowed?, "Mother alone opens the home door")
+    $game_player.moveto(11,11)
+    check(BlueHoennPilot.home_exit_blocked(11), "No directions at inside threshold")
+    check([$game_player.x,$game_player.y] == [11,10], "Blocked exit displaced player")
     BlueHoennPilot.clock
     check(BlueHoennPilot.mother, "Mother after clock missing")
+    check(BlueHoennPilot.home_exit_allowed?, "Completed home introduction blocks exit")
+    $game_map.map_id=703
+    check(!BlueHoennPilot.home_exit_allowed?, "House gate reachable outdoors")
+    BlueHoennPilot.state.delete("clock_set") # old save that was already outside
+    $game_player.moveto(10,18)
     check(BlueHoennPilot.route_birch, "Birch encounter not triggered")
+    check([$game_player.x,$game_player.y] == [10,18], "Route pushed a saved player backward")
     check(BlueHoennPilot.state["birch_rescue_active"], "Rescue flag missing")
     check(!BlueHoennPilot.choose_starter(:TREECKO), "Old lab object must not give starter")
     check(!BlueHoennPilot.choose_birch_ball(:PIKACHU), "Unlisted species accepted")

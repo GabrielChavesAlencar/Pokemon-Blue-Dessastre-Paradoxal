@@ -130,10 +130,18 @@ module BlueKantoTitle
   def self.regional_pilot(directory, region, desktop_folder, compiled)
     return nil if pilot? || !File.file?("Game.exe")
     game = File.expand_path(Dir.pwd)
-    candidates = [File.expand_path("../.blue-work/#{directory}-pilot", game)]
+    candidates = []
+    if region == "Hoenn"
+      candidates << File.expand_path("../.blue-work/hoenn-imp-qa", game)
+      candidates << File.expand_path("../.blue-work/hoenn-qa-fase12", game)
+    end
+    candidates << File.expand_path("../.blue-work/#{directory}-pilot", game)
     candidates << File.expand_path("../.blue-work/game-johto-qa", game) if region == "Johto"
     profile = ENV["USERPROFILE"]
     if profile && !profile.empty?
+      if region == "Hoenn"
+        candidates << File.expand_path("Documents/Codex/.blue-work/hoenn-imp-qa", profile)
+      end
       candidates << File.expand_path("Documents/Codex/#{desktop_folder}", profile)
     end
     candidates.each do |folder|

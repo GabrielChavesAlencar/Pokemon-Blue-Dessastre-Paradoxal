@@ -30,7 +30,7 @@ class HoennStage2Tests(unittest.TestCase):
     def test_three_physical_balls_and_route103_event_are_authored(self):
         maps = {mid: ruby("RPG::Map", events={}) for mid in (8, 101, 103)}
         balls = [(101, 8, 20), (101, 10, 20), (101, 12, 20)]
-        add_opening(maps, balls, (103, 8, 7), "trainer_LASS")
+        add_opening(maps, balls, (103, 8, 7), "trainer_LASS", 700)
         route = {row.attrs["@name"].decode(): row
                  for row in maps[101].attrs["@events"].values()}
         self.assertEqual(len(route), 5)
@@ -68,7 +68,7 @@ class HoennStage2Tests(unittest.TestCase):
         maps = {mid: ruby("RPG::Map", events={}) for mid in (8, 101, 103)}
         with self.assertRaisesRegex(ValueError, "sobrepõem"):
             add_opening(maps, [(101, 10, 18), (101, 12, 20), (101, 14, 20)],
-                        (103, 8, 7), "trainer_LASS")
+                        (103, 8, 7), "trainer_LASS", 700)
 
 
 if __name__ == "__main__":

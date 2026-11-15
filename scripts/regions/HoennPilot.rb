@@ -363,6 +363,23 @@ module BlueHoennPilot
     progress["clock_set"] = true
   end
 
+  def self.home_exit_allowed?
+    progress = state
+    return false unless progress && $game_map && $game_map.map_id == metadata[1][8]
+    !!(progress["clock_set"] && progress["met_mother"])
+  end
+
+  def self.home_exit_blocked(x)
+    return false unless state && $game_map && $game_map.map_id == metadata[1][8]
+    return false unless $game_player && [10, 11].include?(x)
+    pbMessage(localized(
+      "Set the clock upstairs and talk to Mom before leaving home.",
+      "Ajuste o relógio do quarto e fale com sua mãe antes de sair de casa."))
+    # If the player stepped onto the threshold, return just one tile inside.
+    $game_player.moveto(x, 10) if $game_player.x == x && $game_player.y == 11
+    true
+  end
+
   # Only active inside the separate Hoenn pilot. These flags are kept in the
   # regional save, never in a global switch shared by Kanto/Johto/Decades.
   RIVAL_VERSIONS = { TREECKO: 210, TORCHIC: 211, MUDKIP: 212 }.freeze
@@ -405,11 +422,6 @@ module BlueHoennPilot
     flags = state
     return false unless flags
     return false if flags["birch_rescued"] || flags["met_birch"]
-    if !flags["met_mother"] || !flags["clock_set"]
-      pbMessage(_INTL("Converse com sua mãe e ajuste o relógio antes de partir."))
-      $game_player.moveto($game_player.x, 19) if $game_player && $game_player.y == 18
-      return true
-    end
     flags["birch_rescue_active"] = true
     pbMessage(_INTL("Birch: Socorro! Um Zigzagoon me persegue! Escolha uma das três Poké Bolas na maleta logo ao norte!"))
     # The player must be able to STEP PAST the entrance trigger to reach

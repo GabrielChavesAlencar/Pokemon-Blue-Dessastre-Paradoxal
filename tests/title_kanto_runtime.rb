@@ -151,6 +151,13 @@ Dir.mktmpdir("blue-title-root-") do |root|
       File.write(File.join(hoenn, "Data/blue-hoenn-compiled.txt"), "compiled")
       require_check(BlueKantoTitle.hoenn_launcher == [File.join(hoenn, "Game.exe"), hoenn],
                     "Hoenn must use its own compiled pilot")
+      full_hoenn = File.join(root, ".blue-work", "hoenn-imp-qa")
+      FileUtils.mkdir_p(File.join(full_hoenn, "Data"))
+      ["Game.exe", "Hoenn pilot.json", "Data/blue-hoenn-compiled.txt"].each do |name|
+        FileUtils.cp(File.join(hoenn, name), File.join(full_hoenn, name))
+      end
+      require_check(BlueKantoTitle.hoenn_launcher == [File.join(full_hoenn, "Game.exe"), full_hoenn],
+                    "Hoenn should prefer the current compiled pilot over the older copy")
       [["johto", "Johto", "blue-johto-qa-compiled.txt"], ["sinnoh", "Sinnoh", "blue-sinnoh-compiled.txt"]].each do |key, label, stamp|
         pilot = File.join(root, ".blue-work", "#{key}-pilot")
         FileUtils.mkdir_p(File.join(pilot, "Data"))
