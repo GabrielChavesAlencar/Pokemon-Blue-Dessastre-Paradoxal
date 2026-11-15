@@ -1,0 +1,28 @@
+name: Decades - entrada sem menus e transporte
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'scripts/battle_polish/RegionTravel.rb'
+      - 'scripts/battle_polish/Campaign.rb'
+      - 'tests/region_start_runtime.rb'
+      - 'tests/region_travel_runtime.rb'
+      - '.github/workflows/decades-regional-start.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  decades:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sintaxe Ruby do inicio e viagem
+        run: |
+          ruby -c scripts/battle_polish/RegionStart.rb
+          ruby -c scripts/battle_polish/RegionTravel.rb
+          ruby -c scripts/battle_polish/Campaign.rb
+      - name: Novo Jogo Decades - sem menus iniciais
+        run: ruby tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
+      - name: Viagem Kanto Decades - chegada Cherryhill e mecanicas
+        run: ruby tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
