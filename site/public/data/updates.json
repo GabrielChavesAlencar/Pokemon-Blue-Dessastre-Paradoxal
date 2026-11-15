@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "12abcdc738527f71fc5a279e1361d563146c966c",
+      "date": "2026-11-15T11:04:53-03:00",
+      "title": "test(installer): verificar sincronizacao segura do runtime em instalacao existente",
+      "category": "Testes"
+    },
+    {
       "sha": "25ff5cec234588c2bc3c2a4e4ce839e89d7ef2d5",
       "date": "2026-11-15T11:04:33-03:00",
       "title": "feat(updater): sincronizar apenas runtime de Kanto com SHA256 nas atualizacoes",
