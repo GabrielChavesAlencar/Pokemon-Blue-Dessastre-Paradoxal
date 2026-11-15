@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27b93e0929f9822f99d9223c30982b4eaa83364f",
+      "date": "2026-11-15T10:17:29-03:00",
+      "title": "test(title): escolher Decades ao voltar dos atalhos experimentais indisponíveis",
+      "category": "Testes"
+    },
+    {
       "sha": "7d1397dfa59af503d80f7d47b775ef6f40b560c5",
       "date": "2026-11-15T10:16:41-03:00",
       "title": "ci(title): validar seletor de região e fluxo nativo de Novo Jogo",
