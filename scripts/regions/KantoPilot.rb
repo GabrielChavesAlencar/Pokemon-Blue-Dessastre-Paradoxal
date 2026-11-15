@@ -17,10 +17,13 @@ module BlueKantoPilot
   # Shared runtime is active ONLY while the current regional save is in Kanto.
   # Never apply Kanto-specific field rules to Decades maps or other regions.
   def self.kanto_current?
+    # Standalone pilot has no Decades maps. Keep its native Cut sprite
+    # handling available while the pilot marker exists (including map load).
+    return true if PILOT_OVERWORLD_SCALE && File.file?("Kanto pilot.json")
+    return false unless INTEGRATED_KANTO
     state = $PokemonGlobal && $PokemonGlobal.respond_to?(:blue_regions) &&
             $PokemonGlobal.blue_regions
-    state.is_a?(Hash) && state["current"] == "KANTO" &&
-      (PILOT_OVERWORLD_SCALE || INTEGRATED_KANTO)
+    state.is_a?(Hash) && state["current"] == "KANTO"
   end
   GYM_FULL_POWER = {
     "Brock" => :BLUE_KANTO_LEADER, "Misty" => :BLUE_KANTO_LEADER_MISTY,
