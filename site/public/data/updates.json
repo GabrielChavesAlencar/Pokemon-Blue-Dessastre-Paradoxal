@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ca2c77a31d8af2b9551758ff6c246890c7236ded",
+      "date": "2026-11-15T11:43:04-03:00",
+      "title": "fix(regions): reconhecer Kanto importado mesmo sem gem JSON no Game.exe",
+      "category": "Correções"
+    },
+    {
       "sha": "58cfbb9be9cf6317ff82c94d5331512e8a053f60",
       "date": "2026-11-15T11:42:43-03:00",
       "title": "fix(kanto): finalizar marker ASCII com quebra de linha normal",
