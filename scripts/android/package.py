@@ -36,6 +36,9 @@ def compiled_region(cache, name, source):
     raise ValueError('Regional script is missing or stale in Android plugin cache: '+str(name))
 
 def verify_regions(game):
+    # install_hoenn.safe_file validates absolute paths; the Android CLI
+    # normally passes --game-dir game (relative to the checkout).
+    game = Path(game).resolve()
     if any((game / name).is_file() for name in ("Kanto pilot.json", "Hoenn pilot.json")):
         raise ValueError('The Android shared build cannot use isolated pilot save profiles.')
     sys.path.insert(0, str(ROOT / 'scripts/regions'))
