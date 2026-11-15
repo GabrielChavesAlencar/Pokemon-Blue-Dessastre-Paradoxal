@@ -30,6 +30,6 @@ jobs:
           ruby -c tests/evolution_scaling_runtime.rb
           ruby -c tests/evolution_battle_runtime.rb
       - name: Evolucoes de nivel pedra troca felicidade e habitats
-        run: ruby tests/evolution_scaling_runtime.rb scripts/battle_polish/EvolutionScaling.rb
+        run: ruby tests/evolution_scaling_runtime.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Habitat.rb
       - name: Integracao com equipes e cap BST/70/90
         run: ruby tests/evolution_battle_runtime.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Story.rb scripts/battle_polish/Campaign.rb
