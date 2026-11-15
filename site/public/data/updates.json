@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "74ebea2a30904b650a4acff7f4d430875b33b8ef",
+      "date": "2026-11-15T13:52:47-03:00",
+      "title": "ci(decades): validar novo jogo sem menus e chegada regional Cherryhill com mecanicas padrao",
+      "category": "Novidades"
+    },
+    {
       "sha": "04461f2e6072046c3b684e12ec1dd10566139a12",
       "date": "2026-11-15T13:52:22-03:00",
       "title": "test(decades): diagnosticar indice real de escolha automatica no intro",
