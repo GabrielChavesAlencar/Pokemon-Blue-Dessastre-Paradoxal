@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "80df1d64027991f15af9e9c2833fa88293977ca9",
+      "date": "2026-11-15T16:30:45-03:00",
+      "title": "fix(hoenn): explicar origem ausente e recuperar inventario Git fixado para cache",
+      "category": "Correções"
+    },
+    {
       "sha": "04894f8bb42d26253eaeae436965770ae7044769",
       "date": "2026-11-15T16:30:14-03:00",
       "title": "fix(hoenn): reusar fonte local validada dos testes mesmo sem ZIP na raiz",
