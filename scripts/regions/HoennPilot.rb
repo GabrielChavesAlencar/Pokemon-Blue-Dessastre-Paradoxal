@@ -3658,7 +3658,11 @@ module BlueHoennPilot
 
   module Start
     def select_and_prepare
-      return super unless @new_game && $PokemonGlobal && File.file?(BlueHoennPilot::MARKER)
+      # In the MAIN Decades/Kanto/Hoenn installation the real title picker
+      # and BlueRegionStart choose the region. This legacy start override is
+      # permitted ONLY inside the independent Hoenn QA copy.
+      return super unless @new_game && $PokemonGlobal &&
+        File.file?("Hoenn pilot.json") && File.file?(BlueHoennPilot::MARKER)
       start, = BlueHoennPilot.metadata
       $PokemonGlobal.blue_regions = BlueRegions.new_state("HOENN")
       $PokemonGlobal.blue_regions["hoenn_pilot"] = { "profile_pending" => true }
