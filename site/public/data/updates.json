@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e2433f84142536dfe22052ed5695e8fba59fe1db",
+      "date": "2026-11-15T11:06:59-03:00",
+      "title": "test(installer): validar hash backup e protecao de saves ao atualizar runtime Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "871942391099b7bf190b1371eceed07974926496",
       "date": "2026-11-15T11:06:24-03:00",
       "title": "docs(readme): informar Kanto automatico no instalador Blue Story do site",
