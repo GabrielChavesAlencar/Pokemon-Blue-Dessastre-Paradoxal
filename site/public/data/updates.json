@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "37cbdd675a021d77e8563961cbe5dc46e67184cc",
+      "date": "2026-11-15T18:38:21-03:00",
+      "title": "test(android): validar Novo Jogo sem JSON no JoiPlay em CI",
+      "category": "Novidades"
+    },
+    {
+      "sha": "cca17eca93759e8572a7b526288bf87fb2eceb8d",
+      "date": "2026-11-15T18:38:18-03:00",
+      "title": "test(android): validar Novo Jogo sem JSON no JoiPlay em CI",
+      "category": "Novidades"
+    },
+    {
+      "sha": "06fb9796c24f167e45cbcbd6a02747f67bcc6f2e",
+      "date": "2026-11-15T18:38:16-03:00",
+      "title": "ci(android): corrigir crash sem JSON e gerar patch incremental da edição multirregional",
+      "category": "Correções"
+    },
+    {
       "sha": "3875aaaaba8977d1d8be212964d109bfde969de5",
       "date": "2026-11-15T18:37:20-03:00",
       "title": "test(android): reproduzir NameError de RegionStart.rb sem JSON do JoiPlay",
