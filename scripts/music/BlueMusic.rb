@@ -1,5 +1,6 @@
 # Own music overrides. Original RPG maps, PBS and events remain on disk unchanged.
-require 'digest'
+# RGSS/Essentials on Windows may not bundle digest/sha2; NEVER hash in a
+# native battle hook. Python verifies SHA-256 when compiling the manifest.
 module BlueMusic
   PATH='Data/blue-music.rxdata'
   CATEGORIES_PATH='Data/blue-music-categories.rxdata'
@@ -105,9 +106,25 @@ module BlueMusic
         raise 'Duplicate Kanto map scope' if scope.key?(id)
         scope[id]=[parts[2],parts[3]=='1']
       when 'BASEPOOL'
-        raise 'Invalid Kanto default pool signature' unless parts.length==3 && %w[wild trainer gym].include?(parts[1]) && parts[2].match?(/\A[0-9a-f]{64}\z/)
+        # Legacy files contained only SHA256; without a matching track list
+        # we cannot safely allow a Kanto override. Fail closed to the native
+        # Decades random BGM, NOT to a battle-breaking Digest::SHA256 call.
+        modern = parts.length >= 6
+        raise 'Invalid Kanto default pool signature' unless
+          (parts.length == 3 || modern) &&
+          %w[wild trainer gym].include?(parts[1]) &&
+          parts[2].match?(/\A[0-9a-f]{64}\z/)
         raise 'Duplicate default pool signature' if defaults.key?(parts[1])
-        defaults[parts[1]]=parts[2]
+        if modern
+          raise 'Invalid Kanto factory pool settings' unless
+            parts[3].match?(/\A\d{1,3}\z/) && (0..100).include?(parts[3].to_i) &&
+            parts[4].match?(/\A\d{1,3}\z/) && (50..150).include?(parts[4].to_i) &&
+            parts[5..-1].all? { |track| !track.empty? && !track.include?('\\') &&
+              !track.start_with?('/') && !track.split('/').include?('..') }
+          defaults[parts[1]]=parts[3..-1]
+        else
+          defaults[parts[1]]=nil
+        end
       when 'ME'
         raise 'Invalid Kanto ME binding' unless parts.length==5 &&
           %w[obtained_pokemon obtained_item healed badge_awarded evolved caught].include?(parts[1]) &&
@@ -183,10 +200,14 @@ module BlueMusic
   end
   def self.kanto_factory_pool?(key,row)
     return false unless row && row[1]=='random' && row[2].is_a?(Array)
+    # Compare exact original Decades volume/pitch and the ordered track list.
+    # The SHA-256 signature remains in the Python-compiled audit manifest,
+    # but RGSS does not reliably provide Digest::SHA256. A legacy signature-
+    # only manifest simply retains Decades BGM; it cannot crash a battle.
     expected=kanto_data[4][key]
-    return false unless expected
-    payload=[row[3].to_i.to_s,row[4].to_i.to_s,*row[2]]
-    Digest::SHA256.hexdigest(payload.join("\n"))==expected
+    return false unless expected.is_a?(Array) && expected.length >= 3
+    actual=[row[3].to_i.to_s,row[4].to_i.to_s,*row[2]]
+    actual==expected
   end
   def self.kanto_map_symbol?(symbol)
     return false unless kanto_battle_scope?
