@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync} from 'node:fs';
-import {androidReleaseStatus,androidReleaseHtml,androidPilotsHtml,regionalAndroidReleases} from '../src/assets/android-release.js';
+import {androidReleaseStatus,androidReleaseHtml,androidPilotsHtml,regionalAndroidReleases,combinedAndroidRelease,combinedAndroidHtml} from '../src/assets/android-release.js';
 const sha='a'.repeat(40),next='b'.repeat(40);
 const release={tag_name:'build-1',target_commitish:sha,assets:[{name:'Blue-Android-JoiPlay.zip',state:'uploaded',size:1200000000}]};
 const fetcher=(run,ok=true)=>async url=>({ok:url.includes('/releases/')?ok:true,json:async()=>url.includes('/releases/')?release:{workflow_runs:run?[run]:[]}});
@@ -94,4 +94,39 @@ test('guias regionais existem para Windows e Android enquanto não há ZIP compl
     assert.match(html,/O ZIP do jogo ainda não foi publicado/);
     assert.doesNotMatch(html,/testar (Johto|Hoenn)|Blue-(Windows|Android)-(Johto|Hoenn)-Piloto\.zip/);
   }
+});
+
+test('edição Android Decades+Kanto+Hoenn só habilita link com ZIP realmente publicado',async()=>{
+  const assetName='Blue-Android-Decades-Kanto-Hoenn.zip';
+  const tag='android-multiregion-43-abc1234';
+  const url='https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/download/'+tag+'/'+assetName;
+  const base={tag_name:tag,target_commitish:sha,prerelease:true,assets:[]};
+  const fake=items=>async()=>({ok:true,json:async()=>items});
+  const pending=await combinedAndroidRelease(fake([base]));
+  assert.equal(pending.state,'pending');
+  assert.match(combinedAndroidHtml(pending),/aguardando publicação/);
+  assert.doesNotMatch(combinedAndroidHtml(pending),/href=/);
+  for(const invalid of [
+    {...base,assets:[{name:assetName,state:'starter',size:5,browser_download_url:url}]},
+    {...base,assets:[{name:assetName,state:'uploaded',size:0,browser_download_url:url}]},
+    {...base,target_commitish:'invalid',assets:[{name:assetName,state:'uploaded',size:123,browser_download_url:url}]},
+    {...base,assets:[{name:assetName,state:'uploaded',size:123,browser_download_url:'https://evil.example/asset.zip'}]}
+  ])assert.equal((await combinedAndroidRelease(fake([invalid]))).state,'pending');
+  const published=await combinedAndroidRelease(fake([{
+    ...base,assets:[{name:assetName,state:'uploaded',size:1600000000,browser_download_url:url}]
+  }]));
+  assert.equal(published.state,'published');
+  assert.equal(published.url,url);
+  const html=combinedAndroidHtml(published);
+  assert.match(html,/Baixar Decades \+ Kanto \+ Hoenn/);
+  assert.ok(html.includes('href="'+url+'"'));
+  assert.doesNotMatch(combinedAndroidHtml({state:'unavailable'}),/href=/);
+});
+test('asset conjunto na segunda página da API também é localizado',async()=>{
+  const first=Array.from({length:100},(_,i)=>({tag_name:'battle-hub-'+i,target_commitish:sha,assets:[]}));
+  const tag='android-multiregion-5-abcdef0',assetName='Blue-Android-Decades-Kanto-Hoenn.zip';
+  const url='https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/download/'+tag+'/'+assetName;
+  const release={tag_name:tag,target_commitish:next,assets:[{name:assetName,state:'uploaded',size:1430000000,browser_download_url:url}]};
+  const fetcher=async path=>({ok:true,json:async()=>path.includes('page=2')?[release]:first});
+  assert.equal((await combinedAndroidRelease(fetcher)).tag,tag);
 });
