@@ -398,7 +398,7 @@ module BlueRegionTravel
       return false
     end
     if !quiet
-      notice = _INTL("Viajar para {1}? Sua equipe e seu save serão mantidos.", BlueRegions.info(key)["name"])
+      notice = _INTL("Viajar para {1}? Sua equipe e seu save serão mantidos. Itens-chave e HMs ficam guardados na região de origem e retornam quando você voltar.", BlueRegions.info(key)["name"])
       notice += _INTL(" {1} Pokémon especiais serão enviados ao PC.", reservations.length) unless reservations.empty?
       return false unless pbConfirmMessage(notice)
     end
