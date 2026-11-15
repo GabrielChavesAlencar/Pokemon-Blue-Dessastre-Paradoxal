@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "55fd015b988706a5fd050885c87ebe3dcda355cf",
+      "date": "2026-11-15T12:27:15-03:00",
+      "title": "fix(travel): normalizar guarda Ruby do NPC obrigatorio",
+      "category": "Correções"
+    },
+    {
       "sha": "34dd1a9acba89090719c76d5c3f3f6a2e3960dd2",
       "date": "2026-11-15T12:26:58-03:00",
       "title": "docs(travel): alinhar regra de NPC livre com progresso de Liga independente",
