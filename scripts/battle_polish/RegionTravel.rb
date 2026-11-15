@@ -177,7 +177,13 @@ module BlueRegionTravel
         items << [entry[0], entry[1]]
       end
     end
-    registered = bag.registered_items.select { |id| regional_item?(id) }
+    present = items.map { |entry| entry[0] }
+    # Essentials can retain a shortcut after an item was used/removed.
+    # Only persist shortcuts for locally held items, so a stale shortcut
+    # cannot make later visits reject an otherwise valid save.
+    registered = bag.registered_items.select { |id|
+      regional_item?(id) && present.include?(id)
+    }.uniq
     {"items" => items, "registered" => registered}
   end
 
