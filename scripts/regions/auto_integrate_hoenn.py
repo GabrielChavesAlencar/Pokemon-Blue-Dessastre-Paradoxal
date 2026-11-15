@@ -20,6 +20,8 @@ PROOF = Path("Data/blue-hoenn-install.json")
 MARKER = Path("Data/blue-hoenn-start.txt")
 STATUS = ROOT / ".blue-work/hoenn-main-install-status.json"
 LOG = ROOT / ".blue-work/hoenn-main-install.log"
+GAME_STATUS = Path("Data/blue-hoenn-install-status.txt")
+SOURCE_CACHE = ROOT / ".blue-work/hoenn-source"
 
 
 def record(status: str, changed: bool = False, reason: str = "") -> dict:
@@ -31,6 +33,16 @@ def record(status: str, changed: bool = False, reason: str = "") -> dict:
     tmp = STATUS.with_suffix(".tmp")
     tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, STATUS)
+    # The running Game.exe cannot read a log outside its own game directory
+    # reliably. Publish just the bounded status code so the regional travel
+    # NPC can explain why Hoenn is locked, without exposing arbitrary log text.
+    game = ROOT / "game"
+    if (game / "Game.exe").is_file() and (game / "Data").is_dir():
+        marker = game / GAME_STATUS
+        if not marker.is_symlink() and not marker.parent.is_symlink():
+            temp = marker.with_name(marker.name + ".tmp")
+            temp.write_text(status + "\n", encoding="ascii")
+            os.replace(temp, marker)
     return value
 
 
@@ -62,10 +74,11 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
             return record("already_integrated")
         except (RuntimeError, OSError) as error:
             return record("existing_install_needs_review", reason=str(error))
-    if not ZIP.is_file():
+    if not ZIP.is_file() and not SOURCE_CACHE.is_dir():
         return record("awaiting_local_source", reason=
-            "Coloque o ZIP original The Pokémon World Project - Hoenn.zip na raiz do projeto. "
-            "Hoenn não foi instalada; Decades/Kanto permanecem intactos.")
+            "Fonte Hoenn ausente. Copie o ZIP original The Pokémon World Project - Hoenn.zip "
+            "para a pasta do projeto ou execute TESTAR_HOENN.bat para preparar a fonte. "
+            "Os saves e mapas de Decades/Kanto permanecem intactos.")
     try:
         invoke(game, "--apply")
         invoke(game, "--verify-installed")
