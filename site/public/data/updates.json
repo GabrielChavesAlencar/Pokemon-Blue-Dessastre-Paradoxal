@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27a17bd74c23b174b2c27c5045708efaf05eaa6c",
+      "date": "2026-11-15T15:28:16-03:00",
+      "title": "test(site): regras dos primeiros chefes e Full Power em fichas da Liga",
+      "category": "Testes"
+    },
+    {
+      "sha": "5d71428841c78fdc153ca5ec355cb4a5cb7592d9",
+      "date": "2026-11-15T15:28:13-03:00",
+      "title": "test(site): regressão de Kanto para selvagens, treinadores e líderes",
+      "category": "Testes"
+    },
+    {
       "sha": "aadff8088ff7c9ae692cd90d3215d937c38dece6",
       "date": "2026-11-15T15:27:18-03:00",
       "title": "fix(site): links corretos e diferença entre rivais e líderes Kanto",
