@@ -209,6 +209,15 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     install = {"schema"=>1, "source"=>"Essentials FRLG 21.1", "maps"=>mapping}
     File.write("Data/blue-kanto-install.json", JSON.generate(install))
     check(BlueRegionStart.kanto_integrated?, "Audited main Kanto install was not recognized")
+    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,321\n")
+    check(BlueRegionStart.kanto_ready_gate?([321,28,14]),
+          "JSON-free Kanto runtime gate was not recognized")
+    check(!BlueRegionStart.kanto_ready_gate?([322,28,14]),
+          "Kanto runtime gate accepted a wrong map ID")
+    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,25,321\n")
+    check(!BlueRegionStart.kanto_ready_gate?([321,28,14]),
+          "Old 25-map Kanto gate was incorrectly accepted")
+    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,321\n")
     install["schema"] = 99
     File.write("Data/blue-kanto-install.json", JSON.generate(install))
     check(!BlueRegionStart.kanto_integrated?, "Malformed Kanto installation was accepted")
