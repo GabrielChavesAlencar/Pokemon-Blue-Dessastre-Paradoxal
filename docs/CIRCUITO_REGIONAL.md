@@ -1,5 +1,7 @@
 # Circuito regional do Dessastre Paradoxal
 
+> **Regra atual de transporte (15/11/2026):** viagem livre desde o início exclusivamente por NPC na cidade inicial de cada região integrada, sem precisar vencer a Liga. O restante da documentação histórica de desbloqueio por vizinhos foi substituído por [VIAGEM_REGIONAL_LIVRE_NPC.md](VIAGEM_REGIONAL_LIVRE_NPC.md).
+
 Decades continua sendo a campanha jogável. O circuito de dez Ligas e a
 expedição de Hisui estão cadastrados no mesmo catálogo usado pelo jogo,
 Blue Studio e portal. O painel de pausa mostra a progressão; não teleporta
@@ -21,7 +23,7 @@ o jogador para mapas que ainda não foram validados.
 
 ## 1. Regras regionais
 
-A confirmação de uma Liga libera os dois vizinhos. Hisui não conta como
+A conclusão da Liga registra progresso e pós-jogo, mas não libera nem bloqueia a viagem. Hisui não conta como
 Liga e tem saídas próprias quando escolhido como origem. O pós-jogo
 mundial depende das dez Ligas; o núcleo só seleciona uma revanche quando
 já houver um perfil verificado.
@@ -115,7 +117,7 @@ O seletor da **tela inicial → Novo Jogo** oferece **Decades** e **Kanto**. Dif
 
 **Instalação:** `KANTO_INSTALAR_NO_JOGO.bat` prepara e audita a fonte FRLG fixada, apresenta um dry-run, exige confirmação, instala os **142 mapas catalogados**, PBS, tilesets, NPCs, dependências de eventos e overlay de traduções no `game/` local. `ABRIR_JOGO.bat` atualiza plugins/idioma e solicita compilação dos arquivos Essentials. Não copia executáveis, `System.rxdata`, scripts da fonte nem saves. A verificação `python scripts/regions/install_kanto.py --verify-installed` confirma integridade de arquivos, **não** gameplay.
 
-O código de início guarda o ponto nativo de Decades como futura chegada de quem começa em Kanto. A **Liga de Kanto** libera Decades e Johto no catálogo; o transporte ao primeiro destino depende da conclusão real do Hall, de save seguro e de mapa nativo existente. Johto não fica viajável sem integração própria. As regras de insígnias/esmeraldas, HMs, especiais, proteção da Box e motor de batalha Blue permanecem as do [Plano v2](PLANO_REGIOES_DESSASTRE_V2.md).
+O código de início guarda o ponto nativo de Decades como chegada segura de quem começa em Kanto. **Sem precisar vencer a Liga**, o jogador pode viajar entre **Kanto (NPC em Pallet Town)** e **Decades (NPC em Cherryhill City)** na mesma partida. Johto terá o NPC em **New Bark Town** quando for integrada e validada no jogo principal; o piloto independente ainda não é destino compartilhado. O menu regional é apenas informativo e o transporte exige falar pessoalmente com o NPC da cidade inicial. As regras de insígnias/esmeraldas, HMs, especiais, proteção da Box e motor de batalha Blue permanecem as do [Plano v2](PLANO_REGIOES_DESSASTRE_V2.md).
 
 **Migração:** instalações antigas com só 13/25 mapas são recusadas pelo verificador; não apagar marcadores ou copiar arquivos do piloto sobre `game/` para contornar bloqueios, pois MapIDs e saves podem divergir. Preserve a instalação e use nova cópia de teste até existir um migrador comprovado.
 
