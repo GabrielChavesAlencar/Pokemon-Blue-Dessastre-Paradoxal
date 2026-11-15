@@ -443,6 +443,96 @@ module BlueKantoPilot
     end
   end
 
+  # Compiled Kanto trainer PBS can be absent/stale in an existing Decades
+  # installation even when the integrated maps are already present. Recover
+  # ONLY the three author-verified Oak Lab rival variants, directly from the
+  # installed PBS; never invent a team or modify Decades trainer profiles.
+  # The native Essentials compiler remains the canonical permanent source.
+  def self.ensure_lab_rival_trainer(version)
+    type = :BLUE_KANTO_RIVAL
+    return false unless [11, 12, 13].include?(version)
+    return false unless defined?(GameData::Trainer) &&
+                        defined?(GameData::TrainerType)
+    return true if GameData::Trainer.exists?(type, "Blue", version)
+    return false unless GameData::TrainerType.exists?(type)
+    path = "PBS/trainers_kanto.txt"
+    return false unless File.file?(path)
+    target = "[BLUE_KANTO_RIVAL,Blue,#{version}]"
+    selected = nil
+    File.foreach(path, encoding: "UTF-8") do |line|
+      stripped = line.strip
+      if stripped.start_with?("[") && stripped.end_with?("]")
+        if stripped == target
+          return false if selected
+          selected = []
+        elsif selected
+          break
+        end
+      elsif selected && !stripped.empty? && !stripped.start_with?("#")
+        selected << stripped
+      end
+    end
+    return false if !selected || selected.empty?
+    pokemon = []
+    lose_text = nil
+    selected.each do |line|
+      field, separator, raw = line.partition("=")
+      return false if separator.empty?
+      field = field.strip
+      values = raw.split(",").map(&:strip)
+      case field
+      when "Pokemon"
+        return false unless values.length == 2 && values[1].match?(/\A\d+\z/)
+        level = values[1].to_i
+        return false unless (1..100).cover?(level) &&
+                            GameData::Species.exists?(values[0].to_sym)
+        pokemon << {species: values[0].to_sym, level: level}
+      when "Moves"
+        return false if pokemon.empty? || values.empty? || values.any? { |id| id.empty? || !GameData::Move.exists?(id.to_sym) }
+        pokemon[-1][:moves] = values.map(&:to_sym)
+      when "Item"
+        return false if pokemon.empty? || values.length != 1 ||
+                        !GameData::Item.exists?(values[0].to_sym)
+        pokemon[-1][:item] = values[0].to_sym
+      when "LoseText"
+        lose_text = raw.strip
+      else
+        return false  # No extra unreviewed PBS trainer properties.
+      end
+    end
+    return false unless (1..6).cover?(pokemon.length)
+    GameData::Trainer.register(
+      id: [type, "Blue", version], trainer_type: type, real_name: "Blue",
+      version: version, pokemon: pokemon, real_lose_text: lose_text
+    )
+    # Recompile from the normal, complete PBS set at the NEXT launcher start.
+    begin
+      File.write("Data/blue-compile-request.txt", "compile")
+    rescue IOError, SystemCallError
+    end
+    GameData::Trainer.exists?(type, "Blue", version)
+  rescue StandardError => error
+    log_rival_failure(error, version, "prepare")
+    false
+  end
+
+  def self.log_rival_failure(error, version, phase)
+    # Essentials normally collapses an event exception into EventScriptError.
+    # Keep the real cause/backtrace available without touching the save.
+    begin
+      details = [
+        "KANTO_OAK_LAB_RIVAL",
+        "phase=#{phase} version=#{version}",
+        "#{error.class}: #{error.message}",
+        *Array(error.backtrace).first(18),
+        ""
+      ].join("\n")
+      File.open("Data/blue-kanto-rival-error.log", "a") { |log| log.write(details) }
+    rescue StandardError
+      # Logging is optional and must not cause another EventScriptError.
+    end
+  end
+
   def self.rival
     if !starter
       pbMessage(BlueKantoPilot.t("Gary: Pick your Pokémon first.", "Gary: Escolha o seu Pokémon primeiro."))
@@ -456,8 +546,26 @@ module BlueKantoPilot
     BlueMusic.with_kanto_scene("rival_appears") do
       pbMessage(BlueKantoPilot.t("Gary: Hey, {1}! Before you go, let's test our Pokémon!", "Gary: Ei, {1}! Antes de ir, vamos testar nossos Pokémon!", $player.name))
     end
-    setBattleRule("cannotLose")
-    result = TrainerBattle.start(:BLUE_KANTO_RIVAL, "Blue", RIVAL_VERSIONS.fetch(starter))
+    version = RIVAL_VERSIONS.fetch(starter)
+    unless ensure_lab_rival_trainer(version)
+      pbMessage(BlueKantoPilot.t(
+        "Gary: My battle team wasn't loaded. Reopen Blue-Story.exe to repair Kanto's battle data. Your progress is safe.",
+        "Gary: Meu time não foi carregado. Abra novamente o Blue-Story.exe para reparar os dados da batalha de Kanto. Seu progresso está seguro."
+      ))
+      return false
+    end
+    begin
+      setBattleRule("cannotLose")
+      result = TrainerBattle.start(:BLUE_KANTO_RIVAL, "Blue", version)
+    rescue StandardError => error
+      log_rival_failure(error, version, "battle")
+      $game_temp.clear_battle_rules if $game_temp && $game_temp.respond_to?(:clear_battle_rules)
+      pbMessage(BlueKantoPilot.t(
+        "Gary: The battle could not start. Reopen Blue-Story.exe to update and try again. Details: Data/blue-kanto-rival-error.log.",
+        "Gary: Não foi possível iniciar a batalha. Atualize pelo Blue-Story.exe e tente novamente. Detalhes: Data/blue-kanto-rival-error.log."
+      ))
+      return false
+    end
     # Native Essentials blacks out and transfers to the last healing center
     # when defeated. Never mark the tutorial rival as finished on a loss.
     return false unless result
