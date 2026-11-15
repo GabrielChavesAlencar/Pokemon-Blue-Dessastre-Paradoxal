@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "04461f2e6072046c3b684e12ec1dd10566139a12",
+      "date": "2026-11-15T13:52:22-03:00",
+      "title": "test(decades): diagnosticar indice real de escolha automatica no intro",
+      "category": "Testes"
+    },
+    {
       "sha": "b237cd11691b819082ddd9ec19661088193b8868",
       "date": "2026-11-15T13:50:22-03:00",
       "title": "fix(travel): mesmo ponto de chegada Cherryhill com ou sem NPC gerado em Game_Map.setup",
