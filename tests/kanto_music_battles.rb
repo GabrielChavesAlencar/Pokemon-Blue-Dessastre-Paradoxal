@@ -1,7 +1,8 @@
 # Kanto phase 3 Ruby contract: no copyrighted audio or native game saves.
 require 'tmpdir'
 require 'fileutils'
-require 'digest'
+# The embedded Game.exe may have no Digest::SHA256 even after 'require digest'.
+# This entire fixture must exercise Kanto battle audio without that library.
 
 module Compiler
   def self.main; end
@@ -96,8 +97,9 @@ Dir.mktmpdir('kanto-battle-music-') do |folder|
     tracks.each { |key,file| lines << "BATTLE\t#{key}\tKanto/#{file}\t80\t100" }
     %w[wild trainer gym].each do |key|
       pool="BlueRandom/#{key}.mp3"
-      hash=Digest::SHA256.hexdigest(["100","100",pool].join("\n"))
-      lines << "BASEPOOL\t#{key}\t#{hash}"
+      # Signature is generated/audited by Python; the native Ruby only
+      # compares the exact approved baseline entries.
+      lines << "BASEPOOL\t#{key}\t#{'f'*64}\t100\t100\t#{pool}"
     end
     File.write('Data/blue-kanto-music.txt',lines.join("\n")+"\n")
     $game_map=Map.new(701)
@@ -121,6 +123,8 @@ Dir.mktmpdir('kanto-battle-music-') do |folder|
     assert_music('Decades event/random precedence unchanged',
                  bgm(:pbGetWildBattleBGM,[]),'BlueRandom/wild.mp3')
     BlueRegionalPolicy.region='KANTO'
+    # Explicitly simulate the shipped RGSS Ruby lacking SHA-256.
+    Object.send(:remove_const,:Digest) if defined?(Digest)
     assert_music('Kanto explicit event beats factory pool',
                  bgm(:pbGetWildBattleBGM,[]),'native-wild')
     $PokemonGlobal.nextBattleBGM=nil
@@ -133,6 +137,16 @@ Dir.mktmpdir('kanto-battle-music-') do |folder|
     assert_music('Ordinary Kanto rival is not champion',
                  bgm(:pbGetTrainerBattleBGM,[blue]),'Kanto/trainer.mp3')
     assert_music('Kanto ordinary trainer',
+                 bgm(:pbGetTrainerBattleBGM,[common]),'Kanto/trainer.mp3')
+    # Old installs have a BASEPOOL signature only. The safe fallback must
+    # keep native Decades BGM rather than throwing Digest::SHA256 NameError.
+    modern_data=File.binread('Data/blue-kanto-music.txt')
+    legacy_data=modern_data.gsub(/^(BASEPOOL\t(?:wild|trainer|gym)\t[0-9a-f]{64})\t[^\n]+$/, '\\1')
+    File.binwrite('Data/blue-kanto-music.txt',legacy_data)
+    assert_music('Legacy signature-only Kanto BGM falls back safely',
+                 bgm(:pbGetTrainerBattleBGM,[common]),'BlueRandom/trainer.mp3')
+    File.binwrite('Data/blue-kanto-music.txt',modern_data)
+    assert_music('Updated manifest restores verified Kanto BGM',
                  bgm(:pbGetTrainerBattleBGM,[common]),'Kanto/trainer.mp3')
     assert_music('Kanto Rocket boss is not gym leader',
                  bgm(:pbGetTrainerBattleBGM,[rocket]),'Kanto/trainer.mp3')
