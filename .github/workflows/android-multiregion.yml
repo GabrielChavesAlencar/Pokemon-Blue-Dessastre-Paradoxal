@@ -20,7 +20,7 @@ permissions:
   contents: write
 concurrency:
   group: android-multiregion-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build-android-integrado:
     runs-on: windows-2022
