@@ -72,7 +72,10 @@ module BlueRegionStart
       PBS/trainers_hoenn_pilot.txt PBS/trainer_types_hoenn_pilot.txt
       PBS/encounters_hoenn_pilot.txt PBS/map_metadata_hoenn_pilot.txt
       Plugins/ZZZZZ\ Blue\ Hoenn\ Pilot/HoennPilot.rb]
-    required.all? { |name| File.file?(name) }
+    required.all? { |name| File.file?(name) } &&
+      proof["maps"].values.all? { |id|
+        pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
+      }
   rescue IOError, SystemCallError, ArgumentError
     false
   end
