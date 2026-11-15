@@ -141,3 +141,16 @@ Comandos da versão nova:
 Depois de atualizar para um ZIP que já inclui o cliente novo, retome o comando padrão ATUALIZAR-ANDROID.py. Se faltar Data/blue-update.json, a primeira instalação segue exigindo um ZIP completo em pasta nova e cópia segura dos saves.
 
 **Limites:** a atualização depende de release íntegra disponível, internet, espaço suficiente, permissão de armazenamento e JoiPlay fechado. Falhas de download ou verificação deixam a pasta original intacta. A troca de diretórios tenta rollback se falhar; não apague o backup antes de testar. Mudança entre canais (Decades puro e Decades + Kanto + Hoenn, por exemplo) continua exigindo migração explícita, nunca automática.
+
+
+## 15/11/2026 — Kanto mostra "instalação necessária" na edição integrada Android
+
+**Sintoma real no JoiPlay:** em `New Game`, Hoenn está habilitada, mas Kanto aparece como `Kanto (instalação necessária)`, mesmo na edição Decades + Kanto + Hoenn publicada com 142 mapas de Kanto validados pela etapa de build.
+
+**Correção de código:** `scripts/battle_polish/RegionStart.rb` agora verifica Kanto sem depender de `JSON.parse`, mesmo quando o JoiPlay expõe uma constante `JSON` incompleta. Valida `blue-kanto-start.txt`, `blue-kanto-ready.txt`, o manifesto original `blue-kanto-install.json`, os 142 mapas referenciados por IDs exclusivos, PBS e plugin Kanto. Sem provas válidas, não libera o menu. Hoenn mantém seu verificador independente dos 199 mapas.
+
+**Regressão:** `tests/region_start_android_no_json_runtime.rb` agora cobre seleção de Kanto, Hoenn e Decades sem JSON, com constante JSON sem método parse e com parse falhando; verifica rejeição ao remover um mapa de Kanto ou adulterar o marcador. O pacote Android deve compilar a nova versão de `RegionStart.rb` em `Data/PluginScripts.rxdata`, além de incluir a fonte. O workflow multirregional exige compatibilidade entre ambos.
+
+**Atualizar no celular:** depois de uma nova release multirregional **concluída e publicada com essa correção**, feche o JoiPlay, faça backup dos saves e entre na pasta do jogo no Termux. Execute `python ATUALIZAR-ANDROID.py --update`. O cliente novo utilizará patch quando compatível ou instalará o ZIP completo sem precisar extrair manualmente, preservando a instalação anterior. Não use as releases `decades` ou o piloto isolado de Kanto na edição integrada. Se a release ainda tiver o mesmo commit anterior à correção, ela não contém a solução.
+
+**Aceite físico pendente:** abrir New Game e confirmar que Kanto está selecionável, iniciar Pallet Town, carregar/salvar, viajar a Hoenn e verificar que ambos continuam funcionando no JoiPlay real.
