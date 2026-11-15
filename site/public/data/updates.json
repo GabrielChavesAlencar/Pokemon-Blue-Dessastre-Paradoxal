@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bca2e6115e9065ebda350492c9afee2395a079d",
+      "date": "2026-11-15T12:24:02-03:00",
+      "title": "fix(hoenn): remover aviso antigo de viagem desbloqueada apos Liga",
+      "category": "Correções"
+    },
+    {
+      "sha": "dcf649b3edd827d027572a02e5fb1b7a11e06759",
+      "date": "2026-11-15T12:23:50-03:00",
+      "title": "test(hoenn): atualizar QA10 para viagem livre, sem vitorias artificiais",
+      "category": "Testes"
+    },
+    {
       "sha": "4b1ba20845b538c99dea0c5e6a27ff6d6bcef346",
       "date": "2026-11-15T12:22:15-03:00",
       "title": "test(site): transporte livre e instalacao comprovada no guia das regioes",
