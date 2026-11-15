@@ -37,7 +37,7 @@ $game_map=QA10Map.new
 $game_map.map_id=699
 flags=BlueHoennPilot.state
 region=$PokemonGlobal.blue_regions
-assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+assert10(BlueRegions.unlocked(region)==BlueRegions.circuit,
          "Free transport catalogue still requires a League")
 assert10(!BlueHoennPilot.qa10_hall_ready?,"Hall open without badges, Wally and Elite")
 assert10(!BlueHoennPilot.hall_of_fame_stage10,"Hall completed too early")
@@ -58,7 +58,7 @@ assert10(!BlueHoennPilot.qa10_postgame_status,"Status available before finale")
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Hall completion not recorded")
 assert10(flags["hoenn_hall_of_fame"],"Local Hall flag missing")
 assert10(region["leagues"]==["HOENN"],"Hoenn completion missing or duplicated")
-assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+assert10(BlueRegions.unlocked(region)==BlueRegions.circuit,
          "Hall improperly changed the already-free transport catalogue")
 assert10(!region.key?("decades_return"),"Travel happened automatically")
 assert10($messages.any?{|s|s.include?("viagem pelo NPC")},"Post-game transport notice not shown")
@@ -74,7 +74,7 @@ $game_map.map_id=699
 $PokemonGlobal.blue_regions=Marshal.load(Marshal.dump($PokemonGlobal.blue_regions))
 region=$PokemonGlobal.blue_regions
 flags=BlueHoennPilot.state
-assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+assert10(BlueRegions.unlocked(region)==BlueRegions.circuit,
          "Free region catalogue was lost on reload")
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Hall progression lost on reload")
 assert10(region["leagues"]==["HOENN"],"Save reload duplicated League")
@@ -106,7 +106,7 @@ flags["champion_wallace_defeated"]=true
 assert10(BlueHoennPilot.hall_of_fame_stage10,"Started Johto, Hoenn victory not registered")
 assert10(region["leagues"]==["JOHTO","HOENN"],"Johto League overwritten")
 assert10(region["achievements"]["JOHTO"]==["ZEPHYR"],"Johto badges overwritten")
-assert10(BlueRegions.unlocked(region)==BlueRegionData::CIRCUIT,
+assert10(BlueRegions.unlocked(region)==BlueRegions.circuit,
          "Johto's previous League must not restrict free transport")
 
 # A completed League cannot be awarded by an event outside its region.
