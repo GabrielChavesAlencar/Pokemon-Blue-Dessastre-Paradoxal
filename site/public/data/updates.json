@@ -2,6 +2,36 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27e2426b2ceb11db43d3a9334d233ab3e0a22160",
+      "date": "2026-11-15T14:54:59-03:00",
+      "title": "feat(plugins): carregar evolução dinâmica no Blue Story em todas as instalações",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f324b3892abf3a491663ea459967e2e6ffbb24ff",
+      "date": "2026-11-15T14:54:56-03:00",
+      "title": "feat(installer): distribuir EvolutionScaling.rb pelo Blue-Story.exe",
+      "category": "Novidades"
+    },
+    {
+      "sha": "e6a0416b338aa9420f624f861dcdfe54c710cd3a",
+      "date": "2026-11-15T14:54:54-03:00",
+      "title": "feat(evolution): instalar novo módulo no fluxo de compilação Blue Story",
+      "category": "Novidades"
+    },
+    {
+      "sha": "cb5e414232d390a23f0fb18dbec1f43756f45cf0",
+      "date": "2026-11-15T14:54:51-03:00",
+      "title": "fix(balance): liberar BST somente para evolução natural já elegível do treinador",
+      "category": "Correções"
+    },
+    {
+      "sha": "ca4edffb46f2322fded97c90176a55dc006ab0d4",
+      "date": "2026-11-15T14:54:49-03:00",
+      "title": "feat(trainers): evoluir formas normais após escala 70/90%, preservando chefes",
+      "category": "Novidades"
+    },
+    {
       "sha": "3bbb177e0c0adbf5b0c1f551c8fe7c1462bdab09",
       "date": "2026-11-15T14:54:02-03:00",
       "title": "feat(evolution): introduzir evolução dinâmica segura para treinadores e encontros selvagens baseada em level cap",
