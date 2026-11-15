@@ -146,6 +146,7 @@ def download(url, destination, expected_sha, expected_size, max_bytes=MAX_PATCH_
         request = urllib.request.Request(url, headers={"User-Agent": "Pokemon-Blue-Android-Updater"})
         with urllib.request.urlopen(request, timeout=60) as response, temp.open("wb") as output:
             total = 0
+            next_progress = 10
             while True:
                 data = response.read(1024 * 1024)
                 if not data:
@@ -154,6 +155,9 @@ def download(url, destination, expected_sha, expected_size, max_bytes=MAX_PATCH_
                 if total > expected_size:
                     raise ValueError("Patch download exceeds its stated size.")
                 output.write(data)
+                if total * 100 >= expected_size * next_progress:
+                    print("Baixando atualizacao: {}%".format(min(100, total * 100 // expected_size)), flush=True)
+                    next_progress = (total * 100 // expected_size // 10 + 1) * 10
         if total != expected_size or sha256_file(temp) != expected_sha:
             raise ValueError("Patch checksum/size mismatch; refusing installation.")
         os.replace(temp, destination)
@@ -371,7 +375,7 @@ def apply_full_archive(root, installed, manifest, archive_path):
         staging.mkdir()
         try:
             # Verify each extracted file against its published SHA-256.
-            for name, entry in sorted(members.items()):
+            for index, (name, entry) in enumerate(sorted(members.items()), 1):
                 target = staging.joinpath(*PurePosixPath(name).parts)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 digest = hashlib.sha256()
@@ -386,6 +390,8 @@ def apply_full_archive(root, installed, manifest, archive_path):
                 if name != MARKER and (not meta or size != meta["size"] or
                                        digest.hexdigest() != meta["sha256"]):
                     raise ValueError("Full ZIP file hash mismatch: " + name)
+                if index % max(1, len(members) // 10) == 0 or index == len(members):
+                    print("Preparando jogo: {}%".format(index * 100 // len(members)), flush=True)
             # Copy only saves. Everything else remains in the old folder backup.
             copied = 0
             for source in root.rglob("*"):
