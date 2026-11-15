@@ -4,7 +4,10 @@ module BlueRegionTravel
   SPECIAL_FLAGS = %w[Legendary Mythical UltraBeast Paradox].freeze
 
   def self.installed?
-    defined?(BlueRegionStart) && BlueRegionStart.kanto_spawn && File.file?("Data/blue-kanto-install.json")
+    # A start marker alone is not a merged campaign; require the audited
+    # installer proof used by the native title screen.
+    defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:kanto_integrated?) &&
+      !!BlueRegionStart.kanto_integrated?
   end
 
   def self.johto_installed?
@@ -33,22 +36,14 @@ module BlueRegionTravel
 
   def self.source_valid?(state)
     return false unless state && BlueRegions.known?(state["current"])
+    # No League or badge requirement: only an actually merged region may
+    # supply an NPC and depart. Neither an independent pilot nor a forged
+    # unlocked flag can make a region without maps playable.
     case state["current"]
-    when "DECADES"
-      # Old Decades saves can expose Kanto only after BOTH audited final flags.
-      ending_verified? && state["leagues"].include?("DECADES")
-    when "KANTO"
-      # A fresh Kanto start must not show a transport agent before a League.
-      # Returning visitors already have a trusted Decades origin to revisit.
-      installed? && (state["leagues"].include?("KANTO") ||
-                     state["decades_return"].is_a?(Array))
-    when "JOHTO"
-      # The physical New Bark agent is exclusively a post-Hall-of-Fame NPC.
-      # An editable story flag alone is not proof of native League completion.
-      !!johto_installed? && state["leagues"].is_a?(Array) &&
-        state["leagues"].include?("JOHTO")
-    else
-      false
+    when "DECADES" then installed?
+    when "KANTO" then installed?
+    when "JOHTO" then !!johto_installed?
+    else false
     end
   end
 
@@ -78,21 +73,19 @@ module BlueRegionTravel
     return nil unless state && BlueRegions.unlocked(state).include?(key)
     return nil if key == state["current"]
     if key == "KANTO"
+      # The regional NPC is at Pallet, not in the initial bedroom.
       return nil unless installed?
-      kanto_town_point || (BlueRegionStart.kanto_spawn + [2])
+      kanto_town_point
     elsif key == "JOHTO"
       # Never use Kanto's maps or Johto's bedroom as an arrival fallback.
       return nil unless johto_installed?
       BlueRegionStart.johto_town_point
     elsif key == "DECADES"
       position = state["decades_return"]
-      # Players who STARTED in Kanto have never visited Decades. Its original
-      # start point was captured from native System data before the Kanto spawn
-      # was applied; grant that first arrival ONLY after the genuine Kanto Hall.
-      if !position && state["current"] == "KANTO" &&
-         state["leagues"].is_a?(Array) && state["leagues"].include?("KANTO")
-        position = state["decades_first_arrival"]
-      end
+      # Kanto starters may visit Decades BEFORE their first League. This
+      # real native start point was captured when the new game was created.
+      # Never invent fallback coordinates in a foreign map.
+      position ||= state["decades_first_arrival"] if state["current"] == "KANTO"
       return nil unless position.is_a?(Array) && position.length == 4
       return nil unless position.all? { |v| v.is_a?(Integer) } && position[0] > 0 &&
                         position[1] >= 0 && position[2] >= 0 && [2,4,6,8].include?(position[3])
@@ -191,6 +184,9 @@ module BlueRegionTravel
   end
 
   def self.travel(key, quiet = false)
+    # A transport request is only valid inside the initial-town NPC event.
+    # 'quiet' affects message boxes, not permission to teleport.
+    return false unless @npc_event_context
     state = BlueRegions.snapshot
     return false unless available?(state)
     status, reservations = preview(state, key)
@@ -218,7 +214,7 @@ module BlueRegionTravel
     @npc_event_context = true if from_npc
     state = BlueRegions.snapshot
     unless available?(state)
-      pbMessage(_INTL("O transporte regional será liberado após o encerramento da Liga e a instalação dos mapas."))
+      pbMessage(_INTL("O transporte está disponível pelo NPC da cidade inicial quando a região estiver integrada ao jogo principal."))
       return
     end
     loop do
@@ -227,8 +223,6 @@ module BlueRegionTravel
         name = BlueRegions.info(key)["name"]
         if key == state["current"]
           _INTL("{1} (atual)",name)
-        elsif !BlueRegions.unlocked(state).include?(key)
-          _INTL("{1} (bloqueada)",name)
         elsif destination(state,key)
           _INTL("{1} (viajar)",name)
         else
@@ -313,7 +307,8 @@ module BlueRegionTravel
   def self.attach_decades_agent(map)
     return unless installed? && map && map.map_id == DECADES_AGENT_MAP
     state = $PokemonGlobal && $PokemonGlobal.blue_regions
-    return unless state.is_a?(Hash) && state["version"] == 1 && state["current"] == "DECADES"
+    return unless BlueRegions.active? && (state.nil? ||
+      (state.is_a?(Hash) && state["version"] == 1 && state["current"] == "DECADES"))
     return unless map.events.is_a?(Hash)
     return if map.events.values.any? { |event| event.name == DECADES_AGENT_NAME }
     return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
@@ -340,9 +335,8 @@ module BlueRegionTravel
     map.events[event.id] = Game_Event.new(map.map_id, event)
   end
 
-  # The new-game room and travel destination are separate audited points.
-  # Do not spawn an NPC on arbitrary Johto maps or before the real Hall of Fame.
-  # This event is in memory only and will not replace any RMXP map file.
+  # Johto's real New Bark point comes from its verified install manifest.
+  # The NPC is in-memory only and no longer requires Hall of Fame.
   JOHTO_AGENT_NAME = "Agente Regional Johto".freeze
   def self.attach_johto_agent(map)
     return unless johto_installed? && map && map.events.is_a?(Hash)
@@ -350,9 +344,7 @@ module BlueRegionTravel
     return unless point && map.map_id == point[0]
     state = $PokemonGlobal && $PokemonGlobal.blue_regions
     return unless state.is_a?(Hash) && state["version"] == 1 &&
-                  state["current"] == "JOHTO" &&
-                  state["leagues"].is_a?(Array) &&
-                  state["leagues"].include?("JOHTO")
+                  state["current"] == "JOHTO"
     return if map.events.values.any? { |event| event.name == JOHTO_AGENT_NAME }
     return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
     x, y = point[1, 2]
@@ -371,10 +363,51 @@ module BlueRegionTravel
     map.events[event.id] = Game_Event.new(map.map_id,event)
   end
 
+  # Pallet Town (source Map005), after merge into Decades, gets the same
+  # physical NPC. Never edit Map*.rxdata or affect the isolated pilot.
+  KANTO_AGENT_NAME = "Agente Regional Kanto".freeze
+  def self.attach_kanto_agent(map)
+    return unless installed? && map && map.events.is_a?(Hash)
+    state = $PokemonGlobal && $PokemonGlobal.blue_regions
+    return unless state.is_a?(Hash) && state["version"] == 1 &&
+                  state["current"] == "KANTO"
+    town = kanto_town_point
+    return unless town && map.map_id == town[0]
+    return if map.events.values.any? { |event| event.name == KANTO_AGENT_NAME }
+    return unless defined?(RPG::Event) && defined?(RPG::EventCommand) && defined?(Game_Event)
+    occupied = map.events.values.map { |event| [event.x,event.y] }
+    # Use only real passable tiles near the audited Pallet arrival and do not
+    # occupy the arrival point, a map event or a source actor's event position.
+    arrival = town[1,2]
+    places = (0..4).flat_map do |distance|
+      (-distance..distance).flat_map do |dx|
+        dy = distance - dx.abs
+        (dy == 0 ? [0] : [-dy,dy]).map { |offset| [arrival[0]+dx,arrival[1]+offset] }
+      end
+    end.uniq
+    point = places.find do |x,y|
+      [x,y] != arrival && !occupied.include?([x,y]) &&
+        (map.valid?(x,y) rescue false) && (map.passable?(x,y,2) rescue false)
+    end
+    return unless point
+    event = RPG::Event.new(point[0],point[1])
+    event.id = (map.events.keys.max || 0) + 1
+    event.name = KANTO_AGENT_NAME
+    page = event.pages.first
+    page.graphic.character_name = DECADES_AGENT_GRAPHIC
+    page.trigger = 0
+    page.list = [
+      RPG::EventCommand.new(355,0,["BlueRegionTravel.agent(true)"]),
+      RPG::EventCommand.new(0,0,[])
+    ]
+    map.events[event.id] = Game_Event.new(map.map_id,event)
+  end
+
   module DecadesTownAgent
     def setup(*args)
       result = super
       BlueRegionTravel.attach_decades_agent(self)
+      BlueRegionTravel.attach_kanto_agent(self)
       BlueRegionTravel.attach_johto_agent(self)
       result
     end
@@ -384,16 +417,8 @@ module BlueRegionTravel
     return if @installed
     Game_Map.prepend(DecadesTownAgent) if defined?(Game_Map) && !Game_Map.ancestors.include?(DecadesTownAgent)
     PokemonStorageScreen.prepend(StorageRules)
-    MenuHandlers.add(:pause_menu,:blue_region_transport,{
-      "name"=>_INTL("Agente de Transporte Regional"),"order"=>68,
-      "condition"=>proc { |_menu| BlueRegionTravel.available? },
-      "effect"=>proc do |menu|
-        menu.pbHideMenu
-        BlueRegionTravel.agent
-        menu.pbShowMenu
-        false
-      end
-    })
+    # Travel is deliberately NOT registered in the pause menu. Interact with
+    # the NPC in Pallet, Cherryhill or New Bark instead.
     @installed = true
   end
 end
