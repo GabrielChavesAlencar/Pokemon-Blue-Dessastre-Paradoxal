@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0157572935100d17988ab430c2c75ee96442eafd",
+      "date": "2026-11-15T14:26:37-03:00",
+      "title": "ui(hm): esclarecer que é obrigatório obter HM da região atual",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "47c6c4853fedcb24853c0ac001880cc1aae66e4f",
+      "date": "2026-11-15T14:26:34-03:00",
+      "title": "ui(travel): explicar que itens-chave e HMs ficam na origem",
+      "category": "Melhorias"
+    },
+    {
       "sha": "dfab3864e5004d4bf26961ea8e8e1e990ed0e553",
       "date": "2026-11-15T14:25:33-03:00",
       "title": "docs(regions): comunicar regra de HMs e itens-chave independentes em cada campanha",
