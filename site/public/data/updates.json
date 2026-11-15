@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d34e8f499f62a1f491f461d6ec707037bd2aff19",
+      "date": "2026-11-15T11:40:58-03:00",
+      "title": "fix(kanto source): tentar endpoint alternativo oficial com SHA256 identico no instalador",
+      "category": "Correções"
+    },
+    {
       "sha": "535a87e4d4907f809b974dbaeeb1a6a83e368f42",
       "date": "2026-11-15T11:40:26-03:00",
       "title": "test(installer): Kanto automatico reaproveita cache e recupera fonte de origem",
