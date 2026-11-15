@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "18341feda463c435aca63d34fb3d51f7a0bc03c9",
+      "date": "2026-11-15T12:45:22-03:00",
+      "title": "test(kanto): cobrir primeira batalha Gary nos 3 iniciais, erro real e recompilacao automatica",
+      "category": "Testes"
+    },
+    {
       "sha": "cf061dd49cad3f97dc7d458645cd3c2dfb47c512",
       "date": "2026-11-15T12:44:22-03:00",
       "title": "fix(kanto): recuperar equipe real de Gary no PBS e evitar EventScriptError no laboratorio",
