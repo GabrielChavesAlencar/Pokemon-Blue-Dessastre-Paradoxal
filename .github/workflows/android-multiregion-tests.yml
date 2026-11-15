@@ -1,0 +1,32 @@
+name: Android multirregional - contratos e portal
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_android_multiregion.py'
+      - 'site/tests/android-release.test.mjs'
+      - 'site/src/assets/android-release.js'
+      - 'site/src/assets/downloads.js'
+      - 'scripts/android/package.py'
+      - 'scripts/android/update_client.py'
+      - '.github/workflows/android-multiregion-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contratos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxe de empacotamento e atualização
+        run: python -m py_compile scripts/android/package.py scripts/android/update_client.py scripts/android/publish_updates.py
+      - name: Testar ZIP compartilhado, mapas e canais isolados
+        run: python -m unittest discover -s tests -p test_android_multiregion.py -v
+      - name: Testar site de downloads e verificação real de release
+        run: npm test --prefix site
