@@ -1,6 +1,6 @@
 # Kanto integrado — erro EventScriptError na primeira batalha contra Gary
 
-**Atualizado:** 15/11/2026. **Situação:** o usuário reproduziu novamente a falha usando o Blue-Story.exe do build 986. O aviso genérico confirma uma exceção durante `TrainerBattle.start`, após o carregamento da equipe. A causa raiz **continua não identificada sem `Data/blue-kanto-rival-error.log`**. O runtime passou a exibir `ClasseDaExceção: mensagem` no diálogo; os testes isolados de Gary, blackout e instalador passaram na execução [43734207804](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43734207804), mas a batalha jogável no Game.exe segue **não aprovada**.
+**Atualizado:** 15/11/2026. **Causa raiz comprovada pelo log enviado:** `NameError: uninitialized constant Digest::SHA256` em `[Blue Music] BlueMusic.rb:189`, método `kanto_factory_pool?`. O fluxo `TrainerBattle.start` já tinha a equipe de Gary carregada, mas o plugin Blue Music tentava recalcular um hash SHA-256 no Ruby embarcado do Game.exe, que não fornece essa constante. A correção removeu a dependência de Digest em tempo de batalha e passou a comparar exatamente o volume, pitch e lista ordenada de músicas aprovados na compilação Python. **Pendente:** testar a batalha no Game.exe real após atualizar.
 
 ## Sintoma recebido
 
@@ -12,6 +12,14 @@ A chamada de roteiro está em `scripts/regions/KantoPilot.rb`, `BlueKantoPilot.r
 - Versão 12 quando escolheu Charmander.
 - Versão 13 quando escolheu Squirtle.
 - Identidade de treinador usada em todas: `BLUE_KANTO_RIVAL,Blue`, com time original do arquivo `PBS/trainers_kanto.txt` (gerado da fonte FRLG auditada); o apelido do NPC é Gary, mas a chave interna do PBS é Blue.
+
+## Correção definitiva do NameError na seleção de música (log real)
+
+1. `scripts/music/BlueMusic.rb`: remove `require 'digest'` e qualquer `Digest::SHA256` no caminho crítico do combate. `kanto_factory_pool?` compara os campos originais da lista de músicas em vez de recalcular a assinatura no Game.exe.
+2. `scripts/music/compile_kanto_music.py`: o Python do atualizador **mantém a assinatura SHA-256** de auditoria no manifesto `BASEPOOL`, mas anexa os valores originais verificados de volume, pitch e trilhas para comparação pelo Ruby (sem gem adicional).
+3. **Compatibilidade:** para um manifesto Kanto antigo que só contém a assinatura, o motor **usa a lista aleatória nativa de Decades** como fallback; não interrompe batalhas. Na atualização automática, o manifesto é recompilado para voltar a usar a música aprovada de Kanto.
+4. `tests/kanto_music_battles.rb`: executa a seleção de músicas sem qualquer constante `Digest`, incluindo o rival, os oito temas de batalha/vitória, configurações personalizadas e manifestos antigos. `tests/test_kanto_music_phase3.py` verifica a assinatura gerada pelo Python e o conjunto exato de campos.
+5. O `Blue-Story.exe` utiliza `scripts/music/install.py` para instalar o `BlueMusic.rb` novo e atualizar o manifesto de Kanto. `scripts/launch_game.py` solicita recompilação de plugins quando necessário. **Não altera saves nem mapas regionais.**
 
 ## Alterações implementadas
 
