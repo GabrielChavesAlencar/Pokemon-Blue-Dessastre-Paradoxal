@@ -11,5 +11,8 @@ test('the regional guide separates live areas from the Kanto preview', async () 
   assert.match(page,/Piloto em preparação<\/span><h2>Kanto<\/h2>/);
   assert.match(page,/Pallet Town.*Ginásio de Pewter/);
   assert.match(page,/Expedição sem Liga/);
+  assert.match(page,/Viagem livre pelo NPC da cidade inicial/);
+  assert.match(page,/A Liga não libera viagens/);
+  assert.doesNotMatch(page,/O final da Liga libera/);
   assert.match(page,/href="\/localizacoes">Ver mapa e encontros/);
 });
