@@ -69,6 +69,7 @@ module BlueBattleOptions
   def self.battle_area?; false; end
 end
 module BlueRegionStart
+  def self.kanto_integrated?; true; end
   def self.kanto_spawn; [300,28,14]; end
   def self.johto_spawn; @johto_ready ? [712,9,6] : nil; end
   def self.johto_town_point; @johto_ready ? [713,10,11,2] : nil; end
@@ -104,9 +105,9 @@ BlueRegionTravel.install
 Dir.mktmpdir("blue-region-travel-") do |dir|
   Dir.chdir(dir) do
     Dir.mkdir("Data")
-    File.write("Data/blue-kanto-install.json", "{}")
+    File.write("Data/blue-kanto-install.json", '{"maps":{"5":300}}')
     File.write("Data/Map300.rxdata", "dummy")
-    File.write("Data/Map001.rxdata", "dummy")
+    File.write("Data/Map077.rxdata", "native Decades opening town")
     $game_map=FakeGameMap.new
     $game_player=FakePlayerSprite.new
     $game_temp=FakeTemp.new
@@ -121,17 +122,23 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     special=FakePokemon.new(["Paradox"])
     $player.party=[normal,special]
     before=$player.party.dup
+    # No menu or arbitrary route script can teleport. Only the NPC event in
+    # the current region's starting city opens the transport service.
+    check(!BlueRegionTravel.travel("KANTO",true),
+          "Regional travel bypassed the physical NPC")
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,true)
+    check(BlueRegions.unlocked(BlueRegions.new_state("KANTO")).include?("JOHTO"),
+          "Regions are still locked behind a League")
 
     # A new save which STARTED in Kanto has no previous Decades position.
     # Store an actual native start point, but do not unlock travel until the
     # real Kanto Hall of Fame completes. It must remain the SAME save/PC.
     kanto_first = BlueRegions.new_state("KANTO")
-    kanto_first["decades_first_arrival"] = [1,5,8,2]
-    check(BlueRegionTravel.destination(kanto_first, "DECADES").nil?,
-          "Kanto first start bypassed its League")
-    kanto_first["leagues"] << "KANTO"
-    check(BlueRegionTravel.destination(kanto_first, "DECADES") == [1,5,8,2],
-          "Kanto champion did not unlock native Decades start")
+    # Verified native Decades town coordinates in this synthetic fixture.
+    kanto_first["decades_first_arrival"] = [77,5,8,2]
+    check(BlueRegionTravel.destination(kanto_first, "DECADES") == [77,5,8,2],
+          "Kanto traveler must access installed Decades without a League")
+    check(kanto_first["leagues"].empty?, "Travel awarded a League victory")
     $PokemonGlobal.blue_regions = kanto_first
     $game_map.map_id = 300
     $player.party = [normal]
@@ -139,13 +146,13 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($PokemonGlobal.blue_regions["initial"] == "KANTO" &&
           $PokemonGlobal.blue_regions["current"] == "DECADES",
           "One-save Kanto origin was lost after travel")
-    check($game_map.map_id == 1 && $game_player.x == 5, "Kanto to Decades wrong spawn")
+    check($game_map.map_id == 77 && $game_player.x == 5, "Kanto to Decades wrong spawn")
     $PokemonGlobal.blue_regions = nil
     $player.party = [normal,special]
 
-    # A fresh Kanto save, before its League, must not see the agent.
-    check(!BlueRegionTravel.available?(BlueRegions.new_state("KANTO")),
-          "Kanto travel agent appeared before a League or prior visit")
+    # The new save can speak to its NPC before the first badge or League.
+    check(BlueRegionTravel.available?(BlueRegions.new_state("KANTO")),
+          "Kanto travel agent remained locked behind League victory")
 
     # Read-only until a real, successful transfer.
     state=BlueRegions.snapshot
@@ -161,7 +168,7 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $interpreter_running = false
     check(BlueRegionTravel.preview(state,"KANTO")[0] == :ok, "Travel preview failed")
     check(BlueRegionTravel.travel("KANTO",true), "Could not arrive in Kanto")
-    check($game_map.map_id == 300 && $game_player.x == 28, "Wrong Kanto arrival")
+    check($game_map.map_id == 300 && $game_player.x == 18, "Wrong Pallet Town arrival")
     check($player.party == [normal], "Non-special party member changed")
     check($PokemonStorage[0,0] == special, "Special was not deposited")
     check(BlueRegionTravel.restricted?(special), "Special can be withdrawn before 8 local badges")
@@ -171,13 +178,13 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Native PC pbPlace signature changed")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Initial region overwritten")
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Current region not updated")
-    check($PokemonGlobal.blue_regions["decades_return"] == [1,5,8,2], "Return coords lost")
+    check($PokemonGlobal.blue_regions["decades_return"] == [77,5,8,2], "Return coords lost")
 
     saved=Marshal.load(Marshal.dump([$PokemonGlobal.blue_regions,$player.party,$PokemonStorage]))
     check(saved[0]["current"] == "KANTO" && saved[1].size == 1 && saved[2][0,0],
           "Regional trip state cannot be marshalled into a single save")
     check(BlueRegionTravel.travel("DECADES",true), "Could not return to Decades")
-    check($game_map.map_id == 1 && $game_player.x == 5, "Wrong Decades return")
+    check($game_map.map_id == 77 && $game_player.x == 5, "Wrong Decades return")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Return changed initial region")
     check($PokemonStorage[0,0] == special, "PC was cleared after return")
     check($player.party == [normal], "Party was unexpectedly refilled")
@@ -187,7 +194,7 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $scene.fail_once=true
     prior_state=Marshal.dump($PokemonGlobal.blue_regions)
     check(!BlueRegionTravel.travel("KANTO",true), "Failed map transfer reported success")
-    check($game_map.map_id == 1 && $game_player.x == 5, "Rollback did not restore origin")
+    check($game_map.map_id == 77 && $game_player.x == 5, "Rollback did not restore origin")
     check(Marshal.dump($PokemonGlobal.blue_regions) == prior_state, "Failed travel wrote progress")
     check($PokemonStorage[0,0] == special, "Rollback lost stored special")
 
@@ -205,9 +212,19 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(BlueRegionTravel.preview(state,"KANTO")[0] == :no_usable_party, "No usable team missed")
     check(!BlueRegionTravel.travel("KANTO",true), "Travel stranded trainer with no team")
 
-    # Even if someone forges a snapshot, unverified Hall of Fame is not access.
+    # No Hall of Fame flag is required for transport, but it must still be
+    # started by a physical NPC in the correct starting town.
     $game_switches[122]=false
-    check(!BlueRegionTravel.available?(BlueRegions.snapshot), "Travel before ending was allowed")
+    check(BlueRegionTravel.available?(BlueRegions.snapshot),
+          "Transport was still gated by the Decades ending")
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,false)
+    check(!BlueRegionTravel.travel("KANTO",true), "Non-NPC transport was allowed")
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,true)
+    # A valid NPC script on a route outside the starting town cannot move us.
+    $game_map.map_id = 22
+    check(!BlueRegionTravel.travel("KANTO",true),
+          "Transport worked from outside the starting city")
+    $game_map.map_id = 77
 
     # Phase 16: Kanto/Decades transfer semantics stay unchanged; only a
     # trustworthy, audited installation may add a Johto destination.
@@ -239,15 +256,11 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Travel from Kanto to installed Johto failed")
     check($game_map.map_id == 713 && $game_player.x == 10,
           "Johto travel reached the wrong town/coordinate")
-    check(!BlueRegionTravel.available?($PokemonGlobal.blue_regions),
-          "Johto transport agent available before first League victory")
-    check(!BlueRegionTravel.travel("KANTO", true),
-          "Johto -> Kanto was unlocked before its League")
-    check($PokemonGlobal.blue_regions["current"] == "JOHTO",
-          "Denied Johto departure modified region")
-    $PokemonGlobal.blue_regions["leagues"] << "JOHTO"
     check(BlueRegionTravel.available?($PokemonGlobal.blue_regions),
-          "Johto post-League travel agent is blocked")
+          "New Bark agent still requires a Johto League victory")
+    check($PokemonGlobal.blue_regions["leagues"].empty? ||
+          !$PokemonGlobal.blue_regions["leagues"].include?("JOHTO"),
+          "Free transport falsely credited Johto League")
     check(BlueRegionTravel.destination($PokemonGlobal.blue_regions, "HOENN").nil?,
           "Uninstalled Hoenn was given a fabricated destination")
     before_johto = Marshal.dump($PokemonGlobal.blue_regions)
@@ -268,6 +281,7 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(!BlueRegionTravel.travel("KANTO", true),
           "Unverified Johto origin allowed travel")
     check($game_map.map_id == 713, "Denied travel after revoked proof moved player")
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,false)
   end
 end
 puts "Regional travel, restricted PC, rollback, single save and return OK"
