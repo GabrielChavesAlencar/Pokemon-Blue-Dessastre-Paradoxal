@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ce8f514d1f0cca831b1930508e25de7fac682487",
+      "date": "2026-11-15T11:00:35-03:00",
+      "title": "feat(installer): integrar Kanto automaticamente no Blue Story com protecoes de saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "d9a4690f0a816cc65551ff0d24ebdbdcb2fdb3f7",
       "date": "2026-11-15T10:52:56-03:00",
       "title": "docs(circuito): atualizar integracao Kanto de 142 mapas dentro de Decades",
