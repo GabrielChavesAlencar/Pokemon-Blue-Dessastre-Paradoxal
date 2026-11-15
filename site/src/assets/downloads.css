@@ -30,3 +30,8 @@
 .android-update-note strong{font-size:13px;color:#f0ce93}
 .android-update-note p{margin:7px 0 0!important;font-size:12px!important;line-height:1.7!important}
 @media(max-width:680px){.android-update-paths{grid-template-columns:1fr}.android-update-guide h3{font-size:22px}}
+
+/* Três regiões por linha no Windows, com botões legíveis em telas menores. */
+@media(min-width:950px){.download-requirements .android-pilot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.android-pilot-card{min-width:0}
+.android-pilot-card .button{white-space:normal;line-height:1.4;max-width:100%;overflow-wrap:anywhere}
