@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ffcf2ecbe87c08e114a896d3c4cad21b5a2deddb",
+      "date": "2026-11-15T20:10:23-03:00",
+      "title": "Test Android release ordering and prevent GitHub updater downgrade before download",
+      "category": "Melhorias"
+    },
+    {
       "sha": "63f16c4c910cd4a5a4e79079e6bc7cc7135b7d96",
       "date": "2026-11-15T20:09:54-03:00",
       "title": "Keep multiregion release test aligned with required manifest asset",
