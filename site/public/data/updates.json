@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ac821000184e9a03a617b5812cafc9aaca2401a7",
+      "date": "2026-11-15T10:41:10-03:00",
+      "title": "fix(kanto): preservar testes e eventos Cut do piloto isolado ao integrar Decades",
+      "category": "Correções"
+    },
+    {
       "sha": "692ad85258a6287d5551bee447cb63e788830fd0",
       "date": "2026-11-15T10:40:30-03:00",
       "title": "fix(kanto): atualizar instalador Windows para pacote 142 mapas e validacao segura",
