@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "904cd1896b8856eb773e49baa5ed4d74f2840820",
+      "date": "2026-11-15T16:35:51-03:00",
+      "title": "docs(hoenn): resolver Hoenn em preparação com cache auditado e BAT direto",
+      "category": "Documentação"
+    },
+    {
       "sha": "b1ba6047c5231bbc9f17ce5528d6910acfd060c6",
       "date": "2026-11-15T16:34:28-03:00",
       "title": "test(hoenn): reusar pasta Data criada pela nova fixture do status",
