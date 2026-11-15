@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a9118ad9ce56b2cd84dbf9787b4e548c37cfa384",
+      "date": "2026-11-15T16:31:38-03:00",
+      "title": "fix(hoenn): explicar no NPC por que Hoenn ainda está bloqueada",
+      "category": "Correções"
+    },
+    {
       "sha": "e4b37370120c18b18de3270747e364813ec4cb5a",
       "date": "2026-11-15T16:31:17-03:00",
       "title": "fix(hoenn): importar cache de testes e mostrar status do instalador no jogo",
