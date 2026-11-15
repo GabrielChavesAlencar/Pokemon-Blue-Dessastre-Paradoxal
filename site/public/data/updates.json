@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "491c86c9c67adb813a2e7baa3ccae800a958b4b3",
+      "date": "2026-11-14T21:32:04-03:00",
+      "title": "ci(kanto): verificar derrota e retorno ao ultimo Centro Pokemon",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "99c008c390c4f51cc610ef2d57bb32ac26a2010f",
+      "date": "2026-11-14T21:31:53-03:00",
+      "title": "test(kanto): derrotas retornam ao ultimo Centro Pokemon sem avancar historia",
+      "category": "Testes"
+    },
+    {
       "sha": "d23f60e5df52e828099185326de9d36eae868783",
       "date": "2026-11-14T21:30:48-03:00",
       "title": "fix(kanto): usar blackout nativo para centro Pokemon apos derrota sem avançar historia",
