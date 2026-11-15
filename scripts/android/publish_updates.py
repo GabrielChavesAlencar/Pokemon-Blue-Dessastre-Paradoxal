@@ -17,6 +17,7 @@ from scripts.android.update_client import MARKER, CHANNELS, safe_path, sha256_fi
 
 def from_archive(path: Path, channel: str):
     _, root = {"decades": (None, "Pokemon-Blue-Android/"),
+               "multiregion": (None, "Pokemon-Blue-Android/"),
                "kanto": (None, "Pokemon-Blue-Kanto-Android/")}[channel]
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()
