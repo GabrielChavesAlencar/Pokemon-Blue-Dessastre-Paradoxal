@@ -12,6 +12,16 @@ module BlueKantoPilot
   # Este zoom so existe na instalacao isolada do piloto de Kanto.
   PLAYER_OVERWORLD_ZOOM = 0.75
   PILOT_OVERWORLD_SCALE = File.file?("Kanto pilot.json")
+  INTEGRATED_KANTO = !PILOT_OVERWORLD_SCALE && File.file?("Data/blue-kanto-install.json")
+
+  # Shared runtime is active ONLY while the current regional save is in Kanto.
+  # Never apply Kanto-specific field rules to Decades maps or other regions.
+  def self.kanto_current?
+    state = $PokemonGlobal && $PokemonGlobal.respond_to?(:blue_regions) &&
+            $PokemonGlobal.blue_regions
+    state.is_a?(Hash) && state["current"] == "KANTO" &&
+      (PILOT_OVERWORLD_SCALE || INTEGRATED_KANTO)
+  end
   GYM_FULL_POWER = {
     "Brock" => :BLUE_KANTO_LEADER, "Misty" => :BLUE_KANTO_LEADER_MISTY,
     "Lt. Surge" => :BLUE_KANTO_LEADER_SURGE, "Erika" => :BLUE_KANTO_LEADER_ERIKA,
@@ -28,7 +38,7 @@ module BlueKantoPilot
   # Do not alter the underlying localization catalog, other regions, or signs'
   # window skins; this runs only when the isolated Kanto NPC bridge is called.
   def self.cut_tree_obstacle?(event)
-    File.file?("Kanto pilot.json") && event && event.respond_to?(:name) &&
+    kanto_current? && event && event.respond_to?(:name) &&
       event.name.to_s.match?(/cut[ _-]*tree|cuttable[ _-]*tree/i)
   end
 
@@ -36,9 +46,10 @@ module BlueKantoPilot
   # the FRLG source atlas or the official names in the English-language PBS.
   # The generated Kanto pilot.json maps source FRLG Map010 to the stable Blue ID.
   def self.viridian_map_id
-    return nil unless File.file?("Kanto pilot.json")
+    return nil unless PILOT_OVERWORLD_SCALE || INTEGRATED_KANTO
     @viridian_map_id ||= begin
-      match = File.read("Kanto pilot.json").match(/"10"\s*:\s*(\d+)/)
+      path = PILOT_OVERWORLD_SCALE ? "Kanto pilot.json" : "Data/blue-kanto-install.json"
+      match = File.read(path).match(/"10"\s*:\s*(\d+)/)
       match ? match[1].to_i : nil
     end
   rescue IOError, SystemCallError
@@ -46,7 +57,7 @@ module BlueKantoPilot
   end
 
   def self.viridian_display_name_for_map(map_id)
-    return nil unless PILOT_OVERWORLD_SCALE && viridian_map_id == map_id
+    return nil unless kanto_current? && viridian_map_id == map_id
     defined?(BlueLocale) && BlueLocale.enabled? ? "Cidade de Viridian" : "Viridian City"
   end
 
@@ -282,7 +293,7 @@ module BlueKantoPilot
   # The pilot builder now records the five-tile walkway line marked in the
   # screenshot, relative to source Map010's northern house doorway.
   def self.viridian_route2_line
-    return nil unless File.file?("Kanto pilot.json")
+    return nil unless kanto_current?
     @viridian_route2_line ||= begin
       path = "Data/blue-kanto-viridian-route2-line.txt"
       if File.file?(path)
@@ -349,7 +360,7 @@ module BlueKantoPilot
   # Mom hands them over on the FIRST successful journey through the
   # Brock-unlocked Pewter -> Route 3 passage; not at the gym or in Decades.
   def self.mom_running_shoes_at_route3
-    return false unless PILOT_OVERWORLD_SCALE && File.file?("Kanto pilot.json")
+    return false unless kanto_current?
     return false unless $player && $PokemonSystem && progress["current"] == "KANTO"
     return false unless BlueRegions.local_achievements(progress, "KANTO").include?("BOULDER")
     return false if progress["pilot_mom_running_shoes"] == true
@@ -1348,7 +1359,7 @@ end
 module BlueKantoPilot::PlayerOverworldScale
   def update
     super
-    if BlueKantoPilot::PILOT_OVERWORLD_SCALE && @character &&
+    if BlueKantoPilot.kanto_current? && @character &&
        BlueKantoPilot.cut_tree_obstacle?(@character) &&
        !@character.instance_variable_get(:@erased) &&
        !@character.instance_variable_get(:@blue_kanto_cut_animating) &&
