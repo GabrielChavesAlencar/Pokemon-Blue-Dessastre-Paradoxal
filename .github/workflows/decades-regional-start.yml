@@ -8,6 +8,7 @@ on:
       - 'scripts/battle_polish/Campaign.rb'
       - 'tests/region_start_runtime.rb'
       - 'tests/region_travel_runtime.rb'
+      - 'tests/decades_mechanics_runtime.rb'
       - '.github/workflows/decades-regional-start.yml'
   workflow_dispatch:
 permissions:
@@ -24,5 +25,7 @@ jobs:
           ruby -c scripts/battle_polish/Campaign.rb
       - name: Novo Jogo Decades - sem menus iniciais
         run: ruby -I. tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
+      - name: Padrao real da campanha - Mega Z Tera ligados sem Dynamax
+        run: ruby -I. tests/decades_mechanics_runtime.rb scripts/battle_polish/Campaign.rb
       - name: Viagem Kanto Decades - chegada Cherryhill e mecanicas
         run: ruby -I. tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
