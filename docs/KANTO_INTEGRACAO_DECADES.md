@@ -13,11 +13,23 @@
 
 O menu não pede uma segunda escolha regional durante o Story Mode de Decades. `Continue`, os slots do Auto Multi Save, Mystery Gift, outros modos e saves existentes não são migrados automaticamente.
 
+## Instalação automática pelo site — fluxo principal
+
+**Novo comportamento:** ao baixar e executar **`Blue-Story.exe`** no site, o instalador/atualizador usa `scripts/install_game.py` para preparar Decades e, em seguida, chama `scripts/regions/auto_integrate_kanto.py`. Esse processo substitui a necessidade de abrir **`KANTO_INSTALAR_NO_JOGO.bat`** manualmente em instalações limpas.
+
+O inicializador já confere as revisões da `main` a cada abertura; portanto os scripts de integração seguem as atualizações distribuídas pelo próprio EXE. O Python portátil obtido pelo instalador é reutilizado. `ensure_source.py` obtém a fonte FRLG original fixada e verifica o SHA-256 antes da extração; `install_kanto.py` valida o conjunto e instala os mapas, traduções e eventos em `game/`, com backup e rollback. A recompilação é acionada pelo fluxo existente.
+
+Se Kanto já estiver instalado, a instalação automática **não realoca MapIDs**, não sobrescreve RXDATA e não reinicia saves: apenas verifica a integridade. Correções do plugin `KantoPilot.rb` podem ser sincronizadas por hash, com backup. Se um arquivo foi editado, a atualização automática é recusada para não destruir modificações locais.
+
+**Sem internet, fonte indisponível ou pacote legado (13/25 mapas):** a integração é ignorada com aviso, sem bloquear Decades. O status é visível na saída e no log do inicializador. Uma migração de mapas/saves existentes exige procedimento próprio e não deve ser feita apagando marcadores.
+
+**Plataforma:** este fluxo é para o **Blue-Story.exe no Windows**. O Hub isolado não dispara a montagem regional, e o JoiPlay continua com sua distribuição própria. A integração automática de arquivos **não aprova a campanha jogável**; a validação no Game.exe permanece pendente.
+
 ## Preparação no seu PC Windows
 
-1. **Faça uma cópia de segurança dos saves** e feche completamente `Game.exe`. Use uma instalação com **Decades/Blue íntegro** e Python 3.10+, Git e espaço em disco.
+1. **Caminho manual opcional para manutenção:** faça uma cópia de segurança dos saves e feche completamente `Game.exe`. Use uma instalação com **Decades/Blue íntegro** e Python 3.10+, Git e espaço em disco.
 2. Na raiz do repositório, atualize a `main` (`git pull --ff-only origin main`) e, caso necessário, instale Decades/Blue com `INSTALAR_JOGO.bat`.
-3. Providencie localmente o **Essentials FRLG 21.1 / 1.1** de TheTinfoilTemplar, na revisão/hash verificados pelo projeto, e extraia em:
+3. Se não usar o Blue-Story.exe automático, providencie localmente o **Essentials FRLG 21.1 / 1.1** de TheTinfoilTemplar, na revisão/hash verificados pelo projeto, e extraia em:
    `.blue-work/frlg-source/Essentials FRLG/` (incluindo `Data/MapInfos.rxdata`).
 4. Execute **`KANTO_INSTALAR_NO_JOGO.bat`** com o jogo fechado. O atalho monta uma cópia isolada atual, faz **dry-run**, pede confirmação e somente depois instala os mapas/recursos. Usa hashes, backups e rollback em caso de erro; `System.rxdata`, `Scripts.rxdata`, `Game.ini`, `mkxp.json`, `Game.exe` e saves não são importados do doador.
 5. Quando o atalho informar que os arquivos estão prontos, execute **`ABRIR_JOGO.bat`**, que aplica os plugins Blue, mescla as traduções verificadas e solicita recompilação do Essentials se necessário. Na primeira abertura, a recompilação pode encerrar o processo; abra novamente.
