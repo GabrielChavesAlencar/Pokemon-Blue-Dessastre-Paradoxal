@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a731cbc885c2821d16ceefaf29831e1be94f9c6e",
+      "date": "2026-11-15T15:53:08-03:00",
+      "title": "test(kanto): validar limite de 30px e zoom adaptativo do protagonista",
+      "category": "Testes"
+    },
+    {
       "sha": "daaf277f40dc4e41930d04387ab8bd5415a94a88",
       "date": "2026-11-15T15:52:44-03:00",
       "title": "fix(kanto): reduzir sprite do jogador e limitar altura no overworld",
