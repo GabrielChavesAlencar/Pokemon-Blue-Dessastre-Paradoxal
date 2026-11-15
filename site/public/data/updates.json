@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bffbb900873e702b007c59fd631b37cdca1a968b",
+      "date": "2026-11-15T19:05:33-03:00",
+      "title": "Android updater: verified full ZIP fallback with save migration and rollback",
+      "category": "Melhorias"
+    },
+    {
       "sha": "af0c4947cb006b26cc680b0ea33bea19d98c459c",
       "date": "2026-11-15T18:46:54-03:00",
       "title": "fix(android): incluir correcao New Game sem JSON na release JoiPlay compilada",
