@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "573f2c94492a647d8e3dfead734f5db063b4cf39",
+      "date": "2026-11-15T15:02:01-03:00",
+      "title": "test(installer): garantir que Blue-Story.exe instale o módulo dinamico e preserve save/PBS",
+      "category": "Testes"
+    },
+    {
       "sha": "689c3f204fb69e7a7ba696af1868b39290f84306",
       "date": "2026-11-15T15:01:11-03:00",
       "title": "ci(evolution): testar Habitat Dex com dados reais do módulo de evolução",
