@@ -295,6 +295,7 @@ module Compiler
       BlueStartMouse.install
       PokemonStorageScene.prepend(BlueStorageMouse::Scene) unless PokemonStorageScene.ancestors.include?(BlueStorageMouse::Scene)
       BlueExploration.install
+      BlueEvolutionScaling.install
       BlueDexControls.install;BlueDexCompare.install
       PokemonSummary_Scene.prepend(BlueLearnMouse) unless PokemonSummary_Scene.ancestors.include?(BlueLearnMouse)
       MoveRelearner_Scene.prepend(BlueRelearnMouse) unless MoveRelearner_Scene.ancestors.include?(BlueRelearnMouse)
