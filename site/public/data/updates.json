@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cb40276509c69a52d23e31dfced44587b84c9187",
+      "date": "2026-11-15T14:19:50-03:00",
+      "title": "fix(regions): nao transferir atalhos de itens-chave consumidos e impedir bloqueio de save antigo",
+      "category": "Correções"
+    },
+    {
       "sha": "19884698fca1a56410e05b0fb49a046f97247ab0",
       "date": "2026-11-15T14:18:48-03:00",
       "title": "ci(regions): testar separacao dos itens e HMs, licencas locais e saves legados",
