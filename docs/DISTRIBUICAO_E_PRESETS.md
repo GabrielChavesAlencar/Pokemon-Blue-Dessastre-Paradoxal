@@ -10,6 +10,14 @@ Baixe um dos EXEs em **Downloads**, abra e aguarde a primeira instalação e com
 
 Quando o EXE está numa instalação de desenvolvimento existente, ele a reconhece pela pasta `scripts` e `game`. Em um computador novo, a pasta padrão é `%LOCALAPPDATA%/PokemonBlueDessastreParadoxal`.
 
+## Kanto integrado automaticamente ao Blue-Story.exe
+
+O atualizador do Windows já usa `scripts/install_game.py --apply` a cada abertura da versão História. Depois da preparação do motor Blue, o instalador também invoca `scripts/regions/auto_integrate_kanto.py`. Em uma instalação limpa, ele prepara automaticamente a fonte FRLG original, verifica o SHA-256 do arquivo baixado e chama o importador `install_kanto.py --apply` para integrar os 142 mapas catalogados ao **mesmo Game.exe** de Decades. Não é necessário usar o BAT de Kanto.
+
+Quando Kanto já está instalado, a atualização confere o manifesto e pode atualizar **somente** o plugin Ruby original de Kanto por checksum, com backup e recompilação. Não substitui MapIDs, saves, PBS de terceiros ou scripts modificados pelo jogador. Instalações antigas com mapas 13/25, importações parciais e falhas de download retornam um aviso e deixam Decades jogável; a migração não é forçada.
+
+O **Hub de Batalha** não dispara a importação regional, embora compartilhe a instalação de base. O portal apenas distribui o EXE; a importação ocorre **no PC Windows após o download**. Não é funcionalidade do pacote JoiPlay Android.
+
 ## JoiPlay experimental
 
 O download **Blue-Android-JoiPlay.zip** é um pacote de jogo compilado, não um APK nativo. Instale JoiPlay e RPG Maker Plugin pelos [downloads oficiais](https://www.joiplay.net/), extraia o ZIP inteiro e adicione `Pokemon-Blue-Android/Game.exe` ao JoiPlay. A abertura permite escolher a campanha ou o Hub offline.
