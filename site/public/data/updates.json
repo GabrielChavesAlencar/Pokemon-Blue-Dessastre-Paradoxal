@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6d2a14b5d7e94354294884b8cdd2ca07d3143161",
+      "date": "2026-11-15T19:44:43-03:00",
+      "title": "docs(site): align Android fallback guidance with existing regression test",
+      "category": "Documentação"
+    },
+    {
       "sha": "df694005c01b30a53ab95104d0f1029b55e58478",
       "date": "2026-11-15T19:44:21-03:00",
       "title": "Exercise incomplete and broken JoiPlay JSON behavior in Kanto regression",
