@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dc25880d15ed22929703a42a2c6029c25ae80702",
+      "date": "2026-11-15T17:32:59-03:00",
+      "title": "test(site): impedir links falsos e buscar ZIP Android conjunto em releases reais",
+      "category": "Testes"
+    },
+    {
       "sha": "d8227e591eb2d5f1cbd447a60c903f969e8ba056",
       "date": "2026-11-15T17:32:38-03:00",
       "title": "style(site): botão de pacote multirregional Android responsivo",
