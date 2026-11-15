@@ -80,7 +80,13 @@ module BlueRegionTravel
     town = Game_Map.new
     town.setup(DECADES_AGENT_MAP)
     return nil unless town.respond_to?(:events) && town.events.is_a?(Hash)
-    occupied = town.events.values.map { |event| [event.x, event.y] }
+    # Game_Map#setup may already have injected the regional agent when
+    # the current save is Decades, but not when it is Kanto. Exclude ONLY
+    # our generated NPC from the base occupancy list, so the arrival tile
+    # is deterministic in both situations and never depends on travel state.
+    occupied = town.events.values.reject { |event|
+      event.name == DECADES_AGENT_NAME
+    }.map { |event| [event.x, event.y] }
     positions = (18..31).flat_map { |y| (10..35).map { |x| [x,y] } }
     positions.sort_by! { |x,y| [(x-24).abs+(y-24).abs,y,x] }
     safe = positions.select do |x,y|
