@@ -1,12 +1,12 @@
 # Etapa 04 — Escolha da região inicial no jogo-mestre
 
-**Status:** implementação e teste nativo integrado **aprovados no GitHub Actions**; **a aceitação do menu e da jogabilidade por um jogador continua pendente**.  
+**Status atualizado:** a seleção `Novo Jogo → Kanto` e as verificações de integração foram implementadas na `main`. O resultado dos novos testes automatizados e a aceitação do fluxo completo no **Game.exe principal** ainda precisam ser confirmados. As evidências de CI descritas abaixo são históricas e não substituem a nova campanha de 142 mapas.  
 **Regras:** [Plano regional v2](PLANO_REGIOES_DESSASTRE_V2.md).  
 **Contadores:** etapa de desenvolvimento **04/16 (25%)**; etapas integralmente aceitas **01/16 (6,25%)**.
 
 ## Como começar
 
-No jogo principal, abra **Nova partida**, escolha o personagem e o nome, e selecione **Modo História**. O seletor mostra **Decades** e as regiões instaladas. Com Kanto integrado, selecione **Kanto** para começar no quarto da casa de Pallet. O Modo Batalha mantém seu fluxo próprio.
+No **Game.exe principal**, escolha **Novo Jogo → Kanto** antes de iniciar a campanha. Quando os 142 mapas e recursos atuais estiverem integrados, o jogo começa no quarto da casa de Pallet **com o mesmo sistema de saves do Decades**. Caso não estejam, aparece **Kanto (instalação necessária)** e a seleção não abre o piloto separado automaticamente. O Modo Batalha original continua disponível pelo fluxo de Decades. O arquivo [KANTO_INTEGRACAO_DECADES.md](KANTO_INTEGRACAO_DECADES.md) documenta o procedimento atual e seus bloqueios.
 
 O piloto isolado começa em Kanto. A seleção de personagem e nome abre na primeira partida, antes de o jogador controlar o personagem. Na primeira descida da escada, a mãe se aproxima. Ao tentar sair de Pallet sem inicial, Oak vem buscar o jogador e o conduz ao laboratório. Gary desafia o jogador na porta do laboratório após a escolha do inicial.
 
@@ -35,16 +35,16 @@ O primeiro comando é um **dry-run** e não modifica a instalação. O segundo a
 
 **O que é integrado:** 142 mapas, tilesets/autotiles, personagens adaptados, PBS de encontros/treinadores/metadados/conexões, plugin de eventos de Kanto e marcador de origem. O importador **não copia** `System.rxdata`, `Scripts.rxdata`, `Game.ini`, `mkxp.json`, o executável nem diretórios de saves.
 
-O passo seguinte é abrir **`ABRIR_JOGO.bat`**, que prepara a campanha, e aguardar a compilação nativa do Essentials. Em **Nova partida → Modo História**, escolha **Decades** ou **Kanto**.
+O passo seguinte é abrir **`ABRIR_JOGO.bat`**, que prepara a campanha, integra o catálogo de traduções Kanto sem sobrescrever traduções Decades e solicita compilação do Essentials. Na **tela principal → Novo Jogo**, escolha **Decades** ou **Kanto**. O importador antigo de 13/25 mapas é bloqueado; a versão atual exige os **142 mapas e dados auxiliares** e não substitui saves ou MapIDs antigos automaticamente.
 
 ## 2. O que testar ao iniciar
 
-- [ ] Com Kanto instalado, selecionar **Nova partida → Modo História → Decades** e conferir a introdução e o sistema de iniciais originais.
+- [ ] Com Kanto instalado, selecionar **Novo Jogo → Decades** e conferir a introdução, o sistema de iniciais original e a ausência de um segundo seletor.
 - [ ] Começar uma nova partida Kanto e conferir o surgimento em Pallet Town.
 - [ ] Escolher o inicial regional (Bulbasaur, Charmander ou Squirtle), enfrentar Gary e verificar o modo história.
 - [ ] Salvar a partida Kanto, sair, carregar e conferir região, posição, Pokémon e itens.
 - [ ] Abrir um save **antigo de Decades** e conferir que a região inicial, eventos, PC, Pokédex, dinheiro e missões continuam intactos.
-- [ ] Conferir que o seletor lista somente as regiões instaladas.
+- [ ] Conferir que o seletor sinaliza **Kanto (instalação necessária)** quando seus 142 mapas ou arquivos essenciais não estiverem no jogo principal; não criar save ou fallback falso.
 - [ ] Verificar janela/controles, portas e batalhas reais até Pewter — isso também fecha as pendências manuais das etapas 02 e 03.
 
 ## 3. Limites nesta entrega
