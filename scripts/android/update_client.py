@@ -486,6 +486,7 @@ def main(argv=None):
     print("Atualizacao completa aplicada. Saves locais copiados:", saved)
     print("Pasta antiga preservada para recuperacao:", backup)
     print("Reabra o MESMO Game.exe no JoiPlay; confira os saves antes de apagar o backup.")
+    print("Antes de uma proxima atualizacao no Termux, entre novamente na pasta nova com cd.")
     return 0
 
 
