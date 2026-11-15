@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "64b6b19f2247436ea7f4a9ddf4e90e973167c340",
+      "date": "2026-11-15T11:35:56-03:00",
+      "title": "ci(kanto): nao exigir fonte FRLG antes de prepara-la no workflow nativo",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a6fde1d607125159fc2cfe14c5fd428c1aa5690f",
+      "date": "2026-11-15T11:35:47-03:00",
+      "title": "ci(story): permitir preparar base sem importar Kanto na etapa dedicada de QA",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1eebad17c7176e05ae6df77808072cb2e679e57d",
       "date": "2026-11-15T11:34:06-03:00",
       "title": "fix(title): orientar instalar Kanto pelo Blue Story sem BAT manual",
