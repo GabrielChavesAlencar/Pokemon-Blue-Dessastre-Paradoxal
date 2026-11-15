@@ -35,7 +35,7 @@ module BlueKantoTitle
   # own independently built pilot and NEVER write to the Decades save profile.
   START_REGIONS = [
     ["Decades", :decades],
-    ["Kanto (piloto experimental)", :kanto],
+    ["Kanto", :kanto],
     ["Johto (piloto experimental)", :johto],
     ["Hoenn (piloto experimental)", :hoenn],
     ["Sinnoh (piloto experimental)", :sinnoh],
@@ -48,22 +48,40 @@ module BlueKantoTitle
     ["Voltar ao menu", :cancel]
   ].freeze
 
+  def self.start_region_names
+    installed = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:kanto_integrated?) &&
+                BlueRegionStart.kanto_integrated?
+    START_REGIONS.map do |name, region|
+      _INTL(region == :kanto && !installed ? "Kanto (instalação necessária)" : name)
+    end
+  end
+
   def self.choose_start_region
     loop do
-      names = START_REGIONS.map { |name, _| _INTL(name) }
-      choice = pbMessage(_INTL("Em qual região deseja começar um novo jogo?"), names, 0)
+      choice = pbMessage(_INTL("Em qual região deseja começar um novo jogo?"), start_region_names, 0)
       return :cancel unless choice.is_a?(Integer) && (0...START_REGIONS.length).cover?(choice)
       region = START_REGIONS[choice][1]
       case region
-      when :decades then return :decades
+      when :decades
+        # Prevent a second region picker in the old Decades Story Mode event.
+        BlueRegionStart.request_initial("DECADES") if defined?(BlueRegionStart) &&
+                                                     BlueRegionStart.respond_to?(:request_initial)
+        return :decades
+      when :kanto
+        # Kanto runs in the same Game.exe and save system as Decades only when
+        # an audited map+PBS installation exists in the MAIN game directory.
+        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:request_initial) &&
+           BlueRegionStart.request_initial("KANTO")
+          return :integrated
+        end
+        pbMessage(_INTL("Kanto ainda não foi instalado no jogo principal. Feche o jogo e execute KANTO_INSTALAR_NO_JOGO.bat na pasta do projeto. Seus saves serão preservados."))
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
       else
-        # Existing Windows launchers check their own pilot installation and
-        # prompt before opening. Failed/unavailable launches return here.
-        launcher_method = region == :kanto ? :launch : :"launch_#{region}"
-        return :launched if public_send(launcher_method)
+        # Other regions still require separate experimental copies. They must
+        # never silently start Decades or claim to share its progress.
+        return :launched if public_send("launch_#{region}")
       end
     end
   end
@@ -281,7 +299,7 @@ module BlueKantoTitle
           # to the title without writing a save or advancing story flags.
           return original unless @blue_kanto_quit
           case BlueKantoTitle.choose_start_region
-          when :decades then return original
+          when :decades, :integrated then return original
           when :launched then return @blue_kanto_quit
           end
           next
