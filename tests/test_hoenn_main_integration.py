@@ -3,6 +3,7 @@
 No donor archive, native Game.exe or user save is read or written.
 """
 import hashlib
+import io
 import json
 import sys
 import tempfile
@@ -14,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 import install_hoenn as hoenn
 import auto_integrate_hoenn as auto
+import ensure_hoenn_source as downloader
 
 class HoennMainIntegrationTests(unittest.TestCase):
     def setUp(self):
@@ -187,24 +189,40 @@ class HoennAutoInstallTests(unittest.TestCase):
             item.start()
             self.addCleanup(item.stop)
 
-    def test_absent_zip_does_not_fake_a_success_or_run_installer(self):
-        with patch.object(auto,"invoke") as invoke:
-            result=auto.integrate(self.root,self.game)
-        invoke.assert_not_called()
-        self.assertEqual(result["status"],"awaiting_local_source")
-        self.assertFalse(result["ready"])
-        self.assertFalse(result["changed"])
-        self.assertEqual((self.game / auto.GAME_STATUS).read_text().strip(),
-                         "awaiting_local_source")
+    def test_no_zip_bootstraps_pinned_public_source_automatically(self):
+        calls = []
+        with patch.object(auto, "invoke", side_effect=lambda *args: calls.append(args)):
+            result = auto.integrate(self.root, self.game)
+        self.assertEqual([args[-1] for args in calls],
+                         ["--bootstrap-source", "--apply", "--verify-installed"])
+        self.assertEqual(result["status"], "integrated")
+        self.assertEqual(result["source"], "pinned_public_git")
+        self.assertEqual((self.game / auto.GAME_STATUS).read_text().strip(), "integrated")
 
-    def test_cached_source_triggers_import_even_without_zip(self):
+    def test_cache_is_reverified_by_bootstrap_before_import(self):
         auto.SOURCE_CACHE.mkdir(parents=True)
         calls = []
         with patch.object(auto, "invoke", side_effect=lambda *args: calls.append(args)):
             result = auto.integrate(self.root, self.game)
         self.assertEqual(result["status"], "integrated")
-        self.assertEqual([call[-1] for call in calls], ["--apply", "--verify-installed"])
+        self.assertEqual([call[-1] for call in calls],
+                         ["--bootstrap-source", "--apply", "--verify-installed"])
         self.assertEqual((self.game / auto.GAME_STATUS).read_text().strip(), "integrated")
+
+    def test_failed_public_download_blocks_travel_without_attempting_import(self):
+        calls = []
+        def invoke(*args):
+            calls.append(args[-1])
+            raise RuntimeError("Git source temporarily unavailable")
+        with patch.object(auto, "invoke", side_effect=invoke):
+            result = auto.integrate(self.root, self.game)
+        self.assertEqual(calls, ["--bootstrap-source"])
+        self.assertEqual(result["status"], "integration_blocked")
+        self.assertFalse(result["ready"])
+        self.assertFalse(result["changed"])
+        self.assertIn("Git source", result["reason"])
+        self.assertEqual((self.game / auto.GAME_STATUS).read_text().strip(),
+                         "integration_blocked")
 
     def test_source_available_only_marks_ready_after_apply_and_verify(self):
         auto.ZIP.write_bytes(b"private fixture (never uploaded)")
@@ -223,6 +241,79 @@ class HoennAutoInstallTests(unittest.TestCase):
         self.assertEqual(result["status"],"existing_install_needs_review")
         self.assertFalse(result["ready"])
 
+
+
+class HoennVerifiedPublicDownloaderTests(unittest.TestCase):
+    """No real network in CI. Verify pinned raw Git blobs against bytes."""
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(prefix="hoenn-source-hash-")
+        self.addCleanup(self.tmp.cleanup)
+        self.stage = Path(self.tmp.name) / "staged"
+        self.stage.mkdir()
+        self.body = b"Audited donor data; never run this as code."
+        self.rel = "PBS/encounters.txt"
+        self.digest = hashlib.sha1(
+            f"blob {len(self.body)}\0".encode("ascii") + self.body
+        ).hexdigest()
+        self.download = object.__new__(downloader.PinnedDownloader)
+        self.download.stage = self.stage
+        self.download.blobs = {self.rel: {
+            "path": self.rel, "sha": self.digest,
+            "size": len(self.body), "type": "blob",
+        }}
+        self.download.opener = lambda *args, **kwargs: io.BytesIO(self.body)
+        self.download.written = 0
+        self.download.reused = 0
+        self.download.bytes_downloaded = 0
+
+    def test_fixed_revision_and_upstream_raw_url(self):
+        self.assertEqual(downloader.UPSTREAM, hoenn.UPSTREAM)
+        self.assertEqual(downloader.PINNED_TREE,
+                         "c3876ecea7545eb3a91b9c8748d7e2b13f07805d")
+        self.assertIn("The%20Pok%C3%A9mon%20World%20Project%20-%20Hoenn/",
+                      downloader.RAW_BASE)
+        self.assertIn(downloader.UPSTREAM, downloader.RAW_BASE)
+        self.assertNotIn("refs/heads/main", downloader.RAW_BASE)
+
+    def test_download_hash_verification_and_idempotent_cached_reuse(self):
+        result = self.download.file(self.rel)
+        self.assertEqual(result.read_bytes(), self.body)
+        self.assertEqual(self.download.written, 1)
+        self.assertEqual(self.download.bytes_downloaded, len(self.body))
+        with patch.object(self.download, "opener",
+                          side_effect=AssertionError("unexpected second download")):
+            self.assertEqual(self.download.file(self.rel).read_bytes(), self.body)
+        self.assertEqual(self.download.reused, 1)
+
+    def test_corrupt_remote_blob_is_rejected_and_no_cache_is_committed(self):
+        self.download.opener = lambda *args, **kwargs: io.BytesIO(b"x"*len(self.body))
+        with self.assertRaisesRegex(ValueError, "não corresponde"):
+            self.download.file(self.rel)
+        self.assertFalse((self.stage / self.rel).exists())
+
+    def test_corrupt_cached_blob_is_never_overwritten_or_trusted(self):
+        (self.stage / "PBS").mkdir()
+        target = self.stage / self.rel
+        target.write_bytes(b"x"*len(self.body))
+        with self.assertRaisesRegex(ValueError, "Cache Hoenn alterado"):
+            self.download.file(self.rel)
+        self.assertEqual(target.read_bytes(), b"x"*len(self.body))
+
+    def test_path_traversal_and_missing_inventory_blob_fail_closed(self):
+        for bad in ("../PBS/encounters.txt", "Data/../PBS/encounters.txt"):
+            self.download.blobs[bad] = self.download.blobs[self.rel].copy()
+            with self.assertRaisesRegex(ValueError, "Caminho"):
+                self.download.file(bad)
+        with self.assertRaisesRegex(ValueError, "não existe"):
+            self.download.file("Data/Map999.rxdata")
+
+    def test_public_downloader_does_not_write_to_game_or_saves(self):
+        code = (ROOT / "scripts/regions/ensure_hoenn_source.py").read_text("utf-8")
+        self.assertNotIn("os.startfile", code)
+        self.assertNotIn("Process.spawn", code)
+        self.assertNotIn('COPY_DIRS', code)
+        self.assertEqual(self.download.file(self.rel).parent,
+                         self.stage / "PBS")
 
 if __name__=="__main__":
     unittest.main()
