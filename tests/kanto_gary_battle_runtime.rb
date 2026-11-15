@@ -19,7 +19,10 @@ module BlueRegions
   end
 end
 module BlueMusic
-  def self.with_kanto_scene(_name); yield; end
+  def self.with_kanto_scene(_name)
+    yield
+    raise "Mock Kanto music restore failed" if $broken_music
+  end
   def self.kanto_me_play(*); end
 end
 module BlueLocale
@@ -137,6 +140,18 @@ Dir.mktmpdir("kanto-gary-regression-") do |folder|
     end
     assert_gary(File.read("Data/blue-compile-request.txt") == "compile",
                 "Missing compiled trainer failed to schedule native compilation")
+
+    # A broken optional music-restoration callback must not block the
+    # scripted trainer battle when its data are available.
+    $PokemonGlobal.blue_regions["pilot_rival"] = false
+    $PokemonGlobal.blue_regions["pilot_starter"] = "BULBASAUR"
+    $broken_music = true
+    assert_gary(BlueKantoPilot.rival == true,
+                "Optional Kanto music error blocked Gary battle")
+    assert_gary(File.read("Data/blue-kanto-rival-error.log").include?(
+                  "Mock Kanto music restore failed"),
+                "Audio exception wasn't recorded")
+    $broken_music = false
 
     # Once compiled, no PBS rewriting or second registration takes place.
     $PokemonGlobal.blue_regions["pilot_rival"] = false
