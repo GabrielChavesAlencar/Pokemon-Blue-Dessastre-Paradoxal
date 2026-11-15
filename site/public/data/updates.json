@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ade2b9e54c0bc448763ecf5054c44f9dad4de94f",
+      "date": "2026-11-15T12:29:02-03:00",
+      "title": "feat(menu): exibir orientacao sobre NPC sem teleporte direto do menu",
+      "category": "Novidades"
+    },
+    {
       "sha": "55fd015b988706a5fd050885c87ebe3dcda355cf",
       "date": "2026-11-15T12:27:15-03:00",
       "title": "fix(travel): normalizar guarda Ruby do NPC obrigatorio",
