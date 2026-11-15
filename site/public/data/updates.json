@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b3b1cff7419baaa422921821b4c96a3c28680fa9",
+      "date": "2026-11-15T10:33:25-03:00",
+      "title": "test(regions): garantir Kanto integrado, isolamento do start e saves Decades",
+      "category": "Testes"
+    },
+    {
       "sha": "bbbeab6866542f32231a077861005e7b0500cc56",
       "date": "2026-11-15T10:32:42-03:00",
       "title": "test(title): verificar Novo Jogo Kanto integrado sem abrir outro executavel",
