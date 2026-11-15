@@ -110,7 +110,7 @@ module BlueRegionalPolicy
       explanation = case outcome
       when :badge then _INTL("A insígnia necessária ainda não foi obtida em {1}.", label)
       when :event then _INTL("Conclua primeiro a missão de campo de {1}.", label)
-      when :hm then _INTL("Você precisa obter o HM de {1} e mantê-lo na Bolsa.", move.to_s.upcase)
+      when :hm then _INTL("Obtenha o HM de {1} nesta região para usá-lo fora da batalha.", move.to_s.upcase)
       when :pokemon then _INTL("Você precisa de um Pokémon da equipe capaz de aprender {1}.", move.to_s.upcase)
       when :tool then _INTL("Falta a ferramenta ou habilidade para usar este movimento.")
       else _INTL("Este movimento de campo não está disponível em {1}.", label)
