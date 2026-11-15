@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3bbb177e0c0adbf5b0c1f551c8fe7c1462bdab09",
+      "date": "2026-11-15T14:54:02-03:00",
+      "title": "feat(evolution): introduzir evolução dinâmica segura para treinadores e encontros selvagens baseada em level cap",
+      "category": "Novidades"
+    },
+    {
       "sha": "89591c3317e25ec9f1cf5b2c136c98a5957c62f2",
       "date": "2026-11-15T14:38:10-03:00",
       "title": "docs(cherryhill): explicar causa do NPC invisivel, Game_Event 3 argumentos e recuperacao de saves carregados",
