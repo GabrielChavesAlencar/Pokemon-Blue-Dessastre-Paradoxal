@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b0d46636acdcb4f3f57aa24d47c38a0730b1ec0b",
+      "date": "2026-11-15T11:32:38-03:00",
+      "title": "fix(installer): registrar falha real de Kanto e impedir falso status de instalacao concluida",
+      "category": "Correções"
+    },
+    {
       "sha": "7689eee088783020330676a49fbc7087fec54daf",
       "date": "2026-11-15T11:09:48-03:00",
       "title": "ci(installer): conferir sintaxe do atualizador automatico Kanto Windows",
