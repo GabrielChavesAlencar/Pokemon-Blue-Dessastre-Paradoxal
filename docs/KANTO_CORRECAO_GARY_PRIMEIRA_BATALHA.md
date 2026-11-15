@@ -39,7 +39,7 @@ As verificações Ruby de fixture foram adicionadas à CI:
 ruby -c scripts/regions/KantoPilot.rb
 ruby tests/kanto_gary_battle_runtime.rb scripts/regions/KantoPilot.rb
 ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
-python -m unittest tests.test_kanto_auto_integrate -v
+python tests/test_kanto_auto_integrate.py
 ```
 
 Esses testes verificam o contrato de código, as variantes do PBS, vitória/derrota, falha de BGM e recuperabilidade. **Não substituem a abertura real da tela de batalha em Game.exe**.
