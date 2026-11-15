@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d2428897ed64c6da7f6194c505058ad66d30a751",
+      "date": "2026-11-15T16:33:30-03:00",
+      "title": "test(hoenn): cobrir cache local validado e diagnóstico do NPC",
+      "category": "Testes"
+    },
+    {
       "sha": "5b3f86cdbbf9323bd6a4b6691239e01cc9d4d5b4",
       "date": "2026-11-15T16:32:23-03:00",
       "title": "feat(hoenn): comando Windows direto para instalar mapas no Decades com validação",
