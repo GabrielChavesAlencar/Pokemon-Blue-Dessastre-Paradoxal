@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "412af0c45a674900cd1120cbeb5e60f994614e05",
+      "date": "2026-11-15T12:52:51-03:00",
+      "title": "docs(kanto): alinhar comando QA Gary com teste Python executavel diretamente",
+      "category": "Documentação"
+    },
+    {
+      "sha": "de925738bc15233359a5945cb726104edeb0685d",
+      "date": "2026-11-15T12:52:43-03:00",
+      "title": "ci(kanto): executar fixture Python diretamente sem modulo tests importavel",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fee37822936e4d2978e1ad00c98fd7283de81b8e",
       "date": "2026-11-15T12:50:24-03:00",
       "title": "docs(kanto): detalhar correcao do EventScriptError na primeira luta Gary e QA no Windows",
