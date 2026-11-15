@@ -34,9 +34,9 @@ class InstallationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);game=self.fixture(root)
             with patch.object(setup,'run') as run:
-                setup.install(root,game);self.assertEqual(run.call_count,4)
+                setup.install(root,game,skip_kanto=True);self.assertEqual(run.call_count,4)
                 self.assertIn('official_rules/restore.py',str(run.call_args_list[0]))
-                run.reset_mock();setup.install(root,game)
+                run.reset_mock();setup.install(root,game,skip_kanto=True)
                 self.assertEqual(run.call_count,3);self.assertNotIn('official_rules/restore.py',str(run.call_args_list))
     def test_unknown_partial_game_directory_is_never_overwritten(self):
         with tempfile.TemporaryDirectory() as tmp:
