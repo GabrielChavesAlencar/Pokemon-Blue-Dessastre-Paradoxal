@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "95be8e5b9972739120732633ba8e3f80b2689372",
+      "date": "2026-11-15T11:40:03-03:00",
+      "title": "fix(kanto auto): reutilizar piloto local validado antes de baixar FRLG de novo",
+      "category": "Novidades"
+    },
+    {
       "sha": "cf22add7a0716e2755fbcc9499f13156f13b07ca",
       "date": "2026-11-15T11:39:21-03:00",
       "title": "fix(installer): separar etapas no log persistente de Kanto",
