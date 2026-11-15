@@ -15,6 +15,7 @@ MOBILE='Plugins/ZZZZ Blue Battle Lab/Mobile.rb'
 # the independent Kanto/Hoenn pilots or a page pointing at the base ZIP.
 KANTO_PLUGIN = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 HOENN_PLUGIN = "Plugins/ZZZZZ Blue Hoenn Pilot/HoennPilot.rb"
+REGION_START_PLUGIN = "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"
 REGIONAL_FILES = (
     "Data/blue-kanto-install.json", "Data/blue-kanto-start.txt",
     "Data/blue-kanto-ready.txt", "Data/blue-kanto-music.txt",
@@ -52,8 +53,13 @@ def verify_regions(game):
         if not p.is_file() or p.is_symlink() or p.stat().st_size == 0:
             raise ValueError('Missing mandatory Android shared region file: '+name)
     compiled = (game/'Data/PluginScripts.rxdata').read_bytes()
-    for item in (KANTO_PLUGIN, HOENN_PLUGIN):
-        compiled_region(compiled, Path(item).name, (game/item).read_bytes())
+    # Regression for the real Android crash: the package must contain the
+    # updated RegionStart.rb in BOTH the files and compiled plugin scripts.
+    for item in (KANTO_PLUGIN, HOENN_PLUGIN, REGION_START_PLUGIN):
+        file = game / item
+        if not file.is_file() or file.is_symlink():
+            raise ValueError("Missing Android regional boot script: " + item)
+        compiled_region(compiled, Path(item).name, file.read_bytes())
     return kp, hp
 
 
@@ -85,7 +91,7 @@ def verify_archive(output,revision,source_sha=None,channel='decades'):
                 if not archive.getinfo(base+name).file_size:
                     raise ValueError('Empty Android region runtime: '+name)
             cache=archive.read(base+'Data/PluginScripts.rxdata')
-            for name in (KANTO_PLUGIN,HOENN_PLUGIN):
+            for name in (KANTO_PLUGIN,HOENN_PLUGIN,REGION_START_PLUGIN):
                 compiled_region(cache,Path(name).name,archive.read(base+name))
     return {'revision':revision,'mobileSha256':actual}
 
