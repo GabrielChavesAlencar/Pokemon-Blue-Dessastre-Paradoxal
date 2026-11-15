@@ -84,7 +84,11 @@ module BlueEvolutionScaling
     end
     # Multiple eligible forms (e.g. Eevee) have no safe implicit preference.
     # Never fabricate an evolution or select a branch by Pokédex order.
-    matches.uniq.length == 1 ? matches : []
+    # Different native methods may reach the same form. This is still
+    # unambiguous; keep the earliest eligible threshold for that target.
+    targets = matches.map { |row| row[0] }.uniq
+    return [] unless targets.length == 1
+    [[targets[0], matches.map { |row| row[1] }.min]]
   end
 
   # Called on an already cloned trainer Pokémon, after its final level is
