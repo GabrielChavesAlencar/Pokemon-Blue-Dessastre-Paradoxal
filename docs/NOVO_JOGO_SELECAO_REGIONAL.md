@@ -14,7 +14,7 @@
 
 ## Regras do Kanto integrado
 
-A campanha usa o motor de batalha, escalonamento, Pokédex, PC e progressão de Decades/Blue. Cada uma das oito insígnias de Kanto contribui no máximo uma unidade para as esmeraldas globais, enquanto HMs e a regra de oito insígnias para Pokémon especiais consultam **o estado local**. A mãe entrega os Tênis de Corrida após Brock, na Rota 3. A Liga de Kanto libera Decades e Johto no circuito; o transporte usa destinos reais e não inventa mapas ausentes. Para quem começa em Kanto, o ponto inicial de Decades é capturado do `System.rxdata` do Blue **antes** da troca temporária do mapa inicial e só serve de chegada **depois da Liga**.
+A campanha usa o motor de batalha, escalonamento, Pokédex, PC e progressão de Decades/Blue. Cada uma das oito insígnias de Kanto contribui no máximo uma unidade para as esmeraldas globais, enquanto HMs e a regra de oito insígnias para Pokémon especiais consultam **o estado local**. A mãe entrega os Tênis de Corrida após Brock, na Rota 3. **Viagem regional livre:** desde o início, o jogador pode falar com o NPC de **Pallet Town** para visitar Decades; em **Cherryhill City** encontra o NPC para voltar a Kanto, sem exigir vitória na Liga. A chegada a Decades usa um ponto real capturado de `System.rxdata` antes da troca temporária do mapa inicial. Johto terá seu NPC em New Bark somente após a integração validada de mapas. O transporte não utiliza pilotos separados. [Regras completas](VIAGEM_REGIONAL_LIVRE_NPC.md).
 
 ## O que não é certificado automaticamente
 
