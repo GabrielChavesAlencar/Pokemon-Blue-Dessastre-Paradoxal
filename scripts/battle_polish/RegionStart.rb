@@ -5,6 +5,83 @@ module BlueRegionStart
   JOHTO_MARKER = "Data/blue-johto-start.txt".freeze
   JOHTO_INSTALL = "Data/blue-johto-install.json".freeze
   KANTO_INSTALL = "Data/blue-kanto-install.json".freeze
+  HOENN_INSTALL = "Data/blue-hoenn-install.json".freeze
+  HOENN_START = "Data/blue-hoenn-start.txt".freeze
+  HOENN_READY = "Data/blue-hoenn-ready.txt".freeze
+  HOENN_PILOT_METADATA = "Data/blue-hoenn-pilot.txt".freeze
+  HOENN_REVISION = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92".freeze
+
+  # A start marker is never permission to enter Hoenn. The main Decades
+  # game needs the complete, installed 199-map manifest and authored plugin.
+  def self.hoenn_manifest
+    return nil unless File.file?(HOENN_INSTALL) && !File.symlink?(HOENN_INSTALL)
+    begin
+      require "json" unless defined?(JSON)
+    rescue LoadError
+      return nil
+    end
+    data = JSON.parse(File.read(HOENN_INSTALL))
+    return nil unless data.is_a?(Hash) && data["schema"] == 1 &&
+      data["region"] == "HOENN" && data["source_commit"] == HOENN_REVISION &&
+      data["status"] == "INTEGRATED_FILES_READY_FOR_NATIVE_QA" &&
+      data["maps"].is_a?(Hash) && data["maps"].size == 199
+    ids = data["maps"].values
+    return nil unless ids.all? { |id| id.is_a?(Integer) && (700..999).include?(id) } &&
+      ids.uniq.size == 199 && data["maps"].key?("7") && data["maps"].key?("8")
+    data
+  rescue IOError, SystemCallError, JSON::ParserError
+    nil
+  end
+
+  def self.hoenn_pilot_spawn
+    return nil unless File.file?("Hoenn pilot.json") &&
+                      File.file?(HOENN_PILOT_METADATA)
+    raw = File.readlines(HOENN_PILOT_METADATA, chomp: true)
+    return nil unless raw.shift == "BLUE_HOENN_PILOT_V1"
+    point = raw.shift.to_s.split(",").map { |part| Integer(part,10) rescue nil }
+    return nil unless point.length == 3 && point.all? { |v| v.is_a?(Integer) } &&
+      point[1] >= 0 && point[2] >= 0 &&
+      pbRgssExists?(sprintf("Data/Map%03d.rxdata", point[0]))
+    point
+  rescue IOError, SystemCallError
+    nil
+  end
+
+  def self.hoenn_spawn
+    return hoenn_pilot_spawn if File.file?("Hoenn pilot.json")
+    return nil unless hoenn_integrated?
+    [*hoenn_manifest["start"][0,3]]
+  end
+
+  def self.hoenn_integrated?
+    return false if %w[Kanto Johto Hoenn Sinnoh].any? { |label| File.file?("#{label} pilot.json") }
+    proof = hoenn_manifest
+    return false unless proof && File.file?(HOENN_START) &&
+      File.file?(HOENN_READY) && File.file?(HOENN_PILOT_METADATA)
+    home = proof["start"]; town = proof["town"]
+    return false unless [home,town].all? { |p| p.is_a?(Array) && p.length == 4 &&
+      p.all? { |v| v.is_a?(Integer) } && p[1] >= 0 && p[2] >= 0 &&
+      [2,4,6,8].include?(p[3]) && pbRgssExists?(sprintf("Data/Map%03d.rxdata",p[0])) }
+    return false unless home == [proof["maps"]["8"],25,6,2] &&
+      town[0] == proof["maps"]["7"]
+    return false unless File.read(HOENN_START).strip ==
+      "BLUE_HOENN_START_V1,HOENN,#{home[0]},25,6"
+    return false unless File.read(HOENN_READY).strip ==
+      "BLUE_HOENN_READY_V1,199,#{home[0]},#{town[0]}"
+    required = %w[Data/MapInfos.rxdata Data/Tilesets.rxdata
+      PBS/trainers_hoenn_pilot.txt PBS/trainer_types_hoenn_pilot.txt
+      PBS/encounters_hoenn_pilot.txt PBS/map_metadata_hoenn_pilot.txt
+      Plugins/ZZZZZ\ Blue\ Hoenn\ Pilot/HoennPilot.rb]
+    required.all? { |name| File.file?(name) }
+  rescue IOError, SystemCallError, ArgumentError
+    false
+  end
+
+  def self.hoenn_town_point
+    proof = hoenn_manifest
+    hoenn_integrated? ? proof["town"] : nil
+  end
+
   def self.kanto_spawn
     return nil unless File.file?(MARKER)
     # Created only by install_kanto.py after committing an integrated map set.
@@ -160,8 +237,9 @@ module BlueRegionStart
   # This is an in-memory request, not a save flag: the game only commits the
   # chosen starting region after the native new-game values are initialized.
   def self.request_initial(region)
-    return false unless ["DECADES", "KANTO"].include?(region)
+    return false unless ["DECADES", "KANTO", "HOENN"].include?(region)
     return false if region == "KANTO" && !kanto_integrated?
+    return false if region == "HOENN" && !hoenn_integrated?
     @requested_initial = region
     @title_region_chosen = true
     true
@@ -170,13 +248,16 @@ module BlueRegionStart
   def self.playable?(region)
     region == "DECADES" ||
       (region == "KANTO" && !kanto_spawn.nil?) ||
-      (region == "JOHTO" && !johto_spawn.nil?)
+      (region == "JOHTO" && !johto_spawn.nil?) ||
+      (region == "HOENN" && !hoenn_spawn.nil?)
   end
 
   def self.choose_initial
     return "KANTO" if File.file?("Kanto pilot.json") && kanto_spawn
     return "JOHTO" if File.file?("Johto pilot.json") && johto_spawn
+    return "HOENN" if File.file?("Hoenn pilot.json") && hoenn_pilot_spawn
     return "KANTO" if @requested_initial == "KANTO" && kanto_integrated?
+    return "HOENN" if @requested_initial == "HOENN" && hoenn_integrated?
     "DECADES"
   end
 
@@ -190,8 +271,10 @@ module BlueRegionStart
     destinations = {"Decades" => nil}
     kanto = kanto_spawn
     johto = johto_spawn
+    hoenn = hoenn_spawn
     destinations["Kanto"] = ["KANTO", kanto] if kanto
     destinations["Johto"] = ["JOHTO", johto] if johto
+    destinations["Hoenn"] = ["HOENN", hoenn] if hoenn
     return nil if destinations.length == 1
 
     choice = pbMessage(_INTL("Em qual região você quer começar o Modo História?"),
@@ -239,6 +322,7 @@ module BlueRegionStart
     spawn = case region
             when "KANTO" then kanto_spawn
             when "JOHTO" then johto_spawn
+            when "HOENN" then hoenn_spawn
             end
     region = "DECADES" unless region == "DECADES" || spawn
     if region == "DECADES"
@@ -275,6 +359,10 @@ module BlueRegionStart
         $game_player.refresh_charset
       end
       $PokemonGlobal.blue_regions["pilot_profile_pending"] = true
+    elsif region == "HOENN"
+      # The authored Hoenn bedroom profile event expects this regional flag.
+      # Never copy an isolated pilot's save or overwrite global quest flags.
+      $PokemonGlobal.blue_regions["hoenn_pilot"] = {"profile_pending" => true}
     end
     $data_system.start_map_id, $data_system.start_x, $data_system.start_y = spawn
   end
