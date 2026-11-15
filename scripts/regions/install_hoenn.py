@@ -115,7 +115,7 @@ def verify_installed(game: Path) -> dict:
             f"BLUE_HOENN_START_V1,HOENN,{start[0]},{start[1]},{start[2]}" or
             not gate.is_file() or gate.is_symlink() or
             gate.read_text("ascii").strip() !=
-            f"BLUE_HOENN_READY_V1,199,{start[0]},{town[0]}"):
+            f"BLUE_HOENN_READY_V1,199,{start[0]},{town[0]},{town[1]},{town[2]},{town[3]}"):
         raise ValueError("Marcadores finais não correspondem ao manifesto.")
     entries = data.get("installed_sha256")
     if not isinstance(entries, dict) or not entries:
