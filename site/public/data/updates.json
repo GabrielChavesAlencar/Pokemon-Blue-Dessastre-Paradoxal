@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "187ace674a8a631ac46a7fa88eee9a45e612c57a",
+      "date": "2026-11-14T22:10:16-03:00",
+      "title": "feat(kanto): copiar PartyExperience para o plugin do piloto",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c1fe95bebe39a69b2c84142bf6c4a4456cd1b5e0",
+      "date": "2026-11-14T22:10:13-03:00",
+      "title": "feat(exp): instalar compartilhamento moderno de experiencia",
+      "category": "Novidades"
+    },
+    {
       "sha": "46fc4aeb65d36b9b3beb05cfeffe8bf2fc588d02",
       "date": "2026-11-14T22:10:01-03:00",
       "title": "feat(kanto): rastrear PartyExperience na assinatura do piloto",
