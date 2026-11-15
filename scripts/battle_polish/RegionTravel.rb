@@ -189,7 +189,19 @@ module BlueRegionTravel
     old_state = $PokemonGlobal.blue_regions
     old_party = $player.party.dup
     old_slots = reservations.map { |pkmn, pos| [pos, $PokemonStorage[pos[0],pos[1]]] }
+    old_mechanics = $PokemonGlobal.blue_campaign_mechanics
+    # Preserve the player's actual choices independently for each region.
+    # The first Decades arrival uses all mechanics except Dynamax, and later
+    # returns restore any changes the player made while in Decades.
     next_state = Marshal.load(Marshal.dump(state))
+    next_state["mechanics_by_region"] ||= {}
+    if old_mechanics.is_a?(Hash)
+      next_state["mechanics_by_region"][state["current"]] = old_mechanics.dup
+    end
+    new_mechanics = next_state["mechanics_by_region"][key]
+    unless new_mechanics.is_a?(Hash)
+      new_mechanics = BlueCampaign.default_mechanics_for(key)
+    end
     next_state["decades_return"] = before if state["current"] == "DECADES"
     next_state["current"] = key
     next_state["travel_history"] ||= []
@@ -204,10 +216,12 @@ module BlueRegionTravel
         $player.party.delete_at(party_index)
       end
       $PokemonGlobal.blue_regions = next_state
+      $PokemonGlobal.blue_campaign_mechanics = new_mechanics.dup
       pbFadeOutIn { move_to(point) }
       true
     rescue StandardError => error
       $PokemonGlobal.blue_regions = old_state
+      $PokemonGlobal.blue_campaign_mechanics = old_mechanics
       $player.party.replace(old_party)
       old_slots.each { |pos, previous| $PokemonStorage[pos[0],pos[1]] = previous }
       if $game_map.map_id != before[0] || $game_player.x != before[1] || $game_player.y != before[2]
