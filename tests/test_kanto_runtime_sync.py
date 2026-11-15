@@ -49,7 +49,7 @@ class RuntimeSyncTests(unittest.TestCase):
         self.compiled = self.game / "Data/PluginScripts.rxdata"
         self.compiled.write_bytes(b"old compiled scripts")
         self.patcher_root = patch.object(installer, "ROOT", self.root)
-        self.patcher_verify = patch.object(installer, "verify_installed", return_value={"maps": 142})
+        self.patcher_verify = patch.object(installer, "verify_installed", return_value={"maps": 142, "kanto_start": [300, 25, 7]})
         self.patcher_root.start()
         self.patcher_verify.start()
         self.addCleanup(self.patcher_root.stop)
@@ -75,6 +75,8 @@ class RuntimeSyncTests(unittest.TestCase):
         self.assertEqual((self.game / "Data/blue-compile-request.txt").read_bytes(),
                          b"compile")
         self.assertEqual(self.existing_save.read_bytes(), b"do not touch save")
+        self.assertEqual((self.game / "Data/blue-kanto-ready.txt").read_text("ascii"),
+                         "BLUE_KANTO_READY_V1,142,300\n")
         self.assertEqual(installer.sync_runtime(self.game)["status"], "runtime_current")
 
     def test_locally_edited_plugin_blocks_overwrite(self):
