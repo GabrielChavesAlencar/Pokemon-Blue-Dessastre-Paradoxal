@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bf83941524822a6f338dbe7d8acfb3d353b9a643",
+      "date": "2026-11-15T13:23:16-03:00",
+      "title": "fix(music): remover Digest::SHA256 do preparo da batalha Kanto e comparar pool original diretamente",
+      "category": "Correções"
+    },
+    {
       "sha": "10e0b1a90741ca82ff415acf7a4ac10b708475c4",
       "date": "2026-11-15T13:13:52-03:00",
       "title": "docs(kanto): registrar erro persistente do build 986 e resultado real da CI isolada",
