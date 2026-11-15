@@ -1,7 +1,7 @@
 import {esc,icon,sprite} from './utils.js';
 import {teamPokemon} from './story.js';
 import {regionPicker} from './regions.js';
-import {kantoBalancePage,kantoBalanceNote,kantoBalanceLink} from './kanto-balance.js';
+import {kantoBalancePage,kantoBalanceNote} from './kanto-balance.js';
 
 let catalog;
 export async function loadKanto(){
@@ -48,7 +48,7 @@ function layout(data,page,title,body,detail=false){
   const source='<p class="data-note">Fonte: <a href="'+esc(data.source.url)+'" target="_blank" rel="noopener noreferrer">'+
     esc(data.source.name)+'</a>, de '+esc(data.source.author)+'.</p>';
   return '<div class="container detail-container">'+(detail?'<a class="back-link" href="/'+page+'?regiao=kanto">← '+pages[page]+' de Kanto</a>':'')+
-    header+regionPicker(page,'kanto')+tabs+body+source+'</div>';
+    header+(page==='balanceamento'?'':regionPicker(page,'kanto'))+tabs+body+source+'</div>';
 }
 
 function cards(entries,card){
@@ -123,7 +123,7 @@ export function kantoTrainer(model,data,trainer,details){
     return '<section class="section"><h2>'+esc(title)+'</h2><div class="story-team-grid">'+
       variant.team.map(pokemon=>teamPokemon({...displayPokemon(model,pokemon),dynamicLevel:true},model,details)).join('')+'</div></section>';
   }).join('');
-  const rule=trainer.leader?'boss':(/Rival|Campeão|Elite|Chefe/i.test(trainer.role)?'league':'trainer');
+  const rule=trainer.leader?'boss':(/Rival|Chefe/i.test(trainer.role)?'rival':(/Campeão|Elite/i.test(trainer.role)?'league':'trainer'));
   return layout(data,trainer.leader?'chefes':'treinadores',trainer.name,
     '<p>'+esc(trainer.role)+' · '+link(locationLink(area),area.name)+'</p>'+kantoBalanceNote(rule)+
     (trainer.leader&&KANTO_GYM_REWARDS[trainer.name]
