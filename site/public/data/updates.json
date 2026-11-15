@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e4b37370120c18b18de3270747e364813ec4cb5a",
+      "date": "2026-11-15T16:31:17-03:00",
+      "title": "fix(hoenn): importar cache de testes e mostrar status do instalador no jogo",
+      "category": "Correções"
+    },
+    {
       "sha": "80df1d64027991f15af9e9c2833fa88293977ca9",
       "date": "2026-11-15T16:30:45-03:00",
       "title": "fix(hoenn): explicar origem ausente e recuperar inventario Git fixado para cache",
