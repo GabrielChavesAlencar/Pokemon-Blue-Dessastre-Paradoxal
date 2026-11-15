@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7aa0ba03ecf0b4e4d49fb45cbb48457b40afde6f",
+      "date": "2026-11-15T14:25:11-03:00",
+      "title": "docs(regions): definir itens-chave e HMs locais por regiao, PC de itens e teste sem perder saves",
+      "category": "Documentação"
+    },
+    {
       "sha": "a6da187d39e6ba2f06dfee43552ba1ac4deb2f12",
       "date": "2026-11-15T14:24:00-03:00",
       "title": "test(regions): duas copias independentes do mesmo HM e mochila lotada cancelando sem perder progresso",
