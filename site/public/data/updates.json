@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2d7ba3052c92f1f559b61a75292e0f4a4df042f7",
+      "date": "2026-11-15T19:43:14-03:00",
+      "title": "test(site): cover presentation navigation, gallery, and mobile layout",
+      "category": "Testes"
+    },
+    {
+      "sha": "f6a759d27a4efbeb0981b75a526e6ed92ecafe07",
+      "date": "2026-11-15T19:43:10-03:00",
+      "title": "Document JoiPlay Kanto installation gate fix and runtime verification checklist",
+      "category": "Melhorias"
+    },
+    {
       "sha": "751b62834d1b73b5526ffdec30796da504abcc5c",
       "date": "2026-11-15T19:42:26-03:00",
       "title": "feat(site): wire Apresentação route into portal navigation",
