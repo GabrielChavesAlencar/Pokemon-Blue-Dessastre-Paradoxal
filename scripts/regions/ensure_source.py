@@ -23,6 +23,12 @@ SOURCE_URL = (
     "https://drive.usercontent.google.com/download"
     "?id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&export=download&confirm=t"
 )
+# Official Google Drive file, same author-provided ID. Either endpoint must
+# produce bytes matching the pinned SHA256; HTML/permission pages are rejected.
+SOURCE_FALLBACK = (
+    "https://drive.google.com/uc?export=download"
+    "&id=1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI&confirm=t"
+)
 RELATIVE_SOURCE = Path(".blue-work/frlg-source/Essentials FRLG")
 RELATIVE_ARCHIVE = Path(".blue-work/frlg-source/FRLG.rar")
 MAX_DOWNLOAD = 2 * 1024 * 1024 * 1024
@@ -133,7 +139,23 @@ def prepare(root: Path = ROOT, url: str = SOURCE_URL) -> Path:
     if source.exists():
         raise RuntimeError("Fonte FRLG já existe mas está incompleta. Não vou sobrescrever alterações locais.")
 
-    download_pinned(url, archive, expected)
+    errors = []
+    # A cached source always wins above. When downloading for the first time,
+    # Google can serve an HTML permission page from one endpoint, so try its
+    # other official URL for the identical file ID. SHA256 is non-negotiable.
+    candidates = (url, SOURCE_FALLBACK) if url == SOURCE_URL else (url,)
+    for candidate in candidates:
+        try:
+            download_pinned(candidate, archive, expected)
+            break
+        except (OSError, RuntimeError, ValueError) as error:
+            errors.append(str(error))
+            if candidate != candidates[-1]:
+                print("[KANTO] O primeiro endpoint FRLG falhou. Tentando o "
+                      "endpoint alternativo do mesmo arquivo verificado.", flush=True)
+    else:
+        raise RuntimeError("Fonte FRLG indisponivel nos endpoints oficiais: "
+                           + " | ".join(errors))
     tar = find_tar()
     listing = subprocess.run([tar, "-tf", str(archive)], text=True,
                              encoding="utf-8", errors="replace", capture_output=True, check=True)
