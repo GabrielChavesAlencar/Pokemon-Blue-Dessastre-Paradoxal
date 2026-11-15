@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c84ebf8739051ab80b93ce27dde57c31dcb0473e",
+      "date": "2026-11-15T11:33:36-03:00",
+      "title": "fix(story installer): parar falsa instalacao completa e registrar motivo de Kanto ausente",
+      "category": "Correções"
+    },
+    {
       "sha": "b0d46636acdcb4f3f57aa24d47c38a0730b1ec0b",
       "date": "2026-11-15T11:32:38-03:00",
       "title": "fix(installer): registrar falha real de Kanto e impedir falso status de instalacao concluida",
