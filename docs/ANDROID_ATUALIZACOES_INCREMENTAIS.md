@@ -154,3 +154,23 @@ Depois de atualizar para um ZIP que já inclui o cliente novo, retome o comando 
 **Atualizar no celular:** depois de uma nova release multirregional **concluída e publicada com essa correção**, feche o JoiPlay, faça backup dos saves e entre na pasta do jogo no Termux. Execute `python ATUALIZAR-ANDROID.py --update`. O cliente novo utilizará patch quando compatível ou instalará o ZIP completo sem precisar extrair manualmente, preservando a instalação anterior. Não use as releases `decades` ou o piloto isolado de Kanto na edição integrada. Se a release ainda tiver o mesmo commit anterior à correção, ela não contém a solução.
 
 **Aceite físico pendente:** abrir New Game e confirmar que Kanto está selecionável, iniciar Pallet Town, carregar/salvar, viajar a Hoenn e verificar que ambos continuam funcionando no JoiPlay real.
+
+
+## 15/11/2026 — Correção urgente: atualizador selecionava uma release ANTIGA
+
+**Reprodução confirmada em captura do Termux do usuário:** a instalação era o commit `125155eaf256fcc3e5bfa9880585e9d07ce22618` (`android-multiregion-15`), mas o atualizador escolheu `af0c4947cb006b26cc680b0ea33bea19d98c459c` (`android-multiregion-9`) e começou a baixar novamente o ZIP completo de 1,4 GB. A API `/releases?per_page=100` retornou os itens na ordem 9, 3, 15, que **não é cronológica**; o cliente antigo retornava o primeiro item correspondente ao canal. Esse downgrade também explica por que a correção mais recente da seleção de Kanto não aparece no aparelho.
+
+**Correção do cliente:** `scripts/android/update_client.py` consulta as páginas disponíveis, filtra releases publicadas do canal correto que tenham ZIP e manifesto, e seleciona a data `published_at` mais recente, sem depender da ordem da API nem do número da tag. Antes de baixar ou aplicar qualquer patch/ZIP completo, consulta `GET /repos/.../compare/<instalada>...<disponível>` e exige `status=ahead`. Respostas `behind`, `diverged`, `identical` para revisões diferentes, ou comparações inconclusivas **bloqueiam sem alterar arquivos**. Reinstalação forçada da mesma revisão continua permitida.
+
+Os testes `tests/test_android_updates.py` reproduzem a ordem real 9, 3, 15; conferem rascunhos/manifests incompletos; verificam a proteção por ancestralidade; e confirmam que uma tentativa de downgrade não inicia downloads. O workflow multirregional executa os testes antes de gerar/publicar o pacote.
+
+**Recuperação no celular:** não executar repetidamente o cliente antigo. Primeiro esperar o Termux concluir; 100% do download não significa conclusão da instalação. Com o JoiPlay fechado e saves copiados, verificar a versão em `Pokemon-Blue-Android/Data/blue-update.json`. Se a atualização terminou substituindo por `af0c494...`, procurar ao lado da pasta do jogo o backup `Pokemon-Blue-Android.blue-backup-125155eaf256`; restaurá-lo com o jogo fechado, mantendo também a pasta antiga como salvaguarda. Não excluir backups sem antes inspecionar saves. Se não houver backup, não inventar a restauração: usar o cliente corrigido para consultar uma release realmente nova.
+
+O arquivo `ATUALIZAR-ANDROID.py` já instalado não se corrige sozinho. Para consultar/usar a nova versão do script sem reinstalar manualmente, executar a partir da pasta do jogo:
+
+    python -c 'import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/main/scripts/android/update_client.py", "ATUALIZAR-ANDROID-CORRIGIDO.py")'
+    python ATUALIZAR-ANDROID-CORRIGIDO.py --game-dir .
+
+Somente após aparecer uma nova release integrada publicada que contenha o código corrigido de Kanto, aplicar `python ATUALIZAR-ANDROID-CORRIGIDO.py --game-dir . --update`. Caso a revisão publicada ainda seja `125155e...`, o cliente deve informar que a instalação está atualizada; ela **ainda não contém a correção de Kanto**. Não baixar o ZIP `af0c494...` para tentar corrigir esse bug.
+
+**Aceite:** publicar o ZIP multirregional após compilar e conferir `RegionStart.rb` no cache `Data/PluginScripts.rxdata`; validar `New Game → Kanto`, Hoenn e saves no JoiPlay real. Código corrigido/CI não equivalem a teste concluído no celular.
