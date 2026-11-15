@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "312b76ba7602f717f85af53cf489566159a1e9a9",
+      "date": "2026-11-15T10:46:58-03:00",
+      "title": "test(travel): Kanto primeira campanha so acessa Decades apos Hall no mesmo save",
+      "category": "Testes"
+    },
+    {
       "sha": "f02633a9311287fb2bd56f28de7073090ff4f68e",
       "date": "2026-11-15T10:45:53-03:00",
       "title": "feat(travel): permitir Kanto campeao ir a Decades no mesmo save com ponto nativo verificado",
