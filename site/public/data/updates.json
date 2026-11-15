@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7ccaf82e5e07e48114958fea145e89ec1a8dd4ca",
+      "date": "2026-11-15T16:18:54-03:00",
+      "title": "fix(hoenn): impedir plugin do piloto de sobrescrever Novo Jogo Decades/Kanto",
+      "category": "Novidades"
+    },
+    {
       "sha": "f4871651121c7f7b48d633b19fe92de7f143f060",
       "date": "2026-11-15T16:17:39-03:00",
       "title": "fix(hoenn): sincronizar marcador real e validar manifesto compacto",
