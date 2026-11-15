@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0fd2b459855c328a94b98a4d2d8e64fbea7546b4",
+      "date": "2026-11-15T15:15:08-03:00",
+      "title": "docs(evolution): detalhar os mesmos limites para selvagens e treinadores",
+      "category": "Documentação"
+    },
+    {
       "sha": "55ff24b23e2a2b545069f4c25a67a288fce95242",
       "date": "2026-11-15T15:14:42-03:00",
       "title": "test(evolution): provar limites de pedra troca felicidade em encontros selvagens",
