@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d784c33aaf5ae6443e433b5f2930caf5f68cb536",
+      "date": "2026-11-15T19:39:24-03:00",
+      "title": "Fix newline escaping in JoiPlay Kanto startup regression fixtures",
+      "category": "Melhorias"
+    },
+    {
       "sha": "a42d4e480819bf7445b025f206a64745a3715459",
       "date": "2026-11-15T19:38:56-03:00",
       "title": "Regression: Android Kanto and Hoenn playable without JSON; reject incomplete 142 maps",
