@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "46fc4aeb65d36b9b3beb05cfeffe8bf2fc588d02",
+      "date": "2026-11-14T22:10:01-03:00",
+      "title": "feat(kanto): rastrear PartyExperience na assinatura do piloto",
+      "category": "Novidades"
+    },
+    {
+      "sha": "bb68646370c5b5696949c06211977307c928b9c1",
+      "date": "2026-11-14T22:09:58-03:00",
+      "title": "feat(exp): ativar experiencia compartilhada nas batalhas",
+      "category": "Novidades"
+    },
+    {
+      "sha": "d2a47db7668c21bb97ed25139f0719df365e8411",
+      "date": "2026-11-14T22:09:55-03:00",
+      "title": "feat(exp): registrar PartyExperience no plugin de campanha",
+      "category": "Novidades"
+    },
+    {
       "sha": "10b66e5d4ebdc1a9999a4f427358cb3811e2db8e",
       "date": "2026-11-14T22:09:36-03:00",
       "title": "feat(exp): experiencia compartilhada moderna nas batalhas de campanha",
