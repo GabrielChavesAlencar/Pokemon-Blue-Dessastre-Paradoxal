@@ -97,6 +97,36 @@ class HoennMainIntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"inválido"):
             hoenn.verify_installed(self.game)
 
+    def test_reuses_original_pinned_stage_without_private_zip(self):
+        directory = self.root / ".blue-work/hoenn-source/0123456789abcdef"
+        directory.mkdir(parents=True)
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch("hoenn_qa_phase1.load_tree", return_value={}) as inventory, \
+             patch.object(hoenn, "check_tree") as tree, \
+             patch.object(hoenn, "Source") as source_cls, \
+             patch.object(hoenn, "check_source") as audit:
+            source, origin = hoenn.validated_local_source(
+                self.root / "missing-private.zip", self.root / ".blue-work/pinned-tree.json"
+            )
+        self.assertEqual(origin, "audited_staged_source")
+        self.assertIs(source, source_cls.return_value)
+        self.assertEqual(source_cls.call_args.args[0], directory)
+        inventory.assert_called_once()
+        tree.assert_called_once()
+        audit.assert_called_once_with(source)
+
+    def test_staged_source_never_bypasses_hash_audit(self):
+        directory = self.root / ".blue-work/hoenn-source/0123456789abcdef"
+        directory.mkdir(parents=True)
+        with patch.object(hoenn, "ROOT", self.root), \
+             patch("hoenn_qa_phase1.load_tree", return_value={}), \
+             patch.object(hoenn, "check_tree"), \
+             patch.object(hoenn, "check_source", side_effect=ValueError("wrong donor hash")):
+            with self.assertRaisesRegex(ValueError, "hashes"):
+                hoenn.validated_local_source(
+                    self.root / "missing-private.zip", self.root / ".blue-work/pinned-tree.json"
+                )
+
     def test_partial_hoenn_is_never_automatically_reallocated(self):
         self.assertEqual(hoenn.detect_existing(self.game),"absent")
         (self.game / "PBS/trainers_hoenn_pilot.txt").write_text("partial")
@@ -145,11 +175,13 @@ class HoennAutoInstallTests(unittest.TestCase):
         self.game=self.root/"game"
         self.game.mkdir()
         (self.game/"Game.exe").write_bytes(b"fixture")
+        (self.game/"Data").mkdir()
         self.patches=[
             patch.object(auto,"ROOT",self.root),
             patch.object(auto,"ZIP",self.root/"The Pokémon World Project - Hoenn.zip"),
             patch.object(auto,"STATUS",self.root/".blue-work/status.json"),
-            patch.object(auto,"LOG",self.root/".blue-work/log.txt")
+            patch.object(auto,"LOG",self.root/".blue-work/log.txt"),
+            patch.object(auto,"SOURCE_CACHE",self.root/".blue-work/hoenn-source")
         ]
         for item in self.patches:
             item.start()
@@ -162,6 +194,17 @@ class HoennAutoInstallTests(unittest.TestCase):
         self.assertEqual(result["status"],"awaiting_local_source")
         self.assertFalse(result["ready"])
         self.assertFalse(result["changed"])
+        self.assertEqual((self.game / auto.GAME_STATUS).read_text().strip(),
+                         "awaiting_local_source")
+
+    def test_cached_source_triggers_import_even_without_zip(self):
+        auto.SOURCE_CACHE.mkdir(parents=True)
+        calls = []
+        with patch.object(auto, "invoke", side_effect=lambda *args: calls.append(args)):
+            result = auto.integrate(self.root, self.game)
+        self.assertEqual(result["status"], "integrated")
+        self.assertEqual([call[-1] for call in calls], ["--apply", "--verify-installed"])
+        self.assertEqual((self.game / auto.GAME_STATUS).read_text().strip(), "integrated")
 
     def test_source_available_only_marks_ready_after_apply_and_verify(self):
         auto.ZIP.write_bytes(b"private fixture (never uploaded)")
