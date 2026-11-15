@@ -25,6 +25,7 @@ from hoenn_qa_phase1 import (
 )
 from pilot_hoenn import BGM, PNG, ROOT, SOURCE_MAPS, Source, UPSTREAM
 from hoenn_audio import RECOVERY, bgm_source
+from hoenn_qa_phase4 import OBSTACLE_BOULDER, OBSTACLE_ROCK
 from server.ruby_marshal import RubyObject, loads, text
 
 PUBLIC_REPO = "SocomSeal/The-PMon-World-Project"
@@ -73,6 +74,45 @@ def existing_verified(path: Path, expected: str, size: int) -> bool:
     if digest.hexdigest() != expected:
         raise ValueError(f"Cache Hoenn alterado, não será sobrescrito: {path}")
     return True
+
+
+def obstacle_character_paths(world) -> set[str]:
+    """Artwork a reauthored rock/Strength event may need from the donor.
+
+    The pilot's hoenn_qa_phase4.install_simple_obstacles reads the ORIGINAL
+    one-page event's character graphic when the base game has no native
+    boulder/rock sprite. Download these before starting the import; otherwise
+    all 199 maps succeed and the first boulder fails late in the build.
+    Import neither the donor event script nor the full character catalogue.
+    """
+    assets: set[str] = set()
+    for event in world.attrs.get("@events", {}).values():
+        attrs = getattr(event, "attrs", None)
+        if not isinstance(attrs, dict):
+            continue
+        name = text(attrs.get("@name", b""))
+        if not (OBSTACLE_ROCK.fullmatch(name) or OBSTACLE_BOULDER.fullmatch(name)):
+            continue
+        pages = attrs.get("@pages", [])
+        if not isinstance(pages, list) or len(pages) != 1:
+            continue
+        page = getattr(pages[0], "attrs", None)
+        if not isinstance(page, dict):
+            continue
+        condition = getattr(page.get("@condition"), "attrs", {})
+        if not isinstance(condition, dict) or any(condition.get(flag, False) for flag in (
+            "@switch1_valid", "@switch2_valid", "@variable_valid",
+            "@self_switch_valid", "@item_valid", "@actor_valid"
+        )):
+            continue
+        graphic = getattr(page.get("@graphic"), "attrs", {})
+        if not isinstance(graphic, dict):
+            continue
+        character = text(graphic.get("@character_name", b""))
+        if not re.fullmatch(r"[A-Za-z0-9_ ()-]+", character):
+            continue
+        assets.add(f"Graphics/Characters/{character}.png")
+    return assets
 
 
 class PinnedDownloader:
@@ -187,11 +227,13 @@ class PinnedDownloader:
         if not isinstance(tiles, list):
             raise ValueError("Tilesets Hoenn não puderam ser decodificados.")
         used = set()
+        obstacle_art = set()
         for mid in SOURCE_MAPS:
             world = loads((self.stage / f"Data/Map{mid:03}.rxdata").read_bytes())
             if not isinstance(world, RubyObject) or world.name != "RPG::Map":
                 raise ValueError(f"Mapa de origem inválido: {mid}")
             used.add(world.attrs["@tileset_id"])
+            obstacle_art.update(obstacle_character_paths(world))
         images = set()
         for tid in sorted(used):
             if not isinstance(tid, int) or tid <= 0 or tid >= len(tiles):
@@ -207,11 +249,17 @@ class PinnedDownloader:
                 if not re.fullmatch(r"[A-Za-z0-9_ ()-]+", name):
                     raise ValueError(f"Nome de gráfico Hoenn inesperado: {name}")
                 images.add(f"Graphics/{directory}/{name}.png")
+        # Original event artwork required by the QA4 field obstacle
+        # reauthoring (e.g. OBJ_RSE_Strength Boulder.png). Only choose
+        # characters that exist in the pinned Git tree; optional missing
+        # donor graphics remain optional, with the native fallback retained.
+        event_art = sorted(rel for rel in obstacle_art if rel in self.blobs)
         tracks = {bgm_source(name) for name in BGM.values()} | {RECOVERY, CREDIT_TRACK}
         art = [name for name in BOSS_SPRITES if name in self.blobs]
-        total = len(images) + len(tracks) + len(art)
+        resources = sorted(images | set(tracks) | set(art) | set(event_art))
+        total = len(resources)
         print(f"[HOENN AUTO] Baixando recursos visuais/sonoros auditados: {total}",flush=True)
-        for index, rel in enumerate([*sorted(images), *sorted(tracks), *art], 1):
+        for index, rel in enumerate(resources, 1):
             dest = self.file(rel)
             if rel.endswith(".png") and not dest.read_bytes().startswith(PNG):
                 raise ValueError(f"Imagem Hoenn inválida: {rel}")
@@ -233,7 +281,8 @@ class PinnedDownloader:
             "files_downloaded": self.written,
             "files_reused": self.reused,
             "bytes_downloaded": self.bytes_downloaded,
-            "graphics": len(images),
+            "graphics": len(images) + len(event_art) + len(art),
+            "field_obstacle_sprites": len(event_art),
             "audio": len(tracks),
             "redistribution_approved": False,
             "stage": str(self.stage),
