@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d23f60e5df52e828099185326de9d36eae868783",
+      "date": "2026-11-14T21:30:48-03:00",
+      "title": "fix(kanto): usar blackout nativo para centro Pokemon apos derrota sem avançar historia",
+      "category": "Correções"
+    },
+    {
       "sha": "b522eaf606370f062c47bd15e3450a2330d966b7",
       "date": "2026-11-14T21:01:58-03:00",
       "title": "fix(kanto): limitar presente da mae ao piloto ativo e regiao atual Kanto",
