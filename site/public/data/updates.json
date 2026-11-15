@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bbbeab6866542f32231a077861005e7b0500cc56",
+      "date": "2026-11-15T10:32:42-03:00",
+      "title": "test(title): verificar Novo Jogo Kanto integrado sem abrir outro executavel",
+      "category": "Novidades"
+    },
+    {
       "sha": "41b6604f1b532cb97712ca4280e97ef7e7224626",
       "date": "2026-11-15T10:31:54-03:00",
       "title": "feat(title): selecionar Kanto no Novo Jogo do proprio Decades quando instalado",
