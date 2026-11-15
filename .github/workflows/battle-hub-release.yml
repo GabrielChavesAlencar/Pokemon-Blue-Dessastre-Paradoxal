@@ -56,8 +56,11 @@ jobs:
       - name: Instalar a base limpa com o Python privado
         shell: powershell
         run: |
-          & $env:BLUE_PRIVATE_PYTHON scripts/install_game.py --apply
-          if($LASTEXITCODE -ne 0){throw 'Fresh install failed'}
+          # The release runner compiles the Decades/Android base. Kanto's
+          # author-hosted RXDATA are installed automatically ON USER PCs by
+          # Blue-Story.exe, not silently shipped inside the Decades ZIP.
+          & $env:BLUE_PRIVATE_PYTHON scripts/install_game.py --apply --skip-kanto
+          if($LASTEXITCODE -ne 0){throw 'Fresh Decades install failed'}
           & $env:BLUE_PRIVATE_PYTHON scripts/android/package.py --request-compile
           if($LASTEXITCODE -ne 0){throw 'Compilation request failed'}
       - name: Preparar OpenGL por software para o compilador nativo
