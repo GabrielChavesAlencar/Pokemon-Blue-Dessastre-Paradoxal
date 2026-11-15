@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f0abeba20a6029ac791c5468dca2ec8b5cd0d007",
+      "date": "2026-11-15T15:29:11-03:00",
+      "title": "test(site): aceitar capitalização do texto sobre primeiro confronto Kanto",
+      "category": "Testes"
+    },
+    {
       "sha": "27a17bd74c23b174b2c27c5045708efaf05eaa6c",
       "date": "2026-11-15T15:28:16-03:00",
       "title": "test(site): regras dos primeiros chefes e Full Power em fichas da Liga",
