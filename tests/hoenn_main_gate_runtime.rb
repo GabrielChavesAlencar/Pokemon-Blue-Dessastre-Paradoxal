@@ -43,6 +43,9 @@ Dir.mktmpdir("hoenn-main-title") do |tmp|
              "status"=>"INTEGRATED_FILES_READY_FOR_NATIVE_QA",
              "maps"=>ids,"start"=>start,"town"=>town}
     File.write("Data/blue-hoenn-install.json",JSON.generate(proof))
+    compact = BlueRegionStart.hoenn_compact_manifest
+    check(compact && compact["town"] == town && compact["maps"].length == 199,
+          "Hoenn without Ruby json gem could not read audited compact marker")
     check(BlueRegionStart.hoenn_integrated?,
           "audited Hoenn files could not enable main title")
     check(BlueRegionStart.request_initial("HOENN"),
