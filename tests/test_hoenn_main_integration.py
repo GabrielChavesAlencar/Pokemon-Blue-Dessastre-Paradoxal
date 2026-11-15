@@ -74,7 +74,7 @@ class HoennMainIntegrationTests(unittest.TestCase):
         }
         (self.game / hoenn.MANIFEST).write_text(json.dumps(proof))
         (self.game / hoenn.READY_MARKER).write_text(
-            f"BLUE_HOENN_READY_V1,199,{self.start[0]},{self.town[0]}\n")
+            f"BLUE_HOENN_READY_V1,199,{self.start[0]},{self.town[0]},{self.town[1]},{self.town[2]},{self.town[3]}\n")
         (self.game / hoenn.START_MARKER).write_text(
             f"BLUE_HOENN_START_V1,HOENN,{self.start[0]},25,6\n")
         status=hoenn.verify_installed(self.game)
