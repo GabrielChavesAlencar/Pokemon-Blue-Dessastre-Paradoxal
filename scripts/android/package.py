@@ -189,5 +189,7 @@ def build(game,output,revision,channel='decades'):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--game-dir',type=Path,default=ROOT/'game');parser.add_argument('--request-compile',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--revision',default='local');parser.add_argument('--channel',choices=('decades','multiregion'),default='decades');parser.add_argument('--output',type=Path,default=ROOT/'dist/Blue-Android-JoiPlay.zip');a=parser.parse_args()
     if a.request_compile:request_compile(a.game_dir);print('Native Android compilation requested.')
-    elif a.verify:print(json.dumps(verify_archive(a.output,a.revision,hashlib.sha256((ROOT/'scripts/battle_lab/Mobile.rb').read_bytes().replace(b'\r\n',b'\n')).hexdigest()),channel=a.channel)))
+    elif a.verify:
+        source_sha=hashlib.sha256((ROOT/'scripts/battle_lab/Mobile.rb').read_bytes().replace(b'\r\n',b'\n')).hexdigest()
+        print(json.dumps(verify_archive(a.output,a.revision,source_sha,channel=a.channel)))
     else:print(json.dumps(build(a.game_dir,a.output,a.revision,a.channel)))
