@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c2cbe07f8dd1fed1734d0024016613a5c743a645",
+      "date": "2026-11-14T21:00:07-03:00",
+      "title": "fix(kanto): novo jogo nao começa com tenis antes da entrega pela mae",
+      "category": "Novidades"
+    },
+    {
       "sha": "27f473ff4fa2157ccedbac8adacf5e044c831885",
       "date": "2026-11-14T20:59:38-03:00",
       "title": "docs(kanto): entrega dos Tenis de Corrida e corrida automatica apos Brock",
