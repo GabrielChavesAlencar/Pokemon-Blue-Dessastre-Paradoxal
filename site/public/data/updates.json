@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "69165062bec798a090b876233cb04174eefefff1",
+      "date": "2026-11-15T19:06:25-03:00",
+      "title": "Test safe Android full-reinstall fallback, saves, corruption and CLI",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bffbb900873e702b007c59fd631b37cdca1a968b",
       "date": "2026-11-15T19:05:33-03:00",
       "title": "Android updater: verified full ZIP fallback with save migration and rollback",
