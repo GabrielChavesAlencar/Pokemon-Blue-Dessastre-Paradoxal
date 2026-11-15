@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "739f48b25fab1bd54f072f8432ffe272b74e76d6",
+      "date": "2026-11-15T11:36:30-03:00",
+      "title": "ci(kanto): testar o mesmo auto-instalador usado pelo Blue-Story.exe no Windows",
+      "category": "Melhorias"
+    },
+    {
       "sha": "64b6b19f2247436ea7f4a9ddf4e90e973167c340",
       "date": "2026-11-15T11:35:56-03:00",
       "title": "ci(kanto): nao exigir fonte FRLG antes de prepara-la no workflow nativo",
