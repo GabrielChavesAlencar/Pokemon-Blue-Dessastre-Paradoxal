@@ -1,44 +1,33 @@
-# Novo Jogo — seleção da região inicial no projeto principal
+# Novo Jogo — seleção da região inicial (Decades + Kanto integrado)
 
-Implementação de 15/11/2026.
+**Atualizado em 15/11/2026.** A escolha acontece na tela inicial do `Game.exe` principal, antes de executar o novo jogo. [Instruções de integração de Kanto](KANTO_INTEGRACAO_DECADES.md).
 
-## Como usar
+## Opções
 
-1. Na raiz do projeto, atualize a `main` e execute `ABRIR_JOGO.bat` (ou `INSTALAR_JOGO.bat` para uma instalação nova).
-2. Na tela inicial do **jogo principal Decades**, selecione **New Game / Novo Jogo**.
-3. O jogo apresenta **Em qual região deseja começar um novo jogo?**
-4. Escolha **Decades** para executar a introdução original, sem alterar o início do jogo, ou selecione **Kanto, Johto, Hoenn ou Sinnoh** para abrir o respectivo piloto de testes **quando ele já estiver instalado/preparado**.
-5. **Unova, Kalos, Alola, Galar, Paldea e Hisui** aparecem como indisponíveis; nenhuma campanha inexistente é iniciada. **Voltar ao menu** cancela a escolha sem tocar nos saves.
+- **Decades:** inicia a campanha nativa e preserva o fluxo original de Story/Battle Mode, sem outro seletor de região.
+- **Kanto:** usa **o mesmo Game.exe e sistema de saves de Decades**, começando no quarto em Pallet, mas **só após a instalação validada do pacote atual de 142 mapas, PBS, sprites, traduções e plugins** em `game/`. Sem o pacote, o menu informa **instalação necessária**, sem abrir outro jogo nem sobrescrever o save. Para instalar localmente: `KANTO_INSTALAR_NO_JOGO.bat`, seguido de `ABRIR_JOGO.bat`.
+- **Johto, Hoenn e Sinnoh:** pilotos de teste independentes, com save separado, enquanto sua integração unificada não for validada.
+- **Unova, Kalos, Alola, Galar, Paldea e Hisui:** indisponíveis, sem mapa fictício ou progresso concedido.
+- **Voltar ao menu:** cancela a escolha sem criar partida.
 
-## Limite da integração atual
+`Continue`, Auto Multi Save e Mystery Gift mantêm seus handlers e índices nativos. A escolha de Kanto fica numa variável temporária e somente vira `initial=KANTO/current=KANTO` na criação real de um novo jogo. Nenhum save antigo é migrado automaticamente.
 
-Esta alteração implementa **um seletor na interface do jogo principal**, e **não** instala regiões, mapas, eventos, Pokémon iniciais ou viagens que ainda não foram validados. O executável principal continua usando Decades para a campanha nativa; cada piloto experimental é iniciado em **outro executável/cópia**, com save próprio. A escolha de um piloto solicita confirmação pelo lançador existente. Quando ele não está instalado, é exibido o aviso da região, e o usuário pode escolher outra sem iniciar um novo jogo no Decades.
+## Regras do Kanto integrado
 
-- **Kanto:** usa `KANTO_JOGAR_EXPERIMENTAL.bat` localizado na pasta do projeto para gerar/abrir a cópia isolada, sujeito aos insumos e verificações do montador.
-- **Johto:** usa um piloto compilado próprio, ou o lançador experimental existente quando este puder preparar um piloto separado.
-- **Hoenn:** exige `Game.exe`, manifesto e marcador de compilação no piloto privado preparado em `.blue-work/`; não há fallback silencioso para o Decades.
-- **Sinnoh:** depende de um piloto próprio compilado ou lançador de preparação. Sem mapas reais e integração, fica indisponível.
+A campanha usa o motor de batalha, escalonamento, Pokédex, PC e progressão de Decades/Blue. Cada uma das oito insígnias de Kanto contribui no máximo uma unidade para as esmeraldas globais, enquanto HMs e a regra de oito insígnias para Pokémon especiais consultam **o estado local**. A mãe entrega os Tênis de Corrida após Brock, na Rota 3. A Liga de Kanto libera Decades e Johto no circuito; o transporte usa destinos reais e não inventa mapas ausentes. Para quem começa em Kanto, o ponto inicial de Decades é capturado do `System.rxdata` do Blue **antes** da troca temporária do mapa inicial e só serve de chegada **depois da Liga**.
 
-**Regras preservadas:** nenhuma migração de save, insígnia, Pokémon, Pokémon no PC, mapas da base, escolha de inicial ou progresso regional é gravada pela tela de seleção. O menu **Continue** e os controles do Auto Multi Save mantêm os índices e navegação originais. Os próprios pilotos mantêm seu `New Game` original, sem abrir novamente o seletor.
+## O que não é certificado automaticamente
 
-## Para unificar tudo em um único save futuramente
+A disponibilidade do seletor, um manifesto JSON válido, a recompilação de PBS e os testes Ruby/Python não provam que o jogador consegue atravessar todos os 142 mapas, concluir os eventos ou fazer a transição para Decades sem bugs. Kanto ainda tem mapas `preview_only`. Seu aceite completo exige execução e evidência em `Game.exe`, além de save/reload, traduções, habilidades de campo, batalhas, história e regressão do Decades. Não subir a Barra 2 de Kanto sem esse QA.
 
-Antes de permitir uma campanha compartilhada com escolha livre de região, é necessário integrar **mapas reais, MapInfos/Tilesets, eventos, PBS, níveis, bloqueios e transfers**, resolver colisões de MapIDs, disponibilizar os recursos licenciados, proteger save/PC/viagem regional e executar o QA nativo Windows/JoiPlay de cada campanha. A presença de uma região no menu **não** é prova de jogabilidade ou de disponibilidade de ZIP.
-
-## Verificações reproduzíveis
+## Verificações de código
 
 ```powershell
 ruby -c scripts/battle_polish/TitleKanto.rb
 ruby tests/title_kanto_runtime.rb scripts/battle_polish/TitleKanto.rb
 ruby tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
+ruby tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+python -m unittest tests.test_kanto_integrated_locale -v
 ```
 
-A regressão da CI contém essas verificações. São testes Ruby isolados, sem renderização do menu na janela do Game.exe. O teste visual/funcional no Windows e no JoiPlay **ainda é obrigatório** antes de declarar o seletor aprovado em jogo.
-
-## Teste manual mínimo
-
-- No jogo principal: abra **Novo Jogo → Decades**, confirme que segue a intro nativa e salva no perfil Decades.
-- Volte à tela inicial: escolha **Kanto** e confirme que é iniciado somente o piloto separado (ou que o aviso aparece se os arquivos de montagem não existirem).
-- Escolha **Johto, Hoenn e Sinnoh** sem o piloto preparado: devem ser exibidos os avisos e permitir tentar outra opção.
-- Escolha **Unova** ou outra região indisponível: nenhum save deve ser criado e a seleção deve permanecer aberta.
-- Selecione **Voltar**, continue um save Decades antigo e confirme que não sofreu alterações.
+O teste dos mapas reais é privado e exige a fonte local `Essentials FRLG 21.1 / 1.1`, além de uma cópia do jogo principal instalada. Consulte [roteiro E2E de Kanto](KANTO_CODEX_TESTES_E2E.md) e [guia de integração](KANTO_INTEGRACAO_DECADES.md).
