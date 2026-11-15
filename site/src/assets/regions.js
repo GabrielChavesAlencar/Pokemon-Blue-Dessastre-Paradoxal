@@ -19,7 +19,7 @@ export function regionsPage(registry){
       '</span><h2>'+esc(region.name)+'</h2><p><strong>'+esc(region.base)+'</strong></p><p>'+esc(description)+'</p>'+
       (region.pilot?'<p>Trecho em preparação: '+region.pilot.map(esc).join(', ')+'.</p>':'')+
       (key==='DECADES'?'<a class="text-link" href="/localizacoes">Ver mapa e encontros '+icon('arrow')+'</a>':'')+
-      (key==='KANTO'?'<a class="text-link" href="/localizacoes?regiao=kanto">Explorar piloto '+icon('arrow')+'</a>':'')+
+      (key==='KANTO'?'<a class="text-link" href="/localizacoes?regiao=kanto">Explorar piloto '+icon('arrow')+'</a><p><a class="text-link" href="/balanceamento?regiao=kanto">Balanceamento de Kanto '+icon('arrow')+'</a></p>':'')+
       (key==='JOHTO'?'<a class="text-link" href="/localizacoes?regiao=johto">Explorar piloto de Johto '+icon('arrow')+'</a>':'')+
       (key==='HOENN'?'<a class="text-link" href="/localizacoes?regiao=hoenn">Explorar piloto de Hoenn '+icon('arrow')+'</a>':'')+
       (key==='SINNOH'?'<a class="text-link" href="/localizacoes?regiao=sinnoh">Ver pendências de Sinnoh '+icon('arrow')+'</a>':'')+
