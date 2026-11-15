@@ -43,6 +43,7 @@ PILOT_INPUTS = (
     "scripts/regions/export_kanto.py",
     "scripts/regions/KantoPilot.rb",
     "scripts/battle_polish/RegionStart.rb",
+    "scripts/battle_polish/RegionalRespawn.rb",
     "scripts/battle_polish/RegionalPolicy.rb",
     "scripts/battle_polish/Regions.rb",
     "scripts/battle_polish/Title.rb",
@@ -1445,7 +1446,7 @@ def install_pbs(preview, target, mapping):
 
 def install_runtime(target, mapping, game):
     presentation = target / "Plugins/ZZZZ Blue Story and Presentation"
-    for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "Title.rb", "Story.rb", "PartyExperience.rb", "Balance.rb", "RegionalCards.rb",
+    for name in ("RegionStart.rb", "Regions.rb", "RegionalPolicy.rb", "RegionalRespawn.rb", "Title.rb", "Story.rb", "PartyExperience.rb", "Balance.rb", "RegionalCards.rb",
                  "Economy.rb", "Locale.rb", "KantoDex.rb", "DexControls.rb"):
         shutil.copyfile(ROOT / "scripts/battle_polish" / name, presentation / name)
     plugin = target / "Plugins/ZZZZZ Blue Kanto Pilot"
