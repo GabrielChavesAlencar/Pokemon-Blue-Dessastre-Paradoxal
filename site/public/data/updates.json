@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9ce8c5007169ef190f9cd44c6c5f0e403f766940",
+      "date": "2026-11-15T12:48:51-03:00",
+      "title": "test(installer): usar linhas reais PBS no teste do recompile Gary",
+      "category": "Testes"
+    },
+    {
       "sha": "110d51270a9f25f17198bc1d18044e8b4ceaa531",
       "date": "2026-11-15T12:48:40-03:00",
       "title": "test(kanto): validar Gary mesmo com falha de audio opcional",
