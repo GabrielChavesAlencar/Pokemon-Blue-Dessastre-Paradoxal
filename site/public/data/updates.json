@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ca1795b3491fecbc20cab28e090d1eddb0962435",
+      "date": "2026-11-15T14:57:35-03:00",
+      "title": "test(evolution): testar thresholds, familias, selvagens misturados e protecao de formas especiais",
+      "category": "Testes"
+    },
+    {
       "sha": "236646015dc7cca2a89db5b5d729480a3e2d2775",
       "date": "2026-11-15T14:55:51-03:00",
       "title": "feat(habitat): mostrar especies originais e formas evoluidas que podem aparecer pelo cap",
