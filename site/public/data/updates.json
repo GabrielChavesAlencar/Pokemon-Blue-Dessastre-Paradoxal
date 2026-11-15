@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3f6130f15f17e0acae248e913fcb955374c7dc74",
+      "date": "2026-11-15T17:06:41-03:00",
+      "title": "docs(hoenn): registrar causa real do log e correção de sprites de Strength Boulder",
+      "category": "Correções"
+    },
+    {
       "sha": "8fd2820c97d93c622d5ab235c1564f6d607b845d",
       "date": "2026-11-15T17:05:37-03:00",
       "title": "test(hoenn): reproduzir sprite Strength Boulder ausente no download automatico",
