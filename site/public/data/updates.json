@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7689eee088783020330676a49fbc7087fec54daf",
+      "date": "2026-11-15T11:09:48-03:00",
+      "title": "ci(installer): conferir sintaxe do atualizador automatico Kanto Windows",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5c6e2389dc4faf33ff4dc3c330c4ac53d7b1eeab",
       "date": "2026-11-15T11:08:50-03:00",
       "title": "docs(distribuicao): explicar Kanto automatico no atualizador Windows do site",
