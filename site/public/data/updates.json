@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d1d963f9a630aca4a8d7b4ff1ad585355e049c22",
+      "date": "2026-11-15T13:49:00-03:00",
+      "title": "test(decades): novo jogo sem menus perfil modo e iniciais, Mega Z Tera ativos e Dynamax off",
+      "category": "Novidades"
+    },
+    {
       "sha": "f73c5e05bd099a9d8f8da60266c062be4aae702d",
       "date": "2026-11-15T13:47:57-03:00",
       "title": "test(regions): chegada Cherryhill sem intro e preferencias Mega Z Tera por regiao com rollback",
