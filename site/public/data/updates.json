@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9595ca1aa4d94c5e539eef3f79be1ea3b1b7a78c",
+      "date": "2026-11-15T13:23:35-03:00",
+      "title": "fix(kanto music): incluir lista auditada de musicas e volume no manifesto sem SHA no Ruby",
+      "category": "Correções"
+    },
+    {
       "sha": "bf83941524822a6f338dbe7d8acfb3d353b9a643",
       "date": "2026-11-15T13:23:16-03:00",
       "title": "fix(music): remover Digest::SHA256 do preparo da batalha Kanto e comparar pool original diretamente",
