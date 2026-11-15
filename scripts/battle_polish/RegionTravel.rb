@@ -183,12 +183,28 @@ module BlueRegionTravel
     end
   end
 
+  # The player must speak with the actual agent in the initial town.
+  # No travel from arbitrary routes, menus, battle scenes or another region.
+  def self.at_departure_town?(state)
+    return false unless state && $game_map
+    case state["current"]
+    when "DECADES" then $game_map.map_id == DECADES_AGENT_MAP
+    when "KANTO"
+      town = kanto_town_point
+      !!town && $game_map.map_id == town[0]
+    when "JOHTO"
+      point = johto_installed? && BlueRegionStart.johto_agent_point
+      !!point && $game_map.map_id == point[0]
+    else false
+    end
+  end
+
   def self.travel(key, quiet = false)
     # A transport request is only valid inside the initial-town NPC event.
     # 'quiet' affects message boxes, not permission to teleport.
     return false unless @npc_event_context
     state = BlueRegions.snapshot
-    return false unless available?(state)
+    return false unless available?(state) && at_departure_town?(state)
     status, reservations = preview(state, key)
     if status != :ok
       pbMessage(message_for(status)) unless quiet
@@ -213,8 +229,8 @@ module BlueRegionTravel
     previous_event_context = @npc_event_context
     @npc_event_context = true if from_npc
     state = BlueRegions.snapshot
-    unless available?(state)
-      pbMessage(_INTL("O transporte está disponível pelo NPC da cidade inicial quando a região estiver integrada ao jogo principal."))
+    unless from_npc && available?(state) && at_departure_town?(state)
+      pbMessage(_INTL("Para viajar, fale com o Agente Regional na cidade inicial da região atual. Apenas campanhas instaladas podem receber visitantes."))
       return
     end
     loop do
