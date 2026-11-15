@@ -61,6 +61,60 @@ module GameData
   module Species
     def self.get(*); raise "Not used for base forms"; end
   end
+  module Item
+    Entry=Struct.new(:id,:pocket,:key,:hm,:move) do
+      def is_key_item?; !!key; end
+      def is_HM?; !!hm; end
+    end
+    DATA={
+      OAKSPARCEL: Entry.new(:OAKSPARCEL, 2, true, false, nil),
+      POKEFLUTE: Entry.new(:POKEFLUTE, 2, true, false, nil),
+      HM01: Entry.new(:HM01, 3, false, true, :CUT),
+      HM03: Entry.new(:HM03, 3, false, true, :SURF),
+      TM01: Entry.new(:TM01, 3, false, false, :FOCUSPUNCH),
+      POTION: Entry.new(:POTION, 1, false, false, nil),
+      MEGASTONE: Entry.new(:MEGASTONE, 1, false, false, nil)
+    }.freeze
+    def self.try_get(id); DATA[id]; end
+  end
+end
+class FakeBag
+  attr_reader :pockets,:registered_items
+  def initialize
+    @pockets=Array.new(4) { [] }
+    @registered_items=[]
+    @capacity=16
+  end
+  def quantity(id)
+    @pockets.sum { |pocket| (pocket.find { |row| row[0]==id } || [nil,0])[1] }
+  end
+  def has?(id); quantity(id)>0; end
+  def can_add?(id,qty=1)
+    item=GameData::Item.try_get(id)
+    return false unless item
+    pocket=@pockets[item.pocket]
+    (pocket.any? { |row| row[0]==id } || pocket.length<@capacity) && qty>0
+  end
+  def add_all(id,qty=1)
+    return false unless can_add?(id,qty)
+    item=GameData::Item.try_get(id)
+    row=@pockets[item.pocket].find { |entry| entry[0]==id }
+    row ? row[1]+=qty : @pockets[item.pocket] << [id,qty]
+    true
+  end
+  alias add add_all
+  def remove_all(id,qty=1)
+    item=GameData::Item.try_get(id)
+    return false unless item && quantity(id)>=qty
+    row=@pockets[item.pocket].find { |entry| entry[0]==id }
+    row[1]-=qty
+    @pockets[item.pocket].delete(row) if row[1]==0
+    true
+  end
+  alias remove remove_all
+  def register(id)
+    @registered_items << id unless @registered_items.include?(id)
+  end
 end
 module BlueCampaign
   def self.active?; true; end
@@ -164,6 +218,10 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $PokemonStorage=FakeStorage.new
     $PokemonGlobal=PokemonGlobalMetadata.new
     $PokemonGlobal.blue_campaign_mechanics=BlueCampaign.default_mechanics_for("KANTO")
+    $bag=FakeBag.new
+    [:OAKSPARCEL,:HM01,:POTION,:TM01,:MEGASTONE].each { |id| $bag.add(id) }
+    $bag.register(:OAKSPARCEL)
+    $bag.register(:HM01)
     $player=FakePlayer.new
     $game_switches=Hash.new(false)
     $player.badges[18]=true
@@ -206,6 +264,17 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($PokemonGlobal.blue_campaign_mechanics ==
           {"tera"=>true,"mega"=>true,"zmove"=>true,"dynamax"=>false},
           "Decades arrival did not enable Mega/Z/Tera and disable Dynamax")
+    check(!$bag.has?(:OAKSPARCEL) && !$bag.has?(:HM01),
+          "Key items and HMs from Kanto leaked into Decades")
+    check($bag.has?(:POTION) && $bag.has?(:TM01) && $bag.has?(:MEGASTONE),
+          "Ordinary items, TMs or Mega Stones disappeared on travel")
+    check(($bag.registered_items & [:OAKSPARCEL,:HM01]).empty?,
+          "Registered Kanto-only items leaked into Decades quick access")
+    check($PokemonGlobal.blue_regions["region_key_items"]["KANTO"]["items"].length==2,
+          "Kanto key items and HMs were not backed up in the regional save")
+    $bag.add(:POKEFLUTE)
+    $bag.add(:HM03)
+    $bag.register(:POKEFLUTE)
     # Changes made in Decades must survive visits to another region.
     $PokemonGlobal.blue_campaign_mechanics["zmove"]=false
     $PokemonGlobal.blue_regions = nil
@@ -243,6 +312,12 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($PokemonGlobal.blue_regions["current"] == "KANTO", "Current region not updated")
     check($PokemonGlobal.blue_regions["decades_return"] == decades_arrival,
           "Return coords lost")
+    check($bag.has?(:OAKSPARCEL) && $bag.has?(:HM01) &&
+          !$bag.has?(:POKEFLUTE) && !$bag.has?(:HM03),
+          "Return to Kanto did not restore only Kanto's local items")
+    check($bag.registered_items.include?(:OAKSPARCEL) &&
+          !$bag.registered_items.include?(:POKEFLUTE),
+          "Key-item shortcut selection leaked across regions")
     check($PokemonGlobal.blue_campaign_mechanics["dynamax"] == true,
           "Kanto mechanics were overwritten by Decades preferences")
 
@@ -255,6 +330,12 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check($PokemonGlobal.blue_campaign_mechanics["dynamax"] == false &&
           $PokemonGlobal.blue_campaign_mechanics["zmove"] == false,
           "Returning to Decades lost its mechanics preferences")
+    check($bag.has?(:POKEFLUTE) && $bag.has?(:HM03) &&
+          !$bag.has?(:OAKSPARCEL) && !$bag.has?(:HM01),
+          "Returning to Decades did not restore only its own HMs/key items")
+    check($bag.registered_items.include?(:POKEFLUTE) &&
+          !$bag.registered_items.include?(:HM01),
+          "Return to Decades restored another region's shortcuts")
     check($PokemonGlobal.blue_regions["initial"] == "DECADES", "Return changed initial region")
     check($PokemonStorage[0,0] == special, "PC was cleared after return")
     check($player.party == [normal], "Party was unexpectedly refilled")
@@ -263,7 +344,10 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     # Rollback even after scene transfer has moved the player.
     $scene.fail_once=true
     prior_state=Marshal.dump($PokemonGlobal.blue_regions)
+    prior_bag=Marshal.dump([$bag.pockets,$bag.registered_items])
     check(!BlueRegionTravel.travel("KANTO",true), "Failed map transfer reported success")
+    check(Marshal.dump([$bag.pockets,$bag.registered_items])==prior_bag,
+          "Failed map transfer lost or duplicated HMs/key items")
     check($game_map.map_id == 77 && $game_player.x == decades_arrival[1],
           "Rollback did not restore origin")
     check($PokemonGlobal.blue_campaign_mechanics["zmove"] == false,
