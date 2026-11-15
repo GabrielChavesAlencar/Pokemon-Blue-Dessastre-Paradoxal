@@ -70,6 +70,65 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
           "wrong starting position")
     check(BlueRegionStart.hoenn_town_point == town,
           "wrong Littleroot arrival point")
+    # Regression: the SAME combined Android ZIP has all 142 Kanto maps.
+    # JoiPlay sometimes provides an unusable JSON constant rather than no
+    # JSON constant at all. Kanto must work in both cases, just as Hoenn does.
+    FileUtils.mkdir_p("Plugins/ZZZZZ Blue Kanto Pilot")
+    kanto_maps = {}
+    142.times { |i| kanto_maps[(i + 1).to_s] = 300 + i }
+    kanto_home = [kanto_maps["7"], 25, 7]
+    File.write("Data/blue-kanto-install.json",
+               '{"schema":1,"maps":{' +
+               kanto_maps.map { |key,value| %("#{key}":#{value}) }.join(",") +
+               '},"source":"Essentials FRLG 21.1"}')
+    File.write("Data/blue-kanto-start.txt",
+               "BLUE_KANTO_START_V1,KANTO,#{kanto_home.join(',')}\\n")
+    File.write("Data/blue-kanto-ready.txt",
+               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\\n")
+    %w[Data/MapInfos.rxdata Data/Tilesets.rxdata
+       PBS/encounters_kanto.txt PBS/trainers_kanto.txt
+       PBS/trainer_types_kanto.txt PBS/map_metadata_kanto.txt
+       PBS/map_connections_kanto.txt Data/blue-kanto-locale.dat
+       Data/blue-kanto-npc-dialogues.dat
+       Data/blue-kanto-pewter-route3-gate.txt
+       Data/blue-kanto-pewter-mom-sprite.txt
+       Data/blue-kanto-viridian-route2-line.txt
+       Data/blue-kanto-silph-floors.txt].each { |file| File.write(file, "fixture") }
+    File.write("Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb", "fixture")
+    kanto_maps.values.each { |id|
+      File.write(sprintf("Data/Map%03d.rxdata", id), "kanto")
+    }
+    check(BlueRegionStart.kanto_integrated?,
+          "Kanto incorrectly marked 'instalacao necessaria' without JSON")
+    check(BlueRegionStart.request_initial("KANTO"),
+          "New Game Kanto could not be selected without JSON")
+    check(BlueRegionStart.choose_initial == "KANTO",
+          "Kanto starting selection was replaced by Decades")
+    # Reproduces Android plugin providing ::JSON without .parse.
+    Object.const_set(:JSON, Module.new)
+    check(BlueRegionStart.kanto_integrated?,
+          "Kanto blocked by incomplete JoiPlay JSON constant")
+    ::JSON.define_singleton_method(:parse) { |_raw| raise NoMethodError, "broken JSON" }
+    check(BlueRegionStart.kanto_integrated?,
+          "Kanto blocked when JoiPlay JSON parser raises")
+    Object.send(:remove_const, :JSON)
+    # The fallback is NOT a bypass: all physical 142 maps and the proof
+    # must exist. Hoenn stays independent and available.
+    missing = sprintf("Data/Map%03d.rxdata", kanto_maps["42"])
+    File.delete(missing)
+    check(!BlueRegionStart.kanto_integrated?,
+          "Incomplete Kanto incorrectly unlocked with only 141 maps")
+    File.write(missing, "kanto")
+    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,999\\n")
+    check(!BlueRegionStart.kanto_integrated?,
+          "Kanto unlocked with invalid ready gate")
+    File.write("Data/blue-kanto-ready.txt",
+               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\\n")
+    check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?,
+          "Kanto proof repair affected Hoenn")
+    check(BlueRegionStart.request_initial("HOENN"),
+          "Hoenn unavailable after Kanto JSON fallback")
+
     check(BlueRegionStart.request_initial("DECADES"),
           "Decades new game blocked by missing JSON")
     check(BlueRegionStart.choose_initial == "DECADES",
@@ -89,4 +148,4 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
           "New Game accepted incomplete 199-map installation")
   end
 end
-puts "PASS: JoiPlay New Game without JSON, 199 real-map gate, Decades/Kanto unchanged"
+puts "PASS: JoiPlay New Game without JSON, 142 Kanto/199 Hoenn maps, both regions selectable"
