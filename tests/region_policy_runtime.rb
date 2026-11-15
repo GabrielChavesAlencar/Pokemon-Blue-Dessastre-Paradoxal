@@ -47,6 +47,7 @@ class MockBag
   def initialize; @items = []; end
   def has?(item); @items.include?(item); end
   def add(item); @items << item; end
+  def remove(item); @items.delete(item); end
 end
 module GameData
   module Item
@@ -127,7 +128,7 @@ end
 module EventHandlers
   def self.add(*); end
 end
-def pbCheckHiddenMoveBadge(badge=-1,showmsg=true); false; end
+def pbCheckHiddenMoveBadge(badge=-1,showmsg=true); !!$native_badge_ok; end
 def pbRgssExists?(path); File.file?(path); end
 def pbMessage(*);end
 def _INTL(message,*args)
@@ -223,6 +224,26 @@ Dir.mktmpdir("blue-regional-policy-") do |dir|
     $PokemonGlobal.blue_regions["current"]="DECADES"
     $PokemonGlobal.blue_regions["travel_history"]=[["KANTO","DECADES"]]
     assert(!HiddenMoveHandlers.triggerCanUseMove(:FLASH,normal,false),"Native Decades HM badge bypassed")
+    # A travel-derived Decades save must earn its own HM, even if a party
+    # Pokémon already knows the move and Decades' native badge is present.
+    $native_badge_ok=true
+    $bag=MockBag.new
+    $player.party << swimmer
+    assert(BlueRegionalPolicy.field_result(:SURF)==:hm,
+           "Foreign Surf access bypassed local Decades HM")
+    assert(!HiddenMoveHandlers.triggerUseMove(:SURF,swimmer),
+           "Surf from Kanto was usable in Decades without Decades' HM")
+    $bag.add(:HM03)
+    assert(BlueRegionalPolicy.field_result(:SURF)==:native,
+           "Local Decades HM did not restore native badge checks")
+    assert(HiddenMoveHandlers.triggerUseMove(:SURF,swimmer),
+           "Decades local Surf HM and badge should work")
+    # An old native Decades save which has NEVER traveled is not migrated or
+    # retroactively blocked by this feature.
+    $PokemonGlobal.blue_regions["travel_history"]=[]
+    $bag.remove(:HM03)
+    assert(HiddenMoveHandlers.triggerUseMove(:SURF,swimmer),
+           "Untravelled native Decades save lost original field move behavior")
   end
 end
 puts "Regional PC, gifts, 8-badge unlock, balanced crystals and HM tests OK"
