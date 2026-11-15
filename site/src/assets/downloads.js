@@ -14,7 +14,7 @@ export function androidUpdateGuide(){
       <p>Na edição integrada Decades + Kanto + Hoenn, feche o JoiPlay, preserve o save e atualize com o Termux. Se o jogo foi extraído na pasta Download/Pokemon-Blue-Android:</p>
       <pre><code>cd ~/storage/shared/Download/Pokemon-Blue-Android
 python ATUALIZAR-ANDROID.py --update</code></pre>
-      <p>O atualizador baixa somente o patch compatível, quando publicado. Não use o ZIP do Decades puro nem o Piloto Kanto para corrigir a edição conjunta.</p>
+      <p>O cliente novo tenta o patch compatível e, quando não existe, instala o ZIP completo pelo Termux, preservando uma cópia integral da instalação anterior. Instalações antigas precisam atualizar o script uma vez. Não misture canais.</p>
     </div>
     <ol class="android-update-steps">
       <li><strong>Confira se é uma instalação antiga.</strong><p>Se não existir <code>ATUALIZAR-ANDROID.py</code> dentro da pasta do jogo, faça backup dos saves, baixe o ZIP completo mais recente acima e extraia em <strong>outra pasta</strong>. Adicione o novo <code>Game.exe</code> ao JoiPlay. Não extraia o ZIP por cima da pasta anterior.</p></li>
@@ -29,11 +29,12 @@ termux-setup-storage</code></pre></li>
       <li><strong>Verifique a atualização e depois instale.</strong><p>Execute o primeiro comando para comparar a versão local com a release publicada. Só execute o segundo para instalar, depois de fechar o JoiPlay e conferir o backup.</p>
         <pre><code>python ATUALIZAR-ANDROID.py
 python ATUALIZAR-ANDROID.py --update</code></pre>
-        <p>O pacote incremental tem assinatura de versão, tamanho e SHA-256 verificados. O atualizador salva cópias dos arquivos substituídos antes de aplicar as alterações.</p></li>
-      <li><strong>Reabra o mesmo jogo no JoiPlay.</strong><p>Confirme o menu, os comandos de toque, a movimentação e o carregamento do save. Se aparecer <strong>sem patch direto compatível</strong> ou se você pulou versões, baixe o novo ZIP completo e instale em uma pasta nova, sem mexer na instalação antiga.</p></li>
+        <p>O patch é validado por versão, tamanho e SHA-256. Sem patch compatível, o cliente novo instala o ZIP integral validado, preserva saves locais e mantém o jogo anterior como backup. Isso exige espaço para baixar e extrair o pacote completo.</p></li>
+      <li><strong>Reabra o mesmo jogo no JoiPlay.</strong><p>Confirme o menu, os comandos de toque, a movimentação e o carregamento do save. Se não houver patch direto ou você pular versões, o cliente novo usa o ZIP integral pelo Termux. Confira o backup e os saves antes de apagar qualquer arquivo.</p></li>
     </ol>
     <div class="android-update-note"><strong>Erro “Input.mouse_in_window” ao tocar?</strong><p>Isso indica uma incompatibilidade do script de entrada com o plugin JoiPlay. A correção precisa estar dentro de <code>Data/Scripts.rxdata</code> do pacote Android mais recente; não basta atualizar o aplicativo. Se sua versão ainda exibir esse erro, use uma release corrigida depois de sua publicação e teste em uma pasta nova. Preserve os saves.</p></div>
-    <p><a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md" target="_blank" rel="noopener noreferrer">Ver documentação técnica e solução de problemas no GitHub</a></p>
+    <div class="android-update-note"><strong>ATUALIZAR-ANDROID.py antigo?</strong><p>Para ativar o fallback completo uma única vez, execute no Termux, já dentro da pasta do jogo:</p><pre><code>python -c 'import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/main/scripts/android/update_client.py", "ATUALIZAR-ANDROID-NOVO.py")'
+python ATUALIZAR-ANDROID-NOVO.py --game-dir . --update</code></pre><p>Nas próximas versões, use o ATUALIZAR-ANDROID.py normal. Se faltar <code>Data/blue-update.json</code>, faça primeiro uma instalação completa separada com backup dos saves.</p></div><p><a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/ANDROID_ATUALIZACOES_INCREMENTAIS.md" target="_blank" rel="noopener noreferrer">Ver documentação técnica e solução de problemas no GitHub</a></p>
   </section>`;
 }
 
