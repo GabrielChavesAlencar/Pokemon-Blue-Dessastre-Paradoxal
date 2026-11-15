@@ -90,6 +90,7 @@ Dir.mktmpdir("kanto-running-shoes-") do |tmp|
     $player = FakePlayer.new
     $game_map = FakeMap.new(777)
     player = Game_Player.new(19, 6)
+    $game_player = player  # Essentials sets this global before field events run.
 
     # Brock still controls entry; the gift is not awarded prematurely.
     player.move_generic(6)
