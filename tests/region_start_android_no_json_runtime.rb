@@ -82,9 +82,9 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
                kanto_maps.map { |key,value| %("#{key}":#{value}) }.join(",") +
                '},"source":"Essentials FRLG 21.1"}')
     File.write("Data/blue-kanto-start.txt",
-               "BLUE_KANTO_START_V1,KANTO,#{kanto_home.join(',')}\\n")
+               "BLUE_KANTO_START_V1,KANTO,#{kanto_home.join(',')}\n")
     File.write("Data/blue-kanto-ready.txt",
-               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\\n")
+               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\n")
     %w[Data/MapInfos.rxdata Data/Tilesets.rxdata
        PBS/encounters_kanto.txt PBS/trainers_kanto.txt
        PBS/trainer_types_kanto.txt PBS/map_metadata_kanto.txt
@@ -119,11 +119,11 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     check(!BlueRegionStart.kanto_integrated?,
           "Incomplete Kanto incorrectly unlocked with only 141 maps")
     File.write(missing, "kanto")
-    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,999\\n")
+    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,999\n")
     check(!BlueRegionStart.kanto_integrated?,
           "Kanto unlocked with invalid ready gate")
     File.write("Data/blue-kanto-ready.txt",
-               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\\n")
+               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\n")
     check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?,
           "Kanto proof repair affected Hoenn")
     check(BlueRegionStart.request_initial("HOENN"),
