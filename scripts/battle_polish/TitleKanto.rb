@@ -84,11 +84,16 @@ module BlueKantoTitle
         end
         pbMessage(_INTL("Kanto não foi instalado. Feche o jogo e abra novamente o Blue-Story.exe: ele tentará baixar e integrar Kanto automaticamente. Se a instalação falhar, consulte o diagnóstico em .blue-work/kanto-install-status.json. Seus saves serão preservados."))
       when :hoenn
-        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:request_initial) &&
+        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:hoenn_integrated?) &&
+           BlueRegionStart.hoenn_integrated? &&
+           BlueRegionStart.respond_to?(:request_initial) &&
            BlueRegionStart.request_initial("HOENN")
           return :integrated
         end
-        pbMessage(_INTL("Hoenn ainda não está integrada nesta instalação. Use a ferramenta de integração local com a fonte auditada; até lá, Testar Hoenn continua com save separado. Seus saves de Decades/Kanto não foram modificados."))
+        # Keep existing isolated pilot available until the shared 199-map
+        # installation is verified. It retains its own independent save.
+        return :launched if launch_hoenn
+        pbMessage(_INTL("Hoenn ainda não está integrada nesta instalação. Coloque o ZIP original de Hoenn na pasta do projeto e execute a atualização Blue-Story.exe. Seus saves de Decades/Kanto não foram modificados."))
       when :cancel then return :cancel
       when :unavailable
         pbMessage(_INTL("Essa região ainda não tem uma campanha jogável instalada. Nenhum save foi alterado."))
