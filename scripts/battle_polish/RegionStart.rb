@@ -106,6 +106,18 @@ module BlueRegionStart
     proof["npc_point"]
   end
 
+  # The installed package is also summarized in a tiny ASCII marker,
+  # committed only after all map/PBS hashes pass. Ruby in some embedded mkxp
+  # builds omits the JSON gem; this fallback still rejects stray map markers.
+  def self.kanto_ready_gate?(spawn)
+    path = "Data/blue-kanto-ready.txt"
+    return false unless spawn && File.file?(path) && !File.symlink?(path)
+    fields = File.read(path, 128).strip.split(",")
+    fields == ["BLUE_KANTO_READY_V1", "142", spawn[0].to_s]
+  rescue StandardError
+    false
+  end
+
   # Kanto must be genuinely merged into the MAIN installation before its
   # New Game option can start within the Decades executable. A standalone
   # "Kanto pilot.json" or a stray start marker is never sufficient.
@@ -130,7 +142,7 @@ module BlueRegionStart
     begin
       require "json" unless defined?(JSON)
     rescue LoadError
-      return false
+      return kanto_ready_gate?(spawn)
     end
     info = JSON.parse(File.read(KANTO_INSTALL))
     return false unless info.is_a?(Hash) && info["schema"] == 1 &&
