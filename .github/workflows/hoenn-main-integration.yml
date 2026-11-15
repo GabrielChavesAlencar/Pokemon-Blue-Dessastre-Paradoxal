@@ -1,0 +1,44 @@
+name: Hoenn - integracao segura no Decades
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/install_hoenn.py'
+      - 'scripts/regions/auto_integrate_hoenn.py'
+      - 'scripts/regions/HoennPilot.rb'
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'scripts/battle_polish/RegionTravel.rb'
+      - 'scripts/battle_polish/TitleKanto.rb'
+      - 'scripts/install_game.py'
+      - 'tests/test_hoenn_main_integration.py'
+      - 'tests/hoenn_main_gate_runtime.rb'
+      - '.github/workflows/hoenn-main-integration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hoenn-main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - name: Syntax check of native and installers
+        run: |
+          ruby -c scripts/battle_polish/RegionStart.rb
+          ruby -c scripts/battle_polish/RegionTravel.rb
+          ruby -c scripts/battle_polish/TitleKanto.rb
+          python -m py_compile scripts/regions/install_hoenn.py scripts/regions/auto_integrate_hoenn.py scripts/install_game.py
+      - name: Hoenn integrated installer safety tests
+        run: python -m unittest discover -s tests -p 'test_hoenn_main_integration.py' -v
+      - name: Hoenn New Game release gate
+        run: ruby tests/hoenn_main_gate_runtime.rb scripts/battle_polish/RegionStart.rb
+      - name: Existing region and title regressions
+        run: |
+          ruby tests/region_start_runtime.rb scripts/battle_polish/RegionStart.rb
+          ruby tests/title_kanto_runtime.rb scripts/battle_polish/TitleKanto.rb
+          ruby tests/region_travel_runtime.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
