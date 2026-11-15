@@ -9,14 +9,20 @@ export function androidUpdateGuide(){
   return `<section class="android-update-guide" id="android-updates" aria-labelledby="android-update-title">
     <span class="eyebrow">ATUALIZAÇÕES · JOIPLAY</span>
     <h3 id="android-update-title">Como atualizar o jogo no Android</h3>
-    <p><strong>Decades e Piloto Kanto são instalações separadas.</strong> Escolha sempre o arquivo e a pasta correspondentes. O atualizador só funciona se a instalação já incluir <code>ATUALIZAR-ANDROID.py</code> e <code>Data/blue-update.json</code>.</p>
+    <p><strong>Existem três canais diferentes:</strong> Decades padrão, Decades + Kanto + Hoenn integrado e Piloto Kanto isolado. Escolha sempre o arquivo e a pasta correspondentes. O atualizador detecta o canal pela instalação que já inclui <code>ATUALIZAR-ANDROID.py</code> e <code>Data/blue-update.json</code>, sem trocar o canal nem apagar os mapas regionais.</p>
+    <div class="android-update-note"><strong>Corrigido: erro JSON ao tocar em New Game no JoiPlay</strong>
+      <p>Na edição integrada Decades + Kanto + Hoenn, feche o JoiPlay, preserve o save e atualize com o Termux. Se o jogo foi extraído na pasta Download/Pokemon-Blue-Android:</p>
+      <pre><code>cd ~/storage/shared/Download/Pokemon-Blue-Android
+python ATUALIZAR-ANDROID.py --update</code></pre>
+      <p>O atualizador baixa somente o patch compatível, quando publicado. Não use o ZIP do Decades puro nem o Piloto Kanto para corrigir a edição conjunta.</p>
+    </div>
     <ol class="android-update-steps">
       <li><strong>Confira se é uma instalação antiga.</strong><p>Se não existir <code>ATUALIZAR-ANDROID.py</code> dentro da pasta do jogo, faça backup dos saves, baixe o ZIP completo mais recente acima e extraia em <strong>outra pasta</strong>. Adicione o novo <code>Game.exe</code> ao JoiPlay. Não extraia o ZIP por cima da pasta anterior.</p></li>
       <li><strong>Faça backup do progresso.</strong><p>No Decades, use <strong>Onde fica meu save?</strong> no menu. Copie também os saves do perfil independente de Kanto, se estiver jogando o piloto. Preserve arquivos como <code>File A.rxdata</code>–<code>File H.rxdata</code>, <code>Auto 1–3.rxdata</code>, <code>Game.rxdata</code> e <code>.bak</code> fora da pasta do jogo. O JoiPlay pode guardar os saves em outro diretório.</p></li>
       <li><strong>Instale o Termux e habilite o armazenamento.</strong><p>Instale o <a href="https://termux.dev/en/" target="_blank" rel="noopener noreferrer">Termux</a> e abra-o. Execute os comandos abaixo, permitindo o acesso aos arquivos quando o Android solicitar. Python é usado apenas para atualizar, não para jogar.</p>
         <pre><code>pkg install python
 termux-setup-storage</code></pre></li>
-      <li><strong>Feche completamente o JoiPlay.</strong><p>Deixe a pasta extraída em <code>Download</code>, acessível ao Termux, e entre na pasta correta. Use <strong>somente um</strong> dos dois caminhos abaixo:</p>
+      <li><strong>Feche completamente o JoiPlay.</strong><p>Deixe a pasta extraída em <code>Download</code>, acessível ao Termux, e entre na pasta correta. Decades puro e o integrado usam o mesmo nome de pasta, mas o canal de atualização é identificado pelos arquivos instalados:</p>
         <div class="android-update-paths"><div><strong>Decades principal</strong><pre><code>cd ~/storage/shared/Download/Pokemon-Blue-Android</code></pre></div>
         <div><strong>Piloto Kanto</strong><pre><code>cd ~/storage/shared/Download/Pokemon-Blue-Kanto-Android</code></pre></div></div>
         <p>Se você escolheu outra pasta na extração, ajuste esse caminho para o local real do <code>Game.exe</code>.</p></li>
