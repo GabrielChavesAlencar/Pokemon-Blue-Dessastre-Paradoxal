@@ -47,6 +47,7 @@ PILOT_INPUTS = (
     "scripts/battle_polish/Regions.rb",
     "scripts/battle_polish/Title.rb",
     "scripts/battle_polish/Story.rb",
+    "scripts/battle_polish/PartyExperience.rb",
     "scripts/battle_polish/Balance.rb",
     "scripts/battle_polish/RegionalCards.rb",
     "scripts/battle_polish/KantoDex.rb",
