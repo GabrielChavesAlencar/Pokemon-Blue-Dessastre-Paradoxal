@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "00a4cb83e354256c068c8e916cc492dc20cafa44",
+      "date": "2026-11-15T14:36:08-03:00",
+      "title": "fix(cherryhill): criar NPC com assinatura real do Game_Event v21.1 e carregar sprite em saves existentes",
+      "category": "Correções"
+    },
+    {
       "sha": "0157572935100d17988ab430c2c75ee96442eafd",
       "date": "2026-11-15T14:26:37-03:00",
       "title": "ui(hm): esclarecer que é obrigatório obter HM da região atual",
