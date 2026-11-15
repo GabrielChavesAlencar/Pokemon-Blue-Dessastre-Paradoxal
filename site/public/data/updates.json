@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b237cd11691b819082ddd9ec19661088193b8868",
+      "date": "2026-11-15T13:50:22-03:00",
+      "title": "fix(travel): mesmo ponto de chegada Cherryhill com ou sem NPC gerado em Game_Map.setup",
+      "category": "Correções"
+    },
+    {
       "sha": "d1d963f9a630aca4a8d7b4ff1ad585355e049c22",
       "date": "2026-11-15T13:49:00-03:00",
       "title": "test(decades): novo jogo sem menus perfil modo e iniciais, Mega Z Tera ativos e Dynamax off",
