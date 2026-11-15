@@ -82,6 +82,8 @@ jobs:
             throw 'Nao houve compilacao nativa; nao publicar ZIP.'}
       - name: Gerar e verificar ZIP Decades Kanto Hoenn
         shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python scripts/regions/install_kanto.py --game game --verify-installed
           if($LASTEXITCODE -ne 0){throw 'Kanto ausente apos compilacao.'}
