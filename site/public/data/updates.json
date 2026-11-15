@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f73c5e05bd099a9d8f8da60266c062be4aae702d",
+      "date": "2026-11-15T13:47:57-03:00",
+      "title": "test(regions): chegada Cherryhill sem intro e preferencias Mega Z Tera por regiao com rollback",
+      "category": "Testes"
+    },
+    {
       "sha": "c67d90665610e86e0d6bfbe9cc3c252e10b69cdf",
       "date": "2026-11-15T13:46:23-03:00",
       "title": "feat(decades): automatizar perfil story e iniciais na introducao de novo jogo, sem menus extras",
