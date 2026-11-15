@@ -305,7 +305,20 @@ def sync_runtime(game, commit=False):
     A manually edited plugin or an unknown installation manifest blocks the
     update instead of being replaced silently.
     """
-    verify_installed(game)
+    verified = verify_installed(game)
+    # The native engine may not include Ruby's JSON gem. Add the plain-text
+    # gate for older *verified* Kanto installs; never overwrite a foreign or
+    # divergent marker. This operation does not touch maps or saves.
+    ready_path = game / READY_GATE
+    ready_text = (f"BLUE_KANTO_READY_V1,{verified['maps']},"
+                  f"{verified['kanto_start'][0]}\\n").encode("ascii")
+    if ready_path.is_symlink():
+        raise ValueError("Kanto ready gate is a symlink.")
+    if ready_path.exists():
+        if ready_path.read_bytes() != ready_text:
+            raise ValueError("Kanto ready gate conflicts with installed map proof.")
+    elif commit:
+        atomic(ready_path, ready_text)
     rel = PLUGIN / "KantoPilot.rb"
     target = game / rel
     source = ROOT / "scripts/regions/KantoPilot.rb"
