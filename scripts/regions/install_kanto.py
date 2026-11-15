@@ -21,6 +21,12 @@ PBS_NAMES = ("encounters_kanto.txt", "trainers_kanto.txt", "trainer_types_kanto.
 DATA_NAMES = ("MapInfos.rxdata", "Tilesets.rxdata")
 PLUGIN = Path("Plugins/ZZZZZ Blue Kanto Pilot")
 MARKER = Path("Data/blue-kanto-start.txt")
+READY_GATE = Path("Data/blue-kanto-ready.txt")
+
+
+def ready_gate_bytes(mapping):
+    return f"BLUE_KANTO_READY_V1,{len(mapping)},{mapping[7]}\\n".encode("ascii")
+
 PORTRAITS = tuple(f"BLUE_KANTO_{kind}.png" for kind in TYPES)
 # Runtime-only files referenced by the authored Kanto plugin/events. The
 # experimental teleport list and independent save profile are NOT integrated.
@@ -218,7 +224,7 @@ def apply_install(game, pilot, commit=False):
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     backup = ROOT / ".blue-backups" / ("kanto-" + stamp)
     backup.mkdir(parents=True, exist_ok=False)
-    extra = [Path("Data/blue-kanto-install.json"), MARKER,
+    extra = [Path("Data/blue-kanto-install.json"), READY_GATE, MARKER,
              Path("Data/blue-compile-request.txt"), Path("Data/PluginScripts.rxdata")]
     originals = {}
     for relative in list(files) + extra:
@@ -238,6 +244,10 @@ def apply_install(game, pilot, commit=False):
         atomic(game / "Data/blue-compile-request.txt", b"compile")
         atomic(game / "Data/blue-kanto-install.json",
                (json.dumps(info, indent=2) + "\n").encode("utf-8"))
+        # The Ruby engine may not have the JSON standard-library gem. This
+        # small marker is written only AFTER every installed file and hash
+        # passes; the original source + map manifest are still preserved.
+        atomic(game / READY_GATE, ready_gate_bytes(mapping))
         # The marker is deliberately committed LAST. No menu until ready.
         start = "BLUE_KANTO_START_V1,KANTO,%d,25,7\n" % mapping[7]
         atomic(game / MARKER, start.encode("ascii"))
