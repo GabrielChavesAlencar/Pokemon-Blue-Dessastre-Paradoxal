@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/battle_polish/RegionStart.rb'
+      - 'tests/region_start_android_no_json_runtime.rb'
       - 'tests/test_android_multiregion.py'
       - 'site/tests/android-release.test.mjs'
       - 'site/src/assets/android-release.js'
@@ -28,5 +30,9 @@ jobs:
         run: python -m py_compile scripts/android/package.py scripts/android/update_client.py scripts/android/publish_updates.py
       - name: Testar ZIP compartilhado, mapas e canais isolados
         run: python -m unittest discover -s tests -p test_android_multiregion.py -v
+      - name: Reproduzir Novo Jogo no runtime JoiPlay sem JSON
+        run: |
+          ruby -c scripts/battle_polish/RegionStart.rb
+          ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
       - name: Testar site de downloads e verificação real de release
         run: npm test --prefix site
