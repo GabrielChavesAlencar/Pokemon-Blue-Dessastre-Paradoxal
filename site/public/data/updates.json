@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a84f9ca4dcbdcf99440d731e8afa80f7a9cfc4f2",
+      "date": "2026-11-15T11:02:12-03:00",
+      "title": "test(installer): cobrir Kanto automatico, idempotencia, falha offline e saves",
+      "category": "Testes"
+    },
+    {
       "sha": "31a0129b7c9fa94a01449fd64d5969b791455f17",
       "date": "2026-11-15T11:01:17-03:00",
       "title": "feat(story): auto-instalar Kanto apos atualizacao do Blue-Story.exe",
