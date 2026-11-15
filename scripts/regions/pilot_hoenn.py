@@ -111,6 +111,8 @@ from hoenn_qa_phase8 import audit_generated as audit_road
 from hoenn_qa_phase9 import audit_generated as audit_league
 from hoenn_qa_phase10 import audit_generated as audit_hall
 from hoenn_qa_phase11 import audit_generated as audit_presentation, localized_map_name
+from hoenn_audio import BGM, MAP_BGM
+from hoenn_presentation import apply_presentation, add_littleroot_trees
 from hoenn_qa_phase12 import audit_generated as audit_integrated
 
 UPSTREAM = "c59233bdbaac4fbfeca6aa01c7f05be628da2a92"
@@ -147,61 +149,10 @@ PEOPLE = (
     (13, 9, 4, "Enfermeira", "NPC_DPP_PokeCenter_Nurse", "BlueHoennPilot.heal"),
     (14, 3, 5, "Mart", "NPC_DPP_PokeMart_Man", "BlueHoennPilot.mart"),
 )
-BGM = {
-    "Littleroot": "City - Littleroot (Littleroot Town)",
-    "Birch": "Location - Birch Pokemon Lab (Birch Pokemon Lab)",
-    "Route101": "Route 101 (Route 101)",
-    "Oldale": "City - Oldale (Oldale Town)",
-    "Center": "Location - Pokemon Center (Pokemon Center)",
-    "Wild": "Battle Music - Wild Pokemon (Battle! (Wild Pokemon))",
-    "WildVictory": "Battle Victory - Wild Pokemon (Victory! (Wild Pokemon))",
-}
-MAP_BGM = {7: "Littleroot", 8: "Littleroot", 11: "Birch", 101: "Route101",
-           12: "Oldale", 13: "Center", 14: "Oldale", 102: "Route101", 103: "Route101",
-           16: "Oldale", 17: "Center", 18: "Oldale", 19: "Oldale", 20: "Birch",
-           104: "Route101", 105: "Oldale", 106: "Oldale", 156: "Route101",
-           21: "Oldale", 22: "Center", 23: "Oldale", 24: "Oldale", 25: "Birch",
-           26: "Birch", 27: "Birch", 130: "Route101", 131: "Oldale",
-           157: "Route101",
-           28: "Oldale", 29: "Center", 30: "Oldale", 31: "Birch",
-           32: "Oldale", 33: "Oldale", 34: "Center", 35: "Oldale",
-           36: "Oldale", 37: "Oldale", 38: "Birch", 39: "Birch",
-           40: "Oldale", 108: "Route101", 111: "Route101",
-           112: "Oldale", 159: "Route101", 160: "Route101",
-           161: "Route101", 162: "Route101",
-           41: "Oldale", 42: "Center", 43: "Oldale", 44: "Oldale",
-           45: "Oldale", 46: "Oldale", 47: "Birch",
-           113: "Route101", 114: "Route101", 115: "Oldale",
-           **{mid: ("Center" if mid in (54, 59) else "Birch" if mid in (63, 124) else
-                    "Route101" if mid in (117, 121, 123, 125, 177, 178, 180, 191, 192)
-                    else "Oldale") for mid in SOURCE_MAPS_STAGE7},
-           **{mid: ("Center" if mid in (49, 65, 71) else
-                    "Route101" if mid in (132, 134, 135, 138, 139) else
-                    "Birch" if mid in (68, 137) else "Oldale")
-              for mid in SOURCE_MAPS_STAGE8},
-           **{mid: ("Center" if mid == 77 else
-                    "Birch" if mid in (81,82,189,213,217) else
-                    "Route101" if mid in (141,144,212) else "Oldale")
-              for mid in SOURCE_MAPS_STAGE9}}
 OUTDOORS = (7, 12, 16, 21, 28, 32, 41, 53, 58, 101, 102, 103, 104,
             108, 111, 113, 114, 117, 121, 123, 125, 130, 132, 134,
             135, 138, 139, 141, 144, 156, 178, 180, 212, 213, 48, 64, 69, 76,
             83,88,91,146,147,148,149,150,151,152,153,154,155,241,322)
-# QA11: safe provisional OGG music for the entire Stage10 finale.
-# Reuse only seven already pinned ORAS audio assets. Never pretend this is the
-# complete Emerald soundtrack or alter Blue/Decades' global music settings.
-MAP_BGM.update({
-    mid: ("Center" if mid in (84,89,92,93,94,95,96,97,98,99,100) else
-          "Oldale" if mid in (83,88,91,322) else
-          "Route101" if mid in (*range(146,156),*range(258,264),250,251,252) else
-          "Birch")
-    for mid in SOURCE_MAPS_STAGE10
-})
-# Source maps without an explicit prior track remain audible and isolated;
-# the fallbacks are catalogued as pending native review in QA11.
-for _hoenn_mid in SOURCE_MAPS:
-    MAP_BGM.setdefault(_hoenn_mid, "Route101" if _hoenn_mid in OUTDOORS else "Center")
-
 BORDERS = ((7, "North", 101, "South"), (12, "South", 101, "North"),
            (102, "East", 12, "West"), (103, "South", 12, "North"))
 LAND_ENCOUNTERS = {
@@ -1582,6 +1533,7 @@ def build_overlay(game, source):
         stage10_original_events, maps, allowed_maps=SOURCE_MAPS_STAGE10, strict=False)
     if not stage10_source_warps:
         raise ValueError("Mapas Stage10 sem transferências de origem verificadas")
+    add_littleroot_trees(maps[7])
     geometry_audit={}
     edges, required = validate_geometry(maps, tiles, audit=geometry_audit)
     balls = starter_ball_positions(maps, tiles, edges, required)
@@ -2145,22 +2097,13 @@ def build_overlay(game, source):
         if kind not in stage9_boss_art:
             raise ValueError(f"Sem arte nativa Stage9 segura: {kind}")
     overlay["PBS/trainers_hoenn_pilot.txt"] = "".join(trainer_sections).encode("utf-8")
-    for label, track in BGM.items():
-        source_path = f"Audio/BGM/ORAS {track}.ogg"
-        blob = source.read(source_path)
-        if not blob.startswith(b"OggS"):
-            raise ValueError(f"Áudio inválido: {source_path}")
-        overlay[f"Audio/BGM/BLUE_HOENN_{label}.ogg"] = blob
+    presentation = apply_presentation(maps, source, overlay)
+
     credit_track="Audio/BGM/ORAS Misc - Hall of Fame (The Hall of Fame).ogg"
     blob=source.read(credit_track)
     if not blob.startswith(b"OggS"):
         raise ValueError(f"Áudio inválido: {credit_track}")
     overlay["Audio/BGM/BLUE_HOENN_HallCredits.ogg"]=blob
-    for old, label in MAP_BGM.items():
-        maps[old].attrs["@autoplay_bgm"] = True
-        maps[old].attrs["@bgm"] = ruby("RPG::AudioFile", name=f"BLUE_HOENN_{label}".encode(),
-                                     volume=80, pitch=100)
-
     order = max(info.attrs.get("@order", 0) for info in native_infos.values())
     for index, (old, name) in enumerate(SOURCE_MAPS.items(), 1):
         native_infos[ids[old]] = ruby("RPG::MapInfo", name=localized_map_name(name).encode("utf-8"),
@@ -2277,6 +2220,7 @@ def build_overlay(game, source):
                           "native_gameplay_verified":False},
               "native_gameplay_verified": False}
     report["ground_geometry_audit"]=geometry_audit
+    report["hoenn_presentation"] = presentation
     report["imp2_underwater_tile_quarantine"]=underwater_quarantine
     report["imp3_local_media"]={"trainer_art":imp3_donor_boss_art,
                                 "hall_credits_ogg":True,"audition_verified":False}

@@ -122,17 +122,29 @@ def ensure_test_tools(copy: Path, game: Path = ROOT / "game") -> dict:
     # would leave the old plugin active in an already compiled copy.
     if not plugin_path.is_file() or plugin_path.read_bytes() != desired[PLUGIN]:
         desired[COMPILE_REQUEST] = (UPSTREAM + "\n").encode("ascii")
+    count, backup = replace_private_files(copy, desired)
+    if not count:
+        return {"status": "ALREADY_CURRENT", "files_updated": 0,
+                "stops": 199, "saves_touched": False, "native_tested": False}
+    return {
+        "status": "UPDATED_PRIVATE_DEBUG_TOOLS",
+        "files_updated": count, "stops": 199,
+        "backup": str(backup.relative_to(ROOT)),
+        "saves_touched": False, "native_tested": False,
+    }
+
+
+def replace_private_files(copy: Path, desired: dict[str, bytes]) -> tuple[int, Path | None]:
     changes = {}
     for relative, content in desired.items():
         path = copy / relative
         if path.is_symlink():
-            raise ValueError(f"Arquivo de teleporte não pode ser link simbólico: {relative}")
+            raise ValueError(f"Arquivo do piloto não pode ser link simbólico: {relative}")
         previous = path.read_bytes() if path.exists() else None
         if previous != content:
             changes[path] = (previous, content)
     if not changes:
-        return {"status": "ALREADY_CURRENT", "files_updated": 0,
-                "stops": 199, "saves_touched": False, "native_tested": False}
+        return 0, None
 
     # Backup is in ignored .blue-work and NEVER in game/ or the save directory.
     backup = require_private_path(copy.parent / "hoenn-qa12-debug-backups" /
@@ -154,12 +166,7 @@ def ensure_test_tools(copy: Path, game: Path = ROOT / "game") -> dict:
             else:
                 atomic_write(path, previous)
         raise
-    return {
-        "status": "UPDATED_PRIVATE_DEBUG_TOOLS",
-        "files_updated": len(changes), "stops": 199,
-        "backup": str(backup.relative_to(ROOT)),
-        "saves_touched": False, "native_tested": False,
-    }
+    return len(changes), backup
 
 
 if __name__ == "__main__":

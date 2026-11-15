@@ -28,7 +28,7 @@ class HoennQA11Tests(unittest.TestCase):
             for mid in self.names
         }
 
-    def test_199_map_names_and_7_audio_references(self):
+    def test_199_map_names_and_audio_references(self):
         result = audit_generated(self.maps, self.names, self.bgm, {250})
         self.assertEqual(result["maps_with_ptbr_display_label"],199)
         self.assertEqual(result["labels_changed_from_source"],199)
@@ -72,7 +72,7 @@ class HoennQA11Tests(unittest.TestCase):
 
     def test_wrong_or_unlicensed_ogg_name_rejected(self):
         self.bgm[250] = "missing_track"
-        with self.assertRaisesRegex(ValueError,"sete assets"):
+        with self.assertRaisesRegex(ValueError,"temas OGG"):
             audit_generated(self.maps,self.names,self.bgm,{250})
         self.bgm[250] = "Center"
         self.maps[250].attrs["@bgm"].attrs["@name"] = b"BLUE_HOENN_Missing"

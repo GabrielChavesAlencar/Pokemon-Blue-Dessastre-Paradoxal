@@ -17,6 +17,7 @@ from urllib.request import Request, urlopen
 
 from prepare_hoenn_source import inspect_zip
 from pilot_hoenn import BGM, PNG, PROFILE, ROOT, SOURCE_MAPS, Source, UPSTREAM, stage
+from hoenn_audio import RECOVERY, bgm_source
 from server.ruby_marshal import RubyObject, loads, text
 
 # The Hoenn subdirectory tree, not the whole repository's root tree.
@@ -58,7 +59,8 @@ def check_tree(tree: dict) -> dict:
         blobs[path] = sha
     needed = {f"Data/Map{mid:03}.rxdata" for mid in SOURCE_MAPS}
     needed.update(("Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "PBS/map_connections.txt"))
-    needed.update(f"Audio/BGM/ORAS {track}.ogg" for track in BGM.values())
+    needed.update(bgm_source(track) for track in BGM.values())
+    needed.add(RECOVERY)
     missing = sorted(needed - set(blobs))
     if missing:
         raise ValueError(f"Revisão Hoenn sem {len(missing)} recursos exigidos: {missing[:7]}")
@@ -172,9 +174,11 @@ def check_source(source: Source) -> dict:
             images.add(rel)
     source.read("PBS/map_connections.txt")
     for label, track in BGM.items():
-        rel = f"Audio/BGM/ORAS {track}.ogg"
+        rel = bgm_source(track)
         if not source.read(rel).startswith(b"OggS"):
             raise ValueError(f"BGM de Hoenn inválida: {label}")
+    if not source.read(RECOVERY).startswith(b"OggS"):
+        raise ValueError("Vinheta de cura de Hoenn inválida")
     return {"real_map_rxdata_hashes_verified": EXPECTED_MAPS,
             "source_tilesets_used": len(used_tiles),
             "source_graphics_hashes_verified": len(images),
@@ -268,6 +272,15 @@ def build(args) -> dict:
             # backups and rollback. Never overwrite maps, saves or game/.
             from hoenn_qa_teleport_upgrade import ensure_test_tools
             result["test_teleport_update"] = ensure_test_tools(args.output, args.game)
+            manifest = json.loads((args.output / "Hoenn pilot.json").read_text("utf8"))
+            if (args.prepare and args.archive.is_file() and
+                    manifest.get("hoenn_presentation", {}).get("version") != 1):
+                from hoenn_presentation import upgrade_presentation
+
+                check_tree(load_tree(args.inventory, offline=args.offline))
+                extracted = inspect_zip(args.archive, extract=True, include_audio=True)
+                source = Source(ROOT / extracted["local_stage"], args.inventory)
+                result["presentation_update"] = upgrade_presentation(args.output, source)
         result["copy"] = verify_copy(args.output, args.game)
         result["status"] = "COPY_READY_FOR_NATIVE_TEST"
         return result

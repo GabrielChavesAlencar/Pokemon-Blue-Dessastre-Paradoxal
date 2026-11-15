@@ -14,6 +14,8 @@ class Game_Map
     @map_id = id
   end
 
+  def events; {}; end
+
   def display_x=(value)
     @display_x = value.clamp(0, 640)
   end
@@ -139,6 +141,10 @@ def pbGetTimeNow
 end
 
 $center_registered = 0
+def pbMEPlay(name)
+  $healing_jingle = name
+end
+
 def pbSetPokemonCenter
   $center_registered += 1
 end
@@ -214,6 +220,7 @@ Dir.mktmpdir("blue-hoenn-runtime-") do |dir|
     check($player.party == [[:TREECKO, 5]], "Wrong starter")
     BlueHoennPilot.heal
     check($center_registered == 1, "Oldale did not register respawn point")
+    check($healing_jingle == "Pkmn healing", "Center did not play the recovery fanfare")
     check(WildBattle.history == [[:ZIGZAGOON, 2]], "Zigzagoon battle missing/repeated")
     check(BlueHoennPilot.state["birch_rescued"], "Rescue not saved")
     check($bag.items[:POKEBALL] == 0, "Five balls awarded too early")

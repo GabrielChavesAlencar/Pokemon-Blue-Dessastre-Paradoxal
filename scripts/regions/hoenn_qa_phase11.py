@@ -11,6 +11,7 @@ import json
 import re
 from pathlib import Path
 
+from hoenn_audio import AUDIO_LABELS, RECOVERY_DEST
 from server.ruby_marshal import loads
 
 # Only display labels change, never canonical IDs, map coordinates, PBS
@@ -46,8 +47,8 @@ MAP_TERM_TRANSLATIONS = (
     ("Pokemon Center", "Centro Pokémon"),
     ("Poké Mart", "Poké Mart"),
 )
-AUDIO_LABELS = ("Littleroot", "Birch", "Route101", "Oldale",
-                "Center", "Wild", "WildVictory")
+LEGACY_AUDIO_LABELS = ("Littleroot", "Birch", "Route101", "Oldale",
+                       "Center", "Wild", "WildVictory")
 MAP_LABEL_PATTERN = re.compile(r"(?m)^\[(\d+)\]\r?\nName\s*=\s*([^\r\n]+)")
 NATIVE_FALSE = (
     "native_game_exe_tested", "native_ptbr_npc_dialogue_verified",
@@ -75,11 +76,12 @@ def localized_map_name(name: str) -> str:
 
 
 def audit_generated(maps: dict, names: dict[int, str],
-                    bgm: dict[int, str], stage10_ids: set[int]) -> dict:
+                    bgm: dict[int, str], stage10_ids: set[int], *,
+                    audio_labels: tuple[str, ...] = AUDIO_LABELS) -> dict:
     if len(names) != 199 or set(maps) != set(names) or set(bgm) != set(names):
         raise ValueError("QA11: 199 mapas precisam de nomes e música explícitos")
-    if set(bgm.values()) - set(AUDIO_LABELS):
-        raise ValueError("QA11: música não pertence aos sete assets OGG preparados")
+    if set(bgm.values()) - set(audio_labels):
+        raise ValueError("QA11: música não pertence aos temas OGG preparados")
     translated = {}
     for source_id, original in names.items():
         translation = localized_map_name(original)
@@ -98,13 +100,15 @@ def audit_generated(maps: dict, names: dict[int, str],
     if changed < 20:
         raise ValueError("QA11: poucos nomes foram realmente traduzidos")
     if not stage10_ids or not stage10_ids <= names.keys():
-        raise ValueError("QA11: mapas finais de Hoenn sem fallback musical")
+        raise ValueError("QA11: mapas finais de Hoenn sem trilha")
     return {
         "maps_with_ptbr_display_label": len(names),
         "labels_changed_from_source": changed,
         "map_bgms_assigned": len(bgm),
-        "audio_ogg_labels": list(AUDIO_LABELS),
-        "stage10_provisional_music_map_ids": sorted(stage10_ids),
+        "audio_ogg_labels": list(audio_labels),
+        "stage10_provisional_music_map_ids": (
+            sorted(stage10_ids) if audio_labels == LEGACY_AUDIO_LABELS else sorted(stage10_ids & {240})
+        ),
         "trainer_card_region_scoped": True,
         "trainer_card_native_open_hoenn_and_kanto": True,
         "trainer_card_native_decades_unchanged": True,
@@ -152,17 +156,26 @@ def verify_copy(copy: Path) -> dict:
         rxdata[source_id] = loads((copy / f"Data/Map{target:03}.rxdata").read_bytes())
     if len(metadata) != len(SOURCE_MAPS):
         raise ValueError("QA11: mapa metadata extra/ausente")
-    result = audit_generated(rxdata, SOURCE_MAPS, MAP_BGM,
-                             set(SOURCE_MAPS_STAGE10))
+    regional_audio = manifest.get("hoenn_presentation", {}).get("version") == 1
+    labels = AUDIO_LABELS if regional_audio else LEGACY_AUDIO_LABELS
+    map_bgm = MAP_BGM if regional_audio else {
+        mid: world.attrs["@bgm"].attrs["@name"].decode("ascii").removeprefix("BLUE_HOENN_")
+        for mid, world in rxdata.items()
+    }
+    result = audit_generated(rxdata, SOURCE_MAPS, map_bgm, set(SOURCE_MAPS_STAGE10),
+                             audio_labels=labels)
     if qa != result:
         raise ValueError("QA11: manifesto não corresponde à UI e aos áudios compilados")
-    for label in AUDIO_LABELS:
-        path = copy / f"Audio/BGM/BLUE_HOENN_{label}.ogg"
+    audio_paths = [f"Audio/BGM/BLUE_HOENN_{label}.ogg" for label in labels]
+    if regional_audio:
+        audio_paths.append(RECOVERY_DEST)
+    for relative in audio_paths:
+        path = copy / relative
         if not path.is_file() or path.is_symlink() or path.stat().st_size < 4:
-            raise ValueError(f"QA11: OGG nativo ausente: {label}")
+            raise ValueError(f"QA11: OGG nativo ausente: {relative}")
         with path.open("rb") as stream:
             if stream.read(4) != b"OggS":
-                raise ValueError(f"QA11: cabeçalho OGG inválido: {label}")
+                raise ValueError(f"QA11: cabeçalho OGG inválido: {relative}")
     plugin = copy / "Plugins/ZZZZ Blue Story and Presentation/RegionalCards.rb"
     if not plugin.is_file() or plugin.is_symlink():
         raise ValueError("QA11: módulo regional do Trainer Card não está na cópia")

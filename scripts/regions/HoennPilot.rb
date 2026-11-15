@@ -350,6 +350,25 @@ module BlueHoennPilot
     progress[key] = true if TrainerBattle.start(trainer_type, name, 102)
   end
 
+  def self.challenge_trainer(event, kind, name, version, double)
+    progress = state
+    return false unless progress && $player && !$player.party.empty?
+    key = version == 102 ? "route102_#{name}" : "trainer_#{version}_#{kind}_#{name}"
+    already_won = progress[key]
+    original = [event.x, event.y]
+    unless already_won
+      pbNoticePlayer(event, true)
+      version == 102 ? battle(kind, name) : battle_stage3(kind, name, version, double)
+    end
+    if progress[key]
+      $game_self_switches[[event.map_id, event.id, "A"]] = true
+      event.refresh
+    end
+    !!progress[key]
+  ensure
+    event.moveto(*original) if original && !already_won && [event.x, event.y] != original
+  end
+
   def self.mart
     return unless state
     pbPokemonMart([:POKEBALL, :POTION, :ANTIDOTE, :PARALYZEHEAL])
@@ -423,6 +442,7 @@ module BlueHoennPilot
     return false unless flags
     return false if flags["birch_rescued"] || flags["met_birch"]
     flags["birch_rescue_active"] = true
+    return rescue_birch_battle if starter
     pbMessage(_INTL("Birch: Socorro! Um Zigzagoon me persegue! Escolha uma das três Poké Bolas na maleta logo ao norte!"))
     # The player must be able to STEP PAST the entrance trigger to reach
     # the three physical Poké Balls (row 16 in the pinned 20x20 route).
@@ -458,10 +478,20 @@ module BlueHoennPilot
     return false unless pbConfirmMessage(_INTL("Escolher {1} para ajudar Birch?", name))
     return false unless pbAddPokemonSilent(species, 5)
     flags["starter"] = species.to_s
+    hide_starter_balls($game_map)
     # Older saves from the first Hoenn pilot already received five balls with
     # the starter. This explicit new flag avoids re-awarding them on migration.
     flags["balls_at_lab_pending"] = true
     rescue_birch_battle
+  end
+
+  def self.hide_starter_balls(map)
+    return unless map && starter && !map.equal?(@hidden_starter_ball_map)
+    return unless map.map_id == metadata[1][101]
+    map.events.each_value do |event|
+      event.erase if event.name.start_with?("HN_BirchBag_")
+    end
+    @hidden_starter_ball_map = map
   end
 
   def self.rescue_birch_battle
@@ -3279,6 +3309,8 @@ module BlueHoennPilot
     # Also register Oldale as the respawn Pokémon Center, not only heal HP.
     pbSetPokemonCenter
     $player.heal_party
+    jingle = File.file?("Audio/ME/BLUE_HOENN_Recovery.ogg") ? "BLUE_HOENN_Recovery" : "Pkmn healing"
+    pbMEPlay(jingle)
     pbMessage(_INTL("Enfermeira: Seus Pokémon estão recuperados. Boa viagem!"))
   end
 
@@ -3479,31 +3511,133 @@ module BlueHoennPilot
     true
   end
 
+  module LoadCurrentMaps
+    def load_map
+      progress = BlueHoennPilot.state
+      return super unless progress && progress["presentation_revision"] != 1 &&
+                          File.file?("Audio/ME/BLUE_HOENN_Recovery.ogg")
+      prior_flag = $PokemonGlobal.safesave
+      littleroot = $map_factory.map.map_id == BlueHoennPilot.metadata[1][7]
+      x, y = $game_player.x, $game_player.y
+      old_ground = littleroot && $map_factory.map.data[x, y, 1] == 0
+      begin
+        # Saves include cached map events and audio. Use the engine's safe
+        # reload path once so they pick up the current map files.
+        $PokemonGlobal.safesave = true
+        super.tap do
+          if old_ground && !$game_map.passableStrict?(x, y, 0, $game_player)
+            positions = [[x, y-1], [x+1, y], [x, y+1], [x-1, y],
+                         [x, y-2], [x+2, y], [x, y+2], [x-2, y]]
+            safe = positions.find do |px, py|
+              $game_map.passableStrict?(px, py, 0, $game_player) &&
+                $game_map.events.values.none? { |event| event.at_coordinate?(px, py) && !event.through }
+            end
+            $game_player.moveto(*(safe || [5, 9]))
+          end
+          progress["presentation_revision"] = 1
+        end
+      ensure
+        $PokemonGlobal.safesave = prior_flag
+      end
+    end
+  end
+
   module ConnectedMapDisplay
     def display_x=(value)
-      return super unless blue_hoenn_neighbor_display?
+      return @display_x = value if blue_hoenn_neighbor_display?
+      return super unless blue_hoenn_opening_scroll?(:x, value)
       @display_x = value
+      $map_factory.setMapsInRange
     end
 
     def display_y=(value)
-      return super unless blue_hoenn_neighbor_display?
+      return @display_y = value if blue_hoenn_neighbor_display?
+      return super unless blue_hoenn_opening_scroll?(:y, value)
       @display_y = value
+      $map_factory.setMapsInRange
     end
 
     private
 
     def blue_hoenn_neighbor_display?
-      # The map factory positions neighbors relative to the current map.
-      # SnapEdges clamps the current camera, but clamping a neighbor's
-      # world offset makes its tiles and events overlap the current map.
+      # Offsets place neighboring maps in the same world coordinate system.
       return false if !$game_map || equal?($game_map)
       maps = BlueHoennPilot.metadata[1]
       maps.value?(map_id) && maps.value?($game_map.map_id)
+    end
+
+    def blue_hoenn_opening_scroll?(axis, value)
+      return false unless equal?($game_map) && $map_factory && metadata&.snap_edges
+      sizes = [width, height]
+      screen = [Graphics.width.to_f / Game_Map::TILE_WIDTH,
+                Graphics.height.to_f / Game_Map::TILE_HEIGHT]
+      a = axis == :x ? 0 : 1
+      b = 1 - a
+      origin = axis == :x ? value.to_f / Game_Map::REAL_RES_X : value.to_f / Game_Map::REAL_RES_Y
+      return false if origin >= 0 && origin + screen[a] <= sizes[a]
+      maps = BlueHoennPilot.metadata[1]
+      opening = maps.values_at(7, 101, 12, 102, 103)
+      return false unless opening.include?(map_id)
+      lateral = axis == :x ? @display_y.to_f / Game_Map::REAL_RES_Y : @display_x.to_f / Game_Map::REAL_RES_X
+      return false if lateral < 0 || lateral + screen[b] > sizes[b]
+      # Borrow space only from a connected opening map that covers the whole
+      # visible edge. At a corner or short connection, retain the normal clamp.
+      MapFactoryHelper.eachConnectionForMap(map_id) do |first, ax, ay, second, bx, by|
+        other, offset = if first == map_id
+                          [second, [ax - bx, ay - by]]
+                        else
+                          [first, [bx - ax, by - ay]]
+                        end
+        next unless opening.include?(other)
+        dims = MapFactoryHelper.getMapDims(other)
+        next if lateral < offset[b] || lateral + screen[b] > offset[b] + dims[b]
+        if origin < 0
+          return true if offset[a] + dims[a] == 0 && origin >= offset[a]
+        elsif offset[a] == sizes[a] && origin + screen[a] <= offset[a] + dims[a]
+          return true
+        end
+      end
+      false
     end
   end
 
   module Music
     private
+
+    def pbGetTrainerBattleBGM(trainers)
+      return super unless BlueHoennPilot.state
+      return $PokemonGlobal.nextBattleBGM.clone if $PokemonGlobal.nextBattleBGM
+      types = Array(trainers).map(&:trainer_type)
+      blue_hoenn_battle_audio(types) || super
+    end
+
+    def pbGetTrainerBattleBGMFromType(type)
+      return super unless BlueHoennPilot.state
+      return $PokemonGlobal.nextBattleBGM.clone if $PokemonGlobal.nextBattleBGM
+      blue_hoenn_battle_audio([type]) || super
+    end
+
+    def pbGetTrainerVictoryBGM(trainers)
+      return super unless BlueHoennPilot.state
+      return $PokemonGlobal.nextBattleVictoryBGM.clone if $PokemonGlobal.nextBattleVictoryBGM
+      types = Array(trainers).map(&:trainer_type)
+      blue_hoenn_battle_audio(types, victory: true) || super
+    end
+
+    def blue_hoenn_battle_audio(types, victory: false)
+      label = case types.map(&:to_s).join(" ")
+              when /BLUE_HOENN_CHAMPION/ then victory ? "ChampionVictory" : "Champion"
+              when /BLUE_HOENN_ELITE/ then victory ? "GymVictory" : "Elite"
+              when /BLUE_HOENN_(ROXANNE|BRAWLY|WATTSON|FLANNERY|NORMAN|WINONA|TATE_LIZA|JUAN)/ then victory ? "GymVictory" : "GymBattle"
+              when /BLUE_HOENN_(ARCHIE|MAXIE)/ then victory ? "TeamVictory" : "TeamLeader"
+              when /BLUE_HOENN_(AQUA|MAGMA|TABITHA|SHELLY|MATT)/ then victory ? "TeamVictory" : "TeamGrunt"
+              when /RIVAL1|BLUE_HOENN_WALLY/ then victory ? "TrainerVictory" : "Rival"
+              else victory ? "TrainerVictory" : "Trainer"
+              end
+      name = "BLUE_HOENN_#{label}"
+      return nil unless File.file?("Audio/BGM/#{name}.ogg")
+      pbResolveAudioFile(victory ? "../../Audio/BGM/#{name}" : name)
+    end
 
     def pbGetWildBattleBGM(*args)
       if BlueHoennPilot.state && !$PokemonGlobal.nextBattleBGM &&
@@ -3540,12 +3674,19 @@ module BlueHoennPilot
   end
 
   BlueRegionStart.singleton_class.prepend(Start)
+  EventHandlers.add(:on_frame_update, :blue_hoenn_hide_starter_balls, proc do
+    next unless BlueHoennPilot.starter && $map_factory
+    route_id = BlueHoennPilot.metadata[1][101]
+    route = $map_factory.maps.find { |map| map.map_id == route_id }
+    BlueHoennPilot.hide_starter_balls(route)
+  end)
   EventHandlers.add(:on_enter_map, :blue_hoenn_music, proc do |_old_map|
     Object.prepend(Music) unless Object.ancestors.include?(Music)
   end)
 end
 
 Game_Map.prepend(BlueHoennPilot::ConnectedMapDisplay) if defined?(Game_Map)
+Game.singleton_class.prepend(BlueHoennPilot::LoadCurrentMaps) if defined?(Game)
 
 if defined?(Spriteset_Global)
   Spriteset_Global.prepend(BlueHoennPilot::CrisisSprites)

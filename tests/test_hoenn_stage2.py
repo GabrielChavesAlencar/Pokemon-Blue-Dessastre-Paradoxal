@@ -10,7 +10,8 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
 
-from build_johto_events import ruby
+from build_johto_events import event_page, ruby
+from hoenn_presentation import activate_trainer_sight
 from pilot_hoenn import (
     RIVAL_NAMES, RIVAL_TEAMS, add_opening, rival_position,
     starter_ball_positions,
@@ -43,6 +44,29 @@ class HoennStage2Tests(unittest.TestCase):
         rival = next(iter(maps[103].attrs["@events"].values()))
         self.assertEqual(rival.attrs["@name"], b"HN_Rival_103")
         self.assertEqual(rival.attrs["@pages"][0].attrs["@trigger"], 1)
+
+    def test_trainer_sight_uses_the_pinned_facing_and_keeps_the_event_id(self):
+        source_page = event_page(script="nil", sprite="trainer_BUGCATCHER")
+        source_page.attrs["@trigger"] = 2
+        source_page.attrs["@graphic"].attrs["@direction"] = 8
+        source = ruby("RPG::Map", events={
+            4: ruby("RPG::Event", id=4, name=b"Bugcatcher Rick Trainer(2)",
+                    x=25, y=15, pages=[source_page]),
+        })
+        installed = event_page(script='BlueHoennPilot.battle(:BUGCATCHER, "Rick")',
+                               sprite="trainer_BUGCATCHER")
+        rick = ruby("RPG::Event", id=42, name=b"HN_Rick", x=25, y=15, pages=[installed])
+        world = ruby("RPG::Map", events={42: rick})
+        self.assertEqual(activate_trainer_sight(world, source), 1)
+        self.assertEqual(rick.attrs["@id"], 42)
+        self.assertEqual(rick.attrs["@name"], b"HN_Rick Trainer(2)")
+        live, defeated = rick.attrs["@pages"]
+        self.assertEqual(live.attrs["@trigger"], 2)
+        self.assertEqual(live.attrs["@graphic"].attrs["@direction"], 8)
+        self.assertEqual(live.attrs["@list"][0].attrs["@parameters"][0],
+                         b'BlueHoennPilot.challenge_trainer(get_self,:BUGCATCHER,"Rick",102,false)')
+        self.assertEqual(defeated.attrs["@trigger"], 0)
+        self.assertTrue(defeated.attrs["@condition"].attrs["@self_switch_valid"])
 
     def test_ball_selector_requires_passable_tiles_and_approach(self):
         maps = {101: ruby("RPG::Map", width=28, height=35)}

@@ -25,7 +25,8 @@ class HoennQA01Tests(unittest.TestCase):
         paths = {f"Data/Map{n:03}.rxdata" for n in qa.SOURCE_MAPS}
         paths.update(("Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
                       "PBS/map_connections.txt"))
-        paths.update(f"Audio/BGM/ORAS {track}.ogg" for track in qa.BGM.values())
+        paths.update(qa.bgm_source(track) for track in qa.BGM.values())
+        paths.add(qa.RECOVERY)
         return {"sha": qa.PINNED_TREE, "revision": qa.UPSTREAM,
                 "truncated": False,
                 "tree": [{"path": path, "type": "blob", "sha": "a" * 40}
@@ -78,7 +79,7 @@ class HoennQA01Tests(unittest.TestCase):
         result = qa.check_tree(self.make_inventory())
         self.assertEqual(result["source_maps"], 199)
         self.assertEqual(result["revision"], qa.UPSTREAM)
-        self.assertEqual(result["required_pinned_files"], 202 + len(qa.BGM))
+        self.assertEqual(result["required_pinned_files"], 203 + len(qa.BGM))
 
     def test_missing_donor_map_is_blocker(self):
         tree = self.make_inventory()
