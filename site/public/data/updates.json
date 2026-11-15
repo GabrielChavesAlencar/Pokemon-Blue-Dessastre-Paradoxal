@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c46b86542198fd3418574a755bf29dcc781cd8c5",
+      "date": "2026-11-15T18:46:18-03:00",
+      "title": "ci(android): patch direto da primeira release com crash JSON para atualizar sem 1.4 GB",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ba056b35d768dcdea7db10bfe451990ea4962be9",
       "date": "2026-11-15T18:44:09-03:00",
       "title": "test(android): exigir RegionStart corrigido como fonte e plugin compilado no ZIP",
