@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f4e8d17eff2f7001025bb702260265740efd7da2",
+      "date": "2026-11-15T16:07:48-03:00",
+      "title": "test(hoenn): proteger maps Kanto e saves do Decades na integracao",
+      "category": "Testes"
+    },
+    {
       "sha": "959df9f956a052ea4a059daa45edbc74ed9df197",
       "date": "2026-11-15T16:06:22-03:00",
       "title": "feat(hoenn): atualizar Blue-Story com importação local opcional de Hoenn",
