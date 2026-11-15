@@ -131,8 +131,8 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
           "Regions are still locked behind a League")
 
     # A new save which STARTED in Kanto has no previous Decades position.
-    # Store an actual native start point, but do not unlock travel until the
-    # real Kanto Hall of Fame completes. It must remain the SAME save/PC.
+    # Its authentic native Decades destination works before Hall of Fame,
+    # keeping the same party, PC and save.
     kanto_first = BlueRegions.new_state("KANTO")
     # Verified native Decades town coordinates in this synthetic fixture.
     kanto_first["decades_first_arrival"] = [77,5,8,2]
@@ -142,7 +142,7 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     $PokemonGlobal.blue_regions = kanto_first
     $game_map.map_id = 300
     $player.party = [normal]
-    check(BlueRegionTravel.travel("DECADES", true), "Kanto champion could not enter Decades")
+    check(BlueRegionTravel.travel("DECADES", true), "Kanto starter could not enter Decades")
     check($PokemonGlobal.blue_regions["initial"] == "KANTO" &&
           $PokemonGlobal.blue_regions["current"] == "DECADES",
           "One-save Kanto origin was lost after travel")
@@ -161,11 +161,13 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(BlueRegionTravel.available?(state), "Transport not available after proven ending")
     # The static NPC in Pallet/Decades invokes travel during a map event.
     # Trusted event context may call the menu; arbitrary interpreter code may not.
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,false)
     $interpreter_running = true
     check(!BlueRegionTravel.available?(state), "Untrusted map interpreter bypassed travel")
     BlueRegionTravel.agent(true)
     check(!BlueRegionTravel.available?(state), "Trusted NPC context leaked after menu closure")
     $interpreter_running = false
+    BlueRegionTravel.instance_variable_set(:@npc_event_context,true)
     check(BlueRegionTravel.preview(state,"KANTO")[0] == :ok, "Travel preview failed")
     check(BlueRegionTravel.travel("KANTO",true), "Could not arrive in Kanto")
     check($game_map.map_id == 300 && $game_player.x == 18, "Wrong Pallet Town arrival")
