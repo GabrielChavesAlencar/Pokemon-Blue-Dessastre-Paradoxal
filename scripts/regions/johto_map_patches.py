@@ -72,6 +72,36 @@ def validate_patch_format(data: dict, mid: int):
         if key in seen or row["before"] == row["after"]:
             raise PatchError("Patch Johto duplicado ou sem mudança")
         seen.add(key)
+    moves = data.get("events", [])
+    if not isinstance(moves, list) or len(moves) > 150:
+        raise PatchError("Lista de eventos Johto inválida")
+    seen_events = set()
+    for move in moves:
+        if not isinstance(move, dict) or set(move) != {
+                "id", "name", "before", "after", "warp_before", "warp_after"}:
+            raise PatchError("Patch de evento exige id,nome,posições e transferências")
+        eid = move["id"]
+        if type(eid) is not int or not 1 <= eid < 100_000 or eid in seen_events:
+            raise PatchError("ID de evento Johto inválido ou duplicado")
+        seen_events.add(eid)
+        if not isinstance(move["name"], str) or not 0 < len(move["name"]) <= 128:
+            raise PatchError("Nome do evento inválido")
+        for key in ("before", "after"):
+            point = move[key]
+            if (not isinstance(point, list) or len(point) != 2
+                    or any(type(n) is not int or not 0 <= n < 300 for n in point)):
+                raise PatchError("Posição de evento fora dos limites")
+        for key in ("warp_before", "warp_after"):
+            dest = move[key]
+            if dest is not None and (not isinstance(dest, list) or len(dest) != 3
+                    or any(type(n) is not int or not 0 <= n < 10000 for n in dest)):
+                raise PatchError("Destino da escada/porta inválido")
+        if ((move["warp_before"] is None) != (move["warp_after"] is None)
+                or move["warp_before"] is not None
+                and move["warp_before"][0] != move["warp_after"][0]):
+            raise PatchError("O editor não pode criar transferências nem trocar a região de destino")
+        if move["before"] == move["after"] and move["warp_before"] == move["warp_after"]:
+            raise PatchError("Evento sem alteração no patch")
     return data
 
 
@@ -122,6 +152,42 @@ def apply_patch(map_obj, tilesets, mid: int, patch: dict):
     name, w, h, cells, flags = inspect_map(map_obj, tilesets, mid)
     if data["tileset"] != name:
         raise PatchError(f"Map{mid}: tileset alterado, patch não aplicado ({name})")
+    events_updated = 0
+    for row in data.get("events", []):
+        eid = row["id"]
+        event = map_obj.attrs.get("@events", {}).get(eid)
+        if not isinstance(event, RubyObject) or text(event.attrs.get("@name")) != row["name"]:
+            raise PatchError(f"Map{mid}: evento #{eid} mudou desde o patch")
+        if row["name"] == "JH_NEW_GAME_PROFILE":
+            raise PatchError("Não mover o inicializador de personagem do quarto")
+        old, new = tuple(row["before"]), tuple(row["after"])
+        if new[0] >= w or new[1] >= h:
+            raise PatchError(f"Map{mid}: evento fora do mapa")
+        current = event.attrs["@x"], event.attrs["@y"]
+        if current not in (old, new):
+            raise PatchError(f"Map{mid}: coordenada atual do evento #{eid} diverge")
+        commands = [
+            command for page in event.attrs.get("@pages", [])
+            for command in page.attrs.get("@list", [])
+            if command.attrs.get("@code") == 201
+            and len(command.attrs.get("@parameters", [])) >= 4
+            and command.attrs["@parameters"][0] == 0
+        ]
+        if len(commands) > 1:
+            raise PatchError("Evento possui múltiplas transferências; editar manualmente no RMXP")
+        current_warp = ([*commands[0].attrs["@parameters"][1:4]]
+                        if commands else None)
+        if current_warp not in (row["warp_before"], row["warp_after"]):
+            raise PatchError("Transferência do evento mudou desde a leitura")
+        if new != current:
+            for other_id, other in map_obj.attrs.get("@events", {}).items():
+                if other_id != eid and (other.attrs.get("@x"),other.attrs.get("@y")) == new:
+                    raise PatchError("Outro evento já ocupa a posição escolhida")
+            event.attrs["@x"], event.attrs["@y"] = new
+            events_updated += 1
+        if commands and current_warp != row["warp_after"]:
+            commands[0].attrs["@parameters"][2:4] = row["warp_after"][1:3]
+            events_updated += 1
     protected = _protected_positions(map_obj, mid)
     changes = []
     for item in data["edits"]:
@@ -142,7 +208,7 @@ def apply_patch(map_obj, tilesets, mid: int, patch: dict):
         changes.append((x, y, z, new))
     if changes:
         set_tiles(map_obj, changes)
-    return len(changes)
+    return len(changes) + events_updated
 
 
 def apply_project_patches(maps: dict, tilesets: list, project: Path):
