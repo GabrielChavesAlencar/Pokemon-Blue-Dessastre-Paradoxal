@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "06678af09aea027e0cebf0ac9791de38b5e3912b",
+      "date": "2026-11-16T14:19:13-03:00",
+      "title": "test(sinnoh): casos negativos de schema, warps e coordenadas (CH06)",
+      "category": "Testes"
+    },
+    {
       "sha": "b7be5c6c4c4576f5fa599f57f7d81a68c0f78251",
       "date": "2026-11-16T14:18:22-03:00",
       "title": "feat(sinnoh): auditor estrutural de 9 mapas e 16 warps (CH06)",
