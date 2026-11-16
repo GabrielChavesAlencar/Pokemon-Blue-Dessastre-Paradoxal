@@ -270,5 +270,32 @@ class InstalledBedroomTests(unittest.TestCase):
                          b"untouched save")
 
 
+class MissingJohtoInstallationTests(unittest.TestCase):
+    def test_no_private_preview_or_maps_is_not_mislabeled_as_bedroom_error(self):
+        with tempfile.TemporaryDirectory() as work:
+            root=Path(work)
+            (root/"game").mkdir()
+            (root/".blue-work").mkdir()
+            (root/"game"/"Game.exe").write_bytes(b"game already installed")
+            report=inspect_bedroom(root,root/"game")
+            self.assertEqual(report["status"],"JOHTO_NOT_INSTALLED")
+            self.assertEqual(report["preview_integrity"],"NO_PRIVATE_PREVIEW")
+            self.assertFalse(report["safe_to_apply"])
+            self.assertEqual(len(report["missing_johto_maps"]),3)
+            self.assertIn("ZIP privado",report["next_action"])
+            self.assertFalse((root/"game"/"Data"/"Map674.rxdata").exists())
+
+    def test_partial_map_without_preview_is_classified_separately(self):
+        with tempfile.TemporaryDirectory() as work:
+            root=Path(work)
+            (root/"game"/"Data").mkdir(parents=True)
+            (root/".blue-work").mkdir()
+            (root/"game"/"Game.exe").write_bytes(b"game installed")
+            (root/"game"/"Data"/"Map600.rxdata").write_bytes(b"partial map")
+            report=inspect_bedroom(root,root/"game")
+            self.assertEqual(report["status"],"JOHTO_FILES_MISSING")
+            self.assertFalse(report["safe_to_apply"])
+
+
 if __name__ == "__main__":
     unittest.main()
