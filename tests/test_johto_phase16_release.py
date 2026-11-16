@@ -78,7 +78,7 @@ class JohtoReleaseTests(unittest.TestCase):
             'BlueRegionStart.johto_town_point',
             'BlueRegionStart.johto_agent_point',
             "def self.attach_johto_agent",
-            'BlueRegionTravel.attach_johto_agent(self)',
+            'attach_johto_agent(map)',
             "def self.free_storage_slots",
             "def self.perform",
         ):
