@@ -1,0 +1,52 @@
+name: Blue-Story - instalador Windows independente
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/windows/**
+      - scripts/regions/auto_integrate_johto.py
+      - scripts/regions/johto_main_preview.py
+      - scripts/battle_polish/TitleKanto.rb
+      - scripts/battle_polish/RegionStart.rb
+      - .github/workflows/blue-story-windows.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: blue-story-windows
+  cancel-in-progress: false
+
+jobs:
+  standalone-installer:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compilar e executar self-test do Blue-Story
+        run: python scripts/windows/build.py
+      - name: Verificar o executável Windows
+        shell: pwsh
+        run: |
+          if (-not (Test-Path dist/Blue-Story.exe)) {throw "Blue-Story.exe nao foi compilado"}
+          Get-FileHash dist/Blue-Story.exe -Algorithm SHA256 | Format-List
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Blue-Story-Windows
+          path: dist/Blue-Story.exe
+          compression-level: 0
+      - name: Atualizar link estável de download do instalador geral
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view blue-story-windows *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create blue-story-windows --target "$env:GITHUB_SHA" --title "Blue-Story - instalador geral Windows" --notes "Instalador geral autoatualizável do Decades, Kanto, Hoenn e Johto (prévia privada). Os assets Johto não estão distribuídos publicamente." --latest=false
+            if ($LASTEXITCODE -ne 0) {throw "Nao foi possivel criar a release Blue-Story"}
+          }
+          gh release upload blue-story-windows dist/Blue-Story.exe --clobber
+          if ($LASTEXITCODE -ne 0) {throw "Falha ao atualizar o Blue-Story.exe"}
