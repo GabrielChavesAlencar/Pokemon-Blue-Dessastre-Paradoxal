@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d9d5ebd7bd123cb9dbfde97dd6ee7783d8c519fa",
+      "date": "2026-11-16T20:23:15-03:00",
+      "title": "feat(portal): CH17 guia Sinnoh com abas, fases, áreas, ginásios, Liga e HMs pendentes",
+      "category": "Novidades"
+    },
+    {
       "sha": "07fac1c21c8b80498554fca855a9da9c5bd54335",
       "date": "2026-11-16T20:21:12-03:00",
       "title": "feat(portal): CH17 gerador read-only de guias Sinnoh a partir de CH11-CH16",
