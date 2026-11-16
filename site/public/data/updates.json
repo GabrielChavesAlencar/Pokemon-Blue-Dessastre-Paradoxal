@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b1ef7470c64a7cae3b61c38e909a46049c92d26f",
+      "date": "2026-11-15T22:51:38-03:00",
+      "title": "test(title): enforce shared-save Johto new game; pilot only via separate test command",
+      "category": "Testes"
+    },
+    {
       "sha": "6ec1bef48b05c6e9bd53f75ee69f1ac11cfa6b99",
       "date": "2026-11-15T22:51:16-03:00",
       "title": "fix(johto): main title only opens Johto in shared save, never isolated pilot fallback; actionable install label",
