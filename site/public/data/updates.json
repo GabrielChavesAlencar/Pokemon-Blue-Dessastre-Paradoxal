@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "35ee6d8892285dbb0beb8d73fb75fd3812c6ad17",
+      "date": "2026-11-16T00:01:33-03:00",
+      "title": "docs(johto): record HGSS bedroom tiles, stair warps and automatic Blue-Story upgrade",
+      "category": "Documentação"
+    },
+    {
       "sha": "9371b09a74407000e0850a81e0992ba7e8907b05",
       "date": "2026-11-15T23:59:56-03:00",
       "title": "ci(johto): test HGSS bedroom mapping, stairs, installer and rollback",
