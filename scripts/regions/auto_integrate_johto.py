@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+from sinnoh_legacy_plugin_guard import assert_no_legacy_sinnoh_shared
 ORIGINAL_BUNDLE_SHA256 = "74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49"
 OFFLINE_PREFIX = "Johto_Offline_Fase12/"
 OFFLINE_MAPS = frozenset(f"{OFFLINE_PREFIX}Data/Map{i:03}.rxdata" for i in range(600, 682))
@@ -203,6 +204,10 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
         return record(project, {"status": "foreign_game_skipped", "reason": "Só a instalação game/ gerenciada é aceita"})
     if not (game / "Game.exe").is_file():
         return record(project, {"status": "no_game_skipped", "reason": "Decades ainda não está instalado"})
+    try:
+        assert_no_legacy_sinnoh_shared(game)
+    except (ValueError, OSError) as error:
+        return record(project, {"status": "legacy_sinnoh_plugin_blocked", "reason": str(error)})
     # The experimental proof is deliberately distinct from the final,
     # 13-point VERIFIED_PLAYABLE release proof.
     preview_manifest = game / "Data/blue-johto-main-preview.json"

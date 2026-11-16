@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 3,
+    "done": 4,
     "partial": 0,
-    "pending": 17,
-    "percent_complete": 15,
+    "pending": 16,
+    "percent_complete": 20,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -831,8 +831,8 @@
         "priority": "P0",
         "title": "Bloqueio explícito do plugin SinnohPreview.rb legado na instalação compartilhada",
         "acceptance": "Verificação cobre lançador, cópia QA, marcadores e caminho do instalador principal",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "scripts/regions/sinnoh_legacy_plugin_guard.py"
       },
       {
         "id": "CH05",

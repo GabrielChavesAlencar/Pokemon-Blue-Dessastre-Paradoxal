@@ -3,9 +3,13 @@ from pathlib import Path
 import argparse,importlib.util,os,shutil,sys,zlib
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts/official_rules'))
+sys.path.insert(0,str(ROOT/'scripts/regions'))
+from sinnoh_legacy_plugin_guard import assert_no_legacy_sinnoh_shared
 from prepare_restore import Marshal,RubyString,dump
 
 def prepare(project,game):
+    # Guard BEFORE lab.install or Scripts.rxdata/compile writes.
+    assert_no_legacy_sinnoh_shared(game)
     spec=importlib.util.spec_from_file_location('blue_campaign_plugins',project/'scripts/battle_lab/launch.py')
     lab=importlib.util.module_from_spec(spec);spec.loader.exec_module(lab)
     lab.install(project,game)

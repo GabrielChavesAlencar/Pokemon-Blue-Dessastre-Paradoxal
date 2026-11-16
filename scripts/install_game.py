@@ -2,6 +2,8 @@
 from pathlib import Path
 import argparse,json,os,shutil,subprocess,sys
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'scripts/regions'))
+from sinnoh_legacy_plugin_guard import assert_no_legacy_sinnoh_shared
 BASE_URL='https://github.com/HazyCrazy/Pokemon-Decades.git'
 BASE_COMMIT='ff6091b23603b3298ad72a7584b02a51e1d01c0e'
 def run(command,root,env=None):
@@ -27,6 +29,9 @@ def ensure_base(project,game):
     if not (game/'Game.exe').is_file():raise RuntimeError('O download da base nao contem Game.exe.')
 
 def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=False):
+    # CH04: do not modify a shared game containing standalone Sinnoh boot files.
+    game=Path(game).resolve()
+    assert_no_legacy_sinnoh_shared(game)
     # Even an older self-updating Blue-Story.exe downloads this Python entry
     # point from main. Install the editor shortcuts into the managed project
     # before game preparation (which can fail for unrelated region sources).
@@ -49,6 +54,7 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
         except (OSError,ValueError,ImportError,KeyError) as error:
             print('[JOHTO EDITOR] Aviso: editor nao instalado:',error,flush=True)
     game=game.resolve();ensure_base(project,game)
+    assert_no_legacy_sinnoh_shared(game)
     state_path=project/'.blue-work/installation.json'
     state=json.loads(state_path.read_text(encoding='utf8')) if state_path.is_file() else {}
     if state and state.get('game')!=str(game):raise ValueError('Estado de instalacao pertence a outra pasta do jogo.')

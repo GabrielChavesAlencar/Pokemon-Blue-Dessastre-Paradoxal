@@ -8,19 +8,20 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-███░░░░░░░░░░░░░░░░░  3/20 (15%)
+████░░░░░░░░░░░░░░░░  4/20 (20%)
 ```
 
-- **Concluídas:** 3 (**CH01**: mapeamento; **CH02**: validação da Barra E; **CH03**: segurança de MapIDs no instalador compartilhado).
+- **Concluídas:** 4 (**CH01**: mapeamento; **CH02**: validador; **CH03**: proteção de MapIDs; **CH04**: bloqueio do plugin legado SinnohPreview.rb).
 - **Parciais:** 0.
-- **Pendentes:** 17 (**CH04–CH20**).
-- **Fonte de verdade:** campo `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
-- **Mapeamento completo:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md) — 20 entregas incrementais.
-- **Validador CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` em CI, com testes e rejeição de inconsistências.
-- **Proteção CH03:** [`sinnoh_map_id_guard.py`](../scripts/regions/sinnoh_map_id_guard.py) valida o remapeamento de Sinnoh e as escritas de mapas do instalador conjunto de Johto. Os IDs 800–805 do piloto **legado** não podem entrar como arquivos novos do overlay Johto. A presença prévia desses números no jogo (ex.: mapas legítimos de Hoenn) não é tratada como sinal de Sinnoh. Testes: [`test_sinnoh_map_id_guard.py`](../tests/test_sinnoh_map_id_guard.py), [`test_sinnoh_remap.py`](../tests/test_sinnoh_remap.py) e [`test_johto_main_preview.py`](../tests/test_johto_main_preview.py).
-- **Critério:** apenas tarefas `done` e com evidências versionadas entram no numerador; erros de IDs, contagens, tabela ou documentação interrompem o CI.
+- **Pendentes:** 16 (**CH05–CH20**).
+- **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
+- **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
+- **CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` rejeita inconsistências de JSON/MD/tabela.
+- **CH03:** [`sinnoh_map_id_guard.py`](../scripts/regions/sinnoh_map_id_guard.py) protege MapIDs de Sinnoh legado e Johto compartilhado.
+- **CH04:** [`sinnoh_legacy_plugin_guard.py`](../scripts/regions/sinnoh_legacy_plugin_guard.py) rejeita `SinnohPreview.rb`, `BlueSinnohPreview`, declarações em `meta.txt`, perfil de save piloto e marcadores de compilação em `game/` compartilhado. Executado antes das alterações pelo [instalador principal](../scripts/install_game.py), [lançador](../scripts/launch_game.py), [instalador Johto](../scripts/regions/johto_main_preview.py) e [cópia QA Sinnoh](../scripts/regions/install_sinnoh_qa_copy.py); não remove arquivos, não altera piloto isolado. Testes: [`test_sinnoh_legacy_plugin_guard.py`](../tests/test_sinnoh_legacy_plugin_guard.py), regressões Johto e QA.
+- **Critério:** só contabilizar tarefas `done` e evidência versionada.
 
-**Limite:** Barra E não altera a Barra A (8/32, 25%) nem as barras técnicas, jogáveis ou nativas (0/13). CH03 não remapeia os seis mapas reais, não resolve permissões e não comprova gameplay.
+**Limite:** Barra E não substitui a Barra A (8/32, 25%) nem as barras B/C/D (0/13). O bloqueio estático não aprova Game.exe/JoiPlay nem comprova ausência de código antigo já compilado.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

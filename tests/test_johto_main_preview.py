@@ -174,6 +174,33 @@ class JohtoMainPreviewTests(unittest.TestCase):
         self.assertEqual(original.read_bytes(), b"existing-Hoenn-map")
         self.assertTrue((self.game / "Data/Map600.rxdata").exists())
 
+    def test_ch04_legacy_plugin_and_overlay_fail_before_writes(self):
+        original = (self.game / "Data/MapInfos.rxdata").read_bytes()
+        for rel, value in (
+            ("Plugins/Other/SinnohPreview.rb", b"ruby"),
+            ("Plugins/Other/meta.txt", b"Scripts = SinnohPreview.rb\n"),
+            ("Sinnoh pilot.json", b"{}"),
+            ("Data/blue-sinnoh-compile-request.txt", b"legacy"),
+        ):
+            with self.subTest(path=rel):
+                files = self.fixture_overlay()
+                files[rel] = value
+                with patch.object(preview, "build_overlay", return_value=(files, {})):
+                    with self.assertRaisesRegex(ValueError, "não permitido"):
+                        preview.install(self.game, self.root / "fake.zip", self.root, apply=True)
+                self.assertEqual((self.game / "Data/MapInfos.rxdata").read_bytes(), original)
+                self.assertFalse((self.root / ".blue-backups").exists())
+                self.assertFalse((self.game / preview.READY).exists())
+
+    def test_ch04_existing_plugin_blocks_johto_before_overlay_build(self):
+        legacy = self.game / "Plugins/Other/SinnohPreview.rb"
+        legacy.parent.mkdir(parents=True)
+        legacy.write_bytes(b"legacy")
+        with patch.object(preview, "build_overlay", side_effect=AssertionError("called")):
+            with self.assertRaisesRegex(ValueError, "não permitido"):
+                preview.install(self.game, self.root / "fake.zip", self.root)
+        self.assertEqual(legacy.read_bytes(), b"legacy")
+
     def test_preview_proof_rejects_forged_marker_without_maps(self):
         (self.game / preview.PROOF).write_text(
             '{"schema":1,"region":"JOHTO","status":"EXPERIMENTAL_PRIVATE_UNVERIFIED",'

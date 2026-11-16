@@ -312,6 +312,21 @@ class SinnohQAInstallTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Decades limpa"):
             self.planned()
 
+    def test_ch04_qa_rejects_renamed_legacy_runtime_and_marker(self):
+        for rel, value in (
+            ("Plugins/Other/Old.rb", b"module BlueSinnohPreview\nend\n"),
+            ("Plugins/Other/meta.txt", b"Scripts = SinnohPreview.rb\n"),
+            ("Data/blue-sinnoh-compile-request.txt", b"request"),
+        ):
+            with self.subTest(rel=rel):
+                file = self.game / rel
+                file.parent.mkdir(parents=True, exist_ok=True)
+                file.write_bytes(value)
+                with self.assertRaisesRegex(ValueError, "Decades limpa"):
+                    self.planned()
+                self.assertEqual(file.read_bytes(), value)
+                file.unlink()
+
     def test_rejects_spoofed_map_events_or_coordinates_in_local_spec(self):
         fake = copy.deepcopy(self.spec)
         fake["maps"][0]["events"][0]["x"] += 1

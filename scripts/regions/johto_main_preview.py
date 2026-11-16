@@ -30,6 +30,7 @@ import johto_map_patches as map_patches
 import johto_visual as visual
 from johto_opening import repair_opening
 from sinnoh_map_id_guard import assert_johto_shared_overlay_map_ids
+from sinnoh_legacy_plugin_guard import assert_no_legacy_sinnoh_shared, assert_no_legacy_sinnoh_overlay
 from server.ruby_marshal import RubyObject, loads, text
 from stage import serialize
 
@@ -712,7 +713,9 @@ def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str
 def install(game: Path, bundle: Path, root: Path = ROOT, *, apply: bool = False) -> dict:
     game, root = Path(game).resolve(), Path(root).resolve()
     package = Path(bundle).resolve()
+    assert_no_legacy_sinnoh_shared(game)
     files, report = build_overlay(game, package, root)
+    assert_no_legacy_sinnoh_overlay(files)
     # CH03: reject foreign Map*.rxdata at the shared installer write boundary,
     # even when the overlay producer is replaced or a report is tampered with.
     # Existing Hoenn 800–805 files are not touched or flagged as Sinnoh.

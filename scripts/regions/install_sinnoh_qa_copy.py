@@ -24,6 +24,7 @@ from pathlib import Path, PurePosixPath
 from johto_qa import index_base, safe_path, SOURCE_FILES, COPY_DIRS
 from johto_qa import SYSTEM_CLASSES
 from prepare_sinnoh_pilot_bundle import ROOT, digest, _safe_under
+from sinnoh_legacy_plugin_guard import assert_no_legacy_sinnoh_shared
 from server.ruby_marshal import RubyObject, loads
 from stage import serialize
 from pilot import SYSTEM_CLASSES as SYSTEM_CLASSES_NATIVE
@@ -230,6 +231,10 @@ def prepare(base: Path, overlay_dir: Path, spec: dict, *,
             or base != project / "game"
             or (project / ".blue-work").is_symlink()):
         fail("Usar somente a base game/ deste projeto; nunca outro piloto")
+    try:
+        assert_no_legacy_sinnoh_shared(base)
+    except (ValueError, OSError) as error:
+        fail("Base contém piloto antigo: usar uma instalação Decades limpa. " + str(error))
     native = index_base(base)
     for forbidden in (
         "Sinnoh pilot.json", "Data/blue-sinnoh-compiled.txt",
