@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5b6bb7be3cb313f0f9eb430121a4911e7f957535",
+      "date": "2026-11-16T10:08:00-03:00",
+      "title": "fix(johto): log recovery of locally edited maps and explicitly report protected patch conflicts",
+      "category": "Correções"
+    },
+    {
       "sha": "2c2abb9e0da024605d56dd8152c28a458023f305",
       "date": "2026-11-16T10:07:04-03:00",
       "title": "test(johto): accept private HGSS map tileset during semantic integrity recovery only with manifest proof",
