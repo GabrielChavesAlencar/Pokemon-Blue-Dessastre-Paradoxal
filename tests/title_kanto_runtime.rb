@@ -158,11 +158,19 @@ $region_choices = [2]
 scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Integrated Johto must use native Game.exe")
 require_check(BlueRegionStart.requests.last == "JOHTO", "Shared Johto session choice not recorded")
-require_check($last_region_options[2] == "Johto (prévia integrada)", "Installed Johto label is incorrect")
+require_check($last_region_options[2] == "Johto", "Installed Johto label is incorrect")
 BlueRegionStart.johto_integrated = false
 
-# All other region pilots retain separate save profiles and original launchers.
-[[:launch_johto, 2], [:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
+# Main New Game may NEVER silently open a Johto pilot with a separate save.
+# The explicit Testar Johto title command remains the isolated QA entry.
+BlueKantoTitle.define_singleton_method(:launch_johto) { raise "Pilot must not be launched from New Game" }
+$region_choices = [2, 0]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Unavailable shared Johto did not ask again")
+require_check($last_region_options[2].include?("instalação necessária"), "Uninstalled Johto claimed to be integrated")
+
+# Hoenn/Sinnoh retain their explicitly selected isolated fallback modes.
+[[:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
   BlueKantoTitle.define_singleton_method(method) { true }
   $region_choices = [choice]
   scene.queue = [1]
@@ -170,9 +178,6 @@ BlueRegionStart.johto_integrated = false
   require_check($last_region_options.length == 12, "Region list was not displayed")
 end
 BlueKantoTitle.define_singleton_method(:launch_johto) { false }
-$region_choices = [2, 0]
-scene.queue = [1]
-require_check(scene.pbChoose(original, 0) == 1, "Unavailable Johto did not ask again")
 $region_choices = [5, 0]
 scene.queue = [1]
 require_check(scene.pbChoose(original, 0) == 1, "Future region silently started")
