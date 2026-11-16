@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ed530e1541adcb3a0d52ac94434aa24c7ecddb8c",
+      "date": "2026-11-16T20:31:09-03:00",
+      "title": "docs(sinnoh): CH17 guias aprovados e Barra E 17/20 sem alterar jogabilidade",
+      "category": "Documentação"
+    },
+    {
       "sha": "946393992ac55f05886398a85cf1329cedc85f07",
       "date": "2026-11-16T20:28:29-03:00",
       "title": "ci(portal): build antes de testar guias Sinnoh gerados CH17",
