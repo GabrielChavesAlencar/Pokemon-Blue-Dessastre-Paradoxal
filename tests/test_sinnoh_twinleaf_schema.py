@@ -118,7 +118,7 @@ class TwinleafSchemaTests(unittest.TestCase):
 
     def test_duplicate_event_id_wrong_handler_and_wrong_ball_rejected(self):
         d = self.draft()
-        d["maps"][1]["events"][0]["key"] = d["maps"][3]["events"][0]["key"]
+        d["maps"][0]["events"][0]["key"] = d["maps"][1]["events"][1]["key"]
         self.blocked(d, "duplicado")
         d = self.draft()
         d["maps"][1]["events"][0]["handler"] = "barry_intro"
