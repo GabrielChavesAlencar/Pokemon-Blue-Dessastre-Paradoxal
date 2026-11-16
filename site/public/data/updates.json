@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4b03017ad5f0706506b09d0071229046bf749d46",
+      "date": "2026-11-16T20:43:34-03:00",
+      "title": "test(ci): CH18 29 testes negativos e2e de busca, filtros e estado planned do portal",
+      "category": "Testes"
+    },
+    {
       "sha": "442381c20d630371df4216361cfad5237885532c",
       "date": "2026-11-16T20:41:08-03:00",
       "title": "feat(portal): CH18 formulários GET com navegação SPA e filtros responsivos de pendências",
