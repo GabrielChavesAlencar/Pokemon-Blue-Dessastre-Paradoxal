@@ -41,6 +41,17 @@ echo.
 echo Verificando hash, mapas e posicao da escada...
 %PYTHON% scripts\regions\diagnose_johto_bedroom.py --apply
 set "RESULT=%ERRORLEVEL%"
+if not "%RESULT%"=="0" (
+  echo.
+  echo [JOHTO] A correcao foi recusada: mapas alterados ou eventos incompatíveis.
+  echo [JOHTO] Coletando os tres mapas reais SEM incluir saves.
+  %PYTHON% scripts\regions\export_johto_map_diagnostics.py
+  if errorlevel 1 echo [JOHTO] Nao foi possivel gerar o ZIP privado.
+  echo.
+  echo Envie no ChatGPT o ZIP:
+  echo "%CD%\.blue-work\JOHTO_DIAGNOSTICO_MAPAS.zip"
+  echo Nao copie os mapas sobre a instalacao e NAO apague saves.
+)
 echo.
 echo Diagnostico salvo em: "%CD%\.blue-work\johto-bedroom-diagnostic.json"
 echo Se aparecer OLD_OR_DIFFERENT_BEDROOM ou FAILED, compartilhe esse JSON.
