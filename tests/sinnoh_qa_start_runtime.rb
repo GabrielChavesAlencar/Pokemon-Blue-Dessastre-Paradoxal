@@ -150,6 +150,32 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
     check(Marshal.dump($PokemonGlobal.blue_regions) == before,
           "existing regional state changed on load")
 
+    # CH07: an unavailable global on *new game* must not silently open
+    # Decades/Johto. An existing-save load still delegates to super.
+    previous_global = $PokemonGlobal
+    $PokemonGlobal = nil
+    BlueRegionStart.instance_variable_set(:@new_game, true)
+    original_count = $original_called
+    begin
+      BlueRegionStart.select_and_prepare
+      raise "QA new-game incorrectly delegated to native flow"
+    rescue RuntimeError => error
+      raise if error.message == "QA new-game incorrectly delegated to native flow"
+      check(error.message.include?("estado global ausente"),
+            "new-game failure message not explanatory")
+    end
+    check($original_called == original_count,
+          "new QA game delegated to another region")
+    $PokemonGlobal = previous_global
+    check(BlueSinnohQAStart.proof == [500, 10, 11],
+          "QA proof not preserved after failing new game")
+    $PokemonGlobal.blue_regions["initial"] = "JOHTO"
+    check(!BlueSinnohQAStart.barry_test_authorized?,
+          "a foreign initial-region record authorized Barry")
+    $PokemonGlobal.blue_regions["initial"] = "SINNOH"
+    check(BlueSinnohQAStart.barry_test_authorized?,
+          "verified Sinnoh save was incorrectly blocked")
+
     File.write("Data/Map500.rxdata", "tampered terrain")
     check(BlueSinnohQAStart.proof.nil?, "changed map hash was accepted")
     File.write("Data/Map500.rxdata", required["Data/Map500.rxdata"])

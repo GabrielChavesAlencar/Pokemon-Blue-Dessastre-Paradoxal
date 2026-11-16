@@ -134,6 +134,13 @@ jobs:
         run: |
           python scripts/regions/audit_sinnoh_twinleaf_events.py
           python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_schema.py' -v
+      - name: CH07 - Flags, Pokebolas, derrota e save isolado (Ruby puro)
+        run: |
+          ruby -c scripts/regions/SinnohPilot.rb
+          ruby -c scripts/regions/SinnohQAStart.rb
+          ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
+          ruby tests/sinnoh_pilot_ch07_runtime.rb scripts/regions/SinnohPilot.rb
+          ruby tests/sinnoh_qa_start_runtime.rb scripts/regions/SinnohQAStart.rb
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh
