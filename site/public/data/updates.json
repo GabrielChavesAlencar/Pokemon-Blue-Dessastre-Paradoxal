@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "20becfc07714e1b09f935c21c8e86c49d9c10cd9",
+      "date": "2026-11-15T22:07:58-03:00",
+      "title": "test(johto): verify new Blue-Story package discovery and non-destructive rebasing checks",
+      "category": "Testes"
+    },
+    {
       "sha": "f0b37ec358e8191d0b43a728f23a434aec48d90c",
       "date": "2026-11-15T22:07:32-03:00",
       "title": "feat(blue-story): display Decades, Kanto, Hoenn and Johto installation status in launcher",
