@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fb1ea616a01e810608924fbffe5b44e72a08175d",
+      "date": "2026-11-16T15:03:57-03:00",
+      "title": "fix(sinnoh): CH10 fail-closed QA launcher, pinned assets and save guards",
+      "category": "Correções"
+    },
+    {
       "sha": "934ee58d25210223ca7704b0b509d1846a3f729c",
       "date": "2026-11-16T14:57:40-03:00",
       "title": "docs(sinnoh): CH09 verificada E2E e Barra E 9/20 sem alterar fases jogaveis",
