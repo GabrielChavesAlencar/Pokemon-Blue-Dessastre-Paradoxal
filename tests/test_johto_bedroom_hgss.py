@@ -185,6 +185,28 @@ class InstalledBedroomTests(unittest.TestCase):
         self.assertFalse(after["safe_to_apply"])
         self.assertIn("faltam PNGs", after["next_action"])
 
+    def test_manual_repair_accepts_hash_verified_maps_after_global_region_drift(self):
+        # Regional integration can update the shared PBS after private Johto
+        # was installed. Do not certify the whole game, but allow an explicit
+        # backed-up room-only fix when BOTH Johto map hashes are pristine.
+        before_pbs = b"PBS changed later by the other regions"
+        self.write("PBS/map_connections.txt", before_pbs)
+        before = inspect_bedroom(self.root,self.game)
+        self.assertEqual(before["status"], "OLD_OR_DIFFERENT_BEDROOM")
+        self.assertEqual(before["preview_integrity"], "SCOPED_OK_GLOBAL_FILES_CHANGED")
+        self.assertTrue(before["safe_to_apply"])
+        report = preview.refresh_installed_bedroom(
+            self.game,self.root,allow_global_drift=True)
+        self.assertTrue(report["changed"])
+        self.assertTrue(report["global_integrity_drift"])
+        after = inspect_bedroom(self.root,self.game)
+        self.assertEqual(after["status"], "LAYOUT_HGSS_APPLIED")
+        self.assertEqual((self.game/"PBS/map_connections.txt").read_bytes(),before_pbs)
+        self.assertEqual((self.game/"Saves/File A.rxdata").read_bytes(),
+                         b"untouched save")
+        self.assertEqual(after["preview_integrity"], "SCOPED_OK_GLOBAL_FILES_CHANGED")
+        self.assertFalse(after["safe_to_apply"])
+
     def test_diagnostic_rejects_unverified_modified_room(self):
         self.write("Data/Map674.rxdata", b"modified native map")
         result = inspect_bedroom(self.root,self.game)
