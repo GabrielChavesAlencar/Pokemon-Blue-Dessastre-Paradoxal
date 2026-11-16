@@ -1,0 +1,777 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "HISTORICAL_REFERENCE_ONLY_NOT_INSTALLED",
+  "reference_game": "PLATINUM",
+  "sources": {
+    "historical": "docs/SINNOH_DETONADO_PLATINUM_REFERENCIA_ORGANIZADA.md",
+    "identities": "data/regions/detonados-content-review.json",
+    "regional_badges": "site/public/data/regions.json",
+    "kanto_strongest_not_sinnoh": "site/public/data/strongest-teams.json",
+    "other_regions_pbs_not_sinnoh": "site/public/data/story-trainers.json",
+    "balance": "scripts/battle_polish/Campaign.rb",
+    "boss_preservation": "scripts/battle_polish/Story.rb"
+  },
+  "native_source_available_in_repository": false,
+  "native_pbs_compilation_verified": false,
+  "native_event_battle_bindings_verified": false,
+  "gameplay_verified": false,
+  "can_install": false,
+  "may_write_pbs": false,
+  "ui_policy": {
+    "publish_historical_fixed_levels": false,
+    "publish_rematch_as_blue_strongest": false,
+    "publish_unverified_blue_native_as_installed": false,
+    "render_actual_levels_from": "BLUE_CAMPAIGN_DYNAMIC_SCALING_ONLY"
+  },
+  "dynamic_balance": {
+    "normal_percent": 70,
+    "master_percent": 90,
+    "reference_level": "highest_non_egg_party_level",
+    "boss_species_preserved": true,
+    "blue_regional_first_boss_bst_exemption": true,
+    "elite_champion_first_roster_not_automatically_evolved": true
+  },
+  "trainers": [
+    {
+      "id": "SINNOH_ROARK",
+      "name": "Roark",
+      "role": "GYM_LEADER",
+      "order": 1,
+      "badge": "COAL",
+      "reference_city": "Oreburgh",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "GEODUDE",
+          "ONIX",
+          "CRANIDOS"
+        ],
+        "historical_levels": [
+          12,
+          12,
+          14
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_GARDENIA",
+      "name": "Gardenia",
+      "role": "GYM_LEADER",
+      "order": 2,
+      "badge": "FOREST",
+      "reference_city": "Eterna",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "TURTWIG",
+          "CHERRIM",
+          "ROSERADE"
+        ],
+        "historical_levels": [
+          20,
+          20,
+          22
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_FANTINA",
+      "name": "Fantina",
+      "role": "GYM_LEADER",
+      "order": 3,
+      "badge": "RELIC",
+      "reference_city": "Hearthome",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "DUSKULL",
+          "HAUNTER",
+          "MISMAGIUS"
+        ],
+        "historical_levels": [
+          24,
+          24,
+          26
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_MAYLENE",
+      "name": "Maylene",
+      "role": "GYM_LEADER",
+      "order": 4,
+      "badge": "COBBLE",
+      "reference_city": "Veilstone",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "MEDITITE",
+          "MACHOKE",
+          "LUCARIO"
+        ],
+        "historical_levels": [
+          28,
+          29,
+          32
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_CRASHER_WAKE",
+      "name": "Crasher Wake",
+      "role": "GYM_LEADER",
+      "order": 5,
+      "badge": "FEN",
+      "reference_city": "Pastoria",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "GYARADOS",
+          "QUAGSIRE",
+          "FLOATZEL"
+        ],
+        "historical_levels": [
+          33,
+          34,
+          37
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_BYRON",
+      "name": "Byron",
+      "role": "GYM_LEADER",
+      "order": 6,
+      "badge": "MINE",
+      "reference_city": "Canalave",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "MAGNETON",
+          "STEELIX",
+          "BASTIODON"
+        ],
+        "historical_levels": [
+          37,
+          38,
+          41
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_CANDICE",
+      "name": "Candice",
+      "role": "GYM_LEADER",
+      "order": 7,
+      "badge": "ICICLE",
+      "reference_city": "Snowpoint",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "SNEASEL",
+          "PILOSWINE",
+          "ABOMASNOW",
+          "FROSLASS"
+        ],
+        "historical_levels": [
+          40,
+          40,
+          42,
+          44
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_VOLKNER",
+      "name": "Volkner",
+      "role": "GYM_LEADER",
+      "order": 8,
+      "badge": "BEACON",
+      "reference_city": "Sunyshore",
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "JOLTEON",
+          "RAICHU",
+          "LUXRAY",
+          "ELECTIVIRE"
+        ],
+        "historical_levels": [
+          46,
+          46,
+          48,
+          50
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": null,
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_AARON",
+      "name": "Aaron",
+      "role": "ELITE_FOUR",
+      "order": 1,
+      "badge": null,
+      "reference_city": null,
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "YANMEGA",
+          "SCIZOR",
+          "VESPIQUEN",
+          "HERACROSS",
+          "DRAPION"
+        ],
+        "historical_levels": [
+          49,
+          49,
+          50,
+          51,
+          53
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": {
+        "source": "PLATINUM_LEAGUE_REMATCH",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "YANMEGA",
+          "SCIZOR",
+          "VESPIQUEN",
+          "HERACROSS",
+          "DRAPION"
+        ],
+        "historical_levels": [
+          65,
+          65,
+          66,
+          67,
+          69
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_BERTHA",
+      "name": "Bertha",
+      "role": "ELITE_FOUR",
+      "order": 2,
+      "badge": null,
+      "reference_city": null,
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "WHISCASH",
+          "HIPPOWDON",
+          "GOLEM",
+          "GLISCOR",
+          "RHYPERIOR"
+        ],
+        "historical_levels": [
+          50,
+          52,
+          52,
+          53,
+          55
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": {
+        "source": "PLATINUM_LEAGUE_REMATCH",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "WHISCASH",
+          "HIPPOWDON",
+          "GOLEM",
+          "GLISCOR",
+          "RHYPERIOR"
+        ],
+        "historical_levels": [
+          66,
+          68,
+          68,
+          69,
+          71
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_FLINT",
+      "name": "Flint",
+      "role": "ELITE_FOUR",
+      "order": 3,
+      "badge": null,
+      "reference_city": null,
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "HOUNDOOM",
+          "RAPIDASH",
+          "FLAREON",
+          "INFERNAPE",
+          "MAGMORTAR"
+        ],
+        "historical_levels": [
+          52,
+          53,
+          55,
+          55,
+          57
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": {
+        "source": "PLATINUM_LEAGUE_REMATCH",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "HOUNDOOM",
+          "RAPIDASH",
+          "FLAREON",
+          "INFERNAPE",
+          "MAGMORTAR"
+        ],
+        "historical_levels": [
+          68,
+          69,
+          71,
+          71,
+          73
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_LUCIAN",
+      "name": "Lucian",
+      "role": "ELITE_FOUR",
+      "order": 4,
+      "badge": null,
+      "reference_city": null,
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "MRMIME",
+          "BRONZONG",
+          "ESPEON",
+          "ALAKAZAM",
+          "GALLADE"
+        ],
+        "historical_levels": [
+          53,
+          54,
+          55,
+          56,
+          59
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": {
+        "source": "PLATINUM_LEAGUE_REMATCH",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "MRMIME",
+          "BRONZONG",
+          "ESPEON",
+          "ALAKAZAM",
+          "GALLADE"
+        ],
+        "historical_levels": [
+          69,
+          70,
+          71,
+          72,
+          75
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    },
+    {
+      "id": "SINNOH_CYNTHIA",
+      "name": "Cynthia",
+      "role": "CHAMPION",
+      "order": 1,
+      "badge": null,
+      "reference_city": null,
+      "first_battle": {
+        "source": "PLATINUM_FIRST_BATTLE",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "SPIRITOMB",
+          "ROSERADE",
+          "MILOTIC",
+          "TOGEKISS",
+          "LUCARIO",
+          "GARCHOMP"
+        ],
+        "historical_levels": [
+          58,
+          58,
+          58,
+          60,
+          60,
+          62
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "historical_rematch": {
+        "source": "PLATINUM_LEAGUE_REMATCH",
+        "source_game": "POKEMON_PLATINUM",
+        "status": "HISTORICAL_REFERENCE_ONLY",
+        "species": [
+          "SPIRITOMB",
+          "ROSERADE",
+          "MILOTIC",
+          "TOGEKISS",
+          "LUCARIO",
+          "GARCHOMP"
+        ],
+        "historical_levels": [
+          74,
+          74,
+          74,
+          76,
+          76,
+          78
+        ],
+        "levels_are_not_runtime_levels": true,
+        "verified_in_blue_pbs": false
+      },
+      "blue_strongest": {
+        "status": "BLUE_FULL_POWER_VARIANT_NOT_VERIFIED",
+        "species": null,
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_sha256": null,
+        "game_exe_verified": false
+      },
+      "native_pbs": {
+        "status": "NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED",
+        "trainer_type": null,
+        "trainer_name": null,
+        "trainer_version": null,
+        "source_file": null,
+        "source_sha256": null,
+        "team": null,
+        "compiled": false,
+        "event_bound": false,
+        "game_exe_verified": false
+      }
+    }
+  ],
+  "notes": "CH15 separates source-documented Platinum first battles and historical Elite Four/Champion rematches from Blue strongest variants and actual native PBS rosters. No Sinnoh Gym Full Power data or installed native team is present in versioned evidence. Historical levels are archival references ONLY and must never be exposed as fixed encounter levels. Native teams require audited local PBS, compiled Game.exe trainer GameData, correct trainer versions, map event binding and manual playtest before installation claims."
+}
