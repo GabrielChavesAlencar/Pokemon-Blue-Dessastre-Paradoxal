@@ -71,11 +71,10 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 <hr>
 <button id="save" class="primary" style="width:100%;padding:13px" disabled>Salvar no jogo + backup</button>
 <p class="small">O editor altera tiles e pode mover eventos e destinos existentes. Scripts e diálogos são preservados, com backup antes de salvar.</p>
-<button id="remoteCheck" style="width:100%">Verificar GitHub</button>
 <button id="publish" class="gold" style="width:100%;margin-top:8px" disabled>Publicar este mapa na main</button>
 <div id="remoteStatus" class="status">GitHub: verificando automaticamente...</div>
 <div id="githubAuth" class="status" style="display:none" aria-live="polite"></div>
-<p class="small">O Blue-Story instala a ferramenta de publicação. Basta salvar e clicar em <strong>Publicar este mapa na main</strong>. Se ainda faltar autorização, ela abrirá no navegador sem comandos de terminal.</p>
+<p class="small">O Blue-Story instala a ferramenta de publicação. Clique em <strong>Publicar este mapa na main</strong>: o editor salva com backup, confere o GitHub e envia o patch. Se faltar autorização, abrirá o navegador, sem comandos de terminal.</p>
 </aside>
 <section class="center">
 <div class="toolbar"><strong id="title">Escolha um mapa</strong><span id="size"></span><div style="flex:1"></div><label style="margin:0">Zoom <select id="zoom"><option value=".5">50%</option><option value="1" selected>100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label><span id="dirty"></span></div>
@@ -227,7 +226,7 @@ function refreshControls(){
  $('dirty').textContent=dirty?'● Alterações não salvas':'✓ Salvo';
  $('dirty').className=dirty?'bad':'good';
  $('save').disabled=!dirty||busy;
- $('publish').disabled=dirty||busy||!map||!map.patch_hash;
+ $('publish').disabled=busy||!map||(!dirty&&!map.patch_hash);
  $('undo').disabled=!history.length;$('redo').disabled=!future.length;
 }
 async function loadMaps(){
@@ -343,8 +342,13 @@ async function authorizeGithubInApp(){
   throw Error('A autorização do GitHub expirou. Clique em Publicar para tentar novamente.');
 }
 async function publishMap(){
-  if(!map||dirty||!map.patch_hash)return;
-  if(!confirm('Publicar o patch de Map'+map.id+' diretamente na branch MAIN do GitHub?'))return;
+  if(!map||busy)return;
+  if(!confirm('Salvar as edições pendentes (com backup) e publicar o Map'+map.id+' na MAIN do GitHub?'))return;
+  if(dirty){
+    await saveMap();
+    if(dirty)return; // Erro de salvamento: nunca publicar uma versão incompleta.
+  }
+  if(!map.patch_hash){warning('Nenhuma alteração deste mapa para publicar.');return}
   busy=true;refreshControls();setStatus('Publicando alteração na main...');
   try{
     const payload=()=>({map_id:map.id,patch_hash:map.patch_hash,remote_sha:remoteSha});
@@ -379,7 +383,7 @@ $('search').oninput=renderMapList;
 $('zoom').onchange=event=>{zoom=Number(event.target.value);render()};
 $('grid').onclick=()=>{grid=!grid;$('grid').classList.toggle('active',grid);render()};
 $('eventsToggle').onclick=()=>{eventsVisible=!eventsVisible;$('eventsToggle').classList.toggle('active',eventsVisible);render()};
-$('undo').onclick=undo;$('redo').onclick=redo;$('save').onclick=saveMap;$('publish').onclick=publishMap;$('remoteCheck').onclick=checkRemote;
+$('undo').onclick=undo;$('redo').onclick=redo;$('save').onclick=saveMap;$('publish').onclick=publishMap;
 window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveMap()}});
 loadMaps().catch(e=>{warning(e.message);setStatus('Erro na inicialização',true)});
 </script>
