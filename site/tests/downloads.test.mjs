@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {gameDownload,hubDownload,androidDownload,joiplayDownload,downloadStrip,downloadsPage} from '../src/assets/downloads.js';
 test('downloads usam a main e o último pacote do Hub, com instalação dos dois modos',()=>{
-  assert.ok(gameDownload.endsWith('/releases/latest/download/Blue-Story.exe'));
+  assert.ok(gameDownload.endsWith('/releases/download/blue-story-windows/Blue-Story.exe'));
   assert.ok(hubDownload.endsWith('/releases/latest/download/Blue-Battle-Hub.exe'));
   for(const html of [downloadStrip(),downloadsPage()]){assert.ok(html.includes(gameDownload));assert.ok(html.includes(hubDownload));}
   const html=downloadsPage();
@@ -11,6 +11,8 @@ test('downloads usam a main e o último pacote do Hub, com instalação dos dois
   assert.ok(html.includes(androidDownload));
   assert.match(html,/Novo Jogo/);assert.match(html,/Kanto/);
   assert.match(html,/integrar automaticamente Kanto e Hoenn/);
+  assert.match(html,/ZIP privado de Johto/);
+  assert.match(html,/mesmo Game.exe e perfil de saves/);
   assert.match(html,/Testar Kanto, Johto, Hoenn e Sinnoh/);
   assert.match(html,/instalação antiga incompatível/);
   assert.match(html,/Android reais/);
