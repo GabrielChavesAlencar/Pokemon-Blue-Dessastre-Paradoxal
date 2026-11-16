@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3f69b3c6741e1f9479a8f60689e9e7836dc4b2ac",
+      "date": "2026-11-15T23:17:20-03:00",
+      "title": "fix(johto): accept audited transparent autorun profile event at New Bark start; reject actual spawn blockers",
+      "category": "Correções"
+    },
+    {
       "sha": "514b56f3abf2b646909cb1a840e4032f5c404ffb",
       "date": "2026-11-15T23:15:32-03:00",
       "title": "ci(johto): include dependent source modules for private end-to-end installer validation",
