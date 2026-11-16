@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d4f59416378268f562ed929b1ba66d399841b188",
+      "date": "2026-11-16T08:34:45-03:00",
+      "title": "test(johto): repeated diagnostic export preserves old ZIP and works when all region maps are absent",
+      "category": "Testes"
+    },
+    {
+      "sha": "c85c1f20be8f7428a2fbaa791c428e3318a439cf",
+      "date": "2026-11-16T08:34:29-03:00",
+      "title": "fix(johto): diagnostics always create a new numbered ZIP when prior export already exists",
+      "category": "Correções"
+    },
+    {
       "sha": "1c3dfa1c4559241d3d191c2101642a74737c13d7",
       "date": "2026-11-16T07:12:53-03:00",
       "title": "docs(johto): audit user-provided native maps, real stair commands and safe runtime-modified install recovery",
