@@ -55,7 +55,22 @@ internal static class Bootstrap {
                     form.Shown+=async delegate {
                         try {
                             await Task.Run((Action)Prepare);
-                            if(!Hub && !JohtoReady()) {
+                            if(!Hub && !JohtoReady() && JohtoFilesPresent()) {
+                                title.Text="Johto encontrada, mas precisa de reparo";
+                                bar.Style=ProgressBarStyle.Continuous;
+                                var message=
+                                    "Os mapas de Johto existem nesta instalacao, mas a integridade "+
+                                    "nao corresponde ao manifesto. Johto NAO sera declarada pronta.\n\n"+
+                                    JohtoReason()+"\n\n"+
+                                    "Nao substitua mapas nem reinstale o ZIP sobre esta copia.\n"+
+                                    "Execute VERIFICAR_QUARTO_JOHTO.bat na pasta do Blue-Story "+
+                                    "para gerar o diagnostico privado de Map600, Map674 e Map675.\n\n"+
+                                    "OK: continuar com as demais regioes sem modificar Johto.\n\n"+
+                                    "Relatorio: .blue-work/johto-main-install-status.json";
+                                MessageBox.Show(form,message,"Blue-Story - Johto precisa de verificacao",
+                                                MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                            }
+                            else if(!Hub && !JohtoReady()) {
                                 title.Text="Johto ainda não foi instalada";
                                 bar.Style=ProgressBarStyle.Continuous;
                                 var choice=MessageBox.Show(form,
@@ -214,6 +229,10 @@ internal static class Bootstrap {
     static bool JohtoReady() {
         var s=JohtoStatus();object result;
         return s.TryGetValue("ready",out result) && result is bool && (bool)result;
+    }
+    static bool JohtoFilesPresent() {
+        return File.Exists(Path.Combine(Root,"game","Data","blue-johto-main-preview.json"))
+            || File.Exists(Path.Combine(Root,"game","Data","blue-johto-preview-ready.txt"));
     }
     static string JohtoReason() {
         var s=JohtoStatus();object reason;
