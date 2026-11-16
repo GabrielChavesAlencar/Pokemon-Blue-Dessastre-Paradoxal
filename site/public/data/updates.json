@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b30a3ad74be9892c7dbb3961c7f352623470c4c9",
+      "date": "2026-11-15T23:33:00-03:00",
+      "title": "test(johto): reproduce Compiler.main alias stack overflow and validate safe map-enter data checks",
+      "category": "Testes"
+    },
+    {
       "sha": "0518575e234bb8e4a6d8fcedc4071fe2625e7961",
       "date": "2026-11-15T23:31:03-03:00",
       "title": "fix(blue-story): auto repair previously installed Johto Boot.rb recursion before Game.exe starts",
