@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6b86834dd823950b63828e76de2076efaac5d02b",
+      "date": "2026-11-15T23:18:49-03:00",
+      "title": "refactor(johto): isolate the real New Bark transparent autorun start acceptance guard for regression tests",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3f69b3c6741e1f9479a8f60689e9e7836dc4b2ac",
       "date": "2026-11-15T23:17:20-03:00",
       "title": "fix(johto): accept audited transparent autorun profile event at New Bark start; reject actual spawn blockers",
