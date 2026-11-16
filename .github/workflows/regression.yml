@@ -165,6 +165,15 @@ jobs:
           ruby -c scripts/battle_polish/Regions.rb
           ruby -c scripts/battle_polish/RegionalPolicy.rb
           ruby tests/sinnoh_badge_hm_ch11_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb scripts/battle_polish/RegionalPolicy.rb data/regions/sinnoh-badges-hms-contract.json
+      - name: CH12 - Sinnoh escalonamento 70/90, BST, niveis e evolucoes nativas
+        run: |
+          python scripts/regions/audit_sinnoh_trainer_evolution.py
+          python -m unittest discover -s tests -p 'test_sinnoh_trainer_evolution_ch12.py' -v
+          ruby -c scripts/battle_polish/EvolutionScaling.rb
+          ruby -c scripts/battle_polish/Story.rb
+          ruby -c scripts/battle_polish/Campaign.rb
+          ruby -c tests/sinnoh_evolution_ch12_runtime.rb
+          ruby tests/sinnoh_evolution_ch12_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Story.rb scripts/battle_polish/Campaign.rb data/regions/sinnoh-trainer-evolution-contract.json
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh
