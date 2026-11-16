@@ -74,7 +74,7 @@ class JohtoReleaseTests(unittest.TestCase):
         for line in (
             "def self.johto_installed?",
             'when "JOHTO"',
-            'state["leagues"].include?("JOHTO")',
+            'source_valid?(state)',
             'BlueRegionStart.johto_town_point',
             'BlueRegionStart.johto_agent_point',
             "def self.attach_johto_agent",
