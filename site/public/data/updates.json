@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "205d223a042c91f5a468dd9cc970b569381528f0",
+      "date": "2026-11-16T13:51:38-03:00",
+      "title": "fix(sinnoh): bloquear IDs 800-805 em integracao compartilhada (CH03)",
+      "category": "Correções"
+    },
+    {
       "sha": "d69a360fb7bc9a0c27235baf45790368c4b351b3",
       "date": "2026-11-16T13:43:08-03:00",
       "title": "test(sinnoh): validar barra E, backlog CH e gates no CI (CH02)",
