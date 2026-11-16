@@ -8,25 +8,26 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-██████████░░░░░░░░░░  10/20 (50%)
+███████████░░░░░░░░░  11/20 (55%)
 ```
 
-- **Concluídas:** 10 (**CH01–CH10**, incluindo o lançamento QA isolado e pré-voo seguro).
+- **Concluídas:** 11 (**CH01–CH11**, incluindo os contratos das oito insígnias e HMs locais de Sinnoh).
 - **Parciais:** 0.
-- **Pendentes:** 10 (**CH11–CH20**).
+- **Pendentes:** 9 (**CH12–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
 - **CH02:** `validate_sinnoh_chat_progress.py` verifica JSON, painel e backlog.
-- **CH03–CH04:** guardas contra MapIDs antigos 800–805 e plugin legado `SinnohPreview.rb` no Decades principal.
-- **CH05:** `sinnoh-map-id-reservations.json` distingue reservas e ocupação física desconhecida.
-- **CH06:** `audit_sinnoh_twinleaf_events.py` valida os 9 mapas, 24 eventos e 16 warps.
-- **CH07:** `SinnohPilot.rb` isola flags, saves e as três Poké Bolas físicas sem fallback para outra região.
-- **CH08:** testes de Barry e escalonamento `Campaign.rb` em fixtures: Normal 70% e Master 90%, com seed PBS original 5.
-- **CH09:** 8 testes E2E sintéticos de auditoria → plano → geometria → overlay → bundle, rollback/hash, sem escrever em `game/`.
-- **CH10:** [`launch_sinnoh_qa.py`](../scripts/regions/launch_sinnoh_qa.py) oferece `--qa` (consulta segura), `--compile` (executável **somente da QA** com pedido válido) e `--launch` (cópia QA somente após prova de compilação/sonda). [`install_sinnoh_qa_copy.py`](../scripts/regions/install_sinnoh_qa_copy.py) fixa hashes de `Game.exe`, `Data/Scripts.rxdata`, plugins, perfil de saves e arquivos de inicialização, além de bloquear diretórios de assets ausentes, save legado ou symlink, marcador incorreto e adulterações do manifesto. [`SinnohQAStart.rb`](../scripts/regions/SinnohQAStart.rb) rejeita save regional incompatível tanto na recarga quanto antes de sobrescrever estado em Novo Jogo; não cai na seleção Decades/Johto. [14 testes negativos/positivos](../tests/test_sinnoh_ch10_qa_launcher.py) e testes Ruby em CI: [execução 43925173071](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43925173071), com **239 testes Python isolados de Sinnoh aprovados**. [Instruções e limites](SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md).
-- **Critério:** somente tarefas `done` com evidência versionada e CI verificado entram na Barra E.
+- **CH03–CH04:** guardas de MapIDs do piloto antigo 800–805 e `SinnohPreview.rb` no jogo compartilhado.
+- **CH05:** `sinnoh-map-id-reservations.json` diferencia reserva documentada e ocupação física desconhecida.
+- **CH06:** `audit_sinnoh_twinleaf_events.py` valida os 9 mapas, 24 eventos e 16 warps de planejamento.
+- **CH07:** `SinnohPilot.rb` protege flags, save e as três Poké Bolas físicas.
+- **CH08:** testes Barry, três versões PBS e escala `Campaign.rb` Normal 70% / Master 90%.
+- **CH09:** testes E2E sintéticos de auditoria, remapeamento, geometria, overlay, bundle, hashes e rollback.
+- **CH10:** lançador e pré-voo QA seguros, com 14 testes negativos e cópia isolada.
+- **CH11:** [catálogo de 8 badges/HMs Platinum](../data/regions/sinnoh-badges-hms-contract.json) alinhado a `site/public/data/regions.json`; o runtime compartilhado [`BlueRegions`](../scripts/battle_polish/Regions.rb) exige conquistas **locais e válidas**, registro explícito de obtenção de HM por evento confirmado e posse física na Bolsa; [`BlueRegionalPolicy`](../scripts/battle_polish/RegionalPolicy.rb) recusa emprestar permissões de outras regiões. Não se cria item nem se marca vitória em ginásio automaticamente. [Auditor CH11](../scripts/regions/audit_sinnoh_badges_hms.py), [12 testes Python](../tests/test_sinnoh_badges_hms_ch11.py) e [teste Ruby do vault real com inventário sintético](../tests/sinnoh_badge_hm_ch11_runtime.rb) verificam duplicidades, cross-region, save/reload, HM errado, Bolsa, PC, atalhos e compatibilidade nativa de Decades. No [CI isolado 43958964604](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43958964604), **12 testes CH11, Ruby e 251 testes Python Sinnoh** passaram. [Documentação detalhada](SINNOH_CH11_INSIGNIAS_HMS_REGIONAIS.md).
+- **Critério:** apenas tarefas `done` com evidência versionada e CI validado entram na Barra E.
 
-**Limite:** CH10 verifica contratos e um executável sintético; ela **não** comprova Game.exe real/JoiPlay, assets de Sinnoh autorizados, navegação, saves nativos ou publicação jogável. **Barra A 8/32 (25%)**, **B/C/D 0/13** inalteradas.
+**Limite:** Barra E não mede jogabilidade. **Barra A 8/32 (25%)**, **B/C/D 0/13**, inalteradas. O módulo registra permissão somente depois de chamada por evento de obtenção local **ainda não instalado**; não há ginásio, HM, obstáculo ou MapID de Sinnoh validado no Game.exe/JoiPlay.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
