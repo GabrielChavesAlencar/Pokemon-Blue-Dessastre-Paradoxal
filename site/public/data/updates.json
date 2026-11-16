@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ede8ae91cf3937e9bbea411d8b1a84f04a59b2be",
+      "date": "2026-11-16T19:44:37-03:00",
+      "title": "test(ci): CH14 22 eventos Ruby com idempotência, save, Hall of Fame e viagens negativas",
+      "category": "Testes"
+    },
+    {
       "sha": "3bdea75c2e0c069369c4d432751687f9163a1d27",
       "date": "2026-11-16T19:43:00-03:00",
       "title": "test(sinnoh): CH14 auditor e 15 testes de falsos eventos, liga e viagens",
