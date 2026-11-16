@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97b49e68e3d3b13cf0961ccf4e75177100e960c5",
+      "date": "2026-11-16T09:23:02-03:00",
+      "title": "feat(johto): browser map studio with genuine tileset palette, 3 native layers, paint/erase/pick, undo, event markers, save and publish main",
+      "category": "Novidades"
+    },
+    {
       "sha": "dabe3797ccb1706806b01f44143685311b09c684",
       "date": "2026-11-16T09:19:06-03:00",
       "title": "feat(johto): localhost visual map editor API, native map backups, conflict-safe patches and authenticated publish-to-main button",
