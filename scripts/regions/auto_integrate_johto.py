@@ -29,17 +29,35 @@ PRIVATE_BUNDLE_NAME = "Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip"
 
 
 def candidate_bundles(project: Path):
-    """Search only known, local user-owned package locations; never publish assets."""
-    names = ("johto-offline12-preview.zip", PRIVATE_BUNDLE_NAME)
+    """Find private ZIPs, including names Windows browsers assign to duplicates.
+
+    Never scan arbitrary files, hidden paths or symlinks; every candidate must
+    still pass the pinned whole-archive SHA-256 before the installer uses it.
+    """
     directories = [project / ".blue-work", project, Path.home() / "Downloads"]
     profile = os.environ.get("USERPROFILE")
     if profile:
         directories.append(Path(profile) / "Downloads")
-    for folder in directories:
-        for name in names:
-            candidate = folder / name
-            if candidate.is_file() and not candidate.is_symlink():
-                yield candidate
+    seen = set()
+    for directory in directories:
+        if directory.is_symlink() or not directory.is_dir():
+            continue
+        for name in ("johto-offline12-preview.zip", PRIVATE_BUNDLE_NAME):
+            path = directory / name
+            if path.is_file() and not path.is_symlink():
+                resolved = path.resolve()
+                if resolved not in seen:
+                    seen.add(resolved)
+                    yield path
+        # Browsers save duplicate ZIPs as "(1)", "(2)", etc. Previously
+        # this made Blue-Story report "missing" even with the correct bytes.
+        for path in sorted(directory.glob("Johto_Offline_Fase12_Auditoria_Integracao_Privado (*.zip")):
+            suffix = path.name.removeprefix("Johto_Offline_Fase12_Auditoria_Integracao_Privado ")
+            if (suffix.startswith("(") and suffix.endswith(").zip")
+                    and suffix[1:-5].isdigit() and path.is_file()
+                    and not path.is_symlink() and path.resolve() not in seen):
+                seen.add(path.resolve())
+                yield path
 
 
 def inspect_current_baseline(game: Path, archive_path: Path) -> dict:
@@ -191,14 +209,17 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                                     "reason": "; ".join(errors[:5])})
         return record(project, {"status": "already_integrated_verified",
                                 "reason": "Prova e conteúdo Johto instalados previamente e revalidados"})
+    rejected_sources = []
     for source in candidate_bundles(project):
         try:
             bundle = inspect_offline_bundle(source)
             baseline = inspect_current_baseline(game, source)
         except (OSError, ValueError, KeyError, zipfile.BadZipFile,
                 json.JSONDecodeError) as exc:
-            return record(project, {"status": "offline_bundle_invalid", "reason": str(exc),
-                                    "bundle_path": str(source)})
+            # An outdated preview cached in .blue-work must NOT hide a
+            # valid original ZIP downloaded later by the user.
+            rejected_sources.append(f"{source.name}: {exc}")
+            continue
         # The original private ZIP is NOT copied directly into game/. It is
         # validated, visually repaired and remapped into unused 600–699 IDs
         # by the separate transactional builder. Hoenn owns 700–999.
@@ -221,6 +242,10 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                                 "changed": True, "map_count": result["maps"],
                                 "native_qa": False, "bundle_path": str(source),
                                 "bundle": bundle, "current_game": baseline})
+    if rejected_sources:
+        return record(project, {"status": "offline_bundle_invalid",
+                                "reason": "Pacotes Johto encontrados, mas nenhum tem o SHA-256 original: " +
+                                "; ".join(rejected_sources[:4])})
     return record(project, {"status": "awaiting_johto_installable_release",
                             "reason": "ZIP privado Johto OFFLINE 12 não encontrado. Salve Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip na pasta Downloads e reabra Blue-Story.exe. Kanto/Hoenn e os saves foram preservados."})
 
