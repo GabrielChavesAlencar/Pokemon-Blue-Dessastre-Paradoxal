@@ -8,23 +8,23 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-███████░░░░░░░░░░░░░  7/20 (35%)
+████████░░░░░░░░░░░░  8/20 (40%)
 ```
 
-- **Concluídas:** 7 (**CH01–CH07**; agora inclui segurança de flags, escolha de inicial e save isolado).
+- **Concluídas:** 8 (**CH01–CH08**; agora inclui a verificação das três versões PBS de Barry e cálculo dinâmico de níveis).
 - **Parciais:** 0.
-- **Pendentes:** 13 (**CH08–CH20**).
+- **Pendentes:** 12 (**CH09–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02:** `validate_sinnoh_chat_progress.py` verifica JSON, painel e tabela.
-- **CH03–CH04:** impedem colisões dos MapIDs e plugin `SinnohPreview.rb` legado na main.
-- **CH05:** `sinnoh-map-id-reservations.json` diferencia reservas de ocupação física desconhecida.
-- **CH06:** `audit_sinnoh_twinleaf_events.py` verifica schema, 9 mapas, 24 eventos e 16 warps.
-- **CH07:** [`SinnohPilot.rb`](../scripts/regions/SinnohPilot.rb) valida a sequência de checkpoints, evita gravações em consultas/rejeições, impede Poké Bolas repetidas ou reentrantes, salva progresso de Barry tanto após vitória quanto derrota válida `canLose`, mas não quando o resultado é `nil`. Dados inválidos ou pertencentes a outras regiões não são corrigidos silenciosamente. [`SinnohQAStart.rb`](../scripts/regions/SinnohQAStart.rb) bloqueia Novo Jogo QA sem objeto global, sem cair na campanha de outra região; carregamento de save permanece no fluxo nativo. Testes Ruby de [CH07](../tests/sinnoh_pilot_ch07_runtime.rb), [regressão anterior](../tests/sinnoh_pilot_runtime.rb) e [QA](../tests/sinnoh_qa_start_runtime.rb) são executados em CI.
-- **Verificação:** etapa CH07 aprovada na [execução de regressão](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43920105394); são testes **Ruby puro**, não Game.exe.
-- **Critério:** apenas `done` com arquivos publicados, testes verificáveis e evidências entra no numerador.
+- **CH02:** `validate_sinnoh_chat_progress.py` verifica JSON, tabela e painel.
+- **CH03–CH04:** guardas dos MapIDs 800–805 e do plugin legado `SinnohPreview.rb`.
+- **CH05:** `sinnoh-map-id-reservations.json` separa reservas documentadas e ocupação real desconhecida.
+- **CH06:** `audit_sinnoh_twinleaf_events.py` valida 9 mapas, 24 eventos e 16 warps.
+- **CH07:** `SinnohPilot.rb` protege flags da história, os três iniciais e o save regional; o Novo Jogo QA não cai no fluxo de outra região.
+- **CH08:** o [`SinnohPilot.rb`](../scripts/regions/SinnohPilot.rb) agora exige `GameData::Trainer.get(:BLUE_SINNOH_RIVAL, "Barry", versão)` com uma única espécie contrária e seed 5 antes da batalha; ausências, versões erradas ou times adulterados são bloqueados sem avançar flags. O [verificador de PBS](../scripts/regions/verify_sinnoh_barry_pbs.py) rejeita `effective_level` fixo, handler ou seed adulterados, aprovações falsas e dados de iniciais inconsistentes. [Testes Python](../tests/test_sinnoh_barry_ch08.py) e [Ruby](../tests/sinnoh_barry_ch08_runtime.rb) executam o cálculo de `Campaign.rb` nas fixtures: 70% Normal e 90% Master sobre o maior nível não-ovo, com arredondamento inteiro, limites e conservação do seed PBS; teste sintético de expansão Master preserva o contra-inicial. O CI isolado passou na [execução 43921882696](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43921882696).
+- **Critério:** apenas tarefas `done` com evidência publicada e testes reproduzíveis entram na Barra E.
 
-**Limite:** Barra E não mede progresso jogável. Barra A continua 8/32 (25%), e B/C/D continuam 0/13. Testes Game.exe, JoiPlay e mapas reais não foram executados.
+**Limite:** Barra E não é percentual jogável. Barra A permanece **8/32 (25%)** e B/C/D permanecem **0/13**. As verificações CH08 foram feitas com dados sintéticos; o Game.exe/JoiPlay, o PBS compilado real e o nível observado em batalha ainda exigem testes nativos.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

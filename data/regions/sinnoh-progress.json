@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 7,
+    "done": 8,
     "partial": 0,
-    "pending": 13,
-    "percent_complete": 35,
+    "pending": 12,
+    "percent_complete": 40,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -863,8 +863,8 @@
         "priority": "P1",
         "title": "Aumentar as verificações de Barry, três equipes e escalonamento compartilhado",
         "acceptance": "Fixtures cobrem iniciais, versões, ausência de PBS, 70%/90% e bloqueio seguro",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "tests/sinnoh_barry_ch08_runtime.rb"
       },
       {
         "id": "CH09",

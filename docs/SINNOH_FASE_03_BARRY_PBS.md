@@ -66,3 +66,17 @@ A segunda ferramenta rejeita um dos três treinadores ausente, hash alterado, le
 - As ferramentas e o draft de Barry são um trabalho de **código**; não implicam que o jogo agora possua equipes compiladas.
 - No [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md), a introdução Twinleaf/Sandgem mantém **5/8 subetapas completas** até as auditorias e a integração nativa; o trabalho de PBS pode ter uma barra interna própria.
 - As 13 fases técnicas/jogáveis/QA permanecem em **0/13** até haver demonstração real de funcionalidade.
+
+## CH08 — verificações robustas do PBS de Barry e escala Blue Normal/Master (16/11/2026)
+
+A [verificação de draft](../scripts/regions/verify_sinnoh_barry_pbs.py) agora rejeita equipes, movimentos, espécie contra-inicial, ordem/versão 0–2, seed PBS 5 e metadados de nível efetivo adulterados, além de `ready_marker_allowed`, `battle_proven` e outras falsas declarações de teste nativo. O [runtime do piloto](../scripts/regions/SinnohPilot.rb) também verifica a existência do índice `GameData::Trainer` na versão escolhida, um único Pokémon contra-inicial e seed 5 **antes** de iniciar a batalha de Barry. Não cria arquivos PBS instalados nem marcadores de pronto.
+
+Os [9 testes Python CH08](../tests/test_sinnoh_barry_ch08.py) cobrem falta de arquivo PBS, hashes alterados, equipe extra, versão ou escolha errada, nível-base falso, alteração da origem do Blue e bloqueio de instalação. O [teste Ruby CH08](../tests/sinnoh_barry_ch08_runtime.rb) usa o **arquivo real `scripts/battle_polish/Campaign.rb` do repositório**, mais jogadores e treinadores sintéticos, para confirmar a regra `floor(maior_nível_não_ovo × 70/100)` em Normal e `floor(maior_nível_não_ovo × 90/100)` em Master, no intervalo 1..nível máximo, com seed PBS preservado e versão contrária exata. O runtime também verifica a expansão Master da equipe em fixtures. Não é prova de batalha nativa: os parceiros de teste são sintéticos e a geometria, os sprites, o compilador Essentials e o save real continuam pendentes.
+
+```bash
+python -m unittest discover -s tests -p 'test_sinnoh_barry_ch08.py' -v
+ruby -c scripts/battle_polish/Campaign.rb
+ruby tests/sinnoh_barry_ch08_runtime.rb scripts/battle_polish/Campaign.rb scripts/regions/SinnohPilot.rb
+```
+
+**Evidência:** [job isolado de Sinnoh no CI](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43921882696) (CH08 aprovado). Nenhuma barra de aprovação nativa muda de `0/13`.
