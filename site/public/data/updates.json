@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6aaabb7ffb6e3f9125ecad265ab6ce840b668ef0",
+      "date": "2026-11-16T09:47:29-03:00",
+      "title": "ci(blue-story): verify automatic Johto editor folder sync and Windows launcher rebuild",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "196929c1816d6bf709c33b4f0ff5c06e8c0876af",
+      "date": "2026-11-16T09:47:16-03:00",
+      "title": "test(blue-story): auto-install editor folder beside EXE, refresh on main, protect saves and unknown folders",
+      "category": "Testes"
+    },
+    {
       "sha": "33107ceb070af0fa34ae1f2e19e96b13d48b6cf0",
       "date": "2026-11-16T09:46:46-03:00",
       "title": "fix(johto-editor): back up user-modified mirrored files before committing update manifest",
