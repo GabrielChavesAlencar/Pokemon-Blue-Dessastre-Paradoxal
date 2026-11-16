@@ -161,8 +161,12 @@ internal static class Bootstrap {
         try {
             var info=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(path,Encoding.UTF8));
             object ready;
-            if(info.TryGetValue("ready",out ready) && ready is bool && (bool)ready)
+            if(info.TryGetValue("ready",out ready) && ready is bool && (bool)ready) {
+                object qa;
+                if(name=="Johto" && info.TryGetValue("native_qa",out qa) && qa is bool && !(bool)qa)
+                    return "Johto: previa experimental (sem teste no jogo)";
                 return name+": integrado";
+            }
             return name+": pendente (ver relatorio)";
         } catch(Exception) { return name+": relatorio invalido"; }
     }
