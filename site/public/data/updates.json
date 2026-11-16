@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0cfb032784c3d231b8da23ed91942d3a5930968f",
+      "date": "2026-11-16T18:14:41-03:00",
+      "title": "feat(sinnoh): guardas regionais CH11 de 8 badges e prova de HM local",
+      "category": "Novidades"
+    },
+    {
       "sha": "6deed11ee06b550c52120e146651e556d6750595",
       "date": "2026-11-16T15:07:56-03:00",
       "title": "docs(sinnoh): CH10 verificada e Barra E 10/20 sem alterar jogo",
