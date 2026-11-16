@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "035e0cbd77d18019a4083a09d85f7c9f5c0c0ec1",
+      "date": "2026-11-16T00:26:14-03:00",
+      "title": "fix(johto): reserve all HGSS interior warp destinations against blocking donor tiles",
+      "category": "Correções"
+    },
+    {
       "sha": "53bd68593eab53fc6c342b3c7cd6ac3dd558bc96",
       "date": "2026-11-16T00:25:06-03:00",
       "title": "fix(johto): exclude Hoenn Map700+ from all HGSS interior classifications",
