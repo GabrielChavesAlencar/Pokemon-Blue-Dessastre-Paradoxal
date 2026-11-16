@@ -96,6 +96,32 @@ class BedroomMapTests(unittest.TestCase):
                           room.attrs["@events"][2].attrs["@y"]), (6, 7))
         self.assertEqual(loads(serialize(room, preview.johto_qa.EVENT_CLASSES)), room)
 
+    def test_real_sounding_door_warps_keep_all_sound_fade_commands(self):
+        room, home, _ = fixtures()
+        for map_obj in (room, home):
+            cmd_list = map_obj.attrs["@events"][1].attrs["@pages"][0].attrs["@list"]
+            original = cmd_list[0]
+            command_type = type(original)
+            cmd_list[:0] = [
+                command_type("RPG::EventCommand", {
+                    "@code": 250,
+                    "@parameters": [RubyObject("RPG::AudioFile", {
+                        "@name": b"Exit Door", "@volume": 80, "@pitch": 100})]}),
+                command_type("RPG::EventCommand", {
+                    "@code": 223, "@parameters": [RubyData("Tone", bytes(32)), 6]}),
+                command_type("RPG::EventCommand", {
+                    "@code": 106, "@parameters": [8]})
+            ]
+        visual.style_bedroom_hgss(room, home, 5176)
+        for map_obj in (room, home):
+            cmds = map_obj.attrs["@events"][1].attrs["@pages"][0].attrs["@list"]
+            self.assertEqual([cmd.attrs["@code"] for cmd in cmds], [250,223,106,201])
+            self.assertEqual(cmds[0].attrs["@parameters"][0].attrs["@name"],
+                             b"Exit Door")
+        self.assertEqual(home.attrs["@events"][1].attrs["@pages"][0]
+                         .attrs["@list"][3].attrs["@parameters"][2:4], [4,5])
+        self.assertEqual(loads(serialize(home, preview.johto_qa.EVENT_CLASSES)),home)
+
     def test_unknown_existing_warp_is_not_silently_rewritten(self):
         room, home, _ = fixtures()
         room.attrs["@events"][1].attrs["@x"] = 1
@@ -193,7 +219,7 @@ class InstalledBedroomTests(unittest.TestCase):
         self.write("PBS/map_connections.txt", before_pbs)
         before = inspect_bedroom(self.root,self.game)
         self.assertEqual(before["status"], "OLD_OR_DIFFERENT_BEDROOM")
-        self.assertEqual(before["preview_integrity"], "SCOPED_OK_GLOBAL_FILES_CHANGED")
+        self.assertEqual(before["preview_integrity"], "SCOPED_OK_AUDITED_LIVE_MAPS")
         self.assertTrue(before["safe_to_apply"])
         report = preview.refresh_installed_bedroom(
             self.game,self.root,allow_global_drift=True)
@@ -204,7 +230,7 @@ class InstalledBedroomTests(unittest.TestCase):
         self.assertEqual((self.game/"PBS/map_connections.txt").read_bytes(),before_pbs)
         self.assertEqual((self.game/"Saves/File A.rxdata").read_bytes(),
                          b"untouched save")
-        self.assertEqual(after["preview_integrity"], "SCOPED_OK_GLOBAL_FILES_CHANGED")
+        self.assertEqual(after["preview_integrity"], "SCOPED_OK_AUDITED_LIVE_MAPS")
         self.assertFalse(after["safe_to_apply"])
 
     def test_diagnostic_rejects_unverified_modified_room(self):
