@@ -204,6 +204,12 @@ jobs:
           npm run build
           node --test tests/sinnoh-guide.test.mjs
           npm test
+      - name: CH18 - Busca filtros pendencias e linkagem portal Sinnoh
+        run: |
+          cd site
+          npm run build
+          node --test tests/sinnoh-search.test.mjs
+          npm test
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh
