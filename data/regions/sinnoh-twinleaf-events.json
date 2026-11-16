@@ -366,5 +366,5 @@
     "Preparar PBS BLUE_SINNOH_RIVAL 3 versões com marcador isolado, jamais inventar equipes",
     "Testar saves/região após mudanças em Game.exe/JoiPlay"
   ],
-  "notes": "JSON contém 9 mapas simbólicos, 5 handlers de história, 3 Poké Bolas e 15 portais de planejamento (sem MapIDs e coordenadas); nada disto pode ser instalado sem evidência de mapas reais."
+  "notes": "JSON contém 9 mapas simbólicos, 5 handlers de história, 3 Poké Bolas e 16 portais de planejamento (sem MapIDs e coordenadas); nada disto pode ser instalado sem evidência de mapas reais."
 }

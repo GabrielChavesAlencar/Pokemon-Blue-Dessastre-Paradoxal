@@ -8,20 +8,21 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-█████░░░░░░░░░░░░░░░  5/20 (25%)
+██████░░░░░░░░░░░░░░  6/20 (30%)
 ```
 
-- **Concluídas:** 5 (**CH01**: mapeamento; **CH02**: validador; **CH03**: proteção de MapIDs; **CH04**: bloqueio do piloto legado; **CH05**: manifesto de reservas/ocupação desconhecida).
+- **Concluídas:** 6 (**CH01–CH06**; agora inclui o schema e auditor de Twinleaf).
 - **Parciais:** 0.
-- **Pendentes:** 15 (**CH06–CH20**).
+- **Pendentes:** 14 (**CH07–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` valida o JSON, a tabela e as barras.
-- **CH03:** [`sinnoh_map_id_guard.py`](../scripts/regions/sinnoh_map_id_guard.py) bloqueia Sinnoh legado 800–805 nos mapas compartilhados.
-- **CH04:** [`sinnoh_legacy_plugin_guard.py`](../scripts/regions/sinnoh_legacy_plugin_guard.py) bloqueia o plugin isolado no Decades principal.
-- **CH05:** [`sinnoh-map-id-reservations.json`](../data/regions/sinnoh-map-id-reservations.json) distingue **reservas por código** (Johto 600–699; Hoenn 700–999), **legado isolado Sinnoh 800–805**, exclusão Sinnoh 600–999 e **ocupação física desconhecida** em Decades/Kanto/demais. O [auditor somente leitura](../scripts/regions/audit_region_map_id_reservations.py) valida essas afirmações contra linhas de código e classifica consultas sem liberar IDs; aceita relatório local RXDATA opcional, mas nunca atribui dono físico ou certifica instalação. Testes negativos: [`test_sinnoh_map_id_reservations.py`](../tests/test_sinnoh_map_id_reservations.py).
+- **CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` valida JSON/MD/tabela.
+- **CH03–CH04:** proteções dos MapIDs 800–805 e do plugin legado `SinnohPreview.rb` no Decades compartilhado.
+- **CH05:** [`sinnoh-map-id-reservations.json`](../data/regions/sinnoh-map-id-reservations.json) separa reservas e ocupação física desconhecida.
+- **CH06:** [`sinnoh-twinleaf-events.schema.json`](../data/regions/sinnoh-twinleaf-events.schema.json) (JSON Schema Draft 2020-12), [`audit_sinnoh_twinleaf_events.py`](../scripts/regions/audit_sinnoh_twinleaf_events.py) e [`test_sinnoh_twinleaf_schema.py`](../tests/test_sinnoh_twinleaf_schema.py): validam 9 mapas, 24 eventos, 16 warps, 8 pares ida/volta, IDs, presença de campos, topologia, alcance desde o quarto, destinos, handlers, três Poké Bolas e limites de coordenadas quando **dimensões são fornecidas**. Rejeitam warps unilaterais/órfãos, auto-warp, posições/sprites antecipadamente verificados e dados incompletos.
+- **Critério:** só tarefas `done` com artefato no GitHub são contabilizadas.
 
-**Limite:** Barra E não substitui a Barra A (8/32, 25%) nem as barras B/C/D (0/13). Nenhum ID está comprovadamente livre. O uso real do Game.exe/JoiPlay e os direitos dos assets permanecem pendentes.
+**Importante:** CH06 mantém o template `null/false`, sem Game.exe ou JoiPlay. Barras A (8/32) e B/C/D (0/13) permanecem inalteradas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

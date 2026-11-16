@@ -130,6 +130,10 @@ jobs:
         run: |
           python scripts/regions/audit_region_map_id_reservations.py --id 599 --id 600 --id 700 --id 800 --id 1000
           python -m unittest discover -s tests -p 'test_sinnoh_map_id_reservations.py' -v
+      - name: CH06 - Schema Twinleaf (9 mapas, 24 eventos, 16 warps)
+        run: |
+          python scripts/regions/audit_sinnoh_twinleaf_events.py
+          python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_schema.py' -v
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh

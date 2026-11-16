@@ -10,6 +10,7 @@
 | [sinnoh-twinleaf-events.json](../data/regions/sinnoh-twinleaf-events.json) | 9 mapas **simbólicos**, 5 handlers, 3 Poké Bolas, 16 transições, spawn no quarto do jogador | IDs, tiles, sprites, coordenadas ainda **null/false** |
 | [build_sinnoh_twinleaf_events.py](../scripts/regions/build_sinnoh_twinleaf_events.py) | Compilador de overlays em memória sobre **cópia de geometria segura em** `.blue-work/sinnoh-stage/` | Não é instalador de mapas nem de PBS |
 | [test_sinnoh_twinleaf_events.py](../tests/test_sinnoh_twinleaf_events.py) | Fixtures sintéticas, whitelist de scripts, hashes de mapas, 3 Poké Bolas/warps e isolamento | QA nativo não feito |
+| [sinnoh-twinleaf-events.schema.json](../data/regions/sinnoh-twinleaf-events.schema.json) e [audit_sinnoh_twinleaf_events.py](../scripts/regions/audit_sinnoh_twinleaf_events.py) | CH06: 9 mapas, 24 eventos, 16 warps, 8 pares recíprocos, campos/IDs/topologia/limites | Dimensões declaradas não certificam tiles ou Game.exe |
 | [sinnoh_pilot_runtime.rb](../tests/sinnoh_pilot_runtime.rb) | Emulação puramente Ruby: save regional, starter, Barry, Pokédex e não regressão | Sem RPG Maker/Essentials instalado |
 
 **Proteção principal:** todos os plugins permanecem próprios de Sinnoh. Os scripts de eventos gerados só podem ser: `BlueSinnohPilot.mother`, `barry_intro`, `rowan_briefcase`, `barry_rival`, `rowan_pokedex` e **três handlers com espécie fixa** `choose_starter_from_ball(:TURTWIG/:CHIMCHAR/:PIPLUP)`. Nada do jogo doador é executado/copied. A engine de batalha é Blue/Decades.
@@ -83,3 +84,12 @@ Consulte [SINNOH_FASE_03_BARRY_PBS.md](SINNOH_FASE_03_BARRY_PBS.md). O gerador [
 - **Fase 03/12:** preparação de eventos feita, jogabilidade em Twinleaf/Sandgem **não aprovada**.
 - **Barras técnicas/jogáveis/nativas:** **0/13**, sem alterar os saves ou mapa inicial do Blue.
 - Próximo passo próprio de código: preparar os contratos das três versões de Barry com PBS e times compatíveis com o level cap do Blue, sem fabricar o conteúdo da fonte.
+
+### CH06 — auditor estrutural sem instalação (16/11/2026)
+
+```bash
+python scripts/regions/audit_sinnoh_twinleaf_events.py
+python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_schema.py' -v
+```
+
+Resultado esperado do template da `main`: `TEMPLATE_STRUCTURE_VALID_NOT_PLAYABLE`. Aceitar 16 warps com ida/volta não significa permitir auto-warp ou portal órfão; o grafo precisa atingir os nove mapas desde o quarto. O template com coordenadas, MapIDs e sprites `null/false` continua não instalável. A CLI pode verificar limites apenas quando receber `--spec` com especificação local e `--dimensions` com as nove dimensões de um inventário privado; **isso não autentica dimensões, tiles, bloqueios, áudio nem eventos no Game.exe**.

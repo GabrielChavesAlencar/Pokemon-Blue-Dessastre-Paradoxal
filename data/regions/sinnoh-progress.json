@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 5,
+    "done": 6,
     "partial": 0,
-    "pending": 15,
-    "percent_complete": 25,
+    "pending": 14,
+    "percent_complete": 30,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -847,8 +847,8 @@
         "priority": "P1",
         "title": "Schema + auditor das 9 áreas, 24 eventos e 16 warps da introdução",
         "acceptance": "Campos ausentes, coordenadas inválidas, transferência circular/órfã e mapas faltantes reprovam",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "scripts/regions/audit_sinnoh_twinleaf_events.py"
       },
       {
         "id": "CH07",
