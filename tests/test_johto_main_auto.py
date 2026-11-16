@@ -77,6 +77,28 @@ class AutoJohtoTests(unittest.TestCase):
         self.assertEqual([600], report["map_id_conflicts"])
         self.assertEqual((self.game / "Data/Map600.rxdata").read_bytes(), b"another-region-map")
 
+    def test_download_with_browser_duplicate_suffix_is_detected(self):
+        downloads = self.project / "Downloads"
+        downloads.mkdir()
+        duplicate = downloads / "Johto_Offline_Fase12_Auditoria_Integracao_Privado (2).zip"
+        duplicate.write_bytes(b"private-zip")
+        with patch.object(mod.Path, "home", return_value=self.project):
+            discovered = list(mod.candidate_bundles(self.project))
+        self.assertIn(duplicate, discovered)
+
+    def test_invalid_cached_bundle_does_not_hide_valid_download(self):
+        (self.game / "Game.exe").write_bytes(b"sample")
+        cached = self.project / ".blue-work/johto-offline12-preview.zip"
+        cached.parent.mkdir()
+        cached.write_bytes(b"invalid")
+        original = self.project / "Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip"
+        original.write_bytes(b"correct-but-not-real")
+        # The second file must still be evaluated (and correctly rejected
+        # by SHA-256), instead of aborting on the invalid cached ZIP.
+        report = mod.integrate(self.project, self.game)
+        self.assertEqual("offline_bundle_invalid", report["status"])
+        self.assertIn(original.name, report["reason"])
+
     def test_unknown_zip_is_rejected(self):
         (self.game / "Game.exe").write_bytes(b"sample")
         package = self.project / mod.BUNDLE_PATHS[0]
