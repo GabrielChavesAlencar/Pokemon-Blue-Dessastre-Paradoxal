@@ -17,7 +17,8 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts" / "regions"))
 from server.ruby_marshal import RubyObject, loads, text
 from build_johto_elm_lab_v1 import tile, table_values
-from johto_main_preview import PROOF, preview_proof, refresh_installed_bedroom
+from johto_main_preview import (PROOF, preview_proof,
+                               scoped_bedroom_proof, refresh_installed_bedroom)
 
 OUTPUT = ROOT / ".blue-work" / "johto-bedroom-diagnostic.json"
 
@@ -105,8 +106,18 @@ def inspect(project: Path = ROOT, game: Path | None = None):
         report["preview_integrity"] = "OK" if proof else "NO_PRIVATE_PREVIEW"
         report["safe_to_apply"] = bool(proof) and report["status"] == "OLD_OR_DIFFERENT_BEDROOM"
     except (OSError, ValueError, KeyError, TypeError) as error:
-        report["preview_integrity"] = "FAILED"
-        report["preview_integrity_error"] = str(error)
+        report["full_integrity_error"] = str(error)
+        try:
+            scoped = scoped_bedroom_proof(game)
+            if scoped:
+                report["preview_integrity"] = "SCOPED_OK_GLOBAL_FILES_CHANGED"
+                report["safe_to_apply"] = report["status"] == "OLD_OR_DIFFERENT_BEDROOM"
+            else:
+                report["preview_integrity"] = "FAILED"
+                report["preview_integrity_error"] = str(error)
+        except (OSError, ValueError, KeyError, TypeError) as local_error:
+            report["preview_integrity"] = "FAILED"
+            report["preview_integrity_error"] = str(local_error)
     report["next_action"] = (
         "Mapa HGSS aplicado; ainda faltam PNGs privados para móveis HGSS originais"
         if report["status"] == "LAYOUT_HGSS_APPLIED" and not
@@ -127,7 +138,8 @@ def main(argv=None):
     if a.apply:
         if report["safe_to_apply"]:
             try:
-                result = refresh_installed_bedroom(a.game_dir, ROOT)
+                result = refresh_installed_bedroom(
+                    a.game_dir, ROOT, allow_global_drift=True)
                 report = inspect(ROOT, a.game_dir)
                 report["repair"] = result
             except (OSError, KeyError, TypeError, ValueError) as error:
