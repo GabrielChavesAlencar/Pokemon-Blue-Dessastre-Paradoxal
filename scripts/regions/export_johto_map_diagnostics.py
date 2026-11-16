@@ -93,18 +93,32 @@ def bundle(project: Path, game: Path, output: Path):
     if marker.is_file() and not marker.is_symlink():
         result["ready_marker"] = marker.read_text("ascii", errors="replace").strip()[:160]
     output.parent.mkdir(parents=True, exist_ok=True)
-    if output.exists() or output.is_symlink():
-        raise ValueError("ZIP de diagnóstico já existe. Renomeie/remova o ZIP antigo antes.")
+    if output.is_symlink():
+        raise ValueError("Destino ZIP não pode ser symlink")
+    # Diagnósticos anteriores nunca devem impedir outra execução nem ser
+    # apagados. Escolher o primeiro nome livre e REPORTAR o caminho correto.
+    if output.exists():
+        base = output.stem
+        for count in range(1, 1000):
+            candidate = output.with_name(f"{base} ({count}){output.suffix}")
+            if candidate.is_symlink():
+                raise ValueError("ZIP de diagnóstico alternativo é symlink")
+            if not candidate.exists():
+                output = candidate
+                break
+        else:
+            raise ValueError("Limite de diagnósticos excedido na pasta .blue-work")
     with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED) as archive:
         for rel, blob in raw_files.items():
             archive.writestr(rel, blob)
         archive.writestr("DIAGNOSTICO_JOHTO.json",
                          json.dumps(result, ensure_ascii=False, indent=2) + "\n")
         archive.writestr("LEIA-ME.txt",
-                         "Sem saves, dados de conta ou arquivos pessoais.\n"
-                         "Contém APENAS três mapas de Johto e seus eventos do jogo.\n"
-                         "Compartilhe se desejar a auditoria; nunca copie este ZIP em game/.\n")
+                         "Sem saves. Inclui mapas existentes e relatório de arquivos ausentes.\n"
+                         "O diagnóstico JSON pode conter caminhos locais (nome da conta Windows).\n"
+                         "Compartilhe somente se desejar; nunca copie este ZIP em game/.\n")
     return {"zip": str(output), "maps": sorted(raw_files),
+            "missing_maps": [name for name in SELECTED if name not in raw_files],
             "contains_saves": False, "status": result["diagnostic"]["status"]}
 
 
