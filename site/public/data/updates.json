@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "74f428c9a417d05181dd2311283d6c0b107f8c8b",
+      "date": "2026-11-16T14:36:09-03:00",
+      "title": "test(ci): testar inicio QA sem fallback e regressao Ruby CH07",
+      "category": "Testes"
+    },
+    {
       "sha": "cfbac59dca336fbfb92ff1bae719a327ff65f561",
       "date": "2026-11-16T14:35:35-03:00",
       "title": "test(sinnoh): cobrir flags, duas escolhas, derrota, reload e regioes externas (CH07)",
