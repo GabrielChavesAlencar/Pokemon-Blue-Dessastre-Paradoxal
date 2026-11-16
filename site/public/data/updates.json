@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2b28cd22796b65ee0c31cd9152800d43ced28f39",
+      "date": "2026-11-16T13:37:18-03:00",
+      "title": "docs(sinnoh): mostrar barra E de tarefas executaveis direto pelo chat",
+      "category": "Documentação"
+    },
+    {
       "sha": "bc7fffc4910bee91e9616cc28586c467c28dde44",
       "date": "2026-11-16T13:36:53-03:00",
       "title": "docs(sinnoh): registrar 20 tarefas CH e nova barra E no progresso JSON",
