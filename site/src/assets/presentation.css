@@ -87,6 +87,37 @@
 .presentation-final-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;flex:none}
 .presentation-final-actions .button-secondary{background:#172d44}
 .presentation-disclaimer{margin-top:26px;font-size:10px;line-height:1.8;color:#6c839d;text-align:center}
+
+/* Catálogo, regiões e estratégia: cards editoriais da apresentação. */
+.presentation-dex-grid,.presentation-mechanic-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.presentation-dex-card,.presentation-mechanic-card{min-width:0;padding:28px;background:linear-gradient(155deg,#172c44,#0c1b2c);border:1px solid #355170;border-radius:12px}
+.presentation-dex-card strong{display:block;font:800 clamp(45px,5vw,68px)/1 'Barlow Condensed',sans-serif;color:#a4d1ff;letter-spacing:1px}
+.presentation-dex-symbol{display:inline-flex;align-items:center;min-height:68px;font:800 29px/1 'Barlow Condensed',sans-serif;letter-spacing:2px;color:#a4d1ff}
+.presentation-dex-card h3,.presentation-mechanic-card h3{margin-top:16px;color:#eff7ff;font-size:19px}
+.presentation-dex-card p,.presentation-mechanic-card p{margin-top:11px;font-size:12px;line-height:1.85;color:#a7bdd5}
+.presentation-content-note{margin-top:18px;color:#92abc5;font-size:11px;line-height:1.85}
+.presentation-content-note a{color:#a7cfff;text-decoration:underline;text-underline-offset:3px}
+.presentation-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.presentation-region-card{min-width:0;padding:23px 24px;background:#101f33;border:1px solid #304d6b;border-radius:11px}
+.presentation-region-card h3{margin-top:17px;color:#f1f7ff;font-size:24px;font-family:'Barlow Condensed',sans-serif}
+.presentation-region-card p{color:#9eb4cf;font-size:12px;line-height:1.8;margin-top:9px}
+.presentation-region-label{display:inline-flex;align-items:center;border:1px solid #557396;padding:6px 10px;border-radius:50px;color:#b9cee7;background:#223951;font-size:10px;font-weight:700}
+.presentation-region-label--available{border-color:#3f806e;background:#153c37;color:#a4e6ca}
+.presentation-region-label--testing{border-color:#587fa9;background:#1b3a5b;color:#afd5ff}
+.presentation-region-label--building{border-color:#806f4c;background:#453722;color:#f1d6a2}
+.presentation-future{margin-top:17px;padding:25px 28px;display:flex;gap:26px;align-items:center;justify-content:space-between;border:1px solid #35506e;border-radius:11px;background:#12243a}
+.presentation-future p{font-size:12px;color:#9cafc8;margin-top:8px;line-height:1.7}
+.presentation-future-list{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px}
+.presentation-future-list span{padding:8px 12px;border:1px solid #416489;border-radius:6px;color:#bcd4ef;background:#1a3350;font-size:11px;white-space:nowrap}
+.presentation-mechanic-card{position:relative;overflow:hidden}
+.presentation-mechanic-card:before{content:'';position:absolute;width:160px;height:160px;border-radius:50%;right:-75px;top:-75px;background:#7baaf10b;border:1px solid #7baaf122}
+.presentation-mechanic-mark{display:inline-grid;place-items:center;min-width:70px;height:56px;padding:0 12px;border-radius:11px;border:1px solid #668cb8;background:#284b70;color:#c0e2ff;font:800 21px 'Barlow Condensed',sans-serif;letter-spacing:1px}
+.presentation-balance-heading{margin-top:70px}
+.presentation-balance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.presentation-balance-grid article{padding:26px 28px;border:1px solid #314b68;border-radius:11px;background:linear-gradient(135deg,#11243b,#0e1b2c)}
+.presentation-balance-grid article span{color:#86b5e7;font-size:10px;letter-spacing:1.4px;font-weight:700}
+.presentation-balance-grid article h3{font-size:19px;margin-top:14px}
+.presentation-balance-grid article p{font-size:12px;line-height:1.9;color:#abc0d8;margin-top:10px}
 @keyframes presentation-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
 /* O cabeçalho continua utilizável com a nova aba no desktop. */
 @media(min-width:851px) and (max-width:1390px){#nav{gap:clamp(6px,.7vw,12px)}#nav a{font-size:11px}.header-inner{gap:15px}}
@@ -95,3 +126,16 @@
 @media(max-width:760px){.presentation-cover{grid-template-columns:1fr}.presentation-cover-copy{padding:42px 27px 10px}.presentation-cover h1{font-size:clamp(60px,13.5vw,92px)}.presentation-lead{max-width:540px}.presentation-cover-art{height:340px}.presentation-cover-art img{max-height:315px;width:315px}.presentation-art-halo{width:290px}.presentation-art-bottom{right:26px;bottom:25px}.presentation-art-top{top:15px}.presentation-cover-index{bottom:16px;left:25px}.presentation-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.presentation-facts>div:nth-child(2){border-right:0}.presentation-facts>div:nth-child(-n+2){border-bottom:1px solid #2d4561}.presentation-intro{grid-template-columns:1fr;gap:22px;margin-top:60px}.presentation-intro-copy{padding-left:18px}.presentation-section{margin-top:65px}.presentation-section-heading{align-items:flex-start;flex-wrap:wrap}.presentation-feature-grid{grid-template-columns:1fr}.presentation-feature{min-height:unset}.presentation-feature-top{margin-bottom:20px}.presentation-timeline{padding:32px 25px;margin-top:70px}.presentation-chapters{grid-template-columns:1fr;gap:18px;margin-top:32px}.presentation-chapter{display:grid;grid-template-columns:45px 1fr;gap:13px}.presentation-chapter small{margin-top:0}.presentation-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.presentation-detail-grid{grid-template-columns:1fr;margin-top:65px}.presentation-final{margin-top:65px;padding:30px 24px}.presentation-final h2{font-size:33px}}
 @media(max-width:450px){.presentation-breadcrumb{padding-top:19px}.presentation-cover-copy{padding:32px 20px 8px}.presentation-edition{font-size:8px;letter-spacing:2px}.presentation-cover h1{font-size:clamp(48px,13vw,65px);letter-spacing:-1.3px}.presentation-lead{font-size:12px}.presentation-overline{font-size:8px;letter-spacing:1px}.presentation-tags span{font-size:9px}.presentation-actions{width:100%;flex-direction:column}.presentation-actions>.button{width:100%}.presentation-cover-art{height:280px}.presentation-cover-art img{width:275px;height:275px}.presentation-art-halo{width:240px}.presentation-art-top{font-size:8px;right:14px}.presentation-art-bottom{font-size:8px;right:15px;bottom:29px;max-width:135px}.presentation-facts>div{padding:16px}.presentation-facts strong{font-size:11px}.presentation-facts small{font-size:8px}.presentation-intro h2{font-size:36px}.presentation-section-heading h2{font-size:33px}.presentation-gallery{gap:10px}.presentation-gallery-art{min-height:165px}.presentation-gallery-art img{height:138px;width:138px}.presentation-gallery-art:before{width:135px;height:135px}.presentation-gallery-caption{padding:13px}.presentation-gallery-caption h3{font-size:14px}.presentation-gallery-number{font-size:7px}.presentation-info-panel{padding:25px}.presentation-final-actions{flex-direction:column;width:100%}.presentation-final-actions .button{width:100%}.presentation-disclaimer{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.presentation-cover-art img{animation:none}}
+
+@media(max-width:760px){
+  .presentation-dex-grid,.presentation-mechanic-grid{grid-template-columns:1fr}
+  .presentation-region-grid,.presentation-balance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .presentation-future{flex-direction:column;align-items:flex-start}
+  .presentation-future-list{justify-content:flex-start}
+  .presentation-balance-heading{margin-top:55px}
+}
+@media(max-width:450px){
+  .presentation-region-grid,.presentation-balance-grid{grid-template-columns:1fr}
+  .presentation-dex-card,.presentation-mechanic-card,.presentation-region-card,.presentation-balance-grid article{padding:22px}
+  .presentation-future{padding:22px}
+}
