@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1c3dfa1c4559241d3d191c2101642a74737c13d7",
+      "date": "2026-11-16T07:12:53-03:00",
+      "title": "docs(johto): audit user-provided native maps, real stair commands and safe runtime-modified install recovery",
+      "category": "Documentação"
+    },
+    {
       "sha": "cd431e5da4a71dac50f288ce58189130badf4dee",
       "date": "2026-11-16T07:10:59-03:00",
       "title": "ci(johto): verify runtime-edited Johto recognized instead of missing and keep all region/saves unchanged",
