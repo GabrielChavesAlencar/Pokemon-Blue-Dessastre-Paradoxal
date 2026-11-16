@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6519674d525cfe6dfbb9412a1690634e52c5ed3d",
+      "date": "2026-11-16T07:03:41-03:00",
+      "title": "fix(johto): locate stair Transfer Player after sound/fade commands in real installed maps",
+      "category": "Correções"
+    },
+    {
       "sha": "304fe62597f6296cb39c670a38310e7905f3d91a",
       "date": "2026-11-16T06:53:53-03:00",
       "title": "fix(johto): distinguish scripted stair return from missing transfer and report each map checksum",
