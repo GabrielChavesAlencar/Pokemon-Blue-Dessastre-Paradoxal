@@ -47,13 +47,35 @@ class AutoJohtoTests(unittest.TestCase):
                 archive.writestr(name, b"bytes")
             for name in ("Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "johto-offline12-audit.json"):
                 archive.writestr(mod.OFFLINE_PREFIX + name, b"metadata")
+            archive.writestr(mod.OFFLINE_PREFIX + "johto-stage.json", json.dumps({
+                "native_mapinfos_sha256": "0" * 64,
+                "native_tilesets_sha256": "1" * 64,
+            }))
         sha = hashlib.sha256(package.read_bytes()).hexdigest()
-        with patch.object(mod, "ORIGINAL_BUNDLE_SHA256", sha):
+        with patch.object(mod, "ORIGINAL_BUNDLE_SHA256", sha), \
+             patch.object(mod, "candidate_bundles", return_value=iter([package])):
             report = mod.integrate(self.project, self.game)
         self.assertEqual("offline_preview_not_installable", report["status"])
         self.assertEqual(82, report["bundle"]["map_count"])
+        self.assertFalse(report["current_game"]["baseline_compatible"])
         self.assertFalse(report["ready"])
         self.assertFalse((self.game / "Data/blue-johto-install.json").exists())
+
+    def test_johto_map_collisions_require_rebase_not_overwrite(self):
+        (self.game / "Data").mkdir()
+        (self.game / "Data/MapInfos.rxdata").write_bytes(b"native-mapinfos")
+        (self.game / "Data/Tilesets.rxdata").write_bytes(b"native-tilesets")
+        (self.game / "Data/Map600.rxdata").write_bytes(b"another-region-map")
+        bundle = self.project / "synthetic.zip"
+        with zipfile.ZipFile(bundle, "w") as archive:
+            archive.writestr(mod.OFFLINE_PREFIX + "johto-stage.json", json.dumps({
+                "native_mapinfos_sha256": hashlib.sha256(b"native-mapinfos").hexdigest(),
+                "native_tilesets_sha256": hashlib.sha256(b"native-tilesets").hexdigest(),
+            }))
+        report = mod.inspect_current_baseline(self.game, bundle)
+        self.assertTrue(report["rebase_required"])
+        self.assertEqual([600], report["map_id_conflicts"])
+        self.assertEqual((self.game / "Data/Map600.rxdata").read_bytes(), b"another-region-map")
 
     def test_unknown_zip_is_rejected(self):
         (self.game / "Game.exe").write_bytes(b"sample")
