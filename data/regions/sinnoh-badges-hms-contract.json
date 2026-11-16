@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "PLANNED_CONTRACT_NOT_INSTALLED",
+  "reference_game": "Pokémon Platinum",
+  "source_of_truth": "site/public/data/regions.json",
+  "approved_for_install": false,
+  "gameplay_verified": false,
+  "native_gym_events_verified": false,
+  "hm_pickup_events_installed": false,
+  "requires_confirmed_local_pickup": true,
+  "hm_item_is_not_equivalent_to_local_pickup": true,
+  "no_cross_region_key_item_or_hm_transfer": true,
+  "native_decades_badges_unchanged": true,
+  "native_map_ids_assigned": false,
+  "rules": [
+    {
+      "badge": "COAL",
+      "field_move": "ROCK_SMASH",
+      "hm_item": "HM06",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "FOREST",
+      "field_move": "CUT",
+      "hm_item": "HM01",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "COBBLE",
+      "field_move": "FLY",
+      "hm_item": "HM02",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "RELIC",
+      "field_move": "DEFOG",
+      "hm_item": "HM05",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "FEN",
+      "field_move": "SURF",
+      "hm_item": "HM03",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "MINE",
+      "field_move": "STRENGTH",
+      "hm_item": "HM04",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "ICICLE",
+      "field_move": "ROCK_CLIMB",
+      "hm_item": "HM08",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    },
+    {
+      "badge": "BEACON",
+      "field_move": "WATERFALL",
+      "hm_item": "HM07",
+      "verified_gym_event": false,
+      "verified_hm_pickup_event": false
+    }
+  ],
+  "notes": "CH11: declarative badge/HM permissions, not NPC, physical gym, map, game compile or native approval. Gyms and pickup events must be implemented and verified separately; never infer HM local acquisition from another region's Bag."
+}
