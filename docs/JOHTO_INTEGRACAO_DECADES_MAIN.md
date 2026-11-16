@@ -5,6 +5,16 @@
 
 ## Como atualizar no Windows
 
+## Atualização do Blue-Story (16/11): escolher o pacote na própria janela
+
+A janela do **Blue-Story.exe geral** agora confere o status de Johto **antes de iniciar Game.exe**. Se a região não estiver montada, oferece **SIM: selecionar o ZIP original e instalar no mesmo jogo**, **NÃO: abrir apenas as regiões existentes** e **CANCELAR: sair**. Ao selecionar o ZIP, ele valida SHA-256, copia o arquivo para `.blue-work`, monta os 100 mapas com backup/rollback e solicita compilação nativa de PBS e plugins. Não cria um perfil separado de saves.
+
+No menu **Novo Jogo**, **Johto** só aparece com o nome sem sufixo se o pacote principal tiver sido reconhecido. Caso contrário, exibe **Johto (instalação necessária)** e nunca inicia o piloto isolado silenciosamente. A opção separada **Testar Johto** permanece apenas para QA.
+
+Os navegadores podem renomear o ZIP como `... (1).zip`; o instalador passou a procurar cópias numeradas, e ignora cache inválido quando houver uma cópia íntegra em Downloads. Nenhum arquivo privado de Johto é embutido no código público do site ou no EXE: o usuário precisa possuir o ZIP original, disponível nesta conversa.
+
+**Atenção:** a existência do código no GitHub não prova que um novo EXE foi compilado e publicado. É obrigatório verificar o workflow de release, baixar o EXE atualizado e executar o instalador no Windows com o ZIP privado original. O teste automatizado não comprova gameplay no Game.exe nem no JoiPlay.
+
 1. Baixar **Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip** (SHA-256 `74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49`) e deixá-lo **sem extrair** na pasta `Downloads` do mesmo usuário Windows, ou na raiz do projeto ou em `.blue-work`.
 2. Fechar `Game.exe` e abrir **o mesmo Blue-Story.exe geral**. Ele baixa a nova revisão, prepara Decades/Kanto/Hoenn e só depois monta Johto.
 3. Conferir `.blue-work/johto-main-install-status.json`. O sucesso **experimental** é `"status": "experimental_installed_not_native_tested"`. Qualquer outro status deixa Johto bloqueada e informa `reason`; não criar marcadores manualmente.
