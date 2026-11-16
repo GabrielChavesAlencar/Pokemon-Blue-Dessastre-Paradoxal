@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27d898927ae577855942cd0e9d9343093c29c6ef",
+      "date": "2026-11-16T14:34:34-03:00",
+      "title": "fix(sinnoh): fail closed flags, starter grant, loss and QA new game (CH07)",
+      "category": "Correções"
+    },
+    {
       "sha": "eb7c4669149b8f1fde5f328a6ee16a4e7ceadf9b",
       "date": "2026-11-16T14:24:03-03:00",
       "title": "fix(hub): incluir guard Sinnoh CH04 nas dependencias do pacote e regressao",
