@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cfbac59dca336fbfb92ff1bae719a327ff65f561",
+      "date": "2026-11-16T14:35:35-03:00",
+      "title": "test(sinnoh): cobrir flags, duas escolhas, derrota, reload e regioes externas (CH07)",
+      "category": "Testes"
+    },
+    {
       "sha": "27d898927ae577855942cd0e9d9343093c29c6ef",
       "date": "2026-11-16T14:34:34-03:00",
       "title": "fix(sinnoh): fail closed flags, starter grant, loss and QA new game (CH07)",
