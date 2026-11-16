@@ -241,8 +241,12 @@ def scoped_bedroom_proof(game: Path, *, accept_audited_live_maps: bool = False,
     if (not isinstance(home, RubyObject) or home.name != "RPG::Map"
             or not isinstance(tilesets, list) or type(tid) is not int
             or tid <= 0 or tid >= len(tilesets)
-            or not isinstance(tilesets[tid], RubyObject)
-            or text(tilesets[tid].attrs.get("@tileset_name")) != "BLUE_JOHTO_OPENING_INSIDE"):
+            or not isinstance(tilesets[tid], RubyObject)):
+        raise ValueError("Johto: tileset de New Bark não confere com a prévia original")
+    name = text(tilesets[tid].attrs.get("@tileset_name"))
+    private_hgss = (data.get("private_hgss") or {}).get("status") == "private_art_compiled"
+    if (name != "BLUE_JOHTO_OPENING_INSIDE" and not (
+            private_hgss and re.fullmatch(r"BLUE_JOHTO_HGSS_PRIVATE_[0-9]+", name))):
         raise ValueError("Johto: tileset de New Bark não confere com a prévia original")
     return data
 
