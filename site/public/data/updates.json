@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7311b7f6cbf44516e63596036a9e7fa6d5c253ac",
+      "date": "2026-11-16T14:02:36-03:00",
+      "title": "fix(sinnoh): detectar marcadores em Data sem diferenca de maiusculas (CH04)",
+      "category": "Correções"
+    },
+    {
       "sha": "79692812f2e5cda6bfdd92caf7c03374421b49c9",
       "date": "2026-11-16T14:01:18-03:00",
       "title": "fix(sinnoh): impedir plugin standalone no Decades compartilhado (CH04)",
