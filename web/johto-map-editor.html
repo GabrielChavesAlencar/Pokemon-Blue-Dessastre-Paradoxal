@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="johto-csrf" content="__JOHTO_CSRF__">
+<title>Johto Map Studio • Blue: Dessastre Paradoxal</title>
+<style>
+:root {color-scheme:dark;font-family:Inter,Segoe UI,Arial,sans-serif;--bg:#0b101b;--panel:#121b2b;--line:#28364a;--ink:#e9eef8;--muted:#96a5bd;--blue:#4e8bff;--gold:#f0bf5b;--good:#52cea0;--bad:#f27882}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}
+header{height:66px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;justify-content:space-between;gap:16px;background:#101827}
+header h1{font-size:17px;margin:0;font-weight:700}header small{display:block;margin-top:3px;color:var(--muted);font-size:11px;letter-spacing:.6px}
+.headBadge{border:1px solid #38557b;padding:7px 10px;border-radius:40px;color:#b9d0ff;font-size:11px}
+main{height:calc(100vh - 66px);min-height:580px;display:grid;grid-template-columns:255px minmax(0,1fr) 300px;overflow:hidden}
+aside{overflow:auto;background:var(--panel);padding:16px;border-right:1px solid var(--line)}
+aside:last-child{border-right:0;border-left:1px solid var(--line)}
+h2{font-size:12px;letter-spacing:1px;color:#c3d0e5;text-transform:uppercase;margin:14px 0 10px}
+p{line-height:1.5}label{display:block;font-size:12px;color:#b0c0d6;margin:8px 0}
+input,select,button{font:inherit}input,select{background:#0b1422;color:var(--ink);border:1px solid #34435d;border-radius:8px;padding:10px;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--blue)}
+button{background:#25344d;border:1px solid #3b506d;color:#e5edfb;border-radius:9px;padding:9px 11px;cursor:pointer;transition:.13s;font-size:12px}
+button:hover:not(:disabled){background:#354766}button:disabled{opacity:.43;cursor:not-allowed}
+button.primary{background:var(--blue);border-color:var(--blue);color:#081423;font-weight:700}
+button.gold{background:#e4af4c;border-color:#e4af4c;color:#211501;font-weight:700}
+.row{display:flex;gap:7px;align-items:center}.row>*{flex:1;min-width:0}
+.tilesTools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tilesTools button.active,.layers button.active{border-color:#67a4ff;background:#24467b;box-shadow:inset 0 0 0 1px #67a4ff}
+.mapList{display:grid;gap:4px;max-height:240px;overflow:auto;margin-top:10px}
+.mapButton{text-align:left;padding:9px;line-height:1.35}
+.mapButton.active{background:#173b6c;border-color:#508cff}
+.mapButton small{display:block;color:#8ea6c6;margin-top:2px}
+.small{font-size:11px;color:var(--muted);line-height:1.5}
+.hint{border:1px solid #35445d;background:#182337;border-radius:9px;padding:10px;font-size:11px;color:#bdcee7;line-height:1.5}
+.good{color:var(--good)}.bad{color:var(--bad)}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.center{display:flex;flex-direction:column;min-width:0}
+.toolbar{min-height:54px;background:#101a2a;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;padding:8px 14px;flex-wrap:wrap}
+.toolbar strong{font-size:13px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toolbar span{font-size:11px;color:var(--muted)}.toolbar select{width:auto;padding:7px;font-size:12px}
+.mapViewport{flex:1;overflow:auto;min-width:0;position:relative;background-color:#0b1627;background-image:linear-gradient(45deg,#101e32 25%,transparent 25%),linear-gradient(-45deg,#101e32 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#101e32 75%),linear-gradient(-45deg,transparent 75%,#101e32 75%);background-size:48px 48px;background-position:0 0,0 24px,24px -24px,-24px 0;padding:35px}
+#mapCanvas{image-rendering:pixelated;display:block;cursor:crosshair;box-shadow:0 15px 60px #0007;touch-action:none;background:#1d293a}
+#mapCanvas.eraser{cursor:cell}
+.footer{display:flex;justify-content:space-between;padding:9px 15px;background:#101a2a;border-top:1px solid var(--line);gap:10px;font-size:11px;color:#a9b9d1}
+.footer strong{color:#dbe8ff}
+.paletteWrap{height:340px;overflow:auto;background:#0b1421;border:1px solid #344059;border-radius:8px;position:relative}
+#paletteCanvas{display:block;cursor:crosshair;image-rendering:pixelated}
+.selectedTile{display:flex;align-items:center;gap:14px;padding:10px;background:#0c1626;border-radius:10px;border:1px solid var(--line);margin:12px 0}
+#tilePreview{width:64px;height:64px;image-rendering:pixelated;background:#233650}
+.events{max-height:240px;overflow:auto;display:grid;gap:5px}
+.events button{text-align:left;font-size:11px;line-height:1.35}
+.events button b{color:#efc773;font-weight:650}.events button small{display:block;color:#8ca0bc}
+.status{white-space:pre-wrap;font-size:11px;background:#0c1627;border:1px solid #34405a;border-radius:8px;min-height:54px;padding:10px;line-height:1.5;margin-top:10px;overflow-wrap:anywhere}
+#warning{display:none;padding:9px;background:#523031;border:1px solid #9f525b;color:#ffe0e3;border-radius:8px}
+@media(max-width:1150px){main{grid-template-columns:220px minmax(0,1fr) 245px}aside{padding:12px}}@media(max-width:850px){main{height:auto;min-height:calc(100vh - 66px);display:flex;flex-wrap:wrap;overflow:visible}aside{width:50%;height:auto;max-height:520px}.center{width:100%;height:650px;order:3}aside:last-child{border-right:0}}
+</style>
+</head>
+<body>
+<header><div><h1>JOHTO <span style="color:#8ab4ff">MAP STUDIO</span></h1><small>POKÉMON BLUE: DESSASTRE PARADOXAL · EDITOR LOCAL</small></div><div class="headBadge">MAP600—699 • GITHUB MAIN</div></header>
+<main>
+<aside>
+<h2>Explorar mapas</h2>
+<input id="search" placeholder="Buscar cidade, mapa ou ID...">
+<div id="mapList" class="mapList"></div>
+<hr>
+<h2>Ferramentas</h2>
+<div class="tilesTools" id="tools"><button data-tool="brush" class="active">✏️ Pintar</button><button data-tool="erase">⌫ Apagar</button><button data-tool="pick">◉ Capturar</button></div>
+<h2>Camada ativa</h2>
+<div class="row layers" id="layers"><button class="active" data-layer="0">Piso · 0</button><button data-layer="1">Meio · 1</button><button data-layer="2">Topo · 2</button></div>
+<div class="row" style="margin-top:13px"><button id="undo">↶ Desfazer</button><button id="redo">↷ Refazer</button></div>
+<div class="row" style="margin-top:8px"><button id="grid" class="active">▦ Grade</button><button id="eventsToggle" class="active">◉ Eventos</button></div>
+<hr>
+<button id="save" class="primary" style="width:100%;padding:13px" disabled>Salvar no jogo + backup</button>
+<p class="small">O editor altera os tiles do arquivo RXDATA do mapa selecionado e registra um patch JSON versionável. Eventos e scripts ficam intactos.</p>
+<button id="remoteCheck" style="width:100%">Verificar GitHub</button>
+<button id="publish" class="gold" style="width:100%;margin-top:8px" disabled>Publicar este mapa na main</button>
+<div id="remoteStatus" class="status">GitHub: verificando...</div>
+<p class="small">O botão usa sua autenticação local do GitHub CLI. Uma única vez, execute <code>gh auth login</code> se solicitado. Nenhum token é salvo pelo editor.</p>
+</aside>
+<section class="center">
+<div class="toolbar"><strong id="title">Escolha um mapa</strong><span id="size"></span><div style="flex:1"></div><label style="margin:0">Zoom <select id="zoom"><option value=".5">50%</option><option value="1" selected>100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label><span id="dirty"></span></div>
+<div id="viewport" class="mapViewport"><canvas id="mapCanvas" width="400" height="250"></canvas></div>
+<div class="footer"><span id="coords">X — · Y —</span><span id="layerInfo">Camada: Piso</span><strong id="state">Aguardando...</strong></div>
+</section>
+<aside>
+<h2>Paleta do tileset</h2>
+<div id="warning"></div>
+<div id="atlasName" class="small">Carregue um mapa para visualizar os tiles reais.</div>
+<div class="selectedTile"><canvas id="tilePreview" width="64" height="64"></canvas><div><strong id="tileID">ID 384</strong><div id="passability" class="small">Selecione um tile.</div></div></div>
+<div class="paletteWrap"><canvas id="paletteCanvas" width="192" height="280"></canvas></div>
+<p class="small">Clique em um tile da paleta e pinte o mapa com o mouse. Tiles de autotile (ID 48–383) são exibidos como blocos de referência; a edição original é preservada.</p>
+<hr>
+<h2>Eventos (somente leitura)</h2>
+<p class="small">Os eventos são marcados no mapa para evitar apagar sem querer escadas, portas, NPCs e a posição inicial. Clique para localizar.</p>
+<div id="eventList" class="events"></div>
+<hr>
+<div class="hint">**Publicação segura**<p style="margin-bottom:0">O GitHub receberá somente <code>data/regions/johto-map-edits/MapXXX.json</code>, não os gráficos privados, ROMs, mapas binários ou saves. O Blue-Story usará esse patch nas atualizações.</p></div>
+</aside>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),token=document.querySelector('meta[name="johto-csrf"]').content;
+const mapCanvas=$('mapCanvas'), mapCtx=mapCanvas.getContext('2d'),paletteCanvas=$('paletteCanvas'),pctx=paletteCanvas.getContext('2d'),preview=$('tilePreview'),pv=preview.getContext('2d');
+mapCtx.imageSmoothingEnabled=false;pctx.imageSmoothingEnabled=false;pv.imageSmoothingEnabled=false;
+let catalog=[],map=null,cells=[],initial=[],atlas=null,layer=0,tile=384,tool='brush',zoom=1,grid=true,eventsVisible=true;
+let history=[],future=[],stroke=null,dirty=false,busy=false,remoteSha=null,remoteReady=false;
+const TILE=32,SWATCH=24;
+const setStatus=(text,bad=false)=>{$('state').textContent=text;$('state').className=bad?'bad':'good'};
+const warning=text=>{const node=$('warning');node.textContent=text||'';node.style.display=text?'block':'none'};
+async function get(path){const response=await fetch(path,{cache:'no-store'});const json=await response.json();if(!response.ok)throw Error(json.error||'Falha de leitura');return json}
+async function post(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Johto-Editor-Token':token},body:JSON.stringify(body)});const json=await r.json();if(!r.ok)throw Error(json.error||'Falha ao salvar');return json}
+const index=(x,y,z)=>x+map.width*(y+map.height*z);
+function tileAt(x,y,z){return cells[index(x,y,z)]}
+function paintTile(ctx,id,x,y,size){
+ if(id===0)return;
+ if(id<384){ctx.fillStyle='#456382';ctx.fillRect(x,y,size,size);ctx.fillStyle='#e2e9f6';ctx.font=Math.max(8,size*.26)+'px monospace';ctx.fillText(String(id),x+2,y+size*.7);return}
+ const tx=(id-384)%8*32,ty=Math.floor((id-384)/8)*32;
+ if(!atlas||tx+32>atlas.naturalWidth||ty+32>atlas.naturalHeight){ctx.fillStyle='#713f4d';ctx.fillRect(x,y,size,size);return}
+ ctx.drawImage(atlas,tx,ty,32,32,x,y,size,size);
+}
+function render(){
+ if(!map)return;
+ const size=TILE*zoom,w=map.width,h=map.height;
+ mapCanvas.width=Math.ceil(w*size);mapCanvas.height=Math.ceil(h*size);
+ mapCtx.imageSmoothingEnabled=false;
+ mapCtx.fillStyle='#1e2d43';mapCtx.fillRect(0,0,mapCanvas.width,mapCanvas.height);
+ for(let z=0;z<3;z++){
+   if(z!==layer)mapCtx.globalAlpha=.90;
+   for(let y=0;y<h;y++)for(let x=0;x<w;x++)paintTile(mapCtx,tileAt(x,y,z),x*size,y*size,size);
+   mapCtx.globalAlpha=1;
+ }
+ if(grid){mapCtx.strokeStyle='rgba(211,229,255,.15)';mapCtx.lineWidth=.6;mapCtx.beginPath();
+   for(let x=0;x<=w;x++){mapCtx.moveTo(x*size+.5,0);mapCtx.lineTo(x*size+.5,h*size)}
+   for(let y=0;y<=h;y++){mapCtx.moveTo(0,y*size+.5);mapCtx.lineTo(w*size,y*size+.5)}
+   mapCtx.stroke()}
+ if(eventsVisible){for(const e of map.events){mapCtx.fillStyle=e.warp?'#3dd7c6':'#ffd071';mapCtx.beginPath();mapCtx.arc((e.x+.5)*size,(e.y+.5)*size,Math.max(3,size*.21),0,Math.PI*2);mapCtx.fill();mapCtx.strokeStyle='#0a1423';mapCtx.lineWidth=1.4;mapCtx.stroke()}}
+}
+function renderPalette(){
+ if(!atlas)return;
+ const count=Math.max(0,Math.floor(atlas.naturalHeight/32)*8),size=SWATCH;
+ paletteCanvas.width=8*size;paletteCanvas.height=Math.ceil(count/8)*size;
+ pctx.imageSmoothingEnabled=false;pctx.fillStyle='#17263c';pctx.fillRect(0,0,paletteCanvas.width,paletteCanvas.height);
+ for(let n=0;n<count;n++)paintTile(pctx,384+n,(n%8)*size,Math.floor(n/8)*size,size);
+ if(tile>=384&&tile<384+count){const n=tile-384;pctx.strokeStyle='#ffcf62';pctx.lineWidth=3;pctx.strokeRect((n%8)*size+1,Math.floor(n/8)*size+1,size-2,size-2)}
+ renderSelected();
+}
+function renderSelected(){
+ pv.clearRect(0,0,64,64);pv.imageSmoothingEnabled=false;paintTile(pv,tile,0,0,64);
+ $('tileID').textContent='Tile ID '+tile;
+ const flags=map?.flags||[];
+ $('passability').textContent=!tile?'Transparente':!flags[tile]?'Livre':'Flags de colisão: '+flags[tile];
+}
+function currentDiff(){
+ if(!map)return[];
+ const result=[];
+ for(let i=0;i<cells.length;i++)if(cells[i]!==initial[i]){
+   const z=Math.floor(i/(map.width*map.height)),rem=i%(map.width*map.height);
+   result.push({x:rem%map.width,y:Math.floor(rem/map.width),z,from:initial[i],to:cells[i]});
+ }
+ return result;
+}
+function refreshControls(){
+ dirty=currentDiff().length>0;
+ $('dirty').textContent=dirty?'● Alterações não salvas':'✓ Salvo';
+ $('dirty').className=dirty?'bad':'good';
+ $('save').disabled=!dirty||busy;
+ $('publish').disabled=dirty||busy||!remoteReady||!map;
+ $('undo').disabled=!history.length;$('redo').disabled=!future.length;
+}
+async function loadMaps(){
+ const result=await get('/api/maps');catalog=result.maps;
+ if(!catalog.length){setStatus('Nenhum mapa 600–699 instalado',true);warning('Johto ainda não está instalada. Abra o Blue-Story e instale a região antes de editar.');return}
+ renderMapList();const favorite=catalog.find(x=>x.id===674);await openMap((favorite||catalog[0]).id)
+}
+function renderMapList(){
+ const needle=$('search').value.toLowerCase(),list=$('mapList');list.replaceChildren();
+ for(const item of catalog.filter(x=>(x.id+' '+x.name).toLowerCase().includes(needle))){
+   const button=document.createElement('button');button.className='mapButton'+(map?.id===item.id?' active':'');
+   button.textContent='Map'+item.id+' · '+item.name;button.onclick=()=>openMap(item.id);
+   list.appendChild(button);
+ }
+}
+async function checkRemote(){
+ if(!map)return;
+ remoteReady=false;refreshControls();$('remoteStatus').textContent='Consultando GitHub...';
+ try{const result=await get('/api/remote?id='+map.id);remoteSha=result.sha;remoteReady=result.in_sync;
+   $('remoteStatus').textContent=result.in_sync?
+     'GitHub conectado. '+(result.exists?'Arquivo sincronizado com a main.':'Novo arquivo: pode publicar após salvar.') :
+     'Conflito: o arquivo da main é diferente da versão local. Atualize o Blue-Story antes de publicar.';
+ }catch(error){remoteSha=null;remoteReady=false;$('remoteStatus').textContent=
+   error.message+'\nConfigure o GitHub CLI (gh auth login) e clique em Verificar GitHub.'}
+ refreshControls();
+}
+async function openMap(id){
+ if(dirty&&!confirm('Descartar as alterações não salvas do mapa atual?'))return;
+ busy=true;warning('');setStatus('Carregando Map'+id+'...');
+ try{
+   const data=await get('/api/map?id='+id);const img=new Image();
+   img.src='/api/tileset?id='+id+'&t='+encodeURIComponent(data.map_hash);
+   await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error('PNG do tileset não pôde ser carregado'))});
+   atlas=img;map=data;cells=[...data.cells];initial=[...cells];history=[];future=[];stroke=null;tile=384;layer=0;
+   $('atlasName').textContent=data.tileset+' · '+Math.floor(img.naturalHeight/32)*8+' tiles';
+   $('title').textContent='Map'+id+' · '+(catalog.find(x=>x.id===id)?.name||'Johto');
+   $('size').textContent=data.width+' × '+data.height+' · 3 camadas';
+   const list=$('eventList');list.replaceChildren();
+   for(const e of data.events){const button=document.createElement('button');
+     const title=document.createElement('b');title.textContent=e.name+' · '+e.x+','+e.y;
+     const desc=document.createElement('small');desc.textContent=e.warp?
+       'Transferência → Map'+e.warp.map+' ('+e.warp.x+','+e.warp.y+')':'Evento #'+e.id+' · '+e.pages+' pág.';
+     button.append(title,desc);button.onclick=()=>{const s=TILE*zoom;const vp=$('viewport');vp.scrollLeft=(e.x+.5)*s-vp.clientWidth/2;vp.scrollTop=(e.y+.5)*s-vp.clientHeight/2};
+     list.appendChild(button)}
+   document.querySelectorAll('[data-layer]').forEach(b=>b.classList.toggle('active',Number(b.dataset.layer)===layer));
+   render();renderPalette();renderMapList();setStatus('Mapa carregado. Desenhe para editar.');
+   remoteSha=null;remoteReady=false;dirty=false;
+ }catch(error){warning(error.message);setStatus('Não foi possível abrir o mapa',true)}
+ finally{busy=false;refreshControls()}
+ if(map?.id===id)await checkRemote();
+}
+function mapPoint(event){
+ const box=mapCanvas.getBoundingClientRect(),size=TILE*zoom;
+ return {x:Math.floor((event.clientX-box.left)/size),y:Math.floor((event.clientY-box.top)/size)};
+}
+function strokePaint(x,y){
+ if(!map||!stroke||x<0||y<0||x>=map.width||y>=map.height)return;
+ const v=tool==='erase'?0:tile,k=index(x,y,layer);
+ if(tool==='pick'){tile=cells[k];tool='brush';document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));renderPalette();return}
+ if(cells[k]===v)return;
+ if(!stroke.has(k))stroke.set(k,{k,from:cells[k],to:v});
+ else stroke.get(k).to=v;
+ cells[k]=v;render();refreshControls();
+}
+function endStroke(){
+ if(!stroke)return;
+ const actions=[...stroke.values()].filter(e=>e.from!==e.to);
+ if(actions.length){history.push(actions);future=[]}stroke=null;refreshControls();
+}
+function undo(){
+ const actions=history.pop();if(!actions)return;
+ for(const e of actions)cells[e.k]=e.from;
+ future.push(actions);render();refreshControls();
+}
+function redo(){
+ const actions=future.pop();if(!actions)return;
+ for(const e of actions)cells[e.k]=e.to;
+ history.push(actions);render();refreshControls();
+}
+async function saveMap(){
+ const diff=currentDiff();if(!map||!diff.length)return;
+ busy=true;refreshControls();setStatus('Salvando Map'+map.id+'...');
+ try{
+   const saved=await post('/api/save',{map_id:map.id,changes:diff,map_hash:map.map_hash,patch_hash:map.patch_hash});
+   map.map_hash=saved.map_hash;map.patch_hash=saved.patch_hash;initial=[...cells];history=[];future=[];
+   setStatus(saved.count+' tiles salvos, backup criado. Publique na main para manter em outras instalações.');
+ }catch(error){warning(error.message);setStatus('Falha ao salvar',true)}
+ finally{busy=false;refreshControls()}
+}
+async function publishMap(){
+ if(!map||dirty||!remoteReady)return;
+ if(!confirm('Publicar o patch de Map'+map.id+' diretamente na branch MAIN do GitHub?'))return;
+ busy=true;refreshControls();setStatus('Publicando alteração na main...');
+ try{
+   const result=await post('/api/publish',{map_id:map.id,patch_hash:map.patch_hash,remote_sha:remoteSha});
+   remoteSha=result.sha;remoteReady=true;
+   $('remoteStatus').textContent='Publicado na branch MAIN: '+result.url;
+   setStatus('Commit publicado. O Blue-Story poderá reaplicar as alterações.');
+ }catch(error){warning(error.message);setStatus('Falha na publicação',true)}
+ finally{busy=false;refreshControls()}
+}
+mapCanvas.addEventListener('pointerdown',event=>{if(event.button!==0||!map)return;stroke=new Map();mapCanvas.setPointerCapture(event.pointerId);const p=mapPoint(event);strokePaint(p.x,p.y)});
+mapCanvas.addEventListener('pointermove',event=>{if(!map)return;const p=mapPoint(event);$('coords').textContent='X '+p.x+' · Y '+p.y+' · Tile '+(p.x>=0&&p.y>=0&&p.x<map.width&&p.y<map.height?tileAt(p.x,p.y,layer):'—');if(stroke)strokePaint(p.x,p.y)});
+mapCanvas.addEventListener('pointerup',endStroke);mapCanvas.addEventListener('pointercancel',endStroke);
+paletteCanvas.onclick=event=>{if(!map)return;const rect=paletteCanvas.getBoundingClientRect();const col=Math.floor((event.clientX-rect.left)/SWATCH),row=Math.floor((event.clientY-rect.top)/SWATCH);const id=384+row*8+col;if(col>=0&&col<8&&id<map.flags.length){tile=id;tool='brush';document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool==='brush'));renderPalette()}};
+$('tools').onclick=event=>{const b=event.target.closest('[data-tool]');if(!b)return;tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));mapCanvas.classList.toggle('eraser',tool==='erase')};
+$('layers').onclick=event=>{const b=event.target.closest('[data-layer]');if(!b)return;layer=Number(b.dataset.layer);document.querySelectorAll('[data-layer]').forEach(b=>b.classList.toggle('active',b.dataset.layer==layer));$('layerInfo').textContent='Camada: '+['Piso','Meio','Topo'][layer];render()};
+$('search').oninput=renderMapList;
+$('zoom').onchange=event=>{zoom=Number(event.target.value);render()};
+$('grid').onclick=()=>{grid=!grid;$('grid').classList.toggle('active',grid);render()};
+$('eventsToggle').onclick=()=>{eventsVisible=!eventsVisible;$('eventsToggle').classList.toggle('active',eventsVisible);render()};
+$('undo').onclick=undo;$('redo').onclick=redo;$('save').onclick=saveMap;$('publish').onclick=publishMap;$('remoteCheck').onclick=checkRemote;
+window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveMap()}});
+loadMaps().catch(e=>{warning(e.message);setStatus('Erro na inicialização',true)});
+</script>
+</body>
+</html>
