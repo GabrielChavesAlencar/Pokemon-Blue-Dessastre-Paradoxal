@@ -243,6 +243,15 @@ Dir.mktmpdir("blue-region-start-") do |folder|
     end
     mapping = (1..142).map { |n| [n.to_s, n == 7 ? 321 : (n == 5 ? 713 : 400+n)] }.to_h
     install = {"schema"=>1, "source"=>"Essentials FRLG 21.1", "maps"=>mapping}
+    # A valid MAIN install needs all 142 data maps + a strict compact gate.
+    # The historical fixture only created the spawn map, so it now fails
+    # safely with the stronger production verification.
+    File.write("Data/MapInfos.rxdata", "mock map infos")
+    File.write("Data/Tilesets.rxdata", "mock tilesets")
+    mapping.values.each { |mid|
+      File.write(sprintf("Data/Map%03d.rxdata", mid), "mock map")
+    }
+    File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,321\n")
     File.write("Data/blue-kanto-install.json", JSON.generate(install))
     check(BlueRegionStart.kanto_integrated?, "Audited main Kanto install was not recognized")
     File.write("Data/blue-kanto-ready.txt", "BLUE_KANTO_READY_V1,142,321\n")
