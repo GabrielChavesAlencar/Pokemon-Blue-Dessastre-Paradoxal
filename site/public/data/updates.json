@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "812fa213626c9fe8488713dc6a74019b633b4d4c",
+      "date": "2026-11-16T00:28:26-03:00",
+      "title": "test(johto): end-to-end private HGSS updater preserves Kanto, Hoenn and saves with rollback",
+      "category": "Testes"
+    },
+    {
       "sha": "ab59d47a5e3389519e52acfdc73194777b492b92",
       "date": "2026-11-16T00:27:18-03:00",
       "title": "docs(johto): private HGSS interiors, credits, exact map coverage and integration limits",
