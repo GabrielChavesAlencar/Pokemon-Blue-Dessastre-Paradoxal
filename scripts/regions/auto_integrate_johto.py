@@ -189,9 +189,18 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
             import johto_main_preview
             report = johto_main_preview.preview_proof(game)
             if report:
+                # A copied Boot.rb is NOT replaced by Blue-Story's source update.
+                # The first Johto preview used Compiler.singleton_class.prepend,
+                # causing SystemStackError during native Compiler.main.
+                # Apply the audited runtime-only hotfix transactionally, preserving
+                # all 100 maps, global MapInfos/PBS and every save.
+                hotfix = johto_main_preview.refresh_installed_runtime(game, project)
                 return record(project, {"status": "experimental_installed_not_native_tested",
-                                        "reason": "100 mapas de Johto integrados com segurança; testes reais Game.exe/JoiPlay ainda pendentes",
-                                        "map_count": 100, "native_qa": False})
+                                        "reason": "100 mapas Johto preservados; plugin Ruby verificado/atualizado. Compilação e gameplay nativos ainda pendentes",
+                                        "map_count": 100, "native_qa": False,
+                                        "changed": hotfix["changed"],
+                                        "runtime_hotfix": hotfix.get("runtime_hotfix"),
+                                        "backup_folder": hotfix.get("backup_folder")})
         except (ImportError, OSError, ValueError, KeyError, TypeError) as exc:
             return record(project, {"status": "existing_install_needs_review",
                                     "reason": str(exc)})
