@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "28ae6375a79bfa7150077312bc10a14e25924abf",
+      "date": "2026-11-16T19:34:00-03:00",
+      "title": "docs(sinnoh): CH13 auditada e Barra E 13/20 sem alterar barras jogáveis",
+      "category": "Documentação"
+    },
+    {
       "sha": "0a4e8a3a698e11025650df292b6baaea914b6ac9",
       "date": "2026-11-16T19:31:38-03:00",
       "title": "test(ci): CH13 auditar habitats, horários, slots vazios e evolução Blue com casos negativos",
