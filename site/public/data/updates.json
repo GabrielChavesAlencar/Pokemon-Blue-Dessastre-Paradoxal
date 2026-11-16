@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "af9510e079a9bdc048135920bfe7c6d7da50ba4e",
+      "date": "2026-11-16T20:55:11-03:00",
+      "title": "test(sinnoh): CH19 negativos para falha CI isolamento e ausencia de QA nativo",
+      "category": "Testes"
+    },
+    {
+      "sha": "f0932d06fd768ec9313cee5b683d22241d05b3de",
+      "date": "2026-11-16T20:54:56-03:00",
+      "title": "test(ci): CH19 runner de regressao Python Ruby isolada e fail-closed",
+      "category": "Testes"
+    },
+    {
       "sha": "e465bf69841e8d8530ba73b58982ae5be6cc14be",
       "date": "2026-11-16T20:46:19-03:00",
       "title": "docs(sinnoh): CH18 busca/filtros testados e Barra E 18/20 sem alterar barras jogáveis",
