@@ -153,3 +153,81 @@ def apply_project_patches(maps: dict, tilesets: list, project: Path):
         if patch:
             report[mid] = apply_patch(maps[mid], tilesets, mid, patch)
     return report
+
+
+def sync_installed(project: Path, game: Path):
+    """Apply newly published patches to an existing Johto preview only.
+
+    Back up the native maps and proof; preserve NPCs, all other regions and
+    saves. Re-running is a no-op when all target tiles already match.
+    """
+    import os
+    import shutil
+    import uuid
+    from server.ruby_marshal import loads
+    from stage import serialize
+    import johto_qa
+
+    project, game = Path(project).resolve(), Path(game).resolve()
+    proof = game / "Data/blue-johto-main-preview.json"
+    if not proof.is_file() or proof.is_symlink():
+        return {"changed": False, "reason": "Prévia Johto não instalada"}
+    patches_by_id = {mid: read_patch(project, mid) for mid in sorted(REGION_IDS)
+                     if patch_path(project, mid).is_file()}
+    if not patches_by_id:
+        return {"changed": False, "maps": [], "reason": "Nenhum patch Johto publicado"}
+    manifest = json.loads(proof.read_text("utf-8"))
+    if (manifest.get("region") != "JOHTO" or
+            not isinstance(manifest.get("file_hashes"), dict)):
+        raise PatchError("Manifesto Johto inválido; não atualizar mapas manualmente")
+    tiles_path = game / "Data/Tilesets.rxdata"
+    if not tiles_path.is_file() or tiles_path.is_symlink():
+        raise PatchError("Tilesets de Johto não instalados")
+    sets = loads(tiles_path.read_bytes())
+    new_blobs = {}
+    counts = {}
+    for mid, data in patches_by_id.items():
+        path = game / "Data" / f"Map{mid:03}.rxdata"
+        if not path.is_file() or path.is_symlink():
+            raise PatchError(f"Map{mid:03} não instalado; não criar mapa fictício")
+        obj = loads(path.read_bytes())
+        written = apply_patch(obj, sets, mid, data)
+        counts[mid] = written
+        if written:
+            new_blobs[path] = serialize(obj, johto_qa.EVENT_CLASSES)
+            manifest["file_hashes"][f"Data/Map{mid:03}.rxdata"] = digest(new_blobs[path])
+        manifest.setdefault("editor_map_patches", {})[str(mid)] = digest(
+            patch_path(project, mid).read_bytes())
+    old_proof = json.loads(proof.read_text("utf-8"))
+    if not new_blobs and old_proof.get("editor_map_patches") == manifest.get("editor_map_patches"):
+        return {"changed": False, "maps": [], "reason": "Mapas já atualizados"}
+    new_blobs[proof] = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    backup = project / ".blue-backups" / ("johto-map-sync-" + uuid.uuid4().hex)
+    backup.mkdir(parents=True, exist_ok=False)
+    original = {}
+    written = []
+    temporary = []
+    try:
+        for path, blob in new_blobs.items():
+            original[path] = path.read_bytes()
+            (backup / path.name).write_bytes(original[path])
+            dest = path.with_name(path.name + ".johto-patch-tmp")
+            if dest.exists() or dest.is_symlink():
+                raise PatchError("Temporário do patch Johto já existe")
+            dest.write_bytes(blob)
+            temporary.append(dest)
+        for path, blob in new_blobs.items():
+            staged = path.with_name(path.name + ".johto-patch-tmp")
+            if digest(staged.read_bytes()) != digest(blob):
+                raise PatchError("Falha de integridade ao salvar patch Johto")
+            os.replace(staged, path)
+            written.append(path)
+        return {"changed": True, "maps": sorted(mid for mid, n in counts.items() if n),
+                "backup": str(backup), "reason": "Tiles publicados aplicados ao Game.exe"}
+    except BaseException:
+        for path in reversed(written):
+            shutil.copy2(backup / path.name, path)
+        raise
+    finally:
+        for path in temporary:
+            path.unlink(missing_ok=True)
