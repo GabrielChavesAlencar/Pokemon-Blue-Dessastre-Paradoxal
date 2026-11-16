@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "812e78ef6abc6b6126f2ea5bb65e85d3b9073da5",
+      "date": "2026-11-15T22:50:30-03:00",
+      "title": "test(kanto): fixture all 142 real-map slots and compact gate required by current main installer",
+      "category": "Testes"
+    },
+    {
       "sha": "b4239f4135218960dc3315b435d20369353cbcf1",
       "date": "2026-11-15T22:50:16-03:00",
       "title": "test(regions): align stale fixture assertions with current safe free-travel and portable Ruby policies",
