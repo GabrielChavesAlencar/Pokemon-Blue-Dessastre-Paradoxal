@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6fd57242a635507efc93767da014911f5f8d0fde",
+      "date": "2026-11-16T10:08:36-03:00",
+      "title": "test(johto): conflicting map studio patch preserves installed Johto and save while reporting warning",
+      "category": "Testes"
+    },
+    {
       "sha": "5b6bb7be3cb313f0f9eb430121a4911e7f957535",
       "date": "2026-11-16T10:08:00-03:00",
       "title": "fix(johto): log recovery of locally edited maps and explicitly report protected patch conflicts",
