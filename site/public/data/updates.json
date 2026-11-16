@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5f79888a8ff342533fb6aa517dfb2dcf6ca2e9cb",
+      "date": "2026-11-16T11:29:51-03:00",
+      "title": "fix(johto-editor): permitir primeira publicação de patch na main",
+      "category": "Correções"
+    },
+    {
       "sha": "6fd57242a635507efc93767da014911f5f8d0fde",
       "date": "2026-11-16T10:08:36-03:00",
       "title": "test(johto): conflicting map studio patch preserves installed Johto and save while reporting warning",
