@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "033525aa66f543fa98995dfdfba18637fab27388",
+      "date": "2026-11-15T22:21:59-03:00",
+      "title": "site: ampliar apresentação com Pokédex, regiões, mecânicas e balanceamento",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c4e7e7f246ffa2467fb4353d772eec10d0b30ec0",
       "date": "2026-11-15T22:21:39-03:00",
       "title": "fix(title): route Johto selection to integrated Decades first; standalone pilot only as fallback",
