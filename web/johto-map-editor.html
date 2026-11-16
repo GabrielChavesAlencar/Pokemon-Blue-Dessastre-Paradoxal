@@ -23,7 +23,7 @@ button:hover:not(:disabled){background:#354766}button:disabled{opacity:.43;curso
 button.primary{background:var(--blue);border-color:var(--blue);color:#081423;font-weight:700}
 button.gold{background:#e4af4c;border-color:#e4af4c;color:#211501;font-weight:700}
 .row{display:flex;gap:7px;align-items:center}.row>*{flex:1;min-width:0}
-.tilesTools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tilesTools{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .tilesTools button.active,.layers button.active{border-color:#67a4ff;background:#24467b;box-shadow:inset 0 0 0 1px #67a4ff}
 .mapList{display:grid;gap:4px;max-height:240px;overflow:auto;margin-top:10px}
 .mapButton{text-align:left;padding:9px;line-height:1.35}
@@ -63,14 +63,14 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 <div id="mapList" class="mapList"></div>
 <hr>
 <h2>Ferramentas</h2>
-<div class="tilesTools" id="tools"><button data-tool="brush" class="active">✏️ Pintar</button><button data-tool="erase">⌫ Apagar</button><button data-tool="pick">◉ Capturar</button></div>
+<div class="tilesTools" id="tools"><button data-tool="brush" class="active">✏️ Pintar</button><button data-tool="erase">⌫ Apagar</button><button data-tool="pick">◉ Capturar</button><button data-tool="event">◈ Evento</button></div>
 <h2>Camada ativa</h2>
 <div class="row layers" id="layers"><button class="active" data-layer="0">Piso · 0</button><button data-layer="1">Meio · 1</button><button data-layer="2">Topo · 2</button></div>
 <div class="row" style="margin-top:13px"><button id="undo">↶ Desfazer</button><button id="redo">↷ Refazer</button></div>
 <div class="row" style="margin-top:8px"><button id="grid" class="active">▦ Grade</button><button id="eventsToggle" class="active">◉ Eventos</button></div>
 <hr>
 <button id="save" class="primary" style="width:100%;padding:13px" disabled>Salvar no jogo + backup</button>
-<p class="small">O editor altera os tiles do arquivo RXDATA do mapa selecionado e registra um patch JSON versionável. Eventos e scripts ficam intactos.</p>
+<p class="small">O editor altera tiles e pode mover eventos e destinos existentes. Scripts e diálogos são preservados, com backup antes de salvar.</p>
 <button id="remoteCheck" style="width:100%">Verificar GitHub</button>
 <button id="publish" class="gold" style="width:100%;margin-top:8px" disabled>Publicar este mapa na main</button>
 <div id="remoteStatus" class="status">GitHub: verificando...</div>
@@ -89,9 +89,20 @@ hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 <div class="paletteWrap"><canvas id="paletteCanvas" width="192" height="280"></canvas></div>
 <p class="small">Clique em um tile da paleta e pinte o mapa com o mouse. Tiles de autotile (ID 48–383) são exibidos como blocos de referência; a edição original é preservada.</p>
 <hr>
-<h2>Eventos (somente leitura)</h2>
-<p class="small">Os eventos são marcados no mapa para evitar apagar sem querer escadas, portas, NPCs e a posição inicial. Clique para localizar.</p>
+<h2>Eventos e transferências</h2>
+<p class="small">Os eventos são marcados no mapa. Use a ferramenta Evento para selecionar e reposicionar ou clique na lista e ajuste a posição e o destino. Os scripts não são reescritos.</p>
 <div id="eventList" class="events"></div>
+<div id="eventEditor" style="display:none;border:1px solid #3b5e82;background:#15233a;border-radius:10px;padding:10px;margin-top:10px">
+  <strong id="activeEventName" style="font-size:12px"></strong>
+  <p class="small">Mover o evento e ajustar o destino de uma transferência existente. Não cria eventos novos nem muda scripts.</p>
+  <div class="row"><label>X <input id="eventX" type="number" min="0" max="299"></label><label>Y <input id="eventY" type="number" min="0" max="299"></label></div>
+  <div id="warpFields" style="display:none">
+    <p class="small" id="warpMap"></p>
+    <div class="row"><label>Destino X <input id="warpX" type="number" min="0" max="299"></label><label>Destino Y <input id="warpY" type="number" min="0" max="299"></label></div>
+  </div>
+  <button id="applyEvent" style="width:100%">Aplicar posição do evento</button>
+  <p class="small">Escada: edite também o retorno no mapa do outro andar. O evento inicial de perfil não pode ser movido.</p>
+</div>
 <hr>
 <div class="hint">**Publicação segura**<p style="margin-bottom:0">O GitHub receberá somente <code>data/regions/johto-map-edits/MapXXX.json</code>, não os gráficos privados, ROMs, mapas binários ou saves. O Blue-Story usará esse patch nas atualizações.</p></div>
 </aside>
@@ -103,6 +114,7 @@ const mapCanvas=$('mapCanvas'), mapCtx=mapCanvas.getContext('2d'),paletteCanvas=
 mapCtx.imageSmoothingEnabled=false;pctx.imageSmoothingEnabled=false;pv.imageSmoothingEnabled=false;
 let catalog=[],map=null,cells=[],initial=[],atlas=null,layer=0,tile=384,tool='brush',zoom=1,grid=true,eventsVisible=true;
 let history=[],future=[],stroke=null,dirty=false,busy=false,remoteSha=null,remoteReady=false;
+let eventBaseline=[],selectedEvent=null;
 const TILE=32,SWATCH=24;
 const setStatus=(text,bad=false)=>{$('state').textContent=text;$('state').className=bad?'bad':'good'};
 const warning=text=>{const node=$('warning');node.textContent=text||'';node.style.display=text?'block':'none'};
@@ -149,6 +161,57 @@ function renderSelected(){
  const flags=map?.flags||[];
  $('passability').textContent=!tile?'Transparente':!flags[tile]?'Livre':'Flags de colisão: '+flags[tile];
 }
+function eventDiff(){
+ if(!map)return[];
+ const changes=[];
+ for(const event of map.events){
+   const before=eventBaseline.find(e=>e.id===event.id);
+   if(!before)continue;
+   const prior=before.warp?[before.warp.map,before.warp.x,before.warp.y]:null;
+   const next=event.warp?[event.warp.map,event.warp.x,event.warp.y]:null;
+   if(event.x===before.x&&event.y===before.y&&JSON.stringify(prior)===JSON.stringify(next))continue;
+   changes.push({id:event.id,name:event.name,before:[before.x,before.y],
+                 after:[event.x,event.y],warp_before:prior,warp_after:next});
+ }
+ return changes;
+}
+function chooseEvent(id){
+ selectedEvent=id;
+ const e=map?.events.find(x=>x.id===id);
+ const box=$('eventEditor');
+ box.style.display=e?'block':'none';
+ if(!e)return;
+ $('activeEventName').textContent=e.name+' · #'+e.id;
+ $('eventX').value=e.x;$('eventY').value=e.y;
+ $('warpFields').style.display=e.warp?'block':'none';
+ if(e.warp){$('warpMap').textContent='Transferência para Map'+e.warp.map;
+   $('warpX').value=e.warp.x;$('warpY').value=e.warp.y}
+ $('applyEvent').disabled=e.name==='JH_NEW_GAME_PROFILE';
+}
+function renderEventList(){
+ const list=$('eventList');list.replaceChildren();
+ if(!map)return;
+ for(const e of map.events){
+   const button=document.createElement('button');
+   const title=document.createElement('b');title.textContent=e.name+' · '+e.x+','+e.y;
+   const desc=document.createElement('small');desc.textContent=e.warp?
+     'Transferência → Map'+e.warp.map+' ('+e.warp.x+','+e.warp.y+')':'Evento #'+e.id+' · '+e.pages+' pág.';
+   button.append(title,desc);button.onclick=()=>{chooseEvent(e.id);const s=TILE*zoom;const vp=$('viewport');vp.scrollLeft=(e.x+.5)*s-vp.clientWidth/2;vp.scrollTop=(e.y+.5)*s-vp.clientHeight/2};
+   list.appendChild(button)
+ }
+}
+function changeEvent(e,x,y,warpX,warpY){
+ if(!map||!e)return;
+ if(e.name==='JH_NEW_GAME_PROFILE'){warning('O evento de inicialização do personagem não pode ser movido.');return}
+ if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=map.width||y>=map.height){warning('Posição do evento fora do mapa.');return}
+ if(map.events.some(other=>other.id!==e.id&&other.x===x&&other.y===y)){warning('Outro evento ocupa esta posição.');return}
+ if(e.warp&&(!Number.isInteger(warpX)||!Number.isInteger(warpY)||warpX<0||warpY<0||warpX>=300||warpY>=300)){warning('Destino inválido.');return}
+ const from={x:e.x,y:e.y,warp:e.warp?{...e.warp}:null};
+ const to={x,y,warp:e.warp?{...e.warp,x:warpX,y:warpY}:null};
+ if(JSON.stringify(from)===JSON.stringify(to))return;
+ history.push([{kind:'event',id:e.id,from,to}]);future=[];
+ Object.assign(e,{x,y,warp:to.warp});warning('');render();chooseEvent(e.id);renderEventList();refreshControls();
+}
 function currentDiff(){
  if(!map)return[];
  const result=[];
@@ -159,7 +222,7 @@ function currentDiff(){
  return result;
 }
 function refreshControls(){
- dirty=currentDiff().length>0;
+ dirty=currentDiff().length>0||eventDiff().length>0;
  $('dirty').textContent=dirty?'● Alterações não salvas':'✓ Salvo';
  $('dirty').className=dirty?'bad':'good';
  $('save').disabled=!dirty||busy;
@@ -197,17 +260,11 @@ async function openMap(id){
    const data=await get('/api/map?id='+id);const img=new Image();
    img.src='/api/tileset?id='+id+'&t='+encodeURIComponent(data.map_hash);
    await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(Error('PNG do tileset não pôde ser carregado'))});
-   atlas=img;map=data;cells=[...data.cells];initial=[...cells];history=[];future=[];stroke=null;tile=384;layer=0;
+   atlas=img;map=data;cells=[...data.cells];initial=[...cells];eventBaseline=JSON.parse(JSON.stringify(data.events));selectedEvent=null;$('eventEditor').style.display='none';history=[];future=[];stroke=null;tile=384;layer=0;
    $('atlasName').textContent=data.tileset+' · '+Math.floor(img.naturalHeight/32)*8+' tiles';
    $('title').textContent='Map'+id+' · '+(catalog.find(x=>x.id===id)?.name||'Johto');
    $('size').textContent=data.width+' × '+data.height+' · 3 camadas';
-   const list=$('eventList');list.replaceChildren();
-   for(const e of data.events){const button=document.createElement('button');
-     const title=document.createElement('b');title.textContent=e.name+' · '+e.x+','+e.y;
-     const desc=document.createElement('small');desc.textContent=e.warp?
-       'Transferência → Map'+e.warp.map+' ('+e.warp.x+','+e.warp.y+')':'Evento #'+e.id+' · '+e.pages+' pág.';
-     button.append(title,desc);button.onclick=()=>{const s=TILE*zoom;const vp=$('viewport');vp.scrollLeft=(e.x+.5)*s-vp.clientWidth/2;vp.scrollTop=(e.y+.5)*s-vp.clientHeight/2};
-     list.appendChild(button)}
+   renderEventList();
    document.querySelectorAll('[data-layer]').forEach(b=>b.classList.toggle('active',Number(b.dataset.layer)===layer));
    render();renderPalette();renderMapList();setStatus('Mapa carregado. Desenhe para editar.');
    remoteSha=null;remoteReady=false;dirty=false;
@@ -222,6 +279,13 @@ function mapPoint(event){
 function strokePaint(x,y){
  if(!map||!stroke||x<0||y<0||x>=map.width||y>=map.height)return;
  const v=tool==='erase'?0:tile,k=index(x,y,layer);
+ if(tool==='event'){
+   const clicked=map.events.find(e=>e.x===x&&e.y===y);
+   if(clicked){chooseEvent(clicked.id);return}
+   const e=map.events.find(e=>e.id===selectedEvent);
+   if(e)changeEvent(e,x,y,e.warp?.x,e.warp?.y);
+   return;
+ }
  if(tool==='pick'){tile=cells[k];tool='brush';document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));renderPalette();return}
  if(cells[k]===v)return;
  if(!stroke.has(k))stroke.set(k,{k,from:cells[k],to:v});
@@ -235,20 +299,20 @@ function endStroke(){
 }
 function undo(){
  const actions=history.pop();if(!actions)return;
- for(const e of actions)cells[e.k]=e.from;
- future.push(actions);render();refreshControls();
+ for(const e of actions){if(e.kind==='event'){const found=map.events.find(row=>row.id===e.id);if(found)Object.assign(found,{x:e.from.x,y:e.from.y,warp:e.from.warp});}else cells[e.k]=e.from}
+ future.push(actions);render();renderEventList();if(selectedEvent)chooseEvent(selectedEvent);refreshControls();
 }
 function redo(){
  const actions=future.pop();if(!actions)return;
- for(const e of actions)cells[e.k]=e.to;
- history.push(actions);render();refreshControls();
+ for(const e of actions){if(e.kind==='event'){const found=map.events.find(row=>row.id===e.id);if(found)Object.assign(found,{x:e.to.x,y:e.to.y,warp:e.to.warp});}else cells[e.k]=e.to}
+ history.push(actions);render();renderEventList();if(selectedEvent)chooseEvent(selectedEvent);refreshControls();
 }
 async function saveMap(){
- const diff=currentDiff();if(!map||!diff.length)return;
+ const diff=currentDiff(),eventChanges=eventDiff();if(!map||(!diff.length&&!eventChanges.length))return;
  busy=true;refreshControls();setStatus('Salvando Map'+map.id+'...');
  try{
-   const saved=await post('/api/save',{map_id:map.id,changes:diff,map_hash:map.map_hash,patch_hash:map.patch_hash});
-   map.map_hash=saved.map_hash;map.patch_hash=saved.patch_hash;initial=[...cells];history=[];future=[];
+   const saved=await post('/api/save',{map_id:map.id,changes:diff,event_changes:eventChanges,map_hash:map.map_hash,patch_hash:map.patch_hash});
+   map.map_hash=saved.map_hash;map.patch_hash=saved.patch_hash;initial=[...cells];eventBaseline=JSON.parse(JSON.stringify(map.events));history=[];future=[];
    setStatus(saved.count+' tiles salvos, backup criado. Publique na main para manter em outras instalações.');
  }catch(error){warning(error.message);setStatus('Falha ao salvar',true)}
  finally{busy=false;refreshControls()}
@@ -269,6 +333,12 @@ mapCanvas.addEventListener('pointerdown',event=>{if(event.button!==0||!map)retur
 mapCanvas.addEventListener('pointermove',event=>{if(!map)return;const p=mapPoint(event);$('coords').textContent='X '+p.x+' · Y '+p.y+' · Tile '+(p.x>=0&&p.y>=0&&p.x<map.width&&p.y<map.height?tileAt(p.x,p.y,layer):'—');if(stroke)strokePaint(p.x,p.y)});
 mapCanvas.addEventListener('pointerup',endStroke);mapCanvas.addEventListener('pointercancel',endStroke);
 paletteCanvas.onclick=event=>{if(!map)return;const rect=paletteCanvas.getBoundingClientRect();const col=Math.floor((event.clientX-rect.left)/SWATCH),row=Math.floor((event.clientY-rect.top)/SWATCH);const id=384+row*8+col;if(col>=0&&col<8&&id<map.flags.length){tile=id;tool='brush';document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool==='brush'));renderPalette()}};
+$('applyEvent').onclick=()=>{
+ const e=map?.events.find(x=>x.id===selectedEvent);
+ if(!e)return;
+ changeEvent(e,Number($('eventX').value),Number($('eventY').value),
+             e.warp?Number($('warpX').value):null,e.warp?Number($('warpY').value):null);
+};
 $('tools').onclick=event=>{const b=event.target.closest('[data-tool]');if(!b)return;tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));mapCanvas.classList.toggle('eraser',tool==='erase')};
 $('layers').onclick=event=>{const b=event.target.closest('[data-layer]');if(!b)return;layer=Number(b.dataset.layer);document.querySelectorAll('[data-layer]').forEach(b=>b.classList.toggle('active',b.dataset.layer==layer));$('layerInfo').textContent='Camada: '+['Piso','Meio','Topo'][layer];render()};
 $('search').oninput=renderMapList;
