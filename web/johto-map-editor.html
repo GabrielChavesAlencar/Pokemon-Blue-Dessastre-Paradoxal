@@ -201,7 +201,7 @@ function renderEventList(){
  }
 }
 function changeEvent(e,x,y,warpX,warpY){
- if(!map||!e)return;
+ if(!map||!e||busy)return;
  if(e.name==='JH_NEW_GAME_PROFILE'){warning('O evento de inicialização do personagem não pode ser movido.');return}
  if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=map.width||y>=map.height){warning('Posição do evento fora do mapa.');return}
  if(map.events.some(other=>other.id!==e.id&&other.x===x&&other.y===y)){warning('Outro evento ocupa esta posição.');return}
@@ -277,7 +277,7 @@ function mapPoint(event){
  return {x:Math.floor((event.clientX-box.left)/size),y:Math.floor((event.clientY-box.top)/size)};
 }
 function strokePaint(x,y){
- if(!map||!stroke||x<0||y<0||x>=map.width||y>=map.height)return;
+ if(!map||!stroke||busy||x<0||y<0||x>=map.width||y>=map.height)return;
  const v=tool==='erase'?0:tile,k=index(x,y,layer);
  if(tool==='event'){
    const clicked=map.events.find(e=>e.x===x&&e.y===y);
@@ -367,7 +367,7 @@ async function publishMap(){
   }catch(error){warning(error.message);setStatus('Falha na publicação',true)}
   finally{busy=false;refreshControls()}
 }
-mapCanvas.addEventListener('pointerdown',event=>{if(event.button!==0||!map)return;stroke=new Map();mapCanvas.setPointerCapture(event.pointerId);const p=mapPoint(event);strokePaint(p.x,p.y)});
+mapCanvas.addEventListener('pointerdown',event=>{if(event.button!==0||!map||busy)return;stroke=new Map();mapCanvas.setPointerCapture(event.pointerId);const p=mapPoint(event);strokePaint(p.x,p.y)});
 mapCanvas.addEventListener('pointermove',event=>{if(!map)return;const p=mapPoint(event);$('coords').textContent='X '+p.x+' · Y '+p.y+' · Tile '+(p.x>=0&&p.y>=0&&p.x<map.width&&p.y<map.height?tileAt(p.x,p.y,layer):'—');if(stroke)strokePaint(p.x,p.y)});
 mapCanvas.addEventListener('pointerup',endStroke);mapCanvas.addEventListener('pointercancel',endStroke);
 paletteCanvas.onclick=event=>{if(!map)return;const rect=paletteCanvas.getBoundingClientRect();const col=Math.floor((event.clientX-rect.left)/SWATCH),row=Math.floor((event.clientY-rect.top)/SWATCH);const id=384+row*8+col;if(col>=0&&col<8&&id<map.flags.length){tile=id;tool='brush';document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool==='brush'));renderPalette()}};
