@@ -246,6 +246,77 @@ def scoped_bedroom_proof(game: Path, *, accept_audited_live_maps: bool = False) 
 
 
 
+
+def runtime_semantic_preview(game: Path) -> dict | None:
+    """Recognize a compiled/modified Johto preview without promising native QA.
+
+    Game.exe/region installers can update maps, PBS and shared MapInfos after
+    original installation; comparing every byte to a time-frozen install proof
+    is NOT an installation test. We retain the pinned original ZIP signature,
+    require unchanged-or-audited New Bark anchors, parse all 100 genuine RMXP
+    maps, validate their IDs and tileset references, and mark drift explicitly.
+    """
+    game = Path(game).resolve()
+    original = scoped_bedroom_proof(game, accept_audited_live_maps=True)
+    if original is None:
+        return None
+    info_path = local_target(game, "Data/MapInfos.rxdata")
+    tiles_path = local_target(game, "Data/Tilesets.rxdata")
+    if (info_path.is_symlink() or tiles_path.is_symlink()
+            or not info_path.is_file() or not tiles_path.is_file()):
+        raise ValueError("Johto: registradores globais de mapas/tilesets ausentes")
+    infos, tiles = loads(info_path.read_bytes()), loads(tiles_path.read_bytes())
+    if not isinstance(infos, dict) or not PREVIEW_IDS.issubset(infos.keys()):
+        raise ValueError("Johto: a tabela MapInfos não contém os 100 mapas")
+    if not isinstance(tiles, list):
+        raise ValueError("Johto: Tilesets.rxdata inválido")
+    hashes = original["file_hashes"]
+    changed = []
+    for mid in sorted(PREVIEW_IDS):
+        relative = f"Data/Map{mid:03d}.rxdata"
+        path = local_target(game, relative)
+        if not path.is_file() or path.is_symlink() or path.stat().st_size > 16_000_000:
+            raise ValueError("Johto: mapa ausente ou arquivo inesperado: " + relative)
+        contents = path.read_bytes()
+        if sha(contents) != hashes.get(relative):
+            changed.append(mid)
+        m = loads(contents)
+        if not isinstance(m, RubyObject) or m.name != "RPG::Map":
+            raise ValueError("Johto: mapa não é RPG::Map: " + relative)
+        a = m.attrs
+        tid = a.get("@tileset_id")
+        if (type(a.get("@width")) is not int or type(a.get("@height")) is not int
+                or not 3 <= a["@width"] <= 300 or not 3 <= a["@height"] <= 300
+                or not isinstance(a.get("@events"), dict) or type(tid) is not int
+                or tid <= 0 or tid >= len(tiles)
+                or not isinstance(tiles[tid], RubyObject)):
+            raise ValueError("Johto: formato/dimensões de mapa inválidos: " + relative)
+        table = a.get("@data")
+        if (not table or getattr(table, "name", None) != "Table"):
+            raise ValueError("Johto: terreno nativo ausente: " + relative)
+        shape, _ = visual.table_values(table.data, 3)
+        if shape != (a["@width"], a["@height"], 3):
+            raise ValueError("Johto: terreno incompatível: " + relative)
+        for event in a["@events"].values():
+            if not isinstance(event, RubyObject) or event.name != "RPG::Event":
+                raise ValueError("Johto: evento inválido: " + relative)
+            ex,ey=event.attrs.get("@x"),event.attrs.get("@y")
+            if (type(ex) is not int or type(ey) is not int
+                    or not 0 <= ex < a["@width"] or not 0 <= ey < a["@height"]):
+                raise ValueError("Johto: evento fora do mapa: " + relative)
+    plugin = local_target(game, f"{PLUGIN}/Boot.rb")
+    metadata = local_target(game, "PBS/map_metadata_johto_main.txt")
+    if (not plugin.is_file() or plugin.is_symlink()
+            or not metadata.is_file() or metadata.is_symlink()):
+        raise ValueError("Johto: plugin ou metadados regionais ausentes")
+    if b"Compiler.singleton_class.prepend(" in plugin.read_bytes():
+        raise ValueError("Johto: versão antiga do compilador recursivo; atualizar Boot.rb")
+    return {"status": "EXPERIMENTAL_INSTALLED_RUNTIME_MODIFIED_NOT_NATIVE_TESTED",
+            "map_count": len(PREVIEW_IDS), "changed_map_ids": changed,
+            "native_qa": False, "operational_map_structure": True}
+
+
+
 def refresh_installed_bedroom(game: Path, root: Path = ROOT, *, allow_global_drift: bool = False) -> dict:
     """Apply the HGSS-inspired 2F layout to a previously installed Johto preview.
 
