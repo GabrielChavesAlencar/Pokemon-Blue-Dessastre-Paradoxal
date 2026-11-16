@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "57e7bc1f13e9d8c3712037a638e35c5510c34542",
+      "date": "2026-11-16T07:05:34-03:00",
+      "title": "fix(johto): diagnostic recognizes code 201 after code 250 and audits supplied real New Bark maps",
+      "category": "Correções"
+    },
+    {
       "sha": "5d23d8ac97a0409f9aaf5f7de798018f776263e4",
       "date": "2026-11-16T07:04:45-03:00",
       "title": "fix(johto): permit exact user-audited modified bedroom/map hashes while retaining rollback and rejecting unknown edits",
