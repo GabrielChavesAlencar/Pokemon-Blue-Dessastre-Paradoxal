@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "853ee0feeaaf2c4cb1588615217d248cc452c408",
+      "date": "2026-11-16T07:07:17-03:00",
+      "title": "test(johto): exercise real code 250/223/106/201 stair events and preserve audio/fade through map update",
+      "category": "Testes"
+    },
+    {
       "sha": "57e7bc1f13e9d8c3712037a638e35c5510c34542",
       "date": "2026-11-16T07:05:34-03:00",
       "title": "fix(johto): diagnostic recognizes code 201 after code 250 and audits supplied real New Bark maps",
