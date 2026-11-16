@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "53bd68593eab53fc6c342b3c7cd6ac3dd558bc96",
+      "date": "2026-11-16T00:25:06-03:00",
+      "title": "fix(johto): exclude Hoenn Map700+ from all HGSS interior classifications",
+      "category": "Correções"
+    },
+    {
       "sha": "af7253c93d9cfaf598e8723b665cb9e1d0cac2b6",
       "date": "2026-11-16T00:24:34-03:00",
       "title": "ci(johto): validate private HGSS interior tileset installer and safety",
