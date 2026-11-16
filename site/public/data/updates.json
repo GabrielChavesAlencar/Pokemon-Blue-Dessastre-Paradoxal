@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9930f7e5db2d6b83220523cd2dc5c08eae2b9fe4",
+      "date": "2026-11-16T08:38:35-03:00",
+      "title": "docs(johto): explain missing Johto on second Windows profile and pilot-inputs vs OFFLINE12 distinction",
+      "category": "Documentação"
+    },
+    {
       "sha": "71290e74b6293b3accde7e3a7c93b1d22861a778",
       "date": "2026-11-16T08:37:26-03:00",
       "title": "test(johto): reject pilot-inputs base as replacement for OFFLINE12 map pack without touching Game.exe",
