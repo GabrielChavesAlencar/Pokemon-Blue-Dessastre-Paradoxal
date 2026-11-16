@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "71290e74b6293b3accde7e3a7c93b1d22861a778",
+      "date": "2026-11-16T08:37:26-03:00",
+      "title": "test(johto): reject pilot-inputs base as replacement for OFFLINE12 map pack without touching Game.exe",
+      "category": "Testes"
+    },
+    {
       "sha": "4da4be4905de436753cf7166c09fce6071970bad",
       "date": "2026-11-16T08:37:04-03:00",
       "title": "fix(johto): detect base-only pilot-inputs ZIP and explain why it cannot install missing Johto map pack",
