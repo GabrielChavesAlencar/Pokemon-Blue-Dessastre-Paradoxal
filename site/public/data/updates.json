@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8b829b038a64d6208d282880d865a89356168dc1",
+      "date": "2026-11-16T14:53:50-03:00",
+      "title": "test(sinnoh): CH09 ponta a ponta sintetico, hashes, rollback, bundle e CI",
+      "category": "Testes"
+    },
+    {
       "sha": "c9460d56bd8574d0928499e2acc57a0c048d251a",
       "date": "2026-11-16T14:48:08-03:00",
       "title": "docs(sinnoh): CH08 verificada e Barra E 8 de 20 sem alterar gameplay",
