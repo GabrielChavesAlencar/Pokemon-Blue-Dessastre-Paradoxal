@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07a01b09e17aee9158fc96a68e81c17b4f32c7e8",
+      "date": "2026-11-15T23:56:48-03:00",
+      "title": "feat(johto): recreate New Bark 2F HGSS bedroom layout and functional left stair warp",
+      "category": "Novidades"
+    },
+    {
       "sha": "971064c24e4e170a5ff0addb95969affee4ba881",
       "date": "2026-11-15T23:36:32-03:00",
       "title": "docs(johto): SystemStackError Boot.rb:774 root cause, Blue-Story automatic hotfix and verified map/save-safe test",
