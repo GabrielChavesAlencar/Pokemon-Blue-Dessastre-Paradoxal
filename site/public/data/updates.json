@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6a602e4e3d1127c5cb5b42fa1ec638998b4f4edf",
+      "date": "2026-11-15T22:22:31-03:00",
+      "title": "site: estilizar seções de regiões, Pokédex e mecânicas na apresentação",
+      "category": "Melhorias"
+    },
+    {
       "sha": "033525aa66f543fa98995dfdfba18637fab27388",
       "date": "2026-11-15T22:21:59-03:00",
       "title": "site: ampliar apresentação com Pokédex, regiões, mecânicas e balanceamento",
