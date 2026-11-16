@@ -143,7 +143,8 @@ class JohtoMapStudioTests(unittest.TestCase):
             "changes":[{"x":3,"y":6,"z":1,"from":0,"to":405}]})
         session=Session(self.root,self.game)
         session.publish_baseline[674]={"sha":None,"in_sync":True}
-        with patch.object(editor,"remote",return_value={"sha":None,"in_sync":True}),\
+        with patch.object(editor,"github_authenticated",return_value=True),\
+             patch.object(editor,"remote",return_value={"sha":None,"in_sync":True}),\
              patch.object(editor,"_gh",return_value={
                 "commit":{"html_url":"https://github.com/example/commit/test"},
                 "content":{"sha":"abc123"}}) as client:
@@ -159,6 +160,52 @@ class JohtoMapStudioTests(unittest.TestCase):
             self.assertNotIn(b"private save",uploaded)
             self.assertFalse(uploaded.startswith(b"\x04\x08"))
         self.assertEqual(session.publish_baseline[674]["sha"],"abc123")
+
+    def test_first_publish_without_remote_file_needs_no_manual_verification(self):
+        before=details(self.root,self.game,674)
+        saved=save_changes(self.root,self.game,{
+            "map_id":674,"map_hash":before["map_hash"],"patch_hash":None,
+            "changes":[{"x":3,"y":6,"z":1,"from":0,"to":405}]})
+        session=Session(self.root,self.game)
+        # The UI did not request /api/remote beforehand (e.g. offline at startup).
+        with patch.object(editor,"github_authenticated",return_value=True),\
+             patch.object(editor,"remote",return_value={
+                 "exists":False,"sha":None,"in_sync":True}),\
+             patch.object(editor,"_gh",return_value={
+                 "commit":{"html_url":"https://github.com/example/commit/new"},
+                 "content":{"sha":"new"}}):
+            result=publish(session,674,None,saved["patch_hash"])
+        self.assertTrue(result["published"])
+        self.assertEqual(result["branch"],"main")
+        self.assertEqual(session.publish_baseline[674]["sha"],"new")
+
+    def test_real_remote_conflict_never_overwrites_main(self):
+        before=details(self.root,self.game,674)
+        saved=save_changes(self.root,self.game,{
+            "map_id":674,"map_hash":before["map_hash"],"patch_hash":None,
+            "changes":[{"x":3,"y":6,"z":1,"from":0,"to":405}]})
+        session=Session(self.root,self.game)
+        session.publish_baseline[674]={"sha":"old","in_sync":True}
+        with patch.object(editor,"github_authenticated",return_value=True),\
+             patch.object(editor,"remote",return_value={
+                 "exists":True,"sha":"new","in_sync":False}),\
+             patch.object(editor,"_gh") as client:
+            with self.assertRaisesRegex(EditorError,"Outro commit"):
+                publish(session,674,"old",saved["patch_hash"])
+            client.assert_not_called()
+
+    def test_unauthenticated_publishing_requests_browser_authorization(self):
+        before=details(self.root,self.game,674)
+        saved=save_changes(self.root,self.game,{
+            "map_id":674,"map_hash":before["map_hash"],"patch_hash":None,
+            "changes":[{"x":3,"y":6,"z":1,"from":0,"to":405}]})
+        session=Session(self.root,self.game)
+        with patch.object(editor,"github_authenticated",return_value=False),\
+             patch.object(editor,"remote") as remote:
+            with self.assertRaisesRegex(EditorError,"GITHUB_AUTH_REQUIRED") as ctx:
+                publish(session,674,None,saved["patch_hash"])
+            self.assertEqual(ctx.exception.code,401)
+            remote.assert_not_called()
 
     def test_move_staircase_event_and_edit_return_warp_without_touching_scripts(self):
         before=details(self.root,self.game,674)
