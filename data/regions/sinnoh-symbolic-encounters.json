@@ -1,0 +1,800 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "PLANNED_REFERENCE_ONLY_NOT_INSTALLED",
+  "reference_game": "Platinum",
+  "source_of_truth": "data/regions/detonados-content-review.json",
+  "coverage_source": "data/regions/sinnoh-coverage.json",
+  "blue_method_source": "scripts/regions/pbs.py",
+  "blue_habitat_source": "scripts/battle_polish/Habitat.rb",
+  "blue_evolution_source": "scripts/battle_polish/EvolutionScaling.rb",
+  "source_level": "REFERENCE_NOT_NATIVE_VERIFIED",
+  "may_write_pbs": false,
+  "may_install": false,
+  "can_allocate_map_ids": false,
+  "gameplay_verified": false,
+  "encounter_weights_verified": false,
+  "global_progress": {
+    "reference": "BlueEvolutionScaling.progress_level",
+    "reference_party": "highest_non_egg_party_level",
+    "maximum": "GameData::GrowthRate.max_level",
+    "regional_numeric_level_cap": null,
+    "native_evolution_source": "GameData::Species#get_evolutions(true)",
+    "level_evolution_grace": 5,
+    "stone_level": 30,
+    "trade_level": 40,
+    "friendship_level": 45,
+    "wild_chances_by_gap": [
+      {
+        "min_gap": 0,
+        "max_gap": 4,
+        "chance_percent": 15
+      },
+      {
+        "min_gap": 5,
+        "max_gap": 14,
+        "chance_percent": 30
+      },
+      {
+        "min_gap": 15,
+        "max_gap": 24,
+        "chance_percent": 45
+      },
+      {
+        "min_gap": 25,
+        "max_gap": null,
+        "chance_percent": 60
+      }
+    ],
+    "original_species_slot_retained": true,
+    "never_rewrite_native_pbs": true
+  },
+  "restrictions": {
+    "time_method_species_attribution_verified": false,
+    "candidate_methods_not_active": true,
+    "no_fixed_spawn_weights": true,
+    "special_events_not_normal_encounters": true,
+    "no_guessed_maps_or_map_ids": true,
+    "future_import_requires_native_pbs_and_map_audit": true
+  },
+  "areas": [
+    {
+      "reference_area": "Route 201",
+      "area_symbol": "ROUTE_201",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "STARLY",
+        "BIDOOF"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Grama inicial; swarm e Poké Radar separados"
+    },
+    {
+      "reference_area": "Route 202",
+      "area_symbol": "ROUTE_202",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "STARLY",
+        "BIDOOF",
+        "SHINX"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Grama inicial"
+    },
+    {
+      "reference_area": "Route 203",
+      "area_symbol": "ROUTE_203",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "STARLY",
+        "BIDOOF",
+        "SHINX"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Grama inicial; rival em evento de história"
+    },
+    {
+      "reference_area": "Oreburgh Mine",
+      "area_symbol": "OREBURGH_MINE",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "CAVE",
+      "candidate_pbs_methods": [
+        "Cave",
+        "CaveMorning",
+        "CaveDay",
+        "CaveNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "GEODUDE",
+        "ONIX"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Caverna"
+    },
+    {
+      "reference_area": "Valley Windworks",
+      "area_symbol": "VALLEY_WINDWORKS",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "SHELLOS",
+        "BUIZEL",
+        "PACHIRISU"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [
+        {
+          "species": "DRIFLOON",
+          "kind": "STATIC_WEEKLY_EVENT",
+          "event_installed": false
+        }
+      ],
+      "notes": "Drifloon fixo de sexta-feira, evento separado"
+    },
+    {
+      "reference_area": "Eterna Forest",
+      "area_symbol": "ETERNA_FOREST",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "FOREST",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "BUNEARY",
+        "GASTLY"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Dia/noite e Cheryl"
+    },
+    {
+      "reference_area": "Route 206",
+      "area_symbol": "ROUTE_206",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "GLIGAR"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Conferir método de encontro"
+    },
+    {
+      "reference_area": "Wayward Cave",
+      "area_symbol": "WAYWARD_CAVE",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "CAVE",
+      "candidate_pbs_methods": [
+        "Cave",
+        "CaveMorning",
+        "CaveDay",
+        "CaveNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "GIBLE"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Entrada escondida"
+    },
+    {
+      "reference_area": "Mt. Coronet",
+      "area_symbol": null,
+      "symbol_resolution": "UNRESOLVED_REFERENCE_AREA",
+      "terrain": "CAVE",
+      "candidate_pbs_methods": [
+        "Cave",
+        "CaveMorning",
+        "CaveDay",
+        "CaveNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "CLEFAIRY",
+        "NOSEPASS"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Múltiplos pisos"
+    },
+    {
+      "reference_area": "Route 208",
+      "area_symbol": "ROUTE_208",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "RALTS",
+        "BIBAREL"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Conferir métodos reais"
+    },
+    {
+      "reference_area": "Route 209",
+      "area_symbol": "ROUTE_209",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "RALTS",
+        "BIBAREL"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Conferir métodos reais"
+    },
+    {
+      "reference_area": "Route 210",
+      "area_symbol": "ROUTE_210",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "SCYTHER",
+        "SWABLU"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Defog no norte"
+    },
+    {
+      "reference_area": "Route 215",
+      "area_symbol": "ROUTE_215",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "GRASS",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "SCYTHER",
+        "SWABLU"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Conferir métodos reais"
+    },
+    {
+      "reference_area": "Route 212",
+      "area_symbol": null,
+      "symbol_resolution": "UNRESOLVED_REFERENCE_AREA",
+      "terrain": "WETLAND",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "QUAGSIRE"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Chuva e lama"
+    },
+    {
+      "reference_area": "Route 213",
+      "area_symbol": "ROUTE_213",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "COAST",
+      "candidate_pbs_methods": [
+        "Land",
+        "Water",
+        "OldRod",
+        "GoodRod",
+        "SuperRod"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "SHELLOS",
+        "WINGULL",
+        "CHATOT"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "A região leste de Shellos"
+    },
+    {
+      "reference_area": "Great Marsh",
+      "area_symbol": "GREAT_MARSH",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "WETLAND",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "WOOPER",
+        "YANMA",
+        "SKORUPI"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Mecânica Safari"
+    },
+    {
+      "reference_area": "Route 216",
+      "area_symbol": "ROUTE_216",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "SNOW",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "SNOVER",
+        "SNORUNT",
+        "SNEASEL",
+        "SWINUB"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Neve"
+    },
+    {
+      "reference_area": "Route 217",
+      "area_symbol": "ROUTE_217",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "SNOW",
+      "candidate_pbs_methods": [
+        "Land",
+        "LandMorning",
+        "LandDay",
+        "LandNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "SNOVER",
+        "SNORUNT",
+        "SNEASEL",
+        "SWINUB"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Neve"
+    },
+    {
+      "reference_area": "Route 222",
+      "area_symbol": "ROUTE_222",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "COAST",
+      "candidate_pbs_methods": [
+        "Land",
+        "Water",
+        "OldRod",
+        "GoodRod",
+        "SuperRod"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "ELECTABUZZ",
+        "MAGNEMITE",
+        "MAGNETON",
+        "PELIPPER"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Após arco Galactic"
+    },
+    {
+      "reference_area": "Victory Road",
+      "area_symbol": "VICTORY_ROAD",
+      "symbol_resolution": "EXACT_COVERAGE_SYMBOL",
+      "terrain": "CAVE",
+      "candidate_pbs_methods": [
+        "Cave",
+        "Water",
+        "OldRod",
+        "GoodRod",
+        "SuperRod"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "ONIX",
+        "STEELIX"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [],
+      "notes": "Caverna, pisos e Surf"
+    },
+    {
+      "reference_area": "Old Chateau",
+      "area_symbol": null,
+      "symbol_resolution": "UNRESOLVED_REFERENCE_AREA",
+      "terrain": "BUILDING",
+      "candidate_pbs_methods": [
+        "Cave",
+        "CaveMorning",
+        "CaveDay",
+        "CaveNight"
+      ],
+      "time_windows_to_audit": [
+        "morning",
+        "day",
+        "night"
+      ],
+      "time_assignment_verified": false,
+      "reference_species": [
+        "GASTLY",
+        "HAUNTER"
+      ],
+      "status": "planned",
+      "species_method_assignments": [],
+      "encounter_slots": [],
+      "weight_percentages": null,
+      "level_ranges": null,
+      "map_id": null,
+      "source_map_ids": [],
+      "destination_map_ids": [],
+      "native_pbs_verified": false,
+      "installed": false,
+      "special_events": [
+        {
+          "species": "ROTOM",
+          "kind": "STATIC_SCRIPTED_EVENT",
+          "event_installed": false
+        }
+      ],
+      "notes": "Rotom fixo/tempo, não spawn normal"
+    }
+  ],
+  "notes": "All area/species examples are anchored to the existing Platinum review, not verified as compiled encounters. Proposed terrain and candidate PBS methods are worklist categories only. Specific time/species/method allocations, wild level ranges, spawn percentages and regional numeric level cap remain unknown. Areas without unequivocal source symbols stay null; no map is installed and no native PBS is modified."
+}
