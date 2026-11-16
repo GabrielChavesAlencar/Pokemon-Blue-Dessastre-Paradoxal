@@ -95,16 +95,20 @@ def inspect(project: Path = ROOT, game: Path | None = None):
             if text(ev.attrs.get("@name")) == "JH_HOME1F_TO_2F"
         ]
         if len(downstairs) == 1:
-            command = downstairs[0].attrs["@pages"][0].attrs["@list"][0]
-            report["return_event_opcode"] = command.attrs.get("@code")
-            parameters = command.attrs.get("@parameters", [])
-            report["return_xy"] = (parameters[2:4]
-                                   if command.attrs.get("@code") == 201
-                                      and len(parameters) >= 4 else None)
-            if command.attrs.get("@code") != 201:
+            commands = [command for page in downstairs[0].attrs["@pages"]
+                        for command in page.attrs.get("@list", [])]
+            report["return_event_opcodes"] = [cmd.attrs.get("@code") for cmd in commands]
+            transfers = [cmd for cmd in commands
+                         if cmd.attrs.get("@code") == 201 and
+                         isinstance(cmd.attrs.get("@parameters"), list) and
+                         len(cmd.attrs["@parameters"]) >= 4]
+            report["return_event_opcode"] = 201 if len(transfers) == 1 else None
+            report["return_xy"] = (transfers[0].attrs["@parameters"][2:4]
+                                   if len(transfers) == 1 else None)
+            if len(transfers) != 1:
                 report["return_event_note"] = (
-                    "O primeiro comando de retorno não é Transfer Player (201). "
-                    "Pode conter script ou lógica customizada; não sobrescrever sem auditar.")
+                    "Não foi possível identificar uma transferência 201 única; "
+                    "preservar o evento até analisar suas páginas.")
         report["bedroom_geometry_updated"] = (
             pos == [4,4] and top_left == tile(238,1)
             and report.get("return_xy") == [4,5]
@@ -122,9 +126,9 @@ def inspect(project: Path = ROOT, game: Path | None = None):
     except (OSError, ValueError, KeyError, TypeError) as error:
         report["full_integrity_error"] = str(error)
         try:
-            scoped = scoped_bedroom_proof(game)
+            scoped = scoped_bedroom_proof(game, accept_audited_live_maps=True)
             if scoped:
-                report["preview_integrity"] = "SCOPED_OK_GLOBAL_FILES_CHANGED"
+                report["preview_integrity"] = "SCOPED_OK_AUDITED_LIVE_MAPS"
                 report["safe_to_apply"] = report["status"] == "OLD_OR_DIFFERENT_BEDROOM"
             else:
                 report["preview_integrity"] = "FAILED"
