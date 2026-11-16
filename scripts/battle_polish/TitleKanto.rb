@@ -58,7 +58,10 @@ module BlueKantoTitle
                     BlueRegionStart.johto_install_proof
     START_REGIONS.map do |name, region|
       label = if region == :johto && johto
-                johto_release ? "Johto" : "Johto (prévia integrada)"
+                # Same main game and shared save as Kanto/Hoenn.
+                "Johto"
+              elsif region == :johto
+                "Johto (instalação necessária)"
               elsif region == :kanto && !kanto
                 "Kanto (instalação necessária)"
               elsif region == :hoenn && hoenn
@@ -97,8 +100,10 @@ module BlueKantoTitle
            BlueRegionStart.request_initial("JOHTO")
           return :integrated
         end
-        return :launched if launch_johto
-        pbMessage(_INTL("Johto não está instalada nesta campanha. Execute o Blue-Story.exe atualizado com o pacote privado OFFLINE 12 em Downloads. A instalação informará o motivo exato se ainda não puder liberar a região, sem alterar seus saves."))
+        # The main New Game picker must NEVER launch another executable or
+        # switch to a standalone Johto save. Experimental pilots are only
+        # available through the separate "Testar Johto" title command.
+        pbMessage(_INTL("Johto ainda não foi instalada no jogo principal. Feche o jogo e abra Blue-Story.exe. Coloque o arquivo Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip em Downloads, sem extrair. Veja o erro exato em .blue-work/johto-main-install-status.json. Decades, Kanto e Hoenn permanecem disponíveis."))
       when :hoenn
         if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:hoenn_integrated?) &&
            BlueRegionStart.hoenn_integrated? &&
