@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f55c960a9d3270b7942d543bfaa6de6460b435b4",
+      "date": "2026-11-16T13:36:08-03:00",
+      "title": "docs(sinnoh): mapear entregas diretas pelo chat e criterios de progresso",
+      "category": "Documentação"
+    },
+    {
       "sha": "8565cc65b36cf0863202eed9a88725d9ff29f677",
       "date": "2026-11-16T12:58:58-03:00",
       "title": "feat(johto-map): editar Map675 pelo editor visual",
