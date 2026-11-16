@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9cc69adb87c271fe35af2f9ec0a05ae634f07cfb",
+      "date": "2026-11-16T08:54:18-03:00",
+      "title": "feat(johto): self-contained personal Blue-Story EXE auto-stages exact OFFLINE12 private overlay with SHA256 without a separate ZIP",
+      "category": "Novidades"
+    },
+    {
       "sha": "9930f7e5db2d6b83220523cd2dc5c08eae2b9fe4",
       "date": "2026-11-16T08:38:35-03:00",
       "title": "docs(johto): explain missing Johto on second Windows profile and pilot-inputs vs OFFLINE12 distinction",
