@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "11ef546bb84ec7087b19c836f0d55ed5cb20154d",
+      "date": "2026-11-16T20:10:04-03:00",
+      "title": "test(sinnoh): CH16 23 testes negativos de direitos, cues e fallbacks",
+      "category": "Testes"
+    },
+    {
       "sha": "c339f1b306eafc8ebb394fb98866f7ec10fb2f9e",
       "date": "2026-11-16T20:08:50-03:00",
       "title": "test(sinnoh): CH16 auditor de cue keys, áudio ausente e fallbacks BlueMusic",
