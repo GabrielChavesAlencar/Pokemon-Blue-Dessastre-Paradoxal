@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fe03fa3e2566207dfaf81cb332a8c6d0a7c1895b",
+      "date": "2026-11-16T00:30:02-03:00",
+      "title": "fix(johto): report already-installed HGSS interiors accurately on repeated Blue-Story launches",
+      "category": "Correções"
+    },
+    {
       "sha": "87cb0fe724875860dc7379dd17ffef569d5ff1fb",
       "date": "2026-11-16T00:29:23-03:00",
       "title": "fix(johto): clearly report missing real HGSS tiles instead of promising graphics were installed",
