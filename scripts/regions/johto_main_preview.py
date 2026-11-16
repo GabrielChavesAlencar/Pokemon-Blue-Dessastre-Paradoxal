@@ -192,7 +192,8 @@ AUDITED_LIVE_BEDROOM_SHA = {
 }
 
 
-def scoped_bedroom_proof(game: Path, *, accept_audited_live_maps: bool = False) -> dict | None:
+def scoped_bedroom_proof(game: Path, *, accept_audited_live_maps: bool = False,
+                         allow_changed_map_bytes: bool = False) -> dict | None:
     """Validate only the two original Johto maps for explicit manual repair.
 
     Other plug-ins/regions can legitimately change shared PBS or MapInfos after
@@ -227,7 +228,7 @@ def scoped_bedroom_proof(game: Path, *, accept_audited_live_maps: bool = False) 
                 or not path.is_file() or path.is_symlink()):
             raise ValueError("Johto: mapa alterado ou sem hash auditado: " + name)
         observed = sha(path.read_bytes())
-        if observed != value and not (
+        if not allow_changed_map_bytes and observed != value and not (
                 accept_audited_live_maps and observed == AUDITED_LIVE_BEDROOM_SHA[name]
                 and data.get("bedroom_layout") in (None, "")):
             raise ValueError("Johto: mapa alterado ou sem hash auditado: " + name)
@@ -258,7 +259,12 @@ def runtime_semantic_preview(game: Path) -> dict | None:
     maps, validate their IDs and tileset references, and mark drift explicitly.
     """
     game = Path(game).resolve()
-    original = scoped_bedroom_proof(game, accept_audited_live_maps=True)
+    # Room edits made by the visual editor and by Game.exe can be perfectly
+    # valid RXDATA even when they no longer equal the frozen OFFLINE12 SHA.
+    # Check provenance + all 100 native maps, not the two old bedroom bytes.
+    # This intentionally does NOT authorize rewriting Map674/Map675.
+    original = scoped_bedroom_proof(
+        game, accept_audited_live_maps=True, allow_changed_map_bytes=True)
     if original is None:
         return None
     info_path = local_target(game, "Data/MapInfos.rxdata")
@@ -298,6 +304,7 @@ def runtime_semantic_preview(game: Path) -> dict | None:
         shape, _ = visual.table_values(table.data, 3)
         if shape != (a["@width"], a["@height"], 3):
             raise ValueError("Johto: terreno incompatível: " + relative)
+        names = set()
         for event in a["@events"].values():
             if not isinstance(event, RubyObject) or event.name != "RPG::Event":
                 raise ValueError("Johto: evento inválido: " + relative)
@@ -305,6 +312,11 @@ def runtime_semantic_preview(game: Path) -> dict | None:
             if (type(ex) is not int or type(ey) is not int
                     or not 0 <= ex < a["@width"] or not 0 <= ey < a["@height"]):
                 raise ValueError("Johto: evento fora do mapa: " + relative)
+            names.add(text(event.attrs.get("@name")))
+        if mid == 674 and not {"JH_HOME2F_TO_1F", "JH_NEW_GAME_PROFILE"}.issubset(names):
+            raise ValueError("Johto: escada ou inicialização do quarto ausente em Map674")
+        if mid == 675 and "JH_HOME1F_TO_2F" not in names:
+            raise ValueError("Johto: retorno do primeiro andar ausente em Map675")
     plugin = local_target(game, f"{PLUGIN}/Boot.rb")
     metadata = local_target(game, "PBS/map_metadata_johto_main.txt")
     if (not plugin.is_file() or plugin.is_symlink()
