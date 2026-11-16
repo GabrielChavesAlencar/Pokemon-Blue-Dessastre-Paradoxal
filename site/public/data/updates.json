@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e761f64a10f486d722bd31083136481a3ad6f2da",
+      "date": "2026-11-15T22:30:16-03:00",
+      "title": "test(johto): assert private source preview is never falsely approved as final release",
+      "category": "Testes"
+    },
+    {
       "sha": "2fd45596abb6cbb10b577c9df06f03870200106f",
       "date": "2026-11-15T22:28:57-03:00",
       "title": "feat(blue-story): compile shared Johto preview plugins and PBS after safe installation",
