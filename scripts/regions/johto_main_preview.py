@@ -414,6 +414,9 @@ def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str
         "map_ids": sorted(PREVIEW_IDS), "start": list(START),
         "town": list(TOWN), "npc": list(NPC),
         "tilesets_added": tile_count, "pbs_compilation_pending": True,
+        "bedroom_layout": visual.HGSS_BEDROOM_LAYOUT,
+        "bedroom_stairs_warp": list(visual.HGSS_STAIRS_WARP),
+        "bedroom_stairs_return": list(visual.HGSS_STAIRS_RETURN),
         "file_hashes": {name: sha(blob) for name, blob in files.items()},
     }
     files[PROOF] = raw_json(report)
