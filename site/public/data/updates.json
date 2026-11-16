@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cb3c5a0ba33cb8c20549655277014648702702a7",
+      "date": "2026-11-15T23:19:09-03:00",
+      "title": "test(johto): reproduce original New Bark autorun spawn and reject actual NPC collisions",
+      "category": "Testes"
+    },
+    {
       "sha": "6b86834dd823950b63828e76de2076efaac5d02b",
       "date": "2026-11-15T23:18:49-03:00",
       "title": "refactor(johto): isolate the real New Bark transparent autorun start acceptance guard for regression tests",
