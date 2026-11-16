@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0428ce911b689980a2d52d8e3a7fdbab46b03361",
+      "date": "2026-11-16T09:34:06-03:00",
+      "title": "feat(johto): safe versioned event movement and transfer landing edits preserving RPG Maker event commands",
+      "category": "Novidades"
+    },
+    {
       "sha": "25e0d6de843505a333fdf00980c7d511477bef62",
       "date": "2026-11-16T09:31:59-03:00",
       "title": "feat(johto): one-click local GitHub CLI setup/auth for safe publish-map-to-main action",
