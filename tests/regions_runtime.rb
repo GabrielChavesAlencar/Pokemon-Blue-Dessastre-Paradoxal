@@ -10,10 +10,10 @@ require ARGV.fetch(1)
 ring = %w[DECADES KANTO JOHTO HOENN SINNOH UNOVA KALOS ALOLA GALAR PALDEA]
 ring.each_with_index do |region, i|
   s = BlueRegions.new_state(region)
-  check(BlueRegions.unlocked(s) == [region], "initial #{region}")
+  check(BlueRegions.unlocked(s).sort == ring.sort, "free-travel circuit #{region}")
   check(!BlueRegions.complete_league(s, ring[i-1]), "foreign league")
   check(BlueRegions.complete_league(s, region), "complete #{region}")
-  check(BlueRegions.unlocked(s).sort == [region, ring[i-1], ring[(i+1)%10]].sort, "neighbors #{region}")
+  check(BlueRegions.unlocked(s).sort == ring.sort, "regional circuit remains available #{region}")
   check(!BlueRegions.complete_league(s, region), "duplicate #{region}")
   check(!BlueRegions.world_champion?(s), "premature world champion")
 end
@@ -34,7 +34,7 @@ h = BlueRegions.new_state("HISUI")
 check(!BlueRegions.allow_specials?(h, "HISUI"), "Hisui before ending")
 check(!BlueRegions.complete_league(h, "HISUI"), "no Hisui league")
 check(BlueRegions.finish_hisui(h), "Hisui ending")
-check(BlueRegions.unlocked(h).sort == %w[DECADES HISUI SINNOH], "Hisui exits")
+check(BlueRegions.unlocked(h).sort == (ring + ["HISUI"]).sort, "Hisui retains available circuit")
 check(BlueRegions.allow_specials?(h, "HISUI"), "Hisui after ending")
 check(BlueRegions.crystal_total(h, 3) == 3, "Hisui does not give crystal")
 
@@ -60,7 +60,7 @@ Pkmn = Struct.new(:special, :egg?, :fainted?)
 normal, special, fainted = Pkmn.new(false,false,false), Pkmn.new(true,false,false), Pkmn.new(false,false,true)
 party = [normal,special]
 classify = proc { |pkmn| pkmn.special }
-check(BlueRegions.transfer_plan(s, "JOHTO", party, [[0,0]], &classify) == [:locked,[]], "locked destination")
+check(BlueRegions.transfer_plan(s, "JOHTO", party, [[0,0]], &classify) == [:ok, [[special,[0,0]]]], "free regional travel still isolates specials")
 BlueRegions.complete_league(s, "KANTO")
 check(BlueRegions.transfer_plan(s, "JOHTO", party, [], &classify) == [:box_full,[]], "full boxes")
 check(BlueRegions.transfer_plan(s, "JOHTO", [fainted,special], [[0,0]], &classify) == [:no_usable_party,[]], "no usable party")
