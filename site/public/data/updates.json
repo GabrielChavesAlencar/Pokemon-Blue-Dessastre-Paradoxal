@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4d4903187b01b797ebc3a5a37e07beaf9e0353ac",
+      "date": "2026-11-16T19:15:43-03:00",
+      "title": "test(ci): CH12 Sinnoh end-to-end Ruby Campaign Story EvolutionScaling + regressao",
+      "category": "Testes"
+    },
+    {
       "sha": "b655449fd3862b3c9ca2fcfc47e77d6bd5daa775",
       "date": "2026-11-16T19:13:36-03:00",
       "title": "test(sinnoh): CH12 auditor e 15 testes negativos de cap, 70/90 e evolucoes",
