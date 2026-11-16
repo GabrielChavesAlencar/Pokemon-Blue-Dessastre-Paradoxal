@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07fac1c21c8b80498554fca855a9da9c5bd54335",
+      "date": "2026-11-16T20:21:12-03:00",
+      "title": "feat(portal): CH17 gerador read-only de guias Sinnoh a partir de CH11-CH16",
+      "category": "Novidades"
+    },
+    {
       "sha": "c86ab9f1299d6d9da483856d961167fb74a85a20",
       "date": "2026-11-16T20:16:00-03:00",
       "title": "test(sinnoh): CH02 adulteração percentual independe da Barra E atual",
