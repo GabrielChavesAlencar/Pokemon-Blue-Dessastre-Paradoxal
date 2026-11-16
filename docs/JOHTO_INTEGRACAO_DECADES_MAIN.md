@@ -23,6 +23,11 @@ Passos sem apagar save:
    retorno do térreo, e aplica a correção com backup **apenas se** os hashes
    da prévia Johto estiverem íntegros. A confirmação é
    `LAYOUT_HGSS_APPLIED`; não basta o instalador dizer `ready=true`.
+   Se apenas arquivos **compartilhados de outras regiões** mudaram, o BAT
+   também permite reparo isolado: exige que `Map674` e `Map675` ainda
+   correspondam aos hashes originais e confere o tileset real. Ele não
+   declara a instalação inteira aprovada e **não** reescreve PBS de
+   Kanto/Hoenn nem dados globais.
 5. O diagnóstico completo é salvo em
    `.blue-work/johto-bedroom-diagnostic.json`. Se indicar
    `FAILED`, `OLD_OR_DIFFERENT_BEDROOM` ou `MAP_READ_ERROR`, conferir o
