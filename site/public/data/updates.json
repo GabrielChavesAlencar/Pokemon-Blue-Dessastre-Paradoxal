@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6ba958463b0f6f092de7386d94c8328c7716d68f",
+      "date": "2026-11-16T06:33:14-03:00",
+      "title": "docs(johto): include safe map-scoped repair when shared regional PBS has drifted",
+      "category": "Documentação"
+    },
+    {
+      "sha": "f67d3bdef6ad837e1acb39b63bc917f587d50ad0",
+      "date": "2026-11-16T06:33:00-03:00",
+      "title": "fix(launcher): print real managed Game.exe path to diagnose players opening a different Johto copy",
+      "category": "Correções"
+    },
+    {
       "sha": "453bf23e7e46ec1a6e8461d73c5d552ada929b81",
       "date": "2026-11-16T06:31:57-03:00",
       "title": "test(johto): manually repair room after PBS global drift without overwriting another region",
