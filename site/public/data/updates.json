@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c52834f613507020618accb050bb020d6d226c4e",
+      "date": "2026-11-16T19:57:45-03:00",
+      "title": "fix(sinnoh): CH15 relatório explicita ausência de compilação PBS e vínculo nativo",
+      "category": "Correções"
+    },
+    {
       "sha": "c3f411ba4a3f030500d6e6b97a577821b7bbb62e",
       "date": "2026-11-16T19:56:51-03:00",
       "title": "test(ci): CH15 23 verificações positivas negativas roster PBS níveis e Full Power Sinnoh",
