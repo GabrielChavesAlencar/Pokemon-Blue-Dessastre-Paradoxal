@@ -22,6 +22,7 @@ on:
       - web/johto-map-editor.html
       - EDITAR_MAPAS_JOHTO.bat
       - tests/test_johto_map_editor.py
+      - tests/check_johto_map_editor_ui.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,6 +49,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_johto_map_editor.py' -v
       - name: Check Johto editor Python syntax
         run: python -m py_compile scripts/regions/johto_map_editor.py scripts/regions/johto_map_patches.py
+      - name: Validate Johto Map Studio browser controls and JS syntax
+        run: python tests/check_johto_map_editor_ui.py
       - name: Verify Johto original preview layout regressions
         run: python -m unittest discover -s tests -p 'test_johto_main_preview.py' -v
       - uses: actions/upload-artifact@v4
