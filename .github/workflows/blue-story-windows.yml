@@ -12,6 +12,9 @@ on:
       - CONECTAR_GITHUB_EDITOR_JOHTO.bat
       - docs/JOHTO_MAP_STUDIO.md
       - tests/test_blue_story_johto_editor_installer.py
+      - scripts/regions/johto_map_editor.py
+      - tests/test_johto_map_editor.py
+      - tests/test_blue_story_github_cli.py
       - scripts/battle_polish/TitleKanto.rb
       - scripts/battle_polish/RegionStart.rb
       - .github/workflows/blue-story-windows.yml
@@ -36,6 +39,10 @@ jobs:
         run: python -m unittest discover -s tests -p test_embed_johto_private.py -v
       - name: Verificar download, atalhos e atualizacoes do Johto Map Studio
         run: python -m unittest discover -s tests -p test_blue_story_johto_editor_installer.py -v
+      - name: Testar publicação segura do Johto e integração automática com GitHub
+        run: python -m unittest discover -s tests -p test_johto_map_editor.py -v
+      - name: Testar GitHub CLI automática e JavaScript do editor
+        run: python -m unittest discover -s tests -p test_blue_story_github_cli.py -v
       - name: Compilar e executar self-test do Blue-Story
         run: python scripts/windows/build.py
       - name: Verificar o executável Windows
