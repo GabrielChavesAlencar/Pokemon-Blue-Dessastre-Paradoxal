@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "946393992ac55f05886398a85cf1329cedc85f07",
+      "date": "2026-11-16T20:28:29-03:00",
+      "title": "ci(portal): build antes de testar guias Sinnoh gerados CH17",
+      "category": "Documentação"
+    },
+    {
       "sha": "2cb220a6fe6736c276eeebc458ae64c1273cc820",
       "date": "2026-11-16T20:27:11-03:00",
       "title": "fix(portal): CH17 null explicito para 29 áreas sem fase confirmada",
