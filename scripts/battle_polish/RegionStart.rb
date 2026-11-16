@@ -308,9 +308,10 @@ module BlueRegionStart
   # This is an in-memory request, not a save flag: the game only commits the
   # chosen starting region after the native new-game values are initialized.
   def self.request_initial(region)
-    return false unless ["DECADES", "KANTO", "HOENN"].include?(region)
+    return false unless ["DECADES", "KANTO", "JOHTO", "HOENN"].include?(region)
     return false if region == "KANTO" && !kanto_integrated?
     return false if region == "HOENN" && !hoenn_integrated?
+    return false if region == "JOHTO" && !johto_spawn
     @requested_initial = region
     @title_region_chosen = true
     true
@@ -329,6 +330,7 @@ module BlueRegionStart
     return "HOENN" if File.file?("Hoenn pilot.json") && hoenn_pilot_spawn
     return "KANTO" if @requested_initial == "KANTO" && kanto_integrated?
     return "HOENN" if @requested_initial == "HOENN" && hoenn_integrated?
+    return "JOHTO" if @requested_initial == "JOHTO" && johto_spawn
     "DECADES"
   end
 
@@ -430,6 +432,14 @@ module BlueRegionStart
         $game_player.refresh_charset
       end
       $PokemonGlobal.blue_regions["pilot_profile_pending"] = true
+    elsif region == "JOHTO"
+      # Use a consistent Johto overworld character without showing another
+      # profile/mode selection or changing the shared save directory.
+      if $game_player && defined?(pbChangePlayer)
+        pbChangePlayer(3)
+        $game_player.refresh_charset
+        $game_player.transparent = false
+      end
     elsif region == "HOENN"
       # The authored Hoenn bedroom profile event expects this regional flag.
       # Never copy an isolated pilot's save or overwrite global quest flags.
