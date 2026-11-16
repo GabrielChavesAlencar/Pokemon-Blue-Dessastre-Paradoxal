@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bdcc7b43fad9a0edbe311b3964cc8c70881def14",
+      "date": "2026-11-15T23:34:12-03:00",
+      "title": "ci(johto): test real Compiler.main alias-recursion regression and in-place saved-game-safe Boot hotfix",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0caa3f3a041da9b9b071a20edca6a42cc03a2dda",
       "date": "2026-11-15T23:33:44-03:00",
       "title": "test(johto): real-format manifest regression for copied Boot hotfix, rollback and save/map preservation",
