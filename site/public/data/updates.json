@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8b91b07a02a04e926de99fd4dbed4033e3a4c1a3",
+      "date": "2026-11-16T14:45:38-03:00",
+      "title": "test(sinnoh): CH08 tres Barry PBS e runtime Normal70 Master90 em CI",
+      "category": "Testes"
+    },
+    {
       "sha": "7a2b30ef17b4c3570e7bb475c77010e64e5206e2",
       "date": "2026-11-16T14:43:23-03:00",
       "title": "fix(sinnoh): exigir PBS compilado certo para Barry e proteger versões (CH08)",
