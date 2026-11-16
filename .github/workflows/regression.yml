@@ -179,6 +179,13 @@ jobs:
           python scripts/regions/audit_sinnoh_symbolic_encounters.py
           python -m unittest discover -s tests -p 'test_sinnoh_symbolic_encounters_ch13.py' -v
           python -m py_compile scripts/regions/audit_sinnoh_symbolic_encounters.py
+      - name: CH14 - Galactic Cyrus Cynthia Liga e viagem apenas instalada
+        run: |
+          python scripts/regions/audit_sinnoh_story_ch14.py
+          python -m unittest discover -s tests -p 'test_sinnoh_story_ch14.py' -v
+          python -m py_compile scripts/regions/audit_sinnoh_story_ch14.py
+          ruby -c scripts/regions/SinnohStoryContracts.rb
+          ruby tests/sinnoh_story_ch14_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb scripts/regions/SinnohStoryContracts.rb data/regions/sinnoh-story-ch14-contract.json
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh

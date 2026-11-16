@@ -51,7 +51,7 @@ module BlueSinnohStoryContracts
       required = BADGE_REQUIREMENTS.fetch(event, [])
       return nil unless (required - earned).empty?
     end
-    events
+    events.dup
   rescue StandardError
     nil
   end
