@@ -60,6 +60,31 @@ def candidate_bundles(project: Path):
                 yield path
 
 
+def detect_base_only_inputs(project: Path) -> str | None:
+    """Recognize private 'johto-pilot-inputs' base assets, NOT an OFFLINE12 map pack."""
+    directories = [project / ".blue-work", project, Path.home() / "Downloads"]
+    profile = os.environ.get("USERPROFILE")
+    if profile:
+        directories.append(Path(profile) / "Downloads")
+    for folder in directories:
+        if not folder.is_dir() or folder.is_symlink():
+            continue
+        for path in sorted(folder.glob("johto-pilot-inputs*.zip")):
+            if path.is_symlink() or not path.is_file() or path.stat().st_size > 80_000_000:
+                continue
+            try:
+                with zipfile.ZipFile(path) as archive:
+                    if ("johto-inputs-manifest.json" not in archive.namelist()
+                            or "Johto_Offline_Fase12/Data/Map600.rxdata" in archive.namelist()):
+                        continue
+                    data = json.loads(archive.read("johto-inputs-manifest.json"))
+                    if data.get("purpose") == "PRIVATE_JOHTO_PILOT_INPUTS":
+                        return path.name
+            except (OSError, ValueError, KeyError, json.JSONDecodeError, zipfile.BadZipFile):
+                continue
+    return None
+
+
 def inspect_current_baseline(game: Path, archive_path: Path) -> dict:
     """Explain whether the historical offline preview fits the CURRENT game.
 
@@ -297,8 +322,15 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
         return record(project, {"status": "offline_bundle_invalid",
                                 "reason": "Pacotes Johto encontrados, mas nenhum tem o SHA-256 original: " +
                                 "; ".join(rejected_sources[:4])})
+    base_only = detect_base_only_inputs(project)
+    if base_only:
+        return record(project, {"status": "awaiting_johto_installable_release",
+                                "reason": base_only + " contém apenas os insumos da base, não os Map600–681 de Johto. É necessário Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip (original, SHA-256 auditado) na pasta Downloads deste usuário Windows. Nenhum save ou mapa existente foi alterado.",
+                                "base_inputs_detected": base_only,
+                                "missing_private_johto_source": True})
     return record(project, {"status": "awaiting_johto_installable_release",
-                            "reason": "ZIP privado Johto OFFLINE 12 não encontrado. Salve Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip na pasta Downloads e reabra Blue-Story.exe. Kanto/Hoenn e os saves foram preservados."})
+                            "reason": "ZIP privado Johto OFFLINE 12 não encontrado. Salve Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip na pasta Downloads e reabra Blue-Story.exe. Kanto/Hoenn e os saves foram preservados.",
+                            "missing_private_johto_source": True})
 
 
 if __name__ == "__main__":
