@@ -796,8 +796,8 @@
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
     "done": 18,
-    "partial": 0,
-    "pending": 2,
+    "partial": 1,
+    "pending": 1,
     "percent_complete": 90,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
@@ -951,8 +951,8 @@
         "priority": "P4",
         "title": "Regresso isolado Python/Ruby de Sinnoh no CI",
         "acceptance": "Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo",
-        "status": "pending",
-        "evidence_path": null
+        "status": "partial",
+        "evidence_path": "scripts/regions/sinnoh_ci_ch19.py"
       },
       {
         "id": "CH20",
