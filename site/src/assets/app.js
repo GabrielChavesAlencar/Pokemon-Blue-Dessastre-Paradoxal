@@ -14,6 +14,7 @@ import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
 import {loadPendingRegions,loadTrainerBindings,pendingBlocks,pendingPage,pendingOnlyRegion,trainerBindingsPanel} from './pending.js';
 import {loadSinnohGuide,sinnohGuidePage} from './sinnoh-guide.js';
+const sinnohSearchOptions=url=>({busca:url.searchParams.get('busca')||'',pendencia:url.searchParams.get('pendencia')||'todas',tipo:url.searchParams.get('tipo')||'todos'});
 
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
@@ -66,7 +67,7 @@ async function render(scroll=false){
       setPage('Pendências das regiões');
     }else if(route==='sinnoh'){
       const guide=await loadSinnohGuide();if(id!==renderId)return;
-      main.innerHTML=sinnohGuidePage(guide,url.searchParams.get('aba')||'visao',url.searchParams.get('fase')||'all');
+      main.innerHTML=sinnohGuidePage(guide,url.searchParams.get('aba')||'visao',url.searchParams.get('fase')||'all',sinnohSearchOptions(url));
       setPage('Guia de Sinnoh');
     }else if(route==='balanceamento'){
       const data=await loadKanto();if(id!==renderId)return;
@@ -99,7 +100,7 @@ async function render(scroll=false){
       if(region==='sinnoh'){
         const guide=await loadSinnohGuide();if(id!==renderId)return;
         const tab={localizacoes:'areas',treinadores:'treinadores',chefes:'ginasios'}[route];
-        main.innerHTML=sinnohGuidePage(guide,tab,url.searchParams.get('fase')||'all');
+        main.innerHTML=sinnohGuidePage(guide,tab,url.searchParams.get('fase')||'all',sinnohSearchOptions(url));
       }else{
         const data=await loadPilotCatalog(region);if(id!==renderId)return;
         main.innerHTML=pilotIndex(data,route);
@@ -169,6 +170,14 @@ async function render(scroll=false){
     main.innerHTML=`<div class="container">${empty(error.message==='not-found'?'Este caminho ainda não foi descoberto.':'Não foi possível abrir esta página.',error.message==='not-found'?'Volte ao início e encontre um novo destino.':'Tente recarregar a página em alguns instantes.')}<div class="load-more"><a class="button button-primary" href="/">Voltar ao início ${icon('arrow')}</a></div></div>`;setPage('Página não encontrada');
   }finally{if(id===renderId){main.removeAttribute('aria-busy');if(scroll){window.scrollTo({top:0,behavior:'instant'});main.focus({preventScroll:true});}}}
 }
+// Search is a real GET form (works without JavaScript), enhanced with SPA navigation.
+main.addEventListener('submit',event=>{
+  const form=event.target.closest('form[data-sinnoh-filters]');
+  if(!form)return;
+  event.preventDefault();
+  const query=new URLSearchParams(new FormData(form));
+  navigate('/sinnoh?'+query.toString());
+});
 document.addEventListener('click',event=>{
   const link=event.target.closest('a[href]');if(!link||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||link.target==='_blank'||link.hasAttribute('download'))return;
   const href=link.getAttribute('href');if(href.startsWith('#'))return;
@@ -201,6 +210,9 @@ main.addEventListener('input',event=>{
 function updateTrainerLevel(value){const url=new URL(location.href);url.searchParams.set('nivel',String(Math.min(100,Math.max(1,Math.trunc(Number(value))||50))));history.replaceState({},'',url);render(false);}
 main.addEventListener('keydown',event=>{if(event.target.dataset.select==='trainerLevel'&&event.key==='Enter'){event.preventDefault();updateTrainerLevel(event.target.value);}});
 main.addEventListener('change',event=>{
+  // Selecting a planned-data filter submits the scoped Sinnoh search.
+  const form=event.target.closest('form[data-sinnoh-filters]');
+  if(form&&event.target.tagName==='SELECT'){form.requestSubmit();return;}
   const key=event.target.dataset.select;if(!key)return;state[key]=event.target.value;
   if(key==='version')render(false);
   else if(key==='trainerVariant'){const url=new URL(location.href);url.searchParams.set('modo',state.trainerVariant);history.replaceState({},'',url);render(false);}

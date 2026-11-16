@@ -321,3 +321,28 @@
 .sinnoh-guide-footer h2{font-size:24px;margin-bottom:14px}
 @media(max-width:990px){.sinnoh-guide-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.sinnoh-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.sinnoh-guide-grid,.sinnoh-guide-steps{grid-template-columns:1fr}.sinnoh-guide-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.sinnoh-guide-card{padding:16px}}
+
+
+/* CH18 — searchable planned Sinnoh catalog, keyboard-accessible and responsive. */
+.sinnoh-guide-filters{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:22px 0 15px;
+  padding:16px;border:1px solid #304c6c;border-radius:9px;background:#101d30}
+.sinnoh-guide-filters label{display:flex;flex:1 1 215px;flex-direction:column;gap:6px;
+  font-size:11px;font-weight:600;color:#b9d3ec;line-height:1.4}
+.sinnoh-guide-filters input,.sinnoh-guide-filters select{width:100%;min-height:42px;padding:10px 12px;
+  border-radius:6px;border:1px solid #42607d;color:#eaf4ff;background:#0b1523;outline-offset:2px}
+.sinnoh-guide-filters input:focus-visible,.sinnoh-guide-filters select:focus-visible{
+  outline:2px solid #90c7fc}
+.sinnoh-guide-filters .button{min-height:42px;white-space:nowrap}
+.sinnoh-guide-context{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:12px;
+  border-top:1px solid #2a3e56;height:auto}
+.sinnoh-guide-context .text-link{font-size:10px;line-height:1.65;white-space:normal}
+.sinnoh-guide-empty{grid-column:1/-1;padding:25px;border-radius:9px;border:1px dashed #637d9b;
+  background:#152238;color:#c3d7eb;line-height:1.7}
+.sinnoh-guide-result-count{font-size:12px;margin:12px 0 14px;color:#aed5f1}
+.sinnoh-guide-phase{height:auto}
+.sinnoh-guide-card nav{margin:auto 0 0}
+.sinnoh-guide-steps .sinnoh-guide-context{margin-top:10px;padding-top:7px}
+@media(max-width:640px){.sinnoh-guide-filters{padding:13px;gap:10px}
+  .sinnoh-guide-filters label,.sinnoh-guide-filters .button{flex:1 1 100%}
+  .sinnoh-guide-page .sinnoh-guide-tabs{align-items:stretch}
+  .sinnoh-guide-page .sinnoh-guide-tabs .filter-chip{flex:1 1 calc(50% - 8px)}}

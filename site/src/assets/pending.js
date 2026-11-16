@@ -121,6 +121,7 @@ export function pendingPage(db,requested='KANTO',bindings=null){
     '<h1>Áreas, treinadores e Liga pendentes</h1>'+
     '<p>'+esc(db.meaning)+'</p></header>'+
     '<nav class="region-picker" aria-label="Região das pendências">'+tabs+'</nav>'+
+    (region==='SINNOH'?'<p class="data-note"><a class="text-link" href="/sinnoh?aba=pendencias">Pesquisar pendências auditadas, áreas, ginásios e HMs no guia de Sinnoh →</a></p>':'')+
     '<div class="pending-counters">'+counts+'</div>'+
     pendingBlocks(db,region,'localizacoes')+
     pendingBlocks(db,region,'treinadores')+
