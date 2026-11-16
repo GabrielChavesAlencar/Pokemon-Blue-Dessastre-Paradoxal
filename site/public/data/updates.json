@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bd642204bab19e0ce9ca457f14e1ac5e41086c4",
+      "date": "2026-11-16T14:46:27-03:00",
+      "title": "test(sinnoh): alinhar trainer sintetico ao GameData pokemon em CH08",
+      "category": "Testes"
+    },
+    {
       "sha": "8b91b07a02a04e926de99fd4dbed4033e3a4c1a3",
       "date": "2026-11-16T14:45:38-03:00",
       "title": "test(sinnoh): CH08 tres Barry PBS e runtime Normal70 Master90 em CI",
