@@ -144,8 +144,13 @@ class SinnohStoryCH14Tests(unittest.TestCase):
                     row["verified"] = True
         self.rejects("duplicado ou declarado nativo", coverage=coverage)
         coverage = copy.deepcopy(self.coverage)
-        coverage["phases"][8]["events"] = [] if len(coverage["phases"]) > 8 else []
-        self.rejects("Cobertura|fase", coverage=coverage)
+        for phase in coverage["phases"]:
+            if phase["phase"] == 9:
+                phase["events"] = [
+                    row for row in phase["events"]
+                    if row["key"] != "P09_AARON_BATTLE"
+                ]
+        self.rejects("não existe", coverage=coverage)
 
     def test_chapter_references_must_exist(self):
         text = self.walkthrough.replace("### S39", "### X39")
