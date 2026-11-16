@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "88e0f3c216c21ebf2ff80eb6216500f0b6a92d77",
+      "date": "2026-11-16T11:39:50-03:00",
+      "title": "feat(johto-map-ui): publicar com um clique e autorizar na interface",
+      "category": "Novidades"
+    },
+    {
       "sha": "0616b5672376dc3b8d58551a59dcec066237c286",
       "date": "2026-11-16T11:38:31-03:00",
       "title": "feat(johto-editor): publicação com autenticação integrada e proteção de conflitos",
