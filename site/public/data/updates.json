@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0caa3f3a041da9b9b071a20edca6a42cc03a2dda",
+      "date": "2026-11-15T23:33:44-03:00",
+      "title": "test(johto): real-format manifest regression for copied Boot hotfix, rollback and save/map preservation",
+      "category": "Testes"
+    },
+    {
       "sha": "b30a3ad74be9892c7dbb3961c7f352623470c4c9",
       "date": "2026-11-15T23:33:00-03:00",
       "title": "test(johto): reproduce Compiler.main alias stack overflow and validate safe map-enter data checks",
