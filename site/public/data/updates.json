@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "514b56f3abf2b646909cb1a840e4032f5c404ffb",
+      "date": "2026-11-15T23:15:32-03:00",
+      "title": "ci(johto): include dependent source modules for private end-to-end installer validation",
+      "category": "Melhorias"
+    },
+    {
       "sha": "6461db3fea8d8b1402f281e61185b1f81762b341",
       "date": "2026-11-15T23:14:37-03:00",
       "title": "ci(johto): provide auditable source snapshot for offline private Johto end-to-end installer test",
