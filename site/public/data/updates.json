@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dabe3797ccb1706806b01f44143685311b09c684",
+      "date": "2026-11-16T09:19:06-03:00",
+      "title": "feat(johto): localhost visual map editor API, native map backups, conflict-safe patches and authenticated publish-to-main button",
+      "category": "Novidades"
+    },
+    {
       "sha": "dab0aeec46f10a1cb61bb5b704604e6c2804690b",
       "date": "2026-11-16T09:15:24-03:00",
       "title": "feat(johto): versioned safe tile patches for Map600–699, idempotent and event-protected across installs",
