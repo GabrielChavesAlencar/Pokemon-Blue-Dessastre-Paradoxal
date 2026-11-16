@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c9b52b4716d615236b15b3fce4fe46ea30522546",
+      "date": "2026-11-16T09:38:54-03:00",
+      "title": "docs(johto): map studio Windows quickstart, move stairs and warp return, GitHub main publish, saves and rights boundaries",
+      "category": "Documentação"
+    },
+    {
       "sha": "fe6d8d7d964e4d8ca2490c90891df4be65949f4b",
       "date": "2026-11-16T09:38:04-03:00",
       "title": "ci(johto): parse browser JavaScript of map studio and test publish/save controls",
