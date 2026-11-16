@@ -203,7 +203,48 @@ module BlueRegionStart
     nil
   end
 
+  # Private early-access install is NOT the 13-gate VERIFIED_PLAYABLE release.
+  # The portable JoiPlay Ruby runtime may lack JSON and Digest. Read only the
+  # installer-generated compact marker and check ALL 100 map files; never
+  # mistake the old 82-map OFFLINE 12 ZIP for an installed campaign.
+  JOHTO_PREVIEW = "Data/blue-johto-main-preview.json".freeze
+  JOHTO_PREVIEW_READY = "Data/blue-johto-preview-ready.txt".freeze
+  JOHTO_PREVIEW_SHA = "74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49".freeze
+  def self.johto_preview_proof
+    return nil if %w[Kanto Johto Hoenn Sinnoh].any? { |label| File.file?("#{label} pilot.json") }
+    return nil unless File.file?(JOHTO_PREVIEW) && !File.symlink?(JOHTO_PREVIEW) &&
+                      File.file?(JOHTO_PREVIEW_READY) && !File.symlink?(JOHTO_PREVIEW_READY)
+    json = File.read(JOHTO_PREVIEW, 30000)
+    return nil unless json.match?(/"region"\s*:\s*"JOHTO"/) &&
+                      json.match?(/"status"\s*:\s*"EXPERIMENTAL_PRIVATE_UNVERIFIED"/) &&
+                      json.match?(/"source_bundle_sha256"\s*:\s*"#{JOHTO_PREVIEW_SHA}"/) &&
+                      json.match?(/"native_gameplay_verified"\s*:\s*false/)
+    values = File.read(JOHTO_PREVIEW_READY, 128).strip.split(",")
+    return nil unless values.length == 11 &&
+                      values[0, 2] == ["BLUE_JOHTO_PRIVATE_PREVIEW_V1", "100"]
+    points = values[2..-1].map { |s| Integer(s, 10) rescue nil }
+    return nil unless points == [674,6,7,600,10,26,600,10,25]
+    return nil unless (600..699).all? { |id|
+      pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
+    }
+    required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata",
+      "PBS/map_connections.txt", "PBS/trainers_johto.txt",
+      "PBS/trainer_types_johto.txt", "PBS/map_metadata_johto_main.txt",
+      "Plugins/ZZZZZ Blue Johto Main/Boot.rb"]
+    return nil unless required.all? { |name| File.file?(name) && !File.symlink?(name) }
+    {"start" => [674,6,7,2], "travel_point" => [600,10,26,2],
+     "npc_point" => [600,10,25,2], "status" => "EXPERIMENTAL_PRIVATE_UNVERIFIED"}
+  rescue StandardError
+    nil
+  end
+
   def self.johto_spawn
+    # Early-access Johto starts in the shared save only when the local
+    # private builder committed all 100 maps. This cannot satisfy the
+    # independent final-release gate above.
+    if (preview = johto_preview_proof)
+      return preview["start"][0,3]
+    end
     proof = johto_install_proof
     return nil unless proof && File.file?(JOHTO_MARKER) &&
                       !File.symlink?(JOHTO_MARKER)
@@ -220,13 +261,13 @@ module BlueRegionStart
   end
 
   def self.johto_town_point
-    proof = johto_install_proof
+    proof = johto_install_proof || johto_preview_proof
     return nil unless proof && johto_spawn
     proof["travel_point"]
   end
 
   def self.johto_agent_point
-    proof = johto_install_proof
+    proof = johto_install_proof || johto_preview_proof
     return nil unless proof && johto_spawn
     proof["npc_point"]
   end
