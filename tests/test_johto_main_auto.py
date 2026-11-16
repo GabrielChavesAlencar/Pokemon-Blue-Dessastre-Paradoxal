@@ -1,0 +1,95 @@
+"""Safety regressions for the non-destructive Johto/Decades readiness hook."""
+from __future__ import annotations
+
+import hashlib
+import importlib.util
+import json
+import tempfile
+import unittest
+import zipfile
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+MODULE = ROOT / "scripts/regions/auto_integrate_johto.py"
+SPEC = importlib.util.spec_from_file_location("auto_integrate_johto_test", MODULE)
+mod = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(mod)
+
+
+class AutoJohtoTests(unittest.TestCase):
+    def setUp(self):
+        self.work = tempfile.TemporaryDirectory()
+        self.addCleanup(self.work.cleanup)
+        self.project = Path(self.work.name)
+        self.game = self.project / "game"
+        self.game.mkdir()
+
+    def test_missing_game_is_safe(self):
+        report = mod.integrate(self.project, self.game)
+        self.assertEqual("no_game_skipped", report["status"])
+        self.assertFalse(report["ready"])
+        self.assertFalse((self.game / "Data").exists())
+
+    def test_no_bundle_never_unlocks(self):
+        (self.game / "Game.exe").write_bytes(b"sample")
+        report = mod.integrate(self.project, self.game)
+        self.assertEqual("awaiting_johto_installable_release", report["status"])
+        self.assertFalse(report["ready"])
+        self.assertFalse((self.game / "Data/blue-johto-start.txt").exists())
+
+    def test_verified_offline_bundle_is_not_a_release(self):
+        (self.game / "Game.exe").write_bytes(b"sample")
+        package = self.project / mod.BUNDLE_PATHS[0]
+        package.parent.mkdir(parents=True)
+        with zipfile.ZipFile(package, "w") as archive:
+            for name in sorted(mod.OFFLINE_MAPS):
+                archive.writestr(name, b"bytes")
+            for name in ("Data/MapInfos.rxdata", "Data/Tilesets.rxdata", "johto-offline12-audit.json"):
+                archive.writestr(mod.OFFLINE_PREFIX + name, b"metadata")
+        sha = hashlib.sha256(package.read_bytes()).hexdigest()
+        with patch.object(mod, "ORIGINAL_BUNDLE_SHA256", sha):
+            report = mod.integrate(self.project, self.game)
+        self.assertEqual("offline_preview_not_installable", report["status"])
+        self.assertEqual(82, report["bundle"]["map_count"])
+        self.assertFalse(report["ready"])
+        self.assertFalse((self.game / "Data/blue-johto-install.json").exists())
+
+    def test_unknown_zip_is_rejected(self):
+        (self.game / "Game.exe").write_bytes(b"sample")
+        package = self.project / mod.BUNDLE_PATHS[0]
+        package.parent.mkdir(parents=True)
+        package.write_bytes(b"unverified")
+        report = mod.integrate(self.project, self.game)
+        self.assertEqual("offline_bundle_invalid", report["status"])
+        self.assertFalse(report["ready"])
+
+    def test_arbitrary_marker_cannot_unlock_johto(self):
+        (self.game / "Game.exe").write_bytes(b"sample")
+        (self.game / "Data").mkdir()
+        (self.game / "Data/blue-johto-start.txt").write_text("JOHTO,600,6,7")
+        report = mod.integrate(self.project, self.game)
+        self.assertEqual("existing_install_needs_review", report["status"])
+        self.assertFalse(report["ready"])
+        self.assertTrue((self.game / "Data/blue-johto-start.txt").is_file())
+
+    def test_installation_hook_is_read_only(self):
+        (self.game / "Game.exe").write_bytes(b"sample")
+        before = {p.relative_to(self.game): p.read_bytes() for p in self.game.rglob("*") if p.is_file()}
+        mod.integrate(self.project, self.game)
+        after = {p.relative_to(self.game): p.read_bytes() for p in self.game.rglob("*") if p.is_file()}
+        self.assertEqual(before, after)
+        status = json.loads((self.project / mod.STATUS).read_text("utf-8"))
+        self.assertFalse(status["ready"])
+
+    def test_blue_story_calls_johto_after_hoenn(self):
+        installer = (ROOT / "scripts/install_game.py").read_text(encoding="utf-8")
+        self.assertIn("scripts/regions/auto_integrate_johto.py", installer)
+        self.assertGreater(installer.index("auto_integrate_johto.py"),
+                           installer.index("auto_integrate_hoenn.py"))
+        self.assertIn("if not skip_kanto:", installer)
+        self.assertNotIn("VERIFIED_PLAYABLE", (ROOT / "scripts/regions/auto_integrate_johto.py").read_text("utf-8"))
+
+
+if __name__ == "__main__":
+    unittest.main()
