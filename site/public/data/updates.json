@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4f8cf6c8b50ff29f55391d5dfb41f6bba0083296",
+      "date": "2026-11-15T23:30:48-03:00",
+      "title": "fix(johto): transactional in-place Ruby Boot hotfix for already installed private preview; no map/save reinstall",
+      "category": "Correções"
+    },
+    {
       "sha": "11e8923d116470716cbaac0bc0abb81c7773400d",
       "date": "2026-11-15T23:29:29-03:00",
       "title": "fix(johto): remove recursive Compiler.main prepend; validate compiled Johto data safely on map entry",
