@@ -259,6 +259,8 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                                 "reason": "Prévia local de 100 mapas integrada, com saves compartilhados; falta validar Game.exe/JoiPlay. Campanha ainda experimental.",
                                 "changed": True, "map_count": result["maps"],
                                 "native_qa": False, "bundle_path": str(source),
+                                "hgss_status": (installed.get("private_hgss") or {}).get("status", "no_private_art"),
+                                "hgss_maps": (installed.get("private_hgss") or {}).get("maps", []),
                                 "bundle": bundle, "current_game": baseline})
     if rejected_sources:
         return record(project, {"status": "offline_bundle_invalid",
