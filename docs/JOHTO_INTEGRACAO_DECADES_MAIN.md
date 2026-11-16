@@ -3,6 +3,45 @@
 **Atualizado:** 16/11/2026  
 **Estado:** existe agora uma **integração experimental privada** de Johto ao Game.exe principal, preparada pelo Blue-Story.exe. **Não foi testada como jogável no Game.exe nem no JoiPlay**, e não é o lançamento definitivo de Johto.
 
+## Quarto antigo aparecendo mesmo após atualizar (diagnóstico real)
+
+**Se ainda aparece a escada no canto inferior direito**, confirmar primeiro se o
+`Game.exe` iniciado é da **mesma pasta atualizada**. O Blue-Story procura o
+projeto ao lado do executável; se não encontrar, utiliza por padrão
+`%LOCALAPPDATA%\\PokemonBlueDessastreParadoxal\\game\\Game.exe`.
+Cópias independentes de `Game.exe` **não recebem automaticamente** a atualização.
+
+Passos sem apagar save:
+
+1. Fechar `Game.exe` por completo.
+2. Executar o **Blue-Story.exe** atual (ele baixa o código da `main`).
+3. Abrir a pasta do projeto gerenciada e clicar duas vezes em
+   `VERIFICAR_QUARTO_JOHTO.bat`. Se a instalação tiver sido criada automaticamente,
+   a pasta geralmente fica em `%LOCALAPPDATA%\\PokemonBlueDessastreParadoxal`.
+4. O BAT lê `game/Data/Map674.rxdata` e `game/Data/Map675.rxdata`, confere
+   posição do warp real (antigo 9,8; novo 4,4), tile da escada esquerda e o
+   retorno do térreo, e aplica a correção com backup **apenas se** os hashes
+   da prévia Johto estiverem íntegros. A confirmação é
+   `LAYOUT_HGSS_APPLIED`; não basta o instalador dizer `ready=true`.
+5. O diagnóstico completo é salvo em
+   `.blue-work/johto-bedroom-diagnostic.json`. Se indicar
+   `FAILED`, `OLD_OR_DIFFERENT_BEDROOM` ou `MAP_READ_ERROR`, conferir o
+   `game_dir`, o campo `preview_integrity_error` e o log
+   `.blue-work/johto-main-install-status.json`. **Não apagar arquivos de
+   Map674/Map675, nem os saves ou o manifesto para forçar a reinstalação.**
+6. Abrir o `Game.exe` da pasta reportada em `game_exe`; sair e entrar no
+   quarto novamente para confirmar que o mapa renderizado é o instalado.
+
+**Importante:** a correção do mapa desloca a escada e os móveis com os tiles
+**já existentes**, não incorpora as imagens do HGSS. Para o design realmente
+parecido com HeartGold/SoulSilver, enviar/preparar o PNG original dos tilesets
+Akizakura16 (casas) e DonLawride (Centro/Market), além do manifesto privado de
+posicionamentos, seguindo
+[`JOHTO_HGSS_INTERIORES_PRIVADOS.md`](JOHTO_HGSS_INTERIORES_PRIVADOS.md).
+Sem esses PNGs, o resultado continuará com os móveis/piso do Decades,
+mesmo com o layout corrigido. Os créditos e permissões dos autores devem ser
+respeitados antes de distribuir os gráficos num ZIP público.
+
 ## Como atualizar no Windows
 
 ## Atualização do Blue-Story (16/11): escolher o pacote na própria janela
