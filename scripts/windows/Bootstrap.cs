@@ -53,7 +53,39 @@ internal static class Bootstrap {
                     form.Controls.AddRange(new Control[]{title,info,bar});
                     Status=delegate(string s) { if(!form.IsDisposed)form.BeginInvoke((Action)delegate { info.Text=s; }); };
                     form.Shown+=async delegate {
-                        try { await Task.Run((Action)Prepare);title.Text="Tudo pronto. Abrindo o jogo...";
+                        try {
+                            await Task.Run((Action)Prepare);
+                            if(!Hub && !JohtoReady()) {
+                                title.Text="Johto ainda não foi instalada";
+                                bar.Style=ProgressBarStyle.Continuous;
+                                var choice=MessageBox.Show(form,
+                                    "Johto ainda não está disponível neste Game.exe.\\n\\n"+
+                                    JohtoReason()+"\\n\\n"+
+                                    "SIM: selecionar o ZIP privado de Johto e instalar agora.\\n"+
+                                    "NÃO: jogar Decades/Kanto/Hoenn sem Johto.\\n"+
+                                    "CANCELAR: fechar o inicializador.\\n\\n"+
+                                    "Relatório: .blue-work/johto-main-install-status.json",
+                                    "Blue-Story - instalar Johto",MessageBoxButtons.YesNoCancel,
+                                    MessageBoxIcon.Warning);
+                                if(choice==DialogResult.Cancel) {form.Close();return;}
+                                if(choice==DialogResult.Yes) {
+                                    string selected=null;
+                                    using(var picker=new OpenFileDialog {
+                                        Title="Selecione o ZIP privado original de Johto (sem extrair)",
+                                        Filter="Pacote Johto (*.zip)|*.zip",
+                                        CheckFileExists=true,
+                                        Multiselect=false
+                                    }) {
+                                        if(picker.ShowDialog(form)!=DialogResult.OK) {form.Close();return;}
+                                        selected=picker.FileName;
+                                    }
+                                    title.Text="Instalando Johto no jogo principal...";
+                                    bar.Style=ProgressBarStyle.Marquee;
+                                    await Task.Run(delegate {InstallSelectedJohto(selected);});
+                                    if(!JohtoReady())throw new Exception("Johto não instalada: "+JohtoReason());
+                                }
+                            }
+                            title.Text="Tudo pronto. Abrindo o jogo...";
                             string game=Path.Combine(Root,"game");var process=Process.Start(new ProcessStartInfo(Path.Combine(game,"Game.exe")){WorkingDirectory=game,UseShellExecute=true});
                             form.WindowState=FormWindowState.Minimized;
                             await Task.Run(delegate { process.WaitForExit(); });form.Close();
@@ -169,6 +201,39 @@ internal static class Bootstrap {
             }
             return name+": pendente (ver relatorio)";
         } catch(Exception) { return name+": relatorio invalido"; }
+    }
+    const string JohtoZipName="Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip";
+    const string JohtoBundleHash="74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49";
+    static Dictionary<string,object> JohtoStatus() {
+        string path=Path.Combine(Root,".blue-work","johto-main-install-status.json");
+        try {
+            if(!File.Exists(path))return new Dictionary<string,object>();
+            return Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(path,Encoding.UTF8));
+        } catch(Exception) { return new Dictionary<string,object>(); }
+    }
+    static bool JohtoReady() {
+        var s=JohtoStatus();object result;
+        return s.TryGetValue("ready",out result) && result is bool && (bool)result;
+    }
+    static string JohtoReason() {
+        var s=JohtoStatus();object reason;
+        if(s.TryGetValue("reason",out reason) && reason!=null)return Convert.ToString(reason);
+        return "Johto ainda não foi instalada. Consulte .blue-work/johto-main-install-status.json";
+    }
+    static void InstallSelectedJohto(string selected) {
+        if(!File.Exists(selected))throw new Exception("O ZIP selecionado não existe.");
+        if(!String.Equals(Hash(selected),JohtoBundleHash,StringComparison.OrdinalIgnoreCase))
+            throw new Exception("Esse ZIP não corresponde ao pacote Johto OFFLINE 12 original verificado. Nenhum arquivo do jogo foi alterado.");
+        string destination=Path.Combine(Root,".blue-work",JohtoZipName);
+        if(!String.Equals(Path.GetFullPath(selected),Path.GetFullPath(destination),StringComparison.OrdinalIgnoreCase))
+            File.Copy(selected,destination,true);
+        Say("Preparando Johto no Decades principal com backup, mapas, PBS e scripts.");
+        string python=Runtime("python","python.exe");
+        string extra=Path.GetDirectoryName(python);
+        Run(python,new[]{"scripts/regions/auto_integrate_johto.py"},extra);
+        if(!JohtoReady())throw new Exception("A integração Johto falhou: "+JohtoReason());
+        Run(python,new[]{"scripts/launch_game.py","--prepare-only"},extra);
+        Say("Johto instalada como prévia experimental. É necessário testar a jogabilidade.");
     }
     static string RegionalSummary() {
         return "Decades: instalado | "+
