@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ab59d47a5e3389519e52acfdc73194777b492b92",
+      "date": "2026-11-16T00:27:18-03:00",
+      "title": "docs(johto): private HGSS interiors, credits, exact map coverage and integration limits",
+      "category": "Documentação"
+    },
+    {
       "sha": "035e0cbd77d18019a4083a09d85f7c9f5c0c0ec1",
       "date": "2026-11-16T00:26:14-03:00",
       "title": "fix(johto): reserve all HGSS interior warp destinations against blocking donor tiles",
