@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "14427e32380cb3d20620c1225135a2cc812cf597",
+      "date": "2026-11-15T23:12:47-03:00",
+      "title": "feat(blue-story): automatically stage adjacent user-owned Johto ZIP into managed game installer before launching",
+      "category": "Novidades"
+    },
+    {
       "sha": "2b7fedcb684533f12a6489e4a4a06483f297b352",
       "date": "2026-11-15T22:58:14-03:00",
       "title": "test(downloads): pin Blue-Story standalone release and shared-save Johto instructions",
