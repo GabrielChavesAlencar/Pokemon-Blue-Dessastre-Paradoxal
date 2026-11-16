@@ -74,7 +74,7 @@ class JohtoMainPreviewTests(unittest.TestCase):
             order.append(str(target))
             return original(source, target)
 
-        with patch.object(preview, "build_overlay", return_value=(files, {})), \\
+        with patch.object(preview, "build_overlay", return_value=(files, {})), \
              patch.object(preview.os, "replace", side_effect=record_replace):
             result = preview.install(self.game, self.root / "fake.zip", self.root, apply=True)
         self.assertEqual(result["status"], "EXPERIMENTAL_INSTALLED_NOT_NATIVE_TESTED")
@@ -97,7 +97,7 @@ class JohtoMainPreviewTests(unittest.TestCase):
                 raise OSError("disk interrupted")
             return original(source, target)
 
-        with patch.object(preview, "build_overlay", return_value=(files, {})), \\
+        with patch.object(preview, "build_overlay", return_value=(files, {})), \
              patch.object(preview.os, "replace", side_effect=break_second):
             with self.assertRaisesRegex(OSError, "disk interrupted"):
                 preview.install(self.game, self.root / "fake.zip", self.root, apply=True)
