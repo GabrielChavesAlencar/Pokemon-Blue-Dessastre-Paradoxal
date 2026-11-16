@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6033e8c16ae7d5562fc90fc1dff380b5f51f4e84",
+      "date": "2026-11-16T07:09:46-03:00",
+      "title": "fix(johto): Blue-Story recognizes semantically valid runtime-modified Johto and repairs New Bark without reinstalling ZIP",
+      "category": "Correções"
+    },
+    {
       "sha": "0fff9aa712ed44585946e4bc409cd0e936c3c707",
       "date": "2026-11-16T07:08:54-03:00",
       "title": "fix(johto): semantically verify all 100 native maps after runtime updates without requiring stale original byte hashes",
