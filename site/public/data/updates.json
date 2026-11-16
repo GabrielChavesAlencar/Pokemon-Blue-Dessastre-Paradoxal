@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c6e4054085743a19007876bead7d39eddffb5124",
+      "date": "2026-11-15T22:52:21-03:00",
+      "title": "test(blue-story): detect duplicated Downloads Johto ZIP and skip invalid cached candidates",
+      "category": "Testes"
+    },
+    {
+      "sha": "5e3c1a48bf411ec154ff065caf199920ed385358",
+      "date": "2026-11-15T22:52:04-03:00",
+      "title": "fix(blue-story): find Johto ZIP with browser duplicate suffix and never prefer invalid cached archive",
+      "category": "Correções"
+    },
+    {
       "sha": "b1ef7470c64a7cae3b61c38e909a46049c92d26f",
       "date": "2026-11-15T22:51:38-03:00",
       "title": "test(title): enforce shared-save Johto new game; pilot only via separate test command",
