@@ -117,5 +117,29 @@ class JohtoRuntimePreviewTests(unittest.TestCase):
                          b"existing user save")
 
 
+class MissingPrivateSourceTests(unittest.TestCase):
+    def test_base_only_inputs_are_identified_without_falsely_installing_johto(self):
+        import zipfile
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            game=root/"game"
+            game.mkdir(parents=True)
+            (root/".blue-work").mkdir()
+            (game/"Game.exe").write_bytes(b"untouched Game.exe")
+            filename=root/".blue-work/johto-pilot-inputs(1).zip"
+            with zipfile.ZipFile(filename,"w") as archive:
+                archive.writestr("johto-inputs-manifest.json",
+                    json.dumps({"schema":2, "purpose":"PRIVATE_JOHTO_PILOT_INPUTS"}))
+                archive.writestr("game/Graphics/Trainers/HGSS.png",b"some art")
+            result=auto_integrate_johto.integrate(root,game)
+            self.assertEqual(result["status"],"awaiting_johto_installable_release")
+            self.assertFalse(result["ready"])
+            self.assertIn("johto-pilot-inputs(1).zip",result["reason"])
+            self.assertIn("Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip",
+                          result["reason"])
+            self.assertFalse((game/"Data"/"Map674.rxdata").exists())
+            self.assertEqual((game/"Game.exe").read_bytes(),b"untouched Game.exe")
+
+
 if __name__ == "__main__":
     unittest.main()
