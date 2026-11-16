@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b2a9f542bffc8e993727a34a40e40625bad4e00f",
+      "date": "2026-11-16T20:37:42-03:00",
+      "title": "feat(sinnoh): CH18 busca filtrada e validação rígida sem aprovar conteúdo nativo",
+      "category": "Novidades"
+    },
+    {
       "sha": "ed530e1541adcb3a0d52ac94434aa24c7ecddb8c",
       "date": "2026-11-16T20:31:09-03:00",
       "title": "docs(sinnoh): CH17 guias aprovados e Barra E 17/20 sem alterar jogabilidade",
