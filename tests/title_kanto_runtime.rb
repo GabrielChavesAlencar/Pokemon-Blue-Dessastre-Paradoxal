@@ -34,14 +34,17 @@ $notices = 0
 # Isolated UI fixture: no game saves are created by the title picker.
 module BlueRegionStart
   class << self
-    attr_accessor :integrated
+    attr_accessor :integrated, :johto_integrated
     attr_reader :requests
     def request_initial(region)
       return false if region == "KANTO" && !integrated
+      return false if region == "JOHTO" && !johto_integrated
       (@requests ||= []) << region
       true
     end
     def kanto_integrated?; !!integrated; end
+    def johto_spawn; johto_integrated ? [674,6,7] : nil; end
+    def johto_install_proof; nil; end
   end
 end
 require ARGV.fetch(0)
@@ -148,6 +151,15 @@ require_check(scene.pbChoose(original, 0) == 1, "Missing Kanto silently opened i
 require_check($last_region_options[1].include?("instalação necessária"),
               "Missing main Kanto install was advertised as ready")
 require_check(BlueRegionStart.requests.last == "DECADES", "Decades fallback was not explicit")
+
+# Private early-access Johto shares the original New Game branch.
+BlueRegionStart.johto_integrated = true
+$region_choices = [2]
+scene.queue = [1]
+require_check(scene.pbChoose(original, 0) == 1, "Integrated Johto must use native Game.exe")
+require_check(BlueRegionStart.requests.last == "JOHTO", "Shared Johto session choice not recorded")
+require_check($last_region_options[2] == "Johto (prévia integrada)", "Installed Johto label is incorrect")
+BlueRegionStart.johto_integrated = false
 
 # All other region pilots retain separate save profiles and original launchers.
 [[:launch_johto, 2], [:launch_hoenn, 3], [:launch_sinnoh, 4]].each do |method, choice|
