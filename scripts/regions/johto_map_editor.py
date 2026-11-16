@@ -186,8 +186,11 @@ def save_changes(project: Path, game: Path, payload: dict):
     if _running_game():
         raise EditorError("Feche o Game.exe antes de salvar. O jogo pode carregar o mapa antigo.", 409)
     operations = payload.get("changes")
+    event_ops = payload.get("event_changes", [])
     if not isinstance(operations, list) or len(operations) > patches.MAX_EDITS:
         raise EditorError("Lista de desenhos inválida ou grande demais")
+    if not isinstance(event_ops, list) or len(event_ops) > 150:
+        raise EditorError("Lista de eventos inválida")
     with LOCK:
         map_path, old_bytes, obj = _game_map(game, mid)
         if payload.get("map_hash") != sha(old_bytes):
@@ -203,6 +206,20 @@ def save_changes(project: Path, game: Path, payload: dict):
                   for e in existing["edits"]} if existing else {}
         if existing and existing["tileset"] != name:
             raise EditorError("Tileset mudou; não juntar patches de versões diferentes.", 409)
+        merged_events = {row["id"]: dict(row)
+                         for row in existing.get("events", [])} if existing else {}
+        for row in event_ops:
+            if not isinstance(row, dict) or set(row) != {
+                    "id", "name", "before", "after", "warp_before", "warp_after"}:
+                raise EditorError("Evento editado com campos inválidos")
+            previous = merged_events.get(row["id"])
+            initial = previous["before"] if previous else row["before"]
+            initial_warp = previous["warp_before"] if previous else row["warp_before"]
+            if row["after"] == initial and row["warp_after"] == initial_warp:
+                merged_events.pop(row["id"], None)
+            else:
+                merged_events[row["id"]] = {**row, "before": initial,
+                                           "warp_before": initial_warp}
         for item in operations:
             if not isinstance(item, dict) or set(item) != {"x","y","z","from","to"} or any(type(v) is not int for v in item.values()):
                 raise EditorError("Cada alteração deve conter x,y,z,from,to inteiros")
@@ -223,23 +240,25 @@ def save_changes(project: Path, game: Path, payload: dict):
                                    "before":original,"after":new}
         # Apply the delta to the full in-memory map BEFORE any filesystem writes.
         new_patch = {"schema":patches.SCHEMA, "map_id":mid, "tileset":name,
-                     "edits":sorted(merged.values(),key=lambda r:(r["z"],r["y"],r["x"]))}
+                     "edits":sorted(merged.values(),key=lambda r:(r["z"],r["y"],r["x"])),
+                     "events":sorted(merged_events.values(),key=lambda r:r["id"])}
         patches.validate_patch_format(new_patch, mid)
-        if not operations:
+        if not operations and not event_ops:
             raise EditorError("Nada para salvar")
         # Current installed map may already include earlier changes; apply
         # only the submitted differences, but enforce collision and events.
         delta = {"schema":1,"map_id":mid,"tileset":name,"edits":[
             {"x":a["x"],"y":a["y"],"z":a["z"],
              "before":a["from"],"after":a["to"]}
-            for a in operations if a["from"] != a["to"]]}
+            for a in operations if a["from"] != a["to"]],
+            "events": event_ops}
         updated = patches.apply_patch(obj, sets, mid, delta)
         if not updated:
             raise EditorError("Nenhuma alteração nova")
         native = serialize(obj, johto_qa.EVENT_CLASSES)
         # Refuse any accidental changes to non-tile attributes/event scripts.
         verified = loads(native)
-        if verified.attrs["@events"] != loads(old_bytes).attrs["@events"]:
+        if not event_ops and verified.attrs["@events"] != loads(old_bytes).attrs["@events"]:
             raise EditorError("Validação falhou: eventos nativos foram alterados")
         blobs = {map_path: native, patch_path: patches.encode_patch(new_patch)}
         proof = game / "Data/blue-johto-main-preview.json"
