@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb7c4669149b8f1fde5f328a6ee16a4e7ceadf9b",
+      "date": "2026-11-16T14:24:03-03:00",
+      "title": "fix(hub): incluir guard Sinnoh CH04 nas dependencias do pacote e regressao",
+      "category": "Correções"
+    },
+    {
       "sha": "b45fa5fbbd8b2ee9e5f56d2c0fb701397c835af4",
       "date": "2026-11-16T14:21:25-03:00",
       "title": "test(sinnoh): exercitar ID de warp duplicado sem mascarar validacao por handler (CH06)",
