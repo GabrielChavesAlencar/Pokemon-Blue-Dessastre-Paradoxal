@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0616b5672376dc3b8d58551a59dcec066237c286",
+      "date": "2026-11-16T11:38:31-03:00",
+      "title": "feat(johto-editor): publicação com autenticação integrada e proteção de conflitos",
+      "category": "Novidades"
+    },
+    {
       "sha": "35c5863994744bebc0d201cbdfaa0e88b176ba51",
       "date": "2026-11-16T11:37:35-03:00",
       "title": "feat(blue-story): preparar GitHub CLI sem comandos manuais",
