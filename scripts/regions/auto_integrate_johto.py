@@ -197,6 +197,8 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                 hotfix = johto_main_preview.refresh_installed_runtime(game, project)
                 bedroom = johto_main_preview.refresh_installed_bedroom(game, project)
                 hgss = johto_main_preview.refresh_installed_private_hgss(game, project)
+                hgss_proof = johto_main_preview.preview_proof(game) or {}
+                art_status = (hgss_proof.get("private_hgss") or {}).get("status", "no_private_art")
                 return record(project, {"status": "experimental_installed_not_native_tested",
                                         "reason": "Johto experimental preservada; gráficos privados de interiores aplicados se fornecidos e verificados. Compilação e gameplay nativos ainda pendentes",
                                         "map_count": 100, "native_qa": False,
@@ -205,6 +207,7 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                                         "bedroom_layout": bedroom.get("bedroom_layout"),
                                         "bedroom_changed": bedroom["changed"],
                                         "bedroom_backup_folder": bedroom.get("backup_folder"),
+                                        "hgss_status": art_status,
                                         "hgss_changed": hgss["changed"],
                                         "hgss_maps": hgss.get("maps", []),
                                         "hgss_reason": hgss.get("reason"),
