@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6d1c9c901259715e14d10cecca7fc7a4a67e985a",
+      "date": "2026-11-16T11:42:25-03:00",
+      "title": "ci(blue-story): validar instalador e publicação Johto antes da release",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f2d927a603251c7f0053bf77242f49d6197f4d0a",
+      "date": "2026-11-16T11:42:12-03:00",
+      "title": "docs(johto): instalação automática e publicação em um clique",
+      "category": "Documentação"
+    },
+    {
       "sha": "e470dea12a592ce0054f918f1a79a3f342491110",
       "date": "2026-11-16T11:41:24-03:00",
       "title": "test(blue-story): verificar download SHA e script de publicação",
