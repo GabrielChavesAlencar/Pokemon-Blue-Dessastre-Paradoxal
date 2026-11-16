@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b150eac2a3b9ee057e53abbbbc8d952ea9be84a2",
+      "date": "2026-11-16T10:03:47-03:00",
+      "title": "fix(johto): recover edited native Johto as installed; preserve Map674/675 and report patch conflicts without destructive reinstall",
+      "category": "Correções"
+    },
+    {
       "sha": "1b781ec5eb402f451a3c8970e5459dba7b4035c8",
       "date": "2026-11-16T10:02:58-03:00",
       "title": "fix(johto): semantically recognize manually edited Map674/675 without trusting stale install hashes or replacing maps",
