@@ -61,6 +61,21 @@ def local_target(game: Path, name: str) -> Path:
     return path
 
 
+def assert_spawn_not_blocked(map_obj) -> None:
+    """Allow only the audited invisible autorun at the player's start tile."""
+    overlapping = [event for event in map_obj.attrs["@events"].values()
+                   if (event.attrs["@x"], event.attrs["@y"]) == START[1:]]
+    expected = [
+        e for e in overlapping
+        if text(e.attrs["@name"]) == "JH_NEW_GAME_PROFILE"
+        and e.attrs["@pages"]
+        and e.attrs["@pages"][0].attrs.get("@trigger") == 3
+        and not e.attrs["@pages"][0].attrs["@graphic"].attrs.get("@character_name")
+    ]
+    if len(overlapping) != len(expected) or len(expected) > 1:
+        raise ValueError("Spawn do jogador bloqueado por NPC/obstáculo inesperado")
+
+
 def preview_proof(game: Path) -> dict | None:
     manifest = game / PROOF
     if not manifest.is_file() or manifest.is_symlink():
@@ -167,17 +182,7 @@ def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str
     # autorun profile initializer on the EXACT New Bark bedroom start tile.
     # Reject real blockers, but do not reject that one named, non-graphic
     # initializer or Johto can never be installed from its original ZIP.
-    overlapping = [event for event in maps[START[0]].attrs["@events"].values()
-                   if (event.attrs["@x"], event.attrs["@y"]) == START[1:]]
-    expected = [
-        e for e in overlapping
-        if text(e.attrs["@name"]) == "JH_NEW_GAME_PROFILE"
-        and e.attrs["@pages"]
-        and e.attrs["@pages"][0].attrs.get("@trigger") == 3
-        and not e.attrs["@pages"][0].attrs["@graphic"].attrs.get("@character_name")
-    ]
-    if len(overlapping) != len(expected) or len(expected) > 1:
-        raise ValueError("Spawn do jogador bloqueado por NPC/obstáculo inesperado")
+    assert_spawn_not_blocked(maps[START[0]])
 
     # Copy each source Johto tileset to a NEW native index, leaving all
     # Decades/Kanto/Hoenn tileset ids and metadata exactly as they were.
