@@ -63,12 +63,12 @@ A ferramenta **não cria NPCs, não edita scripts nem eventos novos**, não redi
 A CLI é baixada exclusivamente da release oficial `cli/cli`, verificada pelo SHA-256 publicado e guardada em `tools/gh/gh.exe`. O usuário não precisa instalar GitHub CLI, abrir PowerShell, executar `gh auth login` nem fazer `git pull` por conta própria.
 
 1. Execute **Blue-Story.exe** uma vez com internet. Ele busca a `main`, atualiza o editor e prepara a CLI automaticamente.
-2. Abra **Johto-Map-Studio/EDITAR_MAPAS_JOHTO.bat**, edite o mapa e clique **Salvar no jogo + backup**.
-3. Clique **Publicar este mapa na main**. A verificação do GitHub é automática; não é necessário apertar **Verificar GitHub** antes.
+2. Abra **Johto-Map-Studio/EDITAR_MAPAS_JOHTO.bat** e edite o mapa.
+3. Clique **Publicar este mapa na main**. O editor salva automaticamente as mudanças com backup antes de enviar o JSON, verifica o GitHub e publica. **Salvar no jogo + backup** é opcional; não há etapa manual de verificação.
 4. Se ainda não houver autorização, o editor inicia a autenticação oficial no navegador. O usuário confirma o código mostrado na interface **somente na primeira conexão**; depois o programa retoma a publicação.
 5. O editor mostra o commit publicado em `data/regions/johto-map-edits/MapXXX.json`. O Blue-Story sincronizará o patch nas próximas atualizações.
 
-A primeira publicação de um mapa que **ainda não existe** na `main` é aceita mesmo com edições locais. Se a `main` já contém um patch diferente ou mudou após a verificação, o editor interrompe a publicação por segurança: não sobrescreve o trabalho remoto. O botão **Verificar GitHub** continua disponível para diagnóstico opcional.
+A primeira publicação de um mapa que **ainda não existe** na `main` é aceita mesmo com edições locais. Se a `main` já contém um patch diferente ou mudou após a verificação, o editor interrompe a publicação por segurança: não sobrescreve o trabalho remoto. O diagnóstico de conexão é atualizado automaticamente ao abrir o mapa.
 
 É necessário ter permissão de escrita no repositório. A autorização oficial do GitHub exige aprovação do usuário na primeira conexão. O servidor do editor não guarda tokens; as credenciais são gerenciadas pela GitHub CLI.
 
