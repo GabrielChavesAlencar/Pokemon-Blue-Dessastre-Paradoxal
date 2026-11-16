@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "453bf23e7e46ec1a6e8461d73c5d552ada929b81",
+      "date": "2026-11-16T06:31:57-03:00",
+      "title": "test(johto): manually repair room after PBS global drift without overwriting another region",
+      "category": "Documentação"
+    },
+    {
       "sha": "33489ae39db1f17b7a2df24e8b41ca7d712c3e1d",
       "date": "2026-11-16T06:31:32-03:00",
       "title": "feat(johto): room diagnostic can safely repair when unrelated shared regional hashes changed",
