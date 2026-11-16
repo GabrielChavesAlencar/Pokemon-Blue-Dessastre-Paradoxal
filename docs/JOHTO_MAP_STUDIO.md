@@ -57,16 +57,20 @@ Para mudar a escada à esquerda e manter o jogo funcional:
 
 A ferramenta **não cria NPCs, não edita scripts nem eventos novos**, não redimensiona mapas e não altera os tilesets originais. Ela usa os tiles já instalados: os gráficos HGSS de terceiros ainda exigem instalação autorizada separada.
 
-## Publicar diretamente na branch main
+## Publicar diretamente na branch main — sem PowerShell nem comandos manuais
 
-O botão **Publicar este mapa na main** usa a sua autenticação local do **GitHub CLI**, sem solicitar/tokenizar credenciais na interface.
+**O Blue-Story prepara o Johto Map Studio e a GitHub CLI automaticamente.**
+A CLI é baixada exclusivamente da release oficial `cli/cli`, verificada pelo SHA-256 publicado e guardada em `tools/gh/gh.exe`. O usuário não precisa instalar GitHub CLI, abrir PowerShell, executar `gh auth login` nem fazer `git pull` por conta própria.
 
-1. Na pasta gerenciada, execute **`CONECTAR_GITHUB_EDITOR_JOHTO.bat`** uma vez. Ele instala `gh.exe` portátil se necessário e abre a autenticação oficial do GitHub (`gh auth login --web`). Sua conta deve ter permissão para escrever no repositório.
-2. No editor, clique **Verificar GitHub**. Ele compara o patch local com o arquivo da `main`; se houver divergência externa, o botão de publicação não sobrescreve o trabalho de outro editor.
-3. Após **Salvar**, clique **Publicar este mapa na main** e confirme. O programa chama a API oficial com `gh api`, obtém o SHA atual e usa um commit no caminho `data/regions/johto-map-edits/MapXXX.json`, branch `main`.
-4. Verifique o link do commit retornado pelo editor. Quando o Blue-Story sincronizar a `main`, o instalador reaplicará os patches aos mapas Johto existentes, com backups e sem apagar saves.
+1. Execute **Blue-Story.exe** uma vez com internet. Ele busca a `main`, atualiza o editor e prepara a CLI automaticamente.
+2. Abra **Johto-Map-Studio/EDITAR_MAPAS_JOHTO.bat**, edite o mapa e clique **Salvar no jogo + backup**.
+3. Clique **Publicar este mapa na main**. A verificação do GitHub é automática; não é necessário apertar **Verificar GitHub** antes.
+4. Se ainda não houver autorização, o editor inicia a autenticação oficial no navegador. O usuário confirma o código mostrado na interface **somente na primeira conexão**; depois o programa retoma a publicação.
+5. O editor mostra o commit publicado em `data/regions/johto-map-edits/MapXXX.json`. O Blue-Story sincronizará o patch nas próximas atualizações.
 
-**Somente o JSON de alterações** é enviado ao GitHub. Os arquivos `Map###.rxdata`, `game/`, `Saves/`, gráficos, pacote privado OFFLINE 12 e arquivos da Biblioteca do ChatGPT **não** são publicados pela ferramenta.
+A primeira publicação de um mapa que **ainda não existe** na `main` é aceita mesmo com edições locais. Se a `main` já contém um patch diferente ou mudou após a verificação, o editor interrompe a publicação por segurança: não sobrescreve o trabalho remoto. O botão **Verificar GitHub** continua disponível para diagnóstico opcional.
+
+É necessário ter permissão de escrita no repositório. A autorização oficial do GitHub exige aprovação do usuário na primeira conexão. O servidor do editor não guarda tokens; as credenciais são gerenciadas pela GitHub CLI.
 
 ## Segurança e limites
 
