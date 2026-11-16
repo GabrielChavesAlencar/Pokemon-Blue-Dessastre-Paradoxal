@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fe6d8d7d964e4d8ca2490c90891df4be65949f4b",
+      "date": "2026-11-16T09:38:04-03:00",
+      "title": "ci(johto): parse browser JavaScript of map studio and test publish/save controls",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "3875a52d1c351f87010d099d15acf67c64572799",
+      "date": "2026-11-16T09:37:51-03:00",
+      "title": "test(johto): validate map editor browser JavaScript syntax and required publish/save actions",
+      "category": "Testes"
+    },
+    {
       "sha": "72130e31e714328273bccf34e9e705d08e7da16a",
       "date": "2026-11-16T09:37:07-03:00",
       "title": "test(johto): move upstairs stair event, update downstairs transfer landing and protect New Game initializer",
