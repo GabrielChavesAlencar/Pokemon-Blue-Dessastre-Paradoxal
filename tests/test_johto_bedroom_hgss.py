@@ -22,6 +22,7 @@ import johto_visual as visual
 from build_johto_bedroom_v1 import tile
 from build_johto_elm_lab_v1 import table_values
 from stage import serialize
+from diagnose_johto_bedroom import inspect as inspect_bedroom
 
 
 def table(w, h=1, z=1, value=0):
@@ -168,6 +169,28 @@ class InstalledBedroomTests(unittest.TestCase):
             self.assertEqual((self.game/name).read_bytes(), original)
         self.assertFalse(preview.refresh_installed_bedroom(self.game, self.root)["changed"])
         self.assertTrue((Path(report["backup_folder"]) / preview.PROOF).is_file())
+
+    def test_diagnostic_distinguishes_old_room_from_real_new_map_and_missing_art(self):
+        before = inspect_bedroom(self.root,self.game)
+        self.assertEqual(before["status"], "OLD_OR_DIFFERENT_BEDROOM")
+        self.assertEqual(before["actual_stairs_warp_xy"], [9,8])
+        self.assertEqual(before["preview_integrity"], "OK")
+        self.assertTrue(before["safe_to_apply"])
+        self.preview = preview
+        preview.refresh_installed_bedroom(self.game,self.root)
+        after = inspect_bedroom(self.root,self.game)
+        self.assertEqual(after["status"], "LAYOUT_HGSS_APPLIED")
+        self.assertEqual(after["return_xy"], [4,5])
+        self.assertEqual(after["private_hgss_status"], "no_private_art")
+        self.assertFalse(after["safe_to_apply"])
+        self.assertIn("faltam PNGs", after["next_action"])
+
+    def test_diagnostic_rejects_unverified_modified_room(self):
+        self.write("Data/Map674.rxdata", b"modified native map")
+        result = inspect_bedroom(self.root,self.game)
+        self.assertEqual(result["status"], "MAP_READ_ERROR")
+        self.assertEqual(result["preview_integrity"], "FAILED")
+        self.assertFalse(result["safe_to_apply"])
 
     def test_failure_while_swapping_restores_both_maps_and_manifest(self):
         original = {name: (self.game/name).read_bytes() for name in
