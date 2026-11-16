@@ -80,7 +80,7 @@ class SinnohChatProgressTests(unittest.TestCase):
 
     def test_rejects_wrong_percentage(self):
         data = self.read()
-        data["chat_direct_workstream"]["percent_complete"] = 80
+        data["chat_direct_workstream"]["percent_complete"] += 1
         self.write(data)
         self.failed("percent_complete")
 
