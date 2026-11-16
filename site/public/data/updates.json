@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "62b58771cf136559c3ec61f933cb6825337042dc",
+      "date": "2026-11-15T22:40:00-03:00",
+      "title": "fix(blue-story): label Johto beta as untested, not fully integrated release",
+      "category": "Correções"
+    },
+    {
       "sha": "cfdee2d9359da2ba440563efe8bc12b74073036d",
       "date": "2026-11-15T22:38:59-03:00",
       "title": "test(title): respect main Johto readiness gate and verify integrated new-game flow",
