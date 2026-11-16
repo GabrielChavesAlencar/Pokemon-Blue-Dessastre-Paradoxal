@@ -52,8 +52,14 @@ module BlueKantoTitle
             BlueRegionStart.kanto_integrated?
     hoenn = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:hoenn_integrated?) &&
             BlueRegionStart.hoenn_integrated?
+    johto = defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:johto_spawn) &&
+            BlueRegionStart.johto_spawn
+    johto_release = johto && BlueRegionStart.respond_to?(:johto_install_proof) &&
+                    BlueRegionStart.johto_install_proof
     START_REGIONS.map do |name, region|
-      label = if region == :kanto && !kanto
+      label = if region == :johto && johto
+                johto_release ? "Johto" : "Johto (prévia integrada)"
+              elsif region == :kanto && !kanto
                 "Kanto (instalação necessária)"
               elsif region == :hoenn && hoenn
                 "Hoenn"
