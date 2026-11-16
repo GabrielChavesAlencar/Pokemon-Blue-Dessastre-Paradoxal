@@ -93,3 +93,19 @@ python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_schema.py' -v
 ```
 
 Resultado esperado do template da `main`: `TEMPLATE_STRUCTURE_VALID_NOT_PLAYABLE`. Aceitar 16 warps com ida/volta não significa permitir auto-warp ou portal órfão; o grafo precisa atingir os nove mapas desde o quarto. O template com coordenadas, MapIDs e sprites `null/false` continua não instalável. A CLI pode verificar limites apenas quando receber `--spec` com especificação local e `--dimensions` com as nove dimensões de um inventário privado; **isso não autentica dimensões, tiles, bloqueios, áudio nem eventos no Game.exe**.
+
+### CH07 — guardas de flags, Poké Bolas e save isolado (16/11/2026)
+
+O [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb) somente grava checkpoints depois de cada evento de história concluído, preserva saves de outras regiões e rejeita flags inconsistentes. A escolha de Turtwig, Chimchar ou Piplup só ocorre nas três Poké Bolas físicas após Rowan, com trava para requisição reentrante e bloqueio de duplicidade; falha de `pbAddPokemonSilent` não grava nenhuma flag. A primeira batalha de Barry usa `canLose`: resultado `false` é derrota válida que completa o passo, mas `nil` não completa. A Pokédex depende do rival concluído e de setter real no jogador. 
+
+O [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) não faz fallback automático para Decades/Johto quando falta `$PokemonGlobal` durante **Novo Jogo QA**. O fluxo existente para carregar saves continua utilizando o motor nativo. Como este é o piloto *isolado*, um registro cujo `initial` foi marcado como outra região não pode ser reutilizado como save inicial de Sinnoh.
+
+```bash
+ruby -c scripts/regions/SinnohPilot.rb
+ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
+ruby tests/sinnoh_pilot_ch07_runtime.rb scripts/regions/SinnohPilot.rb
+ruby -c scripts/regions/SinnohQAStart.rb
+ruby tests/sinnoh_qa_start_runtime.rb scripts/regions/SinnohQAStart.rb
+```
+
+**Verificação:** [GitHub Actions CH07](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43920105394), com os testes de Ruby puro; nenhum teste nativo foi executado. Fases jogáveis continuam 0/13.

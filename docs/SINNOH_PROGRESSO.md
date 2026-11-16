@@ -8,21 +8,23 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-██████░░░░░░░░░░░░░░  6/20 (30%)
+███████░░░░░░░░░░░░░  7/20 (35%)
 ```
 
-- **Concluídas:** 6 (**CH01–CH06**; agora inclui o schema e auditor de Twinleaf).
+- **Concluídas:** 7 (**CH01–CH07**; agora inclui segurança de flags, escolha de inicial e save isolado).
 - **Parciais:** 0.
-- **Pendentes:** 14 (**CH07–CH20**).
+- **Pendentes:** 13 (**CH08–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` valida JSON/MD/tabela.
-- **CH03–CH04:** proteções dos MapIDs 800–805 e do plugin legado `SinnohPreview.rb` no Decades compartilhado.
-- **CH05:** [`sinnoh-map-id-reservations.json`](../data/regions/sinnoh-map-id-reservations.json) separa reservas e ocupação física desconhecida.
-- **CH06:** [`sinnoh-twinleaf-events.schema.json`](../data/regions/sinnoh-twinleaf-events.schema.json) (JSON Schema Draft 2020-12), [`audit_sinnoh_twinleaf_events.py`](../scripts/regions/audit_sinnoh_twinleaf_events.py) e [`test_sinnoh_twinleaf_schema.py`](../tests/test_sinnoh_twinleaf_schema.py): validam 9 mapas, 24 eventos, 16 warps, 8 pares ida/volta, IDs, presença de campos, topologia, alcance desde o quarto, destinos, handlers, três Poké Bolas e limites de coordenadas quando **dimensões são fornecidas**. Rejeitam warps unilaterais/órfãos, auto-warp, posições/sprites antecipadamente verificados e dados incompletos.
-- **Critério:** só tarefas `done` com artefato no GitHub são contabilizadas.
+- **CH02:** `validate_sinnoh_chat_progress.py` verifica JSON, painel e tabela.
+- **CH03–CH04:** impedem colisões dos MapIDs e plugin `SinnohPreview.rb` legado na main.
+- **CH05:** `sinnoh-map-id-reservations.json` diferencia reservas de ocupação física desconhecida.
+- **CH06:** `audit_sinnoh_twinleaf_events.py` verifica schema, 9 mapas, 24 eventos e 16 warps.
+- **CH07:** [`SinnohPilot.rb`](../scripts/regions/SinnohPilot.rb) valida a sequência de checkpoints, evita gravações em consultas/rejeições, impede Poké Bolas repetidas ou reentrantes, salva progresso de Barry tanto após vitória quanto derrota válida `canLose`, mas não quando o resultado é `nil`. Dados inválidos ou pertencentes a outras regiões não são corrigidos silenciosamente. [`SinnohQAStart.rb`](../scripts/regions/SinnohQAStart.rb) bloqueia Novo Jogo QA sem objeto global, sem cair na campanha de outra região; carregamento de save permanece no fluxo nativo. Testes Ruby de [CH07](../tests/sinnoh_pilot_ch07_runtime.rb), [regressão anterior](../tests/sinnoh_pilot_runtime.rb) e [QA](../tests/sinnoh_qa_start_runtime.rb) são executados em CI.
+- **Verificação:** etapa CH07 aprovada na [execução de regressão](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43920105394); são testes **Ruby puro**, não Game.exe.
+- **Critério:** apenas `done` com arquivos publicados, testes verificáveis e evidências entra no numerador.
 
-**Importante:** CH06 mantém o template `null/false`, sem Game.exe ou JoiPlay. Barras A (8/32) e B/C/D (0/13) permanecem inalteradas.
+**Limite:** Barra E não mede progresso jogável. Barra A continua 8/32 (25%), e B/C/D continuam 0/13. Testes Game.exe, JoiPlay e mapas reais não foram executados.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

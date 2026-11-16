@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-██████░░░░░░░░░░░░░░  6/20 (30%)
+███████░░░░░░░░░░░░░  7/20 (35%)
 ```
 
-**6 concluídas**, **0 parciais**, **14 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**7 concluídas**, **0 parciais**, **13 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -33,7 +33,7 @@
 | P0 | **CH04** ✅ | Bloqueio explícito do plugin `SinnohPreview.rb` legado na instalação compartilhada | Verificação cobre lançador, cópia QA, marcadores e caminho do instalador principal |
 | P0 | **CH05** ✅ | Manifestações das **reservas documentadas**, sem inventar IDs novos | Relatório/fixture diferencia ocupado físico, reserva declarada e desconhecido; nunca libera importação indevidamente |
 | P1 | **CH06** ✅ | Schema + auditor das 9 áreas, 24 eventos e 16 warps da introdução | Campos ausentes, coordenadas inválidas, transferência circular/órfã e mapas faltantes reprovam |
-| P1 | CH07 | Reforçar proteção de flags, três Poké Bolas e save exclusivo de `SinnohPilot.rb` | Ruby/Python com casos duplicados, perda/retorno e fallback sem iniciar outra região |
+| P1 | **CH07** ✅ | Reforçar proteção de flags, três Poké Bolas e save exclusivo de `SinnohPilot.rb` | Ruby/Python com casos duplicados, perda/retorno e fallback sem iniciar outra região |
 | P1 | CH08 | Aumentar as verificações de Barry, três equipes e escalonamento compartilhado | Fixtures cobrem iniciais, versões, ausência de PBS, 70%/90% e bloqueio seguro |
 | P1 | CH09 | Teste de integração sintética ponta a ponta de auditor → plano → geometria → overlay → bundle | Cenários de sucesso/falha, rollback e hashes estáveis, **sem** representar Game.exe |
 | P1 | CH10 | Preparar interface segura do lançador QA do Sinnoh e pré-voo de instalação | Sem fallback para Decades/Johto, saves exclusivos, erro claro sem assets, testes offline |
@@ -48,7 +48,9 @@
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH07–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH08–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH07 concluída:** o [runtime Sinnoh](../scripts/regions/SinnohPilot.rb) verifica flags, grava só ações confirmadas, recusa dois iniciais físicos e chamadas reentrantes, preserva o progresso após derrota válida de Barry, reload de save e viagens entre regiões e rejeita estados forjados. [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) bloqueia Novo Jogo QA com global ausente, sem cair em Decades. Novos [testes Ruby CH07](../tests/sinnoh_pilot_ch07_runtime.rb) e testes do [início QA](../tests/sinnoh_qa_start_runtime.rb) rodam no CI isolado: [execução 43920105394](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43920105394). Não comprova execução no Game.exe nem aprovação de Sinnoh jogável.
 
 **CH06 concluída:** [schema JSON 2020-12](../data/regions/sinnoh-twinleaf-events.schema.json), [auditor estático](../scripts/regions/audit_sinnoh_twinleaf_events.py) e [15 testes negativos/positivos](../tests/test_sinnoh_twinleaf_schema.py) verificam os 9 mapas, 24 eventos, 16 warps, oito pares bidirecionais, alcance, IDs, campos e limites com dimensões locais. O template continua com `null/false`; somente a nota desatualizada de 15 portais foi corrigida para 16. Nem um mapa real, nem Game.exe/JoiPlay, nem qualquer save foi modificado. A auditoria **não libera instalação**.
 

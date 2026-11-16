@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 6,
+    "done": 7,
     "partial": 0,
-    "pending": 14,
-    "percent_complete": 30,
+    "pending": 13,
+    "percent_complete": 35,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -855,8 +855,8 @@
         "priority": "P1",
         "title": "Reforçar proteção de flags, três Poké Bolas e save exclusivo de SinnohPilot.rb",
         "acceptance": "Ruby/Python com casos duplicados, perda/retorno e fallback sem iniciar outra região",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "tests/sinnoh_pilot_ch07_runtime.rb"
       },
       {
         "id": "CH08",
