@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e28b29d1c985c0e576f01a84557749a1118ed16b",
+      "date": "2026-11-15T22:55:41-03:00",
+      "title": "docs(johto): new Blue-Story in-window private ZIP picker, single shared save and installation status",
+      "category": "Documentação"
+    },
+    {
       "sha": "bd658fbe4d77172404df989b3a2ef03222fe5373",
       "date": "2026-11-15T22:54:39-03:00",
       "title": "test(johto): assert current centralized multi-region map agent hook",
