@@ -24,6 +24,53 @@ BUNDLE_PATHS = (
     "Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip",
 )
 STATUS = Path(".blue-work/johto-main-install-status.json")
+PRIVATE_BUNDLE_NAME = "Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip"
+
+
+def candidate_bundles(project: Path):
+    """Search only known, local user-owned package locations; never publish assets."""
+    names = ("johto-offline12-preview.zip", PRIVATE_BUNDLE_NAME)
+    directories = [project / ".blue-work", project, Path.home() / "Downloads"]
+    profile = os.environ.get("USERPROFILE")
+    if profile:
+        directories.append(Path(profile) / "Downloads")
+    for folder in directories:
+        for name in names:
+            candidate = folder / name
+            if candidate.is_file() and not candidate.is_symlink():
+                yield candidate
+
+
+def inspect_current_baseline(game: Path, archive_path: Path) -> dict:
+    """Explain whether the historical offline preview fits the CURRENT game.
+
+    Hoenn may have changed MapInfos, Tilesets and allocated MapIDs since the
+    private offline package was built. These are blockers, never an excuse to
+    overwrite the current base or downgrade another installed region.
+    """
+    data = game / "Data"
+    result = {"baseline_compatible": False, "rebase_required": True,
+              "map_id_conflicts": [], "reason": ""}
+    if not (data / "MapInfos.rxdata").is_file() or not (data / "Tilesets.rxdata").is_file():
+        result["reason"] = "MapInfos/Tilesets atuais ausentes"
+        return result
+    with zipfile.ZipFile(archive_path) as archive:
+        stage = json.loads(archive.read(OFFLINE_PREFIX + "johto-stage.json"))
+    expected = (stage.get("native_mapinfos_sha256"),
+                stage.get("native_tilesets_sha256"))
+    actual = (checksum(data / "MapInfos.rxdata"),
+              checksum(data / "Tilesets.rxdata"))
+    collisions = [i for i in range(600, 682)
+                  if (data / f"Map{i:03}.rxdata").exists()]
+    result["map_id_conflicts"] = collisions
+    result["baseline_compatible"] = expected == actual and not collisions
+    result["rebase_required"] = expected != actual or bool(collisions)
+    result["reason"] = ("Instalação atual difere da base OFFLINE 12: integrar com merge "
+                        "de MapInfos/Tilesets e MapIDs livres, preservando Kanto/Hoenn."
+                        if result["rebase_required"] else
+                        "Prévia usa esta base, mas ainda exige scripts/PBS, direitos e QA nativa.")
+    return result
+
 
 
 def checksum(path: Path) -> str:
@@ -122,20 +169,21 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                                     "reason": "; ".join(errors[:5])})
         return record(project, {"status": "already_integrated_verified",
                                 "reason": "Prova e conteúdo Johto instalados previamente e revalidados"})
-    for candidate in BUNDLE_PATHS:
-        source = project / candidate
-        if not source.exists():
-            continue
+    for source in candidate_bundles(project):
         try:
             bundle = inspect_offline_bundle(source)
-        except (OSError, ValueError, zipfile.BadZipFile) as exc:
+            baseline = inspect_current_baseline(game, source)
+        except (OSError, ValueError, KeyError, zipfile.BadZipFile,
+                json.JSONDecodeError) as exc:
             return record(project, {"status": "offline_bundle_invalid", "reason": str(exc),
-                                    "bundle_path": candidate})
+                                    "bundle_path": str(source)})
         return record(project, {"status": "offline_preview_not_installable",
-                                "reason": "82 mapas e PBS de preparação: falta conciliar mapas/tilesets após Kanto/Hoenn, instalador transacional, direitos e testes nativos Windows/JoiPlay",
-                                "bundle_path": candidate, "bundle": bundle})
+                                "reason": baseline["reason"] +
+                                " Johto continua bloqueada até conclusão de todos os testes.",
+                                "bundle_path": str(source), "bundle": bundle,
+                                "current_game": baseline})
     return record(project, {"status": "awaiting_johto_installable_release",
-                            "reason": "Nenhum pacote Johto instalado e verificado. A versão OFFLINE 12 não pode habilitar a região no jogo principal."})
+                            "reason": "Nenhum pacote Johto instalado e verificado. O Blue-Story procurou na pasta do projeto, .blue-work e Downloads. Johto não será habilitada sem instalador transacional e testes reais."})
 
 
 if __name__ == "__main__":
