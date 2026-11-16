@@ -69,6 +69,7 @@ module BlueSinnohQAStart
     return false unless current.is_a?(Hash) &&
                         current["version"] == 1 &&
                         current["current"] == "SINNOH"
+    return false if current.key?("initial") && current["initial"] != "SINNOH"
     !proof.nil?
   rescue IOError, SystemCallError, ArgumentError, TypeError
     false
@@ -76,8 +77,12 @@ module BlueSinnohQAStart
 
   module Override
     def select_and_prepare(*args)
-      return super unless @new_game && defined?($PokemonGlobal) &&
-                          $PokemonGlobal
+      # Existing saves still use the native reload path, but new QA games
+      # must not silently enter another region when globals are absent.
+      return super unless @new_game
+      raise "Sinnoh QA: estado global ausente; Novo Jogo bloqueado" unless
+        defined?($PokemonGlobal) && $PokemonGlobal &&
+        $PokemonGlobal.respond_to?(:blue_regions=)
       start = BlueSinnohQAStart.proof
       raise "Sinnoh QA: compile os tres PBS de Barry antes de Novo Jogo" unless start
       raise "Sinnoh QA: motor regional nao carregado" unless

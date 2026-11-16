@@ -21,15 +21,48 @@ module BlueSinnohPilot
     return nil unless record.is_a?(Hash) &&
                       record["version"] == 1 &&
                       record["current"] == "SINNOH"
+    # CH07: private Sinnoh QA saves must not borrow another region's initial.
+    return nil if record.key?("initial") && record["initial"] != "SINNOH"
     record
+  end
+
+  # Checkpoint reads must not create or repair flags, especially after a
+  # failed event or when a loaded save is incomplete or forged.
+  def self.valid_flags?(flags)
+    return false unless flags.is_a?(Hash)
+    checkpoints = %w[mother_intro barry_intro rowan_briefcase_seen
+                     starter_received rival_fought pokedex_received]
+    checkpoints.each do |key|
+      return false if flags.key?(key) && flags[key] != true && flags[key] != false
+    end
+    return false if flags["barry_intro"] == true && flags["mother_intro"] != true
+    return false if flags["rowan_briefcase_seen"] == true && flags["barry_intro"] != true
+    raw = flags["starter"]
+    chosen = raw.is_a?(String) && STARTERS.include?(raw.to_sym)
+    granted = flags["starter_received"] == true
+    return false if granted != !!chosen
+    return false if granted && flags["rowan_briefcase_seen"] != true
+    return false if flags.key?("starter") && !granted
+    return false if flags["rival_fought"] == true && !granted
+    return false if flags["pokedex_received"] == true && flags["rival_fought"] != true
+    true
   end
 
   def self.progress
     state = regional_state
     return nil unless state
     existing = state["sinnoh_pilot"]
-    return nil unless existing.nil? || existing.is_a?(Hash)
+    return {} if existing.nil?
+    valid_flags?(existing) ? existing : nil
+  end
+
+  # Only a completed action may create/update the isolated progress record.
+  def self.commit_flag(key)
+    state = regional_state
+    return false unless state && progress
     state["sinnoh_pilot"] ||= {}
+    state["sinnoh_pilot"][key] = true
+    true
   end
 
   def self.starter
@@ -57,8 +90,7 @@ module BlueSinnohPilot
       return false
     end
     pbMessage(_INTL("Mãe: Barry veio procurar você. Ele falou sobre uma pesquisa perto do lago."))
-    flags["mother_intro"] = true
-    true
+    commit_flag("mother_intro")
   end
 
   def self.barry_intro
@@ -73,8 +105,7 @@ module BlueSinnohPilot
       return false
     end
     pbMessage(_INTL("Barry: Dizem que um pesquisador esteve perto do Lago Verity. Vamos conferir!"))
-    flags["barry_intro"] = true
-    true
+    commit_flag("barry_intro")
   end
 
   # In this Blue-authored pilot, Rowan authorizes the player to choose a
@@ -92,8 +123,7 @@ module BlueSinnohPilot
     end
     pbMessage(_INTL("Rowan: Preciso de ajuda para observar os Pokémon desta região."))
     pbMessage(_INTL("Rowan: Escolha um parceiro da maleta. Os três precisam de bons treinadores."))
-    flags["rowan_briefcase_seen"] = true
-    true
+    commit_flag("rowan_briefcase_seen")
   end
 
   def self.choose_starter_from_ball(species)
@@ -110,12 +140,25 @@ module BlueSinnohPilot
       return false
     end
     return false unless defined?(pbAddPokemonSilent)
-    # Never set the selection flag if the engine rejects the grant.
-    return false unless pbAddPokemonSilent(requested, 5)
-    flags["starter"] = requested.to_s
-    flags["starter_received"] = true
-    pbMessage(_INTL("Rowan: Ótima escolha! Observe seu parceiro durante a viagem."))
-    true
+    # Only a physical ball grants a starter; nested grants are denied.
+    return false if @starter_grant_in_progress
+    scope = regional_state
+    @starter_grant_in_progress = true
+    begin
+      return false unless pbAddPokemonSilent(requested, 5)
+      return false unless scope && regional_state.equal?(scope)
+      current = progress
+      return false unless current && !current.key?("starter") &&
+                          current["starter_received"] != true &&
+                          current["rowan_briefcase_seen"] == true
+      scope["sinnoh_pilot"] ||= {}
+      scope["sinnoh_pilot"]["starter"] = requested.to_s
+      scope["sinnoh_pilot"]["starter_received"] = true
+      pbMessage(_INTL("Rowan: Ótima escolha! Observe seu parceiro durante a viagem."))
+      true
+    ensure
+      @starter_grant_in_progress = false
+    end
   end
 
   # The professor never exposes a choice dialog or grants Pokémon.
@@ -167,25 +210,35 @@ module BlueSinnohPilot
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
       return false
     end
-    pbMessage(_INTL("Barry: Vamos descobrir como nossos parceiros se saem!"))
-    setBattleRule("canLose")
-    result = TrainerBattle.start(:BLUE_SINNOH_RIVAL, "Barry", rival_version)
-    return false if result.nil?
-    $player.heal_party if defined?($player) && $player && $player.respond_to?(:heal_party)
-    flags["rival_fought"] = true
-    pbMessage(result ?
-      _INTL("Barry: Você venceu! Vou melhorar minha estratégia.") :
-      _INTL("Barry: Que batalha! Vamos continuar treinando."))
-    true
-  rescue IOError, SystemCallError
-    pbMessage(_INTL("Barry: Nossa batalha não pôde ser validada."))
-    false
+    return false if @rival_battle_in_progress
+    @rival_battle_in_progress = true
+    scope = regional_state
+    chosen = starter
+    begin
+      pbMessage(_INTL("Barry: Vamos descobrir como nossos parceiros se saem!"))
+      setBattleRule("canLose")
+      result = TrainerBattle.start(:BLUE_SINNOH_RIVAL, "Barry", rival_version)
+      # false means a completed canLose defeat, nil means no confirmed battle.
+      return false unless result == true || result == false
+      return false unless scope && regional_state.equal?(scope) && starter == chosen
+      $player.heal_party if defined?($player) && $player && $player.respond_to?(:heal_party)
+      return false unless commit_flag("rival_fought")
+      pbMessage(result ?
+        _INTL("Barry: Você venceu! Vou melhorar minha estratégia.") :
+        _INTL("Barry: Que batalha! Vamos continuar treinando."))
+      true
+    rescue IOError, SystemCallError
+      pbMessage(_INTL("Barry: Nossa batalha não pôde ser validada."))
+      false
+    ensure
+      @rival_battle_in_progress = false
+    end
   end
 
   def self.rowan_pokedex
     flags = progress
     return false unless flags
-    unless flags["rival_fought"] && starter
+    unless flags["rival_fought"] == true && starter
       pbMessage(_INTL("Rowan: Primeiro conheça seu parceiro e complete o treino com Barry."))
       return false
     end
@@ -197,7 +250,7 @@ module BlueSinnohPilot
     return false unless defined?($player) && $player &&
                         $player.respond_to?(:has_pokedex=)
     $player.has_pokedex = true
-    flags["pokedex_received"] = true
+    return false unless commit_flag("pokedex_received")
     pbMessage(_INTL("Rowan: Sua Pokédex está pronta. Explore Sinnoh com cuidado."))
     true
   end
