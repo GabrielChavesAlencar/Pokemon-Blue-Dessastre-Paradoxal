@@ -178,6 +178,82 @@ def refresh_installed_runtime(game: Path, root: Path = ROOT) -> dict:
         raise
 
 
+
+def refresh_installed_bedroom(game: Path, root: Path = ROOT) -> dict:
+    """Apply the HGSS-inspired 2F layout to a previously installed Johto preview.
+
+    Reusing Blue-Story must also update the real Map674/Map675 RXDATA, not just
+    the Python authoring code. Only hash-verified Johto files are edited; no
+    Kanto/Hoenn/Decades maps, world registry, compiled scripts or saves change.
+    """
+    game, root = Path(game).resolve(), Path(root).resolve()
+    installed = preview_proof(game)
+    if installed is None:
+        return {"changed": False, "reason": "Johto não instalada"}
+    if installed.get("bedroom_layout") == visual.HGSS_BEDROOM_LAYOUT:
+        return {"changed": False, "reason": "Quarto HGSS de Johto já atualizado"}
+
+    paths = ("Data/Map674.rxdata", "Data/Map675.rxdata")
+    maps = [loads(local_target(game, name).read_bytes()) for name in paths]
+    if any(not isinstance(obj, RubyObject) or obj.name != "RPG::Map" for obj in maps):
+        raise ValueError("Quarto/casa de Johto não são mapas RMXP válidos")
+    tilesets = loads(local_target(game, "Data/Tilesets.rxdata").read_bytes())
+    tid = maps[0].attrs.get("@tileset_id")
+    if (not isinstance(tilesets, list) or type(tid) is not int or tid <= 0
+            or tid >= len(tilesets) or not isinstance(tilesets[tid], RubyObject)
+            or text(tilesets[tid].attrs.get("@tileset_name")) != "BLUE_JOHTO_OPENING_INSIDE"):
+        raise ValueError("Tileset do quarto não é o atlas Johto auditado")
+    _, passages = visual.table_values(tilesets[tid].attrs["@passages"].data, 1)
+    # Four imported decoration tiles + two nine-tile rugs, padded to 24
+    # entries by extend_tileset(); do not duplicate the atlas in game/.
+    first = len(passages) - 24
+    if first < 384 or len(passages) - first != 24:
+        raise ValueError("Tileset Johto sem as decorações originais")
+    visual.style_bedroom_hgss(maps[0], maps[1], first)
+    modified = {name: serialize(obj, johto_qa.EVENT_CLASSES)
+                for name, obj in zip(paths, maps)}
+    proof = copy.deepcopy(installed)
+    proof["bedroom_layout"] = visual.HGSS_BEDROOM_LAYOUT
+    proof["bedroom_stairs_warp"] = list(visual.HGSS_STAIRS_WARP)
+    proof["bedroom_stairs_return"] = list(visual.HGSS_STAIRS_RETURN)
+    for name, contents in modified.items():
+        proof["file_hashes"][name] = sha(contents)
+    modified[PROOF] = raw_json(proof)
+
+    backups = root / ".blue-backups" / ("johto-bedroom-hgss-" + uuid.uuid4().hex)
+    backups.mkdir(parents=True)
+    for name in (*paths, PROOF):
+        source = local_target(game, name)
+        if not source.is_file() or source.is_symlink():
+            raise ValueError("Arquivo Johto inesperado: " + name)
+        target = backups / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    written = []
+    try:
+        for name in (*paths, PROOF):
+            target = local_target(game, name)
+            pending = target.with_name(target.name + ".blue-hgss-tmp")
+            if pending.exists() or pending.is_symlink():
+                raise ValueError("Atualização do quarto Johto encontrou temporário antigo")
+            try:
+                pending.write_bytes(modified[name])
+                if sha(pending.read_bytes()) != sha(modified[name]):
+                    raise ValueError("Falha de checksum no quarto Johto")
+                os.replace(pending, target)
+                written.append(name)
+            finally:
+                pending.unlink(missing_ok=True)
+        preview_proof(game)
+        return {"changed": True, "bedroom_layout": visual.HGSS_BEDROOM_LAYOUT,
+                "reason": "Map674 e retorno da escada em Map675 atualizados",
+                "backup_folder": str(backups)}
+    except BaseException:
+        for name in reversed(written):
+            shutil.copy2(backups / name, local_target(game, name))
+        raise
+
+
 def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str, bytes], dict]:
     """Plan and validate in memory; no writes to game/ until every check passes."""
     if game.is_symlink() or not (game / "Game.exe").is_file():
