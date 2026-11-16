@@ -279,11 +279,95 @@ def save_changes(project: Path, game: Path, payload: dict):
 
 
 def gh_binary(project: Path):
-    for path in (shutil.which("gh"), project / "tools/gh/gh.exe",
-                 project / ".blue-tools/gh/gh.exe"):
-        if path and Path(path).is_file():
-            return str(path)
-    raise EditorError("GitHub CLI (gh) não encontrado. Instale e execute 'gh auth login' uma vez.", 409)
+    # O Blue-Story instala a CLI oficial (com SHA-256) sem abrir um terminal.
+    try:
+        from scripts.windows.github_cli import ensure_cli
+        return ensure_cli(project)
+    except (OSError, ValueError, RuntimeError) as error:
+        raise EditorError("Não foi possível preparar o GitHub automaticamente: " + str(error), 503) from error
+
+
+def github_authenticated(project: Path) -> bool:
+    try:
+        gh = gh_binary(project)
+        result = subprocess.run([gh, "auth", "status", "--hostname", "github.com"],
+                                capture_output=True, text=True, timeout=15,
+                                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        return result.returncode == 0
+    except (EditorError, OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def auth_status(session):
+    if github_authenticated(session.project):
+        return {"authenticated": True, "pending": False}
+    with session.auth_lock:
+        process = session.auth_process
+        if process and process.poll() is None:
+            return {"authenticated": False, "pending": True,
+                    "device_code": session.auth_code,
+                    "url": "https://github.com/login/device"}
+        return {"authenticated": False, "pending": False,
+                "error": session.auth_error or "A conta GitHub ainda não foi autorizada."}
+
+
+def _auth_reader(session, process):
+    """Lê o código de dispositivo da CLI e abre a autorização no navegador."""
+    output = ""
+    opened = False
+    sent_enter = False
+    try:
+        while True:
+            char = process.stdout.read(1)
+            if not char:
+                break
+            output = (output + char)[-1400:]
+            match = re.search(r"\b[A-Z0-9]{4}-[A-Z0-9]{4}\b", output)
+            if match and not opened:
+                with session.auth_lock:
+                    session.auth_code = match.group(0)
+                opened = True
+                webbrowser.open("https://github.com/login/device")
+            if not sent_enter and ("press enter" in output.lower() or "hit enter" in output.lower()):
+                try:
+                    process.stdin.write("\n")
+                    process.stdin.flush()
+                    sent_enter = True
+                except (OSError, ValueError):
+                    pass
+        process.wait(timeout=15)
+        with session.auth_lock:
+            if process.returncode != 0:
+                session.auth_error = "A autorização do GitHub não foi concluída. Tente publicar novamente."
+    except (OSError, subprocess.TimeoutExpired) as error:
+        with session.auth_lock:
+            session.auth_error = "Falha na autorização do GitHub: " + type(error).__name__
+
+
+def start_auth(session):
+    if github_authenticated(session.project):
+        return {"authenticated": True, "pending": False}
+    with session.auth_lock:
+        if session.auth_process and session.auth_process.poll() is None:
+            return {"authenticated": False, "pending": True,
+                    "device_code": session.auth_code,
+                    "url": "https://github.com/login/device"}
+        gh = gh_binary(session.project)
+        try:
+            process = subprocess.Popen(
+                [gh, "auth", "login", "--hostname", "github.com",
+                 "--git-protocol", "https", "--web"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, bufsize=1,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        except OSError as error:
+            raise EditorError("Não foi possível iniciar autorização oficial do GitHub", 503) from error
+        session.auth_process = process
+        session.auth_code = None
+        session.auth_error = None
+    threading.Thread(target=_auth_reader, args=(session, process), daemon=True).start()
+    return {"authenticated": False, "pending": True,
+            "device_code": None, "url": "https://github.com/login/device"}
 
 
 def _gh(project, args, body=None, allow_404=False):
@@ -323,6 +407,10 @@ class Session:
         self.project,self.game=project,game
         self.token=secrets.token_hex(24)
         self.publish_baseline={}
+        self.auth_lock=threading.Lock()
+        self.auth_process=None
+        self.auth_code=None
+        self.auth_error=None
 
 
 def publish(session: Session, mid:int, expected_sha, expected_patch_hash):
@@ -335,10 +423,19 @@ def publish(session: Session, mid:int, expected_sha, expected_patch_hash):
         if sha(raw)!=expected_patch_hash:
             raise EditorError("O patch mudou desde o último salvamento",409)
         patches.read_patch(session.project,mid)
+        if not github_authenticated(session.project):
+            raise EditorError("GITHUB_AUTH_REQUIRED: autorize sua conta no navegador.", 401)
         baseline=session.publish_baseline.get(mid)
-        if baseline is None or not baseline["in_sync"]:
-            raise EditorError("Clique em 'Verificar GitHub' com a versão local sincronizada antes de editar/publicar",409)
         current=remote(session.project,mid)
+        if baseline is None:
+            if current["in_sync"]:
+                # Mapa aberto antes de conectar: estabelecer a versão segura na hora.
+                baseline=current
+                session.publish_baseline[mid]=baseline
+            else:
+                raise EditorError("Conflito real: a main já contém um patch diferente. Preserve ambos e compare antes de publicar.",409)
+        if not baseline["in_sync"]:
+            raise EditorError("Conflito real: seu patch local difere do existente na main. Nenhum mapa foi sobrescrito.",409)
         if current["sha"]!=expected_sha or current["sha"]!=baseline["sha"]:
             raise EditorError("Outro commit atualizou este mapa na main. Atualize o projeto e compare as edições.",409)
         body={"message":f"feat(johto-map): editar Map{mid:03} pelo editor visual",
@@ -417,8 +514,13 @@ def make_handler(session: Session):
                 elif path=="/api/remote":
                     mid=self.query_id()
                     status=remote(session.project,mid)
-                    session.publish_baseline[mid]=status
+                    # Não perder uma baseline íntegra após salvar novas edições locais.
+                    baseline=session.publish_baseline.get(mid)
+                    if baseline is None or baseline["sha"] != status["sha"]:
+                        session.publish_baseline[mid]=status
                     self.json_response(200,status)
+                elif path=="/api/auth/status":
+                    self.json_response(200,auth_status(session))
                 else:
                     self.json_response(404,{"error":"Rota não encontrada"})
             except (EditorError,patches.PatchError,ValueError,OSError,KeyError) as err:
@@ -439,7 +541,9 @@ def make_handler(session: Session):
                 body=json.loads(self.rfile.read(count))
                 if not isinstance(body,dict):
                     raise EditorError("JSON de edição inválido")
-                if parsed=="/api/save":
+                if parsed=="/api/auth/start":
+                    self.json_response(200,start_auth(session))
+                elif parsed=="/api/save":
                     result=save_changes(session.project,session.game,body)
                     self.json_response(200,result)
                 elif parsed=="/api/publish":
