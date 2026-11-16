@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "22af55d2362ee0f372a53cd97c3ddcd74a6e134a",
+      "date": "2026-11-16T19:52:59-03:00",
+      "title": "data(sinnoh): CH15 13 equipes Platinum e 5 revanches sem falsos PBS ou níveis fixos",
+      "category": "Melhorias"
+    },
+    {
       "sha": "500f2ec6261d66044a45abac5c303d2f9a080d10",
       "date": "2026-11-16T19:47:46-03:00",
       "title": "docs(sinnoh): CH14 validada e Barra E 14/20 sem alterar jogabilidade",
