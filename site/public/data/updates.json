@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e470dea12a592ce0054f918f1a79a3f342491110",
+      "date": "2026-11-16T11:41:24-03:00",
+      "title": "test(blue-story): verificar download SHA e script de publicação",
+      "category": "Testes"
+    },
+    {
       "sha": "2e16dec4892fbfe781c64146545f18d07e7bd17e",
       "date": "2026-11-16T11:41:01-03:00",
       "title": "test(johto-map): cobrir publicação inicial, conflito e autorização automática",
