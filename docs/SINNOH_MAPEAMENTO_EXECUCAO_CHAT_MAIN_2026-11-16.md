@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-█████████████████░░░  17/20 (85%)
+██████████████████░░  18/20 (90%)
 ```
 
-**17 concluídas**, **0 parciais**, **3 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**18 concluídas**, **0 parciais**, **2 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -44,11 +44,13 @@
 | P3 | **CH15** ✅ | Registro de equipes para Roark→Volkner, Elite Four e Cynthia | Esquemas/referências auditáveis, sem espécies ou times inventados nem nível fixo na UI |
 | P3 | **CH16** ✅ | Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic | Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos |
 | P3 | **CH17** ✅ | Guias de Sinnoh no site com estado real `planned`/pendente | Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios |
-| P3 | CH18 | Testes e build do portal para Sinnoh | Pesquisa/filtros/pendências/linkagem sem rótulo `jogável` indevido, suíte do site validada |
+| P3 | **CH18** ✅ | Testes e build do portal para Sinnoh | Pesquisa/filtros/pendências/linkagem sem rótulo `jogável` indevido, suíte do site validada |
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH18 concluída:** [motor puro de pesquisa/validação](../site/src/assets/sinnoh-search.js), [interface com filtros responsivos](../site/src/assets/sinnoh-guide.js), [navegação GET/SPA](../site/src/assets/app.js) e [29 testes negativos e positivos](../site/tests/sinnoh-search.test.mjs). A página `/sinnoh` permite buscar nomes, rotas, espécies candidatas, treinadores, insígnias, HMs, Galactic/Cyrus/Cynthia e classes de pendência; filtra fase documentada ou “sem fase”, com/sem espécies de referência, área citada e revanches Platinum. URLs preservam parâmetros, filtros inválidos voltam ao escopo seguro, resultados vazios não geram provas fictícias, e links bidirecionais levam da área ao catálogo de treinadores, de ginásios às permissões HM e da Liga aos checkpoints; a [página de backlog](../site/src/assets/pending.js) também aponta para o guia. Sete categorias de pendência mostram apenas quantidades documentadas. O validador rejeita falsos MapIDs, níveis, taxas, PBS compilado, pickups, eventos, música instalada, regiões jogáveis e payloads corrompidos. [CI Portal 43981753762](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43981753762): **build/137 testes**; [CI Sinnoh 43981753812](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43981753812): **29 testes CH18**, **137 do portal** e **347 Python de Sinnoh**, todos aprovados. [Documentação CH18](SINNOH_CH18_BUSCA_FILTROS_PENDENCIAS_SITE.md). Sem certificação Game.exe ou JoiPlay.
 
 **CH17 concluída:** [gerador do portal](../site/scripts/sinnoh-guide.mjs) consumindo **CH11–CH16**, [UI dedicada](../site/src/assets/sinnoh-guide.js) em `/sinnoh` e compatibilidade de `/localizacoes`, `/treinadores`, `/chefes` e `/liga` para Sinnoh. Há 120 áreas de referência, **91 atribuídas a fases reais do checklist** e **29 sem fase**, separadas em “Fase a auditar”; 40 treinadores ainda não instalados, oito líderes, quatro Elite, Cynthia, oito HMs e 22 checkpoints de história. O [build](../site/scripts/build.mjs) deriva um `dist/data/sinnoh-guide.json` e não escreve MapIDs, níveis fixos, taxas, itens concedidos nem equipes PBS instaladas. [19 testes negativos/positivos](../site/tests/sinnoh-guide.test.mjs), [build + 108 testes do portal aprovados](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43979589575), [CI isolado CH17 + 347 Sinnoh aprovados](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43979589757). [Documentação CH17](SINNOH_CH17_GUIAS_PORTAL_PLANEJADO.md). Nenhum dado foi afirmado jogável, e este trabalho não inclui certificação de deploy externo.
 
@@ -154,4 +156,4 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 4. Publicar diretamente na `main` sem force push e atualizar **somente** a(s) entrada(s) CH realmente concluída(s).
 5. Informar SHA/links, verificações PASS/FAIL/não executadas e bloqueios; preservar barras oficiais de 13 fases até aceitação.
 
-**Próxima ação sugerida:** **CH18**, aprimorar filtros de busca e navegação do guia de Sinnoh, ampliar testes do portal e validar as referências de pendências sem rótulo jogável indevido. CH01–CH17 concluídas em código/testes; Sinnoh permanece não jogável.
+**Próxima ação sugerida:** **CH19**, consolidar regressões Python/Ruby isoladas de Sinnoh no CI, com identificação da origem de falhas sem confundir sucesso de fixtures com aprovação Game.exe. CH01–CH18 concluídas em código/testes; Sinnoh permanece não jogável.

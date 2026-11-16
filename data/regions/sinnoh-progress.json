@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 17,
+    "done": 18,
     "partial": 0,
-    "pending": 3,
-    "percent_complete": 85,
+    "pending": 2,
+    "percent_complete": 90,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -943,8 +943,8 @@
         "priority": "P3",
         "title": "Testes e build do portal para Sinnoh",
         "acceptance": "Pesquisa/filtros/pendências/linkagem sem rótulo jogável indevido, suíte do site validada",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "site/tests/sinnoh-search.test.mjs"
       },
       {
         "id": "CH19",

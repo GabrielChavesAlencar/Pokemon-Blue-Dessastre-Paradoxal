@@ -8,12 +8,12 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-█████████████████░░░  17/20 (85%)
+██████████████████░░  18/20 (90%)
 ```
 
-- **Concluídas:** 17 (**CH01–CH17**, incluindo página Sinnoh do portal com referência segura a áreas, treinadores, oito ginásios, Elite Four, Cynthia, HMs e história).
+- **Concluídas:** 18 (**CH01–CH18**, com guia e filtros auditáveis para Sinnoh no portal).
 - **Parciais:** 0.
-- **Pendentes:** 3 (**CH18–CH20**).
+- **Pendentes:** 2 (**CH19–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
 - **CH02–CH05:** consistência de progresso e proteções de MapIDs/plugins legados.
@@ -25,6 +25,7 @@
 - **CH15:** 13 treinadores de referência Platinum, 5 revanches históricas e PBS/Full Power sinalizados sem comprovação.
 - **CH16:** 46 chaves musicais e fallback BlueMusic, sem instalar áudio ou hooks.
 - **CH17:** novo guia do portal em **`/sinnoh`**, com abas para **120 áreas** (**91 com fase 3–10 documentada; 29 sem fase, mostradas em filtro “Fase a auditar”**), **40 treinadores de referência**, **8 ginásios, 4 Elite Four e Cynthia**, **8 itens HM e permissões por insígnia regional**, **22 checkpoints Galactic/Cyrus/Liga** e espécies candidatas de **21 áreas**. O [gerador](../site/scripts/sinnoh-guide.mjs) usa os catálogos CH11–CH16, publica somente no `site/dist/data/sinnoh-guide.json` durante o [build](../site/scripts/build.mjs) e rejeita flags falsas de jogabilidade, níveis/MapIDs inventados e vínculos PBS não verificados. A [interface](../site/src/assets/sinnoh-guide.js) está ligada às páginas Guias, Regiões, Localizações, Treinadores, Chefes e Liga, sempre com o aviso **“Planejada / Ainda não adicionado ao Game.exe/JoiPlay”**. **19 testes dedicados**, **108 testes completos do portal** e **347 testes Python isolados de Sinnoh** aprovados; [CI Portal 43979589575](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43979589575) e [CI Sinnoh 43979589757](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43979589757). [Documentação CH17](SINNOH_CH17_GUIAS_PORTAL_PLANEJADO.md).
+- **CH18:** [mecanismo puro de busca, filtros, URLs e validação da fonte](../site/src/assets/sinnoh-search.js) e [interface aprimorada](../site/src/assets/sinnoh-guide.js) fornecem formulário GET com preservação de filtros, busca sem distinguir acentos, apoio a “Rota/Route”, filtros por fase (incluindo **29 sem fase**), espécies candidatas, referências de área dos treinadores, revanches Platinum e categorias de pendência. A nova aba **Pendências** apresenta sete grupos com contagens documentais (120 áreas, 40 treinadores, 13 equipes históricas, 8 HMs, 22 checkpoints, 21 áreas de encontro e 46 cues), todos **planned/a auditar**. Links contextuais ligam áreas, treinadores, ginásios↔HMs e Liga↔história, sem afirmar que exista NPC/evento físico. [29 novos testes positivos/negativos](../site/tests/sinnoh-search.test.mjs) exigem encoding de URL/HTML, buscas vazias, filtros incorretos com fallback seguro, bloqueio de MapIDs, taxas, níveis, times, badge pickup, músicas e estados jogáveis inventados. [CI Portal 43981753762](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43981753762): **build e 137/137 testes** aprovados; [CI Sinnoh 43981753812](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43981753812): **29/29 testes CH18**, **137 testes completos do portal** e **347/347 Python isolados** aprovados. [Documentação CH18](SINNOH_CH18_BUSCA_FILTROS_PENDENCIAS_SITE.md).
 - **Critério:** tarefas só entram como `done` com arquivos publicados na `main` e validação de CI compatível com seu escopo.
 
 **Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 8/32 (25%)**, **B/C/D 0/13** permanecem intactas.
