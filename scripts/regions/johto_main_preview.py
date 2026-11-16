@@ -40,7 +40,7 @@ STATUS = "EXPERIMENTAL_PRIVATE_UNVERIFIED"
 START = (674, 6, 7)
 TOWN = (600, 10, 26, 2)
 NPC = (600, 10, 25, 2)
-RUNTIME = ("JohtoPilot.rb", "JohtoRouteTrainers.rb", "JohtoViolet.rb")
+RUNTIME = ("JohtoPilot.rb", "JohtoRouteTrainers.rb", "JohtoViolet.rb", "JohtoMainCompile.rb")
 
 
 def sha(data: bytes) -> str:
