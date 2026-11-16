@@ -198,6 +198,12 @@ jobs:
           python -m py_compile scripts/music/audit_sinnoh_music_ch16.py
           ruby -c scripts/music/SinnohMusicContracts.rb
           ruby tests/sinnoh_music_ch16_runtime.rb scripts/music/BlueMusic.rb scripts/music/SinnohMusicContracts.rb data/regions/sinnoh-music-ch16.json
+      - name: CH17 - Portal Sinnoh areas trainers liga HM e statuses
+        run: |
+          cd site
+          npm run build
+          node --test tests/sinnoh-guide.test.mjs
+          npm test
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh
