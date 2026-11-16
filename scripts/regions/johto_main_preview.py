@@ -180,7 +180,58 @@ def refresh_installed_runtime(game: Path, root: Path = ROOT) -> dict:
 
 
 
-def refresh_installed_bedroom(game: Path, root: Path = ROOT) -> dict:
+
+def scoped_bedroom_proof(game: Path) -> dict | None:
+    """Validate only the two original Johto maps for explicit manual repair.
+
+    Other plug-ins/regions can legitimately change shared PBS or MapInfos after
+    Johto installation. This is deliberately NOT a Johto release or ready proof.
+    It must never make the global preview pass when shared artifacts drift.
+    """
+    game = Path(game).resolve()
+    manifest = local_target(game, PROOF)
+    if not manifest.is_file() or manifest.is_symlink():
+        return None
+    data = json.loads(manifest.read_text("utf-8"))
+    if (data.get("schema") != 1 or data.get("region") != "JOHTO"
+            or data.get("status") != STATUS
+            or data.get("source_bundle_sha256") != PINNED_SHA
+            or data.get("map_ids") != sorted(PREVIEW_IDS)
+            or data.get("start") != list(START)
+            or data.get("town") != list(TOWN) or data.get("npc") != list(NPC)):
+        raise ValueError("Johto: manifesto incompatível para reparo isolado")
+    marker = local_target(game, READY)
+    expected = "BLUE_JOHTO_PRIVATE_PREVIEW_V1,100," + ",".join(
+        map(str, (*START, *TOWN[:3], *NPC[:3])))
+    if (not marker.is_file() or marker.is_symlink()
+            or marker.read_text("ascii").strip() != expected):
+        raise ValueError("Johto: marcador de instalação privada não corresponde ao pacote original")
+    hashes = data.get("file_hashes")
+    if not isinstance(hashes, dict):
+        raise ValueError("Johto: hashes ausentes")
+    for name in ("Data/Map674.rxdata", "Data/Map675.rxdata"):
+        path = local_target(game, name)
+        value = hashes.get(name)
+        if (not isinstance(value, str) or not re.fullmatch("[a-f0-9]{64}", value)
+                or not path.is_file() or path.is_symlink() or sha(path.read_bytes()) != value):
+            raise ValueError("Johto: mapa alterado ou sem hash auditado: " + name)
+    # The global tileset may have been enlarged by Kanto/Hoenn. Accept ONLY
+    # the authentic Johto slot and tables the map already references.
+    tilesets = loads(local_target(game, "Data/Tilesets.rxdata").read_bytes())
+    room = loads(local_target(game, "Data/Map674.rxdata").read_bytes())
+    home = loads(local_target(game, "Data/Map675.rxdata").read_bytes())
+    tid = room.attrs.get("@tileset_id") if isinstance(room, RubyObject) else None
+    if (not isinstance(home, RubyObject) or home.name != "RPG::Map"
+            or not isinstance(tilesets, list) or type(tid) is not int
+            or tid <= 0 or tid >= len(tilesets)
+            or not isinstance(tilesets[tid], RubyObject)
+            or text(tilesets[tid].attrs.get("@tileset_name")) != "BLUE_JOHTO_OPENING_INSIDE"):
+        raise ValueError("Johto: tileset de New Bark não confere com a prévia original")
+    return data
+
+
+
+def refresh_installed_bedroom(game: Path, root: Path = ROOT, *, allow_global_drift: bool = False) -> dict:
     """Apply the HGSS-inspired 2F layout to a previously installed Johto preview.
 
     Reusing Blue-Story must also update the real Map674/Map675 RXDATA, not just
@@ -188,11 +239,26 @@ def refresh_installed_bedroom(game: Path, root: Path = ROOT) -> dict:
     Kanto/Hoenn/Decades maps, world registry, compiled scripts or saves change.
     """
     game, root = Path(game).resolve(), Path(root).resolve()
-    installed = preview_proof(game)
+    global_drift = False
+    try:
+        installed = preview_proof(game)
+    except (OSError, ValueError, KeyError, TypeError):
+        if not allow_global_drift:
+            raise
+        installed = scoped_bedroom_proof(game)
+        global_drift = True
     if installed is None:
         return {"changed": False, "reason": "Johto não instalada"}
     if installed.get("bedroom_layout") == visual.HGSS_BEDROOM_LAYOUT:
-        return {"changed": False, "reason": "Quarto HGSS de Johto já atualizado"}
+        # Do not trust a flag alone: check the actual warp on Map674, because
+        # the game may still display its old staircase after a partial update.
+        actual = loads(local_target(game, "Data/Map674.rxdata").read_bytes())
+        stairs = [e for e in actual.attrs["@events"].values()
+                  if text(e.attrs.get("@name")) == "JH_HOME2F_TO_1F"]
+        if len(stairs) != 1 or (stairs[0].attrs["@x"], stairs[0].attrs["@y"]) != visual.HGSS_STAIRS_WARP:
+            raise ValueError("Manifesto diz HGSS, mas Map674 ainda contém escada antiga")
+        return {"changed": False, "reason": "Quarto HGSS de Johto já atualizado",
+                "global_integrity_drift": global_drift}
 
     paths = ("Data/Map674.rxdata", "Data/Map675.rxdata")
     maps = [loads(local_target(game, name).read_bytes()) for name in paths]
@@ -245,8 +311,14 @@ def refresh_installed_bedroom(game: Path, root: Path = ROOT) -> dict:
                 written.append(name)
             finally:
                 pending.unlink(missing_ok=True)
-        preview_proof(game)
+        # Recheck exactly the same security scope that was authorized.
+        # Global readiness stays false when unrelated shared files have drifted.
+        if global_drift:
+            scoped_bedroom_proof(game)
+        else:
+            preview_proof(game)
         return {"changed": True, "bedroom_layout": visual.HGSS_BEDROOM_LAYOUT,
+                "global_integrity_drift": global_drift,
                 "reason": "Map674 e retorno da escada em Map675 atualizados",
                 "backup_folder": str(backups)}
     except BaseException:
