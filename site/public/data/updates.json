@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6461db3fea8d8b1402f281e61185b1f81762b341",
+      "date": "2026-11-15T23:14:37-03:00",
+      "title": "ci(johto): provide auditable source snapshot for offline private Johto end-to-end installer test",
+      "category": "Melhorias"
+    },
+    {
       "sha": "14427e32380cb3d20620c1225135a2cc812cf597",
       "date": "2026-11-15T23:12:47-03:00",
       "title": "feat(blue-story): automatically stage adjacent user-owned Johto ZIP into managed game installer before launching",
