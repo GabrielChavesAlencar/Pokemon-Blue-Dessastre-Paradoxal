@@ -298,6 +298,29 @@ class SinnohFullSyntheticPipelineCH09(unittest.TestCase):
         from_source.write_bytes(original)
         self.must_be_untouched()
 
+    def test_repeated_remap_geometry_hashes_are_deterministic(self):
+        audit_a, req, plan_a = self.audited_plan()
+        audit_b = audit_rxdata(self.source, self.native)
+        self.assertEqual(audit_a["source_map_ids"], audit_b["source_map_ids"])
+        self.assertEqual(audit_a["maps"], audit_b["maps"])
+        plan_b = make_plan(audit_b, req, reserved={
+            "schema": 1, "region": "SINNOH",
+            "protected_ids": [510, 580, 600, 800],
+        })
+        self.assertEqual(plan_a["plan_sha256"], plan_b["plan_sha256"])
+        first, report_a = build_geometry(self.source, self.native, plan_a,
+                                         project=self.root)
+        second, report_b = build_geometry(self.source, self.native, plan_b,
+                                          project=self.root)
+        self.assertEqual(first, second)
+        self.assertEqual(report_a["native_data_before_sha256"],
+                         report_b["native_data_before_sha256"])
+        dry_a = preview(self.root, "ch09-determinism", first)
+        dry_b = preview(self.root, "ch09-determinism", second)
+        self.assertEqual(dry_a["plan_sha256"], dry_b["plan_sha256"])
+        self.assertFalse((self.root / ".blue-work").exists())
+        self.must_be_untouched()
+
     def test_stage_fsync_failure_is_atomic_no_partial_output(self):
         _audit, _req, plan = self.audited_plan()
         geom, _ = build_geometry(self.source, self.native, plan, project=self.root)
