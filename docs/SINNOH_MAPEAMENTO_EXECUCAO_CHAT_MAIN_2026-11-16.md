@@ -1,0 +1,125 @@
+# Sinnoh — mapeamento de entregas diretas ChatGPT → GitHub main
+
+**Criado em:** 16/11/2026  
+**Repositório:** `GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal` · branch `main`.  
+**Objetivo:** relacionar tudo o que pode ser **escrito, corrigido, testado estaticamente e publicado diretamente pelo chat**, sem depender de Codex para tarefas que cabem no repositório.  
+**Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
+**Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
+
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento pré-existente continua na Barra A (8/32), e a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+
+## 1. Regra de execução do trabalho pelo chat
+
+1. **Executar diretamente na main:** análises de `docs/`, manifestos e catálogos em `data/` e `site/public/data/`, scripts Python/Ruby autorais, verificadores de compatibilidade, testes em `tests/`, configurações de CI, site e ferramentas que aceitem dados reais **quando fornecidos**.
+2. **Não delegar ao Codex o que é possível neste repositório.** Cada próximo pedido deve escolher uma entrega CH, fazer a alteração real, rodar/verificar os testes possíveis e publicar com commit explícito. Se um teste não puder ser executado neste ambiente, declarar "não executado", não "aprovado".
+3. **Somente ambiente local quando for indispensável:** obter e inspecionar `game/Data`/PBS reais, arquivos-fonte de Sinnoh e autorização por asset; executar RPG Maker XP/Essentials/Compiler e `Game.exe`; testar áudio, controles, mapas, warps, encontros, vitórias/derrotas, saves e JoiPlay. Um ZIP publicado não é automaticamente fonte editável nem licença de redistribuição.
+4. **Modificações aditivas e reversíveis:** não sobrescrever `game/`, saves, `Scripts.rxdata`, `System.rxdata`, `MapInfos.rxdata` ou `Tilesets.rxdata` globais; não atribuir MapIDs sem dados reais. A faixa **600–999 é protegida para Johto**; o piloto legado Sinnoh utiliza **800–805** e **não pode entrar diretamente no jogo multirregional**.
+5. **Uma fonte de verdade por status:** atualizar o `chat_direct_workstream` (CH01–CH20) e a Barra E **na mesma entrega**. `done` requer commit e evidência dos critérios de aceite; `partial` não entra no numerador; `pending` permanece 0. Um novo pedido pode decompor entregas complexas, sem inflar tarefas já concluídas.
+6. **Não falsear barras:** atualizar a Barra A ou B/C/D **somente** segundo seus próprios critérios independentes. CI headless nunca prova que a região inteira está jogável.
+
+## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
+
+```text
+█░░░░░░░░░░░░░░░░░░░  1/20 (5%)
+```
+
+**1 concluída** (CH01: este mapeamento e painel); **19 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+
+| Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
+|---|---|---|---|
+| P0 | **CH01** ✅ | Mapeamento completo, regras, fila e Barra E | MD, JSON e painel publicados e consistentes; **feito nesta entrega** |
+| P0 | CH02 | Validador automático do JSON ↔ Barra E ↔ MD | Script + testes asseguram soma, IDs únicos, status e percentual; CI/checagem real |
+| P0 | CH03 | Proteção estática contra colisão Sinnoh legado 800–805 × Johto 600–999 | Testes negativos impedem que o instalador conjunto injete esses IDs |
+| P0 | CH04 | Bloqueio explícito do plugin `SinnohPreview.rb` legado na instalação compartilhada | Verificação cobre lançador, cópia QA, marcadores e caminho do instalador principal |
+| P0 | CH05 | Manifestações das **reservas documentadas**, sem inventar IDs novos | Relatório/fixture diferencia ocupado físico, reserva declarada e desconhecido; nunca libera importação indevidamente |
+| P1 | CH06 | Schema + auditor das 9 áreas, 24 eventos e 16 warps da introdução | Campos ausentes, coordenadas inválidas, transferência circular/órfã e mapas faltantes reprovam |
+| P1 | CH07 | Reforçar proteção de flags, três Poké Bolas e save exclusivo de `SinnohPilot.rb` | Ruby/Python com casos duplicados, perda/retorno e fallback sem iniciar outra região |
+| P1 | CH08 | Aumentar as verificações de Barry, três equipes e escalonamento compartilhado | Fixtures cobrem iniciais, versões, ausência de PBS, 70%/90% e bloqueio seguro |
+| P1 | CH09 | Teste de integração sintética ponta a ponta de auditor → plano → geometria → overlay → bundle | Cenários de sucesso/falha, rollback e hashes estáveis, **sem** representar Game.exe |
+| P1 | CH10 | Preparar interface segura do lançador QA do Sinnoh e pré-voo de instalação | Sem fallback para Decades/Johto, saves exclusivos, erro claro sem assets, testes offline |
+| P2 | CH11 | Contratos regionais de oito insígnias + HMs de Sinnoh | Dados, guardas e testes garantem badge local, sem apropriar HM de outra região |
+| P2 | CH12 | Modelos de treinadores e evolução com cálculo Blue existente | Regras testadas sem níveis fixos duplicados, preservando Normal/Master e level cap |
+| P2 | CH13 | Catálogo **simbólico** de encontros por rota/terreno/horário/cap | Registros identificados como `planned`, consistência de espécie e método, sem afirmar encontros instalados |
+| P2 | CH14 | Estados e contratos para Galactic, Cyrus, Liga e viagem pós-Cynthia | Eventos idempotentes, desbloqueio lógico Hoenn/Unova só quando instalado; testes sintéticos |
+| P3 | CH15 | Registro de equipes para Roark→Volkner, Elite Four e Cynthia | Esquemas/referências auditáveis, sem espécies ou times inventados nem nível fixo na UI |
+| P3 | CH16 | Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic | Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos |
+| P3 | CH17 | Guias de Sinnoh no site com estado real `planned`/pendente | Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios |
+| P3 | CH18 | Testes e build do portal para Sinnoh | Pesquisa/filtros/pendências/linkagem sem rótulo `jogável` indevido, suíte do site validada |
+| P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
+| P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
+
+**Ordem recomendada:** CH02 → CH03/CH04/CH05 → CH06–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+## 3. Mapeamento exaustivo das 32 entregas oficiais (S01–S32)
+
+Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto** = publicar preparação aqui, só concluir com dados/testes reais locais; **Local** = depende de execução nativa, embora o chat possa criar auditoria/roteiro.
+
+| ID | Pode ser realizado diretamente neste chat / main | Fronteira que NÃO se resolve apenas com GitHub | Tipo |
+|---|---|---|---|
+| S01 | Auditor de origem ZIP/pasta, segurança e testes | Fonte efetiva e direitos | GitHub (código já existe) |
+| S02 | Auditor RXDATA de mapas, tilesets, eventos, transferências e testes | Rodar em arquivos fonte reais | GitHub (código já existe) |
+| S03 | Análise e testes de capacidade de MapIDs | MapInfos/Data e reservas locais reais | GitHub (código já existe) |
+| S04 | Manifesto da fonte, pendências e licença | Confirmação legal de reutilização de cada asset | GitHub (código já existe) |
+| S05 | Inventário simbólico de áreas/eventos | MapIDs, interiores e NPCs de fonte real | GitHub (código já existe) |
+| S06 | Grafo, relatório de transferências e testes | Caminhabilidade/dinâmica na engine | GitHub (código já existe) |
+| S07 | Planejador, staging, SHA, rollback e segurança dos IDs | Remapeamento real e implantação em Game.exe | Misto |
+| S08 | Validar hashes, recursos ausentes, referências e relatórios | Conferir gráficos/collisions nativos reais | Misto |
+| S09 | Menu, botão Testar Sinnoh e testes sem motor | UI operando no executável real | GitHub (código já existe) |
+| S10 | Arquivo/launcher seguro, validação e erro controlado | Executar BAT/EXE Windows com instalação real | Misto |
+| S11 | Preparador de piloto/save isolado, contratos e testes | Mapas, sprites, PBS compilados e save/load real | Misto |
+| S12 | Instalador privado, dry-run, manifests e rollback | Instalar/compilar na máquina com dados autorizados | Misto |
+| S13 | Ruby autoral Rowan/Barry/mãe, eventos/flags, testes | Spawns, colisões, batalhas e cenas jogadas | Misto |
+| S14 | Três Poké Bolas, prevenção de duplicidade e testes | Eventos posicionados e sprites reais no mapa | Misto |
+| S15 | PBS/registradores dos oito ginásios e contratos de badge | NPC, puzzle, vitória real, item e insígnia | Misto |
+| S16 | Política de HMs e testes de permissão local | Uso de HM em obstáculos reais | Misto |
+| S17 | Modelos e adaptadores de treinador/IA e level scaling | Equipes reais em cada NPC e batalha | Misto |
+| S18 | Tabelas propostas de encontro/horário/cap e validação | Slots, mapa real, captura e animações de campo | Misto |
+| S19 | Lógica de flags Galactic, scripts autorais e testes | Cutscenes, NPCs, edifícios e evento nativo | Misto |
+| S20 | Contrato de Cyrus, Spear Pillar e Giratina | Mundo Distorcido, mapas/puzzles e execução | Misto |
+| S21 | Cadastro de Elite/Cynthia, condições e Hall of Fame | Batalhas reais, salas, vitória/derrota | Misto |
+| S22 | Gate de viagem e desbloqueio Hoenn/Unova e regressões | Portais, MapIDs e save compartilhado comprovados | Misto |
+| S23 | Catálogos pós-jogo/revanche e idempotência de eventos | Battle Zone, lendários e rematches jogados | Misto |
+| S24 | Plano/catalogação musical, regras e créditos | Música utilizável/legalmente distribuível | Misto |
+| S25 | Integração de chaves BlueMusic e fallback | Reprodução/loop/fade real de faixas | Misto |
+| S26 | Testes de prioridade/fallback/fade sem motor | Testes auditivos no Windows/JoiPlay | Misto |
+| S27 | Página e guias Sinnoh com estado honesto e mapas simbólicos | Publicar como guia de áreas já acessíveis só com prova real | GitHub (site planejado) |
+| S28 | Catálogo de equipes de líderes e Liga no site | Conferência com PBS final e time no jogo | Misto |
+| S29 | Ocultar níveis fixos; indicar badge/esmeraldas/cap no site | Nível real só comprovável em batalha | GitHub (site/código) |
+| S30 | Unitários, fixtures, regressões, CI e verificações de esquema | End-to-end gráfico do game | GitHub (suite de código) |
+| S31 | Criar protocolo/validador de logs, imagens e 44 testes | **Aceite Windows + JoiPlay é local** | Local |
+| S32 | Atualizar planos, docs de integração, backlog e barras verificáveis | Evidências locais não podem ser fabricadas | GitHub (documentação) |
+
+**Conclusão:** dá para publicar diretamente na `main` a **camada de engenharia** de praticamente todas as 32 linhas; isso **não** significa que os requisitos finais de jogabilidade de S07–S31 possam ser aprovados sem a instalação local e os assets autorizados. O único aceite essencialmente local é S31, e todas as outras tarefas "mistas" terminam em prova nativa.
+
+## 4. Reutilizar antes de escrever código novo
+
+- **Infraestrutura:** [`audit_sinnoh_rxdata.py`](../scripts/regions/audit_sinnoh_rxdata.py), [`plan_sinnoh_remap.py`](../scripts/regions/plan_sinnoh_remap.py), [`convert_sinnoh_geometry.py`](../scripts/regions/convert_sinnoh_geometry.py), [`sinnoh_staging_transaction.py`](../scripts/regions/sinnoh_staging_transaction.py).
+- **Introdução:** [`SinnohPilot.rb`](../scripts/regions/SinnohPilot.rb), [`build_sinnoh_twinleaf_events.py`](../scripts/regions/build_sinnoh_twinleaf_events.py), [`build_sinnoh_barry_pbs.py`](../scripts/regions/build_sinnoh_barry_pbs.py).
+- **QA:** [`prepare_sinnoh_pilot_bundle.py`](../scripts/regions/prepare_sinnoh_pilot_bundle.py), [`install_sinnoh_qa_copy.py`](../scripts/regions/install_sinnoh_qa_copy.py), [`audit_sinnoh_playtest.py`](../scripts/regions/audit_sinnoh_playtest.py).
+- **Proteções:** [`SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md`](SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md) e [`SINNOH_CODEX_PENDENCIAS.md`](SINNOH_CODEX_PENDENCIAS.md).
+- **Portal:** [`site/public/data/regions.json`](../site/public/data/regions.json), [`site/public/data/pending-regions.json`](../site/public/data/pending-regions.json).
+- **Testes:** `tests/test_sinnoh_*.py`, `tests/sinnoh_*.rb` e `tests/title_kanto_runtime.rb` (testes de execução fictícia não equivalem a validação em Game.exe).
+
+## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
+
+| Entrega exclusivamente local ou dependente de arquivos ausentes | Prova a exigir |
+|---|---|
+| Permissão e integridade de fonte editável de Sinnoh | Arquivo fonte/hashes/licença por recurso; não publicar asset não autorizado |
+| Auscultar `game/Data` e reservas existentes | Inventário de MapIDs/tilesets efetivamente instalados e ocupações futuras |
+| Escolher/remapear MapIDs definitivos | Manifesto de origem→destino e 100% das transferências resolvidas |
+| Compilar scripts, eventos, PBS e Game.exe de QA | Resultado do compilador, relatório estrutural e lançamento real |
+| Caminhar em Twinleaf/Sandgem e depois em todos os segmentos | Evidência visual de passabilidade, NPCs, interiores, portais e eventos |
+| Barry, ginásios, Liga, XP e escalonamento | Resultado de batalhas reais, níveis, vitória/derrota, save/load |
+| Música e recursos externos | Arquivos autorizados; escuta e fallback em Windows e Android |
+| Viagem multirregional e save antigo | Mesma instalação/saves reais sem regressão e rollback testado |
+| JoiPlay e atualização Android | Teste em aparelho, menus, encontros, performance, saves e relatório de execução |
+
+## 6. Protocolo de cada próxima entrega CH
+
+1. Ler `AGENTS.md`, este mapeamento, `SINNOH_PROGRESSO.md`, JSON de progresso e scripts atuais da função afetada.
+2. Identificar **arquivos novos/alterados** e casos negativos, assegurar que o escopo de Sinnoh não sobrescreve Kanto/Johto/Hoenn/Decades.
+3. Fazer a implementação com estado `planned`/QA e testes reais do que pode ser executado sem a base do jogo. Não ligar conteúdo experimental ao principal.
+4. Publicar diretamente na `main` sem force push e atualizar **somente** a(s) entrada(s) CH realmente concluída(s).
+5. Informar SHA/links, verificações PASS/FAIL/não executadas e bloqueios; preservar barras oficiais de 13 fases até aceitação.
+
+**Próxima ação sugerida:** **CH02**, automatizar a consistência entre o JSON, esta tabela e a Barra E; depois **CH03**, impedir que mapas de Sinnoh 800–805 sejam integrados na faixa reservada de Johto.
