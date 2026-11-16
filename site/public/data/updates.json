@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1e4af559194817ace0e34e3f15cffe6bdf5bc5d3",
+      "date": "2026-11-16T19:45:06-03:00",
+      "title": "test(sinnoh): CH14 remover evento de fase 9 sem índice de array fixo",
+      "category": "Testes"
+    },
+    {
       "sha": "ede8ae91cf3937e9bbea411d8b1a84f04a59b2be",
       "date": "2026-11-16T19:44:37-03:00",
       "title": "test(ci): CH14 22 eventos Ruby com idempotência, save, Hall of Fame e viagens negativas",
