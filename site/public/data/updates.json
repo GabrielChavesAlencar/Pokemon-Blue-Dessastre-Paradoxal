@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c4e7e7f246ffa2467fb4353d772eec10d0b30ec0",
+      "date": "2026-11-15T22:21:39-03:00",
+      "title": "fix(title): route Johto selection to integrated Decades first; standalone pilot only as fallback",
+      "category": "Correções"
+    },
+    {
+      "sha": "5017e4696db038f1c735cdcbdefe10eabaf7c1ea",
+      "date": "2026-11-15T22:21:29-03:00",
+      "title": "fix(johto): honor verified Johto in shared new-game region selection",
+      "category": "Correções"
+    },
+    {
       "sha": "4636c08f8aecfeb6e63d90e7b415720eeff32de4",
       "date": "2026-11-15T22:08:26-03:00",
       "title": "docs(blue-story): clarify automatic Johto search and current playable-install limitations",
