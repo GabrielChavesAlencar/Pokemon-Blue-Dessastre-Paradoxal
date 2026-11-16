@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6ec1bef48b05c6e9bd53f75ee69f1ac11cfa6b99",
+      "date": "2026-11-15T22:51:16-03:00",
+      "title": "fix(johto): main title only opens Johto in shared save, never isolated pilot fallback; actionable install label",
+      "category": "Correções"
+    },
+    {
       "sha": "812e78ef6abc6b6126f2ea5bb65e85d3b9073da5",
       "date": "2026-11-15T22:50:30-03:00",
       "title": "test(kanto): fixture all 142 real-map slots and compact gate required by current main installer",
