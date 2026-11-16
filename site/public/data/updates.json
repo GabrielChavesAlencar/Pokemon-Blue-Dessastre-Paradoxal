@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cfdee2d9359da2ba440563efe8bc12b74073036d",
+      "date": "2026-11-15T22:38:59-03:00",
+      "title": "test(title): respect main Johto readiness gate and verify integrated new-game flow",
+      "category": "Testes"
+    },
+    {
       "sha": "e1e676c2230129982f666b68cd051307478c3f28",
       "date": "2026-11-15T22:37:58-03:00",
       "title": "docs(johto): usage and limitations of new private shared-save early-access installer",
