@@ -1,9 +1,23 @@
 # Sinnoh — acompanhamento de progresso
 
 **Projeto:** Pokémon Blue: Dessastre Paradoxal  
-**Última atualização:** 13/11/2026  
+**Última atualização:** 16/11/2026  
 **Fonte de verdade:** [data/regions/sinnoh-progress.json](../data/regions/sinnoh-progress.json).  
 **Critério:** esta página separa entregáveis de código/documentação de fases que já rodam no jogo. **Barra cheia de preparação NÃO significa Sinnoh jogável.**
+
+## Barra E — novas entregas diretas pelo ChatGPT na main
+
+```text
+█░░░░░░░░░░░░░░░░░░░  1/20 (5%)
+```
+
+- **Concluídas:** 1 (**CH01**: mapeamento e registro da Barra E).
+- **Pendentes:** 19 (**CH02–CH20**). Nenhum item parcial nesta trilha nova.
+- **Fonte de verdade:** campo `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
+- **Mapeamento completo:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md) — 20 tarefas incrementais e análise de **todas as 32 entregas S01–S32**, distinguindo trabalho de código publicável e testes locais.
+- **Critério:** somente uma tarefa CH com seu artefato publicado e verificado entra no numerador; itens `partial` e `pending` não contam. Nas próximas etapas, atualizar este painel junto do JSON.
+
+**Interpretação importante:** Barra E **não substitui** a Barra A (8/32, 25%) nem as barras B/C/D (0/13). Um script ou guia de Sinnoh publicado no GitHub não instala mapas reais nem comprova batalha, save/load, caminhada no Game.exe ou JoiPlay.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
