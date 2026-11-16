@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "304fe62597f6296cb39c670a38310e7905f3d91a",
+      "date": "2026-11-16T06:53:53-03:00",
+      "title": "fix(johto): distinguish scripted stair return from missing transfer and report each map checksum",
+      "category": "Correções"
+    },
+    {
       "sha": "a74215ddb2b15db949f35f6dce944e62f993a1ff",
       "date": "2026-11-16T06:53:08-03:00",
       "title": "ci(johto): test private diagnostic export, no saves, and changed reverse stair event",
