@@ -106,6 +106,72 @@ class JohtoRuntimePreviewTests(unittest.TestCase):
         for x,raw in original.items():
             self.assertEqual((self.game/x).read_bytes(),raw)
 
+    def test_live_edited_bedroom_hash_and_return_event_are_preserved_as_installed(self):
+        from server.ruby_marshal import loads
+        room_path = self.game / "Data/Map674.rxdata"
+        home_path = self.game / "Data/Map675.rxdata"
+        room = loads(room_path.read_bytes())
+        stairs = next(e for e in room.attrs["@events"].values()
+                      if e.attrs["@name"] == b"JH_HOME2F_TO_1F")
+        # Simulate a legitimate Johto Map Studio edit: the stair is moved
+        # and the native Ruby Marshal bytes no longer match original proof.
+        stairs.attrs["@x"], stairs.attrs["@y"] = 4, 4
+        room_path.write_bytes(serialize(room,preview.johto_qa.EVENT_CLASSES))
+        home = loads(home_path.read_bytes())
+        warp = next(e for e in home.attrs["@events"].values()
+                    if e.attrs["@name"] == b"JH_HOME1F_TO_2F")
+        warp.attrs["@pages"][0].attrs["@list"][0].attrs["@parameters"][2:4] = [4, 5]
+        home_path.write_bytes(serialize(home,preview.johto_qa.EVENT_CLASSES))
+        snapshots = {name:(self.game/name).read_bytes() for name in (
+            "Data/Map674.rxdata","Data/Map675.rxdata","Data/Map600.rxdata",
+            "Data/Tilesets.rxdata","Data/MapInfos.rxdata",
+            "Saves/File A.rxdata","Data/Map410.rxdata","Data/Map701.rxdata")}
+        with self.assertRaisesRegex(ValueError,"Map674.rxdata"):
+            preview.preview_proof(self.game)
+        # The previous implementation called scoped_bedroom_proof unconditionally,
+        # rejected the first changed hash and told Blue-Story Johto was missing.
+        state = preview.runtime_semantic_preview(self.game)
+        self.assertEqual(state["changed_map_ids"],[674,675])
+        result = auto_integrate_johto.integrate(self.root,self.game)
+        self.assertTrue(result["ready"],result)
+        self.assertEqual(result["status"],
+                         "experimental_installed_runtime_modified_not_native_tested")
+        self.assertFalse(result["bedroom_changed"])
+        self.assertIn("preserv",result["bedroom_reason"])
+        self.assertEqual(result["runtime_modified_map_ids"],[674,675])
+        for name,raw in snapshots.items():
+            self.assertEqual((self.game/name).read_bytes(),raw,
+                             "An existing Johto edit/other region/save was overwritten: "+name)
+
+    def test_map_studio_published_edit_prevents_auto_stair_relayout(self):
+        from server.ruby_marshal import loads
+        room_path=self.game/"Data/Map674.rxdata"
+        current=loads(room_path.read_bytes())
+        stair = next(e for e in current.attrs["@events"].values()
+                     if e.attrs["@name"]==b"JH_HOME2F_TO_1F")
+        stair.attrs["@x"],stair.attrs["@y"]=5,5
+        room_path.write_bytes(serialize(current,preview.johto_qa.EVENT_CLASSES))
+        proof_path=self.game/preview.PROOF
+        proof=json.loads(proof_path.read_text("utf-8"))
+        proof["editor_map_patches"]={"674":"a"*64}
+        proof_path.write_text(json.dumps(proof),encoding="utf-8")
+        original=room_path.read_bytes()
+        result=auto_integrate_johto.integrate(self.root,self.game)
+        self.assertTrue(result["ready"],result)
+        self.assertFalse(result["bedroom_changed"])
+        self.assertIn("Map Studio",result["bedroom_reason"])
+        self.assertEqual(room_path.read_bytes(),original)
+
+    def test_missing_bedroom_file_is_not_treated_as_verified_johto(self):
+        target=self.game/"Data/Map674.rxdata"
+        target.unlink()
+        result=auto_integrate_johto.integrate(self.root,self.game)
+        self.assertFalse(result["ready"])
+        self.assertEqual(result["status"],"existing_install_needs_review")
+        self.assertFalse(target.exists())
+        self.assertEqual((self.game/"Saves/File A.rxdata").read_bytes(),
+                         b"existing user save")
+
     def test_corrupt_map_rejected_without_touching_saves(self):
         self.write("Data/Map600.rxdata", b"INVALID")
         original=self.game.joinpath("Data/Map674.rxdata").read_bytes()
