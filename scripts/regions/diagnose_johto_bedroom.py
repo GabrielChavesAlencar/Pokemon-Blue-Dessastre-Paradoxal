@@ -48,8 +48,14 @@ def inspect(project: Path = ROOT, game: Path | None = None):
             report["private_hgss_status"] = art.get("status", "no_private_art")
             report["private_hgss_maps"] = art.get("maps", [])
             hashes = proof.get("file_hashes") or {}
+            report["map_hashes"] = {
+                name: ((game / name).is_file()
+                       and sha_file(game / name) == hashes.get(name))
+                for name in ("Data/Map600.rxdata", "Data/Map674.rxdata",
+                             "Data/Map675.rxdata")
+            }
             report["two_map_hashes_match"] = all(
-                (game / name).is_file() and sha_file(game / name) == hashes.get(name)
+                report["map_hashes"][name]
                 for name in ("Data/Map674.rxdata", "Data/Map675.rxdata")
             )
         except (OSError, ValueError, TypeError, KeyError) as error:
@@ -90,7 +96,15 @@ def inspect(project: Path = ROOT, game: Path | None = None):
         ]
         if len(downstairs) == 1:
             command = downstairs[0].attrs["@pages"][0].attrs["@list"][0]
-            report["return_xy"] = command.attrs["@parameters"][2:4]
+            report["return_event_opcode"] = command.attrs.get("@code")
+            parameters = command.attrs.get("@parameters", [])
+            report["return_xy"] = (parameters[2:4]
+                                   if command.attrs.get("@code") == 201
+                                      and len(parameters) >= 4 else None)
+            if command.attrs.get("@code") != 201:
+                report["return_event_note"] = (
+                    "O primeiro comando de retorno não é Transfer Player (201). "
+                    "Pode conter script ou lógica customizada; não sobrescrever sem auditar.")
         report["bedroom_geometry_updated"] = (
             pos == [4,4] and top_left == tile(238,1)
             and report.get("return_xy") == [4,5]
