@@ -106,6 +106,15 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                           'Detalhes: .blue-work/johto-main-install-status.json',flush=True)
                 elif result.get('native_qa') is False:
                     print('[JOHTO AUTO] Prévia Johto instalada: 100 mapas, não validada em gameplay real.',flush=True)
+                    installed_hgss = result.get('hgss_status') == 'private_art_compiled'
+                    changed_hgss = result.get('hgss_changed')
+                    if installed_hgss or changed_hgss:
+                        print('[JOHTO HGSS] Tilesets reais de autores aplicados em:',
+                              result.get('hgss_maps', []),flush=True)
+                    else:
+                        print('[JOHTO HGSS] Novo visual de interiores ainda não aplicado:',
+                              result.get('hgss_reason','PNGs/manifesto privados dos autores não disponíveis'),
+                              'Veja docs/JOHTO_HGSS_INTERIORES_PRIVADOS.md',flush=True)
                 if result.get('changed'):
                     # New Ruby plugin and regional PBS must be compiled by the
                     # native Game.exe before trainer battles can be tested.
