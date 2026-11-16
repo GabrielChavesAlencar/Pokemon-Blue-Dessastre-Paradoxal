@@ -196,6 +196,38 @@ class JohtoRuntimePreviewTests(unittest.TestCase):
         self.assertEqual((self.game/"Saves/File A.rxdata").read_bytes(),
                          b"existing user save")
 
+    def test_conflicting_published_patch_is_reported_without_marking_johto_missing(self):
+        from server.ruby_marshal import loads
+        # The map changed since the GitHub patch was authored; never apply
+        # the old before-tile over the player's newer local work.
+        room = self.game/"Data/Map674.rxdata"
+        original_room = room.read_bytes()
+        map600 = self.game/"Data/Map600.rxdata"
+        old = loads(map600.read_bytes())
+        old.attrs["@bgm"] = RubyObject("RPG::AudioFile",
+            {"@name": b"104 New Bark Town", "@volume":80,"@pitch":100})
+        map600.write_bytes(serialize(old,preview.johto_qa.EVENT_CLASSES))
+        patchdir=self.root/"data/regions/johto-map-edits"
+        patchdir.mkdir(parents=True)
+        patchdir.joinpath("Map674.json").write_text(json.dumps({
+            "schema": 1, "map_id":674,
+            "tileset":"BLUE_JOHTO_OPENING_INSIDE",
+            "edits":[{"x":3,"y":3,"z":0,"before":900,"after":401}]
+        }),encoding="utf-8")
+        # Avoid bedroom patching itself by recording a previous editor
+        # version; the intentionally conflicting new patch remains pending.
+        proof=self.game/preview.PROOF
+        data=json.loads(proof.read_text("utf-8"))
+        data["editor_map_patches"]={"674":"a"*64}
+        proof.write_text(json.dumps(data),encoding="utf-8")
+        result=auto_integrate_johto.integrate(self.root,self.game)
+        self.assertTrue(result["ready"],result)
+        self.assertFalse(result["map_editor_changed"])
+        self.assertIn("conflito",result["map_editor_warning"])
+        self.assertEqual(room.read_bytes(),original_room)
+        self.assertEqual((self.game/"Saves/File A.rxdata").read_bytes(),
+                         b"existing user save")
+
     def test_corrupt_map_rejected_without_touching_saves(self):
         self.write("Data/Map600.rxdata", b"INVALID")
         original=self.game.joinpath("Data/Map674.rxdata").read_bytes()
