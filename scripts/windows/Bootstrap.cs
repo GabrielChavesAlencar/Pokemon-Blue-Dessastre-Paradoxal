@@ -260,6 +260,64 @@ internal static class Bootstrap {
           RegionalStatus("hoenn-main-install-status.json","Hoenn")+" | "+
           RegionalStatus("johto-main-install-status.json","Johto");
     }
+    // Optional PERSONAL build: append the exact original private Johto ZIP and
+    // a 16-byte footer ["BLUEJH12", ZIP byte length as little-endian Int64] to
+    // the PE executable. Windows/.NET ignores this overlay and runs normally.
+    // The public GitHub release remains code-only. Personal one-file builds can
+    // stage the user's existing private package without publishing its contents.
+    const string EmbeddedJohtoMagic="BLUEJH12";
+    const long EmbeddedJohtoMaxBytes=32000000L;
+    static bool StageEmbeddedJohto() {
+        if(Hub)return false;
+        string executable=typeof(Bootstrap).Assembly.Location;
+        if(!File.Exists(executable))return false;
+        long size, length;
+        using(var file=new FileStream(executable,FileMode.Open,FileAccess.Read,FileShare.Read)) {
+            if(file.Length<16)return false;
+            file.Seek(-16,SeekOrigin.End);
+            using(var reader=new BinaryReader(file,Encoding.ASCII,true)) {
+                if(Encoding.ASCII.GetString(reader.ReadBytes(8))!=EmbeddedJohtoMagic)return false;
+                length=reader.ReadInt64();
+            }
+            size=file.Length;
+        }
+        if(length<=0 || length>EmbeddedJohtoMaxBytes || length>size-16)
+            throw new Exception("Payload Johto embutido no executavel possui dimensoes invalidas.");
+        string target=Path.Combine(Root,".blue-work",JohtoZipName);
+        if(File.Exists(target) && String.Equals(Hash(target),JohtoBundleHash,StringComparison.OrdinalIgnoreCase)) {
+            Say("[JOHTO] Pacote OFFLINE12 original ja esta preparado; sem download adicional.");
+            return true;
+        }
+        // Copy only the appended archive bytes. Verify the entire SHA256
+        // against the pinned source BEFORE replacing anything on disk.
+        string temp=target+".embedded-tmp";
+        if(File.Exists(temp))throw new Exception("Temporario antigo Johto encontrado. Revise "+temp);
+        try {
+            using(var input=new FileStream(executable,FileMode.Open,FileAccess.Read,FileShare.Read))
+            using(var output=new FileStream(temp,FileMode.CreateNew,FileAccess.Write,FileShare.None)) {
+                input.Position=size-16-length;
+                byte[] block=new byte[65536];
+                long remaining=length;
+                while(remaining>0) {
+                    int read=input.Read(block,0,(int)Math.Min((long)block.Length,remaining));
+                    if(read<=0)throw new Exception("Payload embutido Johto incompleto.");
+                    output.Write(block,0,read);
+                    remaining-=read;
+                }
+            }
+            if(!String.Equals(Hash(temp),JohtoBundleHash,StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Johto embutida nao passou SHA-256; instalacao nao alterada.");
+            if(File.Exists(target)) {
+                string backup=Path.Combine(Root,".blue-backups","johto-zip-before-embed-"+DateTime.UtcNow.ToString("yyyyMMddTHHmmssfff")+".zip");
+                Directory.CreateDirectory(Path.GetDirectoryName(backup));
+                File.Copy(target,backup,false);
+                File.Replace(temp,target,null);
+            } else File.Move(temp,target);
+        } finally {if(File.Exists(temp))File.Delete(temp);}
+        Say("[JOHTO] Pacote privado OFFLINE12 extraido do proprio Blue-Story.exe; SHA-256 verificado. Instalacao automatica habilitada.");
+        return true;
+    }
+
     // A user-owned private Johto pack can accompany Blue-Story.exe in one
     // downloadable ZIP. Stage it in the SAME already-managed installation
     // before Python checks regions; never publish or modify its raw contents.
@@ -311,6 +369,7 @@ internal static class Bootstrap {
             if(Path.GetFullPath(stage).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(stage)=="source-"+revision)Directory.Delete(stage,true);
             if(Path.GetFullPath(zip).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(zip)=="source-"+revision+".zip")File.Delete(zip);
         }
+        StageEmbeddedJohto();
         StageAdjacentJohto();
         Say("[GAME EXE GERENCIADO] "+Path.Combine(Root,"game","Game.exe")+
             " - verifique se esta e a MESMA copia que voce esta jogando.");
