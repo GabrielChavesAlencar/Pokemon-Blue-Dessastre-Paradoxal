@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2b7fedcb684533f12a6489e4a4a06483f297b352",
+      "date": "2026-11-15T22:58:14-03:00",
+      "title": "test(downloads): pin Blue-Story standalone release and shared-save Johto instructions",
+      "category": "Testes"
+    },
+    {
+      "sha": "dc6c5c2683f64bac8fd87534ecfd70da39ad18a2",
+      "date": "2026-11-15T22:58:04-03:00",
+      "title": "fix(downloads): point Blue-Story at verified standalone Windows release and explain integrated private Johto installer",
+      "category": "Correções"
+    },
+    {
       "sha": "fa77f176e21b897c2f31d14928229146b33d15a9",
       "date": "2026-11-15T22:56:44-03:00",
       "title": "ci(blue-story): compile and publish standalone Windows installer independent from native game/Android QA",
