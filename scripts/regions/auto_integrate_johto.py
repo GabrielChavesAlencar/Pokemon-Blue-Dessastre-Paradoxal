@@ -195,11 +195,15 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                 # Apply the audited runtime-only hotfix transactionally, preserving
                 # all 100 maps, global MapInfos/PBS and every save.
                 hotfix = johto_main_preview.refresh_installed_runtime(game, project)
+                bedroom = johto_main_preview.refresh_installed_bedroom(game, project)
                 return record(project, {"status": "experimental_installed_not_native_tested",
-                                        "reason": "100 mapas Johto preservados; plugin Ruby verificado/atualizado. Compilação e gameplay nativos ainda pendentes",
+                                        "reason": "100 mapas Johto preservados; quarto inspirado em HGSS e plugin Ruby atualizados. Compilação e gameplay nativos ainda pendentes",
                                         "map_count": 100, "native_qa": False,
-                                        "changed": hotfix["changed"],
+                                        "changed": bool(hotfix["changed"] or bedroom["changed"]),
                                         "runtime_hotfix": hotfix.get("runtime_hotfix"),
+                                        "bedroom_layout": bedroom.get("bedroom_layout"),
+                                        "bedroom_changed": bedroom["changed"],
+                                        "bedroom_backup_folder": bedroom.get("backup_folder"),
                                         "backup_folder": hotfix.get("backup_folder")})
         except (ImportError, OSError, ValueError, KeyError, TypeError) as exc:
             return record(project, {"status": "existing_install_needs_review",
