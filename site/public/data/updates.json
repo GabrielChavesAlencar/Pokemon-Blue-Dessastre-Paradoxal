@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e587c2346a523f094c4dece6d34344b6a83812f9",
+      "date": "2026-11-16T09:29:30-03:00",
+      "title": "ci(johto): test map studio native patch editing, saving, and publish-to-main workflow",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1c3612221b785e985d6cb2058cf0c2a9008b6d24",
       "date": "2026-11-16T09:29:00-03:00",
       "title": "test(johto): tile editor save/undo, native events preserved, solid collision guards, main API and automatic patch replay",
