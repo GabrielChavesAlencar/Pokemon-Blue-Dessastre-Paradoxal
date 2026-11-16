@@ -8,16 +8,18 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-█░░░░░░░░░░░░░░░░░░░  1/20 (5%)
+██░░░░░░░░░░░░░░░░░░  2/20 (10%)
 ```
 
-- **Concluídas:** 1 (**CH01**: mapeamento e registro da Barra E).
-- **Pendentes:** 19 (**CH02–CH20**). Nenhum item parcial nesta trilha nova.
+- **Concluídas:** 2 (**CH01**: mapeamento e **CH02**: validador de progresso).
+- **Parciais:** 0.
+- **Pendentes:** 18 (**CH03–CH20**).
 - **Fonte de verdade:** campo `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
-- **Mapeamento completo:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md) — 20 tarefas incrementais e análise de **todas as 32 entregas S01–S32**, distinguindo trabalho de código publicável e testes locais.
-- **Critério:** somente uma tarefa CH com seu artefato publicado e verificado entra no numerador; itens `partial` e `pending` não contam. Nas próximas etapas, atualizar este painel junto do JSON.
+- **Mapeamento completo:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md) — 20 entregas incrementais e classificação de **todas as 32 entregas S01–S32**.
+- **Validação automática:** `python scripts/regions/validate_sinnoh_chat_progress.py`; testes `tests/test_sinnoh_chat_progress.py`; workflow `regression.yml`.
+- **Critério:** só entram no numerador as tarefas `done` com artefato no repositório. IDs duplicados, divergências da tabela/MD, evidências ausentes, percentual ou preenchimento incorreto fazem o validador retornar erro.
 
-**Interpretação importante:** Barra E **não substitui** a Barra A (8/32, 25%) nem as barras B/C/D (0/13). Um script ou guia de Sinnoh publicado no GitHub não instala mapas reais nem comprova batalha, save/load, caminhada no Game.exe ou JoiPlay.
+**Interpretação importante:** Barra E **não substitui** a Barra A (8/32, 25%) nem as barras B/C/D (0/13). A CH02 não instalou mapas, não compilou PBS e não testou Game.exe/JoiPlay.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

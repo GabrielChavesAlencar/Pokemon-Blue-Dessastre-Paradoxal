@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 1,
+    "done": 2,
     "partial": 0,
-    "pending": 19,
-    "percent_complete": 5,
+    "pending": 18,
+    "percent_complete": 10,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -815,8 +815,8 @@
         "priority": "P0",
         "title": "Validador automático do JSON ↔ Barra E ↔ MD",
         "acceptance": "Script + testes asseguram soma, IDs únicos, status e percentual; CI/checagem real",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "scripts/regions/validate_sinnoh_chat_progress.py"
       },
       {
         "id": "CH03",

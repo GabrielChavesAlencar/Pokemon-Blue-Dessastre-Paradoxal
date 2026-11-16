@@ -20,15 +20,15 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-█░░░░░░░░░░░░░░░░░░░  1/20 (5%)
+██░░░░░░░░░░░░░░░░░░  2/20 (10%)
 ```
 
-**1 concluída** (CH01: este mapeamento e painel); **19 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**2 concluídas**, **0 parciais**, **18 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
 | P0 | **CH01** ✅ | Mapeamento completo, regras, fila e Barra E | MD, JSON e painel publicados e consistentes; **feito nesta entrega** |
-| P0 | CH02 | Validador automático do JSON ↔ Barra E ↔ MD | Script + testes asseguram soma, IDs únicos, status e percentual; CI/checagem real |
+| P0 | **CH02** ✅ | Validador automático do JSON ↔ Barra E ↔ MD | Script + testes asseguram soma, IDs únicos, status e percentual; CI/checagem real |
 | P0 | CH03 | Proteção estática contra colisão Sinnoh legado 800–805 × Johto 600–999 | Testes negativos impedem que o instalador conjunto injete esses IDs |
 | P0 | CH04 | Bloqueio explícito do plugin `SinnohPreview.rb` legado na instalação compartilhada | Verificação cobre lançador, cópia QA, marcadores e caminho do instalador principal |
 | P0 | CH05 | Manifestações das **reservas documentadas**, sem inventar IDs novos | Relatório/fixture diferencia ocupado físico, reserva declarada e desconhecido; nunca libera importação indevidamente |
@@ -48,7 +48,9 @@
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH02 → CH03/CH04/CH05 → CH06–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH03 → CH04/CH05 → CH06–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH02 concluída:** `scripts/regions/validate_sinnoh_chat_progress.py` é uma verificação **somente leitura** de IDs, prioridades, estado, contagens, evidências e consistência entre JSON, tabela e Barra E. Testes negativos estão em `tests/test_sinnoh_chat_progress.py`; a workflow de regressão inclui um passo explícito.
 
 ## 3. Mapeamento exaustivo das 32 entregas oficiais (S01–S32)
 
