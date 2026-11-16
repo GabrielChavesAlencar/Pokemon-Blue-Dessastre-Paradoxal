@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cae3e6a910b4af6afc7e69bfb99971c28112e722",
+      "date": "2026-11-16T09:50:24-03:00",
+      "title": "docs(blue-story): automatic Johto Map Studio download, adjacent EXE folder, managed fallback and update behavior",
+      "category": "Documentação"
+    },
+    {
       "sha": "8459f8b8ce3c715769b3987b89fb8965c477dc80",
       "date": "2026-11-16T09:48:19-03:00",
       "title": "test(blue-story): normalize Windows short/long path in auto-installed editor shortcut assertion",
