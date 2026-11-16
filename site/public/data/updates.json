@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b45fa5fbbd8b2ee9e5f56d2c0fb701397c835af4",
+      "date": "2026-11-16T14:21:25-03:00",
+      "title": "test(sinnoh): exercitar ID de warp duplicado sem mascarar validacao por handler (CH06)",
+      "category": "Testes"
+    },
+    {
       "sha": "c9d56db9343bec0ed334fd83d7f8a36febe667b5",
       "date": "2026-11-16T14:20:32-03:00",
       "title": "docs(ci): integrar auditor CH06 de Twinleaf na barra E e regressao",
