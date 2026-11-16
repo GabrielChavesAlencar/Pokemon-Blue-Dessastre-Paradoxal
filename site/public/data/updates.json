@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2349f40f3ddf1f6386ce7b0fc4737c41fdc882ad",
+      "date": "2026-11-15T23:57:38-03:00",
+      "title": "feat(johto): transactional auto-update of existing Map674/675 bedroom and staircase",
+      "category": "Novidades"
+    },
+    {
       "sha": "07a01b09e17aee9158fc96a68e81c17b4f32c7e8",
       "date": "2026-11-15T23:56:48-03:00",
       "title": "feat(johto): recreate New Bark 2F HGSS bedroom layout and functional left stair warp",
