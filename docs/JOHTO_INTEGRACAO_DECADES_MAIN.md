@@ -35,6 +35,14 @@ python scripts/regions/auto_integrate_johto.py
 python -m unittest discover -s tests -p test_johto_main_auto.py -v
 ```
 
+## Blue-Story.exe — verificação incluída no instalador geral (15/11)
+
+A etapa `[JOHTO AUTO]` foi conectada ao mesmo `scripts/install_game.py --apply` chamado pelo executável Blue-Story.exe. Ela é executada **depois** de Kanto e Hoenn, sem abrir outro programa e sem instalar perfil de piloto. A janela do launcher agora informa o status de Decades, Kanto, Hoenn e Johto, e o log fica em `.blue-work/launcher.log`.
+
+O instalador procura o pacote privado original **automaticamente** em `Downloads/`, na raiz do projeto e em `.blue-work/`. Se encontrá-lo, verifica SHA-256, 82 mapas e integridade do ZIP, e compara `MapInfos.rxdata`/`Tilesets.rxdata` com a instalação atual; a presença de IDs já utilizados nunca autoriza sobrescrita. O resultado é registrado em `.blue-work/johto-main-install-status.json`.
+
+**Limite atual:** o arquivo privado OFFLINE 12 é `NOT_INSTALLABLE`, sem autorização de redistribuição e sem aprovação de testes no Game.exe. Encontrá-lo **não instala automaticamente** a região nem libera Johto no menu. O próximo trabalho de implementação é o instalador transacional de Johto com rebase dos dados, PBS, eventos e QA; não confundir esta etapa de auditoria com disponibilidade jogável.
+
 ## Trabalho restante para JOHTO aparecer diretamente no Decades
 
 1. **Conciliar os metadados com o jogo atual.** `johto_qa.validate_maps` requer que `MapInfos.rxdata` e `Tilesets.rxdata` tenham exatamente os hashes da base usada no OFFLINE 12. Hoje o Decades pode já conter Kanto + Hoenn. Criar um merge por IDs/símbolos em memória, remapear o índice de tilesets e detectar colisões; nunca copiar os dois RXDATA da prévia em cima dos existentes.
