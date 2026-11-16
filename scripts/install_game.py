@@ -90,6 +90,19 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                     print('[HOENN AUTO] Acesso no Game.exe principal permanece bloqueado:',result['reason'],flush=True)
                 if result['changed']:
                     run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
+        # Johto: preflight integrated with the same Blue-Story update flow.
+        # OFFLINE 12 is NOT a runnable region. Do not copy those map files or
+        # unlock Johto until the main-game native release proof passes.
+        if not skip_kanto:
+            johto_path=project/'scripts/regions/auto_integrate_johto.py'
+            if johto_path.is_file():
+                spec=importlib.util.spec_from_file_location('blue_auto_integrate_johto',johto_path)
+                johto=importlib.util.module_from_spec(spec);spec.loader.exec_module(johto)
+                result=johto.integrate(project,game)
+                print('[JOHTO AUTO] Resultado:',result['status'],flush=True)
+                if not result['ready']:
+                    print('[JOHTO AUTO] Johto continua indisponível no Game.exe principal:',result['reason'],
+                          'Detalhes: .blue-work/johto-main-install-status.json',flush=True)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')
 
