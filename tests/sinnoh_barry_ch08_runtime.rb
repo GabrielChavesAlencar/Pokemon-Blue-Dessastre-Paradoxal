@@ -47,6 +47,8 @@ class CH08Trainer
     @name = "Barry"
     @trainer_type = :BLUE_SINNOH_RIVAL
   end
+  # Essentials GameData::Trainer exposes pokemon, not the NPC party alias.
+  def pokemon; @party; end
 end
 class CH08Player
   attr_accessor :party, :has_pokedex
