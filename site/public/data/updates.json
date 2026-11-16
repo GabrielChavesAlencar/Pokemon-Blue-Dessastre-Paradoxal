@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4b9a3cbde4e9dbe849a61fba5cbfa8ab98760c0c",
+      "date": "2026-11-16T18:16:00-03:00",
+      "title": "data(sinnoh): CH11 contrato planejado de oito badges e oito HMs Platinum",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0cfb032784c3d231b8da23ed91942d3a5930968f",
       "date": "2026-11-16T18:14:41-03:00",
       "title": "feat(sinnoh): guardas regionais CH11 de 8 badges e prova de HM local",
