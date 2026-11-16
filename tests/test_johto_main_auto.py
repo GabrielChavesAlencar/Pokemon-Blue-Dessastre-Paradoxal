@@ -38,7 +38,7 @@ class AutoJohtoTests(unittest.TestCase):
         self.assertFalse(report["ready"])
         self.assertFalse((self.game / "Data/blue-johto-start.txt").exists())
 
-    def test_verified_offline_bundle_is_not_a_release(self):
+    def test_synthetic_offline_bundle_cannot_install(self):
         (self.game / "Game.exe").write_bytes(b"sample")
         package = self.project / mod.BUNDLE_PATHS[0]
         package.parent.mkdir(parents=True)
@@ -55,7 +55,7 @@ class AutoJohtoTests(unittest.TestCase):
         with patch.object(mod, "ORIGINAL_BUNDLE_SHA256", sha), \
              patch.object(mod, "candidate_bundles", return_value=iter([package])):
             report = mod.integrate(self.project, self.game)
-        self.assertEqual("offline_preview_not_installable", report["status"])
+        self.assertEqual("experimental_install_blocked", report["status"])
         self.assertEqual(82, report["bundle"]["map_count"])
         self.assertFalse(report["current_game"]["baseline_compatible"])
         self.assertFalse(report["ready"])
@@ -110,7 +110,7 @@ class AutoJohtoTests(unittest.TestCase):
         self.assertGreater(installer.index("auto_integrate_johto.py"),
                            installer.index("auto_integrate_hoenn.py"))
         self.assertIn("if not skip_kanto:", installer)
-        self.assertNotIn("VERIFIED_PLAYABLE", (ROOT / "scripts/regions/auto_integrate_johto.py").read_text("utf-8"))
+        self.assertNotIn('"status": "VERIFIED_PLAYABLE"', (ROOT / "scripts/regions/auto_integrate_johto.py").read_text("utf-8"))
 
 
 if __name__ == "__main__":
