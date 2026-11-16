@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7f95b1186d9e03e124b288d15dfbebd6025d910c",
+      "date": "2026-11-15T21:59:39-03:00",
+      "title": "docs(johto): document safe Decades integration gate and remaining native work",
+      "category": "Documentação"
+    },
+    {
       "sha": "1ac199771d3690a0a0ad7e5ba1c589f50c8d752d",
       "date": "2026-11-15T21:58:50-03:00",
       "title": "test(johto): protect main game against offline preview auto-install",
