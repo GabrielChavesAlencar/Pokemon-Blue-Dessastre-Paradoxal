@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b4239f4135218960dc3315b435d20369353cbcf1",
+      "date": "2026-11-15T22:50:16-03:00",
+      "title": "test(regions): align stale fixture assertions with current safe free-travel and portable Ruby policies",
+      "category": "Testes"
+    },
+    {
+      "sha": "3253b1648500ac35accb98c429cf0450b6f68400",
+      "date": "2026-11-15T22:50:14-03:00",
+      "title": "test(regions): align stale fixture assertions with current safe free-travel and portable Ruby policies",
+      "category": "Testes"
+    },
+    {
+      "sha": "53416e2e1c38691a4e8ea8ee25b47a1799df9277",
+      "date": "2026-11-15T22:50:11-03:00",
+      "title": "test(regions): align stale fixture assertions with current safe free-travel and portable Ruby policies",
+      "category": "Testes"
+    },
+    {
+      "sha": "7e346d4ef5e186d93140c7f600ca74e3effa5938",
+      "date": "2026-11-15T22:50:09-03:00",
+      "title": "test(regions): align stale fixture assertions with current safe free-travel and portable Ruby policies",
+      "category": "Testes"
+    },
+    {
       "sha": "62b58771cf136559c3ec61f933cb6825337042dc",
       "date": "2026-11-15T22:40:00-03:00",
       "title": "fix(blue-story): label Johto beta as untested, not fully integrated release",
