@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4812e0e477951033fa4044eb93f748aa702e685d",
+      "date": "2026-11-16T14:09:21-03:00",
+      "title": "feat(sinnoh): auditar reservas regionais e IDs fisicos desconhecidos (CH05)",
+      "category": "Novidades"
+    },
+    {
       "sha": "7311b7f6cbf44516e63596036a9e7fa6d5c253ac",
       "date": "2026-11-16T14:02:36-03:00",
       "title": "fix(sinnoh): detectar marcadores em Data sem diferenca de maiusculas (CH04)",
