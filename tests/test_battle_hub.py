@@ -12,6 +12,7 @@ class HubPackageTests(unittest.TestCase):
             a=package.build(ROOT,first,'test');b=package.build(ROOT,second,'test');self.assertEqual(a['sha256'],b['sha256'])
             with zipfile.ZipFile(first) as archive:
                 names=archive.namelist();self.assertIn('Blue-Battle-Hub/HUB_DE_BATALHA.bat',names)
+                self.assertIn('Blue-Battle-Hub/scripts/regions/sinnoh_legacy_plugin_guard.py',names)
                 self.assertFalse(any('/game/' in n or '/.git/' in n or '/.blue-backups/' in n or n.endswith('.exe') for n in names))
                 self.assertNotIn('Blue-Battle-Hub/server/main.py',names);self.assertNotIn('Blue-Battle-Hub/site/src/index.html',names)
                 manifest=json.loads(archive.read('Blue-Battle-Hub/hub-manifest.json'));self.assertFalse(manifest['baseIncluded'])
