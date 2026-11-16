@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e465bf69841e8d8530ba73b58982ae5be6cc14be",
+      "date": "2026-11-16T20:46:19-03:00",
+      "title": "docs(sinnoh): CH18 busca/filtros testados e Barra E 18/20 sem alterar barras jogáveis",
+      "category": "Documentação"
+    },
+    {
       "sha": "4b03017ad5f0706506b09d0071229046bf749d46",
       "date": "2026-11-16T20:43:34-03:00",
       "title": "test(ci): CH18 29 testes negativos e2e de busca, filtros e estado planned do portal",
