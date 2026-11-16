@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f8e6d8635a170f579c4baa81844ac4da4c0c965b",
+      "date": "2026-11-16T15:05:30-03:00",
+      "title": "test(sinnoh): CH10 QA launcher, missing assets, saves, hashes and CI",
+      "category": "Testes"
+    },
+    {
       "sha": "fb1ea616a01e810608924fbffe5b44e72a08175d",
       "date": "2026-11-16T15:03:57-03:00",
       "title": "fix(sinnoh): CH10 fail-closed QA launcher, pinned assets and save guards",
