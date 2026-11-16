@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "39d2db302cb6530beaba3b3fda4b6de0a3d43744",
+      "date": "2026-11-15T22:54:11-03:00",
+      "title": "fix(launcher): format Johto installation prompt with real C# newline escapes",
+      "category": "Correções"
+    },
+    {
       "sha": "e50a06d6a780a1490dbb5328771de782130ac093",
       "date": "2026-11-15T22:53:47-03:00",
       "title": "feat(blue-story): show missing Johto reason and install private ZIP via native Windows file picker, same Game.exe",
