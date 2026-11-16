@@ -310,7 +310,8 @@ def remote(project: Path, mid: int):
     local = patches.patch_path(project, mid)
     local_bytes = local.read_bytes() if local.is_file() and not local.is_symlink() else None
     if remote is None:
-        return {"exists":False,"sha":None,"in_sync":local_bytes is None}
+        # Primeira publicação: sem arquivo remoto não há conflito, mesmo com patch local já salvo.
+        return {"exists":False,"sha":None,"in_sync":True}
     if not isinstance(remote,dict) or remote.get("type") != "file":
         raise EditorError("Caminho remoto não é um arquivo comum")
     blob = base64.b64decode(remote.get("content",""),validate=False)
