@@ -39,6 +39,14 @@ def inspect(project: Path = ROOT, game: Path | None = None):
         "status": "UNKNOWN", "safe_to_apply": False,
         "hgss_asset_manifest": (project / ".blue-work/johto-hgss-tiles/manifest.json").is_file(),
     }
+    required = ("Data/Map600.rxdata", "Data/Map674.rxdata",
+                "Data/Map675.rxdata")
+    missing = [name for name in required if not (game / name).is_file()]
+    report["missing_johto_maps"] = missing
+    report["required_private_bundle"] = (
+        "Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip")
+    report["missing_johto_manifest"] = not (game / PROOF).is_file()
+
     proof_file = game / PROOF
     if proof_file.is_file() and not proof_file.is_symlink():
         try:
@@ -136,7 +144,22 @@ def inspect(project: Path = ROOT, game: Path | None = None):
         except (OSError, ValueError, KeyError, TypeError) as local_error:
             report["preview_integrity"] = "FAILED"
             report["preview_integrity_error"] = str(local_error)
+    # Missing original map files are not a layout problem. Do not offer a
+    # dangerous room patch when the private OFFLINE 12 region isn't installed.
+    if missing:
+        if len(missing) == len(required) and report["missing_johto_manifest"]:
+            report["status"] = "JOHTO_NOT_INSTALLED"
+        else:
+            report["status"] = "JOHTO_FILES_MISSING"
+        report["safe_to_apply"] = False
     report["next_action"] = (
+        "Instalar o ZIP privado original Johto OFFLINE 12 usando Blue-Story; "
+        "johto-pilot-inputs.zip é somente a base, sem Map600/674/675"
+        if report["status"] == "JOHTO_NOT_INSTALLED"
+        else "Instalação parcial de Johto: recuperar os mapas pela fonte original "
+             "sem apagar saves" if report["status"] == "JOHTO_FILES_MISSING"
+        else
+
         "Mapa HGSS aplicado; ainda faltam PNGs privados para móveis HGSS originais"
         if report["status"] == "LAYOUT_HGSS_APPLIED" and not
            report.get("private_hgss_status") == "private_art_compiled"
@@ -170,7 +193,9 @@ def main(argv=None):
         target = a.report.resolve()
         if target.is_relative_to((ROOT/".blue-work").resolve()) and target.parent.is_dir():
             target.write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n", "utf-8")
-    return 0 if report["status"] == "LAYOUT_HGSS_APPLIED" else 2
+    return (0 if report["status"] == "LAYOUT_HGSS_APPLIED"
+            else 3 if report["status"] in ("JOHTO_NOT_INSTALLED",
+                                          "JOHTO_FILES_MISSING") else 2)
 
 
 if __name__ == "__main__":
