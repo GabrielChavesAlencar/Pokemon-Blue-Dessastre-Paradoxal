@@ -102,7 +102,7 @@ class JohtoPhase13ContractTests(unittest.TestCase):
         self.assertFalse(completion["travel_adapter_supports_johto_currently"])
         self.assertTrue('when "KANTO"' in self.travel_runtime)
         self.assertTrue('when "DECADES"' in self.travel_runtime)
-        self.assertIn('source_valid?(state) && %w[DECADES KANTO JOHTO]', self.travel_runtime)
+        self.assertIn('source_valid?(state) && %w[DECADES KANTO JOHTO HOENN]', self.travel_runtime)
         self.assertIn('johto_installed?', self.travel_runtime)
         # The old phase-13 document preserves its historical league exits,
         # but the current transport policy is free at the starting-town NPC.
