@@ -174,6 +174,11 @@ jobs:
           ruby -c scripts/battle_polish/Campaign.rb
           ruby -c tests/sinnoh_evolution_ch12_runtime.rb
           ruby tests/sinnoh_evolution_ch12_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Story.rb scripts/battle_polish/Campaign.rb data/regions/sinnoh-trainer-evolution-contract.json
+      - name: CH13 - Catalogo simbolico de habitats, horarios e progresso
+        run: |
+          python scripts/regions/audit_sinnoh_symbolic_encounters.py
+          python -m unittest discover -s tests -p 'test_sinnoh_symbolic_encounters_ch13.py' -v
+          python -m py_compile scripts/regions/audit_sinnoh_symbolic_encounters.py
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh
