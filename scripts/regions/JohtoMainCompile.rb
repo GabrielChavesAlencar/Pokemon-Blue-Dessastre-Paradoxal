@@ -49,40 +49,53 @@ module BlueJohtoMainCompile
     false
   end
 
-  # Called ONLY after Essentials Compiler.main finishes without error.
-  # Never trust a manifest or a skipped compile as evidence of trainer data.
+  # Essentials and several Blue plugins ALIAS Compiler.main. Prepending a
+  # CompilerHook here forms a cycle when another plugin aliases the method
+  # after our plugin loads (old Boot.rb line 774: SystemStackError). Never
+  # monkey-patch Compiler.main. On first map entry the game's native
+  # Compiler.main has already finished, and GameData registries are loaded.
+  # Recheck the actual compiled trainer/encounter data at that point.
   def self.refresh
     return false unless integrated?
     unless valid_compilation?
-      STAMPS.each_key do |path|
-        File.delete(path) if File.file?(path) && !File.symlink?(path)
+      # Do not assert readiness from the ZIP alone. Remove only our own old
+      # readiness tokens, never unrelated game/region files.
+      STAMPS.each do |path, value|
+        if File.file?(path) && !File.symlink?(path) &&
+           File.read(path).strip == value
+          File.delete(path)
+        end
       end
+      @verified = false
       return false
     end
+    return true if @verified && STAMPS.all? { |path, value|
+      File.file?(path) && !File.symlink?(path) &&
+        File.read(path).strip == value
+    }
     STAMPS.each do |path, value|
-      raise "Unsafe Johto ready file" if File.symlink?(path)
-      filename = path + ".pending"
-      raise "Johto compile pending file exists" if File.exist?(filename)
+      return false if File.symlink?(path) || File.symlink?(path + ".pending")
+      next if File.file?(path) && File.read(path).strip == value
+      # Abort if an unexpected file is present. Never overwrite a file
+      # owned by another plugin or leave a half-written completion marker.
+      return false if File.exist?(path) || File.exist?(path + ".pending")
+      pending = path + ".pending"
       begin
-        File.open(filename, "wb") { |file| file.write(value + "\n") }
-        File.rename(filename, path)
+        File.open(pending, "wb") { |file| file.write(value + "\n") }
+        File.rename(pending, path)
       ensure
-        File.delete(filename) if File.file?(filename)
+        File.delete(pending) if File.file?(pending)
       end
     end
-    true
-  end
-
-  module CompilerHook
-    def main(*args)
-      result = super
-      BlueJohtoMainCompile.refresh
-      result
-    end
+    @verified = true
+  rescue StandardError
+    # A read-only game directory or unavailable registry may postpone
+    # Johto trainer battles, but must never crash Decades/Kanto/Hoenn.
+    false
   end
 end
 
-if defined?(Compiler)
-  Compiler.singleton_class.prepend(BlueJohtoMainCompile::CompilerHook) unless
-    Compiler.singleton_class.ancestors.include?(BlueJohtoMainCompile::CompilerHook)
+if defined?(EventHandlers) && EventHandlers.respond_to?(:add)
+  EventHandlers.add(:on_enter_map, :blue_johto_main_compile_status,
+                    proc { |_old_map| BlueJohtoMainCompile.refresh })
 end
