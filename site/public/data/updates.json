@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e50a06d6a780a1490dbb5328771de782130ac093",
+      "date": "2026-11-15T22:53:47-03:00",
+      "title": "feat(blue-story): show missing Johto reason and install private ZIP via native Windows file picker, same Game.exe",
+      "category": "Novidades"
+    },
+    {
       "sha": "c6e4054085743a19007876bead7d39eddffb5124",
       "date": "2026-11-15T22:52:21-03:00",
       "title": "test(blue-story): detect duplicated Downloads Johto ZIP and skip invalid cached candidates",
