@@ -156,7 +156,8 @@ def record(project: Path, value: dict) -> dict:
         "schema": 1,
         "region": "JOHTO",
         "ready": value["status"] in {"already_integrated_verified",
-                    "experimental_installed_not_native_tested"},
+                    "experimental_installed_not_native_tested",
+                    "experimental_installed_runtime_modified_not_native_tested"},
         "changed": False,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         **value,
@@ -187,7 +188,34 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
             sys.path.insert(0, str(project))
             sys.path.insert(0, str(project / "scripts/regions"))
             import johto_main_preview
-            report = johto_main_preview.preview_proof(game)
+            try:
+                report = johto_main_preview.preview_proof(game)
+            except (OSError, ValueError, KeyError, TypeError) as strict_error:
+                # The real Windows game has altered some native Johto maps:
+                # door sound -> fade -> wait -> transfer. Its serialized bytes
+                # no longer match the original private ZIP's exact hashes.
+                # Never re-copy the ZIP or silently overwrite those events.
+                # Verify all 100 maps and exact audited New Bark variants,
+                # then preserve existing files and apply the bedroom-only fix.
+                state = johto_main_preview.runtime_semantic_preview(game)
+                if state is None:
+                    raise strict_error
+                bedroom = johto_main_preview.refresh_installed_bedroom(
+                    game, project, allow_global_drift=True)
+                state = johto_main_preview.runtime_semantic_preview(game)
+                return record(project, {
+                    "status": "experimental_installed_runtime_modified_not_native_tested",
+                    "reason": "Johto já existe, com mapas recompilados. Estrutura dos 100 mapas conferida; não reinstalar ZIP. Gameplay nativo ainda não aprovado.",
+                    "map_count": state["map_count"], "native_qa": False,
+                    "runtime_modified_map_ids": state["changed_map_ids"],
+                    "changed": bedroom["changed"],
+                    "bedroom_layout": bedroom.get("bedroom_layout"),
+                    "bedroom_changed": bedroom["changed"],
+                    "bedroom_backup_folder": bedroom.get("backup_folder"),
+                    "hgss_status": "no_private_art",
+                    "hgss_reason": "Tilesets HGSS privados ainda não fornecidos",
+                    "verification": "semantic_runtime_map_validation_not_native_gameplay_qa",
+                })
             if report:
                 # A copied Boot.rb is NOT replaced by Blue-Story's source update.
                 # The first Johto preview used Compiler.singleton_class.prepend,
