@@ -293,6 +293,8 @@ internal static class Bootstrap {
             if(Path.GetFullPath(zip).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(zip)=="source-"+revision+".zip")File.Delete(zip);
         }
         StageAdjacentJohto();
+        Say("[GAME EXE GERENCIADO] "+Path.Combine(Root,"game","Game.exe")+
+            " - verifique se esta e a MESMA copia que voce esta jogando.");
         string python=Runtime("python","python.exe");string git=Runtime("git",Path.Combine("cmd","git.exe"));string pathExtra=Path.GetDirectoryName(git);
         Say("Preparando a base e as atualizacoes. A primeira instalacao pode demorar.");
         var install=new List<string>{"scripts/install_game.py","--apply"};if(Hub)install.Add("--hub-only");Run(python,install.ToArray(),pathExtra);
