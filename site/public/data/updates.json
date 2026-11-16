@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0bb4b478137fb420afd75adaa1f3333361961b3a",
+      "date": "2026-11-15T21:10:13-03:00",
+      "title": "Build corrected multiregion Android ZIP from checksum-verified published release, without reimporting Kanto sources",
+      "category": "Correções"
+    },
+    {
       "sha": "64badfd3a1d4b6487c1d6a34c3935a4188c85a70",
       "date": "2026-11-15T20:35:07-03:00",
       "title": "Downloads: choose newest published Android multiregion ZIP, not first GitHub API result",
