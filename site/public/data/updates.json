@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a1f87e648b5250634cce52ae4c5023655cef1c0c",
+      "date": "2026-11-16T06:24:24-03:00",
+      "title": "fix(johto): inspect real Map674/675 stairs/layout and safely repair installed bedroom with clear diagnostics",
+      "category": "Correções"
+    },
+    {
       "sha": "fe03fa3e2566207dfaf81cb332a8c6d0a7c1895b",
       "date": "2026-11-16T00:30:02-03:00",
       "title": "fix(johto): report already-installed HGSS interiors accurately on repeated Blue-Story launches",
