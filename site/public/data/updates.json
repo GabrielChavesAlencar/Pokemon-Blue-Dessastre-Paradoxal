@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c32c9475fe90e47ba7030c792b91d9b2836e1a4f",
+      "date": "2026-11-16T08:55:20-03:00",
+      "title": "build(johto): allow user-private self-contained single EXE packaging, SHA256 pin, no public map redistribution",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9cc69adb87c271fe35af2f9ec0a05ae634f07cfb",
       "date": "2026-11-16T08:54:18-03:00",
       "title": "feat(johto): self-contained personal Blue-Story EXE auto-stages exact OFFLINE12 private overlay with SHA256 without a separate ZIP",
