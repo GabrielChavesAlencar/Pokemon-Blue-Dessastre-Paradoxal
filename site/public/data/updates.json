@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9c2a90a88ad5fa82bdc9feab56a34c78584431b6",
+      "date": "2026-11-15T23:58:04-03:00",
+      "title": "fix(johto): record HGSS room layout for fresh 100-map preview installs",
+      "category": "Correções"
+    },
+    {
+      "sha": "c700f45dfc08843888e19f479c4e8ba3a4472016",
+      "date": "2026-11-15T23:58:02-03:00",
+      "title": "feat(johto): Blue-Story refreshes installed HGSS room and 2F warp automatically",
+      "category": "Novidades"
+    },
+    {
       "sha": "2349f40f3ddf1f6386ce7b0fc4737c41fdc882ad",
       "date": "2026-11-15T23:57:38-03:00",
       "title": "feat(johto): transactional auto-update of existing Map674/675 bedroom and staircase",
