@@ -1,0 +1,57 @@
+name: Sinnoh CH19 - regressao Python Ruby isolada
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-ch19.yml'
+      - '.github/workflows/regression.yml'
+      - 'scripts/regions/**'
+      - 'scripts/music/**'
+      - 'scripts/battle_polish/**'
+      - 'data/regions/sinnoh*'
+      - 'tests/test_sinnoh_*.py'
+      - 'tests/sinnoh_*.rb'
+      - 'tests/regions_data_fixture.rb'
+      - 'docs/SINNOH_PROGRESSO.md'
+      - 'docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-ch19.yml'
+      - '.github/workflows/regression.yml'
+      - 'scripts/regions/**'
+      - 'scripts/music/**'
+      - 'scripts/battle_polish/**'
+      - 'data/regions/sinnoh*'
+      - 'tests/test_sinnoh_*.py'
+      - 'tests/sinnoh_*.rb'
+      - 'tests/regions_data_fixture.rb'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sinnoh-offline:
+    name: CH19 Sinnoh / ${{ matrix.suite }} (somente fixtures, sem Game.exe)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [python, ruby]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run CH19 Python/Ruby isolado com falha preservada
+        run: python scripts/regions/sinnoh_ci_ch19.py --suite "${{ matrix.suite }}" --output .blue-work/ch19
+      - name: Publicar relatorio JSON + Markdown mesmo se falhar
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-ch19-${{ matrix.suite }}
+          path: |
+            .blue-work/ch19/sinnoh-ch19-${{ matrix.suite }}.json
+            .blue-work/ch19/sinnoh-ch19-${{ matrix.suite }}.md
+          if-no-files-found: warn
