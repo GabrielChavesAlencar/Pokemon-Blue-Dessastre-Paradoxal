@@ -8,25 +8,26 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-████████████████░░░░  16/20 (80%)
+█████████████████░░░  17/20 (85%)
 ```
 
-- **Concluídas:** 16 (**CH01–CH16**, incluindo catálogo de chaves musicais Sinnoh sem áudio distribuído).
+- **Concluídas:** 17 (**CH01–CH17**, incluindo página Sinnoh do portal com referência segura a áreas, treinadores, oito ginásios, Elite Four, Cynthia, HMs e história).
 - **Parciais:** 0.
-- **Pendentes:** 4 (**CH17–CH20**).
+- **Pendentes:** 3 (**CH18–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
 - **CH02–CH05:** consistência de progresso e proteções de MapIDs/plugins legados.
 - **CH06–CH07:** auditor de Twinleaf, flags, Poké Bolas físicas e save isolado.
-- **CH08–CH09:** Barry, balanceamento 70%/90% e integração E2E sintética até bundle.
-- **CH10–CH11:** lançador QA seguro, insígnias e HMs de Sinnoh.
-- **CH12–CH13:** modelos de evolução dinâmica e catálogo simbólico de encontros sem taxas/MapIDs.
-- **CH14:** 22 checkpoints Galactic/Cyrus/Liga/Hall of Fame; viagens não instaladas bloqueadas.
-- **CH15:** 13 times históricos de Platinum e cinco revanches de Elite Four/Cynthia, mantendo variantes Full Power e PBS sem prova como pendentes.
-- **CH16:** [catálogo de **46 chaves musicais simbólicas**](../data/regions/sinnoh-music-ch16.json), com **43 BGM** e **3 ME**, classifica cidades, rotas, cavernas, batalhas, cenas, Surf e pós-jogo, e separa Hall of Fame BGM/ME. [Auditor read-only](../scripts/music/audit_sinnoh_music_ch16.py) cruza as 45 chaves originais documentadas, valida ausência de arquivos/licenças/MapIDs/hashes e protege as escolhas explícitas e a configuração real de [BlueMusic](../scripts/music/BlueMusic.rb). O [resolvedor Ruby isolado](../scripts/music/SinnohMusicContracts.rb) é apenas um contrato de decisão: não instala hooks, toca música nem modifica audio global. Fallback preserva BGM atual e delega a restauração nativa após batalha/ME, evitando replay, loops e música vazando ao mudar de mapa ou região; fade/loop permanecem desconhecidos. [23 testes negativos Python](../tests/test_sinnoh_music_ch16.py) e [teste Ruby integrado com BlueMusic](../tests/sinnoh_music_ch16_runtime.rb) aprovados no [CI 43977207679](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43977207679), juntamente com **347 testes Python isolados de Sinnoh**. [Detalhes CH16](SINNOH_CH16_CATALOGO_MUSICAL_FALLBACK.md).
-- **Critério:** tarefas só contam `done` com artefatos versionados e CI isolado aprovado.
+- **CH08–CH09:** Barry, 70%/90% e integração E2E sintética até bundle.
+- **CH10–CH11:** lançador QA seguro e permissões de oito insígnias/HMs de Sinnoh.
+- **CH12–CH13:** modelos de evolução dinâmica e encontros simbólicos sem MapIDs ou taxas inventadas.
+- **CH14:** 22 checkpoints Galactic/Cyrus/Liga/Hall of Fame, sem viagem física habilitada automaticamente.
+- **CH15:** 13 treinadores de referência Platinum, 5 revanches históricas e PBS/Full Power sinalizados sem comprovação.
+- **CH16:** 46 chaves musicais e fallback BlueMusic, sem instalar áudio ou hooks.
+- **CH17:** novo guia do portal em **`/sinnoh`**, com abas para **120 áreas** (**91 com fase 3–10 documentada; 29 sem fase, mostradas em filtro “Fase a auditar”**), **40 treinadores de referência**, **8 ginásios, 4 Elite Four e Cynthia**, **8 itens HM e permissões por insígnia regional**, **22 checkpoints Galactic/Cyrus/Liga** e espécies candidatas de **21 áreas**. O [gerador](../site/scripts/sinnoh-guide.mjs) usa os catálogos CH11–CH16, publica somente no `site/dist/data/sinnoh-guide.json` durante o [build](../site/scripts/build.mjs) e rejeita flags falsas de jogabilidade, níveis/MapIDs inventados e vínculos PBS não verificados. A [interface](../site/src/assets/sinnoh-guide.js) está ligada às páginas Guias, Regiões, Localizações, Treinadores, Chefes e Liga, sempre com o aviso **“Planejada / Ainda não adicionado ao Game.exe/JoiPlay”**. **19 testes dedicados**, **108 testes completos do portal** e **347 testes Python isolados de Sinnoh** aprovados; [CI Portal 43979589575](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43979589575) e [CI Sinnoh 43979589757](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43979589757). [Documentação CH17](SINNOH_CH17_GUIAS_PORTAL_PLANEJADO.md).
+- **Critério:** tarefas só entram como `done` com arquivos publicados na `main` e validação de CI compatível com seu escopo.
 
-**Limitação:** planejamento musical não significa áudio disponível, autorização de uso, eventos mapeados nem audição no Windows/Android. Não existem trilhas, arquivos, tempos de loop/fade, MapIDs ou hooks de Sinnoh instalados nesta CH. **Barra A 8/32 (25%) e B/C/D 0/13**, preservadas. Game.exe/JoiPlay não foram executados.
+**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 8/32 (25%)**, **B/C/D 0/13** permanecem intactas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

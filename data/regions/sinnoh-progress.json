@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 16,
+    "done": 17,
     "partial": 0,
-    "pending": 4,
-    "percent_complete": 80,
+    "pending": 3,
+    "percent_complete": 85,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -935,8 +935,8 @@
         "priority": "P3",
         "title": "Guias de Sinnoh no site com estado real planned/pendente",
         "acceptance": "Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "site/tests/sinnoh-guide.test.mjs"
       },
       {
         "id": "CH18",
