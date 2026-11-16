@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "690ec30a06944c1b7b5a3895ac9a06c0c65552b5",
+      "date": "2026-11-15T23:21:05-03:00",
+      "title": "docs(johto): reproduce and fix actual original-bundle New Bark spawn blocker; report private 100-map transaction results",
+      "category": "Documentação"
+    },
+    {
       "sha": "cb3c5a0ba33cb8c20549655277014648702702a7",
       "date": "2026-11-15T23:19:09-03:00",
       "title": "test(johto): reproduce original New Bark autorun spawn and reject actual NPC collisions",
