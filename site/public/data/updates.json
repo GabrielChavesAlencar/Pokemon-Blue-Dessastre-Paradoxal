@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4da4be4905de436753cf7166c09fce6071970bad",
+      "date": "2026-11-16T08:37:04-03:00",
+      "title": "fix(johto): detect base-only pilot-inputs ZIP and explain why it cannot install missing Johto map pack",
+      "category": "Correções"
+    },
+    {
       "sha": "cf03f9d34d37ccae40629b0e58523fbce0627d1e",
       "date": "2026-11-16T08:36:20-03:00",
       "title": "test(johto): distinguish absent/partial regional installation from broken bedroom and never write maps",
