@@ -32,6 +32,18 @@ Os navegadores podem renomear o ZIP como `... (1).zip`; o instalador passou a pr
 - `JohtoMainCompile.rb`: os marcadores de prontidão das batalhas de Silver, treinadores de rota e Falkner/Sprout só são escritos após a compilação real do PBS, com verificação de tipos, equipes e encontros; nunca apenas por presença dos arquivos.
 - `tests/test_johto_main_preview.py`: testes de backup, escrita do marcador por último, rollback, fonte inválida, não sobrescrita de MapIDs e ausência de alterações no dry-run.
 
+## Correção confirmada com ZIP original — 16/11, 02h
+
+**Causa real identificada:** a versão anterior de `johto_main_preview.py` recusava qualquer evento na posição inicial `Map674 (6,7)`. O próprio preparador original de Johto (`repair_new_bark`) coloca nesse ponto o evento invisível autorun `JH_NEW_GAME_PROFILE`. Assim o `build_overlay` sempre interrompia com `Spawn do jogador ocupado por evento`; o Blue-Story continuava com `Johto (instalação necessária)`.
+
+**Corrigido em `scripts/regions/johto_main_preview.py`:** aceitar exclusivamente o evento invisível autorun `JH_NEW_GAME_PROFILE` na posição inicial, com nome, trigger e ausência de sprite conferidos. NPCs, tiles bloqueantes por evento, outros triggers ou eventos extras sobre o spawn continuam rejeitados. Um teste de regressão agora reproduz este caso.
+
+**Validação efetivamente executada neste atendimento:** o ZIP privado ORIGINAL com SHA-256 `74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49` foi processado contra os arquivos-base reais presentes no arquivo privado `johto-pilot-inputs.zip`, com `Game.exe` substituído por placeholder de teste (não executado). O `dry-run` passou com `maps: 100, files: 135`; `--apply` gravou a integração experimental e `preview_proof` validou os 100 mapas e 133 hashes. Em uma segunda cópia foram adicionados registros e MapIDs sintéticos representando Kanto (410) e Hoenn (702); os dois mapas e respectivos registros e tilesets foram preservados após a integração.
+
+**Limite desta evidência:** o pacote principal **real do usuário** (MapInfos/Tilesets após todas as atualizações), a compilação de PBS pelo Essentials, o jogo executado no Windows e o JoiPlay não foram testados aqui. A montagem validada não equivale a afirmar que a campanha completa de Johto está funcional.
+
+**Entrega privada:** foi criado no chat um ZIP de 1,7 MB com `Blue-Story.exe` compilado e o ZIP de Johto juntos. O Blue-Story procura o ZIP ao lado do EXE e o prepara automaticamente na mesma instalação antes do `Game.exe`, sem criar outro save. Esse pacote privado **não** é anexado à release pública do GitHub.
+
 ## Limites conhecidos e testes pendentes
 
 Esta implementação é **prévia de desenvolvimento**, não um Johto completo e certificado: o OFFLINE12 ainda tinha mapas e eventos sem validação nativa, e a adaptação das casas adicionais foi reduzida ao intervalo 682–699 para não invadir os IDs 700–999 de Hoenn. Outras cidades, interiores, missões, Liga, sprites, passabilidade e viagens exigem testes reais. Áudio HGSS opcional não é publicado nem exigido pela instalação.
