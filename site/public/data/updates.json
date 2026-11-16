@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db40d6800d05fd2112008ccbd63b753661eae98e",
+      "date": "2026-11-16T20:26:31-03:00",
+      "title": "test(ci): CH17 19 testes negativos site, build e regressao portal em CI",
+      "category": "Testes"
+    },
+    {
       "sha": "0d1ba15169b9b0095ea08d834a093b67bbb254e7",
       "date": "2026-11-16T20:25:04-03:00",
       "title": "feat(portal): CH17 filtro sem fase para 29 áreas não mapeadas e estilos responsivos",
