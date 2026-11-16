@@ -187,6 +187,80 @@ def set_door(outside, inside, name, from_id, to_id, position, sprite, entrance, 
               event_page(warp=(from_id, x, y + 1), touch=True))
 
 
+# HGSS reference: stairs + red landing to the left, computer/TV at the top,
+# single bed at lower left, blue central rug, plant to the right. Keep the
+# original 14x11 Map674, its new-game spawn (6,7) and all story event IDs.
+HGSS_BEDROOM_LAYOUT = "hgss-inspired-v1"
+HGSS_STAIRS_WARP = (4, 4)
+HGSS_STAIRS_RETURN = (4, 5)
+
+
+def style_bedroom_hgss(room, home, first):
+    """Restyle actual RMXP rooms and move BOTH sides of the 2F stair warp.
+
+    This also runs on already-installed private previews via Blue-Story.
+    No MapID changes, new assets, player relocation or event reconstruction.
+    """
+    (width, height, depth), _ = table_values(room.attrs["@data"].data, 3)
+    if (width, height, depth) != (14, 11, 3):
+        raise ValueError("Quarto de New Bark inesperado; não alterar outro mapa")
+
+    def find_named(map_obj, name):
+        matches = [event for event in map_obj.attrs["@events"].values()
+                   if text(event.attrs["@name"]) == name]
+        if len(matches) != 1:
+            raise ValueError("Evento da escada de Johto ausente/duplicado: " + name)
+        event = matches[0]
+        if not event.attrs["@pages"]:
+            raise ValueError("Evento de escada de Johto sem página")
+        command = event.attrs["@pages"][0].attrs["@list"][0]
+        if command.attrs["@code"] != 201:
+            raise ValueError("Evento de escada de Johto não é transferência")
+        return event, command.attrs["@parameters"]
+
+    upstairs, destination = find_named(room, "JH_HOME2F_TO_1F")
+    downstairs, arrival = find_named(home, "JH_HOME1F_TO_2F")
+    if (destination[:2] != [0, 675] or arrival[:2] != [0, 674]
+            or tuple((upstairs.attrs["@x"], upstairs.attrs["@y"])) not in
+            ((9, 8), HGSS_STAIRS_WARP)
+            or tuple(arrival[2:4]) not in ((9, 7), HGSS_STAIRS_RETURN)):
+        raise ValueError("Warps originais de New Bark divergentes; preservar saves")
+    for event in room.attrs["@events"].values():
+        if event is not upstairs and (event.attrs["@x"], event.attrs["@y"]) in (
+                HGSS_STAIRS_WARP, HGSS_STAIRS_RETURN):
+            raise ValueError("Móvel/escada HGSS conflita com evento existente")
+
+    # Original preview left the diagonal staircase in the lower-right corner.
+    # Clear all its old decor and rug tiles, but NOT the underlying house walls
+    # or the transparent profile autorun at spawn (6,7).
+    updates = [(x, y, layer, 0)
+               for x in range(1, 13) for y in range(2, 10)
+               for layer in (1, 2)]
+    updates.extend((x, 1, 2, 0) for x in range(1, 13))
+    # Same author-created tiles and rug already installed in Johto's atlas.
+    # Its four first appended tiles are floor/teal/mat; the next 9 form blue rug.
+    updates.extend((x + dx, y + dy, 1, first + 4 + dy * 3 + dx)
+                   for y, x in ((5, 5),) for dy in range(3) for dx in range(3))
+    updates.extend((4, y, 1, first + 3) for y in (3, 4))
+    updates += furniture(2, 3, 238, 1, 2, 2)  # stairs at upper LEFT
+    updates += furniture(2, 6, 275, 0, 2, 3)  # bed at lower LEFT
+    updates += furniture(6, 2, 280, 0, 3, 2, layer=1)  # desk
+    updates += furniture(7, 1, 297, 0, 1, 2)  # computer on the desk
+    updates += furniture(10, 3, 279, 2, 2, 1, layer=1)  # TV cabinet
+    updates += furniture(11, 2, 296, 0, 1, 2)  # television
+    updates += furniture(11, 7, 270, 3, 1, 2)  # plant beside rug
+    updates += furniture(5, 1, 198, 6, 2, 1)  # window
+    updates.append((9, 1, 2, tile(204, 4)))  # clock / wall accent
+    set_tiles(room, updates)
+
+    # The staircase is a real Player Touch event, not decorative artwork.
+    # Arrive one tile BELOW its red landing so the reverse warp cannot loop.
+    upstairs.attrs["@x"], upstairs.attrs["@y"] = HGSS_STAIRS_WARP
+    arrival[2:4] = list(HGSS_STAIRS_RETURN)
+    return {"layout": HGSS_BEDROOM_LAYOUT, "warp": HGSS_STAIRS_WARP,
+            "return": HGSS_STAIRS_RETURN, "spawn": (6, 7)}
+
+
 def style_interiors(maps, sets, assets, read_graphic):
     home = maps[675]
     original_set = home.attrs["@tileset_id"]
@@ -208,15 +282,6 @@ def style_interiors(maps, sets, assets, read_graphic):
         return [(x + dx, y + dy, 1, first + offset + dy * 3 + dx)
                 for dy in range(3) for dx in range(3)]
 
-    room = maps[674]
-    set_tiles(room, [(x, y, 2, 0) for x in range(2, 13) for y in range(3, 6)])
-    set_tiles(room, furniture(2, 6, 275, 0, 2, 3)
-              + furniture(2, 1, 280, 4, 3, 2) + furniture(8, 1, 297, 0, 1, 2)
-              + furniture(10, 1, 279, 2, 2, 1) + furniture(5, 1, 198, 6, 2, 1)
-              + furniture(11, 3, 296, 0, 1, 2)
-              + furniture(12, 6, 270, 3, 1, 2) + rug(5, 5, 4)
-              + [(7, 1, 2, tile(204, 4))])
-
     set_tiles(home, floor_area(1, 2, 14, 10, tile(88, 0), tile(88, 1)))
     set_tiles(home, [(x, y, 2, 0) for x in range(1, 15) for y in range(2, 12)
                      if (x, y) not in {(12, 8), (13, 8), (12, 9), (13, 9)}])
@@ -228,6 +293,7 @@ def style_interiors(maps, sets, assets, read_graphic):
               + furniture(9, 6, 276, 7, 1, 2)
               + furniture(1, 8, 270, 3, 1, 2) + furniture(14, 8, 270, 3, 1, 2)
               + [(x, y, 1, mat) for x in (6, 7, 8) for y in (9, 10)])
+    style_bedroom_hgss(maps[674], home, first)
 
     lab = maps[676]
     set_tiles(lab, floor_area(1, 2, 18, 13, teal, teal_alt))
