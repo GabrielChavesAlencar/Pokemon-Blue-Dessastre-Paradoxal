@@ -162,6 +162,30 @@ class JohtoRuntimePreviewTests(unittest.TestCase):
         self.assertIn("Map Studio",result["bedroom_reason"])
         self.assertEqual(room_path.read_bytes(),original)
 
+    def test_private_hgss_tileset_is_accepted_only_when_manifest_marks_it(self):
+        from server.ruby_marshal import loads
+        from copy import deepcopy
+        tiles=self.game/"Data/Tilesets.rxdata"
+        room_path=self.game/"Data/Map674.rxdata"
+        sets=loads(tiles.read_bytes())
+        clone=deepcopy(sets[1])
+        clone.attrs["@tileset_name"]=b"BLUE_JOHTO_HGSS_PRIVATE_1"
+        sets.append(clone)
+        tiles.write_bytes(serialize(sets))
+        room=loads(room_path.read_bytes())
+        room.attrs["@tileset_id"]=2
+        room_path.write_bytes(serialize(room,preview.johto_qa.EVENT_CLASSES))
+        with self.assertRaisesRegex(ValueError,"tileset de New Bark"):
+            preview.runtime_semantic_preview(self.game)
+        manifest=self.game/preview.PROOF
+        contents=json.loads(manifest.read_text("utf-8"))
+        contents["private_hgss"]={"status":"private_art_compiled",
+                                  "maps":[674]}
+        manifest.write_text(json.dumps(contents),encoding="utf-8")
+        verified=preview.runtime_semantic_preview(self.game)
+        self.assertEqual(verified["map_count"],100)
+        self.assertIn(674,verified["changed_map_ids"])
+
     def test_missing_bedroom_file_is_not_treated_as_verified_johto(self):
         target=self.game/"Data/Map674.rxdata"
         target.unlink()
