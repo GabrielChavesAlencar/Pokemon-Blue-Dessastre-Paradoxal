@@ -6,9 +6,11 @@ on:
       - .github/workflows/johto-local-integration-fixture.yml
       - scripts/regions/JohtoMainCompile.rb
       - scripts/regions/johto_main_preview.py
+      - scripts/regions/johto_visual.py
       - scripts/regions/auto_integrate_johto.py
       - tests/johto_compiler_runtime.rb
       - tests/test_johto_boot_hotfix.py
+      - tests/test_johto_bedroom_hgss.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,6 +25,10 @@ jobs:
         run: ruby tests/johto_compiler_runtime.rb scripts/regions/JohtoMainCompile.rb
       - name: Verify Johto upgrade, rollback and unchanged regional saves/maps
         run: python -m unittest discover -s tests -p 'test_johto_boot_hotfix.py' -v
+      - name: Verify HGSS-inspired New Bark room and transactional save-safe upgrade
+        run: python -m unittest discover -s tests -p 'test_johto_bedroom_hgss.py' -v
+      - name: Verify Johto original preview layout regressions
+        run: python -m unittest discover -s tests -p 'test_johto_main_preview.py' -v
       - uses: actions/upload-artifact@v4
         with:
           name: johto-private-fixture-scripts
