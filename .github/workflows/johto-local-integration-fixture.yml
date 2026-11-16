@@ -13,6 +13,7 @@ on:
       - tests/johto_compiler_runtime.rb
       - tests/test_johto_boot_hotfix.py
       - tests/test_johto_bedroom_hgss.py
+      - scripts/regions/diagnose_johto_bedroom.py
   workflow_dispatch:
 permissions:
   contents: read
