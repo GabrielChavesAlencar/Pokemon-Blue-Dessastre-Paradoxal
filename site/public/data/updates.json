@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4636c08f8aecfeb6e63d90e7b415720eeff32de4",
+      "date": "2026-11-15T22:08:26-03:00",
+      "title": "docs(blue-story): clarify automatic Johto search and current playable-install limitations",
+      "category": "Documentação"
+    },
+    {
       "sha": "20becfc07714e1b09f935c21c8e86c49d9c10cd9",
       "date": "2026-11-15T22:07:58-03:00",
       "title": "test(johto): verify new Blue-Story package discovery and non-destructive rebasing checks",
