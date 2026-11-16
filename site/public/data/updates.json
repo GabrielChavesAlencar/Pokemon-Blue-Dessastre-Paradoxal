@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cd431e5da4a71dac50f288ce58189130badf4dee",
+      "date": "2026-11-16T07:10:59-03:00",
+      "title": "ci(johto): verify runtime-edited Johto recognized instead of missing and keep all region/saves unchanged",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "9e165f41f7749c55874627f09f59a6e9b560898e",
+      "date": "2026-11-16T07:10:45-03:00",
+      "title": "test(johto): 100-map semantic revalidation after compiled map drift, bedroom migration and Kanto/Hoenn save preservation",
+      "category": "Testes"
+    },
+    {
       "sha": "6033e8c16ae7d5562fc90fc1dff380b5f51f4e84",
       "date": "2026-11-16T07:09:46-03:00",
       "title": "fix(johto): Blue-Story recognizes semantically valid runtime-modified Johto and repairs New Bark without reinstalling ZIP",
