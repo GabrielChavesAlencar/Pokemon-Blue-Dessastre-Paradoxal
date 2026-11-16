@@ -214,7 +214,7 @@ class SinnohCH16MusicTests(unittest.TestCase):
             "return nil if false"))
 
     def test_cannot_install_runtime_audio_hooks(self):
-        self.rejects("Guarda Ruby",adapter=self.adapter.replace(
+        self.rejects("Proteção Ruby",adapter=self.adapter.replace(
             "blue_music.entry('global',blue_global_key)",
             "blue_music.config"))
         self.rejects("Ruby de planejamento",adapter=self.adapter+"\ndef self.install; pbBGMPlay('fake'); end\n")
