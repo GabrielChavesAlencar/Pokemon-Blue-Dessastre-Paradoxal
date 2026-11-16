@@ -1,5 +1,55 @@
 # Regional progress is additive. It never changes native badges or existing saves on load.
 module BlueRegions
+  # Platinum HMs used by the eight Sinnoh field permissions.  An item held
+  # in a foreign-region Bag is never a substitute for a LOCAL pickup event.
+  # Source-of-truth alignment is checked against site/public/data/regions.json.
+  SINNOH_HM_ITEMS = {
+    "ROCK_SMASH" => :HM06, "CUT" => :HM01, "FLY" => :HM02,
+    "DEFOG" => :HM05, "SURF" => :HM03, "STRENGTH" => :HM04,
+    "ROCK_CLIMB" => :HM08, "WATERFALL" => :HM07
+  }.freeze
+
+  def self.valid_sinnoh_badges?(state)
+    return false unless state.is_a?(Hash) && state["version"] == 1 &&
+                        state["achievements"].is_a?(Hash)
+    records = state["achievements"].fetch("SINNOH", [])
+    milestones = info("SINNOH")["milestones"]
+    records.is_a?(Array) && records.uniq.length == records.length &&
+      records.all? { |badge| badge.is_a?(String) && milestones.include?(badge) }
+  end
+
+  def self.sinnoh_local_hms(state)
+    return nil unless state.is_a?(Hash) && state["version"] == 1
+    registry = state.fetch("region_local_hms", {})
+    return nil unless registry.is_a?(Hash)
+    claims = registry.fetch("SINNOH", [])
+    return nil unless claims.is_a?(Array) && claims.uniq.length == claims.length &&
+                      claims.all? { |key| key.is_a?(String) && SINNOH_HM_ITEMS.key?(key) }
+    claims
+  end
+
+  # Only trusted *Sinnoh pickup events* should call this after the item has
+  # been placed in the active regional Bag. It does NOT create an HM item,
+  # assign badges, activate gym events, or approve a planned map as playable.
+  def self.record_sinnoh_hm(state, action, item, bag, pickup_confirmed = false)
+    return false unless pickup_confirmed == true &&
+                        state.is_a?(Hash) && state["version"] == 1 &&
+                        state["current"] == "SINNOH" && valid_sinnoh_badges?(state)
+    return false unless action.is_a?(String) && SINNOH_HM_ITEMS[action] == item
+    return false unless bag && bag.respond_to?(:has?) && bag.has?(item)
+    return false unless defined?(GameData::Item) && GameData::Item.respond_to?(:try_get)
+    metadata = GameData::Item.try_get(item)
+    return false unless metadata && metadata.respond_to?(:is_HM?) && metadata.is_HM? &&
+                        metadata.respond_to?(:move) &&
+                        metadata.move.to_s.upcase.delete("_") == action.delete("_")
+    claims = sinnoh_local_hms(state)
+    return false unless claims && !claims.include?(action)
+    state["region_local_hms"] ||= {}
+    state["region_local_hms"]["SINNOH"] ||= []
+    state["region_local_hms"]["SINNOH"] << action
+    true
+  end
+
   def self.known?(region)
     BlueRegionData::REGISTRY["regions"].key?(region)
   end
@@ -62,6 +112,11 @@ module BlueRegions
   end
 
   def self.award(state, region, key)
+    # CH11: a forged or malformed Sinnoh achievement list must fail closed.
+    # Do not mutate somebody else's regional save or native badge array.
+    if region == "SINNOH"
+      return false unless valid_sinnoh_badges?(state)
+    end
     return false unless state["current"] == region && unlocked(state).include?(region)
     return false unless region != "DECADES" && known?(region) && info(region)["milestones"].include?(key)
     list = (state["achievements"][region] ||= [])
@@ -71,6 +126,7 @@ module BlueRegions
   end
 
   def self.local_achievements(state, region, native_badges = [])
+    return [] if region == "SINNOH" && !valid_sinnoh_badges?(state)
     if region == "DECADES"
       return [] unless BlueRegionData::DECADES_VERIFIED
       return BlueRegionData::REGISTRY["decades"]["milestones"].map { |row| row["badge"] }
@@ -100,6 +156,13 @@ module BlueRegions
 
   def self.field_access(state, region, action, tool_ready = false)
     return :native if region == "DECADES"
+    # Prevent direct calls from borrowing Sinnoh permissions while the player
+    # is elsewhere; badges, tools and saved local HM claims are separate gates.
+    if region == "SINNOH"
+      return :unavailable unless valid_sinnoh_badges?(state) &&
+                                 state["current"] == "SINNOH" &&
+                                 sinnoh_local_hms(state)
+    end
     rule = info(region)["field"][action]
     return :unavailable unless rule
     if rule["badge"]
@@ -108,6 +171,10 @@ module BlueRegions
     end
     return :event if rule["event"] && !state["field_events"].fetch(region, []).include?(rule["event"])
     return :tool if rule["tool"] && !tool_ready
+    if region == "SINNOH" && rule["tool"] &&
+       !sinnoh_local_hms(state).include?(action)
+      return :hm
+    end
     :allowed
   end
 

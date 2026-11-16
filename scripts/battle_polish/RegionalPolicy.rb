@@ -90,7 +90,10 @@ module BlueRegionalPolicy
     # Every integrated region must obtain its own HM, regardless of whether
     # a party Pokémon already knows the move from a different region.
     if current["current"] != "KANTO"
-      prerequisite = BlueRegions.field_access(current, current["current"], action, false)
+      # Sinnoh must prove an HM pickup from THIS region before a Bag item
+      # grants field access. Other regions retain their existing logic.
+      local_proof = current["current"] == "SINNOH"
+      prerequisite = BlueRegions.field_access(current, current["current"], action, local_proof)
       return prerequisite unless [:tool, :allowed].include?(prerequisite)
       return hm_owned?(move_id) ? :allowed : :hm
     end
