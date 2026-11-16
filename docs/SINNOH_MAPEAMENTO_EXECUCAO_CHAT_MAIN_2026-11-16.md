@@ -23,7 +23,7 @@
 ██████████████████░░  18/20 (90%)
 ```
 
-**18 concluídas**, **0 parciais**, **2 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**18 concluídas**, **1 parciais**, **1 pendentes** (CH19 aguardando CI novo; CH20 pendente). A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -45,10 +45,12 @@
 | P3 | **CH16** ✅ | Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic | Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos |
 | P3 | **CH17** ✅ | Guias de Sinnoh no site com estado real `planned`/pendente | Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios |
 | P3 | **CH18** ✅ | Testes e build do portal para Sinnoh | Pesquisa/filtros/pendências/linkagem sem rótulo `jogável` indevido, suíte do site validada |
-| P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
+| P4 | **CH19** 🟡 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
 **Ordem recomendada:** CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH19 parcial:** publicados o [executor de regressões Python/Ruby isoladas](../scripts/regions/sinnoh_ci_ch19.py), o [novo workflow independente com matriz Python/Ruby](../.github/workflows/sinnoh-ch19.yml) e os [testes negativos](../tests/test_sinnoh_ci_ch19.py). A saída é por check, com JSON/Markdown como artefato e falha preservada; nenhum indicador de Game.exe ou JoiPlay é aprovado. O [relatório CH19](SINNOH_CH19_CI_PYTHON_RUBY_ISOLADO.md) separa a falha anterior de Kanto da suíte isolada aprovada de Sinnoh. Sem confirmação da execução dos **dois novos jobs** no commit final, CH19 permanece `partial` e Barra E fica 18/20 (90%).
 
 **CH18 concluída:** [motor puro de pesquisa/validação](../site/src/assets/sinnoh-search.js), [interface com filtros responsivos](../site/src/assets/sinnoh-guide.js), [navegação GET/SPA](../site/src/assets/app.js) e [29 testes negativos e positivos](../site/tests/sinnoh-search.test.mjs). A página `/sinnoh` permite buscar nomes, rotas, espécies candidatas, treinadores, insígnias, HMs, Galactic/Cyrus/Cynthia e classes de pendência; filtra fase documentada ou “sem fase”, com/sem espécies de referência, área citada e revanches Platinum. URLs preservam parâmetros, filtros inválidos voltam ao escopo seguro, resultados vazios não geram provas fictícias, e links bidirecionais levam da área ao catálogo de treinadores, de ginásios às permissões HM e da Liga aos checkpoints; a [página de backlog](../site/src/assets/pending.js) também aponta para o guia. Sete categorias de pendência mostram apenas quantidades documentadas. O validador rejeita falsos MapIDs, níveis, taxas, PBS compilado, pickups, eventos, música instalada, regiões jogáveis e payloads corrompidos. [CI Portal 43981753762](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43981753762): **build/137 testes**; [CI Sinnoh 43981753812](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43981753812): **29 testes CH18**, **137 do portal** e **347 Python de Sinnoh**, todos aprovados. [Documentação CH18](SINNOH_CH18_BUSCA_FILTROS_PENDENCIAS_SITE.md). Sem certificação Game.exe ou JoiPlay.
 
