@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d1a1c9cd01437373602170a8839033a96d74962c",
+      "date": "2026-11-16T06:52:05-03:00",
+      "title": "fix(johto): create safe three-map diagnostic ZIP automatically when room repair is blocked",
+      "category": "Correções"
+    },
+    {
+      "sha": "7bbf9cfda41e8459f0a5e7af9a4305ebb3e3fde5",
+      "date": "2026-11-16T06:51:51-03:00",
+      "title": "fix(blue-story): distinguish unverified Johto installation from genuinely missing region and avoid unsafe ZIP overwrite",
+      "category": "Correções"
+    },
+    {
       "sha": "cbd76b4b647528d3229a6c7a07117de4e0f6a1c7",
       "date": "2026-11-16T06:51:11-03:00",
       "title": "feat(johto): export original Map600/674/675 and stair events in safe diagnostic ZIP without saves",
