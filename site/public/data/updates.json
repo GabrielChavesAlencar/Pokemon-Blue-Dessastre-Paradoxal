@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8459f8b8ce3c715769b3987b89fb8965c477dc80",
+      "date": "2026-11-16T09:48:19-03:00",
+      "title": "test(blue-story): normalize Windows short/long path in auto-installed editor shortcut assertion",
+      "category": "Testes"
+    },
+    {
       "sha": "6aaabb7ffb6e3f9125ecad265ab6ce840b668ef0",
       "date": "2026-11-16T09:47:29-03:00",
       "title": "ci(blue-story): verify automatic Johto editor folder sync and Windows launcher rebuild",
