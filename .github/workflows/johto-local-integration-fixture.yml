@@ -1,0 +1,24 @@
+name: Johto - snapshot para teste privado da integracao
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/johto-local-integration-fixture.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export-verified-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax for private Johto builder
+        run: python -m py_compile scripts/regions/johto_main_preview.py scripts/regions/johto_qa.py scripts/regions/johto_visual.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: johto-private-fixture-scripts
+          path: |
+            scripts/regions/
+            scripts/official_rules/prepare_restore.py
+            server/ruby_marshal.py
+            data/regions/johto-source.json
+          compression-level: 6
