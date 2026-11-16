@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-█████████████░░░░░░░  13/20 (65%)
+██████████████░░░░░░  14/20 (70%)
 ```
 
-**13 concluídas**, **0 parciais**, **7 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**14 concluídas**, **0 parciais**, **6 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -40,7 +40,7 @@
 | P2 | **CH11** ✅ | Contratos regionais de oito insígnias + HMs de Sinnoh | Dados, guardas e testes garantem badge local, sem apropriar HM de outra região |
 | P2 | **CH12** ✅ | Modelos de treinadores e evolução com cálculo Blue existente | Regras testadas sem níveis fixos duplicados, preservando Normal/Master e level cap |
 | P2 | **CH13** ✅ | Catálogo **simbólico** de encontros por rota/terreno/horário/cap | Registros identificados como `planned`, consistência de espécie e método, sem afirmar encontros instalados |
-| P2 | CH14 | Estados e contratos para Galactic, Cyrus, Liga e viagem pós-Cynthia | Eventos idempotentes, desbloqueio lógico Hoenn/Unova só quando instalado; testes sintéticos |
+| P2 | **CH14** ✅ | Estados e contratos para Galactic, Cyrus, Liga e viagem pós-Cynthia | Eventos idempotentes, desbloqueio lógico Hoenn/Unova só quando instalado; testes sintéticos |
 | P3 | CH15 | Registro de equipes para Roark→Volkner, Elite Four e Cynthia | Esquemas/referências auditáveis, sem espécies ou times inventados nem nível fixo na UI |
 | P3 | CH16 | Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic | Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos |
 | P3 | CH17 | Guias de Sinnoh no site com estado real `planned`/pendente | Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios |
@@ -48,7 +48,9 @@
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH14 concluída:** [contrato de 22 passos Galactic/Cyrus/Liga](../data/regions/sinnoh-story-ch14-contract.json) e [runtime Ruby](../scripts/regions/SinnohStoryContracts.rb) isolam flags numa única chave regional `sinnoh_ch14`; só aceitam a próxima etapa confirmada, nunca duplicam eventos e exigem oito insígnias Sinnoh no portão da Liga. Cynthia não marca `leagues`: apenas a confirmação separada do Hall of Fame chama `BlueRegions.complete_league`. [Auditor Python](../scripts/regions/audit_sinnoh_story_ch14.py), [15 testes Python](../tests/test_sinnoh_story_ch14.py) e [teste Ruby com `RegionTravel` real](../tests/sinnoh_story_ch14_runtime.rb) bloqueiam saves falsos, regressos/atalhos, premiação fictícia e viagem para Hoenn/Unova sem fonte/destino/NPC instalados, mesmo após Hall of Fame sintético. O [CI 43973023734](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43973023734) aprovou CH14 e **301 testes Python isolados de Sinnoh**. [Documentação](SINNOH_CH14_GALACTIC_CYRUS_LIGA.md). Não foram adicionados eventos físicos, MapIDs, NPCs, equipes, recompensas ou prova jogável.
 
 **CH13 concluída:** [catálogo simbólico de 21 áreas](../data/regions/sinnoh-symbolic-encounters.json), [auditor read-only](../scripts/regions/audit_sinnoh_symbolic_encounters.py) e [20 testes Python](../tests/test_sinnoh_symbolic_encounters_ch13.py) verificam 50 referências de espécies ancoradas no inventário existente de Platinum, terrenos e métodos candidatos do Blue, horários a conferir, cap de evolução compartilhado, símbolos ausentes/ambíguos, exclusão de eventos especiais e ausência total de MapIDs/percentuais/slots fictícios. Drifloon e Rotom permanecem eventos estáticos; Mt. Coronet, Route 212 e Old Chateau aguardam mapeamento inequívoco. [CI 43970908799](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43970908799): CH13 **20/20** e Sinnoh **286/286**. [Descrição CH13](SINNOH_CH13_ENCONTROS_SIMBOLICOS.md). Nenhum encounter nativo ou taxa por horário foi instalado.
 
@@ -146,4 +148,4 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 4. Publicar diretamente na `main` sem force push e atualizar **somente** a(s) entrada(s) CH realmente concluída(s).
 5. Informar SHA/links, verificações PASS/FAIL/não executadas e bloqueios; preservar barras oficiais de 13 fases até aceitação.
 
-**Próxima ação sugerida:** **CH14**, definir estados e contratos para Galactic, Cyrus, Liga e desbloqueio pós-Cynthia sem habilitar destinos não instalados. CH01–CH13 foram concluídas em código e testes isolados; Sinnoh continua não jogável.
+**Próxima ação sugerida:** **CH15**, construir registro auditável de equipes dos oito líderes, Elite Four e Cynthia, com separação de referências históricas e PBS nativo, sem criar níveis fixos ou declarar times instalados. CH01–CH14 concluídas em código/testes; Sinnoh continua não jogável.

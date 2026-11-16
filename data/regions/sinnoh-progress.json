@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 13,
+    "done": 14,
     "partial": 0,
-    "pending": 7,
-    "percent_complete": 65,
+    "pending": 6,
+    "percent_complete": 70,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -911,8 +911,8 @@
         "priority": "P2",
         "title": "Estados e contratos para Galactic, Cyrus, Liga e viagem pós-Cynthia",
         "acceptance": "Eventos idempotentes, desbloqueio lógico Hoenn/Unova só quando instalado; testes sintéticos",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "tests/sinnoh_story_ch14_runtime.rb"
       },
       {
         "id": "CH15",

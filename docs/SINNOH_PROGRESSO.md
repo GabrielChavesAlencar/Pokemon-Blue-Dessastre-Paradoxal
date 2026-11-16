@@ -8,23 +8,23 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-█████████████░░░░░░░  13/20 (65%)
+██████████████░░░░░░  14/20 (70%)
 ```
 
-- **Concluídas:** 13 (**CH01–CH13**, incluindo o catálogo simbólico de encontros selvagens sem MapIDs).
+- **Concluídas:** 14 (**CH01–CH14**, incluindo máquina de estados Galactic/Cyrus/Liga sem eventos nativos instalados).
 - **Parciais:** 0.
-- **Pendentes:** 7 (**CH14–CH20**).
+- **Pendentes:** 6 (**CH15–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02–CH05:** consistência de progresso e proteção contra colisões de MapIDs/plugins legados.
-- **CH06–CH07:** schema, auditoria e guards de Twinleaf, iniciais, flags e saves.
-- **CH08–CH09:** três versões de Barry e suíte E2E sintética de conversão/staging/bundle.
-- **CH10–CH11:** pré-voo QA seguro, insígnias/HMs regionais isolados.
-- **CH12:** regras reais de `Campaign.rb`, `Story.rb`, `EvolutionScaling.rb` com 70%/90%, BST e evoluções de nível/pedra/troca/felicidade; sem inventar level cap numérico regional.
-- **CH13:** [catálogo Sinnoh de habitats simbólicos](../data/regions/sinnoh-symbolic-encounters.json) contém **21 áreas revisadas**, **50 menções de espécies candidatas**, terreno e métodos **a auditar**, janelas manhã/dia/noite **a auditar** e regras de progressão já definidas em `BlueEvolutionScaling`. Os locais **Mt. Coronet, Route 212 e Old Chateau** permanecem sem símbolo inequívoco de mapa. Os encontros especiais **Drifloon semanal e Rotom roteirizado** não são slots normais. Nenhum MapID, taxa, nível de encontro, slot ou dado de PBS real foi inserido. [Auditor CH13](../scripts/regions/audit_sinnoh_symbolic_encounters.py) cruza os 21 registros com os [habitats de referência](../data/regions/detonados-content-review.json), [inventário de áreas](../data/regions/sinnoh-coverage.json), métodos PBS e `Habitat.rb` reais, além dos limiares de evolução dinâmica. [20 testes negativos e positivos](../tests/test_sinnoh_symbolic_encounters_ch13.py) e **286 testes Python isolados de Sinnoh** passaram no [CI 43970908799](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43970908799). [Documentação](SINNOH_CH13_ENCONTROS_SIMBOLICOS.md).
-- **Critério:** só tarefas com evidência publicada e CI aprovado entram como `done` na Barra E.
+- **CH02–CH05:** consistência de progresso e proteções dos MapIDs/plugins legados.
+- **CH06–CH07:** auditor de Twinleaf, flags, Poké Bolas físicas e save isolado.
+- **CH08–CH09:** Barry, 70%/90% e integração E2E sintética até bundle.
+- **CH10–CH11:** lançador QA seguro e permissões das oito insígnias/HMs de Sinnoh.
+- **CH12–CH13:** balanceamento/evolução dinâmica e catálogo simbólico de encontros por área, método e horário sem IDs inventados.
+- **CH14:** [contrato de 22 checkpoints](../data/regions/sinnoh-story-ch14-contract.json), [runtime `SinnohStoryContracts.rb`](../scripts/regions/SinnohStoryContracts.rb) e [auditor somente leitura](../scripts/regions/audit_sinnoh_story_ch14.py) modelam a ordem Galactic/Mars/Jupiter → HQ/Cyrus/Saturn → Spear Pillar → Distortion World/Cyrus/Giratina → oitava insígnia → Elite Four → Cynthia → **Hall of Fame confirmado separadamente**. Rejeitam duplicação, flag ausente, premiação inventada, save regional corrompido, Liga antecipada e viagem sem instalação de destino e origem/npc válidos. Não chamam `TrainerBattle`, não adicionam itens/insígnias e não registram teleporte. [15 testes negativos Python](../tests/test_sinnoh_story_ch14.py) e [teste Ruby usando `BlueRegions` e `BlueRegionTravel` reais](../tests/sinnoh_story_ch14_runtime.rb) verificaram idempotência, rollback lógico de falhas, Marshal reload e isolamento entre regiões. [CI 43973023734](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43973023734): CH14 e **301 testes Python isolados** aprovados. [Documentação CH14](SINNOH_CH14_GALACTIC_CYRUS_LIGA.md).
+- **Critério:** só tarefas com arquivo, commit e CI válido contam como `done`.
 
-**Limites:** o catálogo é uma lista de **referências, não encontros instalados**, e a relação espécie↔horário↔método depende do PBS/mapa nativo. No Blue não há level cap numérico regional persistido; a progressão de evolução usa o maior nível não-ovo da equipe, limitado ao máximo do motor. **Barra A 8/32 (25%) e B/C/D 0/13 permanecem inalteradas.** Não foram executados Game.exe ou JoiPlay.
+**Limite:** os callbacks são **contratos para eventos futuros**, não provas de batalhas vencidas; nenhum handler da engine para esses 22 checkpoints foi instalado. A viagem real de Sinnoh continua bloqueada enquanto a região não tiver agente/origem verificados, e Unova não possui destino físico integrado. **Barra A 8/32 (25%)**; **B/C/D 0/13** inalteradas. Nenhum Game.exe/JoiPlay foi executado.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
