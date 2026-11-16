@@ -9,6 +9,9 @@ end
 class PokemonGlobalMetadata
   attr_accessor :blue_regions, :blue_story_mode, :blue_traditional_starters
 end
+module Compiler
+  def self.main; end
+end
 module BlueBattleOptions
   def self.battle_area?; false; end
   def self.snapshot(_); {}; end
@@ -235,6 +238,13 @@ end
 # Test threshold boundaries in the shared runtime, no duplicated policy.
 $player.badge_count = 0
 $PokemonGlobal.blue_regions = BlueRegions.new_state("SINNOH")
+# Five local achievements mean BST tier 540 but NOT Master; baseline
+# Roselia/Graveler must not be replaced by the separate 350 BST adapter.
+BlueRegions.info("SINNOH")["milestones"].first(5).each do |badge|
+  BlueRegions.award($PokemonGlobal.blue_regions, "SINNOH", badge)
+end
+check(BlueStory.stage == 2 && BlueStory.cap == 540 && !BlueCampaign.master?,
+      "threshold regression did not isolate normal 70% from BST tier")
 def threshold(base, evolved, low_player, high_player)
   player_level(low_player)
   early, = battle(base)
