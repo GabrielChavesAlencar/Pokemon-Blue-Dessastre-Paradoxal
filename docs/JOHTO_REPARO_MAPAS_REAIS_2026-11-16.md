@@ -1,5 +1,22 @@
 # Johto — correção de mapas reais do Blue-Story (16/11/2026)
 
+
+## Diagnóstico adicional: outra instalação Windows sem os arquivos de Johto
+
+Uma execução posterior do `VERIFICAR_QUARTO_JOHTO.bat` mostrou `Game.exe` existente, mas `Data/Map674.rxdata`, `Data/Map675.rxdata` e `Data/blue-johto-main-preview.json` ausentes. O diagnóstico anterior tinha os mapas, mas veio de **outro perfil Windows** (`%LOCALAPPDATA%` é diferente por conta). O BAT não pode corrigir o quarto sem que a região esteja instalada.
+
+Foi inspecionado também o ZIP privado `johto-pilot-inputs(1).zip` (manifesto `PRIVATE_JOHTO_PILOT_INPUTS`, schema 2): contém base, gráficos e arquivos PBS, **não** contém `game/Data/Map600.rxdata`, `Map674.rxdata` ou `Map675.rxdata`, e não contém os arquivos do pacote `Johto_Offline_Fase12/`. Portanto, não é possível usá-lo no lugar de `Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip` para instalar a região.
+
+**Correções do código para esse cenário:**
+
+- `diagnose_johto_bedroom.py` diferencia `JOHTO_NOT_INSTALLED` (três mapas ausentes, sem manifesto) de `JOHTO_FILES_MISSING` (instalação parcial) e devolve código 3; não solicita atualização de quarto para mapas ausentes.
+- `VERIFICAR_QUARTO_JOHTO.bat` explica que o ZIP OFFLINE12 original é obrigatório, preserva saves e informa para executar Blue-Story depois de colocar o pacote em Downloads.
+- `export_johto_map_diagnostics.py` cria `JOHTO_DIAGNOSTICO_MAPAS (1).zip`, `(2).zip`, etc. quando já existir um ZIP antigo; não sobrescreve e imprime o caminho real. Para região ausente o BAT não exporta o ZIP sem mapas.
+- `auto_integrate_johto.py` reconhece `johto-pilot-inputs*.zip` pelo próprio manifesto, registra `awaiting_johto_installable_release` e informa qual pacote correto ainda falta, sem modificar `Game.exe` ou outras regiões.
+
+**Próximo passo para a instalação sem Johto:** localizar o ZIP original privado OFFLINE 12 na conta/perfil que recebeu a instalação anterior ou na cópia de backup. Copiar apenas esse ZIP para a pasta Downloads da conta Windows em que o Blue-Story está sendo executado; o Blue-Story valida o SHA-256 antes de instalar. Não usar o ZIP `johto-pilot-inputs` como substituto e não copiar diretamente arquivos RXDATA entre perfis, pois dependem dos tilesets, MapInfos, PBS e scripts da região. Se não houver nenhuma cópia do ZIP privado, será necessário recuperá-lo da fonte original auditada antes da integração.
+
+
 ## Origem verificada
 
 A instalação local do usuário foi diagnosticada por `JOHTO_DIAGNOSTICO_MAPAS.zip`, contendo somente `Map600.rxdata`, `Map674.rxdata`, `Map675.rxdata` e os detalhes, **sem saves**. O ZIP foi analisado sem avaliar scripts Ruby. O pacote privado offline-12 continua com SHA-256 `74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49`.
