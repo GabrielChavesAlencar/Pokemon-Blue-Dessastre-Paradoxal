@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cf03f9d34d37ccae40629b0e58523fbce0627d1e",
+      "date": "2026-11-16T08:36:20-03:00",
+      "title": "test(johto): distinguish absent/partial regional installation from broken bedroom and never write maps",
+      "category": "Testes"
+    },
+    {
       "sha": "3b168c0c3719c1b84ea2747bf9ae2e53443d2d31",
       "date": "2026-11-16T08:35:49-03:00",
       "title": "fix(johto): Windows BAT explains missing Johto, never requests empty diagnostic ZIP, and keeps versioned exports",
