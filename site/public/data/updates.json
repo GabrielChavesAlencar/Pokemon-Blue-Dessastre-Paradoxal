@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "87fe203898b68aecc00274dfd5bc34e7873d7645",
+      "date": "2026-11-15T22:22:53-03:00",
+      "title": "test(site): cobrir conteúdo expandido da apresentação",
+      "category": "Testes"
+    },
+    {
       "sha": "6a602e4e3d1127c5cb5b42fa1ec638998b4f4edf",
       "date": "2026-11-15T22:22:31-03:00",
       "title": "site: estilizar seções de regiões, Pokédex e mecânicas na apresentação",
