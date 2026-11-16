@@ -374,6 +374,23 @@ internal static class Bootstrap {
         Say("[GAME EXE GERENCIADO] "+Path.Combine(Root,"game","Game.exe")+
             " - verifique se esta e a MESMA copia que voce esta jogando.");
         string python=Runtime("python","python.exe");string git=Runtime("git",Path.Combine("cmd","git.exe"));string pathExtra=Path.GetDirectoryName(git);
+        if(!Hub) {
+            // The source ZIP above includes the editor. Mirror its public
+            // components into Johto-Map-Studio both beside Blue-Story.exe and
+            // inside the managed project; never distribute private maps.
+            string exeDir=AppDomain.CurrentDomain.BaseDirectory;
+            Environment.SetEnvironmentVariable("BLUE_STORY_LAUNCHER_DIR",exeDir);
+            try {
+                Say("[JOHTO EDITOR] Baixando e atualizando Johto Map Studio da main...");
+                Run(python,new[]{"scripts/windows/install_johto_editor.py",
+                    "--project-root",Root,"--launcher-dir",exeDir},pathExtra);
+                Say("[JOHTO EDITOR] Editor disponivel em Johto-Map-Studio ao lado do Blue-Story.exe.");
+            } catch(Exception err) {
+                // Editor is optional for starting the game; do not prevent
+                // Kanto/Hoenn/Johto from running if the EXE folder is read-only.
+                Say("[JOHTO EDITOR] Nao foi possivel preparar atalhos: "+err.Message);
+            }
+        }
         Say("Preparando a base e as atualizacoes. A primeira instalacao pode demorar.");
         var install=new List<string>{"scripts/install_game.py","--apply"};if(Hub)install.Add("--hub-only");Run(python,install.ToArray(),pathExtra);
         Run(python,Hub?new[]{"scripts/battle_lab/launch.py","--prepare-only"}:new[]{"scripts/launch_game.py","--prepare-only"},pathExtra);
