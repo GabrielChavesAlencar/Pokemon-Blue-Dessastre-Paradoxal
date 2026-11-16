@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a74215ddb2b15db949f35f6dce944e62f993a1ff",
+      "date": "2026-11-16T06:53:08-03:00",
+      "title": "ci(johto): test private diagnostic export, no saves, and changed reverse stair event",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "759d16b5f718f9151ea44f3f88779528f25e7bd6",
+      "date": "2026-11-16T06:52:51-03:00",
+      "title": "test(johto): export only three diagnostic map RXDATA files and never user saves",
+      "category": "Testes"
+    },
+    {
       "sha": "d1a1c9cd01437373602170a8839033a96d74962c",
       "date": "2026-11-16T06:52:05-03:00",
       "title": "fix(johto): create safe three-map diagnostic ZIP automatically when room repair is blocked",
