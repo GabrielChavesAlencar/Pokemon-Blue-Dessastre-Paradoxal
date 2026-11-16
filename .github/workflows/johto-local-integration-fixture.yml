@@ -17,8 +17,7 @@ jobs:
         with:
           name: johto-private-fixture-scripts
           path: |
-            scripts/regions/
-            scripts/official_rules/prepare_restore.py
+            scripts/
             server/ruby_marshal.py
             data/regions/johto-source.json
           compression-level: 6
