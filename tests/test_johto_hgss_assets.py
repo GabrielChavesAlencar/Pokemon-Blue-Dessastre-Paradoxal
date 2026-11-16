@@ -15,6 +15,7 @@ from johto_hgss_assets import (INTERIORS, compile_private_art, map_kind,
                                 private_sources, FOLDER)
 from server.ruby_marshal import RubyData, RubyObject, loads
 from stage import serialize
+from build_johto_events import EVENT_CLASSES
 
 
 def table(count, *, w=None, h=1, z=1):
@@ -90,7 +91,7 @@ class JohtoHgssAssetsTests(unittest.TestCase):
         self.assertEqual(cells[5+14*5],400)
         _, cells = table_values(self.maps[681].attrs["@data"].data, 3)
         self.assertEqual(cells[6+14*(6+11*2)],401)
-        self.assertEqual(loads(serialize(self.maps[674])),self.maps[674])
+        self.assertEqual(loads(serialize(self.maps[674], EVENT_CLASSES)),self.maps[674])
 
     def test_blocking_tile_cannot_cover_spawn_or_event(self):
         self.set_manifest([{"map":674,"source":"akizakura16", "sheet_col":0,
@@ -107,10 +108,10 @@ class JohtoHgssAssetsTests(unittest.TestCase):
 
     def test_no_assets_keeps_originals_untouched(self):
         (self.folder/"manifest.json").unlink()
-        before = serialize(self.maps[674])
+        before = serialize(self.maps[674], EVENT_CLASSES)
         result = compile_private_art(self.maps,self.tilesets,{},self.read_graphic,self.root)
         self.assertEqual(result["status"],"no_private_art")
-        self.assertEqual(before,serialize(self.maps[674]))
+        self.assertEqual(before,serialize(self.maps[674], EVENT_CLASSES))
 
     def test_interior_scopes_exclude_hoenn_ids(self):
         self.assertEqual(min(INTERIORS),674)
