@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "33489ae39db1f17b7a2df24e8b41ca7d712c3e1d",
+      "date": "2026-11-16T06:31:32-03:00",
+      "title": "feat(johto): room diagnostic can safely repair when unrelated shared regional hashes changed",
+      "category": "Novidades"
+    },
+    {
       "sha": "600c2e0e280e3ebbe0d1a171ae5d3ba3349b63c0",
       "date": "2026-11-16T06:31:09-03:00",
       "title": "fix(johto): allow explicit hash-checked local Map674/675 repair even when shared region files changed",
