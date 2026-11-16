@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8505dfc0f0832291bfc910b9e108af54c733fe00",
+      "date": "2026-11-16T06:27:53-03:00",
+      "title": "docs(johto): exact Windows one-click room diagnosis, real Game.exe path and missing HGSS art distinction",
+      "category": "Documentação"
+    },
+    {
       "sha": "dc3df0c27ad78b8164c7e32f34befc81ee237290",
       "date": "2026-11-16T06:26:15-03:00",
       "title": "ci(johto): run native map bedroom diagnostic tests on every change",
