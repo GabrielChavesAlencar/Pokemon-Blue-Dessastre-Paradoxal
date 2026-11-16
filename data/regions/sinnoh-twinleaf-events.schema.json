@@ -1,0 +1,438 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-twinleaf-events.schema.json",
+  "title": "Sinnoh Twinleaf authored events (not playable)",
+  "description": "Static schema for 9-map 24-event 16-warp draft. Geometry and Game.exe not verified.",
+  "type": "object",
+  "required": [
+    "schema",
+    "region",
+    "status",
+    "purpose",
+    "approved_for_install",
+    "gameplay_verified",
+    "starter_selection",
+    "battle_engine",
+    "start",
+    "maps",
+    "requirements",
+    "notes"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "region": {
+      "const": "SINNOH"
+    },
+    "status": {
+      "const": "EVENT_COORDINATES_REQUIRE_REAL_MAP_AUDIT"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 10
+    },
+    "approved_for_install": {
+      "const": false
+    },
+    "gameplay_verified": {
+      "const": false
+    },
+    "starter_selection": {
+      "const": "THREE_PHYSICAL_BALL_EVENTS_NOT_ROWAN_DIALOG"
+    },
+    "battle_engine": {
+      "const": "BLUE_DECADES_ONLY"
+    },
+    "start": {
+      "$ref": "#/$defs/start"
+    },
+    "maps": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "$ref": "#/$defs/map"
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "notes": {
+      "type": "string",
+      "minLength": 10
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "start": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "map_id",
+        "x",
+        "y",
+        "verified_position",
+        "passability_verified"
+      ],
+      "properties": {
+        "symbol": {
+          "const": "SINNOH_PLAYER_BEDROOM"
+        },
+        "map_id": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 599
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "x": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_position": {
+          "type": "boolean"
+        },
+        "passability_verified": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "map": {
+      "type": "object",
+      "required": [
+        "symbol",
+        "map_id",
+        "map_sha256",
+        "events"
+      ],
+      "properties": {
+        "symbol": {
+          "enum": [
+            "SINNOH_PLAYER_BEDROOM",
+            "SINNOH_PLAYER_HOUSE_1F",
+            "SINNOH_TWINLEAF_TOWN",
+            "SINNOH_BARRY_HOUSE",
+            "SINNOH_ROUTE_201",
+            "SINNOH_LAKE_VERITY",
+            "SINNOH_SANDGEM_TOWN",
+            "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+            "SINNOH_ROUTE_202"
+          ]
+        },
+        "map_id": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 599
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "map_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "events": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/warp"
+              },
+              {
+                "$ref": "#/$defs/handler"
+              },
+              {
+                "$ref": "#/$defs/starter_ball"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "warp": {
+      "type": "object",
+      "required": [
+        "key",
+        "kind",
+        "x",
+        "y",
+        "verified_position",
+        "destination",
+        "arrival_x",
+        "arrival_y",
+        "verified_arrival",
+        "trigger"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^SN_[A-Z0-9_]{3,75}$"
+        },
+        "x": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_position": {
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "warp"
+        },
+        "destination": {
+          "enum": [
+            "SINNOH_PLAYER_BEDROOM",
+            "SINNOH_PLAYER_HOUSE_1F",
+            "SINNOH_TWINLEAF_TOWN",
+            "SINNOH_BARRY_HOUSE",
+            "SINNOH_ROUTE_201",
+            "SINNOH_LAKE_VERITY",
+            "SINNOH_SANDGEM_TOWN",
+            "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+            "SINNOH_ROUTE_202"
+          ]
+        },
+        "arrival_x": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "arrival_y": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_arrival": {
+          "type": "boolean"
+        },
+        "trigger": {
+          "const": "touch"
+        }
+      },
+      "additionalProperties": false
+    },
+    "handler": {
+      "type": "object",
+      "required": [
+        "key",
+        "kind",
+        "x",
+        "y",
+        "verified_position",
+        "handler",
+        "sprite",
+        "verified_sprite",
+        "trigger"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^SN_[A-Z0-9_]{3,75}$"
+        },
+        "x": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_position": {
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "handler"
+        },
+        "handler": {
+          "enum": [
+            "mother",
+            "barry_intro",
+            "rowan_briefcase",
+            "barry_rival",
+            "rowan_pokedex"
+          ]
+        },
+        "sprite": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_ .()-]{1,100}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_sprite": {
+          "type": "boolean"
+        },
+        "trigger": {
+          "enum": [
+            "touch",
+            "action"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "starter_ball": {
+      "type": "object",
+      "required": [
+        "key",
+        "kind",
+        "x",
+        "y",
+        "verified_position",
+        "species",
+        "sprite",
+        "verified_sprite",
+        "trigger"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^SN_[A-Z0-9_]{3,75}$"
+        },
+        "x": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_position": {
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "starter_ball"
+        },
+        "species": {
+          "enum": [
+            "TURTWIG",
+            "CHIMCHAR",
+            "PIPLUP"
+          ]
+        },
+        "sprite": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_ .()-]{1,100}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_sprite": {
+          "type": "boolean"
+        },
+        "trigger": {
+          "const": "action"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
