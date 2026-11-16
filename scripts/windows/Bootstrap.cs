@@ -241,6 +241,34 @@ internal static class Bootstrap {
           RegionalStatus("hoenn-main-install-status.json","Hoenn")+" | "+
           RegionalStatus("johto-main-install-status.json","Johto");
     }
+    // A user-owned private Johto pack can accompany Blue-Story.exe in one
+    // downloadable ZIP. Stage it in the SAME already-managed installation
+    // before Python checks regions; never publish or modify its raw contents.
+    static void StageAdjacentJohto() {
+        if(Hub)return;
+        string local=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,JohtoZipName);
+        string target=Path.Combine(Root,".blue-work",JohtoZipName);
+        if(!File.Exists(local) || String.Equals(Path.GetFullPath(local),Path.GetFullPath(target),
+                                                StringComparison.OrdinalIgnoreCase))return;
+        if(!String.Equals(Hash(local),JohtoBundleHash,StringComparison.OrdinalIgnoreCase)) {
+            Say("[JOHTO] Pacote ao lado do Blue-Story.exe nao tem SHA-256 autorizado; nao foi usado.");
+            return;
+        }
+        if(File.Exists(target) && Hash(target)==JohtoBundleHash) {
+            Say("[JOHTO] Pacote privado correto ja esta na instalacao principal.");
+            return;
+        }
+        string temp=target+".stage";
+        if(File.Exists(temp))File.Delete(temp);
+        try {
+            File.Copy(local,temp);
+            if(Hash(temp)!=JohtoBundleHash)throw new Exception("Falha ao verificar ZIP Johto copiado.");
+            if(File.Exists(target))File.Delete(target);
+            File.Move(temp,target);
+        } finally {if(File.Exists(temp))File.Delete(temp);}
+        Say("[JOHTO] ZIP privado encontrado ao lado do Blue-Story.exe; preparado automaticamente antes do Game.exe.");
+    }
+
     static void Prepare() {
         foreach(var p in Process.GetProcessesByName("Game"))try { if(String.Equals(p.MainModule.FileName,Path.Combine(Root,"game","Game.exe"),StringComparison.OrdinalIgnoreCase))throw new Exception("Feche o jogo antes de atualizar a instalacao."); }catch(System.ComponentModel.Win32Exception){}
         string marker=Path.Combine(Root,".blue-work","launcher-revision.txt");
@@ -264,6 +292,7 @@ internal static class Bootstrap {
             if(Path.GetFullPath(stage).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(stage)=="source-"+revision)Directory.Delete(stage,true);
             if(Path.GetFullPath(zip).StartsWith(cache,StringComparison.OrdinalIgnoreCase) && Path.GetFileName(zip)=="source-"+revision+".zip")File.Delete(zip);
         }
+        StageAdjacentJohto();
         string python=Runtime("python","python.exe");string git=Runtime("git",Path.Combine("cmd","git.exe"));string pathExtra=Path.GetDirectoryName(git);
         Say("Preparando a base e as atualizacoes. A primeira instalacao pode demorar.");
         var install=new List<string>{"scripts/install_game.py","--apply"};if(Hub)install.Add("--hub-only");Run(python,install.ToArray(),pathExtra);
