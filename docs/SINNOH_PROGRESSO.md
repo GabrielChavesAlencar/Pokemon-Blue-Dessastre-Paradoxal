@@ -8,20 +8,20 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-████░░░░░░░░░░░░░░░░  4/20 (20%)
+█████░░░░░░░░░░░░░░░  5/20 (25%)
 ```
 
-- **Concluídas:** 4 (**CH01**: mapeamento; **CH02**: validador; **CH03**: proteção de MapIDs; **CH04**: bloqueio do plugin legado SinnohPreview.rb).
+- **Concluídas:** 5 (**CH01**: mapeamento; **CH02**: validador; **CH03**: proteção de MapIDs; **CH04**: bloqueio do piloto legado; **CH05**: manifesto de reservas/ocupação desconhecida).
 - **Parciais:** 0.
-- **Pendentes:** 16 (**CH05–CH20**).
+- **Pendentes:** 15 (**CH06–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` rejeita inconsistências de JSON/MD/tabela.
-- **CH03:** [`sinnoh_map_id_guard.py`](../scripts/regions/sinnoh_map_id_guard.py) protege MapIDs de Sinnoh legado e Johto compartilhado.
-- **CH04:** [`sinnoh_legacy_plugin_guard.py`](../scripts/regions/sinnoh_legacy_plugin_guard.py) rejeita `SinnohPreview.rb`, `BlueSinnohPreview`, declarações em `meta.txt`, perfil de save piloto e marcadores de compilação em `game/` compartilhado. Executado antes das alterações pelo [instalador principal](../scripts/install_game.py), [lançador](../scripts/launch_game.py), [instalador Johto](../scripts/regions/johto_main_preview.py) e [cópia QA Sinnoh](../scripts/regions/install_sinnoh_qa_copy.py); não remove arquivos, não altera piloto isolado. Testes: [`test_sinnoh_legacy_plugin_guard.py`](../tests/test_sinnoh_legacy_plugin_guard.py), regressões Johto e QA.
-- **Critério:** só contabilizar tarefas `done` e evidência versionada.
+- **CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` valida o JSON, a tabela e as barras.
+- **CH03:** [`sinnoh_map_id_guard.py`](../scripts/regions/sinnoh_map_id_guard.py) bloqueia Sinnoh legado 800–805 nos mapas compartilhados.
+- **CH04:** [`sinnoh_legacy_plugin_guard.py`](../scripts/regions/sinnoh_legacy_plugin_guard.py) bloqueia o plugin isolado no Decades principal.
+- **CH05:** [`sinnoh-map-id-reservations.json`](../data/regions/sinnoh-map-id-reservations.json) distingue **reservas por código** (Johto 600–699; Hoenn 700–999), **legado isolado Sinnoh 800–805**, exclusão Sinnoh 600–999 e **ocupação física desconhecida** em Decades/Kanto/demais. O [auditor somente leitura](../scripts/regions/audit_region_map_id_reservations.py) valida essas afirmações contra linhas de código e classifica consultas sem liberar IDs; aceita relatório local RXDATA opcional, mas nunca atribui dono físico ou certifica instalação. Testes negativos: [`test_sinnoh_map_id_reservations.py`](../tests/test_sinnoh_map_id_reservations.py).
 
-**Limite:** Barra E não substitui a Barra A (8/32, 25%) nem as barras B/C/D (0/13). O bloqueio estático não aprova Game.exe/JoiPlay nem comprova ausência de código antigo já compilado.
+**Limite:** Barra E não substitui a Barra A (8/32, 25%) nem as barras B/C/D (0/13). Nenhum ID está comprovadamente livre. O uso real do Game.exe/JoiPlay e os direitos dos assets permanecem pendentes.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

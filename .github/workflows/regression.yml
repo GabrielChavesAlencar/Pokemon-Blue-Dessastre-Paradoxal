@@ -126,6 +126,10 @@ jobs:
           python -m unittest discover -s tests -p 'test_sinnoh_legacy_plugin_guard.py' -v
           python -m unittest discover -s tests -p 'test_johto_main_preview.py' -v
           python -m unittest discover -s tests -p 'test_sinnoh_qa_install.py' -v
+      - name: CH05 - Auditar reservas e ocupacao desconhecida dos MapIDs
+        run: |
+          python scripts/regions/audit_region_map_id_reservations.py --id 599 --id 600 --id 700 --id 800 --id 1000
+          python -m unittest discover -s tests -p 'test_sinnoh_map_id_reservations.py' -v
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh

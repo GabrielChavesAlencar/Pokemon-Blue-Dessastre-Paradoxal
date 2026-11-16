@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 4,
+    "done": 5,
     "partial": 0,
-    "pending": 16,
-    "percent_complete": 20,
+    "pending": 15,
+    "percent_complete": 25,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -839,8 +839,8 @@
         "priority": "P0",
         "title": "Manifestações das **reservas documentadas**, sem inventar IDs novos",
         "acceptance": "Relatório/fixture diferencia ocupado físico, reserva declarada e desconhecido; nunca libera importação indevidamente",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "data/regions/sinnoh-map-id-reservations.json"
       },
       {
         "id": "CH06",

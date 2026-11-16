@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-████░░░░░░░░░░░░░░░░  4/20 (20%)
+█████░░░░░░░░░░░░░░░  5/20 (25%)
 ```
 
-**4 concluídas**, **0 parciais**, **16 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**5 concluídas**, **0 parciais**, **15 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -31,7 +31,7 @@
 | P0 | **CH02** ✅ | Validador automático do JSON ↔ Barra E ↔ MD | Script + testes asseguram soma, IDs únicos, status e percentual; CI/checagem real |
 | P0 | **CH03** ✅ | Proteção estática contra colisão Sinnoh legado 800–805 × Johto 600–999 | Testes negativos impedem que o instalador conjunto injete esses IDs |
 | P0 | **CH04** ✅ | Bloqueio explícito do plugin `SinnohPreview.rb` legado na instalação compartilhada | Verificação cobre lançador, cópia QA, marcadores e caminho do instalador principal |
-| P0 | CH05 | Manifestações das **reservas documentadas**, sem inventar IDs novos | Relatório/fixture diferencia ocupado físico, reserva declarada e desconhecido; nunca libera importação indevidamente |
+| P0 | **CH05** ✅ | Manifestações das **reservas documentadas**, sem inventar IDs novos | Relatório/fixture diferencia ocupado físico, reserva declarada e desconhecido; nunca libera importação indevidamente |
 | P1 | CH06 | Schema + auditor das 9 áreas, 24 eventos e 16 warps da introdução | Campos ausentes, coordenadas inválidas, transferência circular/órfã e mapas faltantes reprovam |
 | P1 | CH07 | Reforçar proteção de flags, três Poké Bolas e save exclusivo de `SinnohPilot.rb` | Ruby/Python com casos duplicados, perda/retorno e fallback sem iniciar outra região |
 | P1 | CH08 | Aumentar as verificações de Barry, três equipes e escalonamento compartilhado | Fixtures cobrem iniciais, versões, ausência de PBS, 70%/90% e bloqueio seguro |
@@ -48,7 +48,9 @@
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH05 → CH06–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH06–CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH05 concluída:** o [manifesto auditável](../data/regions/sinnoh-map-id-reservations.json) e o [validador](../scripts/regions/audit_region_map_id_reservations.py) distinguem ocupação física **não fornecida**, reservas de código Johto 600–699 / Hoenn 700–999, IDs variáveis de Kanto e Decades desconhecidos e o piloto isolado Sinnoh 800–805. Relatório local RXDATA opcional permite observar ocupação sem atribuir dono nem declarar ID livre. Testes de adulteração/falsas aprovações estão em [test_sinnoh_map_id_reservations.py](../tests/test_sinnoh_map_id_reservations.py). Nenhum mapa, save ou Game.exe foi alterado.
 
 **CH04 concluída:** o [guard de plugin legado](../scripts/regions/sinnoh_legacy_plugin_guard.py) impede `SinnohPreview.rb`, `BlueSinnohPreview`, metadados/flags de piloto e perfil de save isolado no jogo principal, lançador, instalador Johto e origem da cópia QA Sinnoh. O overlay compartilhado é auditado antes de gravação. [Testes negativos](../tests/test_sinnoh_legacy_plugin_guard.py) e regressões foram incluídos no CI. Piloto standalone não foi modificado. Isso não prova gameplay.
 

@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "region": "MULTIREGION",
+  "mode": "DOCUMENTED_MAP_ID_CLAIMS_ONLY",
+  "as_of": "2026-11-16",
+  "scope": "GitHub main: declarative constraints, not an inspected game/Data installation",
+  "native_snapshot": {
+    "status": "NOT_PROVIDED",
+    "occupied_ids": null,
+    "ownership_by_region": null
+  },
+  "allocation": {
+    "confirmed_free_ids": null,
+    "confirmed_free_status": "UNKNOWN",
+    "can_allocate": false,
+    "can_install": false,
+    "safe_to_merge": false
+  },
+  "regions": {
+    "DECADES": {
+      "shared_destination_status": "UNKNOWN_REQUIRES_LOCAL_GAME_DATA",
+      "known_shared_destinations": null,
+      "physical_occupied_ids": null,
+      "evidence": [
+        {
+          "path": "scripts/install_game.py",
+          "contains": "def ensure_base(project,game):"
+        }
+      ],
+      "note": "The base is fetched locally; no current MapInfos.rxdata/PBS/game/Data scan has been supplied."
+    },
+    "KANTO": {
+      "shared_destination_status": "UNKNOWN_DYNAMIC_PILOT_MAPPING",
+      "known_shared_destinations": null,
+      "physical_occupied_ids": null,
+      "evidence": [
+        {
+          "path": "scripts/regions/install_kanto.py",
+          "contains": "mapping = {int(k): int(v) for k, v in info[\"maps\"].items()}"
+        }
+      ],
+      "note": "Kanto donor source MapIDs are not destinations. The installed pilot manifest and native baseline are required."
+    },
+    "JOHTO": {
+      "shared_destination_status": "DOCUMENTED_PREVIEW_RESERVATION_NOT_INSTALLED_PROOF",
+      "known_shared_destinations": null,
+      "physical_occupied_ids": null,
+      "evidence": [
+        {
+          "path": "scripts/regions/johto_main_preview.py",
+          "contains": "PREVIEW_IDS = frozenset(range(600, 700))"
+        }
+      ],
+      "note": "The current shared preview uses 600..699; neither physical occupation nor validated gameplay is inferred."
+    },
+    "HOENN": {
+      "shared_destination_status": "DOCUMENTED_INSTALLER_RANGE_NOT_INSTALLED_PROOF",
+      "known_shared_destinations": null,
+      "physical_occupied_ids": null,
+      "evidence": [
+        {
+          "path": "scripts/regions/pilot_hoenn.py",
+          "contains": "free = [n for n in range(700, 1000) if n not in reserved]"
+        }
+      ],
+      "note": "Hoenn picks specific destination IDs dynamically after checking native occupied IDs; not all 700..999 are physically occupied."
+    },
+    "SINNOH": {
+      "shared_destination_status": "NO_SHARED_IDS_ALLOCATED",
+      "known_shared_destinations": [],
+      "physical_occupied_ids": null,
+      "evidence": [
+        {
+          "path": "scripts/regions/sinnoh_map_id_guard.py",
+          "contains": "JOHTO_SINNOH_EXCLUSION = frozenset(range(600, 1000))"
+        },
+        {
+          "path": "scripts/regions/pilot_sinnoh.py",
+          "contains": "IDS = dict(zip(NAMES, range(800, 806)))"
+        }
+      ],
+      "note": "Legacy 800..805 maps belong to a separate copy, not a shared-game allocation; candidate IDs below 600 still UNKNOWN."
+    }
+  },
+  "documented_shared_reservations": [
+    {
+      "owner": "JOHTO",
+      "start": 600,
+      "end": 699,
+      "claim_type": "SHARED_PREVIEW_CODE_RESERVATION",
+      "source": "scripts/regions/johto_main_preview.py"
+    },
+    {
+      "owner": "HOENN",
+      "start": 700,
+      "end": 999,
+      "claim_type": "SHARED_INSTALLER_CODE_RANGE",
+      "source": "scripts/regions/pilot_hoenn.py"
+    }
+  ],
+  "sinnoh_shared_exclusion": {
+    "start": 600,
+    "end": 999,
+    "rule": "CONSERVATIVE_NO_NEW_SINNOH_MAPS",
+    "source": "scripts/regions/sinnoh_map_id_guard.py"
+  },
+  "legacy_standalone": {
+    "region": "SINNOH",
+    "start": 800,
+    "end": 805,
+    "mode": "STANDALONE_PILOT_ONLY_NOT_SHARED_RESERVATION",
+    "source": "scripts/regions/pilot_sinnoh.py"
+  },
+  "unknown_ownership": [
+    "All physical Decades map IDs",
+    "Kanto shared pilot mapping until its real install manifest is inspected",
+    "Every unreported physical map ID",
+    "All unassigned Sinnoh destination IDs including below 600",
+    "Any four-digit MapID runtime compatibility and other future reservations"
+  ],
+  "review_required": [
+    "Read-only native game/Data and PBS occupancy inventory",
+    "Native MapInfos and installed Kanto/Hoenn/Johto proofs",
+    "Rights and donor asset inventory for Sinnoh",
+    "Compatibility test of destination IDs and save mappings"
+  ],
+  "warning": "Documented reserved != physically occupied; absent != available; local report != installation authorization. Source IDs of donor maps are NOT shared destination IDs."
+}
