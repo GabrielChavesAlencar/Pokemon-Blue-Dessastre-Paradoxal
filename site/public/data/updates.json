@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8640c63407041f8351476d4c233a7fd5d95d30bf",
+      "date": "2026-11-15T22:32:09-03:00",
+      "title": "feat(title): identify Johto main-game preview separately from uninstalled isolated pilot",
+      "category": "Novidades"
+    },
+    {
       "sha": "7dd884dcad1b5f03729b9215ac26bae90c3d7dfe",
       "date": "2026-11-15T22:31:19-03:00",
       "title": "fix(test): valid Python line continuations for Johto preview backup tests",
