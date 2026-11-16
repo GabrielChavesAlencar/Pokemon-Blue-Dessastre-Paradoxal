@@ -83,6 +83,16 @@ module BlueKantoTitle
           return :integrated
         end
         pbMessage(_INTL("Kanto não foi instalado. Feche o jogo e abra novamente o Blue-Story.exe: ele tentará baixar e integrar Kanto automaticamente. Se a instalação falhar, consulte o diagnóstico em .blue-work/kanto-install-status.json. Seus saves serão preservados."))
+      when :johto
+        # Installable Johto belongs to the SAME Game.exe, save and regional
+        # journey as Kanto/Hoenn. A separate experimental QA launcher is only
+        # a fallback while the shared installer lacks a verified start point.
+        if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:request_initial) &&
+           BlueRegionStart.request_initial("JOHTO")
+          return :integrated
+        end
+        return :launched if launch_johto
+        pbMessage(_INTL("Johto não está instalada nesta campanha. Execute o Blue-Story.exe atualizado com o pacote privado OFFLINE 12 em Downloads. A instalação informará o motivo exato se ainda não puder liberar a região, sem alterar seus saves."))
       when :hoenn
         if defined?(BlueRegionStart) && BlueRegionStart.respond_to?(:hoenn_integrated?) &&
            BlueRegionStart.hoenn_integrated? &&
