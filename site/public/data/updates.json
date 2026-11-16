@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "40f872320fffaf904166d026bec3ca96d656b531",
+      "date": "2026-11-16T11:43:22-03:00",
+      "title": "docs(blue-story): remover exigência de autenticação manual dos atalhos",
+      "category": "Documentação"
+    },
+    {
       "sha": "6d1c9c901259715e14d10cecca7fc7a4a67e985a",
       "date": "2026-11-16T11:42:25-03:00",
       "title": "ci(blue-story): validar instalador e publicação Johto antes da release",
