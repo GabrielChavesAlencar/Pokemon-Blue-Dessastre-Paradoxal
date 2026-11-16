@@ -29,6 +29,8 @@ MAX_PLACEMENTS = 900
 # The central source of truth for new/regional interiors is Johto's own
 # physical MapIDs; Map700+ is owned by Hoenn in the combined Game.exe.
 def map_kind(mid):
+    if mid not in INTERIORS:
+        return None  # Map700+ belongs to Hoenn in the combined install.
     if mid == 674: return "bedroom"
     if mid == 675: return "home"
     if mid == 676: return "lab"
