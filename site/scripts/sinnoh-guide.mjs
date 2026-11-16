@@ -71,7 +71,7 @@ export function generateSinnohGuide(sources){
         (a.phase!=null&&!phaseNumbers.has(a.phase))||
         'map_id' in a||'level' in a||'rate' in a)reject('unverified area entered as playable');
     const match=encountersBySymbol.get(a.source_symbol);
-    return {id:a.id,name:nameOf(a),phase:a.phase,
+    return {id:a.id,name:nameOf(a),phase:a.phase??null,
       referenceSymbol:a.source_symbol??null,status:'planned',
       notes:a.notes??'Mapas e encontros nativos ainda não confirmados.',
       speciesCandidates:match?[...match.reference_species]:[],
