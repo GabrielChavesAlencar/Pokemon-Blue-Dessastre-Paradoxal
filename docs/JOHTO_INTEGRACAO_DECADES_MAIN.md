@@ -1,63 +1,40 @@
-# Johto dentro do Decades — integração da campanha principal
+# Johto diretamente no Decades — Blue-Story.exe
 
-**Atualizado:** 15/11/2026  
-**Situação real:** o Blue-Story.exe agora verifica Johto depois de Kanto/Hoenn e produz relatório local. **Johto ainda NÃO foi instalada, liberada no Novo Jogo ou certificada como jogável.** Os controles de segurança continuam ativos.
+**Atualizado:** 16/11/2026  
+**Estado:** existe agora uma **integração experimental privada** de Johto ao Game.exe principal, preparada pelo Blue-Story.exe. **Não foi testada como jogável no Game.exe nem no JoiPlay**, e não é o lançamento definitivo de Johto.
 
-## Objetivo
+## Como atualizar no Windows
 
-Johto deve compartilhar o Game.exe e o perfil de saves do Decades com Kanto e Hoenn. No futuro, o menu de Novo Jogo inicia no quarto de New Bark e a viagem regional chega **fora** da casa, perto do agente regional. O sistema já existente de Box, itens-chave/HMs regionais, emblemas, nível escalado e retrocesso por derrota não deve ser alterado pelo importador. O piloto isolado não é substituto para esse comportamento.
+1. Baixar **Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip** (SHA-256 `74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49`) e deixá-lo **sem extrair** na pasta `Downloads` do mesmo usuário Windows, ou na raiz do projeto ou em `.blue-work`.
+2. Fechar `Game.exe` e abrir **o mesmo Blue-Story.exe geral**. Ele baixa a nova revisão, prepara Decades/Kanto/Hoenn e só depois monta Johto.
+3. Conferir `.blue-work/johto-main-install-status.json`. O sucesso **experimental** é `"status": "experimental_installed_not_native_tested"`. Qualquer outro status deixa Johto bloqueada e informa `reason`; não criar marcadores manualmente.
+4. Na primeira abertura do jogo, permitir a compilação nativa de scripts/PBS solicitada pelo launcher. Em Novo Jogo, uma instalação experimental montada corretamente deve mostrar **Johto (prévia integrada)** e iniciar no quarto de New Bark, dentro da **mesma pasta game/** e do mesmo perfil de saves.
+5. Reportar o resultado do teste com screenshot e o arquivo `.blue-work/johto-main-install-status.json`; nenhuma aprovação de gameplay foi feita nesta sessão.
 
-## Fonte privada já localizada e verificada
+**Aviso:** o ZIP original indica `can_install=false` como **prévia bruta**. Ele só é admitido como *entrada privada* do novo montador `scripts/regions/johto_main_preview.py`, nunca é extraído diretamente em `game/` nem publicado na distribuição. A origem dos assets/músicas ainda carece de aprovação para redistribuição pública.
 
-- `Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip`, SHA-256 `74e727875803f70b3c0598b6b88fe5d79717df849ba1b888fae0583c09202a49`.
-- 82 mapas `Map600` a `Map681` (74 do terreno e 8 interiores), 44 conexões, 21 equipes PBS, 6 encontros iniciais, 32 eventos e gráficos de campo.
-- ZIP de origem de Johto v1: SHA-256 `5d5697e9c3bf5db6ca7039d4af65697dd8b231f4b1305f14731e35ac324b6715`. A autorização para redistribuir os assets permanece pendente.
-- O manifesto do OFFLINE 12 declara `not_playable=true` e `can_install=false`. É uma **prévia privada de auditoria**; nunca deve ser copiado diretamente sobre `game/`.
-- O `johto_qa.py` consegue auditar e preparar **cópia privada** com reparos adicionais de New Bark, Sprout e Violet. O seu overlay QA altera `System.rxdata`, `Scripts.rxdata`, `mkxp.json`, `Game.ini` e cria `Johto pilot.json`: essas alterações de isolamento **NÃO podem ser reaproveitadas** na instalação principal.
+## O que foi implementado
 
-## O que foi adicionado ao fluxo de atualização
+- `scripts/install_game.py` e `scripts/regions/auto_integrate_johto.py`: integração Johto automática depois de Kanto/Hoenn, busca em Downloads e diagnóstico claro.
+- `scripts/regions/johto_main_preview.py`: valida ZIP privado pelo hash exato, prepara **82 mapas originais + 18 interiores adaptados = 100 mapas (Map600–Map699)**, preserva **Hoenn Map700+**, mantém os mapas antigos de Kanto/Decades, reindexa tilesets, mescla `MapInfos.rxdata` e conexões PBS e instala os eventos/sprites e scripts Ruby adaptados de Johto.
+- O construtor **não** altera `System.rxdata`, `Scripts.rxdata`, `Game.ini`, `mkxp.json`, `Game.exe`, saves, perfis de usuário nem os MapIDs existentes. Faz backup em `.blue-backups/johto-preview-...`, aborta se houver colisão e reverte todas as suas alterações em caso de erro.
+- `RegionStart.rb` / `TitleKanto.rb`: Novo Jogo → Johto tenta a região integrada primeiro; o piloto separado é só fallback caso exista. O marcador de **prévia experimental** é diferente do lançamento com 13 comprovantes `VERIFIED_PLAYABLE`. A seleção não exige a biblioteca JSON/Digest no JoiPlay.
+- `JohtoMainCompile.rb`: os marcadores de prontidão das batalhas de Silver, treinadores de rota e Falkner/Sprout só são escritos após a compilação real do PBS, com verificação de tipos, equipes e encontros; nunca apenas por presença dos arquivos.
+- `tests/test_johto_main_preview.py`: testes de backup, escrita do marcador por último, rollback, fonte inválida, não sobrescrita de MapIDs e ausência de alterações no dry-run.
 
-O `scripts/install_game.py` chama `scripts/regions/auto_integrate_johto.py` **depois** de atualizar Kanto e Hoenn, pelo mesmo `Blue-Story.exe`, sem exigir outro BAT.
+## Limites conhecidos e testes pendentes
 
-O verificador:
-1. Não escreve mapas, PBS, plugins, `Game.ini`, `Scripts.rxdata`, saves ou marcadores falsos na pasta `game/`.
-2. Identifica um eventual pacote OFFLINE 12 em `.blue-work/johto-offline12-preview.zip` ou caminhos conhecidos, verifica o SHA-256, os 82 mapas, metadados e CRC.
-3. Se detectar uma instalação prévia, revalida os 13 critérios documentados de liberação, hashes dos mapas e arquivos essenciais; não aceita um `blue-johto-start.txt` isolado.
-4. Registra o status em `.blue-work/johto-main-install-status.json`. Não impede a execução de Decades/Kanto/Hoenn caso Johto continue ausente.
-5. Mantém a seleção de Johto e o destino do agente bloqueados até haver prova real.
+Esta implementação é **prévia de desenvolvimento**, não um Johto completo e certificado: o OFFLINE12 ainda tinha mapas e eventos sem validação nativa, e a adaptação das casas adicionais foi reduzida ao intervalo 682–699 para não invadir os IDs 700–999 de Hoenn. Outras cidades, interiores, missões, Liga, sprites, passabilidade e viagens exigem testes reais. Áudio HGSS opcional não é publicado nem exigido pela instalação.
 
-**Status possíveis:** `awaiting_johto_installable_release`, `offline_preview_not_installable`, `offline_bundle_invalid`, `existing_install_needs_review`, `already_integrated_verified`, `no_game_skipped`, `foreign_game_skipped`.
+**Os testes automatizados de lógica e proteção passaram para os casos sintéticos disponíveis.** Falta validar a montagem com o ZIP original **contra a instalação atual** de Decades+Kanto+Hoenn e lançar `Game.exe`; não se deve chamar uma compilação automática de prova de gameplay. O canal Android multirregional continua Decades+Kanto+Hoenn, **sem Johto** até haver compilação e testes JoiPlay verificados.
 
-Verificação local sem instalar:
+`scripts/regions/install_johto.py --apply` continua bloqueado para o **lançamento final** enquanto não existirem os 13 critérios de aceitação: direitos dos assets, mapas/warps, sprites/tilesets, story, PBS, batalhas/encontros, save/load, HMs/insígnias, viagem/Box, música, regressão Kanto/Decades, teste Windows e teste JoiPlay.
 
-```powershell
-python scripts/regions/auto_integrate_johto.py
-python -m unittest discover -s tests -p test_johto_main_auto.py -v
-```
+## Critério para concluir a integração
 
-## Blue-Story.exe — verificação incluída no instalador geral (15/11)
-
-A etapa `[JOHTO AUTO]` foi conectada ao mesmo `scripts/install_game.py --apply` chamado pelo executável Blue-Story.exe. Ela é executada **depois** de Kanto e Hoenn, sem abrir outro programa e sem instalar perfil de piloto. A janela do launcher agora informa o status de Decades, Kanto, Hoenn e Johto, e o log fica em `.blue-work/launcher.log`.
-
-O instalador procura o pacote privado original **automaticamente** em `Downloads/`, na raiz do projeto e em `.blue-work/`. Se encontrá-lo, verifica SHA-256, 82 mapas e integridade do ZIP, e compara `MapInfos.rxdata`/`Tilesets.rxdata` com a instalação atual; a presença de IDs já utilizados nunca autoriza sobrescrita. O resultado é registrado em `.blue-work/johto-main-install-status.json`.
-
-**Limite atual:** o arquivo privado OFFLINE 12 é `NOT_INSTALLABLE`, sem autorização de redistribuição e sem aprovação de testes no Game.exe. Encontrá-lo **não instala automaticamente** a região nem libera Johto no menu. O próximo trabalho de implementação é o instalador transacional de Johto com rebase dos dados, PBS, eventos e QA; não confundir esta etapa de auditoria com disponibilidade jogável.
-
-## Trabalho restante para JOHTO aparecer diretamente no Decades
-
-1. **Conciliar os metadados com o jogo atual.** `johto_qa.validate_maps` requer que `MapInfos.rxdata` e `Tilesets.rxdata` tenham exatamente os hashes da base usada no OFFLINE 12. Hoje o Decades pode já conter Kanto + Hoenn. Criar um merge por IDs/símbolos em memória, remapear o índice de tilesets e detectar colisões; nunca copiar os dois RXDATA da prévia em cima dos existentes.
-2. **Construir overlay jogável para a campanha principal.** Reutilizar os 82 mapas, depois aplicar os reparos privados do `johto_qa.plan` para as cidades, interiores adicionais, pontos de cura, placas, eventos e caminhos. Revalidar cada MapID depois do merge e no motor; não declarar que os 82 mapas equivalem a toda a campanha HGSS.
-3. **Mesclar PBS e gráficos sem colisões.** Preservar todos os registros de Kanto/Hoenn/Decades, compilar as 21 equipes e os encontros, registrar os 44 links e instalar os Ruby handlers próprios de Johto no mesmo carregamento do jogo principal. Não usar o override de `JohtoPilotStart.rb` nem a troca de perfil de save.
-4. **Instalador transacional real.** Fazer dry-run, backup de cada caminho que pode mudar, escrita atômica, confirmação de SHA após escrita, rollback integral em caso de erro, invalidação de cache e pedido de compilação nativa de PBS/plugins. O `install_johto.py --apply` deve continuar bloqueado até o novo instalador passar pelos testes.
-5. **QA nativa e provas.** Testar New Bark → Elm → três bolas → Silver → Rota 29/Cherrygrove → Violet, salvamento, recarga, centro de cura, viagens, Box, insígnias, líderes, Liga e HMs, inclusive Windows e JoiPlay. O sistema atual exige 13 comprovantes reais; não substitua todos por `true` em testes sintéticos.
-6. **Publicação.** Apenas após aprovação, criar manifesto/markers `blue-johto-*.json/txt` corretos e compilados, adicionar Johto ao canal Android `multiregion`, ampliar o título/ZIP/manifesto do canal sem confundir com Decades puro ou pilotos isolados, e testar o atualizador Termux conservando saves.
-
-## Critério de aceite
-
-- Ao escolher `Novo Jogo → Johto`, iniciar no quarto de New Bark **sem** perfil de piloto ou diálogo de seleção adicional.
-- Viajar Decades ↔ Kanto ↔ Hoenn ↔ Johto, respeitando os desbloqueios, sem repetir introduções ou trocar o save.
-- Reabrir um save antigo e confirmar preservação da party/PC, HMs/itens por região, insígnias, level cap e pontos de cura.
-- No JoiPlay, nenhuma dependência obrigatória de `JSON`/`Digest` pode bloquear menu ou viagem; segurança do manifesto ainda precisa ser preservada.
-- `Game.exe` e Android compilados devem funcionar em teste real; resultado de pytest/unittest/CI isolado não é aprovação de gameplay.
+- Confirmar o status experimental no Blue-Story; confirmar início real em New Bark e eventos Elm/Silver, saída para Rota 29/Cherrygrove e batalha com Falkner.
+- Salvar/recarregar, abrir save antigo, visitar Decades/Kanto/Hoenn sem quebrar o jogo, testar itens-chave/HMs, PC, insígnias, level cap, respawn e viagem.
+- Auditar conteúdo que ainda falta e corrigir qualquer bloqueio com base nos logs, sem declarar sucesso jogável antes dos testes.
+- Só depois considerar release público, download automático Android/Termux e aceitação dos 13 critérios.
 
 **Referências:** `docs/JOHTO_OFFLINE_FASE_12_AUDITORIA_INTEGRACAO.md`, `docs/JOHTO_PENDENCIAS_APOS_OFFLINE_12_DE_12.md`, `docs/JOHTO_FASE_16_INTEGRACAO_E_ACEITE.md`, `docs/HOENN_INTEGRACAO_DECADES_MAIN.md`.
