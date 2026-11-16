@@ -53,6 +53,20 @@ def inspect(draft: Path, game: Path, *, root: Path = ROOT) -> dict:
             "VALIDATED_NATIVE_PBS_DRAFT_NOT_COMPILED",
             False, False, False, False):
         fail("Relatório PBS incorreto ou com falsa aprovação")
+    # CH08: even a well-hashed PBS cannot turn draft metadata into gameplay
+    # approval, or relabel its base seed as the actual trainer battle level.
+    must_remain_false = (
+        "battle_proven", "dynamic_scaling_verified_in_game",
+        "graphic_verified", "save_load_verified",
+    )
+    if (any(report.get(flag) is not False for flag in must_remain_false)
+            or report.get("pbs_seed_level") != SEED_LEVEL
+            or type(report.get("pbs_seed_level")) is not int
+            or report.get("pbs_seed_is_not_final_battle_level") is not True
+            or report.get("ready_marker_filename") != READY_MARKER
+            or report.get("trainer_type") != RIVAL_TYPE
+            or report.get("trainer_name") != RIVAL_NAME):
+        fail("Seed PBS, escopo de Barry ou aprovação de gameplay adulterados")
     files = report.get("files_sha256")
     if not isinstance(files, dict) or set(files) != {PBS_TYPE, PBS_TRAINERS}:
         fail("Relatório não lista exatamente 2 PBS Sinnoh")
@@ -80,11 +94,15 @@ def inspect(draft: Path, game: Path, *, root: Path = ROOT) -> dict:
         fail("Runtime de balanceamento mudou; verificar 70%/90% novamente")
     versions = report.get("versions")
     if (not isinstance(versions, list) or len(versions) != 3 or
-            not isinstance(report.get("native_starters"), dict)):
+            not isinstance(report.get("native_starters"), dict)
+            or set(report["native_starters"]) != {x for x, _ in MATCHUPS}):
         fail("Não há exatamente três equipes Barry no manifesto")
     types = read_blocks_from_bytes(bodies[PBS_TYPE])
     if set(types) != {RIVAL_TYPE}:
         fail("Arquivo trainer_types tem blocos inesperados")
+    if not all(any(line.startswith(key + " = ") for line in types[RIVAL_TYPE])
+               for key in ("Name", "Gender", "BaseMoney")):
+        fail("trainer_types PBS não possui campos nativos obrigatórios")
     trainers = read_blocks_from_bytes(bodies[PBS_TRAINERS])
     expected = {f"{RIVAL_TYPE},{RIVAL_NAME},{i}" for i in range(3)}
     if set(trainers) != expected:
@@ -94,8 +112,14 @@ def inspect(draft: Path, game: Path, *, root: Path = ROOT) -> dict:
         if (not isinstance(row, dict) or
                 (row.get("version"), row.get("player_starter"),
                  row.get("rival_species"), row.get("seed_level_only")) != (
-                 index, player, rival, SEED_LEVEL)):
-            fail("Versão PBS não corresponde à escolha do jogador")
+                 index, player, rival, SEED_LEVEL) or
+                type(row.get("version")) is not int or
+                type(row.get("seed_level_only")) is not int or
+                row.get("effective_level") !=
+                "BlueCampaign.trainer_level(player_party) at runtime" or
+                row.get("handler") !=
+                f'TrainerBattle.start(:{RIVAL_TYPE}, "Barry", {index})'):
+            fail("Versão PBS, nivel dinamico ou handler não corresponde à escolha do jogador")
         moves = row.get("moves_at_seed_level")
         if (not isinstance(moves, list) or not (1 <= len(moves) <= 4)
                 or any(not isinstance(m, str) or not m for m in moves)):

@@ -184,6 +184,29 @@ module BlueSinnohPilot
     flags && flags["rival_fought"] == true
   end
 
+  # CH08: a marker is not a compiled PBS team. A missing or mismatched
+  # GameData trainer must never call TrainerBattle.start or advance the save.
+  # Check only the selected version (0/1/2) in this isolated pilot.
+  def self.compiled_rival_valid?
+    version = rival_version
+    expected = rival_species
+    return false unless version.is_a?(Integer) && (0..2).cover?(version) && expected
+    return false unless defined?(GameData::Trainer) &&
+                        GameData::Trainer.respond_to?(:get)
+    trainer = GameData::Trainer.get(:BLUE_SINNOH_RIVAL, "Barry", version)
+    return false unless trainer && trainer.respond_to?(:pokemon)
+    team = trainer.pokemon
+    return false unless team.is_a?(Array) && team.length == 1
+    pokemon = team.first
+    species = pokemon.is_a?(Hash) ? (pokemon[:species] || pokemon["species"]) :
+              (pokemon.respond_to?(:species) ? pokemon.species : nil)
+    level = pokemon.is_a?(Hash) ? (pokemon[:level] || pokemon["level"]) :
+            (pokemon.respond_to?(:level) ? pokemon.level : nil)
+    species.to_s == expected.to_s && level.is_a?(Integer) && level == 5
+  rescue StandardError
+    false
+  end
+
   def self.barry_rival
     flags = progress
     return false unless flags
@@ -205,7 +228,7 @@ module BlueSinnohPilot
     qa_test_only = defined?(BlueSinnohQAStart) &&
                    BlueSinnohQAStart.respond_to?(:barry_test_authorized?) &&
                    BlueSinnohQAStart.barry_test_authorized?
-    unless (ready_for_release || qa_test_only) &&
+    unless (ready_for_release || qa_test_only) && compiled_rival_valid? &&
            defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
       return false

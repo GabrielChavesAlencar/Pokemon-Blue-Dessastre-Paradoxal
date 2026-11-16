@@ -16,6 +16,24 @@ class CH07Player
     @heals += 1
   end
 end
+module GameData
+  module Trainer
+    @table = {
+      0 => [{:species => :CHIMCHAR, :level => 5}],
+      1 => [{:species => :PIPLUP, :level => 5}],
+      2 => [{:species => :TURTWIG, :level => 5}]
+    }
+    class << self
+      attr_accessor :table
+      def get(type, name, version)
+        return nil unless type == :BLUE_SINNOH_RIVAL && name == "Barry"
+        team = @table[version]
+        team && Struct.new(:pokemon).new(team)
+      end
+    end
+  end
+end
+
 module TrainerBattle
   @calls = []
   class << self
