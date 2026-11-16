@@ -42,6 +42,31 @@ class JohtoMainPreviewTests(unittest.TestCase):
             preview.READY: b"BLUE_JOHTO_PRIVATE_PREVIEW_V1",
         }
 
+    def test_new_bark_audited_autorun_at_spawn_is_allowed(self):
+        from server.ruby_marshal import RubyObject
+        def event(name, trigger=3, sprite=b""):
+            page = RubyObject("RPG::Event::Page", {
+                "@trigger": trigger,
+                "@graphic": RubyObject("RPG::Event::Page::Graphic", {
+                    "@character_name": sprite
+                })
+            })
+            return RubyObject("RPG::Event", {
+                "@name": name, "@x": 6, "@y": 7, "@pages": [page]
+            })
+        original = RubyObject("RPG::Map", {
+            "@events": {1: event(b"JH_NEW_GAME_PROFILE")}
+        })
+        # The original package's New Bark intro contains this autorun at
+        # 674:6,7. Previously the importer rejected its own authored event.
+        preview.assert_spawn_not_blocked(original)
+        for replacement in (event(b"BLOCKING_NPC", 0, b"Actor1"),
+                            event(b"JH_NEW_GAME_PROFILE", 0),
+                            event(b"JH_NEW_GAME_PROFILE", 3, b"Actor1")):
+            original.attrs["@events"][2] = replacement
+            with self.assertRaisesRegex(ValueError, "Spawn do jogador bloqueado"):
+                preview.assert_spawn_not_blocked(original)
+
     def test_hoenn_map_ids_are_never_included_in_preview(self):
         self.assertEqual(preview.STAGED_IDS, frozenset(range(600, 682)))
         self.assertEqual(preview.PREVIEW_IDS, frozenset(range(600, 700)))
