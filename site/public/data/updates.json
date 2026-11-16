@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "657e8172c1ef9e25c62d03f258cb56c5c3ceed04",
+      "date": "2026-11-15T22:30:53-03:00",
+      "title": "test(johto): protect main-game maps, native metadata and saves during experimental private import",
+      "category": "Testes"
+    },
+    {
       "sha": "e761f64a10f486d722bd31083136481a3ad6f2da",
       "date": "2026-11-15T22:30:16-03:00",
       "title": "test(johto): assert private source preview is never falsely approved as final release",
