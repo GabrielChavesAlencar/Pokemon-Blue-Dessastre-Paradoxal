@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5e35c7f27c9babee861a9a13db7b9b4ebf0bd4d",
+      "date": "2026-11-16T20:00:20-03:00",
+      "title": "docs(sinnoh): CH15 validada e Barra E 15/20 sem alterar jogabilidade",
+      "category": "Documentação"
+    },
+    {
       "sha": "c52834f613507020618accb050bb020d6d226c4e",
       "date": "2026-11-16T19:57:45-03:00",
       "title": "fix(sinnoh): CH15 relatório explicita ausência de compilação PBS e vínculo nativo",
