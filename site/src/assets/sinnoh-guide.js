@@ -17,7 +17,8 @@ export async function loadSinnohGuide(fetcher=fetch){
 const tabs=[
  ['visao','Visão geral'],['areas','Áreas'],['treinadores','Treinadores'],
  ['ginasios','8 ginásios'],['liga','Elite Four e Cynthia'],
- ['itens','Itens e HMs'],['progresso','História e progresso']
+ ['itens','Itens e HMs'],['progresso','História e progresso'],
+ ['pendencias','Pendências']
 ];
 const tabHref=key=>'/sinnoh?aba='+key;
 const pending='<span class="content-pending-tag">Ainda não adicionado</span>';
@@ -98,65 +99,97 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
       note('Músicas simbólicas: '+data.music.cueCount+
        '. Nenhuma faixa licenciada, MapID ou hook musical Sinnoh foi instalada.')+'</section>';
   }else if(tab==='areas'){
-    const byPhase=selected==='all'?data.areas:
-      data.areas.filter(a=>selected==='sem-fase'?a.phase===null:String(a.phase)===selected);
+    const byPhase=filtered.items;
     const filters='<nav class="sinnoh-guide-phase" aria-label="Filtrar áreas por fase">'+
-      '<a href="/sinnoh?aba=areas&fase=all" class="filter-chip'+(selected==='all'?' active':'')+'">Todas</a>'+
-      data.phases.map(p=>'<a href="/sinnoh?aba=areas&fase='+p.number+
-       '" class="filter-chip'+(selected===String(p.number)?' active':'')+'">Fase '+p.number+'</a>').join('')+
-      '<a href="/sinnoh?aba=areas&fase=sem-fase" class="filter-chip'+
+      '<a href="'+esc(sinnohGuideUrl('areas',{busca:filtered.busca,pendencia:filtered.pendencia}))+
+       '" class="filter-chip'+(selected==='all'?' active':'')+'">Todas</a>'+
+      data.phases.map(p=>'<a href="'+esc(sinnohGuideUrl('areas',{
+        fase:String(p.number),busca:filtered.busca,pendencia:filtered.pendencia}))+
+        '" class="filter-chip'+(selected===String(p.number)?' active':'')+'">Fase '+p.number+'</a>').join('')+
+      '<a href="'+esc(sinnohGuideUrl('areas',{fase:'sem-fase',busca:filtered.busca,
+        pendencia:filtered.pendencia}))+'" class="filter-chip'+
       (selected==='sem-fase'?' active':'')+'">Fase a auditar</a></nav>';
     section='<section class="section"><h2>Áreas previstas · '+byPhase.length+'</h2>'+
-      note('MapIDs, posições, acesso e encontros permanecem não verificados. Espécies abaixo são apenas candidatas da auditoria de habitats, sem taxas ou níveis publicados.')+
-      filters+cards(byPhase,a=>article(a.name,
+      note('MapIDs, posições, acesso e encontros permanecem não verificados. Espécies abaixo são candidatas da auditoria de habitats, sem taxas ou níveis publicados.')+
+      filterForm(tab,selected,filtered)+filters+resultCount(filtered)+
+      cardResults(byPhase,a=>article(a.name,
         '<p>'+esc(a.phase===null?'Fase a auditar':'Fase '+a.phase)+' · '+esc(a.notes)+'</p>'+
         (a.speciesCandidates.length?'<p>Referências de espécies: '+species(a.speciesCandidates)+
-         '</p><small>Espécies a auditar · nenhuma taxa/slot confirmado.</small>':'<p>Encontros nativos: pendentes de conferência.</p>'),
+         '</p><small>Espécies a auditar · nenhuma taxa/slot confirmado.</small>':'<p>Encontros nativos: pendentes de conferência.</p>')+
+        context(
+          contextLink('treinadores',{},'Treinadores de referência (vínculo não confirmado)'),
+          contextLink('pendencias',{tipo:'areas'},'Auditar mapas')),
         'ÁREA · '+(a.phase===null?'SEM FASE':String(a.phase).padStart(2,'0'))))+'</section>';
   }else if(tab==='treinadores'){
-    section='<section class="section"><h2>Treinadores a localizar · '+data.trainers.length+'</h2>'+
+    section='<section class="section"><h2>Treinadores a localizar · '+filtered.count+'</h2>'+
       note('Grupos e personagens da campanha de Platinum para auditoria futura de mapas, NPCs e PBS. Nenhuma equipe ou versão de treinador foi considerada compilada.')+
-      cards(data.trainers,t=>article(t.name,
+      filterForm(tab,selected,filtered)+resultCount(filtered)+
+      cardResults(filtered.items,t=>article(t.name,
         '<p>'+esc(t.area||'Local de encontro a auditar')+'</p>'+
-        (t.notes?'<p>'+esc(t.notes)+'</p>':''),'TREINADOR · REFERÊNCIA'))+'</section>';
+        (t.notes?'<p>'+esc(t.notes)+'</p>':'')+
+        context(contextLink('areas',{},'Conferir áreas'),
+          contextLink('pendencias',{tipo:'treinadores'},'Vínculos PBS pendentes')),
+        'TREINADOR · REFERÊNCIA'))+'</section>';
   }else if(tab==='ginasios'){
-    const leaders=data.bosses.filter(t=>t.role==='GYM_LEADER');
     section='<section class="section"><h2>Oito ginásios de Sinnoh</h2>'+
       note('Ordem histórica de Platinum. Fantina é a terceira (Relic) e Maylene a quarta (Cobble). Espécies históricas não são times PBS instalados nem recebem níveis fixos no site.')+
-      cards(leaders,t=>article(t.name,
+      filterForm(tab,selected,filtered)+resultCount(filtered)+
+      cardResults(filtered.items,t=>article(t.name,
         '<p>'+esc(t.city||'Cidade a conferir')+' · Insígnia '+esc(t.badge)+'</p>'+
         '<p>Equipe de referência: '+species(t.speciesReference)+'</p>'+
-        '<p>Full Power do Blue: não verificado · PBS: não instalado.</p>',
+        '<p>Full Power do Blue: não verificado · PBS: não instalado.</p>'+
+        context(contextLink('itens',{busca:t.badge},'HM vinculado à insígnia'),
+          contextLink('areas',{busca:t.city||''},'Buscar cidade de referência')),
         'GINÁSIO '+String(t.order).padStart(2,'0')))+'</section>';
   }else if(tab==='liga'){
-    const bosses=data.bosses.filter(t=>t.role==='ELITE_FOUR'||t.role==='CHAMPION');
     section='<section class="section"><h2>Elite Four e Cynthia</h2>'+
       note('Composição histórica Platinum; revanches históricas não são variantes Full Power do Blue. A Liga só termina após evento independente do Hall of Fame confirmado.')+
-      cards(bosses,t=>article(t.name,
+      filterForm(tab,selected,filtered)+resultCount(filtered)+
+      cardResults(filtered.items,t=>article(t.name,
         '<p>Primeira equipe de referência: '+species(t.speciesReference)+'</p>'+
         (t.rematchSpeciesReference?'<p>Revanche histórica: '+species(t.rematchSpeciesReference)+'</p>':'')+
-        '<p>Equipe PBS e batalha nativa: pendentes.</p>',
+        '<p>Equipe PBS e batalha nativa: pendentes.</p>'+
+        context(contextLink('progresso',{},'Progressão da Liga'),
+          contextLink('pendencias',{tipo:'equipes'},'Conferir pendências PBS')),
         t.role==='CHAMPION'?'CAMPEÃ':'ELITE FOUR '+t.order))+'</section>';
   }else if(tab==='itens'){
     section='<section class="section"><h2>Itens e permissões regionais</h2>'+
       note('O item HM precisa ser obtido dentro de Sinnoh, e a insígnia local precisa ter sido conquistada. Ter o mesmo item ou uma insígnia em outra região não libera o golpe de campo aqui.')+
-      cards(data.items,r=>article(r.label,
+      filterForm(tab,selected,filtered)+resultCount(filtered)+
+      cardResults(filtered.items,r=>article(r.label,
         '<p>Exige Insígnia '+esc(r.badge)+' de Sinnoh.</p>'+
-        '<p>Entrega do HM: não confirmada; permissão: não ativada.</p>',
+        '<p>Entrega do HM: não confirmada; permissão: não ativada.</p>'+
+        context(contextLink('ginasios',{busca:r.badge},'Líder da insígnia'),
+          contextLink('pendencias',{tipo:'itens'},'Checar coleta nativa')),
         'ITEM-CHAVE · HM'))+'</section>';
   }else if(tab==='progresso'){
     section='<section class="section"><h2>História e progressão planejadas</h2>'+
       note('Estes checkpoints não representam o save de quem está jogando. São contratos para futuras implementações; não há vitórias, mapas ou desbloqueios certificados.')+
       cards(data.phases,p=>article('Fase '+p.number+' · '+p.title,
-        '<p>'+p.areaCount+' áreas de referência · '+p.eventCount+' eventos previstos.</p>','ROTEIRO PLATINUM'))+
+        '<p>'+p.areaCount+' áreas de referência · '+p.eventCount+' eventos previstos.</p>'+
+        context(contextLink('areas',{fase:String(p.number)},'Áreas desta fase')),
+        'ROTEIRO PLATINUM'))+
       '<h2 class="sinnoh-guide-steps-title">Galactic, Cyrus e Liga: '+data.steps.length+' checkpoints</h2>'+
-      '<ol class="sinnoh-guide-steps">'+data.steps.map(s=>
-        '<li><strong>'+esc(s.title)+'</strong><span>Fase '+esc(s.phase)+
-        ' · Evento não instalado'+(s.requiresBadges.length?' · Exige '+esc(s.requiresBadges.join(', ')):'')+
-        (s.engineHallOfFameRequired?' · Confirmação independente do Hall of Fame obrigatória':'')+
-        '</span></li>').join('')+'</ol>'+
+      filterForm(tab,selected,filtered)+resultCount(filtered)+
+      (filtered.items.length?'<ol class="sinnoh-guide-steps">'+filtered.items.map(st=>
+        '<li><strong>'+esc(st.title)+'</strong><span>Fase '+esc(st.phase)+
+        ' · Evento não instalado'+(st.requiresBadges.length?' · Exige '+esc(st.requiresBadges.join(', ')):'')+
+        (st.engineHallOfFameRequired?' · Confirmação independente do Hall of Fame obrigatória':'')+
+        '</span>'+context(
+          contextLink('areas',{fase:String(st.phase)},'Consultar áreas da fase'),
+          contextLink('liga',{},'Referências da Liga'))+'</li>').join('')+'</ol>':emptyResult)+
       note('Viagem pós-Liga continua bloqueada sem origem de Sinnoh e destino físico verificados. Não criar teleporte automático para Hoenn ou Unova.')+
       '</section>';
+  }else if(tab==='pendencias'){
+    section='<section class="section"><h2>Pendências documentadas</h2>'+
+      note('Todas as categorias abaixo representam trabalhos ainda sem comprovação em dados nativos. O catálogo do portal não instala mapas, versões de treinadores, encontros ou itens.')+
+      filterForm(tab,selected,filtered)+resultCount(filtered)+
+      cardResults(filtered.items,r=>article(r.label,
+        '<p>'+esc(r.count)+' registros de referência em auditoria.</p>'+
+        '<p>'+esc(r.description)+'</p>'+
+        context(contextLink(r.tab,{},'Abrir guia correspondente'),
+          contextLink('progresso',{},'Ver etapas planejadas')),
+        'PENDÊNCIA · CH11–CH16'))+'</section>';
   }
   return '<div class="container detail-container sinnoh-guide-page">'+
     '<a class="back-link" href="/guias">← Todos os guias</a>'+
@@ -167,6 +200,7 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
     '</header>'+navigation+section+
     '<section class="sinnoh-guide-footer"><h2>Estado da implementação</h2>'+
       note('Dados organizados a partir das auditorias CH11–CH16. Isso não comprova instalação de mapas, NPCs, treinadores, encontros, itens ou músicas.')+
-      '<a class="text-link" href="/pendencias?regiao=sinnoh">Consultar pendências detalhadas '+icon('arrow')+'</a>'+
+      contextLink('pendencias',{},'Ver pendências no guia')+
+      '<p><a class="text-link" href="/pendencias?regiao=sinnoh">Abrir backlog regional completo '+icon('arrow')+'</a></p>'+
       '</section></div>';
 }
