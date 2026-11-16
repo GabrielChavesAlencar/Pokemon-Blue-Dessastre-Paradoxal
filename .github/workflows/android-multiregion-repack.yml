@@ -1,0 +1,65 @@
+name: Android - ZIP corrigido Decades Kanto Hoenn
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/android/repack_multiregion_hotfix.py'
+      - '.github/workflows/android-multiregion-repack.yml'
+permissions:
+  contents: write
+concurrency:
+  group: android-multiregion-hotfix
+  cancel-in-progress: false
+jobs:
+  repair-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Conferir compilador do ZIP e correcao de Kanto
+        run: |
+          python -m py_compile scripts/android/repack_multiregion_hotfix.py scripts/android/update_client.py
+          ruby -c scripts/battle_polish/RegionStart.rb
+          ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
+          python -m unittest discover -s tests -p test_android_updates.py -v
+      - name: Baixar ZIP ORIGINAL auditado e hashes da release integrada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist/base
+          gh release download android-multiregion-15-125155e \
+            --pattern 'Blue-Android-Decades-Kanto-Hoenn.zip*' --dir dist/base
+          gh release download android-multiregion-15-125155e \
+            --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir dist/base
+          cd dist/base
+          sha256sum -c Blue-Android-Decades-Kanto-Hoenn.zip.sha256
+      - name: Reempacotar arquivos reais com RegionStart e atualizador corrigidos
+        run: |
+          python scripts/android/repack_multiregion_hotfix.py \
+            --source dist/base/Blue-Android-Decades-Kanto-Hoenn.zip \
+            --output dist/Blue-Android-Decades-Kanto-Hoenn.zip \
+            --revision "$GITHUB_SHA"
+          python scripts/android/publish_updates.py \
+            --channel multiregion \
+            --full-zip dist/Blue-Android-Decades-Kanto-Hoenn.zip \
+            --previous-manifest dist/base/Blue-Android-Decades-Kanto-Hoenn.update.json
+          cd dist
+          sha256sum Blue-Android-Decades-Kanto-Hoenn.zip > Blue-Android-Decades-Kanto-Hoenn.zip.sha256
+          test "$(stat -c %s Blue-Android-Decades-Kanto-Hoenn.zip)" -lt 2147483648
+      - name: Publicar ZIP completo com a correcao ja instalada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="android-multiregion-hotfix-$GITHUB_RUN_NUMBER-$(echo "$GITHUB_SHA" | cut -c1-7)"
+          gh release create "$TAG" \
+            dist/Blue-Android-Decades-Kanto-Hoenn.zip \
+            dist/Blue-Android-Decades-Kanto-Hoenn.update.json \
+            dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256 \
+            --target "$GITHUB_SHA" \
+            --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
+            --notes "ZIP completo baseado na release auditada android-multiregion-15-125155e. Inclui Kanto (142 mapas), Hoenn (199 mapas), RegionStart.rb corrigido no cache do JoiPlay e novo ATUALIZAR-ANDROID.py com protecao contra downgrade. Metadados e SHA-256 validados. Fazer backup dos saves antes de trocar a instalacao. Teste em JoiPlay real ainda pendente." \
+            --prerelease
