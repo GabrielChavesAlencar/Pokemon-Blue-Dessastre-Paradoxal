@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cbd76b4b647528d3229a6c7a07117de4e0f6a1c7",
+      "date": "2026-11-16T06:51:11-03:00",
+      "title": "feat(johto): export original Map600/674/675 and stair events in safe diagnostic ZIP without saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "6ba958463b0f6f092de7386d94c8328c7716d68f",
       "date": "2026-11-16T06:33:14-03:00",
       "title": "docs(johto): include safe map-scoped repair when shared regional PBS has drifted",
