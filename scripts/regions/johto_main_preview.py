@@ -181,7 +181,17 @@ def refresh_installed_runtime(game: Path, root: Path = ROOT) -> dict:
 
 
 
-def scoped_bedroom_proof(game: Path) -> dict | None:
+# Exact SHA-256 bytes of the USER-SUPPLIED 16-Nov Johto diagnostic package.
+# The in-game writer added door sounds/fades and other New Bark events after
+# installation. This pair can be MIGRATED once; it is not an unrestricted
+# bypass for changed maps or a claim that all of Johto passed native QA.
+AUDITED_LIVE_BEDROOM_SHA = {
+    "Data/Map674.rxdata": "8d837d343087eec13927e601ff3d506c1cb3bbaae696c90211b91111814e12b7",
+    "Data/Map675.rxdata": "71fa3e6c22a87f6dd2f4ddab0538f9f33586e5cc979a9891b24f9d259e9469c3",
+}
+
+
+def scoped_bedroom_proof(game: Path, *, accept_audited_live_maps: bool = False) -> dict | None:
     """Validate only the two original Johto maps for explicit manual repair.
 
     Other plug-ins/regions can legitimately change shared PBS or MapInfos after
@@ -213,7 +223,12 @@ def scoped_bedroom_proof(game: Path) -> dict | None:
         path = local_target(game, name)
         value = hashes.get(name)
         if (not isinstance(value, str) or not re.fullmatch("[a-f0-9]{64}", value)
-                or not path.is_file() or path.is_symlink() or sha(path.read_bytes()) != value):
+                or not path.is_file() or path.is_symlink()):
+            raise ValueError("Johto: mapa alterado ou sem hash auditado: " + name)
+        observed = sha(path.read_bytes())
+        if observed != value and not (
+                accept_audited_live_maps and observed == AUDITED_LIVE_BEDROOM_SHA[name]
+                and data.get("bedroom_layout") in (None, "")):
             raise ValueError("Johto: mapa alterado ou sem hash auditado: " + name)
     # The global tileset may have been enlarged by Kanto/Hoenn. Accept ONLY
     # the authentic Johto slot and tables the map already references.
@@ -245,7 +260,7 @@ def refresh_installed_bedroom(game: Path, root: Path = ROOT, *, allow_global_dri
     except (OSError, ValueError, KeyError, TypeError):
         if not allow_global_drift:
             raise
-        installed = scoped_bedroom_proof(game)
+        installed = scoped_bedroom_proof(game, accept_audited_live_maps=True)
         global_drift = True
     if installed is None:
         return {"changed": False, "reason": "Johto não instalada"}
