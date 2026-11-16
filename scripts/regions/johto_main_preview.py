@@ -111,6 +111,73 @@ def preview_proof(game: Path) -> dict | None:
     return data
 
 
+def refresh_installed_runtime(game: Path, root: Path = ROOT) -> dict:
+    """Repair an already installed preview's Ruby plugin, never its maps/saves.
+
+    The original Boot.rb prepended Compiler.main; other Blue plugins alias
+    Compiler.main and create a recursive super/alias cycle on startup. A source
+    update alone cannot repair the copied game/Plugins script. This performs
+    a hash-verified, backed-up, two-file plugin+manifest update in place.
+    """
+    game, root = Path(game).resolve(), Path(root).resolve()
+    installed = preview_proof(game)
+    if installed is None:
+        return {"changed": False, "reason": "Johto não instalada"}
+    plugin_name = f"{PLUGIN}/Boot.rb"
+    manifest_name = PROOF
+    old = local_target(game, plugin_name)
+    manifest = local_target(game, manifest_name)
+    if not old.is_file() or old.is_symlink() or manifest.is_symlink():
+        raise ValueError("Plugin/manifesto Johto existente não é arquivo regular")
+    expected_old_hash = installed["file_hashes"].get(plugin_name)
+    if sha(old.read_bytes()) != expected_old_hash:
+        raise ValueError("Plugin Johto modificado manualmente; hotfix automático recusado")
+
+    source_files = [root / "scripts/regions" / name for name in RUNTIME]
+    for path in source_files:
+        johto_qa.regular(path)
+    replacement = b"\n".join(path.read_bytes() for path in source_files)
+    if (b"Compiler.singleton_class.prepend(" in replacement or
+            b"module CompilerHook" in replacement):
+        raise ValueError("Novo plugin Johto ainda contém o hook recursivo de Compiler.main")
+    if replacement == old.read_bytes():
+        return {"changed": False, "reason": "Plugin Ruby Johto já atualizado"}
+
+    changed_manifest = copy.deepcopy(installed)
+    changed_manifest["file_hashes"][plugin_name] = sha(replacement)
+    changed_manifest["runtime_hotfix"] = "johto-compiler-no-prepend-v2"
+    updated_json = raw_json(changed_manifest)
+    backups = root / ".blue-backups" / ("johto-boot-hotfix-" + uuid.uuid4().hex)
+    backups.mkdir(parents=True)
+    for relative in (plugin_name, manifest_name):
+        target = local_target(game, relative)
+        backup = backups / relative
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(target, backup)
+    written = []
+    try:
+        for target, contents in ((old, replacement), (manifest, updated_json)):
+            pending = target.with_name(target.name + ".blue-hotfix-tmp")
+            if pending.exists() or pending.is_symlink():
+                raise ValueError("Arquivo temporário de correção Johto já existe")
+            try:
+                pending.write_bytes(contents)
+                if sha(pending.read_bytes()) != sha(contents):
+                    raise ValueError("Falha ao verificar gravação do hotfix Johto")
+                os.replace(pending, target)
+                written.append(target)
+            finally:
+                pending.unlink(missing_ok=True)
+        preview_proof(game)
+        return {"changed": True, "reason": "Plugin Johto corrigido sem tocar mapas ou saves",
+                "backup_folder": str(backups), "runtime_hotfix": "compiler-no-prepend-v2"}
+    except BaseException:
+        for target in reversed(written):
+            relative = target.relative_to(game)
+            shutil.copy2(backups / relative, target)
+        raise
+
+
 def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str, bytes], dict]:
     """Plan and validate in memory; no writes to game/ until every check passes."""
     if game.is_symlink() or not (game / "Game.exe").is_file():
