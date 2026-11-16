@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a44e1aa441adeccafa4b40c520231c924603ba62",
+      "date": "2026-11-16T09:45:57-03:00",
+      "title": "feat(blue-story): also install managed Johto Map Studio folder on source update via existing launcher versions",
+      "category": "Novidades"
+    },
+    {
+      "sha": "5ff897c76df7d4f86333636d0918fac95a2e9463",
+      "date": "2026-11-16T09:45:40-03:00",
+      "title": "feat(blue-story): download Johto Map Studio automatically and place launchers beside Blue-Story.exe",
+      "category": "Novidades"
+    },
+    {
       "sha": "9264e979c1009eb6c0c29aa97b170899271971da",
       "date": "2026-11-16T09:44:59-03:00",
       "title": "feat(blue-story): install and auto-update Johto Map Studio folder next to launcher and managed game",
