@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "scripts/regions"))
 
 import johto_qa
 import johto_hgss_assets as hgss
+import johto_map_patches as map_patches
 import johto_visual as visual
 from johto_opening import repair_opening
 from server.ruby_marshal import RubyObject, loads, text
@@ -572,6 +573,8 @@ def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str
         # Optional artist-provided HGSS indoor PNGs are imported from the
         # user's PRIVATE .blue-work folder, never committed to the repository.
         hgss_report = hgss.compile_private_art(maps, stage_tiles, files, graphic, root)
+        # Manual Johto maps override authored defaults AFTER visual repair.
+        editor_patches = map_patches.apply_project_patches(maps, stage_tiles, root)
         files["PBS/map_metadata_johto_main.txt"] = visual.johto_metadata(maps, stage_infos)
         files["PBS/map_connections.txt"] = visual.revise_connections(files["PBS/map_connections.txt"])
         count, tile_count = visual.audit_tilesets(maps, stage_tiles, graphic)
@@ -679,6 +682,8 @@ def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str
         "bedroom_stairs_warp": list(visual.HGSS_STAIRS_WARP),
         "bedroom_stairs_return": list(visual.HGSS_STAIRS_RETURN),
         "private_hgss": hgss_report,
+        "editor_map_patches": {str(mid): map_patches.digest(
+            map_patches.patch_path(root, mid).read_bytes()) for mid in editor_patches},
         "file_hashes": {name: sha(blob) for name, blob in files.items()},
     }
     files[PROOF] = raw_json(report)
