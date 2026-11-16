@@ -288,10 +288,14 @@ class SinnohFullSyntheticPipelineCH09(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "hash diverge"):
             make_plan(audited, corrupt)
         from_source = self.source / "Data/Map010.rxdata"
-        from_source.write_bytes(from_source.read_bytes() + b"tampered")
+        original = from_source.read_bytes()
+        from_source.write_bytes(original + b"tampered")
         with self.assertRaises(ValueError):
             build_geometry(self.source, self.native, proposal, project=self.root)
         self.assertFalse((self.root / ".blue-work").exists())
+        # The fixture itself deliberately changed the donor; restore it
+        # before asserting that the converter did not write to either side.
+        from_source.write_bytes(original)
         self.must_be_untouched()
 
     def test_stage_fsync_failure_is_atomic_no_partial_output(self):
