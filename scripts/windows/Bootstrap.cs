@@ -155,6 +155,23 @@ internal static class Bootstrap {
             if(process.ExitCode!=0)throw new Exception("A preparacao parou (codigo "+process.ExitCode+"). Veja "+LogPath+" e abra novamente para retomar.");
         }
     }
+    static string RegionalStatus(string filename,string name) {
+        string path=Path.Combine(Root,".blue-work",filename);
+        if(!File.Exists(path))return name+": ainda nao verificado";
+        try {
+            var info=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(path,Encoding.UTF8));
+            object ready;
+            if(info.TryGetValue("ready",out ready) && ready is bool && (bool)ready)
+                return name+": integrado";
+            return name+": pendente (ver relatorio)";
+        } catch(Exception) { return name+": relatorio invalido"; }
+    }
+    static string RegionalSummary() {
+        return "Decades: instalado | "+
+          RegionalStatus("kanto-install-status.json","Kanto")+" | "+
+          RegionalStatus("hoenn-main-install-status.json","Hoenn")+" | "+
+          RegionalStatus("johto-main-install-status.json","Johto");
+    }
     static void Prepare() {
         foreach(var p in Process.GetProcessesByName("Game"))try { if(String.Equals(p.MainModule.FileName,Path.Combine(Root,"game","Game.exe"),StringComparison.OrdinalIgnoreCase))throw new Exception("Feche o jogo antes de atualizar a instalacao."); }catch(System.ComponentModel.Win32Exception){}
         string marker=Path.Combine(Root,".blue-work","launcher-revision.txt");
@@ -182,6 +199,7 @@ internal static class Bootstrap {
         Say("Preparando a base e as atualizacoes. A primeira instalacao pode demorar.");
         var install=new List<string>{"scripts/install_game.py","--apply"};if(Hub)install.Add("--hub-only");Run(python,install.ToArray(),pathExtra);
         Run(python,Hub?new[]{"scripts/battle_lab/launch.py","--prepare-only"}:new[]{"scripts/launch_game.py","--prepare-only"},pathExtra);
+        if(!Hub)Say("REGIOES - "+RegionalSummary());
         Say("Pronto. Versao "+revision.Substring(0,7)+".");
     }
     static void SelfTest(string report) {
