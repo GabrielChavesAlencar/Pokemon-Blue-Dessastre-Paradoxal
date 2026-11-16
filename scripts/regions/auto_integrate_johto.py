@@ -213,6 +213,7 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
             sys.path.insert(0, str(project))
             sys.path.insert(0, str(project / "scripts/regions"))
             import johto_main_preview
+            import johto_map_patches as map_patches
             try:
                 report = johto_main_preview.preview_proof(game)
             except (OSError, ValueError, KeyError, TypeError) as strict_error:
@@ -227,13 +228,16 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                     raise strict_error
                 bedroom = johto_main_preview.refresh_installed_bedroom(
                     game, project, allow_global_drift=True)
+                map_sync = map_patches.sync_installed(project, game)
                 state = johto_main_preview.runtime_semantic_preview(game)
                 return record(project, {
                     "status": "experimental_installed_runtime_modified_not_native_tested",
                     "reason": "Johto já existe, com mapas recompilados. Estrutura dos 100 mapas conferida; não reinstalar ZIP. Gameplay nativo ainda não aprovado.",
                     "map_count": state["map_count"], "native_qa": False,
                     "runtime_modified_map_ids": state["changed_map_ids"],
-                    "changed": bedroom["changed"],
+                    "changed": bool(bedroom["changed"] or map_sync["changed"]),
+                    "map_editor_changed": map_sync["changed"],
+                    "map_editor_maps": map_sync.get("maps", []),
                     "bedroom_layout": bedroom.get("bedroom_layout"),
                     "bedroom_changed": bedroom["changed"],
                     "bedroom_backup_folder": bedroom.get("backup_folder"),
@@ -250,12 +254,15 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                 hotfix = johto_main_preview.refresh_installed_runtime(game, project)
                 bedroom = johto_main_preview.refresh_installed_bedroom(game, project)
                 hgss = johto_main_preview.refresh_installed_private_hgss(game, project)
+                map_sync = map_patches.sync_installed(project, game)
                 hgss_proof = johto_main_preview.preview_proof(game) or {}
                 art_status = (hgss_proof.get("private_hgss") or {}).get("status", "no_private_art")
                 return record(project, {"status": "experimental_installed_not_native_tested",
                                         "reason": "Johto experimental preservada; gráficos privados de interiores aplicados se fornecidos e verificados. Compilação e gameplay nativos ainda pendentes",
                                         "map_count": 100, "native_qa": False,
-                                        "changed": bool(hotfix["changed"] or bedroom["changed"] or hgss["changed"]),
+                                        "changed": bool(hotfix["changed"] or bedroom["changed"] or hgss["changed"] or map_sync["changed"]),
+                                        "map_editor_changed": map_sync["changed"],
+                                        "map_editor_maps": map_sync.get("maps", []),
                                         "runtime_hotfix": hotfix.get("runtime_hotfix"),
                                         "bedroom_layout": bedroom.get("bedroom_layout"),
                                         "bedroom_changed": bedroom["changed"],
