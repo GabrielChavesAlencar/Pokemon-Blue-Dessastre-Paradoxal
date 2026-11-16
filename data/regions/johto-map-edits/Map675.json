@@ -1221,6 +1221,20 @@
         14,
         24
       ]
+    },
+    {
+      "after": [
+        8,
+        8
+      ],
+      "before": [
+        6,
+        8
+      ],
+      "id": 3,
+      "name": "JH_NPC_MOTHER",
+      "warp_after": null,
+      "warp_before": null
     }
   ],
   "map_id": 675,
