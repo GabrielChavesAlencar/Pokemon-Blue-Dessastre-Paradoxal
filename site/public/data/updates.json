@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dc3df0c27ad78b8164c7e32f34befc81ee237290",
+      "date": "2026-11-16T06:26:15-03:00",
+      "title": "ci(johto): run native map bedroom diagnostic tests on every change",
+      "category": "Melhorias"
+    },
+    {
       "sha": "d4c4d2f9d273ccfeaadff0a0d9b9ef13178a3971",
       "date": "2026-11-16T06:25:58-03:00",
       "title": "feat(johto): double-click Windows bedroom verification and safe Map674/675 repair launcher",
