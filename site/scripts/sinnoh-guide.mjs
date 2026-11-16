@@ -67,7 +67,8 @@ export function generateSinnohGuide(sources){
   requireUnique(phases.map(p=>p.number),'phase numbers');
   const phaseNumbers=new Set(phases.map(p=>p.number));
   const areas=pendingRegion.areas.map(a=>{
-    if(a.status!=='not_added'||!nameOf(a)||!phaseNumbers.has(a.phase)||
+    if(a.status!=='not_added'||!nameOf(a)||
+        (a.phase!=null&&!phaseNumbers.has(a.phase))||
         'map_id' in a||'level' in a||'rate' in a)reject('unverified area entered as playable');
     const match=encountersBySymbol.get(a.source_symbol);
     return {id:a.id,name:nameOf(a),phase:a.phase,

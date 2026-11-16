@@ -290,3 +290,34 @@
 .kanto-balance-note p{margin-top:12px}
 .kanto-balance-page .regular-grid{margin-top:20px}
 @media(max-width:650px){.kanto-balance-page>.section{margin:20px 0 9px}.kanto-balance-table{font-size:11px}.kanto-balance-table th,.kanto-balance-table td{padding:10px 11px}}
+
+/* CH17 Sinnoh guide: archival reference only, with unambiguous pending states. */
+.sinnoh-guide-page .article-heading{margin-bottom:24px}
+.sinnoh-guide-tabs,.sinnoh-guide-phase{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px}
+.sinnoh-guide-tabs .filter-chip,.sinnoh-guide-phase .filter-chip{min-height:35px;display:inline-flex;align-items:center;justify-content:center}
+.sinnoh-guide-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+.sinnoh-guide-card{display:flex;flex-direction:column;gap:11px;min-width:0;padding:20px;border:1px solid #34455c;background:linear-gradient(140deg,#111f32,#0f1725);border-radius:9px}
+.sinnoh-guide-card h3{font:600 22px/1.2 'Barlow Condensed',sans-serif;letter-spacing:.1px;color:#eef5ff;overflow-wrap:anywhere}
+.sinnoh-guide-card p{font-size:12px;line-height:1.75;color:#a9bbd1;overflow-wrap:anywhere}
+.sinnoh-guide-card small{font-size:10px;color:#9bafc6}
+.sinnoh-guide-card .content-pending-tag{margin-top:auto}
+.sinnoh-guide-card .sinnoh-species{color:#dae6f7}
+.sinnoh-guide-link{transition:border-color .2s,transform .2s}
+.sinnoh-guide-link:hover{border-color:#79acdf;transform:translateY(-2px)}
+.sinnoh-guide-link .text-link{margin-top:auto}
+.sinnoh-guide-stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:25px 0}
+.sinnoh-guide-stat{background:#14243a;border:1px solid #304964;border-radius:8px;padding:15px 12px}
+.sinnoh-guide-stat strong{display:block;font:700 30px/1.1 'Barlow Condensed',sans-serif;color:#d9ebff}
+.sinnoh-guide-stat span{display:block;color:#a3b4c7;font-size:10px;margin-top:9px}
+.sinnoh-guide-page .section{margin-top:34px}
+.sinnoh-guide-page .section>h2{font-size:clamp(24px,3.1vw,36px);margin:10px 0 12px}
+.sinnoh-guide-page .data-note{font-size:12px;line-height:1.8;color:#b5c4d7;margin:10px 0}
+.sinnoh-guide-steps-title{margin-top:32px!important}
+.sinnoh-guide-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style-position:inside;padding:0;margin:21px 0}
+.sinnoh-guide-steps li{padding:14px;background:#101c2c;border:1px solid #2d4057;border-radius:6px;color:#cddcec}
+.sinnoh-guide-steps li strong{font-weight:600;font-size:12px}
+.sinnoh-guide-steps li span{display:block;font-size:10px;color:#93acc6;line-height:1.6;margin-top:5px}
+.sinnoh-guide-footer{margin:45px 0 20px;padding:23px;border-top:1px solid #324967;background:#102036}
+.sinnoh-guide-footer h2{font-size:24px;margin-bottom:14px}
+@media(max-width:990px){.sinnoh-guide-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.sinnoh-guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.sinnoh-guide-grid,.sinnoh-guide-steps{grid-template-columns:1fr}.sinnoh-guide-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.sinnoh-guide-card{padding:16px}}

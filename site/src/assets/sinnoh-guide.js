@@ -41,7 +41,7 @@ export function sinnohGuidePage(data,requested='visao',phase='all'){
   if(data?.schema!==1||data.region!=='SINNOH'||data.status!=='planned'||
      data.gameplayVerified!==false||data.canPlay!==false)throw new Error('sinnoh-guide-invalid');
   const tab=tabs.some(([key])=>key===requested)?requested:'visao';
-  const selected=String(phase)==='all'?'all':
+  const selected=String(phase)==='all'||String(phase)==='sem-fase'?String(phase):
     data.phases.some(p=>String(p.number)===String(phase))?String(phase):'all';
   const navigation='<nav class="sinnoh-guide-tabs" aria-label="Seções do guia de Sinnoh">'+
     tabs.map(([key,label])=>'<a class="filter-chip'+(key===tab?' active':'')+'" href="'+
@@ -66,19 +66,21 @@ export function sinnohGuidePage(data,requested='visao',phase='all'){
       note('Músicas simbólicas: '+data.music.cueCount+
        '. Nenhuma faixa licenciada, MapID ou hook musical Sinnoh foi instalada.')+'</section>';
   }else if(tab==='areas'){
-    const byPhase=selected==='all'?data.areas:data.areas.filter(a=>String(a.phase)===selected);
+    const byPhase=selected==='all'?data.areas:
+      data.areas.filter(a=>selected==='sem-fase'?a.phase===null:String(a.phase)===selected);
     const filters='<nav class="sinnoh-guide-phase" aria-label="Filtrar áreas por fase">'+
       '<a href="/sinnoh?aba=areas&fase=all" class="filter-chip'+(selected==='all'?' active':'')+'">Todas</a>'+
       data.phases.map(p=>'<a href="/sinnoh?aba=areas&fase='+p.number+
        '" class="filter-chip'+(selected===String(p.number)?' active':'')+'">Fase '+p.number+'</a>').join('')+
-      '</nav>';
+      '<a href="/sinnoh?aba=areas&fase=sem-fase" class="filter-chip'+
+      (selected==='sem-fase'?' active':'')+'">Fase a auditar</a></nav>';
     section='<section class="section"><h2>Áreas previstas · '+byPhase.length+'</h2>'+
       note('MapIDs, posições, acesso e encontros permanecem não verificados. Espécies abaixo são apenas candidatas da auditoria de habitats, sem taxas ou níveis publicados.')+
       filters+cards(byPhase,a=>article(a.name,
-        '<p>Fase '+esc(a.phase)+' · '+esc(a.notes)+'</p>'+
+        '<p>'+esc(a.phase===null?'Fase a auditar':'Fase '+a.phase)+' · '+esc(a.notes)+'</p>'+
         (a.speciesCandidates.length?'<p>Referências de espécies: '+species(a.speciesCandidates)+
          '</p><small>Espécies a auditar · nenhuma taxa/slot confirmado.</small>':'<p>Encontros nativos: pendentes de conferência.</p>'),
-        'ÁREA · '+String(a.phase).padStart(2,'0')))+'</section>';
+        'ÁREA · '+(a.phase===null?'SEM FASE':String(a.phase).padStart(2,'0'))))+'</section>';
   }else if(tab==='treinadores'){
     section='<section class="section"><h2>Treinadores a localizar · '+data.trainers.length+'</h2>'+
       note('Grupos e personagens da campanha de Platinum para auditoria futura de mapas, NPCs e PBS. Nenhuma equipe ou versão de treinador foi considerada compilada.')+
