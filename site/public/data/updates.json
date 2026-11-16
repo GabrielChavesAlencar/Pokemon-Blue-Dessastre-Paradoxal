@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "971064c24e4e170a5ff0addb95969affee4ba881",
+      "date": "2026-11-15T23:36:32-03:00",
+      "title": "docs(johto): SystemStackError Boot.rb:774 root cause, Blue-Story automatic hotfix and verified map/save-safe test",
+      "category": "Documentação"
+    },
+    {
       "sha": "bdcc7b43fad9a0edbe311b3964cc8c70881def14",
       "date": "2026-11-15T23:34:12-03:00",
       "title": "ci(johto): test real Compiler.main alias-recursion regression and in-place saved-game-safe Boot hotfix",
