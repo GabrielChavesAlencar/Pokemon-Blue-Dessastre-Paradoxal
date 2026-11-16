@@ -6,6 +6,12 @@ on:
       - scripts/windows/**
       - scripts/regions/auto_integrate_johto.py
       - scripts/regions/johto_main_preview.py
+      - scripts/install_game.py
+      - web/johto-map-editor.html
+      - EDITAR_MAPAS_JOHTO.bat
+      - CONECTAR_GITHUB_EDITOR_JOHTO.bat
+      - docs/JOHTO_MAP_STUDIO.md
+      - tests/test_blue_story_johto_editor_installer.py
       - scripts/battle_polish/TitleKanto.rb
       - scripts/battle_polish/RegionStart.rb
       - .github/workflows/blue-story-windows.yml
@@ -28,6 +34,8 @@ jobs:
           python-version: '3.12'
       - name: Testar o empacotador privado de Johto sem arquivos protegidos
         run: python -m unittest discover -s tests -p test_embed_johto_private.py -v
+      - name: Verificar download, atalhos e atualizacoes do Johto Map Studio
+        run: python -m unittest discover -s tests -p test_blue_story_johto_editor_installer.py -v
       - name: Compilar e executar self-test do Blue-Story
         run: python scripts/windows/build.py
       - name: Verificar o executável Windows
