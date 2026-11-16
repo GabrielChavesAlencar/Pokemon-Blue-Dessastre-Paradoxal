@@ -83,3 +83,28 @@ python scripts/regions/install_sinnoh_qa_copy.py --verify ".blue-work/game-sinno
 - O instalador não copia saves, não ativa Barry, não altera o Game.exe principal, não autoriza redistribuição, não gera sprites do doador e não certifica todas as fases.
 
 Acompanhamento: [SINNOH_PROGRESSO.md](SINNOH_PROGRESSO.md), [sinnoh-progress.json](../data/regions/sinnoh-progress.json), [SINNOH_CODEX_PENDENCIAS.md](SINNOH_CODEX_PENDENCIAS.md).
+
+## CH10 — lançador isolado e pré-voo reforçado (16/11/2026)
+
+O [lançador `launch_sinnoh_qa.py`](../scripts/regions/launch_sinnoh_qa.py) é exclusivamente para uma **cópia privada criada em `.blue-work/` pelo instalador Sinnoh**. Por padrão, sem flag de ação, apenas consulta os arquivos e exibe relatório. **Não baixa, instala, compila ou executa o jogo principal**. Quando uma cópia auditada existir, os modos são:
+
+```bash
+# Verifica sem executar nada; no projeto local com uma cópia privada válida:
+python scripts/regions/launch_sinnoh_qa.py --qa .blue-work/game-sinnoh-qa-<token>
+# Inicia somente o Game.exe dessa cópia, para o compilador nativo pendente:
+python scripts/regions/launch_sinnoh_qa.py --qa .blue-work/game-sinnoh-qa-<token> --compile
+# Só após compilação e auditoria de eventos/PBS pela engine da cópia:
+python scripts/regions/launch_sinnoh_qa.py --qa .blue-work/game-sinnoh-qa-<token> --launch
+```
+
+O texto `<token>` é um **placeholder de pasta privada**. Sem instalação de uma cópia QA real, nenhum desses comandos irá abrir o jogo. A interface nunca aponta para `game/Game.exe` ou outro executável por fallback. `--compile` apenas invoca a cópia QA com a solicitação de compilação já validada; isso **não garante** que a compilação obterá sucesso. `--launch` recusa execução se a compilação e o relatório estrutural nativo não estiverem disponíveis ou coerentes.
+
+O [instalador](../scripts/regions/install_sinnoh_qa_copy.py) registra no manifesto transacional hashes de `Game.exe`, `Scripts.rxdata`, `System.rxdata`, plugins, `mkxp.json` e `Game.ini`; antes de lançar, rejeita arquivo ausente, adulterado ou symlink, falta de Audio/Graphics/Fonts, perfis inconsistentes, save existente em diretórios da cópia, marcadores falsos e caminhos fora de `.blue-work`. A proteção Ruby [`SinnohQAStart.rb`](../scripts/regions/SinnohQAStart.rb) impede entrada de saves de outras regiões no fluxo QA e bloqueia recomeço que tentaria substituir silenciosamente o estado de uma região externa. O carregamento **legítimo** de um save isolado Sinnoh ainda usa a rotina nativa.
+
+```bash
+python -m unittest discover -s tests -p 'test_sinnoh_ch10_qa_launcher.py' -v
+ruby -c scripts/regions/SinnohQAStart.rb
+ruby tests/sinnoh_qa_start_runtime.rb scripts/regions/SinnohQAStart.rb
+```
+
+A [execução do GitHub Actions 43925173071](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43925173071) confirmou 14 testes específicos CH10 e 239 testes Python de Sinnoh. Os testes usam executável **fictício** e interceptam toda chamada a `subprocess.Popen` — nenhum `Game.exe` real foi executado; nada comprova compilação nativa, sprites, colisões, saves de usuário, Android ou região jogável. As barras A/B/C/D seguem sem mudança.

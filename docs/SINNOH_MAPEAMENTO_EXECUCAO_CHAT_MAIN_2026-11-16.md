@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-█████████░░░░░░░░░░░  9/20 (45%)
+██████████░░░░░░░░░░  10/20 (50%)
 ```
 
-**9 concluídas**, **0 parciais**, **11 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**10 concluídas**, **0 parciais**, **10 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -36,7 +36,7 @@
 | P1 | **CH07** ✅ | Reforçar proteção de flags, três Poké Bolas e save exclusivo de `SinnohPilot.rb` | Ruby/Python com casos duplicados, perda/retorno e fallback sem iniciar outra região |
 | P1 | **CH08** ✅ | Aumentar as verificações de Barry, três equipes e escalonamento compartilhado | Fixtures cobrem iniciais, versões, ausência de PBS, 70%/90% e bloqueio seguro |
 | P1 | **CH09** ✅ | Teste de integração sintética ponta a ponta de auditor → plano → geometria → overlay → bundle | Cenários de sucesso/falha, rollback e hashes estáveis, **sem** representar Game.exe |
-| P1 | CH10 | Preparar interface segura do lançador QA do Sinnoh e pré-voo de instalação | Sem fallback para Decades/Johto, saves exclusivos, erro claro sem assets, testes offline |
+| P1 | **CH10** ✅ | Preparar interface segura do lançador QA do Sinnoh e pré-voo de instalação | Sem fallback para Decades/Johto, saves exclusivos, erro claro sem assets, testes offline |
 | P2 | CH11 | Contratos regionais de oito insígnias + HMs de Sinnoh | Dados, guardas e testes garantem badge local, sem apropriar HM de outra região |
 | P2 | CH12 | Modelos de treinadores e evolução com cálculo Blue existente | Regras testadas sem níveis fixos duplicados, preservando Normal/Master e level cap |
 | P2 | CH13 | Catálogo **simbólico** de encontros por rota/terreno/horário/cap | Registros identificados como `planned`, consistência de espécie e método, sem afirmar encontros instalados |
@@ -48,7 +48,9 @@
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH10 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH11 → CH11–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH10 concluída:** o [lançador QA](../scripts/regions/launch_sinnoh_qa.py) não executa `Game.exe` por padrão; `--compile` exige um pedido de compilação íntegro e `--launch` exige provas estruturais nativas. O [instalador da cópia](../scripts/regions/install_sinnoh_qa_copy.py) fixa SHA-256 de arquivos executáveis/críticos, confirma assets e perfil de saves e rejeita saves de outras regiões/copias adulteradas; a atualização Ruby [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) recusa saves Kanto/Johto/Hoenn/Decades e novos jogos com estado estrangeiro, sem fallback para o selector principal. [14 testes CH10](../tests/test_sinnoh_ch10_qa_launcher.py) + [Ruby QA](../tests/sinnoh_qa_start_runtime.rb) passaram no [CI 43925173071](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43925173071); **239 testes Python isolados** passaram. É uma barreira sintética, não prova de Game.exe/JoiPlay.
 
 **CH09 concluída:** [8 testes de integração ponta a ponta](../tests/test_sinnoh_ch09_integration.py) montam uma fonte RMXP **100% sintética e temporária**, passam pelo auditor, plano explícito de IDs, conversor que remove eventos/áudio doador, stage atômico, compilador de eventos autorais, draft PBS de Barry, validação e publicação de bundle *privado*. Exercitam SHA-256 determinístico, arquivo fonte adulterado, ID protegido/ocupado, PBS inválido, corrupção de stage, falhas simuladas de fsync e rollback que não apaga arquivos contaminados. [CI 43923392072](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43923392072): CH09 **8/8** e suíte isolada de Sinnoh **225/225**. **Não** implica instalação, Game.exe, autorização para redistribuir fonte, nem MapIDs 500–508 reais. [Documentação da CH09](SINNOH_CH09_E2E_SINTETICO.md).
 
@@ -138,4 +140,4 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 4. Publicar diretamente na `main` sem force push e atualizar **somente** a(s) entrada(s) CH realmente concluída(s).
 5. Informar SHA/links, verificações PASS/FAIL/não executadas e bloqueios; preservar barras oficiais de 13 fases até aceitação.
 
-**Próxima ação sugerida:** **CH10**, revisar o lançador QA e o pré-voo de instalação de Sinnoh, incluindo falta de assets e fallback seguro. CH01–CH09 foram concluídas estaticamente, sem tornar a região jogável.
+**Próxima ação sugerida:** **CH11**, reforçar os contratos de oito insígnias e HMs de Sinnoh, com testes de isolamento regional e sem transformar preparação em progresso jogável. CH01–CH10 estão concluídas estaticamente.

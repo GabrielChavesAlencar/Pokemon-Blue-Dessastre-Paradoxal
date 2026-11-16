@@ -8,12 +8,12 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-█████████░░░░░░░░░░░  9/20 (45%)
+██████████░░░░░░░░░░  10/20 (50%)
 ```
 
-- **Concluídas:** 9 (**CH01–CH09**, incluindo teste sintético completo audit→remap→geometry→overlay→bundle).
+- **Concluídas:** 10 (**CH01–CH10**, incluindo o lançamento QA isolado e pré-voo seguro).
 - **Parciais:** 0.
-- **Pendentes:** 11 (**CH10–CH20**).
+- **Pendentes:** 10 (**CH11–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
 - **CH02:** `validate_sinnoh_chat_progress.py` verifica JSON, painel e backlog.
@@ -21,11 +21,12 @@
 - **CH05:** `sinnoh-map-id-reservations.json` distingue reservas e ocupação física desconhecida.
 - **CH06:** `audit_sinnoh_twinleaf_events.py` valida os 9 mapas, 24 eventos e 16 warps.
 - **CH07:** `SinnohPilot.rb` isola flags, saves e as três Poké Bolas físicas sem fallback para outra região.
-- **CH08:** `verify_sinnoh_barry_pbs.py` e testes Ruby/Python cobrem 3 versões de Barry e balanceamento real de `Campaign.rb` (Normal 70% e Master 90%) em fixtures.
-- **CH09:** [`test_sinnoh_ch09_integration.py`](../tests/test_sinnoh_ch09_integration.py) reúne em **8 testes** os módulos reais `audit_sinnoh_rxdata` → `make_plan` → `build_geometry` → `preview/stage` → `compile_events` → `build/publish` do bundle isolado, com PBS de Barry. Confere 9 mapas de teste sintéticos, 24 eventos autorais, 16 warps, 3 equipes de Barry, hashes iguais em execuções repetidas, recusa de fontes/IDs adulterados e transações sem arquivos parciais ao simular falha de disco. Rollback só remove stages privados e rejeita arquivos adulterados; `game/`, saves de Decades/Kanto/Johto/Hoenn e scripts doadores continuam intactos. [Registro do método e limites](SINNOH_CH09_E2E_SINTETICO.md). O [CI isolado 43923392072](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43923392072) aprovou **8/8 testes CH09** e **225 testes Python isolados de Sinnoh**.
-- **Critério:** só tarefas `done` com arquivo/commit e evidência verificável entram no numerador.
+- **CH08:** testes de Barry e escalonamento `Campaign.rb` em fixtures: Normal 70% e Master 90%, com seed PBS original 5.
+- **CH09:** 8 testes E2E sintéticos de auditoria → plano → geometria → overlay → bundle, rollback/hash, sem escrever em `game/`.
+- **CH10:** [`launch_sinnoh_qa.py`](../scripts/regions/launch_sinnoh_qa.py) oferece `--qa` (consulta segura), `--compile` (executável **somente da QA** com pedido válido) e `--launch` (cópia QA somente após prova de compilação/sonda). [`install_sinnoh_qa_copy.py`](../scripts/regions/install_sinnoh_qa_copy.py) fixa hashes de `Game.exe`, `Data/Scripts.rxdata`, plugins, perfil de saves e arquivos de inicialização, além de bloquear diretórios de assets ausentes, save legado ou symlink, marcador incorreto e adulterações do manifesto. [`SinnohQAStart.rb`](../scripts/regions/SinnohQAStart.rb) rejeita save regional incompatível tanto na recarga quanto antes de sobrescrever estado em Novo Jogo; não cai na seleção Decades/Johto. [14 testes negativos/positivos](../tests/test_sinnoh_ch10_qa_launcher.py) e testes Ruby em CI: [execução 43925173071](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43925173071), com **239 testes Python isolados de Sinnoh aprovados**. [Instruções e limites](SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md).
+- **Critério:** somente tarefas `done` com evidência versionada e CI verificado entram na Barra E.
 
-**Limite:** Barra E não mede progresso jogável. **Barra A 8/32 (25%)**, barras **B/C/D 0/13**. Os MapIDs 500–508 são exclusivamente uma fixture dentro de pasta temporária; não representam IDs escolhidos para a instalação. Nenhum arquivo de Sinnoh real foi convertido e não houve execução Game.exe/JoiPlay.
+**Limite:** CH10 verifica contratos e um executável sintético; ela **não** comprova Game.exe real/JoiPlay, assets de Sinnoh autorizados, navegação, saves nativos ou publicação jogável. **Barra A 8/32 (25%)**, **B/C/D 0/13** inalteradas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
