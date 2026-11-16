@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0909fe42a46c54da2e085884857ee9dc3536c01e",
+      "date": "2026-11-16T19:19:56-03:00",
+      "title": "docs(sinnoh): CH12 validada e Barra E 12/20 sem alterar jogo",
+      "category": "Documentação"
+    },
+    {
       "sha": "1fec756ed5d0186e6e2e3f27bc46e47c7e781e47",
       "date": "2026-11-16T19:17:58-03:00",
       "title": "test(sinnoh): CH12 fixture Compiler.main e etapa BST sem Master",
