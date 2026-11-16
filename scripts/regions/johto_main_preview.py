@@ -163,9 +163,21 @@ def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str
     if not (0 <= START[1] < maps[START[0]].attrs["@width"]
             and 0 <= START[2] < maps[START[0]].attrs["@height"]):
         raise ValueError("Spawn New Bark fora do quarto")
-    if any((e.attrs["@x"], e.attrs["@y"]) == START[1:] for e in
-           maps[START[0]].attrs["@events"].values()):
-        raise ValueError("Spawn do jogador ocupado por evento")
+    # The offline-12 authoring pass intentionally places a transparent,
+    # autorun profile initializer on the EXACT New Bark bedroom start tile.
+    # Reject real blockers, but do not reject that one named, non-graphic
+    # initializer or Johto can never be installed from its original ZIP.
+    overlapping = [event for event in maps[START[0]].attrs["@events"].values()
+                   if (event.attrs["@x"], event.attrs["@y"]) == START[1:]]
+    expected = [
+        e for e in overlapping
+        if text(e.attrs["@name"]) == "JH_NEW_GAME_PROFILE"
+        and e.attrs["@pages"]
+        and e.attrs["@pages"][0].attrs.get("@trigger") == 3
+        and not e.attrs["@pages"][0].attrs["@graphic"].attrs.get("@character_name")
+    ]
+    if len(overlapping) != len(expected) or len(expected) > 1:
+        raise ValueError("Spawn do jogador bloqueado por NPC/obstáculo inesperado")
 
     # Copy each source Johto tileset to a NEW native index, leaving all
     # Decades/Kanto/Hoenn tileset ids and metadata exactly as they were.
