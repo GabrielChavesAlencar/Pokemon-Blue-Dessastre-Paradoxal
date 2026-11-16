@@ -115,8 +115,8 @@ class KantoBootstrapCompatibilityTests(unittest.TestCase):
         runtime = (k.ROOT / "scripts/battle_polish/RegionStart.rb").read_text(encoding="utf8")
         self.assertFalse(runtime.lstrip().startswith('require "json"'))
         self.assertIn('def self.johto_install_proof', runtime)
-        self.assertIn('require "json" unless defined?(JSON)', runtime)
-        self.assertIn('require "digest" unless defined?(Digest::SHA256)', runtime)
+        self.assertIn('require "json" unless defined?(::JSON) && ::JSON.respond_to?(:parse)', runtime)
+        self.assertIn('require "digest" unless defined?(::Digest::SHA256)', runtime)
         self.assertIn('rescue LoadError', runtime)
         self.assertIn('def self.kanto_spawn', runtime)
 
