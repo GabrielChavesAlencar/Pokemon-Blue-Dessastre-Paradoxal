@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 15,
+    "done": 16,
     "partial": 0,
-    "pending": 5,
-    "percent_complete": 75,
+    "pending": 4,
+    "percent_complete": 80,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -927,8 +927,8 @@
         "priority": "P3",
         "title": "Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic",
         "acceptance": "Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "tests/sinnoh_music_ch16_runtime.rb"
       },
       {
         "id": "CH17",

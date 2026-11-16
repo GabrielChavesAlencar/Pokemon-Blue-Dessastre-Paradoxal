@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-███████████████░░░░░  15/20 (75%)
+████████████████░░░░  16/20 (80%)
 ```
 
-**15 concluídas**, **0 parciais**, **5 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**16 concluídas**, **0 parciais**, **4 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -42,13 +42,15 @@
 | P2 | **CH13** ✅ | Catálogo **simbólico** de encontros por rota/terreno/horário/cap | Registros identificados como `planned`, consistência de espécie e método, sem afirmar encontros instalados |
 | P2 | **CH14** ✅ | Estados e contratos para Galactic, Cyrus, Liga e viagem pós-Cynthia | Eventos idempotentes, desbloqueio lógico Hoenn/Unova só quando instalado; testes sintéticos |
 | P3 | **CH15** ✅ | Registro de equipes para Roark→Volkner, Elite Four e Cynthia | Esquemas/referências auditáveis, sem espécies ou times inventados nem nível fixo na UI |
-| P3 | CH16 | Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic | Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos |
+| P3 | **CH16** ✅ | Catálogo de chaves musicais Sinnoh e fallbacks BlueMusic | Ordem de prioridade, tema/fade/loop fallback em testes, **sem** publicar áudio sem direitos |
 | P3 | CH17 | Guias de Sinnoh no site com estado real `planned`/pendente | Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios |
 | P3 | CH18 | Testes e build do portal para Sinnoh | Pesquisa/filtros/pendências/linkagem sem rótulo `jogável` indevido, suíte do site validada |
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH16–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH17–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH16 concluída:** [46 chaves musicais simbólicas](../data/regions/sinnoh-music-ch16.json), organizadas a partir de 45 nomes já documentados (Hall of Fame dividido em BGM e ME), [auditor Python](../scripts/music/audit_sinnoh_music_ch16.py) e [resolvedor Ruby inerte](../scripts/music/SinnohMusicContracts.rb). Prioridades protegem áudio explícito da engine, cenas confirmadas, escolhas BlueMusic, batalhas, transportes e mapas; fallback de faixa ausente, licença/hash não verificados, mudança de região, vitória, reload e ME mantêm áudio existente. Fade e loop seguem defaults do motor até arquivos autorizados serem auditados; nenhum MP3/OGG/MIDI, MapID, evento ou hook foi criado. [23 testes Python](../tests/test_sinnoh_music_ch16.py), [Ruby com BlueMusic real](../tests/sinnoh_music_ch16_runtime.rb) e **347 testes Python de Sinnoh** aprovados no [CI 43977207679](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43977207679). [Documentação CH16](SINNOH_CH16_CATALOGO_MUSICAL_FALLBACK.md).
 
 **CH15 concluída:** [catálogo de 13 treinadores](../data/regions/sinnoh-trainer-teams-ch15.json), [auditor e sondagem PBS somente leitura](../scripts/regions/audit_sinnoh_teams_ch15.py) e [23 testes negativos/positivos](../tests/test_sinnoh_teams_ch15.py) separaram as equipes de primeiro confronto dos 8 ginásios, Elite Four e Cynthia (13), as revanches Platinum documentadas apenas para Elite Four/Cynthia (5), as variantes **Full Power do Blue não verificadas** e as equipes **nativas PBS sem comprovação**. O registro respeita as espécies e níveis históricos de [Platinum](SINNOH_DETONADO_PLATINUM_REFERENCIA_ORGANIZADA.md), mas bloqueia exibir níveis fixos como reais, reclassificar fontes Kanto/Johto/Decades ou publicar compilações/versões de treinador inventadas. Guardas de `Campaign.rb` e `Story.rb` mantêm escala 70%/90% e espécies autorais de líderes/chefes. [CI 43974961958](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43974961958): CH15 **23/23** e suite Sinnoh **324/324**. [Documentação](SINNOH_CH15_TIMES_LIDERES_ELITE_CYNTHIA.md). Sem mapas, binds NPC ou Game.exe real.
 
@@ -150,4 +152,4 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 4. Publicar diretamente na `main` sem force push e atualizar **somente** a(s) entrada(s) CH realmente concluída(s).
 5. Informar SHA/links, verificações PASS/FAIL/não executadas e bloqueios; preservar barras oficiais de 13 fases até aceitação.
 
-**Próxima ação sugerida:** **CH16**, catalogar chaves musicais de Sinnoh e contratos de fallback BlueMusic sem publicar áudio protegido, com testes de prioridade e ausência de assets. CH01–CH15 estão concluídas em código/testes; Sinnoh permanece não jogável.
+**Próxima ação sugerida:** **CH17**, publicar guias de Sinnoh no site com estado fiel planned/pendente para áreas, treinadores, liga e itens, sem MapIDs, níveis, músicas ou encontros falsamente instalados. CH01–CH16 concluídas em código/testes; Sinnoh permanece não jogável.
