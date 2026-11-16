@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "72130e31e714328273bccf34e9e705d08e7da16a",
+      "date": "2026-11-16T09:37:07-03:00",
+      "title": "test(johto): move upstairs stair event, update downstairs transfer landing and protect New Game initializer",
+      "category": "Testes"
+    },
+    {
       "sha": "2bb8cd01e5dfdf0af70822097d5fe1812d5e5975",
       "date": "2026-11-16T09:36:25-03:00",
       "title": "feat(johto): interactive event/door/stair placement and warp landing inspector, undo/redo and versioned save",
