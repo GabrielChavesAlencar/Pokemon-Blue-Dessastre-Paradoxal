@@ -114,6 +114,12 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                 johto=importlib.util.module_from_spec(spec);spec.loader.exec_module(johto)
                 result=johto.integrate(project,game)
                 print('[JOHTO AUTO] Resultado:',result['status'],flush=True)
+                if result.get('verification') == 'semantic_runtime_map_validation_not_native_gameplay_qa':
+                    print('[JOHTO AUTO] 100 mapas estruturais verificados; edicoes do jogador preservadas. Game.exe nao testado.',flush=True)
+                if result.get('bedroom_reason'):
+                    print('[JOHTO EDITOR] Quarto:',result['bedroom_reason'],flush=True)
+                if result.get('map_editor_warning'):
+                    print('[JOHTO EDITOR] ATENCAO:',result['map_editor_warning'],flush=True)
                 if not result['ready']:
                     print('[JOHTO AUTO] Johto ainda não inicia neste Game.exe:',result['reason'],
                           'Detalhes: .blue-work/johto-main-install-status.json',flush=True)
