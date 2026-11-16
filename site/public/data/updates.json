@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b7be5c6c4c4576f5fa599f57f7d81a68c0f78251",
+      "date": "2026-11-16T14:18:22-03:00",
+      "title": "feat(sinnoh): auditor estrutural de 9 mapas e 16 warps (CH06)",
+      "category": "Novidades"
+    },
+    {
       "sha": "4d6f08f66b675f62958ddb115362ffd6dc8d0ca4",
       "date": "2026-11-16T14:17:18-03:00",
       "title": "feat(sinnoh): schema 2020-12 do nucleo Twinleaf (CH06)",
