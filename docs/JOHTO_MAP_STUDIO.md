@@ -2,6 +2,38 @@
 
 O projeto contém um editor visual de mapas **nativos RPG Maker XP** de Johto, aberto pelo navegador e executado **somente em `127.0.0.1:8771`**. Os arquivos `Data/Map600.rxdata` a `Data/Map699.rxdata` são lidos da instalação do usuário. **Não** é um editor de imagens geradas por IA.
 
+## Download automático pelo Blue-Story.exe
+
+A partir do instalador compilado na `main` em 16/11/2026, o próprio
+`Blue-Story.exe` sincroniza o editor com o GitHub antes de iniciar o jogo.
+O conteúdo público do editor é atualizado a cada execução quando a versão
+da `main` muda.
+
+Ele instala a pasta **`Johto-Map-Studio`** em dois lugares:
+
+1. **Ao lado do `Blue-Story.exe`** que o usuário executou, quando a pasta
+   permitir escrita (exemplo: `Downloads/Blue-Story/Johto-Map-Studio/`).
+2. **Na instalação gerenciada do jogo**, sempre que a origem do editor estiver
+   íntegra: `%LOCALAPPDATA%\\PokemonBlueDessastreParadoxal\\Johto-Map-Studio\\`.
+
+Dentro da pasta há `EDITAR_MAPAS_JOHTO.bat`,
+`CONECTAR_GITHUB_EDITOR_JOHTO.bat`, cópias de referência do código do
+editor e o manual. Ambos os atalhos abrem a **mesma instalação gerenciada**
+do jogo para que não existam versões divergentes dos mapas ou saves.
+
+O arquivo `scripts/windows/install_johto_editor.py` sincroniza essa pasta
+e recusa sobrescrever diretórios que já existem sem identificação do Blue.
+Cópias de referência modificadas pelo usuário são preservadas em backup
+antes de atualizar. Se o diretório do executável estiver protegido contra
+gravação, o editor permanece disponível na instalação gerenciada; o jogo
+não é bloqueado por esse motivo.
+
+**Compatibilidade de inicializadores:** o `scripts/install_game.py` baixado
+pela `main` também cria a pasta gerenciada em execuções de lançadores antigos.
+A cópia **ao lado do executável** exige o novo `Blue-Story.exe` compilado.
+O recurso não instala tilesets HGSS externos, nem disponibiliza ZIPs
+privados na release pública.
+
 ## Como abrir no Windows (Blue-Story)
 
 1. Execute o Blue-Story e instale o jogo principal com Johto. O Blue-Story baixa o código do repositório, incluindo o novo editor.
