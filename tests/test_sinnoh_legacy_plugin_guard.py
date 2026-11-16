@@ -69,6 +69,16 @@ class SinnohLegacyPluginTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), value)
                 path.unlink()
 
+    def test_case_insensitive_data_directory_and_marker_names(self):
+        for rel in ("DATA/BLUE-SINNOH-COMPILE-REQUEST.TXT",
+                    "Data/BLUE-SINNOH-COMPILED.TXT"):
+            with self.subTest(path=rel):
+                path = self.create(rel, b"legacy marker")
+                with self.assertRaisesRegex(ValueError, "não permitido"):
+                    assert_no_legacy_sinnoh_shared(self.game)
+                self.assertEqual(path.read_bytes(), b"legacy marker")
+                path.unlink()
+
     def test_rejects_suspicious_shared_overlays(self):
         for rel, content in (
             ("Plugins/Other/SinnohPreview.rb", b"legacy"),

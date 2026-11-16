@@ -62,7 +62,9 @@ def assert_no_legacy_sinnoh_shared(game: Path) -> None:
         fail("game/ não é diretório")
     for rel in sorted(MARKERS):
         parent, name = rel.rsplit("/", 1) if "/" in rel else ("", rel)
-        marker = entry(game / parent if parent else game, name)
+        # Case-insensitive lookup of each path segment (Data vs data on Linux).
+        folder = entry(game, parent) if parent else game
+        marker = entry(folder, name) if folder is not None else None
         if marker is not None:
             fail("marcador de perfil piloto encontrado: " + str(marker))
     plugins = entry(game, "Plugins")
