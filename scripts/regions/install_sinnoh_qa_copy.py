@@ -48,6 +48,19 @@ BARRY_READY = "Data/blue-sinnoh-rival-ready.txt"
 MAX_FILES = 30000
 MAX_FILE_BYTES = 64 * 1024 * 1024
 MAX_TOTAL_BYTES = 4 * 1024 * 1024 * 1024
+# Hash-pinned runtime files of the *isolated copy*, not the shared game.
+# Compiled output is deliberately excluded; the original Scripts.rxdata stays
+# immutable, while the Essentials compiler generates separate Data files.
+QA_LAUNCH_REQUIRED = (
+    "Game.exe", "mkxp.json", "Game.ini", "Data/Scripts.rxdata",
+    "Data/System.rxdata",
+    "Plugins/ZZZZZ Blue Sinnoh Intro/SinnohPilot.rb",
+    START_PLUGIN, PROBE_PLUGIN,
+)
+QA_ASSET_DIRS = ("Audio", "Graphics", "Fonts")
+QA_SAVE_PATTERNS = (
+    "Saves/**/*", "Savedata/**/*", "Save/**/*", "Data/File*.rxdata",
+)
 
 
 def fail(message: str):
@@ -464,12 +477,29 @@ def install(project: Path, base: Path, output: Path, report: dict,
                 os.fsync(fp.fileno())
             if digest(to.read_bytes()) != report["overlay_file_hashes"][name]:
                 fail("Arquivo do QA alterado durante escrita: " + name)
+        # CH10: pin every asset needed to bootstrap the private launcher.
+        # Game.exe and native files were verified against the base snapshot;
+        # modified QA plugins/configs were verified against overlay_file_hashes.
+        launch_sha = {}
+        for rel in QA_LAUNCH_REQUIRED:
+            f = temp / rel
+            if f.is_symlink() or not f.is_file():
+                fail("Arquivo crítico para lançar QA ausente: " + rel)
+            launch_sha[rel] = digest(f.read_bytes())
+        for dirname in QA_ASSET_DIRS:
+            folder = temp / dirname
+            if folder.is_symlink() or not folder.is_dir() or not any(
+                p.is_file() and not p.is_symlink() for p in folder.rglob("*")
+            ):
+                fail("Assets essenciais ausentes no QA: " + dirname)
         (temp / "sinnoh-qa-transaction.json").write_text(
             json.dumps({
                 "schema": 1, "kind": "SINNOH_QA_PRIVATE_TRANSACTION",
                 "base_sha256": digest(json.dumps(native, sort_keys=True).encode("ascii")),
                 "file_sha256": report["overlay_file_hashes"],
                 "save_isolation": report["save_isolation"],
+                "qa_launch_sha256": launch_sha,
+                "qa_proof_sha256": digest((temp / QA_META).read_bytes()),
                 "runtime_playable": False,
             }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         if dest.exists() or dest.is_symlink():
@@ -490,15 +520,42 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
         fail("Provas do instalador QA ausentes")
     proof = json.loads(proof_file.read_text("utf-8"))
     trans = json.loads(trans_file.read_text("utf-8"))
-    if (proof.get("kind") != "ISOLATED_SINNOH_QA" or proof.get("region") != "SINNOH"
-            or trans.get("kind") != "SINNOH_QA_PRIVATE_TRANSACTION"):
-        fail("Não é instalação criada pelo instalador de Sinnoh")
+    if (not isinstance(proof, dict) or not isinstance(trans, dict)
+            or proof.get("kind") != "ISOLATED_SINNOH_QA"
+            or proof.get("region") != "SINNOH"
+            or proof.get("runtime_playable") is not False
+            or trans.get("kind") != "SINNOH_QA_PRIVATE_TRANSACTION"
+            or trans.get("runtime_playable") is not False
+            or trans.get("qa_proof_sha256") != digest(proof_file.read_bytes())):
+        fail("Prova de instalação QA ausente, adulterada ou aprovada indevidamente")
     profile = proof.get("profile")
     if not isinstance(profile, dict) or not all(
         isinstance(profile.get(k), str) and "Sinnoh" in profile[k]
         for k in ("dataPathApp", "dataPathOrg")
     ):
         fail("Perfil de save separado ausente")
+    if trans.get("save_isolation") != profile:
+        fail("Perfil da transação QA difere do save configurado")
+    pinned = trans.get("qa_launch_sha256")
+    if (not isinstance(pinned, dict) or set(pinned) != set(QA_LAUNCH_REQUIRED)
+            or any(not isinstance(value, str) or not SHA.fullmatch(value)
+                   for value in pinned.values())):
+        fail("Manifesto do lançador QA ausente ou incompleto")
+    for rel, expected in pinned.items():
+        target = qa / rel
+        if (target.is_symlink() or not target.is_file()
+                or any(parent.is_symlink() for parent in target.parents)
+                or digest(target.read_bytes()) != expected):
+            fail("Arquivo crítico do QA protegido ausente ou adulterado: " + rel)
+    for dirname in QA_ASSET_DIRS:
+        folder = qa / dirname
+        if (folder.is_symlink() or not folder.is_dir() or not any(
+                p.is_file() and not p.is_symlink() for p in folder.rglob("*"))):
+            fail("Assets essenciais não disponíveis no QA: " + dirname)
+    # No existing regional save is inherited by a new private QA copy.
+    for pattern in QA_SAVE_PATTERNS:
+        if any(p.is_file() or p.is_symlink() for p in qa.glob(pattern)):
+            fail("Save incompatível encontrado dentro da cópia QA")
     mkxp = jsonc((qa / "mkxp.json").read_text("utf-8"))
     if any(mkxp.get(k) != profile[k] for k in ("dataPathApp", "dataPathOrg")):
         fail("Configuração de saves foi alterada")
@@ -521,7 +578,17 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
     )
     if compiled.is_file() and not compiled_ok:
         fail("Prova de compilação nativa não corresponde ao QA")
-    pending = (qa / COMPILE_REQUEST).exists()
+    request_file = qa / COMPILE_REQUEST
+    if request_file.is_symlink() or compiled.is_symlink() or errors.is_symlink():
+        fail("Marcador de compilação QA em link simbólico")
+    pending = request_file.exists()
+    if pending and (
+        not request_file.is_file() or
+        request_file.read_text("ascii").strip() != proof["compile_token"]
+    ):
+        fail("Pedido de compilação QA inválido ou alterado")
+    if not compiled_ok and not pending:
+        fail("Cópia QA sem pedido de compilação nem prova válida")
     if compiled_ok and pending:
         fail("Compilação marcada como concluída mas pedido ainda está pendente")
     evidence = qa / ENGINE_REPORT
@@ -572,6 +639,9 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
         "gameplay_save_reload_verified": False,
         "android_verified": False,
         "barry_ready_marker_present": False,
+        "required_launcher_assets_verified": True,
+        "save_profile_matches_transaction": True,
+        "no_foreign_save_in_qa": True,
         "ready_to_launch_for_manual_testing": compiled_ok and checked,
         "playable_approved": False,
     }

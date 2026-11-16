@@ -176,6 +176,38 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
     check(BlueSinnohQAStart.barry_test_authorized?,
           "verified Sinnoh save was incorrectly blocked")
 
+    # CH10: a foreign Johto/Decades save must never be passed to the
+    # original selector or overwritten when entering QA New Game.
+    BlueRegionStart.instance_variable_set(:@new_game, false)
+    $PokemonGlobal.blue_regions["current"] = "JOHTO"
+    prior_count = $original_called
+    foreign_state = Marshal.dump($PokemonGlobal.blue_regions)
+    begin
+      BlueRegionStart.select_and_prepare
+      raise "Foreign saved region unexpectedly loaded"
+    rescue RuntimeError => error
+      raise if error.message == "Foreign saved region unexpectedly loaded"
+      check(error.message.include?("incompatível"), "foreign save error not clear")
+    end
+    check($original_called == prior_count, "foreign save delegated to native loader")
+    check(Marshal.dump($PokemonGlobal.blue_regions) == foreign_state,
+          "foreign save was changed during blocked load")
+    BlueRegionStart.instance_variable_set(:@new_game, true)
+    begin
+      BlueRegionStart.select_and_prepare
+      raise "Foreign save replaced with Sinnoh during new game"
+    rescue RuntimeError => error
+      raise if error.message == "Foreign save replaced with Sinnoh during new game"
+      check(error.message.include?("incompatível"), "foreign new game not blocked")
+    end
+    check($original_called == prior_count, "foreign new game fell back")
+    check(Marshal.dump($PokemonGlobal.blue_regions) == foreign_state,
+          "foreign new game erased save")
+    $PokemonGlobal.blue_regions["current"] = "SINNOH"
+    $PokemonGlobal.blue_regions["initial"] = "SINNOH"
+    check(BlueSinnohQAStart.proof == [500, 10, 11],
+          "Sinnoh restored after foreign save test")
+
     File.write("Data/Map500.rxdata", "tampered terrain")
     check(BlueSinnohQAStart.proof.nil?, "changed map hash was accepted")
     File.write("Data/Map500.rxdata", required["Data/Map500.rxdata"])

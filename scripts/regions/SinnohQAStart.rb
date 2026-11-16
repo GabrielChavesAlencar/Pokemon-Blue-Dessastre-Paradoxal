@@ -79,16 +79,41 @@ module BlueSinnohQAStart
     def select_and_prepare(*args)
       # Existing saves still use the native reload path, but new QA games
       # must not silently enter another region when globals are absent.
-      return super unless @new_game
+      unless @new_game
+        # Do not rewrite a loaded foreign-region save through QA's start path.
+        if defined?($PokemonGlobal) && $PokemonGlobal &&
+           $PokemonGlobal.respond_to?(:blue_regions)
+          saved = $PokemonGlobal.blue_regions
+          if saved && (!saved.is_a?(Hash) || saved["version"] != 1 ||
+             saved["current"] != "SINNOH" ||
+             (saved.key?("initial") && saved["initial"] != "SINNOH"))
+            raise "Sinnoh QA: save de outra região incompatível; carregamento bloqueado"
+          end
+        end
+        return super
+      end
       raise "Sinnoh QA: estado global ausente; Novo Jogo bloqueado" unless
         defined?($PokemonGlobal) && $PokemonGlobal &&
         $PokemonGlobal.respond_to?(:blue_regions=)
+      old_state = $PokemonGlobal.blue_regions if
+        $PokemonGlobal.respond_to?(:blue_regions)
+      if old_state && (!old_state.is_a?(Hash) ||
+         old_state["version"] != 1 ||
+         old_state["current"] != "SINNOH" ||
+         (old_state.key?("initial") && old_state["initial"] != "SINNOH"))
+        raise "Sinnoh QA: save regional incompatível; não substituir por Sinnoh"
+      end
       start = BlueSinnohQAStart.proof
       raise "Sinnoh QA: compile os tres PBS de Barry antes de Novo Jogo" unless start
       raise "Sinnoh QA: motor regional nao carregado" unless
         defined?(BlueRegions) && defined?(BlueStory) && defined?(BlueCampaign)
       raise "Sinnoh QA: perfil regional invalido" unless
         BlueRegions.respond_to?(:new_state)
+      raise "Sinnoh QA: mapa de inicialização ausente" unless
+        defined?($data_system) && $data_system &&
+        $data_system.respond_to?(:start_map_id=) &&
+        $data_system.respond_to?(:start_x=) &&
+        $data_system.respond_to?(:start_y=)
       $PokemonGlobal.blue_regions = BlueRegions.new_state("SINNOH")
       BlueStory.choose_mode(:story)
       BlueCampaign.begin_journey(false)
