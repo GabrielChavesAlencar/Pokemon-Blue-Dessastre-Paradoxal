@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e1e676c2230129982f666b68cd051307478c3f28",
+      "date": "2026-11-15T22:37:58-03:00",
+      "title": "docs(johto): usage and limitations of new private shared-save early-access installer",
+      "category": "Documentação"
+    },
+    {
       "sha": "c73c8d8c19edbdb617b88e8b805ec332f39c3ae3",
       "date": "2026-11-15T22:36:14-03:00",
       "title": "feat(johto): ship native PBS compile-gate with shared Johto beta plugin",
