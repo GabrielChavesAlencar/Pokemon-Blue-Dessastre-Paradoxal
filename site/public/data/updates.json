@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "600c2e0e280e3ebbe0d1a171ae5d3ba3349b63c0",
+      "date": "2026-11-16T06:31:09-03:00",
+      "title": "fix(johto): allow explicit hash-checked local Map674/675 repair even when shared region files changed",
+      "category": "Correções"
+    },
+    {
       "sha": "8505dfc0f0832291bfc910b9e108af54c733fe00",
       "date": "2026-11-16T06:27:53-03:00",
       "title": "docs(johto): exact Windows one-click room diagnosis, real Game.exe path and missing HGSS art distinction",
