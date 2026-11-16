@@ -84,7 +84,7 @@ def ensure_cli(project: Path, *, install: bool = True) -> str:
             raise RuntimeError("A GitHub CLI baixada falhou na verificação SHA-256")
         with zipfile.ZipFile(archive) as zip_file:
             matches = [item for item in zip_file.infolist()
-                       if item.filename.replace("\\", "/").endswith("/bin/gh.exe")
+                       if item.filename.replace("\\", "/").split("/")[-2:] == ["bin", "gh.exe"]
                        and not item.is_dir()]
             if len(matches) != 1 or matches[0].file_size > 80_000_000:
                 raise RuntimeError("gh.exe ausente ou inválido no pacote oficial")
