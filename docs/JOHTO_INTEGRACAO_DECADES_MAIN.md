@@ -44,6 +44,20 @@ Os navegadores podem renomear o ZIP como `... (1).zip`; o instalador passou a pr
 
 **Entrega privada:** foi criado no chat um ZIP de 1,7 MB com `Blue-Story.exe` compilado e o ZIP de Johto juntos. O Blue-Story procura o ZIP ao lado do EXE e o prepara automaticamente na mesma instalação antes do `Game.exe`, sem criar outro save. Esse pacote privado **não** é anexado à release pública do GitHub.
 
+## Hotfix do crash na abertura de Johto — 16/11/2026
+
+**Sintoma real do Windows:** janela preta, `Script 'Blue Johto Main Preview|Boot.rb' line 774: SystemStackError: stack level too deep`.
+
+**Causa reproduzida em Ruby:** `JohtoMainCompile.rb` usava `Compiler.singleton_class.prepend(CompilerHook)` e `super` para interceptar `Compiler.main`. Outros plugins Blue (Options, ZA Megas, Music) fazem `alias ... main`; quando um desses aliases é definido após o prepend, cria-se um ciclo `super -> alias -> hook -> super`.
+
+**Correção instalada na main:** retirado todo hook de `Compiler.main` do `JohtoMainCompile.rb`. A leitura dos registros `GameData::Trainer` e `GameData::Encounter` agora acontece em `EventHandlers.add(:on_enter_map)`, após a compilação nativa, e só grava marcadores de batalha quando os registros realmente existem. Falhas de compilação não liberam batalhas nem devem derrubar o resto do jogo.
+
+**Como aplicar a quem JÁ instalou Johto:** **feche o Game.exe e execute o mesmo Blue-Story.exe geral novamente com internet**. Ele baixa o novo código e detecta o manifesto existente. `auto_integrate_johto.py` chama `refresh_installed_runtime()`, que compara o SHA do `Boot.rb` atual com `Data/blue-johto-main-preview.json`, faz backup da versão antiga e substitui **somente** `Plugins/ZZZZZ Blue Johto Main/Boot.rb` e o manifesto atualizado. O próprio instalador em seguida solicita a recompilação do plugin/PBS antes de abrir o Game.exe. **Não é necessário reinstalar os 100 mapas, copiar o ZIP original, apagar dados ou trocar saves.**
+
+**Verificação:** em `.blue-work/johto-main-install-status.json` procurar `"status": "experimental_installed_not_native_tested"`, `"ready": true` e na primeira correção `"runtime_hotfix": "compiler-no-prepend-v2"`. A prova persistente fica em `game/Data/blue-johto-main-preview.json` com `"runtime_hotfix": "johto-compiler-no-prepend-v2"`. O backup da correção fica em `.blue-backups/johto-boot-hotfix-...`.
+
+**Testes efetivamente executados:** workflow dedicado de Ruby com aliases de Compiler carregados depois de Johto (sem recursão), teste Python de correção e rollback com manifesto de 100 mapas, além de aplicação real da atualização de Boot em uma **cópia de teste com os 100 mapas instalados**. O manifest/hash foi revalidado e uma segunda execução não alterou arquivos. Comparação de SHA antes/depois mostrou mapas Johto, `MapInfos.rxdata`, `Tilesets.rxdata`, `PBS/map_connections.txt` e o save de teste preservados. **A execução de Game.exe no Windows do usuário não foi realizada**; nenhum teste de gameplay completo é alegado.
+
 ## Limites conhecidos e testes pendentes
 
 Esta implementação é **prévia de desenvolvimento**, não um Johto completo e certificado: o OFFLINE12 ainda tinha mapas e eventos sem validação nativa, e a adaptação das casas adicionais foi reduzida ao intervalo 682–699 para não invadir os IDs 700–999 de Hoenn. Outras cidades, interiores, missões, Liga, sprites, passabilidade e viagens exigem testes reais. Áudio HGSS opcional não é publicado nem exigido pela instalação.
