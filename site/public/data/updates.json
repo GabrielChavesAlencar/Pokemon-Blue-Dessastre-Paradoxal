@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "af7253c93d9cfaf598e8723b665cb9e1d0cac2b6",
+      "date": "2026-11-16T00:24:34-03:00",
+      "title": "ci(johto): validate private HGSS interior tileset installer and safety",
+      "category": "Melhorias"
+    },
+    {
       "sha": "53aad4bbf22c14347fcdc640695071ef00263317",
       "date": "2026-11-16T00:24:08-03:00",
       "title": "test(johto): include RMXP events during visual fixture roundtrip",
