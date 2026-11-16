@@ -108,6 +108,24 @@ def compile_private_art(maps, sets, outputs, read_graphic, project: Path):
     placements = spec.get("placements")
     if not isinstance(placements, list) or not 0 < len(placements) <= MAX_PLACEMENTS:
         raise ValueError("Nenhum posicionamento HGSS auditado no manifesto privado")
+    # Reserve not only event tiles, but ALL in-map destinations of code 201
+    # transfers; a decorative object must never trap a player arriving from
+    # downstairs, a Pokémon Center or a neighboring route.
+    protected = {mid: set() for mid in INTERIORS}
+    protected[674].add((6, 7))  # New-game profile spawn.
+    for source_mid, world in maps.items():
+        if source_mid not in INTERIORS:
+            continue
+        for event in world.attrs["@events"].values():
+            protected[source_mid].add((event.attrs["@x"], event.attrs["@y"]))
+            for page in event.attrs.get("@pages", []):
+                for command in page.attrs.get("@list", []):
+                    if command.attrs.get("@code") != 201:
+                        continue
+                    args = command.attrs.get("@parameters", [])
+                    if len(args) >= 4 and args[0] == 0 and args[1] in protected:
+                        protected[args[1]].add((args[2], args[3]))
+
     per_map = {}
     for item in placements:
         if not isinstance(item, dict) or item.get("source") not in sources:
@@ -132,11 +150,8 @@ def compile_private_art(maps, sets, outputs, read_graphic, project: Path):
             x, y, layer = item["x"], item["y"], item["layer"]
             if not 0 <= x < a["@width"] or not 0 <= y < a["@height"]:
                 raise ValueError(f"HGSS Map{mid}: posicionamento fora do mapa")
-            if layer == 2 and not item["passable"]:
-                event_positions = {(e.attrs["@x"], e.attrs["@y"])
-                                   for e in a["@events"].values()}
-                if (x, y) in event_positions or (mid == 674 and (x, y) == (6, 7)):
-                    raise ValueError(f"HGSS Map{mid}: objeto bloqueia evento/spawn")
+            if not item["passable"] and (x, y) in protected[mid]:
+                raise ValueError(f"HGSS Map{mid}: objeto bloqueia evento/spawn/warp")
             per_map.setdefault(mid, []).append(item)
 
     # Share a single appended tileset per native source ID, to avoid bloating
