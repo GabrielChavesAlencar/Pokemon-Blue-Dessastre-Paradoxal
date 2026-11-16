@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c2f928d8127b06a7f960132cb4a69ce0a8ace941",
+      "date": "2026-11-16T11:40:35-03:00",
+      "title": "fix(blue-story): aceitar gh.exe dentro da pasta bin do ZIP oficial",
+      "category": "Correções"
+    },
+    {
       "sha": "88e0f3c216c21ebf2ff80eb6216500f0b6a92d77",
       "date": "2026-11-16T11:39:50-03:00",
       "title": "feat(johto-map-ui): publicar com um clique e autorizar na interface",
