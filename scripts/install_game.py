@@ -31,6 +31,14 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
     # point from main. Install the editor shortcuts into the managed project
     # before game preparation (which can fail for unrelated region sources).
     if not hub_only:
+        # O Blue-Story prepara a publicacao sem pedir PowerShell, BAT de login ou Git.
+        # Falha de rede nao deve impedir de jogar/editar mapas localmente.
+        try:
+            from scripts.windows.github_cli import ensure_cli
+            github_cli = ensure_cli(project)
+            print('[JOHTO GITHUB] CLI pronta para publicar:', github_cli, flush=True)
+        except (OSError, ValueError, RuntimeError, ImportError) as error:
+            print('[JOHTO GITHUB] Publicacao indisponivel temporariamente:', error, flush=True)
         try:
             from scripts.windows.install_johto_editor import install as install_editor
             origin=os.environ.get('BLUE_STORY_LAUNCHER_DIR')
