@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7a2b30ef17b4c3570e7bb475c77010e64e5206e2",
+      "date": "2026-11-16T14:43:23-03:00",
+      "title": "fix(sinnoh): exigir PBS compilado certo para Barry e proteger versões (CH08)",
+      "category": "Correções"
+    },
+    {
       "sha": "9bd22b6f8ab1fc67d712596286e45b9a3bdcaaeb",
       "date": "2026-11-16T14:37:38-03:00",
       "title": "docs(sinnoh): marcar CH07 verificada e atualizar Barra E para 7/20",
