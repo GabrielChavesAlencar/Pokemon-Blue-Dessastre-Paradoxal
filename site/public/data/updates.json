@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5600304a87dbe3613aa296278a4255574432d893",
+      "date": "2026-11-16T00:22:51-03:00",
+      "title": "feat(johto): Blue-Story checks and applies private HGSS interior tiles incrementally",
+      "category": "Novidades"
+    },
+    {
+      "sha": "582e8ae9da0981527487d5055654fbba0b218795",
+      "date": "2026-11-16T00:22:36-03:00",
+      "title": "feat(johto): safe incremental HGSS interior asset upgrade for existing Blue-Story installs",
+      "category": "Novidades"
+    },
+    {
       "sha": "89fef2a6e298aa7f6349f36cc6f97122eeca0f1c",
       "date": "2026-11-16T00:22:05-03:00",
       "title": "feat(johto): use private credited HGSS indoor tiles when assembling all 100 shared maps",
