@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c73c8d8c19edbdb617b88e8b805ec332f39c3ae3",
+      "date": "2026-11-15T22:36:14-03:00",
+      "title": "feat(johto): ship native PBS compile-gate with shared Johto beta plugin",
+      "category": "Novidades"
+    },
+    {
+      "sha": "54278d7bf76e1b046b9dbcd65233735eeeac2d9e",
+      "date": "2026-11-15T22:36:05-03:00",
+      "title": "feat(johto): only unlock rival, route and gym battles after native Essentials PBS compilation",
+      "category": "Novidades"
+    },
+    {
       "sha": "8640c63407041f8351476d4c233a7fd5d95d30bf",
       "date": "2026-11-15T22:32:09-03:00",
       "title": "feat(title): identify Johto main-game preview separately from uninstalled isolated pilot",
