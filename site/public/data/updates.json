@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "545f829fed4ff10c225f0e0d55cfc236ee677243",
+      "date": "2026-11-15T21:58:22-03:00",
+      "title": "feat(johto): run non-destructive readiness check after Hoenn in Blue-Story",
+      "category": "Novidades"
+    },
+    {
+      "sha": "26e5a0dd05f0952487354f03c6f0f426b319ea0e",
+      "date": "2026-11-15T21:58:10-03:00",
+      "title": "feat(johto): add safe read-only main Decades integration preflight",
+      "category": "Novidades"
+    },
+    {
       "sha": "5d0cc84fa309039699e625daec18766d52948c1e",
       "date": "2026-11-15T21:12:34-03:00",
       "title": "Repack Android compiled cache with native Ruby Marshal, preserving production Hash records",
