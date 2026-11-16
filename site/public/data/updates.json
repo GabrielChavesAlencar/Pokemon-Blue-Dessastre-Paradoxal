@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7361a639dbb60b64175c9d35c961ff28a9364ed4",
+      "date": "2026-11-16T00:21:10-03:00",
+      "title": "feat(johto): private HGSS indoor tile importer with local artists, atlas mapping and event-safe placement",
+      "category": "Novidades"
+    },
+    {
       "sha": "35ee6d8892285dbb0beb8d73fb75fd3812c6ad17",
       "date": "2026-11-16T00:01:33-03:00",
       "title": "docs(johto): record HGSS bedroom tiles, stair warps and automatic Blue-Story upgrade",
