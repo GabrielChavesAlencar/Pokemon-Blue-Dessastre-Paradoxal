@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2c2abb9e0da024605d56dd8152c28a458023f305",
+      "date": "2026-11-16T10:07:04-03:00",
+      "title": "test(johto): accept private HGSS map tileset during semantic integrity recovery only with manifest proof",
+      "category": "Testes"
+    },
+    {
+      "sha": "3a1a27252141353c57e4f0eb16dc7845f7c679d9",
+      "date": "2026-11-16T10:06:50-03:00",
+      "title": "fix(johto): semantic recovery supports installed private HGSS tilesets with verified manifest metadata",
+      "category": "Correções"
+    },
+    {
       "sha": "07fd2b437b8208eaed5905982bcec1e7ddbeab96",
       "date": "2026-11-16T10:04:28-03:00",
       "title": "test(johto): reproduce edited Map674 and Map675 stale hashes, preserve map studio changes and reject missing maps",
