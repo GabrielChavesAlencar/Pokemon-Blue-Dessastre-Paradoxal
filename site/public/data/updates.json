@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0518575e234bb8e4a6d8fcedc4071fe2625e7961",
+      "date": "2026-11-15T23:31:03-03:00",
+      "title": "fix(blue-story): auto repair previously installed Johto Boot.rb recursion before Game.exe starts",
+      "category": "Correções"
+    },
+    {
       "sha": "4f8cf6c8b50ff29f55391d5dfb41f6bba0083296",
       "date": "2026-11-15T23:30:48-03:00",
       "title": "fix(johto): transactional in-place Ruby Boot hotfix for already installed private preview; no map/save reinstall",
