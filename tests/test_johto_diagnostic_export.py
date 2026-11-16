@@ -61,8 +61,31 @@ class DiagnosticExporterTests(unittest.TestCase):
                 self.assertEqual(data["events"]["Data/Map675.rxdata"]["events"][0]
                                  ["pages"][0]["commands"][0]["code"],355)
                 self.assertNotIn(b"PERSONAL SAVE DO NOT EXPORT",output.read("Data/Map674.rxdata"))
-            with self.assertRaisesRegex(ValueError,"já existe"):
-                bundle(root,game,zip_path)
+            second = bundle(root,game,zip_path)
+            self.assertNotEqual(second["zip"], str(zip_path))
+            self.assertTrue(Path(second["zip"]).is_file())
+            self.assertIn("(1).zip", second["zip"])
+            self.assertTrue(zip_path.is_file())  # original intact
+
+    def test_missing_johto_maps_can_be_reported_repeatedly_without_saves(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            game=root/"game"
+            game.mkdir()
+            (root/".blue-work").mkdir()
+            (game/"Game.exe").write_bytes(b"test")
+            output=root/".blue-work/JOHTO_DIAGNOSTICO_MAPAS.zip"
+            first=bundle(root,game,output)
+            second=bundle(root,game,output)
+            self.assertEqual(first["maps"],[])
+            self.assertEqual(len(first["missing_maps"]),3)
+            self.assertTrue(Path(second["zip"]).exists())
+            self.assertNotEqual(first["zip"],second["zip"])
+            with zipfile.ZipFile(second["zip"]) as archive:
+                self.assertEqual(set(archive.namelist()),{
+                    "DIAGNOSTICO_JOHTO.json","LEIA-ME.txt"})
+                data=json.loads(archive.read("DIAGNOSTICO_JOHTO.json"))
+                self.assertTrue(data["files"]["Data/Map674.rxdata"]["missing"])
 
     def test_bundle_cannot_be_written_into_game_directory(self):
         with tempfile.TemporaryDirectory() as folder:
