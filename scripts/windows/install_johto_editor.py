@@ -136,6 +136,14 @@ def install(project: Path, executable_dir: Path | None = None) -> dict:
                         raise ValueError("Arquivo temporário do editor já existe")
                     staged.write_bytes(body)
                     temps.append(staged)
+                # Backup any user-modified mirror BEFORE swapping files or
+                # stamping the manifest. Failure leaves the mirror unchanged.
+                if backups:
+                    backup_folder = project / ".blue-backups" / ("johto-editor-shortcut-" + uuid.uuid4().hex)
+                    for relative, body in backups.items():
+                        backup_path = backup_folder / relative
+                        backup_path.parent.mkdir(parents=True, exist_ok=True)
+                        backup_path.write_bytes(body)
                 for target, prior in previous.items():
                     staged = target.with_name(target.name + ".johto-new")
                     os.replace(staged, target)
@@ -153,12 +161,6 @@ def install(project: Path, executable_dir: Path | None = None) -> dict:
                 tmp_manifest.write_text(json.dumps(marker, ensure_ascii=False, indent=2) + "\n", "utf-8")
                 temps.append(tmp_manifest)
                 os.replace(tmp_manifest, manifest)
-                if backups:
-                    backup_folder = project / ".blue-backups" / ("johto-editor-shortcut-" + uuid.uuid4().hex)
-                    for relative, body in backups.items():
-                        backup_path = backup_folder / relative
-                        backup_path.parent.mkdir(parents=True, exist_ok=True)
-                        backup_path.write_bytes(body)
                 result["installed"].append(str(dest))
             except BaseException:
                 for target in reversed(written):
