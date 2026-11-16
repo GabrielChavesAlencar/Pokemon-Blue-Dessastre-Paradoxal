@@ -27,6 +27,19 @@ def ensure_base(project,game):
     if not (game/'Game.exe').is_file():raise RuntimeError('O download da base nao contem Game.exe.')
 
 def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=False):
+    # Even an older self-updating Blue-Story.exe downloads this Python entry
+    # point from main. Install the editor shortcuts into the managed project
+    # before game preparation (which can fail for unrelated region sources).
+    if not hub_only:
+        try:
+            from scripts.windows.install_johto_editor import install as install_editor
+            origin=os.environ.get('BLUE_STORY_LAUNCHER_DIR')
+            editor=install_editor(project,Path(origin) if origin else None)
+            print('[JOHTO EDITOR] Atalhos e codigo atualizados:',editor['installed'],flush=True)
+            for issue in editor['warnings']:
+                print('[JOHTO EDITOR] Pasta opcional indisponivel:',issue['directory'],issue['reason'],flush=True)
+        except (OSError,ValueError,ImportError,KeyError) as error:
+            print('[JOHTO EDITOR] Aviso: editor nao instalado:',error,flush=True)
     game=game.resolve();ensure_base(project,game)
     state_path=project/'.blue-work/installation.json'
     state=json.loads(state_path.read_text(encoding='utf8')) if state_path.is_file() else {}
