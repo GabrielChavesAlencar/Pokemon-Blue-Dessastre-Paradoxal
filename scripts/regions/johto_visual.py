@@ -213,10 +213,18 @@ def style_bedroom_hgss(room, home, first):
         event = matches[0]
         if not event.attrs["@pages"]:
             raise ValueError("Evento de escada de Johto sem página")
-        command = event.attrs["@pages"][0].attrs["@list"][0]
-        if command.attrs["@code"] != 201:
-            raise ValueError("Evento de escada de Johto não é transferência")
-        return event, command.attrs["@parameters"]
+        # Installed maps add sound, fade and wait BEFORE the real code 201.
+        # Never replace these commands or assume the transfer is the first.
+        transfers = [
+            cmd for page in event.attrs["@pages"]
+            for cmd in page.attrs.get("@list", [])
+            if cmd.attrs.get("@code") == 201
+            and isinstance(cmd.attrs.get("@parameters"), list)
+            and len(cmd.attrs["@parameters"]) >= 4
+        ]
+        if len(transfers) != 1:
+            raise ValueError("Escada de Johto precisa de uma única transferência (201)")
+        return event, transfers[0].attrs["@parameters"]
 
     upstairs, destination = find_named(room, "JH_HOME2F_TO_1F")
     downstairs, arrival = find_named(home, "JH_HOME1F_TO_2F")
