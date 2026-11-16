@@ -59,11 +59,11 @@ internal static class Bootstrap {
                                 title.Text="Johto ainda não foi instalada";
                                 bar.Style=ProgressBarStyle.Continuous;
                                 var choice=MessageBox.Show(form,
-                                    "Johto ainda não está disponível neste Game.exe.\\n\\n"+
-                                    JohtoReason()+"\\n\\n"+
-                                    "SIM: selecionar o ZIP privado de Johto e instalar agora.\\n"+
-                                    "NÃO: jogar Decades/Kanto/Hoenn sem Johto.\\n"+
-                                    "CANCELAR: fechar o inicializador.\\n\\n"+
+                                    "Johto ainda não está disponível neste Game.exe.\n\n"+
+                                    JohtoReason()+"\n\n"+
+                                    "SIM: selecionar o ZIP privado de Johto e instalar agora.\n"+
+                                    "NÃO: jogar Decades/Kanto/Hoenn sem Johto.\n"+
+                                    "CANCELAR: fechar o inicializador.\n\n"+
                                     "Relatório: .blue-work/johto-main-install-status.json",
                                     "Blue-Story - instalar Johto",MessageBoxButtons.YesNoCancel,
                                     MessageBoxIcon.Warning);
