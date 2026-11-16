@@ -20,10 +20,10 @@
 ## 2. Nova Barra E — trabalho que pode ser concluído pelo chat
 
 ```text
-███████████░░░░░░░░░  11/20 (55%)
+████████████░░░░░░░░  12/20 (60%)
 ```
 
-**11 concluídas**, **0 parciais**, **9 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**12 concluídas**, **0 parciais**, **8 pendentes**. A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -38,7 +38,7 @@
 | P1 | **CH09** ✅ | Teste de integração sintética ponta a ponta de auditor → plano → geometria → overlay → bundle | Cenários de sucesso/falha, rollback e hashes estáveis, **sem** representar Game.exe |
 | P1 | **CH10** ✅ | Preparar interface segura do lançador QA do Sinnoh e pré-voo de instalação | Sem fallback para Decades/Johto, saves exclusivos, erro claro sem assets, testes offline |
 | P2 | **CH11** ✅ | Contratos regionais de oito insígnias + HMs de Sinnoh | Dados, guardas e testes garantem badge local, sem apropriar HM de outra região |
-| P2 | CH12 | Modelos de treinadores e evolução com cálculo Blue existente | Regras testadas sem níveis fixos duplicados, preservando Normal/Master e level cap |
+| P2 | **CH12** ✅ | Modelos de treinadores e evolução com cálculo Blue existente | Regras testadas sem níveis fixos duplicados, preservando Normal/Master e level cap |
 | P2 | CH13 | Catálogo **simbólico** de encontros por rota/terreno/horário/cap | Registros identificados como `planned`, consistência de espécie e método, sem afirmar encontros instalados |
 | P2 | CH14 | Estados e contratos para Galactic, Cyrus, Liga e viagem pós-Cynthia | Eventos idempotentes, desbloqueio lógico Hoenn/Unova só quando instalado; testes sintéticos |
 | P3 | CH15 | Registro de equipes para Roark→Volkner, Elite Four e Cynthia | Esquemas/referências auditáveis, sem espécies ou times inventados nem nível fixo na UI |
@@ -48,7 +48,9 @@
 | P4 | CH19 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
 | P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
-**Ordem recomendada:** CH12–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+**Ordem recomendada:** CH13–CH14 → CH15–CH18 → CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH12 concluída:** [manifesto de regras de Sinnoh](../data/regions/sinnoh-trainer-evolution-contract.json) e [auditor](../scripts/regions/audit_sinnoh_trainer_evolution.py) evitam recriar níveis fixos, inventar um cap regional e atribuir jogabilidade. O balanceamento real de `Campaign.rb` usa 70% Normal / 90% Master, base no maior nível não-ovo do jogador limitada por `GrowthRate.max_level`; o BST 350/450/540 de `Story.rb` é outro teto. [15 casos Python CH12](../tests/test_sinnoh_trainer_evolution_ch12.py) e [runtime Ruby com código Blue real](../tests/sinnoh_evolution_ch12_runtime.rb) confirmam evoluções pós-escala de iniciais Turtwig/Chimchar/Piplup, pedra 30, troca 40, felicidade 45, nível+5, condicionais, PBS/bosses intactos e expansão Master com fixtures. [CI 43968704804](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43968704804) aprovou CH12. [Documentação CH12](SINNOH_CH12_BALANCEAMENTO_EVOLUCAO.md). Sem afirmar qualquer batalha nativa ou cap regional por insígnias.
 
 **CH11 concluída:** [contrato declarativo das 8 insígnias/HMs](../data/regions/sinnoh-badges-hms-contract.json) conferido com o catálogo público pelo [auditor](../scripts/regions/audit_sinnoh_badges_hms.py). [Regions.rb](../scripts/battle_polish/Regions.rb) impede que conquistas inválidas, insígnias de outra região ou HM apenas presente na Bolsa liberem campo de Sinnoh; somente eventos futuros de obtenção local confirmada podem registrar cada HM, sem gerar o item. [RegionalPolicy.rb](../scripts/battle_polish/RegionalPolicy.rb) exige essa prova antes de aceitar o HM físico. [12 testes Python](../tests/test_sinnoh_badges_hms_ch11.py) e [Ruby com vault de Bolsa/PC/atalhos](../tests/sinnoh_badge_hm_ch11_runtime.rb) passaram no [CI 43958964604](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43958964604); **251 testes Sinnoh** também passaram. Nenhuma prova de ginásio/HM nativo ou aprovação jogável foi criada. [Descrição CH11](SINNOH_CH11_INSIGNIAS_HMS_REGIONAIS.md).
 
@@ -142,4 +144,4 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 4. Publicar diretamente na `main` sem force push e atualizar **somente** a(s) entrada(s) CH realmente concluída(s).
 5. Informar SHA/links, verificações PASS/FAIL/não executadas e bloqueios; preservar barras oficiais de 13 fases até aceitação.
 
-**Próxima ação sugerida:** **CH12**, validar os modelos de treinadores/evoluções com as regras dinâmicas do Blue. CH01–CH11 estão concluídas em código e testes isolados; a região ainda não foi aprovada como jogável.
+**Próxima ação sugerida:** **CH13**, criar catálogo simbólico de encontros por rota, terreno, horário e progresso sem inventar mapas/MapIDs nem declarar encontros realmente instalados. CH01–CH12 foram concluídas em código e testes isolados; Sinnoh permanece não jogável.

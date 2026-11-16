@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 11,
+    "done": 12,
     "partial": 0,
-    "pending": 9,
-    "percent_complete": 55,
+    "pending": 8,
+    "percent_complete": 60,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -895,8 +895,8 @@
         "priority": "P2",
         "title": "Modelos de treinadores e evolução com cálculo Blue existente",
         "acceptance": "Regras testadas sem níveis fixos duplicados, preservando Normal/Master e level cap",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "tests/sinnoh_evolution_ch12_runtime.rb"
       },
       {
         "id": "CH13",

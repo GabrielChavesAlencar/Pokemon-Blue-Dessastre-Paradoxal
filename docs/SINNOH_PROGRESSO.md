@@ -8,26 +8,25 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-███████████░░░░░░░░░  11/20 (55%)
+████████████░░░░░░░░  12/20 (60%)
 ```
 
-- **Concluídas:** 11 (**CH01–CH11**, incluindo os contratos das oito insígnias e HMs locais de Sinnoh).
+- **Concluídas:** 12 (**CH01–CH12**, incluindo contratos e execução integrada das regras de balanceamento/evolução de Sinnoh).
 - **Parciais:** 0.
-- **Pendentes:** 9 (**CH12–CH20**).
+- **Pendentes:** 8 (**CH13–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02:** `validate_sinnoh_chat_progress.py` verifica JSON, painel e backlog.
-- **CH03–CH04:** guardas de MapIDs do piloto antigo 800–805 e `SinnohPreview.rb` no jogo compartilhado.
-- **CH05:** `sinnoh-map-id-reservations.json` diferencia reserva documentada e ocupação física desconhecida.
-- **CH06:** `audit_sinnoh_twinleaf_events.py` valida os 9 mapas, 24 eventos e 16 warps de planejamento.
-- **CH07:** `SinnohPilot.rb` protege flags, save e as três Poké Bolas físicas.
-- **CH08:** testes Barry, três versões PBS e escala `Campaign.rb` Normal 70% / Master 90%.
-- **CH09:** testes E2E sintéticos de auditoria, remapeamento, geometria, overlay, bundle, hashes e rollback.
-- **CH10:** lançador e pré-voo QA seguros, com 14 testes negativos e cópia isolada.
-- **CH11:** [catálogo de 8 badges/HMs Platinum](../data/regions/sinnoh-badges-hms-contract.json) alinhado a `site/public/data/regions.json`; o runtime compartilhado [`BlueRegions`](../scripts/battle_polish/Regions.rb) exige conquistas **locais e válidas**, registro explícito de obtenção de HM por evento confirmado e posse física na Bolsa; [`BlueRegionalPolicy`](../scripts/battle_polish/RegionalPolicy.rb) recusa emprestar permissões de outras regiões. Não se cria item nem se marca vitória em ginásio automaticamente. [Auditor CH11](../scripts/regions/audit_sinnoh_badges_hms.py), [12 testes Python](../tests/test_sinnoh_badges_hms_ch11.py) e [teste Ruby do vault real com inventário sintético](../tests/sinnoh_badge_hm_ch11_runtime.rb) verificam duplicidades, cross-region, save/reload, HM errado, Bolsa, PC, atalhos e compatibilidade nativa de Decades. No [CI isolado 43958964604](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43958964604), **12 testes CH11, Ruby e 251 testes Python Sinnoh** passaram. [Documentação detalhada](SINNOH_CH11_INSIGNIAS_HMS_REGIONAIS.md).
-- **Critério:** apenas tarefas `done` com evidência versionada e CI validado entram na Barra E.
+- **CH02:** validador entre JSON, Barra E e backlog, executado no CI.
+- **CH03–CH05:** guardas contra colisões de mapas/plugins de Sinnoh no Decades e manifesto de reservas/ocupação desconhecida.
+- **CH06–CH07:** schema de Twinleaf e guardas para eventos, flags, iniciais e save isolado.
+- **CH08:** três equipes de Barry, condições de PBS e regra Blue Normal 70% / Master 90%.
+- **CH09:** integração E2E sintética auditoria → remapeamento → geometria → overlay → bundle, com hash e rollback.
+- **CH10:** lançador e pré-voo da cópia QA isolada com bloqueio de assets e saves incompatíveis.
+- **CH11:** oito insígnias/HMs de Platinum com conquistas e comprovação de obtenção locais, isolando Bolsa/PC.
+- **CH12:** [contrato Sinnoh de escala e evolução](../data/regions/sinnoh-trainer-evolution-contract.json) e [auditor read-only](../scripts/regions/audit_sinnoh_trainer_evolution.py) conferem as regras **já existentes** em `Campaign.rb`, `Story.rb` e `EvolutionScaling.rb` (sem duplicar ou alterar o balanceamento compartilhado). [15 testes Python negativos](../tests/test_sinnoh_trainer_evolution_ch12.py) recusam level cap regional inexistente, 70/90 alterado, BST tomado por cap de nível, limiares 5/30/40/45 adulterados, dados de família/ramificações e aprovação jogável fictícia. [Teste Ruby integrado](../tests/sinnoh_evolution_ch12_runtime.rb) executa a cadeia compartilhada de `Battle.initialize` com famílias de Turtwig, Chimchar, Piplup, Roselia, Graveler e Riolu **sintéticas**; verifica escala, estágio Master com 11 esmeraldas totais, evolução após escala, time 4 no Master, chefes imutáveis, dia/noite, ovo, nível máximo, encontros e preservação dos dados PBS. A [execução CI 43968704804](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43968704804) confirmou sucesso da etapa CH12. [Documentação detalhada](SINNOH_CH12_BALANCEAMENTO_EVOLUCAO.md).
+- **Critério:** somente `done` com evidências e CI isolado aprovados entra na Barra E.
 
-**Limite:** Barra E não mede jogabilidade. **Barra A 8/32 (25%)**, **B/C/D 0/13**, inalteradas. O módulo registra permissão somente depois de chamada por evento de obtenção local **ainda não instalado**; não há ginásio, HM, obstáculo ou MapID de Sinnoh validado no Game.exe/JoiPlay.
+**Limites:** o Blue ainda **não possui um level cap regional numérico por insígnias persistido no save**; a referência corrente é o maior nível não-ovo do jogador limitada por `GameData::GrowthRate.max_level`. Os tetos 350/450/540 são **BST**, e não níveis. Sinnoh continua planejada; sem equipes de treinadores reais compiladas, mapas ou Game.exe/JoiPlay. **Barra A 8/32 (25%)**, barras **B/C/D 0/13**, inalteradas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
