@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ed48715dfc1b89bf1a3708c0a0d9573e2d918290",
+      "date": "2026-11-16T20:56:19-03:00",
+      "title": "docs(sinnoh): CH19 relatorios fail-closed e distincoes de CI sem QA nativo",
+      "category": "Documentação"
+    },
+    {
       "sha": "3ec8507e61a52d2c882b41195170b37975903a11",
       "date": "2026-11-16T20:55:26-03:00",
       "title": "ci(sinnoh): CH19 pipeline independente Python Ruby e artefatos auditaveis",
