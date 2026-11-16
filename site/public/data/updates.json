@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "11e8923d116470716cbaac0bc0abb81c7773400d",
+      "date": "2026-11-15T23:29:29-03:00",
+      "title": "fix(johto): remove recursive Compiler.main prepend; validate compiled Johto data safely on map entry",
+      "category": "Correções"
+    },
+    {
       "sha": "690ec30a06944c1b7b5a3895ac9a06c0c65552b5",
       "date": "2026-11-15T23:21:05-03:00",
       "title": "docs(johto): reproduce and fix actual original-bundle New Bark spawn blocker; report private 100-map transaction results",
