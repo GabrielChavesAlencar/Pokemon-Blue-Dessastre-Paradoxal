@@ -7,6 +7,7 @@ import {generate} from './changelog.mjs';
 import {extractSprites} from './extract-sprites.mjs';
 import {extractExtras} from './extract-extras.mjs';
 import {generateGuides} from './guides.mjs';
+import {generateSinnohGuide,sinnohSourcePaths} from './sinnoh-guide.mjs';
 import {activeLocations} from '../src/assets/data.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=path.join(root,'dist');
@@ -22,6 +23,16 @@ if(trainerEvidence.schema!==1||trainerEvidence.records.length!==13||
   trainerEvidence.state!=='NATIVE_AUDIT_PENDING_NOT_GAMEPLAY')throw new Error('regional-trainer-bindings-invalid');
 await writeFile(path.join(output,'data/trainer-event-bindings-phase1.json'),JSON.stringify(trainerEvidence));
 console.log('Vínculos regionais dos pilotos: '+trainerEvidence.records.length+' (não certificados como jogáveis)');
+const repoRoot=path.resolve(root,'..');
+const sinnohSourceData=Object.fromEntries(await Promise.all(
+  Object.entries(sinnohSourcePaths).map(async ([name,relative])=>[
+    name,JSON.parse(await readFile(path.join(repoRoot,relative),'utf8'))
+  ])
+));
+const sinnohGuide=generateSinnohGuide(sinnohSourceData);
+await writeFile(path.join(output,'data/sinnoh-guide.json'),JSON.stringify(sinnohGuide));
+console.log('Sinnoh CH17: '+sinnohGuide.counts.areas+' áreas, '+sinnohGuide.counts.gyms+' ginásios, 0 mapas nativos');
+
 const readJson=async name=>JSON.parse(await readFile(path.join(root,'public/data',name+'.json'),'utf8'));
 const locationData=await readJson('locations');
 const generatedGuides=generateGuides({catalog:await readJson('catalog'),locations:{...locationData,locations:activeLocations(locationData.locations,await readJson('region-points'))},details:await readJson('details'),editorial:await readJson('guides')});

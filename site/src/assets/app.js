@@ -13,6 +13,7 @@ import {downloadsPage} from './downloads.js';
 import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
 import {loadPendingRegions,loadTrainerBindings,pendingBlocks,pendingPage,pendingOnlyRegion,trainerBindingsPanel} from './pending.js';
+import {loadSinnohGuide,sinnohGuidePage} from './sinnoh-guide.js';
 
 const main=document.getElementById('main');
 let model,detailData,currentBase,currentEffective,currentRoute='',renderId=0;
@@ -63,11 +64,20 @@ async function render(scroll=false){
       const bindings=await loadTrainerBindings();if(id!==renderId)return;
       main.innerHTML=pendingPage(pending,(url.searchParams.get('regiao')||'kanto').toUpperCase(),bindings);
       setPage('Pendências das regiões');
+    }else if(route==='sinnoh'){
+      const guide=await loadSinnohGuide();if(id!==renderId)return;
+      main.innerHTML=sinnohGuidePage(guide,url.searchParams.get('aba')||'visao',url.searchParams.get('fase')||'all');
+      setPage('Guia de Sinnoh');
     }else if(route==='balanceamento'){
       const data=await loadKanto();if(id!==renderId)return;
       main.innerHTML=kantoIndex(model,data,'balanceamento');
       setPage('Balanceamento de Kanto');
     }else if(route==='liga'){
+      if(!parts[1] && url.searchParams.get('regiao')==='sinnoh'){
+        const guide=await loadSinnohGuide();if(id!==renderId)return;
+        main.innerHTML=sinnohGuidePage(guide,'liga');
+        setPage('Liga de Sinnoh');
+      }else{
       const db=await loadStrongestTeams();if(id!==renderId)return;
       if(parts[1]){
         const entry=db.teams.find(t=>t.id===decodeURIComponent(parts[1]));if(!entry)throw new Error('not-found');
@@ -80,13 +90,16 @@ async function render(scroll=false){
         main.firstElementChild?.insertAdjacentHTML('beforeend',pendingBlocks(pending,region,'liga'));
         setPage('Elite Four e Campeões');
       }
+      }
     }
     else if(['localizacoes','treinadores','chefes'].includes(route) &&
       !parts[1] && ['johto','hoenn','sinnoh'].includes(url.searchParams.get('regiao'))){
       const region=url.searchParams.get('regiao');
       const pending=await loadPendingRegions();if(id!==renderId)return;
       if(region==='sinnoh'){
-        main.innerHTML=pendingOnlyRegion(pending,'SINNOH',route);
+        const guide=await loadSinnohGuide();if(id!==renderId)return;
+        const tab={localizacoes:'areas',treinadores:'treinadores',chefes:'ginasios'}[route];
+        main.innerHTML=sinnohGuidePage(guide,tab,url.searchParams.get('fase')||'all');
       }else{
         const data=await loadPilotCatalog(region);if(id!==renderId)return;
         main.innerHTML=pilotIndex(data,route);

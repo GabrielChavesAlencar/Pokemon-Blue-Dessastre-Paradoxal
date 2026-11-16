@@ -29,7 +29,7 @@ export function generateSinnohGuide(sources){
       !planned(badges)||badges.status!=='PLANNED_CONTRACT_NOT_INSTALLED'||
       badges.approved_for_install!==false||badges.native_map_ids_assigned!==false||
       !planned(encounters)||encounters.may_install!==false||
-      encounters.status!=='PLANNED_REFERENCE_ONLY'&&encounters.status!=='PLANNED_SYMBOLIC_ENCOUNTERS_NOT_INSTALLED'&&encounters.status!=='PLANNED_AUDIT_ONLY'&&encounters.status!=='PLANNED_NOT_INSTALLED'||
+      encounters.status!=='PLANNED_REFERENCE_ONLY_NOT_INSTALLED'||
       !planned(story)||story.native_events_installed!==false||story.can_install!==false||
       !planned(music)||music.recordings?.length!==0||music.can_install!==false||
       music.status!=='SYMBOLIC_CUES_PLANNED_NOT_INSTALLED'||
