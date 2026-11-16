@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "53aad4bbf22c14347fcdc640695071ef00263317",
+      "date": "2026-11-16T00:24:08-03:00",
+      "title": "test(johto): include RMXP events during visual fixture roundtrip",
+      "category": "Testes"
+    },
+    {
+      "sha": "7fd3c40d9b87e8e3cc263e5c54f18fa0f7725741",
+      "date": "2026-11-16T00:23:49-03:00",
+      "title": "test(johto): private HGSS art pixels, accurate tile flags, map scope and source checksum",
+      "category": "Testes"
+    },
+    {
       "sha": "5600304a87dbe3613aa296278a4255574432d893",
       "date": "2026-11-16T00:22:51-03:00",
       "title": "feat(johto): Blue-Story checks and applies private HGSS interior tiles incrementally",
