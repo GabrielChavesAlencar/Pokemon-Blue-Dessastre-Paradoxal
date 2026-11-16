@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "71bf60c612abf6efbec888fef89058b7847e2656",
+      "date": "2026-11-16T12:51:32-03:00",
+      "title": "feat(johto-map): editar Map675 pelo editor visual",
+      "category": "Novidades"
+    },
+    {
       "sha": "d91e268f15a0321e102ceb5d0894f8913a8b70f5",
       "date": "2026-11-16T12:49:33-03:00",
       "title": "feat(johto-map): editar Map675 pelo editor visual",
