@@ -152,6 +152,12 @@ jobs:
       - name: CH09 - E2E sintetico audit remap geometry story bundle rollback
         run: |
           python -m unittest discover -s tests -p 'test_sinnoh_ch09_integration.py' -v
+      - name: CH10 - QA launcher preflight isolation and negative tests
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_ch10_qa_launcher.py' -v
+          python -m py_compile scripts/regions/launch_sinnoh_qa.py scripts/regions/install_sinnoh_qa_copy.py
+          ruby -c scripts/regions/SinnohQAStart.rb
+          ruby tests/sinnoh_qa_start_runtime.rb scripts/regions/SinnohQAStart.rb
       - name: Testar somente Sinnoh em fixtures locais
         run: python -m unittest discover -s tests -p 'test_sinnoh_*.py' -v
       - name: Testar Ruby dos eventos autorais de Sinnoh
