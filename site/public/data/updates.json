@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5d23d8ac97a0409f9aaf5f7de798018f776263e4",
+      "date": "2026-11-16T07:04:45-03:00",
+      "title": "fix(johto): permit exact user-audited modified bedroom/map hashes while retaining rollback and rejecting unknown edits",
+      "category": "Correções"
+    },
+    {
       "sha": "6519674d525cfe6dfbb9412a1690634e52c5ed3d",
       "date": "2026-11-16T07:03:41-03:00",
       "title": "fix(johto): locate stair Transfer Player after sound/fade commands in real installed maps",
