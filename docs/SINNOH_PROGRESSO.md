@@ -8,23 +8,24 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-██████████████░░░░░░  14/20 (70%)
+███████████████░░░░░  15/20 (75%)
 ```
 
-- **Concluídas:** 14 (**CH01–CH14**, incluindo máquina de estados Galactic/Cyrus/Liga sem eventos nativos instalados).
+- **Concluídas:** 15 (**CH01–CH15**, incluindo referências de equipes dos 8 líderes, Elite Four e Cynthia).
 - **Parciais:** 0.
-- **Pendentes:** 6 (**CH15–CH20**).
+- **Pendentes:** 5 (**CH16–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
 - **CH02–CH05:** consistência de progresso e proteções dos MapIDs/plugins legados.
 - **CH06–CH07:** auditor de Twinleaf, flags, Poké Bolas físicas e save isolado.
 - **CH08–CH09:** Barry, 70%/90% e integração E2E sintética até bundle.
 - **CH10–CH11:** lançador QA seguro e permissões das oito insígnias/HMs de Sinnoh.
-- **CH12–CH13:** balanceamento/evolução dinâmica e catálogo simbólico de encontros por área, método e horário sem IDs inventados.
-- **CH14:** [contrato de 22 checkpoints](../data/regions/sinnoh-story-ch14-contract.json), [runtime `SinnohStoryContracts.rb`](../scripts/regions/SinnohStoryContracts.rb) e [auditor somente leitura](../scripts/regions/audit_sinnoh_story_ch14.py) modelam a ordem Galactic/Mars/Jupiter → HQ/Cyrus/Saturn → Spear Pillar → Distortion World/Cyrus/Giratina → oitava insígnia → Elite Four → Cynthia → **Hall of Fame confirmado separadamente**. Rejeitam duplicação, flag ausente, premiação inventada, save regional corrompido, Liga antecipada e viagem sem instalação de destino e origem/npc válidos. Não chamam `TrainerBattle`, não adicionam itens/insígnias e não registram teleporte. [15 testes negativos Python](../tests/test_sinnoh_story_ch14.py) e [teste Ruby usando `BlueRegions` e `BlueRegionTravel` reais](../tests/sinnoh_story_ch14_runtime.rb) verificaram idempotência, rollback lógico de falhas, Marshal reload e isolamento entre regiões. [CI 43973023734](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43973023734): CH14 e **301 testes Python isolados** aprovados. [Documentação CH14](SINNOH_CH14_GALACTIC_CYRUS_LIGA.md).
-- **Critério:** só tarefas com arquivo, commit e CI válido contam como `done`.
+- **CH12–CH13:** balanceamento/evolução dinâmica e catálogo simbólico de encontros por área, método e horário.
+- **CH14:** 22 checkpoints Galactic, Cyrus, Elite Four, Cynthia e Hall of Fame com viagem física bloqueada até haver fonte/destino nativos.
+- **CH15:** [registro de 13 treinadores de Platinum](../data/regions/sinnoh-trainer-teams-ch15.json) contém as **8 equipes históricas de ginásios**, **4 Elite Four**, **Cynthia** e **5 revanches históricas de Elite Four/Cynthia**, com espécies/níveis marcados exclusivamente como **referência**. Para os ginásios não há revanche histórica documentada nesse detonado, e para **nenhuma** equipe existe prova de variante Full Power do Blue ou PBS compilado. O [auditor read-only](../scripts/regions/audit_sinnoh_teams_ch15.py) compara a fonte histórica, a ordem das insígnias e preservação do balanceamento Normal 70% / Master 90%, e pode inspecionar **candidatos** de um PBS externo sem certificar instalação. [23 testes positivos/negativos](../tests/test_sinnoh_teams_ch15.py) recusam inventar versões, times fortes, níveis fixos na interface, claims de compilação, empréstimo de catálogos Kanto/Johto/Decades e dados históricos modificados. [CI 43974961958](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43974961958): CH15 **23/23** e **324 testes Python isolados** aprovados. [Documentação CH15](SINNOH_CH15_TIMES_LIDERES_ELITE_CYNTHIA.md).
+- **Critério:** somente tarefas `done` com evidência no repositório e testes/CI aprovados entram na Barra E.
 
-**Limite:** os callbacks são **contratos para eventos futuros**, não provas de batalhas vencidas; nenhum handler da engine para esses 22 checkpoints foi instalado. A viagem real de Sinnoh continua bloqueada enquanto a região não tiver agente/origem verificados, e Unova não possui destino físico integrado. **Barra A 8/32 (25%)**; **B/C/D 0/13** inalteradas. Nenhum Game.exe/JoiPlay foi executado.
+**Limites:** não foram adicionadas equipes PBS, batalhas, MapIDs, eventos, versões de treinador ou dados de interface publicáveis como jogabilidade. Os valores históricos **não são o nível efetivo de combate no Blue**. A fonte nativa do jogo não está presente neste repositório e o teste não executou Game.exe/JoiPlay. **Barra A 8/32 (25%)**, **B/C/D 0/13** inalteradas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

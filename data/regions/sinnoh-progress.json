@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 14,
+    "done": 15,
     "partial": 0,
-    "pending": 6,
-    "percent_complete": 70,
+    "pending": 5,
+    "percent_complete": 75,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -919,8 +919,8 @@
         "priority": "P3",
         "title": "Registro de equipes para Roark→Volkner, Elite Four e Cynthia",
         "acceptance": "Esquemas/referências auditáveis, sem espécies ou times inventados nem nível fixo na UI",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "tests/test_sinnoh_teams_ch15.py"
       },
       {
         "id": "CH16",
