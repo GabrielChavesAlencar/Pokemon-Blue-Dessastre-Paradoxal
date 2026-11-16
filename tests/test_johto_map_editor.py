@@ -160,6 +160,66 @@ class JohtoMapStudioTests(unittest.TestCase):
             self.assertFalse(uploaded.startswith(b"\x04\x08"))
         self.assertEqual(session.publish_baseline[674]["sha"],"abc123")
 
+    def test_move_staircase_event_and_edit_return_warp_without_touching_scripts(self):
+        before=details(self.root,self.game,674)
+        stair=next(e for e in before["events"] if e["name"]=="JH_HOME2F_TO_1F")
+        event_change={
+            "id":stair["id"],"name":stair["name"],
+            "before":[stair["x"],stair["y"]],"after":[4,4],
+            "warp_before":[stair["warp"]["map"],stair["warp"]["x"],stair["warp"]["y"]],
+            "warp_after":[stair["warp"]["map"],stair["warp"]["x"],stair["warp"]["y"]],
+        }
+        result=save_changes(self.root,self.game,{
+            "map_id":674,"map_hash":before["map_hash"],"patch_hash":None,
+            "changes":[],"event_changes":[event_change]})
+        self.assertEqual(result["count"],1)
+        updated=details(self.root,self.game,674)
+        moved=next(e for e in updated["events"] if e["name"]=="JH_HOME2F_TO_1F")
+        self.assertEqual((moved["x"],moved["y"]),(4,4))
+        patch674=patcher.read_patch(self.root,674)
+        self.assertEqual(len(patch674["events"]),1)
+        self.assertEqual(patch674["events"][0]["before"],[9,8])
+
+        # The downstairs event may use a sound and fade before code 201;
+        # only the transfer coordinates change, never the rest of its script.
+        downstairs=details(self.root,self.game,675)
+        back=next(e for e in downstairs["events"] if e["name"]=="JH_HOME1F_TO_2F")
+        move={
+            "id":back["id"],"name":back["name"],
+            "before":[back["x"],back["y"]],
+            "after":[back["x"],back["y"]],
+            "warp_before":[674,9,7],"warp_after":[674,4,5]}
+        report=save_changes(self.root,self.game,{
+            "map_id":675,"map_hash":downstairs["map_hash"],"patch_hash":None,
+            "changes":[],"event_changes":[move]})
+        self.assertEqual(report["count"],1)
+        changed=details(self.root,self.game,675)
+        ret=next(e for e in changed["events"] if e["name"]=="JH_HOME1F_TO_2F")
+        self.assertEqual(ret["warp"],{"map":674,"x":4,"y":5})
+        # No source characters/MapInfos/tilesets or saves were replaced.
+        self.assertEqual((self.game/"Saves/File.rxdata").read_bytes(),
+                         b"the user's private save")
+
+        fresh, home, sets=fixtures()
+        self.assertEqual(patcher.apply_patch(fresh,sets,674,patch674),1)
+        self.assertEqual(patcher.apply_patch(fresh,sets,674,patch674),0)
+        self.assertEqual(fresh.attrs["@events"][1].attrs["@x"],4)
+        self.assertEqual(patcher.apply_patch(home,sets,675,patcher.read_patch(self.root,675)),1)
+        self.assertEqual(home.attrs["@events"][1].attrs["@pages"][0].attrs["@list"][0]
+                         .attrs["@parameters"][2:4],[4,5])
+
+    def test_profile_initialization_event_cannot_be_moved(self):
+        before=details(self.root,self.game,674)
+        profile=next(e for e in before["events"] if e["name"]=="JH_NEW_GAME_PROFILE")
+        movement={"id":profile["id"],"name":profile["name"],
+                  "before":[6,7],"after":[6,8],
+                  "warp_before":[674,6,7],"warp_after":[674,6,7]}
+        with self.assertRaisesRegex(ValueError,"Não mover"):
+            save_changes(self.root,self.game,{
+                "map_id":674,"map_hash":before["map_hash"],"patch_hash":None,
+                "changes":[],"event_changes":[movement]})
+        self.assertEqual((self.game/"Data/Map674.rxdata").read_bytes(),self.original)
+
     def test_unknown_old_tile_blocks_published_patch_without_overwriting_events(self):
         old,_,sets=fixtures()
         p={"schema":1,"map_id":674,"tileset":"BLUE_JOHTO_OPENING_INSIDE",
