@@ -255,6 +255,105 @@ def refresh_installed_bedroom(game: Path, root: Path = ROOT) -> dict:
         raise
 
 
+
+def refresh_installed_private_hgss(game: Path, root: Path = ROOT) -> dict:
+    """Update local artist-provided HGSS graphics in ALL mapped Johto interiors.
+
+    Only runs if the user has provided a valid private tile manifest and PNGs;
+    never downloads/distributes artwork and never modifies saves or other
+    regions. The installer records exact hashes and supports full rollback.
+    """
+    game, root = Path(game).resolve(), Path(root).resolve()
+    manifest, sources = hgss.private_sources(root)
+    if manifest is None:
+        return {"changed": False, "reason": "Tilesets de autores não fornecidos"}
+    installed = preview_proof(game)
+    if installed is None:
+        return {"changed": False, "reason": "Johto experimental ainda não instalada"}
+    digest = sha((root / hgss.MANIFEST).read_bytes())
+    old = installed.get("private_hgss") or {}
+    if old.get("manifest_sha256") == digest and old.get("status") == "private_art_compiled":
+        if old.get("source_digests") != {s: t[5] for s, t in sources.items()}:
+            raise ValueError("Manifesto/arquivos HGSS privados divergentes")
+        return {"changed": False, "reason": "Todos interiores HGSS já preparados"}
+    if old.get("status") == "private_art_compiled":
+        raise ValueError("Troca de pacote HGSS já instalado exige uma migração auditada; não empilhar tilesets")
+
+    names = [f"Data/Map{mid:03}.rxdata" for mid in sorted(hgss.INTERIORS)]
+    maps = {mid: loads(local_target(game, f"Data/Map{mid:03}.rxdata").read_bytes())
+            for mid in sorted(hgss.INTERIORS)}
+    if any(not isinstance(obj, RubyObject) or obj.name != "RPG::Map" for obj in maps.values()):
+        raise ValueError("Mapas de interiores Johto inválidos")
+    sets = loads(local_target(game, "Data/Tilesets.rxdata").read_bytes())
+    if not isinstance(sets, list):
+        raise ValueError("Tilesets da instalação Johto inválidos")
+    extra = {}
+    def read_graphic(category, name):
+        key = f"Graphics/{category}/{name}.png"
+        return extra[key] if key in extra else johto_qa.regular(local_target(game, key)).read_bytes()
+    art = hgss.compile_private_art(maps, sets, extra, read_graphic, root)
+    if art.get("status") != "private_art_compiled":
+        raise ValueError("Manifesto HGSS não produziu os tiles esperados")
+    # Validate every generated tile reference, named graphic and flag table
+    # before touching the existing installation.
+    visual.audit_tilesets(maps, sets, read_graphic)
+    replacement = {f"Data/Map{mid:03}.rxdata": serialize(maps[mid], johto_qa.EVENT_CLASSES)
+                   for mid in art["maps"]}
+    replacement["Data/Tilesets.rxdata"] = serialize(sets)
+    replacement.update(extra)
+
+    new_proof = copy.deepcopy(installed)
+    new_proof["private_hgss"] = art
+    for name, blob in replacement.items():
+        new_proof["file_hashes"][name] = sha(blob)
+    replacement[PROOF] = raw_json(new_proof)
+
+    backup_files = {name for name in replacement if name != PROOF
+                    and local_target(game, name).exists()}
+    backup_files.add(PROOF)
+    backups = root / ".blue-backups" / ("johto-private-hgss-" + uuid.uuid4().hex)
+    backups.mkdir(parents=True)
+    for name in sorted(backup_files):
+        src = local_target(game, name)
+        if not src.is_file() or src.is_symlink():
+            raise ValueError("Backup HGSS encontrou arquivo inesperado: " + name)
+        target = backups / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, target)
+
+    # The proof is last so interrupted upgrades never pass preview_proof().
+    updated = []
+    try:
+        order = [name for name in replacement if name != PROOF] + [PROOF]
+        for name in order:
+            destination = local_target(game, name)
+            if name.startswith("Graphics/") and destination.exists():
+                raise ValueError("Atlas HGSS privado já existente: " + name)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            pending = destination.with_name(destination.name + ".hgss-tmp")
+            if pending.exists() or pending.is_symlink():
+                raise ValueError("Atualização HGSS encontrou arquivo temporário")
+            try:
+                pending.write_bytes(replacement[name])
+                if sha(pending.read_bytes()) != sha(replacement[name]):
+                    raise ValueError("Falha de integridade HGSS: " + name)
+                os.replace(pending, destination)
+                updated.append(name)
+            finally:
+                pending.unlink(missing_ok=True)
+        preview_proof(game)
+        return {"changed": True, "maps": art["maps"], "credits": art["credits"],
+                "backup_folder": str(backups), "reason": "Interiores HGSS atualizados"}
+    except BaseException:
+        for name in reversed(updated):
+            destination = local_target(game, name)
+            if name in backup_files:
+                shutil.copy2(backups / name, destination)
+            else:
+                destination.unlink(missing_ok=True)
+        raise
+
+
 def build_overlay(game: Path, bundle: Path, root: Path = ROOT) -> tuple[dict[str, bytes], dict]:
     """Plan and validate in memory; no writes to game/ until every check passes."""
     if game.is_symlink() or not (game / "Game.exe").is_file():
