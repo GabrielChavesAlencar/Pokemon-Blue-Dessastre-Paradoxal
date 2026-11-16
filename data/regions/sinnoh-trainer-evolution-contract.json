@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "status": "PLANNED_CONTRACT_NOT_INSTALLED",
+  "source_of_truth": {
+    "trainer_level": "scripts/battle_polish/Campaign.rb",
+    "story_stage_and_bst": "scripts/battle_polish/Story.rb",
+    "evolution": "scripts/battle_polish/EvolutionScaling.rb",
+    "badges": "site/public/data/regions.json"
+  },
+  "gameplay_verified": false,
+  "native_trainers_installed": false,
+  "can_install": false,
+  "level_cap": {
+    "regional_numeric_cap_in_save": null,
+    "regional_badge_to_level_cap_implemented": false,
+    "reference": "highest_non_egg_party_level",
+    "maximum": "GameData::GrowthRate.max_level",
+    "minimum": 1,
+    "bst_stage_caps": [
+      350,
+      450,
+      540,
+      null
+    ],
+    "bst_cap_is_not_a_level_cap": true
+  },
+  "balance": {
+    "normal_percent": 70,
+    "master_percent": 90,
+    "rounding": "integer_floor",
+    "master_trigger": "BlueStory.stage == 3",
+    "master_team_target": 4,
+    "max_opponent_pokemon": 6,
+    "evolution_after_scaling": true,
+    "regular_trainers_auto_evolve": true,
+    "authored_boss_species_preserved": true,
+    "trainer_pbs_never_mutated": true
+  },
+  "evolution": {
+    "native_source": "GameData::Species#get_evolutions(true)",
+    "level_required_plus_grace": 5,
+    "stone_level": 30,
+    "trade_level": 40,
+    "friendship_level": 45,
+    "unsupported_conditions_blocked": true,
+    "ambiguous_branch_blocked": true,
+    "special_forms_blocked": true,
+    "conditions_by_gender_and_time_respected": true
+  },
+  "trainer_examples": [
+    {
+      "family": [
+        "TURTWIG",
+        "GROTLE",
+        "TORTERRA"
+      ],
+      "method": "LEVEL",
+      "thresholds": [
+        23,
+        37
+      ],
+      "synthetic_fixture_only": true
+    },
+    {
+      "family": [
+        "CHIMCHAR",
+        "MONFERNO",
+        "INFERNAPE"
+      ],
+      "method": "LEVEL",
+      "thresholds": [
+        19,
+        41
+      ],
+      "synthetic_fixture_only": true
+    },
+    {
+      "family": [
+        "PIPLUP",
+        "PRINPLUP",
+        "EMPOLEON"
+      ],
+      "method": "LEVEL",
+      "thresholds": [
+        21,
+        41
+      ],
+      "synthetic_fixture_only": true
+    },
+    {
+      "family": [
+        "ROSELIA",
+        "ROSERADE"
+      ],
+      "method": "STONE",
+      "thresholds": [
+        30
+      ],
+      "synthetic_fixture_only": true
+    },
+    {
+      "family": [
+        "GRAVELER",
+        "GOLEM"
+      ],
+      "method": "TRADE",
+      "thresholds": [
+        40
+      ],
+      "synthetic_fixture_only": true
+    },
+    {
+      "family": [
+        "RIOLU",
+        "LUCARIO"
+      ],
+      "method": "FRIENDSHIP",
+      "thresholds": [
+        45
+      ],
+      "synthetic_fixture_only": true
+    }
+  ],
+  "notes": "CH12 contracts validate already shared Blue dynamic calculation using synthetic species fixtures only. No actual Sinnoh trainer PBS/map/NPC/save or native Game.exe was compiled. A future numeric region badge cap must be separately designed and tested; BST stage cap is NOT a trainer level cap."
+}
