@@ -143,6 +143,37 @@ class JohtoMainPreviewTests(unittest.TestCase):
         self.assertEqual((self.game / "Data/MapInfos.rxdata").read_bytes(), b"old-infos")
         self.assertFalse((self.game / preview.READY).exists())
 
+    def test_ch03_foreign_sinnoh_maps_rejected_before_any_write(self):
+        original_infos = (self.game / "Data/MapInfos.rxdata").read_bytes()
+        for extra in ("Data/Map800.rxdata", "Data/Map805.rxdata",
+                      "Data/Map700.rxdata", "Data/Map1000.rxdata"):
+            for apply in (False, True):
+                with self.subTest(extra=extra, apply=apply):
+                    files = self.fixture_overlay()
+                    files[extra] = b"foreign-sinnoh-or-other-region"
+                    with patch.object(preview, "build_overlay", return_value=(files, {})):
+                        with self.assertRaisesRegex(ValueError, "MapID"):
+                            preview.install(self.game, self.root / "fake.zip",
+                                            self.root, apply=apply)
+                    self.assertFalse((self.game / extra).exists())
+                    self.assertFalse((self.game / preview.READY).exists())
+                    self.assertFalse((self.root / ".blue-backups").exists())
+                    self.assertEqual(
+                        (self.game / "Data/MapInfos.rxdata").read_bytes(), original_infos
+                    )
+
+    def test_ch03_existing_hoenn_800_file_not_mistaken_for_new_sinnoh(self):
+        # A different region may already own this number in the native game.
+        original = self.game / "Data/Map800.rxdata"
+        original.write_bytes(b"existing-Hoenn-map")
+        with patch.object(preview, "build_overlay",
+                          return_value=(self.fixture_overlay(), {})):
+            result = preview.install(self.game, self.root / "fake.zip",
+                                     self.root, apply=True)
+        self.assertEqual(result["status"], "EXPERIMENTAL_INSTALLED_NOT_NATIVE_TESTED")
+        self.assertEqual(original.read_bytes(), b"existing-Hoenn-map")
+        self.assertTrue((self.game / "Data/Map600.rxdata").exists())
+
     def test_preview_proof_rejects_forged_marker_without_maps(self):
         (self.game / preview.PROOF).write_text(
             '{"schema":1,"region":"JOHTO","status":"EXPERIMENTAL_PRIVATE_UNVERIFIED",'

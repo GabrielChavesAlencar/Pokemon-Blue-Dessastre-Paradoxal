@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 from audit_johto import ROOT, write_report
+from sinnoh_map_id_guard import assert_sinnoh_shared_destinations
 
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 ID = re.compile(r"[1-9][0-9]*\Z")
@@ -125,6 +126,9 @@ def make_plan(audit: dict, request: dict, *, prior: dict | None = None,
     symbols = keys_to_ids(request.get("symbols"), "Símbolos")
     if set(mapping) != source or set(symbols) != source or set(requested_hashes) != source:
         fail("Todos os mapas reais devem ter IDs, símbolos e hashes; sem exclusão implícita")
+    # Shared gate: the old Sinnoh pilot maps 800–805 are never candidates.
+    # This rejects all of 600–999 even if those numbers appear unused locally.
+    assert_sinnoh_shared_destinations(mapping.values())
     for mid in sorted(source):
         if requested_hashes[mid] != audited[mid]["sha256"]:
             fail(f"Map{mid}: hash diverge da fonte auditada")

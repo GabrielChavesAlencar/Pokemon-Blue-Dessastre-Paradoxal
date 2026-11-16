@@ -21,7 +21,11 @@ class SinnohChatProgressTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        for relative in (LEDGER, MAP, PANEL, SCRIPT):
+        ledger = json.loads((ROOT / LEDGER).read_text(encoding="utf-8"))
+        done_artifacts = [task["evidence_path"]
+                          for task in ledger["chat_direct_workstream"]["tasks"]
+                          if task["status"] == "done"]
+        for relative in sorted(set((LEDGER, MAP, PANEL, SCRIPT, *done_artifacts))):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, destination)
@@ -90,15 +94,21 @@ class SinnohChatProgressTests(unittest.TestCase):
         self.failed("fora do repositório")
 
     def test_rejects_missing_bar_and_wrong_fill(self):
-        self.replace(PANEL, "██░░░░░░░░░░░░░░░░░░", "█░░░░░░░░░░░░░░░░░░░")
+        done = self.read()["chat_direct_workstream"]["done"]
+        self.replace(PANEL, "█" * done + "░" * (20 - done),
+                     "█" * (done - 1) + "░" * (21 - done))
         self.failed("preenchimento gráfico")
 
     def test_rejects_panel_counter_mismatch(self):
-        self.replace(PANEL, "- **Pendentes:** 18", "- **Pendentes:** 19")
+        pending = self.read()["chat_direct_workstream"]["pending"]
+        self.replace(PANEL, f"- **Pendentes:** {pending}",
+                     f"- **Pendentes:** {pending + 1}")
         self.failed("contador Pendentes")
 
     def test_rejects_mapping_counter_mismatch(self):
-        self.replace(MAP, "**18 pendentes**", "**19 pendentes**")
+        pending = self.read()["chat_direct_workstream"]["pending"]
+        self.replace(MAP, f"**{pending} pendentes**",
+                     f"**{pending + 1} pendentes**")
         self.failed("mapeamento: contador pending")
 
     def test_rejects_missing_completed_marker(self):
@@ -106,7 +116,10 @@ class SinnohChatProgressTests(unittest.TestCase):
         self.failed("marcador incorreto")
 
     def test_rejects_duplicate_mapping_row(self):
-        self.replace(MAP, "| P0 | CH03 |", "| P0 | CH02 |")
+        content = (self.root / MAP).read_text(encoding="utf-8")
+        row = next(line for line in content.splitlines()
+                   if line.startswith("| P4 |") and "CH20" in line)
+        self.replace(MAP, row, row.replace("CH20", "CH02", 1))
         self.failed("mapeamento: ID/prioridade")
 
     def test_rejects_changed_priorities(self):

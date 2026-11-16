@@ -98,6 +98,14 @@ class SinnohRemapTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicado"):
             make_plan(audited(), duplicate)
 
+    def test_ch03_refuses_every_legacy_sinnoh_destination_in_shared_plan(self):
+        for legacy in range(800, 806):
+            with self.subTest(legacy=legacy):
+                req = request()
+                req["mapping"]["7"] = legacy
+                with self.assertRaisesRegex(ValueError, "legado"):
+                    make_plan(audited(), req)
+
     def test_declared_other_region_reservations_block_destinations(self):
         with self.assertRaisesRegex(ValueError, "reserva"):
             make_plan(audited(), request(),

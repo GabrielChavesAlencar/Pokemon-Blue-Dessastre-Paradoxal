@@ -8,18 +8,19 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-██░░░░░░░░░░░░░░░░░░  2/20 (10%)
+███░░░░░░░░░░░░░░░░░  3/20 (15%)
 ```
 
-- **Concluídas:** 2 (**CH01**: mapeamento e **CH02**: validador de progresso).
+- **Concluídas:** 3 (**CH01**: mapeamento; **CH02**: validação da Barra E; **CH03**: segurança de MapIDs no instalador compartilhado).
 - **Parciais:** 0.
-- **Pendentes:** 18 (**CH03–CH20**).
+- **Pendentes:** 17 (**CH04–CH20**).
 - **Fonte de verdade:** campo `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
-- **Mapeamento completo:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md) — 20 entregas incrementais e classificação de **todas as 32 entregas S01–S32**.
-- **Validação automática:** `python scripts/regions/validate_sinnoh_chat_progress.py`; testes `tests/test_sinnoh_chat_progress.py`; workflow `regression.yml`.
-- **Critério:** só entram no numerador as tarefas `done` com artefato no repositório. IDs duplicados, divergências da tabela/MD, evidências ausentes, percentual ou preenchimento incorreto fazem o validador retornar erro.
+- **Mapeamento completo:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md) — 20 entregas incrementais.
+- **Validador CH02:** `python scripts/regions/validate_sinnoh_chat_progress.py` em CI, com testes e rejeição de inconsistências.
+- **Proteção CH03:** [`sinnoh_map_id_guard.py`](../scripts/regions/sinnoh_map_id_guard.py) valida o remapeamento de Sinnoh e as escritas de mapas do instalador conjunto de Johto. Os IDs 800–805 do piloto **legado** não podem entrar como arquivos novos do overlay Johto. A presença prévia desses números no jogo (ex.: mapas legítimos de Hoenn) não é tratada como sinal de Sinnoh. Testes: [`test_sinnoh_map_id_guard.py`](../tests/test_sinnoh_map_id_guard.py), [`test_sinnoh_remap.py`](../tests/test_sinnoh_remap.py) e [`test_johto_main_preview.py`](../tests/test_johto_main_preview.py).
+- **Critério:** apenas tarefas `done` e com evidências versionadas entram no numerador; erros de IDs, contagens, tabela ou documentação interrompem o CI.
 
-**Interpretação importante:** Barra E **não substitui** a Barra A (8/32, 25%) nem as barras B/C/D (0/13). A CH02 não instalou mapas, não compilou PBS e não testou Game.exe/JoiPlay.
+**Limite:** Barra E não altera a Barra A (8/32, 25%) nem as barras técnicas, jogáveis ou nativas (0/13). CH03 não remapeia os seis mapas reais, não resolve permissões e não comprova gameplay.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
