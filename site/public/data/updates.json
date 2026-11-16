@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0fff9aa712ed44585946e4bc409cd0e936c3c707",
+      "date": "2026-11-16T07:08:54-03:00",
+      "title": "fix(johto): semantically verify all 100 native maps after runtime updates without requiring stale original byte hashes",
+      "category": "Correções"
+    },
+    {
       "sha": "853ee0feeaaf2c4cb1588615217d248cc452c408",
       "date": "2026-11-16T07:07:17-03:00",
       "title": "test(johto): exercise real code 250/223/106/201 stair events and preserve audio/fade through map update",
