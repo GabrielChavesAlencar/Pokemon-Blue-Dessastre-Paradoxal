@@ -48,3 +48,33 @@ test('Página possui regras responsivas e movimento reduzido',async()=>{
   assert.match(css,/@media\(max-width:450px\)/);
   assert.match(css,/prefers-reduced-motion:reduce/);
 });
+
+test('Apresentação informa catálogo, etapas regionais, balanceamento e mecânicas',()=>{
+  const html=presentationPage({byId:new Map()});
+  assert.match(html,/1\.025 Pokémon oficiais|1\.025 espécies oficiais/);
+  assert.match(html,/Pokémon de fangames/);
+  assert.match(html,/Fan forms e Paradoxos/);
+  for(const region of ['Decades','Kanto','Hoenn','Johto','Sinnoh','Unova','Kalos','Alola','Galar','Paldea','Hisui'])
+    assert.match(html,new RegExp(region));
+  assert.match(html,/Disponível para testes/);
+  assert.match(html,/Em construção/);
+  assert.match(html,/EXPANSÕES FUTURAS/);
+  assert.match(html,/Mega Evolução/);
+  assert.match(html,/Z-Moves/);
+  assert.match(html,/Terastalização/);
+  assert.match(html,/Dynamax fica desativado/);
+  assert.match(html,/Insígnias e esmeraldas/);
+  assert.match(html,/Selvagens que evoluem/);
+  assert.match(html,/Itens-chave e HMs locais/);
+  assert.match(html,/href="\/regioes"/);
+  assert.match(html,/href="\/balanceamento\?regiao=kanto"/);
+});
+
+test('Novas seções editoriais têm grid responsivo',async()=>{
+  const css=await readSource('assets/presentation.css');
+  for(const klass of ['presentation-dex-grid','presentation-region-grid','presentation-mechanic-grid','presentation-balance-grid'])
+    assert.ok(css.includes('.'+klass));
+  assert.match(css,/@media\(max-width:760px\)/);
+  assert.match(css,/@media\(max-width:450px\)/);
+});
+
