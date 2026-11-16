@@ -2,7 +2,13 @@ name: Johto - snapshot para teste privado da integracao
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/johto-local-integration-fixture.yml']
+    paths:
+      - .github/workflows/johto-local-integration-fixture.yml
+      - scripts/regions/JohtoMainCompile.rb
+      - scripts/regions/johto_main_preview.py
+      - scripts/regions/auto_integrate_johto.py
+      - tests/johto_compiler_runtime.rb
+      - tests/test_johto_boot_hotfix.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,6 +19,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Python syntax for private Johto builder
         run: python -m py_compile scripts/regions/johto_main_preview.py scripts/regions/johto_qa.py scripts/regions/johto_visual.py
+      - name: Verify Ruby Compiler.main remains non-recursive with late-aliasing Blue plugins
+        run: ruby tests/johto_compiler_runtime.rb scripts/regions/JohtoMainCompile.rb
+      - name: Verify Johto upgrade, rollback and unchanged regional saves/maps
+        run: python -m unittest discover -s tests -p 'test_johto_boot_hotfix.py' -v
       - uses: actions/upload-artifact@v4
         with:
           name: johto-private-fixture-scripts
