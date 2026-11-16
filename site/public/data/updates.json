@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4848a07b3e43ed908a6aac59da929b3bb5b80624",
+      "date": "2026-11-16T20:06:19-03:00",
+      "title": "data(sinnoh): CH16 catálogo de cues sem áudio e resolvedor Ruby seguro",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c5e35c7f27c9babee861a9a13db7b9b4ebf0bd4d",
       "date": "2026-11-16T20:00:20-03:00",
       "title": "docs(sinnoh): CH15 validada e Barra E 15/20 sem alterar jogabilidade",
