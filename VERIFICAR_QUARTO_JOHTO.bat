@@ -41,20 +41,34 @@ echo.
 echo Verificando hash, mapas e posicao da escada...
 %PYTHON% scripts\regions\diagnose_johto_bedroom.py --apply
 set "RESULT=%ERRORLEVEL%"
-if not "%RESULT%"=="0" (
+if "%RESULT%"=="3" (
   echo.
-  echo [JOHTO] A correcao foi recusada: mapas alterados ou eventos incompatíveis.
-  echo [JOHTO] Coletando os tres mapas reais SEM incluir saves.
+  echo [JOHTO] A regiao nao foi instalada nesta copia do Game.exe,
+  echo ou faltam os mapas de New Bark. Isto nao e um erro do quarto.
+  echo.
+  echo Necessario: Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip
+  echo Esse ZIP tem os mapas 600-681. O ZIP johto-pilot-inputs NAO tem mapas Johto.
+  echo Coloque o ZIP ORIGINAL na pasta Downloads deste usuario Windows,
+  echo feche o Game.exe e execute Blue-Story.exe para instalar Johto.
+  echo NAO apague saves, NAO extraia mapas manualmente na pasta game.
+)
+if "%RESULT%"=="2" (
+  echo.
+  echo [JOHTO] Os mapas existem, mas a correcao nao e segura.
+  echo [JOHTO] Preparando diagnostico sem saves.
   %PYTHON% scripts\regions\export_johto_map_diagnostics.py
-  if errorlevel 1 echo [JOHTO] Nao foi possivel gerar o ZIP privado.
-  echo.
-  echo Envie no ChatGPT o ZIP:
-  echo "%CD%\.blue-work\JOHTO_DIAGNOSTICO_MAPAS.zip"
-  echo Nao copie os mapas sobre a instalacao e NAO apague saves.
+  if errorlevel 1 (
+    echo [JOHTO] Falha ao criar ZIP de diagnostico.
+  ) else (
+    echo [JOHTO] O ZIP foi criado com o caminho EXATO impresso acima.
+    echo [JOHTO] Diagnosticos anteriores sao preservados com nomes numerados.
+  )
+  echo NAO copie os mapas sobre a instalacao e NAO apague saves.
 )
 echo.
 echo Diagnostico salvo em: "%CD%\.blue-work\johto-bedroom-diagnostic.json"
-echo Se aparecer OLD_OR_DIFFERENT_BEDROOM ou FAILED, compartilhe esse JSON.
+echo Se aparecer JOHTO_NOT_INSTALLED, instale o pacote offline12 original.
+echo Se aparecer OLD_OR_DIFFERENT_BEDROOM ou FAILED, confira o JSON.
 echo Se aparecer LAYOUT_HGSS_APPLIED, abra o GAME.EXE DESTA PASTA.
 echo OBS: Os moveis HGSS originais exigem os PNGs externos dos autores.
 echo.
