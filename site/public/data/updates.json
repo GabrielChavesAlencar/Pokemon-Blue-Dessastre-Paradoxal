@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8e3fb56f454811678ecf13dde28e830b3782cafd",
+      "date": "2026-11-16T20:40:09-03:00",
+      "title": "feat(portal): CH18 busca e filtros nas 7 abas, pendências e links contextuais",
+      "category": "Novidades"
+    },
+    {
       "sha": "922956091d8d54afe36d4e8d14969de7a82390a7",
       "date": "2026-11-16T20:38:50-03:00",
       "title": "feat(portal): CH18 integra validador de origem e formulários de pesquisa segura",
