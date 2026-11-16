@@ -42,7 +42,7 @@ class BlueStoryEditorFolderTests(unittest.TestCase):
             for relative in SOURCES:
                 self.assertEqual((studio / relative).read_bytes(),
                                  (self.project / SOURCES[relative]).read_bytes())
-            self.assertIn(str(self.project),
+            self.assertIn(str(self.project.resolve()),
                           (studio / "EDITAR_MAPAS_JOHTO.bat").read_text("utf-8"))
             self.assertIn("CONECTAR_GITHUB_EDITOR_JOHTO.bat",
                           (studio / "CONECTAR_GITHUB_EDITOR_JOHTO.bat").read_text("utf-8"))
