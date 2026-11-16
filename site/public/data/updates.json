@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97c28d175590e85352316c65307823e4b292d6ed",
+      "date": "2026-11-15T21:11:03-03:00",
+      "title": "Publish complete Android Kanto/Hoenn hotfix ZIP using checksum-verified previous release as base",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0bb4b478137fb420afd75adaa1f3333361961b3a",
       "date": "2026-11-15T21:10:13-03:00",
       "title": "Build corrected multiregion Android ZIP from checksum-verified published release, without reimporting Kanto sources",
