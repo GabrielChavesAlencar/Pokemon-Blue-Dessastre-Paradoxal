@@ -1,8 +1,9 @@
-"""Safely check Johto readiness after the Kanto/Hoenn main-game installers.
+"""Install a strictly local/private Johto experimental main-game preview.
 
-The OFFLINE 12 ZIP is a private QA preview, NOT a playable overlay. This
-module never copies its maps or creates the release-proof/start markers.
-Actual integration requires a separate transactional installer with native QA.
+The OFFLINE 12 ZIP alone is NOT an executable release. Its pinned assets are
+compiled into a guarded 100-map early-access integration by
+johto_main_preview.py, with backups and no Kanto/Hoenn map overlaps.
+Never produce the final 13-point VERIFIED_PLAYABLE release proof here.
 """
 from __future__ import annotations
 
@@ -136,7 +137,8 @@ def record(project: Path, value: dict) -> dict:
     payload = {
         "schema": 1,
         "region": "JOHTO",
-        "ready": value["status"] == "already_integrated_verified",
+        "ready": value["status"] in {"already_integrated_verified",
+                    "experimental_installed_not_native_tested"},
         "changed": False,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         **value,
@@ -157,6 +159,26 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
         return record(project, {"status": "foreign_game_skipped", "reason": "Só a instalação game/ gerenciada é aceita"})
     if not (game / "Game.exe").is_file():
         return record(project, {"status": "no_game_skipped", "reason": "Decades ainda não está instalado"})
+    # The experimental proof is deliberately distinct from the final,
+    # 13-point VERIFIED_PLAYABLE release proof.
+    preview_manifest = game / "Data/blue-johto-main-preview.json"
+    preview_marker = game / "Data/blue-johto-preview-ready.txt"
+    if preview_manifest.exists() or preview_marker.exists():
+        try:
+            import sys
+            sys.path.insert(0, str(project))
+            sys.path.insert(0, str(project / "scripts/regions"))
+            import johto_main_preview
+            report = johto_main_preview.preview_proof(game)
+            if report:
+                return record(project, {"status": "experimental_installed_not_native_tested",
+                                        "reason": "100 mapas de Johto integrados com segurança; testes reais Game.exe/JoiPlay ainda pendentes",
+                                        "map_count": 100, "native_qa": False})
+        except (ImportError, OSError, ValueError, KeyError, TypeError) as exc:
+            return record(project, {"status": "existing_install_needs_review",
+                                    "reason": str(exc)})
+        return record(project, {"status": "existing_install_needs_review",
+                                "reason": "Johto prévia parcialmente instalada; não iniciar ou sobrescrever"})
     proof = game / "Data/blue-johto-install.json"
     marker = game / "Data/blue-johto-start.txt"
     if proof.exists() or marker.exists():
@@ -177,13 +199,30 @@ def integrate(project: Path = ROOT, game: Path | None = None) -> dict:
                 json.JSONDecodeError) as exc:
             return record(project, {"status": "offline_bundle_invalid", "reason": str(exc),
                                     "bundle_path": str(source)})
-        return record(project, {"status": "offline_preview_not_installable",
-                                "reason": baseline["reason"] +
-                                " Johto continua bloqueada até conclusão de todos os testes.",
-                                "bundle_path": str(source), "bundle": bundle,
-                                "current_game": baseline})
+        # The original private ZIP is NOT copied directly into game/. It is
+        # validated, visually repaired and remapped into unused 600–699 IDs
+        # by the separate transactional builder. Hoenn owns 700–999.
+        try:
+            import sys
+            sys.path.insert(0, str(project))
+            sys.path.insert(0, str(project / "scripts/regions"))
+            import johto_main_preview
+            result = johto_main_preview.install(game, source, project, apply=True)
+            installed = johto_main_preview.preview_proof(game)
+            if not installed:
+                raise ValueError("Instalação Johto sem prova estática verificável")
+        except (ImportError, OSError, ValueError, KeyError, TypeError,
+                AttributeError, IndexError) as exc:
+            return record(project, {"status": "experimental_install_blocked",
+                                    "reason": str(exc), "bundle_path": str(source),
+                                    "bundle": bundle, "current_game": baseline})
+        return record(project, {"status": "experimental_installed_not_native_tested",
+                                "reason": "Prévia local de 100 mapas integrada, com saves compartilhados; falta validar Game.exe/JoiPlay. Campanha ainda experimental.",
+                                "changed": True, "map_count": result["maps"],
+                                "native_qa": False, "bundle_path": str(source),
+                                "bundle": bundle, "current_game": baseline})
     return record(project, {"status": "awaiting_johto_installable_release",
-                            "reason": "Nenhum pacote Johto instalado e verificado. O Blue-Story procurou na pasta do projeto, .blue-work e Downloads. Johto não será habilitada sem instalador transacional e testes reais."})
+                            "reason": "ZIP privado Johto OFFLINE 12 não encontrado. Salve Johto_Offline_Fase12_Auditoria_Integracao_Privado.zip na pasta Downloads e reabra Blue-Story.exe. Kanto/Hoenn e os saves foram preservados."})
 
 
 if __name__ == "__main__":
