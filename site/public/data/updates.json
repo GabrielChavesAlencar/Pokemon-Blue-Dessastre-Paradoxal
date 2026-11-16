@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b655449fd3862b3c9ca2fcfc47e77d6bd5daa775",
+      "date": "2026-11-16T19:13:36-03:00",
+      "title": "test(sinnoh): CH12 auditor e 15 testes negativos de cap, 70/90 e evolucoes",
+      "category": "Testes"
+    },
+    {
       "sha": "e38fcae0de8025a3dfb9055e6f8a8944f67a235c",
       "date": "2026-11-16T19:11:27-03:00",
       "title": "data(sinnoh): contrato CH12 balance e evolucao sem level cap inventado",
