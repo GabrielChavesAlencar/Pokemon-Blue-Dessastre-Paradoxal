@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fa77f176e21b897c2f31d14928229146b33d15a9",
+      "date": "2026-11-15T22:56:44-03:00",
+      "title": "ci(blue-story): compile and publish standalone Windows installer independent from native game/Android QA",
+      "category": "Melhorias"
+    },
+    {
       "sha": "e28b29d1c985c0e576f01a84557749a1118ed16b",
       "date": "2026-11-15T22:55:41-03:00",
       "title": "docs(johto): new Blue-Story in-window private ZIP picker, single shared save and installation status",
