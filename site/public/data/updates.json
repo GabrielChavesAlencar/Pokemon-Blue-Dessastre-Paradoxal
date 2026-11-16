@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9cfe17742ab135d08998fb0796220854c713d6a5",
+      "date": "2026-11-16T08:56:07-03:00",
+      "title": "ci(johto): test single-file embedded private archive support before publishing code-only launcher",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "a7a0df476d3af0770bcbc66d26e60c2e2ba5fa1c",
+      "date": "2026-11-16T08:55:53-03:00",
+      "title": "test(johto): synthetic private one-file Windows EXE overlay validates SHA256 and preserves source",
+      "category": "Testes"
+    },
+    {
       "sha": "c32c9475fe90e47ba7030c792b91d9b2836e1a4f",
       "date": "2026-11-16T08:55:20-03:00",
       "title": "build(johto): allow user-private self-contained single EXE packaging, SHA256 pin, no public map redistribution",
