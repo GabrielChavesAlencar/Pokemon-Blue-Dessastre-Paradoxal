@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5a8c83af2cb1a7a74597626ed1ff464185024c12",
+      "date": "2026-11-16T19:29:10-03:00",
+      "title": "data(sinnoh): CH13 21 áreas simbólicas Platinum sem MapIDs, taxas ou encontros instalados",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0909fe42a46c54da2e085884857ee9dc3536c01e",
       "date": "2026-11-16T19:19:56-03:00",
       "title": "docs(sinnoh): CH12 validada e Barra E 12/20 sem alterar jogo",
