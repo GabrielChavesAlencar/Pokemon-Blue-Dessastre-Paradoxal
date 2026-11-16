@@ -90,9 +90,10 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                     print('[HOENN AUTO] Acesso no Game.exe principal permanece bloqueado:',result['reason'],flush=True)
                 if result['changed']:
                     run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
-        # Johto: preflight integrated with the same Blue-Story update flow.
-        # OFFLINE 12 is NOT a runnable region. Do not copy those map files or
-        # unlock Johto until the main-game native release proof passes.
+        # Johto: the local private OFFLINE12 source is NEVER copied raw.
+        # A transactional experimental installer repairs its map data and
+        # rebases into unused 600-699 IDs (700+ belongs to Hoenn). This is a
+        # shared-save EARLY ACCESS build, not the final native-QA release.
         if not skip_kanto:
             johto_path=project/'scripts/regions/auto_integrate_johto.py'
             if johto_path.is_file():
@@ -101,8 +102,14 @@ def install(project,game,hub_only=False,allow_kanto_missing=False,skip_kanto=Fal
                 result=johto.integrate(project,game)
                 print('[JOHTO AUTO] Resultado:',result['status'],flush=True)
                 if not result['ready']:
-                    print('[JOHTO AUTO] Johto continua indisponível no Game.exe principal:',result['reason'],
+                    print('[JOHTO AUTO] Johto ainda não inicia neste Game.exe:',result['reason'],
                           'Detalhes: .blue-work/johto-main-install-status.json',flush=True)
+                elif result.get('native_qa') is False:
+                    print('[JOHTO AUTO] Prévia Johto instalada: 100 mapas, não validada em gameplay real.',flush=True)
+                if result.get('changed'):
+                    # New Ruby plugin and regional PBS must be compiled by the
+                    # native Game.exe before trainer battles can be tested.
+                    run([sys.executable,'scripts/launch_game.py','--game-dir',game,'--prepare-only'],project,env)
         print('[OK] Instalado. Abra ABRIR_JOGO.bat para a campanha ou HUB_DE_BATALHA.bat para o Hub.')
     print('As listas de musica compartilhadas do projeto foram aplicadas; cada batalha sorteia uma faixa da categoria.')
 
