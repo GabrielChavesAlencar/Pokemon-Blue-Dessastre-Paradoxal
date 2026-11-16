@@ -71,7 +71,7 @@ def _files(project: Path) -> dict[str, bytes]:
         "\r\n"
         "Este editor foi baixado automaticamente pela main do GitHub.\r\n"
         "Execute EDITAR_MAPAS_JOHTO.bat para abrir o editor no navegador.\r\n"
-        "Use CONECTAR_GITHUB_EDITOR_JOHTO.bat para autenticar a sua conta GitHub.\r\n"
+        "Use Publicar este mapa na main: o Blue-Story instala o GitHub e pede autorizacao no navegador, quando necessario.\r\n"
         "\r\n"
         f"O jogo, mapas, backups e patches sao mantidos SOMENTE em:\r\n{project}\r\n"
         "Os arquivos na subpasta editor/ sao copia de referencia do codigo,\r\n"
