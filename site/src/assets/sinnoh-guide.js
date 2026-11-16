@@ -1,5 +1,6 @@
 // CH17 — navigable Sinnoh planning guide. All data is generated from CH11–CH16.
 import {esc,icon} from './utils.js';
+import {validateSinnohGuide,filterSinnohGuide,sinnohGuideUrl,sinnohPendingGroups} from './sinnoh-search.js';
 
 let cache;
 export async function loadSinnohGuide(fetcher=fetch){
@@ -7,17 +8,7 @@ export async function loadSinnohGuide(fetcher=fetch){
     const response=await fetcher('/data/sinnoh-guide.json');
     if(!response.ok)throw new Error('sinnoh-guide-unavailable');
     const value=await response.json();
-    if(value.schema!==1||value.region!=='SINNOH'||value.status!=='planned'||
-        value.gameplayVerified!==false||value.canPlay!==false||
-        value.counts?.verifiedNativeMaps!==0||
-        value.counts?.verifiedNativeTrainers!==0||
-        value.counts?.verifiedNativeItems!==0||
-        value.bosses?.length!==13||value.items?.length!==8||
-        value.steps?.length!==22||!Array.isArray(value.areas)||
-        value.areas.some(a=>a.status!=='planned'||a.confirmedWildEncounters!==0)||
-        value.bosses.some(b=>b.status!=='planned'||b.pbsInstalled!==false||
-          b.fullPowerVerified!==false||'level' in b||'mapId' in b))
-      throw new Error('sinnoh-guide-invalid');
+    validateSinnohGuide(value);
     cache=value;
   }
   return cache;
@@ -37,12 +28,53 @@ const summary=(num,label)=>'<div class="sinnoh-guide-stat"><strong>'+num+'</stro
 const article=(title,body,kicker='REFERÊNCIA PLANEJADA')=>
   '<article class="sinnoh-guide-card"><span class="eyebrow">'+esc(kicker)+'</span><h3>'+esc(title)+'</h3>'+body+pending+'</article>';
 
-export function sinnohGuidePage(data,requested='visao',phase='all'){
-  if(data?.schema!==1||data.region!=='SINNOH'||data.status!=='planned'||
-     data.gameplayVerified!==false||data.canPlay!==false)throw new Error('sinnoh-guide-invalid');
+const contextLink=(tab,params,label)=>
+  '<a class="text-link" href="'+esc(sinnohGuideUrl(tab,params))+'">'+esc(label)+' '+icon('arrow')+'</a>';
+const context=(...links)=>'<nav class="sinnoh-guide-context" aria-label="Relações com outros guias">'+links.join('')+'</nav>';
+const emptyResult='<p class="sinnoh-guide-empty" role="status">Nenhuma referência encontrada. Tente outra busca ou remova os filtros. Os dados continuam planejados e não jogáveis.</p>';
+const cardResults=(items,render)=>items.length?cards(items,render):emptyResult;
+const searchFilters={
+  areas:[['todas','Todas as referências'],['sem-fase','Fase a auditar'],['com-especies','Com espécies candidatas'],['sem-especies','Sem espécies candidatas']],
+  treinadores:[['todas','Todos os treinadores'],['com-area','Área citada na fonte'],['sem-area','Sem área citada']],
+  liga:[['todas','Toda a Liga'],['com-revanche','Com revanche Platinum'],['sem-revanche','Sem revanche documentada']],
+  itens:[['todas','Todos os HMs'],['sem-coleta','Coleta não confirmada']]
+};
+function filterForm(tab,phase,filtered){
+  if(!['areas','treinadores','ginasios','liga','itens','progresso','pendencias'].includes(tab))return '';
+  const choices=searchFilters[tab]||[];
+  const typeChoices=[['todos','Todos os tipos'],...sinnohPendingGroupsSafe(tab)];
+  const selection=choices.length?'<label>Tipo de pendência<select name="pendencia">'+
+    choices.map(([key,label])=>'<option value="'+esc(key)+'"'+(filtered.pendencia===key?' selected':'')+'>'+esc(label)+'</option>').join('')+
+    '</select></label>':'';
+  const kind=tab==='pendencias'?'<label>Categoria<select name="tipo">'+
+    typeChoices.map(([key,label])=>'<option value="'+esc(key)+'"'+(filtered.tipo===key?' selected':'')+'>'+esc(label)+'</option>').join('')+'</select></label>':'';
+  return '<form class="sinnoh-guide-filters" data-sinnoh-filters method="get" action="/sinnoh" role="search" aria-label="Pesquisar referências planejadas">'+
+    '<input type="hidden" name="aba" value="'+esc(tab)+'">'+
+    (tab==='areas'&&phase!=='all'?'<input type="hidden" name="fase" value="'+esc(phase)+'">':'')+
+    '<label>Buscar no guia<input type="search" name="busca" maxlength="100" autocomplete="off" value="'+esc(filtered.busca)+'" placeholder="Nome, local, espécie, insígnia…" aria-label="Buscar referências de Sinnoh"></label>'+
+    selection+kind+
+    '<button type="submit" class="button button-primary">Pesquisar</button>'+
+    '<a class="button button-secondary" href="'+esc(sinnohGuideUrl(tab,tab==='areas'?{fase:phase}:{}))+'">Limpar filtros</a>'+
+    '</form>';
+}
+const pendingFilterLabels={
+  areas:'Mapas e áreas',treinadores:'Treinadores e NPCs',
+  equipes:'Ginásios, Elite Four e Cynthia',itens:'HMs e permissões',
+  historia:'Galactic, Cyrus e Liga',encontros:'Encontros selvagens',
+  musica:'Chaves musicais'
+};
+const sinnohPendingGroupsSafe=tab=>tab==='pendencias'?
+  Object.entries(pendingFilterLabels):[];
+const resultCount=filtered=>'<p class="sinnoh-guide-result-count" role="status" aria-live="polite">'+
+  filtered.count+' referência'+(filtered.count===1?'':'s')+' exibida'+(filtered.count===1?'':'s')+
+  (filtered.busca?' para “'+esc(filtered.busca)+'”':'')+'. Todas permanecem pendentes de prova nativa.</p>';
+
+
+export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
+  validateSinnohGuide(data);
   const tab=tabs.some(([key])=>key===requested)?requested:'visao';
-  const selected=String(phase)==='all'||String(phase)==='sem-fase'?String(phase):
-    data.phases.some(p=>String(p.number)===String(phase))?String(phase):'all';
+  const filtered=filterSinnohGuide(data,tab,{...options,fase:phase});
+  const selected=filtered.fase;
   const navigation='<nav class="sinnoh-guide-tabs" aria-label="Seções do guia de Sinnoh">'+
     tabs.map(([key,label])=>'<a class="filter-chip'+(key===tab?' active':'')+'" href="'+
       tabHref(key)+'"'+(key===tab?' aria-current="page"':'')+'>'+esc(label)+'</a>').join('')+'</nav>';
