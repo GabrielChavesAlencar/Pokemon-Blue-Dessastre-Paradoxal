@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "72d69f088d5b6ff80987f0d8a72b9ea887f57520",
+      "date": "2026-11-16T09:27:21-03:00",
+      "title": "feat(johto): one-click Windows launcher opens local map studio and saves real Map600–699 edits",
+      "category": "Novidades"
+    },
+    {
       "sha": "c83439f5fc169721e74826042b9b4d692d168aa8",
       "date": "2026-11-16T09:26:04-03:00",
       "title": "feat(johto): Blue-Story auto-syncs all published Johto map editor patches during existing-region updates",
