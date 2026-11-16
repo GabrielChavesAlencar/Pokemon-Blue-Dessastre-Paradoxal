@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "928ec3c25a11f4034fed16c36ad456c877cf5aa3",
+      "date": "2026-11-16T19:40:48-03:00",
+      "title": "feat(sinnoh): CH14 contratos ordenados Galactic Cyrus Liga Hall of Fame com viagem bloqueada",
+      "category": "Novidades"
+    },
+    {
       "sha": "28ae6375a79bfa7150077312bc10a14e25924abf",
       "date": "2026-11-16T19:34:00-03:00",
       "title": "docs(sinnoh): CH13 auditada e Barra E 13/20 sem alterar barras jogáveis",
