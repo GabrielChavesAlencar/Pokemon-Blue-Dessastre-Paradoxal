@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "87cb0fe724875860dc7379dd17ffef569d5ff1fb",
+      "date": "2026-11-16T00:29:23-03:00",
+      "title": "fix(johto): clearly report missing real HGSS tiles instead of promising graphics were installed",
+      "category": "Correções"
+    },
+    {
+      "sha": "8faab836416649fbbd730667e631b77eb7b92035",
+      "date": "2026-11-16T00:29:09-03:00",
+      "title": "feat(johto): report which HGSS indoor map upgrades actually have licensed local sources",
+      "category": "Novidades"
+    },
+    {
       "sha": "812fa213626c9fe8488713dc6a74019b633b4d4c",
       "date": "2026-11-16T00:28:26-03:00",
       "title": "test(johto): end-to-end private HGSS updater preserves Kanto, Hoenn and saves with rollback",
