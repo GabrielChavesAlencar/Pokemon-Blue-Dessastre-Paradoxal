@@ -124,5 +124,99 @@ class JohtoHgssAssetsTests(unittest.TestCase):
         self.assertIsNone(map_kind(702))
 
 
+
+
+class ExistingGamePrivateHgssTests(JohtoHgssAssetsTests):
+    """The actual incremental updater must not edit other regions or saves."""
+
+    def setUp(self):
+        super().setUp()
+        import johto_main_preview as preview
+        from build_johto_events import EVENT_CLASSES
+        self.preview = preview
+        self.game = self.root / "game"
+        for name in ("Data", "Saves", "PBS", "Graphics/Tilesets", preview.PLUGIN):
+            (self.game / name).mkdir(parents=True, exist_ok=True)
+        self.write("Game.exe", b"the unchanged user executable")
+        self.write("Saves/File A.rxdata", b"the unchanged user save")
+        self.write("Data/Map410.rxdata", b"the unchanged Kanto map")
+        self.write("Data/Map702.rxdata", b"the unchanged Hoenn map")
+        self.write("Graphics/Tilesets/Inside.png", self.inside)
+        self.write("Data/Tilesets.rxdata", serialize(self.tilesets))
+        self.write("Data/MapInfos.rxdata", b"the original regional registry")
+        self.write("PBS/map_connections.txt", b"the original region connections")
+        self.write("PBS/map_metadata_johto_main.txt", b"Johto metadata")
+        self.write(preview.PLUGIN + "/Boot.rb", b"original boot")
+        names = ["Data/Tilesets.rxdata", "Data/MapInfos.rxdata",
+                 "PBS/map_connections.txt","PBS/map_metadata_johto_main.txt",
+                 preview.PLUGIN + "/Boot.rb"]
+        for mid in sorted(preview.PREVIEW_IDS):
+            name = f"Data/Map{mid:03}.rxdata"
+            if mid in INTERIORS:
+                self.write(name, serialize(map_fixture(mid), EVENT_CLASSES))
+            else:
+                self.write(name, ("unchanged Johto map " + str(mid)).encode())
+            names.append(name)
+        self.write(preview.READY, (
+            "BLUE_JOHTO_PRIVATE_PREVIEW_V1,100," +
+            ",".join(map(str, (*preview.START, *preview.TOWN[:3], *preview.NPC[:3]))) +
+            "\n").encode("ascii"))
+        proof = {
+            "schema":1, "region":"JOHTO","status":preview.STATUS,
+            "source_bundle_sha256":preview.PINNED_SHA,
+            "map_ids":sorted(preview.PREVIEW_IDS), "start":list(preview.START),
+            "town":list(preview.TOWN), "npc":list(preview.NPC),
+            "private_hgss":{"status":"no_private_art","maps":[]},
+            "file_hashes": {name:preview.sha((self.game/name).read_bytes())
+                            for name in names}
+        }
+        self.write(preview.PROOF,preview.raw_json(proof))
+
+    def write(self, name, blob):
+        path = self.game / name
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(blob)
+
+    def test_original_maps_and_save_survive_upgrade_and_reinstall_is_noop(self):
+        protected = ["Game.exe","Saves/File A.rxdata","Data/Map410.rxdata",
+                     "Data/Map702.rxdata","Data/MapInfos.rxdata",
+                     "PBS/map_connections.txt","Data/Map600.rxdata"]
+        before = {x:(self.game/x).read_bytes() for x in protected}
+        self.assertIsNotNone(self.preview.preview_proof(self.game))
+        result = self.preview.refresh_installed_private_hgss(self.game,self.root)
+        self.assertTrue(result["changed"])
+        self.assertEqual(result["maps"],[674,681])
+        self.assertTrue(self.preview.preview_proof(self.game)["private_hgss"]
+                        ["status"] == "private_art_compiled")
+        for path in protected:
+            self.assertEqual((self.game/path).read_bytes(), before[path])
+        self.assertEqual(self.preview.refresh_installed_private_hgss(self.game,self.root)
+                         ["changed"],False)
+
+    def test_mid_commit_error_rolls_back_all_art_and_maps(self):
+        from unittest.mock import patch
+        before = {name:(self.game/name).read_bytes() for name in
+                  ["Data/Map674.rxdata","Data/Map681.rxdata",
+                   "Data/Tilesets.rxdata", self.preview.PROOF,
+                   "Saves/File A.rxdata"]}
+        original = self.preview.os.replace
+        count = 0
+
+        def fail_on_third(source,destination):
+            nonlocal count
+            count += 1
+            if count == 3:
+                raise OSError("HGSS simulated interrupted write")
+            return original(source,destination)
+
+        with patch.object(self.preview.os,"replace",side_effect=fail_on_third):
+            with self.assertRaisesRegex(OSError,"interrupted"):
+                self.preview.refresh_installed_private_hgss(self.game,self.root)
+        for name, data in before.items():
+            self.assertEqual((self.game/name).read_bytes(),data)
+        self.assertIsNotNone(self.preview.preview_proof(self.game))
+        self.assertFalse(list((self.game/"Graphics/Tilesets").glob("BLUE_JOHTO_HGSS_PRIVATE_*")))
+
+
 if __name__ == "__main__":
     unittest.main()
