@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "95f6cf56b7fe051bc71614e0392f79d68d19e798",
+      "date": "2026-11-15T22:07:08-03:00",
+      "title": "feat(blue-story): auto-detect private Johto package in Downloads and audit current region baseline",
+      "category": "Novidades"
+    },
+    {
       "sha": "7f95b1186d9e03e124b288d15dfbebd6025d910c",
       "date": "2026-11-15T21:59:39-03:00",
       "title": "docs(johto): document safe Decades integration gate and remaining native work",
