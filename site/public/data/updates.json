@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1b781ec5eb402f451a3c8970e5459dba7b4035c8",
+      "date": "2026-11-16T10:02:58-03:00",
+      "title": "fix(johto): semantically recognize manually edited Map674/675 without trusting stale install hashes or replacing maps",
+      "category": "Correções"
+    },
+    {
       "sha": "cae3e6a910b4af6afc7e69bfb99971c28112e722",
       "date": "2026-11-16T09:50:24-03:00",
       "title": "docs(blue-story): automatic Johto Map Studio download, adjacent EXE folder, managed fallback and update behavior",
