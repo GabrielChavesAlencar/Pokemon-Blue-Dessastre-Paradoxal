@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d69a360fb7bc9a0c27235baf45790368c4b351b3",
+      "date": "2026-11-16T13:43:08-03:00",
+      "title": "test(sinnoh): validar barra E, backlog CH e gates no CI (CH02)",
+      "category": "Testes"
+    },
+    {
       "sha": "2b28cd22796b65ee0c31cd9152800d43ced28f39",
       "date": "2026-11-16T13:37:18-03:00",
       "title": "docs(sinnoh): mostrar barra E de tarefas executaveis direto pelo chat",
