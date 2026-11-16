@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e45096d8da9443584d164909aefecc4f449ad115",
+      "date": "2026-11-16T08:35:17-03:00",
+      "title": "fix(johto): diagnostic distinguishes absent/partial Johto maps from bedroom layout repair and returns dedicated exit code",
+      "category": "Correções"
+    },
+    {
       "sha": "d4f59416378268f562ed929b1ba66d399841b188",
       "date": "2026-11-16T08:34:45-03:00",
       "title": "test(johto): repeated diagnostic export preserves old ZIP and works when all region maps are absent",
