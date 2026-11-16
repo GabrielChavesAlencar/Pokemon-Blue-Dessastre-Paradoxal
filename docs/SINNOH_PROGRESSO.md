@@ -8,25 +8,23 @@
 ## Barra E — novas entregas diretas pelo ChatGPT na main
 
 ```text
-████████████░░░░░░░░  12/20 (60%)
+█████████████░░░░░░░  13/20 (65%)
 ```
 
-- **Concluídas:** 12 (**CH01–CH12**, incluindo contratos e execução integrada das regras de balanceamento/evolução de Sinnoh).
+- **Concluídas:** 13 (**CH01–CH13**, incluindo o catálogo simbólico de encontros selvagens sem MapIDs).
 - **Parciais:** 0.
-- **Pendentes:** 8 (**CH13–CH20**).
+- **Pendentes:** 7 (**CH14–CH20**).
 - **Fonte de verdade:** `chat_direct_workstream` em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 - **Mapeamento:** [SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md](SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md).
-- **CH02:** validador entre JSON, Barra E e backlog, executado no CI.
-- **CH03–CH05:** guardas contra colisões de mapas/plugins de Sinnoh no Decades e manifesto de reservas/ocupação desconhecida.
-- **CH06–CH07:** schema de Twinleaf e guardas para eventos, flags, iniciais e save isolado.
-- **CH08:** três equipes de Barry, condições de PBS e regra Blue Normal 70% / Master 90%.
-- **CH09:** integração E2E sintética auditoria → remapeamento → geometria → overlay → bundle, com hash e rollback.
-- **CH10:** lançador e pré-voo da cópia QA isolada com bloqueio de assets e saves incompatíveis.
-- **CH11:** oito insígnias/HMs de Platinum com conquistas e comprovação de obtenção locais, isolando Bolsa/PC.
-- **CH12:** [contrato Sinnoh de escala e evolução](../data/regions/sinnoh-trainer-evolution-contract.json) e [auditor read-only](../scripts/regions/audit_sinnoh_trainer_evolution.py) conferem as regras **já existentes** em `Campaign.rb`, `Story.rb` e `EvolutionScaling.rb` (sem duplicar ou alterar o balanceamento compartilhado). [15 testes Python negativos](../tests/test_sinnoh_trainer_evolution_ch12.py) recusam level cap regional inexistente, 70/90 alterado, BST tomado por cap de nível, limiares 5/30/40/45 adulterados, dados de família/ramificações e aprovação jogável fictícia. [Teste Ruby integrado](../tests/sinnoh_evolution_ch12_runtime.rb) executa a cadeia compartilhada de `Battle.initialize` com famílias de Turtwig, Chimchar, Piplup, Roselia, Graveler e Riolu **sintéticas**; verifica escala, estágio Master com 11 esmeraldas totais, evolução após escala, time 4 no Master, chefes imutáveis, dia/noite, ovo, nível máximo, encontros e preservação dos dados PBS. A [execução CI 43968704804](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43968704804) confirmou sucesso da etapa CH12. [Documentação detalhada](SINNOH_CH12_BALANCEAMENTO_EVOLUCAO.md).
-- **Critério:** somente `done` com evidências e CI isolado aprovados entra na Barra E.
+- **CH02–CH05:** consistência de progresso e proteção contra colisões de MapIDs/plugins legados.
+- **CH06–CH07:** schema, auditoria e guards de Twinleaf, iniciais, flags e saves.
+- **CH08–CH09:** três versões de Barry e suíte E2E sintética de conversão/staging/bundle.
+- **CH10–CH11:** pré-voo QA seguro, insígnias/HMs regionais isolados.
+- **CH12:** regras reais de `Campaign.rb`, `Story.rb`, `EvolutionScaling.rb` com 70%/90%, BST e evoluções de nível/pedra/troca/felicidade; sem inventar level cap numérico regional.
+- **CH13:** [catálogo Sinnoh de habitats simbólicos](../data/regions/sinnoh-symbolic-encounters.json) contém **21 áreas revisadas**, **50 menções de espécies candidatas**, terreno e métodos **a auditar**, janelas manhã/dia/noite **a auditar** e regras de progressão já definidas em `BlueEvolutionScaling`. Os locais **Mt. Coronet, Route 212 e Old Chateau** permanecem sem símbolo inequívoco de mapa. Os encontros especiais **Drifloon semanal e Rotom roteirizado** não são slots normais. Nenhum MapID, taxa, nível de encontro, slot ou dado de PBS real foi inserido. [Auditor CH13](../scripts/regions/audit_sinnoh_symbolic_encounters.py) cruza os 21 registros com os [habitats de referência](../data/regions/detonados-content-review.json), [inventário de áreas](../data/regions/sinnoh-coverage.json), métodos PBS e `Habitat.rb` reais, além dos limiares de evolução dinâmica. [20 testes negativos e positivos](../tests/test_sinnoh_symbolic_encounters_ch13.py) e **286 testes Python isolados de Sinnoh** passaram no [CI 43970908799](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43970908799). [Documentação](SINNOH_CH13_ENCONTROS_SIMBOLICOS.md).
+- **Critério:** só tarefas com evidência publicada e CI aprovado entram como `done` na Barra E.
 
-**Limites:** o Blue ainda **não possui um level cap regional numérico por insígnias persistido no save**; a referência corrente é o maior nível não-ovo do jogador limitada por `GameData::GrowthRate.max_level`. Os tetos 350/450/540 são **BST**, e não níveis. Sinnoh continua planejada; sem equipes de treinadores reais compiladas, mapas ou Game.exe/JoiPlay. **Barra A 8/32 (25%)**, barras **B/C/D 0/13**, inalteradas.
+**Limites:** o catálogo é uma lista de **referências, não encontros instalados**, e a relação espécie↔horário↔método depende do PBS/mapa nativo. No Blue não há level cap numérico regional persistido; a progressão de evolução usa o maior nível não-ovo da equipe, limitado ao máximo do motor. **Barra A 8/32 (25%) e B/C/D 0/13 permanecem inalteradas.** Não foram executados Game.exe ou JoiPlay.
 
 ## Barra A — desenvolvimento aqui no GitHub
 

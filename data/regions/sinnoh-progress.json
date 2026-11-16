@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 12,
+    "done": 13,
     "partial": 0,
-    "pending": 8,
-    "percent_complete": 60,
+    "pending": 7,
+    "percent_complete": 65,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -903,8 +903,8 @@
         "priority": "P2",
         "title": "Catálogo **simbólico** de encontros por rota/terreno/horário/cap",
         "acceptance": "Registros identificados como planned, consistência de espécie e método, sem afirmar encontros instalados",
-        "status": "pending",
-        "evidence_path": null
+        "status": "done",
+        "evidence_path": "scripts/regions/audit_sinnoh_symbolic_encounters.py"
       },
       {
         "id": "CH14",
