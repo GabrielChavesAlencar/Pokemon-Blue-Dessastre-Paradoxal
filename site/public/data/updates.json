@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "247c9e02864018d485452f34cf9ac3b75688cc0f",
+      "date": "2026-11-15T23:59:32-03:00",
+      "title": "test(johto): verify HGSS bedroom tiles, both stair warps, hash-safe updater and rollback",
+      "category": "Testes"
+    },
+    {
       "sha": "9c2a90a88ad5fa82bdc9feab56a34c78584431b6",
       "date": "2026-11-15T23:58:04-03:00",
       "title": "fix(johto): record HGSS room layout for fresh 100-map preview installs",
