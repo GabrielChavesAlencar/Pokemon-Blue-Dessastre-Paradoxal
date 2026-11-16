@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "76a16368ff2403deeb2f6b6d9770ef78de99c5ef",
+      "date": "2026-11-15T22:28:16-03:00",
+      "title": "feat(blue-story): automatically integrate private experimental Johto preview into shared main game with safe backup",
+      "category": "Novidades"
+    },
+    {
       "sha": "c8d7de32c12a2bc40caaf1d3538e01878f57e969",
       "date": "2026-11-15T22:27:34-03:00",
       "title": "feat(johto): gate shared 100-map early-access Johto start independent from 13-point release proof",
