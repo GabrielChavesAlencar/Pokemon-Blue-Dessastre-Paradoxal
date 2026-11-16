@@ -58,6 +58,16 @@ Os navegadores podem renomear o ZIP como `... (1).zip`; o instalador passou a pr
 
 **Testes efetivamente executados:** workflow dedicado de Ruby com aliases de Compiler carregados depois de Johto (sem recursão), teste Python de correção e rollback com manifesto de 100 mapas, além de aplicação real da atualização de Boot em uma **cópia de teste com os 100 mapas instalados**. O manifest/hash foi revalidado e uma segunda execução não alterou arquivos. Comparação de SHA antes/depois mostrou mapas Johto, `MapInfos.rxdata`, `Tilesets.rxdata`, `PBS/map_connections.txt` e o save de teste preservados. **A execução de Game.exe no Windows do usuário não foi realizada**; nenhum teste de gameplay completo é alegado.
 
+## Redesign do quarto do jogador — referência HeartGold/SoulSilver
+
+O quarto **Map674** no jogo principal foi reorganizado usando os sprites e tiles nativos do pacote Johto já instalado; **não** é uma imagem gerada. Em comparação ao desenho anterior, a escada visual passou do canto inferior direito para o lado esquerdo, acompanhada por um pequeno tapete; a cama ficou embaixo à esquerda, o tapete azul no centro, escrivaninha/computador e TV na parede superior e planta no lado direito.
+
+O redesign está em `scripts/regions/johto_visual.py:style_bedroom_hgss` e é aplicado automaticamente a novas instalações experimentais de Johto pelo `johto_main_preview.py`. O MapID permanece **674**, as dimensões **14×11** e o spawn **(6,7)**. O evento original `JH_NEW_GAME_PROFILE` não é removido. A escada real `JH_HOME2F_TO_1F` passa para **(4,4)**; o evento inverso do térreo `JH_HOME1F_TO_2F` preserva o mesmo ID e volta a **(4,5)**. Os outros eventos do mapa são preservados.
+
+**Para quem já instalou Johto:** fechar o `Game.exe` e executar o mesmo `Blue-Story.exe` com internet. O instalador detecta o manifesto de Johto, atualiza apenas `game/Data/Map674.rxdata`, `game/Data/Map675.rxdata` e `game/Data/blue-johto-main-preview.json`, após revalidar os hashes anteriores. O backup é criado em `.blue-backups/johto-bedroom-hgss-...`. Na segunda atualização o procedimento é idempotente e não precisa do ZIP privado novamente. Não alterar o `Data/MapInfos.rxdata`, `Data/Tilesets.rxdata`, mapas de Kanto/Hoenn, salvamentos ou arquivos executáveis. Se mapas tiverem sido editados por outro editor fora do manifesto, o instalador não deve sobrescrevê-los silenciosamente.
+
+**Teste realizado:** no workflow `johto-local-integration-fixture.yml`, os testes Python confirmam os tiles, os dois sentidos de transferência, a manutenção do spawn/evento de perfil, os hashes, o comportamento idempotente e o rollback. **Teste visual e de colisões dentro do Game.exe ainda é necessário**: abrir Johto, conferir escada à esquerda, descer/subir, salvar/recarregar e observar a passagem em tiles de entrada. Não marcar a campanha completa como jogável com base apenas nesses testes.
+
 ## Limites conhecidos e testes pendentes
 
 Esta implementação é **prévia de desenvolvimento**, não um Johto completo e certificado: o OFFLINE12 ainda tinha mapas e eventos sem validação nativa, e a adaptação das casas adicionais foi reduzida ao intervalo 682–699 para não invadir os IDs 700–999 de Hoenn. Outras cidades, interiores, missões, Liga, sprites, passabilidade e viagens exigem testes reais. Áudio HGSS opcional não é publicado nem exigido pela instalação.
