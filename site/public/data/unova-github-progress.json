@@ -141,8 +141,9 @@
         {
           "id": "G04.2",
           "title": "Definir esquema de encontros por área e método",
-          "status": "pending",
-          "acceptance": "Grama, água, pesca, cavernas, horário, variante e temporada"
+          "status": "done",
+          "acceptance": "Grama, água, pesca, cavernas, horário, variante e temporada",
+          "evidence": "scripts/regions/audit_unova_g04_encounter_methods.py"
         },
         {
           "id": "G04.3",
