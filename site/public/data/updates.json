@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "21ccfd6b15e27eb287202abe67b19a82c7dd2cbb",
+      "date": "2026-11-17T07:15:25-03:00",
+      "title": "feat(unova): validador do catálogo simbólico sem MapIDs fictícios",
+      "category": "Novidades"
+    },
+    {
       "sha": "1f2b0b3a6835d2c766766c0e83657c24308fc86c",
       "date": "2026-11-17T07:15:04-03:00",
       "title": "feat(unova): auditor ZIP U02 read-only com bloqueios de segurança e sem instalação",
