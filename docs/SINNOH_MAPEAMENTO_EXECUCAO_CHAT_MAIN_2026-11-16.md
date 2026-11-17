@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 22/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 23/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -216,7 +216,15 @@ O [adaptador Ruby S21](../scripts/regions/SinnohLeagueContracts.rb) preserva as 
 
 O [contrato S21](../data/regions/sinnoh-league-s21.json) continua *reference_only*, com `VERIFIED_NATIVE_SOURCES` vazio, nenhum MapID ou PBS compilado, e oito checkpoints sem evento instalado. O [auditor](../scripts/regions/audit_sinnoh_s21_league.py) compara CH11, CH14, CH15, cobertura da fase 9 e o detonado S42/S43; [16 testes negativos](../tests/test_sinnoh_s21_league.py) e [testes Ruby de progresso/save](../tests/sinnoh_s21_league_runtime.rb) só usam fixtures sintéticas.
 
-[Critérios de aceite e limitações](SINNOH_S21_ELITE_CYNTHIA_HALL_OF_FAME_ACEITE.md): **Barra A 22/32 (68%)**, 5 parciais e 5 pendentes, E 20/20, B/C/D 0/13. Os 44 casos nativos, salas, combates, Hall e save real no Game.exe/JoiPlay seguem **não realizados**. A S22 (viagem Hoenn/Unova) ainda está pendente.
+[Critérios de aceite e limitações](SINNOH_S21_ELITE_CYNTHIA_HALL_OF_FAME_ACEITE.md): **Barra A 22/32 (68%)**, 5 parciais e 5 pendentes, E 20/20, B/C/D 0/13. Os 44 casos nativos, salas, combates, Hall e save real no Game.exe/JoiPlay seguem **não realizados**. A S22 possui o pré-voo e testes offline, porém não instala a viagem física para Hoenn/Unova.
+
+### S22 — Pré-verificação de viagens Sinnoh → Hoenn/Unova, sem mapas novos
+
+O [contrato S22](../data/regions/sinnoh-travel-s22.json) é implementado em [`SinnohTravelContracts.rb`](../scripts/regions/SinnohTravelContracts.rb) e usa o CH14 (Hall confirmado) e as verificações reais de `BlueRegionTravel` sem autorizar viagem: o registro nativo de partida é **vazio**. Hoenn pode ter chegada auditada por instalação independente, mas **Sinnoh não possui mapa/NPC de saída**; Unova não tem ponto de chegada real. O circuito global de viagens livres existente **não depende de Hall** e não foi alterado.
+
+O [runner Ruby S22](../tests/sinnoh_s22_travel_runtime.rb) testa `RegionTravel.stage_local_bag` com bolsa/PC falsos: separa HMs e itens-chave de origem/destino, preserva itens comuns, reverte corretamente ao regressar a Sinnoh e rejeita dados de inventário inválidos sem tocar no objeto real da prévia. O [auditor Python](../scripts/regions/audit_sinnoh_s22_travel.py) e [16 testes negativos](../tests/test_sinnoh_s22_travel.py) bloqueiam chegada fictícia de Unova, MapIDs de Sinnoh não instalados, Hall falso e permissões de NPC fabricadas. [Aceite S22](SINNOH_S22_VIAGENS_HOENN_UNOVA_ACEITE.md).
+
+**Barra A 23/32 (71%)**, 5 parciais, 4 pendentes, E 20/20, B/C/D 0/13. Faltam instalação física, save/teleporte nativo e 44 verificações reais; **S23 pós-jogo e revanches continua pendente.**
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
