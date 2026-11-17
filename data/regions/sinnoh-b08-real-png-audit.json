@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "B08",
+  "status": "REAL_DONOR_14_PNG_STRUCTURAL_CRC_VERIFIED_STAGE_RUNTIME_PENDING",
+  "date": "2026-11-17",
+  "source_donor_zip_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+  "source_tile_ids": [
+    1,
+    31
+  ],
+  "asset_count": 14,
+  "total_png_bytes": 3808519,
+  "assets": [
+    {
+      "path": "Graphics/Autotiles/Flowers1.png",
+      "bytes": 416,
+      "sha256": "340e8900d0e5f55f75f8700847b24cb04e6326ae9d404a52f54301def1eae865",
+      "width": 160,
+      "height": 32,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Lava.png",
+      "bytes": 10085,
+      "sha256": "7d1e0b9555aa361a29b8c0348736ce4c09f4671528f63c8f2c30caae9c4c9f14",
+      "width": 768,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Sand shore.png",
+      "bytes": 3901,
+      "sha256": "03b65c504705817c4469b077e68c272e70817d46d9fcc47118433c02eb04463e",
+      "width": 768,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Sea deep.png",
+      "bytes": 9948,
+      "sha256": "1fcf2da58f06c5d87fd6994ecdb38ea8bd24121c2cc7df6d7d66bee04189a094",
+      "width": 768,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Sea without shore.png",
+      "bytes": 2426,
+      "sha256": "ba392806eda788ba351217bab4d2eb8b2e4352ad735167984d7ac95ded5922b9",
+      "width": 768,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Sea2.png",
+      "bytes": 9554,
+      "sha256": "4f0459362687558f677978d1b2041697a98446d8b9ac86ff5a5a4a86f10612ec",
+      "width": 768,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Shallow Water.png",
+      "bytes": 42625,
+      "sha256": "4fbfc645418787ebf96dceb793dccc9468a3e08932b327aea514827bc43c248f",
+      "width": 1536,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Shore.png",
+      "bytes": 23816,
+      "sha256": "ac2e2785a20277bdb9d4eb47f76d7d78589e66e9f1935ac4b2128fccf704e602",
+      "width": 1536,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Water rock.png",
+      "bytes": 3301,
+      "sha256": "b9b5fa157001661f7e0b43eb5fc270950892c0ca85e2746070aa9858d6e37975",
+      "width": 768,
+      "height": 128,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Waterfall bottom.png",
+      "bytes": 155,
+      "sha256": "570455dbac538b9c79591331b4e2e9a55dcfd2f404592a3b269a7cd145e1ea1c",
+      "width": 128,
+      "height": 32,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Waterfall crest.png",
+      "bytes": 211,
+      "sha256": "8ba1b25b40f58d8d161e2ec3113bc6d343f686a07a3a9752aad4aee923fe6602",
+      "width": 128,
+      "height": 32,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Autotiles/Waterfall.png",
+      "bytes": 273,
+      "sha256": "ed1217874ef18ca962119891a1128d3ecb994df5d0822c89d46dba19784a5e61",
+      "width": 128,
+      "height": 32,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Tilesets/OutsideWorld2.7.png",
+      "bytes": 1530821,
+      "sha256": "49602ad31848919a0fec2386ad17090e2bbc63053e581db60ba4fd64dc1393f1",
+      "width": 256,
+      "height": 50000,
+      "crc_valid": true
+    },
+    {
+      "path": "Graphics/Tilesets/SinnohCompleteTileset.png",
+      "bytes": 2170987,
+      "sha256": "722b4f35110356d09c5e581cc285f129b768b2d824b0ca5f46bd3d03027ad704",
+      "width": 256,
+      "height": 70000,
+      "crc_valid": true
+    }
+  ],
+  "no_png_bytes_committed_to_github": true,
+  "rights_for_redistribution_verified": false,
+  "native_rendering_compatibility_confirmed": false,
+  "native_b07_stage_received_from_user": false,
+  "qa_overlay_generated_on_users_windows": false,
+  "live_game_exe_or_joiplay_tested": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "note": "Donor original PNGs inspected read-only for IHDR, IDAT, IEND, CRC-32. This does not prove runtime support for tall images, license or stage execution."
+}
