@@ -93,7 +93,7 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None,
         seen.add(earlier)
         if not _patchable_immutables(previous.get("immutable", {}), current.get("immutable", {})):
             continue
-        old, new = _old_patch_files(previous), current["files"]
+        old, new = _old_patch_files(previous, current["files"]), current["files"]
         changed = {name: meta for name, meta in new.items() if old.get(name) != meta}
         removed = sorted(set(old) - set(new))
         previous_entries.append((earlier, changed, removed))
