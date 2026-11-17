@@ -8,7 +8,6 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
-import shutil
 import stat
 import sys
 import tempfile
@@ -381,10 +380,10 @@ def apply_patch(root, installed, manifest, patch_file):
 
 
 def _save_file(relative):
-    """Keep local save files when replacing the whole installation.
+    """Detect saves that must never be modified by any update mode.
 
-    JoiPlay may also store saves outside the game directory; those are untouched.
-    Any unrecognized user files remain in the backed-up old installation.
+    In-place updates preserve all save files and untracked user files.
+    Saves held outside the game by JoiPlay are untouched as well.
     """
     parts = relative.parts
     if not parts or any(p.startswith(".blue-") for p in parts):
