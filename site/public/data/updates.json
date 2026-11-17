@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "56767990204d53b0d5f67e8650ada14f5e08e804",
+      "date": "2026-11-17T20:52:06-03:00",
+      "title": "Unova G06.3 — busca, filtros e acessibilidade (27/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "3077174d2c49f025ddd4b90447f98bf9992d0458",
       "date": "2026-11-17T20:41:50-03:00",
       "title": "feat(sinnoh): L01 optional offline sanitized exporter for B09 B10 B11 R07 R08 (#170)",
