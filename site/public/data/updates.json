@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1d0dce1bffa15d8452f312097c095b3447d7412c",
+      "date": "2026-11-17T08:31:19-03:00",
+      "title": "data(unova): matriz E06 de direitos e catalogos E07 de musicas e treinadores pendentes",
+      "category": "Novidades"
+    },
+    {
       "sha": "ad6f9e8517bbcf76a6fbe5e867d4f7413cf06e26",
       "date": "2026-11-17T08:30:27-03:00",
       "title": "feat(unova): leitura inerte RXDATA de nomes, eventos e transferencias, sem instalar mapas",
