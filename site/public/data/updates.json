@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4b5d492bc73a8da4758178cc4504528439e25ade",
+      "date": "2026-11-17T08:36:25-03:00",
+      "title": "fix(unova): bloquear symlinks ancestrais e sobrescrita dos relatorios RXDATA",
+      "category": "Novidades"
+    },
+    {
       "sha": "83dbd0737f1d971d9a54d9af1e05a9c67edfcf5b",
       "date": "2026-11-17T08:35:43-03:00",
       "title": "test(unova): progresso E08 deve permanecer bloqueado sem prova nativa",
