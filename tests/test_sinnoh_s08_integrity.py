@@ -10,6 +10,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts/regions"))
@@ -31,8 +32,7 @@ class S08IntegrityTests(unittest.TestCase):
         self.game, self.overlay, spec = fixture(self.root)
         self.spec = self.root / ".blue-work/sinnoh-qa-spec.json"
         self.spec.write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
-        self.qa = self.root / ".blue-work/game-sinnoh-qa-" + PROFILE if False else (
-            self.root / ".blue-work" / ("game-sinnoh-qa-" + PROFILE))
+        self.qa = self.root / ".blue-work" / ("game-sinnoh-qa-" + PROFILE)
 
     def hashes(self):
         return {f.relative_to(self.game).as_posix(): hashlib.sha256(f.read_bytes()).hexdigest()
@@ -170,7 +170,7 @@ class S08IntegrityTests(unittest.TestCase):
     def test_13_cli_incomplete_input_fails_closed(self):
         stream=io.StringIO()
         with contextlib.redirect_stderr(stream):
-            with unittest.mock.patch.object(sys,"argv",["s08","--overlay",str(self.overlay),
+            with patch.object(sys,"argv",["s08","--overlay",str(self.overlay),
                               "--project",str(self.root)]):
                 self.assertEqual(s08.main(),2)
         self.assertIn("SINNOH_S08_BLOQUEADO",stream.getvalue())
@@ -178,7 +178,7 @@ class S08IntegrityTests(unittest.TestCase):
     def test_14_cli_private_overlay_prints_nonplayable_report(self):
         stream=io.StringIO()
         with contextlib.redirect_stdout(stream):
-            with unittest.mock.patch.object(sys,"argv",["s08","--overlay",str(self.overlay),
+            with patch.object(sys,"argv",["s08","--overlay",str(self.overlay),
                  "--spec",str(self.spec),"--project",str(self.root)]):
                 self.assertEqual(s08.main(),0)
         result=json.loads(stream.getvalue())
