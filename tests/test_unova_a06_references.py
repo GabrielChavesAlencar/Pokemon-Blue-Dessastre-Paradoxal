@@ -40,7 +40,7 @@ def _tiny_ruby_marshal(v):
             return (b"o" + sym(x.name) + integer(len(x.attrs))
                     + b"".join(sym(key)+raw(val) for key,val in x.attrs.items()))
         raise TypeError(type(x).__name__)
-    return b"\\x04\\x08" + raw(v)
+    return b"\x04\x08" + raw(v)
 
 
 def mapblob(commands):
