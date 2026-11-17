@@ -406,9 +406,9 @@ def run(root: Path = ROOT) -> dict:
 
 
 def main(argv=None) -> int:
-    if argv not in (None, []):
-        blocked("G07 nao aceita caminhos ou arquivos privados como entrada")
     try:
+        if argv not in (None, []):
+            blocked("G07 nao aceita caminhos ou arquivos privados como entrada")
         print(json.dumps(run(), ensure_ascii=False, indent=2))
         return 0
     except (OSError, UnicodeError, ValueError, KeyError, TypeError):
