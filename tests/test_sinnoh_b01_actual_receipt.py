@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 RECEIPT=ROOT/"data/regions/sinnoh-b01-actual-native.json"
 SOURCE=ROOT/"data/regions/sinnoh-b00-actual-source.json"
-SHA=re.compile(r"[0-9a-f]{64}\\Z")
+SHA=re.compile(r"[0-9a-f]{64}\Z")
 
 class RealB01ReceiptTest(unittest.TestCase):
     @classmethod
