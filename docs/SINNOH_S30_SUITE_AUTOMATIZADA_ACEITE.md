@@ -22,8 +22,19 @@ cd site && npm run build && npm test
 
 O manifesto é propositalmente `ready_for_ci_not_native_verified`. **Só os resultados reais dos cinco jobs no GitHub Actions** permitem registrar S30 como `done`; o manifesto sozinho não é um certificado de testes executados.
 
+## Evidências da execução real de CI
+
+- [Sinnoh S30 — workflow 43989855764](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43989855764): **conclusão `success`, 5/5 jobs aprovados**.
+- **Manifesto:** 11/11 testes de segurança da S30 passaram; os relatórios JSON e Markdown foram publicados como [artefato](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43989855764/artifacts/14287281006), sempre com `ready_for_ci_not_native_verified`.
+- **Python:** 7 verificações CH19 aprovaram, incluindo descoberta `test_sinnoh_*.py`, contadores e auditorias; [relatório](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43989855764/artifacts/14287625598).
+- **Ruby:** 22/22 verificações de sintaxe/fixtures aprovadas; [relatório](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43989855764/artifacts/14286329619).
+- **Portal:** build e **151/151 testes** aprovados, sem tratar referência planejada como gameplay.
+- **Android estático:** **18/18 testes CH20 e 12/12 testes do auditor de evidências** aprovados; relatório [JSON](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43989855764/artifacts/14286962388) com **44/44 casos pendentes**, `Game.exe=false` e `JoiPlay=false`.
+- O workflow Blue Studio e outros jobs de regiões são independentes; **aprovar esta suíte não declara a pipeline geral verde**.
+- Todas as evidências são **offline/fixtures** e não substituem testes no Windows/Android.
+
 ## Aceite e barras
 
-Após os cinco jobs serem verificados em uma execução real de CI e o PR integrado à `main`, a **S30** fica concluída em seu escopo offline: **Barra A 11/32 (34%)**, 6 etapas parciais, 15 pendentes. A Barra E permanece **20/20 (100%)** e B/C/D **0/13**.
+Os cinco jobs foram verificados com sucesso na execução indicada acima; após a integração do PR na `main`, a **S30** fica concluída em seu escopo offline: **Barra A 11/32 (34%)**, 6 etapas parciais, 15 pendentes. A Barra E permanece **20/20 (100%)** e B/C/D **0/13**.
 
 **Fora do escopo desta S30:** mapa real, Game.exe, JoiPlay, compilar PBS nativo, saves, áudio, colisões, batalhas e observações dos 44 testes nativos. A aceitação Windows/Android continua na **S31**, com bloqueios de fonte autorizada, IDs e QA real.
