@@ -1,0 +1,94 @@
+name: Sinnoh G09 - ginasios HMs Liga e pos-jogo
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g09-progression.yml'
+      - 'scripts/regions/audit_sinnoh_g09_progression.py'
+      - 'scripts/regions/audit_sinnoh_s15_gyms.py'
+      - 'scripts/regions/audit_sinnoh_s16_hms.py'
+      - 'scripts/regions/audit_sinnoh_s21_league.py'
+      - 'scripts/regions/audit_sinnoh_s23_postgame.py'
+      - 'tests/test_sinnoh_g09_progression.py'
+      - 'data/regions/sinnoh-*.json'
+      - 'scripts/battle_polish/**'
+      - 'scripts/regions/Sinnoh*Contracts.rb'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g09-progression.yml'
+      - 'scripts/regions/audit_sinnoh_g09_progression.py'
+      - 'scripts/regions/audit_sinnoh_s15_gyms.py'
+      - 'scripts/regions/audit_sinnoh_s16_hms.py'
+      - 'scripts/regions/audit_sinnoh_s21_league.py'
+      - 'scripts/regions/audit_sinnoh_s23_postgame.py'
+      - 'tests/test_sinnoh_g09_progression.py'
+      - 'data/regions/sinnoh-*.json'
+      - 'scripts/battle_polish/**'
+      - 'scripts/regions/Sinnoh*Contracts.rb'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: G09 / 20 testes Python e matriz de gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regressao cruzada e fail-closed
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g09_progression.py' -v
+      - name: Verificar auditores de origem S15 S16 S21 S23
+        run: |
+          python scripts/regions/audit_sinnoh_s15_gyms.py > /dev/null
+          python scripts/regions/audit_sinnoh_s16_hms.py > /dev/null
+          python scripts/regions/audit_sinnoh_s21_league.py > /dev/null
+          python scripts/regions/audit_sinnoh_s23_postgame.py > /dev/null
+      - name: Publicar somente matriz de metadados sem salvar game nem saves
+        run: |
+          mkdir -p .blue-work/sinnoh-g09
+          python scripts/regions/audit_sinnoh_g09_progression.py > .blue-work/sinnoh-g09/progression.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path(".blue-work/sinnoh-g09/progression.json").read_text(encoding="utf-8"))
+          assert r["status"]=="CROSS_STAGE_PROGRESSION_AUDITED_OFFLINE_NATIVE_GATES_PENDING"
+          assert r["counts"]["gyms"]==8
+          assert r["counts"]["local_hm_pickup_gates"]==8
+          assert r["counts"]["league_checkpoints"]==8
+          assert r["counts"]["optional_postgame_gates"]==6
+          assert r["badge_vs_hm_order"]["mapping_by_badge_not_array_position"]
+          assert r["badge_vs_hm_order"]["narrative_gym_badge_order"][2:4]==["RELIC","COBBLE"]
+          assert r["badge_vs_hm_order"]["registry_and_hm_catalog_badge_order"][2:4]==["COBBLE","RELIC"]
+          assert r["league_progression"][-1]["outcome"]=="engine_hall_of_fame_confirmed"
+          assert all(not x["native_quest_installed"] for x in r["postgame_gates"])
+          assert not r["safety"]["gameplay_approved"] and not r["safety"]["ready_to_install"]
+          assert r["phase_b_approved"]==r["phase_c_approved"]==r["phase_d_approved"]==0
+          print("SINNOH_G09_OFFLINE_CROSS_STAGE_NO_NATIVE_APPROVAL")
+          PY
+      - name: Arquivar somente JSON seguro de auditoria
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g09-static-progression
+          path: .blue-work/sinnoh-g09/progression.json
+          if-no-files-found: warn
+
+  ruby:
+    name: G09 / adaptadores Ruby e guarda de saves por regiao
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Regressao de ginasios S15 e HMs S16
+        run: |
+          ruby tests/sinnoh_s15_gyms_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/regions/SinnohGymContracts.rb data/regions/sinnoh-gyms-s15.json
+          ruby tests/sinnoh_s16_hms_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/regions/SinnohHMContracts.rb data/regions/sinnoh-hms-s16.json
+      - name: Regressao Liga S21 e pos-jogo S23
+        run: |
+          ruby tests/sinnoh_s21_league_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/regions/SinnohStoryContracts.rb scripts/regions/SinnohLeagueContracts.rb data/regions/sinnoh-league-s21.json
+          ruby tests/sinnoh_s23_postgame_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/regions/SinnohStoryContracts.rb scripts/regions/SinnohPostgameContracts.rb data/regions/sinnoh-postgame-s23.json
