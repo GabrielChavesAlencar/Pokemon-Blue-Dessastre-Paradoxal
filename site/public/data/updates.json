@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4f16a08ed68e9cd3d2118aec83ddf55497c01065",
+      "date": "2026-11-17T15:22:32-03:00",
+      "title": "Corrige A13 silenciosa com progresso e log persistente",
+      "category": "Correções"
+    },
+    {
       "sha": "c7fb6d0d17f440f9b7d90d52ce38dca9480c938a",
       "date": "2026-11-17T15:16:07-03:00",
       "title": "Unova A13: cópia QA privada do Decades com perfis separados",
