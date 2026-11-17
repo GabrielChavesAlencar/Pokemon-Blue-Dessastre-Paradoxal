@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8af6b941b73949ea46de3f8d9c81680ed4d88684",
+      "date": "2026-11-17T20:39:52-03:00",
+      "title": "fix(android): regenerate compiled Mobile.rb SHA-256 in repacked JoiPlay build metadata",
+      "category": "Correções"
+    },
+    {
       "sha": "bb56850e1f4703e21caefd00a5609775e52aa352",
       "date": "2026-11-17T20:36:42-03:00",
       "title": "ci(android): validate in-game version display and include 5d0cc84 historical patch",
