@@ -221,11 +221,96 @@ def _verify_paths(old, new, patch):
     return changed, removed
 
 
+def _local_target(root, name):
+    """Refuse symlink parents: never write outside the selected JoiPlay folder."""
+    if (not isinstance(name, str) or not name or "\\x00" in name or
+            "\\\\" in name or name.startswith("/") or
+            any(part in ("", ".", "..") for part in name.split("/"))):
+        raise ValueError("Unsafe Android update path: " + str(name))
+    target = root.joinpath(*PurePosixPath(name).parts)
+    cursor = target
+    while cursor != root:
+        if cursor.is_symlink():
+            raise ValueError("A symbolic link blocks the update: " + name)
+        cursor = cursor.parent
+    return target
+
+
+def _replace_from_zip(archive, member, destination, expected):
+    """One-file atomic replacement; no backup and no half-written target."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(prefix=".blue-update-", dir=destination.parent)
+    try:
+        digest = hashlib.sha256()
+        size = 0
+        with os.fdopen(fd, "wb") as output, archive.open(member) as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                size += len(chunk)
+                digest.update(chunk)
+                output.write(chunk)
+            output.flush()
+            os.fsync(output.fileno())
+        if size != expected["size"] or digest.hexdigest() != expected["sha256"]:
+            raise ValueError("Downloaded file failed verification: " + member)
+        os.replace(name, destination)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+
+def _write_installed_revision(root, manifest):
+    """Commit the new version only after all files are synchronized."""
+    marker = _local_target(root, MARKER)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    fd, filename = tempfile.mkstemp(prefix=".blue-update-manifest-", dir=marker.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf8") as output:
+            json.dump({
+                "schema": 1, "channel": manifest["channel"],
+                "revision": manifest["revision"], "files": manifest["files"],
+                "immutable": manifest.get("immutable", {})
+            }, output, sort_keys=True)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(filename, marker)
+    finally:
+        if os.path.exists(filename):
+            os.unlink(filename)
+
+
+def _check_local_changes(root, old, new, changed, removed):
+    """Allow OLD or ALREADY-UPDATED hashes so interrupted patches can resume."""
+    actions = []
+    for name in sorted(changed):
+        target = _local_target(root, name)
+        expected = new[name]
+        if target.is_file() and sha256_file(target) == expected["sha256"]:
+            continue
+        prior = old.get(name)
+        if prior is None:
+            if target.exists():
+                raise ValueError("Refusing to replace untracked file: " + name)
+        elif not target.is_file() or sha256_file(target) != prior["sha256"]:
+            raise ValueError("File was modified; update refused: " + name)
+        actions.append(name)
+    for name in removed:
+        target = _local_target(root, name)
+        if not target.exists():
+            continue  # An interrupted earlier attempt already removed it.
+        prior = old[name]
+        if not target.is_file() or sha256_file(target) != prior["sha256"]:
+            raise ValueError("File was modified; update refused: " + name)
+    return actions
+
+
 def apply_patch(root, installed, manifest, patch_file):
+    """Install only the changed files. No backup and safely resumable."""
     if manifest["channel"] != installed["channel"]:
         raise ValueError("Cannot mix Kanto and Decades.")
     if manifest.get("immutable", {}) != installed.get("immutable", {}):
         raise ValueError("Runtime/save configuration changed; a full ZIP is required.")
+    if not root.is_dir() or root.is_symlink():
+        raise ValueError("Invalid installed game directory.")
     with zipfile.ZipFile(patch_file) as archive:
         entries = archive.namelist()
         if len(entries) != len(set(entries)):
@@ -241,6 +326,8 @@ def apply_patch(root, installed, manifest, patch_file):
         for name in changed:
             entry = archive.getinfo("files/" + name)
             meta = changed[name]
+            if entry.is_dir() or entry.flag_bits & 1:
+                raise ValueError("Unexpected ZIP member: " + name)
             if entry.file_size != meta["size"] or entry.file_size > MAX_PATCH_BYTES:
                 raise ValueError("Patch file size mismatch: " + name)
             digest = hashlib.sha256()
@@ -249,72 +336,23 @@ def apply_patch(root, installed, manifest, patch_file):
                     digest.update(chunk)
             if digest.hexdigest() != meta["sha256"]:
                 raise ValueError("Patch file checksum mismatch: " + name)
-        # Immutable runtime and save profile must still match their baseline.
         for name, meta in installed.get("immutable", {}).items():
-            critical = root / name
-            if (not critical.is_file() or critical.is_symlink()
-                    or sha256_file(critical) != meta["sha256"]):
+            critical = _local_target(root, name)
+            if (not critical.is_file() or
+                    sha256_file(critical) != meta["sha256"]):
                 raise ValueError("Critical runtime/configuration was modified: " + name)
-        # Only touch files owned by the exact installed revision. Protect modifications.
-        for name in sorted(set(changed) | set(removed)):
-            current = root / name
-            previous = installed["files"].get(name)
-            if previous:
-                if not current.is_file() or current.is_symlink() or sha256_file(current) != previous["sha256"]:
-                    raise ValueError("File was modified; update refused: " + name)
-            elif current.exists():
-                raise ValueError("Refusing to replace untracked file: " + name)
-        backups = root / ".blue-android-update-backups"
-        backup = backups / (installed["revision"][:12] + "-to-" + manifest["revision"][:12])
-        if backup.exists():
-            raise ValueError("Existing backup for this update; resolve it first: " + str(backup))
-        backup.mkdir(parents=True)
-        modified = []
-        try:
-            for name in sorted(set(changed) | set(removed)):
-                destination = root / name
-                if destination.exists():
-                    saved = backup / name
-                    saved.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(destination, saved)
-                modified.append(name)
-            for name in sorted(changed):
-                target = root / name
-                target.parent.mkdir(parents=True, exist_ok=True)
-                fd, temp_path = tempfile.mkstemp(prefix=".blue-update-", dir=target.parent)
-                try:
-                    with os.fdopen(fd, "wb") as output, archive.open("files/" + name) as source:
-                        shutil.copyfileobj(source, output, length=1024 * 1024)
-                    os.replace(temp_path, target)
-                finally:
-                    if os.path.exists(temp_path):
-                        os.unlink(temp_path)
-            for name in removed:
-                (root / name).unlink()
-            marker = root / MARKER
-            temp_marker = marker.with_name(marker.name + ".tmp")
-            temp_marker.write_text(json.dumps({
-                "schema": 1, "channel": manifest["channel"], "revision": manifest["revision"],
-                "files": manifest["files"], "immutable": manifest.get("immutable", {})},
-                sort_keys=True), encoding="utf8")
-            (backup / "BACKUP-INFO.txt").write_text(
-                "Previous revision: " + installed["revision"] + "\n"
-                "New revision: " + manifest["revision"] + "\n"
-                "Do not delete until the game and its saves are tested.\n", encoding="utf8")
-            # Last operation commits the new revision only after everything succeeds.
-            os.replace(temp_marker, marker)
-        except BaseException:
-            for name in reversed(modified):
-                original = backup / name
-                target = root / name
-                if original.is_file():
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(original, target)
-                else:
-                    target.unlink(missing_ok=True)
-            raise
-    return len(changed), len(removed), backup
-
+        # Validate every local target before the first write. Existing NEW
+        # files come from an interrupted update and need not be written again.
+        todo = _check_local_changes(root, installed["files"],
+                                    manifest["files"], changed, removed)
+        for index, name in enumerate(todo, 1):
+            _replace_from_zip(archive, "files/" + name,
+                              _local_target(root, name), changed[name])
+            print("Atualizando arquivos: {}/{}".format(index, len(todo)), flush=True)
+        for name in removed:
+            _local_target(root, name).unlink(missing_ok=True)
+        _write_installed_revision(root, manifest)
+    return len(todo), len(removed), None  # No backup directory is ever created.
 
 
 def _save_file(relative):
