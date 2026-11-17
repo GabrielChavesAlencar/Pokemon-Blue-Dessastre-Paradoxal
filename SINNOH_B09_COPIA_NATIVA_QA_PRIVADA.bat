@@ -48,7 +48,8 @@ echo [AVISO] NAO INICIE O CLONE: ainda falta isolar a pasta de saves.
 choice /C SN /N /M "Criar agora a copia privada? [S/N]: "
 if errorlevel 2 goto :cancel
 set "REPORT=%~dp0SINNOH_B09_RELATORIO_%RANDOM%_%RANDOM%.json"
-echo [B09] Criando apenas a copia privada, com hashes verificados...
+echo [B09] Criando copia privada; progresso aparecera a cada 500 arquivos...
+echo [B09] O relatorio JSON continua sendo gravado em arquivo separado.
 %PY% scripts\regions\build_sinnoh_b09_native_qa.py --latest --native-inventory "%B01%" --game-dir "%GAMEDIR%" --clone --expected-plan-sha "%PLAN_SHA%" > "%REPORT%"
 if errorlevel 1 goto :failed
 echo.
