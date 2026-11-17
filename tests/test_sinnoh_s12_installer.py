@@ -205,7 +205,7 @@ class S12PrivateInstallerTests(unittest.TestCase):
         self.assertIn('--check', bat)
         self.assertIn("DisableDelayedExpansion", bat)
         self.assertNotIn("game\\Game.exe", bat)
-        self.assertNotIn("start Game.exe", bat.lower())
+        self.assertNotIn("start game.exe", bat.lower())
         for forbidden in ("powershell", "git clone", "rmdir", "del /q",
                           "pip install", "robocopy", "curl ", "wget "):
             self.assertNotIn(forbidden, bat.lower())
