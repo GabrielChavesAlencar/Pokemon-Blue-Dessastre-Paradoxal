@@ -404,3 +404,31 @@
 .unova-progress-footer{font-size:12px;margin:22px 0 35px;color:var(--muted);line-height:1.7}
 @media(max-width:550px){.unova-progress-overview,.unova-progress-group{padding:15px}
   .unova-progress-grid{grid-template-columns:minmax(0,1fr)}}
+
+
+/* G06.2 · Unova White · editorial navigation, not native playability. */
+.unova-guide-page{padding-bottom:52px}
+.unova-guide-alert{margin:18px 0 20px;padding:18px 20px;border:1px solid #6f5930;border-left:4px solid #efb65c;border-radius:9px;background:#211d1a;color:#f2d6a5}
+.unova-guide-alert strong{font:700 17px 'Barlow Condensed',sans-serif;letter-spacing:.03em}
+.unova-guide-alert p{font-size:12px;line-height:1.7;margin:7px 0 0;color:#e0c49d}
+.unova-guide-nav{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:21px 0 29px}
+.unova-guide-nav .filter-chip{display:inline-flex;align-items:center;text-decoration:none}
+.unova-guide-stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px;margin:23px 0}
+.unova-guide-stat{padding:16px 12px;background:#14243a;border-radius:9px;border:1px solid #345372}
+.unova-guide-stat strong{display:block;font:700 28px/1.1 'Barlow Condensed',sans-serif;color:#ebf6ff}
+.unova-guide-stat span{font-size:11px;color:#adbed3;line-height:1.5}
+.unova-guide-page>.section{margin:36px 0}
+.unova-guide-page>.section>h2{font-size:clamp(23px,3vw,34px);margin-bottom:18px}
+.unova-guide-page .data-note{font-size:12px;line-height:1.8;color:#bdcee1;margin:10px 0}
+.unova-guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,245px),1fr));gap:13px}
+.unova-guide-card{display:flex;flex-direction:column;min-width:0;gap:8px;padding:19px;border-radius:9px;border:1px solid #314c6a;background:linear-gradient(150deg,#15263b,#0f1828)}
+.unova-guide-card h3{font:600 22px/1.25 'Barlow Condensed',sans-serif;color:#f0f6ff;overflow-wrap:anywhere}
+.unova-guide-card p{font-size:12px;line-height:1.7;color:#afc4df;overflow-wrap:anywhere}
+.unova-guide-card .content-pending-tag{margin-top:auto}
+.unova-guide-context,.unova-guide-related,.unova-guide-actions{display:flex;flex-wrap:wrap;gap:10px 15px;margin-top:12px;padding-top:11px;border-top:1px solid #324a65}
+.unova-guide-context .text-link,.unova-guide-related .text-link,.unova-guide-actions .text-link{font-size:11px;line-height:1.7}
+.unova-guide-breadcrumb{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 21px;font-size:11px;color:#9fb3ce}
+.unova-guide-breadcrumb .text-link{font-size:11px}
+.unova-guide-footer{margin:45px 0 20px;padding:22px;border-radius:9px;background:#102037;border:1px solid #304967}
+@media(max-width:1000px){.unova-guide-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.unova-guide-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.unova-guide-card{padding:15px}.unova-guide-nav .filter-chip{flex:1 1 calc(50% - 9px);justify-content:center}}
