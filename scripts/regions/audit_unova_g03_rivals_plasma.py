@@ -483,7 +483,9 @@ def build_demo(ctx:tuple,gyms_data:dict,finale_data:dict,postgame_data:dict,
             if event["kind"]=="battle":
                 kw.update(outcome="WIN",leader_key=gyms._leader(gym,_g01(env)))
             g02("record_story",**kw)
+        snapshots[f"CH{index+1:02d}_READY_TO_COMPLETE"]=copy.deepcopy(env)
         g03("complete_gym",simulation_gate=machine.SIMULATION_GATE)
+        snapshots[f"CH{index+1:02d}_CHAPTER_COMPLETED"]=copy.deepcopy(env)
         g03("advance_gym")
     snapshots["CH10_LEAGUE"]=copy.deepcopy(env)
     for member in finale_data["elite_members"]:
