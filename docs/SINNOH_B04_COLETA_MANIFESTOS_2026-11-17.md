@@ -2,6 +2,14 @@
 
 **Status atualizado (17/11/2026):** ZIP gerado no Windows **recebido e confrontado com B01**; os três manifestos foram localizados, mas o coletor V1 omitiu 31 IDs menores que 100. Veja o [catálogo consolidado e a correção](MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17.md). **A versão corrigida do coletor foi entregue nesta conversa**. Ainda não foram homologadas reservas futuras. A etapa é preparação de evidências, não integração de mapas, liberação de R07, ou aprovação de Game.exe/JoiPlay. **Barra B = 0/13, C = 0/13, D = 0/13.**
 
+## Estado final — coleta B04 V2 correta (17/11/2026)
+
+O usuário executou a V2 e enviou `SINNOH_B04_PROVENIENCIA_REGIONAL_V2.zip` (SHA-256 `b7341ac4e457c6b1a8b8c7271357e23e5b3316df08387bd05e3ae4bb1e31a8a9`). **Foram identificados os 648 MapIDs, exatamente iguais aos da B01**, sem omissões ou extras. Os três manifestos Kanto/Johto/Hoenn seguem coerentes em contagem e faixas, sem sobreposição. A V2 resolveu a coleta incompleta; os 617 IDs documentados anteriormente são históricos da V1/reexecução incompleta.
+
+[Resultado documentado e faixas Sinnoh/Unova](MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17.md) · [Recibo B04 V2](../data/regions/sinnoh-b04-v2-validated.json).
+
+**Esta é validação da coleta local, não dos direitos, reservas futuras nem da execução do Game.exe/JoiPlay.** R07 permanece pendente e B/C/D = 0/13.
+
 ## Reexecução após a primeira correção (17/11/2026)
 
 O usuário entregou `SINNOH_B04_PROVENIENCIA_REGIONAL(1).zip` (SHA `32b865890c7a85698afbc9e498483a4e2b2fff7a3ac092fc37ecfdbb0f571bc0`). **O JSON é idêntico ao do B04 anterior:** 617 mapas físicos, ainda faltando os 31 IDs menores que 100 na comparação com a B01. Os três manifestos regionais e hashes MapInfos/Tilesets não mudaram; nenhum dos 31 IDs foi liberado para Unova. Isso **não permite confirmar qual script foi executado**.

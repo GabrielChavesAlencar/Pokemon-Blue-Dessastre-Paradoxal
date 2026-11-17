@@ -4,6 +4,22 @@
 
 Este documento mostra **todos os MapIDs ocupados**, a retenção administrativa de **76 posições para Sinnoh** e os **174 candidatos fisicamente vazios para planejar Unova**. Não muda o Game.exe, não instala mapas e **não comprova reservas futuras**. Ver [inventário JSON B05](../data/regions/sinnoh-b05-mapid-planning.json) e [auditor automático](../scripts/regions/audit_sinnoh_b05_mapid_planning.py).
 
+## B04 V2 — validação concluída dos 648 MapIDs (17/11/2026)
+
+**Resultado:** o arquivo `SINNOH_B04_PROVENIENCIA_REGIONAL_V2.zip` enviado pelo usuário foi aberto e validado nesta conversa, inclusive em comparação exata com o inventário B01. Seu SHA-256 é `b7341ac4e457c6b1a8b8c7271357e23e5b3316df08387bd05e3ae4bb1e31a8a9`.
+
+- **648/648 MapIDs físicos** presentes: zero IDs ausentes, zero extras, sem duplicações.
+- Os 31 IDs de 1–99 omitidos pelo coletor anterior **agora constam do relatório V2**.
+- Os hashes `MapInfos` e `Tilesets` são iguais aos da B01 (instalação sem divergência detectada nesse inventário).
+- Manifestos numéricos resumidos, sem colisões: **Kanto 300–441 (142), Johto 600–699 (100), Hoenn 700–898 (199)**. Os SHA-256 declarados por esses manifestos também são idênticos aos dos relatórios B04 anteriores.
+- **Sinnoh:** a retenção administrativa `442–517` (76 IDs) **não muda** e **não é reserva nativa homologada**.
+- **Unova:** permanecem **174 posições fisicamente vagas para planejamento**, sendo `518–599` o maior bloco contínuo (82 IDs); **nenhuma foi alocada à região**.
+- A verificação é da **consistência do relatório numérico gerado no Windows** com a B01. O ZIP não inclui os manifestos brutos nem os bytes MapInfos/Tilesets; portanto não é uma verificação criptográfica independente de sua origem nem comprova reservas de mapas futuros, licenças ou jogabilidade.
+
+[Recibo JSON B04 V2](../data/regions/sinnoh-b04-v2-validated.json) · [Auditor offline](../scripts/regions/audit_sinnoh_b04_v2_receipt.py) · [13 testes de regressão](../tests/test_sinnoh_b04_v2_receipt.py).
+
+**B/C/D = 0/13, R07/R08/R09 ainda pendentes, Sinnoh e Unova continuam planejadas.** Não há necessidade de repetir B04 com a base B01 atual; uma instalação alterada exigirá novo inventário.
+
 ## Resumo
 
 | Classificação | MapIDs (inclusive) | Quantidade | Estado |
