@@ -270,7 +270,7 @@ def main(argv=None) -> int:
         print("UNOVA_A05="+str(result.get("a05_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
-        if args.open_summary and os.name=="nt":
+        if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
             try:
                 subprocess.Popen(["notepad.exe",str(summary)],
                                  close_fds=True)
