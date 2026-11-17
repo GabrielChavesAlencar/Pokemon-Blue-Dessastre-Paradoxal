@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fe36ef104a10d35d1eed57b1c8397782bae5cc1d",
+      "date": "2026-11-17T12:44:54-03:00",
+      "title": "docs(sinnoh): B04 V2 confirma todos 648 MapIDs mantendo Unova livre apenas para planejar",
+      "category": "Novidades"
+    },
+    {
       "sha": "cd220589de777ee30dc9a9c74d633546eaf6dbcd",
       "date": "2026-11-17T12:32:49-03:00",
       "title": "feat(unova): A05 planejamento auditavel MapIDs candidatos B01/B04/B05",
