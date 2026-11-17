@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4295d38017b588522cfd772d9746c1e646f6d1d9",
+      "date": "2026-11-17T08:55:10-03:00",
+      "title": "feat(sinnoh): S24 catálogo musical auditável por cenário (25/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "da93735c5b97dd62935b4efa846ea7fdfae918ae",
       "date": "2026-11-17T08:49:27-03:00",
       "title": "docs(sinnoh): evidenciar merge S23 PR84 e CI revalidado em main atual",
