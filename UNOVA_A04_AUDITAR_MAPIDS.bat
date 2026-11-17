@@ -17,15 +17,10 @@ echo.
 if errorlevel 1 goto :blocked
 goto :success
 :guide
-echo Nao foi selecionada a pasta REAL do Decades.
-echo Para auditar, arraste sobre este BAT a pasta game ou Data.
-echo.
-echo Para comparar varias regioes, use o terminal CMD da pasta do projeto:
-echo python scripts\regions\audit_unova_a04_mapids.py --base-data "C:\Jogo\game\Data" --overlay "KANTO=C:\Pilotos\Kanto\Data" --overlay "JOHTO=C:\Pilotos\Johto\Data" --overlay "HOENN=C:\Pilotos\Hoenn.zip" --overlay "SINNOH=C:\Pilotos\Sinnoh\Data" --write
-echo.
-echo Sem MapInfos real, nenhuma reserva de MapID pode ser certificada.
-%PY% scripts\regions\audit_unova_a04_mapids.py --write
-goto :blocked
+echo Abrindo seletor da pasta real do Decades e overlays opcionais...
+%PY% scripts\regions\audit_unova_a04_mapids.py --gui --write
+if errorlevel 1 goto :blocked
+goto :success
 :success
 echo.
 echo [OK] Inventario de ocupacao gerado em:
