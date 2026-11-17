@@ -23,6 +23,7 @@ import audit_unova_a07_reference_provenance as a07
 import audit_unova_a08_readiness as a08
 import audit_unova_a09_intro_and_claims as a09
 import audit_unova_a10_dynamic_matrix as a10
+import audit_unova_a11_intro_preflight as a11
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -163,6 +164,7 @@ def pretty(result: dict) -> str:
     a08_result=result.get("a08_result")
     a09_result=result.get("a09_result")
     a10_result=result.get("a10_result")
+    a11_result=result.get("a11_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -307,6 +309,13 @@ def pretty(result: dict) -> str:
         lines.append("")
     if a10_result:
         matrix=a10_result.get("matrix_status_counts",{})
+        # A10 omits unused histogram keys; zero is known only if all 82
+        # candidates were classified and the observed counts sum to 82.
+        matrix_complete=(a10_result.get("status")=="DIAGNOSTIC_COMPLETE_RESERVATION_BLOCKED"
+                         and a10_result.get("mapids_reviewed")==82
+                         and sum(x for x in matrix.values() if type(x) is int)==82)
+        def show_count(name):
+            return str(matrix.get(name,0)) if matrix_complete else "DESCONHECIDO"
         intro=a10_result.get("intro_transfer_analysis",{})
         dyn=a10_result.get("dynamic_script_references",{})
         manifests=a10_result.get("installer_manifest_analysis",{})
@@ -315,12 +324,12 @@ def pretty(result: dict) -> str:
             "  Status: "+a10_result.get("status","UNKNOWN"),
             "  IDs avaliados: "+str(a10_result.get("mapids_reviewed","DESCONHECIDO"))+"/82",
             "  Livres apenas no snapshot, NAO reservados: "+
-                str(matrix.get("OBSERVED_VACANT_NOT_RESERVED","DESCONHECIDO")),
-            "  IDs ja ocupados: "+str(matrix.get("OCCUPIED_IN_CURRENT_SNAPSHOT","DESCONHECIDO")),
+                show_count("OBSERVED_VACANT_NOT_RESERVED"),
+            "  IDs ja ocupados: "+show_count("OCCUPIED_IN_CURRENT_SNAPSHOT"),
             "  IDs com reclamacao em manifesto: "+
-                str(matrix.get("INSTALLER_MANIFEST_CLAIM_REVIEW","DESCONHECIDO")),
+                show_count("INSTALLER_MANIFEST_CLAIM_REVIEW"),
             "  Referencias estaticas a candidatos: "+
-                str(matrix.get("STATIC_REFERENCE_REVIEW","DESCONHECIDO")),
+                show_count("STATIC_REFERENCE_REVIEW"),
             "  MapID3: posições de transferencia nos dois eventos: "+
                 str(len(intro.get("mapid3_transfer_positions",[]))),
             "  MapID3: mesmas contagens da A09? "+
@@ -339,14 +348,54 @@ def pretty(result: dict) -> str:
         if a10_result.get("block_reason"):
             lines.append("  Bloqueio A10: "+a10_result["block_reason"])
         lines.append("")
+    if a11_result:
+        pre=a11_result.get("reservation_preflight",{})
+        counts=pre.get("status_counts",{})
+        intro=a11_result.get("intro_route_review",{})
+        dynamic=a11_result.get("computed_reference_review",{})
+        lines.extend([
+            "A11 — introducoes, referencias computadas e pre-reserva reversivel",
+            "  Status: "+a11_result.get("status","DESCONHECIDO"),
+            "  Transferencias MapID 3 documentadas: "+
+                str(intro.get("transfer_count","DESCONHECIDO")),
+            "  Origem dessas transferencias confere com A10? "+
+                ("Sim" if intro.get("matches_a10_positions") else "Nao/Desconhecido"),
+            "  Condicoes de paginas testadas no Game.exe? Nao",
+            "  Substituicao automatica do MapID 3? Nao",
+            "  Expressoes computadas (heuristica): "+
+                str(dynamic.get("computed_shape_observed","DESCONHECIDO")),
+            "  Quantidade confere com A09? "+
+                ("Sim" if dynamic.get("counts_match_a09") else "Nao/Desconhecido"),
+            "  Classificacao das expressoes: "+", ".join(
+                str(k)+"="+str(v) for k,v in sorted(dynamic.get("shape_histogram",{}).items()))[:400],
+            "  Manifestos regionais faltantes/nao completos: "+
+                ", ".join(a11_result.get("regional_manifest_missing_or_partial",[]))[:400],
+            "  Matriz com todos os 82 IDs: "+
+                str(pre.get("count","DESCONHECIDO"))+"/82",
+            "  Desocupados no snapshot, NAO reservados: "+
+                str(counts.get("OBSERVED_VACANT_NOT_RESERVED","DESCONHECIDO")),
+            "  Ocupados no snapshot: "+
+                str(counts.get("OCCUPIED_IN_CURRENT_SNAPSHOT","DESCONHECIDO")),
+            "  Reivindicados em manifestos locais: "+
+                str(counts.get("INSTALLER_MANIFEST_CLAIM_REVIEW","DESCONHECIDO")),
+            "  Referenciados estaticamente: "+
+                str(counts.get("STATIC_REFERENCE_REVIEW","DESCONHECIDO")),
+            "  Protocolo de rollback: RASCUNHO — nenhum backup criado",
+            "  Pendencias: "+", ".join(a11_result.get("review_flags",[]))[:850],
+            "  IDs reservados ou instalados: 0",
+            "  Relatorio completo A11: "+str(result.get("a11_report_path") or "NAO_GERADO"),
+        ])
+        if a11_result.get("block_reason"):
+            lines.append("  Motivo bloqueio A11: "+a11_result["block_reason"])
+        lines.append("")
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
         "  NENHUM MapID de Unova foi reservado nem certificado como livre.",
         "  A Barra A continua 0/8 ate validar reservas e instalacao real.",
         "",
-        "Se precisar me enviar um arquivo, envie o relatorio A05 acima",
-        "ou o A04 quando o diagnostico indicar divergencias.",
+        "Para a proxima fase, envie este LEIA_AQUI_UNOVA_MAPIDS.txt",
+        "e o arquivo a11-intro-preflight-HASH.json indicado acima.",
         "",
         "Pastas pesquisadas:",
     ])
@@ -381,8 +430,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -471,6 +520,23 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_completed":0,"bar_a_total":8,
             }
         a10_path=a10.save(project,a10_result)
+        try:
+            a11_result=a11.audit(selected,project,a04_result,a06_result,a07_result,
+                                 a08_result,a09_result,a10_result)
+        except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
+            a11_result={
+                "schema":1,"region":"UNOVA","phase":"A11",
+                "status":"BLOCKED_A11_INCOMPLETE_NOT_CERTIFIED",
+                "intro_route_review":{},
+                "computed_reference_review":{},
+                "reservation_preflight":{},
+                "regional_manifest_missing_or_partial":[],
+                "review_flags":["A11_AUDIT_CHAIN_OR_MAPDATA_INVALID"],
+                "block_reason":str(exc)[:300],
+                "can_reserve_mapids":False,"can_install":False,
+                "bar_a_completed":0,"bar_a_total":8,
+            }
+        a11_path=a11.save(project,a11_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -486,6 +552,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a09_report_path":str(a09_path),
             "a10_result":a10_result,
             "a10_report_path":str(a10_path),
+            "a11_result":a11_result,
+            "a11_report_path":str(a11_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -511,6 +579,7 @@ def main(argv=None) -> int:
         print("UNOVA_A08="+str(result.get("a08_report_path") or "NAO_GERADO"))
         print("UNOVA_A09="+str(result.get("a09_report_path") or "NAO_GERADO"))
         print("UNOVA_A10="+str(result.get("a10_report_path") or "NAO_GERADO"))
+        print("UNOVA_A11="+str(result.get("a11_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
