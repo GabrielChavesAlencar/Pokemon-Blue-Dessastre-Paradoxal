@@ -36,8 +36,9 @@
         {
           "id": "G01.2",
           "title": "Implementar máquina de estados dos capítulos",
-          "status": "pending",
-          "acceptance": "Pré-requisitos, desbloqueios e transições testáveis sem engine"
+          "status": "done",
+          "acceptance": "Pré-requisitos, desbloqueios e transições testáveis sem engine",
+          "evidence": "scripts/regions/audit_unova_g01_chapter_machine.py"
         },
         {
           "id": "G01.3",
