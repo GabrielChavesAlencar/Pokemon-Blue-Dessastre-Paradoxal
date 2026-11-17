@@ -101,6 +101,20 @@ def audit(handoff,android_report,chain_report,ledger,docs):
             type(chain_report) is not dict or type(ledger) is not dict or
             type(docs) is not dict or set(docs)!=set(DOCUMENTS)):
         blocked("missing final handoff input")
+    expected_handoff_keys={
+        "schema","region","stage","version","status","original_case_source",
+        "native_evidence_validator","b10_contract","b11_contract",
+        "qa_prerequisites","category_counts","total_cases","windows_cases",
+        "android_cases","completed_native_cases","manually_reviewed_cases",
+        "real_b10_execution_verified","real_b11_save_isolation_verified",
+        "real_map_ids_and_events_verified","asset_rights_verified",
+        "native_pbs_compiled_verified","game_exe_tested","joiplay_tested",
+        "r07_complete","r08_complete","r09_complete",
+        "phase_b_approved","phase_c_approved","phase_d_approved",
+        "can_launch_game_now","can_install_live_game","cases",
+    }
+    if set(handoff)!=expected_handoff_keys:
+        blocked("unexpected or missing versioned handoff property")
     if (handoff.get("schema")!=1 or handoff.get("region")!="SINNOH" or
             handoff.get("stage")!="G12" or type(handoff.get("version")) is not int or
             handoff["version"]!=1 or
