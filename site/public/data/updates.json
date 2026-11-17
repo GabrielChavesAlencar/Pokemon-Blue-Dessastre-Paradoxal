@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e1232dba6b618334a4b0cc25b19de1da889d6bf8",
+      "date": "2026-11-17T07:08:20-03:00",
+      "title": "feat(sinnoh): S22 viagem segura Hoenn Unova e Barra A 23/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "67ef1de631f00b90368f89e965f23d6e9cf499bc",
       "date": "2026-11-17T07:06:51-03:00",
       "title": "docs(unova): esclarecer que análise narrativa anterior está no chat, não no repositório",
