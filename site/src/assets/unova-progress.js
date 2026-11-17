@@ -1,4 +1,4 @@
-import {esc} from './utils.js';
+import {esc,icon} from './utils.js';
 
 const STATES=new Set(['done','pending','in_progress','blocked']);
 export async function loadUnovaGithubProgress(fetcher=fetch){
