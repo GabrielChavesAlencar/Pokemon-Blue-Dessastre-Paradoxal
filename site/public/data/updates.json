@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b3f4b6cd7ad61928752cad64289cb69f2bc6da67",
+      "date": "2026-11-17T18:46:38-03:00",
+      "title": "docs(sinnoh): mark G05 integrated, GitHub pipeline 5/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "26c423ef3a173a709c0763570c91d0a245022086",
+      "date": "2026-11-17T18:46:26-03:00",
+      "title": "fix(sinnoh): G05 harden B11 private save audit and scope coverage (#150)",
+      "category": "Correções"
+    },
+    {
       "sha": "35fb4c0dd8cb5881300f4c991712fea9bd6f619d",
       "date": "2026-11-17T18:40:58-03:00",
       "title": "Unova G03.3: rivais, Plasma e chefes por capítulo com testes offline",
