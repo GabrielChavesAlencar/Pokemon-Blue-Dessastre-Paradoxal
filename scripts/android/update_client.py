@@ -424,142 +424,129 @@ def _zip_members(archive, channel, manifest):
 
 
 def apply_full_archive(root, installed, manifest, archive_path):
-    """Install a verified full ZIP in-place with rollback and save migration.
+    """Manual full-ZIP repair, modifying only differing files in place.
 
-    Stage alongside the game so the old path remains valid in JoiPlay. Keep the
-    entire previous installation as a sibling backup, including all untracked
-    files and any user modifications.
+    No old-installation copy, sibling backup, staged duplicate of the whole
+    game, or save migration. All unrelated files and saves stay where they are.
     """
     if installed["channel"] != manifest["channel"]:
         raise ValueError("Cannot change Android update channels.")
     if not root.is_dir() or root.is_symlink() or root.parent == root:
         raise ValueError("Invalid installed game directory.")
-    old_revision = installed["revision"][:12]
-    new_revision = manifest["revision"][:12]
-    staging = root.parent / ("." + root.name + ".blue-stage-" + new_revision)
-    backup = root.parent / (root.name + ".blue-backup-" + old_revision)
-    if staging.exists() or backup.exists():
-        raise ValueError("Update staging/backup already exists; resolve it first.")
     with zipfile.ZipFile(archive_path) as archive:
         members = _zip_members(archive, installed["channel"], manifest)
-        staging.mkdir()
-        try:
-            # Verify each extracted file against its published SHA-256.
-            for index, (name, entry) in enumerate(sorted(members.items()), 1):
-                target = staging.joinpath(*PurePosixPath(name).parts)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                digest = hashlib.sha256()
-                size = 0
-                with archive.open(entry) as source, target.open("xb") as output:
-                    for chunk in iter(lambda: source.read(1024 * 1024), b""):
-                        size += len(chunk)
-                        digest.update(chunk)
-                        output.write(chunk)
-                meta = (manifest["files"].get(name) or
-                        manifest.get("immutable", {}).get(name))
-                if name != MARKER and (not meta or size != meta["size"] or
-                                       digest.hexdigest() != meta["sha256"]):
-                    raise ValueError("Full ZIP file hash mismatch: " + name)
-                if index % max(1, len(members) // 10) == 0 or index == len(members):
-                    print("Preparando jogo: {}%".format(index * 100 // len(members)), flush=True)
-            # Copy only saves. Everything else remains in the old folder backup.
-            copied = 0
-            for source in root.rglob("*"):
-                if source.is_symlink() or not source.is_file():
-                    continue
-                relative = source.relative_to(root)
-                if not _save_file(relative):
-                    continue
-                target = staging / relative
-                if target.exists():
-                    raise ValueError("New ZIP contains a save path: " + str(relative))
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(source, target)
-                copied += 1
-            # Swaps are on the same filesystem. Roll back if the second fails.
-            os.replace(root, backup)
-            try:
-                os.replace(staging, root)
-            except BaseException:
-                os.replace(backup, root)
-                raise
-        finally:
-            if staging.exists():
-                shutil.rmtree(staging)
-    return backup, copied
+        old = {**installed.get("immutable", {}), **installed["files"]}
+        new = {**manifest.get("immutable", {}), **manifest["files"]}
+        changes = {name: meta for name, meta in new.items() if old.get(name) != meta}
+        removed = sorted(set(old) - set(new))
+        if any(_save_file(PurePosixPath(name)) for name in set(changes) | set(removed)):
+            raise ValueError("Refusing to change local save files.")
+        # Prevalidate the current installation before touching anything.
+        todo = _check_local_changes(root, old, new, changes, removed)
+        for index, name in enumerate(todo, 1):
+            _replace_from_zip(archive, members[name], _local_target(root, name),
+                              changes[name])
+            if index % max(1, len(todo) // 10) == 0 or index == len(todo):
+                print("Atualizando arquivos: {}%".format(index * 100 // len(todo)), flush=True)
+        for name in removed:
+            _local_target(root, name).unlink(missing_ok=True)
+        _write_installed_revision(root, manifest)
+    return None, len(todo)  # Compatibility: no backup; number of files updated.
 
 
 def install_full_from_release(root, installed, release, manifest):
-    """Verified full-package fallback for missing/incompatible incremental patches."""
+    """EXPLICIT --full only: downloads large ZIP but never recreates the folder."""
     asset_name = CHANNELS[installed["channel"]][0]
     meta = manifest.get("full")
     url = asset_url(release, asset_name)
     if (not isinstance(meta, dict) or meta.get("asset") != asset_name
             or not url):
         raise ValueError("No verified full Android ZIP was published.")
-    # Store outside the game folder; it must survive the directory rename.
     cache = root.parent / (".blue-android-downloads-" + root.name)
     archive_path = cache / asset_name
     download(url, archive_path, meta.get("sha256"), meta.get("size"),
              max_bytes=MAX_FULL_BYTES)
     try:
-        backup, copied = apply_full_archive(root, installed, manifest, archive_path)
+        return apply_full_archive(root, installed, manifest, archive_path)
     finally:
         archive_path.unlink(missing_ok=True)
-    return backup, copied
+        if cache.is_dir() and not any(cache.iterdir()):
+            cache.rmdir()
+
+
+def compatible_patch(release, installed, manifest):
+    """Choose a verified release delta for THIS installed revision."""
+    if manifest.get("immutable", {}) != installed.get("immutable", {}):
+        return None
+    candidates = manifest.get("patches", [])
+    if not isinstance(candidates, list):
+        raise ValueError("Invalid release patch list.")
+    legacy = manifest.get("patch")
+    if isinstance(legacy, dict):
+        candidates = [legacy, *candidates]
+    matching = []
+    for item in candidates:
+        if (isinstance(item, dict) and
+                item.get("from_revision") == installed["revision"] and
+                asset_url(release, item.get("asset", "")) and
+                isinstance(item.get("size"), int) and item["size"] > 0 and
+                isinstance(item.get("sha256"), str) and
+                len(item["sha256"]) == 64):
+            matching.append(item)
+    return min(matching, key=lambda row: row["size"]) if matching else None
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Update a CLOSED JoiPlay Blue installation using Termux Python.")
+    parser = argparse.ArgumentParser(
+        description="Fast incremental updates for a CLOSED JoiPlay installation, without backups.")
     parser.add_argument("--game-dir", type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument("--update", action="store_true",
-                        help="Install a patch, or verified full ZIP when patching is impossible.")
+                        help="Download/apply ONLY changed files from a compatible delta.")
     parser.add_argument("--full", action="store_true",
-                        help="Use the verified full ZIP, keeping the old game as a backup.")
+                        help="Explicit fallback: download full ZIP but replace only changed files, no backup.")
     args = parser.parse_args(argv)
     root = args.game_dir.expanduser().resolve()
     info = read_installed(root)
     release, manifest = remote_update(info)
-    # Even a full reinstall must never downgrade or jump to a diverged
-    # history. Same-revision --full is permitted for repairing broken files.
     verify_forward_revision(info["revision"], manifest["revision"])
     if info["revision"] == manifest["revision"] and not args.full:
         print("O jogo ja esta atualizado:", info["revision"])
         return 0
     print("Versao instalada:", info["revision"])
     print("Versao disponivel:", manifest["revision"])
-    patch = manifest.get("patch") or {}
-    compatible = (
-        not args.full and
-        patch.get("from_revision") == info["revision"] and
-        manifest.get("immutable", {}) == info.get("immutable", {}) and
-        asset_url(release, patch.get("asset", "")))
-    if compatible:
-        print("Pacote incremental:", patch["asset"],
-              "(" + str(patch.get("size", 0)) + " bytes)")
+    patch = None if args.full else compatible_patch(release, info, manifest)
+    if patch:
+        print("Atualizacao incremental:", patch["asset"],
+              "(" + str(patch["size"]) + " bytes); sem backup.")
         if not args.update:
-            print("Feche o JoiPlay e execute novamente com --update para instalar.")
+            print("Feche o JoiPlay e execute com --update para instalar.")
             return 0
         path = root / ".blue-android-downloads" / patch["asset"]
-        download(asset_url(release, patch["asset"]), path,
-                 patch["sha256"], patch["size"])
-        changed, removed, backup = apply_patch(root, info, manifest, path)
-        print("Atualizacao incremental aplicada:", changed, "novos/alterados,",
-              removed, "removidos. Backup:", backup)
+        try:
+            download(asset_url(release, patch["asset"]), path,
+                     patch["sha256"], patch["size"])
+            changed, removed, _unused = apply_patch(root, info, manifest, path)
+        finally:
+            path.unlink(missing_ok=True)
+            if path.parent.is_dir() and not any(path.parent.iterdir()):
+                path.parent.rmdir()
+        print("Atualizacao incremental concluida:", changed, "arquivo(s) modificados,",
+              removed, "removido(s). Nenhum backup criado.")
         return 0
+    if not args.full:
+        print("Sem patch incremental para esta revisao. Nenhum ZIP completo sera baixado.")
+        print("Aguarde uma release com patch para sua versao ou use --full --update")
+        print("para baixar o ZIP completo MANUALMENTE (sem backup, apenas arquivos alterados).")
+        return 0 if not args.update else 2
     full = manifest.get("full") or {}
-    print("Nao ha patch direto compativel; o Termux pode instalar o ZIP completo.")
-    print("Pacote completo:", full.get("asset", "indisponivel"),
-          "(" + str(full.get("size", 0)) + " bytes)")
-    print("A instalacao antiga sera guardada como backup ao lado da pasta do jogo.")
+    print("Modo manual --full: download integral de", full.get("asset", "indisponivel"))
+    print("Somente os arquivos alterados serao substituidos; sem backup.")
     if not args.update:
-        print("Feche o JoiPlay e execute --update para atualizar sem reinstalar manualmente.")
+        print("Execute com --full --update para confirmar.")
         return 0
-    backup, saved = install_full_from_release(root, info, release, manifest)
-    print("Atualizacao completa aplicada. Saves locais copiados:", saved)
-    print("Pasta antiga preservada para recuperacao:", backup)
-    print("Reabra o MESMO Game.exe no JoiPlay; confira os saves antes de apagar o backup.")
-    print("Antes de uma proxima atualizacao no Termux, entre novamente na pasta nova com cd.")
+    _backup, count = install_full_from_release(root, info, release, manifest)
+    print("Atualizacao concluida:", count, "arquivo(s) modificados. Saves preservados.")
+    print("Reabra o mesmo Game.exe no JoiPlay.")
     return 0
 
 
