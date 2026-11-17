@@ -108,9 +108,16 @@ class S08IntegrityTests(unittest.TestCase):
                         {"@tileset_name":b"MissingSinnoh"})])
         with self.assertRaisesRegex(ValueError,"graficos citados"):
             s08.graphic_inventory(blob, {}, self.game, {})
-        images={"Graphics/Tilesets/MissingSinnoh.png": b"fixture PNG"}
+        png = bytes.fromhex(
+            "89504e470d0a1a0a0000000d494844520000000100000001"
+            "08060000001f15c4890000000049454e44ae426082")
+        images={"Graphics/Tilesets/MissingSinnoh.png": png}
         good=s08.graphic_inventory(blob,images,self.game,{})
         self.assertEqual(good["referenced_graphics_count"],1)
+        with self.assertRaisesRegex(ValueError,"PNG referenciado invalido"):
+            s08.graphic_inventory(
+                blob,{"Graphics/Tilesets/MissingSinnoh.png": b"invalid PNG"},
+                self.game,{})
 
     def test_08_rejects_graphic_name_path_traversal(self):
         blob=serialize([None,RubyObject("RPG::Tileset",
