@@ -2,6 +2,30 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "98bf47622404eda95b8869dc012facb231d6d8d5",
+      "date": "2026-11-16T21:04:05-03:00",
+      "title": "docs(ci): CH20 15 testes e verificacao do schema CH06",
+      "category": "Documentação"
+    },
+    {
+      "sha": "cdb4b4b6ba5599799d0148a6a741a8da09a81770",
+      "date": "2026-11-16T21:04:02-03:00",
+      "title": "docs(ci): CH20 15 testes e verificacao do schema CH06",
+      "category": "Documentação"
+    },
+    {
+      "sha": "9ff59d3c35c8ea743780dd98023002e42be36ffe",
+      "date": "2026-11-16T21:03:59-03:00",
+      "title": "docs(ci): CH20 15 testes e verificacao do schema CH06",
+      "category": "Documentação"
+    },
+    {
+      "sha": "843f80475e3ddc95bcd9c745e4d340730107a468",
+      "date": "2026-11-16T21:03:57-03:00",
+      "title": "docs(ci): CH20 15 testes e verificacao do schema CH06",
+      "category": "Documentação"
+    },
+    {
       "sha": "f0f7f39561fa07d2a91f6f86e909f007d4cf5c37",
       "date": "2026-11-16T21:03:45-03:00",
       "title": "test(sinnoh): CH20 rejeitar topologia invalida via auditor CH06",
