@@ -40,3 +40,11 @@ py -3 scripts\regions\build_sinnoh_b09_native_qa.py --rollback-sha "SHA_DO_DRY_R
 **Próxima etapa B10:** após o usuário enviar os relatórios B08 e B09, avaliar os caminhos de salvamento e elaborar uma maneira verificável de executar o jogo de QA sem compartilhar saves com a instalação principal; testar apenas com autorização e dados verificados.
 
 [Contrato B09](../data/regions/sinnoh-b09-native-qa.json) · [Builder](../scripts/regions/build_sinnoh_b09_native_qa.py) · [18 testes de regressão](../tests/test_sinnoh_b09_native_qa.py).
+
+## Progresso no console e leitura otimizada da B09
+
+O construtor mostra o inventario em `stderr` a cada 1.000 arquivos e, durante a clonagem, publica quantidade de arquivos verificados e bytes copiados a cada 500 arquivos. O `stdout` permanece um unico JSON, preservando a integridade dos relatórios utilizados pela Central. Mensagens não expõem nomes de arquivos ou caminhos absolutos.
+
+A copia do arquivo nativo calcula SHA-256 durante a transferencia, em vez de ler o arquivo antes de copia-lo; apos a escrita, o arquivo de destino continua sendo relido e auditado por SHA-256. Alteracoes da origem mesmo mantendo o mesmo tamanho bloqueiam a clonagem e acionam o rollback tradicional. Nenhum save, Game.exe ou arquivo de jogo principal e modificado ou executado.
+
+A melhoria vale para execucoes que usarem esta versao do script do GitHub; nao atualiza automaticamente o BAT/ZIP da Central ja extraida nem altera uma recuperacao em andamento. Nao caracteriza aprovacao de Game.exe/JoiPlay ou das barras B/C/D.
