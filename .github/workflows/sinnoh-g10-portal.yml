@@ -1,0 +1,72 @@
+name: Sinnoh G10 - estados de implantacao no portal
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g10-portal.yml'
+      - 'site/scripts/sinnoh-g10-status.mjs'
+      - 'site/scripts/build.mjs'
+      - 'site/src/assets/sinnoh-implementation.js'
+      - 'site/src/assets/sinnoh-guide.js'
+      - 'site/src/assets/sinnoh-search.js'
+      - 'site/src/assets/app.js'
+      - 'site/src/assets/styles.css'
+      - 'site/tests/sinnoh-g10-status.test.mjs'
+      - 'data/regions/sinnoh-*.json'
+      - 'site/public/data/regions.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g10-portal.yml'
+      - 'site/scripts/sinnoh-g10-status.mjs'
+      - 'site/scripts/build.mjs'
+      - 'site/src/assets/sinnoh-implementation.js'
+      - 'site/src/assets/sinnoh-guide.js'
+      - 'site/src/assets/sinnoh-search.js'
+      - 'site/src/assets/app.js'
+      - 'site/src/assets/styles.css'
+      - 'site/tests/sinnoh-g10-status.test.mjs'
+      - 'data/regions/sinnoh-*.json'
+      - 'site/public/data/regions.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portal:
+    name: G10 / build do portal e testes de falsos estados
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dependencias do portal
+        run: npm ci --prefix site
+      - name: Gerar guias e matriz G10 a partir de manifestos publicos
+        run: npm run build --prefix site
+      - name: Testar 20 cenarios G10 e reguladores CH17/CH18
+        run: |
+          node --test site/tests/sinnoh-g10-status.test.mjs
+          node --test site/tests/sinnoh-guide.test.mjs site/tests/sinnoh-search.test.mjs
+      - name: Suite completa do site
+        run: npm test --prefix site
+      - name: Guardar somente metadados G10 sem assets doador/saves
+        run: |
+          node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const d=JSON.parse(readFileSync('site/dist/data/sinnoh-implementation.json','utf8'));
+          if(d.status!=='PUBLIC_CONTRACT_EVIDENCE_ONLY_NO_NATIVE_APPROVAL'||
+             d.states[1].count!==54||d.states[2].count!==0||d.states[3].count!==0||
+             d.verification.gameExeTested!==false||d.verification.playableVerified!==false||
+             d.verification.phaseBApproved!==0||d.verification.phaseCApproved!==0||
+             d.verification.phaseDApproved!==0)throw Error('G10 release guard');
+          console.log('SINNOH_G10_PUBLIC_STATUS_ONLY_NO_NATIVE_APPROVAL');
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sinnoh-g10-public-status-metadata
+          path: site/dist/data/sinnoh-implementation.json
+          if-no-files-found: warn

@@ -1,6 +1,6 @@
 // CH18: pure query/filter contract for the non-playable Sinnoh reference guide.
 export const SINNOH_TABS=Object.freeze([
-  'visao','areas','treinadores','ginasios','liga','itens','progresso','pendencias'
+  'visao','areas','treinadores','ginasios','liga','itens','progresso','pendencias','implantacao'
 ]);
 export const SINNOH_PENDING_TYPES=Object.freeze([
   'areas','treinadores','equipes','itens','historia','encontros','musica'
