@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "952414509fc3d7123fabb6afd1d76e0dd2365a27",
+      "date": "2026-11-17T12:32:03-03:00",
+      "title": "docs(sinnoh): B04 reexecucao ainda em 617 IDs, coletor V2 e protecao de Unova",
+      "category": "Novidades"
+    },
+    {
       "sha": "30be9044ec58c44621a518afd2566fa2956ba380",
       "date": "2026-11-17T12:19:42-03:00",
       "title": "feat(regions): B05 mapa ocupado, 76 Sinnoh hold e 174 candidatos Unova",
