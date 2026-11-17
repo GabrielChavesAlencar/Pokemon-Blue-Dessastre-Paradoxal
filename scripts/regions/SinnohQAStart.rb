@@ -31,7 +31,7 @@ module BlueSinnohQAStart
                       !File.symlink?("mkxp.json") && File.file?("Game.ini") &&
                       !File.symlink?("Game.ini")
     app = profile["dataPathApp"]
-    return nil unless app.is_a?(String) && app.match?(/\\ASinnoh-QA-[a-f0-9]{12}\\z/)
+    return nil unless app.is_a?(String) && app.match?(/\ASinnoh-QA-[a-f0-9]{12}\z/)
     suffix = app.delete_prefix("Sinnoh-QA-")
     expected_title = "Sinnoh QA " + suffix
     return nil unless profile["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + suffix &&
