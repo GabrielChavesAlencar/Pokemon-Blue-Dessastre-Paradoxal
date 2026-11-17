@@ -18,6 +18,12 @@ O arquivo [`SINNOH_DIAGNOSTICAR_PENDENCIAS.bat`](../SINNOH_DIAGNOSTICAR_PENDENCI
 
 O auditor informa IDs ocupados, reservas conflitantes e MapIDs futuros faltantes. Mesmo que nenhuma colisão seja identificada, o estado máximo é `CANDIDATE_READY_FOR_MANUAL_REVIEW_NOT_APPROVED` com `r07_complete=false`. **Uma declaração local de revisão não equivale a comprovação de reserva exaustiva ou licença.** O intervalo 600–999 continua indisponível para o remapeamento compartilhado; IDs de quatro dígitos continuam bloqueados.
 
+## Evidência de CI
+
+- [Matriz S30 — run 43998666938](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43998666938): job Python e manifesto `success`, exigindo o script, BAT e os **16 testes R07**; não precisa de arquivos do usuário para os fixtures.
+- [CH19 — run 43998666939](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43998666939): regressões Python e Ruby aprovadas. **Nenhum** MapInfos do usuário, mapa autorizado ou save real foi inspecionado por esses testes.
+- No repositório os MapIDs futuros **não** estão provados; o relatório R07 de uma máquina real segue bloqueado até os insumos locais existirem.
+
 ## Testes e pendências
 
 [16 testes R07](../tests/test_sinnoh_r07_reservations.py) validam ausência de baseline, referências de região, SHA do MapInfos, manifests ausentes/adulterados, conflito com Decades e outras reservas, symlinks, input fora de `.blue-work` e relatório sem modificação dos arquivos originais. Testes usam RXDATA sintético; não há cópia local real no GitHub.
