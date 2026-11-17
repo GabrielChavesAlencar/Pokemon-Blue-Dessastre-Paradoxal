@@ -8,6 +8,7 @@ on:
       - 'scripts/regions/audit_sinnoh_playtest.py'
       - 'tests/test_sinnoh_android_ch20.py'
       - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-twinleaf-events.schema.json'
       - 'data/regions/sinnoh-progress.json'
       - 'docs/SINNOH_CH20_JOIPLAY_PREFLIGHT.md'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - 'scripts/regions/audit_sinnoh_playtest.py'
       - 'tests/test_sinnoh_android_ch20.py'
       - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-twinleaf-events.schema.json'
       - 'data/regions/sinnoh-progress.json'
   workflow_dispatch:
 
