@@ -1,0 +1,48 @@
+name: Unova E - documentos e ferramentas (sem Game.exe)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/regions/audit_unova_*.py'
+      - 'tests/test_unova_*.py'
+      - 'data/regions/unova-*.json'
+      - 'docs/UNOVA_*.md'
+      - 'UNOVA_*AUDITAR*.bat'
+      - 'UNOVA_VALIDAR_DOCUMENTACAO.bat'
+      - '.github/workflows/unova-documentation.yml'
+  pull_request:
+    paths:
+      - 'scripts/regions/audit_unova_*.py'
+      - 'tests/test_unova_*.py'
+      - 'data/regions/unova-*.json'
+      - 'docs/UNOVA_*.md'
+      - '.github/workflows/unova-documentation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unova-docs-only:
+    name: Auditoria segura E - sem mapas instalados
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Conferir que Unova permanece planned
+        run: |
+          python scripts/regions/audit_unova_u03_catalog.py
+          python scripts/regions/audit_unova_e06_e07.py
+          python scripts/regions/audit_unova_e08_readiness.py
+      - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
+        run: python -m unittest discover -s tests -p 'test_unova_*.py' -v
+      - name: Compilar sintaxe Python sem executar mapas nem modificar saves
+        run: |
+          python -m py_compile scripts/regions/audit_unova_u02.py
+          python -m py_compile scripts/regions/audit_unova_u03_catalog.py
+          python -m py_compile scripts/regions/audit_unova_source_detail.py
+          python -m py_compile scripts/regions/audit_unova_e06_e07.py
+          python -m py_compile scripts/regions/audit_unova_e08_readiness.py
