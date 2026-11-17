@@ -1,0 +1,68 @@
+name: Sinnoh G06 - auditoria grafica estatica
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g06-render-static.yml'
+      - 'scripts/regions/audit_sinnoh_g06_render_static.py'
+      - 'tests/test_sinnoh_g06_render_static.py'
+      - 'data/regions/sinnoh-b01-actual-native.json'
+      - 'data/regions/sinnoh-b06-technical-candidate.json'
+      - 'data/regions/sinnoh-b07-private-stage.json'
+      - 'data/regions/sinnoh-b08-private-qa.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g06-render-static.yml'
+      - 'scripts/regions/audit_sinnoh_g06_render_static.py'
+      - 'tests/test_sinnoh_g06_render_static.py'
+      - 'data/regions/sinnoh-b01-actual-native.json'
+      - 'data/regions/sinnoh-b06-technical-candidate.json'
+      - 'data/regions/sinnoh-b07-private-stage.json'
+      - 'data/regions/sinnoh-b08-private-qa.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g06-static:
+    name: G06 / 21 testes PNG e tileset sem imagens proprietarias
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testes de PNG sintetico com CRC, zlib, scanline e metadados
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g06_render_static.py' -v
+      - name: Gerar relatorio de metadados publicos e garantir nenhuma aprovacao
+        run: |
+          mkdir -p .blue-work/sinnoh-g06
+          python scripts/regions/audit_sinnoh_g06_render_static.py > .blue-work/sinnoh-g06/static-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          file=Path(".blue-work/sinnoh-g06/static-report.json")
+          r=json.loads(file.read_text(encoding="utf-8"))
+          assert r["status"]=="STATIC_RENDER_METADATA_RECONCILED_PNG_BYTES_NOT_AVAILABLE"
+          assert r["expected_private_png_count"]==14
+          assert r["real_png_bytes_inspected_on_github"]==0
+          assert r["expected_geometry_map_count"]==54
+          assert r["source_tileset_ids"]==[1,31]
+          assert r["expected_private_tileset_indices_if_zero_slot_present"]==[71,72]
+          assert r["private_tileset_indices_verified_against_native_serialized_table"] is False
+          assert all(x["needs_native_render_test"] for x in r["tall_png_render_risks"])
+          assert not r["real_png_crc_zlib_verified_on_github"]
+          assert not r["rendering_in_Game_exe_verified"]
+          assert not r["can_install_live_game"]
+          assert r["phase_b_approved"]==r["phase_c_approved"]==r["phase_d_approved"]==0
+          print("SINNOH_G06_STATIC_ONLY_PNG_BYTES_NOT_AVAILABLE")
+          PY
+      - name: Publicar apenas resumo JSON, nunca imagens ou saves
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g06-render-metadata-only
+          path: .blue-work/sinnoh-g06/static-report.json
+          if-no-files-found: warn
