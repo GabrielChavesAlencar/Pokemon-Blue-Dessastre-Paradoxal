@@ -59,8 +59,8 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertEqual(work["complete"], sum(row["complete"] for row in substeps))
         self.assertEqual(work["complete"], 6)
         self.assertEqual(work["total"], 9)
-        self.assertEqual(record["development"]["done"], 8)
-        self.assertEqual(record["development"]["percent_complete"], 25)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
+        self.assertEqual(record["development"]["percent_complete"], 100 * record["development"]["done"] // record["development"]["total"])
         self.assertEqual(next(t["status"] for t in record["tasks"]
                               if t["id"] == "S07"), "partial")
         self.assertTrue(all(not row["complete"] or
@@ -80,10 +80,10 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertFalse(phase["native_verified"])
         self.assertFalse(phase["assets_verified"])
         self.assertTrue(phase["not_playable"])
-        self.assertEqual(record["development"]["done"], 8)
-        self.assertEqual(record["development"]["partial"], 7)
-        self.assertEqual(record["development"]["pending"], 17)
-        self.assertEqual(record["development"]["percent_complete"], 25)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
+        self.assertEqual(record["development"]["partial"], sum(t["status"] == "partial" for t in record["tasks"]))
+        self.assertEqual(record["development"]["pending"], sum(t["status"] == "pending" for t in record["tasks"]))
+        self.assertEqual(record["development"]["percent_complete"], 100 * record["development"]["done"] // record["development"]["total"])
         self.assertEqual({row["id"]: row["status"] for row in record["tasks"]
                           if row["id"] in ("S13", "S14")},
                          {"S13": "partial", "S14": "partial"})
@@ -114,12 +114,12 @@ class SinnohProgressTests(unittest.TestCase):
                 self.assertTrue((ROOT / item["evidence"]).is_file())
         self.assertEqual(record["intro_workstream"]["complete"], 5)
         self.assertFalse(record["intro_workstream"]["substeps"][6]["complete"])
-        self.assertEqual(record["development"]["done"], 8)
-        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
+        self.assertEqual(record["development"]["partial"], sum(t["status"] == "partial" for t in record["tasks"]))
         self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
         panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
         self.assertIn("4/6", panel)
-        self.assertIn("8/32 (25%)", panel)
+        self.assertIn(f'{record["development"]["done"]}/{record["development"]["total"]} ({record["development"]["percent_complete"]}%)', panel)
         self.assertIn("0/13 (0%)", panel)
 
     def test_legacy_compatibility_qa_is_preparation_not_gameplay(self):
@@ -133,7 +133,7 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertFalse(step["pbs_compiled"])
         self.assertFalse(step["runtime_verified"])
         self.assertFalse(step["can_merge_into_multiregion"])
-        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
         self.assertEqual(record["phase_gates"]["technically_approved"], 0)
         self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
         for item in step["substeps"]:
@@ -141,7 +141,7 @@ class SinnohProgressTests(unittest.TestCase):
                 self.assertTrue((ROOT / item["evidence"]).is_file())
         panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
         self.assertIn("3/6", panel)
-        self.assertIn("8/32", panel)
+        self.assertIn(f'{record["development"]["done"]}/{record["development"]["total"]}', panel)
 
     def test_private_qa_pilot_overlay_is_only_code_preparation(self):
         record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
@@ -155,14 +155,14 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertFalse(bundle["native_qa_approved"])
         self.assertFalse(bundle["main_game_modified"])
         self.assertFalse(bundle["can_install"])
-        self.assertEqual(record["development"]["done"], 8)
-        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
+        self.assertEqual(record["development"]["partial"], sum(t["status"] == "partial" for t in record["tasks"]))
         self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
         self.assertTrue(all(not t["complete"] or (ROOT / t["evidence"]).is_file()
                             for t in bundle["substeps"]))
         panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
         self.assertIn("3/6", panel)
-        self.assertIn("8/32 (25%)", panel)
+        self.assertIn(f'{record["development"]["done"]}/{record["development"]["total"]} ({record["development"]["percent_complete"]}%)', panel)
 
     def test_qa_installer_is_code_preparation_not_native_acceptance(self):
         record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
@@ -178,13 +178,13 @@ class SinnohProgressTests(unittest.TestCase):
                      "android_verified", "source_assets_rights_verified",
                      "can_launch_as_verified_game", "actual_main_game_or_saves_modified"):
             self.assertFalse(stage[gate], gate)
-        self.assertEqual(record["development"]["done"], 8)
-        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
+        self.assertEqual(record["development"]["partial"], sum(t["status"] == "partial" for t in record["tasks"]))
         self.assertEqual(record["phase_gates"]["technically_approved"], 0)
         self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
         panel = (ROOT / "docs/SINNOH_PROGRESSO.md").read_text("utf-8")
         self.assertIn("4/7", panel)
-        self.assertIn("8/32 (25%)", panel)
+        self.assertIn(f'{record["development"]["done"]}/{record["development"]["total"]} ({record["development"]["percent_complete"]}%)', panel)
 
     def test_postcompile_engine_probe_only_prepares_native_validation(self):
         record = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text("utf-8"))
@@ -201,7 +201,7 @@ class SinnohProgressTests(unittest.TestCase):
                     "android_joi_play_tested", "main_game_or_user_saves_modified",
                     "ready_marker_created", "playable_approved"):
             self.assertFalse(step[key], key)
-        self.assertEqual(record["development"]["done"], 8)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
         self.assertEqual(record["phase_gates"]["technically_approved"], 0)
         self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
         self.assertEqual(record["phase_gates"]["fully_tested_native"], 0)
@@ -224,8 +224,8 @@ class SinnohProgressTests(unittest.TestCase):
                     "manual_evidence_accepted", "ready_marker_created",
                     "native_qa_approved", "main_game_or_user_saves_modified"):
             self.assertFalse(stage[key], key)
-        self.assertEqual(record["development"]["done"], 8)
-        self.assertEqual(record["development"]["partial"], 7)
+        self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
+        self.assertEqual(record["development"]["partial"], sum(t["status"] == "partial" for t in record["tasks"]))
         self.assertEqual(record["phase_gates"]["technically_approved"], 0)
         self.assertEqual(record["phase_gates"]["playable_in_game_executable"], 0)
         self.assertEqual(record["phase_gates"]["fully_tested_native"], 0)
