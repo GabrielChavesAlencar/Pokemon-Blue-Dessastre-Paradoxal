@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/sinnoh-s30.yml'
+      - 'SINNOH_JOGAR_EXPERIMENTAL.bat'
       - 'scripts/regions/**'
       - 'scripts/music/**'
       - 'scripts/battle_polish/**'
@@ -17,6 +18,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/sinnoh-s30.yml'
+      - 'SINNOH_JOGAR_EXPERIMENTAL.bat'
       - 'scripts/regions/**'
       - 'scripts/music/**'
       - 'scripts/battle_polish/**'
