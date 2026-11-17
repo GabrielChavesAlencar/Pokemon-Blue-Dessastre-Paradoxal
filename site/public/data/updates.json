@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c0f8862c2faa39c344c9d6267f33fef96e8cd395",
+      "date": "2026-11-17T13:16:42-03:00",
+      "title": "feat(sinnoh): B07 stage privado de 54 geometrias com tilesets isolados e rollback",
+      "category": "Novidades"
+    },
+    {
       "sha": "e4029e33114633f100adb61ea3fd993b1b00ff12",
       "date": "2026-11-17T13:08:51-03:00",
       "title": "ci(unova): disponibilizar RUN_UNOVA_MAPIDS.bat em ZIP para download sem abrir texto",
