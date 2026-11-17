@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "workstream": "B",
+  "step": "B00",
+  "status": "AWAITING_DONOR_ZIP_AND_CREDITS",
+  "source_candidates": [
+    {
+      "name": "Pokemon World V18",
+      "author": "community RPG Maker XP project author",
+      "engine": "Pokemon Essentials v18",
+      "url": "https://www.mediafire.com/file/tq5w0in2xt2peb1/Pokemon_World_V18.zip/file",
+      "credits_url": "https://www.mediafire.com/file/gdtsjg5lbnstzo1/Credits.txt/file",
+      "origin": "https://www.reddit.com/r/PokemonRMXP/comments/wsiyyr",
+      "author_reuse_note": "Author publicly shared source maps and subsequently agreed to reuse of project parts; third-party asset rights must still be audited",
+      "reusability_scope_verified": false,
+      "full_sinnoh_maps_verified": false,
+      "donor_package_sha256": null
+    },
+    {
+      "name": "Pokemon Ancient Platinum",
+      "author": "Phantombass",
+      "engine": "Pokemon Essentials v21.1 (per project description)",
+      "url": "https://eeveeexpo.com/threads/9085/",
+      "credits_url": null,
+      "origin": "docs/SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md",
+      "author_reuse_note": "Existing comparison candidate; editable RMXP source and reuse rights still unverified",
+      "reusability_scope_verified": false,
+      "full_sinnoh_maps_verified": false,
+      "donor_package_sha256": null
+    }
+  ],
+  "optional_art": "https://www.deviantart.com/alchemybats/art/DPP-Style-Sinnoh-Overworld-Tileset-V-2-1205547742",
+  "mandatory_user_uploads": [
+    "Pokemon_World_V18.zip",
+    "Credits.txt"
+  ],
+  "optional_uploads": [
+    "local_decades_game_Data_inventory_or_map_snapshot.zip"
+  ],
+  "intake_mode": "ZIP_METADATA_ONLY_READ_ONLY",
+  "source_map_ids_verified": false,
+  "source_map_count_verified": false,
+  "source_sinnoh_map_ids_identified": false,
+  "assets_usage_rights_individually_verified": false,
+  "decades_occupied_map_ids_verified": false,
+  "planned_regions_reservations_verified": false,
+  "source_pbs_or_native_events_installed": false,
+  "game_or_saves_modified": false,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "technical_phase_approved": false,
+  "phase_b_completed": 0,
+  "phase_b_total": 13,
+  "notes": "The published Pokemon World V18 package contains other regions too: total donor map count must not be mislabeled as Sinnoh map count. No archive was downloaded or audited in this turn; links and author attribution are leads, not proof of rights for each third-party asset."
+}
