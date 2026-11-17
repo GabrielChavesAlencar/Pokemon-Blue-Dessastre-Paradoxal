@@ -30,6 +30,8 @@ REQUIRED = {
         "tests/test_sinnoh_s10_launcher.py",
         "tests/test_sinnoh_s11_save_isolation.py",
         "scripts/regions/sinnoh_save_isolation.py",
+        "scripts/regions/sinnoh_s12_installer.py",
+        "tests/test_sinnoh_s12_installer.py",
     ),
     "ruby": (
         "tests/sinnoh_pilot_runtime.rb",
@@ -52,6 +54,7 @@ REQUIRED = {
     "contracts": (
         "data/regions/sinnoh-progress.json",
         "SINNOH_JOGAR_EXPERIMENTAL.bat",
+        "SINNOH_INSTALAR_EXPERIMENTAL.bat",
         "data/regions/sinnoh-source.json",
         "data/regions/sinnoh-twinleaf-events.json",
         "site/public/data/regions.json",
