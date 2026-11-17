@@ -19,6 +19,7 @@ from typing import Mapping
 import audit_unova_a04_mapids as a04
 import audit_unova_a05_candidates as a05
 import audit_unova_a06_references as a06
+import audit_unova_a07_reference_provenance as a07
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -155,6 +156,7 @@ def pretty(result: dict) -> str:
     a04_result=result.get("a04_result")
     a05_result=result.get("a05_result")
     a06_result=result.get("a06_result")
+    a07_result=result.get("a07_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -205,6 +207,26 @@ def pretty(result: dict) -> str:
             "  Relatorio: "+str(result["a06_report_path"]),
             "",
         ])
+    if a07_result:
+        lines.extend([
+            "A07 — origem de MapID 3 e referencias literais em scripts",
+            "  Mapas relidos: "+str(a07_result["map_files_parsed"])+"/"+
+                str(a07_result["map_files_expected"]),
+            "  Transferencias estaticas ao MapID 3: "+
+                str(a07_result["mapid_3_static_reference_count"]),
+            "  Origem das transferencias para MapID 3: "+
+                "; ".join("map "+str(x.get("source_map_id","CommonEvent"))+
+                    ", evento "+str(x.get("event_id",x.get("common_event_index")))+
+                    ", pag "+str(x.get("page_index","n/a")) for x in
+                    a07_result["static_interest_references"] if x["destination_map_id"]==3)[:500],
+            "  Pistas literais em scripts (IDs 3/518-599): "+
+                str(len(a07_result["script_literal_hints"])),
+            "  CommonEvents: "+a07_result["common_events"]["status"],
+            "  Scripts.rxdata: "+a07_result["scripts_rxdata"]["status"],
+            "  Pendencias na analise: "+str(a07_result["review_errors_count"]),
+            "  Relatorio detalhado: "+str(result["a07_report_path"]),
+            "",
+        ])
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
@@ -247,8 +269,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -265,6 +287,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         a05_path = a05.save(project,a05_result)
         a06_result=a06.audit(selected,a04_result)
         a06_path=a06.save(project,a06_result)
+        a07_result=a07.audit(selected,a04_result,a06_result)
+        a07_path=a07.save(project,a07_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -272,6 +296,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a05_report_path":str(a05_path),
             "a06_result":a06_result,
             "a06_report_path":str(a06_path),
+            "a07_result":a07_result,
+            "a07_report_path":str(a07_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -293,6 +319,7 @@ def main(argv=None) -> int:
         print("UNOVA_A04="+str(result.get("a04_report_path") or "NAO_GERADO"))
         print("UNOVA_A05="+str(result.get("a05_report_path") or "NAO_GERADO"))
         print("UNOVA_A06="+str(result.get("a06_report_path") or "NAO_GERADO"))
+        print("UNOVA_A07="+str(result.get("a07_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
