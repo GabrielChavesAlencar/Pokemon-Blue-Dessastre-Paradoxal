@@ -174,6 +174,33 @@ def private_a04(root: Path, report_path: Path) -> dict:
         report.get("observed_or_declared_occupied_count")!=
         len(report.get("observed_or_declared_occupied_map_ids",[]))):
         block("A04 com IDs incorretos/duplicados")
+    maps=base["maps"]
+    if base["file_count"]!=len(maps) or not maps:
+        block("A04 com numero de arquivos divergente")
+    physical=set()
+    declared=set()
+    for row in maps:
+        if (type(row) is not dict or type(row.get("id")) is not int or
+            not 1<=row["id"]<=99999 or row["id"] in physical or
+            type(row.get("bytes")) is not int or not 0<row["bytes"]<=a04.MAX_FILE_BYTES or
+            type(row.get("sha256")) is not str or
+            not SHA.fullmatch(row["sha256"])):
+            block("A04 arquivo de mapa invalido/duplicado")
+        physical.add(row["id"])
+        if row.get("mapinfo_name") is not None:
+            if not isinstance(row["mapinfo_name"],str) or not row["mapinfo_name"].strip():
+                block("A04 nome de mapa invalido")
+            declared.add(row["id"])
+    missing=base.get("missing_map_file_ids")
+    if (not isinstance(missing,list) or
+        any(type(i) is not int or not 1<=i<=99999 for i in missing) or
+        missing!=sorted(set(missing)) or set(missing)&physical):
+        block("A04 MapInfos sem arquivos inconsistentes")
+    declared.update(missing)
+    if (base.get("mapinfos_declared_count")!=len(declared) or
+        base.get("orphan_map_file_ids")!=sorted(physical-declared) or
+        source_ids!=sorted(physical|declared)):
+        block("A04 MapInfos e MapNNN divergentes")
     observed=report["observed_or_declared_occupied_map_ids"]
     if (any(type(i) is not int or not 1<=i<=99999 for i in observed) or
         observed!=sorted(set(observed)) or not set(source_ids)<=set(observed)):
