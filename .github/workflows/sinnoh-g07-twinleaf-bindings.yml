@@ -1,0 +1,80 @@
+name: Sinnoh G07 - vinculos planejados de Twinleaf
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g07-twinleaf-bindings.yml'
+      - 'scripts/regions/audit_sinnoh_g07_twinleaf_bindings.py'
+      - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
+      - 'tests/test_sinnoh_g07_twinleaf_bindings.py'
+      - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-twinleaf-events.schema.json'
+      - 'data/regions/sinnoh-intro-s13.json'
+      - 'data/regions/sinnoh-starters-s14.json'
+      - 'data/regions/sinnoh-b07-private-stage.json'
+      - 'data/regions/sinnoh-b08-private-qa.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g07-twinleaf-bindings.yml'
+      - 'scripts/regions/audit_sinnoh_g07_twinleaf_bindings.py'
+      - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
+      - 'tests/test_sinnoh_g07_twinleaf_bindings.py'
+      - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-twinleaf-events.schema.json'
+      - 'data/regions/sinnoh-intro-s13.json'
+      - 'data/regions/sinnoh-starters-s14.json'
+      - 'data/regions/sinnoh-b07-private-stage.json'
+      - 'data/regions/sinnoh-b08-private-qa.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g07-static:
+    name: G07 / 20 testes de topologia e vinculos sem Game.exe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Executar testes negativos e reconciliação CH06-S13-S14-B07-B09
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g07_twinleaf_bindings.py' -v
+      - name: Gerar matriz somente de metadados e impedir falsa aprovação nativa
+        run: |
+          mkdir -p .blue-work/sinnoh-g07
+          python scripts/regions/audit_sinnoh_g07_twinleaf_bindings.py > .blue-work/sinnoh-g07/bindings.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path(".blue-work/sinnoh-g07/bindings.json")
+          data=json.loads(p.read_text(encoding="utf8"))
+          assert data["status"]=="TWINLEAF_SYMBOLIC_BINDING_MATRIX_ONLY_NATIVE_EVIDENCE_PENDING"
+          assert len(data["maps"])==9
+          assert len(data["reciprocal_pairs"])==8
+          assert data["counts"]["planned_warps"]==16
+          assert data["counts"]["planned_handlers"]==5
+          assert data["counts"]["planned_physical_starter_balls"]==3
+          assert data["counts"]["physically_bound_maps"]==0
+          assert data["counts"]["physically_bound_events"]==0
+          assert data["counts"]["native_transfers_verified"]==0
+          assert data["terrain_stage"]["terrain_candidate_count"]==54
+          assert all(x["native_map_id"] is None for x in data["maps"])
+          assert data["start_spawn"]["native_map_id"] is None
+          assert not data["game_exe_tested"]
+          assert not data["joiplay_tested"]
+          assert not data["can_install_live_game"]
+          assert data["phase_b_approved"]==data["phase_c_approved"]==data["phase_d_approved"]==0
+          print("SINNOH_G07_SYMBOLIC_BINDINGS_ONLY_NATIVE_GATES_PENDING")
+          PY
+      - name: Publicar apenas matriz de vínculos simbólicos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g07-symbolic-binding-matrix
+          path: .blue-work/sinnoh-g07/bindings.json
+          if-no-files-found: warn
