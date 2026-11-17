@@ -14,6 +14,7 @@ import audit_unova_e08_readiness as readiness
 FILES=(
     "data/regions/unova-u03-areas.json",
     "data/regions/unova-e06-e07-preparation.json",
+    "data/regions/unova-e05-source-map-atlas.json",
     "site/public/data/regions.json",
     "docs/UNOVA_PESQUISA_FONTES_RMXP.md",
     "docs/UNOVA_PLANO_IMPORTACAO_REGIAO_32_FASES.md",
@@ -47,6 +48,8 @@ class ReadinessTests(unittest.TestCase):
         self.assertTrue(r["source_e04_e05_audit_evidence_verified"])
         self.assertEqual(r["source_unova_event_containers"],0)
         self.assertEqual(r["source_unova_map_files_audited"],64)
+        self.assertEqual(r["source_maps_20x15"],56)
+        self.assertEqual(r["source_maps_larger"],8)
         self.assertTrue(r["symbolic_music_and_trainers_only"])
 
     def test_02_zip_filename_never_approves(self):
@@ -98,6 +101,7 @@ class ReadinessTests(unittest.TestCase):
         result=readiness.inspect(self.root)
         self.assertEqual(result["bar_e"]["completed"],6)
         self.assertEqual(result["source_unova_map_files_audited"],64)
+        self.assertEqual(result["source_maps_20x15"],56)
         self.assertFalse(result["can_install"])
         self.assertFalse(result["rights_verified"])
         self.assertFalse(result["game_exe_tested"])
