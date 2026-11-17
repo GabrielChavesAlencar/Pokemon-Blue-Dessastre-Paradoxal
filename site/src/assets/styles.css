@@ -292,6 +292,31 @@
 @media(max-width:650px){.kanto-balance-page>.section{margin:20px 0 9px}.kanto-balance-table{font-size:11px}.kanto-balance-table th,.kanto-balance-table td{padding:10px 11px}}
 
 /* CH17 Sinnoh guide: archival reference only, with unambiguous pending states. */
+
+/* G10: evidence states are explicitly documentary; no "playable" green UI. */
+.sinnoh-implementation{border:1px solid #3b526e;border-radius:12px;background:#0e1a2d;padding:20px 22px}
+.sinnoh-implementation .section-heading{margin-bottom:12px}
+.sinnoh-implementation-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.sinnoh-implementation-stage{min-width:0;padding:18px;border:1px solid #476079;border-radius:9px;background:#172840}
+.sinnoh-implementation-stage strong{display:block;color:#e1ebf9;font:700 30px/1.2 'Barlow Condensed',sans-serif}
+.sinnoh-implementation-stage span{display:block;color:#b9cfe9;font-size:12px;font-weight:700;margin:4px 0}
+.sinnoh-implementation-stage p{font-size:11px;line-height:1.65;color:#adbfd1}
+.sinnoh-implementation-stage[data-sinnoh-state="installed"],
+.sinnoh-implementation-stage[data-sinnoh-state="playable"]{border-style:dashed;background:#111e2c}
+.sinnoh-implementation-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.sinnoh-implementation-category{border:1px solid #364e6a;background:#121f33;border-radius:9px;padding:16px}
+.sinnoh-implementation-category h3{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:16px;color:#f1f6ff}
+.sinnoh-implementation-category p{font-size:12px;color:#aebfd4;margin:10px 0}
+.sinnoh-evidence-status{display:inline-block;font-size:10px;color:#f6cf91;border:1px solid #977549;border-radius:4px;padding:2px 6px}
+.sinnoh-implementation-more{margin:14px 0}
+.sinnoh-implementation-details{padding:16px;background:#111e2f;border-radius:9px}
+.sinnoh-implementation-details h3,.sinnoh-implementation-blockers h3{font-size:17px;color:#e7eefb;margin:16px 0 10px}
+.sinnoh-implementation-details p{font-size:12px;color:#aec1d6;line-height:1.8}
+.sinnoh-implementation-details ol,.sinnoh-implementation-blockers ul{margin:10px 0 0;padding-left:22px;color:#bacbe0;font-size:12px;line-height:1.9}
+.sinnoh-implementation-blockers{border:1px dashed #576d87;border-radius:8px;padding:14px 17px;margin:22px 0}
+@media(max-width:1000px){.sinnoh-implementation-stages{grid-template-columns:repeat(2,minmax(0,1fr))}.sinnoh-implementation-categories{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.sinnoh-implementation{padding:14px}.sinnoh-implementation-stages,.sinnoh-implementation-categories{grid-template-columns:1fr}.sinnoh-implementation-stage{padding:14px}}
+
 .sinnoh-guide-page .article-heading{margin-bottom:24px}
 .sinnoh-guide-tabs,.sinnoh-guide-phase{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px}
 .sinnoh-guide-tabs .filter-chip,.sinnoh-guide-phase .filter-chip{min-height:35px;display:inline-flex;align-items:center;justify-content:center}
