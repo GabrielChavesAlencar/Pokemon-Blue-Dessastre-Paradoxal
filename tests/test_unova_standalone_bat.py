@@ -27,6 +27,7 @@ NEEDED=(
  "scripts/regions/audit_unova_a10_dynamic_matrix.py",
  "scripts/regions/audit_unova_a11_intro_preflight.py",
  "scripts/regions/audit_unova_a12_ownership.py",
+ "scripts/regions/audit_unova_a13_private_qa.py",
  "scripts/install_game.py",
  "scripts/regions/install_kanto.py",
  "scripts/regions/pilot.py",
@@ -74,7 +75,7 @@ class StandaloneBatTests(unittest.TestCase):
         self.assertIn("python",self.prefix.casefold())
         self.assertIn("exit /b",self.prefix)
 
-    def test_02_contains_all_twenty_five_dependency_files(self):
+    def test_02_contains_all_twenty_six_dependency_files(self):
         self.assertEqual(set(self.files),set(NEEDED))
 
     def test_03_embedded_files_same_as_repository(self):
@@ -155,6 +156,7 @@ class StandaloneBatTests(unittest.TestCase):
             self.assertIn("A10",summary)
             self.assertIn("A11",summary)
             self.assertIn("A12",summary)
+            self.assertIn("A13",summary)
             self.assertIn("NENHUM MapID",summary)
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a04-mapids-*.json")))
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a05-candidates-*.json")))
@@ -165,6 +167,7 @@ class StandaloneBatTests(unittest.TestCase):
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a10-dynamic-matrix-*.json")))
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a11-intro-preflight-*.json")))
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a12-installer-ownership-*.json")))
+            self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a13-private-qa-*.json")))
 
 
 if __name__=="__main__":
