@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2560963b54a46c2f304c62373d9f9fb7fa741b83",
+      "date": "2026-11-17T19:02:05-03:00",
+      "title": "build(android): include compiled Kanto fossil mechanics in audited multiregion hotfix ZIP",
+      "category": "Melhorias"
+    },
+    {
       "sha": "b64b5f8eb933392574ff704e4c2c552e199854c9",
       "date": "2026-11-17T19:01:21-03:00",
       "title": "fix(kanto): recover old Miguel saves with no fossil event pages",
