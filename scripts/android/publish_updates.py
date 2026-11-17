@@ -31,7 +31,9 @@ def from_archive(path: Path, channel: str):
             raise ValueError("Missing installed update manifest in game ZIP.")
         actual = {n[len(root):] for n in names if safe_path(n[len(root):])}
         if actual != set(marker["files"]):
-            raise ValueError("Game archive and installed update manifest differ.")
+            missing = sorted(set(marker["files"]) - actual)
+            extras = sorted(actual - set(marker["files"]))
+            raise ValueError("Game archive and installed update manifest differ. Missing: {} / extra: {}".format(missing[:12], extras[:12]))
         for name, meta in marker.get("immutable", {}).items():
             if (name not in {entry[len(root):] for entry in names} or
                     meta != {"sha256": sha256_bytes(archive.read(root + name)),
