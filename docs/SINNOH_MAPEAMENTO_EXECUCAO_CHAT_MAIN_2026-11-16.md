@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 20/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 21/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -202,7 +202,13 @@ O [auditor S18](../scripts/regions/audit_sinnoh_s18_wild.py) e [12 testes negati
 
 O [adaptador Ruby](../scripts/regions/SinnohGalacticContracts.rb) usa a única chave de save `sinnoh_ch14` para as cinco etapas **Windworks, Mars, Jupiter (Forest), Pastoria e Lagos**, respeitando batalhas confirmadas, ordem e bloqueio regional. Como não existem MapIDs/callbacks verificados, `VERIFIED_NATIVE_SOURCES` permanece vazio; **não registra eventos reais, não altera equipes, sprites, itens, NPCs ou mapas**. O [contrato S19](../data/regions/sinnoh-galactic-s19.json), [auditor Python](../scripts/regions/audit_sinnoh_s19_galactic.py), [12 testes negativos](../tests/test_sinnoh_s19_galactic.py) e [runner Ruby](../tests/sinnoh_s19_galactic_runtime.rb) cobrem resultados inválidos, repetição, sequência, saves e regressões cross-region. [Aceite/limitações](SINNOH_S19_TEAM_GALACTIC_ACEITE.md).
 
-**Barra A 20/32 (62%)**, 5 parciais, 7 pendentes; E 20/20, B/C/D 0/13, 44 testes nativos aguardam fontes reais. S20 (Cyrus/Spear Pillar/Giratina) permanece pendente; a S19 foi entregue somente no escopo do código de progressão e provas sintéticas.
+**Barra A 20/32 (62%)**, 5 parciais, 7 pendentes; E 20/20, B/C/D 0/13, 44 testes nativos aguardam fontes reais. S20 já dispõe de contratos/testes offline, mas S19 e S20 ainda requerem mapas/callbacks físicos para aprovação jogável.
+
+### S20 — Cyrus, Spear Pillar, Mundo Distorcido e Giratina
+
+O [adaptador Ruby S20](../scripts/regions/SinnohDistortionContracts.rb) expõe gates por resultado tipado e a única sequência `sinnoh_ch14` para as nove etapas da fase 8: Cyrus, Saturn, Mars, Jupiter, Dialga/Palkia, puzzles, Cyrus final, Giratina e retorno seguro. Só inicia após as cinco etapas S19, exige Mine+Icicle e **não modifica mapas, salva flags paralelas, força captura de Giratina ou gera teleportes**. O registro `VERIFIED_NATIVE_SOURCES` é vazio e o método público rejeita confirmações sem callback instalado. O [contrato S20](../data/regions/sinnoh-distortion-s20.json) segue a referência S39 e o inventário CH14; [auditoria](../scripts/regions/audit_sinnoh_s20_distortion.py), [16 testes negativos](../tests/test_sinnoh_s20_distortion.py) e [teste Ruby de salvamento/resultado](../tests/sinnoh_s20_distortion_runtime.rb) usam fixtures, nunca jogo nativo.
+
+[Critérios de aceite S20](SINNOH_S20_CYRUS_DISTORTION_GIRATINA_ACEITE.md): **Barra A 21/32 (65%)**, 5 parciais, 6 pendentes; E 20/20, B/C/D 0/13, 44 casos nativos pendentes. Ainda requer mapas autorizados de Mt. Coronet/Distortion, encontros/puzzles reais, battle results e Game.exe/JoiPlay. **S21 (Elite/Cynthia) continua pendente.**
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
