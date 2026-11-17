@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "60611140979a39ceeff197f15496ef7d9644802c",
+      "date": "2026-11-17T07:17:06-03:00",
+      "title": "feat(unova): BAT de duplo clique para auditoria sem tocar no jogo",
+      "category": "Novidades"
+    },
+    {
       "sha": "998872fab492ba409f4cf602c8f1ab0788e89b82",
       "date": "2026-11-17T07:16:28-03:00",
       "title": "test(unova): 14 testes anti MapID falso e status planejado de U03",
