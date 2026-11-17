@@ -35,6 +35,10 @@ Faltam mapa e NPC de partida realmente instalados em Sinnoh, mapa de chegada de 
 
 **Aceite em código após CI e merge:** Barra A **23/32 (71%)**, 5 parciais, 4 pendentes; Barra E 20/20; B/C/D 0/13, 44 verificações nativas pendentes. A S23 — pós-jogo/revanches — continua pendente. **O projeto Sinnoh ainda não é jogável.**
 
-## Evidências de CI
+## Evidências reais do GitHub Actions
 
-Inserir somente execuções verificadas do GitHub Actions (S30, CH19 Python/Ruby, Portal e CH20 estático), sem promover fixtures ao status de teste nativo.
+- [Sinnoh S30 — execução 44061544618](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44061544618): **5/5 jobs `success`** (manifesto, Python com **16 testes negativos S22** e auditor `sinnoh-s22-travel-contract = passed (0)`, Ruby `sinnoh-s22-travel = passed (0)`, portal **161/161 testes** e Android estático).
+- [Sinnoh CH19 — execução 44061544763](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44061544763): **Python/Ruby `success`**, executando o auditor e o runtime S22 explicitamente; `CH19_SCOPE=sinnoh_only CH19_STATUS=passed NATIVE_QA=false`.
+- [Portal Blue — execução 44061544641](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44061544641): build e suíte do portal `success`.
+- [Sinnoh CH20 — execução 44061544598](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44061544598): pré-voo JoiPlay **estático** aprovado (18 + 12 verificações). **44 casos nativos continuam sem execução.**
+- **O que não foi testado:** Game.exe, partida real Windows/JoiPlay, mapas de Unova, NPC ou partida física em Sinnoh, passagem de Pokémon entre regiões com dados reais, arquivos de Bag/PC do usuário e retorno de teleporte. A fixture Hoenn usa um **ponto fictício somente para testar o bloqueio de fonte Sinnoh**, e nunca se converte em prova ou mapeamento nativo.
