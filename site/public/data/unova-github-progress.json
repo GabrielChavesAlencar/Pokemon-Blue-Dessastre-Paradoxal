@@ -183,8 +183,9 @@
         {
           "id": "G05.3",
           "title": "Contratar NPC de viagem e retorno entre regiões",
-          "status": "pending",
-          "acceptance": "Viagens por NPC com pré-condições e fallback seguro"
+          "status": "done",
+          "acceptance": "Viagens por NPC com pré-condições e fallback seguro",
+          "evidence": "scripts/regions/audit_unova_g05_travel.py"
         },
         {
           "id": "G05.4",
