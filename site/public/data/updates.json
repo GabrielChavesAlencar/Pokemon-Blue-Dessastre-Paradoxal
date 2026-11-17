@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "83dbd0737f1d971d9a54d9af1e05a9c67edfcf5b",
+      "date": "2026-11-17T08:35:43-03:00",
+      "title": "test(unova): progresso E08 deve permanecer bloqueado sem prova nativa",
+      "category": "Novidades"
+    },
+    {
       "sha": "b4258a13c4c93806b0153cee1fbb4d03a4de0df1",
       "date": "2026-11-17T08:34:36-03:00",
       "title": "feat(unova): relatorio E08 de progresso e bloqueios sem falsa homologacao nativa",
