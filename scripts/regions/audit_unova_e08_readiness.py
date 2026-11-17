@@ -13,6 +13,7 @@ from pathlib import Path
 from audit_unova_u03_catalog import validate as validate_areas
 from audit_unova_e06_e07 import validate as validate_resources
 from audit_unova_e04_e05_evidence import validate as validate_observed_source
+from audit_unova_e05_source_map_atlas import validate as validate_source_atlas
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -47,7 +48,12 @@ def inspect(root: Path = ROOT) -> dict:
     if evidence_path.exists():
         if not evidence_path.is_file() or evidence_path.stat().st_size > 200000:
             raise ValueError("E08: evidencia de fonte invalida")
-        observed = validate_observed_source(json.loads(evidence_path.read_text("utf-8-sig")))
+        raw_observation = json.loads(evidence_path.read_text("utf-8-sig"))
+        observed = validate_observed_source(raw_observation)
+        atlas_path = root/"data/regions/unova-e05-source-map-atlas.json"
+        if atlas_path.is_symlink() or not atlas_path.is_file() or atlas_path.stat().st_size>200000:
+            raise ValueError("E08: atlas verificado E05 ausente")
+        atlas = validate_source_atlas(json.loads(atlas_path.read_text("utf-8-sig")), raw_observation)
     has_source = (root/".blue-work/unova/sources/Pokemon_World_V18.zip").is_file()
     stages = [
         {"id":"E01","name":"Pesquisa de fontes publicada","completed":True,"proof":"docs/UNOVA_PESQUISA_FONTES_RMXP.md"},
@@ -77,6 +83,8 @@ def inspect(root: Path = ROOT) -> dict:
         "source_e04_e05_audit_evidence_verified":bool(observed),
         "source_unova_event_containers":observed["unova_events_found"] if observed else None,
         "source_unova_map_files_audited":observed["unova_candidate_maps_read"] if observed else None,
+        "source_maps_20x15":atlas["maps_20x15"] if observed else None,
+        "source_maps_larger":atlas["maps_larger"] if observed else None,
         "symbolic_music_and_trainers_only":True,
         "source_map_ids_verified":False,
         "rights_verified":False,
