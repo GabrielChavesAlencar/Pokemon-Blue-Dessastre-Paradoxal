@@ -74,7 +74,8 @@ Regra para qualquer PR da esteira: executar testes específicos e negativos; com
 
 ## 6. Progresso da esteira
 
-- **G01–G12:** **0/12 implementados nesta nova trilha**; ferramentas pré-existentes não contam como entregas novas.
+- **G01–G12:** **1/12 entregue na main** (G01 concluída; G02–G12 pendentes). Ferramentas pré-existentes não contam como entregas novas.
+- **G01 (concluída, PR #142):** auditor somente de recibos [script](../scripts/regions/audit_sinnoh_g01_b09_receipt.py), [14 testes sintéticos e negativos](../tests/test_sinnoh_g01_b09_receipt.py) e [guia](SINNOH_G01_AUDITOR_RECUPERACAO_B09.md). Verificação offline com relatório privado recebido encontrou metadados coerentes, **sem validar fisicamente o clone**. Suites Sinnoh S30 e CH19 passaram no PR #142. Barras jogáveis não mudaram.
 - **Marco anterior local:** B07 e B08 reportados, **B09 recuperada e concluída apenas como clone privado não executável**.
 - **B10/B11 locais:** pendentes até os relatórios do usuário.
 - **Barra A:** 32/32 (100% código); **E:** 20/20 (100% CH); **B/C/D:** 0/13.
