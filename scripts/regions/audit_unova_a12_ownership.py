@@ -232,6 +232,17 @@ def audit(game:Path,project:Path,a04_report:dict,a06_report:dict,
         and a07_report.get("review_errors_count")==0
         and a10_report.get("mapids_reviewed")==82)
     if not chain:deny("A04..A11 audit chain incoherent")
+    data=a04.directory_root(game)
+    infos=data/"MapInfos.rxdata"
+    if infos.is_symlink() or not infos.is_file() or hashlib.sha256(
+            infos.read_bytes()).hexdigest()!=digest:
+        deny("MapInfos changed since A04")
+    map1=next((row for row in baseline.get("maps",[]) if row.get("id")==1),None)
+    if not map1:deny("Map001 missing")
+    p=data/map1["source_filename"]
+    if p.is_symlink() or not p.is_file() or hashlib.sha256(
+            p.read_bytes()).hexdigest()!=map1.get("sha256"):
+        deny("Map001 changed since A04")
     review=audit_installer_sources(project)
     shapes=resolve_shape_groups(a11_report)
     plan=rehearsal(a04_report,a10_report,a11_report,review)
