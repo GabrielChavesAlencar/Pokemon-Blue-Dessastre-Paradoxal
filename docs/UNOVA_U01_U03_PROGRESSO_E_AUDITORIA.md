@@ -117,3 +117,14 @@ Novos scripts e testes foram desenvolvidos em branch de integração protegida, 
 A suíte independente de Unova passou **83 testes sintéticos (59 anteriores + 24 novos)** na [execução 44077820904](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44077820904). CI de preparação não prova mapa jogável, fonte real aprovada ou direitos para redistribuição.
 
 **Estado mantido: E 4/8 (50%), U01–U32 jogáveis 0/32.** E04 requer ZIP e proveniência, E05 requer conferir os mapas/eventos reais, E06 requer licenças por recurso, E08 requer testes Windows/JoiPlay. Os novos auditores apenas preparam e protegem esse trabalho.
+
+
+## Etapa seguinte — assistente E04 (sem aprovação de fonte)
+
+Criado o [UNOVA_E04_ESCOLHER_FONTE.bat](../UNOVA_E04_ESCOLHER_FONTE.bat) e o [script de aquisição isolada](../scripts/regions/unova_e04_intake.py), com [instruções completas](UNOVA_E04_ASSISTENTE_FONTE.md).
+
+O BAT permite escolher o ZIP pela janela do Windows ou arrastar o arquivo. Copia exclusivamente para a área privada .blue-work/unova/sources, calcula SHA-256, impede sobrescrever uma fonte diferente e encaminha para os auditores já existentes. Credits.txt é opcional para o transporte, mas obrigatório como evidência a verificar antes do fechamento de direitos.
+
+**Não** houve download do ZIP original do Pokémon World V18 neste ambiente. Os hashes são do arquivo selecionado pelo usuário e não comprovam sua origem. Créditos **não** equivalem a licença. A nova entrega acrescenta testes negativos sintéticos; ela não instala nenhuma região.
+
+**Barra E permanece 4/8 (50%)**, E04 ainda pendente da auditoria de fonte/proveniência. **Barra jogável continua 0/32.**
