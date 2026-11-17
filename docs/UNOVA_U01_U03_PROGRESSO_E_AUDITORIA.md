@@ -155,3 +155,12 @@ A campanha White mantém **Iris como líder do oitavo ginásio**, com Drayden id
 Criado o manifesto [SP05](../data/regions/unova-sp05-cheren-pilot.json), o script [unova_sp05_cheren_pilot.py](../scripts/regions/unova_sp05_cheren_pilot.py), o [BAT com seleção Windows](../UNOVA_CHEREN_SP05_QA.bat) e o [manual SP05](UNOVA_SP05_CHEREN_PILOTO_QA.md). Com fonte real e documentos fornecidos, o script verifica SHA-256 do ZIP + relatórios SP03/SP04, valida PNG RGBA8 4×4, mede a silhueta nos 16 quadros e compara a proporção com um sprite de referência do Decades. O staging só cria cópia privada e manifesto em .blue-work/unova/qa/sp05-cheren, nunca instala, não valida identidade visual ou direitos automaticamente e não altera Game.exe/saves/Blue-Story.
 
 **Ainda não há sprite autorizado recebido, nem Nuvema ou Cheren nativos testados. Barras E 4/8; jogável 0/32.**
+
+
+## Plano operacional a partir de SP05 (17/11/2026)
+
+Novo roteiro de implementação com 16 entregas P01–P16, gates G0–G7 e critérios de aceite separados entre CI, Game.exe Windows e JoiPlay Android: [UNOVA_ROTEIRO_IMPLEMENTACAO_OPERACIONAL_SP05_U32.md](UNOVA_ROTEIRO_IMPLEMENTACAO_OPERACIONAL_SP05_U32.md).
+
+O plano parte do Cheren SP05 e do catálogo SP04, prioriza Nuvema → Route 1 → Accumula em QA e depois percorre U08–U32, sem presumir MapIDs, licenças ou conteúdo já instalado. Também identifica T01–T05, tarefas que podem começar sem o ZIP real do doador.
+
+**Sem mudança jogável nesta entrega documental: A/B/C/D 0/8, E 4/8 e Unova 0/32.**
