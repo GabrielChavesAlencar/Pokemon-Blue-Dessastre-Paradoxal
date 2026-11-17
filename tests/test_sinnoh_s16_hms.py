@@ -55,10 +55,12 @@ class SinnohS16Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"SINNOH_S16_BLOCKED"):
             self.check(adapter=self.text["adapter"]+"\nEventHandlers.add(:fake,:fake,proc {})\n")
     def test_19_runtime_proof_required(self):
-        with self.assertRaisesRegex(ValueError,"SINNOH_S16_BLOCKED"):
+        # CH11 runs first and is expected to reject a removed native pickup guard.
+        with self.assertRaisesRegex(ValueError,r"SINNOH CH11"):
             self.check(regions=self.text["regions"].replace("pickup_confirmed == true","pickup_confirmed != false"))
     def test_20_no_cross_region_field_bypass(self):
-        with self.assertRaisesRegex(ValueError,"SINNOH_S16_BLOCKED"):
+        # Preserve CH11's earlier, stricter rejection of cross-region access.
+        with self.assertRaisesRegex(ValueError,r"SINNOH CH11"):
             self.check(policy=self.text["policy"].replace('local_proof = current["current"] == "SINNOH"',"local_proof = false"))
     def test_21_no_key_item_cross_region(self):
         with self.assertRaisesRegex(ValueError,"SINNOH_S16_BLOCKED"):
