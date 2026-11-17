@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "step": "B02",
+  "status": "DOCUMENTED_RESERVATIONS_REVIEWED_FUTURE_CLAIMS_UNVERIFIED",
+  "evidence_date": "2026-11-17",
+  "native_inventory_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+  "native_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "source_sinnoh_zip_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+  "static_reservations_manifest": "data/regions/sinnoh-map-id-reservations.json",
+  "observation_scope": "MAPINFOS_NAMES_AND_DOCUMENTED_CODE_CLAIMS_ONLY",
+  "physical_occupied_total": 648,
+  "physical_occupied_1_to_599": 349,
+  "physical_vacant_1_to_599": 250,
+  "physical_vacant_ranges_1_to_599": [
+    {
+      "first": 2,
+      "last": 21,
+      "count": 20
+    },
+    {
+      "first": 23,
+      "last": 31,
+      "count": 9
+    },
+    {
+      "first": 34,
+      "last": 41,
+      "count": 8
+    },
+    {
+      "first": 44,
+      "last": 47,
+      "count": 4
+    },
+    {
+      "first": 49,
+      "last": 75,
+      "count": 27
+    },
+    {
+      "first": 276,
+      "last": 299,
+      "count": 24
+    },
+    {
+      "first": 442,
+      "last": 599,
+      "count": 158
+    }
+  ],
+  "maximal_vacant_span_1_to_599": {
+    "start": 442,
+    "end": 599,
+    "count": 158,
+    "ownership_verified": false
+  },
+  "protected_code_claims": [
+    {
+      "owner": "JOHTO",
+      "start": 600,
+      "end": 699,
+      "claim_type": "SHARED_PREVIEW_CODE_RESERVATION",
+      "source": "scripts/regions/johto_main_preview.py"
+    },
+    {
+      "owner": "HOENN",
+      "start": 700,
+      "end": 999,
+      "claim_type": "SHARED_INSTALLER_CODE_RANGE",
+      "source": "scripts/regions/pilot_hoenn.py"
+    }
+  ],
+  "protected_code_claims_total_slots": 400,
+  "protected_claimed_johto_600_to_699": {
+    "occupied_snapshot": 100,
+    "sinnoh_destination_ids_assigned": 0,
+    "actual_map_ownership_proven": false
+  },
+  "protected_claimed_hoenn_700_to_999": {
+    "occupied_snapshot": 199,
+    "sinnoh_destination_ids_assigned": 0,
+    "actual_map_ownership_proven": false
+  },
+  "claimed_bands_physically_unoccupied": 101,
+  "native_label_samples": {
+    "439": "Elite Four — sala de Lance",
+    "441": "Hall of Fame — Kanto",
+    "600": "[Johto preview] New Bark Town",
+    "699": "Casa em Ecruteak",
+    "700": "Vila Littleroot",
+    "800": "Museu de Lilycove",
+    "805": "Rota 119",
+    "898": "Cidade de Ever Grande Norte"
+  },
+  "sinnoh_original_map_count": 76,
+  "sinnoh_original_collision_count": 72,
+  "sinnoh_destination_map_ids": {},
+  "kanto_installer_mapping_status": "DYNAMIC_NO_FUTURE_RESERVATION_MANIFEST",
+  "johto_future_reservation_evidence": false,
+  "hoenn_future_reservation_evidence": false,
+  "kanto_future_reservation_evidence": false,
+  "all_future_reservations_verified": false,
+  "reservation_manifest_reviewed_by_user": false,
+  "per_asset_rights_verified": false,
+  "source_mapids_reused_as_destinations": false,
+  "native_playtest_performed": false,
+  "can_allocate": false,
+  "can_install": false,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "note": "Claimed installer regions do not prove installed owners; native labels are observed but cannot certify ownership. 442-599 is physically vacant only, and Kanto future reservations below 600 are unknown. No map IDs allocated, no assets imported, user saves intact."
+}

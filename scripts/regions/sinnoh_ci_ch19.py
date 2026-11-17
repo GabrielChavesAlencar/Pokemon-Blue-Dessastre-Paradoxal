@@ -24,6 +24,7 @@ PYTHON_CHECKS = [
     ("sinnoh-source-audit", [PY, "scripts/regions/audit_sinnoh_source.py"]),
     ("sinnoh-b00-file-intake", [PY, "scripts/regions/audit_sinnoh_b00_intake.py"]),
     ("sinnoh-b01-inventory-syntax", [PY, "-m", "py_compile", "scripts/regions/audit_sinnoh_b01_inventory.py"]),
+    ("sinnoh-b02-regional-reservations", [PY, "scripts/regions/audit_sinnoh_b02_reservations.py"]),
     ("sinnoh-s07-remap-reconciliation-syntax", [PY, "-m", "py_compile", "scripts/regions/sinnoh_s07_reconcile.py"]),
     ("sinnoh-badges-hms-audit", [PY, "scripts/regions/audit_sinnoh_badges_hms.py"]),
     ("sinnoh-s15-gyms-audit", [PY, "scripts/regions/audit_sinnoh_s15_gyms.py"]),
