@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "02b9ab0dcc9df9e3e595f0c893d96599f10ef4b5",
+      "date": "2026-11-17T19:05:48-03:00",
+      "title": "ci(android): rebuild Kanto and Hoenn bundle when fossil source or runtime changes",
+      "category": "Melhorias"
+    },
+    {
       "sha": "aa841e4436020478f0ad2f3e44db11f86fdb339f",
       "date": "2026-11-17T19:04:33-03:00",
       "title": "fix(android): accept verified compiled Kanto runtime with legacy installer checksum",
