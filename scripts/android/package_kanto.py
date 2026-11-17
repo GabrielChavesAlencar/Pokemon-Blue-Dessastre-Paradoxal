@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import re
@@ -208,7 +209,9 @@ def build(game: Path, output: Path, revision: str) -> dict:
     if output.exists():
         raise ValueError("Existing Kanto mobile ZIP must not be overwritten.")
     text = DOC + "Revision: " + revision + "\n"
+    build_utc = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     build_info = ("Region: KANTO\nRevision: " + revision + "\n"
+                  "Build-UTC: " + build_utc + "\n"
                   "Mobile-SHA256: " + mobile_hash + "\n"
                   "Plugins-SHA256: " + plugin_hash + "\n")
     try:
