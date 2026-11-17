@@ -12,6 +12,13 @@
 
 O [gerador do guia](../site/scripts/sinnoh-guide.mjs) acrescenta uma política `levelPolicy` derivada desses contratos, sem inventar número de cap, nível de encontro ou versão de treinador. O [validador do portal](../site/src/assets/sinnoh-search.js) recusa cap fictício, níveis fixos/históricos ou metadados que aleguem níveis verificados. A [página Sinnoh](../site/src/assets/sinnoh-guide.js) explica **em todas as oito abas**: referência da equipe sem ovos, Normal 70%, Master 90%, função regional das insígnias e esmeraldas, falta de leitura de save no portal e necessidade de PBS/jogo real.
 
+## Validação efetiva pelo GitHub Actions
+
+- [Portal Blue — run 43988876576](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43988876576): **build aprovado e 151/151 testes do site passaram**, incluindo os 8 testes S29; 0 falhas.
+- [Sinnoh CH19 — run 43988876549](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43988876549): **Python e Ruby aprovados** na matriz isolada, incluindo a consistência dos registros de progresso e auditorias de Sinnoh.
+- [Sinnoh CH20 — run 43988876422](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43988876422): pré-voo estático de 44 casos **aprovado**, sem os converter em playtest executado.
+- O pipeline geral Blue Studio é independente e **não** deve ser declarado aprovado apenas por esses três workflows.
+
 ## Testes e critérios de aceite
 
 Os [8 testes S29](../site/tests/sinnoh-s29-dynamic-levels.test.mjs) verificam:
@@ -21,6 +28,6 @@ Os [8 testes S29](../site/tests/sinnoh-s29-dynamic-levels.test.mjs) verificam:
 - Negativos para `effective_level`, `levelCap`, níveis históricos, verificação de runtime falsa, alteração de percentual e nível numérico de cap vindo do catálogo.
 - Geração determinística do `site/dist/data/sinnoh-guide.json` pelo build, sem injetar mapas/itens/níveis jogáveis.
 
-Executar `cd site && npm run build && npm test`. A comprovação requer **GitHub Actions do portal aprovado**, além da regressão de Sinnoh e consistência da Barra A. Após CI e integração na `main`, **S29 = done** e a Barra A passa de **9/32 (28%)** para **10/32 (31%)**, permanecendo 7 parciais e 15 pendentes.
+Executar `cd site && npm run build && npm test`. A comprovação requer **GitHub Actions do portal aprovado**, além da regressão de Sinnoh e consistência da Barra A. Com CI de código concluído e após integração na `main`, **S29 = done** e a Barra A passa de **9/32 (28%)** para **10/32 (31%)**, permanecendo 7 parciais e 15 pendentes.
 
 **Limitações:** o site não consulta os saves dos jogadores, não comprova localização de Pokémon, presença de NPCs, abertura de mapas ou níveis no Game.exe/JoiPlay. Mesmo com a S29 concluída, **B/C/D continuam 0/13** e os **44 casos nativos seguem pendentes**. A Barra E continua 20/20 (100%).
