@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7136928fd1a0b9dc01f26487b7516085b9a3da4f",
+      "date": "2026-11-16T23:20:52-03:00",
+      "title": "feat(sinnoh): S18 encontros evolutivos progressivos e Barra A 19/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "a41bf3548c8bc6d0273be8b3f9bb9b8f5be3388f",
       "date": "2026-11-16T23:09:22-03:00",
       "title": "test(sinnoh): S17 balanceamento dinamico auditado e Barra A 18/32",
