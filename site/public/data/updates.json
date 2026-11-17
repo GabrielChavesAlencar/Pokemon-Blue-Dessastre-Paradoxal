@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "28b3c00a1fb0c6053b200ade7b3e136691b8d113",
+      "date": "2026-11-17T17:24:17-03:00",
+      "title": "docs(sinnoh): mark GitHub-only G01 complete 1/12 after PR 142",
+      "category": "Documentação"
+    },
+    {
+      "sha": "4d5d97dd32ec6600040ec2cd7527686fe8e8f85f",
+      "date": "2026-11-17T17:24:02-03:00",
+      "title": "feat(sinnoh): G01 B09 receipt auditor with fail-closed tests (#142)",
+      "category": "Novidades"
+    },
+    {
       "sha": "6d9b5a8daec79da8ced719a0d3a3d822297fd6b8",
       "date": "2026-11-17T17:17:42-03:00",
       "title": "Unova G02.2: oito ginásios White com eventos, insígnias e travas offline",
