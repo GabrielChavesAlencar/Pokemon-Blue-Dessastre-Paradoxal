@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 14,
+    "done": 15,
     "partial": 6,
-    "pending": 12,
-    "percent_complete": 43,
-    "percent_with_partial_not_counted": 43,
+    "pending": 11,
+    "percent_complete": 46,
+    "percent_with_partial_not_counted": 46,
     "groups": [
       {
         "key": "foundation",
@@ -164,8 +164,8 @@
     {
       "id": "S12",
       "title": "Instalador isolado do piloto",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md"
     },
     {
       "id": "S13",
