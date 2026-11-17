@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "67ef1de631f00b90368f89e965f23d6e9cf499bc",
+      "date": "2026-11-17T07:06:51-03:00",
+      "title": "docs(unova): esclarecer que análise narrativa anterior está no chat, não no repositório",
+      "category": "Novidades"
+    },
+    {
+      "sha": "48c55db8735e186bbeb10850317c720d12d9868e",
+      "date": "2026-11-17T07:06:39-03:00",
+      "title": "docs(unova): roteiro de integração em 32 fases com segurança e QA real",
+      "category": "Novidades"
+    },
+    {
       "sha": "13faf2ede3c3474abdcc9c34113a58c8302939a1",
       "date": "2026-11-17T07:02:14-03:00",
       "title": "docs(unova): auditar fontes RPG Maker XP e direitos de reutilização",
