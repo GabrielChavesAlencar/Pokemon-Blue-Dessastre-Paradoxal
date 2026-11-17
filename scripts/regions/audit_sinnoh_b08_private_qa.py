@@ -96,7 +96,7 @@ def png_geometry(data):
             if tag!=b"IHDR" or n!=13:
                 blocked("PNG sem IHDR valido")
             w,h,depth,colour,_,_,_=struct.unpack(">IIBBBBB",content)
-            if not 1<=w<=65535 or not 1<=h<=65535 or depth not in (1,2,4,8,16) or colour not in (0,2,3,4,6):
+            if not 1<=w<=16384 or not 1<=h<=100000 or w*h>40_000_000 or depth not in (1,2,4,8,16) or colour not in (0,2,3,4,6):
                 blocked("PNG com dimensoes/formato nao suportado")
             dimensions=(w,h)
         if tag==b"IDAT":has_idat=True
