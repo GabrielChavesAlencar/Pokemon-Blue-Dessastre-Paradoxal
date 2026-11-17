@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/sinnoh-ch19.yml'
       - '.github/workflows/regression.yml'
+      - 'SINNOH_INSTALAR_EXPERIMENTAL.bat'
       - 'scripts/regions/**'
       - 'scripts/music/**'
       - 'scripts/battle_polish/**'
@@ -18,6 +19,7 @@ on:
     paths:
       - '.github/workflows/sinnoh-ch19.yml'
       - '.github/workflows/regression.yml'
+      - 'SINNOH_INSTALAR_EXPERIMENTAL.bat'
       - 'scripts/regions/**'
       - 'scripts/music/**'
       - 'scripts/battle_polish/**'

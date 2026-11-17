@@ -30,25 +30,25 @@
 - **CH20 (concluída em escopo estático):** [pré-voo Android/JoiPlay](../scripts/regions/audit_sinnoh_android_ch20.py), [18 testes CH20](../tests/test_sinnoh_android_ch20.py), [12 testes do auditor de evidências](../tests/test_sinnoh_playtest_audit.py) e [workflow exclusivo CH20](../.github/workflows/sinnoh-ch20.yml) publicados na `main` pelo [PR #66](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/66), merge `c7c8cdd`. [CI 43986405854](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854) **18/18 + 12/12 testes aprovados**, com [relatórios JSON + Markdown e hashes conferidos](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854/artifacts/14284479390). [Relatório CH20](SINNOH_CH20_JOIPLAY_PREFLIGHT.md): **44 IDs de casos completos, 0/44 observados no Game.exe/JoiPlay**, dados do jogo reais não fornecidos. Conclusão da Barra E **20/20 (100%)** não aprova jogo nativo nem altera as barras A/B/C/D.
 - **Critério:** tarefas só entram como `done` com arquivos publicados na `main` e validação de CI compatível com seu escopo.
 
-**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 14/32 (43%)**, **B/C/D 0/13** permanecem intactas.
+**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 15/32 (46%)**, **B/C/D 0/13** permanecem intactas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
 ```text
-██████████░░░░░░░░░░░░░░  14/32 (43%)
+███████████░░░░░░░░░░░░░  15/32 (46%)
 ```
 
-- **Concluídas:** 14 entregas verificadas no repositório (incluindo S10, S11, S27, S28, S29 e S30).
+- **Concluídas:** 15 entregas verificadas no repositório (incluindo S10, S11, S12, S27, S28, S29 e S30).
 - **Parciais:** 6 (não contam como concluídas até atingirem o próprio critério).
-- **Pendentes:** 12.
+- **Pendentes:** 11.
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
-- **Restam 18 para a barra de desenvolvimento** (inclui parciais).
+- **Restam 17 para a barra de desenvolvimento** (inclui parciais).
 
 ## S27 — guias planejados no site (concluída)
 
 A [entrega S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) contabiliza o trabalho de **portal web**, não uma região jogável. O guia `/sinnoh` já usa os catálogos CH11–CH16 e a navegação/pesquisa CH17–CH18; agora diferencia explicitamente **guia publicado no portal** de **mapas/eventos ainda não instalados no jogo**. Os [testes de aceite S27](../site/tests/sinnoh-s27-development.test.mjs) validam oito abas, 120 áreas, 40 treinadores, 13 líderes/Liga, 8 HMs, 22 checkpoints e salvaguardas contra anúncios falsos de MapIDs, níveis, PBS, encontros ou jogo funcional. A aprovação da S27 depende do build e da suíte completa do site em CI.
 
-**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)** e a S10 para **13/32 (40%)**; após a S11, o total atual é **14/32 (43%)**. Isso não conclui S13–S23 nem altera B/C/D.
+**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)** e a S11 para **14/32 (43%)**; após a S12, o total atual é **15/32 (46%)**. Isso não conclui S13–S23 nem altera B/C/D.
 
 ## S29 — níveis dinâmicos sem valores fixos no portal (concluída)
 
@@ -80,6 +80,12 @@ A [S11](SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md) torna o isolamento dos saves
 
 [13 testes S11](../tests/test_sinnoh_s11_save_isolation.py) e [testes Ruby](../tests/sinnoh_qa_start_runtime.rb) simulam saves estrangeiros, perfis trocados, token e diretório inseguros, sem executar `Game.exe` ou ler/modificar dados reais. **Aceite S11 é de código**: não há evidência de save/reload real ou piloto instalado. Após CI, **Barra A 14/32 (43%)**, 6 parciais e 12 pendentes. **B/C/D 0/13, E 20/20**; 44 casos nativos não executados.
 
+## S12 — instalador isolado do piloto (concluído em código após CI)
+
+A [entrega S12](SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md) acrescenta o [BAT de instalação](../SINNOH_INSTALAR_EXPERIMENTAL.bat) com duplo clique e [orquestrador seguro](../scripts/regions/sinnoh_s12_installer.py) com simulação por padrão. Ele exige overlay + especificação privada auditados (mapas reais licenciados **não estão no GitHub**), rejeita duplicidade, tokens inconsistentes, arquivos adulterados e symlinks. Quando há fontes válidas, cria apenas uma cópia com nome exclusivo em `.blue-work/` e **sem saves herdados**; nunca substitui `game/`, não executa o `Game.exe` nem certifica jogo funcional. A transação existente realiza cópia temporária com verificação SHA-256 e rollback em falhas antes da publicação.
+
+Os [16 testes S12](../tests/test_sinnoh_s12_installer.py) cobrem simulação sem gravação, criação de cópia sintética, bloqueios e rollback. Após CI de regressão do Sinnoh aprovado, **Barra A 15/32 (46%)**: 15 concluídas, 6 parciais e 11 pendentes. A Barra E permanece 20/20; B/C/D 0/13 e **44 casos nativos pendentes**. A instalação QA real requer mapas autorizados e permanece bloqueada sem esses insumos.
+
 ## Subetapas do S07 — remapeamento seguro (parcial)
 
 ```text
@@ -88,13 +94,13 @@ A [S11](SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md) torna o isolamento dos saves
 
 A ferramenta de remapeamento já verifica IDs reais de origem, símbolos, hashes, colisões, planos anteriores e produz **propostas** de transferência entre os IDs candidatos. Veja [plan_sinnoh_remap.py](../scripts/regions/plan_sinnoh_remap.py), [testes](../tests/test_sinnoh_remap.py) e o [relatório da Fase 01](SINNOH_FASE_01_PREVIA_REMAPEAMENTO.md).
 
-As **três subetapas restantes** exigem baseline/reservas de todas as regiões, conversão dos dados reais da fonte autorizada e teste nativo isolado. Por isso **S07 continua parcial**, a Barra A permanece em **14/32** e nenhuma das barras de jogabilidade sobe. Os detalhes R01–R09 estão em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
+As **três subetapas restantes** exigem baseline/reservas de todas as regiões, conversão dos dados reais da fonte autorizada e teste nativo isolado. Por isso **S07 continua parcial**, a Barra A permanece em **15/32** e nenhuma das barras de jogabilidade sobe. Os detalhes R01–R09 estão em [sinnoh-progress.json](../data/regions/sinnoh-progress.json).
 
 ### Conversão de geometria — código disponível, mapas reais pendentes
 
 O conversor [convert_sinnoh_geometry.py](../scripts/regions/convert_sinnoh_geometry.py) e seus [6 testes com mapas sintéticos](../tests/test_sinnoh_geometry_converter.py) já produzem prévias de terreno, tilesets e cópias dos índices de mapa **sem eventos/scripts, encontros ou músicas do jogo doador**, com dry-run e stage opcional em `.blue-work`. Consulte [Fase 01 — prévia de geometria](SINNOH_FASE_01_PREVIA_GEOMETRIA.md).
 
-**Limite:** nenhum ZIP real de Sinnoh foi convertido e ainda não existem portais, NPCs, saves ou mapas jogáveis novos. Por isso **R08 segue incompleto**, S07 segue **6/9**, a Barra A permanece **14/32 (43%)** e as barras técnicas/jogáveis continuam **0/13**.
+**Limite:** nenhum ZIP real de Sinnoh foi convertido e ainda não existem portais, NPCs, saves ou mapas jogáveis novos. Por isso **R08 segue incompleto**, S07 segue **6/9**, a Barra A permanece **15/32 (46%)** e as barras técnicas/jogáveis continuam **0/13**.
 
 ## Fase 03 — introdução de Twinleaf (preparação parcial)
 
@@ -116,7 +122,7 @@ Os handlers Ruby [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb), a [templat
 
 O [gerador de PBS do Barry](../scripts/regions/build_sinnoh_barry_pbs.py) prepara **três versões com vantagem de tipo** (Turtwig → Chimchar; Chimchar → Piplup; Piplup → Turtwig), sempre usando espécies e golpes existentes na instalação Blue, sem importar equipes do jogo doador. O [verificador](../scripts/regions/verify_sinnoh_barry_pbs.py) compara SHA-256, valida a presença das três equipes, confere o código de balanceamento **70% normal / 90% Master** e recusa o arquivo de liberação no draft. Consulte a [documentação PBS](SINNOH_FASE_03_BARRY_PBS.md).
 
-**Faltam 2 subetapas:** compilar os PBS e conferir o sprite/batalhas na cópia experimental; testar níveis efetivos, vitória/derrota e saves em Game.exe/JoiPlay. O nível 5 nos PBS é **somente o nível-base técnico**, não o nível fixo exibido ao jogador. Como a integração real não foi verificada, o item **I07 da introdução continua pendente**, a preparação geral permanece **14/32** e nenhuma barra de fases jogáveis sobe.
+**Faltam 2 subetapas:** compilar os PBS e conferir o sprite/batalhas na cópia experimental; testar níveis efetivos, vitória/derrota e saves em Game.exe/JoiPlay. O nível 5 nos PBS é **somente o nível-base técnico**, não o nível fixo exibido ao jogador. Como a integração real não foi verificada, o item **I07 da introdução continua pendente**, a preparação geral permanece **15/32** e nenhuma barra de fases jogáveis sobe.
 
 **CI isolada de Sinnoh:** [execução 43535200301](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43535200301) aprovou **82 testes Python** e o harness Ruby `SINNOH_STORY_RUNTIME_GUARDS_OK`. A suíte geral continua sujeita a uma falha separada de integridade do piloto de Johto (`test_ruby_guard_only_accepts_signed_local_pilot`), que não deve ser confundida com aprovação de gameplay de Sinnoh.
 
@@ -132,7 +138,7 @@ A auditoria [audit_sinnoh_pilot_compat.py](../scripts/regions/audit_sinnoh_pilot
 
 O [preflight_sinnoh_barry_qa.py](../scripts/regions/preflight_sinnoh_barry_qa.py) confere os dois PBS de Barry **já copiados para uma instalação QA separada**, a partir dos hashes do draft, e registra o sprite candidato, o executável e a ausência de marcador prematuro. **Não compila PBS e não executa a batalha**, logo o trabalho permanece parcial. Veja [guia de reconciliação e QA](SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md).
 
-Faltam: auditoria física das reservas, montagem do piloto novo com fonte autorizada e testes reais Windows/Android. O avanço de **3/6** é apenas desta etapa de código; desenvolvimento geral **14/32**, fases técnicas/jogáveis/QA **0/13**.
+Faltam: auditoria física das reservas, montagem do piloto novo com fonte autorizada e testes reais Windows/Android. O avanço de **3/6** é apenas desta etapa de código; desenvolvimento geral **15/32**, fases técnicas/jogáveis/QA **0/13**.
 
 ## Novo piloto — montagem privada do overlay (preparação parcial)
 
@@ -144,7 +150,7 @@ O novo montador [prepare_sinnoh_pilot_bundle.py](../scripts/regions/prepare_sinn
 
 [Documentação e comandos do piloto](SINNOH_FASE_02_PACOTE_INTEGRACAO_QA.md) | [Testes sintéticos de integração](../tests/test_sinnoh_pilot_bundle.py).
 
-**Restam 3 subetapas locais:** auditar a fonte autorizada e os IDs reservados, montar/compilar na cópia real do Game.exe com perfil isolado, testar Windows/Android e a batalha com Barry. O montador fica em **dry-run por padrão**, escreve apenas em pasta nova de `.blue-work` mediante `--publish` e **não cria marcador de batalha**. Portanto a barra geral continua **14/32 (43%)**, as fases técnicas/jogáveis/QA **0/13**, e a compatibilidade do piloto legado permanece **3/6**.
+**Restam 3 subetapas locais:** auditar a fonte autorizada e os IDs reservados, montar/compilar na cópia real do Game.exe com perfil isolado, testar Windows/Android e a batalha com Barry. O montador fica em **dry-run por padrão**, escreve apenas em pasta nova de `.blue-work` mediante `--publish` e **não cria marcador de batalha**. Portanto a barra geral continua **15/32 (46%)**, as fases técnicas/jogáveis/QA **0/13**, e a compatibilidade do piloto legado permanece **3/6**.
 
 **Validação atualizada de código:** a [CI isolada de Sinnoh, execução 43538522476](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43538522476), aprovou **119 testes Python** e os testes Ruby de introdução e sondagem do Barry em ambiente sintético. A regressão geral permanece com a falha preexistente de Johto `test_ruby_guard_only_accepts_signed_local_pilot` (`[601, 13, 13]` vs `nil`), sem representar falha do montador de Sinnoh. Teste offline não prova Game.exe jogável.
 
@@ -158,7 +164,7 @@ O [instalador QA](../scripts/regions/install_sinnoh_qa_copy.py) monta **uma cóp
 
 O plugin [SinnohQAStart.rb](../scripts/regions/SinnohQAStart.rb) exige a prova de compilação, o perfil Sinnoh e SHA-256 dos arquivos protegidos antes de preparar um novo jogo. A falta de prova bloqueia o início em vez de cair silenciosamente na campanha Decades. Os [testes Python](../tests/test_sinnoh_qa_install.py) e [testes Ruby](../tests/sinnoh_qa_start_runtime.rb) cobrem esse contrato com instalações fictícias. [Guia completo para Codex/Windows](SINNOH_FASE_02_INSTALACAO_QA_SAVES_E_PBS.md).
 
-**Restam 3 subetapas reais:** auditar e montar a cópia com os mapas autorizados, compilar/verificar o PBS e os caminhos efetivos de saves no Game.exe Windows, e testar Twinleaf/Barry/saves/Android sem regressões. Por isso a instalação QA ainda **não foi executada com assets reais**, o item do piloto continua **parcial**, o desenvolvimento geral permanece **14/32 (43%)** e as barras de aceite **0/13**. Nenhum save principal foi modificado.
+**Restam 3 subetapas reais:** auditar e montar a cópia com os mapas autorizados, compilar/verificar o PBS e os caminhos efetivos de saves no Game.exe Windows, e testar Twinleaf/Barry/saves/Android sem regressões. Por isso a instalação QA ainda **não foi executada com assets reais**, o item do piloto continua **parcial**, o desenvolvimento geral permanece **15/32 (46%)** e as barras de aceite **0/13**. Nenhum save principal foi modificado.
 
 **CI isolada:** [execução de Sinnoh](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43539553514) aprovou **134 testes Python**, sintaxe Ruby e os harnesses de abertura/Barry, inclusive `SINNOH_QA_START_SAVE_AND_PBS_GUARDS_OK`. A suíte geral possui uma falha separada anterior do piloto de Johto; isso não equivale a QA Windows/Android para Sinnoh.
 
@@ -172,7 +178,7 @@ O módulo [SinnohQAProbe.rb](../scripts/regions/SinnohQAProbe.rb), incluído ape
 
 O [verificador Python](../scripts/regions/install_sinnoh_qa_copy.py) exige hashes de **todos** os mapas preparados e confere o novo relatório. O [plugin de inicialização QA](../scripts/regions/SinnohQAStart.rb) não autoriza `Novo Jogo` com token sozinho. [Testes Python](../tests/test_sinnoh_qa_install.py), [testes Ruby da sondagem](../tests/sinnoh_qa_engine_probe_runtime.rb) e [início Ruby](../tests/sinnoh_qa_start_runtime.rb) usam só arquivos e equipes **sintéticos**. Detalhes no [guia de validação pós-compilação](SINNOH_FASE_02_VALIDACAO_NATIVA_PBS_EVENTOS.md).
 
-**Restam 3 subetapas reais:** rodar essa sondagem no Game.exe com mapas autorizados, observar batalha/nível efetivo 70%/90% e saves Windows, e validar o Android/JoiPlay com regressões. **Nenhuma dessas três ocorreu nesta conversa.** Portanto o desenvolvimento geral permanece **14/32 (43%)**, as 13 fases técnicas/jogáveis/nativas permanecem **0/13** e a instalação QA continua **4/7**.
+**Restam 3 subetapas reais:** rodar essa sondagem no Game.exe com mapas autorizados, observar batalha/nível efetivo 70%/90% e saves Windows, e validar o Android/JoiPlay com regressões. **Nenhuma dessas três ocorreu nesta conversa.** Portanto o desenvolvimento geral permanece **15/32 (46%)**, as 13 fases técnicas/jogáveis/nativas permanecem **0/13** e a instalação QA continua **4/7**.
 
 **CI isolada comprovada:** [execução 43540748918](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43540748918) — **138 testes Python aprovados** e harnesses Ruby de prova de início, eventos e Barry aprovados. A conclusão **geral** daquela workflow foi falha em testes fora da suíte isolada; não confundir sucesso isolado com pipeline totalmente verde ou gameplay nativo.
 
@@ -186,7 +192,7 @@ A introdução autoral [SinnohPilot.rb](../scripts/regions/SinnohPilot.rb) agora
 
 O [auditor de playtest](../scripts/regions/audit_sinnoh_playtest.py) prepara um roteiro **local de 44 casos**: três Poké Bolas, 12 batalhas (3 iniciais × Normal/Master × vitória/derrota), 16 warps, cinco NPCs, três verificações de save/reload, quatro regressões e Android/JoiPlay. Ele confronta os **níveis observados** com a regra real de código Blue (70%/90%) e exige capturas/logs locais com SHA-256. O resultado **não aprova o jogo automaticamente**, nem prova que uma pessoa executou os testes — as evidências ainda exigem revisão humana. Veja [guia de execução Windows/Android](SINNOH_FASE_02_PLAYTEST_REAL_BARRY_SAVES.md) e [testes do auditor](../tests/test_sinnoh_playtest_audit.py).
 
-**Pendências reais T05–T07:** executar Game.exe QA sobre mapas legítimos e auditar os 12 combates, fazer os testes de portais/saves/regressões e validar Android/JoiPlay. Nenhuma evidência real foi fornecida nesta conversa; o progresso geral permanece **14/32 (43%)** e a aprovação das 13 fases continua **0/13**.
+**Pendências reais T05–T07:** executar Game.exe QA sobre mapas legítimos e auditar os 12 combates, fazer os testes de portais/saves/regressões e validar Android/JoiPlay. Nenhuma evidência real foi fornecida nesta conversa; o progresso geral permanece **15/32 (46%)** e a aprovação das 13 fases continua **0/13**.
 
 **CI isolada:** a [execução 43541798458](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43541798458) aprovou **151 testes Python** e verificações Ruby da história, início de Sinnoh e estruturas da engine com fixtures. A conclusão da CI geral é acompanhada separadamente.
 
@@ -249,6 +255,7 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Concluído | S09 | Botão Testar Sinnoh sem quebrar saves | [menu](../scripts/battle_polish/TitleKanto.rb) |
 | Concluído em código | S10 | BAT de duplo clique e seleção segura da cópia QA | [BAT](../SINNOH_JOGAR_EXPERIMENTAL.bat), [relatório S10](SINNOH_S10_LANCADOR_EXPERIMENTAL_ACEITE.md) |
 | Concluído em código | S11 | Piloto com namespace exclusivo de saves e carregamento regional protegido | [isolamento](../scripts/regions/sinnoh_save_isolation.py), [aceite S11](SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md) |
+| Concluído em código | S12 | Instalador QA isolado, dry-run, BAT e rollback | [instalador](../scripts/regions/sinnoh_s12_installer.py), [aceite S12](SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md) |
 | Parcial | S13 | Estrutura autoral de Rowan, Barry e Pokédex | [Ruby](../scripts/regions/SinnohPilot.rb), [MD](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md) |
 | Parcial | S14 | Três iniciais em Poké Bolas físicas, com save isolado | [template](../data/regions/sinnoh-twinleaf-events.json), [compilador](../scripts/regions/build_sinnoh_twinleaf_events.py) |
 | Parcial | S24 | Catálogo musical planejado | [estudo](SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md) |
@@ -257,7 +264,7 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Parcial | S31 | Plano de aceitação Windows/JoiPlay | [plano](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) |
 | Concluído | S32 | Fila de pendências Codex | [backlog](SINNOH_CODEX_PENDENCIAS.md) |
 
-**As demais entregas de S12–S29 não listadas acima seguem pendentes** (exceto S13 e S14, parciais, e S27/S29 já concluídas em código web); veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.
+**As demais entregas de S13–S29 não listadas acima seguem pendentes** (exceto S13 e S14, parciais, e S27/S29 já concluídas em código web); veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.
 
 ## O que foi feito nesta etapa
 

@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/sinnoh-s30.yml'
       - 'SINNOH_JOGAR_EXPERIMENTAL.bat'
+      - 'SINNOH_INSTALAR_EXPERIMENTAL.bat'
       - 'scripts/regions/**'
       - 'scripts/music/**'
       - 'scripts/battle_polish/**'
@@ -19,6 +20,7 @@ on:
     paths:
       - '.github/workflows/sinnoh-s30.yml'
       - 'SINNOH_JOGAR_EXPERIMENTAL.bat'
+      - 'SINNOH_INSTALAR_EXPERIMENTAL.bat'
       - 'scripts/regions/**'
       - 'scripts/music/**'
       - 'scripts/battle_polish/**'

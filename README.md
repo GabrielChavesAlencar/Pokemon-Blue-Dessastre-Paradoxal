@@ -142,6 +142,10 @@ Se você já baixou Pokémon Decades, copie os arquivos para `game/` mantendo `G
 
 > Alternativa: definir a variável de ambiente `BLUE_GAME_DIR` com o caminho da sua cópia local do jogo e executar `RUN.bat`. Arquivos originais não precisam ficar dentro desta pasta.
 
+### Instalar piloto experimental Sinnoh em cópia privada (S12)
+
+O [`SINNOH_INSTALAR_EXPERIMENTAL.bat`](SINNOH_INSTALAR_EXPERIMENTAL.bat) permite tentar a **instalação privada com duplo clique no Windows**, sem PowerShell e **sem alterar o `game/` principal nem os saves**. O instalador **não baixa mapas**: exige um overlay autorizado com manifesto/hashes e a especificação de eventos auditada em `.blue-work/sinnoh-qa-spec.json`. Se faltarem, **bloqueia**; não inventa mapas ou Pokémon e não inicia `Game.exe`. Com os arquivos corretos, cria apenas `.blue-work/game-sinnoh-qa-<12hex>` com saves isolados e pedido de compilação pendente. `--check` realiza somente simulação. [Contrato, insumos e limitações S12](docs/SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md). **Sinnoh continua não jogável até execução/QA nativas verificadas.**
+
 ### Testar Sinnoh em cópia privada (S10)
 
 O arquivo [`SINNOH_JOGAR_EXPERIMENTAL.bat`](SINNOH_JOGAR_EXPERIMENTAL.bat) pode ser aberto com **duplo clique** no Windows, sem PowerShell. Ele **não instala Sinnoh automaticamente**: exige uma única cópia privada e auditada em `.blue-work/game-sinnoh-qa-XXXXXXXXXXXX`. A primeira abertura solicita somente a compilação QA pendente; após prova estrutural de compilação, outra abertura inicia exclusivamente o `Game.exe` privado para testes. Se faltar a cópia, os mapas autorizados ou as provas, mostra um bloqueio e **não abre o jogo principal**. O BAT também aceita `--check` para uma checagem sem execução. [Manual e limitações S10](docs/SINNOH_S10_LANCADOR_EXPERIMENTAL_ACEITE.md). Sinnoh permanece **não jogável/sem QA Windows/JoiPlay aprovada**.
