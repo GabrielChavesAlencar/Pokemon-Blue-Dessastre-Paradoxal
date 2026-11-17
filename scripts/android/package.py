@@ -1,5 +1,6 @@
 """Build a clean, precompiled JoiPlay game ZIP as a release asset, never a Git source file."""
 from pathlib import Path
+from datetime import datetime, timezone
 import argparse,hashlib,json,sys,zipfile,zlib
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
@@ -156,10 +157,13 @@ def build(game,output,revision,channel='decades'):
         for name in REGIONAL_FILES:
             plans[name]=game/name
     output.parent.mkdir(parents=True,exist_ok=True)
+    build_utc=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z")
+    build_info=('Compatibility: 2\nRevision: '+revision+'\nBuild-UTC: '+build_utc+
+                '\nMobile-SHA256: '+mobile_sha+'\nPlugins-SHA256: '+fingerprint(game)+'\n')
     with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
         for name,file in sorted(plans.items()):archive.write(file,'Pokemon-Blue-Android/'+name)
         archive.writestr('Pokemon-Blue-Android/Data/blue-mobile.txt','experimental-v1\n')
-        archive.writestr('Pokemon-Blue-Android/Data/blue-mobile-build.txt','Compatibility: 2\nRevision: '+revision+'\nMobile-SHA256: '+mobile_sha+'\nPlugins-SHA256: '+fingerprint(game)+'\n')
+        archive.writestr('Pokemon-Blue-Android/Data/blue-mobile-build.txt',build_info)
         readme = (
             'Versao experimental para JoiPlay + RPG Maker Plugin. Nao e um APK nativo.\n'
             'Instale os aplicativos de https://www.joiplay.net/ e extraia este ZIP por completo.\n'
@@ -183,9 +187,7 @@ def build(game,output,revision,channel='decades'):
         # Inventory is checked by the release publisher and the Android updater.
         extras={
             'Data/blue-mobile.txt': b'experimental-v1\n',
-            'Data/blue-mobile-build.txt': (
-                'Compatibility: 2\nRevision: '+revision+'\nMobile-SHA256: '+mobile_sha+
-                '\nPlugins-SHA256: '+fingerprint(game)+'\n').encode('utf8')
+            'Data/blue-mobile-build.txt': build_info.encode('utf8')
         }
         archive.writestr('Pokemon-Blue-Android/Data/blue-update.json',
                          installed_manifest(channel,revision,{**plans,**extras,
