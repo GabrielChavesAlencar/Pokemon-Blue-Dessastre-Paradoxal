@@ -427,6 +427,10 @@ def simulate(data: dict, registry: dict, it: dict, sp: dict,
         staged["party_state"]["party"] = [
             mon for mon in party if mon["id"] not in to_box
         ]
+        staged["party_state"]["free_box_slots"] = [
+            slot for slot in staged["party_state"]["free_box_slots"]
+            if slot not in set(to_box.values())
+        ]
         if fail_at == "after_party":
             raise RuntimeError("fixture simulated box/party failure")
         staged["current"] = destination
