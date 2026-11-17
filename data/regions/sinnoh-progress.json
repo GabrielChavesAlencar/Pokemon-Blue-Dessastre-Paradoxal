@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 16,
+    "done": 17,
     "partial": 5,
-    "pending": 11,
-    "percent_complete": 50,
-    "percent_with_partial_not_counted": 50,
+    "pending": 10,
+    "percent_complete": 53,
+    "percent_with_partial_not_counted": 53,
     "groups": [
       {
         "key": "foundation",
@@ -93,7 +93,7 @@
     "Piloto separado em mapa real de Twinleaf",
     "Testes nativos no Windows e Android"
   ],
-  "next": "T05–T07: no Windows local, produzir mapa real autorizado e perfil QA compilado, jogar Barry com os 3 iniciais em Normal/Master, registrar nível e resultados, percorrer 16 portais, salvar/carregar e testar JoiPlay. O roteiro e auditor de 44 casos foram publicados em código; fases jogáveis continuam 0/13.",
+  "next": "R07: coletar baseline game/Data local e reservas futuras Kanto/Johto/Hoenn com diagnóstico SINNOH_DIAGNOSTICAR_PENDENCIAS.bat (não conclui R07). R08: obter mapas reais Sinnoh autorizados e realizar remapeamento. R09/S31: compilar e testar Game.exe/JoiPlay com saves isolados. S24/S25 e S13–S23 dependem de ativos/ligação nativa.",
   "tasks": [
     {
       "id": "S01",
@@ -248,8 +248,8 @@
     {
       "id": "S26",
       "title": "Testes de fallback, prioridade, fade e loop",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S26_TESTES_MUSICA_ACEITE.md"
     },
     {
       "id": "S27",
@@ -334,7 +334,11 @@
         "id": "R07",
         "description": "Auditar reservas não instaladas Kanto, Johto e Hoenn na cópia local",
         "complete": false,
-        "evidence": null
+        "evidence": null,
+        "diagnostic_code": "scripts/regions/audit_sinnoh_r07_reservations.py",
+        "diagnostic_tests": "tests/test_sinnoh_r07_reservations.py",
+        "diagnostic_doc": "docs/SINNOH_R07_DIAGNOSTICO_RESERVAS.md",
+        "diagnostic_status": "OFFLINE_CODE_PREPARED_REAL_EVIDENCE_PENDING"
       },
       {
         "id": "R08",
