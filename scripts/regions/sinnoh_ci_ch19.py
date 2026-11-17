@@ -30,6 +30,7 @@ PYTHON_CHECKS = [
     ("sinnoh-b05-multiregion-mapid-planning", [PY, "scripts/regions/audit_sinnoh_b05_mapid_planning.py"]),
     ("sinnoh-b06-real-technical-candidate", [PY, "scripts/regions/audit_sinnoh_b06_technical_candidate.py"]),
     ("sinnoh-b07-private-geometry-preflight", [PY, "scripts/regions/build_sinnoh_b07_private_stage.py"]),
+    ("sinnoh-b08-private-qa-preflight", [PY, "scripts/regions/audit_sinnoh_b08_private_qa.py"]),
     ("sinnoh-s07-remap-reconciliation-syntax", [PY, "-m", "py_compile", "scripts/regions/sinnoh_s07_reconcile.py"]),
     ("sinnoh-badges-hms-audit", [PY, "scripts/regions/audit_sinnoh_badges_hms.py"]),
     ("sinnoh-s15-gyms-audit", [PY, "scripts/regions/audit_sinnoh_s15_gyms.py"]),
