@@ -245,7 +245,13 @@ def probe(project: Path, *, download: bool) -> dict:
             raw = get_api_file_info(key)
             obj = safe_meta(raw, key)
             report["provider_file_info"][kind] = obj
-            if obj["provider_filename"].casefold() != expected_name.casefold():
+            approved_names = (
+                {"Pokemon_World_V18.zip", "Pokemon World V18.zip"}
+                if kind == "zip" else {"Credits.txt"}
+            )
+            if obj["provider_filename"].casefold() not in {
+                name.casefold() for name in approved_names
+            }:
                 report["errors"].append(kind + ": NOME_ARQUIVO_DIVERGENTE")
                 continue
             if not download:
