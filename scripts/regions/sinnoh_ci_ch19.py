@@ -27,6 +27,7 @@ PYTHON_CHECKS = [
     ("sinnoh-teams-audit", [PY, "scripts/regions/audit_sinnoh_teams_ch15.py"]),
     ("sinnoh-s17-balance-contract", [PY, "scripts/regions/audit_sinnoh_s17_balance.py"]),
     ("sinnoh-s18-wild-contract", [PY, "scripts/regions/audit_sinnoh_s18_wild.py"]),
+    ("sinnoh-s19-galactic-contract", [PY, "scripts/regions/audit_sinnoh_s19_galactic.py"]),
     ("sinnoh-music-audit", [PY, "scripts/music/audit_sinnoh_music_ch16.py"]),
 ]
 
@@ -42,6 +43,7 @@ RUBY_RUNTIME = [
     ("sinnoh-s17-trainers", ["tests/sinnoh_s17_trainer_balance_runtime.rb", "tests/sinnoh_evolution_ch12_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/EvolutionScaling.rb", "scripts/battle_polish/Story.rb", "scripts/battle_polish/Campaign.rb", "data/regions/sinnoh-trainer-evolution-contract.json"]),
     ("sinnoh-s18-wild", ["tests/sinnoh_s18_wild_runtime.rb", "tests/sinnoh_evolution_ch12_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/EvolutionScaling.rb", "scripts/battle_polish/Story.rb", "scripts/battle_polish/Campaign.rb", "data/regions/sinnoh-trainer-evolution-contract.json"]),
     ("sinnoh-story", ["tests/sinnoh_story_ch14_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/RegionTravel.rb", "scripts/regions/SinnohStoryContracts.rb", "data/regions/sinnoh-story-ch14-contract.json"]),
+    ("sinnoh-s19-galactic", ["tests/sinnoh_s19_galactic_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/regions/SinnohStoryContracts.rb", "scripts/regions/SinnohGalacticContracts.rb", "data/regions/sinnoh-galactic-s19.json"]),
     ("sinnoh-music", ["tests/sinnoh_music_ch16_runtime.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
     ("sinnoh-music-s26", ["tests/sinnoh_s26_music_regression.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
 ]
@@ -51,6 +53,7 @@ RUBY_SYNTAX = [
     "scripts/regions/SinnohQAProbe.rb",
     "scripts/regions/SinnohBarryNativeProbe.rb",
     "scripts/regions/SinnohStoryContracts.rb",
+    "scripts/regions/SinnohGalacticContracts.rb",
     "scripts/music/SinnohMusicContracts.rb",
     "scripts/battle_polish/Regions.rb",
     "scripts/battle_polish/RegionTravel.rb",
