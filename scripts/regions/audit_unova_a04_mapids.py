@@ -410,9 +410,58 @@ def overlay_args(values: list[str]) -> dict[str,Path]:
     return found
 
 
+def choose_gui():
+    """Optional Windows UI; never reads a directory without user selection."""
+    try:
+        import tkinter as tk
+        from tkinter import filedialog, messagebox
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showinfo("A04: auditoria segura",
+            "Escolha a pasta Data ou game de sua instalação real do Decades.\n"
+            "Os arquivos serão lidos somente para identificar ocupação.\n"
+            "Nenhum MapID será alocado para Unova.", parent=root)
+        base = filedialog.askdirectory(
+            parent=root,title="Escolha game/Data ou game (Decades instalado)")
+        if not base:
+            root.destroy()
+            return None
+        overlays = []
+        if messagebox.askyesno("Comparar outras regiões?",
+            "Você possui snapshots separados de Kanto, Johto, Hoenn e Sinnoh "
+            "para comparar? É opcional e não prova a propriedade dos mapas.",
+            parent=root):
+            for label in REGIONS:
+                if not messagebox.askyesno(label+" (opcional)",
+                        "Deseja incluir uma fonte separada para "+label+"?",
+                        parent=root):
+                    continue
+                byzip = messagebox.askyesno("Formato de "+label,
+                    "A fonte de "+label+" está num ZIP?\n"
+                    "Sim = escolher ZIP. Não = escolher pasta Data/game.",
+                    parent=root)
+                if byzip:
+                    source = filedialog.askopenfilename(
+                        parent=root,title="ZIP do snapshot "+label,
+                        filetypes=[("ZIP de mapas","*.zip")])
+                else:
+                    source = filedialog.askdirectory(
+                        parent=root,title="Data/game do snapshot "+label)
+                if not source:
+                    root.destroy()
+                    return None
+                overlays.append(label+"="+source)
+        root.destroy()
+        return Path(base),overlays
+    except (OSError,ImportError,RuntimeError) as exc:
+        block("seletor gráfico indisponível: "+str(exc))
+
+
 def main(argv=None) -> int:
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project",type=Path,default=ROOT)
+    parser.add_argument("--gui",action="store_true",
+                        help="selecionar pasta real e overlays por janelas Windows")
     parser.add_argument("--base-data",type=Path,
                         help="pasta Data OU game do Decades instalado, leitura apenas")
     parser.add_argument("--overlay",action="append",default=[],metavar="REGION=PATH",
@@ -420,6 +469,14 @@ def main(argv=None) -> int:
     parser.add_argument("--write",action="store_true")
     args=parser.parse_args(argv)
     try:
+        if args.gui:
+            if args.base_data or args.overlay:
+                block("--gui nao pode ser combinado com --base-data/--overlay")
+            selection=choose_gui()
+            if selection is None:
+                print("UNOVA_A04_CANCELADO: nenhuma fonte alterada")
+                return 2
+            args.base_data,args.overlay=selection
         if not args.base_data:
             report=missing_base()
             if args.write:
