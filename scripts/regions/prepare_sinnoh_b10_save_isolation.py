@@ -26,7 +26,7 @@ if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
 import build_sinnoh_b09_native_qa as b09
 from audit_sinnoh_b06_technical_candidate import B00,B01,B04,B05,B06,load,verify_native_zip
 from audit_sinnoh_b01_inventory import unpack as unpack_native
-from build_sinnoh_b07_private_stage import CONTRACT as B07
+from build_sinnoh_b07_private_stage import CONTRACT as B07, MAPNAME
 from audit_sinnoh_b08_private_qa import CONTRACT as B08
 from sinnoh_staging_transaction import ALLOWED
 CONTRACT=ROOT/"data/regions/sinnoh-b10-save-isolation.json"
@@ -183,7 +183,7 @@ def audit_clone(project,folder,plan_sha,c,b09c,b01,b05):
         if origin=="NATIVE":
             if b09.should_skip(Path(rel)):blocked("save/pasta pessoal no B09")
             native_count+=1
-            m=b09.MAPNAME.fullmatch(Path(rel).name) if len(PurePosixPath(rel).parts)==2 and rel.startswith("Data/") else None
+            m=MAPNAME.fullmatch(Path(rel).name) if len(PurePosixPath(rel).parts)==2 and rel.startswith("Data/") else None
             if m:source_ids.add(int(m.group(1)))
         else:
             if not ALLOWED.fullmatch(rel):
