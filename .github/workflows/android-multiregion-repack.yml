@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/repack_multiregion_hotfix.py'
+      - 'scripts/android/update_client.py'
+      - 'scripts/android/publish_updates.py'
       - '.github/workflows/android-multiregion-repack.yml'
 permissions:
   contents: write
@@ -37,16 +39,26 @@ jobs:
             --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir dist/base
           cd dist/base
           sha256sum -c Blue-Android-Decades-Kanto-Hoenn.zip.sha256
-      - name: Reempacotar arquivos reais com RegionStart e atualizador corrigidos
+      - name: Reempacotar arquivos reais e gerar deltas para versoes anteriores
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python scripts/android/repack_multiregion_hotfix.py \
             --source dist/base/Blue-Android-Decades-Kanto-Hoenn.zip \
             --output dist/Blue-Android-Decades-Kanto-Hoenn.zip \
             --revision "$GITHUB_SHA"
-          python scripts/android/publish_updates.py \
-            --channel multiregion \
-            --full-zip dist/Blue-Android-Decades-Kanto-Hoenn.zip \
-            --previous-manifest dist/base/Blue-Android-Decades-Kanto-Hoenn.update.json
+          args=(--channel multiregion --full-zip dist/Blue-Android-Decades-Kanto-Hoenn.zip
+            --previous-manifest dist/base/Blue-Android-Decades-Kanto-Hoenn.update.json)
+          while read -r tag; do
+            [[ -z "$tag" || "$tag" == "android-multiregion-15-125155e" ]] && continue
+            mkdir -p "dist/previous/$tag"
+            gh release download "$tag" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$tag"
+            args+=(--previous-manifest "dist/previous/$tag/Blue-Android-Decades-Kanto-Hoenn.update.json")
+          done < <(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq '
+            [.[] | select(.draft == false and (.tag_name | startswith("android-multiregion-"))) |
+            select([.assets[].name] | index("Blue-Android-Decades-Kanto-Hoenn.update.json")) |
+            .tag_name][:4][]')
+          python scripts/android/publish_updates.py "${args[@]}"
           cd dist
           sha256sum Blue-Android-Decades-Kanto-Hoenn.zip > Blue-Android-Decades-Kanto-Hoenn.zip.sha256
           test "$(stat -c %s Blue-Android-Decades-Kanto-Hoenn.zip)" -lt 2147483648
@@ -55,10 +67,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="android-multiregion-hotfix-$GITHUB_RUN_NUMBER-$(echo "$GITHUB_SHA" | cut -c1-7)"
-          gh release create "$TAG" \
-            dist/Blue-Android-Decades-Kanto-Hoenn.zip \
-            dist/Blue-Android-Decades-Kanto-Hoenn.update.json \
-            dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256 \
+          assets=(dist/Blue-Android-Decades-Kanto-Hoenn.zip
+            dist/Blue-Android-Decades-Kanto-Hoenn.update.json
+            dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256)
+          shopt -s nullglob
+          for patch in dist/Blue-Android-Decades-Kanto-Hoenn*.patch.zip; do assets+=("$patch"); done
+          gh release create "$TAG" "${assets[@]}" \
             --target "$GITHUB_SHA" \
             --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
             --notes "ZIP completo baseado na release auditada android-multiregion-15-125155e. Inclui Kanto (142 mapas), Hoenn (199 mapas), RegionStart.rb corrigido no cache do JoiPlay e novo ATUALIZAR-ANDROID.py com protecao contra downgrade. Metadados e SHA-256 validados. Fazer backup dos saves antes de trocar a instalacao. Teste em JoiPlay real ainda pendente." \
