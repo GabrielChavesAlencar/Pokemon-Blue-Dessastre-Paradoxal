@@ -114,6 +114,8 @@ def checked_roots(roots):
         output.append(resolved)
     if not output:
         blocked("nenhuma pasta de saves monitoravel; informe --watch-dir")
+    if len(output)>32:
+        blocked("muitas pastas monitoradas para auditoria de saves")
     for i,p in enumerate(output):
         for other in output[i+1:]:
             if p.is_relative_to(other) or other.is_relative_to(p):
