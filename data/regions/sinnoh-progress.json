@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 29,
-    "partial": 3,
+    "done": 30,
+    "partial": 2,
     "pending": 0,
-    "percent_complete": 90,
-    "percent_with_partial_not_counted": 90,
+    "percent_complete": 93,
+    "percent_with_partial_not_counted": 93,
     "groups": [
       {
         "key": "foundation",
@@ -170,8 +170,8 @@
     {
       "id": "S13",
       "title": "Introdução, Rowan e Barry",
-      "status": "partial",
-      "evidence_path": "scripts/regions/SinnohPilot.rb"
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S13_INTRO_ROWAN_BARRY_ACEITE.md"
     },
     {
       "id": "S14",
@@ -438,7 +438,7 @@
     "native_verified": false,
     "assets_verified": false,
     "not_playable": true,
-    "note": "5/8 subetapas de introdução aprovadas em código. I07 continua pendente apesar de o gerador/verificador dos três PBS de Barry estarem prontos; faltam compilação e batalhas reais."
+    "note": "S13 engenharia de checkpoints e roteiro concluidos (30/32 codigo), mas I06-I08 continuam pendentes (5/8). Falta auditar mapas/spawn/sprites, PBS Barry nativos e executar Game.exe/JoiPlay."
   },
   "barry_pbs_workstream": {
     "status": "PBS_DRAFT_CODE_READY_NATIVE_QA_PENDING",

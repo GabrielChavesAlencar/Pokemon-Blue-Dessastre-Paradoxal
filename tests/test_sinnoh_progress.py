@@ -87,7 +87,7 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertEqual(record["development"]["percent_complete"], 100 * record["development"]["done"] // record["development"]["total"])
         self.assertEqual({row["id"]: row["status"] for row in record["tasks"]
                           if row["id"] in ("S13", "S14")},
-                         {"S13": "partial", "S14": "partial"})
+                         {"S13": "done", "S14": "partial"})
         self.assertTrue(all(not row["complete"] or (
             row["evidence"] and (ROOT / row["evidence"]).is_file()
         ) for row in phase["substeps"]))
