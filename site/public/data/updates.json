@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c7fb6d0d17f440f9b7d90d52ce38dca9480c938a",
+      "date": "2026-11-17T15:16:07-03:00",
+      "title": "Unova A13: cópia QA privada do Decades com perfis separados",
+      "category": "Novidades"
+    },
+    {
       "sha": "6328667250618ee79e61c73ee726885655590c50",
       "date": "2026-11-17T15:02:37-03:00",
       "title": "Unova A12: revisão de propriedade regional e pré-instalação isolada",
