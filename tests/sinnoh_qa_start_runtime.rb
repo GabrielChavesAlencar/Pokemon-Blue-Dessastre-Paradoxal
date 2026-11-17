@@ -81,7 +81,7 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
       "dataPathOrg" => profile["dataPathOrg"]
     }
     File.write("mkxp.json", JSON.generate(config))
-    File.write("Game.ini", "[Game]\\nTitle=#{profile['title']}\\n")
+    File.write("Game.ini", ["[Game]", "Title=#{profile['title']}", ""].join(10.chr))
     proof = {
       "schema" => 1,
       "profile" => profile,
