@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4c228f4434e986fbaa47b6cd820dd2dc1de24cf4",
+      "date": "2026-11-17T19:28:27-03:00",
+      "title": "docs(android): explain no-backup patch-only updater inside game ZIP",
+      "category": "Documentação"
+    },
+    {
       "sha": "fb1fe36e652daaced4d19791c77bad9b5a95fabd",
       "date": "2026-11-17T19:27:53-03:00",
       "title": "fix(android): hotfix release manifest tracks updated updater as patchable file",
