@@ -140,7 +140,7 @@ async function render(scroll=false){
     }else if(route==='unova'){
       const guide=await loadUnovaGuide();if(id!==renderId)return;
       const guideSection=parts[1]||'home';const ref=parts[2]??null;
-      main.innerHTML=unovaGuidePage(guide,guideSection,ref);
+      main.innerHTML=unovaGuidePage(guide,guideSection,ref,url.searchParams);
       setPage(guideSection==='home'?'Guia de Unova':'Guia Unova · '+guideSection);
     }else if(route==='unova-progresso'){
       const progress=await loadUnovaGithubProgress();if(id!==renderId)return;
@@ -183,6 +183,15 @@ async function render(scroll=false){
 }
 // Search is a real GET form (works without JavaScript), enhanced with SPA navigation.
 main.addEventListener('submit',event=>{
+  // Real GET form supports keyboard Enter and full-page no-JS navigation.
+  const unovaForm=event.target.closest('form[data-unova-filters]');
+  if(unovaForm){
+    event.preventDefault();
+    const query=new URLSearchParams(new FormData(unovaForm));
+    const destination=unovaForm.getAttribute('action')+'?'+query.toString();
+    navigate(destination);
+    return;
+  }
   const form=event.target.closest('form[data-sinnoh-filters]');
   if(!form)return;
   event.preventDefault();

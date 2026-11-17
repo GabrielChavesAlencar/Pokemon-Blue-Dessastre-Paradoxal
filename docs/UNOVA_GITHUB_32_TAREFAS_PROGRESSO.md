@@ -6,9 +6,9 @@
 
 ## Barra geral
 
-**26/32 entregas concluídas (81%)** · 6 pendentes
+**27/32 entregas concluídas (84%)** · 5 pendentes
 
-`[██████████████████████████░░░░░░]` **81%**
+`[███████████████████████████░░░░░]` **84%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
@@ -17,7 +17,7 @@
 | G03 — Treinadores e balanceamento | **4/4** | `████` |
 | G04 — Áreas, selvagens e temporadas | **4/4** | `████` |
 | G05 — Mecânicas e isolamento regional | **4/4** | `████` |
-| G06 — Site, guias e acompanhamento | **3/4** | `███░` |
+| G06 — Site, guias e acompanhamento | **4/4** | `████` |
 | G07 — Blue-Story, manifests e instalador | **1/4** | `█░░░` |
 | G08 — Auditoria, CI e qualidade | **2/4** | `██░░` |
 
@@ -80,7 +80,7 @@ Conteúdo de referência exibido como planejado, nunca como jogável.
 
 - [x] **G06.1 — Registrar Unova no circuito de regiões como planned.** Registro público da região com status planned e oito insígnias · [Evidência](../site/public/data/regions.json)
 - [x] **G06.2 — Criar guias das 74 áreas e progressão da história.** Portal /unova com 74 áreas, 12 capítulos, 8 ginásios, Elite Four, NPCs e treinadores simbólicos, links contextuais e testes negativos de conteúdo nativo falso · [Evidência](../site/scripts/unova-guide.mjs)
-- [ ] **G06.3 — Adicionar busca e filtros de NPCs, trainers e missões.** Links contextuais, pesquisa por fase e acessibilidade
+- [x] **G06.3 — Adicionar busca e filtros de NPCs, trainers e missões.** Filtros de áreas, capítulos, missões, NPCs, treinadores, líderes, Liga e pendências; URLs GET compartilháveis, teclado, links contextuais, testes positivos/negativos e fail-closed planned · [Evidência](../site/src/assets/unova-search.js)
 - [x] **G06.4 — Publicar barra de progresso GitHub com 32 tarefas.** Página /unova-progresso alimentada por JSON e testada no CI · [Evidência](../site/public/data/unova-github-progress.json)
 
 ### G07 — Blue-Story, manifests e instalador
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G06.3 (busca e filtros de NPCs, treinadores e missões por capítulo/fase, links contextuais e acessibilidade sobre o guia G06.2, sem instalar mapas). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G07.2 (schema de pacote incremental de Unova com versões, hashes, direitos, caminhos autorizados e manifestos de origem em fixtures offline; G07.1 já concluída). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.

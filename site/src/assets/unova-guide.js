@@ -1,6 +1,7 @@
 // G06.2: navigable, read-only Unova White guide derived from audited sources.
 // Never interprets a symbolic reference as native Game.exe content.
 import {esc,icon} from './utils.js';
+import {filterUnovaGuide,unovaFilterUrl,UNOVA_PENDING_TYPES} from './unova-search.js';
 
 let cache;
 const invalid=reason=>{throw new Error('unova-guide-invalid: '+reason);};
@@ -26,8 +27,8 @@ const chapterBy=(data,key)=>data.chapters.find(c=>c.key===key);
 const listLinks=(list,make)=>list.length?'<div class="unova-guide-related">'+list.map(make).join('')+'</div>':
  note('Nenhuma referência auditada neste catálogo; não significa ausência de conteúdo no jogo original.');
 const nav=[
- ['home','Visão geral'],['capitulos','História'],['areas','74 áreas'],
- ['ginasios','8 ginásios'],['liga','Elite Four e Castelo'],
+ ['home','Visão geral'],['capitulos','História'],['missoes','Missões'],
+ ['areas','74 áreas'],['ginasios','8 ginásios'],['liga','Elite Four e Castelo'],
  ['npcs','NPCs'],['treinadores','Treinadores'],['pendencias','Pendências']
 ];
 export function validateUnovaGuide(data){
@@ -39,6 +40,7 @@ export function validateUnovaGuide(data){
     !Array.isArray(data.gyms)||data.gyms.length!==8||
     !Array.isArray(data.elite)||data.elite.length!==4||
     !Array.isArray(data.npcs)||!Array.isArray(data.trainers)||
+    !Array.isArray(data.missions)||data.missions.length!==12||data.counts?.missions!==12||
     !Array.isArray(data.castle)||data.nativeMapIdsVerified!==0||
     data.nativeEventsVerified!==0||data.nativeTeamsVerified!==0||
     data.nativeEncounterRatesVerified!==0||data.counts?.areas!==74||
@@ -46,7 +48,8 @@ export function validateUnovaGuide(data){
     data.counts?.eliteFour!==4||data.counts?.npcs!==data.npcs.length||
     data.counts?.trainerReferences!==data.trainers.length)invalid('summary or native state');
  const ids=new Set(data.areas.map(a=>a.key)),chapterIds=new Set(data.chapters.map(c=>c.key));
- if(ids.size!==74||chapterIds.size!==12||new Set(data.npcs.map(n=>n.key)).size!==data.npcs.length||
+ if(ids.size!==74||chapterIds.size!==12||new Set(data.missions.map(m=>m.key)).size!==12||
+   new Set(data.npcs.map(n=>n.key)).size!==data.npcs.length||
    new Set(data.trainers.map(t=>t.key)).size!==data.trainers.length)invalid('duplicate references');
  if(data.areas.some(a=>!/^UNOVA_[A-Z0-9_]+$/.test(a.key)||a.status!=='planned'||a.installed!==false||
    a.nativeMapId!==null||a.verifiedLevels!==null||a.verifiedEncounters!==0||
@@ -61,6 +64,10 @@ export function validateUnovaGuide(data){
    (c.referenceAreaKey!==null&&!ids.has(c.referenceAreaKey))))invalid('chapter gameplay or links');
  if(data.chapters.flatMap(c=>c.areaKeys).length!==74||
     new Set(data.chapters.flatMap(c=>c.areaKeys)).size!==74)invalid('incomplete area coverage');
+ if(data.missions.some(m=>m.status!=='planned'||m.installed!==false||
+   m.nativeEventId!==null||m.nativeMapId!==null||
+   !chapterIds.has(m.chapterKey)||!ids.has(m.areaKey)||
+   m.sourcePath!==data.sourcePaths.story))invalid('mission native event or area falsely approved');
  if(data.gyms.some(g=>g.status!=='planned'||g.installed!==false||
    g.team!==null||g.levels!==null||g.nativeTrainerId!==null||
    !chapterIds.has(g.chapterKey)||!ids.has(g.gymAreaKey)||!ids.has(g.cityAreaKey)))invalid('gym team/MapID falsely installed');
@@ -85,6 +92,37 @@ export async function loadUnovaGuide(fetcher=fetch){
  }
  return cache;
 }
+
+
+const searchEmpty='<p class="unova-guide-empty" role="status">Nenhuma referência planejada corresponde aos filtros. Tente outra pesquisa; isso não indica ausência de conteúdo no jogo original.</p>';
+const select=(key,label,choices,current,display)=>
+ '<label>'+esc(label)+'<select name="'+esc(key)+'" aria-label="'+esc(label)+'">'+
+ '<option value="todos">Todos</option>'+
+ choices.map(k=>'<option value="'+esc(k)+'"'+(current===k?' selected':'')+'>'+
+ esc(display(k))+'</option>').join('')+'</select></label>';
+const chapterLabel=(data,key)=>{const chapter=chapterBy(data,key);return chapter?'Cap. '+chapter.index+' · '+chapter.title:key;};
+const areaLabel=(data,key)=>areaBy(data,key)?.name??key;
+const formSearch=(data,tab,filtered)=>{
+ const x=filtered.filters,o=filtered.options;
+ const form='<form method="get" action="'+esc('/unova/'+tab)+'" role="search"'+
+ ' aria-label="Pesquisar referências planejadas de Unova" data-unova-filters class="unova-guide-filters">'+
+ '<label class="unova-guide-search-label">Buscar por nome, chave ou local'+
+ '<input type="search" name="busca" maxlength="100" autocomplete="off"'+
+ ' placeholder="NPC, missão, rota, capítulo, insígnia…" value="'+esc(x.busca)+'"'+
+ ' aria-label="Buscar referências de Unova"></label>'+
+ (o.fases.length?select('fase','Fase de planejamento',o.fases,x.fase,k=>k):'')+
+ (o.capitulos.length?select('capitulo','Capítulo',o.capitulos,x.capitulo,k=>chapterLabel(data,k)):'')+
+ (o.tipos.length?select('tipo','Categoria ou papel',o.tipos,x.tipo,k=>k):'')+
+ (o.pendencias.length?select('pendencia','Pendência',o.pendencias,x.pendencia,k=>UNOVA_PENDING_TYPES[k]??k):'')+
+ (['areas','npcs','treinadores','missoes','ginasios','liga'].includes(tab)&&o.areas.length?
+  select('area','Área de referência',o.areas,x.area,k=>areaLabel(data,k)):'')+
+ '<button type="submit" class="button button-primary">'+icon('search')+' Pesquisar</button>'+
+ '<a class="button button-secondary" href="'+esc('/unova/'+tab)+'">Limpar filtros</a></form>';
+ return form+'<p class="unova-guide-result-count" role="status" aria-live="polite"'+
+ ' aria-atomic="true">'+filtered.count+' de '+filtered.total+' referências planejadas'+
+ ' · nenhum dado nativo instalado</p>';
+};
+const filteredCards=(filtered,render)=>filtered.count?cards(filtered.items,render):searchEmpty;
 
 const section=(title,body)=>'<section class="section"><h2>'+esc(title)+'</h2>'+body+'</section>';
 const intro=(title,description)=>'<header class="article-heading"><span class="eyebrow">UNOVA WHITE · GUIA PLANEJADO</span>'+
@@ -119,10 +157,11 @@ const areaDetails=(data,a)=>{
   (chapter?'<div class="unova-guide-context">'+linkChapter(chapter,'Ver capítulo')+'</div>':''))+
  related('Personagens citados nesta área',
   people.length?cards(people,n=>card(n.name,note('Papel: '+n.role+' · sprite e evento pendentes')+
-   '<div class="unova-guide-context">'+link('/unova/npcs','Catálogo de NPCs')+'</div>')):note('Não há associação de NPC auditada para esta área.'))+
+   '<div class="unova-guide-context">'+link('/unova/npcs?area='+encodeURIComponent(a.key),'Filtrar NPCs desta área')+'</div>')):note('Não há associação de NPC auditada para esta área.'))+
  related('Confrontos de referência',
   trainer.length?cards(trainer,t=>card(t.actor,note('Política contratual: '+t.policy+' · nenhum time ou nível PBS confirmado')+
-   '<div class="unova-guide-context">'+linkChapter(chapterBy(data,t.chapterKey),'Capítulo do confronto')+'</div>')):note('Não há confronto identificado nesta área no contrato G03.3.'))+
+   '<div class="unova-guide-context">'+linkChapter(chapterBy(data,t.chapterKey),'Capítulo do confronto')+
+    ' '+link('/unova/treinadores?area='+encodeURIComponent(a.key),'Treinadores desta área')+'</div>')):note('Não há confronto identificado nesta área no contrato G03.3.'))+
  (gyms.length?related('Ginásio relacionado',listLinks(gyms,()=>link('/unova/ginasios','Ver os oito ginásios'))):'')+
  (elite.length?related('Elite Four',link('/unova/liga','Ver os quatro membros')):'')+
  related('Explorar referências próximas',
@@ -138,6 +177,7 @@ const chapterDetails=(data,c)=>{
  section('Missão e gates simbólicos',
   note('Missão: '+(c.missionKey||'pendente')+'. Requisito de transição: '+(c.requiredMissionKey||'início da jornada')+
    '. Flags de conclusão são simulações; nenhuma recompensa ou batalha real é ativada.')+
+  '<div class="unova-guide-context">'+link('/unova/missoes?capitulo='+encodeURIComponent(c.key),'Missões deste capítulo')+'</div>'+
   note('Área de referência: '+(areaBy(data,c.referenceAreaKey)?.name||'pendente')+
    '. Grupo editorial por fase, não roteiro físico entre mapas.'))+
  section('Áreas associadas · '+areas.length,cards(areas,a=>areaCard(a,c)))+
@@ -163,7 +203,7 @@ const trainerCard=(data,t)=>card(t.actor,note('Contrato: '+t.key+' · '+t.policy
  '<div class="unova-guide-context">'+linkArea(areaBy(data,t.areaKey),'Local citado')+
  ' '+linkChapter(chapterBy(data,t.chapterKey),'Capítulo')+'</div>','CONFRONTO DE REFERÊNCIA');
 const noGame=()=>note('Estas fichas organizam os contratos existentes, mas nenhum MapID, taxa, Pokémon selvagem, nível fixo, equipe, evento, NPC instalado ou SaveData real de Unova foi confirmado.');
-export function unovaGuidePage(data,sectionKey='home',id=null){
+export function unovaGuidePage(data,sectionKey='home',id=null,query={}){
  validateUnovaGuide(data);
  const known=new Set(nav.map(([key])=>key));
  if(!known.has(sectionKey)&&!['area','capitulo'].includes(sectionKey))invalid('unknown guide page');
@@ -175,33 +215,59 @@ export function unovaGuidePage(data,sectionKey='home',id=null){
   const c=chapterBy(data,id);if(!c)invalid('unknown chapter');
   content=chapterDetails(data,c);
  }else if(sectionKey==='capitulos'){
+  const selected=filterUnovaGuide(data,'capitulos',query);
   content=intro('História e progressão de Unova','12 capítulos de campanha e pós-jogo, com ligações narrativas auditadas.')+
-   section('Capítulos contratados',cards(data.chapters,chapterCard));
+   formSearch(data,'capitulos',selected)+
+   section('Capítulos contratados',filteredCards(selected,chapterCard));
+ }else if(sectionKey==='missoes'){
+  const selected=filterUnovaGuide(data,'missoes',query);
+  content=intro('Missões de Unova White','12 missões principais de G01.1. Flags e gatilhos ainda não instalados no jogo.')+
+   formSearch(data,'missoes',selected)+
+   section('Missões narrativas de referência',filteredCards(selected,m=>
+    card(m.key,note('Capítulo: '+m.chapterTitle+' · tipo: '+m.kind+
+      '. Evento, flag, recompensa e MapID nativos: pendentes.')+
+     '<div class="unova-guide-context">'+
+     linkChapter(chapterBy(data,m.chapterKey),'Ver capítulo')+
+     ' '+linkArea(areaBy(data,m.areaKey),'Área de referência')+'</div>','MISSÃO PLANEJADA')));
  }else if(sectionKey==='areas'){
+  const selected=filterUnovaGuide(data,'areas',query);
   content=intro('74 áreas de Unova','Cidades, rotas, cavernas, ginásios e locais opcionais: todos ainda planejados.')+
-   section('Todas as 74 referências',cards(data.areas,a=>areaCard(a,chapterBy(data,a.chapterKey))));
+   formSearch(data,'areas',selected)+
+   section('Todas as 74 referências',filteredCards(selected,a=>areaCard(a,chapterBy(data,a.chapterKey))));
  }else if(sectionKey==='ginasios'){
+  const selected=filterUnovaGuide(data,'ginasios',query);
   content=intro('Oito ginásios de Unova White','Contratos da campanha White por capítulo e insígnia; nenhum combate nativo disponível.')+
-   section('Insígnias e líderes de referência',cards(data.gyms,g=>gymCard(data,g)));
+   formSearch(data,'ginasios',selected)+
+   section('Insígnias e líderes de referência',filteredCards(selected,g=>gymCard(data,g)));
  }else if(sectionKey==='liga'){
+  const selected=filterUnovaGuide(data,'liga',query);
+  const elite=selected.items.filter(x=>x.entryKind==='elite');
+  const castle=selected.items.filter(x=>x.entryKind==='castelo');
   content=intro('Elite Four, N e Ghetsis','Elite Four e Castelo de N documentados como eventos simbólicos.')+
-   section('Quatro membros da Elite Four',cards(data.elite,e=>card(e.name,
+   formSearch(data,'liga',selected)+
+   section('Quatro membros da Elite Four',elite.length?cards(elite,e=>card(e.name,
     note('Especialidade: '+e.specialty+' · equipe, níveis e Trainer PBS pendentes')+
     '<div class="unova-guide-context">'+linkArea(areaBy(data,e.areaKey),'Área da Liga')+
-    ' '+linkChapter(chapterBy(data,e.chapterKey),'Capítulo')+'</div>','ELITE FOUR PLANEJADA')))+
-   section('Castelo de N e desfecho (apenas contratos)',cards(data.castle,e=>card(e.description,
+    ' '+linkChapter(chapterBy(data,e.chapterKey),'Capítulo')+'</div>','ELITE FOUR PLANEJADA')):searchEmpty)+
+   section('Castelo de N e desfecho (apenas contratos)',castle.length?cards(castle,e=>card(e.description,
     note('Evento simbólico '+e.key+'. Sem batalha, captura ou créditos executados.')+
-    '<div class="unova-guide-context">'+linkArea(areaBy(data,e.areaKey),'Castelo')+'</div>')));
+    '<div class="unova-guide-context">'+linkArea(areaBy(data,e.areaKey),'Castelo')+'</div>')):searchEmpty);
  }else if(sectionKey==='npcs'){
+  const selected=filterUnovaGuide(data,'npcs',query);
   content=intro('NPCs de referência','Catálogo SP04 de personagens; nenhum sprite ou evento aprovado para o Game.exe.')+
-   section(data.npcs.length+' personagens documentados',cards(data.npcs,n=>peopleCard(data,n)));
+   formSearch(data,'npcs',selected)+
+   section(data.npcs.length+' personagens documentados',filteredCards(selected,n=>peopleCard(data,n)));
  }else if(sectionKey==='treinadores'){
+  const selected=filterUnovaGuide(data,'treinadores',query);
   content=intro('Rivais, Plasma e treinadores','Referências G03.3 de encontros planejados; nenhuma equipe PBS compilada.')+
-   section(data.trainers.length+' confrontos auditados',cards(data.trainers,t=>trainerCard(data,t)));
+   formSearch(data,'treinadores',selected)+
+   section(data.trainers.length+' confrontos auditados',filteredCards(selected,t=>trainerCard(data,t)));
  }else if(sectionKey==='pendencias'){
+  const selected=filterUnovaGuide(data,'pendencias',query);
   content=intro('Pendências de Unova','O catálogo não autoriza instalar mapas ou usar dados de combate no jogo.')+
-   section('O que falta comprovar',cards(Object.entries(data.pending).map(([k,v])=>({key:k,val:v})),
-    p=>card(p.key.replaceAll(/([A-Z])/g,' $1').trim(),note(String(p.val)),'NÃO VERIFICADO')))+
+   formSearch(data,'pendencias',selected)+
+   section('O que falta comprovar',filteredCards(selected,p=>
+    card(p.label,note(p.value),'NÃO VERIFICADO')))+
    section('Proveniência',note(data.chapterGroupingExplanation)+noGame()+
     link('/unova-progresso','Acompanhar Barra G no GitHub'));
  }else{
@@ -214,6 +280,7 @@ export function unovaGuidePage(data,sectionKey='home',id=null){
    section('Seguir a história',cards(data.chapters,chapterCard))+
    section('Áreas de referência',cards(data.areas.slice(0,8),a=>areaCard(a,chapterBy(data,a.chapterKey))))+
    '<div class="unova-guide-actions">'+link('/unova/areas','Consultar todas as 74 áreas')+
+   link('/unova/missoes','Pesquisar missões planejadas')+
    link('/unova/ginasios','Líderes e insígnias')+
    link('/unova/liga','Elite Four e desfecho')+'</div>'+
    section('Estado da implementação',noGame()+note(data.chapterGroupingExplanation)+

@@ -113,6 +113,17 @@ export function generateUnovaGuide({areas,story,transitions,gyms,finale,postgame
     areaKey:e.area_key,status:'planned',nativeEventId:null,
     trainerTeam:null,levels:null
   }));
+  const missions=story.missions.map(m=>{
+    const chapter=chapterIndex.get(m.chapter_key);
+    ensure(chapter&&m.planned_only===true&&m.real_event_id===null
+      &&areaKeys.has(m.reference_area_key),'mission native-event or area drift');
+    return {
+      key:m.key,chapterKey:m.chapter_key,chapterTitle:chapter.title,
+      areaKey:m.reference_area_key,plannedPhase:chapter.planned_phase,
+      kind:m.kind,status:'planned',nativeEventId:null,nativeMapId:null,
+      installed:false,sourcePath:unovaGuideSources.story
+    };
+  });
   const people=npcs.characters.map(n=>({
     key:n.key,name:n.display_name,role:n.role,areaKey:n.primary_area_key,
     relatedAreaKeys:[...n.additional_area_keys],status:'planned',
@@ -130,10 +141,10 @@ export function generateUnovaGuide({areas,story,transitions,gyms,finale,postgame
     gameExeTested:false,nativeMapIdsVerified:0,nativeTeamsVerified:0,
     nativeEventsVerified:0,nativeEncounterRatesVerified:0,
     sourcePaths:unovaGuideSources,
-    counts:{areas:74,chapters:12,gyms:8,eliteFour:4,npcs:people.length,trainerReferences:trainers.length},
+    counts:{areas:74,chapters:12,missions:12,gyms:8,eliteFour:4,npcs:people.length,trainerReferences:trainers.length},
     warning:'Guia editorial de Unova White. Fases, locais, personagens e batalhas são referências contratuais; não são mapas, encontros, equipes, níveis ou eventos instalados.',
     chapterGroupingExplanation:'Áreas agrupadas editorialmente por fase U03/U07–U30; associação não significa ligação física, ordem de transferência ou capítulo jogável confirmado.',
-    chapters,areas:arows,gyms:leaders,elite,castle,npcs:people,trainers,
+    chapters,missions,areas:arows,gyms:leaders,elite,castle,npcs:people,trainers,
     pending:{maps:74,events:'PENDENTE',npcSprites:'PENDENTE',trainerTeams:'PENDENTE',
       levels:'PENDENTE',wildEncounters:'PENDENTE',rights:'PENDENTE',gameExe:'NÃO TESTADO'}
   };
