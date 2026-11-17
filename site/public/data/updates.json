@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ed5ba8259e18a43a036e2939ff20c803bd5dc5db",
+      "date": "2026-11-17T12:01:05-03:00",
+      "title": "feat(sinnoh): B04 coleta segura de manifestos regionais e auditor de ZIP",
+      "category": "Novidades"
+    },
+    {
       "sha": "158874f52f94cda4ec8b106310a15763dbf6a24c",
       "date": "2026-11-17T11:47:55-03:00",
       "title": "feat(unova): auditor A04 de MapInfos e MapIDs multirregionais read-only",
