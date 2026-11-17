@@ -70,7 +70,8 @@ export function unovaGithubProgressPage(data){
   return '<div class="container detail-container unova-github-progress">'+
     '<a class="back-link" href="/regioes">← Circuito de regiões</a>'+
     '<header class="article-heading"><span class="eyebrow">UNOVA · TRABALHO PELO GITHUB</span>'+
-    '<h1>Progresso das tarefas de Unova</h1>'+
+    '<h1>Progresso das tarefas de Unova</h1>'+ 
+    '<p><a class="text-link" href="/unova">Abrir guia planejado de Unova '+icon('arrow')+'</a></p>'+
     '<p>Esta barra acompanha entregas de código, catálogos, testes e site que podemos executar sem o PC. Ela é independente do progresso jogável e dos testes locais.</p></header>'+
     '<section class="panel unova-progress-overview" aria-label="Progresso total">'+
     '<p class="eyebrow">DESENVOLVIMENTO PELO GITHUB</p>'+
