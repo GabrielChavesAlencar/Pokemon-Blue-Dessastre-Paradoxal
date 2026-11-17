@@ -1,0 +1,932 @@
+{
+  "schema": 1,
+  "phase": "G04.3",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "OFFLINE_ONLY_NO_NATIVE_WILD_LEVELS",
+  "sources": {
+    "g04_methods": "data/regions/unova-g04-encounter-methods-contract.json",
+    "g03_scaling": "data/regions/unova-g03-leader-scaling-contracts.json",
+    "shared_evolution": "data/regions/sinnoh-trainer-evolution-contract.json",
+    "native_evolution": "scripts/battle_polish/EvolutionScaling.rb",
+    "registry": "site/public/data/regions.json",
+    "tracker": "site/public/data/unova-github-progress.json"
+  },
+  "source_evidence": {
+    "unova_encounters_pbs": null,
+    "unova_native_species": null,
+    "unova_native_level_ranges": null,
+    "unova_source_map_ids": null,
+    "unova_source_license_approval": null
+  },
+  "progress": {
+    "signal": "HIGHEST_NON_EGG_PARTY_LEVEL",
+    "fallback_without_non_egg": 1,
+    "native_max": "GameData::GrowthRate.max_level",
+    "regional_badge_numeric_level_cap": null,
+    "native_slot_level_is_authoritative": true,
+    "do_not_scale_trainer_levels_as_wild": true
+  },
+  "method_families": {
+    "level": [
+      "Level",
+      "LevelMale",
+      "LevelFemale",
+      "LevelDay",
+      "LevelNight",
+      "LevelMorning",
+      "LevelAfternoon",
+      "LevelEvening"
+    ],
+    "stone": [
+      "Item",
+      "ItemMale",
+      "ItemFemale",
+      "ItemDay",
+      "ItemNight"
+    ],
+    "trade": [
+      "Trade",
+      "TradeMale",
+      "TradeFemale",
+      "TradeDay",
+      "TradeNight",
+      "TradeItem"
+    ],
+    "friendship": [
+      "Happiness",
+      "HappinessMale",
+      "HappinessFemale",
+      "HappinessDay",
+      "HappinessNight"
+    ]
+  },
+  "thresholds": {
+    "level_plus_grace": 5,
+    "stone_level": 30,
+    "trade_level": 40,
+    "friendship_level": 45
+  },
+  "chance_bands": [
+    {
+      "min_gap": 0,
+      "max_gap_exclusive": 5,
+      "chance_percent": 15
+    },
+    {
+      "min_gap": 5,
+      "max_gap_exclusive": 15,
+      "chance_percent": 30
+    },
+    {
+      "min_gap": 15,
+      "max_gap_exclusive": 25,
+      "chance_percent": 45
+    },
+    {
+      "min_gap": 25,
+      "max_gap_exclusive": null,
+      "chance_percent": 60
+    }
+  ],
+  "safety": {
+    "max_evolution_steps": 3,
+    "branching_requires_single_unique_eligible_target": true,
+    "gender_and_time_require_verified_context": true,
+    "never_guess_unsupported_evolution_methods": true,
+    "no_special_species_or_nonzero_forms": true,
+    "only_synthetic_fixtures_without_native_source": true,
+    "preserve_original_slot_weight": true,
+    "preserve_original_encounter_rate": true,
+    "do_not_modify_original_pbs_or_saves": true,
+    "wild_chance_not_encounter_weight": true,
+    "G04_4_owns_real_probability_validation": true
+  },
+  "areas": [
+    {
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ACCUMULA_TOWN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_STRIATON_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_NACRENE_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_CASTELIA_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_NIMBASA_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_DRIFTVEIL_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_MISTRALTON_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ICIRRUS_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_OPELUCID_CITY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_POKEMON_LEAGUE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ANVILLE_TOWN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_LACUNOSA_TOWN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_UNDELLA_TOWN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_WHITE_FOREST",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_01",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_02",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_03",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_04",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_05",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_06",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_07",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_08",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_09",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_10",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_11",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_12",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_13",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_14",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_15",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_16",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_17",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROUTE_18",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_JUNIPER_LAB",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_DREAMYARD",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_STRIATON_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_WELLSPRING_CAVE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_PINWHEEL_FOREST",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_NACRENE_MUSEUM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_NACRENE_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_SKYARROW_BRIDGE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_CASTELIA_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_DESERT_RESORT",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_RELIC_CASTLE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_LOSTLORN_FOREST",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_NIMBASA_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_BATTLE_SUBWAY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_DRIFTVEIL_DRAWBRIDGE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_COLD_STORAGE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_DRIFTVEIL_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_CHARGESTONE_CAVE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_CELESTIAL_TOWER",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_MISTRALTON_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_MISTRALTON_CAVE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_TWIST_MOUNTAIN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_MOOR_OF_ICIRRUS",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ICIRRUS_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_DRAGONSPIRAL_TOWER",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_TUBELINE_BRIDGE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_OPELUCID_GYM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_VICTORY_ROAD",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ELITE_FOUR",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_NS_CASTLE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_GIANT_CHASM",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_VILLAGE_BRIDGE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_MARVELOUS_BRIDGE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_UNDERGROUND_RUINS",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ABUNDANT_SHRINE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_CHALLENGERS_CAVE",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_P2_LABORATORY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_LIBERTY_GARDEN",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_ROYAL_UNOVA",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_UNDELLA_BAY",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    },
+    {
+      "area_key": "UNOVA_UNITY_TOWER",
+      "native_level_min": null,
+      "native_level_max": null,
+      "native_species": null,
+      "native_encounter_rate": null,
+      "native_slot_weights": null,
+      "native_map_id": null,
+      "native_pbs_verified": false,
+      "scaling_installed": false
+    }
+  ],
+  "can_install": false,
+  "native_encounters_verified": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "notes": [
+    "G04.3 is an offline audit contract. BlueEvolutionScaling.rb remains the native behavior.",
+    "74 areas are symbolic U03 references; no native PBS, level, species, probabilities, map IDs, assets or saves are verified.",
+    "The highest non-egg party level is a progression signal, not a badge-derived regional numeric cap.",
+    "The original native encounter slot and its rate/weight must remain authoritative; evolution chance never supplies a new spawn rate.",
+    "Only FIXTURE_* identities are accepted by the simulator; no gameplay or installation approval is implied."
+  ]
+}
