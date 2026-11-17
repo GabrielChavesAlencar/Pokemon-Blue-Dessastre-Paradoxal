@@ -432,3 +432,24 @@
 .unova-guide-footer{margin:45px 0 20px;padding:22px;border-radius:9px;background:#102037;border:1px solid #304967}
 @media(max-width:1000px){.unova-guide-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:620px){.unova-guide-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.unova-guide-card{padding:15px}.unova-guide-nav .filter-chip{flex:1 1 calc(50% - 9px);justify-content:center}}
+
+
+/* Unova G06.3: keyboard-accessible read-only GET search/filter controls. */
+.unova-guide-filters{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;margin:23px 0 12px;
+ padding:17px;border:1px solid #395773;border-radius:10px;background:#111e30}
+.unova-guide-filters label{display:flex;flex:1 1 160px;flex-direction:column;gap:6px;
+ color:#d4e4f6;font-size:12px;font-weight:600;line-height:1.4}
+.unova-guide-filters .unova-guide-search-label{flex:2 1 260px}
+.unova-guide-filters input,.unova-guide-filters select{display:block;width:100%;min-height:44px;
+ background:#0a1626;color:#f0f8ff;border:1px solid #516a82;border-radius:7px;padding:10px 12px}
+.unova-guide-filters input:focus-visible,.unova-guide-filters select:focus-visible,
+.unova-guide-filters button:focus-visible,.unova-guide-filters a:focus-visible,
+.unova-guide-nav a:focus-visible,.unova-guide-context a:focus-visible{
+ outline:3px solid #8cccff;outline-offset:3px}
+.unova-guide-filters .button{min-height:44px;display:inline-flex;align-items:center;gap:7px;text-decoration:none;justify-content:center}
+.unova-guide-result-count{margin:10px 0 17px;color:#c1d9f1;font-size:12px;line-height:1.7}
+.unova-guide-empty{border:1px dashed #6785a3;background:#15243b;color:#c6d9f0;
+ padding:24px;border-radius:9px;line-height:1.75}
+@media(max-width:650px){.unova-guide-filters{padding:13px;gap:9px}
+ .unova-guide-filters label{flex:1 1 100%}
+ .unova-guide-filters .button{flex:1 1 calc(50% - 10px)}}
