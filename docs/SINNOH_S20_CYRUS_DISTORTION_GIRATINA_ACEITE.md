@@ -23,6 +23,11 @@ Não temos mapas autorizados e remapeados de Galactic HQ, Mt. Coronet/Spear Pill
 
 **Critério de conclusão no código:** PR na `main` após CH19 Python/Ruby, S30 (5 jobs), portal e CH20 estático aprovados, com evidência neste documento. Nesse escopo, **Barra A 21/32 (65%)** (5 parciais, 6 pendentes); **Barra E 20/20**, **B/C/D 0/13**, 44 casos nativos não executados.
 
-## Evidências de CI
+## Evidências reais do GitHub Actions
 
-Registrar somente as execuções de GitHub Actions realmente concluídas. Não contar a suíte sintética como prova de jogo nativo.
+- [Sinnoh S30 — execução 44057241150](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44057241150): **5/5 jobs `success`**; manifesto (11 testes), Python (incluindo **16 novos testes negativos S20**, `sinnoh-s20-distortion-contract = passed (0)`), Ruby (`sinnoh-s20-distortion = passed (0)`), Portal (**161/161 testes**), Android estático.
+- [Sinnoh CH19 — execução 44057241146](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44057241146): jobs Python e Ruby **`success`**, cobrindo explicitamente o novo auditor e o runner Ruby S20, com `CH19_SCOPE=sinnoh_only CH19_STATUS=passed NATIVE_QA=false`.
+- [Portal Blue — execução 44057241468](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44057241468): build e testes do site **`success`**.
+- [Sinnoh CH20 — execução 44057241124](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44057241124): pré-voo JoiPlay **estático aprovado**, sem pacote nativo nem aparelho.
+- **Limite da prova:** os nove checkpoints só foram exercitados com fontes e estados sintéticos, sem assets de Sinnoh em Game.exe, sem Giratina capturável, sem mapa de Spear Pillar/Mundo Distorcido, sem teleportes reais, sem saves Windows/JoiPlay e sem execução dos **44 casos nativos pendentes**.
+
