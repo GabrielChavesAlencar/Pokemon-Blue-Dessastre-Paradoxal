@@ -112,11 +112,19 @@ class S14Tests(unittest.TestCase):
 
     def test_24_progress_only_offline(self):
         p=json.loads((ROOT/"data/regions/sinnoh-progress.json").read_text("utf-8"))
-        self.assertEqual((p["development"]["done"],p["development"]["partial"],
-                          p["development"]["pending"],p["development"]["percent_complete"]),
-                         (31,1,0,96))
+        # S14 code completion remains valid when S31 tooling finishes later.
+        self.assertGreaterEqual(p["development"]["done"],31)
+        self.assertEqual(p["development"]["done"],
+                         sum(t["status"]=="done" for t in p["tasks"]))
+        self.assertEqual(p["development"]["partial"],
+                         sum(t["status"]=="partial" for t in p["tasks"]))
+        self.assertEqual(p["development"]["pending"],
+                         sum(t["status"]=="pending" for t in p["tasks"]))
+        self.assertEqual(p["development"]["percent_complete"],
+                         100*p["development"]["done"]//p["development"]["total"])
         self.assertEqual(next(t["status"] for t in p["tasks"] if t["id"]=="S14"),"done")
-        self.assertEqual(next(t["status"] for t in p["tasks"] if t["id"]=="S31"),"partial")
+        self.assertIn(next(t["status"] for t in p["tasks"] if t["id"]=="S31"),
+                      ("partial","done"))
         self.assertEqual((p["intro_workstream"]["complete"],p["intro_workstream"]["total"]),(5,8))
         self.assertFalse(p["intro_workstream"]["native_verified"])
         self.assertEqual(p["phase_gates"]["playable_in_game_executable"],0)

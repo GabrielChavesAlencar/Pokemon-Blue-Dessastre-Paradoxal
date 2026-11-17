@@ -26,6 +26,8 @@ REQUIRED = {
         "tests/test_sinnoh_graph.py",
         "tests/test_sinnoh_android_ch20.py",
         "tests/test_sinnoh_playtest_audit.py",
+        "tests/test_sinnoh_s31_acceptance.py",
+        "scripts/regions/audit_sinnoh_s31_acceptance.py",
         "tests/test_sinnoh_s30_suite.py",
         "tests/test_sinnoh_s10_launcher.py",
         "tests/test_sinnoh_s11_save_isolation.py",
@@ -109,6 +111,7 @@ REQUIRED = {
     ),
     "contracts": (
         "data/regions/sinnoh-progress.json",
+        "data/regions/sinnoh-s31-acceptance.json",
         "SINNOH_JOGAR_EXPERIMENTAL.bat",
         "SINNOH_INSTALAR_EXPERIMENTAL.bat",
         "SINNOH_DIAGNOSTICAR_PENDENCIAS.bat",
@@ -174,14 +177,14 @@ def collect(root: Path = ROOT) -> dict:
     status_by_id = {row["id"]: row["status"] for row in tasks}
     if status_by_id["S30"] != "done":
         fail("S30 deve ter evidencia auditada antes de ser concluida")
-    if status_by_id["S31"] != "done":
-        if any(progress.get("phase_gates", {}).get(s) != 0 for s in NATIVE_FIELDS):
-            fail("aprovacao nativa sem aceite S31")
+    # Completing the acceptance *tooling* cannot turn missing Game.exe/
+    # JoiPlay proof into native phase approval. S31 done is code-only.
+    if any(progress.get("phase_gates", {}).get(s) != 0 for s in NATIVE_FIELDS):
+        fail("aprovacao nativa sem aceite S31 e sem evidencia real")
     if progress.get("chat_direct_workstream", {}).get("done") != 20:
         fail("Barra E inesperada")
-    if (progress.get("native_playtest_workstream", {}).get("native_qa_approved") is True
-            and status_by_id["S31"] != "done"):
-        fail("playtest nativo promovido sem aceite")
+    if progress.get("native_playtest_workstream", {}).get("native_qa_approved") is not False:
+        fail("playtest nativo promovido sem aceite verificado")
     region = json.loads((root / "site/public/data/regions.json").read_text("utf-8"))
     if region.get("regions", {}).get("SINNOH", {}).get("status") != "planned":
         fail("Sinnoh erroneamente anunciada como jogavel")

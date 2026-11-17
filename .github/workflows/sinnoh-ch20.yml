@@ -9,6 +9,9 @@ on:
       - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
       - 'tests/test_sinnoh_android_ch20.py'
       - 'tests/test_sinnoh_playtest_audit.py'
+      - 'scripts/regions/audit_sinnoh_s31_acceptance.py'
+      - 'tests/test_sinnoh_s31_acceptance.py'
+      - 'data/regions/sinnoh-s31-acceptance.json'
       - 'data/regions/sinnoh-twinleaf-events.json'
       - 'data/regions/sinnoh-twinleaf-events.schema.json'
       - 'data/regions/sinnoh-progress.json'
@@ -21,6 +24,9 @@ on:
       - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
       - 'tests/test_sinnoh_android_ch20.py'
       - 'tests/test_sinnoh_playtest_audit.py'
+      - 'scripts/regions/audit_sinnoh_s31_acceptance.py'
+      - 'tests/test_sinnoh_s31_acceptance.py'
+      - 'data/regions/sinnoh-s31-acceptance.json'
       - 'data/regions/sinnoh-twinleaf-events.json'
       - 'data/regions/sinnoh-twinleaf-events.schema.json'
       - 'data/regions/sinnoh-progress.json'
@@ -45,6 +51,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
           python -m unittest discover -s tests -p 'test_sinnoh_playtest_audit.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_s31_acceptance.py' -v
+          python scripts/regions/audit_sinnoh_s31_acceptance.py
       - name: Emitir relatorio CH20 deterministico e sem certificacao nativa
         run: |
           python scripts/regions/audit_sinnoh_android_ch20.py \
