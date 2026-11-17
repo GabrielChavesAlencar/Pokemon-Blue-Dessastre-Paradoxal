@@ -71,7 +71,7 @@ class UnovaG053Tests(unittest.TestCase):
                              self.snapshot() if state is None else state,
                              destination, **kwargs)
 
-    def run(self, state=None, destination="HOENN", **kwargs):
+    def travel(self, state=None, destination="HOENN", **kwargs):
         return mod.simulate(self.data, self.reg, self.it, self.sp,
                             self.snapshot() if state is None else state,
                             destination, **kwargs)
@@ -241,95 +241,95 @@ class UnovaG053Tests(unittest.TestCase):
     def test_055_same_region_kanto_even_if_quiet(self):
         self.expected("SAME_REGION_NO_TRAVEL", destination="KANTO", quiet=True)
     def test_056_successful_hoenn_fixture_arrival(self):
-        self.assertEqual(self.run()["status"], "SIMULATED_SUCCESS_NOT_NATIVE_TRAVEL")
+        self.assertEqual(self.travel()["status"], "SIMULATED_SUCCESS_NOT_NATIVE_TRAVEL")
     def test_057_success_sets_current_region(self):
-        self.assertEqual(self.run()["fixture"]["current"], "HOENN")
+        self.assertEqual(self.travel()["fixture"]["current"], "HOENN")
     def test_058_success_sets_new_position(self):
-        self.assertEqual(self.run()["fixture"]["position"], "FIXTURE_HOENN_LITTLEROOT")
+        self.assertEqual(self.travel()["fixture"]["position"], "FIXTURE_HOENN_LITTLEROOT")
     def test_059_success_records_one_history(self):
-        self.assertEqual(len(self.run()["fixture"]["travel_history"]), 1)
+        self.assertEqual(len(self.travel()["fixture"]["travel_history"]), 1)
     def test_060_success_history_uses_fixture_locations(self):
-        row = self.run()["fixture"]["travel_history"][0]
+        row = self.travel()["fixture"]["travel_history"][0]
         self.assertEqual(row["source"], "KANTO")
         self.assertEqual(row["destination"], "HOENN")
         self.assertEqual(row["from_point"], mod.ORIGINS["KANTO"])
     def test_061_success_boxes_special(self):
-        self.assertEqual(self.run()["fixture"]["pc_boxes"]["FIXTURE_BOX_A"], "FIXTURE_SPECIAL")
+        self.assertEqual(self.travel()["fixture"]["pc_boxes"]["FIXTURE_BOX_A"], "FIXTURE_SPECIAL")
     def test_062_success_removes_special_from_party(self):
-        self.assertEqual([m["id"] for m in self.run()["fixture"]["party_state"]["party"]],
+        self.assertEqual([m["id"] for m in self.travel()["fixture"]["party_state"]["party"]],
                          ["FIXTURE_NORMAL"])
     def test_063_success_reserves_taken_box(self):
-        self.assertEqual(self.run()["fixture"]["party_state"]["free_box_slots"], [])
+        self.assertEqual(self.travel()["fixture"]["party_state"]["free_box_slots"], [])
     def test_064_success_restores_destination_HM(self):
         self.assertIn("FIXTURE_HOENN_HM",
-                      [m["id"] for m in self.run()["fixture"]["bag_state"]["bag"]])
+                      [m["id"] for m in self.travel()["fixture"]["bag_state"]["bag"]])
     def test_065_success_saves_source_HM_in_vault(self):
         self.assertIn("FIXTURE_HM_KANTO",
-                      [m["id"] for m in self.run()["fixture"]["bag_state"]["vault"]["KANTO"]["items"]])
+                      [m["id"] for m in self.travel()["fixture"]["bag_state"]["vault"]["KANTO"]["items"]])
     def test_066_success_preserves_global_TM(self):
         self.assertIn("FIXTURE_GLOBAL_TM",
-                      [m["id"] for m in self.run()["fixture"]["bag_state"]["bag"]])
+                      [m["id"] for m in self.travel()["fixture"]["bag_state"]["bag"]])
     def test_067_success_restores_Hoenn_PC_key_item(self):
         self.assertIn("FIXTURE_HOENN_PC_KEY",
-                      [m["id"] for m in self.run()["fixture"]["bag_state"]["pc"]])
+                      [m["id"] for m in self.travel()["fixture"]["bag_state"]["pc"]])
     def test_068_success_save_state_and_party_state_consistent(self):
-        s = self.run()["fixture"]
+        s = self.travel()["fixture"]
         self.assertEqual(s["party_state"]["current"], s["bag_state"]["current"])
     def test_069_success_preserves_origin_input_immutably(self):
         state = self.snapshot()
         before = copy.deepcopy(state)
-        self.run(state)
+        self.travel(state)
         self.assertEqual(state, before)
     def test_070_success_no_native_transfer(self):
-        result = self.run()
+        result = self.travel()
         self.assertFalse(result["native_transfer"])
         self.assertFalse(result["can_install"])
     def test_071_return_to_kanto_fixture(self):
-        first = self.run()["fixture"]
-        second = self.run(first, "KANTO")
+        first = self.travel()["fixture"]
+        second = self.travel(first, "KANTO")
         self.assertEqual(second["status"], "SIMULATED_SUCCESS_NOT_NATIVE_TRAVEL")
         self.assertEqual(second["fixture"]["current"], "KANTO")
     def test_072_return_recovers_Kanto_HM(self):
-        second = self.run(self.run()["fixture"], "KANTO")
+        second = self.travel(self.travel()["fixture"], "KANTO")
         self.assertIn("FIXTURE_HM_KANTO",
                       [m["id"] for m in second["fixture"]["bag_state"]["bag"]])
     def test_073_return_does_not_automatically_withdraw_special(self):
-        second = self.run(self.run()["fixture"], "KANTO")
+        second = self.travel(self.travel()["fixture"], "KANTO")
         self.assertNotIn("FIXTURE_SPECIAL",
                          [m["id"] for m in second["fixture"]["party_state"]["party"]])
         self.assertIn("FIXTURE_SPECIAL", second["fixture"]["pc_boxes"].values())
     def test_074_return_restores_Kanto_PC_key_item(self):
-        second = self.run(self.run()["fixture"], "KANTO")
+        second = self.travel(self.travel()["fixture"], "KANTO")
         self.assertIn("FIXTURE_KANTO_PC_KEY",
                       [m["id"] for m in second["fixture"]["bag_state"]["pc"]])
     def test_075_return_appends_history_not_overwrites(self):
-        second = self.run(self.run()["fixture"], "KANTO")
+        second = self.travel(self.travel()["fixture"], "KANTO")
         self.assertEqual(len(second["fixture"]["travel_history"]), 2)
     def test_076_hoenn_source_with_proof_can_return(self):
-        self.assertEqual(self.run(self.run()["fixture"], "KANTO")["status"],
+        self.assertEqual(self.travel(self.travel()["fixture"], "KANTO")["status"],
                          "SIMULATED_SUCCESS_NOT_NATIVE_TRAVEL")
     def test_077_empty_Party_with_no_special_blocks(self):
         s = self.snapshot(with_special=False)
         s["party_state"]["party"] = []
         self.expected("NO_USABLE_PARTY_BLOCKED", s)
     def test_078_success_mechanics_saved_by_source(self):
-        s = self.run()["fixture"]
+        s = self.travel()["fixture"]
         self.assertEqual(s["mechanics_by_region"]["KANTO"], {"FIXTURE_MEGA": True})
     def test_079_success_not_give_unknown_mechanics(self):
-        self.assertEqual(self.run()["fixture"]["current_mechanics"], {})
+        self.assertEqual(self.travel()["fixture"]["current_mechanics"], {})
     def test_080_stored_decades_return_from_town_only(self):
         s = self.snapshot("DECADES", with_special=False)
-        result = self.run(s, "KANTO")
+        result = self.travel(s, "KANTO")
         self.assertEqual(result["status"], "SIMULATED_SUCCESS_NOT_NATIVE_TRAVEL")
         self.assertEqual(result["fixture"]["decades_return"], mod.ORIGINS["DECADES"])
     def test_081_return_to_decades_from_stored_town(self):
         s = self.snapshot("DECADES", with_special=False)
-        out = self.run(s, "KANTO")["fixture"]
-        back = self.run(out, "DECADES")
+        out = self.travel(s, "KANTO")["fixture"]
+        back = self.travel(out, "DECADES")
         self.assertEqual(back["position"], mod.ORIGINS["DECADES"])
     def test_082_decades_return_without_stored_point_safe_fallback(self):
         s = self.snapshot("KANTO", with_special=False)
-        back = self.run(s, "DECADES")
+        back = self.travel(s, "DECADES")
         self.assertEqual(back["position"], mod.DECADES_SAFE)
     def test_083_decades_special_without_native_badges_blocked(self):
         self.expected("DECADES_NATIVE_SPECIAL_GATE_UNKNOWN", destination="DECADES")
@@ -365,58 +365,58 @@ class UnovaG053Tests(unittest.TestCase):
         self.invalid_fixture(lambda s: s["current_mechanics"].update(mega=True))
     def test_099_rollback_after_party(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_party")
+        result = self.travel(s, fail_at="after_party")
         self.assertEqual(result["status"], "SIMULATED_TRANSFER_FAILED_ROLLED_BACK")
         self.assertEqual(result["fixture"], s)
     def test_100_rollback_after_region(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_region")
+        result = self.travel(s, fail_at="after_region")
         self.assertEqual(result["fixture"], s)
     def test_101_rollback_after_bag(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_bag")
+        result = self.travel(s, fail_at="after_bag")
         self.assertEqual(result["fixture"], s)
     def test_102_rollback_after_pc(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_pc")
+        result = self.travel(s, fail_at="after_pc")
         self.assertEqual(result["fixture"], s)
     def test_103_rollback_after_position(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_position")
+        result = self.travel(s, fail_at="after_position")
         self.assertEqual(result["fixture"], s)
     def test_104_failure_does_not_modify_snapshot(self):
         s = self.snapshot()
         original = copy.deepcopy(s)
-        self.run(s, fail_at="after_position")
+        self.travel(s, fail_at="after_position")
         self.assertEqual(s, original)
     def test_105_failed_transfer_returns_original_position(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_position")
+        result = self.travel(s, fail_at="after_position")
         self.assertEqual(result["restored_position"], mod.ORIGINS["KANTO"])
     def test_106_failed_transfer_does_not_claim_native_mutation(self):
-        result = self.run(fail_at="after_pc")
+        result = self.travel(fail_at="after_pc")
         self.assertFalse(result["native_save_modified"])
         self.assertFalse(result["native_transfer"])
     def test_107_failed_transfer_preserves_Bag_and_PC(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_pc")
+        result = self.travel(s, fail_at="after_pc")
         self.assertEqual(result["fixture"]["bag_state"], s["bag_state"])
     def test_108_failed_transfer_preserves_party_and_boxes(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_party")
+        result = self.travel(s, fail_at="after_party")
         self.assertEqual(result["fixture"]["pc_boxes"], s["pc_boxes"])
         self.assertEqual(result["fixture"]["party_state"], s["party_state"])
     def test_109_failed_transfer_preserves_history_and_mechanics(self):
         s = self.snapshot()
-        result = self.run(s, fail_at="after_region")
+        result = self.travel(s, fail_at="after_region")
         self.assertEqual(result["fixture"]["travel_history"], s["travel_history"])
         self.assertEqual(result["fixture"]["mechanics_by_region"], s["mechanics_by_region"])
     def test_110_invalid_failure_injection_refused(self):
-        with self.assertRaises(ValueError): self.run(fail_at="delete_saves")
+        with self.assertRaises(ValueError): self.travel(fail_at="delete_saves")
     def test_111_synthetic_NPC_quiet_still_valid_not_native(self):
-        self.assertEqual(self.run(quiet=True)["status"],
+        self.assertEqual(self.travel(quiet=True)["status"],
                          "SIMULATED_SUCCESS_NOT_NATIVE_TRAVEL")
-        self.assertFalse(self.run(quiet=True)["native_transfer"])
+        self.assertFalse(self.travel(quiet=True)["native_transfer"])
     def test_112_bad_catalog_claims_unova_installed(self):
         self.invalid_catalog(lambda d: d.update(native_npc_installed=True))
     def test_113_bad_catalog_forges_unova_point(self):
