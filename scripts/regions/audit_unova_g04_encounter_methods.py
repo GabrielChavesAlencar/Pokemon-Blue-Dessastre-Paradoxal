@@ -189,6 +189,8 @@ def validate_catalog(data:dict,areas:dict,regions:dict,pbs:str,habitat:str,
         exact(row,AREA_KEYS,"area audit row")
         methods=kind_methods.get(reference["kind"])
         if methods is None:deny("new U03 terrain requires explicit review")
+        if reference["chapter"]=="event_only":
+            methods=[]  # static/scripted events never imply wild encounter tables
         expected_row={
             "area_key":reference["key"],"u03_kind":reference["kind"],
             "chapter_scope":reference["chapter"],
