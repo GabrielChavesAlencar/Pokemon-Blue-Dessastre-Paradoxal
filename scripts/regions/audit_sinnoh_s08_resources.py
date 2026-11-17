@@ -88,8 +88,8 @@ def check_png(data: bytes, rel: str) -> None:
     # Only validate the minimal binary signature/IHDR/dimensions here.
     # Native rendering, format decoding and sprite proportions require Game.exe.
     if (not isinstance(data, bytes) or len(data) < 36
-            or data[:8] != b"\\x89PNG\\r\\n\\x1a\\n"
-            or data[8:12] != b"\\x00\\x00\\x00\\r"
+            or data[:8] != b"\x89PNG\r\n\x1a\n"
+            or data[8:12] != b"\x00\x00\x00\r"
             or data[12:16] != b"IHDR"
             or int.from_bytes(data[16:20], "big") < 1
             or int.from_bytes(data[20:24], "big") < 1
