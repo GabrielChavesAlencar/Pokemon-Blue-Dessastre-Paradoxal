@@ -1,0 +1,65 @@
+name: Sinnoh G03 - matriz estatica de MapIDs
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g03-mapids.yml'
+      - 'scripts/regions/audit_sinnoh_g03_regional_mapids.py'
+      - 'scripts/regions/audit_sinnoh_b05_mapid_planning.py'
+      - 'tests/test_sinnoh_g03_regional_mapids.py'
+      - 'data/regions/sinnoh-b0*.json'
+      - 'data/regions/unova-u03-areas.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g03-mapids.yml'
+      - 'scripts/regions/audit_sinnoh_g03_regional_mapids.py'
+      - 'scripts/regions/audit_sinnoh_b05_mapid_planning.py'
+      - 'tests/test_sinnoh_g03_regional_mapids.py'
+      - 'data/regions/sinnoh-b0*.json'
+      - 'data/regions/unova-u03-areas.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-static:
+    name: G03 / Evidencias B01-B05-B07 e testes fail-closed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testes negativos da matriz
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g03_regional_mapids.py' -v
+      - name: Gerar relatorio somente de metadados no runner
+        run: |
+          mkdir -p .blue-work/sinnoh-g03
+          python scripts/regions/audit_sinnoh_g03_regional_mapids.py > .blue-work/sinnoh-g03/matrix.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path(".blue-work/sinnoh-g03/matrix.json").read_text(encoding="utf8"))
+          assert report["status"]=="STATIC_MATRIX_RECONCILED_FUTURE_RESERVATIONS_UNVERIFIED"
+          assert report["baseline"]["b01_reported_native_physical_maps"]==648
+          assert report["sinnoh"]["hold_count"]==76
+          assert report["sinnoh"]["geometry_count"]==54
+          assert report["sinnoh"]["empty_placeholder_count"]==22
+          assert report["unova"]["vacant_candidates_1_to_599"]==174
+          assert report["unova"]["preferred_window_size"]==82
+          assert not report["r07_complete"]
+          assert not report["can_install_live_game"]
+          assert not report["future_reservations_verified"]
+          assert not report["game_exe_tested"] and not report["joiplay_tested"]
+          assert report["phase_b_approved"]==report["phase_c_approved"]==report["phase_d_approved"]==0
+          print("SINNOH_G03_STATIC_ONLY_NO_NATIVE_APPROVAL")
+          PY
+      - name: Arquivar apenas matriz estatica sem arquivos de jogo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g03-mapids-static
+          path: .blue-work/sinnoh-g03/matrix.json
+          if-no-files-found: warn
