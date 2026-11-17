@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4dd570d800af63f551e5673798202983c5a4a553",
+      "date": "2026-11-17T10:57:35-03:00",
+      "title": "feat(sinnoh): B01 inventário de MapIDs Decades com auditoria segura e 12 testes",
+      "category": "Novidades"
+    },
+    {
       "sha": "12665c6e5f1934878bf645991de06e8b407880d1",
       "date": "2026-11-17T10:45:09-03:00",
       "title": "feat(sinnoh): B00 fonte real auditada, 54 mapas com terreno e 22 vazios",
