@@ -56,7 +56,13 @@ def verified_previous(path: Path, channel: str):
     return previous
 
 
-def publish(archive_path: Path, channel: str, previous_path: Path | None = None):
+def publish(archive_path: Path, channel: str, previous_path: Path | None = None,
+            additional_previous_paths=()):
+    """Publish an exact file delta for every supplied previous game revision.
+
+    --previous-manifest can be repeated for older installs. No old ZIP needed:
+    each patch is built against that revision's verified SHA inventory.
+    """
     filename, manifest_name = CHANNELS[channel]
     if archive_path.name != filename:
         raise ValueError("Unexpected full archive name.")
@@ -64,54 +70,78 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None)
     revision = current["revision"]
     result = {
         "schema": 1, "channel": channel, "revision": revision,
-        "files": current["files"], "immutable": current.get("immutable", {}), "patch": None,
+        "files": current["files"], "immutable": current.get("immutable", {}),
+        "patch": None, "patches": [],
         "full": {
             "asset": archive_path.name,
             "size": archive_path.stat().st_size,
             "sha256": sha256_file(archive_path),
         },
     }
-    previous = verified_previous(previous_path, channel) if previous_path else None
-    patch_file = archive_path.parent / (archive_path.stem + ".patch.zip")
-    if (previous and previous["revision"] != revision and
-            previous.get("immutable", {}) == current.get("immutable", {})):
+    paths = ([previous_path] if previous_path is not None else []) + list(additional_previous_paths)
+    seen = set()
+    previous_entries = []
+    for path in paths:
+        previous = verified_previous(path, channel)
+        if not previous:
+            continue
+        earlier = previous["revision"]
+        if earlier in seen or earlier == revision:
+            continue
+        seen.add(earlier)
+        if previous.get("immutable", {}) != current.get("immutable", {}):
+            continue
         old, new = previous["files"], current["files"]
         changed = {name: meta for name, meta in new.items() if old.get(name) != meta}
         removed = sorted(set(old) - set(new))
-        if changed or removed:
+        previous_entries.append((earlier, changed, removed))
+    with zipfile.ZipFile(archive_path) as source:
+        for index, (earlier, changed, removed) in enumerate(previous_entries):
+            # Preserve the legacy filename for the FIRST patch so older
+            # updater versions can still use manifest["patch"].
+            patch_name = (archive_path.stem + ".patch.zip" if index == 0 else
+                          archive_path.stem + ".from-" + earlier[:12] + ".patch.zip")
+            patch_file = archive_path.parent / patch_name
             patch_meta = {
-                "schema": 1, "channel": channel, "from_revision": previous["revision"],
-                "to_revision": revision, "changed": changed, "removed": removed,
+                "schema": 1, "channel": channel,
+                "from_revision": earlier, "to_revision": revision,
+                "changed": changed, "removed": removed,
             }
-            with zipfile.ZipFile(archive_path) as source, zipfile.ZipFile(
-                    patch_file, "w", compression=zipfile.ZIP_DEFLATED,
-                    compresslevel=6, allowZip64=True) as patch:
+            with zipfile.ZipFile(patch_file, "w", compression=zipfile.ZIP_DEFLATED,
+                                 compresslevel=6, allowZip64=True) as patch:
                 patch.writestr("patch.json", json.dumps(patch_meta, sort_keys=True))
                 for name in sorted(changed):
                     patch.writestr("files/" + name, source.read(prefix + name))
-            if patch_file.stat().st_size < min(1024 * 1024 * 1024,
-                                             archive_path.stat().st_size * .85):
-                result["patch"] = {
-                    "asset": patch_file.name,
-                    "from_revision": previous["revision"],
-                    "size": patch_file.stat().st_size,
-                    "sha256": sha256_file(patch_file),
-                }
-            else:
+            if (patch_file.stat().st_size >= min(1024 * 1024 * 1024,
+                                               archive_path.stat().st_size * .95)):
                 patch_file.unlink()
+                continue
+            row = {
+                "asset": patch_file.name, "from_revision": earlier,
+                "size": patch_file.stat().st_size,
+                "sha256": sha256_file(patch_file),
+            }
+            result["patches"].append(row)
+            if result["patch"] is None:
+                result["patch"] = row
     (archive_path.parent / manifest_name).write_text(
         json.dumps(result, sort_keys=True, separators=(",", ":")), encoding="utf8")
-    return {"channel": channel, "revision": revision, "patch": result["patch"],
-            "manifest": manifest_name}
+    return {
+        "channel": channel, "revision": revision,
+        "patch": result["patch"], "patches": result["patches"],
+        "manifest": manifest_name,
+    }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--channel", choices=CHANNELS, required=True)
     parser.add_argument("--full-zip", type=Path, required=True)
-    parser.add_argument("--previous-manifest", type=Path)
+    parser.add_argument("--previous-manifest", type=Path, action="append", default=[])
     args = parser.parse_args()
-    print(json.dumps(publish(args.full_zip, args.channel, args.previous_manifest)))
+    print(json.dumps(publish(args.full_zip, args.channel,
+                             args.previous_manifest[0] if args.previous_manifest else None,
+                             args.previous_manifest[1:])))
 
 
 if __name__ == "__main__":
