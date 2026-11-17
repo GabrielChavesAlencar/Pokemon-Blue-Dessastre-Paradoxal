@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "24581ecf7cfd5931514d5c3e8d4d9150a155e939",
+      "date": "2026-11-17T19:34:35-03:00",
+      "title": "Unova G04.4 — auditar probabilidades e lacunas sem dados nativos (21/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "72fb2909a0b3fd5358d26a718feb7d04dd5ff904",
       "date": "2026-11-17T19:30:48-03:00",
       "title": "chore(android): remove unused backup code import and clarify save preservation",
