@@ -1,0 +1,81 @@
+name: Unova E04 - verificar fonte publica (sem instalar)
+
+on:
+  push:
+    branches:
+      - feat/unova-e04-source-origin-remote-probe-20261117
+    paths:
+      - 'scripts/regions/unova_e04_remote_probe.py'
+      - 'tests/test_unova_e04_remote_probe.py'
+      - '.github/workflows/unova-e04-remote-origin.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-origin:
+    name: Fonte MediaFire original - analise efemera nao instalavel
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar seguranca do cliente remoto
+        run: |
+          python -m unittest discover -s tests -p 'test_unova_e04_remote_probe.py' -v
+          python -m py_compile scripts/regions/unova_e04_remote_probe.py
+      - name: Consultar API do provedor e tentar analisar ZIP e creditos da fonte original
+        run: |
+          python scripts/regions/unova_e04_remote_probe.py --download
+      - name: Cruzar RXDATA e relatar bloqueios (se a fonte foi obtida)
+        shell: bash
+        run: |
+          if [[ -f ".blue-work/unova/sources/Pokemon_World_V18.zip" ]]; then
+            echo "Fonte baixada apenas para area privada da execucao. Gerando inventarios."
+            python scripts/regions/audit_unova_u02.py --write || echo "::warning::ZIP U02 nao passou em verificacao estrutural"
+            python scripts/regions/audit_unova_source_detail.py --write || echo "::warning::RXDATA real nao pode ser analisado ainda"
+            if [[ -f ".blue-work/unova/audit/u02-rxdata-detail.json" ]]; then
+              python scripts/regions/audit_unova_e05_crosswalk.py --write || echo "::warning::Crosswalk E05 bloqueado"
+            fi
+            python scripts/regions/audit_unova_e06_rights_inventory.py --write || echo "::warning::Inventario de direitos E06 bloqueado"
+          else
+            echo "::warning::Fonte real indisponivel. Nao foi inventariado nenhum mapa doador."
+          fi
+      - name: Relatorio final nao jogavel
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path(".blue-work/unova/audit")
+          p=root/"e04-remote-origin-probe.json"
+          if not p.exists():
+              raise SystemExit("A sondagem nao gerou relatorio; falha do proprio executor")
+          r=json.loads(p.read_text("utf-8"))
+          print("E04_PROVIDER_METADATA_RECEIVED=", bool(r.get("provider_file_info",{}).get("zip")))
+          print("E04_ZIP_DOWNLOADED=",r["zip_downloaded"])
+          print("E04_ZIP_SHA256=",r["zip_sha256"] or "NAO_OBTIDO")
+          print("E04_ZIP_TOTAL_MAPS_ALL_REGIONS=",r["whole_donor_project_map_count"])
+          print("E04_UNOVA_MAPS_VERIFIED=",r["unova_map_count"])
+          print("E04_CREDITS_DOWNLOAD=",r["credits_downloaded"])
+          print("E04_COMPLETE=",r["e04_complete"])
+          print("E04_GATES=",r["errors"])
+          print("STATUS_REGIAO=PLANNED; GAME_EXE=NAO_TESTADO; INSTALACAO=PROIBIDA")
+          PY
+      - name: Descartar bytes de terceiros antes de publicar metadados
+        if: always()
+        shell: bash
+        run: |
+          rm -rf .blue-work/unova/sources
+          echo "Somente relatorios JSON sem assets de terceiros podem virar artefato."
+      - name: Publicar apenas relatorios inertes (nunca ZIP/Audio/Imagens)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unova-e04-metadata-only
+          path: .blue-work/unova/audit/*.json
+          if-no-files-found: warn
+          retention-days: 7
