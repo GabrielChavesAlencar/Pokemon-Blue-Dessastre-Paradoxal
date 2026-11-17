@@ -26,6 +26,7 @@ import audit_unova_a10_dynamic_matrix as a10
 import audit_unova_a11_intro_preflight as a11
 import audit_unova_a12_ownership as a12
 import audit_unova_a13_private_qa as a13
+import audit_unova_a14_sandbox as a14
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -169,6 +170,7 @@ def pretty(result: dict) -> str:
     a11_result=result.get("a11_result")
     a12_result=result.get("a12_result")
     a13_result=result.get("a13_result")
+    a14_result=result.get("a14_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -456,6 +458,33 @@ def pretty(result: dict) -> str:
         if a13_result.get("block_reason"):
             lines.append("  Bloqueio de copia A13: "+a13_result["block_reason"])
         lines.append("")
+    if a14_result:
+        lines.extend([
+            "A14 — preparacao de inicializacao em Windows Sandbox (SEM abrir Game.exe no host)",
+            "  Status: "+a14_result.get("status","DESCONHECIDO"),
+            "  Configuracao WSB: "+str(a14_result.get("wsb_configuration_path") or "NAO_CRIADA"),
+            "  Relatorio que o Windows Sandbox ira criar: "+
+                str(a14_result.get("runtime_log_expected") or "INEXISTENTE"),
+            "  Pasta isolada de relatorios (UNICA pasta com escrita compartilhada): "+
+                str(a14_result.get("sandbox_reports_folder") or "INEXISTENTE"),
+            "  Fontes do jogo mapeadas somente leitura? "+
+                ("Sim" if (len(a14_result.get("sandbox_host_mappings",[]))==3 and
+                            all(x.get("read_only") for x in
+                                a14_result["sandbox_host_mappings"][:2])) else "Nao/Desconhecido"),
+            "  Rede e area de transferencia desabilitadas na config? "+
+                ("Sim" if a14_result.get("networking_disabled_in_config") and
+                 a14_result.get("clipboard_disabled_in_config") else "Nao/Desconhecido"),
+            "  Windows Sandbox instalado e funcional? NAO VERIFICADO NESTE PC",
+            "  Game.exe executado? NAO. Apenas configuracao para abertura posterior.",
+            "  Local efetivo dos saves em execucao? NAO VERIFICADO",
+            "  MapIDs Unova atribuidos? Nao",
+            "  Relatorio JSON completo A14: "+str(result.get("a14_report_path") or "NAO_GERADO"),
+        ])
+        if a14_result.get("block_reason"):
+            lines.append("  Motivo do bloqueio: "+a14_result["block_reason"])
+        if a14_result.get("wsb_configuration_path"):
+            lines.append("  PROXIMO PASSO: dois cliques no .wsb acima, APENAS se tiver Windows Sandbox")
+        lines.append("")
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
@@ -463,7 +492,7 @@ def pretty(result: dict) -> str:
         "  A Barra A continua 0/8 ate validar reservas e instalacao real.",
         "",
         "Para a proxima fase, envie este LEIA_AQUI_UNOVA_MAPIDS.txt",
-        "e o arquivo a13-private-qa-HASH.json indicado acima.",
+        "e o arquivo a14-sandbox-preflight-HASH.json (e futuro log A14_SANDBOX_RUNTIME.txt).",
         "",
         "Pastas pesquisadas:",
     ])
@@ -503,8 +532,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,"a12_result":None,"a13_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,"a12_report_path":None,"a13_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,"a12_result":None,"a13_result":None,"a14_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,"a12_report_path":None,"a13_report_path":None,"a14_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -658,6 +687,38 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_completed":0,"bar_a_total":8,
             }
         a13_path=a13.save(project,a13_result)
+        _progress("A14 — verificando copia A13 e preparando Windows Sandbox...")
+        try:
+            local=env.get("LOCALAPPDATA","").strip()
+            if not local:
+                raise ValueError("LOCALAPPDATA nao encontrado")
+            if not a13_result.get("path"):
+                raise ValueError("A13 nao produziu copia QA; impossivel preparar Windows Sandbox")
+            a14_result=a14.prepare(Path(a13_result["path"]),a13_result,Path(local),
+                                   progress=_progress)
+        except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
+            _progress("A14 bloqueada: "+str(exc)[:550])
+            a14_result={
+                "schema":1,"phase":"A14","region":"UNOVA",
+                "status":"BLOCKED_A14_SANDBOX_PREPARATION",
+                "wsb_configuration_path":None,
+                "runtime_log_expected":None,
+                "sandbox_reports_folder":None,
+                "block_reason":str(exc)[:500],
+                "host_game_started":False,
+                "sandbox_game_started":False,
+                "qa_runtime_save_path_verified":False,
+                "gameplay_approved":False,
+                "can_install":False,
+                "can_reserve_mapids":False,
+                "bar_a_completed":0,"bar_a_total":8,
+            }
+        a14_path=a14.save(project,a14_result)
+        _progress("A14: "+a14_result.get("status","DESCONHECIDO"))
+        _progress("Relatorio A14: "+str(a14_path))
+        if a14_result.get("wsb_configuration_path"):
+            _progress("Para testar em VM: duplo clique em "+
+                      str(a14_result["wsb_configuration_path"]))
         _progress("Resultado A13: "+a13_result.get("status","DESCONHECIDO"))
         _progress("Relatorio JSON A13: "+str(a13_path))
         result.update({
@@ -681,6 +742,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a12_report_path":str(a12_path),
             "a13_result":a13_result,
             "a13_report_path":str(a13_path),
+            "a14_result":a14_result,
+            "a14_report_path":str(a14_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         _progress("Auditoria interrompida: "+str(exc))
@@ -712,6 +775,9 @@ def main(argv=None) -> int:
         print("UNOVA_A12="+str(result.get("a12_report_path") or "NAO_GERADO"))
         print("UNOVA_A13="+str(result.get("a13_report_path") or "NAO_GERADO"))
         print("UNOVA_A13_STATUS="+str((result.get("a13_result") or {}).get("status") or "NAO_EXECUTADA"))
+        print("UNOVA_A14="+str(result.get("a14_report_path") or "NAO_GERADO"))
+        print("UNOVA_A14_STATUS="+str((result.get("a14_result") or {}).get("status") or "NAO_EXECUTADA"))
+        print("UNOVA_A14_WSB="+str((result.get("a14_result") or {}).get("wsb_configuration_path") or "NAO_GERADO"))
         if (result.get("a13_result") or {}).get("block_reason"):
             print("UNOVA_A13_BLOQUEIO="+str(result["a13_result"]["block_reason"]))
         if result.get("error"):
