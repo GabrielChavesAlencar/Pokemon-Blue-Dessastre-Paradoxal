@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d8103a73f442828fe5b8e0bc8b7b6a612faa033e",
+      "date": "2026-11-17T20:57:46-03:00",
+      "title": "test(android): exact legacy launcher replacement succeeds, unrelated edits still block and saves stay intact",
+      "category": "Testes"
+    },
+    {
       "sha": "b6c93d9f08fb977f7662bf6aa3871e78ed683589",
       "date": "2026-11-17T20:57:15-03:00",
       "title": "test(android): pin exact official Android launcher previously distributed to players",
