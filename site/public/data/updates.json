@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "133927a01c6d96ce812e68ba0961ab07925479fd",
+      "date": "2026-11-17T19:15:19-03:00",
+      "title": "docs(sinnoh): G08 merged, GitHub-only pipeline reaches 8/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "0e3e3006a3c2ab0eafd89caf8db2b0f964f1d2d3",
+      "date": "2026-11-17T19:15:06-03:00",
+      "title": "feat(sinnoh): G08 Rowan Barry PBS and dynamic trainer balance offline (#155)",
+      "category": "Novidades"
+    },
+    {
       "sha": "01f47bd3b6c0aef6ca5c2fd9769d1c4d3ff8785a",
       "date": "2026-11-17T19:09:44-03:00",
       "title": "Unova G04.2: métodos, horários e estações auditáveis sem encontros inventados",
