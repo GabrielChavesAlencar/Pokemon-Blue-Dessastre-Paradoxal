@@ -128,3 +128,12 @@ O BAT permite escolher o ZIP pela janela do Windows ou arrastar o arquivo. Copia
 **Não** houve download do ZIP original do Pokémon World V18 neste ambiente. Os hashes são do arquivo selecionado pelo usuário e não comprovam sua origem. Créditos **não** equivalem a licença. A nova entrega acrescenta testes negativos sintéticos; ela não instala nenhuma região.
 
 **Barra E permanece 4/8 (50%)**, E04 ainda pendente da auditoria de fonte/proveniência. **Barra jogável continua 0/32.**
+
+
+## SP03 — Auditor de sprites Gen 5 (documentação/ferramentas)
+
+Foi implementada a ferramenta [audit_unova_sprite_pack.py](../scripts/regions/audit_unova_sprite_pack.py), independente do auditor RXDATA: lê ZIPs com PNG, GIF ou APNG; registra dimensões, quadros declarados, possíveis grades 4×4/3×4, nomes candidatos de NPCs, conteúdos duplicados SHA-256, colisões de basenames e possíveis diferenças de tamanho frente a Graphics/Characters do Decades, quando disponível. Nunca extrai ou instala arquivos do pack.
+
+O [UNOVA_AUDITAR_SPRITES.bat](../UNOVA_AUDITAR_SPRITES.bat) permite escolher ZIP pela janela do Windows ou arrastar e soltar, e comparar opcionalmente a pasta local de sprites do Decades. O relatório é salvo apenas em .blue-work/unova/audit/sprite-packs/ e os créditos continuam não verificados. [Manual SP03](UNOVA_AUDITOR_SPRITES_SP03.md).
+
+**Situação de progresso:** construção do auditor e execução de testes sintéticos não equivalem a auditar os packs originais nem a comprovar direitos e funcionamento nativo. **Barra E permanece 4/8; Unova jogável permanece 0/32.** Nenhuma alteração em Game.exe, saves, MapInfos, PBS, instalador ou outras regiões.
