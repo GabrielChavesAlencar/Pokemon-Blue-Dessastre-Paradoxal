@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1b59c815ca22a24a59f212e9fe9dcab4248dce5f",
+      "date": "2026-11-17T18:56:29-03:00",
+      "title": "docs(sinnoh): mark G06 complete in main; pipeline reaches 6/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "e8d57a7d64100f4a4f1b69cb11ff57842325fc1b",
+      "date": "2026-11-17T18:56:14-03:00",
+      "title": "feat(sinnoh): G06 static PNG render and tileset integrity audit (#152)",
+      "category": "Novidades"
+    },
+    {
       "sha": "1472d02db9615017e6203b2cc3bdd27fa9b2598e",
       "date": "2026-11-17T18:52:20-03:00",
       "title": "Unova G03.4: Elite Four, Alder e revanches escalonáveis offline",
