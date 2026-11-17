@@ -148,6 +148,31 @@ def reconcile(manifest,l02_result):
         or l02_result.get("b11_session_link_in_sanitized_sources_available") is not False
         or l02_result.get("independent_receipt_authenticity_proven") is not False):
         blocked("L02 review claims unsupported evidence or native progress")
+    for field in ("game_exe_tested","joiplay_tested","windows_sandbox_executed",
+                  "host_saves_accessed","host_saves_globally_isolated_proven",
+                  "game_installed","may_start_game_in_host","auto_uploaded",
+                  "independent_receipt_authenticity_proven"):
+        if l02_result.get(field) is not False:
+            blocked("L02 audit claims impossible physical activity")
+    if l02_result.get("local_qa_gates")!={f"L{i:02}":"PENDING" for i in range(1,6)}:
+        blocked("local native QA gates changed")
+    for phase in ("b","c","d"):
+        field="phase_"+phase+"_approved"
+        if type(l02_result.get(field)) is not int or l02_result[field]!=0:
+            blocked("native phase has moved without physical approval")
+    counters=l02_result.get("counts")
+    if (type(counters) is not dict
+        or set(counters)!={"total","missing","self_reported_unverified",
+                          "missing_prerequisite","conflicting",
+                          "independently_accepted"}
+        or counters["total"]!=5
+        or type(counters["independently_accepted"]) is not int
+        or counters["independently_accepted"]!=0):
+        blocked("L02 count schema has changed")
+    if any(type(v) is not int or not 0<=v<=5 for v in counters.values()):
+        blocked("L02 counts cannot be accepted")
+    if l02_result.get("documentary_review_cannot_schedule_native_QA") is not True:
+        blocked("L02 documentary gate was weakened")
     original=l02_result.get("reports")
     if type(original) is not dict or set(original)!=set(STAGES):
         blocked("L02 source rows differ from the five stages")
@@ -189,6 +214,16 @@ def reconcile(manifest,l02_result):
         l02.STATUS_BLOCKED:l02_result["counts"]["conflicting"],
     }:
         blocked("L02 aggregate counts cannot be reconciled")
+    if counts[l02.STATUS_BLOCKED]:
+        expected_global="BLOCKED_CONFLICTING_OR_UNSAFE_REPORTS"
+    elif counts[l02.STATUS_DEPENDENCY]:
+        expected_global="BLOCKED_MISSING_CHAIN_PREREQUISITES"
+    elif counts[l02.STATUS_MISSING]:
+        expected_global="INCOMPLETE_DOCUMENTARY_HANDOFF"
+    else:
+        expected_global="DOCUMENTARY_REVIEW_ONLY_NATIVE_APPROVAL_PENDING"
+    if l02_result.get("status")!=expected_global:
+        blocked("L02 global status disagrees with per-stage report states")
     return {
         "schema":1,"region":"SINNOH","stage":"L03","version":1,
         "status":"DOCUMENTARY_HANDOFF_REQUIRES_SEPARATE_HUMAN_REVIEW",
