@@ -23,7 +23,7 @@ export function regionsPage(registry){
       (key==='JOHTO'?'<a class="text-link" href="/localizacoes?regiao=johto">Explorar piloto de Johto '+icon('arrow')+'</a>':'')+
       (key==='HOENN'?'<a class="text-link" href="/localizacoes?regiao=hoenn">Explorar piloto de Hoenn '+icon('arrow')+'</a>':'')+
       (key==='SINNOH'?'<a class="text-link" href="/sinnoh">Guia planejado de Sinnoh '+icon('arrow')+'</a>':'')+
-      (key==='UNOVA'?'<a class="text-link" href="/unova-progresso">Ver progresso GitHub de Unova '+icon('arrow')+'</a>':'')+
+      (key==='UNOVA'?'<a class="text-link" href="/unova">Guia planejado de Unova '+icon('arrow')+'</a><p><a class="text-link" href="/unova-progresso">Ver progresso GitHub de Unova '+icon('arrow')+'</a></p>':'')+
       (['KANTO','JOHTO','HOENN','SINNOH'].includes(key)?'<p><a class="text-link" href="/pendencias?regiao='+key.toLowerCase()+'">Próximas fases · Não adicionado '+icon('arrow')+'</a></p>':'')+
       '</article>';
   }).join('');

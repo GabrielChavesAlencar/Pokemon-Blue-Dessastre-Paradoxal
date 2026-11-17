@@ -8,6 +8,7 @@ import {extractSprites} from './extract-sprites.mjs';
 import {extractExtras} from './extract-extras.mjs';
 import {generateGuides} from './guides.mjs';
 import {generateSinnohGuide,sinnohSourcePaths} from './sinnoh-guide.mjs';
+import {generateUnovaGuide,unovaGuideSources} from './unova-guide.mjs';
 import {generateSinnohG10Status,sinnohG10Sources} from './sinnoh-g10-status.mjs';
 import {activeLocations} from '../src/assets/data.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -33,6 +34,14 @@ const sinnohSourceData=Object.fromEntries(await Promise.all(
 const sinnohGuide=generateSinnohGuide(sinnohSourceData);
 await writeFile(path.join(output,'data/sinnoh-guide.json'),JSON.stringify(sinnohGuide));
 console.log('Sinnoh CH17: '+sinnohGuide.counts.areas+' áreas, '+sinnohGuide.counts.gyms+' ginásios, 0 mapas nativos');
+const unovaSources=Object.fromEntries(await Promise.all(
+  Object.entries(unovaGuideSources).map(async ([name,relative])=>[
+    name,JSON.parse(await readFile(path.join(repoRoot,relative),'utf8'))
+  ])
+));
+const unovaGuide=generateUnovaGuide(unovaSources);
+await writeFile(path.join(output,'data/unova-guide.json'),JSON.stringify(unovaGuide));
+console.log('Unova G06.2: '+unovaGuide.counts.areas+' áreas, '+unovaGuide.counts.chapters+' capítulos, 0 mapas nativos');
 const sinnohG10Data=Object.fromEntries(await Promise.all(
   Object.entries(sinnohG10Sources).map(async ([key,relative])=>[
     key,JSON.parse(await readFile(path.join(repoRoot,relative),'utf8'))

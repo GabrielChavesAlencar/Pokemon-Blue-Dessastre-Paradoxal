@@ -7,6 +7,7 @@ import {regularIndex,regularResults,regularTrainerById,regularDetail} from './re
 import {changesPage} from './changes.js';
 import {loadRegions,regionsPage,regionPicker} from './regions.js';
 import {loadUnovaGithubProgress,unovaGithubProgressPage} from './unova-progress.js';
+import {loadUnovaGuide,unovaGuidePage} from './unova-guide.js';
 import {loadKanto,kantoIndex,kantoLocation,kantoTrainer} from './kanto.js';
 import {loadPilotCatalog,pilotIndex} from './regional-pilot.js';
 import {presentationPage} from './presentation.js';
@@ -136,6 +137,11 @@ async function render(scroll=false){
     }else if(route==='localizacoes'){
       if(parts[1]){const area=model.locations.find(x=>x.id===Number(parts[1]));if(!area)throw new Error('not-found');currentBase=area;main.innerHTML=locationDetail(model,area,state);setPage(area.name);}
       else{main.innerHTML=locations(model,state);addRegionPicker(route);setPage('Localizações');}
+    }else if(route==='unova'){
+      const guide=await loadUnovaGuide();if(id!==renderId)return;
+      const guideSection=parts[1]||'home';const ref=parts[2]??null;
+      main.innerHTML=unovaGuidePage(guide,guideSection,ref);
+      setPage(guideSection==='home'?'Guia de Unova':'Guia Unova · '+guideSection);
     }else if(route==='unova-progresso'){
       const progress=await loadUnovaGithubProgress();if(id!==renderId)return;
       main.innerHTML=unovaGithubProgressPage(progress);setPage('Unova · Progresso GitHub');

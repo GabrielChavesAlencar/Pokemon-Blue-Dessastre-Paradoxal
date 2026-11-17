@@ -211,8 +211,9 @@
         {
           "id": "G06.2",
           "title": "Criar guias das 74 áreas e progressão da história",
-          "status": "pending",
-          "acceptance": "Páginas por capítulo, ginásios, áreas e pendências explícitas"
+          "status": "done",
+          "acceptance": "Páginas por capítulo, ginásios, áreas e pendências explícitas",
+          "evidence": "site/scripts/unova-guide.mjs"
         },
         {
           "id": "G06.3",
