@@ -176,9 +176,15 @@ def modified_files(source, revision):
     patched_both = replace_compiled_kanto(patched_region, kanto)
     proof = json.loads(source.read(PREFIX + KANTO_MANIFEST))
     hashes = proof.get("installed_sha256")
-    if (not isinstance(hashes, dict) or KANTO not in hashes or
-            hashes[KANTO] != digest(source.read(PREFIX + KANTO))):
-        raise ValueError("Original Kanto plugin does not match the audited install proof.")
+    if not isinstance(hashes, dict) or not re.fullmatch(r"[0-9a-f]{64}", str(hashes.get(KANTO, ""))):
+        raise ValueError("Original Kanto install proof is missing a plugin checksum.")
+    # Old combined releases may have compiled the game after sync_runtime
+    # updated KantoPilot, leaving an older installer checksum in this proof.
+    # Validate the actual distributed runtime against its compiled cache;
+    # the outer update manifest separately pins every archived file hash.
+    from scripts.android.package import compiled_region
+    compiled_region(source.read(PREFIX + CACHE), "KantoPilot.rb",
+                    source.read(PREFIX + KANTO))
     hashes[KANTO] = digest(kanto)
     result = {
         REGION: source_code,
@@ -194,7 +200,7 @@ def modified_files(source, revision):
     result[README] = instructions.replace(
         old_revision_line, ("Revision: " + revision + "\n").encode()
     ) + (b"\nKanto Android: 142 mapas confirmados, RegionStart.rb corrigido "
-         b"no cache do JoiPlay. Fos meis: escolha exclusiva no Mt. Moon "
+         b"no cache do JoiPlay. Fosseis: escolha exclusiva no Mt. Moon "
          b"apos derrotar Miguel, inclusive em saves antigos; restauracao no "
          b"laboratorio de Cinnabar pelo menu local.\nAtualizador Android: "
          b"protecao contra downgrade e escolha correta da release.\n")
