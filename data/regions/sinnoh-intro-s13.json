@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "task": "S13",
+  "status": "INTRO_SEQUENCE_OFFLINE_ONLY_NOT_INSTALLED",
+  "source_events": "data/regions/sinnoh-twinleaf-events.json",
+  "source_runtime": "scripts/regions/SinnohPilot.rb",
+  "state_key": "sinnoh_pilot",
+  "reference": "BLUE_AUTHORED_PLATINUM_SEQUENCE",
+  "step_count": 6,
+  "native_maps_compiled": 0,
+  "native_handlers_verified": 0,
+  "native_barry_pbs_compiled": false,
+  "source_sprites_verified": false,
+  "start_spawn_verified": false,
+  "game_exe_executed": false,
+  "joiplay_executed": false,
+  "native_qa_approved": false,
+  "can_install": false,
+  "gameplay_approved": false,
+  "global_hooks_installed": false,
+  "policies": {
+    "ordered_flag_commits": true,
+    "reject_unknown_keys": true,
+    "no_start_without_sinnoh_state": true,
+    "no_cross_region_state_write": true,
+    "no_starter_without_physical_ball": true,
+    "no_duplicate_starter": true,
+    "no_barry_without_verified_compiled_trainer": true,
+    "no_story_after_nil_battle": true,
+    "can_lose_confirmed_false_result_is_valid": true,
+    "pokedex_after_confirmed_rival": true,
+    "only_actual_player_gets_dex": true,
+    "no_map_ids_or_positions_fabricated": true,
+    "isolated_qa_not_native_acceptance": true
+  },
+  "steps": [
+    {
+      "flag": "mother_intro",
+      "handler": "mother",
+      "needs": [],
+      "kind": "dialogue",
+      "order": 1,
+      "map": "SINNOH_PLAYER_HOUSE_1F",
+      "event": "SN_NPC_MOTHER",
+      "physical_balls": [],
+      "native_map_id": null,
+      "native_event_id": null,
+      "native_callback_verified": false,
+      "player_interaction_verified": false,
+      "game_exe_verified": false,
+      "joiplay_verified": false,
+      "status": "OFFLINE_CONTRACT_ONLY"
+    },
+    {
+      "flag": "barry_intro",
+      "handler": "barry_intro",
+      "needs": [
+        "mother_intro"
+      ],
+      "kind": "dialogue",
+      "order": 2,
+      "map": "SINNOH_BARRY_HOUSE",
+      "event": "SN_NPC_BARRY_INTRO",
+      "physical_balls": [],
+      "native_map_id": null,
+      "native_event_id": null,
+      "native_callback_verified": false,
+      "player_interaction_verified": false,
+      "game_exe_verified": false,
+      "joiplay_verified": false,
+      "status": "OFFLINE_CONTRACT_ONLY"
+    },
+    {
+      "flag": "rowan_briefcase_seen",
+      "handler": "rowan_briefcase",
+      "needs": [
+        "barry_intro"
+      ],
+      "kind": "dialogue",
+      "order": 3,
+      "map": "SINNOH_LAKE_VERITY",
+      "event": "SN_NPC_ROWAN_BRIEFCASE",
+      "physical_balls": [],
+      "native_map_id": null,
+      "native_event_id": null,
+      "native_callback_verified": false,
+      "player_interaction_verified": false,
+      "game_exe_verified": false,
+      "joiplay_verified": false,
+      "status": "OFFLINE_CONTRACT_ONLY"
+    },
+    {
+      "flag": "starter_received",
+      "handler": "choose_starter_from_ball",
+      "needs": [
+        "rowan_briefcase_seen"
+      ],
+      "kind": "physical_starter",
+      "order": 4,
+      "map": "SINNOH_LAKE_VERITY",
+      "event": null,
+      "physical_balls": [
+        {
+          "map": "SINNOH_LAKE_VERITY",
+          "event": "SN_BALL_TURTWIG",
+          "species": "TURTWIG"
+        },
+        {
+          "map": "SINNOH_LAKE_VERITY",
+          "event": "SN_BALL_CHIMCHAR",
+          "species": "CHIMCHAR"
+        },
+        {
+          "map": "SINNOH_LAKE_VERITY",
+          "event": "SN_BALL_PIPLUP",
+          "species": "PIPLUP"
+        }
+      ],
+      "native_map_id": null,
+      "native_event_id": null,
+      "native_callback_verified": false,
+      "player_interaction_verified": false,
+      "game_exe_verified": false,
+      "joiplay_verified": false,
+      "status": "OFFLINE_CONTRACT_ONLY"
+    },
+    {
+      "flag": "rival_fought",
+      "handler": "barry_rival",
+      "needs": [
+        "starter_received"
+      ],
+      "kind": "confirmed_battle_can_lose",
+      "order": 5,
+      "map": "SINNOH_LAKE_VERITY",
+      "event": "SN_NPC_BARRY_BATTLE",
+      "physical_balls": [],
+      "native_map_id": null,
+      "native_event_id": null,
+      "native_callback_verified": false,
+      "player_interaction_verified": false,
+      "game_exe_verified": false,
+      "joiplay_verified": false,
+      "status": "OFFLINE_CONTRACT_ONLY"
+    },
+    {
+      "flag": "pokedex_received",
+      "handler": "rowan_pokedex",
+      "needs": [
+        "rival_fought"
+      ],
+      "kind": "engine_pokedex_flag",
+      "order": 6,
+      "map": "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+      "event": "SN_NPC_ROWAN_POKEDEX",
+      "physical_balls": [],
+      "native_map_id": null,
+      "native_event_id": null,
+      "native_callback_verified": false,
+      "player_interaction_verified": false,
+      "game_exe_verified": false,
+      "joiplay_verified": false,
+      "status": "OFFLINE_CONTRACT_ONLY"
+    }
+  ],
+  "note": "Seis checkpoints de introducao autoral para a copia isolada. I06/I07/I08 seguem com prova nativa pendente (5/8). Nao ha mapa, sprite, PBS de Barry nem coordenada real auditada para publicar no jogo. Nao escreve novos hooks nem importa eventos doador."
+}

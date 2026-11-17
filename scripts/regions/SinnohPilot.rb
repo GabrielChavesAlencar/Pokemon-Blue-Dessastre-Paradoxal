@@ -32,6 +32,11 @@ module BlueSinnohPilot
     return false unless flags.is_a?(Hash)
     checkpoints = %w[mother_intro barry_intro rowan_briefcase_seen
                      starter_received rival_fought pokedex_received]
+    # Refuse arbitrary saved flags: only these six checkpoints plus the
+    # paired physical starter species belong to this isolated story.
+    return false unless flags.keys.all? { |key|
+      key.is_a?(String) && (checkpoints.include?(key) || key == "starter")
+    }
     checkpoints.each do |key|
       return false if flags.key?(key) && flags[key] != true && flags[key] != false
     end
@@ -59,7 +64,22 @@ module BlueSinnohPilot
   # Only a completed action may create/update the isolated progress record.
   def self.commit_flag(key)
     state = regional_state
-    return false unless state && progress
+    flags = progress
+    return false unless state && flags && key.is_a?(String)
+    # Exactly one transition per verified event, never arbitrary direct writes.
+    previous = {
+      "mother_intro" => nil,
+      "barry_intro" => "mother_intro",
+      "rowan_briefcase_seen" => "barry_intro",
+      "rival_fought" => "starter_received",
+      "pokedex_received" => "rival_fought"
+    }
+    return false unless previous.key?(key) && flags[key] != true
+    required = previous[key]
+    return false if required && flags[required] != true
+    return false if key == "rival_fought" && !@rival_battle_in_progress
+    return false if key == "pokedex_received" && !@pokedex_grant_in_progress
+    return false unless valid_flags?(flags.merge(key => true))
     state["sinnoh_pilot"] ||= {}
     state["sinnoh_pilot"][key] = true
     true
@@ -272,9 +292,16 @@ module BlueSinnohPilot
     # Only mark dex as delivered after the engine's actual player field exists.
     return false unless defined?($player) && $player &&
                         $player.respond_to?(:has_pokedex=)
-    $player.has_pokedex = true
-    return false unless commit_flag("pokedex_received")
-    pbMessage(_INTL("Rowan: Sua Pokédex está pronta. Explore Sinnoh com cuidado."))
-    true
+    return false if @pokedex_grant_in_progress
+    @pokedex_grant_in_progress = true
+    begin
+      # Do not grant a Pokédex before committing a valid regional checkpoint.
+      return false unless commit_flag("pokedex_received")
+      $player.has_pokedex = true
+      pbMessage(_INTL("Rowan: Sua Pokédex está pronta. Explore Sinnoh com cuidado."))
+      true
+    ensure
+      @pokedex_grant_in_progress = false
+    end
   end
 end
