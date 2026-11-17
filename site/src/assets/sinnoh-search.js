@@ -15,7 +15,8 @@ const joinFields=x=>normalizeSinnohText(x.flat(Infinity).filter(v=>v!=null).join
 const disallowed=new Set([
   'map_id','mapId','physical_map_id','level','historical_levels','level_ranges',
   'rate','weight_percentages','slots','encounter_slots','trainerVersion',
-  'versionPBS','chance','x','y'
+  'versionPBS','chance','x','y','effectiveLevel','effective_level','levelCap',
+  'level_cap','fixedLevel','fixed_level','levelRange','exactLevel','exact_level'
 ]);
 export function validateSinnohGuide(data){
   if(!data||data.schema!==1||data.region!=='SINNOH'||data.sourceGame!=='Pokémon Platinum'||
@@ -34,7 +35,18 @@ export function validateSinnohGuide(data){
      data.counts.encounterReferenceAreas!==21||data.counts.musicCueReferences!==46||
      data.music?.status!=='planned'||data.music?.audioInstalled!==false||
      data.music?.cueCount!==46||data.balance?.normalPercent!==70||
-     data.balance?.masterPercent!==90)fail('metadata or reference counts');
+     data.balance?.masterPercent!==90||
+     !data.levelPolicy||
+     data.levelPolicy.reference!=='highest_non_egg_party_level'||
+     data.levelPolicy.regionalNumericCap!==null||
+     data.levelPolicy.badgesDoNotRevealExactLevel!==true||
+     data.levelPolicy.verifiedRuntimeLevels!==false||
+     data.levelPolicy.source!=='scripts/battle_polish/Campaign.rb'||
+     data.levelPolicy.fieldEvolutionSource!=='scripts/battle_polish/EvolutionScaling.rb'||
+     ['level','levelCap','level_cap','effectiveLevel','effective_level',
+      'fixedLevel','fixed_level','historical_levels','exactLevel']
+       .some(k=>Object.hasOwn(data.balance,k)||Object.hasOwn(data.levelPolicy,k)))
+    fail('metadata or reference counts');
   const groups={areas:data.areas,trainers:data.trainers,bosses:data.bosses,
     items:data.items,steps:data.steps,phases:data.phases};
   for(const [key,records] of Object.entries(groups)){
