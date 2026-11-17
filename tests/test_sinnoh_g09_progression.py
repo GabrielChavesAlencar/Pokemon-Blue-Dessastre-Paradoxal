@@ -171,7 +171,7 @@ class SinnohG09Tests(unittest.TestCase):
         for fn in (
             lambda d,s:d["league"]["steps"][1].update(requires_local_badges=[]),
             lambda d,s:d["league"]["steps"][0].update(previous=None),
-            lambda d,s:d["league"]["steps"][3].update(previous="P09_AARON_BATTLE"),
+            lambda d,s:d["league"]["steps"][3].update(previous="SINNOH_LEAGUE_BARRY_GATE"),
             lambda d,s:d["league"].update(native_league_installed=True),
             lambda d,s:d["story"].update(native_events_installed=True),
         ):
