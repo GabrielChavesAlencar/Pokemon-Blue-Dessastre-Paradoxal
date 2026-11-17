@@ -28,6 +28,7 @@ PYTHON_CHECKS = [
     ("sinnoh-s16-local-hms", [PY, "scripts/regions/audit_sinnoh_s16_hms.py"]),
     ("sinnoh-s13-intro-audit", [PY, "scripts/regions/audit_sinnoh_s13_intro.py"]),
     ("sinnoh-s14-starters-audit", [PY, "scripts/regions/audit_sinnoh_s14_starters.py"]),
+    ("sinnoh-s31-acceptance-report", [PY, "scripts/regions/audit_sinnoh_s31_acceptance.py"]),
     ("sinnoh-story-audit", [PY, "scripts/regions/audit_sinnoh_story_ch14.py"]),
     ("sinnoh-teams-audit", [PY, "scripts/regions/audit_sinnoh_teams_ch15.py"]),
     ("sinnoh-s17-balance-contract", [PY, "scripts/regions/audit_sinnoh_s17_balance.py"]),

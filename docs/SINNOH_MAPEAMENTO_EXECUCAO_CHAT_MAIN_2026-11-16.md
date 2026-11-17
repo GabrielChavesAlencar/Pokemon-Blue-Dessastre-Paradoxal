@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 31/32 após as entregas S07, S08, S10, S11, S12, S13, S14, S15, S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 32/32 após as entregas S07, S08, S10, S11, S12, S13, S14, S15, S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29, a suíte offline S30 e o protocolo S31; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -275,6 +275,12 @@ A [S13](SINNOH_S13_INTRO_ROWAN_BARRY_ACEITE.md) adiciona [seis checkpoints audit
 A [S14](SINNOH_S14_TRES_INICIAIS_EVENTOS_FISICOS_ACEITE.md) vincula as três Poké Bolas e os rivais de Barry no [manifesto](../data/regions/sinnoh-starters-s14.json), reforça o [compilador](../scripts/regions/build_sinnoh_twinleaf_events.py) contra troca de espécies, mapas e gatilhos `touch`, e adiciona [pré-visualização Ruby sem escrita](../scripts/regions/SinnohStarterContracts.rb) com [24 testes Python](../tests/test_sinnoh_s14_starters.py) e [regressão Ruby](../tests/sinnoh_s14_starter_runtime.rb) de save/load e troca de região.
 
 **Após CI/merge: Barra A 31/32 (96%) apenas código, S31 parcial**, E 20/20, B/C/D 0/13. I06–I08 permanecem 5/8, 44 testes nativos ainda pendentes. Nenhuma Poké Bola compilada ou jogável foi afirmada.
+
+### S31 — prontidão de aceite 44 casos, nunca aprovação nativa automática
+
+O [auditor S31](../scripts/regions/audit_sinnoh_s31_acceptance.py) cruza todos os 44 IDs do checklist CH20 com a cópia QA compilada e evidências locais por SHA-256; o [manifesto](../data/regions/sinnoh-s31-acceptance.json) define 43 casos Windows e 1 Android e os [19 testes](../tests/test_sinnoh_s31_acceptance.py) verificam fraude, perfil, lacunas e restrições. Um relatório com 44 relatos ainda exige inspeção humana; este programa não certifica execução real nem cria marcador.
+
+**Após CI/merge: Barra A 32/32 (100% apenas engenharia), Barra E 20/20; B/C/D 0/13.** Trilha T05–T07 4/7, I06–I08 5/8, R07–R09 6/9, **0/44 testes reais comprovados** no repositório. Nenhum `Game.exe`, JoiPlay, direitos de mapas, PBS, áudio ou save de usuário foi validado. Requer a instalação local autorizada antes de qualquer anúncio jogável.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

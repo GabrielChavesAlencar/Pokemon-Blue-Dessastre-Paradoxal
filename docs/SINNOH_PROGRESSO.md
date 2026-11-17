@@ -30,25 +30,25 @@
 - **CH20 (concluída em escopo estático):** [pré-voo Android/JoiPlay](../scripts/regions/audit_sinnoh_android_ch20.py), [18 testes CH20](../tests/test_sinnoh_android_ch20.py), [12 testes do auditor de evidências](../tests/test_sinnoh_playtest_audit.py) e [workflow exclusivo CH20](../.github/workflows/sinnoh-ch20.yml) publicados na `main` pelo [PR #66](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/66), merge `c7c8cdd`. [CI 43986405854](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854) **18/18 + 12/12 testes aprovados**, com [relatórios JSON + Markdown e hashes conferidos](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854/artifacts/14284479390). [Relatório CH20](SINNOH_CH20_JOIPLAY_PREFLIGHT.md): **44 IDs de casos completos, 0/44 observados no Game.exe/JoiPlay**, dados do jogo reais não fornecidos. Conclusão da Barra E **20/20 (100%)** não aprova jogo nativo nem altera as barras A/B/C/D.
 - **Critério:** tarefas só entram como `done` com arquivos publicados na `main` e validação de CI compatível com seu escopo.
 
-**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 31/32 (96%)**, **B/C/D 0/13** permanecem intactas.
+**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 32/32 (100% apenas engenharia)**, **B/C/D 0/13** permanecem intactas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
 ```text
-███████████████████░  31/32 (96%)
+████████████████████  32/32 (100% engenharia)
 ```
 
-- **Concluídas:** 31 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
-- **Parciais:** 1 (S31; introdução I06–I08 e remapeamento R07–R09 ainda parciais no subfluxo nativo).
+- **Concluídas:** 32 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
+- **Parciais:** 0 na Barra A de engenharia (I06–I08, R07–R09 e T05–T07 permanecem parciais nas trilhas nativas).
 - **Pendentes:** 0.
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
-- **Restam 1 para a barra de desenvolvimento** (inclui parciais).
+- **Restam 0 para a barra de engenharia**; a certificação de Sinnoh jogável ainda não começou.
 
 ## S27 — guias planejados no site (concluída)
 
 A [entrega S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) contabiliza o trabalho de **portal web**, não uma região jogável. O guia `/sinnoh` já usa os catálogos CH11–CH16 e a navegação/pesquisa CH17–CH18; agora diferencia explicitamente **guia publicado no portal** de **mapas/eventos ainda não instalados no jogo**. Os [testes de aceite S27](../site/tests/sinnoh-s27-development.test.mjs) validam oito abas, 120 áreas, 40 treinadores, 13 líderes/Liga, 8 HMs, 22 checkpoints e salvaguardas contra anúncios falsos de MapIDs, níveis, PBS, encontros ou jogo funcional. A aprovação da S27 depende do build e da suíte completa do site em CI.
 
-**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)**, a S11 para **14/32 (43%)** e a S12 para **15/32 (46%)**; após a S08, o total era **16/32 (50%)**; com a S26, o total era **17/32 (53%)**; após a S17, eram **18/32 (56%)**; com a S18, eram **19/32 (59%)**; após a S19, eram **20/32 (62%)**; com a S20, eram **21/32 (65%)**; com a S21, eram **22/32 (68%)**; com a S22, eram **23/32 (71%)**; com a S23, o total foi **24/32 (75%)**; após a S24, eram **25/32 (78%)**; após S25 eram **26/32 (81%)**; com S15 eram **27/32 (84%)**; após S16 eram **28/32 (87%)**; após S07 em código eram **29/32 (90%)**; com S13 eram **30/32 (93%)**; com S14 são **31/32 (96%)**. Isso não torna as fases S13–S23 jogáveis nem altera B/C/D.
+**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)**, a S11 para **14/32 (43%)** e a S12 para **15/32 (46%)**; após a S08, o total era **16/32 (50%)**; com a S26, o total era **17/32 (53%)**; após a S17, eram **18/32 (56%)**; com a S18, eram **19/32 (59%)**; após a S19, eram **20/32 (62%)**; com a S20, eram **21/32 (65%)**; com a S21, eram **22/32 (68%)**; com a S22, eram **23/32 (71%)**; com a S23, o total foi **24/32 (75%)**; após a S24, eram **25/32 (78%)**; após S25 eram **26/32 (81%)**; com S15 eram **27/32 (84%)**; após S16 eram **28/32 (87%)**; após S07 em código eram **29/32 (90%)**; com S13 eram **30/32 (93%)**; com S14 eram **31/32 (96%)**; após S31 são **32/32 (100% de engenharia)**. Isso não torna as fases S13–S23 jogáveis nem altera B/C/D.
 
 ## S07 — reconciliação MapIDs, stage e rollback (engenharia offline)
 
@@ -67,6 +67,12 @@ A [S13](SINNOH_S13_INTRO_ROWAN_BARRY_ACEITE.md) integra [seis checkpoints](../da
 A [entrega S14](SINNOH_S14_TRES_INICIAIS_EVENTOS_FISICOS_ACEITE.md) fortalece o [compilador de eventos Twinleaf](../scripts/regions/build_sinnoh_twinleaf_events.py) para exigir chaves, espécies, mapa e interação manual nas três Poké Bolas do Lago Verity. Inclui [contrato S14](../data/regions/sinnoh-starters-s14.json), [pré-visualizador Ruby](../scripts/regions/SinnohStarterContracts.rb), [auditor](../scripts/regions/audit_sinnoh_s14_starters.py), [24 testes Python](../tests/test_sinnoh_s14_starters.py) e [teste Ruby de escolhas, saves e isolamento regional](../tests/sinnoh_s14_starter_runtime.rb). Não altera a fonte real da engine nem a instalação principal.
 
 **Após CI e merge: Barra A 31/32 (96%) apenas de engenharia, uma parcial S31.** A trilha de introdução I01–I08 continua **5/8**; MapIDs, sprites e PBS nativos não foram testados, B/C/D permanecem 0/13 e 44 observações Windows/JoiPlay pendentes.
+
+## S31 — aceitação Windows/Android: engenharia de QA finalizada, prova nativa pendente
+
+A [S31](SINNOH_S31_ACEITE_WINDOWS_ANDROID_OFFLINE_32_32.md) entrega [reconciliador read-only de 44 casos](../scripts/regions/audit_sinnoh_s31_acceptance.py), [manifesto de aceite](../data/regions/sinnoh-s31-acceptance.json) e [19 testes negativos e de integração](../tests/test_sinnoh_s31_acceptance.py), cruzando CH20 estático com o auditor do Game.exe/JoiPlay em uma cópia isolada. **Sem cópia QA real: 0/44 evidências, T05–T07 4/7, I06–I08 5/8, R07–R09 6/9.**
+
+**Barra A 32/32 (100%) representa somente entregáveis de código, auditoria, testes e documentação.** Não foram executados os 44 testes nativos; B/C/D seguem **0/13**, Sinnoh `planned` e nenhum marcador de liberação foi gerado.
 
 ## S15 — oito ginásios e insígnias (contratos offline)
 
@@ -381,7 +387,7 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Concluída offline | S26 | Testes de prioridades, fallback, fade e loop com BlueMusic sem reprodução | [S26](SINNOH_S26_TESTES_MUSICA_ACEITE.md) |
 | Concluído web | S28 | Catálogo de 13 equipes Platinum, 5 revanches e 40 treinadores pendentes | [relatório S28](SINNOH_S28_CATALOGO_TIMES_REFERENCIAS.md) |
 | Concluída offline | S30 | Suíte automatizada Python/Ruby/portal/Android, CI separado | [relatório S30](SINNOH_S30_SUITE_AUTOMATIZADA_ACEITE.md) |
-| Parcial | S31 | Plano de aceitação Windows/JoiPlay | [plano](SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md) |
+| Concluído em código | S31 | Relatório e validador 44 casos Windows/JoiPlay; T05–T07 nativos 4/7, sem jogo executado | [aceite S31](SINNOH_S31_ACEITE_WINDOWS_ANDROID_OFFLINE_32_32.md), [auditor](../scripts/regions/audit_sinnoh_s31_acceptance.py) |
 | Concluído | S32 | Fila de pendências Codex | [backlog](SINNOH_CODEX_PENDENCIAS.md) |
 
 **As demais entregas de S13–S29 não listadas acima seguem pendentes** (exceto S13 e S14, parciais, e S27/S29 já concluídas em código web); veja a lista completa, com os 32 IDs, no [registro JSON](../data/regions/sinnoh-progress.json). A ordem de implementação é independente das fases integradas: uma API pode estar pronta mas não haver mapa-fonte para aprovar uma fase.

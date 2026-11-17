@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "task": "S31",
+  "status": "ACCEPTANCE_TOOLING_READY_NATIVE_EVIDENCE_MISSING",
+  "technical_scope": "OFFLINE_READ_ONLY_REPORT_ONLY",
+  "source_checks": {
+    "android": "scripts/regions/audit_sinnoh_android_ch20.py",
+    "native": "scripts/regions/audit_sinnoh_playtest.py",
+    "progress": "data/regions/sinnoh-progress.json",
+    "intro": "data/regions/sinnoh-twinleaf-events.json",
+    "plan": "docs/SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md"
+  },
+  "expected_cases": 44,
+  "expected_by_kind": {
+    "starter": 3,
+    "barry": 12,
+    "save_reload": 3,
+    "warp": 16,
+    "npc": 5,
+    "regression": 4,
+    "android": 1
+  },
+  "windows_cases_required": 43,
+  "android_cases_required": 1,
+  "qa_t_substeps_complete": 4,
+  "qa_t_substeps_total": 7,
+  "native_observations_verified": 0,
+  "native_game_exe_tested": false,
+  "native_joiplay_tested": false,
+  "independent_human_review": false,
+  "release_marker_allowed": false,
+  "source_rights_verified": false,
+  "physical_maps_verified": false,
+  "gameplay_playable": false,
+  "auto_accept": false,
+  "phase_approval_allowed": false,
+  "source_assets_copied": false,
+  "policies": {
+    "require_isolated_qa_profile": true,
+    "strict_compile_token_and_profile": true,
+    "compare_all_44_case_ids": true,
+    "never_use_android_for_windows_case": true,
+    "require_evidence_file_and_sha256": true,
+    "reject_unknown_or_reordered_cases": true,
+    "require_independent_human_review": true,
+    "no_release_marker_from_tool": true,
+    "no_native_gate_update_from_ci": true,
+    "do_not_modify_main_game_or_saves": true,
+    "require_rights_and_real_map_assets": true
+  },
+  "notes": "S31 entrega apenas protocolo de aceite offline e comparador dos roteiros CH20/QA. Nao implica executar Game.exe Windows, JoiPlay, mapas reais ou auditar licencas. T05/T06/T07 e I06/I07/I08 permanecem pendentes. Mesmo 44 evidencias registradas por um operador exigem revisao humana independente e nao liberam publicacao automaticamente."
+}
