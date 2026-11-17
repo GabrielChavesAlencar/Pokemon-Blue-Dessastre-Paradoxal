@@ -158,8 +158,20 @@ def audit(contract: dict, story: dict, source: dict, registry: dict,
             or story.get("native_events_installed") is not False
             or story.get("can_install") is not False):
         blocked("CH14 declarou viagem/HoF nativo sem prova")
+    # A receipt proves only that the donor ZIP was read as inert RXDATA data.
+    # It must NOT be mistaken for a compiled map, a native NPC or installation.
+    status = source.get("status") if isinstance(source, dict) else None
+    receipt = source.get("received_real_source", {}) if isinstance(source, dict) else {}
     if (not isinstance(source, dict) or source.get("region") != "SINNOH"
-            or source.get("status") != "REPO_BASELINE_PREPARED_SOURCE_PENDING"
+            or status not in ("REPO_BASELINE_PREPARED_SOURCE_PENDING",
+                              "DONOR_RECEIVED_LOCAL_SOURCE_AUDITED_NOT_INSTALLABLE")
+            or (status == "DONOR_RECEIVED_LOCAL_SOURCE_AUDITED_NOT_INSTALLABLE"
+                and (not isinstance(receipt, dict)
+                     or receipt.get("source_rights_verified") is not False
+                     or receipt.get("editable_mapped_sinnoh_game_installed") is not False
+                     or receipt.get("map_tree_count") != 76
+                     or receipt.get("terrain_maps") != 54
+                     or receipt.get("blank_maps") != 22))
             or source.get("import_control", {}).get("imports_enabled") is not False
             or source.get("import_control", {}).get("gameplay_sinnoh_installed") is not False):
         blocked("fonte real de Sinnoh marcada instalada sem auditoria")
