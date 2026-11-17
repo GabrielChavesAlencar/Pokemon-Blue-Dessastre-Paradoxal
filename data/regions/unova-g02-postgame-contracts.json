@@ -1,0 +1,326 @@
+{
+  "schema": 1,
+  "phase": "G02.4",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "GITHUB_ONLY_PLANNED_POSTGAME_CONTRACTS",
+  "g01_source": "data/regions/unova-g01-state-contract.json",
+  "g02_2_source": "data/regions/unova-g02-gym-story-contracts.json",
+  "g02_3_source": "data/regions/unova-g02-elite-finale-contracts.json",
+  "area_catalog": "data/regions/unova-u03-areas.json",
+  "required_chapter": "UNOVA_CH12_POSTGAME",
+  "required_credits_token": "UNOVA_G023_CREDITS_SIMULATED",
+  "required_postgame_token": "UNOVA_G023_POSTGAME_ACCESS_SIMULATED",
+  "simulation_gate": "SIMULATED_ONLY_NO_NATIVE_APPROVAL",
+  "sages_collection": "SIX_POSTGAME_SAGES_NOT_GHETSIS",
+  "looker_briefing": {
+    "key": "UNOVA_G024_LOOKER_BRIEFING",
+    "area_key": "UNOVA_NUVEMA_TOWN",
+    "planned_key_item_intent": "SUPER_ROD_NOT_GRANTED",
+    "requires_chapter": "UNOVA_CH12_POSTGAME",
+    "native_npc_id": null,
+    "map_id": null
+  },
+  "sages": [
+    {
+      "key": "UNOVA_G024_SAGE_GORM",
+      "name": "GORM",
+      "area_key": "UNOVA_DREAMYARD",
+      "tm_intent": "TM75_SWORDS_DANCE",
+      "required_capabilities": [],
+      "planned_phase": "U28",
+      "reward_granted": false,
+      "native_event_id": null,
+      "map_id": null
+    },
+    {
+      "key": "UNOVA_G024_SAGE_RYOKU",
+      "name": "RYOKU",
+      "area_key": "UNOVA_RELIC_CASTLE",
+      "tm_intent": "TM04_CALM_MIND",
+      "required_capabilities": [],
+      "planned_phase": "U28",
+      "reward_granted": false,
+      "native_event_id": null,
+      "map_id": null
+    },
+    {
+      "key": "UNOVA_G024_SAGE_ZINZOLIN",
+      "name": "ZINZOLIN",
+      "area_key": "UNOVA_COLD_STORAGE",
+      "tm_intent": "TM01_HONE_CLAWS",
+      "required_capabilities": [],
+      "planned_phase": "U28",
+      "reward_granted": false,
+      "native_event_id": null,
+      "map_id": null
+    },
+    {
+      "key": "UNOVA_G024_SAGE_BRONIUS",
+      "name": "BRONIUS",
+      "area_key": "UNOVA_CHARGESTONE_CAVE",
+      "tm_intent": "TM69_ROCK_POLISH",
+      "required_capabilities": [],
+      "planned_phase": "U28",
+      "reward_granted": false,
+      "native_event_id": null,
+      "map_id": null
+    },
+    {
+      "key": "UNOVA_G024_SAGE_ROOD",
+      "name": "ROOD",
+      "area_key": "UNOVA_ROUTE_18",
+      "tm_intent": "TM32_DOUBLE_TEAM",
+      "required_capabilities": [
+        "SURF"
+      ],
+      "planned_phase": "U28",
+      "reward_granted": false,
+      "native_event_id": null,
+      "map_id": null
+    },
+    {
+      "key": "UNOVA_G024_SAGE_GIALLO",
+      "name": "GIALLO",
+      "area_key": "UNOVA_ROUTE_14",
+      "tm_intent": "TM08_BULK_UP",
+      "required_capabilities": [
+        "SURF",
+        "WATERFALL"
+      ],
+      "planned_phase": "U28",
+      "reward_granted": false,
+      "native_event_id": null,
+      "map_id": null
+    }
+  ],
+  "looker_completion": {
+    "key": "UNOVA_G024_LOOKER_SIX_SAGES_COMPLETE",
+    "required_sages": 6,
+    "any_order": true,
+    "native_event_id": null
+  },
+  "navigation_capabilities": [
+    "DIVE",
+    "SURF",
+    "WATERFALL"
+  ],
+  "party_pair_gate": {
+    "key": "UNOVA_G024_PLANNED_TORNADUS_THUNDURUS_PAIR",
+    "required_species": [
+      "THUNDURUS",
+      "TORNADUS"
+    ],
+    "version": "WHITE_BW",
+    "party_verified_in_game": false
+  },
+  "legendary_encounters": [
+    {
+      "key": "UNOVA_G024_LEGEND_COBALION",
+      "species": "COBALION",
+      "area_key": "UNOVA_MISTRALTON_CAVE",
+      "required_capabilities": [
+        "SURF"
+      ],
+      "required_encounters": [],
+      "requires_both_genies_party_simulated": false,
+      "version": "WHITE_BW",
+      "planned_phase": "U30",
+      "native_encounter_id": null,
+      "map_id": null,
+      "ownership_verified": false,
+      "capture_executed": false
+    },
+    {
+      "key": "UNOVA_G024_LEGEND_TERRAKION",
+      "species": "TERRAKION",
+      "area_key": "UNOVA_VICTORY_ROAD",
+      "required_capabilities": [],
+      "required_encounters": [
+        "UNOVA_G024_LEGEND_COBALION"
+      ],
+      "requires_both_genies_party_simulated": false,
+      "version": "WHITE_BW",
+      "planned_phase": "U30",
+      "native_encounter_id": null,
+      "map_id": null,
+      "ownership_verified": false,
+      "capture_executed": false
+    },
+    {
+      "key": "UNOVA_G024_LEGEND_VIRIZION",
+      "species": "VIRIZION",
+      "area_key": "UNOVA_PINWHEEL_FOREST",
+      "required_capabilities": [],
+      "required_encounters": [
+        "UNOVA_G024_LEGEND_COBALION"
+      ],
+      "requires_both_genies_party_simulated": false,
+      "version": "WHITE_BW",
+      "planned_phase": "U30",
+      "native_encounter_id": null,
+      "map_id": null,
+      "ownership_verified": false,
+      "capture_executed": false
+    },
+    {
+      "key": "UNOVA_G024_LEGEND_KYUREM",
+      "species": "KYUREM",
+      "area_key": "UNOVA_GIANT_CHASM",
+      "required_capabilities": [],
+      "required_encounters": [],
+      "requires_both_genies_party_simulated": false,
+      "version": "WHITE_BW",
+      "planned_phase": "U30",
+      "native_encounter_id": null,
+      "map_id": null,
+      "ownership_verified": false,
+      "capture_executed": false
+    },
+    {
+      "key": "UNOVA_G024_LEGEND_THUNDURUS",
+      "species": "THUNDURUS",
+      "area_key": "UNOVA_ROUTE_07",
+      "required_capabilities": [],
+      "required_encounters": [],
+      "requires_both_genies_party_simulated": false,
+      "version": "WHITE_BW",
+      "planned_phase": "U30",
+      "native_encounter_id": null,
+      "map_id": null,
+      "ownership_verified": false,
+      "capture_executed": false
+    },
+    {
+      "key": "UNOVA_G024_LEGEND_LANDORUS",
+      "species": "LANDORUS",
+      "area_key": "UNOVA_ABUNDANT_SHRINE",
+      "required_capabilities": [
+        "SURF"
+      ],
+      "required_encounters": [
+        "UNOVA_G024_LEGEND_THUNDURUS"
+      ],
+      "requires_both_genies_party_simulated": true,
+      "version": "WHITE_BW",
+      "planned_phase": "U30",
+      "native_encounter_id": null,
+      "map_id": null,
+      "ownership_verified": false,
+      "capture_executed": false
+    }
+  ],
+  "event_only_blocked": [
+    "VICTINI",
+    "KELDEO",
+    "MELOETTA",
+    "GENESECT"
+  ],
+  "optional_activities": [
+    {
+      "key": "UNOVA_G024_ACTIVITY_EASTERN_UNOVA",
+      "area_key": "UNOVA_ROUTE_11",
+      "required_capabilities": [],
+      "kind": "OPTIONAL_ACTIVITY",
+      "planned_phase": "U29",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    },
+    {
+      "key": "UNOVA_G024_ACTIVITY_WHITE_FOREST",
+      "area_key": "UNOVA_WHITE_FOREST",
+      "required_capabilities": [],
+      "kind": "OPTIONAL_ACTIVITY",
+      "planned_phase": "U29",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    },
+    {
+      "key": "UNOVA_G024_ACTIVITY_UNDELLA_VISIT",
+      "area_key": "UNOVA_UNDELLA_TOWN",
+      "required_capabilities": [],
+      "kind": "OPTIONAL_ACTIVITY",
+      "planned_phase": "U29",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    },
+    {
+      "key": "UNOVA_G024_ACTIVITY_ABYSSAL_RUINS",
+      "area_key": "UNOVA_UNDELLA_BAY",
+      "required_capabilities": [
+        "DIVE"
+      ],
+      "kind": "OPTIONAL_ACTIVITY",
+      "planned_phase": "U30",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    },
+    {
+      "key": "UNOVA_G024_ACTIVITY_BATTLE_SUBWAY",
+      "area_key": "UNOVA_BATTLE_SUBWAY",
+      "required_capabilities": [],
+      "kind": "OPTIONAL_ACTIVITY",
+      "planned_phase": "U30",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    },
+    {
+      "key": "UNOVA_G024_ACTIVITY_ROYAL_UNOVA",
+      "area_key": "UNOVA_ROYAL_UNOVA",
+      "required_capabilities": [],
+      "kind": "OPTIONAL_ACTIVITY",
+      "planned_phase": "U30",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    },
+    {
+      "key": "UNOVA_G024_ACTIVITY_VOLCARONA",
+      "area_key": "UNOVA_RELIC_CASTLE",
+      "required_capabilities": [],
+      "kind": "SPECIAL_ENCOUNTER_NOT_LEGENDARY",
+      "planned_phase": "U30",
+      "native_event_id": null,
+      "map_id": null,
+      "items_granted": false
+    }
+  ],
+  "league_rematch": {
+    "key": "UNOVA_G024_LEAGUE_REMATCH",
+    "elite_members": [
+      "UNOVA_G023_ELITE_SHAUNTAL",
+      "UNOVA_G023_ELITE_GRIMSLEY",
+      "UNOVA_G023_ELITE_CAITLIN",
+      "UNOVA_G023_ELITE_MARSHAL"
+    ],
+    "champion_key": "ALDER",
+    "elite_order": "ANY_ORDER",
+    "loss_behavior": "NO_PROGRESS_AND_SYMBOLIC_RETURN_ONLY",
+    "reward_policy": "NO_NATIVE_REWARDS",
+    "max_sessions": 25,
+    "native_trainer_id": null,
+    "trainer_party": null,
+    "trainer_levels": null
+  },
+  "native_game_modified": false,
+  "native_saves_modified": false,
+  "game_exe_tested": false,
+  "can_install": false,
+  "real_badges_granted": false,
+  "real_pokemon_captured": false,
+  "real_hms_verified": false,
+  "real_items_granted": false,
+  "notes": [
+    "Pós-jogo contratual White; Looker pede SEIS sábios restantes, pois Ghetsis já foi enfrentado no castelo na G02.3.",
+    "As tarefas opcionais não completam a missão principal G01.1 por conta própria nem executam switches, mapas, HMs ou teleporte.",
+    "Cobalion é pré-requisito de encontro para Terrakion/Virizion; Landorus requer um plano de dupla Tornadus/Thundurus, nunca prova de party nativa.",
+    "Thundurus corresponde à versão White; Tornadus não é capturado automaticamente no White, nem liberado por um evento falso.",
+    "Captura real, encontros em horários sazonais e recompensas TMs ficam pendentes até integração e testes nativos.",
+    "Victini/Keldeo/Meloetta/Genesect exigem eventos externos; permanecerão bloqueados, sem inventar distribuição."
+  ]
+}

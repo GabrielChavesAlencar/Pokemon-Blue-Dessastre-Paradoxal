@@ -6,14 +6,14 @@
 
 ## Barra geral
 
-**14/32 entregas concluídas (44%)** · 18 pendentes
+**15/32 entregas concluídas (47%)** · 17 pendentes
 
-`[██████████████░░░░░░░░░░░░░░░░░░]` **44%**
+`[███████████████░░░░░░░░░░░░░░░░░]` **47%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
 | G01 — Progressão e estado da campanha | **4/4** | `████` |
-| G02 — História, ginásios e pós-jogo | **3/4** | `███░` |
+| G02 — História, ginásios e pós-jogo | **4/4** | `████` |
 | G03 — Treinadores e balanceamento | **1/4** | `█░░░` |
 | G04 — Áreas, selvagens e temporadas | **1/4** | `█░░░` |
 | G05 — Mecânicas e isolamento regional | **0/4** | `░░░░` |
@@ -45,7 +45,7 @@ Contratos narrativos originais e verificáveis sem mapas nativos.
 - [x] **G02.1 — Catalogar os 13 eventos iniciais de Nuvema a Accumula.** Contratos simbólicos U07 com testes negativos, sem mapas nem flags instaladas · [Evidência](../data/regions/unova-u07-nuvema-events.json)
 - [x] **G02.2 — Contratar eventos da campanha e dos oito ginásios.** Dependências de história, insígnias e variações de Striaton e Opelucid · [Evidência](../scripts/regions/audit_unova_g02_gym_story.py)
 - [x] **G02.3 — Modelar Elite Four, N, Ghetsis e créditos.** Batalhas em qualquer ordem na Elite, derrotas e retornos seguros, créditos únicos e desbloqueio simbólico do pós-jogo · [Evidência](../scripts/regions/audit_unova_g02_elite_finale.py)
-- [ ] **G02.4 — Modelar Looker, sábios, lendários e pós-jogo.** Missões paralelas, fases opcionais e bloqueios de conteúdo especiais
+- [x] **G02.4 — Modelar Looker, sábios, lendários e pós-jogo.** Seis sábios, quatro restrições de evento externo, encontros opcionais e sessões de revanche com Alder, todos apenas em simulação · [Evidência](../scripts/regions/audit_unova_g02_postgame.py)
 
 ### G03 — Treinadores e balanceamento
 
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G02.4 (Looker, sábios, lendários e pós-jogo), mantendo a progressão nativa como pendente. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G03.2 (treinadores e regras de balanceamento simbólico), mantendo progressão nativa como pendente. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
