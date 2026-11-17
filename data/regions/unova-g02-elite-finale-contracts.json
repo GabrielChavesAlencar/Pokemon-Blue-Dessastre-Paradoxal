@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "phase": "G02.3",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "OFFLINE_ELITE_FINALE_CONTRACTS_ONLY",
+  "source_g01_contract": "data/regions/unova-g01-state-contract.json",
+  "source_g01_transitions": "data/regions/unova-g01-chapter-transitions.json",
+  "source_g01_reentry": "data/regions/unova-g01-reentry-policy.json",
+  "source_g01_serialization": "data/regions/unova-g01-serialization-contract.json",
+  "source_g02_gym_contracts": "data/regions/unova-g02-gym-story-contracts.json",
+  "source_area_catalog": "data/regions/unova-u03-areas.json",
+  "source_region_registry": "site/public/data/regions.json",
+  "required_badges": [
+    "TRIO",
+    "BASIC",
+    "INSECT",
+    "BOLT",
+    "QUAKE",
+    "JET",
+    "FREEZE",
+    "LEGEND"
+  ],
+  "elite_chapter_key": "UNOVA_CH10_LEAGUE",
+  "castle_chapter_key": "UNOVA_CH11_NS_CASTLE",
+  "postgame_chapter_key": "UNOVA_CH12_POSTGAME",
+  "elite_area_key": "UNOVA_ELITE_FOUR",
+  "castle_area_key": "UNOVA_NS_CASTLE",
+  "chapter_order": [
+    "UNOVA_CH10_LEAGUE",
+    "UNOVA_CH11_NS_CASTLE",
+    "UNOVA_CH12_POSTGAME"
+  ],
+  "simulation_gate": "SIMULATED_ONLY_NO_NATIVE_APPROVAL",
+  "elite_order": "ANY_ORDER_ONCE_EACH",
+  "elite_members": [
+    {
+      "key": "UNOVA_G023_ELITE_SHAUNTAL",
+      "member_name": "SHAUNTAL",
+      "specialty": "GHOST",
+      "chapter_key": "UNOVA_CH10_LEAGUE",
+      "area_key": "UNOVA_ELITE_FOUR",
+      "battle_outcome_required": "WIN",
+      "native_trainer_id": null,
+      "team": null,
+      "levels": null,
+      "simulation_only": true
+    },
+    {
+      "key": "UNOVA_G023_ELITE_GRIMSLEY",
+      "member_name": "GRIMSLEY",
+      "specialty": "DARK",
+      "chapter_key": "UNOVA_CH10_LEAGUE",
+      "area_key": "UNOVA_ELITE_FOUR",
+      "battle_outcome_required": "WIN",
+      "native_trainer_id": null,
+      "team": null,
+      "levels": null,
+      "simulation_only": true
+    },
+    {
+      "key": "UNOVA_G023_ELITE_CAITLIN",
+      "member_name": "CAITLIN",
+      "specialty": "PSYCHIC",
+      "chapter_key": "UNOVA_CH10_LEAGUE",
+      "area_key": "UNOVA_ELITE_FOUR",
+      "battle_outcome_required": "WIN",
+      "native_trainer_id": null,
+      "team": null,
+      "levels": null,
+      "simulation_only": true
+    },
+    {
+      "key": "UNOVA_G023_ELITE_MARSHAL",
+      "member_name": "MARSHAL",
+      "specialty": "FIGHTING",
+      "chapter_key": "UNOVA_CH10_LEAGUE",
+      "area_key": "UNOVA_ELITE_FOUR",
+      "battle_outcome_required": "WIN",
+      "native_trainer_id": null,
+      "team": null,
+      "levels": null,
+      "simulation_only": true
+    }
+  ],
+  "castle_events": [
+    {
+      "id": "UNOVA_G023_CASTLE_ENTRY",
+      "kind": "narrative",
+      "stage": 0,
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "area_key": "UNOVA_NS_CASTLE",
+      "description_ptbr": "Entrada no Castelo de N",
+      "requires": [],
+      "outcome_required": null,
+      "single_execution": true,
+      "native_event_id": null,
+      "native_map_id": null,
+      "team": null,
+      "levels": null
+    },
+    {
+      "id": "UNOVA_G023_ZEKROM_STORY_GATE",
+      "kind": "legendary_story_gate",
+      "stage": 1,
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "area_key": "UNOVA_NS_CASTLE",
+      "description_ptbr": "Encontro simbólico com Zekrom em White; captura real pendente",
+      "requires": [
+        "UNOVA_G023_CASTLE_ENTRY"
+      ],
+      "outcome_required": null,
+      "single_execution": true,
+      "native_event_id": null,
+      "native_map_id": null,
+      "team": null,
+      "levels": null
+    },
+    {
+      "id": "UNOVA_G023_N_BATTLE",
+      "kind": "battle",
+      "stage": 2,
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "area_key": "UNOVA_NS_CASTLE",
+      "description_ptbr": "Confronto final com N",
+      "requires": [
+        "UNOVA_G023_ZEKROM_STORY_GATE"
+      ],
+      "outcome_required": "WIN",
+      "single_execution": true,
+      "native_event_id": null,
+      "native_map_id": null,
+      "team": null,
+      "levels": null
+    },
+    {
+      "id": "UNOVA_G023_GHETSIS_BATTLE",
+      "kind": "battle",
+      "stage": 3,
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "area_key": "UNOVA_NS_CASTLE",
+      "description_ptbr": "Confronto final com Ghetsis",
+      "requires": [
+        "UNOVA_G023_N_BATTLE"
+      ],
+      "outcome_required": "WIN",
+      "single_execution": true,
+      "native_event_id": null,
+      "native_map_id": null,
+      "team": null,
+      "levels": null
+    },
+    {
+      "id": "UNOVA_G023_CREDITS",
+      "kind": "credits",
+      "stage": 4,
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "area_key": "UNOVA_NS_CASTLE",
+      "description_ptbr": "Créditos da campanha White e sinal de pós-jogo",
+      "requires": [
+        "UNOVA_G023_GHETSIS_BATTLE"
+      ],
+      "outcome_required": null,
+      "single_execution": true,
+      "native_event_id": null,
+      "native_map_id": null,
+      "team": null,
+      "levels": null
+    }
+  ],
+  "castle_order": "STRICT_PREFIX",
+  "safe_loss_return_areas": {
+    "elite": "UNOVA_POKEMON_LEAGUE",
+    "castle": "UNOVA_NS_CASTLE"
+  },
+  "unique_story_tokens": {
+    "legendary_gate": "UNOVA_G023_ZEKROM_GATE_READY_NOT_CAPTURED",
+    "credits": "UNOVA_G023_CREDITS_SIMULATED",
+    "postgame": "UNOVA_G023_POSTGAME_ACCESS_SIMULATED"
+  },
+  "native_game_modified": false,
+  "native_saves_modified": false,
+  "game_exe_tested": false,
+  "can_install": false,
+  "legendary_captured": false,
+  "real_credits_shown": false,
+  "rewards_granted": false,
+  "notes": [
+    "Os quatro membros são Shauntal, Grimsley, Caitlin e Marshal e podem ser enfrentados em qualquer ordem, sem repetir a vitória.",
+    "O desafio inicial White segue do Conselho da Elite Four ao Castelo de N; vitória de N e Ghetsis antecede créditos, que liberam simbolicamente o pós-jogo.",
+    "A passagem por Zekrom aqui é um gate narrativo único SEM captura, Pokémon, itens ou batalha real. Conteúdo de lendários/pós-jogo permanece para G02.4.",
+    "Retorno após derrota é somente área simbólica sugerida, sem teleporte, blackouts ou mudança em save real.",
+    "Elite/Ghetsis sem equipes ou níveis até fontes nativas auditadas; não criar MapIDs, posições, NPCs ou scripts RXDATA falsos."
+  ]
+}
