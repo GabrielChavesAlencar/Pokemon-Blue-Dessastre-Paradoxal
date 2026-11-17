@@ -1,0 +1,254 @@
+{
+  "schema": 1,
+  "region": "MULTIREGION",
+  "stage": "SINNOH_B05_UNOVA_MAPID_PLANNING",
+  "status": "B04_REGIONAL_MANIFESTS_RECONCILED_SINNOH_ADMIN_HOLD_UNOVA_CANDIDATES_ONLY",
+  "as_of": "2026-11-17",
+  "evidence": {
+    "b01_inventory_zip_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+    "b04_provenance_zip_sha256": "7e8a696a650034f85d397bb3fc8ccd9dcd116f9d100b2aae7e7cbe070d1396e7",
+    "mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+    "tilesets_sha256": "2fd4551a5767615a159a8b5b65a604d1e486009d37953ca6a1955affffabf675",
+    "b04_same_b01_baseline": true,
+    "b04_current_manifest_summaries_are_self_reported": true,
+    "b04_collector_regex_bug": "Map([0-9]{3,5}) excludes Map IDs with 1-2 digits",
+    "b04_reported_physical_count": 617,
+    "b01_verified_physical_count": 648,
+    "b04_unreported_b01_map_ids": [
+      1,
+      22,
+      32,
+      33,
+      42,
+      43,
+      48,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "b04_reported_ids_are_subset_of_b01": true,
+    "short_id_collector_fixed_package_available": true
+  },
+  "occupied": {
+    "total": 648,
+    "ranges": [
+      {
+        "start": 1,
+        "end": 1,
+        "count": 1
+      },
+      {
+        "start": 22,
+        "end": 22,
+        "count": 1
+      },
+      {
+        "start": 32,
+        "end": 33,
+        "count": 2
+      },
+      {
+        "start": 42,
+        "end": 43,
+        "count": 2
+      },
+      {
+        "start": 48,
+        "end": 48,
+        "count": 1
+      },
+      {
+        "start": 76,
+        "end": 275,
+        "count": 200
+      },
+      {
+        "start": 300,
+        "end": 441,
+        "count": 142
+      },
+      {
+        "start": 600,
+        "end": 898,
+        "count": 299
+      }
+    ],
+    "identified_from_regional_manifests": {
+      "KANTO": {
+        "count": 142,
+        "ranges": [
+          {
+            "start": 300,
+            "end": 441,
+            "count": 142
+          }
+        ],
+        "manifest_sha256": "cd4c07603222de90ba20cbe92befd100b90de617333f135f95993ac2d2d62372"
+      },
+      "JOHTO": {
+        "count": 100,
+        "ranges": [
+          {
+            "start": 600,
+            "end": 699,
+            "count": 100
+          }
+        ],
+        "manifest_sha256": "bdce76a0d6d32c2d8f5ad7a1f9bb765dfd2e3ff748e7a2ea18a4f1cbbc737c0b"
+      },
+      "HOENN": {
+        "count": 199,
+        "ranges": [
+          {
+            "start": 700,
+            "end": 898,
+            "count": 199
+          }
+        ],
+        "manifest_sha256": "78a13097149b5005dc3b014a9dc25eb61912bb36d159e84946127bce526494f7"
+      }
+    },
+    "base_or_other_manifest_unattributed": {
+      "count": 207,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 1,
+          "count": 1
+        },
+        {
+          "start": 22,
+          "end": 22,
+          "count": 1
+        },
+        {
+          "start": 32,
+          "end": 33,
+          "count": 2
+        },
+        {
+          "start": 42,
+          "end": 43,
+          "count": 2
+        },
+        {
+          "start": 48,
+          "end": 48,
+          "count": 1
+        },
+        {
+          "start": 76,
+          "end": 275,
+          "count": 200
+        }
+      ]
+    }
+  },
+  "sinnoh": {
+    "administrative_planning_hold": {
+      "start": 442,
+      "end": 517,
+      "count": 76
+    },
+    "id_holds_only": true,
+    "native_reserved_or_allocated": false,
+    "source_to_destination_mapping_done": false,
+    "future_region_reservations_verified": false,
+    "can_install": false,
+    "source_maps_with_terrain": 54,
+    "source_maps_empty_terrain": 22
+  },
+  "unova": {
+    "already_allocated_shared_map_ids": false,
+    "candidate_ids_not_occupied_or_sinnoh_held_1_to_599": 174,
+    "candidate_ranges": [
+      {
+        "start": 2,
+        "end": 21,
+        "count": 20
+      },
+      {
+        "start": 23,
+        "end": 31,
+        "count": 9
+      },
+      {
+        "start": 34,
+        "end": 41,
+        "count": 8
+      },
+      {
+        "start": 44,
+        "end": 47,
+        "count": 4
+      },
+      {
+        "start": 49,
+        "end": 75,
+        "count": 27
+      },
+      {
+        "start": 276,
+        "end": 299,
+        "count": 24
+      },
+      {
+        "start": 518,
+        "end": 599,
+        "count": 82
+      }
+    ],
+    "preferred_contiguous_candidate": {
+      "start": 518,
+      "end": 599,
+      "count": 82
+    },
+    "reservation_confirmed": false,
+    "can_install": false,
+    "requires_review_of_future_claims": true
+  },
+  "excluded": {
+    "johto_protected": {
+      "start": 600,
+      "end": 699,
+      "count": 100
+    },
+    "hoenn_protected": {
+      "start": 700,
+      "end": 999,
+      "count": 300,
+      "currently_occupied": 199
+    },
+    "four_digit_mapids": "NOT_HOMOLOGATED"
+  },
+  "constraints": {
+    "cannot_claim_all_future_reservations_verified": true,
+    "do_not_override_other_regions": true,
+    "no_native_gameplay_test": true,
+    "r07_complete": false,
+    "b_approved": 0,
+    "c_approved": 0,
+    "d_approved": 0
+  }
+}
