@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e22ff13de2738a99c6d2771c7c022c26912b7064",
+      "date": "2026-11-17T20:35:02-03:00",
+      "title": "fix(android): compile version menu from correct Mobile.rb and write real newline build timestamp",
+      "category": "Correções"
+    },
+    {
+      "sha": "bbe3bebd2cfef475c70cdbcf68148bbeb279cc1f",
+      "date": "2026-11-17T20:34:38-03:00",
+      "title": "feat(android): compile in-game version UI into JoiPlay plugin cache and stamp UTC build time",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b5a2a780ea402d3f6b7331baf1c50c7417ec4ec7",
+      "date": "2026-11-17T20:34:11-03:00",
+      "title": "feat(android): record actual Kanto pilot package build date and time",
+      "category": "Novidades"
+    },
+    {
       "sha": "be0a1cd13b967118d94f51199b7e944c30b33fa5",
       "date": "2026-11-17T20:34:01-03:00",
       "title": "feat(android): embed actual UTC build date and time in game version metadata",
