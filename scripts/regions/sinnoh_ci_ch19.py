@@ -34,6 +34,7 @@ PYTHON_CHECKS = [
     ("sinnoh-s23-postgame-contract", [PY, "scripts/regions/audit_sinnoh_s23_postgame.py"]),
     ("sinnoh-music-audit", [PY, "scripts/music/audit_sinnoh_music_ch16.py"]),
     ("sinnoh-s24-music-catalog", [PY, "scripts/music/audit_sinnoh_music_s24.py"]),
+    ("sinnoh-s25-bridge-audit", [PY, "scripts/music/audit_sinnoh_music_s25.py"]),
 ]
 
 RUBY_RUNTIME = [
@@ -55,6 +56,7 @@ RUBY_RUNTIME = [
     ("sinnoh-s23-postgame", ["tests/sinnoh_s23_postgame_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/regions/SinnohStoryContracts.rb", "scripts/regions/SinnohPostgameContracts.rb", "data/regions/sinnoh-postgame-s23.json"]),
     ("sinnoh-music", ["tests/sinnoh_music_ch16_runtime.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
     ("sinnoh-music-s26", ["tests/sinnoh_s26_music_regression.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
+    ("sinnoh-s25-bridge", ["tests/sinnoh_s25_music_runtime.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "scripts/music/SinnohBlueMusicBridge.rb", "data/regions/sinnoh-music-ch16.json", "data/regions/sinnoh-music-s25.json"]),
 ]
 RUBY_SYNTAX = [
     "scripts/regions/SinnohPilot.rb",
@@ -68,6 +70,7 @@ RUBY_SYNTAX = [
     "scripts/regions/SinnohTravelContracts.rb",
     "scripts/regions/SinnohPostgameContracts.rb",
     "scripts/music/SinnohMusicContracts.rb",
+    "scripts/music/SinnohBlueMusicBridge.rb",
     "scripts/battle_polish/Regions.rb",
     "scripts/battle_polish/RegionTravel.rb",
     "scripts/battle_polish/RegionalPolicy.rb",
