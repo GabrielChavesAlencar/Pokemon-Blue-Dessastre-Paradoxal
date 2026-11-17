@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b64b5f8eb933392574ff704e4c2c552e199854c9",
+      "date": "2026-11-17T19:01:21-03:00",
+      "title": "fix(kanto): recover old Miguel saves with no fossil event pages",
+      "category": "Correções"
+    },
+    {
       "sha": "a9ab0949b807d24a86d5866965218fa70545dfc9",
       "date": "2026-11-17T18:58:29-03:00",
       "title": "fix(kanto): correct fossil source script regex escaping",
