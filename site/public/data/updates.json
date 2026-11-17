@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bec52083aaf17750863c6f8bf23b70c863eb9646",
+      "date": "2026-11-17T20:33:13-03:00",
+      "title": "fix(android): correct Ruby regex escapes for version metadata",
+      "category": "Correções"
+    },
+    {
       "sha": "36b4e23d725ed69540a763fbeab3a2612542af03",
       "date": "2026-11-17T20:32:43-03:00",
       "title": "feat(android): show installed game version, channel, build timestamp and GitHub SHA in title and pause menu",
