@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "54c31e0d9f680e5cfa7c7da788707fe4a7e0910c",
+      "date": "2026-11-16T21:02:23-03:00",
+      "title": "docs(sinnoh): registrar CH20 parcial no mapeamento Barra E",
+      "category": "Documentação"
+    },
+    {
+      "sha": "f9d8430229f9e1e6aa63caa2d383cb1d44a92b16",
+      "date": "2026-11-16T21:02:15-03:00",
+      "title": "docs(sinnoh): painel CH20 parcial checklist 44 e A B C D preservadas",
+      "category": "Documentação"
+    },
+    {
+      "sha": "976e3e7f9ba27028823cffb2194be918f539f58f",
+      "date": "2026-11-16T21:02:06-03:00",
+      "title": "docs(sinnoh): CH20 parcial e Barra E 18/20 sem tocar gates jogaveis",
+      "category": "Documentação"
+    },
+    {
       "sha": "bb410b987f199b138f923fddc8f6ad1b966dea91",
       "date": "2026-11-16T21:01:44-03:00",
       "title": "docs(sinnoh): CH20 preflight Android, auditor ZIP e plano 44 nativos",
