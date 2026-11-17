@@ -263,7 +263,7 @@ def audit(game:Path,project:Path,a04_report:dict,a06_report:dict,
     if not dynamic["counts_match_a09"] or dynamic["errors_count"] or dynamic["unsupported_sections"]:
         flags.append("SCRIPT_TRIAGE_INCOMPLETE_OR_DIFFERENT")
     if missing:flags.append("REGIONAL_MANIFESTS_INCOMPLETE")
-    if any(x["status"]!="OBSERVED_VACANT_NOT_RESERVED" for x in reserve["candidate_matrix"]):
+    if any(x["observed_status"]!="OBSERVED_VACANT_NOT_RESERVED" for x in reserve["candidate_matrix"]):
         flags.append("CANDIDATE_MAPID_CONFLICTS_OBSERVED")
     flags+=["FUTURE_BLUE_STORY_CLAIMS_UNCHECKED",
             "NO_NATIVE_GAME_EXE_OR_ANDROID_INTRO_VALIDATION",
