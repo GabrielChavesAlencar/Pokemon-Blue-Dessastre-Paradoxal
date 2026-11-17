@@ -1,6 +1,6 @@
 # Sinnoh B04 — coletor privado de proveniência de Kanto, Johto e Hoenn
 
-**Status (17/11/2026):** ferramenta de coleta disponibilizada no chat, **aguardando o ZIP gerado no Windows**. A etapa é preparação de evidências, não integração de mapas, liberação de R07, ou aprovação de Game.exe/JoiPlay. **Barra B = 0/13, C = 0/13, D = 0/13.**
+**Status atualizado (17/11/2026):** ZIP gerado no Windows **recebido e confrontado com B01**; os três manifestos foram localizados, mas o coletor V1 omitiu 31 IDs menores que 100. Veja o [catálogo consolidado e a correção](MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17.md). **A versão corrigida do coletor foi entregue nesta conversa**. Ainda não foram homologadas reservas futuras. A etapa é preparação de evidências, não integração de mapas, liberação de R07, ou aprovação de Game.exe/JoiPlay. **Barra B = 0/13, C = 0/13, D = 0/13.**
 
 ## Obter o ZIP B04 com apenas dois cliques
 

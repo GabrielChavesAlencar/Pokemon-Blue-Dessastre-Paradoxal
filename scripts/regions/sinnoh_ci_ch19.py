@@ -27,6 +27,7 @@ PYTHON_CHECKS = [
     ("sinnoh-b02-regional-reservations", [PY, "scripts/regions/audit_sinnoh_b02_reservations.py"]),
     ("sinnoh-b03-installer-tilesets-preflight", [PY, "scripts/regions/audit_sinnoh_b03_installer_evidence.py"]),
     ("sinnoh-b04-local-provenance-preflight", [PY, "scripts/regions/audit_sinnoh_b04_provenance.py"]),
+    ("sinnoh-b05-multiregion-mapid-planning", [PY, "scripts/regions/audit_sinnoh_b05_mapid_planning.py"]),
     ("sinnoh-s07-remap-reconciliation-syntax", [PY, "-m", "py_compile", "scripts/regions/sinnoh_s07_reconcile.py"]),
     ("sinnoh-badges-hms-audit", [PY, "scripts/regions/audit_sinnoh_badges_hms.py"]),
     ("sinnoh-s15-gyms-audit", [PY, "scripts/regions/audit_sinnoh_s15_gyms.py"]),
