@@ -277,8 +277,8 @@ class UnovaG043Tests(unittest.TestCase):
                                  self.native,changed,self.tracker)
     def test_080_demo_is_fixture_only(self):
         demo = mod.demo(self.data,self.g04)
-        self.assertEqual(demo["synthetic_early"]["resolved_species"],"FIXTURE_BASE")
-        self.assertEqual(demo["synthetic_late"]["resolved_species"],"FIXTURE_EVOLVED")
+        self.assertEqual(demo["synthetic_early"]["resolved_species"],"FIXTURE_RATTATA")
+        self.assertEqual(demo["synthetic_late"]["resolved_species"],"FIXTURE_RATICATE")
         self.assertFalse(demo["can_install"])
     def test_081_cli_check(self):
         r = subprocess.run([sys.executable,str(ROOT/"scripts/regions/audit_unova_g04_wild_scaling.py"),
