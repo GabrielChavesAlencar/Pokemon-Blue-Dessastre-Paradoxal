@@ -12,7 +12,9 @@ import zipfile
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from scripts.android.update_client import MARKER, CHANNELS, safe_path, sha256_file, sha256_bytes
+from scripts.android.update_client import (MARKER, CHANNELS, safe_path, sha256_file,
+                                         sha256_bytes, _patchable_immutables,
+                                         _old_patch_files)
 
 
 def from_archive(path: Path, channel: str):
@@ -89,9 +91,9 @@ def publish(archive_path: Path, channel: str, previous_path: Path | None = None,
         if earlier in seen or earlier == revision:
             continue
         seen.add(earlier)
-        if previous.get("immutable", {}) != current.get("immutable", {}):
+        if not _patchable_immutables(previous.get("immutable", {}), current.get("immutable", {})):
             continue
-        old, new = previous["files"], current["files"]
+        old, new = _old_patch_files(previous), current["files"]
         changed = {name: meta for name, meta in new.items() if old.get(name) != meta}
         removed = sorted(set(old) - set(new))
         previous_entries.append((earlier, changed, removed))
