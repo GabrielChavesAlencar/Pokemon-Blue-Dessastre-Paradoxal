@@ -6,15 +6,15 @@
 
 ## Barra geral
 
-**16/32 entregas concluídas (50%)** · 16 pendentes
+**17/32 entregas concluídas (53%)** · 15 pendentes
 
-`[████████████████░░░░░░░░░░░░░░░░]` **50%**
+`[█████████████████░░░░░░░░░░░░░░░]` **53%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
 | G01 — Progressão e estado da campanha | **4/4** | `████` |
 | G02 — História, ginásios e pós-jogo | **4/4** | `████` |
-| G03 — Treinadores e balanceamento | **2/4** | `██░░` |
+| G03 — Treinadores e balanceamento | **3/4** | `███░` |
 | G04 — Áreas, selvagens e temporadas | **1/4** | `█░░░` |
 | G05 — Mecânicas e isolamento regional | **0/4** | `░░░░` |
 | G06 — Site, guias e acompanhamento | **2/4** | `██░░` |
@@ -53,7 +53,7 @@ Dados e regras de batalha offline, sem presumir equipes ou níveis reais.
 
 - [x] **G03.1 — Catalogar referências simbólicas de treinadores.** Referências-base E07 sem equipes, níveis, PBS ou sprites verificados · [Evidência](../data/regions/unova-e06-e07-preparation.json)
 - [x] **G03.2 — Definir contratos dos líderes e times escalonáveis.** Level cap sem número regional fictício, evolução dinâmica com fixtures, dificuldades 70/90 e cobertura defensiva sintética · [Evidência](../scripts/regions/audit_unova_g03_leader_scaling.py)
-- [ ] **G03.3 — Estruturar rivais, Plasma e chefes por capítulo.** Estado de revanche, eventos e recompensas com identificadores estáveis
+- [x] **G03.3 — Estruturar rivais, Plasma e chefes por capítulo.** Vínculos read-only G01/G02, nove vitórias simbólicas, variantes estáveis, intenções únicas e revenches planejadas · [Evidência](../scripts/regions/audit_unova_g03_rivals_plasma.py)
 - [ ] **G03.4 — Modelar Elite Four, Alder e rematches.** Tabelas e testes para a campanha e o pós-jogo sem fingir PBS compilado
 
 ### G04 — Áreas, selvagens e temporadas
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G03.3 (rivais, Plasma e chefes por capítulo), mantendo progressão e equipes nativas como pendentes. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G03.4 (Elite Four, Alder e rematches com contratos de times auditáveis), mantendo progressão e equipes nativas como pendentes. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
