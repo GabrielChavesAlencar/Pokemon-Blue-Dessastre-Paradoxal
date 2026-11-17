@@ -106,8 +106,9 @@
         {
           "id": "G03.2",
           "title": "Definir contratos dos líderes e times escalonáveis",
-          "status": "pending",
-          "acceptance": "Level cap, evolução dinâmica e variantes de dificuldade"
+          "status": "done",
+          "acceptance": "Level cap, evolução dinâmica e variantes de dificuldade",
+          "evidence": "scripts/regions/audit_unova_g03_leader_scaling.py"
         },
         {
           "id": "G03.3",
