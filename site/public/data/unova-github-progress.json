@@ -155,8 +155,9 @@
         {
           "id": "G04.4",
           "title": "Validar encontros, taxas e lacunas de dados",
-          "status": "pending",
-          "acceptance": "Soma de probabilidades, duplicações e campos desconhecidos preservados"
+          "status": "done",
+          "acceptance": "Soma de probabilidades, duplicações e campos desconhecidos preservados",
+          "evidence": "scripts/regions/audit_unova_g04_encounter_validation.py"
         }
       ]
     },
