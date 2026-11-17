@@ -135,9 +135,18 @@ class SinnohS24MusicCatalogTests(unittest.TestCase):
     def test_19_only_s24_code_progresses(self):
         p = json.loads((ROOT / "data/regions/sinnoh-progress.json").read_text(encoding="utf-8"))
         self.assertEqual(next(t["status"] for t in p["tasks"] if t["id"]=="S24"), "done")
-        self.assertEqual(next(t["status"] for t in p["tasks"] if t["id"]=="S25"), "pending")
-        self.assertEqual((p["development"]["done"], p["development"]["partial"]), (25, 4))
-        self.assertEqual(p["development"]["percent_complete"], 78)
+        # S24 remains complete after later milestones. S25 may advance
+        # independently without implying that licensed audio was installed.
+        self.assertIn(next(t["status"] for t in p["tasks"] if t["id"]=="S25"),
+                      ("pending", "done"))
+        self.assertGreaterEqual(p["development"]["done"], 25)
+        self.assertEqual(p["development"]["done"],
+                         sum(t["status"] == "done" for t in p["tasks"]))
+        self.assertEqual(p["development"]["percent_complete"],
+                         100 * p["development"]["done"] // p["development"]["total"])
+        s24 = json.loads((ROOT / "data/regions/sinnoh-music-s24.json").read_text(encoding="utf-8"))
+        self.assertFalse(s24["install_allowed"])
+        self.assertFalse(s24["native_qa_approved"])
         self.assertTrue(all(p["phase_gates"][k] == 0 for k in (
             "technically_approved", "playable_in_game_executable", "fully_tested_native"
         )))
