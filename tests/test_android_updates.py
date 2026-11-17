@@ -54,6 +54,61 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertTrue(safe_path("LEIA-ME-ANDROID.txt"))
         self.assertTrue(safe_path("LEIA-ME-ANDROID-KANTO.txt"))
 
+    def _launcher_patch_fixture(self, local_updater):
+        _, old = self.build_zip(self.a, b"OLD MAP", updater=b"# packaged old updater\n")
+        new, _ = self.build_zip(self.b, b"NEW MAP", updater=b"# patched new updater\n")
+        previous = self.root / "old.json"
+        previous.write_text(json.dumps(old))
+        new_path = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(new_path)
+        published = publish(new_path, "kanto", previous)
+        assert published["patch"]
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        game = self.root / "installed"
+        (game / "Data").mkdir(parents=True)
+        (game / "Data/Map001.rxdata").write_bytes(b"OLD MAP")
+        (game / "Data/blue-update.json").write_text(json.dumps(old))
+        (game / "Data/File A.rxdata").write_bytes(b"SAVE CONTENT")
+        (game / "ATUALIZAR-ANDROID.py").write_bytes(local_updater)
+        return game, manifest, self.root / published["patch"]["asset"]
+
+    def test_known_1911_byte_android_launcher_can_update_without_backup(self):
+        # This is exactly the user-shared launcher placed in their phone.
+        launcher = (Path(__file__).parent / "fixtures" /
+                    "android_updater_launcher_20261117.py").read_bytes()
+        self.assertEqual(len(launcher), 1911)
+        from scripts.android.update_client import KNOWN_ANDROID_LAUNCHERS
+        import hashlib
+        self.assertIn(hashlib.sha256(launcher).hexdigest(), KNOWN_ANDROID_LAUNCHERS)
+        game, manifest, patch_file = self._launcher_patch_fixture(launcher)
+        count, removed, backup = apply_patch(game, read_installed(game), manifest, patch_file)
+        self.assertEqual((count, removed, backup), (2, 0, None))
+        self.assertEqual((game / "ATUALIZAR-ANDROID.py").read_bytes(), b"# patched new updater\n")
+        self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
+        self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"SAVE CONTENT")
+        self.assertEqual(read_installed(game)["revision"], self.b)
+        self.assertFalse((game / ".blue-android-update-backups").exists())
+
+    def test_unrecognized_modified_updater_still_refused_and_game_untouched(self):
+        game, manifest, patch_file = self._launcher_patch_fixture(b"# arbitrary edited script\n")
+        with self.assertRaisesRegex(ValueError, "ATUALIZAR-ANDROID.py"):
+            apply_patch(game, read_installed(game), manifest, patch_file)
+        self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"OLD MAP")
+        self.assertEqual((game / "ATUALIZAR-ANDROID.py").read_bytes(), b"# arbitrary edited script\n")
+        self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"SAVE CONTENT")
+        self.assertEqual(read_installed(game)["revision"], self.a)
+
+    def test_known_launcher_cannot_bypass_other_modified_file(self):
+        launcher = (Path(__file__).parent / "fixtures" /
+                    "android_updater_launcher_20261117.py").read_bytes()
+        game, manifest, patch_file = self._launcher_patch_fixture(launcher)
+        (game / "Data/Map001.rxdata").write_bytes(b"CUSTOM MAP")
+        with self.assertRaisesRegex(ValueError, "Data/Map001.rxdata"):
+            apply_patch(game, read_installed(game), manifest, patch_file)
+        self.assertEqual((game / "ATUALIZAR-ANDROID.py").read_bytes(), launcher)
+        self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"CUSTOM MAP")
+        self.assertEqual(read_installed(game)["revision"], self.a)
+
     def test_incremental_update_without_backup(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
         new, new_marker = self.build_zip(self.b, b"NEW")
