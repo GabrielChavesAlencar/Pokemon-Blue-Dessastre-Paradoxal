@@ -8,6 +8,7 @@ import {extractSprites} from './extract-sprites.mjs';
 import {extractExtras} from './extract-extras.mjs';
 import {generateGuides} from './guides.mjs';
 import {generateSinnohGuide,sinnohSourcePaths} from './sinnoh-guide.mjs';
+import {generateSinnohG10Status,sinnohG10Sources} from './sinnoh-g10-status.mjs';
 import {activeLocations} from '../src/assets/data.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=path.join(root,'dist');
@@ -32,6 +33,15 @@ const sinnohSourceData=Object.fromEntries(await Promise.all(
 const sinnohGuide=generateSinnohGuide(sinnohSourceData);
 await writeFile(path.join(output,'data/sinnoh-guide.json'),JSON.stringify(sinnohGuide));
 console.log('Sinnoh CH17: '+sinnohGuide.counts.areas+' áreas, '+sinnohGuide.counts.gyms+' ginásios, 0 mapas nativos');
+const sinnohG10Data=Object.fromEntries(await Promise.all(
+  Object.entries(sinnohG10Sources).map(async ([key,relative])=>[
+    key,JSON.parse(await readFile(path.join(repoRoot,relative),'utf8'))
+  ])
+));
+const sinnohImplementation=generateSinnohG10Status(sinnohG10Data,sinnohGuide);
+await writeFile(path.join(output,'data/sinnoh-implementation.json'),JSON.stringify(sinnohImplementation));
+console.log('Sinnoh G10: '+sinnohImplementation.states[1].count+
+  ' terrenos candidatos privados; instalados=0, jogáveis=0');
 
 const readJson=async name=>JSON.parse(await readFile(path.join(root,'public/data',name+'.json'),'utf8'));
 const locationData=await readJson('locations');
