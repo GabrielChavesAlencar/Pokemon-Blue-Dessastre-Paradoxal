@@ -102,3 +102,18 @@ Dê duplo clique em [UNOVA_VALIDAR_DOCUMENTACAO.bat](../UNOVA_VALIDAR_DOCUMENTAC
 - O workflow independente não substitui a suíte completa. Houve anteriormente uma falha Ruby em Kanto/CutTree (escala do protagonista) na regressão geral; ela requer acompanhamento separado e não autoriza afirmar que a suite total está verde.
 
 **Critério de encerramento:** preencher E04/E05/E06 com fonte real e direitos por arquivo, e E08 com QA Windows/Android registrado. Os 59 testes servem para proteger o trabalho preparatório, não para declarar Unova jogável.
+
+
+## Continuação da Barra E — pipeline de fontes E04–E06
+
+Novos scripts e testes foram desenvolvidos em branch de integração protegida, **sem editar o Decades, o Blue-Story, mapas ou saves**. O objetivo é diminuir o trabalho manual que faltará quando o ZIP do autor estiver disponível:
+
+- [Auditor de correspondências E05](../scripts/regions/audit_unova_e05_crosswalk.py): cruza a leitura RXDATA com as 74 áreas e separa nome único, nome repetido, nome genérico e ausência de nome. Não confirma identidade regional nem aloca MapIDs de destino.
+- [Inventário de direitos por asset E06](../scripts/regions/audit_unova_e06_rights_inventory.py): enumera arquivos do ZIP, categorias, CRC de referência, hash do arquivo de créditos quando presente e bloqueia redistribuição presumida.
+- [Manual de execução E04–E06](UNOVA_E04_E06_AUDITORIA_FONTE_DIREITOS.md): explica o fluxo por duplo clique, relatórios locais e a revisão de direitos.
+- [UNOVA_VALIDAR_DOCUMENTACAO.bat](../UNOVA_VALIDAR_DOCUMENTACAO.bat): agora tenta os relatórios E05/E06 depois da inspeção U02 se o ZIP existir; sem ZIP, exibe pendência e mantém Unova bloqueada.
+- [Testes E05](../tests/test_unova_e05_crosswalk.py) e [E06](../tests/test_unova_e06_rights_inventory.py): 24 casos novos de segurança, correspondência ambígua e licenças não comprovadas.
+
+A suíte independente de Unova passou **83 testes sintéticos (59 anteriores + 24 novos)** na [execução 44077820904](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44077820904). CI de preparação não prova mapa jogável, fonte real aprovada ou direitos para redistribuição.
+
+**Estado mantido: E 4/8 (50%), U01–U32 jogáveis 0/32.** E04 requer ZIP e proveniência, E05 requer conferir os mapas/eventos reais, E06 requer licenças por recurso, E08 requer testes Windows/JoiPlay. Os novos auditores apenas preparam e protegem esse trabalho.
