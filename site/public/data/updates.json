@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b90aeca8c8ead25a26d3143b2084d0deb362ca5e",
+      "date": "2026-11-17T07:18:23-03:00",
+      "title": "docs(unova): barras verificáveis, U01-U03, bloqueios e auditoria com BAT",
+      "category": "Novidades"
+    },
+    {
       "sha": "60611140979a39ceeff197f15496ef7d9644802c",
       "date": "2026-11-17T07:17:06-03:00",
       "title": "feat(unova): BAT de duplo clique para auditoria sem tocar no jogo",
