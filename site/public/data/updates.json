@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1bfe19fc83ac3a696928a4d04ac86094b7a71797",
+      "date": "2026-11-17T08:55:37-03:00",
+      "title": "feat(unova): preparação E05/E06, inventário seguro e testes isolados",
+      "category": "Novidades"
+    },
+    {
       "sha": "4295d38017b588522cfd772d9746c1e646f6d1d9",
       "date": "2026-11-17T08:55:10-03:00",
       "title": "feat(sinnoh): S24 catálogo musical auditável por cenário (25/32)",
