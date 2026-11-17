@@ -12,17 +12,41 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts/regions"))
 from stage import serialize
-from server.ruby_marshal import RubyObject
+from server.ruby_marshal import RubyObject, integer
 import audit_unova_a04_mapids as a04
 import audit_unova_a06_references as a06
 
 def command(code,parameters):
     return RubyObject("RPG::EventCommand",{"@code":code,"@parameters":parameters})
 
+def _tiny_ruby_marshal(v):
+    """Test-only minimal Ruby Marshal serializer for nested RPG::Map events."""
+    def sym(s):
+        raw=s.encode("utf-8")
+        return b":" + integer(len(raw)) + raw
+    def raw(x):
+        if x is None:
+            return b"0"
+        if type(x) is int:
+            return b"i" + integer(x)
+        if isinstance(x,bytes):
+            return b'"' + integer(len(x)) + x
+        if isinstance(x,list):
+            return b"[" + integer(len(x)) + b"".join(raw(y) for y in x)
+        if isinstance(x,dict):
+            return (b"{" + integer(len(x))
+                    + b"".join(raw(k)+raw(y) for k,y in x.items()))
+        if isinstance(x,RubyObject):
+            return (b"o" + sym(x.name) + integer(len(x.attrs))
+                    + b"".join(sym(key)+raw(val) for key,val in x.attrs.items()))
+        raise TypeError(type(x).__name__)
+    return b"\\x04\\x08" + raw(v)
+
+
 def mapblob(commands):
     page=RubyObject("RPG::Event::Page",{"@list":commands})
     ev=RubyObject("RPG::Event",{"@pages":[page]})
-    return serialize(RubyObject("RPG::Map",{"@events":{1:ev},"@width":20,"@height":15,"@tileset_id":1}))
+    return _tiny_ruby_marshal(RubyObject("RPG::Map",{"@events":{1:ev},"@width":20,"@height":15,"@tileset_id":1}))
 
 def mapinfos(items):
     return serialize({i:RubyObject("RPG::MapInfo",{"@name":("Map "+str(i)).encode()})
