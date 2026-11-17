@@ -209,7 +209,7 @@ class UnovaNPCCatalogTests(unittest.TestCase):
             filename_alias_candidates=["hilda","HILDA"]))
 
     def test_20_report_in_other_folder_blocked(self):
-        fake=self.project/"game/sprites-"+self.archive_sha[:16]+".json"
+        fake=self.project/"game"/("sprites-"+self.archive_sha[:16]+".json")
         fake.parent.mkdir(parents=True)
         fake.write_text(json.dumps(self.base_report([self.img("NPC/Cheren.png")])))
         with self.assertRaises(ValueError):
@@ -280,7 +280,7 @@ class UnovaNPCCatalogTests(unittest.TestCase):
         self.assertEqual(code,2)
 
     def test_28_unknown_file_extension_not_report_accepted(self):
-        path=self.sp03_dir/"sprites-"+self.archive_sha[:16]+".txt"
+        path=self.sp03_dir/("sprites-"+self.archive_sha[:16]+".txt")
         path.write_text("{}")
         with self.assertRaises(ValueError):
             sp04.read_sp03(self.project,path)
