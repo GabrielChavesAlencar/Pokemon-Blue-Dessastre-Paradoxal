@@ -76,6 +76,8 @@ jobs:
           python scripts/regions/audit_unova_g04_encounter_validation.py --simulate-demo
           python scripts/regions/audit_unova_g05_regional_items.py --check
           python scripts/regions/audit_unova_g05_regional_items.py --simulate-demo
+          python scripts/regions/audit_unova_g05_badges_specials.py --check
+          python scripts/regions/audit_unova_g05_badges_specials.py --simulate-demo
           # A04 native baseline is private and absent in CI; negative tests cover this gate.
           python scripts/regions/audit_unova_a05_candidates.py
       - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
@@ -109,6 +111,7 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_g04_wild_scaling.py
           python -m py_compile scripts/regions/audit_unova_g04_encounter_validation.py
           python -m py_compile scripts/regions/audit_unova_g05_regional_items.py
+          python -m py_compile scripts/regions/audit_unova_g05_badges_specials.py
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
           python -m py_compile scripts/regions/audit_unova_a06_references.py
@@ -165,6 +168,7 @@ jobs:
           python -m unittest discover -s tests -p test_unova_g04_wild_scaling.py -v
           python -m unittest discover -s tests -p test_unova_g04_encounter_validation.py -v
           python -m unittest discover -s tests -p test_unova_g05_regional_items.py -v
+          python -m unittest discover -s tests -p test_unova_g05_badges_specials.py -v
           python -m unittest discover -s tests -p test_unova_auto_mapids.py -v
           python -m unittest discover -s tests -p test_unova_standalone_bat.py -v
       - name: Empacotar BAT validado no Windows como ZIP

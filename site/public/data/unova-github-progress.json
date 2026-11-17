@@ -176,8 +176,9 @@
         {
           "id": "G05.2",
           "title": "Definir insígnias, esmeraldas e trava de especiais",
-          "status": "pending",
-          "acceptance": "Insígnias únicas e restrições regionais de Pokémon especiais"
+          "status": "done",
+          "acceptance": "Insígnias únicas e restrições regionais de Pokémon especiais",
+          "evidence": "scripts/regions/audit_unova_g05_badges_specials.py"
         },
         {
           "id": "G05.3",
