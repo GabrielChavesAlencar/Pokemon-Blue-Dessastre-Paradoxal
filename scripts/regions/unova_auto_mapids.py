@@ -20,6 +20,7 @@ import audit_unova_a04_mapids as a04
 import audit_unova_a05_candidates as a05
 import audit_unova_a06_references as a06
 import audit_unova_a07_reference_provenance as a07
+import audit_unova_a08_readiness as a08
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -157,6 +158,7 @@ def pretty(result: dict) -> str:
     a05_result=result.get("a05_result")
     a06_result=result.get("a06_result")
     a07_result=result.get("a07_result")
+    a08_result=result.get("a08_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -227,6 +229,39 @@ def pretty(result: dict) -> str:
             "  Relatorio detalhado: "+str(result["a07_report_path"]),
             "",
         ])
+    if a08_result:
+        rows=a08_result.get("map001_event_context",[])
+        local=a08_result.get("local_region_manifests",{})
+        extra=a08_result.get("additional_script_indicators",{})
+        lines.extend([
+            "A08 — Map001 eventos 1/2 e verificacao de reservas no instalador",
+            "  Status: "+a08_result["status"],
+            "  Eventos de Map001 descritos: "+str(len(rows)),
+            "  MapID 3 presente fisicamente/declarado? "+
+                ("Sim" if a08_result.get("mapid3_physically_or_declared_present") else "Nao"),
+            "  Transferencias para 3 conferem com A07? "+
+                ("Sim" if a08_result.get("mapid3_transfers_reconciled_with_a07") else "Nao"),
+            "  Eventos sem dados: "+", ".join(map(str,a08_result.get("map001_target_events_missing",[]))),
+            "  Eventos e condicoes (sem executar): "+
+                "; ".join("evento "+str(e["event_id"])+": "+e.get("name","")+" ("+
+                    str(len(e["pages"]))+" paginas)" for e in rows)[:600],
+            "  Colisoes observadas no bloco Unova 518-599: "+
+                ", ".join(map(str,a08_result.get("candidate_518_599_occupied_ids",[]))),
+            "  Colisoes apontadas por manifestos locais: "+
+                ", ".join(map(str,local.get("observed_candidate_overlaps",[]))),
+            "  Manifestos locais: "+
+                "; ".join(m.get("file","")+":"+m.get("status","") for m in
+                           local.get("manifests",[]))[:650],
+            "  Pistas de chamadas de transferencia em scripts adicionais: "+
+                str(extra.get("transfer_api_name_occurrences","DESCONHECIDO")),
+            "  Pendencias para revisao humana: "+
+                str(a08_result.get("review_problems_count","DESCONHECIDO")),
+            "  Reserva de MapIDs autorizada? Nao",
+            "  Relatorio detalhado: "+str(result.get("a08_report_path") or "NAO_GERADO"),
+        ])
+        if a08_result.get("block_reason"):
+            lines.append("  Bloqueio A08: "+a08_result["block_reason"])
+        lines.append("")
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
@@ -269,8 +304,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -307,6 +342,26 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "can_reserve_mapids":False,"can_install":False,
             }
         a07_path=a07.save(project,a07_result)
+        try:
+            a08_result=a08.audit(selected,project,a04_result,a06_result,a07_result)
+        except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
+            # An incomplete A07/A08 is unknown, never a clean reservation.
+            a08_result={
+                "schema":1,"region":"UNOVA","phase":"A08",
+                "status":"BLOCKED_A08_INCOMPLETE_NOT_CERTIFIED",
+                "map001_event_context":[],"map001_target_events_missing":[],
+                "mapid3_physically_or_declared_present":None,
+                "mapid3_transfers_reconciled_with_a07":False,
+                "candidate_518_599_occupied_ids":[],
+                "local_region_manifests":{"manifests":[],
+                    "observed_candidate_overlaps":[],"manifest_coverage_incomplete":True},
+                "additional_script_indicators":{"transfer_api_name_occurrences":None},
+                "review_problems_count":None,
+                "block_reason":str(exc)[:300],
+                "can_reserve_mapids":False,"can_install":False,"bar_a_completed":0,
+                "bar_a_total":8
+            }
+        a08_path=a08.save(project,a08_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -316,6 +371,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a06_report_path":str(a06_path),
             "a07_result":a07_result,
             "a07_report_path":str(a07_path),
+            "a08_result":a08_result,
+            "a08_report_path":str(a08_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -338,6 +395,7 @@ def main(argv=None) -> int:
         print("UNOVA_A05="+str(result.get("a05_report_path") or "NAO_GERADO"))
         print("UNOVA_A06="+str(result.get("a06_report_path") or "NAO_GERADO"))
         print("UNOVA_A07="+str(result.get("a07_report_path") or "NAO_GERADO"))
+        print("UNOVA_A08="+str(result.get("a08_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
