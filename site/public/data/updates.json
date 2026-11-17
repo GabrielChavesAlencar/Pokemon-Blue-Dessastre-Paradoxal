@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fcea47b75fc90a3faab15d8772a635c3857faa0d",
+      "date": "2026-11-16T21:00:56-03:00",
+      "title": "test(sinnoh): CH20 14 testes negativos ZIP JoiPlay e roteiro nativo pendente",
+      "category": "Testes"
+    },
+    {
       "sha": "b653ff60b3f4160928bc2f9beb2442b276c58e22",
       "date": "2026-11-16T21:00:26-03:00",
       "title": "feat(sinnoh): CH20 auditor estatico JoiPlay e 44 casos sem MapIDs inventados",
