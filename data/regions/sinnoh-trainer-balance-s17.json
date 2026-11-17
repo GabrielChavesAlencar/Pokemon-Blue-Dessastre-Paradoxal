@@ -34,7 +34,7 @@
     "master_team_1_to_3_expands_to_4",
     "master_team_4_to_6_preserved",
     "double_battle_total_no_more_than_6",
-    "boss_leader_elite_champion_rival_species_preserved",
+    "first_leader_elite_champion_preserved_rivals_obey_bst",
     "evolution_thresholds_after_level_scaling",
     "original_trainer_pbs_and_player_party_unchanged",
     "level_min_and_engine_max",
