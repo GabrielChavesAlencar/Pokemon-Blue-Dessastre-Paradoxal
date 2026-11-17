@@ -20,7 +20,8 @@ const requireTab=tab=>{
 const string=x=>typeof x==='string'?x:'';
 const clean=(x,max)=>string(x).trim().slice(0,max);
 export const normalizeUnovaText=value=>String(value??'').normalize('NFKD')
- .replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+ .replace(/[\u0300-\u036f]/g,'').toLowerCase()
+ .replace(/\brotas?\b/g,'route').replace(/\s+/g,' ').trim();
 const matches=(text,query)=>{
  if(!query)return true;
  const hay=normalizeUnovaText(text);
