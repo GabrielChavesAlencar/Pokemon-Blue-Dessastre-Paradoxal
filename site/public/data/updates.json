@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f8ea2bdb7736a17a3e30d6f2aca3279603a77024",
+      "date": "2026-11-16T21:50:37-03:00",
+      "title": "feat(sinnoh): S28 equipes Platinum auditadas, Barra A 12/32 e CI verde",
+      "category": "Novidades"
+    },
+    {
       "sha": "b06b08f748fc781695dbcff904d6d3889759d324",
       "date": "2026-11-16T21:44:26-03:00",
       "title": "test(sinnoh): S30 suite de regressao offline aprovada, Barra A 11/32",
