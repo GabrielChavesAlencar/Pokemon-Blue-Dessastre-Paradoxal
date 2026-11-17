@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "step": "B03",
+  "kind": "LOCAL_FUTURE_RESERVATION_INPUT_TEMPLATES_ONLY",
+  "baseline_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "records": {
+    "KANTO": {
+      "schema": 1,
+      "region": "KANTO",
+      "kind": "LOCAL_FUTURE_MAP_ID_RESERVATIONS",
+      "baseline_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+      "future_reserved_map_ids": [],
+      "ownership_evidence": "",
+      "reviewed_locally": false,
+      "read_only": true
+    },
+    "JOHTO": {
+      "schema": 1,
+      "region": "JOHTO",
+      "kind": "LOCAL_FUTURE_MAP_ID_RESERVATIONS",
+      "baseline_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+      "future_reserved_map_ids": [],
+      "ownership_evidence": "",
+      "reviewed_locally": false,
+      "read_only": true
+    },
+    "HOENN": {
+      "schema": 1,
+      "region": "HOENN",
+      "kind": "LOCAL_FUTURE_MAP_ID_RESERVATIONS",
+      "baseline_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+      "future_reserved_map_ids": [],
+      "ownership_evidence": "",
+      "reviewed_locally": false,
+      "read_only": true
+    }
+  },
+  "user_review_done": false,
+  "can_use_as_r07_evidence": false,
+  "auto_approval": false,
+  "guidance": "These are unreviewed templates, not valid R07 evidence. Only actual future reserved IDs backed by installer/project files may be entered and locally reviewed. Empty arrays do not prove no future reservations."
+}

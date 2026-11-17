@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "workstream": "B",
+  "stage": "B03",
+  "status": "INSTALLER_EVIDENCE_AUDITED_REVIEW_TEMPLATES_READY_NOT_INSTALLABLE",
+  "evidence_date": "2026-11-17",
+  "donor_zip_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+  "native_inventory_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+  "native_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "native_tilesets_sha256": "2fd4551a5767615a159a8b5b65a604d1e486009d37953ca6a1955affffabf675",
+  "source_tree_map_count": 76,
+  "source_with_terrain": 54,
+  "source_empty_terrain": 22,
+  "installed_physical_map_count": 648,
+  "source_original_id_collisions": 72,
+  "code_protected_ranges": [
+    {
+      "region": "JOHTO",
+      "start": 600,
+      "end": 699,
+      "kind": "PREVIEW_CODE_CLAIM"
+    },
+    {
+      "region": "HOENN",
+      "start": 700,
+      "end": 999,
+      "kind": "INSTALLER_CODE_RANGE"
+    }
+  ],
+  "range_1_to_599_vacant_count": 250,
+  "illustrative_contiguous_window": {
+    "start": 442,
+    "end": 517,
+    "length": 76,
+    "physical_snapshot_vacant_only": true,
+    "future_claims_checked": false,
+    "selected_as_destinations": false
+  },
+  "native_occupied_status": "OBSERVED_SNAPSHOT_NOT_OWNERSHIP_PROOF",
+  "code_evidence": [
+    {
+      "region": "KANTO",
+      "file": "scripts/regions/install_kanto.py",
+      "entries": [
+        "mapping = {int(k): int(v) for k, v in info[\"maps\"].items()}",
+        "atomic(game / \"Data/blue-kanto-install.json\",",
+        "raise ValueError(\"Kanto ja instalado: recusar IDs duplicados.\")"
+      ],
+      "proof_file": "game/Data/blue-kanto-install.json",
+      "claim": "INSTALLED_DYNAMIC_MAPPING_ONLY",
+      "future_reservation_ids": [],
+      "future_reviewed": false,
+      "actual_mapping_available_in_upload": false
+    },
+    {
+      "region": "JOHTO",
+      "file": "scripts/regions/johto_main_preview.py",
+      "entries": [
+        "PREVIEW_IDS = frozenset(range(600, 700))",
+        "PROOF = \"Data/blue-johto-main-preview.json\"",
+        "new_id = len(new_tiles)",
+        "remap[old_id] = new_id"
+      ],
+      "proof_file": "game/Data/blue-johto-main-preview.json",
+      "claim": "PREVIEW_600_TO_699_CODE_CONSTRAINT",
+      "future_reservation_ids": [],
+      "future_reviewed": false,
+      "actual_mapping_available_in_upload": false
+    },
+    {
+      "region": "HOENN",
+      "file": "scripts/regions/pilot_hoenn.py",
+      "entries": [
+        "free = [n for n in range(700, 1000) if n not in reserved]",
+        "reserved = set(native_infos) | disk_ids | pbs_ids | set(range(600, 682))",
+        "tile_ids[native_id] = len(native_tiles)"
+      ],
+      "proof_file": "game/Data/blue-hoenn-install.json",
+      "claim": "DYNAMIC_700_TO_999_WITH_PBS_OCCUPANCY",
+      "future_reservation_ids": [],
+      "future_reviewed": false,
+      "actual_mapping_available_in_upload": false
+    },
+    {
+      "region": "SINNOH_CONVERTER",
+      "file": "scripts/regions/convert_sinnoh_geometry.py",
+      "entries": [
+        "new_id = len(output_tiles)",
+        "new_attrs[\"@autotile_names\"] = [",
+        "\"@tileset_id\": tileset_map[old_tile]"
+      ],
+      "proof_file": null,
+      "claim": "APPEND_ONLY_TILESET_CONVERSION_NOT_RUN",
+      "future_reservation_ids": [],
+      "future_reviewed": false,
+      "actual_mapping_available_in_upload": false
+    }
+  ],
+  "future_reservations_reconciled": false,
+  "installer_mapping_files_received": false,
+  "reservation_review_templates": "data/regions/sinnoh-b03-reservation-review-templates.json",
+  "confirmed_future_ids_kanto": [],
+  "confirmed_future_ids_johto": [],
+  "confirmed_future_ids_hoenn": [],
+  "destination_mapping": {},
+  "tileset_strategy": {
+    "mode": "APPEND_WITH_NEW_NATIVE_IDS_AFTER_RIGHTS_AND_BASELINE_RECHECK_ONLY",
+    "native_tileset_table_reported_length": 70,
+    "donor_to_native_index_mapping": {},
+    "materialized_new_tilesets": 0,
+    "donor_tile_ids": [
+      {
+        "donor_id": 1,
+        "donor_name": "OutsideWorld2.7",
+        "current_native_name": "Outside stock",
+        "new_native_id": null,
+        "graphics_and_rights_verified": false
+      },
+      {
+        "donor_id": 31,
+        "donor_name": "SinnohCompleteTileset",
+        "current_native_name": "FRLG_Preview_Mart interior",
+        "new_native_id": null,
+        "graphics_and_rights_verified": false
+      }
+    ],
+    "must_rewrite_map_tileset_ids": true,
+    "must_verify_autotile_names_and_files": true,
+    "must_preserve_existing_native_tilesets": true,
+    "may_reuse_numeric_source_ids": false,
+    "rights_cleared": false,
+    "dry_run_executed_against_real_donor": false
+  },
+  "protect_other_regions": true,
+  "audited_native_ownership_for_all_ids": false,
+  "kanto_dynamic_mapping_verified_from_native_manifest": false,
+  "johto_native_manifest_verified": false,
+  "hoenn_native_manifest_verified": false,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "native_game_exe_tested": false,
+  "joiplay_tested": false,
+  "can_generate_installable_remap": false,
+  "can_install": false,
+  "can_mark_playable": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "game_or_saves_modified": false,
+  "note": "B03 is an offline review of source code claims and a hypothetical physical window, not a reservation or mapping. Installed provenance markers and per-asset rights are not in the B01 ZIP."
+}
