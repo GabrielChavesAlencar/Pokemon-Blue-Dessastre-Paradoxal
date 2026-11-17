@@ -74,12 +74,12 @@
   "protected_code_claims_total_slots": 400,
   "protected_claimed_johto_600_to_699": {
     "occupied_snapshot": 100,
-    "source_mapids_assigned": 0,
+    "sinnoh_destination_ids_assigned": 0,
     "actual_map_ownership_proven": false
   },
   "protected_claimed_hoenn_700_to_999": {
     "occupied_snapshot": 199,
-    "source_mapids_assigned": 0,
+    "sinnoh_destination_ids_assigned": 0,
     "actual_map_ownership_proven": false
   },
   "claimed_bands_physically_unoccupied": 101,
