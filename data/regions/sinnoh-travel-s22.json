@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "S22",
+  "status": "READ_ONLY_POST_LEAGUE_TRAVEL_PREFLIGHT_NO_NATIVE_SOURCE",
+  "sources": {
+    "regional_policy": "scripts/battle_polish/Regions.rb",
+    "travel_engine": "scripts/battle_polish/RegionTravel.rb",
+    "story_engine": "scripts/regions/SinnohStoryContracts.rb",
+    "league_engine": "scripts/regions/SinnohLeagueContracts.rb",
+    "travel_adapter": "scripts/regions/SinnohTravelContracts.rb",
+    "original_ch14_contract": "data/regions/sinnoh-story-ch14-contract.json",
+    "sinnoh_source": "data/regions/sinnoh-source.json",
+    "registry": "site/public/data/regions.json",
+    "fixture": "tests/sinnoh_s22_travel_runtime.rb"
+  },
+  "post_league_destinations": [
+    "HOENN",
+    "UNOVA"
+  ],
+  "hall_of_fame_required_for_this_post_league_journey": true,
+  "global_circuit_free_travel_policy_unchanged": true,
+  "real_departure_npc_map_id": null,
+  "real_departure_npc_event_id": null,
+  "verified_native_departures": [],
+  "verified_source_map_ids": [],
+  "verified_arrival_points": [],
+  "installed_unova_arrival": null,
+  "installed_sinnoh_portal": false,
+  "allows_remote_map_travel": false,
+  "inventory_policy": {
+    "regional_items": "GameData::Item is_key_item? or is_HM?",
+    "same_region_bag_and_pc_restored_on_return": true,
+    "normal_items_remain_shared": true,
+    "regional_hms_do_not_carry_between_regions": true,
+    "preview_never_changes_bag_party_pc_or_save": true,
+    "native_transfer_must_use_existing_BlueRegionTravel_stage_and_rollback": true
+  },
+  "checks": {
+    "only_verified_hall_of_fame_enables_post_league_preflight": true,
+    "hoenn_requires_existing_installed_arrival": true,
+    "unova_requires_existing_installed_arrival": true,
+    "source_sinnoh_must_be_native_and_installed": true,
+    "native_npc_context_required": true,
+    "unverified_source_registry_fail_closed": true,
+    "no_fallback_to_kanto_hoenn_or_decades_home_map": true,
+    "no_map_ids_or_coordinates_inferred": true,
+    "no_cross_region_item_transfer": true,
+    "no_second_story_save_or_auto_unlock_flags": true,
+    "no_game_exe_or_joiplay_claim": true
+  },
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "native_qa_passed": false,
+  "playable_verified": false,
+  "can_install": false,
+  "notes": "S22 implements a read-only post-Sinnoh-League itinerary gate and tests the existing BlueRegionTravel local Key Item/HM inventory staging. The general BlueRegions.unlocked circuit has free-travel semantics and is intentionally unchanged. A logical destination in the circuit or a CH14 Hall of Fame record does not install an arrival or departure NPC. Hoenn may have independently installed arrivals in other builds, but Sinnoh's physical source remains missing. Unova has no native arrival. No Game.exe, map, item, key item, NPC, teleport, save or runtime battle has been modified in this offline delivery."
+}
