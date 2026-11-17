@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5411ab83dba48c372ee339c79d896b7460ce7c0e",
+      "date": "2026-11-17T17:27:15-03:00",
+      "title": "fix(sinnoh): G02 B09 progress and stream SHA verification (#139)",
+      "category": "Correções"
+    },
+    {
       "sha": "ab7a8b2fc4400975770dff8664e6b7d662d9a6dc",
       "date": "2026-11-17T17:26:24-03:00",
       "title": "Unova G02.3: Elite Four, N, Ghetsis e créditos simulados com testes",
