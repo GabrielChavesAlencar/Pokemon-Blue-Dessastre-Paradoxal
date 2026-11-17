@@ -41,6 +41,16 @@ export function validateSinnohGuide(data){
      data.levelPolicy.regionalNumericCap!==null||
      data.levelPolicy.badgesDoNotRevealExactLevel!==true||
      data.levelPolicy.verifiedRuntimeLevels!==false||
+     !data.teamCatalog||
+     data.teamCatalog.status!=='historical_reference_only'||
+     data.teamCatalog.historicalTrainerCount!==13||
+     data.teamCatalog.regularTrainersWithoutVerifiedTeams!==data.trainers?.length||
+     data.teamCatalog.verifiedBlueTrainerTeams!==0||
+     data.teamCatalog.compiledNativePBSTeams!==0||
+     data.teamCatalog.officialPlatinumRematchReferences!==5||
+     data.teamCatalog.blueFullPowerVerifiedTeams!==0||
+     data.teamCatalog.gameExeVerifiedTeams!==0||
+     data.teamCatalog.fixedRuntimeLevelsPublished!==false||
      data.levelPolicy.source!=='scripts/battle_polish/Campaign.rb'||
      data.levelPolicy.fieldEvolutionSource!=='scripts/battle_polish/EvolutionScaling.rb'||
      ['level','levelCap','level_cap','effectiveLevel','effective_level',
@@ -66,9 +76,30 @@ export function validateSinnohGuide(data){
       a.confirmedWildEncounters!==0||!Array.isArray(a.speciesCandidates)||
       a.speciesCandidates.some(x=>typeof x!=='string'))||
     data.trainers.some(t=>typeof t.name!=='string'||t.teamInstalled!==false)||
-    data.bosses.some(b=>b.pbsInstalled!==false||b.fullPowerVerified!==false||
-      !Array.isArray(b.speciesReference)||
-      !['GYM_LEADER','ELITE_FOUR','CHAMPION'].includes(b.role))||
+    data.bosses.some(b=>{
+      const audit=b.teamAudit,first=audit?.firstBattle,rematch=audit?.historicalRematch,
+            blue=audit?.blueFullPower,native=audit?.nativePBS;
+      return b.pbsInstalled!==false||b.fullPowerVerified!==false||
+        !Array.isArray(b.speciesReference)||
+        !b.speciesReference.length||b.speciesReference.length>6||
+        !['GYM_LEADER','ELITE_FOUR','CHAMPION'].includes(b.role)||
+        b.referenceGame!=='Pokémon Platinum'||
+        first?.origin!=='PLATINUM_FIRST_BATTLE'||
+        first?.memberCount!==b.speciesReference.length||
+        first?.verifiedInBlue!==false||
+        (b.rematchSpeciesReference===null?rematch!==null:
+          !Array.isArray(b.rematchSpeciesReference)||
+          !b.rematchSpeciesReference.length||
+          rematch?.origin!=='PLATINUM_LEAGUE_REMATCH'||
+          rematch?.memberCount!==b.rematchSpeciesReference.length||
+          rematch?.verifiedInBlue!==false)||
+        (b.role==='GYM_LEADER'&&rematch!==null)||
+        blue?.status!=='pending'||blue?.species!==null||
+        blue?.verified!==false||
+        native?.status!=='pending'||native?.team!==null||
+        native?.compiled!==false||native?.eventBound!==false||
+        native?.gameExeVerified!==false;
+    })||
     data.bosses.filter(b=>b.role==='GYM_LEADER').length!==8||
     data.bosses.filter(b=>b.role==='ELITE_FOUR').length!==4||
     data.bosses.filter(b=>b.role==='CHAMPION').length!==1||
