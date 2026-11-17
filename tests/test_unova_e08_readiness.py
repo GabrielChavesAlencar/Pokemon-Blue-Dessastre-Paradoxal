@@ -36,14 +36,17 @@ class ReadinessTests(unittest.TestCase):
 
     def test_01_baseline_stays_blocked(self):
         r=self.baseline
-        self.assertEqual(r["bar_e"]["completed"],4)
+        self.assertEqual(r["bar_e"]["completed"],6)
         self.assertEqual(r["bar_e"]["total"],8)
         self.assertEqual(r["playable_phases_completed"],0)
         self.assertFalse(r["can_install"])
         self.assertFalse(r["game_exe_tested"])
         self.assertFalse(r["android_tested"])
         self.assertFalse(r["rights_verified"])
-        self.assertEqual(len(r["blockers"]),4)
+        self.assertEqual(len(r["blockers"]),2)
+        self.assertTrue(r["source_e04_e05_audit_evidence_verified"])
+        self.assertEqual(r["source_unova_event_containers"],0)
+        self.assertEqual(r["source_unova_map_files_audited"],64)
         self.assertTrue(r["symbolic_music_and_trainers_only"])
 
     def test_02_zip_filename_never_approves(self):
@@ -86,6 +89,39 @@ class ReadinessTests(unittest.TestCase):
         self.assertGreater(r["prepared_tooling"]["symbolic_music_cues"],50)
         self.assertFalse(r["rights_verified"])
         self.assertFalse(r["source_map_ids_verified"])
+
+
+    def test_08_copy_real_snapshot_proves_only_E04_E05(self):
+        source=ROOT/"data/regions/unova-e04-e05-observed-source.json"
+        target=self.root/"data/regions/unova-e04-e05-observed-source.json"
+        shutil.copy2(source,target)
+        result=readiness.inspect(self.root)
+        self.assertEqual(result["bar_e"]["completed"],6)
+        self.assertEqual(result["source_unova_map_files_audited"],64)
+        self.assertFalse(result["can_install"])
+        self.assertFalse(result["rights_verified"])
+        self.assertFalse(result["game_exe_tested"])
+        self.assertEqual(result["playable_phases_completed"],0)
+
+    def test_09_forged_source_observation_is_blocked(self):
+        source=ROOT/"data/regions/unova-e04-e05-observed-source.json"
+        target=self.root/"data/regions/unova-e04-e05-observed-source.json"
+        shutil.copy2(source,target)
+        doc=json.loads(target.read_text("utf-8"))
+        doc["unova_parent_event_containers"]=999
+        target.write_text(json.dumps(doc),encoding="utf-8")
+        with self.assertRaises(ValueError):
+            readiness.inspect(self.root)
+
+    def test_10_invalid_source_zip_hash_is_blocked(self):
+        source=ROOT/"data/regions/unova-e04-e05-observed-source.json"
+        target=self.root/"data/regions/unova-e04-e05-observed-source.json"
+        shutil.copy2(source,target)
+        doc=json.loads(target.read_text("utf-8"))
+        doc["archive_sha256"]="0"*64
+        target.write_text(json.dumps(doc),encoding="utf-8")
+        with self.assertRaises(ValueError):
+            readiness.inspect(self.root)
 
 if __name__=="__main__":
     unittest.main()
