@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "phase": "G01.2",
+  "status": "OFFLINE_SYNTHETIC_TRANSITIONS_ONLY",
+  "g01_contract": "data/regions/unova-g01-state-contract.json",
+  "g01_state_schema_version": 1,
+  "engine_scope": "GITHUB_TESTS_ONLY",
+  "simulation_gate": "SIMULATED_ONLY_NO_NATIVE_APPROVAL",
+  "native_save_adapter": false,
+  "auto_install": false,
+  "game_exe_tested": false,
+  "source_u07_events": "data/regions/unova-u07-nuvema-events.json",
+  "u07_order": [
+    {
+      "key": "UNOVA_U07_STARTER_GIFT",
+      "requires": [],
+      "battle_policy": null,
+      "kind": "choice"
+    },
+    {
+      "key": "UNOVA_U07_BIANCA_FIRST_BATTLE",
+      "requires": [
+        "UNOVA_U07_STARTER_GIFT"
+      ],
+      "battle_policy": "ADVANCE_ON_LOSS",
+      "kind": "battle"
+    },
+    {
+      "key": "UNOVA_U07_CHEREN_FIRST_BATTLE",
+      "requires": [
+        "UNOVA_U07_BIANCA_FIRST_BATTLE"
+      ],
+      "battle_policy": "ADVANCE_ON_LOSS",
+      "kind": "battle"
+    },
+    {
+      "key": "UNOVA_U07_MOM_XTRANSCEIVER",
+      "requires": [
+        "UNOVA_U07_CHEREN_FIRST_BATTLE"
+      ],
+      "battle_policy": null,
+      "kind": "grant"
+    },
+    {
+      "key": "UNOVA_U07_VISIT_BIANCA_HOME",
+      "requires": [
+        "UNOVA_U07_MOM_XTRANSCEIVER"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue"
+    },
+    {
+      "key": "UNOVA_U07_JUNIPER_LAB_POKEDEX",
+      "requires": [
+        "UNOVA_U07_VISIT_BIANCA_HOME"
+      ],
+      "battle_policy": null,
+      "kind": "grant"
+    },
+    {
+      "key": "UNOVA_U07_MOM_TOWN_MAP",
+      "requires": [
+        "UNOVA_U07_JUNIPER_LAB_POKEDEX"
+      ],
+      "battle_policy": null,
+      "kind": "grant"
+    },
+    {
+      "key": "UNOVA_U07_ROUTE1_GROUP",
+      "requires": [
+        "UNOVA_U07_MOM_TOWN_MAP"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue"
+    },
+    {
+      "key": "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL",
+      "requires": [
+        "UNOVA_U07_ROUTE1_GROUP"
+      ],
+      "battle_policy": null,
+      "kind": "grant"
+    },
+    {
+      "key": "UNOVA_U07_ACCUMULA_CENTER_INTRO",
+      "requires": [
+        "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue"
+    },
+    {
+      "key": "UNOVA_U07_PLASMA_SPEECH",
+      "requires": [
+        "UNOVA_U07_ACCUMULA_CENTER_INTRO"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue"
+    },
+    {
+      "key": "UNOVA_U07_N_FIRST_BATTLE",
+      "requires": [
+        "UNOVA_U07_PLASMA_SPEECH"
+      ],
+      "battle_policy": "WIN_REQUIRED",
+      "kind": "battle"
+    },
+    {
+      "key": "UNOVA_U07_ROUTE2_PASSAGE",
+      "requires": [
+        "UNOVA_U07_N_FIRST_BATTLE"
+      ],
+      "battle_policy": null,
+      "kind": "milestone"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "UNOVA_G01_BEGIN_CH01",
+      "action": "begin",
+      "from": "UNOVA_CH00_NOT_STARTED",
+      "to": "UNOVA_CH01_NUVEMA",
+      "required_mission_key": null,
+      "required_completion_flag": null,
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH02",
+      "action": "advance",
+      "from": "UNOVA_CH01_NUVEMA",
+      "to": "UNOVA_CH02_STRIATON",
+      "required_mission_key": "UNOVA_MISSION_CH01_BEGIN_JOURNEY",
+      "required_completion_flag": "UNOVA_FLAG_CH01_COMPLETED",
+      "required_u07_flags": [
+        "UNOVA_U07_STARTER_GIFT",
+        "UNOVA_U07_BIANCA_FIRST_BATTLE",
+        "UNOVA_U07_CHEREN_FIRST_BATTLE",
+        "UNOVA_U07_MOM_XTRANSCEIVER",
+        "UNOVA_U07_VISIT_BIANCA_HOME",
+        "UNOVA_U07_JUNIPER_LAB_POKEDEX",
+        "UNOVA_U07_MOM_TOWN_MAP",
+        "UNOVA_U07_ROUTE1_GROUP",
+        "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL",
+        "UNOVA_U07_ACCUMULA_CENTER_INTRO",
+        "UNOVA_U07_PLASMA_SPEECH",
+        "UNOVA_U07_N_FIRST_BATTLE",
+        "UNOVA_U07_ROUTE2_PASSAGE"
+      ]
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH03",
+      "action": "advance",
+      "from": "UNOVA_CH02_STRIATON",
+      "to": "UNOVA_CH03_NACRENE",
+      "required_mission_key": "UNOVA_MISSION_CH02_FIRST_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH02_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH04",
+      "action": "advance",
+      "from": "UNOVA_CH03_NACRENE",
+      "to": "UNOVA_CH04_CASTELIA",
+      "required_mission_key": "UNOVA_MISSION_CH03_SECOND_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH03_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH05",
+      "action": "advance",
+      "from": "UNOVA_CH04_CASTELIA",
+      "to": "UNOVA_CH05_NIMBASA",
+      "required_mission_key": "UNOVA_MISSION_CH04_THIRD_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH04_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH06",
+      "action": "advance",
+      "from": "UNOVA_CH05_NIMBASA",
+      "to": "UNOVA_CH06_DRIFTVEIL",
+      "required_mission_key": "UNOVA_MISSION_CH05_FOURTH_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH05_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH07",
+      "action": "advance",
+      "from": "UNOVA_CH06_DRIFTVEIL",
+      "to": "UNOVA_CH07_MISTRALTON",
+      "required_mission_key": "UNOVA_MISSION_CH06_FIFTH_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH06_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH08",
+      "action": "advance",
+      "from": "UNOVA_CH07_MISTRALTON",
+      "to": "UNOVA_CH08_ICIRRUS",
+      "required_mission_key": "UNOVA_MISSION_CH07_SIXTH_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH07_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH09",
+      "action": "advance",
+      "from": "UNOVA_CH08_ICIRRUS",
+      "to": "UNOVA_CH09_OPELUCID",
+      "required_mission_key": "UNOVA_MISSION_CH08_SEVENTH_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH08_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH10",
+      "action": "advance",
+      "from": "UNOVA_CH09_OPELUCID",
+      "to": "UNOVA_CH10_LEAGUE",
+      "required_mission_key": "UNOVA_MISSION_CH09_EIGHTH_GYM",
+      "required_completion_flag": "UNOVA_FLAG_CH09_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH11",
+      "action": "advance",
+      "from": "UNOVA_CH10_LEAGUE",
+      "to": "UNOVA_CH11_NS_CASTLE",
+      "required_mission_key": "UNOVA_MISSION_CH10_ELITE_FOUR",
+      "required_completion_flag": "UNOVA_FLAG_CH10_COMPLETED",
+      "required_u07_flags": []
+    },
+    {
+      "id": "UNOVA_G01_ADVANCE_CH12",
+      "action": "advance",
+      "from": "UNOVA_CH11_NS_CASTLE",
+      "to": "UNOVA_CH12_POSTGAME",
+      "required_mission_key": "UNOVA_MISSION_CH11_N_CASTLE",
+      "required_completion_flag": "UNOVA_FLAG_CH11_COMPLETED",
+      "required_u07_flags": []
+    }
+  ],
+  "completion": {
+    "chapter_01_requires_all_u07_events": true,
+    "chapter_02_to_12_require_explicit_simulated_gate": true,
+    "completion_markers_are_test_only": true,
+    "real_gym_or_story_evidence_verified": false,
+    "rewards_issued": false
+  },
+  "notes": [
+    "As transições não alteram dados do Game.exe, switches reais, recompensas, mapas nem saves.",
+    "G01.2 impõe ordem estrutural; G01.3 deverá garantir reentradas e recompensas reais em lógica sintética.",
+    "Do segundo capítulo em diante, gatilhos são EXPLICITAMENTE simulados, pois os contratos nativos de história ainda não existem."
+  ]
+}
