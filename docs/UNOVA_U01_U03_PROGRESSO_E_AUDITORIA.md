@@ -187,3 +187,10 @@ Foi criado o [auditor A04 somente leitura](../scripts/regions/audit_unova_a04_ma
 O MD multirregional recebido pelo usuário em 17/11/2026 foi conferido com o catálogo já publicado [Sinnoh B05](../data/regions/sinnoh-b05-mapid-planning.json). A [proposta A05](../data/regions/unova-a05-mapid-candidates.json) e o [auditor A05](../scripts/regions/audit_unova_a05_candidates.py) registram **648 MapIDs ocupados no snapshot**, **76 retidos administrativamente para Sinnoh (442–517)** e **174 historicamente vagos como candidatos Unova**, priorizando **518–599 (82 posições)**. Os outros 92 são candidatos de expansão e os 31 IDs curtos omitidos no coletor B04 antigo continuam ocupados.
 
 O [BAT A05](../UNOVA_A05_PLANEJAR_MAPIDS.bat) permite planejamento histórico ou comparação com relatório privado A04, registrando colisões novas. Veja [manual A05](UNOVA_A05_PROPOSTA_MAPIDS_B01_B04.md). **Nenhuma área U03 recebeu MapID de destino, nenhum dado do Game.exe foi editado e reservas futuras não foram homologadas. Barra A 0/8, Barra E 4/8, Unova jogável 0/32.**
+
+
+## RUN automático A04+A05 — 17/11/2026
+
+[RUN_UNOVA_MAPIDS.bat](../RUN_UNOVA_MAPIDS.bat) localiza automaticamente a instalação do Blue/Decades em LocalAppData, verifica Game.exe + Data/MapInfos.rxdata e roda A04→A05 sem janelas de seleção. Os JSONs privados imutáveis e o resumo legível são gerados em .blue-work/unova/audit; o resumo LEIA_AQUI_UNOVA_MAPIDS.txt abre automaticamente no Bloco de Notas no Windows. O [manual de execução automática](UNOVA_MAPIDS_EXECUCAO_AUTOMATICA.md) explica fontes conhecidas, bloqueios e limites.
+
+**Não marca A04/A05 como aprovadas sem execução real na máquina.** Barra A 0/8, E 4/8, Unova 0/32. Nenhum mapa, MapInfos ou save foi alterado.
