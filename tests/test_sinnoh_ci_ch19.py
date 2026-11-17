@@ -71,6 +71,27 @@ class SinnohCIChapter19Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ci.summarize("python", [{"status": "success"}])
 
+    def test_rejects_falsely_passing_exit_code(self):
+        rows = [{"id": "sinnoh-forged", "status": "passed", "returncode": 7,
+                 "command": ["python", "--bad"], "tail": ""}]
+        with self.assertRaisesRegex(ValueError, "exit code 0"):
+            ci.summarize("python", rows)
+
+    def test_rejects_falsely_blocked_with_process_exit(self):
+        rows = [{"id": "sinnoh-forged", "status": "blocked", "returncode": 0,
+                 "command": ["python"], "tail": ""}]
+        with self.assertRaisesRegex(ValueError, "blocked"):
+            ci.summarize("ruby", rows)
+
+    def test_timeout_is_failed_not_certified(self):
+        with tempfile.TemporaryDirectory() as d:
+            result = ci.run_check("sinnoh-intentional-timeout",
+                                  [sys.executable, "-c", "import time;time.sleep(2)"],
+                                  Path(d), timeout=1)
+        self.assertEqual(result["status"], "failed")
+        self.assertIsNone(result["returncode"])
+        self.assertEqual(ci.summarize("python", [result])["status"], "failed")
+
     def test_reports_are_machine_readable_and_never_claim_native_pass(self):
         sample = {"id": "sinnoh-offline", "command": [sys.executable], "status": "passed",
                   "returncode": 0, "tail": ""}
