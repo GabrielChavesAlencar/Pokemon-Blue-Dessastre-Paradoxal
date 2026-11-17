@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e4029e33114633f100adb61ea3fd993b1b00ff12",
+      "date": "2026-11-17T13:08:51-03:00",
+      "title": "ci(unova): disponibilizar RUN_UNOVA_MAPIDS.bat em ZIP para download sem abrir texto",
+      "category": "Novidades"
+    },
+    {
       "sha": "9b3a589a93720d314b03c1961c7e60ebb533a2dd",
       "date": "2026-11-17T13:02:50-03:00",
       "title": "fix(unova): RUN BAT autossuficiente funciona em Downloads sem scripts externos",
