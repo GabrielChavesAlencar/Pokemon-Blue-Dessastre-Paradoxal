@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "07738b551bea02fcc03746e85fbdbf696f5b5580",
+      "date": "2026-11-17T20:21:30-03:00",
+      "title": "Unova G05.4 — blackout, checkpoint regional e estado (25/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "dfe69d7f9d2f464b37bcdb64d6132af9d3a3f949",
       "date": "2026-11-17T20:11:15-03:00",
       "title": "docs(sinnoh): finish GitHub G01-G12 12/12, 44 native cases and local gates still pending",
