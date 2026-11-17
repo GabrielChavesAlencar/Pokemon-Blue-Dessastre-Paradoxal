@@ -27,6 +27,7 @@ PYTHON_CHECKS = [
     ("sinnoh-s15-gyms-audit", [PY, "scripts/regions/audit_sinnoh_s15_gyms.py"]),
     ("sinnoh-s16-local-hms", [PY, "scripts/regions/audit_sinnoh_s16_hms.py"]),
     ("sinnoh-s13-intro-audit", [PY, "scripts/regions/audit_sinnoh_s13_intro.py"]),
+    ("sinnoh-s14-starters-audit", [PY, "scripts/regions/audit_sinnoh_s14_starters.py"]),
     ("sinnoh-story-audit", [PY, "scripts/regions/audit_sinnoh_story_ch14.py"]),
     ("sinnoh-teams-audit", [PY, "scripts/regions/audit_sinnoh_teams_ch15.py"]),
     ("sinnoh-s17-balance-contract", [PY, "scripts/regions/audit_sinnoh_s17_balance.py"]),
@@ -45,6 +46,7 @@ RUBY_RUNTIME = [
     ("sinnoh-pilot", ["tests/sinnoh_pilot_runtime.rb", "scripts/regions/SinnohPilot.rb"]),
     ("sinnoh-pilot-ch07", ["tests/sinnoh_pilot_ch07_runtime.rb", "scripts/regions/SinnohPilot.rb"]),
     ("sinnoh-s13-intro", ["tests/sinnoh_s13_intro_runtime.rb", "scripts/regions/SinnohPilot.rb", "scripts/regions/SinnohIntroContracts.rb", "data/regions/sinnoh-intro-s13.json"]),
+    ("sinnoh-s14-starters", ["tests/sinnoh_s14_starter_runtime.rb", "scripts/regions/SinnohPilot.rb", "scripts/regions/SinnohStarterContracts.rb", "data/regions/sinnoh-starters-s14.json"]),
     ("sinnoh-barry-ch08", ["tests/sinnoh_barry_ch08_runtime.rb", "scripts/battle_polish/Campaign.rb", "scripts/regions/SinnohPilot.rb"]),
     ("sinnoh-barry-native-probe", ["tests/sinnoh_barry_native_probe_runtime.rb", "scripts/regions/SinnohBarryNativeProbe.rb"]),
     ("sinnoh-qa-start", ["tests/sinnoh_qa_start_runtime.rb", "scripts/regions/SinnohQAStart.rb"]),
@@ -68,6 +70,7 @@ RUBY_RUNTIME = [
 RUBY_SYNTAX = [
     "scripts/regions/SinnohPilot.rb",
     "scripts/regions/SinnohIntroContracts.rb",
+    "scripts/regions/SinnohStarterContracts.rb",
     "scripts/regions/SinnohQAStart.rb",
     "scripts/regions/SinnohQAProbe.rb",
     "scripts/regions/SinnohBarryNativeProbe.rb",

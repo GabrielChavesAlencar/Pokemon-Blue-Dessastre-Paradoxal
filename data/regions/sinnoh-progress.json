@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 30,
-    "partial": 2,
+    "done": 31,
+    "partial": 1,
     "pending": 0,
-    "percent_complete": 93,
-    "percent_with_partial_not_counted": 93,
+    "percent_complete": 96,
+    "percent_with_partial_not_counted": 96,
     "groups": [
       {
         "key": "foundation",
@@ -176,8 +176,8 @@
     {
       "id": "S14",
       "title": "Três iniciais de Sinnoh",
-      "status": "partial",
-      "evidence_path": "data/regions/sinnoh-twinleaf-events.json"
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S14_TRES_INICIAIS_EVENTOS_FISICOS_ACEITE.md"
     },
     {
       "id": "S15",
@@ -438,7 +438,7 @@
     "native_verified": false,
     "assets_verified": false,
     "not_playable": true,
-    "note": "S13 engenharia de checkpoints e roteiro concluidos (30/32 codigo), mas I06-I08 continuam pendentes (5/8). Falta auditar mapas/spawn/sprites, PBS Barry nativos e executar Game.exe/JoiPlay."
+    "note": "S13/S14 concluidos na Barra A somente em engenharia offline; a trilha nativa I06-I08 permanece 5/8, faltam mapas/sprites de Twinleaf e Verity, PBS Barry compilados, Game.exe e JoiPlay."
   },
   "barry_pbs_workstream": {
     "status": "PBS_DRAFT_CODE_READY_NATIVE_QA_PENDING",

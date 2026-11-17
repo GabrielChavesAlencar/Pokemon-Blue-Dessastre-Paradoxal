@@ -30,25 +30,25 @@
 - **CH20 (concluída em escopo estático):** [pré-voo Android/JoiPlay](../scripts/regions/audit_sinnoh_android_ch20.py), [18 testes CH20](../tests/test_sinnoh_android_ch20.py), [12 testes do auditor de evidências](../tests/test_sinnoh_playtest_audit.py) e [workflow exclusivo CH20](../.github/workflows/sinnoh-ch20.yml) publicados na `main` pelo [PR #66](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/66), merge `c7c8cdd`. [CI 43986405854](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854) **18/18 + 12/12 testes aprovados**, com [relatórios JSON + Markdown e hashes conferidos](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854/artifacts/14284479390). [Relatório CH20](SINNOH_CH20_JOIPLAY_PREFLIGHT.md): **44 IDs de casos completos, 0/44 observados no Game.exe/JoiPlay**, dados do jogo reais não fornecidos. Conclusão da Barra E **20/20 (100%)** não aprova jogo nativo nem altera as barras A/B/C/D.
 - **Critério:** tarefas só entram como `done` com arquivos publicados na `main` e validação de CI compatível com seu escopo.
 
-**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 30/32 (93%)**, **B/C/D 0/13** permanecem intactas.
+**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 31/32 (96%)**, **B/C/D 0/13** permanecem intactas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
 ```text
-███████████████████░  30/32 (93%)
+███████████████████░  31/32 (96%)
 ```
 
-- **Concluídas:** 30 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
-- **Parciais:** 2 (S14 e S31; introdução I06–I08 e remapeamento R07–R09 ainda parciais no subfluxo nativo).
+- **Concluídas:** 31 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
+- **Parciais:** 1 (S31; introdução I06–I08 e remapeamento R07–R09 ainda parciais no subfluxo nativo).
 - **Pendentes:** 0.
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
-- **Restam 2 para a barra de desenvolvimento** (inclui parciais).
+- **Restam 1 para a barra de desenvolvimento** (inclui parciais).
 
 ## S27 — guias planejados no site (concluída)
 
 A [entrega S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) contabiliza o trabalho de **portal web**, não uma região jogável. O guia `/sinnoh` já usa os catálogos CH11–CH16 e a navegação/pesquisa CH17–CH18; agora diferencia explicitamente **guia publicado no portal** de **mapas/eventos ainda não instalados no jogo**. Os [testes de aceite S27](../site/tests/sinnoh-s27-development.test.mjs) validam oito abas, 120 áreas, 40 treinadores, 13 líderes/Liga, 8 HMs, 22 checkpoints e salvaguardas contra anúncios falsos de MapIDs, níveis, PBS, encontros ou jogo funcional. A aprovação da S27 depende do build e da suíte completa do site em CI.
 
-**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)**, a S11 para **14/32 (43%)** e a S12 para **15/32 (46%)**; após a S08, o total era **16/32 (50%)**; com a S26, o total era **17/32 (53%)**; após a S17, eram **18/32 (56%)**; com a S18, eram **19/32 (59%)**; após a S19, eram **20/32 (62%)**; com a S20, eram **21/32 (65%)**; com a S21, eram **22/32 (68%)**; com a S22, eram **23/32 (71%)**; com a S23, o total foi **24/32 (75%)**; após a S24, eram **25/32 (78%)**; após S25 eram **26/32 (81%)**; com S15 eram **27/32 (84%)**; após S16 eram **28/32 (87%)**; após S07 em código eram **29/32 (90%)**; com S13 são **30/32 (93%)**. Isso não torna as fases S13–S23 jogáveis nem altera B/C/D.
+**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)**, a S11 para **14/32 (43%)** e a S12 para **15/32 (46%)**; após a S08, o total era **16/32 (50%)**; com a S26, o total era **17/32 (53%)**; após a S17, eram **18/32 (56%)**; com a S18, eram **19/32 (59%)**; após a S19, eram **20/32 (62%)**; com a S20, eram **21/32 (65%)**; com a S21, eram **22/32 (68%)**; com a S22, eram **23/32 (71%)**; com a S23, o total foi **24/32 (75%)**; após a S24, eram **25/32 (78%)**; após S25 eram **26/32 (81%)**; com S15 eram **27/32 (84%)**; após S16 eram **28/32 (87%)**; após S07 em código eram **29/32 (90%)**; com S13 eram **30/32 (93%)**; com S14 são **31/32 (96%)**. Isso não torna as fases S13–S23 jogáveis nem altera B/C/D.
 
 ## S07 — reconciliação MapIDs, stage e rollback (engenharia offline)
 
@@ -61,6 +61,12 @@ A [entrega S07](SINNOH_S07_RECONCILIACAO_TRANSACIONAL_OFFLINE_ACEITE.md) adicion
 A [S13](SINNOH_S13_INTRO_ROWAN_BARRY_ACEITE.md) integra [seis checkpoints](../data/regions/sinnoh-intro-s13.json) a [guardas Ruby do piloto](../scripts/regions/SinnohPilot.rb), [inspector read-only](../scripts/regions/SinnohIntroContracts.rb), [auditor](../scripts/regions/audit_sinnoh_s13_intro.py), [21 testes Python](../tests/test_sinnoh_s13_intro.py) e [teste Ruby](../tests/sinnoh_s13_intro_runtime.rb). O runtime recusa flags arbitrárias e avanços fora de ordem; Barry exige PBS compilado verificado e vitória ou derrota efetivamente retornada; Pokédex só depois da batalha.
 
 **Barra A 30/32 (93%) após CI, apenas engenharia**; duas parciais (S14/S31). A trilha I06–I08 **continua 5/8**, com mapas, sprites, PBS e execução Game.exe/JoiPlay pendentes. B/C/D 0/13 e 44 casos nativos não verificados.
+
+## S14 — três iniciais por Poké Bolas físicas (código e testes)
+
+A [entrega S14](SINNOH_S14_TRES_INICIAIS_EVENTOS_FISICOS_ACEITE.md) fortalece o [compilador de eventos Twinleaf](../scripts/regions/build_sinnoh_twinleaf_events.py) para exigir chaves, espécies, mapa e interação manual nas três Poké Bolas do Lago Verity. Inclui [contrato S14](../data/regions/sinnoh-starters-s14.json), [pré-visualizador Ruby](../scripts/regions/SinnohStarterContracts.rb), [auditor](../scripts/regions/audit_sinnoh_s14_starters.py), [24 testes Python](../tests/test_sinnoh_s14_starters.py) e [teste Ruby de escolhas, saves e isolamento regional](../tests/sinnoh_s14_starter_runtime.rb). Não altera a fonte real da engine nem a instalação principal.
+
+**Após CI e merge: Barra A 31/32 (96%) apenas de engenharia, uma parcial S31.** A trilha de introdução I01–I08 continua **5/8**; MapIDs, sprites e PBS nativos não foram testados, B/C/D permanecem 0/13 e 44 observações Windows/JoiPlay pendentes.
 
 ## S15 — oito ginásios e insígnias (contratos offline)
 
@@ -361,7 +367,7 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Concluído em código | S11 | Piloto com namespace exclusivo de saves e carregamento regional protegido | [isolamento](../scripts/regions/sinnoh_save_isolation.py), [aceite S11](SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md) |
 | Concluído em código | S12 | Instalador QA isolado, dry-run, BAT e rollback | [instalador](../scripts/regions/sinnoh_s12_installer.py), [aceite S12](SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md) |
 | Concluído em código | S13 | Seis checkpoints Rowan/Barry e Pokédex com bloqueios; I06–I08 nativos pendentes | [aceite S13](SINNOH_S13_INTRO_ROWAN_BARRY_ACEITE.md), [trilha I01–I08](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md) |
-| Parcial | S14 | Três iniciais em Poké Bolas físicas, com save isolado | [template](../data/regions/sinnoh-twinleaf-events.json), [compilador](../scripts/regions/build_sinnoh_twinleaf_events.py) |
+| Concluído em código | S14 | Três Poké Bolas físicas por ação, validação de save e região; I06–I08 nativos seguem pendentes | [aceite S14](SINNOH_S14_TRES_INICIAIS_EVENTOS_FISICOS_ACEITE.md), [template](../data/regions/sinnoh-twinleaf-events.json) |
 | Concluído em código | S15 | Oito ginásios e insígnias com gates anti-fraude sem eventos nativos | [aceite S15](SINNOH_S15_OITO_GINASIOS_INSIGNIAS_ACEITE.md) |
 | Concluído em código | S16 | Oito HMs vinculados a badges/recibos locais, sem eventos nativos | [aceite S16](SINNOH_S16_HMS_INSIGNIAS_LOCAIS_ACEITE.md) |
 | Concluído em código | S24 | Catálogo simbólico dos 46 cenários musicais | [aceite S24](SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md) |
