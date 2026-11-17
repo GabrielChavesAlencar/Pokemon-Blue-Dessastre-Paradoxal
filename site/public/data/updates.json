@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "db59e59643627f607597253fd260fd3be847ac00",
+      "date": "2026-11-17T19:40:46-03:00",
+      "title": "docs(sinnoh): mark G10 integrated in main, pipeline reaches 10/12",
+      "category": "Documentação"
+    },
+    {
       "sha": "a0ef0c839c83a8863f73eab3ed71f0fad74f54c7",
       "date": "2026-11-17T19:40:04-03:00",
       "title": "feat(sinnoh): G10 source-grounded portal implementation evidence (#159)",
