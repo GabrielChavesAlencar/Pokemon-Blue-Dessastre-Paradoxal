@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "2d14b0c49ad00000c9988319c42de0e3f5335150",
+      "date": "2026-11-17T20:26:33-03:00",
+      "title": "feat(sinnoh): L00 sanitized physical-readiness preflight, no native approval (#167)",
+      "category": "Novidades"
+    },
+    {
       "sha": "07738b551bea02fcc03746e85fbdbf696f5b5580",
       "date": "2026-11-17T20:21:30-03:00",
       "title": "Unova G05.4 — blackout, checkpoint regional e estado (25/32)",
