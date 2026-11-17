@@ -80,11 +80,27 @@
     "summary_disclaimer": "Relatorios e mapas sao somente provas de estrutura do projeto doador, nao mapas verificados no jogo Destino"
   },
   "blockers": [
+    "56 de 64 mapas Unova medem 20x15; possiveis placeholders sem validacao de tiles; somente 8 mapas possuem dimensoes maiores",
     "64 mapas do ramo Unova tem zero eventos RMXP: reconstruir NPCs, ligacoes, treinadores e historia",
     "O projeto doador mistura White/BW, BW2 e anime; rotas 301–323 nao correspondem automaticamente a BW 1–18",
     "35 areas do catalogo nao tem correspondencia exata de nome; ausencia de nome nao prova ausencia fisica",
     "19 nomes de rota/Victory Road encontrados em outros ramos do jogo nao devem ser importados como Unova",
     "Verificar licencas de cada asset antes de redistribuir (E06)",
     "Sem remap nativo, nao instalar no Game.exe, nao marcar Android funcional (E08)"
-  ]
+  ],
+  "source_unova_map_dimensions_20x15": 56,
+  "source_unova_map_dimensions_nondefault": 8,
+  "source_unova_larger_map_ids": [
+    463,
+    464,
+    465,
+    466,
+    468,
+    490,
+    494,
+    495
+  ],
+  "source_map_atlas": "data/regions/unova-e05-source-map-atlas.json",
+  "source_map_tile_geometry_visually_verified": false,
+  "audit_20x15_not_proof_of_blank_map": true
 }
