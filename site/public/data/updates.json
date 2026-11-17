@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bd313256a28684720556447c5df8116224b34520",
+      "date": "2026-11-17T14:04:00-03:00",
+      "title": "feat(sinnoh): B10 Windows Sandbox para isolamento privado dos saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "8c7b8dc2e6a600a49a5338cb26a5c412761b74d0",
       "date": "2026-11-17T13:56:16-03:00",
       "title": "Unova A08: auditoria inerte de eventos Map001 e manifestos",
