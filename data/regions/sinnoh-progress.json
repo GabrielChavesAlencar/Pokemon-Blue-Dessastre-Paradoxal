@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 23,
+    "done": 24,
     "partial": 5,
-    "pending": 4,
-    "percent_complete": 71,
-    "percent_with_partial_not_counted": 71,
+    "pending": 3,
+    "percent_complete": 75,
+    "percent_with_partial_not_counted": 75,
     "groups": [
       {
         "key": "foundation",
@@ -230,8 +230,8 @@
     {
       "id": "S23",
       "title": "Pós-jogo e revanches",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S23_POS_JOGO_REVANCHES_ACEITE.md"
     },
     {
       "id": "S24",
