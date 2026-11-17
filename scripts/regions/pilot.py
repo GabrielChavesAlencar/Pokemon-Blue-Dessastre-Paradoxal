@@ -445,7 +445,7 @@ KANTO_MOONSTONE_CALLBACK = 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018", 1
 # merely talking about fossils is never an item anchor.
 FOSSIL_ITEM_SYMBOLS = ("HELIXFOSSIL", "DOMEFOSSIL")
 FOSSIL_REWARD_SCRIPT = re.compile(
-    r"(?i)\\b(?:pbItemBall|pbReceiveItem|pbAddItem)\\s*\\(\\s*:?(HELIXFOSSIL|DOMEFOSSIL)\\b"
+    r"(?i)\b(?:pbItemBall|pbReceiveItem|pbAddItem)\s*\(\s*:?(HELIXFOSSIL|DOMEFOSSIL)\b"
 )
 
 
