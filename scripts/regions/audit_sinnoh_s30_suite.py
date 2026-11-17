@@ -174,7 +174,9 @@ def write_report(report: dict, path: Path, root: Path = ROOT) -> None:
     destination = destination.absolute()
     allowed = (root / ".blue-work/sinnoh-s30").resolve()
     if (destination.is_symlink() or not destination.parent.resolve().is_relative_to(allowed)
-            or not destination.name.endswith(".json") or destination.exists()):
+            or not destination.name.endswith(".json") or destination.exists()
+            or destination.with_suffix(".md").exists()
+            or destination.with_suffix(".md").is_symlink()):
         fail("saida fora da pasta privada, symlink ou sobrescrita")
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
