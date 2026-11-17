@@ -1,0 +1,97 @@
+name: Sinnoh L02 - revisor offline de evidencias sanitizadas
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l02-review.yml'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'tests/test_sinnoh_l02_evidence.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'scripts/regions/audit_sinnoh_g12_handoff.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l02-review.yml'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'tests/test_sinnoh_l02_evidence.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'scripts/regions/audit_sinnoh_g12_handoff.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    name: L02 / 40 testes sinteticos negativos e relatório sanitizado
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar revisao fail-closed L02 e recusar evidencias falsas
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: Relatorio do modelo publico exige cinco ausencias e zero QA real
+        run: |
+          python scripts/regions/review_sinnoh_l02_evidence.py > /tmp/sinnoh-l02-public-review.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/sinnoh-l02-public-review.json")
+          r=json.loads(p.read_text(encoding="utf-8"))
+          assert r["stage"]=="L02" and r["region"]=="SINNOH"
+          assert r["status"]=="INCOMPLETE_DOCUMENTARY_HANDOFF"
+          assert r["counts"]["missing"]==5 and r["counts"]["independently_accepted"]==0
+          assert set(r["reports"])=={"B09","B10","B11","R07","R08"}
+          assert all(v["status"]=="MISSING_REPORT" for v in r["reports"].values())
+          assert not r["chronology_dates_in_sanitized_sources_available"]
+          assert not r["b11_session_link_in_sanitized_sources_available"]
+          assert not r["sinnoh_playable"] and not r["may_install_live_game"]
+          assert r["native_cases_total"]==44 and r["native_cases_approved"]==0
+          assert (r["phase_b_approved"],r["phase_c_approved"],r["phase_d_approved"])==(0,0,0)
+          text=p.read_text(encoding="utf-8")
+          for forbidden in ("C:\\Users","Save01.rxdata","private-baseline.json",
+                            "hmac_key","source_clone_sha256","watch_id"):
+              assert forbidden not in text
+          print("SINNOH_L02_FIVE_MISSING_ZERO_NATIVE_APPROVAL")
+          PY
+      - name: Nao publicar ou importar relatorios privados
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "SINNOH_L02_NO_UPLOAD_NO_VM_NO_HOST_SAVE_ACCESS"
+
+  regressions:
+    name: L02 / suites L00 L01 G12 G11
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L01 exportador opcional, 30 testes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 auditor sanitizado, 24 testes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 matriz 44 nativos pendentes, 20 testes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+      - name: G11 regressao B07 B08 B09 B10 B11, 18 testes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g11_ci_chain.py' -v
