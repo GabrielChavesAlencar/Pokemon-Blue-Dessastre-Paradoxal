@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a3c257ea1fd79933a96f1fef7053df0fb40d31ad",
+      "date": "2026-11-17T20:09:14-03:00",
+      "title": "Unova G05.3 — NPC regional e retorno seguro (24/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "8624277636ea2c75afcfdcb0e1e0fbf9dd439207",
       "date": "2026-11-17T19:57:19-03:00",
       "title": "Unova G05.2 — insígnias, esmeraldas e especiais (23/32)",
