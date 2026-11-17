@@ -33,7 +33,8 @@ def root_paths(project: Path) -> tuple[Path, Path, Path]:
     work = project / ".blue-work"
     game_data = project / "game" / "Data"
     if (not project.is_dir() or project.is_symlink()
-            or work.is_symlink() or game_data.is_symlink()):
+            or work.is_symlink() or (project / "game").is_symlink()
+            or game_data.is_symlink()):
         blocked("projeto ou caminho de jogo invalido/symlink")
     if (work.exists() and not work.is_dir()) or (
             game_data.exists() and not game_data.is_dir()):
@@ -215,7 +216,9 @@ def main(argv: list[str] | None = None) -> int:
             plan_file = args.plan.absolute()
             root = args.project.absolute()
             if (plan_file.is_symlink() or not plan_file.is_file()
+                    or (root / ".blue-work").is_symlink()
                     or not plan_file.is_relative_to(root / ".blue-work")
+                    or not plan_file.resolve().is_relative_to((root / ".blue-work").resolve())
                     or plan_file.stat().st_size > 1_000_000):
                 blocked("plano deve estar dentro de .blue-work, sem symlink")
             plan = json.loads(plan_file.read_text("utf-8"))
