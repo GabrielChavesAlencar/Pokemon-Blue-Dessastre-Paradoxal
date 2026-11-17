@@ -284,5 +284,16 @@ class MapIDA05Tests(unittest.TestCase):
         self.assertFalse(review["mapid_reservation_confirmed"])
 
 
+    def test_33_catalog_reference_uses_portable_posix_paths(self):
+        """JSON references use '/' on both Linux and Windows."""
+        source=json.loads(self.source(NEEDED[0]).read_text("utf-8"))
+        self.assertEqual(source["unova_symbolic_area_catalog"],a05.U03.as_posix())
+        self.assertEqual(source["evidence"]["cross_reference"],a05.B05.as_posix())
+        # Both should run on WindowsPath without platform-dependent str(Path).
+        self.assertNotIn("\\",source["unova_symbolic_area_catalog"])
+        self.assertNotIn("\\",source["evidence"]["cross_reference"])
+        self.assertEqual(a05.audit(self.project)["historical_candidate_count"],174)
+
+
 if __name__=="__main__":
     unittest.main()
