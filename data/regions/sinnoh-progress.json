@@ -796,8 +796,8 @@
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
     "done": 18,
-    "partial": 1,
-    "pending": 1,
+    "partial": 2,
+    "pending": 0,
     "percent_complete": 90,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
@@ -959,8 +959,8 @@
         "priority": "P4",
         "title": "Auditoria estática Android/JoiPlay + checklist de 44 casos nativos",
         "acceptance": "Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais**",
-        "status": "pending",
-        "evidence_path": null
+        "status": "partial",
+        "evidence_path": "scripts/regions/audit_sinnoh_android_ch20.py"
       }
     ]
   }
