@@ -21,8 +21,8 @@ O [auditor A04](../scripts/regions/audit_unova_a04_mapids.py) lê somente os dad
 
 1. Atualize o repositório para obter **[UNOVA_A04_AUDITAR_MAPIDS.bat](../UNOVA_A04_AUDITAR_MAPIDS.bat)**.
 2. Identifique a pasta **game/Data da instalação real do Decades**, que contém MapInfos.rxdata e MapNNN.rxdata. O repositório do editor não substitui essa instalação.
-3. Abra o BAT ou arraste a pasta Data/game sobre ele; ele audita os arquivos somente leitura. Sem a pasta, mostra bloqueio e não simula IDs.
-4. Opcionalmente, informe overlays separados de Kanto, Johto, Hoenn e Sinnoh, caso tenha cópias verdadeiras dos pilotos, usando pastas Data ou ZIPs. Não rotule a mesma instalação consolidada como quatro snapshots regionais distintos.
+3. Dê dois cliques no BAT: ele abrirá a janela para escolher a pasta Data/game da instalação real. Também é possível arrastar essa pasta sobre o BAT; nesse caso, audita a baseline diretamente.
+4. O assistente perguntará se deseja comparar overlays separados de Kanto, Johto, Hoenn e Sinnoh, caso tenha cópias verdadeiras dos pilotos; escolha as pastas Data/game ou ZIPs pelas janelas. Não rotule a mesma instalação consolidada como quatro snapshots regionais distintos.
 5. Consulte os relatórios JSON privados em **.blue-work/unova/audit/a04-mapids-HASH.json**, nomeados pelo hash da evidência, sem exportar MapInfos ou sprites.
 
 Com o terminal CMD tradicional, o equivalente é:
@@ -34,7 +34,7 @@ Com o terminal CMD tradicional, o equivalente é:
 | Campo | Significado |
 |---|---|
 | observed_or_declared_occupied_map_ids | União de todos os IDs observados em MapNNN e declarados no MapInfos das fontes analisadas |
-| sources.DE CADES (chave real DECADES) | Baseline do jogo e MapInfos nativo; o rótulo não garante autoria por região |
+| sources.DECADES | Baseline do jogo e MapInfos nativo; o rótulo não garante autoria por região |
 | sources.KANTO/JOHTO/HOENN/SINNOH | Fontes opcionais informadas pelo operador |
 | missing_map_file_ids | IDs declarados no MapInfos mas ausentes como arquivo — **não são livres** |
 | orphan_map_file_ids | Arquivos MapNNN não listados no MapInfos da mesma fonte |
