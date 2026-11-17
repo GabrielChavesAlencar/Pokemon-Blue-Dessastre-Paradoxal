@@ -29,8 +29,9 @@
         {
           "id": "G01.1",
           "title": "Criar esquema versionado do estado de Unova",
-          "status": "pending",
-          "acceptance": "Flags, capítulos, missões, checkpoints e regras de compatibilidade por versão"
+          "status": "done",
+          "acceptance": "Flags, capítulos, missões, checkpoints e regras de compatibilidade por versão",
+          "evidence": "data/regions/unova-g01-state-contract.json"
         },
         {
           "id": "G01.2",
