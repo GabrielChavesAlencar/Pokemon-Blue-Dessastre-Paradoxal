@@ -2,6 +2,48 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5b3725fe2807ab95662ec89745b974fc0297b90e",
+      "date": "2026-11-17T19:24:45-03:00",
+      "title": "test(android): cover legacy updater migration into fast incremental patches",
+      "category": "Testes"
+    },
+    {
+      "sha": "aec3b2dde2a042932275fb889b77d1d8b9128da1",
+      "date": "2026-11-17T19:24:24-03:00",
+      "title": "fix(android): keep legacy updater immutable when both manifests use old schema",
+      "category": "Correções"
+    },
+    {
+      "sha": "bf770538b4f276864918bdcf438dbdf496d54667",
+      "date": "2026-11-17T19:24:18-03:00",
+      "title": "Unova G04.3: auditar evolução dinâmica e níveis selvagens (20/32)",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f108215118130c0771ca7c3a81af76fcdb311ed7",
+      "date": "2026-11-17T19:24:16-03:00",
+      "title": "fix(android): migrate legacy updater only when target tracks the updater",
+      "category": "Correções"
+    },
+    {
+      "sha": "8de0c2635b5bbd3e90e6c17d24ef01ea112943ec",
+      "date": "2026-11-17T19:23:31-03:00",
+      "title": "feat(android): generate backwards-compatible delta to upgrade legacy immutable updater",
+      "category": "Novidades"
+    },
+    {
+      "sha": "f1fd392a34eb7922f977771d7d6f52e116ba524e",
+      "date": "2026-11-17T19:23:20-03:00",
+      "title": "feat(android): patch updater itself even when legacy ZIP marks it immutable",
+      "category": "Novidades"
+    },
+    {
+      "sha": "ecc08c12f6270b58a9415f8b09677f21a05d1419",
+      "date": "2026-11-17T19:22:30-03:00",
+      "title": "test(android): verify patch-only default, no-backup installs and resume support",
+      "category": "Testes"
+    },
+    {
       "sha": "8d63a9886f2d6b861d387df2d12bb7df779c1f1a",
       "date": "2026-11-17T19:20:45-03:00",
       "title": "ci(android): publish no-backup updater and multi-revision deltas in fast hotfix release",
