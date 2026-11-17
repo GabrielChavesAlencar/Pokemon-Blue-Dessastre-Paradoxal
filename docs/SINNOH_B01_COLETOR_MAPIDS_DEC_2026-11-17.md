@@ -1,5 +1,7 @@
 # Sinnoh B01 — Coleta segura de MapIDs do Decades
 
+**Recebido em 17/11/2026:** ZIP de inventário real entregue pelo usuário; veja os [resultados: 648 MapIDs ocupados e 72 conflitos com Sinnoh](SINNOH_B01_RESULTADO_REAL_MAPIDS_2026-11-17.md). As instruções abaixo ficam disponíveis para gerar novos snapshots quando a instalação for atualizada. Os direitos e as reservas futuras seguem pendentes, B/C/D 0/13.
+
 Esta fase gera o inventário da instalação local sem executar Game.exe, JoiPlay nem alterar saves. Os 76 IDs de origem de Sinnoh já estão documentados em B00, mas seus IDs de destino continuam desconhecidos sem o índice real do Decades.
 
 ## Para o usuário no Windows

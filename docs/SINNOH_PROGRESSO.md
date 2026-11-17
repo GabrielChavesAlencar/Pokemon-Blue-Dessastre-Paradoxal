@@ -426,3 +426,7 @@ A [etapa B00](SINNOH_B00_RECEBIMENTO_FONTES_2026-11-17.md) documentou o pacote P
 ### Barra B — B01: coletor de MapIDs Decades e comparação com Sinnoh
 
 O [coletor Windows e o auditor B01](SINNOH_B01_COLETOR_MAPIDS_DEC_2026-11-17.md) foram preparados. O usuário pode criar um inventário ZIP privado somente de MapInfos/Tilesets/IDs e devolvê-lo aqui. O auditor cruza a instalação com os **76 MapIDs Sinnoh** já observados, sem instalar conteúdo. A disponibilidade de IDs ainda não está confirmada: reservas de Kanto/Johto/Hoenn permanecem não verificadas. **B/C/D = 0/13**, com Game.exe/JoiPlay adiados.
+
+### Barra B — inventário real da instalação Decades auditado (17/11/2026)
+
+O [resultado B01 real](SINNOH_B01_RESULTADO_REAL_MAPIDS_2026-11-17.md) conferiu o ZIP enviado com 648 MapIDs ocupados, índice e arquivos físicos coerentes; **72 de 76 IDs Sinnoh colidem** com a base. Há **250 IDs fisicamente não ocupados** entre 1 e 599, incluindo o intervalo 442–599, mas **não foram reservados** porque os destinos futuros Kanto/Johto/Hoenn ainda exigem auditoria. O tileset 31 do doador é SinnohCompleteTileset; o 31 da base é Poké Mart, logo precisa de remapeamento próprio. Nenhum mapa ou save alterado; **B/C/D seguem 0/13** e testes nativos são adiados.
