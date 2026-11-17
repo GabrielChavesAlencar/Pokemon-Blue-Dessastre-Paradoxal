@@ -120,8 +120,9 @@
         {
           "id": "G03.4",
           "title": "Modelar Elite Four, Alder e rematches",
-          "status": "pending",
-          "acceptance": "Tabelas e testes para a campanha e o pós-jogo sem fingir PBS compilado"
+          "status": "done",
+          "acceptance": "Tabelas e testes para a campanha e o pós-jogo sem fingir PBS compilado",
+          "evidence": "scripts/regions/audit_unova_g03_elite_alder.py"
         }
       ]
     },
