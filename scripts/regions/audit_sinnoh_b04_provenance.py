@@ -213,7 +213,15 @@ def audit_zip(path,spec,b01,b03):
     if type(report["same_b01_baseline"]) is not bool or report["same_b01_baseline"]!=baseline:
         blocked("alegacao de baseline divergente")
     physical=checked_ids(report["physical_map_ids"],"instalacao local")
-    if baseline and (len(physical)!=648
+    # Collector v1 required 3-5 digits in MapNNN.rxdata and accidentally omitted
+    # all 31 native map files with IDs < 100. Do not count the 31 as free,
+    # forge a physical re-scan or silently mark the inventory complete.
+    expected_legacy=(
+        set(range(100,276)) | set(range(300,442))
+        | set(range(600,899))
+    )
+    legacy_short_id_bug=(baseline and physical==expected_legacy)
+    if baseline and not legacy_short_id_bug and (len(physical)!=648
         or sum(x<=599 for x in physical)!=349
         or sum(600<=x<=699 for x in physical)!=100
         or sum(700<=x<=999 for x in physical)!=199):
@@ -227,6 +235,8 @@ def audit_zip(path,spec,b01,b03):
        if a in claims and b in claims))) if len(claims)>1 else []
     if not baseline:
         status="BASELINE_CHANGED_REQUIRES_NEW_B01"
+    elif legacy_short_id_bug:
+        status="LEGACY_B04_COLLECTOR_OMITTED_SHORT_MAP_IDS_RESCAN_REQUIRED"
     elif overlaps:
         status="INSTALLED_REGIONAL_ID_COLLISIONS_NEED_REVIEW"
     elif len(claims)!=3:
@@ -238,6 +248,10 @@ def audit_zip(path,spec,b01,b03):
        "local_report_sha256":hashlib.sha256(Path(path).read_bytes()).hexdigest(),
        "b01_baseline_matches_current_hashes":baseline,
        "physical_map_ids_reported":len(physical),
+       "legacy_collector_short_ids_omitted":legacy_short_id_bug,
+       "legacy_b01_known_omitted_ids":(
+          [1,22,32,33,42,43,48,*range(76,100)] if legacy_short_id_bug else []),
+       "b01_reference_physical_map_count":b01["native_occupied_map_count"],
        "regional_installation_claims":region_results,
        "installed_region_claims_matching_contract":len(claims),
        "conflicting_installed_destination_ids":overlaps,
