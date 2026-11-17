@@ -28,9 +28,9 @@ São **trilhas auxiliares independentes de oito marcos cada**. Não confundir se
 | **B — História, NPCs, ginásios** | **0/8 (0%)** | Nenhum evento Unova instalado |
 | **C — Selvagens, treinadores, música, pós-jogo** | **0/8 (0%)** | Nenhum recurso de origem integrado |
 | **D — Game.exe, Blue-Story, JoiPlay** | **0/8 (0%)** | Nenhum teste real ou pacote instalado |
-| **E — Documentação, ferramentas, catálogos** | **3/8 (37,5%)** | E01 fontes, E02 plano 32 fases, E03 catálogo/validador/testes publicados |
+| **E — Documentação, ferramentas, catálogos** | **4/8 (50%)** | E01 fontes, E02 plano, E03 áreas/testes e E07 cues/treinadores/fallbacks simbólicos |
 
-Pendências E04–E08: auditoria real do ZIP; nomes/eventos RXDATA; direitos de recursos; dados musicais/treinadores; evidências integradas de QA.
+Pendências E04, E05, E06 e E08: ZIP real, nomes/eventos, direitos por arquivo e QA real. E07 documenta apenas chaves musicais, treinadores e fallbacks simbólicos, sem áudio ou equipes instalados.
 
 **Fases U01–U32 aprovadas como jogáveis: 0/32.** U01 pesquisa inicial documentada (direitos ainda pendentes); U02 ferramentas criadas mas auditoria da fonte bloqueada; U03 catálogo de referências criado mas sem confrontar MapInfos real; U04–U32 não executadas.
 
@@ -60,3 +60,36 @@ O BAT não foi executado em Windows/JoiPlay nesta entrega. Na ausência do ZIP o
 Obter ZIP e créditos do autor, validar hashes/direitos, fazer o parse **inerte** de MapInfos/MapNNN para descobrir quais áreas Unova realmente existem, preencher matriz PRESENT/PARTIAL/MISSING e cruzar os 74 registros simbólicos com os mapas. Depois, U04 deve auditar MapInfos real e as reservas de todas as regiões antes de qualquer mapa piloto U05.
 
 **Não marcar como concluída uma fase de importação sem a fonte, compilação e QA real.**
+
+
+## Atualização da Barra E — 17/11/2026
+
+Foram publicados instrumentos adicionais de trabalho, sem substituir arquivos jogáveis:
+
+| Componente | Arquivo | Estado comprovado |
+|---|---|---|
+| Parser RXDATA inerte E05 | [audit_unova_source_detail.py](../scripts/regions/audit_unova_source_detail.py) | Implementado, mas ainda não aplicado ao ZIP real. Conta eventos, scripts não executados e transferências de MapNNN |
+| Direitos e cues E06/E07 | [unova-e06-e07-preparation.json](../data/regions/unova-e06-e07-preparation.json) | 14 grupos de direitos UNVERIFIED, 69 chaves musicais e 19 referências de treinadores sem níveis/times inventados |
+| Validador de direitos e música | [audit_unova_e06_e07.py](../scripts/regions/audit_unova_e06_e07.py) | Falha se houver licença, MapID, música ou time falsamente aprovado |
+| Relatório E08 | [audit_unova_e08_readiness.py](../scripts/regions/audit_unova_e08_readiness.py) | Mostra 4/8 (50%), bloqueios e nenhuma aprovação Windows/JoiPlay |
+| Validação com duplo clique | [UNOVA_VALIDAR_DOCUMENTACAO.bat](../UNOVA_VALIDAR_DOCUMENTACAO.bat) | Executa auditorias documentais sem iniciar Game.exe |
+| Testes complementares | [RXDATA](../tests/test_unova_e05_rxdata.py), [direitos/music](../tests/test_unova_e06_e07.py), [relatório](../tests/test_unova_e08_readiness.py) | 33 cenários adicionais de proteção sintética |
+
+### Critérios exatos, sem trocar documentação por conteúdo jogável
+
+- [x] E01 — pesquisa e comparação de fontes reais
+- [x] E02 — plano de integração U01–U32
+- [x] E03 — 74 áreas de referência, validador e testes
+- [ ] E04 — ZIP real do autor inspecionado, SHA-256, proveniência e créditos auditados; ferramenta preparada
+- [ ] E05 — MapInfos/MapNNN reais confrontados com Unova; parser inerte preparado, nomes ainda não conferidos
+- [ ] E06 — licenças e autorizações de cada asset verificadas; matriz preparatória não é autorização
+- [x] E07 — 69 chaves musicais, fallbacks simbólicos e 19 referências de treinadores; nenhum áudio/time instalado
+- [ ] E08 — evidências reais de QA Windows/Game.exe e Android/JoiPlay; gerador de checklist não substitui testes
+
+**Barra E = 4/8 (50%).** A/B/C/D = 0/8; campanha jogável = 0/32. O status regional de Unova continua PLANNED.
+
+### Execução sem PowerShell
+
+Dê duplo clique em [UNOVA_VALIDAR_DOCUMENTACAO.bat](../UNOVA_VALIDAR_DOCUMENTACAO.bat). Este verifica as 74 áreas, 69 cues, 19 treinadores e o relatório E08, sem mexer no jogo. Para auditar a fonte, mantenha o ZIP original em .blue-work/unova/sources/Pokemon_World_V18.zip, obtido do autor, e rode novamente o BAT. O parser grava um relatório somente em .blue-work/unova/audit/u02-rxdata-detail.json. Fontes desconhecidas, direitos incompletos e dados não comprovados continuam bloqueados.
+
+**Observação sobre CI:** em uma execução anterior da suíte geral, a etapa Ruby de Kanto falhou no teste de escala do protagonista kanto_cut_tree_runtime.rb; ela não é uma prova de falha da auditoria Unova. Não declarar toda a regressão global verde antes de verificar o run final da main.
