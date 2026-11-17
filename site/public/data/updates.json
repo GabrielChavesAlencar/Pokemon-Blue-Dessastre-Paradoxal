@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4ac48f68f0c1951cb32c06ea8787d9fbbbaae6ae",
+      "date": "2026-11-17T18:38:45-03:00",
+      "title": "docs(sinnoh): mark G04 integrated in main, GitHub pipeline 4/12",
+      "category": "Documentação"
+    },
+    {
       "sha": "d05724ff33929a0a3f0d36a2ea841fab1e21ab1d",
       "date": "2026-11-17T18:38:20-03:00",
       "title": "fix(sinnoh): G04 harden B10 Sandbox preparation (#148)",
