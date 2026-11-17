@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d877ca20dabe47bd5c797003bf9dc2231e5537db",
+      "date": "2026-11-17T11:19:13-03:00",
+      "title": "docs(sinnoh): B01 inventário real do Decades e 72 colisões auditadas",
+      "category": "Documentação"
+    },
+    {
       "sha": "7bf605ae932cb61724efa2e6522834b48a45c57b",
       "date": "2026-11-17T11:14:09-03:00",
       "title": "feat(unova): piloto privado Cheren SP05 com QA 4x4 e comparação Decades",
