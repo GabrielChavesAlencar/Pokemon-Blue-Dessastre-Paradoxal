@@ -35,8 +35,8 @@ s20_check(!distortion.respond_to?(:record_with_sources),
 
 def s20_fixture(state, event, outcome, source, sources)
   # Private helper only; never a public production callback.
-  BlueSinnohDistortionContracts.send(
-    :record_with_sources, state, event, outcome, source, sources)
+  BlueSinnohDistortionContracts.send(:record_with_sources,
+    state, event, outcome, source, sources)
 end
 
 def s20_reject(state, event, outcome, source, sources)
