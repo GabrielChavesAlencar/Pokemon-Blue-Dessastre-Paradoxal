@@ -14,6 +14,10 @@ O arquivo [`SINNOH_DIAGNOSTICAR_PENDENCIAS.bat`](../SINNOH_DIAGNOSTICAR_PENDENCI
 
 A [auditoria B02](SINNOH_B02_RESERVAS_REGIONAIS_2026-11-17.md) cruzou o ZIP real do Decades (**648 MapIDs ocupados**) com as restrições documentadas: Johto 600–699 e Hoenn 700–999. A região de Kanto possui instalação com destinos dinâmicos; **suas reservas futuras ainda não foram apresentadas**. O intervalo 442–599 é fisicamente vazio, mas não está reservado a Sinnoh. **R07 segue parcial** e o auditor R07 exige manifestos privados vinculados ao baseline, sem prova artificial.
 
+## Atualização B03 — modelos de reserva futura, ainda não validados
+
+A [B03](SINNOH_B03_RESERVAS_E_TILESETS_2026-11-17.md) confirmou em código a origem de cada faixa protegida e criou [três modelos privados a preencher](../data/regions/sinnoh-b03-reservation-review-templates.json), vinculados ao SHA do `MapInfos` recebido em B01. Os modelos têm listas vazias e `reviewed_locally=false` de propósito; **não constituem evidência R07**. O inventário real não incluiu `blue-kanto-install.json`, `blue-johto-main-preview.json` nem `blue-hoenn-install.json`, e não permite inventar reservas futuras. Os 250 IDs fisicamente vazios, inclusive 442–599, não foram alocados; R07 continua parcial.
+
 ## Evidências ainda necessárias
 
 1. **Baseline local real:** `game/Data/MapInfos.rxdata` e mapas de Decades/Kanto/Johto/Hoenn atualmente instalados; é proibido substituir por arquivos sintéticos em produção.
