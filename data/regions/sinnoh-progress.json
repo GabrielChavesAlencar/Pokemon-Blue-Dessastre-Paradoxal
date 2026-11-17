@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 11,
+    "done": 12,
     "partial": 6,
-    "pending": 15,
-    "percent_complete": 34,
-    "percent_with_partial_not_counted": 34,
+    "pending": 14,
+    "percent_complete": 37,
+    "percent_with_partial_not_counted": 37,
     "groups": [
       {
         "key": "foundation",
@@ -260,8 +260,8 @@
     {
       "id": "S28",
       "title": "Catálogo de times de treinadores e Liga",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S28_CATALOGO_TIMES_REFERENCIAS.md"
     },
     {
       "id": "S29",
