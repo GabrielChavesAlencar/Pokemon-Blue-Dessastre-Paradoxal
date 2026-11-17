@@ -19,7 +19,7 @@
 | Android/JoiPlay | 1 | Início e carregamento no aparelho, perfil próprio, iniciais e warps |
 | **Total** | **44** | **0 executados/comprovados por esta CH20** |
 
-O campo `native_status: pending` impede que um caso derivado de JSON simbólico apareça como observação real. Os nomes e símbolos não demonstram existência de mapas ou eventos instalados.
+**Aceite nativo registrado: 0/44 casos.** O campo `native_status: pending` impede que um caso derivado de JSON simbólico apareça como observação real. Os nomes e símbolos não demonstram existência de mapas ou eventos instalados.
 
 ## Como executar o pré-voo local
 
