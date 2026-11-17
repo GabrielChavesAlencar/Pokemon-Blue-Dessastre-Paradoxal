@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "56e71431437e12ac4818ab61defa50a64730446d",
+      "date": "2026-11-17T09:50:41-03:00",
+      "title": "feat(sinnoh): S13 Rowan Barry checkpoints seguros em código (30/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "fcb808e6b955a29d53de461328e897283239ca23",
       "date": "2026-11-17T09:41:00-03:00",
       "title": "feat(sinnoh): S07 reconciliação MapIDs e rollback auditado (29/32 em código)",
