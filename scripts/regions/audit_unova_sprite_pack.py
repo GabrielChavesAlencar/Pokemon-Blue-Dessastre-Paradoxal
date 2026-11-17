@@ -30,8 +30,8 @@ MAX_SPRITE_BYTES = 16 * 1024**2
 MAX_PIXELS = 16_777_216
 MAX_DIM = 8192
 MAX_REFERENCE_FILES = 10000
-SPRITE_EXT = {".png", ".gif"}
-OTHER_IMAGE_EXT = {".bmp", ".jpg", ".jpeg", ".webp", ".apng", ".tga", ".ase", ".aseprite"}
+SPRITE_EXT = {".png", ".gif", ".apng"}
+OTHER_IMAGE_EXT = {".bmp", ".jpg", ".jpeg", ".webp", ".tga", ".ase", ".aseprite"}
 EXPECTED = ("CHEREN", "BIANCA", "JUNIPER", "N", "GHETSIS", "TEAM_PLASMA",
             "HILBERT", "HILDA", "CILAN", "CHILI", "CRESS", "LENORA",
             "BURGH", "ELESA", "CLAY", "SKYLA", "BRYCEN", "IRIS",
@@ -70,6 +70,7 @@ def inspect_png(blob: bytes) -> dict:
     color = None
     apng = 0
     palette_alpha = False
+    found_idat = False
     ended = False
     while offset + 12 <= len(blob):
         size = struct.unpack_from(">I", blob, offset)[0]
@@ -101,14 +102,16 @@ def inspect_png(blob: bytes) -> dict:
                 deny("APNG com quadros excessivos")
         if kind == b"tRNS":
             palette_alpha = True
+        if kind == b"IDAT":
+            found_idat = True
         offset += 12 + size
         if kind == b"IEND":
             if size != 0 or offset != len(blob):
                 deny("PNG com IEND invalido ou bytes extras")
             ended = True
             break
-    if not ended or width is None:
-        deny("PNG truncado/sem IEND")
+    if not ended or width is None or not found_idat:
+        deny("PNG truncado/sem IDAT/IEND")
     return {
         "format": "APNG" if apng else "PNG",
         "width": width, "height": height,
@@ -206,7 +209,7 @@ def inspect_gif(blob: bytes) -> dict:
 
 
 def image_info(blob: bytes, extension: str) -> dict:
-    if extension == ".png":
+    if extension in (".png", ".apng"):
         return inspect_png(blob)
     if extension == ".gif":
         return inspect_gif(blob)
@@ -288,7 +291,7 @@ def _read_member(archive: zipfile.ZipFile, info: zipfile.ZipInfo) -> bytes:
 
 
 def reference_inventory(directory: Path | None) -> dict:
-    if directory is None or not directory.exists():
+    if directory is None:
         return {
             "status": "NOT_PROVIDED", "files_scanned": 0,
             "same_name_comparisons_available": False,
@@ -296,6 +299,8 @@ def reference_inventory(directory: Path | None) -> dict:
             "sprites": {},
         }
     root = directory.absolute()
+    if not root.exists():
+        deny("pasta de referencia Decades indicada nao encontrada")
     if root.is_symlink() or not root.is_dir():
         deny("diretorio Decades invalido ou link simbolico")
     found = defaultdict(list)
