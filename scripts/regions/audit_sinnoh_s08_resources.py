@@ -84,6 +84,19 @@ def source_audit(source: Path, game_data: Path | None = None) -> dict:
     }
 
 
+def check_png(data: bytes, rel: str) -> None:
+    # Only validate the minimal binary signature/IHDR/dimensions here.
+    # Native rendering, format decoding and sprite proportions require Game.exe.
+    if (not isinstance(data, bytes) or len(data) < 36
+            or data[:8] != b"\\x89PNG\\r\\n\\x1a\\n"
+            or data[8:12] != b"\\x00\\x00\\x00\\r"
+            or data[12:16] != b"IHDR"
+            or int.from_bytes(data[16:20], "big") < 1
+            or int.from_bytes(data[20:24], "big") < 1
+            or b"IEND" not in data[-20:]):
+        blocked("arquivo PNG referenciado invalido: " + rel)
+
+
 def graphic_inventory(tileset_blob: bytes, overlay: dict[str, bytes],
                       base: Path, base_hashes: dict[str, str]) -> dict:
     """Resolve required tilesets/autotiles from the merged private QA inputs."""
@@ -112,14 +125,13 @@ def graphic_inventory(tileset_blob: bytes, overlay: dict[str, bytes],
             rel = f"Graphics/{folder}/{name}.png"
             paths.add(rel)
             if rel in overlay:
-                data = overlay[rel]
-                if not isinstance(data, bytes) or not data:
-                    blocked("grafico do overlay corrompido: " + rel)
+                check_png(overlay[rel], rel)
             elif rel in base_hashes:
                 f = base / rel
                 if (f.is_symlink() or not f.is_file()
                         or digest(f.read_bytes()) != base_hashes[rel]):
                     blocked("grafico da base adulterado: " + rel)
+                check_png(f.read_bytes(), rel)
             else:
                 missing.add(rel)
     if missing:
