@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 12,
+    "done": 13,
     "partial": 6,
-    "pending": 14,
-    "percent_complete": 37,
-    "percent_with_partial_not_counted": 37,
+    "pending": 13,
+    "percent_complete": 40,
+    "percent_with_partial_not_counted": 40,
     "groups": [
       {
         "key": "foundation",
@@ -152,8 +152,8 @@
     {
       "id": "S10",
       "title": "Lançador próprio SINNOH_JOGAR_EXPERIMENTAL.bat",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S10_LANCADOR_EXPERIMENTAL_ACEITE.md"
     },
     {
       "id": "S11",
