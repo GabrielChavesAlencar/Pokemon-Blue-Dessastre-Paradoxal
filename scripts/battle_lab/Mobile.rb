@@ -35,7 +35,7 @@ module BlueMobile
   def self.file_field(path, key)
     return nil unless File.file?(path)
     content=File.read(path)
-    match=content.match(/^#{Regexp.escape(key)}:\\s*(.+?)\\s*$/)
+    match=content.match(/^#{Regexp.escape(key)}:\s*(.+?)\s*$/)
     match && match[1]
   rescue IOError, SystemCallError
     nil
@@ -43,14 +43,14 @@ module BlueMobile
   def self.marker_field(key)
     marker='Data/blue-update.json'
     return nil unless File.file?(marker)
-    match=File.read(marker).match(/"#{Regexp.escape(key)}"\\s*:\\s*"([^"]+)"/)
+    match=File.read(marker).match(/"#{Regexp.escape(key)}"\s*:\s*"([^"]+)"/)
     match && match[1]
   rescue IOError, SystemCallError
     nil
   end
   def self.format_utc(value)
     return 'Nao registrada (versao antiga)' if value.nil? || value.empty?
-    match=value.match(/\\A(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})(?::(\\d{2}))?/)
+    match=value.match(/\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/)
     return value unless match
     "#{match[3]}/#{match[2]}/#{match[1]} #{match[4]}:#{match[5]}:#{match[6] || '00'}"
   end
