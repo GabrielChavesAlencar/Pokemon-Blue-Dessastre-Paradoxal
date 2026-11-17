@@ -1,7 +1,9 @@
 """Sinnoh B09: synthetic B07+B08→native sandbox, fail-closed + rollback."""
 from __future__ import annotations
+import contextlib
 import copy
 import hashlib
+import io
 import json
 from pathlib import Path
 import subprocess
@@ -222,5 +224,32 @@ class B09Tests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,"SINNOH_B09_BLOCKED"):
                     b09.check_contract(c,self.b08,self.b07,self.b06,self.b00,
                                        self.b01,self.b04,self.b05)
+
+    def test_19_clone_progress_goes_only_to_stderr(self):
+        project,game,files,infos,tiles,dry,rows,report=self.fixture()
+        native,_=b09.scan_native_game(project,game)
+        plan=b09.plan_clone(native,files,dry["plan_sha256"])
+        stdout=io.StringIO()
+        stderr=io.StringIO()
+        with contextlib.redirect_stdout(stdout),contextlib.redirect_stderr(stderr):
+            result=b09.clone_private(project,game,files,plan,plan["plan_sha256"])
+        self.assertEqual(stdout.getvalue(),"")
+        self.assertIn("[B09 COPIA]",stderr.getvalue())
+        self.assertIn("100% em bytes",stderr.getvalue())
+        self.assertIn("Game.exe NAO iniciado",stderr.getvalue())
+        self.assertFalse(result["safe_to_launch"])
+
+    def test_20_same_size_source_mutation_blocks_stream_copy(self):
+        project,game,files,infos,tiles,dry,rows,report=self.fixture()
+        native,_=b09.scan_native_game(project,game)
+        plan=b09.plan_clone(native,files,dry["plan_sha256"])
+        source=game/"Game.exe"
+        raw=source.read_bytes()
+        source.write_bytes(raw[:-1]+bytes([raw[-1]^1]))
+        self.assertEqual(source.stat().st_size,len(raw))
+        with self.assertRaisesRegex(ValueError,"jogo mudou entre dry-run"):
+            b09.clone_private(project,game,files,plan,plan["plan_sha256"])
+        base=project/".blue-work/sinnoh-b09-native-qa"
+        self.assertFalse(any(base.iterdir()) if base.exists() else False)
 
 if __name__=="__main__":unittest.main()
