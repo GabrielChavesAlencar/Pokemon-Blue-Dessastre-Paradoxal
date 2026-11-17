@@ -223,8 +223,8 @@ def _verify_paths(old, new, patch):
 
 def _local_target(root, name):
     """Refuse symlink parents: never write outside the selected JoiPlay folder."""
-    if (not isinstance(name, str) or not name or "\\x00" in name or
-            "\\\\" in name or name.startswith("/") or
+    if (not isinstance(name, str) or not name or "\x00" in name or
+            "\\" in name or name.startswith("/") or
             any(part in ("", ".", "..") for part in name.split("/"))):
         raise ValueError("Unsafe Android update path: " + str(name))
     target = root.joinpath(*PurePosixPath(name).parts)
