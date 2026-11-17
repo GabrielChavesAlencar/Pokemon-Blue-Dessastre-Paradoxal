@@ -21,6 +21,7 @@ import audit_unova_a05_candidates as a05
 import audit_unova_a06_references as a06
 import audit_unova_a07_reference_provenance as a07
 import audit_unova_a08_readiness as a08
+import audit_unova_a09_intro_and_claims as a09
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -159,6 +160,7 @@ def pretty(result: dict) -> str:
     a06_result=result.get("a06_result")
     a07_result=result.get("a07_result")
     a08_result=result.get("a08_result")
+    a09_result=result.get("a09_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -262,6 +264,45 @@ def pretty(result: dict) -> str:
         if a08_result.get("block_reason"):
             lines.append("  Bloqueio A08: "+a08_result["block_reason"])
         lines.append("")
+    if a09_result:
+        intro=a09_result.get("intro_event_evidence",{})
+        calls=a09_result.get("script_transfer_triage",{})
+        counts=calls.get("classification_counts",{})
+        manifest=a09_result.get("manifest_provenance",{})
+        lines.extend([
+            "A09 — introducoes, condicoes, referencias dinamicas e manifestos",
+            "  Status: "+a09_result.get("status","UNKNOWN"),
+            "  Transferencias do Map001 para MapID 3: "+str(intro.get("static_transfer_to_mapid3_count","DESCONHECIDO")),
+            "  Origem confere com A07? "+("Sim" if intro.get("mapid3_origin_matches_a07") else "Nao/Desconhecido"),
+            "  Condicoes reais de ativacao executadas? Nao",
+        ])
+        for event in intro.get("events",[]):
+            lines.append("  Evento "+str(event.get("event_id"))+" — "+str(event.get("event_name","")))
+            for page in event.get("pages",[])[:10]:
+                to3=[x for x in page.get("transfer_evidence",[]) if x.get("destination_map_id")==3]
+                gates=", ".join(k+"="+str(v) for k,v in page.get("condition_ids",{}).items())
+                lines.append("    Pagina "+str(page.get("page_index"))+", gatilho "+str(page.get("trigger_label"))+
+                             ", comandos "+str(page.get("command_total"))+
+                             ", transferencias p/3 "+str(len(to3))+
+                             ", condicoes "+gates[:120])
+        lines.extend([
+            "  Chamadas textuais em scripts classificadas: "+
+                str(sum(v for k,v in counts.items() if k.isupper())),
+            "    Definicoes: "+str(counts.get("DEFINITION",0))+
+                "; simbolicas/computadas: "+str(counts.get("SYMBOLIC_OR_COMPUTED",0))+
+                "; literal ID 3: "+str(counts.get("LITERAL_TARGET_3",0))+
+                "; literal Unova 518-599: "+str(counts.get("LITERAL_UNOVA_CANDIDATE",0)),
+            "  Manifestos com colisao observada: "+
+                ", ".join(map(str,manifest.get("observed_candidate_collisions",[]))),
+            "  Cobertura dos manifestos completa? Nao (reivindicacoes futuras nao verificadas)",
+            "  Revisao humana pendente: "+
+                ", ".join(a09_result.get("followup_review_flags",[])[:12])[:750],
+            "  Reserva autorizada? Nao",
+            "  Relatorio completo: "+str(result.get("a09_report_path") or "NAO_GERADO"),
+        ])
+        if a09_result.get("block_reason"):
+            lines.append("  Motivo do bloqueio: "+a09_result["block_reason"])
+        lines.append("")
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
@@ -304,8 +345,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -362,6 +403,22 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_total":8
             }
         a08_path=a08.save(project,a08_result)
+        try:
+            a09_result=a09.audit(selected,project,a04_result,a06_result,a07_result,a08_result)
+        except (ValueError,OSError,KeyError,TypeError,IndexError,RecursionError) as exc:
+            a09_result={
+                "schema":1,"phase":"A09","region":"UNOVA",
+                "status":"BLOCKED_A09_INCOMPLETE_NOT_CERTIFIED",
+                "intro_event_evidence":{"events":[],"static_transfer_to_mapid3_count":None,
+                    "mapid3_origin_matches_a07":False},
+                "script_transfer_triage":{"classification_counts":{},"scan_error_count":None},
+                "manifest_provenance":{"observed_candidate_collisions":[],
+                    "missing_or_unrecognized_coverage":True},
+                "followup_review_flags":["A09_BLOCKED"],
+                "block_reason":str(exc)[:300],
+                "can_reserve_mapids":False,"can_install":False,"bar_a_completed":0,"bar_a_total":8
+            }
+        a09_path=a09.save(project,a09_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -373,6 +430,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a07_report_path":str(a07_path),
             "a08_result":a08_result,
             "a08_report_path":str(a08_path),
+            "a09_result":a09_result,
+            "a09_report_path":str(a09_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -396,6 +455,7 @@ def main(argv=None) -> int:
         print("UNOVA_A06="+str(result.get("a06_report_path") or "NAO_GERADO"))
         print("UNOVA_A07="+str(result.get("a07_report_path") or "NAO_GERADO"))
         print("UNOVA_A08="+str(result.get("a08_report_path") or "NAO_GERADO"))
+        print("UNOVA_A09="+str(result.get("a09_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
