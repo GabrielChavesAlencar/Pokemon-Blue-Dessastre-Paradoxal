@@ -42,6 +42,8 @@ REQUIRED = {
         "tests/test_sinnoh_b00_intake.py",
         "scripts/regions/audit_sinnoh_b01_inventory.py",
         "tests/test_sinnoh_b01_inventory.py",
+        "tests/test_sinnoh_b01_actual_receipt.py",
+        "data/regions/sinnoh-b01-actual-native.json",
         "scripts/regions/sinnoh_s07_reconcile.py",
         "scripts/regions/sinnoh_staging_transaction.py",
         "tests/test_sinnoh_s07_reconcile.py",
