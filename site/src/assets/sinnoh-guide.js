@@ -1,6 +1,7 @@
 // CH17 — navigable Sinnoh planning guide. All data is generated from CH11–CH16.
 import {esc,icon} from './utils.js';
 import {validateSinnohGuide,filterSinnohGuide,sinnohGuideUrl,sinnohPendingGroups} from './sinnoh-search.js';
+import {sinnohImplementationPanel} from './sinnoh-implementation.js';
 
 let cache;
 export async function loadSinnohGuide(fetcher=fetch){
@@ -18,7 +19,7 @@ const tabs=[
  ['visao','Visão geral'],['areas','Áreas'],['treinadores','Treinadores'],
  ['ginasios','8 ginásios'],['liga','Elite Four e Cynthia'],
  ['itens','Itens e HMs'],['progresso','História e progresso'],
- ['pendencias','Pendências']
+ ['pendencias','Pendências'],['implantacao','Estado da implementação']
 ];
 const tabHref=key=>'/sinnoh?aba='+key;
 const pending='<span class="content-pending-tag">Ainda não adicionado</span>';
@@ -83,7 +84,7 @@ const resultCount=filtered=>'<p class="sinnoh-guide-result-count" role="status" 
   (filtered.busca?' para “'+esc(filtered.busca)+'”':'')+'. Todas permanecem pendentes de prova nativa.</p>';
 
 
-export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
+export function sinnohGuidePage(data,requested='visao',phase='all',options={},implementation=null){
   validateSinnohGuide(data);
   const tab=tabs.some(([key])=>key===requested)?requested:'visao';
   const filtered=filterSinnohGuide(data,tab,{...options,fase:phase});
@@ -210,6 +211,11 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
           contextLink('progresso',{},'Ver etapas planejadas')),
         'PENDÊNCIA · CH11–CH16'))+'</section>';
   }
+  if(tab==='implantacao')section=implementation?
+    sinnohImplementationPanel(implementation,'implantacao'):
+    '<section class="section"><h2>Estado da implementação</h2>'+note('As evidências G10 só aparecem depois da verificação do catálogo de implementação. Sinnoh permanece não jogável.')+'</section>';
+  const implementationSummary=implementation&&tab!=='implantacao'?
+    sinnohImplementationPanel(implementation,'visao'):'';
   return '<div class="container detail-container sinnoh-guide-page">'+
     '<a class="back-link" href="/guias">← Todos os guias</a>'+
     '<header class="article-heading"><span class="eyebrow">SINNOH · PLANEJADA · NÃO JOGÁVEL</span>'+
@@ -217,7 +223,7 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
     '<p>'+esc(data.meaning)+'</p>'+
     '<p><span class="content-pending-tag">Ainda não adicionado ao Game.exe/JoiPlay</span></p>'+
     note('Guia disponível no portal. Sinnoh ainda não está instalado como região jogável; mapas, NPCs e eventos são referências planejadas, não provas de implantação.')+
-    '</header>'+navigation+levelPanel(data)+section+
+    '</header>'+navigation+implementationSummary+levelPanel(data)+section+
     '<section class="sinnoh-guide-footer"><h2>Estado da implementação</h2>'+
       note('Dados organizados a partir das auditorias CH11–CH16. Isso não comprova instalação de mapas, NPCs, treinadores, encontros, itens ou músicas.')+
       contextLink('pendencias',{},'Ver pendências no guia')+
