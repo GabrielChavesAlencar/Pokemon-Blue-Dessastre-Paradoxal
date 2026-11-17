@@ -84,7 +84,7 @@ PILOT_REQUIRED=(
     'current["starter_received"] != true',
     'scope["sinnoh_pilot"]["starter"] = requested.to_s',
     'scope["sinnoh_pilot"]["starter_received"] = true',
-    'return false if flags["starter_received"] || flags.key?("starter")',
+    'if flags["starter_received"] || flags.key?("starter")',
 )
 BRIDGE_REQUIRED=(
     "module BlueSinnohStarterContracts",
