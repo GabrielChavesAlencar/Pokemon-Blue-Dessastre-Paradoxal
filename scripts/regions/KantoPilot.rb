@@ -692,6 +692,12 @@ module BlueKantoPilot
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
     if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
+      # Older saves may have Miguel defeated but still use his first page.
+      # Both paths must offer the missing one-time prize.
+      if key == "KANTO_038_019" && !progress["pilot_mt_moon_fossil"]
+        choose_moon_fossil unless moon_fossil_props?
+        return
+      end
       return if full_power_gym(name, type)
       pbMessage(BlueKantoPilot.t("{1}: Good luck on your journey!", "{1}: Boa sorte na sua jornada!", name))
       return
@@ -928,8 +934,8 @@ module BlueKantoPilot
   CINNABAR_FOSSILS = MOON_FOSSILS.merge(OLDAMBER: :AERODACTYL).freeze
 
   def self.moon_fossil_props?
-    $game_map && $game_map.events.values.any? { |ev|
-      ["Kanto Helix Fossil", "Kanto Dome Fossil"].include?(ev.name)
+    $game_map && ["Kanto Helix Fossil", "Kanto Dome Fossil"].all? { |name|
+      $game_map.events.values.any? { |ev| ev.name == name }
     }
   end
 
