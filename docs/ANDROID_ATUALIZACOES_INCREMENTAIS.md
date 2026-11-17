@@ -174,3 +174,22 @@ O arquivo `ATUALIZAR-ANDROID.py` já instalado não se corrige sozinho. Para con
 Somente após aparecer uma nova release integrada publicada que contenha o código corrigido de Kanto, aplicar `python ATUALIZAR-ANDROID-CORRIGIDO.py --game-dir . --update`. Caso a revisão publicada ainda seja `125155e...`, o cliente deve informar que a instalação está atualizada; ela **ainda não contém a correção de Kanto**. Não baixar o ZIP `af0c494...` para tentar corrigir esse bug.
 
 **Aceite:** publicar o ZIP multirregional após compilar e conferir `RegionStart.rb` no cache `Data/PluginScripts.rxdata`; validar `New Game → Kanto`, Hoenn e saves no JoiPlay real. Código corrigido/CI não equivalem a teste concluído no celular.
+
+## 17/11/2026 — Atualizador rápido sem backup (substitui o comportamento anterior)
+
+A partir deste código, o comando padrão `python ATUALIZAR-ANDROID.py --update` **não faz backup**, **não reinstala o jogo** e **não baixa automaticamente o ZIP completo**. Se existir um patch publicado para a revisão exata registrada em `Data/blue-update.json`, ele baixa apenas os arquivos alterados, valida canal, revisão, SHA-256 e tamanho, grava cada arquivo individualmente por substituição atômica e atualiza o marcador de versão por último. Arquivos inalterados e saves permanecem no lugar; não é criada `.blue-android-update-backups/`.
+
+O empacotador publica deltas para diferentes revisões anteriores de cada canal (priorizando recentes e a mais antiga, conforme a esteira) em `patches[]`, mantendo `patch` para compatibilidade. Também pode atualizar o próprio `ATUALIZAR-ANDROID.py` por patch, migrando o arquivo das listas antigas de `immutable` para `files`, **sem** permitir alterações em `Game.exe`, `mkxp.json`, `Game.ini` ou saves por meio do patch.
+
+Sem patch direto compatível, `--update` informa a indisponibilidade e termina sem baixar os cerca de 1,4 GB do ZIP completo nem alterar o jogo. Apenas quem executar **explicitamente** `python ATUALIZAR-ANDROID.py --full --update` autoriza baixar o ZIP integral verificado. Mesmo nesse modo, o cliente deixa a instalação no mesmo diretório, modifica somente arquivos com conteúdo diferente, preserva saves e arquivos extras, e **não** faz backup.
+
+**Trade-off escolhido:** sem backup, não há rollback automático entre múltiplos arquivos. O cliente valida os hashes antes de escrever, usa arquivos temporários por arquivo e, se for interrompido, aceita arquivos já atualizados e consegue retomar o mesmo patch. Isso reduz espaço ocupado e cópias, mas não elimina riscos de queda de energia/armazenamento defeituoso; mantenha uma cópia pessoal do save importante fora da pasta do jogo.
+
+**Ativar em instalações antigas:** versões já extraídas não substituem sozinhas seu atualizador Python antes de executar o código novo. Na pasta do jogo (Termux com permissão de armazenamento), execute uma vez:
+
+```sh
+python -c 'import urllib.request; urllib.request.urlretrieve("https://raw.githubusercontent.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/main/scripts/android/update_client.py", "ATUALIZAR-ANDROID-RAPIDO.py")'
+python ATUALIZAR-ANDROID-RAPIDO.py --game-dir . --update
+```
+
+Depois de instalada uma release que incorpore o novo atualizador, use normalmente `python ATUALIZAR-ANDROID.py --update`. Feche o JoiPlay antes de executar. Não confunda código publicado na main com patch/ZIP já aprovado e distribuído em release.
