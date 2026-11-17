@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1472d02db9615017e6203b2cc3bdd27fa9b2598e",
+      "date": "2026-11-17T18:52:20-03:00",
+      "title": "Unova G03.4: Elite Four, Alder e revanches escalonáveis offline",
+      "category": "Novidades"
+    },
+    {
       "sha": "b3f4b6cd7ad61928752cad64289cb69f2bc6da67",
       "date": "2026-11-17T18:46:38-03:00",
       "title": "docs(sinnoh): mark G05 integrated, GitHub pipeline 5/12",
