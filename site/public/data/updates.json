@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "97e04f6fe583b5396a36942d199fc5a206c0ee62",
+      "date": "2026-11-17T14:45:25-03:00",
+      "title": "Unova A11: pré-reserva inerte e validação de rotas de introdução",
+      "category": "Novidades"
+    },
+    {
       "sha": "5bb79c81ff290bb4a49ad67a393a5993c5da9a4a",
       "date": "2026-11-17T14:25:57-03:00",
       "title": "Unova A10: auditoria de destinos dinâmicos e matriz de MapIDs 518–599",
