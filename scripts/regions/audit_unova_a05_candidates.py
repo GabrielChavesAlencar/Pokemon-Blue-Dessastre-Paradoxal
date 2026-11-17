@@ -71,7 +71,7 @@ def validate_plan(root: Path) -> tuple[dict,dict,set[int],set[int]]:
     base_expected={
       "schema":1,"region":"UNOVA","phase":"A05","story_version":"WHITE_BW",
       "status":"HISTORICAL_SNAPSHOT_CANDIDATES_NOT_RESERVED",
-      "unova_symbolic_area_catalog":str(U03),
+      "unova_symbolic_area_catalog":U03.as_posix(),
       "unova_symbolic_areas_count":74,
       "current_native_a04_required":True,
       "non_homologated_mapids_from":1000,
@@ -100,7 +100,7 @@ def validate_plan(root: Path) -> tuple[dict,dict,set[int],set[int]]:
       "source_type":"B01_B04_SUMMARY_CROSS_REFERENCED_WITH_SINNOH_B05",
       "supplied_md_filename":"MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17(1).md",
       "supplied_md_sha256":"e50ae9a9bbb3a93db54523e0e74c0bd2ad0e0272b87643fad8ee07bd17705c95",
-      "cross_reference":str(B05),
+      "cross_reference":B05.as_posix(),
       "b01_archive_sha256":history["b01_inventory_zip_sha256"],
       "b04_archive_sha256":history["b04_provenance_zip_sha256"],
       "historical_mapinfos_sha256":history["mapinfos_sha256"],
