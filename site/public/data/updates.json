@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3eda4311f2aef3212b0fa44603cd60e252d612fc",
+      "date": "2026-11-17T06:39:08-03:00",
+      "title": "feat(sinnoh): S20 Cyrus Distortion Giratina gates e Barra A 21/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "4d430e6938a8ec40d3329b958e3b2c75f06f3db8",
       "date": "2026-11-17T06:27:56-03:00",
       "title": "feat(sinnoh): S19 gates Galactic auditados e Barra A 20/32",
