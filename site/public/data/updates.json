@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a79a882f55fad304bec664ad753910af44eeaa6d",
+      "date": "2026-11-17T19:51:11-03:00",
+      "title": "feat(sinnoh): G11 CI integration for safe B07-B11 synthetic QA (#161)",
+      "category": "Novidades"
+    },
+    {
       "sha": "53425d8e71fd963c702c99da5ed959c9344c6c5b",
       "date": "2026-11-17T19:45:31-03:00",
       "title": "Unova G05.1 — contratos de isolamento de HMs e itens-chave (22/32)",
