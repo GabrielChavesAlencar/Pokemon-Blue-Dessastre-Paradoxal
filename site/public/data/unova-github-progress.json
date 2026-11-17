@@ -85,8 +85,9 @@
         {
           "id": "G02.4",
           "title": "Modelar Looker, sábios, lendários e pós-jogo",
-          "status": "pending",
-          "acceptance": "Missões paralelas, fases opcionais e bloqueios de conteúdo especiais"
+          "status": "done",
+          "acceptance": "Missões paralelas, fases opcionais e bloqueios de conteúdo especiais",
+          "evidence": "scripts/regions/audit_unova_g02_postgame.py"
         }
       ]
     },
