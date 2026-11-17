@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "895021ab0be9c60d475f3da1512afd616eee6ab8",
+      "date": "2026-11-17T18:17:44-03:00",
+      "title": "Unova G03.2: líderes, 70/90% Master e evolução/cobertura offline",
+      "category": "Novidades"
+    },
+    {
       "sha": "9963bc872fd95916fac63a6a26140c3b053d8b01",
       "date": "2026-11-17T17:38:34-03:00",
       "title": "Unova G02.4: Looker, seis sábios, lendários e revanche da Liga offline",
