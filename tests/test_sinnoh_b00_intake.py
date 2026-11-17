@@ -41,7 +41,7 @@ class B00Tests(unittest.TestCase):
 
     def test_01_no_source_zero_approval(self):
         r=inspect()
-        self.assertEqual(r["status"],"AWAITING_USER_FILES")
+        self.assertEqual(r["status"],"SOURCE_NOT_PROVIDED_IN_THIS_RUN")
         self.assertFalse(r["can_import_maps"])
         self.assertEqual(r["phase_b_completed"],0)
         self.assertEqual(r["additional_file_counts"]["tilesets"],0)
@@ -112,7 +112,8 @@ class B00Tests(unittest.TestCase):
         x=load_manifest()
         self.assertEqual(x["phase_b_completed"],0)
         self.assertFalse(x["technical_phase_approved"])
-        self.assertFalse(x["source_map_ids_verified"])
+        self.assertTrue(x["source_map_ids_verified"])
+        self.assertFalse(x["assets_usage_rights_individually_verified"])
 
     def test_12_symlink_source_rejected(self):
         self.create()

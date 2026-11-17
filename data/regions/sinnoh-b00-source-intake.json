@@ -3,7 +3,7 @@
   "region": "SINNOH",
   "workstream": "B",
   "step": "B00",
-  "status": "AWAITING_DONOR_ZIP_AND_CREDITS",
+  "status": "SOURCE_UPLOADED_AND_RXDATA_MAP_TREE_AUDITED_LOCALLY_NOT_INSTALLABLE",
   "source_candidates": [
     {
       "name": "Pokemon World V18",
@@ -15,7 +15,7 @@
       "author_reuse_note": "Author publicly shared source maps and subsequently agreed to reuse of project parts; third-party asset rights must still be audited",
       "reusability_scope_verified": false,
       "full_sinnoh_maps_verified": false,
-      "donor_package_sha256": null
+      "donor_package_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35"
     },
     {
       "name": "Pokemon Ancient Platinum",
@@ -38,10 +38,10 @@
   "optional_uploads": [
     "local_decades_game_Data_inventory_or_map_snapshot.zip"
   ],
-  "intake_mode": "ZIP_METADATA_ONLY_READ_ONLY",
-  "source_map_ids_verified": false,
-  "source_map_count_verified": false,
-  "source_sinnoh_map_ids_identified": false,
+  "intake_mode": "DEEP_INERT_RMXP_MAP_TREE_AUDITED_LOCAL",
+  "source_map_ids_verified": true,
+  "source_map_count_verified": true,
+  "source_sinnoh_map_ids_identified": true,
   "assets_usage_rights_individually_verified": false,
   "decades_occupied_map_ids_verified": false,
   "planned_regions_reservations_verified": false,
@@ -52,5 +52,5 @@
   "technical_phase_approved": false,
   "phase_b_completed": 0,
   "phase_b_total": 13,
-  "notes": "The published Pokemon World V18 package contains other regions too: total donor map count must not be mislabeled as Sinnoh map count. No archive was downloaded or audited in this turn; links and author attribution are leads, not proof of rights for each third-party asset."
+  "notes": "Original uploaded ZIP and Credits.txt received and audited in chat (2026-11-17). Internal root Pokemon Journeys V18, 912 donor map files across regions and 76 Sinnoh indexed maps (54 drawn / 22 empty). Only inert metadata stored in GitHub; original binary files not uploaded, asset rights not individually verified; B/C/D remain 0/13."
 }

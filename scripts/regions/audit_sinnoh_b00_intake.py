@@ -43,16 +43,28 @@ def load_manifest(root=ROOT):
     if type(d) is not dict or set(d)!=REQUIRED_KEYS:
         blocked("manifesto B00 incompleto/adulterado")
     if (d["schema"]!=1 or d["region"]!="SINNOH" or d["step"]!="B00"
-        or d["workstream"]!="B" or d["status"]!="AWAITING_DONOR_ZIP_AND_CREDITS"
+        or d["workstream"]!="B" or d["status"]!="SOURCE_UPLOADED_AND_RXDATA_MAP_TREE_AUDITED_LOCALLY_NOT_INSTALLABLE"
         or d["phase_b_completed"]!=0 or d["phase_b_total"]!=13
         or any(d[key] is not False for key in (
-          "source_map_ids_verified","source_map_count_verified",
-          "source_sinnoh_map_ids_identified","assets_usage_rights_individually_verified",
+          "assets_usage_rights_individually_verified",
           "decades_occupied_map_ids_verified","planned_regions_reservations_verified",
           "source_pbs_or_native_events_installed","game_or_saves_modified",
           "game_exe_tested","joiplay_tested","technical_phase_approved"
         ))):
         blocked("dados de origem ou aprovacoes nativas fabricados")
+    receipt_path=Path(root)/"data/regions/sinnoh-b00-actual-source.json"
+    if receipt_path.is_symlink() or not receipt_path.is_file():
+        blocked("comprovante de fonte local ausente")
+    receipt=json.loads(receipt_path.read_text("utf-8"))
+    if (receipt.get("source_zip_sha256")!=d["source_candidates"][0]["donor_package_sha256"]
+        or receipt.get("sinnoh_map_count")!=76
+        or receipt.get("rights_per_asset_verified") is not False
+        or receipt.get("phase_b_technically_approved")!=0):
+        blocked("comprovante de fonte auditada adulterado")
+    if (d["source_map_ids_verified"] is not True
+        or d["source_map_count_verified"] is not True
+        or d["source_sinnoh_map_ids_identified"] is not True):
+        blocked("mapas reais recebidos precisam de marcador de auditoria")
     candidates=d.get("source_candidates")
     if not isinstance(candidates,list) or len(candidates)!=2:
         blocked("fontes desconhecidas")
@@ -118,7 +130,7 @@ def inspect(source=None,credits=None,game_data=None,*,root=ROOT):
     inventory=inspect_extra_zip(source)
     shape=donor["source"]
     if source is None:
-        status="AWAITING_USER_FILES"
+        status="SOURCE_NOT_PROVIDED_IN_THIS_RUN"
     elif shape["empty_or_template_source"]:
         status="SOURCE_TOO_SMALL_OR_TEMPLATE_ONLY"
     elif credits_info is None:

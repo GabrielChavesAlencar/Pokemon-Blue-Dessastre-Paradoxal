@@ -418,3 +418,7 @@ O `123` é apenas um **exemplo de argumento**: não significa que Twinleaf tenha
 ## Barra B — início do recebimento de arquivos reais (B00)
 
 A [etapa B00](SINNOH_B00_RECEBIMENTO_FONTES_2026-11-17.md) documentou o pacote Pokémon World V18 compartilhado pelo criador e o arquivo de créditos, o [manifesto de entrada](../data/regions/sinnoh-b00-source-intake.json), o [verificador read-only](../scripts/regions/audit_sinnoh_b00_intake.py) e [12 testes](../tests/test_sinnoh_b00_intake.py). **O ZIP ainda não foi enviado ou auditado; B/C/D ficam 0/13** e os testes Game.exe/JoiPlay permanecem para depois. O próximo passo é receber os dois downloads na conversa e separar os MapIDs reais de Sinnoh dos demais mapas do doador.
+
+### Barra B — auditoria com os arquivos reais enviados (17/11/2026)
+
+[Auditoria B00 real](SINNOH_B00_FONTE_REAL_AUDITORIA_2026_11_17.md): ZIP e `Credits.txt` recebidos e hashes identificados; a árvore Sinnoh possui **76 entradas reais**, **54 mapas com terreno**, **22 vazios**, **64 sem eventos** e **397 eventos predominantemente de pontes**. O pacote contém 912 mapas de várias regiões; nenhum arquivo do doador foi incorporado ao jogo principal. **B = 0/13, C = 0/13, D = 0/13**, aguardando direitos específicos, inventário de MapIDs Decades/Kanto/Johto/Hoenn, interiores, NPCs e dados de gameplay; testes Windows/Android adiados conforme pedido.
