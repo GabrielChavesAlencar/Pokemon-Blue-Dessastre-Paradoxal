@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c06f7bf486e33950ade1f98eeb2749a3bbd21916",
+      "date": "2026-11-16T22:08:29-03:00",
+      "title": "feat(sinnoh): S11 piloto com saves isolados e Barra A 14/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "55ce0b3ffa6da797358adccb6b60b80684e83545",
       "date": "2026-11-16T21:59:12-03:00",
       "title": "feat(sinnoh): S10 launcher Windows QA seguro e Barra A 13/32",
