@@ -16,7 +16,7 @@ O ZIP foi obtido diretamente dos links indicados pelo criador e examinado em Git
 - [ ] E06 — direitos de reutilização e distribuição de cada asset
 - [ ] E08 — integração jogável e testes Windows/Game.exe e JoiPlay
 
-Os mapas oferecem geometria candidata, **não** NPCs ou eventos da campanha White/BW. O doador mistura referências BW, BW2 e anime. Nenhum MapID original foi instalado no Decades.
+Os 64 mapas são apenas estruturas de origem: **56 têm dimensões 20×15, possivelmente placeholders; só oito têm dimensões maiores (Nuvema, Accumula, Striaton, Nacrene, Castelia e rotas 301–303)**. Nem os oito tiveram os tiles verificados visualmente. Esses mapas **não** oferecem NPCs ou eventos da campanha White/BW. [Atlas completo](../data/regions/unova-e05-source-map-atlas.json). O doador mistura referências BW, BW2 e anime. Nenhum MapID original foi instalado no Decades.
 
 **Barras A/B/C/D = 0/8 e campanha jogável = 0/32.** As seções mais antigas que mencionam 4/8 são histórico preparatório.
 
