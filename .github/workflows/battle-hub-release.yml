@@ -127,14 +127,21 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/android/package.py --verify --revision "$GITHUB_SHA"
-          # Fetch ONLY the previous manifest; ZIPs are large and never need redownloading.
-          mkdir -p .blue-work/previous-decades
-          previous=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name' 2>/dev/null || true)
-          if [[ "$previous" == battle-hub-* ]]; then
-            gh release download "$previous" --pattern 'Blue-Android-JoiPlay.update.json' --dir .blue-work/previous-decades || true
-          fi
-          python scripts/android/publish_updates.py --channel decades --full-zip dist/Blue-Android-JoiPlay.zip --previous-manifest .blue-work/previous-decades/Blue-Android-JoiPlay.update.json
+          # Recent + oldest inventory baselines; never download historical ZIPs.
+          args=(--channel decades --full-zip dist/Blue-Android-JoiPlay.zip)
+          mapfile -t tags < <(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq '
+            [.[] | select(.draft == false and (.tag_name | startswith("battle-hub-"))) |
+              select([.assets[].name] | index("Blue-Android-JoiPlay.update.json")) |
+              .tag_name][:4][]')
+          for tag in "${tags[@]}"; do
+            folder=".blue-work/previous-decades/$tag"
+            mkdir -p "$folder"
+            gh release download "$tag" --pattern 'Blue-Android-JoiPlay.update.json' --dir "$folder"
+            args+=(--previous-manifest "$folder/Blue-Android-JoiPlay.update.json")
+          done
+          python scripts/android/publish_updates.py "${args[@]}"
           tag="battle-hub-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}"
           assets=(dist/Blue-Story.exe dist/Blue-Battle-Hub.exe dist/Blue-Battle-Hub.zip dist/Blue-Battle-Hub.zip.sha256 dist/Blue-Android-JoiPlay.zip dist/Blue-Android-JoiPlay.zip.sha256 dist/Blue-Android-JoiPlay.update.json)
-          if [[ -f dist/Blue-Android-JoiPlay.patch.zip ]]; then assets+=(dist/Blue-Android-JoiPlay.patch.zip); fi
+          shopt -s nullglob
+          for delta in dist/Blue-Android-JoiPlay*.patch.zip; do assets+=("$delta"); done
           gh release create "$tag" "${assets[@]}" --target "$GITHUB_SHA" --title "Pokémon Blue - build ${GITHUB_RUN_NUMBER}" --notes-file docs/INSTALACAO.md --latest
