@@ -58,16 +58,27 @@ s17_assert(originals.first.party.first.level == 5 &&
            originals.first.party.first.species == :TURTWIG,
            'trainer PBS input was modified by dynamic level')
 
-# Evolving forms of trainers/Champions are not flattened by BST caps or
-# forcibly replaced by generic species. Preserve authored boss identity.
-%w[LEADER ELITE ELITEFOUR CHAMPION RIVAL ADMIN BOSS].each do |role|
+# First gym/Elite/Champion battles bypass the lower BST tiers, keeping
+# authored species. Other boss-like classes (Rival/Admin/Boss) still obey
+# Story's BST tier unless an explicit Full Power context is selected.
+%w[LEADER ELITE ELITEFOUR CHAMPION].each do |role|
   kind = ("BLUE_SINNOH_" + role).to_sym
   team, native, = s17_trainers([[kind, "S17 #{role}", 3, [:TORTERRA]]])
   s17_assert(team.first.party.first.species == :TORTERRA,
-             "#{role}: authored species replaced by BST/evolution")
+             "#{role}: first regional boss species replaced")
   s17_assert(team.first.party.first.level == 37, "#{role}: wrong dynamic level")
   s17_assert(team.first.version == 3 && native.first.version == 3,
              "#{role}: version changed")
+end
+%w[RIVAL ADMIN BOSS].each do |role|
+  kind = ("BLUE_SINNOH_" + role).to_sym
+  team, native, = s17_trainers([[kind, "S17 #{role}", 3, [:TORTERRA]]])
+  s17_assert(team.first.party.first.species != :TORTERRA,
+             "#{role}: strong non-exempt class escaped early BST tier")
+  s17_assert(team.first.party.first.level == 37,
+             "#{role}: BST tier changed dynamic level")
+  s17_assert(native.first.party.first.species == :TORTERRA,
+             "#{role}: authored PBS changed by BST tier")
 end
 
 # The stages in Blue are based on cumulative local medals + native badges,
