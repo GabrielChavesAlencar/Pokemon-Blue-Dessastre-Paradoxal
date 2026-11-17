@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7ab7eb56a0cca678c1250f8d7f76ac5cac78bd2a",
+      "date": "2026-11-17T19:51:35-03:00",
+      "title": "docs(sinnoh): G11 integrated in main; GitHub pipeline reaches 11/12",
+      "category": "Documentação"
+    },
+    {
       "sha": "a79a882f55fad304bec664ad753910af44eeaa6d",
       "date": "2026-11-17T19:51:11-03:00",
       "title": "feat(sinnoh): G11 CI integration for safe B07-B11 synthetic QA (#161)",
