@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 15,
-    "partial": 6,
+    "done": 16,
+    "partial": 5,
     "pending": 11,
-    "percent_complete": 46,
-    "percent_with_partial_not_counted": 46,
+    "percent_complete": 50,
+    "percent_with_partial_not_counted": 50,
     "groups": [
       {
         "key": "foundation",
@@ -140,8 +140,8 @@
     {
       "id": "S08",
       "title": "Validador de integridade de todos os recursos",
-      "status": "partial",
-      "evidence_path": "scripts/regions/audit_sinnoh_rxdata.py"
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S08_INTEGRIDADE_RECURSOS_ACEITE.md"
     },
     {
       "id": "S09",
