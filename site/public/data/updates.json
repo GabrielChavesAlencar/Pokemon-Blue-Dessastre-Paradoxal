@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "01f47bd3b6c0aef6ca5c2fd9769d1c4d3ff8785a",
+      "date": "2026-11-17T19:09:44-03:00",
+      "title": "Unova G04.2: métodos, horários e estações auditáveis sem encontros inventados",
+      "category": "Novidades"
+    },
+    {
       "sha": "02900a9f66f51921d612ba036b96c52e64ab0ed1",
       "date": "2026-11-17T19:07:38-03:00",
       "title": "fix(android): normalize one Windows path separator in Kanto checksum proof",
