@@ -16,6 +16,7 @@ from pathlib import Path
 
 from install_sinnoh_qa_copy import ROOT, prepare, install, verify
 from prepare_sinnoh_pilot_bundle import _safe_under
+from audit_sinnoh_s08_resources import private_overlay_audit
 
 PRIVATE_SPEC = "sinnoh-qa-spec.json"
 OVERLAY_REPORT = "sinnoh-qa-overlay-report.json"
@@ -87,6 +88,12 @@ def execute(project: Path = ROOT, *, overlay: Path, spec: Path,
     profile = secrets.token_hex(6) if token is None else token
     report, blobs, native = prepare(root / "game", overlay, source,
                                     token=profile, project=root)
+    integrity = private_overlay_audit(root, overlay, spec, token=profile)
+    if (integrity["status"] != "STATIC_INTEGRITY_VERIFIED_NOT_NATIVE_GAMEPLAY"
+            or integrity["missing_graphics"] or
+            not integrity["plugin_dependencies_verified"] or
+            integrity["native_qa_approved"] or integrity["native_gameplay_verified"]):
+        blocked("S08: integridade dos recursos de Sinnoh nao comprovada")
     if (report.get("mode") != "ISOLATED_QA_INSTALL_PLAN"
             or report.get("runtime_playable") is not False
             or report.get("current_main_game_or_saves_modified") is not False
@@ -108,6 +115,9 @@ def execute(project: Path = ROOT, *, overlay: Path, spec: Path,
         "source_rights_and_native_testing_pending": True,
         "overlay_files": len(blobs),
         "native_files": len(native),
+        "resource_integrity_verified": True,
+        "resource_integrity_mode": "STATIC_OFFLINE_ONLY",
+        "referenced_graphics_count": integrity["referenced_graphics_count"],
         "profile": report["save_isolation"],
     }
     if not do_install:
