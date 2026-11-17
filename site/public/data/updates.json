@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fcb808e6b955a29d53de461328e897283239ca23",
+      "date": "2026-11-17T09:41:00-03:00",
+      "title": "feat(sinnoh): S07 reconciliação MapIDs e rollback auditado (29/32 em código)",
+      "category": "Novidades"
+    },
+    {
       "sha": "c85815b659c3d56a0f5eb97c03de42f31a395e03",
       "date": "2026-11-17T09:30:21-03:00",
       "title": "feat(sinnoh): S16 HMs por insígnias e comprovantes locais (28/32)",
