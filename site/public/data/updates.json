@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1c4b1a6fffdd4170c4d43bb2257adac3c663a13e",
+      "date": "2026-11-17T13:17:25-03:00",
+      "title": "fix(unova): corrigir A05 no Windows e RUN BAT portatil reempacotado",
+      "category": "Novidades"
+    },
+    {
       "sha": "c0f8862c2faa39c344c9d6267f33fef96e8cd395",
       "date": "2026-11-17T13:16:42-03:00",
       "title": "feat(sinnoh): B07 stage privado de 54 geometrias com tilesets isolados e rollback",
