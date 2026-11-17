@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1d2ea3f8061e61b1d96cc761759e7edaf9aa316b",
+      "date": "2026-11-17T13:33:32-03:00",
+      "title": "feat(sinnoh): B08 auditoria de stage e QA privado sem alterar jogo principal",
+      "category": "Novidades"
+    },
+    {
       "sha": "6e77c5b940205dec2efb573a0b014a4594fcd763",
       "date": "2026-11-17T13:29:01-03:00",
       "title": "feat(unova): A06 auditar transferencias MapID via RUN automatico sem instalar",
