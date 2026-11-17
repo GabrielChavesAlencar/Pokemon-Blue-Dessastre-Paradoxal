@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 19/32 após as entregas S08, S10, S11, S12, S17, S18, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 20/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -197,6 +197,12 @@ A [S17](SINNOH_S17_TREINADORES_DINAMICOS_ACEITE.md) só conclui o escopo do runt
 A [S18](SINNOH_S18_ENCONTROS_EVOLUCOES_ACEITE.md) acrescenta uma proteção no [EvolutionScaling.rb](../scripts/battle_polish/EvolutionScaling.rb): não evoluir encontros com `base_level`/`cap` inválidos ou acima da referência de progressão, preservando o slot original. O [runner Ruby](../tests/sinnoh_s18_wild_runtime.rb) exerce o verdadeiro `WildEncounters` com dados sintéticos e valida chances **15%, 30%, 45%, 60%**, espécies originais, evolução em várias fases, limiares de pedra/troca/felicidade, horário, casos especiais e ausência de alteração nas tabelas de spawn de Kanto/Johto/Hoenn/Decades.
 
 O [auditor S18](../scripts/regions/audit_sinnoh_s18_wild.py) e [12 testes negativos](../tests/test_sinnoh_s18_wild.py) vinculam a política ao catálogo CH13: **21 áreas de referência não são áreas jogáveis**, sem MapIDs, pesos, métodos/horários confirmados ou PBS compilados; Drifloon e Rotom ainda são eventos estáticos. **Barra A 19/32 (59%)**, 5 parciais, 8 pendentes, E 20/20, B/C/D 0/13 e 44 casos nativos aguardando dados reais. A regra compartilhada é exercida offline, não um encontro testado no Game.exe.
+
+### S19 — Team Galactic, sequência CH14 por resultados confirmados (offline)
+
+O [adaptador Ruby](../scripts/regions/SinnohGalacticContracts.rb) usa a única chave de save `sinnoh_ch14` para as cinco etapas **Windworks, Mars, Jupiter (Forest), Pastoria e Lagos**, respeitando batalhas confirmadas, ordem e bloqueio regional. Como não existem MapIDs/callbacks verificados, `VERIFIED_NATIVE_SOURCES` permanece vazio; **não registra eventos reais, não altera equipes, sprites, itens, NPCs ou mapas**. O [contrato S19](../data/regions/sinnoh-galactic-s19.json), [auditor Python](../scripts/regions/audit_sinnoh_s19_galactic.py), [12 testes negativos](../tests/test_sinnoh_s19_galactic.py) e [runner Ruby](../tests/sinnoh_s19_galactic_runtime.rb) cobrem resultados inválidos, repetição, sequência, saves e regressões cross-region. [Aceite/limitações](SINNOH_S19_TEAM_GALACTIC_ACEITE.md).
+
+**Barra A 20/32 (62%)**, 5 parciais, 7 pendentes; E 20/20, B/C/D 0/13, 44 testes nativos aguardam fontes reais. S20 (Cyrus/Spear Pillar/Giratina) permanece pendente; a S19 foi entregue somente no escopo do código de progressão e provas sintéticas.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
