@@ -285,8 +285,10 @@ def qa_root(project):
         blocked("workspace QA aponta para fora do repositorio")
     return qa
 
-def prepare_qa(project,plan_sha,files,audit):
+def prepare_qa(project,plan_sha,files,audit,*,live_game_verified=False):
     """Create only an immutable local overlay; never a standalone executable."""
+    if live_game_verified is not True:
+        blocked("overlay exige comprovacao de game/Data atual")
     project=Path(project).absolute()
     target_root=qa_root(project)
     if not target_root.parent.exists():
@@ -401,7 +403,7 @@ def main(argv=None):
                 "can_install":False,"r07_complete":False,
                 "r08_complete":False,"phase_b_approved":0}
         if args.prepare_qa:
-            result["overlay"]=prepare_qa(ROOT,chosen_sha,files,info)
+            result["overlay"]=prepare_qa(ROOT,chosen_sha,files,info,live_game_verified=bool(game))
         print(json.dumps(result,ensure_ascii=False,indent=2))
         return 0
     except (OSError,ValueError,TypeError,IndexError,KeyError,
