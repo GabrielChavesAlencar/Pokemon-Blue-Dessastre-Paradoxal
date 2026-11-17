@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6328667250618ee79e61c73ee726885655590c50",
+      "date": "2026-11-17T15:02:37-03:00",
+      "title": "Unova A12: revisão de propriedade regional e pré-instalação isolada",
+      "category": "Novidades"
+    },
+    {
       "sha": "97e04f6fe583b5396a36942d199fc5a206c0ee62",
       "date": "2026-11-17T14:45:25-03:00",
       "title": "Unova A11: pré-reserva inerte e validação de rotas de introdução",
