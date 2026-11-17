@@ -6,6 +6,7 @@ import {storyIndex,bossesIndex,trainerDetail,allTrainers} from './story.js';
 import {regularIndex,regularResults,regularTrainerById,regularDetail} from './regular-trainers.js';
 import {changesPage} from './changes.js';
 import {loadRegions,regionsPage,regionPicker} from './regions.js';
+import {loadUnovaGithubProgress,unovaGithubProgressPage} from './unova-progress.js';
 import {loadKanto,kantoIndex,kantoLocation,kantoTrainer} from './kanto.js';
 import {loadPilotCatalog,pilotIndex} from './regional-pilot.js';
 import {presentationPage} from './presentation.js';
@@ -134,6 +135,9 @@ async function render(scroll=false){
     }else if(route==='localizacoes'){
       if(parts[1]){const area=model.locations.find(x=>x.id===Number(parts[1]));if(!area)throw new Error('not-found');currentBase=area;main.innerHTML=locationDetail(model,area,state);setPage(area.name);}
       else{main.innerHTML=locations(model,state);addRegionPicker(route);setPage('Localizações');}
+    }else if(route==='unova-progresso'){
+      const progress=await loadUnovaGithubProgress();if(id!==renderId)return;
+      main.innerHTML=unovaGithubProgressPage(progress);setPage('Unova · Progresso GitHub');
     }else if(route==='regioes'){
       const registry=await loadRegions();if(id!==renderId)return;
       main.innerHTML=regionsPage(registry);setPage('Circuito de regiões');
