@@ -71,7 +71,12 @@ def should_skip(relative:Path,is_dir:bool):
     if SAVE_FILE.match(relative.name):return True
     return False
 
-def inventory(game:Path):
+def _emit(progress,message):
+    if progress is not None:
+        progress(message)
+
+
+def inventory(game:Path,progress=None):
     """Exhaustive bounded snapshot, including checks against reparse points."""
     game=Path(game).absolute()
     if not game.is_dir():blocked("jogo nao encontrado")
@@ -109,6 +114,9 @@ def inventory(game:Path):
             if item.stat(follow_symlinks=False).st_size!=size:
                 blocked("arquivo alterado durante inventario")
             entries.append({"path":rel.as_posix(),"size":size,"sha256":digest})
+            if len(entries)==1 or len(entries)%100==0:
+                _emit(progress,"Inventario: "+str(len(entries))+
+                      " arquivos, "+str(total//(1024*1024))+" MiB analisados")
     descend(game)
     lookup={x["path"]:x for x in entries}
     missing=set(REQUIRED)-set(lookup)
@@ -189,12 +197,16 @@ def private_root(game:Path,root:Path):
         blocked("QA fora da instalacao e de seus ancestrais obrigatoria")
     return root
 
-def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
+def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict,progress=None)->dict:
     """Create or verify only a private clone. No game process, maps or save writes."""
     game=Path(game).absolute()
+    _emit(progress,"Conferindo MapInfos, Map001 e relatorios A04-A12...")
     roots=baselines(game,a04_report,a12_report)
     qa_root=private_root(game,qa_root)
-    inv=inventory(game)
+    _emit(progress,"Iniciando inventario de arquivos; pode levar algum tempo...")
+    inv=inventory(game,progress=progress)
+    _emit(progress,"Inventario conferido: "+str(inv["file_count"])+
+          " arquivos, "+str(inv["total_bytes"]//(1024*1024))+" MiB")
     if (inv["mapinfos_sha256"]!=roots["mapinfos_sha256"] or
         inv["map001_sha256"]!=roots["map001_sha256"]):
         blocked("baseline mudou durante o inventario")
@@ -202,6 +214,7 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
     destination=qa_root/("qa-unova-a13-"+identity)
     no_symlink_ancestors(qa_root)
     token=identity
+    _emit(progress,"Validando configuracao do mkxp e isolamento do perfil...")
     mkxp,ini,profile=make_configs(game,token)
     source_paths={x["path"] for x in inv["files"]}
     if INVENTORY_FILE in source_paths or KEEP_FILE in source_paths:
@@ -236,7 +249,8 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
         saved=json.loads(manifest.read_text("utf-8"))
         if saved!=proof:blocked("QA existente pertence a outra versao ou foi alterada")
         # Never silently trust a previously modified or partially copied clone.
-        actual=inventory(destination)
+        _emit(progress,"Copia QA anterior detectada: verificando hashes...")
+        actual=inventory(destination,progress=progress)
         expected_copied={x["path"]:x for x in inv["files"]}
         original_overrides={x["path"]:x for x in inv["files"] if x["path"] not in
                             ("Game.ini","mkxp.json")}
@@ -254,13 +268,17 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
                 "source_bytes":inv["total_bytes"],"profile":profile,
                 "no_user_game_modified":True,"game_exe_launched":False,
                 "qa_runtime_tested":False,"unova_installed":False}
+    _emit(progress,"Verificando espaco livre para a copia QA...")
     if shutil.disk_usage(qa_root).free<inv["total_bytes"]+MIN_FREE_MARGIN:
         blocked("espaco livre insuficiente para QA e margem de seguranca")
     stage=qa_root/(".building-qa-unova-a13-"+identity+"-"+secrets.token_hex(6))
     no_symlink_ancestors(stage)
     try:
         stage.mkdir(exist_ok=False)
-        for entry in inv["files"]:
+        _emit(progress,"Copiando para pasta privada temporaria; Game.exe NAO sera iniciado.")
+        bytes_done=0
+        next_update_bytes=128*1024*1024
+        for file_index,entry in enumerate(inv["files"],1):
             rel=Path(entry["path"])
             source=game/rel
             dest=stage/rel
@@ -273,7 +291,21 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
                 with dest.open("xb") as f:f.write(blob)
             else:
                 with source.open("rb") as src, dest.open("xb") as out:
-                    shutil.copyfileobj(src,out,1024*1024)
+                    while True:
+                        chunk=src.read(1024*1024)
+                        if not chunk:
+                            break
+                        out.write(chunk)
+                        bytes_done+=len(chunk)
+                        if bytes_done>=next_update_bytes:
+                            _emit(progress,"Copia: "+str(bytes_done//(1024*1024))+
+                                  "/"+str(inv["total_bytes"]//(1024*1024))+
+                                  " MiB; arquivo "+str(file_index)+
+                                  "/"+str(inv["file_count"]))
+                            next_update_bytes+=128*1024*1024
+            if file_index==1 or file_index%100==0:
+                _emit(progress,"Copia: "+str(file_index)+"/"+
+                      str(inv["file_count"])+" arquivos conferidos")
             expected=(sha(blob) if blob is not None else entry["sha256"])
             if hash_file(dest)!=expected:
                 blocked("copia QA com hash divergente: "+rel.as_posix())
@@ -289,6 +321,7 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
         if destination.exists() or destination.is_symlink():
             blocked("pasta QA foi criada por outro processo")
         stage.rename(destination)
+        _emit(progress,"Copia QA criada e verificada: "+str(destination))
     except BaseException:
         # Only ever remove the private, uniquely created *staging* folder.
         if stage.is_dir() and not stage.is_symlink():
@@ -299,8 +332,8 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
             "no_user_game_modified":True,"game_exe_launched":False,
             "qa_runtime_tested":False,"unova_installed":False}
 
-def audit(game:Path,qa_root:Path,a04_report:dict,a12_report:dict):
-    return clone(game,qa_root,a04_report,a12_report)
+def audit(game:Path,qa_root:Path,a04_report:dict,a12_report:dict,progress=None):
+    return clone(game,qa_root,a04_report,a12_report,progress=progress)
 
 def save(project:Path,report:dict):
     project=a04.safe_path(project)
