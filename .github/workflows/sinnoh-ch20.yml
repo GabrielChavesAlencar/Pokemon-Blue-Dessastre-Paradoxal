@@ -6,7 +6,9 @@ on:
       - '.github/workflows/sinnoh-ch20.yml'
       - 'scripts/regions/audit_sinnoh_android_ch20.py'
       - 'scripts/regions/audit_sinnoh_playtest.py'
+      - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
       - 'tests/test_sinnoh_android_ch20.py'
+      - 'tests/test_sinnoh_playtest_audit.py'
       - 'data/regions/sinnoh-twinleaf-events.json'
       - 'data/regions/sinnoh-twinleaf-events.schema.json'
       - 'data/regions/sinnoh-progress.json'
@@ -16,7 +18,9 @@ on:
       - '.github/workflows/sinnoh-ch20.yml'
       - 'scripts/regions/audit_sinnoh_android_ch20.py'
       - 'scripts/regions/audit_sinnoh_playtest.py'
+      - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
       - 'tests/test_sinnoh_android_ch20.py'
+      - 'tests/test_sinnoh_playtest_audit.py'
       - 'data/regions/sinnoh-twinleaf-events.json'
       - 'data/regions/sinnoh-twinleaf-events.schema.json'
       - 'data/regions/sinnoh-progress.json'
@@ -37,15 +41,19 @@ jobs:
           python-version: '3.11'
       - name: Validar sintaxe do auditor Android
         run: python -m py_compile scripts/regions/audit_sinnoh_android_ch20.py
-      - name: Testar 44 casos, ZIPs maliciosos, evidencias falsas e paths
-        run: python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
+      - name: Testar pre-voo, paridade dos 44 casos e auditor de evidencias nativas
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_playtest_audit.py' -v
       - name: Emitir relatorio CH20 deterministico e sem certificacao nativa
         run: |
           python scripts/regions/audit_sinnoh_android_ch20.py \
             --output .blue-work/sinnoh-ch20/ch20-static-ci.json
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
+          from scripts.regions.audit_sinnoh_android_ch20 import render_markdown
           p = Path(".blue-work/sinnoh-ch20/ch20-static-ci.json")
           j = json.loads(p.read_text("utf-8"))
           assert j["checklist_total"] == 44
@@ -53,6 +61,12 @@ jobs:
           assert j["package"]["status"] == "NOT_PROVIDED"
           assert not j["joiplay_tested"] and not j["native_gameplay_verified"]
           assert all(c["native_status"] == "pending" for c in j["cases"])
+          assert len(j["checklist_sha256"]) == 64
+          assert set(j["input_sha256"]) == {"twinleaf_template", "twinleaf_schema", "qa_ledger"}
+          summary = render_markdown(j)
+          p.with_suffix(".md").write_text(summary, encoding="utf-8")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write(summary)
           print("SINNOH_CH20_STATIC_OK=44_NATIVOS_PENDENTES")
           PY
       - name: Preservar relatorio mesmo em caso de falha
@@ -60,5 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sinnoh-ch20-static-report
-          path: .blue-work/sinnoh-ch20/ch20-static-ci.json
+          path: |
+            .blue-work/sinnoh-ch20/ch20-static-ci.json
+            .blue-work/sinnoh-ch20/ch20-static-ci.md
           if-no-files-found: warn
