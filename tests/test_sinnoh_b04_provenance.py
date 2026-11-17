@@ -219,6 +219,12 @@ class B04Tests(unittest.TestCase):
         # Actual uploaded B04 had exact long-ID subset and no maps 1..99.
         self.report["physical_map_ids"]=(
             list(range(100,276))+list(range(300,442))+list(range(600,899)))
+        # The actual uploaded Kanto manifest maps 142 donors to 300..441,
+        # not the 1..142 range used by the generic synthetic fixture.
+        kanto=self.report["regions"]["KANTO"]
+        kanto["destination_map_ids"]=list(range(300,442))
+        kanto["source_to_destination"]={
+            str(i+1):dest for i,dest in enumerate(kanto["destination_map_ids"])}
         report=self.run_check()
         self.assertEqual(report["physical_map_ids_reported"],617)
         self.assertTrue(report["legacy_collector_short_ids_omitted"])
