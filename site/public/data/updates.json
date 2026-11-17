@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c3dfdc7f86afcf61ce8e8c1bcce738d52bce1393",
+      "date": "2026-11-17T10:26:41-03:00",
+      "title": "feat(sinnoh): B00 fontes e recebimento seguro, sem alterar B/C/D",
+      "category": "Novidades"
+    },
+    {
       "sha": "2ac3914a7ac2b7c5031294531618bb8c360fff7f",
       "date": "2026-11-17T10:25:13-03:00",
       "title": "docs(unova): avaliar Unova/BW packs e detalhar integração segura Essentials 21.1",
