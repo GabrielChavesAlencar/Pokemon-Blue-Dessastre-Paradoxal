@@ -207,11 +207,15 @@ def main(argv=None) -> int:
                     fail("pasta de relatorio insegura")
             dest.mkdir(parents=True, exist_ok=True)
             target = dest / "u02-rxdata-detail.json"
-            if target.is_symlink() or target.exists():
-                fail("relatorio ja existe ou symlink; preservar evidencia anterior")
-            with target.open("x", encoding="utf-8") as out:
-                json.dump(report, out, indent=2, ensure_ascii=False)
-                out.write("\n")
+            if target.is_symlink():
+                fail("relatorio symlink")
+            payload = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
+            if target.exists():
+                if target.read_text("utf-8") != payload:
+                    fail("relatorio anterior difere; preservar evidencia anterior")
+            else:
+                with target.open("x", encoding="utf-8") as out:
+                    out.write(payload)
         print(json.dumps({k: v for k, v in report.items() if k != "maps"}, indent=2, ensure_ascii=False))
         return 0
     except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as exc:
