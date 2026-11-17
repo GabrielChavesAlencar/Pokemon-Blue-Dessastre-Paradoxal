@@ -6,9 +6,9 @@
 
 ## Barra geral
 
-**21/32 entregas concluídas (66%)** · 11 pendentes
+**22/32 entregas concluídas (69%)** · 10 pendentes
 
-`[█████████████████████░░░░░░░░░░░]` **66%**
+`[██████████████████████░░░░░░░░░░]` **69%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
@@ -16,7 +16,7 @@
 | G02 — História, ginásios e pós-jogo | **4/4** | `████` |
 | G03 — Treinadores e balanceamento | **4/4** | `████` |
 | G04 — Áreas, selvagens e temporadas | **4/4** | `████` |
-| G05 — Mecânicas e isolamento regional | **0/4** | `░░░░` |
+| G05 — Mecânicas e isolamento regional | **1/4** | `█░░░` |
 | G06 — Site, guias e acompanhamento | **2/4** | `██░░` |
 | G07 — Blue-Story, manifests e instalador | **1/4** | `█░░░` |
 | G08 — Auditoria, CI e qualidade | **2/4** | `██░░` |
@@ -69,7 +69,7 @@ Referências e encontros sem MapIDs e probabilidades inventadas.
 
 Regras compartilhadas com Decades sem editar o jogo principal.
 
-- [ ] **G05.1 — Especificar HMs e itens-chave exclusivos por região.** Inventário, PC de itens e disponibilidade ao viajar
+- [x] **G05.1 — Especificar HMs e itens-chave exclusivos por região.** Contrato auditável de Bolsa, PC de itens, atalhos e seis ações simbólicas de Unova, simulação ida/retorno e 98 testes, sem modificar Ruby/saves · [Evidência](../scripts/regions/audit_unova_g05_regional_items.py)
 - [ ] **G05.2 — Definir insígnias, esmeraldas e trava de especiais.** Insígnias únicas e restrições regionais de Pokémon especiais
 - [ ] **G05.3 — Contratar NPC de viagem e retorno entre regiões.** Viagens por NPC com pré-condições e fallback seguro
 - [ ] **G05.4 — Testar blackout, Centro Pokémon e estado compartilhado.** Moedas, boxes, TMs, progresso e fallback de Centro da região atual
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G05.1 (HMs e itens-chave exclusivos por região, apenas contrato e fixtures offline). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G05.2 (insígnias locais, esmeraldas e restrições de Pokémon especiais, somente contratos auditáveis e fixtures offline). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.

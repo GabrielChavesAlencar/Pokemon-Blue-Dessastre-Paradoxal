@@ -169,8 +169,9 @@
         {
           "id": "G05.1",
           "title": "Especificar HMs e itens-chave exclusivos por região",
-          "status": "pending",
-          "acceptance": "Inventário, PC de itens e disponibilidade ao viajar"
+          "status": "done",
+          "acceptance": "Inventário, PC de itens e disponibilidade ao viajar",
+          "evidence": "scripts/regions/audit_unova_g05_regional_items.py"
         },
         {
           "id": "G05.2",
