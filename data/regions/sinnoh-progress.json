@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 24,
-    "partial": 5,
+    "done": 25,
+    "partial": 4,
     "pending": 3,
-    "percent_complete": 75,
-    "percent_with_partial_not_counted": 75,
+    "percent_complete": 78,
+    "percent_with_partial_not_counted": 78,
     "groups": [
       {
         "key": "foundation",
@@ -236,8 +236,8 @@
     {
       "id": "S24",
       "title": "Catálogo de músicas por cenário",
-      "status": "partial",
-      "evidence_path": "docs/SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md"
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md"
     },
     {
       "id": "S25",

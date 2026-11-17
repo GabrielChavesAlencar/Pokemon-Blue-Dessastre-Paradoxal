@@ -30,25 +30,31 @@
 - **CH20 (concluída em escopo estático):** [pré-voo Android/JoiPlay](../scripts/regions/audit_sinnoh_android_ch20.py), [18 testes CH20](../tests/test_sinnoh_android_ch20.py), [12 testes do auditor de evidências](../tests/test_sinnoh_playtest_audit.py) e [workflow exclusivo CH20](../.github/workflows/sinnoh-ch20.yml) publicados na `main` pelo [PR #66](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/66), merge `c7c8cdd`. [CI 43986405854](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854) **18/18 + 12/12 testes aprovados**, com [relatórios JSON + Markdown e hashes conferidos](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43986405854/artifacts/14284479390). [Relatório CH20](SINNOH_CH20_JOIPLAY_PREFLIGHT.md): **44 IDs de casos completos, 0/44 observados no Game.exe/JoiPlay**, dados do jogo reais não fornecidos. Conclusão da Barra E **20/20 (100%)** não aprova jogo nativo nem altera as barras A/B/C/D.
 - **Critério:** tarefas só entram como `done` com arquivos publicados na `main` e validação de CI compatível com seu escopo.
 
-**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 24/32 (75%)**, **B/C/D 0/13** permanecem intactas.
+**Limitações:** o build do portal **não comprova publicação externa em Vercel**, nem mapas, batalhas, Pokémon selvagens, itens ou música nativa em Sinnoh. Nenhum Game.exe/JoiPlay foi executado. **Barra A 25/32 (78%)**, **B/C/D 0/13** permanecem intactas.
 
 ## Barra A — desenvolvimento aqui no GitHub
 
 ```text
-███████████████░░░░░  24/32 (75%)
+████████████████░░░░  25/32 (78%)
 ```
 
-- **Concluídas:** 24 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
-- **Parciais:** 5 (não contam como concluídas até atingirem o próprio critério).
+- **Concluídas:** 25 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
+- **Parciais:** 4 (não contam como concluídas até atingirem o próprio critério).
 - **Pendentes:** 3.
 - **Total:** 32 entregas no inventário [JSON](../data/regions/sinnoh-progress.json).
-- **Restam 8 para a barra de desenvolvimento** (inclui parciais).
+- **Restam 7 para a barra de desenvolvimento** (inclui parciais).
 
 ## S27 — guias planejados no site (concluída)
 
 A [entrega S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) contabiliza o trabalho de **portal web**, não uma região jogável. O guia `/sinnoh` já usa os catálogos CH11–CH16 e a navegação/pesquisa CH17–CH18; agora diferencia explicitamente **guia publicado no portal** de **mapas/eventos ainda não instalados no jogo**. Os [testes de aceite S27](../site/tests/sinnoh-s27-development.test.mjs) validam oito abas, 120 áreas, 40 treinadores, 13 líderes/Liga, 8 HMs, 22 checkpoints e salvaguardas contra anúncios falsos de MapIDs, níveis, PBS, encontros ou jogo funcional. A aprovação da S27 depende do build e da suíte completa do site em CI.
 
-**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)**, a S11 para **14/32 (43%)** e a S12 para **15/32 (46%)**; após a S08, o total era **16/32 (50%)**; com a S26, o total era **17/32 (53%)**; após a S17, eram **18/32 (56%)**; com a S18, eram **19/32 (59%)**; após a S19, eram **20/32 (62%)**; com a S20, eram **21/32 (65%)**; com a S21, eram **22/32 (68%)**; com a S22, eram **23/32 (71%)**; com a S23, o total atual é **24/32 (75%)**. Isso não torna as fases S13–S23 jogáveis nem altera B/C/D.
+**Situação nativa preservada:** 0 mapas de Sinnoh certificados; Game.exe/JoiPlay não executados nesta entrega. A S27 avançou a Barra A para **9/32 (28%)**, a S29 para **10/32 (31%)**, a S30 para **11/32 (34%)**, a S28 para **12/32 (37%)**, a S10 para **13/32 (40%)**, a S11 para **14/32 (43%)** e a S12 para **15/32 (46%)**; após a S08, o total era **16/32 (50%)**; com a S26, o total era **17/32 (53%)**; após a S17, eram **18/32 (56%)**; com a S18, eram **19/32 (59%)**; após a S19, eram **20/32 (62%)**; com a S20, eram **21/32 (65%)**; com a S21, eram **22/32 (68%)**; com a S22, eram **23/32 (71%)**; com a S23, o total foi **24/32 (75%)**; após a S24, o total é **25/32 (78%)**. Isso não torna as fases S13–S23 jogáveis nem altera B/C/D.
+
+## S24 — música contextual: catálogo S24 concluído em código
+
+A [matriz S24](../data/regions/sinnoh-music-s24.json) descreve 46 chaves musicais por cenário e guarda, com [auditor](../scripts/music/audit_sinnoh_music_s24.py) e [19 testes](../tests/test_sinnoh_s24_music.py) que rejeitam licença, MapID, áudio ou hook inventados. **Nenhuma faixa foi copiada ou instalada**, e BlueMusic não foi modificado. [Aceite S24](SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md).
+
+**Após CI, Barra A 25/32 (78%)**, 4 parciais e 3 pendentes, E 20/20, B/C/D 0/13 e 44 observações nativas pendentes. **S25 (integração efetiva com áudio licenciado) ainda não foi realizada.**
 
 ## S29 — níveis dinâmicos sem valores fixos no portal (concluída)
 
@@ -326,7 +332,7 @@ Esta tabela descreve **preparação**, não porcentagens falsas de mapa concluí
 | Concluído em código | S12 | Instalador QA isolado, dry-run, BAT e rollback | [instalador](../scripts/regions/sinnoh_s12_installer.py), [aceite S12](SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md) |
 | Parcial | S13 | Estrutura autoral de Rowan, Barry e Pokédex | [Ruby](../scripts/regions/SinnohPilot.rb), [MD](SINNOH_FASE_03_TWINLEAF_EVENTOS_PILOTO.md) |
 | Parcial | S14 | Três iniciais em Poké Bolas físicas, com save isolado | [template](../data/regions/sinnoh-twinleaf-events.json), [compilador](../scripts/regions/build_sinnoh_twinleaf_events.py) |
-| Parcial | S24 | Catálogo musical planejado | [estudo](SINNOH_ESCOLHA_FONTES_MAPAS_E_MUSICAS.md) |
+| Concluído em código | S24 | Catálogo simbólico dos 46 cenários musicais | [aceite S24](SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md) |
 | Concluída em código | S17 | Balanceamento dinâmico 70/90, Master 4, duplas até 6 e autores preservados | [aceite S17](SINNOH_S17_TREINADORES_DINAMICOS_ACEITE.md) |
 | Concluída em código | S18 | Evolução selvagem 15–60%, slots e pesos preservados, 21 áreas apenas planejadas | [aceite S18](SINNOH_S18_ENCONTROS_EVOLUCOES_ACEITE.md) |
 | Concluída em código | S19 | Gates Galactic Windworks, Mars, Jupiter, Pastoria e Lagos, sem handlers nativos | [aceite S19](SINNOH_S19_TEAM_GALACTIC_ACEITE.md) |
