@@ -37,6 +37,8 @@ class SinnohS10LauncherTests(unittest.TestCase):
             "compile_request_pending": pending, "compiled_marker_present": compiled,
             "ready_to_launch_for_manual_testing": ready,
             "save_profile_isolated_in_config": True,
+            "save_namespace_verified": True,
+            "foreign_save_inherited": False,
             "playable_approved": False,
         }
 

@@ -24,6 +24,28 @@ module BlueSinnohQAStart
                       data["region"] == "SINNOH" &&
                       data["kind"] == "ISOLATED_SINNOH_QA" &&
                       data["runtime_playable"] == false
+    # S11: do not trust an old save namespace just because map/PBS hashes pass.
+    # The actual mkxp save directory must match this QA token, never Decades.
+    profile = data["profile"]
+    return nil unless profile.is_a?(Hash) && File.file?("mkxp.json") &&
+                      !File.symlink?("mkxp.json") && File.file?("Game.ini") &&
+                      !File.symlink?("Game.ini")
+    app = profile["dataPathApp"]
+    return nil unless app.is_a?(String) && app.match?(/\ASinnoh-QA-[a-f0-9]{12}\z/)
+    suffix = app.delete_prefix("Sinnoh-QA-")
+    expected_title = "Sinnoh QA " + suffix
+    return nil unless profile["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + suffix &&
+                      profile["title"] == expected_title
+    config = JSON.parse(File.read("mkxp.json"))
+    return nil unless config.is_a?(Hash) &&
+                      config["dataPathApp"] == app &&
+                      config["dataPathOrg"] == profile["dataPathOrg"] &&
+                      config["windowTitle"] == expected_title &&
+                      config.keys.none? { |key| key.downcase.include?("save") ||
+                                               key.downcase.include?("userdata") }
+    return nil unless File.read("Game.ini").lines.count { |line|
+      line.strip == "Title=" + expected_title
+    } == 1
     token = data["compile_token"]
     return nil unless token.is_a?(String) &&
                       token.match?(/\A[a-f0-9]{64}\z/) &&
@@ -69,7 +91,7 @@ module BlueSinnohQAStart
     return false unless current.is_a?(Hash) &&
                         current["version"] == 1 &&
                         current["current"] == "SINNOH"
-    return false if current.key?("initial") && current["initial"] != "SINNOH"
+    return false unless current["initial"] == "SINNOH"
     !proof.nil?
   rescue IOError, SystemCallError, ArgumentError, TypeError
     false
@@ -81,15 +103,19 @@ module BlueSinnohQAStart
       # must not silently enter another region when globals are absent.
       unless @new_game
         # Do not rewrite a loaded foreign-region save through QA's start path.
-        if defined?($PokemonGlobal) && $PokemonGlobal &&
-           $PokemonGlobal.respond_to?(:blue_regions)
-          saved = $PokemonGlobal.blue_regions
-          if saved && (!saved.is_a?(Hash) || saved["version"] != 1 ||
-             saved["current"] != "SINNOH" ||
-             (saved.key?("initial") && saved["initial"] != "SINNOH"))
-            raise "Sinnoh QA: save de outra região incompatível; carregamento bloqueado"
-          end
+        # A missing regional record is an UNKNOWN save, not permission to
+        # delegate to Decades. Reject before the native loader can write it.
+        saved = if defined?($PokemonGlobal) && $PokemonGlobal &&
+                   $PokemonGlobal.respond_to?(:blue_regions)
+                  $PokemonGlobal.blue_regions
+                else
+                  nil
+                end
+        unless saved.is_a?(Hash) && saved["version"] == 1 &&
+               saved["current"] == "SINNOH" && saved["initial"] == "SINNOH"
+          raise "Sinnoh QA: save sem origem SINNOH ou de outra região incompatível; carregamento bloqueado"
         end
+        raise "Sinnoh QA: perfil e prova da cópia privada inválidos" unless BlueSinnohQAStart.proof
         return super
       end
       raise "Sinnoh QA: estado global ausente; Novo Jogo bloqueado" unless
@@ -100,7 +126,7 @@ module BlueSinnohQAStart
       if old_state && (!old_state.is_a?(Hash) ||
          old_state["version"] != 1 ||
          old_state["current"] != "SINNOH" ||
-         (old_state.key?("initial") && old_state["initial"] != "SINNOH"))
+         old_state["initial"] != "SINNOH")
         raise "Sinnoh QA: save regional incompatível; não substituir por Sinnoh"
       end
       start = BlueSinnohQAStart.proof

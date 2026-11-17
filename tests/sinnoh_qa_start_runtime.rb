@@ -69,8 +69,22 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
     }
     required.each { |path, data| File.write(path, data) }
     token = "a" * 64
+    profile_token = "abcdef123456"
+    profile = {
+      "title" => "Sinnoh QA " + profile_token,
+      "dataPathApp" => "Sinnoh-QA-" + profile_token,
+      "dataPathOrg" => "Dessastre-Sinnoh-QA-" + profile_token
+    }
+    config = {
+      "windowTitle" => profile["title"],
+      "dataPathApp" => profile["dataPathApp"],
+      "dataPathOrg" => profile["dataPathOrg"]
+    }
+    File.write("mkxp.json", JSON.generate(config))
+    File.write("Game.ini", ["[Game]", "Title=#{profile['title']}", ""].join(10.chr))
     proof = {
       "schema" => 1,
+      "profile" => profile,
       "region" => "SINNOH",
       "kind" => "ISOLATED_SINNOH_QA",
       "runtime_playable" => false,
@@ -142,6 +156,31 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
     File.write("Data/blue-sinnoh-qa-engine-check.json", JSON.generate(engine_report))
     check(BlueSinnohQAStart.proof == [500, 10, 11], "fixed report not accepted")
 
+    # S11: a tampered save namespace must block even a valid engine report.
+    config["dataPathApp"] = "Decades Main"
+    File.write("mkxp.json", JSON.generate(config))
+    check(BlueSinnohQAStart.proof.nil?, "foreign save namespace accepted")
+    config["dataPathApp"] = profile["dataPathApp"]
+    File.write("mkxp.json", JSON.generate(config))
+    check(BlueSinnohQAStart.proof == [500, 10, 11], "restored private namespace denied")
+
+    # S11: legacy saves with no BlueRegions origin must NEVER delegate to
+    # the main Decades loader. This is distinct from a new Sinnoh save.
+    BlueRegionStart.instance_variable_set(:@new_game, false)
+    existing_state = Marshal.dump($PokemonGlobal.blue_regions)
+    $PokemonGlobal.blue_regions = nil
+    before_legacy = $original_called
+    begin
+      BlueRegionStart.select_and_prepare
+      raise "Legacy save with missing region was loaded"
+    rescue RuntimeError => error
+      raise if error.message == "Legacy save with missing region was loaded"
+      check(error.message.include?("incompatível"), "missing region guard error")
+    end
+    check($original_called == before_legacy, "legacy save reached original loader")
+    check($PokemonGlobal.blue_regions.nil?, "legacy save unexpectedly initialized")
+    $PokemonGlobal.blue_regions = Marshal.load(existing_state)
+
     # Existing save loads never invoke a QA new-game reset.
     BlueRegionStart.instance_variable_set(:@new_game, false)
     before = Marshal.dump($PokemonGlobal.blue_regions)
@@ -205,6 +244,19 @@ Dir.mktmpdir("sinnoh-qa-start-") do |tmp|
           "foreign new game erased save")
     $PokemonGlobal.blue_regions["current"] = "SINNOH"
     $PokemonGlobal.blue_regions["initial"] = "SINNOH"
+    # Missing initial origin must remain blocked even if current is SINNOH.
+    initial_value = $PokemonGlobal.blue_regions.delete("initial")
+    BlueRegionStart.instance_variable_set(:@new_game, false)
+    before_missing_initial = $original_called
+    begin
+      BlueRegionStart.select_and_prepare
+      raise "Save without initial region was loaded"
+    rescue RuntimeError => error
+      raise if error.message == "Save without initial region was loaded"
+      check(error.message.include?("incompatível"), "missing initial guard error")
+    end
+    check($original_called == before_missing_initial, "missing initial delegated to native")
+    $PokemonGlobal.blue_regions["initial"] = initial_value
     check(BlueSinnohQAStart.proof == [500, 10, 11],
           "Sinnoh restored after foreign save test")
 

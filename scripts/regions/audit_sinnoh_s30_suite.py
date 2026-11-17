@@ -28,9 +28,13 @@ REQUIRED = {
         "tests/test_sinnoh_playtest_audit.py",
         "tests/test_sinnoh_s30_suite.py",
         "tests/test_sinnoh_s10_launcher.py",
+        "tests/test_sinnoh_s11_save_isolation.py",
+        "scripts/regions/sinnoh_save_isolation.py",
     ),
     "ruby": (
         "tests/sinnoh_pilot_runtime.rb",
+        "tests/sinnoh_qa_start_runtime.rb",
+        "scripts/regions/SinnohQAStart.rb",
         "tests/sinnoh_barry_ch08_runtime.rb",
         "tests/sinnoh_story_ch14_runtime.rb",
         "tests/sinnoh_music_ch16_runtime.rb",

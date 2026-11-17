@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 13/32 após o lançador S10, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 14/32 após as entregas S10, S11, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -159,6 +159,12 @@ A [S28](SINNOH_S28_CATALOGO_TIMES_REFERENCIAS.md) gera uma apresentação audit�
 O [BAT S10](../SINNOH_JOGAR_EXPERIMENTAL.bat) invoca o [launcher Python](../scripts/regions/launch_sinnoh_qa.py) para localizar **exatamente uma** pasta privada `.blue-work/game-sinnoh-qa-<token>`. A seleção exige nome auditável, recusa symlink/ambiguidade e usa verificações de transação, SHA-256 e save segregado antes de compilar ou lançar o `Game.exe` **privado**. Nunca busca `game/Game.exe` principal nem inicia Johto/Hoenn/Decades como fallback. `--check` apenas lê, e o BAT informa erros quando não há cópia QA instalada.
 
 [15 testes S10](../tests/test_sinnoh_s10_launcher.py) validam o fluxo sem executar `Game.exe` real e a [matriz S30](../scripts/regions/audit_sinnoh_s30_suite.py) exige os arquivos do lançador. Documentação e critérios: [aceite S10](SINNOH_S10_LANCADOR_EXPERIMENTAL_ACEITE.md). **Barra A 13/32 (40%)**, 6 parciais, 13 pendentes; E 20/20 e **B/C/D 0/13**. S11/S12 e os 44 testes Windows/JoiPlay continuam bloqueados por instalação/QA reais.
+
+### S11 — saves privados de Sinnoh (Barra A concluída em código)
+
+A [S11](SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md) introduz verificação cruzada do token privado nas configurações `mkxp.json`, `Game.ini` e no manifesto QA. O [instalador privado](../scripts/regions/install_sinnoh_qa_copy.py) e o [launcher](../scripts/regions/launch_sinnoh_qa.py) bloqueiam inicialização em pasta ou namespace divergente; o [Ruby QA](../scripts/regions/SinnohQAStart.rb) rejeita saves antigos sem `blue_regions.initial=current=SINNOH` **antes do fluxo original poder carregá-los**. [13 testes Python](../tests/test_sinnoh_s11_save_isolation.py) e [fixture Ruby](../tests/sinnoh_qa_start_runtime.rb) garantem, com dados sintéticos, que a cópia privada não usa nem remove saves das outras regiões.
+
+**Barra A 14/32 (43%)** (6 parciais, 12 pendentes), Barra E 20/20; B/C/D 0/13. Nem a S11 nem o CI afirmam compilação ou abertura real de mapas, save/reload no Windows ou QA JoiPlay: isso continua no piloto S12 e na S31.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
