@@ -26,6 +26,10 @@ const note=(text)=>'<p class="data-note">'+esc(text)+'</p>';
 const species=items=>'<span class="sinnoh-species">'+items.map(esc).join(' · ')+'</span>';
 const cards=(items,render)=>'<div class="sinnoh-guide-grid">'+items.map(render).join('')+'</div>';
 const summary=(num,label)=>'<div class="sinnoh-guide-stat"><strong>'+num+'</strong><span>'+esc(label)+'</span></div>';
+const teamEvidence=t=>'<p>Catálogo histórico: '+t.teamAudit.firstBattle.memberCount+
+  ' Pokémon de referência no primeiro combate de Platinum. Sem níveis fixos no Blue.</p>'+
+  '<p>Full Power Blue: pendente · Equipe PBS: não compilada · Batalha Game.exe: não verificada.</p>';
+
 const article=(title,body,kicker='REFERÊNCIA PLANEJADA')=>
   '<article class="sinnoh-guide-card"><span class="eyebrow">'+esc(kicker)+'</span><h3>'+esc(title)+'</h3>'+body+pending+'</article>';
 
@@ -94,7 +98,8 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
       '<div class="sinnoh-guide-stats">'+summary(data.counts.areas,'Áreas de referência')+
       summary(data.counts.trainers,'Treinadores a auditar')+
       summary(data.counts.gyms,'Ginásios')+summary(data.counts.eliteFour,'Elite Four')+
-      summary(data.counts.hmItems,'HMs regionais')+summary(data.counts.storySteps,'Etapas de história')+'</div>'+
+      summary(data.counts.hmItems,'HMs regionais')+summary(data.counts.storySteps,'Etapas de história')+
+      summary(data.teamCatalog.historicalTrainerCount,'Equipes históricas auditadas')+'</div>'+
       '<div class="sinnoh-guide-grid">'+tabs.filter(([key])=>key!=='visao').map(([key,label])=>
       '<a class="sinnoh-guide-card sinnoh-guide-link" href="'+tabHref(key)+'">'+
       '<span class="eyebrow">GUIA DE REFERÊNCIA</span><h3>'+esc(label)+'</h3>'+
@@ -130,11 +135,12 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
         'ÁREA · '+(a.phase===null?'SEM FASE':String(a.phase).padStart(2,'0'))))+'</section>';
   }else if(tab==='treinadores'){
     section='<section class="section"><h2>Treinadores a localizar · '+filtered.count+'</h2>'+
-      note('Grupos e personagens da campanha de Platinum para auditoria futura de mapas, NPCs e PBS. Nenhuma equipe ou versão de treinador foi considerada compilada.')+
+      note('Grupos e personagens da campanha de Platinum para auditoria futura de mapas, NPCs e PBS. Nenhuma equipe ou versão de treinador foi considerada compilada. Os '+data.teamCatalog.regularTrainersWithoutVerifiedTeams+' treinadores gerais não têm times Blue verificados.')+
       filterForm(tab,selected,filtered)+resultCount(filtered)+
       cardResults(filtered.items,t=>article(t.name,
         '<p>'+esc(t.area||'Local de encontro a auditar')+'</p>'+
         (t.notes?'<p>'+esc(t.notes)+'</p>':'')+
+        '<p>Equipe nativa Blue: a auditar, sem Pokémon, nível ou versão PBS confirmados.</p>'+
         context(contextLink('areas',{},'Conferir áreas'),
           contextLink('pendencias',{tipo:'treinadores'},'Vínculos PBS pendentes')),
         'TREINADOR · REFERÊNCIA'))+'</section>';
@@ -145,6 +151,7 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
       cardResults(filtered.items,t=>article(t.name,
         '<p>'+esc(t.city||'Cidade a conferir')+' · Insígnia '+esc(t.badge)+'</p>'+
         '<p>Equipe de referência: '+species(t.speciesReference)+'</p>'+
+        teamEvidence(t)+
         '<p>Full Power do Blue: não verificado · PBS: não instalado.</p>'+
         context(contextLink('itens',{busca:t.badge},'HM vinculado à insígnia'),
           contextLink('areas',{busca:t.city||''},'Buscar cidade de referência')),
@@ -156,6 +163,10 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
       cardResults(filtered.items,t=>article(t.name,
         '<p>Primeira equipe de referência: '+species(t.speciesReference)+'</p>'+
         (t.rematchSpeciesReference?'<p>Revanche histórica: '+species(t.rematchSpeciesReference)+'</p>':'')+
+        teamEvidence(t)+
+        (t.teamAudit.historicalRematch?
+          '<p>Revanche Platinum: '+t.teamAudit.historicalRematch.memberCount+
+          ' Pokémon históricos. Não representa variante Full Power do Blue.</p>':'')+
         '<p>Equipe PBS e batalha nativa: pendentes.</p>'+
         context(contextLink('progresso',{},'Progressão da Liga'),
           contextLink('pendencias',{tipo:'equipes'},'Conferir pendências PBS')),

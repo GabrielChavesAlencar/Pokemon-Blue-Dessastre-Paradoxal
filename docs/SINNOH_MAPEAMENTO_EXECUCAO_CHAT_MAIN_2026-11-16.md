@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 11/32 após S27, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 12/32 após S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -149,6 +149,10 @@ A [S29](SINNOH_S29_NIVEIS_DINAMICOS_PORTAL_ACEITE.md) explica a fonte real do c�
 ### S30 — matriz de testes automatizados offline (Barra A concluída)
 
 A [S30](SINNOH_S30_SUITE_AUTOMATIZADA_ACEITE.md) consolida os testes Python/Ruby de Sinnoh, o portal e os testes estáticos Android em [workflow S30](../.github/workflows/sinnoh-s30.yml), cinco jobs independentes. O [auditor de cobertura com hashes](../scripts/regions/audit_sinnoh_s30_suite.py) exige fontes e testes e recusa falso sucesso sem aprovações do workflow; [11 testes S30](../tests/test_sinnoh_s30_suite.py) incluem manipulações de QA, componentes faltantes e sobrescrita de relatórios. **Barra A 11/32 (34%)**, 6 parciais, 15 pendentes; B/C/D 0/13, E 20/20. Sem Game.exe/JoiPlay reais nem liberação de mapas/Sinnoh jogável.
+
+### S28 — catálogo de times de líderes e Liga (Barra A concluída no portal)
+
+A [S28](SINNOH_S28_CATALOGO_TIMES_REFERENCIAS.md) gera uma apresentação auditável de **13 equipes históricas Platinum** (8 ginásios, 4 Elite e Cynthia), 5 revanches de referência e a pendência de times nativos dos 40 treinadores gerais. O [gerador CH17/S28](../site/scripts/sinnoh-guide.mjs), [schema](../site/src/assets/sinnoh-search.js) e [10 testes S28](../site/tests/sinnoh-s28-trainer-teams.test.mjs) recusam PBS compilado inventado, Full Power falseado, níveis fixos, mudança de origem e campos extras. **Barra A 12/32 (37%)** (6 parciais, 14 pendentes), E 20/20; B/C/D 0/13 e 44 casos nativos ainda pendentes. Esta entrega documenta times planejados, **não aprova batalhas Game.exe**.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
