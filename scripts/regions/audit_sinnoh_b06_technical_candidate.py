@@ -109,9 +109,12 @@ def audit(candidate,b00,b01,b04,b05):
     occupied=expand(b05["occupied"]["ranges"],limit=999)
     unova=expand(b05["unova"]["candidate_ranges"],limit=599)
     proposed={row["candidate_destination_map_id"] for row in expected}
-    if (proposed&occupied or proposed&unova
+    expected_occupied=({1,22,32,33,42,43,48}|set(range(76,276))
+                       |set(range(300,442))|set(range(600,899)))
+    expected_unova=set(range(1,600))-expected_occupied-proposed
+    if (occupied!=expected_occupied or proposed&occupied or proposed&unova
         or proposed!=set(range(442,518))
-        or len(unova)!=174
+        or unova!=expected_unova or len(unova)!=174
         or b05["unova"]["preferred_contiguous_candidate"]!={"start":518,"end":599,"count":82}):
         blocked("destinos candidatos colidem com Decades ou Unova")
     return {
