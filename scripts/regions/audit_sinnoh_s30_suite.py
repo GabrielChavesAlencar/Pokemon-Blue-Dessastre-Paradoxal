@@ -53,6 +53,8 @@ REQUIRED = {
         "data/regions/sinnoh-b04-collector-contract.json",
         "scripts/regions/audit_sinnoh_b04_provenance.py",
         "tests/test_sinnoh_b04_provenance.py",
+        "data/regions/sinnoh-b04-rerun-receipt.json",
+        "tests/test_sinnoh_b04_rerun_receipt.py",
         "data/regions/sinnoh-b05-mapid-planning.json",
         "scripts/regions/audit_sinnoh_b05_mapid_planning.py",
         "tests/test_sinnoh_b05_mapid_planning.py",
