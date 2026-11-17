@@ -214,6 +214,13 @@ class SinnohR07ReservationsTests(unittest.TestCase):
         self.assertIn("SINNOH_R07_BLOQUEADO",err.getvalue())
 
     def test_16_static_auditor_never_modifies_main_or_other_regions(self):
+        bat=(ROOT/"SINNOH_DIAGNOSTICAR_PENDENCIAS.bat").read_text("utf-8")
+        self.assertIn('cd /d "%~dp0"',bat)
+        self.assertIn('audit_sinnoh_r07_reservations.py',bat)
+        self.assertIn("--write",bat)
+        self.assertNotIn("powershell",bat.lower())
+        self.assertNotIn("start game.exe",bat.lower())
+        self.assertNotIn("rmdir ",bat.lower())
         self.all_manifests()
         original={
             str(p.relative_to(self.root)):hashlib.sha256(p.read_bytes()).hexdigest()
