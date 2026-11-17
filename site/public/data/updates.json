@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cdc51b478ae211e7b0fecd915bd094fcf85ae0d5",
+      "date": "2026-11-17T19:30:05-03:00",
+      "title": "fix(android): accept old immutable-updater ZIP as repackage source, migrate output only",
+      "category": "Correções"
+    },
+    {
       "sha": "95791a2f205565e1ac2403ed06c1ff4a9d53ffb3",
       "date": "2026-11-17T19:29:43-03:00",
       "title": "diagnose(android): show exact manifest ZIP inventory mismatch for fast updater release",
