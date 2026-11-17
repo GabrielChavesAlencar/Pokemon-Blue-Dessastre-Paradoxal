@@ -263,7 +263,10 @@ def collect(root=ROOT,repo_root=ROOT):
     # The real L00 contracts & final G12 provenance are the final guard.
     final=l00.g12.run(repo_root)
     handoff=l00.read_json(repo_root,l00.g12.HANDOFF)
-    l00.audit(bundle,docs,handoff,final)
+    try:
+        l00.audit(bundle,docs,handoff,final)
+    except (ValueError,TypeError,KeyError,IndexError,AttributeError):
+        blocked("source summary was rejected by the L00 final auditor")
     return bundle
 
 def write_explicit(root,bundle):
