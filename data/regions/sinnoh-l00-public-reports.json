@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "L00",
+  "mode": "SANITIZED_REPORTS_NOT_INDEPENDENT_PROOF",
+  "reports": {
+    "B09": null,
+    "B10": null,
+    "B11": null,
+    "R07": null,
+    "R08": null
+  }
+}
