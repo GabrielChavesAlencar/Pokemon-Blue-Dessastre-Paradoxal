@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "aa841e4436020478f0ad2f3e44db11f86fdb339f",
+      "date": "2026-11-17T19:04:33-03:00",
+      "title": "fix(android): accept verified compiled Kanto runtime with legacy installer checksum",
+      "category": "Correções"
+    },
+    {
+      "sha": "7797b712d7fe5ffd6186ffac2708000e0082b853",
+      "date": "2026-11-17T19:03:57-03:00",
+      "title": "chore(unova): synchronize standalone payload after Kanto pilot fossil patch",
+      "category": "Novidades"
+    },
+    {
       "sha": "6758447d3458bbc197bc04983e31bbe3d281348b",
       "date": "2026-11-17T19:03:19-03:00",
       "title": "test(kanto): fossil source, one-time reward and Android release contracts",
