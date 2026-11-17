@@ -21,6 +21,7 @@ NEEDED=(
  "scripts/regions/audit_unova_a04_mapids.py",
  "scripts/regions/audit_unova_a05_candidates.py",
  "scripts/regions/audit_unova_a06_references.py",
+ "scripts/regions/audit_unova_a07_reference_provenance.py",
  "scripts/regions/audit_sinnoh_b05_mapid_planning.py",
  "server/ruby_marshal.py",
  "data/regions/unova-a05-mapid-candidates.json",
@@ -60,7 +61,7 @@ class StandaloneBatTests(unittest.TestCase):
         self.assertIn("python",self.prefix.casefold())
         self.assertIn("exit /b",self.prefix)
 
-    def test_02_contains_all_eleven_dependency_files(self):
+    def test_02_contains_all_twelve_dependency_files(self):
         self.assertEqual(set(self.files),set(NEEDED))
 
     def test_03_embedded_files_same_as_repository(self):
@@ -135,10 +136,12 @@ class StandaloneBatTests(unittest.TestCase):
             self.assertIn("B04 V2",summary)
             self.assertIn("A05",summary)
             self.assertIn("A06",summary)
+            self.assertIn("A07",summary)
             self.assertIn("NENHUM MapID",summary)
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a04-mapids-*.json")))
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a05-candidates-*.json")))
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a06-references-*.json")))
+            self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a07-provenance-*.json")))
 
 
 if __name__=="__main__":
