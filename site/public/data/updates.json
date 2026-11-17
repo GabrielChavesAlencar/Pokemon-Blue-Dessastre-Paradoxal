@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f33dee0b38bada7dde43a3996f1700f9e018645a",
+      "date": "2026-11-17T16:40:00-03:00",
+      "title": "Unova G01.1: esquema versionado de estado regional e validação offline",
+      "category": "Novidades"
+    },
+    {
       "sha": "88bb8c99aa7daefcf8b0b96307b3050775de3492",
       "date": "2026-11-17T16:30:51-03:00",
       "title": "Unova: barra GitHub com 32 tarefas rastreáveis e painel no portal",
