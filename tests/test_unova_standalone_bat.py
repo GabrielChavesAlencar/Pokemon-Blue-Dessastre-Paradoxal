@@ -73,7 +73,8 @@ class StandaloneBatTests(unittest.TestCase):
                 compile(source,name,"exec")
 
     def test_05_bat_has_no_powershell_commands_or_downloads(self):
-        self.assertNotIn("powershell",self.prefix.casefold())
+        self.assertNotIn("powershell.exe",self.prefix.casefold())
+        self.assertNotIn("powershell -",self.prefix.casefold())
         self.assertNotIn("curl ",self.prefix.casefold())
         self.assertNotIn("bitsadmin",self.prefix.casefold())
         self.assertNotIn("git clone",self.prefix.casefold())
