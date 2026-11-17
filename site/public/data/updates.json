@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "82ece72c99bd0835806fd2af2f45e6a8fe4a504a",
+      "date": "2026-11-17T10:58:36-03:00",
+      "title": "feat(unova): catálogo SP04 de NPCs com cruzamento seguro de sprites",
+      "category": "Novidades"
+    },
+    {
       "sha": "4dd570d800af63f551e5673798202983c5a4a553",
       "date": "2026-11-17T10:57:35-03:00",
       "title": "feat(sinnoh): B01 inventário de MapIDs Decades com auditoria segura e 12 testes",
