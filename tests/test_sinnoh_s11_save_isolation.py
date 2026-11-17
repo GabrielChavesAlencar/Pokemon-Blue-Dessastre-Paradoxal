@@ -97,7 +97,7 @@ class S11SaveNamespaceTests(unittest.TestCase):
             self.check(qa=self.root / "game")
         with self.assertRaisesRegex(ValueError, "pasta QA"):
             self.check(qa=self.root / ".blue-work/johto-test")
-        with self.assertRaisesRegex(ValueError, "pasta QA"):
+        with self.assertRaisesRegex(ValueError, "namespace"):
             self.check(qa=self.root / ".blue-work/game-sinnoh-qa-000000000001")
 
     def test_rejects_qa_namespace_colliding_with_original_main(self):
