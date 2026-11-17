@@ -264,6 +264,12 @@ def modified_files(source, revision):
     if boot.count(before_revision) != 1:
         raise ValueError("Original mobile build metadata is inconsistent.")
     boot = boot.replace(before_revision, ("Revision: " + revision + "\n").encode())
+    mobile_sha = hashlib.sha256(mobile.replace(b"\r\n", b"\n")).hexdigest()
+    previous_mobile_hash = re.search(rb"(?m)^Mobile-SHA256: [0-9a-f]{64}$", boot)
+    if not previous_mobile_hash:
+        raise ValueError("Mobile.rb checksum provenance missing from original ZIP.")
+    boot = boot.replace(previous_mobile_hash.group(),
+                        b"Mobile-SHA256: " + mobile_sha.encode())
     previous_fingerprint = re.search(rb"(?m)^Plugins-SHA256: [0-9a-f]{64}$", boot)
     if previous_fingerprint:
         new_fingerprint = plugin_fingerprint(source, result)
