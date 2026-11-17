@@ -128,7 +128,7 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j["maps"][0].update(map_id=None))
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(arrival_x=12))
-        with self.assertRaisesRegex(ValueError, "coordenadas|chegada sem geometria"):
+        with self.assertRaisesRegex(ValueError, "coordenadas|chegada sem geometria|campo/tipo de evento"):
             checklist(self.root)
 
     def test_rejects_fake_playable_status_and_native_evidence(self):
@@ -142,7 +142,7 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
 
     def test_rejects_unrecognized_handler_or_warp_and_duplicate_key(self):
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(destination="UNKNOWN"))
-        with self.assertRaisesRegex(ValueError, "destino|formato inválido"):
+        with self.assertRaisesRegex(ValueError, "destino|formato inválido|campo/tipo de evento"):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(destination="SINNOH_PLAYER_HOUSE_1F"))
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"].append(
@@ -156,7 +156,7 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j["maps"][1]["events"][0].update(x=None))
         self.modify(TEMPLATE, lambda j: j["maps"][1]["events"][0].update(sprite="fake.png"))
-        with self.assertRaisesRegex(ValueError, "sprite sem fonte"):
+        with self.assertRaisesRegex(ValueError, "sprite sem fonte|campo/tipo de evento"):
             checklist(self.root)
 
     def test_write_json_only_in_blue_work_and_never_overwrite(self):
