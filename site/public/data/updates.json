@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f0f7f39561fa07d2a91f6f86e909f007d4cf5c37",
+      "date": "2026-11-16T21:03:45-03:00",
+      "title": "test(sinnoh): CH20 rejeitar topologia invalida via auditor CH06",
+      "category": "Testes"
+    },
+    {
+      "sha": "c0c6e400dd26417c8d34a62f52363545ec69b228",
+      "date": "2026-11-16T21:03:32-03:00",
+      "title": "test(sinnoh): CH20 fixture com schema CH06 e negativos de posicoes/sprites",
+      "category": "Testes"
+    },
+    {
       "sha": "27bb9edd3b28902dcc02302acdb6494e2d1dc336",
       "date": "2026-11-16T21:03:15-03:00",
       "title": "fix(sinnoh): CH20 reutiliza auditor CH06 contra flags e eventos falsos",
