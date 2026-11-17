@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 10/32 após as entregas web S27 e S29; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 11/32 após S27, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -145,6 +145,10 @@ A [S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) foi concluída no escopo do portal we
 ### S29 — nível dinâmico no guia (Barra A concluída)
 
 A [S29](SINNOH_S29_NIVEIS_DINAMICOS_PORTAL_ACEITE.md) explica a fonte real do cálculo `70% Normal / 90% Master` sobre o maior Pokémon não-ovo da party. Em todas as oito abas, o guia diferencia regra de balanceamento, insígnias regionais/esmeraldas e número efetivo só calculável numa batalha real; **não inventa cap numérico regional**, nível fixo de treinadores ou níveis de encontros. [Testes S29](../site/tests/sinnoh-s29-dynamic-levels.test.mjs) e filtros negam falso `levelCap`, `effectiveLevel`, equipe instalada ou leitura de save. **A Barra A atinge 10/32 (31%)**, com B/C/D 0/13 e Barra E 20/20.
+
+### S30 — matriz de testes automatizados offline (Barra A concluída)
+
+A [S30](SINNOH_S30_SUITE_AUTOMATIZADA_ACEITE.md) consolida os testes Python/Ruby de Sinnoh, o portal e os testes estáticos Android em [workflow S30](../.github/workflows/sinnoh-s30.yml), cinco jobs independentes. O [auditor de cobertura com hashes](../scripts/regions/audit_sinnoh_s30_suite.py) exige fontes e testes e recusa falso sucesso sem aprovações do workflow; [11 testes S30](../tests/test_sinnoh_s30_suite.py) incluem manipulações de QA, componentes faltantes e sobrescrita de relatórios. **Barra A 11/32 (34%)**, 6 parciais, 15 pendentes; B/C/D 0/13, E 20/20. Sem Game.exe/JoiPlay reais nem liberação de mapas/Sinnoh jogável.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

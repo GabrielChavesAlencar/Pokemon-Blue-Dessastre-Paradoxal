@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 10,
-    "partial": 7,
+    "done": 11,
+    "partial": 6,
     "pending": 15,
-    "percent_complete": 31,
-    "percent_with_partial_not_counted": 31,
+    "percent_complete": 34,
+    "percent_with_partial_not_counted": 34,
     "groups": [
       {
         "key": "foundation",
@@ -272,8 +272,8 @@
     {
       "id": "S30",
       "title": "Suíte automatizada de testes",
-      "status": "partial",
-      "evidence_path": "tests/test_sinnoh_graph.py"
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S30_SUITE_AUTOMATIZADA_ACEITE.md"
     },
     {
       "id": "S31",
