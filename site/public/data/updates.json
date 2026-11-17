@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3077174d2c49f025ddd4b90447f98bf9992d0458",
+      "date": "2026-11-17T20:41:50-03:00",
+      "title": "feat(sinnoh): L01 optional offline sanitized exporter for B09 B10 B11 R07 R08 (#170)",
+      "category": "Novidades"
+    },
+    {
       "sha": "8af6b941b73949ea46de3f8d9c81680ed4d88684",
       "date": "2026-11-17T20:39:52-03:00",
       "title": "fix(android): regenerate compiled Mobile.rb SHA-256 in repacked JoiPlay build metadata",
