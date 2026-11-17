@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a24926c6becb07e0c2e2e8dde8272e8b8370f50f",
+      "date": "2026-11-17T09:04:13-03:00",
+      "title": "feat(unova): assistente E04 de fonte privada e validação segura",
+      "category": "Novidades"
+    },
+    {
       "sha": "1bfe19fc83ac3a696928a4d04ac86094b7a71797",
       "date": "2026-11-17T08:55:37-03:00",
       "title": "feat(unova): preparação E05/E06, inventário seguro e testes isolados",
