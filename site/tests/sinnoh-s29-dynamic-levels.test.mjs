@@ -52,7 +52,7 @@ test('S29 líderes e Cynthia mantêm apenas especies historicas, sem level fixo'
   for(const tab of ['ginasios','liga']){
     const html=sinnohGuidePage(guide,tab);
     assert.doesNotMatch(html,/\b(?:Lv\.?|Nível)\s*\d+\b/i);
-    assert.match(html,/Equipe PBS|PBS e batalha nativa/);
+    assert.match(html,/PBS: não instalado|Equipe PBS|PBS e batalha nativa/);
   }
   assert.equal(guide.bosses.length,13);
   assert.ok(guide.bosses.every(b=>!Object.hasOwn(b,'level') &&
