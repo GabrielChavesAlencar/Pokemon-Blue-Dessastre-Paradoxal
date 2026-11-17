@@ -38,7 +38,9 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          from scripts.regions import prepare_sinnoh_b10_save_isolation as b10
+          import sys
+          sys.path.insert(0,str(Path('scripts/regions').resolve()))
+          import prepare_sinnoh_b10_save_isolation as b10
           clone=r"C:\Private\SyntheticClone"
           tools=r"C:\Private\SyntheticTools"
           config=b10.xml_wsb(clone,tools)
