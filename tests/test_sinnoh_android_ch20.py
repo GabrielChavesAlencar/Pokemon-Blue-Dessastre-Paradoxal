@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import copy
-import io
+import hashlib
 import json
 from pathlib import Path
 import stat
+import sys
 import tempfile
 import unittest
 from zipfile import ZipFile, ZipInfo
@@ -67,6 +68,50 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
         self.assertEqual(sum(c["id"].startswith("warp-") for c in cases), 16)
         self.assertEqual(sum(c["id"].startswith("npc-") for c in cases), 5)
         self.assertIn("android-joi-play", [x["id"] for x in cases])
+
+    def test_case_ids_match_existing_native_auditor_exactly(self):
+        # IDs numericos sao EXCLUSIVAMENTE placeholders efemeros no teste;
+        # nenhum MapID real e publicado/atribuido por esta comparacao.
+        from scripts.regions.audit_sinnoh_android_ch20 import STARTERS
+        sys.path.insert(0, str(ROOT / "scripts/regions"))
+        from audit_sinnoh_playtest import expected_cases
+        spec = json.loads((self.root / TEMPLATE).read_text("utf-8"))
+        contract = []
+        for index, source in enumerate(spec["maps"], start=1):
+            events = []
+            for e in source["events"]:
+                if e["kind"] == "warp":
+                    events.append({"key": e["key"], "kind": "warp",
+                                   "destination": e["destination"],
+                                   "arrival_x": 0, "arrival_y": 0})
+                elif e["kind"] == "handler":
+                    events.append({"key": e["key"], "kind": "handler",
+                                   "handler": e["handler"]})
+            contract.append({"symbol": source["symbol"], "id": index,
+                             "events": events})
+        native_ids = [c["id"] for c in expected_cases({"event_contract": contract})]
+        ch20_ids = [c["id"] for c in checklist(self.root)]
+        self.assertEqual(len(native_ids), 44)
+        self.assertEqual(ch20_ids, native_ids)
+        self.assertEqual(len(STARTERS), 3)
+
+    def test_checklist_hash_and_source_hashes_are_reproducible(self):
+        first = audit(root=self.root)
+        second = audit(root=self.root)
+        self.assertEqual(first, second)
+        self.assertEqual(len(first["checklist_sha256"]), 64)
+        for label, path in (("twinleaf_template", TEMPLATE),
+                            ("twinleaf_schema", SCHEMA), ("qa_ledger", LEDGER)):
+            expected = hashlib.sha256((self.root / path).read_bytes()).hexdigest()
+            self.assertEqual(first["input_sha256"][label], expected)
+        # Alterar apenas o registro externo NAO cria nem aprova teste nativo.
+        self.modify(LEDGER, lambda j: j.update(updated_at="audit-only-fixture"))
+        modified = audit(root=self.root)
+        self.assertNotEqual(first["input_sha256"]["qa_ledger"],
+                            modified["input_sha256"]["qa_ledger"])
+        self.assertEqual(first["checklist_sha256"], modified["checklist_sha256"])
+        self.assertEqual(modified["completed_native_cases"], 0)
+        self.assertFalse(modified["native_gameplay_verified"])
 
     def test_clean_zip_is_not_claimed_compatible_with_joiplay(self):
         report = audit(root=self.root, package=self.makezip())
