@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "phase": "G05.2",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "PLANNED_OFFLINE_BADGE_AND_SPECIALS_AUDIT_ONLY",
+  "sources": {
+    "registry": "site/public/data/regions.json",
+    "gym_contract": "data/regions/unova-g02-gym-story-contracts.json",
+    "regional_items": "data/regions/unova-g05-regional-items-contract.json",
+    "regions_runtime": "scripts/battle_polish/Regions.rb",
+    "travel_runtime": "scripts/battle_polish/RegionTravel.rb",
+    "field_runtime": "scripts/battle_polish/RegionalPolicy.rb",
+    "tracker": "site/public/data/unova-github-progress.json"
+  },
+  "badges": [
+    {
+      "index": 1,
+      "badge": "TRIO",
+      "gym_contract_id": "UNOVA_G02_GYM_01",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 2,
+      "badge": "BASIC",
+      "gym_contract_id": "UNOVA_G02_GYM_02",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 3,
+      "badge": "INSECT",
+      "gym_contract_id": "UNOVA_G02_GYM_03",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 4,
+      "badge": "BOLT",
+      "gym_contract_id": "UNOVA_G02_GYM_04",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 5,
+      "badge": "QUAKE",
+      "gym_contract_id": "UNOVA_G02_GYM_05",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 6,
+      "badge": "JET",
+      "gym_contract_id": "UNOVA_G02_GYM_06",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 7,
+      "badge": "FREEZE",
+      "gym_contract_id": "UNOVA_G02_GYM_07",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    },
+    {
+      "index": 8,
+      "badge": "LEGEND",
+      "gym_contract_id": "UNOVA_G02_GYM_08",
+      "native_badge_index": null,
+      "native_switch_id": null,
+      "native_reward_item_id": null,
+      "native_event_id": null,
+      "gym_battle_verified": false,
+      "installed": false,
+      "source_status": "G02_SYMBOLIC_ONLY_NOT_NATIVE_GYM"
+    }
+  ],
+  "native_evidence": {
+    "source_unova_badge_indices": null,
+    "source_unova_gym_event_ids": null,
+    "source_unova_badge_switch_ids": null,
+    "source_unova_badge_reward_items": null,
+    "source_unova_gym_map_ids": null,
+    "source_unova_native_provenance_sha256": null,
+    "source_unova_licensed_assets": null,
+    "native_special_box_qa": null
+  },
+  "progress_policy": {
+    "regional_badge_source": "site/public/data/regions.json",
+    "regional_contributions": "UNIQUE_MILESTONES_IN_EACH_NON_DECADES_CIRCUIT_REGION",
+    "decades_contribution": "NATIVE_BADGE_COUNT_PARAMETER_NOT_REWRITTEN",
+    "total_formula": "NATIVE_DECADES_COUNT_PLUS_DISTINCT_REGIONAL_MILESTONES",
+    "reject_duplicate_regional_claims": true,
+    "foreign_badges_never_unlock_local_specials": true,
+    "hisui_not_counted_in_circuit_total": true,
+    "native_badge_array_unmodified": true,
+    "offline_badge_awards_never_real": true
+  },
+  "special_policy": {
+    "metadata_source": "species_data.flags_and_base_species_flags_for_nonzero_form",
+    "special_flags": [
+      "Legendary",
+      "Mythical",
+      "UltraBeast",
+      "Paradox"
+    ],
+    "ignore_bst_and_name_heuristics": true,
+    "unova_local_milestones_required": 8,
+    "local_region_not_global_crystals": true,
+    "hisui_uses_hisui_complete_not_badge_count": true,
+    "move_specials_to_pc_only_after_verified_native_commit": true,
+    "preview_reserves_one_slot_per_restricted_party_pokemon": true,
+    "preview_requires_one_non_egg_non_fainted_survivor": true,
+    "preview_rejects_insufficient_box_slots": true,
+    "no_release_or_overwrite_of_pokemon": true,
+    "no_cross_region_badge_or_special_permission": true
+  },
+  "simulation_policy": {
+    "scope": "FIXTURE_ONLY_G05_2_NOT_NATIVE_SAVE",
+    "pokemon_id_prefix": "FIXTURE_",
+    "allow_preview_for_planned_region_not_native_travel": true,
+    "no_native_badge_awards": true,
+    "no_box_writes": true,
+    "no_native_qa_claims": true,
+    "no_installation_or_field_access": true,
+    "reject_unknown_achievements_and_flags": true
+  },
+  "native_game_modified": false,
+  "native_badges_modified": false,
+  "native_items_granted": false,
+  "native_saves_modified": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "can_install": false,
+  "notes": [
+    "G05.2 audits regional badges and species-category protections in memory only; neither simulated awards nor preview results are game events.",
+    "Unova White eight badges originate exclusively from G02.2 and site/public/data/regions.json; real badge indices, switches, NPC events and map IDs are unknown.",
+    "Global crystal score adds native Decades badge count to unique achievements in circuit regions other than Decades; Hisui is excluded, and native badge flags are never written.",
+    "Eight LOCAL badges unlock Legendary, Mythical, UltraBeast and Paradox species in each regional destination; eight global crystals or eight badges elsewhere never suffice.",
+    "Metadata flags, including base flags for alternate forms, are authoritative for special classification, never species names or battle stats.",
+    "Transfers must preserve one usable non-egg, non-fainted Pokemon and reserve sufficient empty PC slots before any native commit; G05.2 only previews fixture reservations.",
+    "Unova is planned and not installed. G05.3 addresses NPC travel, G05.4 blackouts and native state persistence; no native Windows or JoiPlay gameplay is claimed."
+  ]
+}
