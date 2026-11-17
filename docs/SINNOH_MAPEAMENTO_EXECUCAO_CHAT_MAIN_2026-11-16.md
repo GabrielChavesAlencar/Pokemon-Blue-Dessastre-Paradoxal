@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 21/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 22/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -208,7 +208,15 @@ O [adaptador Ruby](../scripts/regions/SinnohGalacticContracts.rb) usa a única c
 
 O [adaptador Ruby S20](../scripts/regions/SinnohDistortionContracts.rb) expõe gates por resultado tipado e a única sequência `sinnoh_ch14` para as nove etapas da fase 8: Cyrus, Saturn, Mars, Jupiter, Dialga/Palkia, puzzles, Cyrus final, Giratina e retorno seguro. Só inicia após as cinco etapas S19, exige Mine+Icicle e **não modifica mapas, salva flags paralelas, força captura de Giratina ou gera teleportes**. O registro `VERIFIED_NATIVE_SOURCES` é vazio e o método público rejeita confirmações sem callback instalado. O [contrato S20](../data/regions/sinnoh-distortion-s20.json) segue a referência S39 e o inventário CH14; [auditoria](../scripts/regions/audit_sinnoh_s20_distortion.py), [16 testes negativos](../tests/test_sinnoh_s20_distortion.py) e [teste Ruby de salvamento/resultado](../tests/sinnoh_s20_distortion_runtime.rb) usam fixtures, nunca jogo nativo.
 
-[Critérios de aceite S20](SINNOH_S20_CYRUS_DISTORTION_GIRATINA_ACEITE.md): **Barra A 21/32 (65%)**, 5 parciais, 6 pendentes; E 20/20, B/C/D 0/13, 44 casos nativos pendentes. Ainda requer mapas autorizados de Mt. Coronet/Distortion, encontros/puzzles reais, battle results e Game.exe/JoiPlay. **S21 (Elite/Cynthia) continua pendente.**
+[Critérios de aceite S20](SINNOH_S20_CYRUS_DISTORTION_GIRATINA_ACEITE.md): **Barra A 21/32 (65%)**, 5 parciais, 6 pendentes; E 20/20, B/C/D 0/13, 44 casos nativos pendentes. Ainda requer mapas autorizados de Mt. Coronet/Distortion, encontros/puzzles reais, battle results e Game.exe/JoiPlay. **S21 possui contratos e testes offline, mas nenhuma batalha física de Elite/Cynthia/Hall foi instalada.**
+
+### S21 — Liga de Sinnoh, Elite Four, Cynthia e Hall of Fame (offline)
+
+O [adaptador Ruby S21](../scripts/regions/SinnohLeagueContracts.rb) preserva as oito etapas CH14 após o retorno seguro da S20: Volkner/Beacon, Barry após oito insígnias **locais** de Sinnoh, Aaron, Bertha, Flint, Lucian, Cynthia e o Hall of Fame. O resultado `battle_won` de Cynthia **não basta** para a conclusão da Liga: o Hall exige `engine_hall_of_fame_confirmed` independente, com atualização pelo CH14 da única lista regional `leagues`. Não cria flags de liberação de Hoenn/Unova, badges, recompensas ou portais.
+
+O [contrato S21](../data/regions/sinnoh-league-s21.json) continua *reference_only*, com `VERIFIED_NATIVE_SOURCES` vazio, nenhum MapID ou PBS compilado, e oito checkpoints sem evento instalado. O [auditor](../scripts/regions/audit_sinnoh_s21_league.py) compara CH11, CH14, CH15, cobertura da fase 9 e o detonado S42/S43; [16 testes negativos](../tests/test_sinnoh_s21_league.py) e [testes Ruby de progresso/save](../tests/sinnoh_s21_league_runtime.rb) só usam fixtures sintéticas.
+
+[Critérios de aceite e limitações](SINNOH_S21_ELITE_CYNTHIA_HALL_OF_FAME_ACEITE.md): **Barra A 22/32 (68%)**, 5 parciais e 5 pendentes, E 20/20, B/C/D 0/13. Os 44 casos nativos, salas, combates, Hall e save real no Game.exe/JoiPlay seguem **não realizados**. A S22 (viagem Hoenn/Unova) ainda está pendente.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

@@ -29,6 +29,7 @@ PYTHON_CHECKS = [
     ("sinnoh-s18-wild-contract", [PY, "scripts/regions/audit_sinnoh_s18_wild.py"]),
     ("sinnoh-s19-galactic-contract", [PY, "scripts/regions/audit_sinnoh_s19_galactic.py"]),
     ("sinnoh-s20-distortion-contract", [PY, "scripts/regions/audit_sinnoh_s20_distortion.py"]),
+    ("sinnoh-s21-league-contract", [PY, "scripts/regions/audit_sinnoh_s21_league.py"]),
     ("sinnoh-music-audit", [PY, "scripts/music/audit_sinnoh_music_ch16.py"]),
 ]
 
@@ -46,6 +47,7 @@ RUBY_RUNTIME = [
     ("sinnoh-story", ["tests/sinnoh_story_ch14_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/RegionTravel.rb", "scripts/regions/SinnohStoryContracts.rb", "data/regions/sinnoh-story-ch14-contract.json"]),
     ("sinnoh-s19-galactic", ["tests/sinnoh_s19_galactic_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/regions/SinnohStoryContracts.rb", "scripts/regions/SinnohGalacticContracts.rb", "data/regions/sinnoh-galactic-s19.json"]),
     ("sinnoh-s20-distortion", ["tests/sinnoh_s20_distortion_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/regions/SinnohStoryContracts.rb", "scripts/regions/SinnohDistortionContracts.rb", "data/regions/sinnoh-distortion-s20.json"]),
+    ("sinnoh-s21-league", ["tests/sinnoh_s21_league_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/regions/SinnohStoryContracts.rb", "scripts/regions/SinnohLeagueContracts.rb", "data/regions/sinnoh-league-s21.json"]),
     ("sinnoh-music", ["tests/sinnoh_music_ch16_runtime.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
     ("sinnoh-music-s26", ["tests/sinnoh_s26_music_regression.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
 ]
@@ -57,6 +59,7 @@ RUBY_SYNTAX = [
     "scripts/regions/SinnohStoryContracts.rb",
     "scripts/regions/SinnohGalacticContracts.rb",
     "scripts/regions/SinnohDistortionContracts.rb",
+    "scripts/regions/SinnohLeagueContracts.rb",
     "scripts/music/SinnohMusicContracts.rb",
     "scripts/battle_polish/Regions.rb",
     "scripts/battle_polish/RegionTravel.rb",
