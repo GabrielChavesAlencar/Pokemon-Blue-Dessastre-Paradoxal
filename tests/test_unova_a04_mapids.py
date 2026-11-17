@@ -317,6 +317,14 @@ class UnovaMapIDTests(unittest.TestCase):
         self.assertFalse(doc["native_game_exe_tested"])
         self.assertFalse(doc["region_identity_verified"])
 
+    def test_33_same_physical_game_and_data_cannot_be_two_regions(self):
+        args=["--project",str(self.project),"--base-data",str(self.game),
+              "--overlay",f"KANTO={self.native}"]
+        with contextlib.redirect_stderr(io.StringIO()):
+            code=a04.main(args)
+        self.assertEqual(code,2)
+        self.assertFalse((self.project/"game").exists())
+
     def test_32_untracked_regions_cannot_be_automatically_assigned(self):
         k=a04.scan_dir(self.overlay("KANTO",{450:b"maybe"}),"KANTO")
         doc=a04.analyze(a04.scan_dir(self.native,"DECADES",base=True),{"KANTO":k})
