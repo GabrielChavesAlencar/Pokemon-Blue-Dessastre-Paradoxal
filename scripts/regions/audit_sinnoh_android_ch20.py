@@ -216,12 +216,23 @@ def inspect_package(package: Path | None) -> dict:
 def audit(root: Path = ROOT, package: Path | None = None) -> dict:
     cases = checklist(root)
     pkg = inspect_package(package)
+    # O hash canonico e independente da ordem de chaves e da plataforma.
+    # Aponta para o plano, NAO para capturas nem gameplay executado.
+    manifest = json.dumps(cases, ensure_ascii=False, sort_keys=True,
+                          separators=(",", ":")).encode("utf-8")
+    source_sha = {
+        "twinleaf_template": sha256(root / TEMPLATE),
+        "twinleaf_schema": sha256(root / SCHEMA),
+        "qa_ledger": sha256(root / LEDGER),
+    }
     return {
         "schema": 1, "chapter": "CH20", "region": "SINNOH",
         "mode": "STATIC_JOIPLAY_PREFLIGHT_NOT_NATIVE_QA",
         "package": pkg,
         "checklist_total": 44,
         "by_kind": EXPECTED_COUNTS.copy(),
+        "checklist_sha256": hashlib.sha256(manifest).hexdigest(),
+        "input_sha256": source_sha,
         "completed_native_cases": 0,
         "cases": cases,
         "static_checklist_valid": True,
