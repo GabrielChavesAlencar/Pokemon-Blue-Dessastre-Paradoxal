@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 23/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 24/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -224,7 +224,15 @@ O [contrato S22](../data/regions/sinnoh-travel-s22.json) é implementado em [`Si
 
 O [runner Ruby S22](../tests/sinnoh_s22_travel_runtime.rb) testa `RegionTravel.stage_local_bag` com bolsa/PC falsos: separa HMs e itens-chave de origem/destino, preserva itens comuns, reverte corretamente ao regressar a Sinnoh e rejeita dados de inventário inválidos sem tocar no objeto real da prévia. O [auditor Python](../scripts/regions/audit_sinnoh_s22_travel.py) e [16 testes negativos](../tests/test_sinnoh_s22_travel.py) bloqueiam chegada fictícia de Unova, MapIDs de Sinnoh não instalados, Hall falso e permissões de NPC fabricadas. [Aceite S22](SINNOH_S22_VIAGENS_HOENN_UNOVA_ACEITE.md).
 
-**Barra A 23/32 (71%)**, 5 parciais, 4 pendentes, E 20/20, B/C/D 0/13. Faltam instalação física, save/teleporte nativo e 44 verificações reais; **S23 pós-jogo e revanches continua pendente.**
+**Barra A 23/32 (71%)**, 5 parciais, 4 pendentes, E 20/20, B/C/D 0/13. Faltam instalação física, save/teleporte nativo e 44 verificações reais; **S23 possui contratos e testes offline, mas nenhuma área, missão ou revanche física foi instalada.**
+
+### S23 — Battle Zone, missões opcionais e revanches sem NPC/PBS físico
+
+A [S23](SINNOH_S23_POS_JOGO_REVANCHES_ACEITE.md) implementa apenas o [adaptador Ruby de pós-jogo](../scripts/regions/SinnohPostgameContracts.rb) e o [catálogo de 14 áreas/6 eventos](../data/regions/sinnoh-postgame-s23.json). Ele exige Hall CH14, bloqueia Heatran antes da Battle Zone e Darkrai/Shaymin sem confirmação nativa de evento; não fornece lendários, teleporte, item de evento nem flags de missão paralelas exceto o ledger opcional sintético de marcos `sinnoh_s23`. Nenhum handler `record_from_native` funciona enquanto `VERIFIED_NATIVE_SOURCES` permanecer vazio.
+
+As **cinco revanches históricas Platinum** de Aaron, Bertha, Flint, Lucian e Cynthia são referências CH15, não times jogáveis. A revanche **Blue Full Power global** só pode ser preparada após **dez Ligas concluídas** e elenco nativo de revanche auditado; para lendários/míticos/UB/paradoxos na party valem as **oito insígnias locais** já existentes, não dez Ligas. O [auditor S23](../scripts/regions/audit_sinnoh_s23_postgame.py), [16 testes negativos](../tests/test_sinnoh_s23_postgame.py) e [runtime Ruby com saves sintéticos](../tests/sinnoh_s23_postgame_runtime.rb) verificam essas invariantes sem executar batalhas.
+
+**Barra A 24/32 (75%)**, 5 parciais, 3 pendentes, E 20/20, B/C/D 0/13, 44 casos nativos ainda pendentes. Battle Zone, Stark Mountain, Battle Frontier e eventos lendários continuam **não instalados** no Game.exe/JoiPlay.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
