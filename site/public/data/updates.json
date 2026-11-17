@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7bf605ae932cb61724efa2e6522834b48a45c57b",
+      "date": "2026-11-17T11:14:09-03:00",
+      "title": "feat(unova): piloto privado Cheren SP05 com QA 4x4 e comparação Decades",
+      "category": "Novidades"
+    },
+    {
       "sha": "82ece72c99bd0835806fd2af2f45e6a8fe4a504a",
       "date": "2026-11-17T10:58:36-03:00",
       "title": "feat(unova): catálogo SP04 de NPCs com cruzamento seguro de sprites",
