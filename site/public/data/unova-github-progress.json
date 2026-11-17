@@ -148,8 +148,9 @@
         {
           "id": "G04.3",
           "title": "Criar regras de evolução e níveis escalonados",
-          "status": "pending",
-          "acceptance": "Evoluções, nível mínimo, balanceamento e limites por progressão"
+          "status": "done",
+          "acceptance": "Evoluções, nível mínimo, balanceamento e limites por progressão",
+          "evidence": "scripts/regions/audit_unova_g04_wild_scaling.py"
         },
         {
           "id": "G04.4",
