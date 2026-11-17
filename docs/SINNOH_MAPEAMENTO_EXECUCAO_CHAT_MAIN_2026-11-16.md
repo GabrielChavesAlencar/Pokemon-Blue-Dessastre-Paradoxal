@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 16/32 após as entregas S08, S10, S11, S12, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 17/32 após as entregas S08, S10, S11, S12, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -177,6 +177,14 @@ A [S12](SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md) inclui [16 testes sintético
 O [validador S08](../scripts/regions/audit_sinnoh_s08_resources.py) consolida auditoria RXDATA, ligações/MapIDs, referências de tilesets/autotiles, assinatura PNG, dependências Ruby e hashes SHA-256 dos mapas/scripts/PBS gerados. O [instalador S12](../scripts/regions/sinnoh_s12_installer.py) agora **bloqueia a criação de QA privada se a S08 não aprovar os recursos**. A [cobertura com 16 testes](../tests/test_sinnoh_s08_integrity.py) usa apenas arquivos sintéticos, não altera o Decades ou saves, não executa Game.exe e rejeita report falso, gráficos corrompidos e links inseguros.
 
 O [aceite S08](SINNOH_S08_INTEGRIDADE_RECURSOS_ACEITE.md) só conclui a infraestrutura de auditoria em código: **Barra A 16/32 (50%)**, 5 parciais, 11 pendentes; E 20/20, B/C/D 0/13; 44 casos nativos seguem não observados. Direitos dos assets, renderização, colisões e QA real continuam bloqueados sem fonte legítima.
+
+### R07 — diagnóstico de reservas futuras sem conclusão falsa da S07
+
+O [diagnóstico R07](SINNOH_R07_DIAGNOSTICO_RESERVAS.md) e o [BAT de duplo clique](../SINNOH_DIAGNOSTICAR_PENDENCIAS.bat) leem o MapInfos local e manifestos futuros de Kanto, Johto e Hoenn sem tocar `game/` ou saves, e geram `.blue-work/sinnoh-diagnostics/r07-reservations.json`. A [suite de 16 testes negativos](../tests/test_sinnoh_r07_reservations.py) detecta IDs ocupados, reservas futuras conflitantes, baseline divergente, symlink e falso aceite nativo. A presença de código **não prova** que todas as reservas foram fornecidas: **S07 continua parcial (6/9, R07–R09 pendentes)**.
+
+### S26 — regressões da política musical, offline
+
+O [teste Ruby S26](../tests/sinnoh_s26_music_regression.rb), executado via [CH19](../scripts/regions/sinnoh_ci_ch19.py), confere todos os **46 cues CH16**, prioridades do BlueMusic, fallback sem faixa licenciada, ausência de loops/fades inventados, 11 transições e ausência de alteração em outra região. [Aceite e bloqueios](SINNOH_S26_TESTES_MUSICA_ACEITE.md). A **Barra A 17/32 (53%)** (5 parciais, 10 pendentes); B/C/D 0/13 e E 20/20. As tarefas S24/S25 exigem fonte/licenças e instalação real de áudio; o código de testes não desbloqueia músicas.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

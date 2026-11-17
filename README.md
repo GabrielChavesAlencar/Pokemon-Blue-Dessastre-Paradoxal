@@ -142,6 +142,10 @@ Se você já baixou Pokémon Decades, copie os arquivos para `game/` mantendo `G
 
 > Alternativa: definir a variável de ambiente `BLUE_GAME_DIR` com o caminho da sua cópia local do jogo e executar `RUN.bat`. Arquivos originais não precisam ficar dentro desta pasta.
 
+### Diagnosticar pendências de MapIDs de Sinnoh (S07/R07)
+
+O [`SINNOH_DIAGNOSTICAR_PENDENCIAS.bat`](SINNOH_DIAGNOSTICAR_PENDENCIAS.bat) permite **duplo clique no Windows**, sem PowerShell, para verificar se existem `game/Data/MapInfos.rxdata`, reservas futuras revisadas de **Kanto, Johto e Hoenn** e possíveis colisões com um remapeamento Sinnoh. Produz `.blue-work/sinnoh-diagnostics/r07-reservations.json`. O diagnóstico **não instala mapas, não abre Game.exe e não modifica os saves**. Ausência de fonte/manifestos é apresentada como pendência, não como sucesso. [Manual R07](docs/SINNOH_R07_DIAGNOSTICO_RESERVAS.md).
+
 ### Instalar piloto experimental Sinnoh em cópia privada (S12)
 
 O [`SINNOH_INSTALAR_EXPERIMENTAL.bat`](SINNOH_INSTALAR_EXPERIMENTAL.bat) permite tentar a **instalação privada com duplo clique no Windows**, sem PowerShell e **sem alterar o `game/` principal nem os saves**. O instalador **não baixa mapas**: exige um overlay autorizado com manifesto/hashes e a especificação de eventos auditada em `.blue-work/sinnoh-qa-spec.json`. Se faltarem, **bloqueia**; não inventa mapas ou Pokémon e não inicia `Game.exe`. Com os arquivos corretos, cria apenas `.blue-work/game-sinnoh-qa-<12hex>` com saves isolados e pedido de compilação pendente. `--check` realiza somente simulação. [Contrato, insumos e limitações S12](docs/SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md). **Sinnoh continua não jogável até execução/QA nativas verificadas.**

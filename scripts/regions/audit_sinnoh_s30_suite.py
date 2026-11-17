@@ -34,6 +34,8 @@ REQUIRED = {
         "tests/test_sinnoh_s12_installer.py",
         "tests/test_sinnoh_s08_integrity.py",
         "scripts/regions/audit_sinnoh_s08_resources.py",
+        "scripts/regions/audit_sinnoh_r07_reservations.py",
+        "tests/test_sinnoh_r07_reservations.py",
     ),
     "ruby": (
         "tests/sinnoh_pilot_runtime.rb",
@@ -42,6 +44,7 @@ REQUIRED = {
         "tests/sinnoh_barry_ch08_runtime.rb",
         "tests/sinnoh_story_ch14_runtime.rb",
         "tests/sinnoh_music_ch16_runtime.rb",
+        "tests/sinnoh_s26_music_regression.rb",
         "scripts/battle_polish/Campaign.rb",
     ),
     "portal": (
@@ -57,6 +60,7 @@ REQUIRED = {
         "data/regions/sinnoh-progress.json",
         "SINNOH_JOGAR_EXPERIMENTAL.bat",
         "SINNOH_INSTALAR_EXPERIMENTAL.bat",
+        "SINNOH_DIAGNOSTICAR_PENDENCIAS.bat",
         "data/regions/sinnoh-source.json",
         "data/regions/sinnoh-twinleaf-events.json",
         "site/public/data/regions.json",
@@ -127,6 +131,7 @@ def collect(root: Path = ROOT) -> dict:
         fail("descoberta Python de Sinnoh insegura")
     if (not any(name == "sinnoh-story" for name, _ in ci.RUBY_CHECKS)
             or not any(name == "sinnoh-music" for name, _ in ci.RUBY_CHECKS)
+            or not any(name == "sinnoh-music-s26" for name, _ in ci.RUBY_CHECKS)
             or any("Game.exe" in " ".join(command) or "JoiPlay" in " ".join(command)
                    for _, command in ci.RUBY_CHECKS)):
         fail("comandos Ruby nao isolados")
