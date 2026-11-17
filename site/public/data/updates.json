@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "587b1896e636bb6c5a906750916dbdafa9c73119",
+      "date": "2026-11-17T08:37:41-03:00",
+      "title": "fix(unova): reexecutar auditoria idempotente sem sobrescrever evidencia diferente",
+      "category": "Novidades"
+    },
+    {
       "sha": "a58caf7760ec76fd73bb6a36ebac51c82197fabd",
       "date": "2026-11-17T08:37:23-03:00",
       "title": "feat(unova): duplo clique para validar E e ler fonte com bloqueios seguros",
