@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "02900a9f66f51921d612ba036b96c52e64ab0ed1",
+      "date": "2026-11-17T19:07:38-03:00",
+      "title": "fix(android): normalize one Windows path separator in Kanto checksum proof",
+      "category": "Correções"
+    },
+    {
+      "sha": "ab9b3806c292874581dc6adc09831b2a2d49c791",
+      "date": "2026-11-17T19:07:19-03:00",
+      "title": "fix(android): preserve Windows backslash keys in Kanto runtime install proof",
+      "category": "Correções"
+    },
+    {
       "sha": "7f3dc9aaa60ba3e9356e420f03e497c341651373",
       "date": "2026-11-17T19:06:48-03:00",
       "title": "fix(android): recognize historical Kanto manifests without plugin checksums",
