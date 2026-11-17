@@ -201,13 +201,14 @@ def clone(game:Path,qa_root:Path,a04_report:dict,a12_report:dict)->dict:
     identity=sha((str(game).casefold()+"|"+roots["mapinfos_sha256"]).encode("utf-8"))[:16]
     destination=qa_root/("qa-unova-a13-"+identity)
     no_symlink_ancestors(qa_root)
-    if (not qa_root.exists()):qa_root.mkdir(parents=True,exist_ok=False)
-    if not qa_root.is_dir():blocked("pasta privada QA invalida")
     token=identity
     mkxp,ini,profile=make_configs(game,token)
     source_paths={x["path"] for x in inv["files"]}
     if INVENTORY_FILE in source_paths or KEEP_FILE in source_paths:
         blocked("arquivos QA ja fazem parte da instalacao")
+    # All non-writing validation precedes creation of even the QA root.
+    if not qa_root.exists():qa_root.mkdir(parents=True,exist_ok=False)
+    if not qa_root.is_dir():blocked("pasta privada QA invalida")
     proof={"schema":1,"phase":"A13","region":"UNOVA",
         "status":STATUS,"source_mapinfos_sha256":roots["mapinfos_sha256"],
         "source_map001_sha256":roots["map001_sha256"],
