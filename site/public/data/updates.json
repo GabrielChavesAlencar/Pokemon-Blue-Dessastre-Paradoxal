@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a58caf7760ec76fd73bb6a36ebac51c82197fabd",
+      "date": "2026-11-17T08:37:23-03:00",
+      "title": "feat(unova): duplo clique para validar E e ler fonte com bloqueios seguros",
+      "category": "Novidades"
+    },
+    {
       "sha": "4b5d492bc73a8da4758178cc4504528439e25ade",
       "date": "2026-11-17T08:36:25-03:00",
       "title": "fix(unova): bloquear symlinks ancestrais e sobrescrita dos relatorios RXDATA",
