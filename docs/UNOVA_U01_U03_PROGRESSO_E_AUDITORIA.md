@@ -148,3 +148,10 @@ O novo [auditor SP04](../scripts/regions/audit_unova_sp04_npcs.py) cruza esse ca
 A campanha White mantém **Iris como líder do oitavo ginásio**, com Drayden identificado como referência de Black. A lista é de elenco/arquétipos, não de todas as instâncias anônimas nos mapas.
 
 **E = 4/8 (50%)**, pois pack real, direitos e QA ainda estão pendentes; fases Unova realmente jogáveis **0/32**. Nenhuma alteração no jogo, saves, Blue-Story ou sprites instalados.
+
+
+## SP05 — Cheren: preparação QA isolada sem instalar no jogo
+
+Criado o manifesto [SP05](../data/regions/unova-sp05-cheren-pilot.json), o script [unova_sp05_cheren_pilot.py](../scripts/regions/unova_sp05_cheren_pilot.py), o [BAT com seleção Windows](../UNOVA_CHEREN_SP05_QA.bat) e o [manual SP05](UNOVA_SP05_CHEREN_PILOTO_QA.md). Com fonte real e documentos fornecidos, o script verifica SHA-256 do ZIP + relatórios SP03/SP04, valida PNG RGBA8 4×4, mede a silhueta nos 16 quadros e compara a proporção com um sprite de referência do Decades. O staging só cria cópia privada e manifesto em .blue-work/unova/qa/sp05-cheren, nunca instala, não valida identidade visual ou direitos automaticamente e não altera Game.exe/saves/Blue-Story.
+
+**Ainda não há sprite autorizado recebido, nem Nuvema ou Cheren nativos testados. Barras E 4/8; jogável 0/32.**
