@@ -274,5 +274,22 @@ class SpritePackTests(unittest.TestCase):
         self.assertEqual(r["reference_status"],"NOT_PROVIDED")
         self.assertIsNone(r["reference_typical_4x4_cell_height"])
 
+    def test_29_explicit_missing_decades_folder_is_blocking(self):
+        with self.assertRaisesRegex(ValueError,"nao encontrada"):
+            audit.audit(self.pack(),self.base/"missing-ref")
+
+    def test_30_apng_filename_extension_is_supported(self):
+        result=audit.audit(self.pack({"Characters/N.apng":png(128,128,apng_frames=4)}))
+        self.assertEqual(result["images"][0]["format"],"APNG")
+        self.assertEqual(result["images"][0]["animation_frames_declared"],4)
+        self.assertEqual(result["unsupported_image_paths"],[])
+
+    def test_31_png_without_idat_is_not_a_valid_image(self):
+        bad=(b"\x89PNG\r\n\x1a\n"+
+             chunk(b"IHDR",struct.pack(">IIBBBBB",128,128,8,6,0,0,0))+
+             chunk(b"IEND",b""))
+        with self.assertRaisesRegex(ValueError,"IDAT"):
+            audit.inspect_png(bad)
+
 if __name__=="__main__":
     unittest.main()
