@@ -43,6 +43,11 @@ EXPECTED={
     "unova_parent_maps_unparsed":0,
     "unova_parent_event_containers":0,
     "unova_parent_script_command_count":0,
+    "source_unova_map_dimensions_20x15":56,
+    "source_unova_map_dimensions_nondefault":8,
+    "source_map_atlas":"data/regions/unova-e05-source-map-atlas.json",
+    "source_map_tile_geometry_visually_verified":False,
+    "audit_20x15_not_proof_of_blank_map":True,
     "source_area_matches_inside_unova_parent":20,
     "source_area_name_matches_outside_unova_parent":19,
     "symbolic_areas_without_same_name":35,
@@ -81,6 +86,8 @@ def validate(data):
         value=data.get(key)
         if type(value) is not type(expected) or value!=expected:
             raise ValueError("E04/E05: evidencia divergente ou falsa no campo "+key)
+    if data.get("source_unova_larger_map_ids") != [463,464,465,466,468,490,494,495]:
+        raise ValueError("E04/E05: dimensoes de mapas maiores divergentes")
     if data.get("source_map_examples")!=AREAS:
         raise ValueError("E04/E05: MapIDs da fonte não correspondem ao relatório real")
     if data.get("source_unova_b2w2_anime_areas_detected")!=[
@@ -108,6 +115,8 @@ def validate(data):
         "source_mapinfos":data["all_donor_mapinfo_entries"],
         "unova_candidate_maps_read":data["unova_parent_maps_parsed"],
         "unova_events_found":data["unova_parent_event_containers"],
+        "unova_maps_20x15":data["source_unova_map_dimensions_20x15"],
+        "unova_maps_larger":data["source_unova_map_dimensions_nondefault"],
         "unova_area_name_matches_in_donor_branch":data["source_area_matches_inside_unova_parent"],
         "e04_completed":True,"e05_completed":True,
         "e06_completed":False,"e08_completed":False,
