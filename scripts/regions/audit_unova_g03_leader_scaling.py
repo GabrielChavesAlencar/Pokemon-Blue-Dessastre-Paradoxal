@@ -338,7 +338,7 @@ def coverage_plan(policy:dict,*,attack_types:list[str],party:list[dict],
             deny("candidate types invalid")
         if row["synthetic_only"] is not True or not isinstance(row["special_flags"],list) or any(
             not isinstance(x,str) for x in row["special_flags"]) or (
-            set(row["special_flags"]) & SPECIAL):
+            {flag.upper() for flag in row["special_flags"]} & SPECIAL):
             deny("candidate not an eligible ordinary synthetic species")
         bst=_int(row["bst"],"candidate BST",440,570)
         _multipliers(row["multipliers"],attack_types,"candidate")
