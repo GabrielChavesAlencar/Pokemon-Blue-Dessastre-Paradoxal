@@ -18,6 +18,7 @@ from typing import Mapping
 
 import audit_unova_a04_mapids as a04
 import audit_unova_a05_candidates as a05
+import audit_unova_a06_references as a06
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -153,6 +154,7 @@ def pretty(result: dict) -> str:
         lines += ["BLOQUEIO: "+result["error"],""]
     a04_result=result.get("a04_result")
     a05_result=result.get("a05_result")
+    a06_result=result.get("a06_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -183,6 +185,24 @@ def pretty(result: dict) -> str:
                 ("Sim" if a05_result["a04_snapshot_baseline_hash_matches_b05"] else "Nao"),
             "  Status: "+a05_result["status"],
             "  Relatorio completo: "+str(result["a05_report_path"]),
+            "",
+        ])
+    if a06_result:
+        lines.extend([
+            "A06 — referencias estaticas em eventos de mapas",
+            "  Mapas lidos integralmente: "+
+                str(a06_result["map_files_parsed"])+"/"+str(a06_result["map_files_expected"]),
+            "  Falhas na leitura de mapas: "+str(len(a06_result["map_read_failures"])),
+            "  Transferencias estaticas: "+str(a06_result["static_transfer_command_count"]),
+            "  Destinos estaticos ausentes: "+
+                ", ".join(map(str,a06_result["static_unresolved_destination_ids"][:35])),
+            "  Referencias a candidatos Unova 518-599: "+
+                ", ".join(map(str,a06_result["candidate_unova_518_599_referenced"][:35])),
+            "  Transferencias dinamicas: "+str(a06_result["dynamic_transfer_commands"]),
+            "  Linhas de script de evento sem executar: "+
+                str(a06_result["event_script_commands_not_executed"]),
+            "  Status: "+a06_result["status"],
+            "  Relatorio: "+str(result["a06_report_path"]),
             "",
         ])
     lines.extend([
@@ -227,8 +247,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,
-        "a04_report_path":None,"a05_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -243,11 +263,15 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         # This links the exact A04 content-addressed report to the A05 output.
         a05_result = a05.audit(project,a04_path)
         a05_path = a05.save(project,a05_result)
+        a06_result=a06.audit(selected,a04_result)
+        a06_path=a06.save(project,a06_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
             "a05_result":a05_result,
             "a05_report_path":str(a05_path),
+            "a06_result":a06_result,
+            "a06_report_path":str(a06_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -268,6 +292,7 @@ def main(argv=None) -> int:
         print("UNOVA_AUTO_RESUMO="+str(summary))
         print("UNOVA_A04="+str(result.get("a04_report_path") or "NAO_GERADO"))
         print("UNOVA_A05="+str(result.get("a05_report_path") or "NAO_GERADO"))
+        print("UNOVA_A06="+str(result.get("a06_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":

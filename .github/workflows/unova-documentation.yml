@@ -70,6 +70,7 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_u07_events.py
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
+          python -m py_compile scripts/regions/audit_unova_a06_references.py
           python -m py_compile scripts/regions/unova_auto_mapids.py
 
       - name: Empacotar RUN_UNOVA_MAPIDS.bat para download como ZIP
@@ -92,6 +93,7 @@ jobs:
         shell: cmd
         run: |
           python -m unittest discover -s tests -p test_unova_a05_candidates.py -v
+          python -m unittest discover -s tests -p test_unova_a06_references.py -v
           python -m unittest discover -s tests -p test_unova_auto_mapids.py -v
           python -m unittest discover -s tests -p test_unova_standalone_bat.py -v
       - name: Empacotar BAT validado no Windows como ZIP
