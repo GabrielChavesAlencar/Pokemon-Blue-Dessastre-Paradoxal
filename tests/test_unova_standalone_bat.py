@@ -161,7 +161,7 @@ class StandaloneBatTests(unittest.TestCase):
             self.assertIn("A14",summary)
             self.assertIn("UNOVA_A13_STATUS=",result.stdout)
             self.assertIn("Log de diagnostico",result.stdout)
-            log=appdata/"PokemonBlueUnovaMapids"/"ULTIMA_EXECUCAO_A13.log"
+            log=appdata/"PokemonBlueUnovaMapids"/"ULTIMA_EXECUCAO_A14.log"
             self.assertTrue(log.is_file())
             log_text=log.read_text("utf-8")
             self.assertIn("A13",log_text)
