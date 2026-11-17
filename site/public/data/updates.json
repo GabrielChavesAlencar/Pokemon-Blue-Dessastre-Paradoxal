@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "deb47de45259fc518ea618cf297712f33a99f8cb",
+      "date": "2026-11-17T17:28:38-03:00",
+      "title": "docs(sinnoh): mark G02 complete and progress to 2/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "d05e9b369a0f0de64e52dcf75b8ea104c4bd943b",
+      "date": "2026-11-17T17:28:26-03:00",
+      "title": "docs(sinnoh): G02 B09 progress and CI verdict",
+      "category": "Documentação"
+    },
+    {
       "sha": "5411ab83dba48c372ee339c79d896b7460ce7c0e",
       "date": "2026-11-17T17:27:15-03:00",
       "title": "fix(sinnoh): G02 B09 progress and stream SHA verification (#139)",
