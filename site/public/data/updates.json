@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a9083369e07cca2b031dd1661f08d06572b53596",
+      "date": "2026-11-17T10:17:45-03:00",
+      "title": "feat(unova): validar coerência privada de evidências E04–E06",
+      "category": "Novidades"
+    },
+    {
       "sha": "707194084b33d52190c3c5aab46b34009de42fa6",
       "date": "2026-11-17T10:12:21-03:00",
       "title": "feat(sinnoh): S31 roteiro 44 casos e aceite tecnico offline, Barra A 32/32",
