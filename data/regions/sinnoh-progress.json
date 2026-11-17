@@ -795,10 +795,10 @@
     "documentation": "docs/SINNOH_MAPEAMENTO_EXECUCAO_CHAT_MAIN_2026-11-16.md",
     "progress_panel": "docs/SINNOH_PROGRESSO.md",
     "total": 20,
-    "done": 18,
-    "partial": 2,
+    "done": 19,
+    "partial": 1,
     "pending": 0,
-    "percent_complete": 90,
+    "percent_complete": 95,
     "not_gameplay_progress": true,
     "technical_and_gameplay_gates_unchanged": true,
     "tasks": [
@@ -951,8 +951,8 @@
         "priority": "P4",
         "title": "Regresso isolado Python/Ruby de Sinnoh no CI",
         "acceptance": "Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo",
-        "status": "partial",
-        "evidence_path": "scripts/regions/sinnoh_ci_ch19.py"
+        "status": "done",
+        "evidence_path": "docs/SINNOH_CH19_CI_PYTHON_RUBY_ISOLADO.md"
       },
       {
         "id": "CH20",
