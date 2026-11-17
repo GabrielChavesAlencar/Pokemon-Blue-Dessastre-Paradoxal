@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "cd220589de777ee30dc9a9c74d633546eaf6dbcd",
+      "date": "2026-11-17T12:32:49-03:00",
+      "title": "feat(unova): A05 planejamento auditavel MapIDs candidatos B01/B04/B05",
+      "category": "Novidades"
+    },
+    {
       "sha": "952414509fc3d7123fabb6afd1d76e0dd2365a27",
       "date": "2026-11-17T12:32:03-03:00",
       "title": "docs(sinnoh): B04 reexecucao ainda em 617 IDs, coletor V2 e protecao de Unova",
