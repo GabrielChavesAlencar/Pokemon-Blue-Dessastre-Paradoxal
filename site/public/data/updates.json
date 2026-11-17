@@ -2,6 +2,42 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fb1fe36e652daaced4d19791c77bad9b5a95fabd",
+      "date": "2026-11-17T19:27:53-03:00",
+      "title": "fix(android): hotfix release manifest tracks updated updater as patchable file",
+      "category": "Correções"
+    },
+    {
+      "sha": "c5ec7e7f653cd8d83a8c7cfe22c79f937fb86bcd",
+      "date": "2026-11-17T19:26:50-03:00",
+      "title": "docs(sinnoh): mark G09 merged on main and GitHub-only pipeline 9/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "ef1e62363b1fb75c11a5a618eec621771334688b",
+      "date": "2026-11-17T19:26:42-03:00",
+      "title": "docs(android): explain patch-only default, no backups and migration from old updater",
+      "category": "Documentação"
+    },
+    {
+      "sha": "fc12217224f355cac120b0712d09531203cee59b",
+      "date": "2026-11-17T19:26:34-03:00",
+      "title": "feat(sinnoh): G09 cross-stage gym HM League and postgame audit (#157)",
+      "category": "Novidades"
+    },
+    {
+      "sha": "2fee2f9d9124e1f3576ac26b06bcb9d8b25eadf2",
+      "date": "2026-11-17T19:26:01-03:00",
+      "title": "ci(decades): publish small Android deltas for recent installed builds",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "0a47397f89b60420bcf44a86198d3ed29323535b",
+      "date": "2026-11-17T19:25:43-03:00",
+      "title": "ci(kanto): publish small Android patches for multiple historical installs",
+      "category": "Melhorias"
+    },
+    {
       "sha": "5b3725fe2807ab95662ec89745b974fc0297b90e",
       "date": "2026-11-17T19:24:45-03:00",
       "title": "test(android): cover legacy updater migration into fast incremental patches",
