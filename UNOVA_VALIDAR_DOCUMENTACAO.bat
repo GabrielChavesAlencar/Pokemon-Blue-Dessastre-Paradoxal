@@ -29,6 +29,14 @@ if exist ".blue-work\unova\sources\Pokemon_World_V18.zip" (
     if errorlevel 1 goto :blocked
     %PY% scripts\regions\audit_unova_source_detail.py --write
     if errorlevel 1 goto :blocked
+    echo.
+    echo [E05] Cruzando 74 areas com nomes reais, sem aprovar MapIDs...
+    %PY% scripts\regions\audit_unova_e05_crosswalk.py --write
+    if errorlevel 1 goto :blocked
+    echo.
+    echo [E06] Criando matriz privada de direitos por arquivo...
+    %PY% scripts\regions\audit_unova_e06_rights_inventory.py --write
+    if errorlevel 1 goto :blocked
 ) else (
     echo [PENDENTE] ZIP do autor nao fornecido. Nenhum mapa real auditado.
 )

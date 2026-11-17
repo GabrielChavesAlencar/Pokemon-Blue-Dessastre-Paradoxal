@@ -46,3 +46,5 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_source_detail.py
           python -m py_compile scripts/regions/audit_unova_e06_e07.py
           python -m py_compile scripts/regions/audit_unova_e08_readiness.py
+          python -m py_compile scripts/regions/audit_unova_e05_crosswalk.py
+          python -m py_compile scripts/regions/audit_unova_e06_rights_inventory.py
