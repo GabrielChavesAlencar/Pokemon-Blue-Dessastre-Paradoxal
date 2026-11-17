@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 13,
+    "done": 14,
     "partial": 6,
-    "pending": 13,
-    "percent_complete": 40,
-    "percent_with_partial_not_counted": 40,
+    "pending": 12,
+    "percent_complete": 43,
+    "percent_with_partial_not_counted": 43,
     "groups": [
       {
         "key": "foundation",
@@ -158,8 +158,8 @@
     {
       "id": "S11",
       "title": "Piloto Sinnoh com saves isolados",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md"
     },
     {
       "id": "S12",
