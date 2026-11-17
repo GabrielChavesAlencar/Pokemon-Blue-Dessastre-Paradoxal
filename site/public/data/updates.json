@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3abd0dd2c2dfd021d95b4714b75bcf22bf51b65f",
+      "date": "2026-11-17T19:19:12-03:00",
+      "title": "feat(android): opt-in full ZIP only, no backups, in-place changed-file updates",
+      "category": "Novidades"
+    },
+    {
       "sha": "4d7a4d54f65393c0e2c045354c4b70e7d4e24ffc",
       "date": "2026-11-17T19:18:25-03:00",
       "title": "fix(android): reject null bytes and Windows separators in in-place update paths",
