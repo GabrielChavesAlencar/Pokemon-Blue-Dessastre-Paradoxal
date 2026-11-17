@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bdb76268cec6edb6618f597ddba05789ee82d676",
+      "date": "2026-11-16T21:30:25-03:00",
+      "title": "feat(sinnoh): S27 guia web concluido, Barra A 9/32 e CI 143 testes",
+      "category": "Novidades"
+    },
+    {
       "sha": "c81d415040f41d2bb62cb243f94379f634957b2a",
       "date": "2026-11-16T21:21:02-03:00",
       "title": "docs(sinnoh): CH20 concluida offline, Barra E 20/20 100%, 44 nativos pendentes",
