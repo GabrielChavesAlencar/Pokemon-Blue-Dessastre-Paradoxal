@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "12665c6e5f1934878bf645991de06e8b407880d1",
+      "date": "2026-11-17T10:45:09-03:00",
+      "title": "feat(sinnoh): B00 fonte real auditada, 54 mapas com terreno e 22 vazios",
+      "category": "Novidades"
+    },
+    {
+      "sha": "3c5f5a02694bc39f1da2a2a5aa8924deed81179b",
+      "date": "2026-11-17T10:44:23-03:00",
+      "title": "feat(unova): auditor seguro de sprites Gen 5 com comparação Decades",
+      "category": "Novidades"
+    },
+    {
       "sha": "c3dfdc7f86afcf61ce8e8c1bcce738d52bce1393",
       "date": "2026-11-17T10:26:41-03:00",
       "title": "feat(sinnoh): B00 fontes e recebimento seguro, sem alterar B/C/D",
