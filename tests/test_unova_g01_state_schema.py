@@ -179,6 +179,14 @@ class G011StateSchemaTests(unittest.TestCase):
         self.deny_contract(lambda c:c.update(source_assets_imported=True))
     def test_49_contract_must_keep_both_catalog_refs(self):
         self.deny_contract(lambda c:c.update(source_area_catalog="other.json"))
+    def test_51_default_state_cannot_forge_completed_event(self):
+        self.deny_contract(lambda c:c["default_state"]["flags"].update(
+            {"UNOVA_U07_STARTER_GIFT":True}))
+
+    def test_52_default_state_cannot_start_in_elite_four(self):
+        self.deny_contract(lambda c:c["default_state"].update(
+            current_chapter="UNOVA_CH10_LEAGUE"))
+
     def test_50_cli_reports_offline_mode_and_no_game(self):
         result=subprocess.run([sys.executable,str(ROOT/"scripts/regions/audit_unova_g01_state_schema.py"),"--check"],
             cwd=ROOT,text=True,capture_output=True,timeout=20,check=False)
