@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 25/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S24, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 26/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -239,6 +239,12 @@ As **cinco revanches históricas Platinum** de Aaron, Bertha, Flint, Lucian e Cy
 A [entrega S24](SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md) acrescenta a [matriz](../data/regions/sinnoh-music-s24.json), o [auditor estático](../scripts/music/audit_sinnoh_music_s24.py) e [19 testes](../tests/test_sinnoh_s24_music.py). As 46 chaves CH16 foram associadas a contexto, guarda e fallback sem inventar licença, MapID, arquivo, evento ou binding. **S24 conclui catálogo, não música distribuível**: S25 e o teste nativo continuam bloqueados.
 
 **Após CI e merge: Barra A 25/32 (78%)**, 4 parciais e 3 pendentes; E 20/20, B/C/D 0/13, 44 verificações nativas não realizadas.
+
+### S25 — Ponte BlueMusic read-only, sem faixas instaladas
+
+A [entrega S25](SINNOH_S25_BLUEMUSIC_INTEGRACAO_OFFLINE_ACEITE.md) adiciona [bridge Ruby](../scripts/music/SinnohBlueMusicBridge.rb), manifesto, [auditor](../scripts/music/audit_sinnoh_music_s25.py), 21 testes negativos e testes Ruby contra BlueMusic real, com preferências manuais e outras regiões preservadas. O registro de faixas nativas continua vazio.
+
+**Após CI e merge: Barra A 26/32 (81%)**, 4 parciais, 2 pendentes; E 20/20, B/C/D 0/13. Sem licenças/áudio instalado e 44 testes nativos ainda necessários.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "S25",
+  "status": "BRIDGE_OFFLINE_NOT_INSTALLED",
+  "source_ch16": "data/regions/sinnoh-music-ch16.json",
+  "source_s24": "data/regions/sinnoh-music-s24.json",
+  "blue_music": "scripts/music/BlueMusic.rb",
+  "bridge": "scripts/music/SinnohBlueMusicBridge.rb",
+  "cue_count": 46,
+  "approved_tracks": [],
+  "licensed_sources": [],
+  "native_maps": [],
+  "native_events": [],
+  "compiled_bindings": [],
+  "enabled": false,
+  "installed": false,
+  "autoplay": false,
+  "audio_copied": false,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "native_qa_approved": false,
+  "priority": [
+    "EXPLICIT_ENGINE",
+    "MANUAL_BLUE_MUSIC",
+    "VERIFIED_SINNOH",
+    "KEEP_NATIVE"
+  ],
+  "policies": {
+    "preserve_mute": true,
+    "preserve_custom": true,
+    "preserve_random": true,
+    "no_cross_region": true,
+    "no_global_hooks": true,
+    "no_unlicensed_track": true,
+    "restore_after_battle_by_engine": true
+  },
+  "note": "Somente contrato de codigo; nenhum arquivo autorizado, mapa, evento ou hook compilado. Sem reproducao em Game.exe ou JoiPlay."
+}

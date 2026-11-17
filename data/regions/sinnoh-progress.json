@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 25,
+    "done": 26,
     "partial": 4,
-    "pending": 3,
-    "percent_complete": 78,
-    "percent_with_partial_not_counted": 78,
+    "pending": 2,
+    "percent_complete": 81,
+    "percent_with_partial_not_counted": 81,
     "groups": [
       {
         "key": "foundation",
@@ -242,8 +242,8 @@
     {
       "id": "S25",
       "title": "Integração com BlueMusic",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S25_BLUEMUSIC_INTEGRACAO_OFFLINE_ACEITE.md"
     },
     {
       "id": "S26",
