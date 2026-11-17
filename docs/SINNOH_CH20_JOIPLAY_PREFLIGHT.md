@@ -1,6 +1,6 @@
 # Sinnoh — CH20: pré-voo Android/JoiPlay + checklist 44 casos
 
-**Data:** 16/11/2026 · **Estado:** implementação estática publicada; validação do novo CI pendente de comprovação. **Nenhum Game.exe ou JoiPlay foi executado.**
+**Data:** 16/11/2026 · **Estado:** implementação estática publicada; [CI CH20 43985365818](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43985365818) passou em PR; aceite final CH20 ainda não registrado. **Nenhum Game.exe ou JoiPlay foi executado.**
 
 ## Reutilização sem duplicar os dados de jogo
 
@@ -49,4 +49,4 @@ Se existirem arquivos com IDs 800–805, o relatório exige identificação da r
 
 **Critério para `done` na Barra E:** arquivos, 15 testes e execução do novo workflow CH20 comprovados na `main`. Se não houver prova de CI, o status permanece **partial**, mesmo com o código publicado. Conclusão estática da CH20 **nunca** aumenta as barras técnicas/jogáveis.
 
-**Situação das barras:** Barra E 18/20 (90%) enquanto CH19 e CH20 aguardam validação do novo CI; A 8/32 (25%), B/C/D 0/13, sem alteração. Não foi usado o jogo principal nem seus saves.
+**Situação das barras:** Barra E **19/20 (95%)** após conclusão da CH19 (CI Python 374/374 e Ruby 22/22); CH20 continua parcial aguardando revisão de seu relatório final. A 8/32 (25%), B/C/D 0/13, sem alteração. Não foi usado o jogo principal nem seus saves.
