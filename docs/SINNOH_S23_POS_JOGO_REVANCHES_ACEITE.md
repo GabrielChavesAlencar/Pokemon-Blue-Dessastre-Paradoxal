@@ -26,6 +26,11 @@
 
 **Aceite apenas em código após CI e merge:** Barra A **24/32 (75%)**, 5 parciais e 3 pendentes; E **20/20**, B/C/D **0/13**, **44 testes nativos não executados**. O código não torna a campanha, a Battle Zone ou as revanches jogáveis.
 
-## Evidências de CI
+## Evidências reais do GitHub Actions
 
-A preencher após execuções reais do GitHub Actions. Não inferir testagem de Game.exe/JoiPlay a partir de testes Ruby sintéticos.
+- [Sinnoh S30 — execução 44076081364](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44076081364): **5/5 jobs `success`**. Manifesto (11 testes), Python (incluindo **16 testes negativos S23** e `sinnoh-s23-postgame-contract = passed (0)`), Ruby (`sinnoh-s23-postgame = passed (0)`), Portal (**161/161 testes**) e Android estático.
+- [Sinnoh CH19 — execução 44076081101](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44076081101): **Python e Ruby `success`**, ambos com auditor/runner S23 explicitamente verificados; `CH19_SCOPE=sinnoh_only CH19_STATUS=passed NATIVE_QA=false`.
+- [Portal Blue — execução 44076081026](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44076081026): build e testes do portal `success`.
+- [Sinnoh CH20 — execução 44076081118](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44076081118): pré-voo JoiPlay **estático aprovado**, sem execução do jogo Android. **44 verificações nativas pendentes**.
+- A primeira rodada do [PR #83](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/pull/83) encontrou um **erro de sintaxe numa condição redundante do teste Ruby S23**; a condição foi removida sem alterar qualquer script de jogo. A segunda rodada acima aprovou Python/Ruby, manifesto, portal e Android estático.
+- **Limite do CI:** nenhuma área Battle Zone, evento lendário, batalha de revanche, time PBS, item ou save de Game.exe/JoiPlay foi compilado, instalado ou testado nativamente. Os cenários de Hall of Fame, eventos e 10 Ligas foram simulados com dados e callbacks **sintéticos**.
