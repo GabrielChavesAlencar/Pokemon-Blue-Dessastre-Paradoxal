@@ -32,7 +32,7 @@ STAGE_CHECKS={
 }
 GENERAL_CHECKS=(
     "Revisar a origem e a autenticidade de cada relatório sanitizado: um SHA do JSON não é assinatura",
-    "Confirmar cronologia e vínculo de sessão B11 usando evidência privada local: nenhum timestamp/watch_id é exportado",
+    "Confirmar cronologia e vínculo de sessão B11 usando revisão privada local: nenhum identificador de sessão nem horário é exportado",
     "Não transferir arquivos do jogo, PNGs reais, snapshots de saves, HMAC ou logs privados",
     "Não iniciar Game.exe, Windows Sandbox ou JoiPlay pela auditoria documental",
 )
@@ -50,8 +50,8 @@ def load_sources(root=ROOT,*,workspace=False):
     final=l00.g12.run(root)
     return bundle,docs,handoff,final
 
-def _valid_stage(stage,raw,docs,reports):
-    if stage=="B10" and reports["B09"] is None:
+def _valid_stage(stage,raw,docs,reports,*,b09_valid=True):
+    if stage=="B10" and not b09_valid:
         # Validate B10 against its own literal SHA to check all local policy,
         # but NEVER treat a self-matching SHA as B09 provenance. The stage
         # remains blocked on the missing independent B09 receipt.
@@ -88,7 +88,8 @@ def review(bundle,contracts,handoff,g12_report):
             code="NO_SANITIZED_RECEIPT_PROVIDED"
         else:
             try:
-                _valid_stage(stage,receipt,contracts,raw)
+                _valid_stage(stage,receipt,contracts,raw,
+                             b09_valid=(stage!="B10" or results["B09"]["status"]==STATUS_UNVERIFIED))
             except (ValueError,TypeError,KeyError,IndexError,AttributeError):
                 status=STATUS_BLOCKED
                 code="INVALID_SCHEMA_HASH_COUNTER_OR_NATIVE_ASSERTION"
