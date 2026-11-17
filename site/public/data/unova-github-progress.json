@@ -1,0 +1,281 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "track": "GITHUB_ONLY_DEVELOPMENT",
+  "reference_version": "WHITE_BW",
+  "updated": "2026-11-17",
+  "status": "PLANNED_NOT_NATIVE_PLAYABLE",
+  "description": "Trabalho de código, catálogos, interfaces e testes executável no GitHub; tarefas concluídas são entregas documentais ou de código, não aprovações Game.exe.",
+  "native_technical_bar": {
+    "completed": 0,
+    "total": 8
+  },
+  "native_playable_bar": {
+    "completed": 0,
+    "total": 32
+  },
+  "rules": [
+    "Concluir tarefa somente após código/contrato pronto, testes adequados e evidência versionada em GitHub",
+    "Não contar projeto planejado como mapa, sprite, PBS compilado ou save nativo aprovado",
+    "Não promover Barra A ou U01–U32 com base em CI/simulações",
+    "Lacunas de dados de mapa, níveis, equipes, slots e licenças permanecem pendentes"
+  ],
+  "groups": [
+    {
+      "id": "G01",
+      "title": "Progressão e estado da campanha",
+      "description": "Contrato de persistência e desbloqueios de Unova sem ler saves reais.",
+      "tasks": [
+        {
+          "id": "G01.1",
+          "title": "Criar esquema versionado do estado de Unova",
+          "status": "pending",
+          "acceptance": "Flags, capítulos, missões, checkpoints e regras de compatibilidade por versão"
+        },
+        {
+          "id": "G01.2",
+          "title": "Implementar máquina de estados dos capítulos",
+          "status": "pending",
+          "acceptance": "Pré-requisitos, desbloqueios e transições testáveis sem engine"
+        },
+        {
+          "id": "G01.3",
+          "title": "Garantir recompensas únicas e reentrada segura",
+          "status": "pending",
+          "acceptance": "Simulação de revisitas, perda de batalhas e idempotência"
+        },
+        {
+          "id": "G01.4",
+          "title": "Criar migrador e teste sintético de save regional",
+          "status": "pending",
+          "acceptance": "Round-trip e regressões de migração sem tocar em save do jogador"
+        }
+      ]
+    },
+    {
+      "id": "G02",
+      "title": "História, ginásios e pós-jogo",
+      "description": "Contratos narrativos originais e verificáveis sem mapas nativos.",
+      "tasks": [
+        {
+          "id": "G02.1",
+          "title": "Catalogar os 13 eventos iniciais de Nuvema a Accumula",
+          "status": "done",
+          "acceptance": "Contratos simbólicos U07 com testes negativos, sem mapas nem flags instaladas",
+          "evidence": "data/regions/unova-u07-nuvema-events.json"
+        },
+        {
+          "id": "G02.2",
+          "title": "Contratar eventos da campanha e dos oito ginásios",
+          "status": "pending",
+          "acceptance": "Dependências de história, insígnias e variações de Striaton e Opelucid"
+        },
+        {
+          "id": "G02.3",
+          "title": "Modelar Elite Four, N, Ghetsis e créditos",
+          "status": "pending",
+          "acceptance": "Batalhas, derrotas, retornos e clímax White com recompensas únicas"
+        },
+        {
+          "id": "G02.4",
+          "title": "Modelar Looker, sábios, lendários e pós-jogo",
+          "status": "pending",
+          "acceptance": "Missões paralelas, fases opcionais e bloqueios de conteúdo especiais"
+        }
+      ]
+    },
+    {
+      "id": "G03",
+      "title": "Treinadores e balanceamento",
+      "description": "Dados e regras de batalha offline, sem presumir equipes ou níveis reais.",
+      "tasks": [
+        {
+          "id": "G03.1",
+          "title": "Catalogar referências simbólicas de treinadores",
+          "status": "done",
+          "acceptance": "Referências-base E07 sem equipes, níveis, PBS ou sprites verificados",
+          "evidence": "data/regions/unova-e06-e07-preparation.json"
+        },
+        {
+          "id": "G03.2",
+          "title": "Definir contratos dos líderes e times escalonáveis",
+          "status": "pending",
+          "acceptance": "Level cap, evolução dinâmica e variantes de dificuldade"
+        },
+        {
+          "id": "G03.3",
+          "title": "Estruturar rivais, Plasma e chefes por capítulo",
+          "status": "pending",
+          "acceptance": "Estado de revanche, eventos e recompensas com identificadores estáveis"
+        },
+        {
+          "id": "G03.4",
+          "title": "Modelar Elite Four, Alder e rematches",
+          "status": "pending",
+          "acceptance": "Tabelas e testes para a campanha e o pós-jogo sem fingir PBS compilado"
+        }
+      ]
+    },
+    {
+      "id": "G04",
+      "title": "Áreas, selvagens e temporadas",
+      "description": "Referências e encontros sem MapIDs e probabilidades inventadas.",
+      "tasks": [
+        {
+          "id": "G04.1",
+          "title": "Catalogar 74 áreas simbólicas de Unova",
+          "status": "done",
+          "acceptance": "Catálogo U03 de áreas e estados planned, sem mapas originais ou destino validado",
+          "evidence": "data/regions/unova-u03-areas.json"
+        },
+        {
+          "id": "G04.2",
+          "title": "Definir esquema de encontros por área e método",
+          "status": "pending",
+          "acceptance": "Grama, água, pesca, cavernas, horário, variante e temporada"
+        },
+        {
+          "id": "G04.3",
+          "title": "Criar regras de evolução e níveis escalonados",
+          "status": "pending",
+          "acceptance": "Evoluções, nível mínimo, balanceamento e limites por progressão"
+        },
+        {
+          "id": "G04.4",
+          "title": "Validar encontros, taxas e lacunas de dados",
+          "status": "pending",
+          "acceptance": "Soma de probabilidades, duplicações e campos desconhecidos preservados"
+        }
+      ]
+    },
+    {
+      "id": "G05",
+      "title": "Mecânicas e isolamento regional",
+      "description": "Regras compartilhadas com Decades sem editar o jogo principal.",
+      "tasks": [
+        {
+          "id": "G05.1",
+          "title": "Especificar HMs e itens-chave exclusivos por região",
+          "status": "pending",
+          "acceptance": "Inventário, PC de itens e disponibilidade ao viajar"
+        },
+        {
+          "id": "G05.2",
+          "title": "Definir insígnias, esmeraldas e trava de especiais",
+          "status": "pending",
+          "acceptance": "Insígnias únicas e restrições regionais de Pokémon especiais"
+        },
+        {
+          "id": "G05.3",
+          "title": "Contratar NPC de viagem e retorno entre regiões",
+          "status": "pending",
+          "acceptance": "Viagens por NPC com pré-condições e fallback seguro"
+        },
+        {
+          "id": "G05.4",
+          "title": "Testar blackout, Centro Pokémon e estado compartilhado",
+          "status": "pending",
+          "acceptance": "Moedas, boxes, TMs, progresso e fallback de Centro da região atual"
+        }
+      ]
+    },
+    {
+      "id": "G06",
+      "title": "Site, guias e acompanhamento",
+      "description": "Conteúdo de referência exibido como planejado, nunca como jogável.",
+      "tasks": [
+        {
+          "id": "G06.1",
+          "title": "Registrar Unova no circuito de regiões como planned",
+          "status": "done",
+          "acceptance": "Registro público da região com status planned e oito insígnias",
+          "evidence": "site/public/data/regions.json"
+        },
+        {
+          "id": "G06.2",
+          "title": "Criar guias das 74 áreas e progressão da história",
+          "status": "pending",
+          "acceptance": "Páginas por capítulo, ginásios, áreas e pendências explícitas"
+        },
+        {
+          "id": "G06.3",
+          "title": "Adicionar busca e filtros de NPCs, trainers e missões",
+          "status": "pending",
+          "acceptance": "Links contextuais, pesquisa por fase e acessibilidade"
+        },
+        {
+          "id": "G06.4",
+          "title": "Publicar barra de progresso GitHub com 32 tarefas",
+          "status": "done",
+          "acceptance": "Página /unova-progresso alimentada por JSON e testada no CI",
+          "evidence": "site/public/data/unova-github-progress.json"
+        }
+      ]
+    },
+    {
+      "id": "G07",
+      "title": "Blue-Story, manifests e instalador",
+      "description": "Preparação, dry-run e rollback, sem instalação de Unova.",
+      "tasks": [
+        {
+          "id": "G07.1",
+          "title": "Auditar estaticamente alocações dos instaladores regionais",
+          "status": "done",
+          "acceptance": "Auditor A12 com análise AST das fontes e política fail-closed",
+          "evidence": "scripts/regions/audit_unova_a12_ownership.py"
+        },
+        {
+          "id": "G07.2",
+          "title": "Criar schema de pacote incremental de Unova",
+          "status": "pending",
+          "acceptance": "Versão, hashes, direitos, caminhos e manifestos de origem requeridos"
+        },
+        {
+          "id": "G07.3",
+          "title": "Simular transação de instalação e reversão",
+          "status": "pending",
+          "acceptance": "Conflitos, backups, rollback e compare-and-swap com fixtures sintéticas"
+        },
+        {
+          "id": "G07.4",
+          "title": "Preparar contratos Windows e Android/JoiPlay",
+          "status": "pending",
+          "acceptance": "Atualizações incrementais compatíveis, sem alegar aprovação nativa"
+        }
+      ]
+    },
+    {
+      "id": "G08",
+      "title": "Auditoria, CI e qualidade",
+      "description": "Proteções automatizadas para código e documentação no GitHub.",
+      "tasks": [
+        {
+          "id": "G08.1",
+          "title": "Disponibilizar ferramentas de proveniência e direitos",
+          "status": "done",
+          "acceptance": "Auditores E04–E06; nenhum asset é considerado licenciado sem prova",
+          "evidence": "scripts/regions/audit_unova_e06_rights_inventory.py"
+        },
+        {
+          "id": "G08.2",
+          "title": "Expandir suíte de testes integrados dos sistemas G01–G07",
+          "status": "pending",
+          "acceptance": "Testes negativos, fixtures e simulações de progressão e conteúdo"
+        },
+        {
+          "id": "G08.3",
+          "title": "Criar matriz de regressão multirregional offline",
+          "status": "pending",
+          "acceptance": "Invariantes de Kanto, Johto, Hoenn, Sinnoh e Decades"
+        },
+        {
+          "id": "G08.4",
+          "title": "Validar o próprio tracker e barras no CI/site",
+          "status": "done",
+          "acceptance": "Testes de consistência de 32 tarefas e bloqueio de promoção jogável",
+          "evidence": "site/tests/unova-progress.test.mjs"
+        }
+      ]
+    }
+  ]
+}
