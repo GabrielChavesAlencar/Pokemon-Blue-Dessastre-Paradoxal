@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 28,
-    "partial": 4,
+    "done": 29,
+    "partial": 3,
     "pending": 0,
-    "percent_complete": 87,
-    "percent_with_partial_not_counted": 87,
+    "percent_complete": 90,
+    "percent_with_partial_not_counted": 90,
     "groups": [
       {
         "key": "foundation",
@@ -134,8 +134,8 @@
     {
       "id": "S07",
       "title": "Importador transacional dry-run e rollback",
-      "status": "partial",
-      "evidence_path": "scripts/regions/sinnoh_staging_transaction.py"
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S07_RECONCILIACAO_TRANSACIONAL_OFFLINE_ACEITE.md"
     },
     {
       "id": "S08",
@@ -353,7 +353,7 @@
         "evidence": null
       }
     ],
-    "note": "6/9 etapas aprovadas no S07. R08 tem conversor de geometria próprio escrito e testado só em fixtures; não inclui mapas reais, eventos de gameplay, fonte licenciada, nem teste Game.exe. Não incrementar fase.",
+    "note": "S07 concluiu engenharia do importador e reconciliação offline; subetapas R07/R08/R09 continuam sem fonte/reserva/QA nativos (6/9), sem autorização de instalar ou jogo jogável.",
     "geometry_preview": {
       "status": "CODE_COMPLETE_WITH_SYNTHETIC_TESTS_ONLY",
       "code": "scripts/regions/convert_sinnoh_geometry.py",

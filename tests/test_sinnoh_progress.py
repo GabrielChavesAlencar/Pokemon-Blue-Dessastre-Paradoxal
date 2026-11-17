@@ -61,8 +61,9 @@ class SinnohProgressTests(unittest.TestCase):
         self.assertEqual(work["total"], 9)
         self.assertEqual(record["development"]["done"], sum(t["status"] == "done" for t in record["tasks"]))
         self.assertEqual(record["development"]["percent_complete"], 100 * record["development"]["done"] // record["development"]["total"])
+        # S07 engineering can finish while native R07/R08/R09 remain partial.
         self.assertEqual(next(t["status"] for t in record["tasks"]
-                              if t["id"] == "S07"), "partial")
+                              if t["id"] == "S07"), "done")
         self.assertTrue(all(not row["complete"] or
                             (row["evidence"] and (ROOT / row["evidence"]).is_file())
                             for row in substeps))
