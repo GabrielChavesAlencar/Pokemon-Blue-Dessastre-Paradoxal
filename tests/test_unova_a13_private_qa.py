@@ -172,6 +172,14 @@ class A13CopyTests(unittest.TestCase):
         path=Path(self.clone()["path"])
         self.assertFalse((path/".blue-work").exists())
         self.assertFalse((path/"Saves").exists())
+    def test_26_progress_messages_verify_copy(self):
+        messages=[]
+        r=a13.clone(self.game,self.qa,self.a04,self.a12,progress=messages.append)
+        self.assertEqual(r["status"],a13.STATUS)
+        self.assertTrue(any("Iniciando inventario" in m for m in messages))
+        self.assertTrue(any("Copia QA criada e verificada" in m for m in messages))
+        self.assertTrue(any("perfil" in m for m in messages))
+
     def test_25_snapshot_report_no_gameplay_approval(self):
         r=self.clone()
         doc=json.loads((Path(r["path"])/a13.INVENTORY_FILE).read_text())

@@ -157,6 +157,13 @@ class StandaloneBatTests(unittest.TestCase):
             self.assertIn("A11",summary)
             self.assertIn("A12",summary)
             self.assertIn("A13",summary)
+            self.assertIn("UNOVA_A13_STATUS=",result.stdout)
+            self.assertIn("Log de diagnostico",result.stdout)
+            log=appdata/"PokemonBlueUnovaMapids"/"ULTIMA_EXECUCAO_A13.log"
+            self.assertTrue(log.is_file())
+            log_text=log.read_text("utf-8")
+            self.assertIn("A13",log_text)
+            self.assertIn("BLOCKED_A13_QA_COPY_NOT_CREATED",log_text)
             self.assertIn("NENHUM MapID",summary)
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a04-mapids-*.json")))
             self.assertTrue(list(cache.glob("bundle-*/.blue-work/unova/audit/a05-candidates-*.json")))

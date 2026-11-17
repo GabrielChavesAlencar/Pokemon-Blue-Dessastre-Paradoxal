@@ -490,7 +490,12 @@ def store_summary(project: Path, report: dict) -> Path:
     return dest
 
 
+def _progress(label: str) -> None:
+    print("[A13] "+label,flush=True)
+
+
 def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
+    _progress("Procurando instalacao principal do jogo...")
     project = a04.safe_path(project)
     selected, checked, reason = discover(project,environ)
     result: dict = {
@@ -504,18 +509,23 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "can_reserve_mapids":False,"can_install":False,
     }
     if selected is None:
+        _progress("Instalacao nao encontrada: "+str(reason))
         return result
+    _progress("Instalacao localizada: "+str(selected))
     try:
+        _progress("A04 — lendo inventario da instalacao...")
         baseline = a04.scan_source(selected,"DECADES",base=True)
         a04_result = a04.analyze(baseline,{})
         a04_path = a04.write_private(project,a04_result)
         result["a04_report_path"]=str(a04_path)
         result["a04_result"]=a04_result
         # This links the exact A04 content-addressed report to the A05 output.
+        _progress("A05-A06 — verificando candidatos e transferencias...")
         a05_result = a05.audit(project,a04_path)
         a05_path = a05.save(project,a05_result)
         a06_result=a06.audit(selected,a04_result)
         a06_path=a06.save(project,a06_result)
+        _progress("A07-A09 — rastreando introducoes e referencias...")
         try:
             a07_result=a07.audit(selected,a04_result,a06_result)
         except (ValueError,OSError,KeyError,TypeError) as exc:
@@ -572,6 +582,7 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "can_reserve_mapids":False,"can_install":False,"bar_a_completed":0,"bar_a_total":8
             }
         a09_path=a09.save(project,a09_result)
+        _progress("A10-A12 — verificando MapIDs, manifestos e instaladores...")
         try:
             a10_result=a10.audit(selected,project,a04_result,a06_result,a07_result,a08_result,a09_result)
         except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
@@ -623,14 +634,18 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_completed":0,"bar_a_total":8,
             }
         a12_path=a12.save(project,a12_result)
+        _progress("A12: "+a12_result.get("status","DESCONHECIDO"))
+        _progress("A13 — verificando copia QA privada. Pode exigir varios GB de espaco.")
         env=dict(os.environ if environ is None else environ)
         try:
             local=env.get("LOCALAPPDATA","").strip()
             if not local:
                 raise ValueError("LOCALAPPDATA ausente; nao selecionar destino QA alternativo")
             qa_root=Path(local)/"PokemonBlueUnovaMapids"/"qa-copies"
-            a13_result=a13.audit(selected,qa_root,a04_result,a12_result)
+            a13_result=a13.audit(selected,qa_root,a04_result,a12_result,
+                                  progress=_progress)
         except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
+            _progress("A13 bloqueada: "+str(exc)[:500])
             a13_result={
                 "schema":1,"region":"UNOVA","phase":"A13",
                 "status":"BLOCKED_A13_QA_COPY_NOT_CREATED",
@@ -643,6 +658,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_completed":0,"bar_a_total":8,
             }
         a13_path=a13.save(project,a13_result)
+        _progress("Resultado A13: "+a13_result.get("status","DESCONHECIDO"))
+        _progress("Relatorio JSON A13: "+str(a13_path))
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -666,6 +683,7 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a13_report_path":str(a13_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
+        _progress("Auditoria interrompida: "+str(exc))
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
         result["error"]=str(exc)
     return result
@@ -680,6 +698,7 @@ def main(argv=None) -> int:
     try:
         result=execute(args.project)
         summary=store_summary(args.project,result)
+        _progress("Relatorio TXT criado: "+str(summary))
         print("UNOVA_AUTO_STATUS="+result["status"])
         print("UNOVA_AUTO_RESUMO="+str(summary))
         print("UNOVA_A04="+str(result.get("a04_report_path") or "NAO_GERADO"))
@@ -692,6 +711,9 @@ def main(argv=None) -> int:
         print("UNOVA_A11="+str(result.get("a11_report_path") or "NAO_GERADO"))
         print("UNOVA_A12="+str(result.get("a12_report_path") or "NAO_GERADO"))
         print("UNOVA_A13="+str(result.get("a13_report_path") or "NAO_GERADO"))
+        print("UNOVA_A13_STATUS="+str((result.get("a13_result") or {}).get("status") or "NAO_EXECUTADA"))
+        if (result.get("a13_result") or {}).get("block_reason"):
+            print("UNOVA_A13_BLOQUEIO="+str(result["a13_result"]["block_reason"]))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
