@@ -24,6 +24,7 @@ import audit_unova_a08_readiness as a08
 import audit_unova_a09_intro_and_claims as a09
 import audit_unova_a10_dynamic_matrix as a10
 import audit_unova_a11_intro_preflight as a11
+import audit_unova_a12_ownership as a12
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -165,6 +166,7 @@ def pretty(result: dict) -> str:
     a09_result=result.get("a09_result")
     a10_result=result.get("a10_result")
     a11_result=result.get("a11_result")
+    a12_result=result.get("a12_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -388,6 +390,51 @@ def pretty(result: dict) -> str:
         if a11_result.get("block_reason"):
             lines.append("  Motivo bloqueio A11: "+a11_result["block_reason"])
         lines.append("")
+    if a12_result:
+        review=a12_result.get("installer_source_review",{})
+        plan=a12_result.get("isolated_install_preparation",{})
+        shapes=a12_result.get("dynamic_reference_prioritization",{})
+        intro=a12_result.get("intro_mapid3_runtime_status",{})
+        regional=a12_result.get("regional_local_manifest_review",{})
+        lines.extend([
+            "A12 — propriedade de MapIDs nos instaladores e plano QA isolado",
+            "  Status: "+a12_result.get("status","DESCONHECIDO"),
+            "  Fontes de instaladores lidas, via AST, sem executar: "+
+                str(review.get("sources_parsed","DESCONHECIDO"))+"/"+
+                str(review.get("sources_expected","DESCONHECIDO")),
+            "  Intervalos literais do codigo revisado (NAO reivindicacoes completas): "+
+                ", ".join(x["region"]+":"+str(x["range"][0])+"-"+
+                          str(x["range"][1]) for x in
+                          review.get("observed_literal_bands",[]))[:450],
+            "  Intervalos literais revisados cruzam Unova 518-599? "+
+                ("Sim" if not a12_result.get("known_literal_bands_do_not_intersect_candidate_interval")
+                 else "Nao (somente intervalos comprovados no codigo)"),
+            "  Mapeamento dinamico Kanto/Hoenn e futuras reservas homologados? Nao",
+            "  Referencias computadas classificadas, NAO resolvidas: "+
+                str(shapes.get("total_observed","DESCONHECIDO")),
+            "  Prioridades: "+", ".join(x["shape"]+":"+str(x["count"])+"("+x["manual_review_priority"]+")"
+                                     for x in shapes.get("by_shape",[]))[:500],
+            "  Intro MapID 3: transferencias: "+
+                str(intro.get("transfers_observed","DESCONHECIDO"))+
+                "; runtime validado? Nao",
+            "  IDs da preinstalacao 518-599 avaliados: "+
+                str(plan.get("candidate_count","DESCONHECIDO"))+"/82",
+            "  Conflitos observados no snapshot: "+
+                str(plan.get("observed_snapshot_conflicts","DESCONHECIDO")),
+            "  Simulacoes negativas: "+str(len(plan.get("synthetic_cases",[])))+
+                " (SINTETICAS, sem criar jogos)",
+            "  Instalacao QA isolada criada? Nao — apenas plano em memoria",
+            "  Backup ou rollback executado? Nao",
+            "  Manifestos regionais presentes: "+
+                ", ".join(x.get("name","")+":"+x.get("status","")
+                          for x in regional.get("manifest_files",[]))[:500],
+            "  Pendencias: "+", ".join(a12_result.get("review_flags",[]))[:750],
+            "  Reserva ou instalacao autorizada? Nao",
+            "  Relatorio completo: "+str(result.get("a12_report_path") or "NAO_GERADO"),
+        ])
+        if a12_result.get("block_reason"):
+            lines.append("  Bloqueio A12: "+a12_result["block_reason"])
+        lines.append("")
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
@@ -395,7 +442,7 @@ def pretty(result: dict) -> str:
         "  A Barra A continua 0/8 ate validar reservas e instalacao real.",
         "",
         "Para a proxima fase, envie este LEIA_AQUI_UNOVA_MAPIDS.txt",
-        "e o arquivo a11-intro-preflight-HASH.json indicado acima.",
+        "e o arquivo a12-installer-ownership-HASH.json indicado acima.",
         "",
         "Pastas pesquisadas:",
     ])
@@ -430,8 +477,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,"a12_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,"a12_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -537,6 +584,24 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_completed":0,"bar_a_total":8,
             }
         a11_path=a11.save(project,a11_result)
+        try:
+            a12_result=a12.audit(selected,project,a04_result,a06_result,a07_result,
+                                 a08_result,a09_result,a10_result,a11_result)
+        except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
+            a12_result={
+                "schema":1,"region":"UNOVA","phase":"A12",
+                "status":"BLOCKED_A12_INCOMPLETE_NOT_CERTIFIED",
+                "installer_source_review":{},
+                "dynamic_reference_prioritization":{},
+                "isolated_install_preparation":{},
+                "intro_mapid3_runtime_status":{},
+                "regional_local_manifest_review":{},
+                "review_flags":["A12_SOURCE_OR_AUDIT_CHAIN_INVALID"],
+                "block_reason":str(exc)[:300],
+                "can_reserve_mapids":False,"can_install":False,
+                "bar_a_completed":0,"bar_a_total":8,
+            }
+        a12_path=a12.save(project,a12_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -554,6 +619,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a10_report_path":str(a10_path),
             "a11_result":a11_result,
             "a11_report_path":str(a11_path),
+            "a12_result":a12_result,
+            "a12_report_path":str(a12_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -580,6 +647,7 @@ def main(argv=None) -> int:
         print("UNOVA_A09="+str(result.get("a09_report_path") or "NAO_GERADO"))
         print("UNOVA_A10="+str(result.get("a10_report_path") or "NAO_GERADO"))
         print("UNOVA_A11="+str(result.get("a11_report_path") or "NAO_GERADO"))
+        print("UNOVA_A12="+str(result.get("a12_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
