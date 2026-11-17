@@ -287,7 +287,25 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         a05_path = a05.save(project,a05_result)
         a06_result=a06.audit(selected,a04_result)
         a06_path=a06.save(project,a06_result)
-        a07_result=a07.audit(selected,a04_result,a06_result)
+        try:
+            a07_result=a07.audit(selected,a04_result,a06_result)
+        except (ValueError,OSError,KeyError,TypeError) as exc:
+            # Keep successful A04/A05/A06 diagnostics when A07 is blocked;
+            # explicitly report UNKNOWN values, never imply zero references.
+            a07_result={
+                "schema":1,"region":"UNOVA","phase":"A07",
+                "status":"BLOCKED_A07_INCOMPLETE_NOT_CERTIFIED",
+                "map_files_expected":a06_result["map_files_expected"],
+                "map_files_parsed":None,
+                "mapid_3_static_reference_count":None,
+                "static_interest_references":[],
+                "script_literal_hints":[],
+                "common_events":{"status":"NOT_EXAMINED"},
+                "scripts_rxdata":{"status":"NOT_EXAMINED"},
+                "review_errors_count":None,
+                "block_reason":str(exc)[:300],
+                "can_reserve_mapids":False,"can_install":False,
+            }
         a07_path=a07.save(project,a07_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
