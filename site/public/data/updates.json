@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "67bc34aab260cc7e423773d88c94c7c521205917",
+      "date": "2026-11-17T08:32:07-03:00",
+      "title": "feat(unova): validador de direitos, 69 cues musicais e 19 treinadores sem ativos falsos",
+      "category": "Novidades"
+    },
+    {
       "sha": "1d0dce1bffa15d8452f312097c095b3447d7412c",
       "date": "2026-11-17T08:31:19-03:00",
       "title": "data(unova): matriz E06 de direitos e catalogos E07 de musicas e treinadores pendentes",
