@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "phase": "G05.3",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "PLANNED_OFFLINE_TRAVEL_AUDIT_ONLY",
+  "sources": {
+    "registry": "site/public/data/regions.json",
+    "items": "data/regions/unova-g05-regional-items-contract.json",
+    "specials": "data/regions/unova-g05-badges-specials-contract.json",
+    "runtime_travel": "scripts/battle_polish/RegionTravel.rb",
+    "runtime_regions": "scripts/battle_polish/Regions.rb",
+    "runtime_start": "scripts/battle_polish/RegionStart.rb",
+    "tracker": "site/public/data/unova-github-progress.json"
+  },
+  "native_evidence": {
+    "unova_verified_source_map_id": null,
+    "unova_npc_event_id": null,
+    "unova_native_installer_proof": null,
+    "unova_approved_arrival_point": null,
+    "unova_native_return_event": null,
+    "unova_game_exe_qa_receipt": null,
+    "unova_android_qa_receipt": null,
+    "unova_source_license": null
+  },
+  "routable_runtime_regions": [
+    "DECADES",
+    "KANTO",
+    "JOHTO",
+    "HOENN"
+  ],
+  "planned_only_regions": [
+    "SINNOH",
+    "UNOVA",
+    "KALOS",
+    "ALOLA",
+    "GALAR",
+    "PALDEA",
+    "HISUI"
+  ],
+  "origin_labels": {
+    "DECADES": "FIXTURE_DECADES_CHERRYHILL",
+    "KANTO": "FIXTURE_KANTO_PALLET",
+    "JOHTO": "FIXTURE_JOHTO_NEW_BARK",
+    "HOENN": "FIXTURE_HOENN_LITTLEROOT"
+  },
+  "decades_safe_fallback": "FIXTURE_DECADES_CHERRYHILL_SAFE",
+  "policy": {
+    "npc_must_be_interacted_with": true,
+    "agent_must_be_at_initial_town": true,
+    "campaign_not_arena": true,
+    "safe_context_required": true,
+    "source_installation_required": true,
+    "destination_installed_and_safe_point_required": true,
+    "regional_circuit_is_not_install_proof": true,
+    "league_victory_not_required_by_current_runtime": true,
+    "no_hall_of_fame_gate": true,
+    "no_menu_or_route_teleport": true,
+    "same_region_not_destination": true,
+    "hisui_requires_separate_quest_and_install_proof": true,
+    "decades_return_not_native_intro": true,
+    "decades_stored_return_must_match_verified_town": true,
+    "decades_fallback_verified_safe_town_only": true,
+    "preview_hm_keyitem_pc_before_commit": true,
+    "preview_special_party_and_box_slots_before_commit": true,
+    "require_non_egg_non_fainted_survivor": true,
+    "recheck_at_final_commit_boundary": true,
+    "atomic_rollback_party_boxes_bag_pc_region_mechanics_and_position": true,
+    "quiet_only_suppresses_messages": true,
+    "unova_native_travel_forbidden": true,
+    "never_map_planned_area_to_native": true,
+    "no_game_or_save_writes": true
+  },
+  "simulation": {
+    "scope": "G05_3_SYNTHETIC_TRAVEL_NOT_GAME_SAVE",
+    "synthetic_install_proof_is_not_native_evidence": true,
+    "fixture_location_prefix": "FIXTURE_",
+    "destination_points_are_labels_not_map_ids": true,
+    "no_native_transfer_or_installer_calls": true,
+    "no_npc_spawn": true,
+    "no_pokemon_held_in_native_pc": true,
+    "no_real_badge_or_level_change": true,
+    "no_native_save_adapter": true,
+    "no_claim_real_johto_or_hoenn_ready": true
+  },
+  "native_map_ids_allocated": false,
+  "native_npc_installed": false,
+  "native_saves_modified": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "can_install": false,
+  "notes": [
+    "G05.3 is an offline audit of the existing RegionTravel.rb Ruby code. No native NPC, event, source map, arrival point or installation is added.",
+    "Runtime transport requires a physical regional agent in the initial town, a safe Essentials scene, a genuine merged source and installed safe arrival destination.",
+    "Hall of Fame and league victories are intentionally NOT gates in current RegionTravel; BlueRegions.unlocked includes circuit regions regardless of league, but destination still demands native install proof.",
+    "DECADES uses a verified Cherryhill return point, never an intro or bedroom fallback; any unsafe stored point must be ignored by the native runtime.",
+    "Unova is included in circuit but not in RegionTravel.destination source/destination allowlist; claiming Unova native travel is forbidden despite symbolic progress.",
+    "All installation and map points in fixtures are labels and explicitly synthetic, not a claim that Kanto, Johto or Hoenn is installed in a player's copy.",
+    "G05.1 stages Bag and Item PC separately; G05.2 reserves Pokemon Box slots and requires a survivor; G05.3 simulates atomic rollback of party, Box, Bag, PC, region, mechanics, history and position without touching saves.",
+    "Windows/Android Game.exe and JoiPlay gameplay/installer verification is outside this contract. G05.4 covers blackout, Pokemon Center and state persistence."
+  ]
+}
