@@ -93,3 +93,12 @@ Foram publicados instrumentos adicionais de trabalho, sem substituir arquivos jo
 Dê duplo clique em [UNOVA_VALIDAR_DOCUMENTACAO.bat](../UNOVA_VALIDAR_DOCUMENTACAO.bat). Este verifica as 74 áreas, 69 cues, 19 treinadores e o relatório E08, sem mexer no jogo. Para auditar a fonte, mantenha o ZIP original em .blue-work/unova/sources/Pokemon_World_V18.zip, obtido do autor, e rode novamente o BAT. O parser grava um relatório somente em .blue-work/unova/audit/u02-rxdata-detail.json. Fontes desconhecidas, direitos incompletos e dados não comprovados continuam bloqueados.
 
 **Observação sobre CI:** em uma execução anterior da suíte geral, a etapa Ruby de Kanto falhou no teste de escala do protagonista kanto_cut_tree_runtime.rb; ela não é uma prova de falha da auditoria Unova. Não declarar toda a regressão global verde antes de verificar o run final da main.
+
+
+### Evidência CI independente de Unova
+
+- [Workflow Unova E — run 44076192454](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44076192454) concluiu com **success**: 59 testes Python específicos de Unova aprovados, validação das 74 áreas, auditoria de 14 categorias de direitos (todas pendentes), 69 chaves musicais, 19 referências de treinadores e verificação de sintaxe dos scripts.
+- Esse CI só usa fixtures sintéticas e contratos de dados. Não baixou ZIP do autor, não inspecionou RXDATA real do usuário e não executou Game.exe, Blue-Story ou JoiPlay.
+- O workflow independente não substitui a suíte completa. Houve anteriormente uma falha Ruby em Kanto/CutTree (escala do protagonista) na regressão geral; ela requer acompanhamento separado e não autoriza afirmar que a suite total está verde.
+
+**Critério de encerramento:** preencher E04/E05/E06 com fonte real e direitos por arquivo, e E08 com QA Windows/Android registrado. Os 59 testes servem para proteger o trabalho preparatório, não para declarar Unova jogável.
