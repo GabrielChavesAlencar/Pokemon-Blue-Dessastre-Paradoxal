@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 17/32 após as entregas S08, S10, S11, S12, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 18/32 após as entregas S08, S10, S11, S12, S17, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -185,6 +185,12 @@ O [diagnóstico R07](SINNOH_R07_DIAGNOSTICO_RESERVAS.md) e o [BAT de duplo cliqu
 ### S26 — regressões da política musical, offline
 
 O [teste Ruby S26](../tests/sinnoh_s26_music_regression.rb), executado via [CH19](../scripts/regions/sinnoh_ci_ch19.py), confere todos os **46 cues CH16**, prioridades do BlueMusic, fallback sem faixa licenciada, ausência de loops/fades inventados, 11 transições e ausência de alteração em outra região. [Aceite e bloqueios](SINNOH_S26_TESTES_MUSICA_ACEITE.md). A **Barra A 17/32 (53%)** (5 parciais, 10 pendentes); B/C/D 0/13 e E 20/20. As tarefas S24/S25 exigem fonte/licenças e instalação real de áudio; o código de testes não desbloqueia músicas.
+
+### S17 — regressões de battle scaling, sem NPCs instalados
+
+O [contrato S17](../data/regions/sinnoh-trainer-balance-s17.json) e o [auditor estático](../scripts/regions/audit_sinnoh_s17_balance.py) validam as regras já existentes em [Campaign.rb](../scripts/battle_polish/Campaign.rb), [Story.rb](../scripts/battle_polish/Story.rb) e [EvolutionScaling.rb](../scripts/battle_polish/EvolutionScaling.rb). O novo [runner Ruby S17](../tests/sinnoh_s17_trainer_balance_runtime.rb) carrega os módulos reais por `Battle.prepend` com treinadores sintéticos e testa **70%/90%, ovos excluídos, evolução regular, chefes preservados, 4 integrantes no Master, até 6 adversários em duplas e zero alteração do PBS/party**. [10 testes Python](../tests/test_sinnoh_s17_trainer_balance.py) rejeitam alegações de `Game.exe`, rosters Platinum nativos e níveis fixos não comprovados.
+
+A [S17](SINNOH_S17_TREINADORES_DINAMICOS_ACEITE.md) só conclui o escopo do runtime compartilhado e testes offline: **Barra A 18/32 (56%)**, 5 parciais, 9 pendentes, E 20/20, B/C/D 0/13. **Não há treinadores Sinnoh novos instalados nos mapas, nem batalhas Windows/Android certificadas**; S15/S16/S18–S23 e S31 continuam exigindo mapas/eventos reais.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

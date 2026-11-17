@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 17,
+    "done": 18,
     "partial": 5,
-    "pending": 10,
-    "percent_complete": 53,
-    "percent_with_partial_not_counted": 53,
+    "pending": 9,
+    "percent_complete": 56,
+    "percent_with_partial_not_counted": 56,
     "groups": [
       {
         "key": "foundation",
@@ -194,8 +194,8 @@
     {
       "id": "S17",
       "title": "Treinadores com balanceamento dinâmico",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S17_TREINADORES_DINAMICOS_ACEITE.md"
     },
     {
       "id": "S18",
