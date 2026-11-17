@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "4d7a4d54f65393c0e2c045354c4b70e7d4e24ffc",
+      "date": "2026-11-17T19:18:25-03:00",
+      "title": "fix(android): reject null bytes and Windows separators in in-place update paths",
+      "category": "Correções"
+    },
+    {
+      "sha": "64ffa9f4eb332245289669176c34de27fe29d12f",
+      "date": "2026-11-17T19:18:09-03:00",
+      "title": "feat(android): remove patch backups, apply only verified changed files and resume interruptions",
+      "category": "Novidades"
+    },
+    {
       "sha": "133927a01c6d96ce812e68ba0961ab07925479fd",
       "date": "2026-11-17T19:15:19-03:00",
       "title": "docs(sinnoh): G08 merged, GitHub-only pipeline reaches 8/12",
