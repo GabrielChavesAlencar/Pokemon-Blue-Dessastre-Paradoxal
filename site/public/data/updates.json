@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1a3e9d74bc250bbe342aa5778a828d45ca9596a5",
+      "date": "2026-11-17T08:44:20-03:00",
+      "title": "feat(sinnoh): S23 contratos de pós-jogo e revanches (24/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "8b14b0e1ba754ca34e9f86d0d37b6d9d013bd127",
       "date": "2026-11-17T08:42:16-03:00",
       "title": "docs(unova): registrar 59 testes verdes de workflow independente e bloqueios restantes",
