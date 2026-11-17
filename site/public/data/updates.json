@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8b14b0e1ba754ca34e9f86d0d37b6d9d013bd127",
+      "date": "2026-11-17T08:42:16-03:00",
+      "title": "docs(unova): registrar 59 testes verdes de workflow independente e bloqueios restantes",
+      "category": "Novidades"
+    },
+    {
+      "sha": "1b830c869452da3c6ec1146ed1d63a6a6a046c9a",
+      "date": "2026-11-17T08:41:58-03:00",
+      "title": "test(unova): exigir exatamente quatro pendencias reais E04-E06 e E08",
+      "category": "Novidades"
+    },
+    {
+      "sha": "7e10f31765c28b1427b191d47a19b4b606bbfa48",
+      "date": "2026-11-17T08:41:49-03:00",
+      "title": "fix(unova): bloqueios E08 refletem apenas E04-E06 e E08 restantes",
+      "category": "Novidades"
+    },
+    {
       "sha": "50ec509800f3513adaab3bedb42385b67e1ab1e5",
       "date": "2026-11-17T08:40:52-03:00",
       "title": "ci(unova): suite independente U02-E08 sem dependencia do Game.exe",
