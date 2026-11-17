@@ -190,8 +190,9 @@
         {
           "id": "G05.4",
           "title": "Testar blackout, Centro Pokémon e estado compartilhado",
-          "status": "pending",
-          "acceptance": "Moedas, boxes, TMs, progresso e fallback de Centro da região atual"
+          "status": "done",
+          "acceptance": "Moedas, boxes, TMs, progresso e fallback de Centro da região atual",
+          "evidence": "scripts/regions/audit_unova_g05_blackout_state.py"
         }
       ]
     },
