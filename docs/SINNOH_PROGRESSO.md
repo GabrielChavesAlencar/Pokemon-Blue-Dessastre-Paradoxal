@@ -422,3 +422,7 @@ A [etapa B00](SINNOH_B00_RECEBIMENTO_FONTES_2026-11-17.md) documentou o pacote P
 ### Barra B — auditoria com os arquivos reais enviados (17/11/2026)
 
 [Auditoria B00 real](SINNOH_B00_FONTE_REAL_AUDITORIA_2026_11_17.md): ZIP e `Credits.txt` recebidos e hashes identificados; a árvore Sinnoh possui **76 entradas reais**, **54 mapas com terreno**, **22 vazios**, **64 sem eventos** e **397 eventos predominantemente de pontes**. O pacote contém 912 mapas de várias regiões; nenhum arquivo do doador foi incorporado ao jogo principal. **B = 0/13, C = 0/13, D = 0/13**, aguardando direitos específicos, inventário de MapIDs Decades/Kanto/Johto/Hoenn, interiores, NPCs e dados de gameplay; testes Windows/Android adiados conforme pedido.
+
+### Barra B — B01: coletor de MapIDs Decades e comparação com Sinnoh
+
+O [coletor Windows e o auditor B01](SINNOH_B01_COLETOR_MAPIDS_DEC_2026-11-17.md) foram preparados. O usuário pode criar um inventário ZIP privado somente de MapInfos/Tilesets/IDs e devolvê-lo aqui. O auditor cruza a instalação com os **76 MapIDs Sinnoh** já observados, sem instalar conteúdo. A disponibilidade de IDs ainda não está confirmada: reservas de Kanto/Johto/Hoenn permanecem não verificadas. **B/C/D = 0/13**, com Game.exe/JoiPlay adiados.
