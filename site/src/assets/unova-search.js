@@ -34,7 +34,7 @@ const chapterForArea=(data,key)=>areaBy(data,key)?.chapterKey??null;
 const phaseForArea=(data,key)=>areaBy(data,key)?.plannedPhase??null;
 const rowFields=(data,tab,row)=>{
  if(tab==='areas')return {
-  searchable:[row.key,row.name,row.kind,row.plannedPhase,row.storyScope,chapterBy(data,row.chapterKey)?.title],
+  searchable:[row.key,row.name,row.kind,row.plannedPhase,row.storyScope],
   fase:row.plannedPhase,capitulo:row.chapterKey,tipo:row.kind,area:row.key,
   pending:['mapas','eventos','encontros','niveis','qa','direitos']
  };
