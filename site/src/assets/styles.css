@@ -346,3 +346,36 @@
   .sinnoh-guide-filters label,.sinnoh-guide-filters .button{flex:1 1 100%}
   .sinnoh-guide-page .sinnoh-guide-tabs{align-items:stretch}
   .sinnoh-guide-page .sinnoh-guide-tabs .filter-chip{flex:1 1 calc(50% - 8px)}}
+
+
+/* Unova GitHub-only progress. Separate from game/native approval bars. */
+.unova-progress-overview{margin-bottom:22px;padding:23px}
+.unova-progress-overview>.eyebrow{margin:0 0 10px}
+.unova-progress-total{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-bottom:12px}
+.unova-progress-total strong{font-size:clamp(24px,3.5vw,38px);letter-spacing:-.03em}
+.unova-progress-total span{font-size:16px;font-weight:700;color:var(--muted)}
+.unova-github-progress progress{display:block;width:100%;height:14px;accent-color:#458cf7;overflow:hidden;border:0;border-radius:999px}
+.unova-github-progress progress::-webkit-progress-bar{background:#192940;border-radius:999px}
+.unova-github-progress progress::-webkit-progress-value{background:#458cf7;border-radius:999px}
+.unova-github-progress progress::-moz-progress-bar{background:#458cf7;border-radius:999px}
+.unova-progress-overview>p{margin-top:12px;line-height:1.6}
+.unova-progress-overview .unova-progress-warning{color:var(--muted);max-width:880px}
+.unova-progress-native{border-top:1px solid var(--line);padding-top:14px;margin-top:16px;
+  display:flex;flex-wrap:wrap;gap:10px 30px;font-size:12px;color:var(--muted)}
+.unova-progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,370px),1fr));gap:16px;align-items:start}
+.unova-progress-group{padding:20px;min-width:0}
+.unova-progress-group h2{margin:6px 0 10px;font-size:20px}
+.unova-progress-group header>p{font-size:12px;line-height:1.65;color:var(--muted);margin:8px 0}
+.unova-progress-group header>p strong{color:var(--text,#dce6f6)}
+.unova-progress-group progress{height:9px;margin:12px 0 5px}
+.unova-progress-tasks{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.unova-progress-task{border:1px solid var(--line);padding:13px;border-radius:8px;min-width:0}
+.unova-progress-task-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
+.unova-progress-task-head strong{font-size:12px;line-height:1.45;flex:1 1 180px}
+.unova-progress-status{font-size:10px;border:1px solid var(--line);padding:4px 6px;border-radius:7px;color:var(--muted)}
+.unova-progress-status.is-done{border-color:#36715a;color:#8de0b4}
+.unova-progress-task p{font-size:11px;line-height:1.55;margin:7px 0 0;color:var(--muted)}
+.unova-progress-task .text-link{font-size:11px}
+.unova-progress-footer{font-size:12px;margin:22px 0 35px;color:var(--muted);line-height:1.7}
+@media(max-width:550px){.unova-progress-overview,.unova-progress-group{padding:15px}
+  .unova-progress-grid{grid-template-columns:minmax(0,1fr)}}
