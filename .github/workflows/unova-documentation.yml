@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'scripts/regions/audit_unova_*.py'
+      - 'scripts/regions/unova_*.py'
       - 'tests/test_unova_*.py'
       - 'data/regions/unova-*.json'
       - 'docs/UNOVA_*.md'
       - 'UNOVA_*AUDITAR*.bat'
       - 'UNOVA_VALIDAR_DOCUMENTACAO.bat'
+      - 'UNOVA_E04_ESCOLHER_FONTE.bat'
       - '.github/workflows/unova-documentation.yml'
   pull_request:
     paths:
@@ -48,3 +50,4 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_e08_readiness.py
           python -m py_compile scripts/regions/audit_unova_e05_crosswalk.py
           python -m py_compile scripts/regions/audit_unova_e06_rights_inventory.py
+          python -m py_compile scripts/regions/unova_e04_intake.py
