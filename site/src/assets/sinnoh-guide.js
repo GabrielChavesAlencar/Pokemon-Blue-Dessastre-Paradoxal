@@ -197,6 +197,7 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
     '<h1>Guia de Sinnoh</h1>'+
     '<p>'+esc(data.meaning)+'</p>'+
     '<p><span class="content-pending-tag">Ainda não adicionado ao Game.exe/JoiPlay</span></p>'+
+    note('Guia disponível no portal. Sinnoh ainda não está instalado como região jogável; mapas, NPCs e eventos são referências planejadas, não provas de implantação.')+
     '</header>'+navigation+section+
     '<section class="sinnoh-guide-footer"><h2>Estado da implementação</h2>'+
       note('Dados organizados a partir das auditorias CH11–CH16. Isso não comprova instalação de mapas, NPCs, treinadores, encontros, itens ou músicas.')+
