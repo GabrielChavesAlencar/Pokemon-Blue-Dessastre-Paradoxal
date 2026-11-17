@@ -173,3 +173,10 @@ Publicados [13 contratos planejados](../data/regions/unova-u07-nuvema-events.jso
 A ferramenta verifica sequência de flags UNOVA_U07, escolha única de inicial, progressão mesmo com derrota dos rivais iniciais, nova tentativa de N após derrota, recompensas sem duplicação e reentrada/save sintético seguro. **Não manipula mapas, sprites, times, scripts nem saves reais. Nenhum evento foi compilado no Game.exe.**
 
 **Barras mantidas:** A/B/C/D 0/8, E 4/8, U07 não jogável e campanha completa 0/32.
+
+
+## A04 — auditor de MapIDs multirregionais (preparação, não aceite real)
+
+Foi criado o [auditor A04 somente leitura](../scripts/regions/audit_unova_a04_mapids.py) e o [BAT de seleção Windows](../UNOVA_A04_AUDITAR_MAPIDS.bat), com [manual](UNOVA_A04_MAPIDS_MULTIRREGIONAIS.md) e [testes sintéticos](../tests/test_unova_a04_mapids.py). O auditor pode inspecionar MapInfos.rxdata e MapNNN.rxdata de uma instalação real do Decades, além de cópias/ZIPs de Kanto, Johto, Hoenn e Sinnoh fornecidos explicitamente. Calcula hashes, conta IDs observados/declarados, identifica órfãos/ausências e aponta sobreposições entre snapshots, sem atribuir autoria por região nem reservar MapIDs Unova.
+
+**A04 permanece pendente:** não houve acesso ao MapInfos da instalação real e os dados de outras regiões ainda não foram auditados neste ambiente. Testes sobre fixtures não comprovam espaço livre nem autorização para importação. **Barra A 0/8, Barra E 4/8, Unova jogável 0/32.**
