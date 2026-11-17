@@ -10,6 +10,10 @@ O arquivo [`SINNOH_DIAGNOSTICAR_PENDENCIAS.bat`](../SINNOH_DIAGNOSTICAR_PENDENCI
 
 **Não acessa, migra ou apaga saves.** O código de saída é 2 quando faltam insumos; isso é um bloqueio esperado, não um erro de instalação.
 
+## Atualização B02 — inventário e códigos já confrontados (17/11/2026)
+
+A [auditoria B02](SINNOH_B02_RESERVAS_REGIONAIS_2026-11-17.md) cruzou o ZIP real do Decades (**648 MapIDs ocupados**) com as restrições documentadas: Johto 600–699 e Hoenn 700–999. A região de Kanto possui instalação com destinos dinâmicos; **suas reservas futuras ainda não foram apresentadas**. O intervalo 442–599 é fisicamente vazio, mas não está reservado a Sinnoh. **R07 segue parcial** e o auditor R07 exige manifestos privados vinculados ao baseline, sem prova artificial.
+
 ## Evidências ainda necessárias
 
 1. **Baseline local real:** `game/Data/MapInfos.rxdata` e mapas de Decades/Kanto/Johto/Hoenn atualmente instalados; é proibido substituir por arquivos sintéticos em produção.

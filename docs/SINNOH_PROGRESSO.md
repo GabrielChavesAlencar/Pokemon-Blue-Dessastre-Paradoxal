@@ -430,3 +430,7 @@ O [coletor Windows e o auditor B01](SINNOH_B01_COLETOR_MAPIDS_DEC_2026-11-17.md)
 ### Barra B — inventário real da instalação Decades auditado (17/11/2026)
 
 O [resultado B01 real](SINNOH_B01_RESULTADO_REAL_MAPIDS_2026-11-17.md) conferiu o ZIP enviado com 648 MapIDs ocupados, índice e arquivos físicos coerentes; **72 de 76 IDs Sinnoh colidem** com a base. Há **250 IDs fisicamente não ocupados** entre 1 e 599, incluindo o intervalo 442–599, mas **não foram reservados** porque os destinos futuros Kanto/Johto/Hoenn ainda exigem auditoria. O tileset 31 do doador é SinnohCompleteTileset; o 31 da base é Poké Mart, logo precisa de remapeamento próprio. Nenhum mapa ou save alterado; **B/C/D seguem 0/13** e testes nativos são adiados.
+
+### Barra B — B02: auditoria das reservas de Kanto, Johto e Hoenn (17/11/2026)
+
+O [relatório B02](SINNOH_B02_RESERVAS_REGIONAIS_2026-11-17.md), o [recibo derivado](../data/regions/sinnoh-b02-reservations.json), o [auditor B02](../scripts/regions/audit_sinnoh_b02_reservations.py) e os [16 testes](../tests/test_sinnoh_b02_reservations.py) cruzam o B01 real com as reservas de código do CH05: **Johto 600–699 (100 IDs ocupados)** e **Hoenn 700–999 (199 ocupados)**; Kanto usa mapeamento dinâmico. Sobram 250 IDs fisicamente vazios em 1–599, inclusive 442–599 (158), mas nenhuma reserva futura foi confirmada para as três regiões. **Não se alocou nenhum ID a Sinnoh. B/C/D seguem 0/13; R07 permanece incompleto.**
