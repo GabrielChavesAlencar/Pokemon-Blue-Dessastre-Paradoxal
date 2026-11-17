@@ -67,6 +67,10 @@ def preflight(qa: Path, *, project: Path = ROOT, mode: str = "check") -> dict:
     result = verify(qa, project=project)
     if not result["required_launcher_assets_verified"]:
         raise ValueError("Assets críticos do lançador QA não verificados")
+    if result.get("save_namespace_verified") is not True:
+        raise ValueError("S11: namespace isolado de saves nao verificado")
+    if result.get("foreign_save_inherited") is not False:
+        raise ValueError("S11: nao iniciar QA com save herdado de outra regiao")
     if mode == "compile" and (
         not result["compile_request_pending"] or
         result["compiled_marker_present"]
