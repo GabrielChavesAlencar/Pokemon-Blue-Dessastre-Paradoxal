@@ -26,6 +26,7 @@ PYTHON_CHECKS = [
     ("sinnoh-story-audit", [PY, "scripts/regions/audit_sinnoh_story_ch14.py"]),
     ("sinnoh-teams-audit", [PY, "scripts/regions/audit_sinnoh_teams_ch15.py"]),
     ("sinnoh-s17-balance-contract", [PY, "scripts/regions/audit_sinnoh_s17_balance.py"]),
+    ("sinnoh-s18-wild-contract", [PY, "scripts/regions/audit_sinnoh_s18_wild.py"]),
     ("sinnoh-music-audit", [PY, "scripts/music/audit_sinnoh_music_ch16.py"]),
 ]
 
@@ -39,6 +40,7 @@ RUBY_RUNTIME = [
     ("sinnoh-badges-hms", ["tests/sinnoh_badge_hm_ch11_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/RegionTravel.rb", "scripts/battle_polish/RegionalPolicy.rb", "data/regions/sinnoh-badges-hms-contract.json"]),
     ("sinnoh-evolution", ["tests/sinnoh_evolution_ch12_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/EvolutionScaling.rb", "scripts/battle_polish/Story.rb", "scripts/battle_polish/Campaign.rb", "data/regions/sinnoh-trainer-evolution-contract.json"]),
     ("sinnoh-s17-trainers", ["tests/sinnoh_s17_trainer_balance_runtime.rb", "tests/sinnoh_evolution_ch12_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/EvolutionScaling.rb", "scripts/battle_polish/Story.rb", "scripts/battle_polish/Campaign.rb", "data/regions/sinnoh-trainer-evolution-contract.json"]),
+    ("sinnoh-s18-wild", ["tests/sinnoh_s18_wild_runtime.rb", "tests/sinnoh_evolution_ch12_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/EvolutionScaling.rb", "scripts/battle_polish/Story.rb", "scripts/battle_polish/Campaign.rb", "data/regions/sinnoh-trainer-evolution-contract.json"]),
     ("sinnoh-story", ["tests/sinnoh_story_ch14_runtime.rb", "tests/regions_data_fixture.rb", "scripts/battle_polish/Regions.rb", "scripts/battle_polish/RegionTravel.rb", "scripts/regions/SinnohStoryContracts.rb", "data/regions/sinnoh-story-ch14-contract.json"]),
     ("sinnoh-music", ["tests/sinnoh_music_ch16_runtime.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),
     ("sinnoh-music-s26", ["tests/sinnoh_s26_music_regression.rb", "scripts/music/BlueMusic.rb", "scripts/music/SinnohMusicContracts.rb", "data/regions/sinnoh-music-ch16.json"]),

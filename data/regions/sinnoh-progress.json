@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 18,
+    "done": 19,
     "partial": 5,
-    "pending": 9,
-    "percent_complete": 56,
-    "percent_with_partial_not_counted": 56,
+    "pending": 8,
+    "percent_complete": 59,
+    "percent_with_partial_not_counted": 59,
     "groups": [
       {
         "key": "foundation",
@@ -200,8 +200,8 @@
     {
       "id": "S18",
       "title": "Encontros e evoluções por level cap",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S18_ENCONTROS_EVOLUCOES_ACEITE.md"
     },
     {
       "id": "S19",

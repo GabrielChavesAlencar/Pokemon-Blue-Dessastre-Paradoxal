@@ -38,6 +38,8 @@ REQUIRED = {
         "tests/test_sinnoh_r07_reservations.py",
         "tests/test_sinnoh_s17_trainer_balance.py",
         "scripts/regions/audit_sinnoh_s17_balance.py",
+        "scripts/regions/audit_sinnoh_s18_wild.py",
+        "tests/test_sinnoh_s18_wild.py",
     ),
     "ruby": (
         "tests/sinnoh_pilot_runtime.rb",
@@ -48,6 +50,7 @@ REQUIRED = {
         "tests/sinnoh_music_ch16_runtime.rb",
         "tests/sinnoh_s26_music_regression.rb",
         "tests/sinnoh_s17_trainer_balance_runtime.rb",
+        "tests/sinnoh_s18_wild_runtime.rb",
         "scripts/battle_polish/Campaign.rb",
     ),
     "portal": (
@@ -67,6 +70,7 @@ REQUIRED = {
         "data/regions/sinnoh-source.json",
         "data/regions/sinnoh-twinleaf-events.json",
         "data/regions/sinnoh-trainer-balance-s17.json",
+        "data/regions/sinnoh-wild-s18.json",
         "site/public/data/regions.json",
         ".github/workflows/sinnoh-ch19.yml",
         ".github/workflows/sinnoh-ch20.yml",
@@ -137,6 +141,7 @@ def collect(root: Path = ROOT) -> dict:
             or not any(name == "sinnoh-music" for name, _ in ci.RUBY_CHECKS)
             or not any(name == "sinnoh-music-s26" for name, _ in ci.RUBY_CHECKS)
             or not any(name == "sinnoh-s17-trainers" for name, _ in ci.RUBY_CHECKS)
+            or not any(name == "sinnoh-s18-wild" for name, _ in ci.RUBY_CHECKS)
             or any("Game.exe" in " ".join(command) or "JoiPlay" in " ".join(command)
                    for _, command in ci.RUBY_CHECKS)):
         fail("comandos Ruby nao isolados")

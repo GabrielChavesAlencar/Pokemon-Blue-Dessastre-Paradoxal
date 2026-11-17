@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "S18",
+  "status": "SHARED_WILD_SCALING_TESTED_OFFLINE_NATIVE_ENCOUNTERS_PENDING",
+  "sources": {
+    "runtime": "scripts/battle_polish/EvolutionScaling.rb",
+    "progress": "scripts/battle_polish/Campaign.rb",
+    "area_catalog": "data/regions/sinnoh-symbolic-encounters.json",
+    "evolution_contract": "data/regions/sinnoh-trainer-evolution-contract.json",
+    "ruby_fixture": "tests/sinnoh_s18_wild_runtime.rb"
+  },
+  "reference_areas": 21,
+  "progress": {
+    "reference": "highest_non_egg_party_level",
+    "max_level": "GameData::GrowthRate.max_level",
+    "regional_numeric_level_cap": null,
+    "source_of_evolutions": "GameData::Species#get_evolutions(true)",
+    "level_evolution_grace": 5,
+    "stone_level": 30,
+    "trade_level": 40,
+    "friendship_level": 45,
+    "wild_chances_by_gap": [
+      {
+        "min_gap": 0,
+        "max_gap": 4,
+        "chance_percent": 15
+      },
+      {
+        "min_gap": 5,
+        "max_gap": 14,
+        "chance_percent": 30
+      },
+      {
+        "min_gap": 15,
+        "max_gap": 24,
+        "chance_percent": 45
+      },
+      {
+        "min_gap": 25,
+        "max_gap": null,
+        "chance_percent": 60
+      }
+    ],
+    "original_species_slot_retained": true,
+    "preserve_native_encounter_metadata": true,
+    "preserve_original_pbs_weights": true,
+    "invalid_level_or_cap_keeps_original_slot": true,
+    "no_ambiguous_evolution": true,
+    "special_or_legendary_forms_excluded": true,
+    "time_dependent_methods_respected": true
+  },
+  "reference_only": {
+    "all_areas_unverified": true,
+    "candidate_methods_not_native_assignments": true,
+    "species_are_historical_references_not_spawns": true,
+    "no_fixed_spawn_weights": true,
+    "no_fixed_level_ranges": true,
+    "no_invented_map_ids": true,
+    "static_special_events_not_random_encounters": true,
+    "no_guessed_time_species_mapping": true
+  },
+  "gameplay": {
+    "native_encounter_pbs_compiled": false,
+    "native_map_ids_verified": false,
+    "actual_area_rates_verified": false,
+    "native_evolution_observed": false,
+    "game_exe_tested": false,
+    "joiplay_tested": false,
+    "playable_verified": false,
+    "can_install": false,
+    "may_write_pbs": false
+  },
+  "note": "S18 validates the existing BlueEvolutionScaling wild pipeline with synthetic Species and native-hook fixtures. The 21 CH13 Sinnoh areas are reference-only; actual per-map slots/rates, species-by-time assignments, level ranges and Game.exe/JoiPlay behavior have not been verified."
+}

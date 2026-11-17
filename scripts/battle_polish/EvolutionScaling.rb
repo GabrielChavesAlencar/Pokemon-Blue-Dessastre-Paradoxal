@@ -139,6 +139,15 @@ module BlueEvolutionScaling
 
   def self.wild_option(species, base_level, cap, roll = nil)
     return [species, base_level] unless active?
+    # S18: the shared encounter slot remains authoritative. Never turn a
+    # malformed native level/cap into a fabricated evolved Pokemon, and
+    # never modify an encounter already above the player's progress level.
+    # This is not a badge-derived regional numeric cap.
+    maximum = GameData::GrowthRate.max_level
+    return [species, base_level] unless
+      base_level.is_a?(Integer) && cap.is_a?(Integer) &&
+      base_level.between?(1, maximum) && cap.between?(1, maximum) &&
+      base_level <= cap
     current = species
     evolved_level = base_level
     3.times do
