@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "region": "SINNOH",
-  "updated_at": "2026-11-16",
+  "updated_at": "2026-11-17",
   "meaning": "Acompanhamento de entregáveis de código/documentação. Não é porcentagem de Sinnoh jogável.",
   "statuses": {
     "done": "Entregável em código/documento publicado, sujeito a CI; não prova execução Game.exe",
@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 19,
+    "done": 20,
     "partial": 5,
-    "pending": 8,
-    "percent_complete": 59,
-    "percent_with_partial_not_counted": 59,
+    "pending": 7,
+    "percent_complete": 62,
+    "percent_with_partial_not_counted": 62,
     "groups": [
       {
         "key": "foundation",
@@ -206,8 +206,8 @@
     {
       "id": "S19",
       "title": "Eventos da Team Galactic",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S19_TEAM_GALACTIC_ACEITE.md"
     },
     {
       "id": "S20",
