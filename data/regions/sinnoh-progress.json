@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 22,
+    "done": 23,
     "partial": 5,
-    "pending": 5,
-    "percent_complete": 68,
-    "percent_with_partial_not_counted": 68,
+    "pending": 4,
+    "percent_complete": 71,
+    "percent_with_partial_not_counted": 71,
     "groups": [
       {
         "key": "foundation",
@@ -224,8 +224,8 @@
     {
       "id": "S22",
       "title": "Viagem e desbloqueio Hoenn/Unova",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S22_VIAGENS_HOENN_UNOVA_ACEITE.md"
     },
     {
       "id": "S23",
