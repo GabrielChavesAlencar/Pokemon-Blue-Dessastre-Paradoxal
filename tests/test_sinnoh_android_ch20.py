@@ -124,7 +124,7 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
 
     def test_rejects_fake_map_id_and_coordinates_in_source_template(self):
         self.modify(TEMPLATE, lambda j: j["maps"][0].update(map_id=802))
-        with self.assertRaisesRegex(ValueError, "MapID|IDs e hashes"):
+        with self.assertRaisesRegex(ValueError, "MapID|IDs e hashes|campo/tipo de evento"):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j["maps"][0].update(map_id=None))
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(arrival_x=12))
