@@ -36,7 +36,7 @@ class ReadinessTests(unittest.TestCase):
 
     def test_01_baseline_stays_blocked(self):
         r=self.baseline
-        self.assertEqual(r["bar_e"]["completed"],3)
+        self.assertEqual(r["bar_e"]["completed"],4)
         self.assertEqual(r["bar_e"]["total"],8)
         self.assertEqual(r["playable_phases_completed"],0)
         self.assertFalse(r["can_install"])
@@ -51,7 +51,7 @@ class ReadinessTests(unittest.TestCase):
         r=readiness.inspect(self.root)
         self.assertTrue(r["donor_zip_present_not_audited"])
         self.assertFalse(r["can_install"])
-        self.assertEqual(r["bar_e"]["completed"],3)
+        self.assertEqual(r["bar_e"]["completed"],4)
 
     def test_03_missing_research_blocks(self):
         (self.root/"docs/UNOVA_PESQUISA_FONTES_RMXP.md").unlink()
