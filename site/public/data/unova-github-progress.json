@@ -113,8 +113,9 @@
         {
           "id": "G03.3",
           "title": "Estruturar rivais, Plasma e chefes por capítulo",
-          "status": "pending",
-          "acceptance": "Estado de revanche, eventos e recompensas com identificadores estáveis"
+          "status": "done",
+          "acceptance": "Estado de revanche, eventos e recompensas com identificadores estáveis",
+          "evidence": "scripts/regions/audit_unova_g03_rivals_plasma.py"
         },
         {
           "id": "G03.4",
