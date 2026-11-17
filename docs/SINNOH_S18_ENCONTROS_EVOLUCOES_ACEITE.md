@@ -32,6 +32,10 @@ Após CI CH19 Python/Ruby, S30, portal, CH20 e merge na `main`, a S18 pode ficar
 
 **Não demonstrado:** spawn real de Starly, Bidoof, Shinx ou qualquer outra espécie nos mapas de Sinnoh; pesos e níveis de slot PBS; quais espécies aparecem a cada horário; Drifloon/Rotom como eventos funcionais; compilação de PBS; captura, salvamento, gráficos, colisão ou execução em Game.exe/JoiPlay. Nenhum mapa ou save principal foi alterado nesta tarefa.
 
-## Evidências de CI
+## Evidências reais do GitHub Actions
 
-A inserir após a execução efetiva do GitHub Actions. Os resultados de teste sintético nunca serão promovidos a certificação de jogabilidade.
+- [Sinnoh S30 — run 44002153272](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44002153272): **5/5 jobs aprovados**. Manifesto (11 testes), Python (descoberta geral e **12 novos testes negativos da S18**, mais auditor), Ruby (`sinnoh-s18-wild = passed (0)`), Portal (**161/161 testes aprovados**) e Android estático.
+- [Sinnoh CH19 — run 44002153387](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44002153387): jobs **Python e Ruby success**; `sinnoh-s18-wild-contract = passed (0)` e `sinnoh-s18-wild = passed (0)`.
+- [Portal Blue — run 44002153334](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44002153334): build e testes do site aprovados.
+- [Sinnoh CH20 — run 44002153330](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44002153330): pré-voo **estático** de JoiPlay aprovado, sem aparelho real.
+- **Limite do CI:** a engine é exercida com Pokémon/slots sintéticos. Nenhum `Game.exe`, save, tabela PBS de Sinnoh, evento Drifloon/Rotom ou encontro real no Windows/Android foi testado. As **44 verificações nativas continuam pendentes**.
