@@ -24,7 +24,7 @@ def png(width=1,height=1,*,depth=8,colour=2,interlace=0,
     header=struct.pack(">IIBBBBB",width,height,depth,colour,0,0,interlace)
     channels=g06.COLOUR_CHANNELS[colour]
     pass_rows=g06._passes(width,height,channels,depth,interlace)
-    if filtered_rows is None:
+    if idat is None and filtered_rows is None:
         packed=[]
         compressor=zlib.compressobj(level=6)
         for row_len,rows in pass_rows:
@@ -33,7 +33,7 @@ def png(width=1,height=1,*,depth=8,colour=2,interlace=0,
                 packed.append(compressor.compress(row))
         packed.append(compressor.flush())
         idat=b"".join(packed)
-    else:
+    elif idat is None:
         idat=zlib.compress(filtered_rows)
     if idat is None:
         raise AssertionError("missing compressed stream")
@@ -207,9 +207,9 @@ class SinnohG06RenderStaticTests(unittest.TestCase):
 
     def test_20_missing_or_invalid_chunk_format_rejected(self):
         raw=png()
-        with self.assertRaisesRegex(ValueError,"chunk"):
+        with self.assertRaisesRegex(ValueError,"nao canonico"):
             g06.inspect_png(raw[:8]+raw[8:12]+b"aC1D"+raw[16:])
-        with self.assertRaisesRegex(ValueError,"chunk"):
+        with self.assertRaisesRegex(ValueError,"nao canonico"):
             g06.inspect_png(raw[:8]+raw[8:12]+b"AbcD"+raw[16:])
 
     def test_21_cli_emits_only_json_metadata_and_no_binary_assets(self):
