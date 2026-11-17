@@ -305,6 +305,23 @@ def _write_installed_revision(root, manifest, mode="patch"):
             os.unlink(filename)
 
 
+# The single-file launcher shared with Android players on 17 Nov 2026
+# intentionally downloads this client from GitHub instead of embedding it.
+# Players manually replaced ATUALIZAR-ANDROID.py with that known launcher;
+# the old installed manifest still expects the original packaged updater.
+# It is safe to migrate ONLY the exact known launcher after the signed
+# release's patch metadata and every new file digest were validated.
+KNOWN_ANDROID_LAUNCHERS = frozenset({
+    "0dcf2bc93d7b92e66a6b9366569b2f831d8f5941ccf5cde72b9f9022387468a1",
+})
+
+
+def _trusted_local_updater(path):
+    if not path.is_file() or path.is_symlink() or path.stat().st_size > 1024 * 1024:
+        return False
+    return sha256_file(path) in KNOWN_ANDROID_LAUNCHERS
+
+
 def _check_local_changes(root, old, new, changed, removed):
     """Allow OLD or ALREADY-UPDATED hashes so interrupted patches can resume."""
     actions = []
@@ -317,8 +334,13 @@ def _check_local_changes(root, old, new, changed, removed):
         if prior is None:
             if target.exists():
                 raise ValueError("Refusing to replace untracked file: " + name)
-        elif not target.is_file() or sha256_file(target) != prior["sha256"]:
+        elif not target.is_file():
             raise ValueError("File was modified; update refused: " + name)
+        elif sha256_file(target) != prior["sha256"]:
+            if name != "ATUALIZAR-ANDROID.py" or not _trusted_local_updater(target):
+                raise ValueError("File was modified; update refused: " + name)
+            print("Reconhecido iniciador Android oficial instalado manualmente; "
+                  "atualizando somente o proprio atualizador.", flush=True)
         actions.append(name)
     for name in removed:
         target = _local_target(root, name)
