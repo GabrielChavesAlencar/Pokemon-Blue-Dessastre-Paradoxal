@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 24/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 25/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S24, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -233,6 +233,12 @@ A [S23](SINNOH_S23_POS_JOGO_REVANCHES_ACEITE.md) implementa apenas o [adaptador 
 As **cinco revanches históricas Platinum** de Aaron, Bertha, Flint, Lucian e Cynthia são referências CH15, não times jogáveis. A revanche **Blue Full Power global** só pode ser preparada após **dez Ligas concluídas** e elenco nativo de revanche auditado; para lendários/míticos/UB/paradoxos na party valem as **oito insígnias locais** já existentes, não dez Ligas. O [auditor S23](../scripts/regions/audit_sinnoh_s23_postgame.py), [16 testes negativos](../tests/test_sinnoh_s23_postgame.py) e [runtime Ruby com saves sintéticos](../tests/sinnoh_s23_postgame_runtime.rb) verificam essas invariantes sem executar batalhas.
 
 **Barra A 24/32 (75%)**, 5 parciais, 3 pendentes, E 20/20, B/C/D 0/13, 44 casos nativos ainda pendentes. Battle Zone, Stark Mountain, Battle Frontier e eventos lendários continuam **não instalados** no Game.exe/JoiPlay.
+
+### S24 — catálogo dos 46 cenários musicais (sem gravações)
+
+A [entrega S24](SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md) acrescenta a [matriz](../data/regions/sinnoh-music-s24.json), o [auditor estático](../scripts/music/audit_sinnoh_music_s24.py) e [19 testes](../tests/test_sinnoh_s24_music.py). As 46 chaves CH16 foram associadas a contexto, guarda e fallback sem inventar licença, MapID, arquivo, evento ou binding. **S24 conclui catálogo, não música distribuível**: S25 e o teste nativo continuam bloqueados.
+
+**Após CI e merge: Barra A 25/32 (78%)**, 4 parciais e 3 pendentes; E 20/20, B/C/D 0/13, 44 verificações nativas não realizadas.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

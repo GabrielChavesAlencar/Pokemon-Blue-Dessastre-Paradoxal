@@ -33,6 +33,7 @@ PYTHON_CHECKS = [
     ("sinnoh-s22-travel-contract", [PY, "scripts/regions/audit_sinnoh_s22_travel.py"]),
     ("sinnoh-s23-postgame-contract", [PY, "scripts/regions/audit_sinnoh_s23_postgame.py"]),
     ("sinnoh-music-audit", [PY, "scripts/music/audit_sinnoh_music_ch16.py"]),
+    ("sinnoh-s24-music-catalog", [PY, "scripts/music/audit_sinnoh_music_s24.py"]),
 ]
 
 RUBY_RUNTIME = [

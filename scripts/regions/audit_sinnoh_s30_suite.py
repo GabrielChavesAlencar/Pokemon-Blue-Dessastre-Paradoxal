@@ -49,6 +49,8 @@ REQUIRED = {
         "tests/test_sinnoh_s22_travel.py",
         "scripts/regions/audit_sinnoh_s22_travel.py",
         "tests/test_sinnoh_s23_postgame.py",
+        "tests/test_sinnoh_s24_music.py",
+        "scripts/music/audit_sinnoh_music_s24.py",
         "scripts/regions/audit_sinnoh_s23_postgame.py",
     ),
     "ruby": (
@@ -96,6 +98,7 @@ REQUIRED = {
         "data/regions/sinnoh-league-s21.json",
         "data/regions/sinnoh-travel-s22.json",
         "data/regions/sinnoh-postgame-s23.json",
+        "data/regions/sinnoh-music-s24.json",
         "site/public/data/regions.json",
         ".github/workflows/sinnoh-ch19.yml",
         ".github/workflows/sinnoh-ch20.yml",
