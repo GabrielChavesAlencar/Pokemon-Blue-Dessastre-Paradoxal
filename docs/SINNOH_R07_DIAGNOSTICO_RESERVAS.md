@@ -41,3 +41,7 @@ O auditor informa IDs ocupados, reservas conflitantes e MapIDs futuros faltantes
 ## Atualização B04 — coleta local dos manifestos de instalação (17/11/2026)
 
 O [coletor de proveniência B04](SINNOH_B04_COLETA_MANIFESTOS_2026-11-17.md) solicita, na instalação local do usuário, **apenas um resumo de IDs e hashes** dos manifestos já existentes de Kanto/Johto/Hoenn. Ele **não** cria nem declara reservas de mapas futuros. Se um manifesto estiver ausente, inválido ou se `MapInfos/Tilesets` divergir dos SHA de B01, a análise deve registrar a pendência sem assumir liberação de ID algum. Mesmo os três manifestos instalados válidos não encerram a auditoria de reservas **futuras**. R07 mantém `complete=false`, e B/C/D ficam 0/13.
+
+## Atualização B05 — retenção administrativa de MapIDs Sinnoh
+
+O [catálogo B05](MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17.md) separa 442–517 (76 IDs) **somente para planejamento de Sinnoh**, excluindo-os dos 174 candidatos físicos restantes para Unova. **Isso não equivale a prova R07** nem a um mapeamento instalado. O ZIP B04 confirma os três manifestos instalados resumidos, mas não inclui declarações de reservas futuras e omitiu 31 MapIDs baixos por erro de regex já identificado. R07 permanece incompleto e os instaladores não devem ser acionados por esse catálogo.
