@@ -43,8 +43,9 @@
         {
           "id": "G01.3",
           "title": "Garantir recompensas únicas e reentrada segura",
-          "status": "pending",
-          "acceptance": "Simulação de revisitas, perda de batalhas e idempotência"
+          "status": "done",
+          "acceptance": "Simulação de revisitas, perda de batalhas e idempotência",
+          "evidence": "scripts/regions/audit_unova_g01_reentry_ledger.py"
         },
         {
           "id": "G01.4",
