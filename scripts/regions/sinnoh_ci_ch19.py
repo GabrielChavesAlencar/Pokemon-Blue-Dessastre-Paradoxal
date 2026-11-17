@@ -103,6 +103,14 @@ def summarize(suite: str, results: list[dict]) -> dict:
     statuses = [r["status"] for r in results]
     if any(s not in ("passed", "failed", "blocked") for s in statuses):
         raise ValueError("status nao reconhecido")
+    # Nao confiar em 'passed' quando o processo retornou erro. Os relatórios
+    # tambem precisam expor a causa, para que CI nao mascare falhas regionais.
+    for row in results:
+        status, code = row["status"], row.get("returncode")
+        if status == "passed" and (type(code) is not int or code != 0):
+            raise ValueError("CH19 resultado 'passed' sem exit code 0")
+        if status == "blocked" and code is not None:
+            raise ValueError("CH19 runner 'blocked' com exit code incompatível")
     state = "passed" if all(s == "passed" for s in statuses) else (
         "failed" if "failed" in statuses else "blocked"
     )
