@@ -29,6 +29,14 @@ A [suíte S30](../scripts/regions/audit_sinnoh_s30_suite.py) também exige a pre
 
 Com CI verificado e merge, a S10 pode ser contada como `done` **apenas para o lançador entregue**, elevando a **Barra A a 13/32 (40%)** (6 parciais, 13 pendentes). **B/C/D seguem 0/13**, a Barra E 20/20, e **44 testes nativos** seguem pendentes.
 
+## Evidências reais do GitHub Actions
+
+- [Sinnoh S30 — run 43991823532](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43991823532): **5/5 jobs aprovados**, incluindo auditor de hashes de BAT/teste, Python `test_sinnoh_*.py`, Ruby, Android estático e **161/161 testes do portal**.
+- [Sinnoh CH19 — run 43991823537](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43991823537): Python e Ruby **success**. A descoberta Python inclui os **15 testes S10** (`test_sinnoh_s10_launcher.py`), que utilizam executáveis simulados e `Popen` mockado, **sem abrir Game.exe real**.
+- [Portal Blue — run 43991823636](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43991823636): build e suíte **aprovados**, resultado independente do Windows.
+- [Sinnoh CH20 — run 43991823665](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43991823665): pré-voo estático de 44 casos **aprovado**, todos ainda pendentes de teste nativo.
+- O workflow geral Blue Studio e as execuções de outras regiões são independentes. **Nenhum teste automático faz do Sinnoh uma região nativamente aprovada.**
+
 ## Restrições reais
 
 No GitHub, **não há os assets originais de Sinnoh nem `Game.exe` real** para executar. O código de instalação S12 e a criação de uma cópia com dados legítimos precisam de fonte autorizada e auditoria local. O BAT instalado sozinho não torna Sinnoh jogável. Não executar QA Android/JoiPlay a partir deste arquivo Windows.
