@@ -4,7 +4,8 @@
 --qa PATH or --auto: report preflight (does not execute anything)
 --compile: start ONLY the verified, pending private QA Game.exe once so its
            native compiler can write the required compiled/engine markers
---launch: start ONLY the private QA Game.exe after native static checks pass\n--auto --start: one validated QA copy; compile pending or start QA if structurally ready
+--launch: start ONLY the private QA Game.exe after native static checks pass
+--auto --start: one validated QA copy; compile pending or start QA if structurally ready
 
 Never starts Decades/Johto or writes to the main game's directory/saves.
 This CLI does NOT claim gameplay approval, even when launching for manual QA.
@@ -23,7 +24,7 @@ from install_sinnoh_qa_copy import ROOT, verify
 
 # S10: selecionar SOMENTE diretorios produzidos pelo instalador QA privado.
 # Nao procurar Game.exe em outras regioes, desktop ou na pasta game/.
-QA_FOLDER = re.compile(r"game-sinnoh-qa-[a-f0-9]{12}\\Z")
+QA_FOLDER = re.compile(r"game-sinnoh-qa-[a-f0-9]{12}\Z")
 
 
 def discover_private_qa(project: Path = ROOT) -> Path:
