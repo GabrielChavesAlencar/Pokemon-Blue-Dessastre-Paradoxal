@@ -68,6 +68,8 @@ class SpritePackTests(unittest.TestCase):
     def test_01_identifies_characters_png_gif_and_animations(self):
         r=audit.audit(self.pack())
         self.assertEqual(r["supported_images"],4)
+        self.assertEqual(r["formats_count"],{"GIF":1,"PNG":3})
+        self.assertEqual(r["sprite_kinds_count"],{"OVERWORLD_SHEET_CANDIDATE":4})
         self.assertEqual(r["invalid_images"],[])
         self.assertEqual(r["status"],"SPRITES_AUDITED_NOT_LICENSED_OR_INSTALLED")
         self.assertIn("CHEREN",r["characters_by_filename_candidates"])
@@ -195,6 +197,7 @@ class SpritePackTests(unittest.TestCase):
         self.assertIn("EXISTING_DECADES_BASENAME_COLLISION_DO_NOT_OVERWRITE",x["warnings"])
         self.assertIn("POTENTIAL_DIMENSION_MISMATCH",x["warnings"])
         self.assertIn("POTENTIAL_FRAME_SCALE_MISMATCH",x["warnings"])
+        self.assertEqual(r["potential_warnings_count"]["POTENTIAL_FRAME_SCALE_MISMATCH"],1)
         self.assertEqual(x["candidate_cell_height_ratio_to_first_decades_match"],2)
         self.assertFalse(x["installable"])
         self.assertEqual((ref/"Cheren.png").read_bytes(),png(64,64))
