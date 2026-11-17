@@ -6,16 +6,16 @@
 
 ## Barra geral
 
-**20/32 entregas concluídas (63%)** · 12 pendentes
+**21/32 entregas concluídas (66%)** · 11 pendentes
 
-`[████████████████████░░░░░░░░░░░░]` **63%**
+`[█████████████████████░░░░░░░░░░░]` **66%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
 | G01 — Progressão e estado da campanha | **4/4** | `████` |
 | G02 — História, ginásios e pós-jogo | **4/4** | `████` |
 | G03 — Treinadores e balanceamento | **4/4** | `████` |
-| G04 — Áreas, selvagens e temporadas | **3/4** | `███░` |
+| G04 — Áreas, selvagens e temporadas | **4/4** | `████` |
 | G05 — Mecânicas e isolamento regional | **0/4** | `░░░░` |
 | G06 — Site, guias e acompanhamento | **2/4** | `██░░` |
 | G07 — Blue-Story, manifests e instalador | **1/4** | `█░░░` |
@@ -63,7 +63,7 @@ Referências e encontros sem MapIDs e probabilidades inventadas.
 - [x] **G04.1 — Catalogar 74 áreas simbólicas de Unova.** Catálogo U03 de áreas e estados planned, sem mapas originais ou destino validado · [Evidência](../data/regions/unova-u03-areas.json)
 - [x] **G04.2 — Definir esquema de encontros por área e método.** 74 áreas U03, 20 métodos PBS, janelas do dia/estações como perguntas de auditoria; slots/pesos/níveis permanecem desconhecidos · [Evidência](../scripts/regions/audit_unova_g04_encounter_methods.py)
 - [x] **G04.3 — Criar regras de evolução e níveis escalonados.** Contrato G04.2/G03.2, simulação somente com fixtures de evolução condicional e nível mínimo, 82 testes e sem PBS/MapIDs nativos · [Evidência](../scripts/regions/audit_unova_g04_wild_scaling.py)
-- [ ] **G04.4 — Validar encontros, taxas e lacunas de dados.** Soma de probabilidades, duplicações e campos desconhecidos preservados
+- [x] **G04.4 — Validar encontros, taxas e lacunas de dados.** Auditoria por método/horário/estação/campanha, 88 testes sintéticos de soma, duplicações e campos desconhecidos, sem encontros reais supostos · [Evidência](../scripts/regions/audit_unova_g04_encounter_validation.py)
 
 ### G05 — Mecânicas e isolamento regional
 
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G04.4 (auditoria de encontros, taxas, duplicações e lacunas de dados). Até comprovação PBS/nativa, slots, espécies, taxas e níveis reais continuam pendentes. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G05.1 (HMs e itens-chave exclusivos por região, apenas contrato e fixtures offline). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
