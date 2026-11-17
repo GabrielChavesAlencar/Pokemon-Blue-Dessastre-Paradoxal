@@ -274,11 +274,18 @@ class UnovaG051Tests(unittest.TestCase):
         self.bad_travel(state)
     def test_081_full_bag_prevents_travel_no_commit(self):
         state=self.state();before=copy.deepcopy(state)
-        state["bag_capacity"]=5;before=copy.deepcopy(state)
+        state["bag_capacity"]=5
+        state["vault"]["UNOVA"]["items"].extend([
+            self.item("UNOVA_OTHER_HM"),self.item("UNOVA_MAP","KEY_ITEM"),
+            self.item("UNOVA_PASS","KEY_ITEM")])
+        before=copy.deepcopy(state)
         self.bad_travel(state)
         self.assertEqual(state,before)
     def test_082_full_pc_prevents_travel_no_commit(self):
         state=self.state();state["pc_capacity"]=2
+        state["vault"]["UNOVA"]["pc_items"].extend([
+            self.item("UNOVA_PC_KEY_B","KEY_ITEM"),
+            self.item("UNOVA_PC_KEY_C","KEY_ITEM")])
         before=copy.deepcopy(state)
         self.bad_travel(state)
         self.assertEqual(state,before)
