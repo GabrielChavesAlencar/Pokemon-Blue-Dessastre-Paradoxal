@@ -24,7 +24,7 @@ CHANNELS = {
     "multiregion": ("Blue-Android-Decades-Kanto-Hoenn.zip", "Blue-Android-Decades-Kanto-Hoenn.update.json"),
 }
 ALLOWED_ROOTS = {"Audio", "Graphics", "Fonts", "PBS", "Plugins", "Data"}
-FORBIDDEN = {"mkxp.json", "Game.ini", "ATUALIZAR-ANDROID.py", MARKER}
+FORBIDDEN = {"mkxp.json", "Game.ini", MARKER}
 MAX_PATCH_BYTES = 1024 * 1024 * 1024  # 1 GiB; larger changes require full installation.
 MAX_FULL_BYTES = 2 * 1024 * 1024 * 1024  # GitHub release asset upper bound.
 MAX_UNPACKED_BYTES = 12 * 1024 * 1024 * 1024
@@ -39,7 +39,7 @@ def safe_path(name):
         return False
     # Kanto's map/event inventory changes whenever its source is updated.
     # It is game data (not the JoiPlay save profile) and must be patchable.
-    if name in ("Kanto pilot.json", "LEIA-ME-ANDROID.txt",
+    if name in ("ATUALIZAR-ANDROID.py", "Kanto pilot.json", "LEIA-ME-ANDROID.txt",
                 "LEIA-ME-ANDROID-KANTO.txt"):
         return True
     if name in FORBIDDEN or len(path.parts) < 2 or path.parts[0] not in ALLOWED_ROOTS:
@@ -197,6 +197,27 @@ def download(url, destination, expected_sha, expected_size, max_bytes=MAX_PATCH_
         temp.unlink(missing_ok=True)
 
 
+def _patchable_immutables(old, new):
+    """Only the updater itself may migrate from legacy immutable to mutable.
+
+    Game.exe, the JoiPlay save profile and all other root files stay protected.
+    """
+    earlier = dict(old)
+    later = dict(new)
+    earlier.pop("ATUALIZAR-ANDROID.py", None)
+    later.pop("ATUALIZAR-ANDROID.py", None)
+    return earlier == later
+
+
+def _old_patch_files(info):
+    """Legacy ZIPs stored the updater in immutable; permit its own upgrade."""
+    old = dict(info["files"])
+    updater = info.get("immutable", {}).get("ATUALIZAR-ANDROID.py")
+    if updater and "ATUALIZAR-ANDROID.py" not in old:
+        old["ATUALIZAR-ANDROID.py"] = updater
+    return old
+
+
 def _verify_paths(old, new, patch):
     changed = patch.get("changed")
     removed = patch.get("removed", [])
@@ -307,7 +328,7 @@ def apply_patch(root, installed, manifest, patch_file):
     """Install only the changed files. No backup and safely resumable."""
     if manifest["channel"] != installed["channel"]:
         raise ValueError("Cannot mix Kanto and Decades.")
-    if manifest.get("immutable", {}) != installed.get("immutable", {}):
+    if not _patchable_immutables(installed.get("immutable", {}), manifest.get("immutable", {})):
         raise ValueError("Runtime/save configuration changed; a full ZIP is required.")
     if not root.is_dir() or root.is_symlink():
         raise ValueError("Invalid installed game directory.")
@@ -320,7 +341,8 @@ def apply_patch(root, installed, manifest, patch_file):
                 or patch.get("from_revision") != installed["revision"]
                 or patch.get("to_revision") != manifest["revision"]):
             raise ValueError("Patch does not match this installed version.")
-        changed, removed = _verify_paths(installed["files"], manifest["files"], patch)
+        old_files = _old_patch_files(installed)
+        changed, removed = _verify_paths(old_files, manifest["files"], patch)
         if set(entries) != {"patch.json"} | {"files/" + name for name in changed}:
             raise ValueError("Patch contains unexpected files.")
         for name in changed:
@@ -337,13 +359,15 @@ def apply_patch(root, installed, manifest, patch_file):
             if digest.hexdigest() != meta["sha256"]:
                 raise ValueError("Patch file checksum mismatch: " + name)
         for name, meta in installed.get("immutable", {}).items():
+            if name == "ATUALIZAR-ANDROID.py":
+                continue  # Verified as a changed/unchanged file below.
             critical = _local_target(root, name)
             if (not critical.is_file() or
                     sha256_file(critical) != meta["sha256"]):
                 raise ValueError("Critical runtime/configuration was modified: " + name)
         # Validate every local target before the first write. Existing NEW
         # files come from an interrupted update and need not be written again.
-        todo = _check_local_changes(root, installed["files"],
+        todo = _check_local_changes(root, old_files,
                                     manifest["files"], changed, removed)
         for index, name in enumerate(todo, 1):
             _replace_from_zip(archive, "files/" + name,
@@ -476,7 +500,8 @@ def install_full_from_release(root, installed, release, manifest):
 
 def compatible_patch(release, installed, manifest):
     """Choose a verified release delta for THIS installed revision."""
-    if manifest.get("immutable", {}) != installed.get("immutable", {}):
+    if not _patchable_immutables(installed.get("immutable", {}),
+                                 manifest.get("immutable", {})):
         return None
     candidates = manifest.get("patches", [])
     if not isinstance(candidates, list):
