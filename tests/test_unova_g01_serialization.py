@@ -319,10 +319,12 @@ class UnovaG014Tests(unittest.TestCase):
 
     def test_57_unicode_escape_instead_of_canonical_blocked(self):
         data=self.encode(self.at_events(13))
-        # Alternate escaped formatting remains valid JSON but is not canonical.
-        d=json.loads(data)
+        # The same "UNOVA" value with an escaped U is semantically identical,
+        # but its original bytes are not the deterministic canonical encoding.
+        altered=data.replace(b'"UNOVA"',b'"\\u0055NOVA"',1)
+        self.assertNotEqual(altered,data)
         with self.assertRaises(ValueError):
-            self.decode(json.dumps(d,sort_keys=True,separators=(",",":"),ensure_ascii=True).encode())
+            self.decode(altered)
 
     def test_58_missing_v1_payload_blocked(self):
         self.tamper_v1(lambda d:d.pop("payload"))
