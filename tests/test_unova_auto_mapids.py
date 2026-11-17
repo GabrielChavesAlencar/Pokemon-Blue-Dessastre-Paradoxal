@@ -247,5 +247,19 @@ class AutoMapIDsTests(unittest.TestCase):
         self.assertFalse(result["a05_result"]["can_install"])
 
 
+    def test_23_a06_report_is_always_generated_and_failures_visible(self):
+        self.make_game()
+        report=runner.execute(self.project,self.env)
+        self.assertIsNotNone(report["a06_result"])
+        self.assertTrue(Path(report["a06_report_path"]).is_file())
+        self.assertEqual(report["a06_result"]["map_files_expected"],22)
+        self.assertEqual(report["a06_result"]["map_files_parsed"],0)
+        self.assertEqual(len(report["a06_result"]["map_read_failures"]),22)
+        self.assertFalse(report["a06_result"]["can_reserve_mapids"])
+        summary=runner.pretty(report)
+        self.assertIn("A06",summary)
+        self.assertIn("Falhas na leitura de mapas: 22",summary)
+
+
 if __name__=="__main__":
     unittest.main()
