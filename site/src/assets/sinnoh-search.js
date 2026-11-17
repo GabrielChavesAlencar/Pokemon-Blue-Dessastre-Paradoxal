@@ -12,6 +12,9 @@ export const normalizeSinnohText=x=>String(x??'').normalize('NFKD')
   .replace(/\brotas?\b/g,'route').replace(/\s+/g,' ').trim();
 const match=(hay,query)=>!query||query.split(' ').every(word=>hay.includes(word));
 const joinFields=x=>normalizeSinnohText(x.flat(Infinity).filter(v=>v!=null).join(' '));
+const exactKeys=(value,keys)=>value!==null&&typeof value==='object'&&
+  !Array.isArray(value)&&Object.keys(value).length===keys.length&&
+  keys.every(key=>Object.hasOwn(value,key));
 const disallowed=new Set([
   'map_id','mapId','physical_map_id','level','historical_levels','level_ranges',
   'rate','weight_percentages','slots','encounter_slots','trainerVersion',
@@ -80,6 +83,11 @@ export function validateSinnohGuide(data){
       const audit=b.teamAudit,first=audit?.firstBattle,rematch=audit?.historicalRematch,
             blue=audit?.blueFullPower,native=audit?.nativePBS;
       return b.pbsInstalled!==false||b.fullPowerVerified!==false||
+        !exactKeys(audit,['firstBattle','historicalRematch','blueFullPower','nativePBS'])||
+        !exactKeys(first,['origin','memberCount','verifiedInBlue'])||
+        (rematch!==null&&!exactKeys(rematch,['origin','memberCount','verifiedInBlue']))||
+        !exactKeys(blue,['status','species','verified'])||
+        !exactKeys(native,['status','team','compiled','eventBound','gameExeVerified'])||
         !Array.isArray(b.speciesReference)||
         !b.speciesReference.length||b.speciesReference.length>6||
         !['GYM_LEADER','ELITE_FOUR','CHAMPION'].includes(b.role)||
