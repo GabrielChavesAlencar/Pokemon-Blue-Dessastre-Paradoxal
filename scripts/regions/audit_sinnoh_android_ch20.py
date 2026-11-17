@@ -248,6 +248,38 @@ def audit(root: Path = ROOT, package: Path | None = None) -> dict:
     }
 
 
+def render_markdown(report: dict) -> str:
+    """Resumo deterministico, sem transformar checklist em execucao nativa."""
+    if (report.get("chapter") != "CH20" or report.get("checklist_total") != 44
+            or report.get("completed_native_cases") != 0
+            or report.get("native_gameplay_verified") is not False
+            or report.get("joiplay_tested") is not False
+            or report.get("game_exe_tested") is not False):
+        blocked("Relatorio CH20 nao representa exclusivamente checklist offline")
+    counts = report["by_kind"]
+    rows = [
+        "# Sinnoh CH20 — auditoria estatica Android/JoiPlay",
+        "",
+        "**Resultado:** 44 casos registrados, **0/44 observados nativamente**.",
+        "**Aviso:** relatorio de contrato offline; nao certifica Game.exe, JoiPlay,",
+        "saves, dados de terceiros ou compatibilidade do jogo real.",
+        "",
+        f"**Pacote:** `{report['package']['status']}`",
+        f"**SHA-256 do checklist:** `{report['checklist_sha256']}`",
+        "",
+        "| Categoria | Planejados | Aprovados nativamente |",
+        "|---|---:|---:|",
+    ]
+    for kind in ("starter", "barry", "save_reload", "warp", "npc", "regression", "android"):
+        rows.append(f"| {kind} | {counts[kind]} | 0 |")
+    rows.extend(["", "**Hashes dos contratos de origem:**"])
+    for key in ("twinleaf_template", "twinleaf_schema", "qa_ledger"):
+        rows.append(f"- {key}: `{report['input_sha256'][key]}`")
+    rows.extend(["", "**Pendencias nativas:** executar os testes no Game.exe e no aparelho;",
+                 "conferir capturas, logs e saves no perfil QA isolado."])
+    return "\n".join(rows) + "\n"
+
+
 def safe_output(root: Path, requested: Path) -> Path:
     root = root.absolute()
     work = root / ".blue-work"
