@@ -168,6 +168,7 @@ def pretty(result: dict) -> str:
         lines.extend([
             "A05 — comparacao com B01/B04/B05",
             "  Historico B01: 648 ocupados",
+            "  B04 V2 (MD atualizado): 648/648 MapIDs consistentes com B01; sem reserva aprovada",
             "  Sinnoh (retencao administrativa): 442-517 (76)",
             "  Unova bloco candidato prioritario: 518-599 (82)",
             "  Outros candidatos historicos: 92",
