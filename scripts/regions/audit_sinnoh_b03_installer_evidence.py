@@ -89,6 +89,8 @@ def constructed_evidence(b00,b01,b02,ch05,root=ROOT):
         or b02.get("native_inventory_sha256")!=b01["inventory_archive_sha256"]
         or b02.get("native_mapinfos_sha256")!=b01["mapinfos_sha256"]
         or b02.get("sinnoh_destination_map_ids")!={}
+        or b02.get("sinnoh_original_collision_count")!=72
+        or b02.get("physical_vacant_1_to_599")!=250
         or b02.get("all_future_reservations_verified") is not False
         or b02.get("phase_b_approved")!=0):
         blocked("B02 nao corresponde ao inventario real recebido")
