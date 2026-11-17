@@ -33,6 +33,7 @@ PYTHON_CHECKS = [
     ("sinnoh-b08-private-qa-preflight", [PY, "scripts/regions/audit_sinnoh_b08_private_qa.py"]),
     ("sinnoh-b09-native-qa-clone-preflight", [PY, "scripts/regions/build_sinnoh_b09_native_qa.py"]),
     ("sinnoh-b10-save-isolation-preflight", [PY, "scripts/regions/prepare_sinnoh_b10_save_isolation.py"]),
+    ("sinnoh-b11-host-save-preflight", [PY, "scripts/regions/audit_sinnoh_b11_host_saves.py"]),
     ("sinnoh-s07-remap-reconciliation-syntax", [PY, "-m", "py_compile", "scripts/regions/sinnoh_s07_reconcile.py"]),
     ("sinnoh-badges-hms-audit", [PY, "scripts/regions/audit_sinnoh_badges_hms.py"]),
     ("sinnoh-s15-gyms-audit", [PY, "scripts/regions/audit_sinnoh_s15_gyms.py"]),
