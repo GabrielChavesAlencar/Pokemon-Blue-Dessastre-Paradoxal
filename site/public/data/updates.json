@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1c477cb648b8c9d23723bea065f7a6faa406c0a3",
+      "date": "2026-11-17T18:57:21-03:00",
+      "title": "fix(kanto): add save-safe Mt. Moon fossil choice and Cinnabar revival",
+      "category": "Correções"
+    },
+    {
       "sha": "1b59c815ca22a24a59f212e9fe9dcab4248dce5f",
       "date": "2026-11-17T18:56:29-03:00",
       "title": "docs(sinnoh): mark G06 complete in main; pipeline reaches 6/12",
