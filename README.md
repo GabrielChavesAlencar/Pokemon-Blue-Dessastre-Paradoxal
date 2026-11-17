@@ -142,6 +142,10 @@ Se você já baixou Pokémon Decades, copie os arquivos para `game/` mantendo `G
 
 > Alternativa: definir a variável de ambiente `BLUE_GAME_DIR` com o caminho da sua cópia local do jogo e executar `RUN.bat`. Arquivos originais não precisam ficar dentro desta pasta.
 
+### Testar Sinnoh em cópia privada (S10)
+
+O arquivo [`SINNOH_JOGAR_EXPERIMENTAL.bat`](SINNOH_JOGAR_EXPERIMENTAL.bat) pode ser aberto com **duplo clique** no Windows, sem PowerShell. Ele **não instala Sinnoh automaticamente**: exige uma única cópia privada e auditada em `.blue-work/game-sinnoh-qa-XXXXXXXXXXXX`. A primeira abertura solicita somente a compilação QA pendente; após prova estrutural de compilação, outra abertura inicia exclusivamente o `Game.exe` privado para testes. Se faltar a cópia, os mapas autorizados ou as provas, mostra um bloqueio e **não abre o jogo principal**. O BAT também aceita `--check` para uma checagem sem execução. [Manual e limitações S10](docs/SINNOH_S10_LANCADOR_EXPERIMENTAL_ACEITE.md). Sinnoh permanece **não jogável/sem QA Windows/JoiPlay aprovada**.
+
 ## Abrir e atualizar automaticamente (RUN.bat)
 
 O **RUN.bat** agora verifica o GitHub e tenta atualizar o editor pela branch `main` antes de abrir o Blue Studio no navegador. **Nao exige GitHub CLI (`gh`)**: basta **Git for Windows** com acesso a este repositorio privado e **Python 3.10+**.

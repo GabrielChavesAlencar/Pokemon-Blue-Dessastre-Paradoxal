@@ -27,6 +27,7 @@ REQUIRED = {
         "tests/test_sinnoh_android_ch20.py",
         "tests/test_sinnoh_playtest_audit.py",
         "tests/test_sinnoh_s30_suite.py",
+        "tests/test_sinnoh_s10_launcher.py",
     ),
     "ruby": (
         "tests/sinnoh_pilot_runtime.rb",
@@ -46,6 +47,7 @@ REQUIRED = {
     ),
     "contracts": (
         "data/regions/sinnoh-progress.json",
+        "SINNOH_JOGAR_EXPERIMENTAL.bat",
         "data/regions/sinnoh-source.json",
         "data/regions/sinnoh-twinleaf-events.json",
         "site/public/data/regions.json",
