@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "phase": "SP05",
+  "status": "PLANNED_PRIVATE_QA_ONLY",
+  "npc_key": "UNOVA_NPC_CHEREN",
+  "story_scope": "WHITE_BW",
+  "planned_area_key": "UNOVA_NUVEMA_TOWN",
+  "destination_relative": "Graphics/Characters/UNOVA_NPC_CHEREN.png",
+  "image_requirements": {
+    "format": "PNG_RGBA8_NONINTERLACED",
+    "columns": 4,
+    "direction_rows": [
+      "down",
+      "left",
+      "right",
+      "up"
+    ],
+    "frames_per_direction": 4,
+    "require_all_16_visible": true
+  },
+  "scale_policy": {
+    "baseline_required": true,
+    "min_visible_height_ratio": 0.8,
+    "max_visible_height_ratio": 1.2,
+    "min_visible_width_ratio": 0.8,
+    "max_visible_width_ratio": 1.25,
+    "rounding": "three_decimals",
+    "visual_signoff_required": true
+  },
+  "rights_policy": {
+    "local_evidence_file_required_for_staging": true,
+    "rights_document_authenticity_not_auto_verified": true,
+    "redistribution_permission_not_inferred": true,
+    "public_distribution_allowed": false
+  },
+  "source_sprite_selected": false,
+  "source_rights_verified": false,
+  "visual_review_complete": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "map_id_verified": false,
+  "changes_existing_game": false,
+  "can_install": false,
+  "notes": "Manifesto do piloto local de Cheren. Sem ZIP de sprite, comprovante de direitos e referencia Decades reais, nao ha imagem para preparar nem teste nativo aprovado."
+}
