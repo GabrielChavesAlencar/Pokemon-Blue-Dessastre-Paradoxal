@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c5eb20cc47ef903b85ecc197dfbeef19e5459b18",
+      "date": "2026-11-17T11:35:50-03:00",
+      "title": "feat(sinnoh): B02 auditoria de reservas regionais, sem alocar MapIDs",
+      "category": "Novidades"
+    },
+    {
       "sha": "20750f0c699d60399b55328abf9ca2bfeb0bf83e",
       "date": "2026-11-17T11:34:25-03:00",
       "title": "feat(unova): contratos U07 de Nuvema, Route 1 e Accumula com simulador seguro",
