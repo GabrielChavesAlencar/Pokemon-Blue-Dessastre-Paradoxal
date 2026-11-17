@@ -74,7 +74,8 @@ Regra para qualquer PR da esteira: executar testes específicos e negativos; com
 
 ## 6. Progresso da esteira
 
-- **G01–G12:** **1/12 entregue na main** (G01 concluída; G02–G12 pendentes). Ferramentas pré-existentes não contam como entregas novas.
+- **G01–G12:** **2/12 entregues na main** (G01 e G02 concluídas; G03–G12 pendentes). Ferramentas pré-existentes não contam como entregas novas.
+- **G02 (concluída, PR #139):** progresso de B09 no console sem corromper JSON, SHA da origem calculado durante a cópia, hash do destino preservado e regressões específicas aprovadas no S30/CH19. [Aceite G02](SINNOH_G02_B09_PROGRESSO_CI_ACEITE.md). Falhas gerais Kanto/Blue Studio isoladas na [issue #144](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/144), não declaradas aprovadas.
 - **G01 (concluída, PR #142):** auditor somente de recibos [script](../scripts/regions/audit_sinnoh_g01_b09_receipt.py), [14 testes sintéticos e negativos](../tests/test_sinnoh_g01_b09_receipt.py) e [guia](SINNOH_G01_AUDITOR_RECUPERACAO_B09.md). Verificação offline com relatório privado recebido encontrou metadados coerentes, **sem validar fisicamente o clone**. Suites Sinnoh S30 e CH19 passaram no PR #142. Barras jogáveis não mudaram.
 - **Marco anterior local:** B07 e B08 reportados, **B09 recuperada e concluída apenas como clone privado não executável**.
 - **B10/B11 locais:** pendentes até os relatórios do usuário.
