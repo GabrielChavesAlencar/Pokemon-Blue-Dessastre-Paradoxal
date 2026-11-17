@@ -27,6 +27,14 @@ npm test
 
 O workflow **Portal Blue** deve passar build + suíte completa; a regressão CH19 Python/Ruby, o pré-voo CH20 e a suíte S30 são verificações adicionais de isolamento. **Não confundir testes web aprovados com uma batalha executada.**
 
+## Evidências reais de CI
+
+- [Portal Blue — run 43990733669](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43990733669): build e **161/161 testes aprovados**, dos quais **10 cobrem S28**.
+- [Sinnoh CH19 — run 43990733539](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43990733539): jobs Python e Ruby **ambos `success`**, com progressão e fontes auditadas isoladamente.
+- [Sinnoh CH20 — run 43990733675](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43990733675): pré-voo Android **estático aprovado**, sem executar JoiPlay.
+- [Sinnoh S30 — run 43990733619](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43990733619): **5/5 jobs aprovados** (Manifesto, Python, Ruby, Portal, Android estático).
+- O workflow geral Blue Studio é independente e não deve ser declarado aprovado por essas evidências. **Nenhum Game.exe real, mapa novo ou save de usuário foi testado/alterado por este CI.**
+
 ## Aceite da S28
 
 A S28 é considerada **concluída em código/documentação web** após aprovação do CI e merge na `main`, registrando no [ledger](../data/regions/sinnoh-progress.json) **Barra A 12/32 (37%)**, 6 tarefas parciais e 14 pendentes. O progresso de trabalho pelo chat (Barra E) permanece 20/20 (100%); os 13 gates técnicos/jogáveis/nativos B/C/D continuam **0/13**, com **44 casos nativos não executados**.
