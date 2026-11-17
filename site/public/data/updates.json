@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a6d07146766b5b5a284ffbee405a2b811764e9a9",
+      "date": "2026-11-17T08:33:30-03:00",
+      "title": "test(unova): 16 guards de direitos, musicas, times e MapIDs nao verificados",
+      "category": "Novidades"
+    },
+    {
       "sha": "3e47b431c91f3a84784d912f18851e419b7c9e93",
       "date": "2026-11-17T08:33:05-03:00",
       "title": "test(unova): 10 casos de parse RXDATA inerte e transferencias sem execucao",
