@@ -30,6 +30,12 @@ def from_archive(path: Path, channel: str):
                 or not isinstance(marker.get("files"), dict)):
             raise ValueError("Missing installed update manifest in game ZIP.")
         actual = {n[len(root):] for n in names if safe_path(n[len(root):])}
+        # Old 2026 game ZIPs deliberately marked the updater immutable.
+        # We may read those historic baselines, but newly built packages must
+        # list ATUALIZAR-ANDROID.py as patchable in files.
+        if ("ATUALIZAR-ANDROID.py" in marker.get("immutable", {}) and
+                "ATUALIZAR-ANDROID.py" not in marker["files"]):
+            actual.discard("ATUALIZAR-ANDROID.py")
         if actual != set(marker["files"]):
             missing = sorted(set(marker["files"]) - actual)
             extras = sorted(actual - set(marker["files"]))
