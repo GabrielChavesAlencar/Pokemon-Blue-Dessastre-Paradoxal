@@ -6,13 +6,13 @@
 
 ## Barra geral
 
-**8/32 entregas concluídas (25%)** · 24 pendentes
+**9/32 entregas concluídas (28%)** · 23 pendentes
 
-`[████████░░░░░░░░░░░░░░░░░░░░░░░░]` **25%**
+`[█████████░░░░░░░░░░░░░░░░░░░░░░░]` **28%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
-| G01 — Progressão e estado da campanha | **0/4** | `░░░░` |
+| G01 — Progressão e estado da campanha | **1/4** | `█░░░` |
 | G02 — História, ginásios e pós-jogo | **1/4** | `█░░░` |
 | G03 — Treinadores e balanceamento | **1/4** | `█░░░` |
 | G04 — Áreas, selvagens e temporadas | **1/4** | `█░░░` |
@@ -33,7 +33,7 @@ A origem de verdade é [site/public/data/unova-github-progress.json](../site/pub
 
 Contrato de persistência e desbloqueios de Unova sem ler saves reais.
 
-- [ ] **G01.1 — Criar esquema versionado do estado de Unova.** Flags, capítulos, missões, checkpoints e regras de compatibilidade por versão
+- [x] **G01.1 — Criar esquema versionado do estado de Unova.** Flags, capítulos, missões, checkpoints e regras de compatibilidade por versão · [Evidência](../data/regions/unova-g01-state-contract.json)
 - [ ] **G01.2 — Implementar máquina de estados dos capítulos.** Pré-requisitos, desbloqueios e transições testáveis sem engine
 - [ ] **G01.3 — Garantir recompensas únicas e reentrada segura.** Simulação de revisitas, perda de batalhas e idempotência
 - [ ] **G01.4 — Criar migrador e teste sintético de save regional.** Round-trip e regressões de migração sem tocar em save do jogador
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G01.1 (esquema versionado do estado regional) seguida de G01.2–G01.4. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G01.2 (máquina de estados para capítulos), depois G01.3–G01.4. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.

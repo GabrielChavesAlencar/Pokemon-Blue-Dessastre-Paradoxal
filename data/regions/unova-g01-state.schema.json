@@ -1,0 +1,535 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/unova-g01-state.schema.json",
+  "title": "Unova G01.1 — estrutura de estado regional (simulação, não save nativo)",
+  "description": "Versão 1: apenas validação estrutural; não aprova instalação, execução, save ou migração.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "region",
+    "campaign",
+    "state_status",
+    "current_chapter",
+    "flags",
+    "missions",
+    "checkpoint"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "region": {
+      "type": "string",
+      "const": "UNOVA"
+    },
+    "campaign": {
+      "type": "string",
+      "const": "WHITE_BW"
+    },
+    "state_status": {
+      "type": "string",
+      "const": "SIMULATED_ONLY_NOT_GAME_SAVE"
+    },
+    "current_chapter": {
+      "type": "string",
+      "enum": [
+        "UNOVA_CH00_NOT_STARTED",
+        "UNOVA_CH01_NUVEMA",
+        "UNOVA_CH02_STRIATON",
+        "UNOVA_CH03_NACRENE",
+        "UNOVA_CH04_CASTELIA",
+        "UNOVA_CH05_NIMBASA",
+        "UNOVA_CH06_DRIFTVEIL",
+        "UNOVA_CH07_MISTRALTON",
+        "UNOVA_CH08_ICIRRUS",
+        "UNOVA_CH09_OPELUCID",
+        "UNOVA_CH10_LEAGUE",
+        "UNOVA_CH11_NS_CASTLE",
+        "UNOVA_CH12_POSTGAME"
+      ]
+    },
+    "flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "UNOVA_U07_STARTER_GIFT": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_BIANCA_FIRST_BATTLE": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_CHEREN_FIRST_BATTLE": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_MOM_XTRANSCEIVER": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_VISIT_BIANCA_HOME": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_JUNIPER_LAB_POKEDEX": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_MOM_TOWN_MAP": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_ROUTE1_GROUP": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_ACCUMULA_CENTER_INTRO": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_PLASMA_SPEECH": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_N_FIRST_BATTLE": {
+          "type": "boolean"
+        },
+        "UNOVA_U07_ROUTE2_PASSAGE": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH01_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH02_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH03_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH04_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH05_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH06_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH07_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH08_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH09_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH10_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH11_COMPLETED": {
+          "type": "boolean"
+        },
+        "UNOVA_FLAG_CH12_COMPLETED": {
+          "type": "boolean"
+        }
+      }
+    },
+    "missions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "UNOVA_MISSION_CH01_BEGIN_JOURNEY": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH02_FIRST_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH03_SECOND_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH04_THIRD_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH05_FOURTH_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH06_FIFTH_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH07_SIXTH_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH08_SEVENTH_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH09_EIGHTH_GYM": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH10_ELITE_FOUR": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH11_N_CASTLE": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        },
+        "UNOVA_MISSION_CH12_POSTGAME": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "active",
+            "completed",
+            "blocked"
+          ]
+        }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "last_story_area_key",
+        "last_heal_center_area_key",
+        "last_safe_area_key",
+        "map_id",
+        "x",
+        "y",
+        "verified_in_game"
+      ],
+      "properties": {
+        "last_story_area_key": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "UNOVA_NUVEMA_TOWN",
+                "UNOVA_ACCUMULA_TOWN",
+                "UNOVA_STRIATON_CITY",
+                "UNOVA_NACRENE_CITY",
+                "UNOVA_CASTELIA_CITY",
+                "UNOVA_NIMBASA_CITY",
+                "UNOVA_DRIFTVEIL_CITY",
+                "UNOVA_MISTRALTON_CITY",
+                "UNOVA_ICIRRUS_CITY",
+                "UNOVA_OPELUCID_CITY",
+                "UNOVA_POKEMON_LEAGUE",
+                "UNOVA_ANVILLE_TOWN",
+                "UNOVA_LACUNOSA_TOWN",
+                "UNOVA_UNDELLA_TOWN",
+                "UNOVA_WHITE_FOREST",
+                "UNOVA_ROUTE_01",
+                "UNOVA_ROUTE_02",
+                "UNOVA_ROUTE_03",
+                "UNOVA_ROUTE_04",
+                "UNOVA_ROUTE_05",
+                "UNOVA_ROUTE_06",
+                "UNOVA_ROUTE_07",
+                "UNOVA_ROUTE_08",
+                "UNOVA_ROUTE_09",
+                "UNOVA_ROUTE_10",
+                "UNOVA_ROUTE_11",
+                "UNOVA_ROUTE_12",
+                "UNOVA_ROUTE_13",
+                "UNOVA_ROUTE_14",
+                "UNOVA_ROUTE_15",
+                "UNOVA_ROUTE_16",
+                "UNOVA_ROUTE_17",
+                "UNOVA_ROUTE_18",
+                "UNOVA_JUNIPER_LAB",
+                "UNOVA_DREAMYARD",
+                "UNOVA_STRIATON_GYM",
+                "UNOVA_WELLSPRING_CAVE",
+                "UNOVA_PINWHEEL_FOREST",
+                "UNOVA_NACRENE_MUSEUM",
+                "UNOVA_NACRENE_GYM",
+                "UNOVA_SKYARROW_BRIDGE",
+                "UNOVA_CASTELIA_GYM",
+                "UNOVA_DESERT_RESORT",
+                "UNOVA_RELIC_CASTLE",
+                "UNOVA_LOSTLORN_FOREST",
+                "UNOVA_NIMBASA_GYM",
+                "UNOVA_BATTLE_SUBWAY",
+                "UNOVA_DRIFTVEIL_DRAWBRIDGE",
+                "UNOVA_COLD_STORAGE",
+                "UNOVA_DRIFTVEIL_GYM",
+                "UNOVA_CHARGESTONE_CAVE",
+                "UNOVA_CELESTIAL_TOWER",
+                "UNOVA_MISTRALTON_GYM",
+                "UNOVA_MISTRALTON_CAVE",
+                "UNOVA_TWIST_MOUNTAIN",
+                "UNOVA_MOOR_OF_ICIRRUS",
+                "UNOVA_ICIRRUS_GYM",
+                "UNOVA_DRAGONSPIRAL_TOWER",
+                "UNOVA_TUBELINE_BRIDGE",
+                "UNOVA_OPELUCID_GYM",
+                "UNOVA_VICTORY_ROAD",
+                "UNOVA_ELITE_FOUR",
+                "UNOVA_NS_CASTLE",
+                "UNOVA_GIANT_CHASM",
+                "UNOVA_VILLAGE_BRIDGE",
+                "UNOVA_MARVELOUS_BRIDGE",
+                "UNOVA_UNDERGROUND_RUINS",
+                "UNOVA_ABUNDANT_SHRINE",
+                "UNOVA_CHALLENGERS_CAVE",
+                "UNOVA_P2_LABORATORY",
+                "UNOVA_LIBERTY_GARDEN",
+                "UNOVA_ROYAL_UNOVA",
+                "UNOVA_UNDELLA_BAY",
+                "UNOVA_UNITY_TOWER"
+              ]
+            }
+          ]
+        },
+        "last_heal_center_area_key": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "UNOVA_NUVEMA_TOWN",
+                "UNOVA_ACCUMULA_TOWN",
+                "UNOVA_STRIATON_CITY",
+                "UNOVA_NACRENE_CITY",
+                "UNOVA_CASTELIA_CITY",
+                "UNOVA_NIMBASA_CITY",
+                "UNOVA_DRIFTVEIL_CITY",
+                "UNOVA_MISTRALTON_CITY",
+                "UNOVA_ICIRRUS_CITY",
+                "UNOVA_OPELUCID_CITY",
+                "UNOVA_POKEMON_LEAGUE",
+                "UNOVA_ANVILLE_TOWN",
+                "UNOVA_LACUNOSA_TOWN",
+                "UNOVA_UNDELLA_TOWN",
+                "UNOVA_WHITE_FOREST",
+                "UNOVA_ROUTE_01",
+                "UNOVA_ROUTE_02",
+                "UNOVA_ROUTE_03",
+                "UNOVA_ROUTE_04",
+                "UNOVA_ROUTE_05",
+                "UNOVA_ROUTE_06",
+                "UNOVA_ROUTE_07",
+                "UNOVA_ROUTE_08",
+                "UNOVA_ROUTE_09",
+                "UNOVA_ROUTE_10",
+                "UNOVA_ROUTE_11",
+                "UNOVA_ROUTE_12",
+                "UNOVA_ROUTE_13",
+                "UNOVA_ROUTE_14",
+                "UNOVA_ROUTE_15",
+                "UNOVA_ROUTE_16",
+                "UNOVA_ROUTE_17",
+                "UNOVA_ROUTE_18",
+                "UNOVA_JUNIPER_LAB",
+                "UNOVA_DREAMYARD",
+                "UNOVA_STRIATON_GYM",
+                "UNOVA_WELLSPRING_CAVE",
+                "UNOVA_PINWHEEL_FOREST",
+                "UNOVA_NACRENE_MUSEUM",
+                "UNOVA_NACRENE_GYM",
+                "UNOVA_SKYARROW_BRIDGE",
+                "UNOVA_CASTELIA_GYM",
+                "UNOVA_DESERT_RESORT",
+                "UNOVA_RELIC_CASTLE",
+                "UNOVA_LOSTLORN_FOREST",
+                "UNOVA_NIMBASA_GYM",
+                "UNOVA_BATTLE_SUBWAY",
+                "UNOVA_DRIFTVEIL_DRAWBRIDGE",
+                "UNOVA_COLD_STORAGE",
+                "UNOVA_DRIFTVEIL_GYM",
+                "UNOVA_CHARGESTONE_CAVE",
+                "UNOVA_CELESTIAL_TOWER",
+                "UNOVA_MISTRALTON_GYM",
+                "UNOVA_MISTRALTON_CAVE",
+                "UNOVA_TWIST_MOUNTAIN",
+                "UNOVA_MOOR_OF_ICIRRUS",
+                "UNOVA_ICIRRUS_GYM",
+                "UNOVA_DRAGONSPIRAL_TOWER",
+                "UNOVA_TUBELINE_BRIDGE",
+                "UNOVA_OPELUCID_GYM",
+                "UNOVA_VICTORY_ROAD",
+                "UNOVA_ELITE_FOUR",
+                "UNOVA_NS_CASTLE",
+                "UNOVA_GIANT_CHASM",
+                "UNOVA_VILLAGE_BRIDGE",
+                "UNOVA_MARVELOUS_BRIDGE",
+                "UNOVA_UNDERGROUND_RUINS",
+                "UNOVA_ABUNDANT_SHRINE",
+                "UNOVA_CHALLENGERS_CAVE",
+                "UNOVA_P2_LABORATORY",
+                "UNOVA_LIBERTY_GARDEN",
+                "UNOVA_ROYAL_UNOVA",
+                "UNOVA_UNDELLA_BAY",
+                "UNOVA_UNITY_TOWER"
+              ]
+            }
+          ]
+        },
+        "last_safe_area_key": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "UNOVA_NUVEMA_TOWN",
+                "UNOVA_ACCUMULA_TOWN",
+                "UNOVA_STRIATON_CITY",
+                "UNOVA_NACRENE_CITY",
+                "UNOVA_CASTELIA_CITY",
+                "UNOVA_NIMBASA_CITY",
+                "UNOVA_DRIFTVEIL_CITY",
+                "UNOVA_MISTRALTON_CITY",
+                "UNOVA_ICIRRUS_CITY",
+                "UNOVA_OPELUCID_CITY",
+                "UNOVA_POKEMON_LEAGUE",
+                "UNOVA_ANVILLE_TOWN",
+                "UNOVA_LACUNOSA_TOWN",
+                "UNOVA_UNDELLA_TOWN",
+                "UNOVA_WHITE_FOREST",
+                "UNOVA_ROUTE_01",
+                "UNOVA_ROUTE_02",
+                "UNOVA_ROUTE_03",
+                "UNOVA_ROUTE_04",
+                "UNOVA_ROUTE_05",
+                "UNOVA_ROUTE_06",
+                "UNOVA_ROUTE_07",
+                "UNOVA_ROUTE_08",
+                "UNOVA_ROUTE_09",
+                "UNOVA_ROUTE_10",
+                "UNOVA_ROUTE_11",
+                "UNOVA_ROUTE_12",
+                "UNOVA_ROUTE_13",
+                "UNOVA_ROUTE_14",
+                "UNOVA_ROUTE_15",
+                "UNOVA_ROUTE_16",
+                "UNOVA_ROUTE_17",
+                "UNOVA_ROUTE_18",
+                "UNOVA_JUNIPER_LAB",
+                "UNOVA_DREAMYARD",
+                "UNOVA_STRIATON_GYM",
+                "UNOVA_WELLSPRING_CAVE",
+                "UNOVA_PINWHEEL_FOREST",
+                "UNOVA_NACRENE_MUSEUM",
+                "UNOVA_NACRENE_GYM",
+                "UNOVA_SKYARROW_BRIDGE",
+                "UNOVA_CASTELIA_GYM",
+                "UNOVA_DESERT_RESORT",
+                "UNOVA_RELIC_CASTLE",
+                "UNOVA_LOSTLORN_FOREST",
+                "UNOVA_NIMBASA_GYM",
+                "UNOVA_BATTLE_SUBWAY",
+                "UNOVA_DRIFTVEIL_DRAWBRIDGE",
+                "UNOVA_COLD_STORAGE",
+                "UNOVA_DRIFTVEIL_GYM",
+                "UNOVA_CHARGESTONE_CAVE",
+                "UNOVA_CELESTIAL_TOWER",
+                "UNOVA_MISTRALTON_GYM",
+                "UNOVA_MISTRALTON_CAVE",
+                "UNOVA_TWIST_MOUNTAIN",
+                "UNOVA_MOOR_OF_ICIRRUS",
+                "UNOVA_ICIRRUS_GYM",
+                "UNOVA_DRAGONSPIRAL_TOWER",
+                "UNOVA_TUBELINE_BRIDGE",
+                "UNOVA_OPELUCID_GYM",
+                "UNOVA_VICTORY_ROAD",
+                "UNOVA_ELITE_FOUR",
+                "UNOVA_NS_CASTLE",
+                "UNOVA_GIANT_CHASM",
+                "UNOVA_VILLAGE_BRIDGE",
+                "UNOVA_MARVELOUS_BRIDGE",
+                "UNOVA_UNDERGROUND_RUINS",
+                "UNOVA_ABUNDANT_SHRINE",
+                "UNOVA_CHALLENGERS_CAVE",
+                "UNOVA_P2_LABORATORY",
+                "UNOVA_LIBERTY_GARDEN",
+                "UNOVA_ROYAL_UNOVA",
+                "UNOVA_UNDELLA_BAY",
+                "UNOVA_UNITY_TOWER"
+              ]
+            }
+          ]
+        },
+        "map_id": {
+          "type": "null"
+        },
+        "x": {
+          "type": "null"
+        },
+        "y": {
+          "type": "null"
+        },
+        "verified_in_game": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  }
+}

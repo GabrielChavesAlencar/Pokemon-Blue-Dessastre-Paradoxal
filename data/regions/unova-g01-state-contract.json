@@ -1,0 +1,442 @@
+{
+  "contract_version": 1,
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "phase": "G01.1",
+  "status": "VERSIONED_SCHEMA_ONLY_NOT_NATIVE_SAVE",
+  "source_area_catalog": "data/regions/unova-u03-areas.json",
+  "source_event_catalog": "data/regions/unova-u07-nuvema-events.json",
+  "source_regions_registry": "site/public/data/regions.json",
+  "state_schema_file": "data/regions/unova-g01-state.schema.json",
+  "compatibility": {
+    "current_state_schema_version": 1,
+    "accepted_versions": [
+      1
+    ],
+    "future_versions": "REJECT_FAIL_CLOSED",
+    "older_versions": "REJECT_UNTIL_G01_4_EXPLICIT_MIGRATOR",
+    "unknown_fields": "REJECT",
+    "implicit_migration": false,
+    "native_save_adapter": "NOT_IMPLEMENTED",
+    "state_transitions": "NOT_IMPLEMENTED_G01_2",
+    "persistence_format": "SIMULATED_ONLY_NOT_GAME_SAVE"
+  },
+  "default_state": {
+    "schema_version": 1,
+    "region": "UNOVA",
+    "campaign": "WHITE_BW",
+    "state_status": "SIMULATED_ONLY_NOT_GAME_SAVE",
+    "current_chapter": "UNOVA_CH00_NOT_STARTED",
+    "flags": {},
+    "missions": {},
+    "checkpoint": {
+      "last_story_area_key": null,
+      "last_heal_center_area_key": null,
+      "last_safe_area_key": null,
+      "map_id": null,
+      "x": null,
+      "y": null,
+      "verified_in_game": false
+    }
+  },
+  "allowed_mission_statuses": [
+    "not_started",
+    "active",
+    "completed",
+    "blocked"
+  ],
+  "absent_flag_means": false,
+  "absent_mission_means": "not_started",
+  "chapters": [
+    {
+      "key": "UNOVA_CH00_NOT_STARTED",
+      "index": 0,
+      "title": "Antes da jornada",
+      "reference_area_key": null,
+      "planned_phase": "U07",
+      "arc": "prestart",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH01_NUVEMA",
+      "index": 1,
+      "title": "Nuvema, Route 1 e Accumula",
+      "reference_area_key": "UNOVA_NUVEMA_TOWN",
+      "planned_phase": "U07",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH02_STRIATON",
+      "index": 2,
+      "title": "Striaton e Wellspring Cave",
+      "reference_area_key": "UNOVA_STRIATON_CITY",
+      "planned_phase": "U08",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH03_NACRENE",
+      "index": 3,
+      "title": "Nacrene e Pinwheel Forest",
+      "reference_area_key": "UNOVA_NACRENE_CITY",
+      "planned_phase": "U10",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH04_CASTELIA",
+      "index": 4,
+      "title": "Castelia e Desert Resort",
+      "reference_area_key": "UNOVA_CASTELIA_CITY",
+      "planned_phase": "U11",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH05_NIMBASA",
+      "index": 5,
+      "title": "Nimbasa e Route 5",
+      "reference_area_key": "UNOVA_NIMBASA_CITY",
+      "planned_phase": "U14",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH06_DRIFTVEIL",
+      "index": 6,
+      "title": "Driftveil e Chargestone",
+      "reference_area_key": "UNOVA_DRIFTVEIL_CITY",
+      "planned_phase": "U16",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH07_MISTRALTON",
+      "index": 7,
+      "title": "Mistralton e Celestial Tower",
+      "reference_area_key": "UNOVA_MISTRALTON_CITY",
+      "planned_phase": "U18",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH08_ICIRRUS",
+      "index": 8,
+      "title": "Icirrus e Dragonspiral Tower",
+      "reference_area_key": "UNOVA_ICIRRUS_CITY",
+      "planned_phase": "U21",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH09_OPELUCID",
+      "index": 9,
+      "title": "Opelucid e oitava insígnia",
+      "reference_area_key": "UNOVA_OPELUCID_CITY",
+      "planned_phase": "U23",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH10_LEAGUE",
+      "index": 10,
+      "title": "Victory Road e Elite Four",
+      "reference_area_key": "UNOVA_POKEMON_LEAGUE",
+      "planned_phase": "U25",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH11_NS_CASTLE",
+      "index": 11,
+      "title": "Castelo de N e Ghetsis",
+      "reference_area_key": "UNOVA_NS_CASTLE",
+      "planned_phase": "U27",
+      "arc": "campaign",
+      "map_id": null,
+      "game_exe_verified": false
+    },
+    {
+      "key": "UNOVA_CH12_POSTGAME",
+      "index": 12,
+      "title": "Pós-jogo de Unova White",
+      "reference_area_key": "UNOVA_GIANT_CHASM",
+      "planned_phase": "U28",
+      "arc": "postgame",
+      "map_id": null,
+      "game_exe_verified": false
+    }
+  ],
+  "missions": [
+    {
+      "key": "UNOVA_MISSION_CH01_BEGIN_JOURNEY",
+      "chapter_key": "UNOVA_CH01_NUVEMA",
+      "reference_area_key": "UNOVA_NUVEMA_TOWN",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH02_FIRST_GYM",
+      "chapter_key": "UNOVA_CH02_STRIATON",
+      "reference_area_key": "UNOVA_STRIATON_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH03_SECOND_GYM",
+      "chapter_key": "UNOVA_CH03_NACRENE",
+      "reference_area_key": "UNOVA_NACRENE_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH04_THIRD_GYM",
+      "chapter_key": "UNOVA_CH04_CASTELIA",
+      "reference_area_key": "UNOVA_CASTELIA_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH05_FOURTH_GYM",
+      "chapter_key": "UNOVA_CH05_NIMBASA",
+      "reference_area_key": "UNOVA_NIMBASA_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH06_FIFTH_GYM",
+      "chapter_key": "UNOVA_CH06_DRIFTVEIL",
+      "reference_area_key": "UNOVA_DRIFTVEIL_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH07_SIXTH_GYM",
+      "chapter_key": "UNOVA_CH07_MISTRALTON",
+      "reference_area_key": "UNOVA_MISTRALTON_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH08_SEVENTH_GYM",
+      "chapter_key": "UNOVA_CH08_ICIRRUS",
+      "reference_area_key": "UNOVA_ICIRRUS_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH09_EIGHTH_GYM",
+      "chapter_key": "UNOVA_CH09_OPELUCID",
+      "reference_area_key": "UNOVA_OPELUCID_CITY",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH10_ELITE_FOUR",
+      "chapter_key": "UNOVA_CH10_LEAGUE",
+      "reference_area_key": "UNOVA_POKEMON_LEAGUE",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH11_N_CASTLE",
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "reference_area_key": "UNOVA_NS_CASTLE",
+      "kind": "main",
+      "planned_only": true,
+      "real_event_id": null
+    },
+    {
+      "key": "UNOVA_MISSION_CH12_POSTGAME",
+      "chapter_key": "UNOVA_CH12_POSTGAME",
+      "reference_area_key": "UNOVA_GIANT_CHASM",
+      "kind": "postgame",
+      "planned_only": true,
+      "real_event_id": null
+    }
+  ],
+  "flag_catalog": [
+    {
+      "key": "UNOVA_U07_STARTER_GIFT",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_STARTER_GIFT",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_BIANCA_FIRST_BATTLE",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_BIANCA_FIRST_BATTLE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_CHEREN_FIRST_BATTLE",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_CHEREN_FIRST_BATTLE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_MOM_XTRANSCEIVER",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_MOM_XTRANSCEIVER",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_VISIT_BIANCA_HOME",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_VISIT_BIANCA_HOME",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_JUNIPER_LAB_POKEDEX",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_JUNIPER_LAB_POKEDEX",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_MOM_TOWN_MAP",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_MOM_TOWN_MAP",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_ROUTE1_GROUP",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_ROUTE1_GROUP",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_ACCUMULA_CENTER_INTRO",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_ACCUMULA_CENTER_INTRO",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_PLASMA_SPEECH",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_PLASMA_SPEECH",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_N_FIRST_BATTLE",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_N_FIRST_BATTLE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_U07_ROUTE2_PASSAGE",
+      "kind": "EVENT_COMPLETED",
+      "source_event_key": "UNOVA_U07_ROUTE2_PASSAGE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH01_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH01_NUVEMA",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH02_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH02_STRIATON",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH03_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH03_NACRENE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH04_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH04_CASTELIA",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH05_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH05_NIMBASA",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH06_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH06_DRIFTVEIL",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH07_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH07_MISTRALTON",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH08_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH08_ICIRRUS",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH09_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH09_OPELUCID",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH10_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH10_LEAGUE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH11_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH11_NS_CASTLE",
+      "native_switch_id": null
+    },
+    {
+      "key": "UNOVA_FLAG_CH12_COMPLETED",
+      "kind": "CHAPTER_COMPLETED",
+      "chapter_key": "UNOVA_CH12_POSTGAME",
+      "native_switch_id": null
+    }
+  ],
+  "native_game_files_modified": false,
+  "source_assets_imported": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "can_install": false,
+  "notes": [
+    "G01.1 valida apenas estrutura e campos permitidos, não implementa progressão ou migração de saves.",
+    "Todas as áreas são símbolos do catálogo U03; MapIDs, coordenadas, switches e eventos físicos continuam nulos.",
+    "Os 13 eventos U07 são âncoras de flags planejadas; seu motor sintético existente não é adaptador de saves do Game.exe."
+  ]
+}
