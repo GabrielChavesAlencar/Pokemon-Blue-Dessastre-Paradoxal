@@ -9,6 +9,8 @@ on:
       - 'tests/test_unova_e04_remote_probe.py'
       - 'scripts/regions/audit_unova_e05_mapinfos_only.py'
       - 'tests/test_unova_e05_mapinfos_only.py'
+      - 'scripts/regions/audit_unova_e05_anchored_events.py'
+      - 'tests/test_unova_e05_anchored_events.py'
       - '.github/workflows/unova-e04-remote-origin.yml'
   workflow_dispatch:
 
@@ -31,6 +33,8 @@ jobs:
           python -m py_compile scripts/regions/unova_e04_remote_probe.py
           python -m unittest discover -s tests -p 'test_unova_e05_mapinfos_only.py' -v
           python -m py_compile scripts/regions/audit_unova_e05_mapinfos_only.py
+          python -m unittest discover -s tests -p 'test_unova_e05_anchored_events.py' -v
+          python -m py_compile scripts/regions/audit_unova_e05_anchored_events.py
       - name: Consultar API do provedor e tentar analisar ZIP e creditos da fonte original
         run: |
           python scripts/regions/unova_e04_remote_probe.py --download
@@ -41,6 +45,7 @@ jobs:
             echo "Fonte baixada apenas para area privada da execucao. Gerando inventarios."
             python scripts/regions/audit_unova_u02.py --write || echo "::warning::ZIP U02 nao passou em verificacao estrutural"
             python scripts/regions/audit_unova_e05_mapinfos_only.py --write || echo "::warning::MapInfos real nao foi indexado"
+            python scripts/regions/audit_unova_e05_anchored_events.py --write || echo "::warning::Eventos de mapas Unova nao foram analisados"
             python scripts/regions/audit_unova_source_detail.py --write || echo "::warning::RXDATA real nao pode ser analisado ainda"
             if [[ -f ".blue-work/unova/audit/u02-rxdata-detail.json" ]]; then
               python scripts/regions/audit_unova_e05_crosswalk.py --write || echo "::warning::Crosswalk E05 bloqueado"
@@ -78,6 +83,16 @@ jobs:
               print("E05_UNOVA_ANCHORED_FIRST40=",candidates[:40])
           else:
               print("E05_MAPINFOS_INDEX=NAO_GERADO")
+          event_report=root/"e05-anchored-events.json"
+          if event_report.exists():
+              e=json.loads(event_report.read_text("utf-8"))
+              print("E05_PARENT_CONTEXT_MAPS=",e["unova_parent_context_map_files"])
+              print("E05_PARSABLE_MAPS=",e["parsed_map_count"])
+              print("E05_UNPARSED_MAPS=",e["unparsed_map_count"])
+              print("E05_PARSED_EVENTS=",e["total_event_containers_parsed"])
+              print("E05_COMMAND_COUNTS=",e["command_totals_parsed"])
+              print("E05_MAPS_WITH_EVENTS=",[(m["source_map_id"],m["name"],m.get("event_containers"))
+                    for m in e["maps"] if m.get("event_containers")][:35])
           print("STATUS_REGIAO=PLANNED; GAME_EXE=NAO_TESTADO; INSTALACAO=PROIBIDA")
           PY
       - name: Descartar bytes de terceiros antes de publicar metadados
