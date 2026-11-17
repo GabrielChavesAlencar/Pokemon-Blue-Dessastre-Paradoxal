@@ -13,6 +13,7 @@ import json
 import os
 import sys
 import tempfile
+import zipfile
 from pathlib import Path
 
 from audit_unova_u02 import audit_zip, fail
@@ -247,7 +248,7 @@ def main(argv=None) -> int:
         report = intake(args.project, zip_path, credits)
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0
-    except (ValueError, OSError, KeyError, TypeError) as exc:
+    except (ValueError, OSError, KeyError, TypeError, zipfile.BadZipFile) as exc:
         print("UNOVA_E04_BLOQUEADO: " + str(exc), file=sys.stderr)
         return 2
 
