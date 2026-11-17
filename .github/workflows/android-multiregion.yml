@@ -106,19 +106,21 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Pacote Android incompleto.'}
           python scripts/android/package.py --verify --revision '${{ github.sha }}' --channel multiregion --output dist/Blue-Android-Decades-Kanto-Hoenn.zip
           if($LASTEXITCODE -ne 0){throw 'Verificacao do ZIP falhou.'}
-          # This bugfix is for players who downloaded the FIRST combined
-          # Android ZIP (android-multiregion-3). Derive its one-hop patch from
-          # the oldest published integrated baseline, not a newer intermediate
-          # release, so the old Termux updater can apply it directly.
-          $previous = @(gh release list --limit 100 --json tagName,isDraft,publishedAt | ConvertFrom-Json |
-            Where-Object { -not $_.isDraft -and $_.tagName -match '^android-multiregion-' } |
-            Sort-Object publishedAt | Select-Object -First 1)
+          # Generate separate hash-based patches for recent installations
+          # AND the oldest combined release. No historical game ZIP download.
+          $recent=@(gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json |
+            Where-Object { $_.tag_name -match '^android-multiregion-' -and -not $_.draft -and
+              @($_.assets | Where-Object { $_.name -eq 'Blue-Android-Decades-Kanto-Hoenn.update.json' }).Count -gt 0 } |
+            Sort-Object published_at -Descending)
+          if($LASTEXITCODE -ne 0){throw 'Nao foi possivel listar releases Android.'}
+          $selected=@($recent | Select-Object -First 4)
+          if($recent.Count -gt 4){$selected+=@($recent | Select-Object -Last 1)}
           $args=@('--channel','multiregion','--full-zip','dist/Blue-Android-Decades-Kanto-Hoenn.zip')
-          if($previous.Count -gt 0){
-            $old=Join-Path 'dist' 'previous'
+          foreach($release in $selected){
+            $old=Join-Path 'dist/previous' $release.tag_name
             New-Item -ItemType Directory -Force -Path $old | Out-Null
-            gh release download $previous[0].tagName --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $old
-            if($LASTEXITCODE -ne 0){throw 'Nao foi possivel verificar a release anterior para gerar patch.'}
+            gh release download $release.tag_name --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $old
+            if($LASTEXITCODE -ne 0){throw "Manifesto Android anterior indisponivel: $($release.tag_name)"}
             $args+=@('--previous-manifest',(Join-Path $old 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
           }
           python scripts/android/publish_updates.py @args
@@ -139,8 +141,6 @@ jobs:
           $assets=@('dist/Blue-Android-Decades-Kanto-Hoenn.zip',
             'dist/Blue-Android-Decades-Kanto-Hoenn.zip.sha256',
             'dist/Blue-Android-Decades-Kanto-Hoenn.update.json')
-          if(Test-Path 'dist/Blue-Android-Decades-Kanto-Hoenn.patch.zip'){
-            $assets+='dist/Blue-Android-Decades-Kanto-Hoenn.patch.zip'
-          }
+          $assets+=@(Get-ChildItem dist -File -Filter 'Blue-Android-Decades-Kanto-Hoenn*.patch.zip' | ForEach-Object { $_.FullName })
           gh release create $tag $assets --target '${{ github.sha }}' --title 'Pokemon Blue - Decades + Kanto + Hoenn (Android experimental)' --notes-file dist/android-multiregion-notes.txt --prerelease
           if($LASTEXITCODE -ne 0){throw 'Falha ao publicar pacote multirregional no GitHub.'}
