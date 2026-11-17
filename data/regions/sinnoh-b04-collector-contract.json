@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "step": "B04",
+  "status": "ONE_CLICK_COLLECTOR_READY_LOCAL_PROVENANCE_NOT_RECEIVED",
+  "format": "SINNOH_B04_LOCAL_REGIONAL_PROVENANCE_READ_ONLY",
+  "input_archive_name": "SINNOH_B04_PROVENIENCIA_REGIONAL.zip",
+  "input_files": [
+    "native_provenance.json",
+    "LEIA_ME.txt"
+  ],
+  "collector_delivery": "Separate downloadable ZIP in this chat; user chooses to execute and upload",
+  "reference_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "reference_tilesets_sha256": "2fd4551a5767615a159a8b5b65a604d1e486009d37953ca6a1955affffabf675",
+  "reference_b01_inventory_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+  "expected_regions": {
+    "KANTO": {
+      "filename": "blue-kanto-install.json",
+      "source_key": "maps",
+      "source_kind": "NUMERIC_SOURCE_TO_DESTINATION",
+      "schema": 1,
+      "required_manifest_status": null,
+      "required_region": null,
+      "documented_source": "scripts/regions/install_kanto.py",
+      "expected_map_count": 142
+    },
+    "JOHTO": {
+      "filename": "blue-johto-main-preview.json",
+      "source_key": "map_ids",
+      "source_kind": "NUMERIC_DESTINATION_LIST",
+      "schema": 1,
+      "required_manifest_status": "EXPERIMENTAL_PRIVATE_UNVERIFIED",
+      "required_region": "JOHTO",
+      "documented_source": "scripts/regions/johto_main_preview.py",
+      "expected_map_count": 100
+    },
+    "HOENN": {
+      "filename": "blue-hoenn-install.json",
+      "source_key": "maps",
+      "source_kind": "NUMERIC_SOURCE_TO_DESTINATION",
+      "schema": 1,
+      "required_manifest_status": "INTEGRATED_FILES_READY_FOR_NATIVE_QA",
+      "required_region": "HOENN",
+      "documented_source": "scripts/regions/install_hoenn.py",
+      "expected_map_count": 199
+    }
+  },
+  "input_contains_raw_manifests": false,
+  "input_contains_saved_games": false,
+  "input_contains_map_bytes": false,
+  "input_contains_images_or_audio": false,
+  "native_baseline_recheck_required": true,
+  "manifest_file_hashes_reported_locally_not_independently_attested": true,
+  "future_reservation_manifest_included": false,
+  "future_reservations_verified": false,
+  "ownership_by_region_verified": false,
+  "individual_asset_rights_verified": false,
+  "can_allocate_sinnoh_map_ids": false,
+  "can_install": false,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "can_mark_playable": false,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "main_game_or_saves_modified": false,
+  "note": "Regional install JSON manifests describe current installations, not uninstalled future reservations. The ZIP self-reports local hashes but does not include raw proofs, so its authenticity is not independently established. Missing manifests and changed baselines must remain blocked."
+}
