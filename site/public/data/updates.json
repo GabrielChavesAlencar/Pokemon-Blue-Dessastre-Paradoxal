@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d34fd53d68283b0503cbdbc012500a5f2be6fbc5",
+      "date": "2026-11-17T08:38:30-03:00",
+      "title": "test(unova): validar E07 simbolico como 4/8 sem fonte real",
+      "category": "Novidades"
+    },
+    {
+      "sha": "b6e07e8e017abdca294d480543bd89c1f92c097b",
+      "date": "2026-11-17T08:38:20-03:00",
+      "title": "docs(unova): E07 aceita catalogo simbolico e fallback sem aprovar musica real",
+      "category": "Novidades"
+    },
+    {
       "sha": "587b1896e636bb6c5a906750916dbdafa9c73119",
       "date": "2026-11-17T08:37:41-03:00",
       "title": "fix(unova): reexecutar auditoria idempotente sem sobrescrever evidencia diferente",
