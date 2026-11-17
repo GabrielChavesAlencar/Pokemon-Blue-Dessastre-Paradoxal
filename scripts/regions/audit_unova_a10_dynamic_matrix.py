@@ -119,11 +119,11 @@ def context_of_transfer(command,index,commands):
     for off,entry in enumerate(before):
         data=attrs(entry);code=data.get("@code")
         if code not in GUARD_CODES:continue
-        params=data.get("@parameters",[])
+        guard_params=data.get("@parameters",[])
         # Preserve only control discriminator/ids; never run or reveal script.
         safe_numbers=[]
-        if isinstance(params,list):
-            safe_numbers=[v for v in params[:5] if type(v) is int]
+        if isinstance(guard_params,list):
+            safe_numbers=[v for v in guard_params[:5] if type(v) is int]
         guards.append({"command_index":max(0,index-MAX_NEAR)+off,
                        "kind":GUARD_CODES[code],
                        "indent":get_int(data.get("@indent")),
@@ -165,7 +165,8 @@ def inspect_intro(game,base,a09):
             active={k:bool(cond.get("@"+k)) for k in ("switch1_valid","switch2_valid",
                                                      "variable_valid","self_switch_valid")}
             guards={key:get_int(cond.get("@"+key)) for key in ("switch1_id","switch2_id",
-                "variable_id","variable_value") if active.get(key.split("_id")[0]+"_valid",False)}
+                "variable_id","variable_value") if active.get(("variable" if key.startswith("variable_")
+                else key.split("_id")[0])+"_valid",False)}
             if active.get("self_switch_valid"):
                 guards["self_switch_ch"]=a08.plain(cond.get("@self_switch_ch",b""),10)
             transfers=[]
