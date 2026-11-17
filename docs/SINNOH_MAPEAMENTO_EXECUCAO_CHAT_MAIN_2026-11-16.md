@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 15/32 após as entregas S10, S11, S12, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 16/32 após as entregas S08, S10, S11, S12, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -171,6 +171,12 @@ A [S11](SINNOH_S11_PILOTO_SAVES_ISOLADOS_ACEITE.md) introduz verificação cruza
 O [BAT S12](../SINNOH_INSTALAR_EXPERIMENTAL.bat) usa o [orquestrador Python](../scripts/regions/sinnoh_s12_installer.py) para selecionar **um único overlay autorizado** e a especificação local `.blue-work/sinnoh-qa-spec.json`. O script inicia em `dry-run` e só cria arquivos com `--install`; o BAT, ao ser aberto por duplo clique, tenta essa instalação **somente após a auditoria integral dos insumos**. Rejeita fontes inexistentes, symlinks, MapIDs colidentes, manifestos adulterados, saves e instalações QA preexistentes. Copia a base para pasta temporária privada, verifica SHA-256, publica por rename atômico e faz rollback da transação antes da publicação em caso de falha. **Não copia saves, não toca em game/, não baixa assets, não executa Game.exe.**
 
 A [S12](SINNOH_S12_INSTALADOR_QA_ISOLADO_ACEITE.md) inclui [16 testes sintéticos de instalação e rollback](../tests/test_sinnoh_s12_installer.py) na regressão CH19/S30. **Barra A 15/32 (46%)**, 6 parciais e 11 pendentes; E 20/20 e B/C/D 0/13. O piloto em dados reais continua bloqueado pela ausência de fontes autorizadas e de QA Windows/JoiPlay.
+
+### S08 — validador de integridade de recursos (Barra A concluída em código)
+
+O [validador S08](../scripts/regions/audit_sinnoh_s08_resources.py) consolida auditoria RXDATA, ligações/MapIDs, referências de tilesets/autotiles, assinatura PNG, dependências Ruby e hashes SHA-256 dos mapas/scripts/PBS gerados. O [instalador S12](../scripts/regions/sinnoh_s12_installer.py) agora **bloqueia a criação de QA privada se a S08 não aprovar os recursos**. A [cobertura com 16 testes](../tests/test_sinnoh_s08_integrity.py) usa apenas arquivos sintéticos, não altera o Decades ou saves, não executa Game.exe e rejeita report falso, gráficos corrompidos e links inseguros.
+
+O [aceite S08](SINNOH_S08_INTEGRIDADE_RECURSOS_ACEITE.md) só conclui a infraestrutura de auditoria em código: **Barra A 16/32 (50%)**, 5 parciais, 11 pendentes; E 20/20, B/C/D 0/13; 44 casos nativos seguem não observados. Direitos dos assets, renderização, colisões e QA real continuam bloqueados sem fonte legítima.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
