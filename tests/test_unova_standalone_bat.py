@@ -14,6 +14,7 @@ import tempfile
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/"scripts/regions"))
 BAT=ROOT/"RUN_UNOVA_MAPIDS.bat"
 NEEDED=(
  "scripts/regions/unova_auto_mapids.py",
