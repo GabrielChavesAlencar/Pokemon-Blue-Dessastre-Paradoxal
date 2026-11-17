@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8d63a9886f2d6b861d387df2d12bb7df779c1f1a",
+      "date": "2026-11-17T19:20:45-03:00",
+      "title": "ci(android): publish no-backup updater and multi-revision deltas in fast hotfix release",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "f8ae2685a775addbce3bf600b50bd11fa1199bcb",
+      "date": "2026-11-17T19:20:25-03:00",
+      "title": "ci(android): publish small patches for recent and oldest multiregion installs",
+      "category": "Melhorias"
+    },
+    {
       "sha": "072f1d8e9bc7ab5eda3812b44a8110dc5dc6fee0",
       "date": "2026-11-17T19:19:47-03:00",
       "title": "feat(android): publish small incremental patches for multiple installed revisions",
