@@ -414,3 +414,7 @@ python -m unittest discover -s tests -p "test_sinnoh_graph.py" -v
 O `123` é apenas um **exemplo de argumento**: não significa que Twinleaf tenha esse MapID. Sem confirmação do MapInfos, omitir `--start-map`.
 
 **Publicação:** código e documentação sob `main` após testes. O jogo principal, fontes externas, saves, mapas e músicas não autorizados permanecem intactos e fora do Git.
+
+## Barra B — início do recebimento de arquivos reais (B00)
+
+A [etapa B00](SINNOH_B00_RECEBIMENTO_FONTES_2026-11-17.md) documentou o pacote Pokémon World V18 compartilhado pelo criador e o arquivo de créditos, o [manifesto de entrada](../data/regions/sinnoh-b00-source-intake.json), o [verificador read-only](../scripts/regions/audit_sinnoh_b00_intake.py) e [12 testes](../tests/test_sinnoh_b00_intake.py). **O ZIP ainda não foi enviado ou auditado; B/C/D ficam 0/13** e os testes Game.exe/JoiPlay permanecem para depois. O próximo passo é receber os dois downloads na conversa e separar os MapIDs reais de Sinnoh dos demais mapas do doador.

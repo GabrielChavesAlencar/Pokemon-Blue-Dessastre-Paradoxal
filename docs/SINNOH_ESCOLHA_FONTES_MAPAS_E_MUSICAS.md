@@ -7,6 +7,10 @@
 
 > **Decisão:** entre os cinco fangames de Sinnoh já registrados em `docs/ESTUDO_FANGAME_TODAS_AS_REGIOES_POKEMON.md`, **Pokémon Ancient Platinum (Phantombass)** é o melhor candidato para **investigar o conjunto de mapas e eventos**, porque a versão 1.0.6 é declarada concluída, usa Essentials v21.1 e se baseia em Platinum. **Não está comprovado que a distribuição inclua projeto RMXP-fonte editável ou permissão para copiar seus mapas/áudios.** Para **fidelidade dos locais e músicas**, a referência principal deve ser **Pokémon Platinum**, complementada por Diamond/Pearl e, opcionalmente, BDSP. **Não foi confirmado um map pack completo, aberto e autorizado de Sinnoh pronto para importar.**
 
+## Atualização B00 — fonte publicada para recebimento (17/11/2026)
+
+Foi localizada uma fonte adicional **efetivamente compartilhada pelo criador em formato de projeto RMXP antigo**: [Pokémon World V18](SINNOH_B00_RECEBIMENTO_FONTES_2026-11-17.md). A postagem original disponibiliza o ZIP e um arquivo de créditos e contém autorização pública para reutilizar partes do projeto. Isso a torna candidata à **auditoria de arquivos de Sinnoh**, não fonte auditada ou licenciada em sua totalidade. **Ancient Platinum permanece como alternativa para pesquisa**, sem substituição silenciosa da fonte registrada em `sinnoh-source.json`. Nenhum ZIP foi baixado ou examinado neste passo. **B/C/D seguem 0/13**.
+
 ## 1. Documentos da main analisados e contratos a preservar
 
 - [Estudo de todos os fangames](ESTUDO_FANGAME_TODAS_AS_REGIOES_POKEMON.md): lista **Ancient Platinum, Platinum Dawn, Banished Platinum, Uprising e Fire Ash**; avisa que essa lista é preliminar, não auditoria de assets ou licença; escolhe Platinum como base geográfica.
