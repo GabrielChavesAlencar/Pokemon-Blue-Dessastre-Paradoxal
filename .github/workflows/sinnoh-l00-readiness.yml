@@ -1,0 +1,99 @@
+name: Sinnoh L00 - prontidao documental somente relatos sanitizados
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l00-readiness.yml'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'tests/test_sinnoh_l00_readiness.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+      - 'scripts/regions/audit_sinnoh_g12_handoff.py'
+      - 'scripts/regions/audit_sinnoh_g11_ci_chain.py'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l00-readiness.yml'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'tests/test_sinnoh_l00_readiness.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+      - 'scripts/regions/audit_sinnoh_g12_handoff.py'
+      - 'scripts/regions/audit_sinnoh_g11_ci_chain.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l00-audit:
+    name: L00 / 24 testes negativos e relatório de bloqueios seguro
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Executar fixtures L00 e verificar fail-closed
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: Emitir apenas evidencias publicas sem host files
+        run: |
+          mkdir -p .blue-work/sinnoh-l00
+          python scripts/regions/audit_sinnoh_l00_readiness.py > .blue-work/sinnoh-l00/public-readiness.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path(".blue-work/sinnoh-l00/public-readiness.json")
+          j=json.loads(path.read_text(encoding="utf-8"))
+          assert j["stage"]=="L00"
+          assert j["status"]=="NO_NATIVE_READINESS_APPROVAL_GITHUB_ONLY"
+          assert j["received_reports"]==0 and j["missing_reports"]==5
+          assert set(j["sources"])=={"B09","B10","B11","R07","R08"}
+          assert all(x["status"]=="MISSING_REPORT" for x in j["sources"].values())
+          assert j["native_cases_total"]==44 and j["completed_native_cases"]==0
+          assert j["windows_cases"]==43 and j["android_cases"]==1
+          assert j["local_gates"]=={f"L{i:02}":"PENDING" for i in range(1,6)}
+          assert not j["may_start_game_in_host"] and not j["may_start_game_in_vm"]
+          assert not j["may_install_live_game"] and not j["native_approved"]
+          assert j["phase_b_approved"]==j["phase_c_approved"]==j["phase_d_approved"]==0
+          content=path.read_text(encoding="utf-8")
+          for danger in ("C:\\Users","Save01.rxdata","private-baseline.json","hmac_key","source_zip_sha256"):
+              assert danger not in content
+          print("SINNOH_L00_MISSING_5_REPORTS_ZERO_NATIVE_APPROVAL")
+          PY
+      - name: Artefato L00 somente JSON de campos previamente autorizados
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-l00-public-readiness-no-native-approval
+          path: .blue-work/sinnoh-l00/public-readiness.json
+          if-no-files-found: warn
+
+  l00-upstream:
+    name: L00 / regresso G12 G11 B10 B11 e R07 sem VM
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: G12 e matriz CH20 de 44 casos
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+      - name: G11 integrada e B10 B11 sintéticos
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_g11_ci_chain.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_b10_save_isolation.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_b11_host_saves.py' -v
+      - name: Contratos de reservas R07 e pre-voo local sintetico
+        run: python -m unittest discover -s tests -p 'test_sinnoh_r07_reservations.py' -v
