@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "50ec509800f3513adaab3bedb42385b67e1ab1e5",
+      "date": "2026-11-17T08:40:52-03:00",
+      "title": "ci(unova): suite independente U02-E08 sem dependencia do Game.exe",
+      "category": "Novidades"
+    },
+    {
       "sha": "319aa291c251c9019738940be1dfb9bf6913a91e",
       "date": "2026-11-17T08:39:46-03:00",
       "title": "docs(unova): estado E 4/8 com parser e auditadores preparatorios e gates reais",
