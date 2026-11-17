@@ -11,10 +11,12 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-
-from scripts.regions import sinnoh_ci_ch19 as ci
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.regions import sinnoh_ci_ch19 as ci
 REQUIRED = {
     "python": (
         "scripts/regions/sinnoh_ci_ch19.py",
