@@ -1,0 +1,85 @@
+name: Sinnoh L01 - exportador opcional de resumos sanitizados
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l01-sanitized-export.yml'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'tests/test_sinnoh_l01_exporter.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'tests/test_sinnoh_l00_readiness.py'
+      - 'scripts/regions/audit_sinnoh_g01_b09_receipt.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l01-sanitized-export.yml'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'tests/test_sinnoh_l01_exporter.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'tests/test_sinnoh_l00_readiness.py'
+      - 'scripts/regions/audit_sinnoh_g01_b09_receipt.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exporter:
+    name: L01 / 30 testes negativos e preview sem escrita
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar 30 cenarios L01 sem arquivos nativos
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: Preview default so deve emitir metadados ausentes
+        run: |
+          python scripts/regions/export_sinnoh_l01_reports.py --preview > /tmp/sinnoh-l01-preview.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("/tmp/sinnoh-l01-preview.json").read_text(encoding="utf8"))
+          assert d["stage"]=="L00" and d["region"]=="SINNOH"
+          assert set(d["reports"])=={"B09","B10","B11","R07","R08"}
+          assert all(v is None for v in d["reports"].values())
+          assert not Path(".blue-work/sinnoh-l00-input/public-reports.json").exists()
+          assert not Path(".blue-work/sinnoh-l01-source").exists()
+          print("SINNOH_L01_NO_USER_REPORTS_NO_GAME_NO_SAVE_NO_UPLOAD")
+          PY
+      - name: Nao publicar previews ou relatórios locais em artefatos
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "L01 no-upload guard passed; no artifact will be uploaded"
+
+  upstream:
+    name: L01 / regressao L00 G01 G12 e B11 sem execucao
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L00 24 testes de formato e permissoes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G01 vinculo B09 dry-run/recibo
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g01_b09_receipt.py' -v
+      - name: G12 44 casos nativos sem aprovacao
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+      - name: B11 regressao de snapshots sinteticos
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b11_host_saves.py' -v
