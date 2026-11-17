@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "072f1d8e9bc7ab5eda3812b44a8110dc5dc6fee0",
+      "date": "2026-11-17T19:19:47-03:00",
+      "title": "feat(android): publish small incremental patches for multiple installed revisions",
+      "category": "Novidades"
+    },
+    {
       "sha": "3abd0dd2c2dfd021d95b4714b75bcf22bf51b65f",
       "date": "2026-11-17T19:19:12-03:00",
       "title": "feat(android): opt-in full ZIP only, no backups, in-place changed-file updates",
