@@ -16,6 +16,8 @@ O pacote é uma fonte **parcial de geometria de Unova**, **não** um jogo pronto
 | Entradas em MapInfos.rxdata | **911** |
 | Mapas com arquivo sob a hierarquia Unova Region | **64** |
 | Mapas dessa hierarquia cujo RXDATA foi interpretado | **64/64** |
+| Mapas Unova de **20×15 tiles** (dimensão padrão; possíveis placeholders) | **56/64** |
+| Mapas Unova com dimensões maiores que 20×15 | **8/64** |
 | Eventos RMXP (@events) somados nesses 64 mapas | **0** |
 | Comandos/diálogos/transferências registrados nesses mapas | **0** |
 | Áreas simbólicas com nome correspondente dentro da hierarquia Unova | **20/74** |
@@ -74,7 +76,28 @@ A árvore contém IDs de origem para grupos como **Unova Region (32)**, **Unova 
 
 O projeto utiliza **Route 301–323** dentro da árvore Unova, não Route 1–18 da campanha oficial Black/White. Esses números não podem ser convertidos automaticamente 301→1 etc. sem estudar geometria, sequência, portas e o detonado.
 
-### 3.2 Armadilhas de interpretação
+### 3.2 Auditoria de dimensões: a maior parte pode ser placeholder
+
+A leitura real da geometria estrutural revelou **56 dos 64 mapas com 20×15 tiles**. Esse é um tamanho padrão que pode corresponder a um mapa inicial/vazio ou a um interior pequeno — **não é evidência suficiente para afirmar que estão vazios**. Todos esses 56 também têm zero eventos RMXP.
+
+Somente **8 mapas** possuem dimensões maiores que 20×15:
+
+| MapID original | Mapa na fonte | Dimensões em tiles |
+|---:|---|---:|
+| 463 | Nuvema Town | 67×44 |
+| 464 | Accumula Town | 77×41 |
+| 465 | Striaton City | 109×64 |
+| 466 | Nacrene City | 100×82 |
+| 468 | Castelia City | 150×200 |
+| 490 | Route 301 | 67×60 |
+| 494 | Route 302 | 73×28 |
+| 495 | Route 303 | 64×72 |
+
+O [atlas completo versionado](../data/regions/unova-e05-source-map-atlas.json) contém os 64 IDs de origem, nomes, relação com o pai, dimensões, ausência de eventos e flags impedindo importação. Esse atlas não transporta arquivos de terceiros.
+
+**Consequência prática:** o Pokémon World V18 parece aproveitável sobretudo como referência geográfica das **primeiras cinco cidades e três rotas**, ainda sujeitas a inspecionar os dados de tiles, prioridades, colisões, sprites e licenças. Para Nimbasa em diante, os mapas de 20×15 e nomes vazios de eventos indicam alto esforço de reconstrução. Não devemos anunciar “64 mapas completos” nem escolher um MapID de destino antecipadamente.
+
+### 3.3 Armadilhas de interpretação
 
 A busca global por nome encontrou **Route 1–18** com IDs originais **34–51** e três mapas chamados **Victory Road** nos IDs **335, 383 e 626**; nenhum desses 19 conjuntos pertence à hierarquia Unova identificada no arquivo. Portanto são correspondências perigosas e **não devem ser importadas** como Unova.
 
