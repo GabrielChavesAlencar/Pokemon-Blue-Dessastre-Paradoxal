@@ -117,7 +117,7 @@ class StandaloneBatTests(unittest.TestCase):
                     "assert b;"
                     "exec(compile(c.lstrip('\\r\\n'),str(p),'exec'),"
                     "{'__name__':'__main__','__file__':str(p)})")
-            env=dict(os.environ,LOCALAPPDATA=str(appdata),
+            env=dict(os.environ,UNOVA_MAPIDS_HEADLESS="1",LOCALAPPDATA=str(appdata),
                      USERPROFILE=str(temp/"profile"),
                      APPDATA=str(temp/"roaming"))
             result=subprocess.run(
