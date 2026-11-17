@@ -7,6 +7,8 @@ on:
     paths:
       - 'scripts/regions/unova_e04_remote_probe.py'
       - 'tests/test_unova_e04_remote_probe.py'
+      - 'scripts/regions/audit_unova_e05_mapinfos_only.py'
+      - 'tests/test_unova_e05_mapinfos_only.py'
       - '.github/workflows/unova-e04-remote-origin.yml'
   workflow_dispatch:
 
@@ -27,6 +29,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_unova_e04_remote_probe.py' -v
           python -m py_compile scripts/regions/unova_e04_remote_probe.py
+          python -m unittest discover -s tests -p 'test_unova_e05_mapinfos_only.py' -v
+          python -m py_compile scripts/regions/audit_unova_e05_mapinfos_only.py
       - name: Consultar API do provedor e tentar analisar ZIP e creditos da fonte original
         run: |
           python scripts/regions/unova_e04_remote_probe.py --download
@@ -36,6 +40,7 @@ jobs:
           if [[ -f ".blue-work/unova/sources/Pokemon_World_V18.zip" ]]; then
             echo "Fonte baixada apenas para area privada da execucao. Gerando inventarios."
             python scripts/regions/audit_unova_u02.py --write || echo "::warning::ZIP U02 nao passou em verificacao estrutural"
+            python scripts/regions/audit_unova_e05_mapinfos_only.py --write || echo "::warning::MapInfos real nao foi indexado"
             python scripts/regions/audit_unova_source_detail.py --write || echo "::warning::RXDATA real nao pode ser analisado ainda"
             if [[ -f ".blue-work/unova/audit/u02-rxdata-detail.json" ]]; then
               python scripts/regions/audit_unova_e05_crosswalk.py --write || echo "::warning::Crosswalk E05 bloqueado"
@@ -63,6 +68,16 @@ jobs:
           print("E04_CREDITS_DOWNLOAD=",r["credits_downloaded"])
           print("E04_COMPLETE=",r["e04_complete"])
           print("E04_GATES=",r["errors"])
+          idx=root/"e05-mapinfos-only.json"
+          if idx.exists():
+              o=json.loads(idx.read_text("utf-8"))
+              print("E05_MAPINFOS_ENTRIES=",o["mapinfos_entry_count"])
+              print("E05_UNOVA_PARENT_KEYWORD_CANDIDATES=",o["clues"]["anchored_by_unova_parent_name"])
+              print("E05_DIRECT_NAME_MATCH_CANDIDATES=",o["clues"]["direct_name_candidates"])
+              candidates=[(m["source_map_id"],m["name"]) for m in o["maps"] if m["ancestor_unova_or_isshu_keyword"]]
+              print("E05_UNOVA_ANCHORED_FIRST40=",candidates[:40])
+          else:
+              print("E05_MAPINFOS_INDEX=NAO_GERADO")
           print("STATUS_REGIAO=PLANNED; GAME_EXE=NAO_TESTADO; INSTALACAO=PROIBIDA")
           PY
       - name: Descartar bytes de terceiros antes de publicar metadados
