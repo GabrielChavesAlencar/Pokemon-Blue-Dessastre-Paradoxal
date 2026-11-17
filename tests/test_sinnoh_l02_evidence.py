@@ -13,7 +13,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/"scripts/regions"),str(ROOT/"tests")]
 import review_sinnoh_l02_evidence as l02
 import export_sinnoh_l01_reports as l01
-from test_sinnoh_l01_exporter import SinnohL01Tests
+import test_sinnoh_l01_exporter as l01_fixtures
 
 class SinnohL02ReviewTests(unittest.TestCase):
     @classmethod
@@ -21,7 +21,7 @@ class SinnohL02ReviewTests(unittest.TestCase):
         cls.contracts={k:l02.l00.read_json(ROOT,p) for k,p in l02.l00.CONTRACTS.items()}
         cls.handoff=l02.l00.read_json(ROOT,l02.l00.g12.HANDOFF)
         cls.final=l02.l00.g12.run(ROOT)
-        cls.source=SinnohL01Tests.complete_fixture()
+        cls.source=l01_fixtures.SinnohL01Tests.complete_fixture()
 
     def make(self,*stages):
         orig=copy.deepcopy(self.source)
