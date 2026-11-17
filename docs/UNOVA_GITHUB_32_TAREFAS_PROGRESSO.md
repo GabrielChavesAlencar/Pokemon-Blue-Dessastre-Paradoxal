@@ -6,13 +6,13 @@
 
 ## Barra geral
 
-**11/32 entregas concluídas (34%)** · 21 pendentes
+**12/32 entregas concluídas (38%)** · 20 pendentes
 
-`[███████████░░░░░░░░░░░░░░░░░░░░░]` **34%**
+`[████████████░░░░░░░░░░░░░░░░░░░░]` **38%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
-| G01 — Progressão e estado da campanha | **3/4** | `███░` |
+| G01 — Progressão e estado da campanha | **4/4** | `████` |
 | G02 — História, ginásios e pós-jogo | **1/4** | `█░░░` |
 | G03 — Treinadores e balanceamento | **1/4** | `█░░░` |
 | G04 — Áreas, selvagens e temporadas | **1/4** | `█░░░` |
@@ -36,7 +36,7 @@ Contrato de persistência e desbloqueios de Unova sem ler saves reais.
 - [x] **G01.1 — Criar esquema versionado do estado de Unova.** Flags, capítulos, missões, checkpoints e regras de compatibilidade por versão · [Evidência](../data/regions/unova-g01-state-contract.json)
 - [x] **G01.2 — Implementar máquina de estados dos capítulos.** Pré-requisitos, desbloqueios e transições testáveis sem engine · [Evidência](../scripts/regions/audit_unova_g01_chapter_machine.py)
 - [x] **G01.3 — Garantir recompensas únicas e reentrada segura.** Simulação de revisitas, perda de batalhas e idempotência · [Evidência](../scripts/regions/audit_unova_g01_reentry_ledger.py)
-- [ ] **G01.4 — Criar migrador e teste sintético de save regional.** Round-trip e regressões de migração sem tocar em save do jogador
+- [x] **G01.4 — Criar migrador e teste sintético de save regional.** Round-trip e regressões de migração sem tocar em save do jogador · [Evidência](../scripts/regions/audit_unova_g01_serialization.py)
 
 ### G02 — História, ginásios e pós-jogo
 
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G01.4 (migração e serialização sintéticas do estado regional), preservando o jogo principal. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G02.2 (contratos de eventos da campanha e dos oito ginásios), mantendo a progressão nativa como pendente. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.

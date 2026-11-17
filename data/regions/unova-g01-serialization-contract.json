@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "phase": "G01.4",
+  "status": "OFFLINE_TEST_FIXTURE_CODEC_NOT_NATIVE_SAVE",
+  "format_v1": "UNOVA_G01_4_OFFLINE_STATE_V1",
+  "legacy_format_v0": "UNOVA_G01_4_SYNTHETIC_FIXTURE_V0",
+  "storage_version": 1,
+  "accepted_current_storage_versions": [
+    1
+  ],
+  "explicit_legacy_storage_version": 0,
+  "state_schema_version": 1,
+  "ledger_schema_version": 1,
+  "scope": "SIMULATED_ONLY_NOT_GAME_SAVE",
+  "payload_source": "scripts/regions/audit_unova_g01_reentry_ledger.py",
+  "state_contract": "data/regions/unova-g01-state-contract.json",
+  "transition_contract": "data/regions/unova-g01-chapter-transitions.json",
+  "receipt_policy": "data/regions/unova-g01-reentry-policy.json",
+  "hash_algorithm": "SHA256_CANONICAL_UTF8_JSON_PAYLOAD",
+  "canonical_json": "UTF8_SORT_KEYS_COMPACT_NO_NAN",
+  "max_payload_bytes": 262144,
+  "legacy_migration": "EXPLICIT_ONLY_REPLAY_SOURCE_EVENTS_AND_COMPARE_STATE",
+  "legacy_fixture_only": true,
+  "auto_migration": false,
+  "real_game_save_adapter": false,
+  "native_items_granted": false,
+  "can_install": false,
+  "game_exe_tested": false,
+  "notes": [
+    "G01.4 migra apenas o invólucro de armazenamento sintético v0, nunca um save real nem um estado G01.1 schema_version=0.",
+    "Uma migração exige API migrate_legacy com acknowledgement explícito, validação U07/G01.1/G01.2/G01.3 e replay determinístico dos recibos.",
+    "Arquivos RXDATA, SAV e caminhos de usuário não são lidos ou escritos por esta ferramenta; encode/decode recebem bytes e devolvem estado apenas em memória.",
+    "SHA-256 detecta alterações acidentais ou incoerência de conteúdo, não oferece assinatura/autenticação contra adulteração intencional."
+  ]
+}

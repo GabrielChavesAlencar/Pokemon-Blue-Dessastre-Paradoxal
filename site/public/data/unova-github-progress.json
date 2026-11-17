@@ -50,8 +50,9 @@
         {
           "id": "G01.4",
           "title": "Criar migrador e teste sintético de save regional",
-          "status": "pending",
-          "acceptance": "Round-trip e regressões de migração sem tocar em save do jogador"
+          "status": "done",
+          "acceptance": "Round-trip e regressões de migração sem tocar em save do jogador",
+          "evidence": "scripts/regions/audit_unova_g01_serialization.py"
         }
       ]
     },
