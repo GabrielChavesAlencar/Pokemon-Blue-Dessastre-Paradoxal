@@ -91,6 +91,21 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
           python -m unittest discover -s tests -p 'test_sinnoh_playtest_audit.py' -v
+      - name: Validar tambem pre-voo Android estatico de S30 sem JoiPlay real
+        run: |
+          mkdir -p .blue-work/sinnoh-g12
+          python scripts/regions/audit_sinnoh_android_ch20.py --output .blue-work/sinnoh-g12/android-static.json > /dev/null
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path(".blue-work/sinnoh-g12/android-static.json").read_text(encoding="utf8"))
+          assert d["checklist_total"]==44 and d["completed_native_cases"]==0
+          assert not d["joiplay_tested"] and not d["game_exe_tested"]
+          assert not d["native_gameplay_verified"] and not d["manual_evidence_accepted"]
+          assert d["package"]["status"]=="NOT_PROVIDED"
+          assert all(x["native_status"]=="pending" and x["evidence"] is None for x in d["cases"])
+          print("SINNOH_G12_ANDROID_STATIC_ONLY_44_PENDING")
+          PY
       - name: Reexecutar os 18 cenarios sinteticos G11
         run: python -m unittest discover -s tests -p 'test_sinnoh_g11_ci_chain.py' -v
       - name: Revalidar o isolamento B10 e auditoria B11
