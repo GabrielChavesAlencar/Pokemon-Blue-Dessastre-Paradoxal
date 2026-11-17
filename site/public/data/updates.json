@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9b3a589a93720d314b03c1961c7e60ebb533a2dd",
+      "date": "2026-11-17T13:02:50-03:00",
+      "title": "fix(unova): RUN BAT autossuficiente funciona em Downloads sem scripts externos",
+      "category": "Novidades"
+    },
+    {
       "sha": "a9705346fa43d9af50870b9c3dee663bada5a6b9",
       "date": "2026-11-17T12:58:39-03:00",
       "title": "feat(sinnoh): B06 prévia técnica verificável dos 76 MapIDs sem instalar",
