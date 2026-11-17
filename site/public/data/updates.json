@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "767657dda5de39400767d86632f0eb6a330f6b3d",
+      "date": "2026-11-17T20:36:21-03:00",
+      "title": "Unova G06.2 — guias das 74 áreas e história (26/32)",
+      "category": "Novidades"
+    },
+    {
+      "sha": "c7a6ba3d363fc79b92ca7b1b8456c3db80516f83",
+      "date": "2026-11-17T20:36:19-03:00",
+      "title": "ci(android): test in-game version UI and publish patch for player's exact 5d0cc84 installation",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "dabb2a39b6f37e4c4ec176afd04865956dc82faa",
+      "date": "2026-11-17T20:35:54-03:00",
+      "title": "test(android): offline version screen shows genuine build and applied timestamps without JSON",
+      "category": "Testes"
+    },
+    {
       "sha": "e22ff13de2738a99c6d2771c7c022c26912b7064",
       "date": "2026-11-17T20:35:02-03:00",
       "title": "fix(android): compile version menu from correct Mobile.rb and write real newline build timestamp",
