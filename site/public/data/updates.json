@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c81d415040f41d2bb62cb243f94379f634957b2a",
+      "date": "2026-11-16T21:21:02-03:00",
+      "title": "docs(sinnoh): CH20 concluida offline, Barra E 20/20 100%, 44 nativos pendentes",
+      "category": "Documentação"
+    },
+    {
       "sha": "c7c8cdd0dd10a0d418ce91ed9316be7f5e09acdc",
       "date": "2026-11-16T21:18:12-03:00",
       "title": "feat(sinnoh): CH20 auditor JoiPlay e 44 casos com hashes e CI comprovado",
