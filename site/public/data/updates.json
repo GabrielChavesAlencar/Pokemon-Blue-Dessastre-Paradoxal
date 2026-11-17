@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c85815b659c3d56a0f5eb97c03de42f31a395e03",
+      "date": "2026-11-17T09:30:21-03:00",
+      "title": "feat(sinnoh): S16 HMs por insígnias e comprovantes locais (28/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "9d1d50e94416111480df98f59752bfee22ae2810",
       "date": "2026-11-17T09:22:24-03:00",
       "title": "feat(sinnoh): S15 oito ginásios e insígnias auditáveis, Barra A 27/32",
