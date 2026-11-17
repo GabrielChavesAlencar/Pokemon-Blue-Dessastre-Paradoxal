@@ -209,4 +209,132 @@ class B11Tests(unittest.TestCase):
                     ValueError,"SINNOH_B11_BLOCKED"):
                 b11.check_contract(c,self.c10,self.c09)
 
+    def test_20_missing_default_scopes_are_counted_not_named(self):
+        project,root=self.fixture()
+        with patch.object(b11,"b10_session",return_value=None):
+            before=b11.prepare_before(project,"a"*64,[root],
+                scope_selection_mode="default",default_scopes_not_monitored=3)
+        self.assertEqual(before["scope_selection_mode"],"default")
+        self.assertEqual(before["default_scopes_not_monitored"],3)
+        self.assertTrue(before["coverage_is_partial"])
+        after=b11.inspect_after(project,before["watch_id"],"not_run")
+        self.assertEqual(after["default_scopes_not_monitored"],3)
+        self.assertTrue(after["coverage_is_partial"])
+        self.assertFalse(after["complete_host_save_coverage_verified"])
+        self.assertNotIn(str(root),json.dumps(after))
+
+    def test_21_unwatched_directory_is_never_claimed_covered(self):
+        project,root=self.fixture()
+        before=self.prepare(project,root)
+        external=root.parent/"unwatched"
+        external.mkdir()
+        (external/"SaveExternal.rxdata").write_bytes(b"not watched")
+        report=b11.inspect_after(project,before["watch_id"],"save_inside_vm")
+        self.assertTrue(report["watch_unchanged"])
+        self.assertEqual(report["files_added"],0)
+        self.assertFalse(report["host_saves_globally_isolated_proven"])
+        self.assertFalse(report["true_runtime_save_path_in_source_verified"])
+        self.assertTrue(report["coverage_is_partial"])
+        self.assertIsNone(report["default_scopes_not_monitored"])
+
+    def test_22_scan_errors_must_block_instead_of_silent_success(self):
+        project,root=self.fixture()
+        def unreadable(_root,**kwargs):
+            kwargs["onerror"](PermissionError(r"C:\private\secret-save.rxdata"))
+            return iter(())
+        with patch.object(b11.os,"walk",side_effect=unreadable):
+            with self.assertRaisesRegex(ValueError,"escopo incompleto"):
+                b11.fingerprint([root],b"a"*32)
+
+    def test_23_symlink_ancestor_of_selected_scope_rejected(self):
+        project,root=self.fixture()
+        (root/"deep").mkdir()
+        alias=root.parent/"alias"
+        try:
+            alias.symlink_to(root,target_is_directory=True)
+        except (OSError,NotImplementedError):
+            self.skipTest("symlink unavailable")
+        with self.assertRaisesRegex(ValueError,"SINNOH_B11_BLOCKED"):
+            b11.checked_roots([alias/"deep"])
+
+    def test_24_tampered_private_baseline_fields_rejected(self):
+        project,root=self.fixture()
+        before=self.prepare(project,root)
+        path=project/".blue-work/sinnoh-b11-save-audit"/(
+            "watch-"+before["watch_id"])/"private-baseline.json"
+        original=json.loads(path.read_text("utf-8"))
+        mutations=(
+            {"baseline_files":False},
+            {"baseline_bytes":-1},
+            {"hmac_key":"g"*64},
+            {"baseline_digest":"f"*64},
+            {"scope_selection_mode":"approved"},
+            {"default_scopes_not_monitored":99},
+            {"extra_private_field":"secret"},
+        )
+        for fields in mutations:
+            with self.subTest(fields=fields),self.assertRaisesRegex(ValueError,"SINNOH_B11_BLOCKED"):
+                path.write_text(json.dumps({**original,**fields}),encoding="utf-8")
+                b11.inspect_after(project,before["watch_id"],"not_run")
+        path.write_text(json.dumps(original),encoding="utf-8")
+        self.assertTrue(b11.inspect_after(project,before["watch_id"],"not_run")["watch_unchanged"])
+
+    def test_25_save_mutation_during_hash_is_blocked(self):
+        project,root=self.fixture()
+        original=b11.file_sha
+        def changing(path):
+            digest=original(path)
+            path.write_bytes(path.read_bytes()+b"changed after digest")
+            return digest
+        with patch.object(b11,"file_sha",side_effect=changing):
+            with self.assertRaisesRegex(ValueError,"mudou durante a auditoria"):
+                b11.fingerprint([root],b"a"*32)
+
+    def test_26_explicit_scope_cannot_report_default_scope_coverage(self):
+        project,root=self.fixture()
+        for mode,missing in (
+            ("explicit",0),("default",None),("default",True),
+            ("default",-1),("default",5),("complete",0)
+        ):
+            with self.subTest(mode=mode,missing=missing),self.assertRaisesRegex(
+                    ValueError,"SINNOH_B11_BLOCKED"):
+                b11.prepare_before(project,"a"*64,[root],
+                    scope_selection_mode=mode,
+                    default_scopes_not_monitored=missing)
+
+    def test_27_guest_diag_has_host_guard_and_no_exec(self):
+        self.assertIn('if /I not "%USERNAME%"=="WDAGUtilityAccount" goto :outside',
+                      b11.GUEST_DIAG)
+        self.assertIn('if /I not "%USERPROFILE%"=="C:\\Users\\WDAGUtilityAccount" goto :outside',
+                      b11.GUEST_DIAG)
+        self.assertIn(":outside",b11.GUEST_DIAG)
+        self.assertIn("exit /b 3",b11.GUEST_DIAG)
+        self.assertNotIn("start Game.exe",b11.GUEST_DIAG)
+        self.assertNotIn("call Game.exe",b11.GUEST_DIAG)
+
+    def test_28_cli_does_not_print_raw_private_path_errors(self):
+        import contextlib
+        import io
+        err=io.StringIO()
+        with patch.object(b11,"inspect_after",side_effect=FileNotFoundError(
+                r"C:\Users\tester\private\Saves\Save01.rxdata")):
+            with contextlib.redirect_stderr(err):
+                rc=b11.main(["--after","a"*32])
+        self.assertEqual(rc,2)
+        self.assertIn("SINNOH_B11_BLOCKED",err.getvalue())
+        self.assertNotIn("Save01.rxdata",err.getvalue())
+        self.assertNotIn(r"C:\Users",err.getvalue())
+
+    def test_29_same_byte_length_modified_save_detected(self):
+        project,root=self.fixture()
+        before=self.prepare(project,root)
+        save=root/"Save01.rxdata"
+        size=save.stat().st_size
+        save.write_bytes(b"x"*size)
+        after=b11.inspect_after(project,before["watch_id"],"not_run")
+        self.assertEqual(after["files_changed"],1)
+        self.assertEqual(after["files_added"],0)
+        self.assertEqual(after["files_removed"],0)
+        self.assertEqual(after["status"],"HOST_WATCHED_FILES_CHANGED_REVIEW_REQUIRED")
+
 if __name__=="__main__":unittest.main()
