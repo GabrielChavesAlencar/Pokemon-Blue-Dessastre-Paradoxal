@@ -1,0 +1,62 @@
+name: Sinnoh CH20 - JoiPlay preflight estatico 44 casos
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-ch20.yml'
+      - 'scripts/regions/audit_sinnoh_android_ch20.py'
+      - 'scripts/regions/audit_sinnoh_playtest.py'
+      - 'tests/test_sinnoh_android_ch20.py'
+      - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-progress.json'
+      - 'docs/SINNOH_CH20_JOIPLAY_PREFLIGHT.md'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-ch20.yml'
+      - 'scripts/regions/audit_sinnoh_android_ch20.py'
+      - 'scripts/regions/audit_sinnoh_playtest.py'
+      - 'tests/test_sinnoh_android_ch20.py'
+      - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-progress.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-preflight:
+    name: CH20 / Python sem pacote privado nem aparelho
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar sintaxe do auditor Android
+        run: python -m py_compile scripts/regions/audit_sinnoh_android_ch20.py
+      - name: Testar 44 casos, ZIPs maliciosos, evidencias falsas e paths
+        run: python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
+      - name: Emitir relatorio CH20 deterministico e sem certificacao nativa
+        run: |
+          python scripts/regions/audit_sinnoh_android_ch20.py \
+            --output .blue-work/sinnoh-ch20/ch20-static-ci.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path(".blue-work/sinnoh-ch20/ch20-static-ci.json")
+          j = json.loads(p.read_text("utf-8"))
+          assert j["checklist_total"] == 44
+          assert j["completed_native_cases"] == 0
+          assert j["package"]["status"] == "NOT_PROVIDED"
+          assert not j["joiplay_tested"] and not j["native_gameplay_verified"]
+          assert all(c["native_status"] == "pending" for c in j["cases"])
+          print("SINNOH_CH20_STATIC_OK=44_NATIVOS_PENDENTES")
+          PY
+      - name: Preservar relatorio mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-ch20-static-report
+          path: .blue-work/sinnoh-ch20/ch20-static-ci.json
+          if-no-files-found: warn
