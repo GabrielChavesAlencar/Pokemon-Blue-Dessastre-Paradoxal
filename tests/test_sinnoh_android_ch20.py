@@ -11,7 +11,7 @@ import unittest
 from zipfile import ZipFile, ZipInfo
 
 from scripts.regions.audit_sinnoh_android_ch20 import (
-    ROOT, LEDGER, TEMPLATE, EXPECTED_COUNTS,
+    ROOT, LEDGER, TEMPLATE, SCHEMA, EXPECTED_COUNTS,
     audit, checklist, inspect_package, safe_output, write_report,
 )
 
@@ -21,7 +21,7 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="sinnoh-ch20-")
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        for relative in (TEMPLATE, LEDGER):
+        for relative in (TEMPLATE, SCHEMA, LEDGER):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_bytes((ROOT / relative).read_bytes())
@@ -124,16 +124,16 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
 
     def test_rejects_fake_map_id_and_coordinates_in_source_template(self):
         self.modify(TEMPLATE, lambda j: j["maps"][0].update(map_id=802))
-        with self.assertRaisesRegex(ValueError, "MapID"):
+        with self.assertRaisesRegex(ValueError, "MapID|IDs e hashes"):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j["maps"][0].update(map_id=None))
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(arrival_x=12))
-        with self.assertRaisesRegex(ValueError, "coordenadas"):
+        with self.assertRaisesRegex(ValueError, "coordenadas|chegada sem geometria"):
             checklist(self.root)
 
     def test_rejects_fake_playable_status_and_native_evidence(self):
         self.modify(TEMPLATE, lambda j: j.update(approved_for_install=True))
-        with self.assertRaisesRegex(ValueError, "jogavel"):
+        with self.assertRaisesRegex(ValueError, "jogavel|valor fixo"):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j.update(approved_for_install=False))
         self.modify(LEDGER, lambda j: j["native_playtest_workstream"].update(android_joi_play_tested=True))
@@ -147,7 +147,16 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(destination="SINNOH_PLAYER_HOUSE_1F"))
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"].append(
             copy.deepcopy(j["maps"][0]["events"][0])))
-        with self.assertRaisesRegex(ValueError, "44 casos"):
+        with self.assertRaisesRegex(ValueError, "44 casos|duplicado"):
+            checklist(self.root)
+
+    def test_rejects_fabricated_handler_coordinates_or_sprite(self):
+        self.modify(TEMPLATE, lambda j: j["maps"][1]["events"][0].update(x=6))
+        with self.assertRaisesRegex(ValueError, "posição sem geometria"):
+            checklist(self.root)
+        self.modify(TEMPLATE, lambda j: j["maps"][1]["events"][0].update(x=None))
+        self.modify(TEMPLATE, lambda j: j["maps"][1]["events"][0].update(sprite="fake.png"))
+        with self.assertRaisesRegex(ValueError, "sprite sem fonte"):
             checklist(self.root)
 
     def test_write_json_only_in_blue_work_and_never_overwrite(self):
