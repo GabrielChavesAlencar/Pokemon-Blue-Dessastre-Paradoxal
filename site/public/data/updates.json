@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8e258054cc31e472044d620785acb283803901b4",
+      "date": "2026-11-17T18:30:03-03:00",
+      "title": "docs(sinnoh): G03 completed in main; GitHub-only pipeline 3/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "6fa5cc7aacba4e566cd065c1781916dbac955afd",
+      "date": "2026-11-17T18:29:49-03:00",
+      "title": "feat(sinnoh): G03 static regional MapID matrix and fail-closed tests (#147)",
+      "category": "Novidades"
+    },
+    {
       "sha": "895021ab0be9c60d475f3da1512afd616eee6ab8",
       "date": "2026-11-17T18:17:44-03:00",
       "title": "Unova G03.2: líderes, 70/90% Master e evolução/cobertura offline",
