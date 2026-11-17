@@ -25,6 +25,7 @@ import audit_unova_a09_intro_and_claims as a09
 import audit_unova_a10_dynamic_matrix as a10
 import audit_unova_a11_intro_preflight as a11
 import audit_unova_a12_ownership as a12
+import audit_unova_a13_private_qa as a13
 
 ROOT = Path(__file__).resolve().parents[2]
 SUMMARY = Path(".blue-work/unova/audit/LEIA_AQUI_UNOVA_MAPIDS.txt")
@@ -167,6 +168,7 @@ def pretty(result: dict) -> str:
     a10_result=result.get("a10_result")
     a11_result=result.get("a11_result")
     a12_result=result.get("a12_result")
+    a13_result=result.get("a13_result")
     if a04_result:
         lines.extend([
             "A04 — inventario da instalacao atual",
@@ -435,6 +437,25 @@ def pretty(result: dict) -> str:
         if a12_result.get("block_reason"):
             lines.append("  Bloqueio A12: "+a12_result["block_reason"])
         lines.append("")
+    if a13_result:
+        lines.extend([
+            "A13 — copia QA privada real, saves isolados por perfil no mkxp",
+            "  Status: "+a13_result.get("status","DESCONHECIDO"),
+            "  Pasta da copia QA: "+str(a13_result.get("path") or "NAO_CRIADA"),
+            "  Arquivos copiados e conferidos: "+
+                str(a13_result.get("file_count","DESCONHECIDO")),
+            "  Bytes do inventario: "+str(a13_result.get("source_bytes","DESCONHECIDO")),
+            "  Perfil de save estatico diferente? "+
+                ("Sim" if a13_result.get("profile") else "Nao/Desconhecido"),
+            "  O Game.exe foi executado? Nao",
+            "  Isolamento de saves efetivamente testado no jogo? NAO",
+            "  Mapas de Unova instalados? Nao",
+            "  NENHUMA reserva de MapID de Unova foi autorizada",
+            "  Relatorio completo: "+str(result.get("a13_report_path") or "NAO_GERADO"),
+        ])
+        if a13_result.get("block_reason"):
+            lines.append("  Bloqueio de copia A13: "+a13_result["block_reason"])
+        lines.append("")
     lines.extend([
         "IMPORTANTE:",
         "  Esta ferramenta NAO altera Game.exe, MapInfos, mapas, scripts ou saves.",
@@ -442,7 +463,7 @@ def pretty(result: dict) -> str:
         "  A Barra A continua 0/8 ate validar reservas e instalacao real.",
         "",
         "Para a proxima fase, envie este LEIA_AQUI_UNOVA_MAPIDS.txt",
-        "e o arquivo a12-installer-ownership-HASH.json indicado acima.",
+        "e o arquivo a13-private-qa-HASH.json indicado acima.",
         "",
         "Pastas pesquisadas:",
     ])
@@ -477,8 +498,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
         "game_dir":str(selected) if selected else None,
         "candidates_checked":checked,
         "error":reason,
-        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,"a12_result":None,
-        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,"a12_report_path":None,
+        "a04_result":None,"a05_result":None,"a06_result":None,"a07_result":None,"a08_result":None,"a09_result":None,"a10_result":None,"a11_result":None,"a12_result":None,"a13_result":None,
+        "a04_report_path":None,"a05_report_path":None,"a06_report_path":None,"a07_report_path":None,"a08_report_path":None,"a09_report_path":None,"a10_report_path":None,"a11_report_path":None,"a12_report_path":None,"a13_report_path":None,
         "no_game_files_modified":True,
         "can_reserve_mapids":False,"can_install":False,
     }
@@ -602,6 +623,26 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
                 "bar_a_completed":0,"bar_a_total":8,
             }
         a12_path=a12.save(project,a12_result)
+        env=dict(os.environ if environ is None else environ)
+        try:
+            local=env.get("LOCALAPPDATA","").strip()
+            if not local:
+                raise ValueError("LOCALAPPDATA ausente; nao selecionar destino QA alternativo")
+            qa_root=Path(local)/"PokemonBlueUnovaMapids"/"qa-copies"
+            a13_result=a13.audit(selected,qa_root,a04_result,a12_result)
+        except (ValueError,OSError,KeyError,TypeError,RecursionError) as exc:
+            a13_result={
+                "schema":1,"region":"UNOVA","phase":"A13",
+                "status":"BLOCKED_A13_QA_COPY_NOT_CREATED",
+                "path":None,"profile":None,"file_count":None,
+                "source_bytes":None,
+                "block_reason":str(exc)[:500],
+                "game_exe_launched":False,"qa_runtime_tested":False,
+                "unova_installed":False,"no_user_game_modified":True,
+                "can_reserve_mapids":False,"can_install":False,
+                "bar_a_completed":0,"bar_a_total":8,
+            }
+        a13_path=a13.save(project,a13_result)
         result.update({
             "status":"AUTO_A04_A05_DONE_NOT_NATIVE_APPROVED",
             "error":None,
@@ -621,6 +662,8 @@ def execute(project: Path, environ: Mapping[str,str] | None = None) -> dict:
             "a11_report_path":str(a11_path),
             "a12_result":a12_result,
             "a12_report_path":str(a12_path),
+            "a13_result":a13_result,
+            "a13_report_path":str(a13_path),
         })
     except (ValueError,OSError,KeyError,TypeError) as exc:
         result["status"]="AUTO_A04_OR_A05_BLOCKED"
@@ -648,6 +691,7 @@ def main(argv=None) -> int:
         print("UNOVA_A10="+str(result.get("a10_report_path") or "NAO_GERADO"))
         print("UNOVA_A11="+str(result.get("a11_report_path") or "NAO_GERADO"))
         print("UNOVA_A12="+str(result.get("a12_report_path") or "NAO_GERADO"))
+        print("UNOVA_A13="+str(result.get("a13_report_path") or "NAO_GERADO"))
         if result.get("error"):
             print("UNOVA_AUTO_ERRO="+result["error"])
         if args.open_summary and os.name=="nt" and os.environ.get("UNOVA_MAPIDS_HEADLESS")!="1":
