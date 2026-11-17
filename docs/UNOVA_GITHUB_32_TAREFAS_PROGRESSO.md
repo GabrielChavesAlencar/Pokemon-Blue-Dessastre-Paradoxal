@@ -6,9 +6,9 @@
 
 ## Barra geral
 
-**24/32 entregas concluídas (75%)** · 8 pendentes
+**25/32 entregas concluídas (78%)** · 7 pendentes
 
-`[████████████████████████░░░░░░░░]` **75%**
+`[█████████████████████████░░░░░░░]` **78%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
@@ -16,7 +16,7 @@
 | G02 — História, ginásios e pós-jogo | **4/4** | `████` |
 | G03 — Treinadores e balanceamento | **4/4** | `████` |
 | G04 — Áreas, selvagens e temporadas | **4/4** | `████` |
-| G05 — Mecânicas e isolamento regional | **3/4** | `███░` |
+| G05 — Mecânicas e isolamento regional | **4/4** | `████` |
 | G06 — Site, guias e acompanhamento | **2/4** | `██░░` |
 | G07 — Blue-Story, manifests e instalador | **1/4** | `█░░░` |
 | G08 — Auditoria, CI e qualidade | **2/4** | `██░░` |
@@ -72,7 +72,7 @@ Regras compartilhadas com Decades sem editar o jogo principal.
 - [x] **G05.1 — Especificar HMs e itens-chave exclusivos por região.** Contrato auditável de Bolsa, PC de itens, atalhos e seis ações simbólicas de Unova, simulação ida/retorno e 98 testes, sem modificar Ruby/saves · [Evidência](../scripts/regions/audit_unova_g05_regional_items.py)
 - [x] **G05.2 — Definir insígnias, esmeraldas e trava de especiais.** Oito insígnias locais de Unova, soma de conquistas globais, quatro categorias especiais, prévia segura de Box/party, 120 testes offline e nenhuma alteração de saves · [Evidência](../scripts/regions/audit_unova_g05_badges_specials.py)
 - [x] **G05.3 — Contratar NPC de viagem e retorno entre regiões.** Contrato de NPC da cidade inicial, origem/destino instalados, retorno seguro, prévia G05.1/G05.2 e rollback sintético em cinco pontos, 127 testes offline · [Evidência](../scripts/regions/audit_unova_g05_travel.py)
-- [ ] **G05.4 — Testar blackout, Centro Pokémon e estado compartilhado.** Moedas, boxes, TMs, progresso e fallback de Centro da região atual
+- [x] **G05.4 — Testar blackout, Centro Pokémon e estado compartilhado.** Auditoria do hook Ruby, Centro local e fallback por região, 122 testes offline de persistência/rollback e dois riscos nativos registrados sem modificar o jogo · [Evidência](../scripts/regions/audit_unova_g05_blackout_state.py)
 
 ### G06 — Site, guias e acompanhamento
 
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G05.4 (blackout, Centro Pokémon da região atual, estado compartilhado, boxes, TMs e persistência apenas em fixtures offline, sem tocar saves). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G06.2 (guias das 74 áreas, progressão de capítulos e ginásios, status de pendências verificáveis e links de navegação, sem simular jogabilidade). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
