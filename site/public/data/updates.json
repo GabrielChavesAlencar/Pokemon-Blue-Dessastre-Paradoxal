@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "53425d8e71fd963c702c99da5ed959c9344c6c5b",
+      "date": "2026-11-17T19:45:31-03:00",
+      "title": "Unova G05.1 — contratos de isolamento de HMs e itens-chave (22/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "db59e59643627f607597253fd260fd3be847ac00",
       "date": "2026-11-17T19:40:46-03:00",
       "title": "docs(sinnoh): mark G10 integrated in main, pipeline reaches 10/12",
