@@ -73,10 +73,18 @@ class SinnohS16Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"SINNOH_S15_BLOCKED"):self.check(s15=x)
     def test_24_progress_code_only(self):
         p=json.loads((ROOT/"data/regions/sinnoh-progress.json").read_text("utf-8"))
-        self.assertEqual(p["development"]["done"],28)
-        self.assertEqual(p["development"]["partial"],4)
-        self.assertEqual(p["development"]["pending"],0)
-        self.assertEqual(p["development"]["percent_complete"],87)
+        # S16 acceptance must survive later engineering milestones.
+        self.assertGreaterEqual(p["development"]["done"],28)
+        self.assertEqual(p["development"]["done"],
+                         sum(t["status"]=="done" for t in p["tasks"]))
+        self.assertEqual(p["development"]["partial"],
+                         sum(t["status"]=="partial" for t in p["tasks"]))
+        self.assertEqual(p["development"]["pending"],
+                         sum(t["status"]=="pending" for t in p["tasks"]))
+        self.assertEqual(p["development"]["percent_complete"],
+                         100*p["development"]["done"]//p["development"]["total"])
+        self.assertFalse(self.data["s16"]["can_grant_hm"])
+        self.assertEqual(self.data["s16"]["verified_native_sources"],{})
         self.assertEqual(next(x["status"] for x in p["tasks"] if x["id"]=="S16"),"done")
         self.assertEqual(p["phase_gates"]["playable_in_game_executable"],0)
         self.assertEqual(p["phase_gates"]["fully_tested_native"],0)
