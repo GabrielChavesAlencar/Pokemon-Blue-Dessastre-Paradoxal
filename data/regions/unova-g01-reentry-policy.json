@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "phase": "G01.3",
+  "status": "OFFLINE_RECEIPT_LEDGER_NOT_NATIVE_INVENTORY",
+  "state_schema_version": 1,
+  "ledger_schema_version": 1,
+  "g01_contract": "data/regions/unova-g01-state-contract.json",
+  "g01_machine": "data/regions/unova-g01-chapter-transitions.json",
+  "source_u07_events": "data/regions/unova-u07-nuvema-events.json",
+  "scope": "SIMULATED_ONLY_NOT_GAME_SAVE",
+  "allowed_operations": [
+    "begin",
+    "record_u07",
+    "complete",
+    "advance",
+    "reenter"
+  ],
+  "duplicate_event": "NO_OP_ONLY_IF_INPUT_MATCHES_ORIGINAL",
+  "conflicting_replay": "REJECT_FAIL_CLOSED",
+  "past_chapter_reentry": "READ_ONLY_NO_CHECKPOINT_ROLLBACK",
+  "failed_required_win": "NO_OP_RETRY_WITHOUT_RECEIPT",
+  "reward_intents_not_inventory": true,
+  "actual_items_granted": false,
+  "game_exe_tested": false,
+  "can_install": false,
+  "release_native_claims": false,
+  "events": [
+    {
+      "event_key": "UNOVA_U07_STARTER_GIFT",
+      "requires": [],
+      "battle_policy": null,
+      "kind": "choice",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_BIANCA_FIRST_BATTLE",
+      "requires": [
+        "UNOVA_U07_STARTER_GIFT"
+      ],
+      "battle_policy": "ADVANCE_ON_LOSS",
+      "kind": "battle",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_CHEREN_FIRST_BATTLE",
+      "requires": [
+        "UNOVA_U07_BIANCA_FIRST_BATTLE"
+      ],
+      "battle_policy": "ADVANCE_ON_LOSS",
+      "kind": "battle",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_MOM_XTRANSCEIVER",
+      "requires": [
+        "UNOVA_U07_CHEREN_FIRST_BATTLE"
+      ],
+      "battle_policy": null,
+      "kind": "grant",
+      "grants_once": [
+        {
+          "category": "KEY_ITEM",
+          "token": "XTRANSCEIVER",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "event_key": "UNOVA_U07_VISIT_BIANCA_HOME",
+      "requires": [
+        "UNOVA_U07_MOM_XTRANSCEIVER"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_JUNIPER_LAB_POKEDEX",
+      "requires": [
+        "UNOVA_U07_VISIT_BIANCA_HOME"
+      ],
+      "battle_policy": null,
+      "kind": "grant",
+      "grants_once": [
+        {
+          "category": "KEY_ITEM",
+          "token": "POKEDEX",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "event_key": "UNOVA_U07_MOM_TOWN_MAP",
+      "requires": [
+        "UNOVA_U07_JUNIPER_LAB_POKEDEX"
+      ],
+      "battle_policy": null,
+      "kind": "grant",
+      "grants_once": [
+        {
+          "category": "KEY_ITEM",
+          "token": "TOWN_MAP",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "event_key": "UNOVA_U07_ROUTE1_GROUP",
+      "requires": [
+        "UNOVA_U07_MOM_TOWN_MAP"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL",
+      "requires": [
+        "UNOVA_U07_ROUTE1_GROUP"
+      ],
+      "battle_policy": null,
+      "kind": "grant",
+      "grants_once": [
+        {
+          "category": "ITEM",
+          "token": "POKE_BALL",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "event_key": "UNOVA_U07_ACCUMULA_CENTER_INTRO",
+      "requires": [
+        "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_PLASMA_SPEECH",
+      "requires": [
+        "UNOVA_U07_ACCUMULA_CENTER_INTRO"
+      ],
+      "battle_policy": null,
+      "kind": "dialogue",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_N_FIRST_BATTLE",
+      "requires": [
+        "UNOVA_U07_PLASMA_SPEECH"
+      ],
+      "battle_policy": "WIN_REQUIRED",
+      "kind": "battle",
+      "grants_once": []
+    },
+    {
+      "event_key": "UNOVA_U07_ROUTE2_PASSAGE",
+      "requires": [
+        "UNOVA_U07_N_FIRST_BATTLE"
+      ],
+      "battle_policy": null,
+      "kind": "milestone",
+      "grants_once": [
+        {
+          "category": "STORY_TOKEN",
+          "token": "ROUTE_2_PASSAGE_READY",
+          "amount": 1
+        }
+      ]
+    }
+  ],
+  "reward_keys": [
+    "KEY_ITEM:XTRANSCEIVER",
+    "KEY_ITEM:POKEDEX",
+    "KEY_ITEM:TOWN_MAP",
+    "ITEM:POKE_BALL",
+    "STORY_TOKEN:ROUTE_2_PASSAGE_READY"
+  ],
+  "notes": [
+    "Os grants_once são intenções offline derivadas de U07; NÃO inserem itens na bag, Pokémon no party ou flags em saves reais.",
+    "Nenhum evento concluído pode ganhar segunda intenção de recompensa por reentrada, replay ou repetição de capítulos.",
+    "O primeiro combate contra N exige WIN; LOSS permite nova tentativa sem receipts, flags ou recompensas; Bianca e Cheren avançam com LOSS conforme U07.",
+    "G01.4 definirá migração/serialização do envelope; esta fase opera exclusivamente em memória com cópias profundas."
+  ]
+}
