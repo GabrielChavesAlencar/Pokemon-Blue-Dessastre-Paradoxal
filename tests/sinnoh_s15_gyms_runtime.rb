@@ -1,9 +1,10 @@
 # S15: test the real shared BlueRegions via the existing fixture, no Game.exe.
 require 'json'
 fixture=File.expand_path(ARGV.fetch(0))
-require fixture
-load File.expand_path(ARGV.fetch(1))
-spec=JSON.parse(File.read(File.expand_path(ARGV.fetch(2))))
+load fixture
+load File.expand_path(ARGV.fetch(1)) # shared BlueRegions runtime
+load File.expand_path(ARGV.fetch(2)) # inert S15 adapter
+spec=JSON.parse(File.read(File.expand_path(ARGV.fetch(3))))
 def check(ok,why)
   raise "SINNOH_S15_RUBY: #{why}" unless ok
 end
