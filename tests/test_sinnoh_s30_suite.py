@@ -41,7 +41,9 @@ class SinnohS30SuiteTests(unittest.TestCase):
             self.assertEqual(set(report["groups"][group]["sha256"]), set(expected))
             self.assertTrue(all(len(sha) == 64 for sha
                                 in report["groups"][group]["sha256"].values()))
-        self.assertEqual(report["development_counts"]["done"], 11)
+        ledger = json.loads((self.root / "data/regions/sinnoh-progress.json").read_text("utf-8"))
+        self.assertEqual(report["development_counts"]["done"], ledger["development"]["done"])
+        self.assertEqual(next(t["status"] for t in ledger["tasks"] if t["id"] == "S30"), "done")
         self.assertFalse(report["native_game_exe_tested"])
         self.assertFalse(report["joiplay_tested"])
         self.assertFalse(report["native_qa_approved"])
@@ -107,7 +109,10 @@ class SinnohS30SuiteTests(unittest.TestCase):
         (self.root / rel).write_text(original, encoding="utf-8")
         def update_consistent(j):
             next(t for t in j["tasks"] if t["id"] == "S30").update(status="partial")
-            j["development"].update(done=10, partial=7, percent_complete=31)
+            dev = j["development"]
+            dev["done"] -= 1
+            dev["partial"] += 1
+            dev["percent_complete"] = 100 * dev["done"] // dev["total"]
         self.edit(rel, update_consistent)
         with self.assertRaisesRegex(ValueError, "S30 deve ter evidencia"):
             s30.collect(self.root)
