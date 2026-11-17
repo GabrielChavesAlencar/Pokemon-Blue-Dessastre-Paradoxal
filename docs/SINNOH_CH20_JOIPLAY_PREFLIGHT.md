@@ -4,8 +4,8 @@
 
 ## Reutilização sem duplicar os dados de jogo
 
-- [Auditor de Android/JoiPlay CH20](../scripts/regions/audit_sinnoh_android_ch20.py) deriva 44 IDs do [contrato simbólico Twinleaf](../data/regions/sinnoh-twinleaf-events.json) e segue a divisão do [auditor nativo preexistente](../scripts/regions/audit_sinnoh_playtest.py). A CH20 não substitui esse auditor de evidências, nem cria MapIDs/posições de chegada fictícios.
-- [14 casos de teste](../tests/test_sinnoh_android_ch20.py) incluem ZIP seguro e malicioso, arquivos obrigatórios, prefixo de pasta, colisões 800–805 como **alerta a auditar**, casos duplicados, falsificação de aprovação/posição, isolamento de saída em `.blue-work` e proteção contra sobrescrita/symlink.
+- [Auditor de Android/JoiPlay CH20](../scripts/regions/audit_sinnoh_android_ch20.py) deriva 44 IDs do [contrato simbólico Twinleaf](../data/regions/sinnoh-twinleaf-events.json), revalidado pelo [auditor CH06 de topologia, schema, eventos e sprites](../scripts/regions/audit_sinnoh_twinleaf_events.py) e segue a divisão do [auditor nativo preexistente](../scripts/regions/audit_sinnoh_playtest.py). A CH20 não substitui esse auditor de evidências, nem cria MapIDs/posições de chegada fictícios.
+- [15 casos de teste](../tests/test_sinnoh_android_ch20.py) incluem ZIP seguro e malicioso, arquivos obrigatórios, prefixo de pasta, colisões 800–805 como **alerta a auditar**, casos duplicados, falsificação de aprovação/posição, isolamento de saída em `.blue-work` e proteção contra sobrescrita/symlink.
 - [CI separado CH20](../.github/workflows/sinnoh-ch20.yml): verifica sintaxe, testes, gera artefato JSON sempre com 44 casos nativos **pendentes**. O CI não baixa e não publica assets privados.
 
 | Categoria | Casos | O que exige teste real |
@@ -47,6 +47,6 @@ Se existirem arquivos com IDs 800–805, o relatório exige identificação da r
 3. Compilação de PBS, battle 70%/90%, warps, save/reload e retorno ao Centro Pokémon no Windows ou no Android.
 4. Autenticidade de capturas e logs de um aparelho; a revisão precisa ser local, e o [auditor do playtest](../scripts/regions/audit_sinnoh_playtest.py) continua sendo o responsável por validar as 44 observações e seus hashes.
 
-**Critério para `done` na Barra E:** arquivos, 14 testes e execução do novo workflow CH20 comprovados na `main`. Se não houver prova de CI, o status permanece **partial**, mesmo com o código publicado. Conclusão estática da CH20 **nunca** aumenta as barras técnicas/jogáveis.
+**Critério para `done` na Barra E:** arquivos, 15 testes e execução do novo workflow CH20 comprovados na `main`. Se não houver prova de CI, o status permanece **partial**, mesmo com o código publicado. Conclusão estática da CH20 **nunca** aumenta as barras técnicas/jogáveis.
 
 **Situação das barras:** Barra E 18/20 (90%) enquanto CH19 e CH20 aguardam validação do novo CI; A 8/32 (25%), B/C/D 0/13, sem alteração. Não foi usado o jogo principal nem seus saves.
