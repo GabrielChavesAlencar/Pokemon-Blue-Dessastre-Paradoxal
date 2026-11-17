@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "845ca8738160b0e8de5cfe3cfff53fdc10a1efa3",
+      "date": "2026-11-17T06:52:27-03:00",
+      "title": "feat(sinnoh): S21 Elite Cynthia e Hall of Fame separado; Barra A 22/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "3eda4311f2aef3212b0fa44603cd60e252d612fc",
       "date": "2026-11-17T06:39:08-03:00",
       "title": "feat(sinnoh): S20 Cyrus Distortion Giratina gates e Barra A 21/32",
