@@ -31,6 +31,14 @@ python scripts/regions/audit_sinnoh_s08_resources.py \
 
 **Política de falhas:** sem fonte/overlay, arquivos faltantes, gráficos malformados, hashes modificados ou dependências não satisfeitas, a ferramenta devolve falha, não um certificado de implantação. Um relatório de fonte com mapas/refs pendentes apresenta `BLOCKED_SOURCE_INTEGRITY` e código de saída diferente de zero. Mesmo uma conferência limpa usa `STATIC_INTEGRITY_VERIFIED_NOT_NATIVE_GAMEPLAY` e marca `native_qa_approved=false`, `import_allowed=false` e `source_rights_verified=false`.
 
+## Evidências reais do CI
+
+- [Sinnoh S30 — run 43997200040](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43997200040): **5/5 jobs `success`**. Manifesto (11/11 testes), Python (7 verificações e descoberta `test_sinnoh_*.py`, incluindo os **16 testes S08**), Ruby (22 verificações), Portal (**161/161** testes) e Android estático (**18 + 12** testes). Os **44 casos nativos continuam pendentes**.
+- [Sinnoh CH19 — run 43997199313](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43997199313): jobs Python/Ruby `success`, sem Game.exe.
+- [Portal Blue — run 43997199347](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43997199347): build e suíte `success`.
+- [Sinnoh CH20 — run 43997199167](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43997199167): pré-voo JoiPlay **estático aprovado**, nenhum aparelho testado.
+- Workflows gerais de outras regiões são independentes; estes resultados comprovam apenas o escopo estático/offline de Sinnoh, não execução de mapa real nem direitos sobre recursos.
+
 ## Critérios de aceite
 
 Concluir S08 no seu **escopo de código e prevenção de regressões** após CI CH19, matriz S30, portal e CH20 aprovados, com merge na `main`. A S08 fica `done` quando essas condições forem atendidas. A Barra A evolui de **15/32 (46%) para 16/32 (50%)**; **5 tarefas parciais e 11 pendentes**. A Barra E permanece **20/20 (100%)** e as barras **B/C/D permanecem 0/13**.
