@@ -1,0 +1,125 @@
+name: Sinnoh G11 - integracao offline B07-B11
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g11-b07-b11-integration.yml'
+      - 'scripts/regions/build_sinnoh_b07_private_stage.py'
+      - 'scripts/regions/audit_sinnoh_b08_private_qa.py'
+      - 'scripts/regions/build_sinnoh_b09_native_qa.py'
+      - 'scripts/regions/prepare_sinnoh_b10_save_isolation.py'
+      - 'scripts/regions/audit_sinnoh_b11_host_saves.py'
+      - 'scripts/regions/audit_sinnoh_g11_ci_chain.py'
+      - 'data/regions/sinnoh-b0*.json'
+      - 'data/regions/sinnoh-b1*.json'
+      - 'tests/test_sinnoh_b07_private_stage.py'
+      - 'tests/test_sinnoh_b08_private_qa.py'
+      - 'tests/test_sinnoh_b09_native_qa.py'
+      - 'tests/test_sinnoh_b10_save_isolation.py'
+      - 'tests/test_sinnoh_b11_host_saves.py'
+      - 'tests/test_sinnoh_g11_ci_chain.py'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g11-b07-b11-integration.yml'
+      - 'scripts/regions/build_sinnoh_b07_private_stage.py'
+      - 'scripts/regions/audit_sinnoh_b08_private_qa.py'
+      - 'scripts/regions/build_sinnoh_b09_native_qa.py'
+      - 'scripts/regions/prepare_sinnoh_b10_save_isolation.py'
+      - 'scripts/regions/audit_sinnoh_b11_host_saves.py'
+      - 'scripts/regions/audit_sinnoh_g11_ci_chain.py'
+      - 'data/regions/sinnoh-b0*.json'
+      - 'data/regions/sinnoh-b1*.json'
+      - 'tests/test_sinnoh_b07_private_stage.py'
+      - 'tests/test_sinnoh_b08_private_qa.py'
+      - 'tests/test_sinnoh_b09_native_qa.py'
+      - 'tests/test_sinnoh_b10_save_isolation.py'
+      - 'tests/test_sinnoh_b11_host_saves.py'
+      - 'tests/test_sinnoh_g11_ci_chain.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: G11 / contratos B07-B11 e metadados sem binarios
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Executar preflights somente metadados
+        run: |
+          python scripts/regions/build_sinnoh_b07_private_stage.py > /dev/null
+          python scripts/regions/audit_sinnoh_b08_private_qa.py > /dev/null
+          python scripts/regions/build_sinnoh_b09_native_qa.py > /dev/null
+          python scripts/regions/prepare_sinnoh_b10_save_isolation.py > /dev/null
+          python scripts/regions/audit_sinnoh_b11_host_saves.py > /dev/null
+      - name: Auditor integrado fail-closed e verificacao de nao-aprovacao
+        run: |
+          mkdir -p .blue-work/sinnoh-g11
+          python scripts/regions/audit_sinnoh_g11_ci_chain.py > .blue-work/sinnoh-g11/public-chain.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path(".blue-work/sinnoh-g11/public-chain.json")
+          x=json.loads(p.read_text(encoding="utf-8"))
+          assert x["status"]=="B07_B11_PUBLIC_CONTRACT_CHAIN_RECONCILED_SYNTHETIC_ONLY"
+          assert [v["stage"] for v in x["chain"]]==["B07","B08","B09","B10","B11"]
+          assert x["candidate_terrain_maps"]==54
+          assert x["expected_synthetic_clone_map_count"]==702
+          assert x["private_pngs_required_by_B08"]==14
+          assert x["png_bytes_of_real_donor_inspected_in_CI"]==0
+          assert not x["sandbox_run_performed"] and not x["game_exe_tested"]
+          assert not x["joiplay_tested"] and not x["can_install_live_game"]
+          assert not x["save_snapshot_coverage_proven"]
+          assert x["saves_excluded_from_B09"]
+          assert not x["r07_complete"] and not x["r08_complete"] and not x["r09_complete"]
+          assert x["phase_b_approved"]==x["phase_c_approved"]==x["phase_d_approved"]==0
+          text=p.read_text(encoding="utf8")
+          for forbidden in ("C:\\Users", "private-baseline.json", "Save01.rxdata",
+                            "hmac_key", "source_zip_sha256"):
+              assert forbidden not in text
+          print("SINNOH_G11_CONTRACTS_RECONCILED_NO_NATIVE_APPROVAL")
+          PY
+      - name: Publicar somente JSON sintetico sem saves, PNGs ou Game.exe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g11-public-metadata-only
+          path: .blue-work/sinnoh-g11/public-chain.json
+          if-no-files-found: warn
+
+  individual:
+    name: G11 / suites nativas sinteticas B07-B11
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: B07  builder privado e contratacoes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b07_private_stage.py' -v
+      - name: B08  auditoria de overlay
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b08_private_qa.py' -v
+      - name: B09  clone sem saves e sem executar Game.exe
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b09_native_qa.py' -v
+      - name: B10  politicas e geracao de WSB sintético
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b10_save_isolation.py' -v
+      - name: B11  snapshots sintéticos e privacidade
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b11_host_saves.py' -v
+
+  end-to-end:
+    name: G11 / 18 testes de ponta a ponta B07-B11
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Contratos, clone sintetico, WSB inerte, save mock e adulteracoes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g11_ci_chain.py' -v
