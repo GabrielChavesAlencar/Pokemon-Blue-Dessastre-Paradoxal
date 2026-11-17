@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ad6f9e8517bbcf76a6fbe5e867d4f7413cf06e26",
+      "date": "2026-11-17T08:30:27-03:00",
+      "title": "feat(unova): leitura inerte RXDATA de nomes, eventos e transferencias, sem instalar mapas",
+      "category": "Novidades"
+    },
+    {
       "sha": "b90aeca8c8ead25a26d3143b2084d0deb362ca5e",
       "date": "2026-11-17T07:18:23-03:00",
       "title": "docs(unova): barras verificáveis, U01-U03, bloqueios e auditoria com BAT",
