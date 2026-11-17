@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 26/32 após as entregas S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 27/32 após as entregas S08, S10, S11, S12, S15, S17, S18, S19, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -245,6 +245,12 @@ A [entrega S24](SINNOH_S24_CATALOGO_CENARIOS_ACEITE.md) acrescenta a [matriz](..
 A [entrega S25](SINNOH_S25_BLUEMUSIC_INTEGRACAO_OFFLINE_ACEITE.md) adiciona [bridge Ruby](../scripts/music/SinnohBlueMusicBridge.rb), manifesto, [auditor](../scripts/music/audit_sinnoh_music_s25.py), 21 testes negativos e testes Ruby contra BlueMusic real, com preferências manuais e outras regiões preservadas. O registro de faixas nativas continua vazio.
 
 **Após CI e merge: Barra A 26/32 (81%)**, 4 parciais, 2 pendentes; E 20/20, B/C/D 0/13. Sem licenças/áudio instalado e 44 testes nativos ainda necessários.
+
+### S15 — oito ginásios em contrato, sem badges nativas instaladas
+
+A [S15](SINNOH_S15_OITO_GINASIOS_INSIGNIAS_ACEITE.md) associa os [oito líderes Platinum](../data/regions/sinnoh-gyms-s15.json) a eventos e insígnias planejados, verificando CH15 (equipes), CH11 (HM/badges) e BlueRegions/BlueCampaign. A [ponte Ruby](../scripts/regions/SinnohGymContracts.rb) mantém `VERIFIED_NATIVE_SOURCES` vazio e impede concessão de insígnias por eventos falsos. O [auditor](../scripts/regions/audit_sinnoh_s15_gyms.py), [22 testes Python](../tests/test_sinnoh_s15_gyms.py) e [fixture Ruby](../tests/sinnoh_s15_gyms_runtime.rb) só exercitam contratos offline. Nenhum Ginásio real foi importado.
+
+**Após CI e merge: Barra A 27/32 (84%)**, quatro parciais, um pendente; E 20/20 e B/C/D 0/13. 44 verificações nativas ainda necessárias.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

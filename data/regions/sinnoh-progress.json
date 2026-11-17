@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 26,
+    "done": 27,
     "partial": 4,
-    "pending": 2,
-    "percent_complete": 81,
-    "percent_with_partial_not_counted": 81,
+    "pending": 1,
+    "percent_complete": 84,
+    "percent_with_partial_not_counted": 84,
     "groups": [
       {
         "key": "foundation",
@@ -182,8 +182,8 @@
     {
       "id": "S15",
       "title": "Oito ginásios e insígnias",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S15_OITO_GINASIOS_INSIGNIAS_ACEITE.md"
     },
     {
       "id": "S16",
