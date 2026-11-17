@@ -342,8 +342,8 @@ def main(argv=None):
                 blocked("--after nao pode modificar o escopo do snapshot")
             result=inspect_after(ROOT,args.after,args.observation)
         else:
-            if any((args.latest,args.clone_sha,args.native_inventory,args.watch_dir))
-                or args.observation!="not_run":
+            if (any((args.latest,args.clone_sha,args.native_inventory,args.watch_dir))
+                or args.observation!="not_run"):
                 blocked("informe --before ou --after")
             c=load(CONTRACT);c10=load(b10.CONTRACT);c09=load(b09.CONTRACT)
             check_contract(c,c10,c09)
