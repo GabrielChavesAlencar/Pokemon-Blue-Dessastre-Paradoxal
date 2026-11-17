@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a9ab0949b807d24a86d5866965218fa70545dfc9",
+      "date": "2026-11-17T18:58:29-03:00",
+      "title": "fix(kanto): correct fossil source script regex escaping",
+      "category": "Correções"
+    },
+    {
+      "sha": "8d8a9f9a402db487cd008842a5e7e39b31e79b3a",
+      "date": "2026-11-17T18:58:11-03:00",
+      "title": "fix(kanto): restore source-anchored Mt. Moon fossil objects in new imports",
+      "category": "Correções"
+    },
+    {
       "sha": "1c477cb648b8c9d23723bea065f7a6faa406c0a3",
       "date": "2026-11-17T18:57:21-03:00",
       "title": "fix(kanto): add save-safe Mt. Moon fossil choice and Cinnabar revival",
