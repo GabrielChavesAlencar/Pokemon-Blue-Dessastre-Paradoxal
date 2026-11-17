@@ -1,0 +1,151 @@
+name: Sinnoh S30 - suite automatizada offline
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-s30.yml'
+      - 'scripts/regions/**'
+      - 'scripts/music/**'
+      - 'scripts/battle_polish/**'
+      - 'data/regions/sinnoh*'
+      - 'tests/test_sinnoh_*.py'
+      - 'tests/sinnoh_*.rb'
+      - 'site/src/assets/sinnoh*'
+      - 'site/scripts/sinnoh*'
+      - 'site/tests/sinnoh*.test.mjs'
+      - 'docs/SINNOH_PROGRESSO.md'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-s30.yml'
+      - 'scripts/regions/**'
+      - 'scripts/music/**'
+      - 'scripts/battle_polish/**'
+      - 'data/regions/sinnoh*'
+      - 'tests/test_sinnoh_*.py'
+      - 'tests/sinnoh_*.rb'
+      - 'site/src/assets/sinnoh*'
+      - 'site/scripts/sinnoh*'
+      - 'site/tests/sinnoh*.test.mjs'
+      - 'docs/SINNOH_PROGRESSO.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manifest:
+    name: S30 / Manifesto
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testar manifestos, escopo, arquivos faltantes e falso QA nativo
+        run: python -m unittest discover -s tests -p 'test_sinnoh_s30_suite.py' -v
+      - name: Emitir manifesto offline com hashes dos componentes
+        run: python scripts/regions/audit_sinnoh_s30_suite.py --output .blue-work/sinnoh-s30/manifest.json
+      - name: Conservar relatorio mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-s30-manifesto
+          path: |
+            .blue-work/sinnoh-s30/manifest.json
+            .blue-work/sinnoh-s30/manifest.md
+          if-no-files-found: warn
+
+  python:
+    name: S30 / Python
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regressao completa de Sinnoh e auditores fail-closed
+        run: python scripts/regions/sinnoh_ci_ch19.py --suite python --output .blue-work/sinnoh-s30
+      - name: Conservar relatorio Python mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-s30-python
+          path: |
+            .blue-work/sinnoh-s30/sinnoh-ch19-python.json
+            .blue-work/sinnoh-s30/sinnoh-ch19-python.md
+          if-no-files-found: warn
+
+  ruby:
+    name: S30 / Ruby
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regressoes Ruby de Sinnoh com isolamento de regioes
+        run: python scripts/regions/sinnoh_ci_ch19.py --suite ruby --output .blue-work/sinnoh-s30
+      - name: Conservar relatorio Ruby mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-s30-ruby
+          path: |
+            .blue-work/sinnoh-s30/sinnoh-ch19-ruby.json
+            .blue-work/sinnoh-s30/sinnoh-ch19-ruby.md
+          if-no-files-found: warn
+
+  portal:
+    name: S30 / Portal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build deterministico e suite completa do portal
+        working-directory: site
+        run: |
+          npm run build
+          npm test
+
+  android:
+    name: S30 / Android estatico
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditar pacote e evidencias somente em fixtures
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_playtest_audit.py' -v
+      - name: Reprovar qualquer promessa falsa de compatibilidade JoiPlay
+        run: |
+          python scripts/regions/audit_sinnoh_android_ch20.py --output .blue-work/sinnoh-s30/android.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('.blue-work/sinnoh-s30/android.json')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          assert r['checklist_total']==44
+          assert r['completed_native_cases']==0
+          assert not r['joiplay_tested'] and not r['game_exe_tested']
+          assert not r['native_gameplay_verified']
+          assert r['package']['status']=='NOT_PROVIDED'
+          assert all(t['native_status']=='pending' for t in r['cases'])
+          print('SINNOH_S30_ANDROID_STATIC_ONLY_44_PENDING')
+          PY
+      - name: Conservar pre-voo offline Android
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-s30-android-static
+          path: .blue-work/sinnoh-s30/android.json
+          if-no-files-found: warn
