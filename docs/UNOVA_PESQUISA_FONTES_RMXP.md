@@ -32,7 +32,7 @@
 | F08 | MCChara Gen-5 — código | Fork Essentials 20.1, não é campanha completa | https://github.com/MCChara/Pokemon-Essentials-Gen-5 |
 | F09 | Maruno17 Essentials — referência compatível | Repositório de scripts baseado em v21.1; não contém campanha pronta | https://github.com/Maruno17/pokemon-essentials |
 | F10 | Detonado Black/White | Referência da campanha a recriar; não é fonte binária de mapas | https://www.pokemythology.net/detonados/detonado-black-white/ |
-| F11 | Plano narrativo existente | Análise da sequência original Unova para usar durante a reconstrução | docs/UNOVA_PLANO_MESTRE_DETONADO_BLACK_WHITE_DESSASTRE_PARADOXAL.md |
+| F11 | Plano narrativo gerado nesta conversa | Análise da sequência original de Unova disponibilizada como arquivo nesta conversa; ainda não está publicada no GitHub | UNOVA_PLANO_MESTRE_DETONADO_BLACK_WHITE_DESSASTRE_PARADOXAL.md (arquivo local do chat) |
 | F12 | Regras regionais do projeto | Contrato real de saves, viagens, NPC de viagem e itens regionais | docs/VIAGEM_REGIONAL_LIVRE_NPC.md |
 
 **Observação de proveniência:** o conteúdo de F01 é uma manifestação do autor do fangame; não resolve direitos da franquia Pokémon ou de autores de sprites, tilesets, arranjos musicais e plugins incluídos. Um fangame gratuito não é automaticamente um pacote de recursos reutilizáveis.
