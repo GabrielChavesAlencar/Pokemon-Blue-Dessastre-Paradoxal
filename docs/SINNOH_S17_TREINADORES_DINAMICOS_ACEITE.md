@@ -30,6 +30,11 @@ O [catálogo CH15](../data/regions/sinnoh-trainer-teams-ch15.json) contém **13 
 
 **Aceite de código após CI/merge:** S17 pode ser marcada `done` como validação/integração de regras compartilhadas, elevando a Barra A para **18/32 (56%)** (5 parciais, 9 pendentes). **Barra E 20/20; B/C/D 0/13; 44 casos nativos pendentes.** As S15/S16/S18–S23 continuam sem instalação de mapas, NPCs e batalhas reais.
 
-## Evidências CI
+## Evidências reais do GitHub Actions
 
-Resultados do CI desta entrega devem ser inseridos **após execução** e verificação dos jobs CH19 (Python/Ruby), S30 (5 jobs), portal e CH20 estático. Nenhum resultado futuro ou teste nativo é presumido aprovado.
+- [Sinnoh S30 — run 44000656370](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44000656370): **5/5 jobs aprovados**. Manifesto (11 testes), Python (descoberta geral e 10 testes negativos S17), Ruby (`sinnoh-s17-trainers = passed (0)`), Portal (**161/161 testes**) e pré-voo Android estático.
+- [Sinnoh CH19 — run 44000656211](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44000656211): **Python e Ruby `success`**, incluindo `sinnoh-s17-balance-contract = passed (0)` e `sinnoh-s17-trainers = passed (0)`.
+- [Portal Blue — run 44000656633](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44000656633): build + suíte do site aprovados.
+- [Sinnoh CH20 — run 44000656219](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44000656219): pré-voo Android **estático** `success`, com 44 verificações nativas ainda pendentes.
+- A primeira rodada de teste encontrou uma **expectativa incorreta**: a S17 exigia preservação de Torterra no rival em estágio inicial, mas o `BlueStory` aplica normalmente seu limite BST a rivais/administradores. O teste foi ajustado para exigir a política existente, sem alterar o balanceamento compartilhado. A segunda rodada acima passou integralmente.
+- Esses resultados **não incluem Game.exe Windows nem JoiPlay** e não provam instalação de equipes, NPCs ou batalhas físicas de Sinnoh.
