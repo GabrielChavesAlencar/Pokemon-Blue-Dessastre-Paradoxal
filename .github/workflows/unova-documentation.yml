@@ -39,6 +39,7 @@ jobs:
           python scripts/regions/audit_unova_u03_catalog.py
           python scripts/regions/audit_unova_e06_e07.py
           python scripts/regions/audit_unova_e04_e05_evidence.py
+          python scripts/regions/audit_unova_e05_source_map_atlas.py
           python scripts/regions/audit_unova_e08_readiness.py
       - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
         run: python -m unittest discover -s tests -p 'test_unova_*.py' -v
@@ -56,3 +57,4 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_e05_mapinfos_only.py
           python -m py_compile scripts/regions/audit_unova_e05_anchored_events.py
           python -m py_compile scripts/regions/audit_unova_e04_e05_evidence.py
+          python -m py_compile scripts/regions/audit_unova_e05_source_map_atlas.py
