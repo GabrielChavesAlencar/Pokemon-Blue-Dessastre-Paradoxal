@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "77ca60e86dfc947a61957e8384491c57a6ae1324",
+      "date": "2026-11-17T17:00:04-03:00",
+      "title": "Unova G01.3: recompensas únicas, recibos idempotentes e reentrada offline",
+      "category": "Novidades"
+    },
+    {
       "sha": "c5c5ce427c815c233c70bc69b76ed15934a06269",
       "date": "2026-11-17T16:51:09-03:00",
       "title": "Unova G01.2: máquina de estados de capítulos com pré-requisitos e testes offline",
