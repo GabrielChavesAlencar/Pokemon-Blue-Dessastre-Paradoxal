@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 from audit_johto import ROOT, read_map_data
+from audit_sinnoh_twinleaf_events import BALLS as STATIC_BALLS, HANDLERS as STATIC_HANDLERS
 from build_johto_events import EVENT_CLASSES, event_page, ruby
 from server.ruby_marshal import RubyObject
 from sinnoh_staging_transaction import preview as dry_run, stage as create_stage
@@ -212,12 +213,19 @@ def compile_events(folder: Path, spec: dict, *, project: Path = ROOT):
                     handler = row.get("handler")
                     if handler not in HANDLERS:
                         fail("Handler externo/não confiável bloqueado")
+                    if STATIC_HANDLERS.get(key) != (symbol, handler):
+                        fail("Handler não corresponde à chave/local CH06: " + str(key))
                     used_handlers.add(handler)
                     script = HANDLERS[handler]
                 else:
                     species = row.get("species")
                     if species not in STARTERS or species in used_starters:
                         fail("Poké Bola não pertence aos três iniciais únicos de Sinnoh")
+                    # Never convert a walk-over/touch into an unintended grant.
+                    # Each original event key is bound to EXACTLY one species
+                    # in Lake Verity, and only player action may request it.
+                    if trigger != "action" or STATIC_BALLS.get(key) != (symbol, species):
+                        fail("Poké Bola exige interação action e chave/espécie CH06")
                     used_starters.add(species)
                     script = f"BlueSinnohPilot.choose_starter_from_ball(:{species})"
                 page = event_page(script=script, sprite=sprite, touch=(trigger == "touch"))

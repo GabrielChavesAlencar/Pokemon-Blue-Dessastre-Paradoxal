@@ -84,11 +84,18 @@ class SinnohS13Test(unittest.TestCase):
             self.check(bridge=self.bridge+"\nEventHandlers.add(:fake,:fake,proc {})")
     def test_21_progress_distinguishes_native(self):
         p=json.loads((ROOT/"data/regions/sinnoh-progress.json").read_text("utf-8"))
-        self.assertEqual((p["development"]["done"],p["development"]["partial"],
-                          p["development"]["pending"],p["development"]["percent_complete"]),
-                         (30,2,0,93))
+        # Completion of S13 must survive later S14/S31 engineering work.
+        self.assertGreaterEqual(p["development"]["done"],30)
+        self.assertEqual(p["development"]["done"],
+                         sum(t["status"]=="done" for t in p["tasks"]))
+        self.assertEqual(p["development"]["partial"],
+                         sum(t["status"]=="partial" for t in p["tasks"]))
+        self.assertEqual(p["development"]["pending"],
+                         sum(t["status"]=="pending" for t in p["tasks"]))
+        self.assertEqual(p["development"]["percent_complete"],
+                         100*p["development"]["done"]//p["development"]["total"])
         self.assertEqual(next(x["status"] for x in p["tasks"] if x["id"]=="S13"),"done")
-        self.assertEqual(next(x["status"] for x in p["tasks"] if x["id"]=="S14"),"partial")
+        self.assertIn(next(x["status"] for x in p["tasks"] if x["id"]=="S14"),("partial","done"))
         self.assertEqual((p["intro_workstream"]["complete"],p["intro_workstream"]["total"]),(5,8))
         self.assertFalse(p["intro_workstream"]["native_verified"])
         self.assertEqual(p["phase_gates"]["playable_in_game_executable"],0)
