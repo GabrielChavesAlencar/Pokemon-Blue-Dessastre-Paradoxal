@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "5bb79c81ff290bb4a49ad67a393a5993c5da9a4a",
+      "date": "2026-11-17T14:25:57-03:00",
+      "title": "Unova A10: auditoria de destinos dinâmicos e matriz de MapIDs 518–599",
+      "category": "Novidades"
+    },
+    {
       "sha": "94f4bfe1538302b9538a043c80c3befcb3038125",
       "date": "2026-11-17T14:17:57-03:00",
       "title": "feat(sinnoh): B11 auditoria de saves do host e diagnóstico sandbox privado",
