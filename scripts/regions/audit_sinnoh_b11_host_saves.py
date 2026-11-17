@@ -105,8 +105,8 @@ def checked_roots(roots):
     seen=set()
     for root in roots:
         p=Path(root).expanduser().absolute()
-        if link(p) or not p.is_dir():
-            blocked("pasta monitorada ausente, symlink ou junction")
+        if any(link(parent) for parent in (p,*p.parents)) or not p.is_dir():
+            blocked("pasta monitorada ausente, symlink ou junction (inclusive ancestral)")
         resolved=p.resolve()
         key=str(resolved).casefold()
         if key in seen:continue
@@ -114,6 +114,8 @@ def checked_roots(roots):
         output.append(resolved)
     if not output:
         blocked("nenhuma pasta de saves monitoravel; informe --watch-dir")
+    if len(output)>32:
+        blocked("muitas pastas monitoradas para auditoria de saves")
     for i,p in enumerate(output):
         for other in output[i+1:]:
             if p.is_relative_to(other) or other.is_relative_to(p):
@@ -127,7 +129,11 @@ def fingerprint(roots,key):
     result={}
     bytes_scanned=0
     for slot,root in enumerate(checked_roots(roots)):
-        for dirpath,dirs,files in os.walk(root,topdown=True,followlinks=False):
+        def walk_error(exc):
+            # Do not leak private directory names in user-visible diagnostics.
+            blocked("erro de leitura durante a varredura de saves; escopo incompleto")
+        for dirpath,dirs,files in os.walk(
+                root,topdown=True,followlinks=False,onerror=walk_error):
             here=Path(dirpath)
             for d in dirs:
                 if link(here/d):
@@ -136,7 +142,8 @@ def fingerprint(roots,key):
                 p=here/name
                 if link(p) or not p.is_file():
                     blocked("arquivo pessoal nao regular/junction")
-                size=p.stat().st_size
+                before=p.stat()
+                size=before.st_size
                 if size>MAX_FILE_BYTES:blocked("arquivo muito grande para auditoria")
                 bytes_scanned+=size
                 if bytes_scanned>MAX_TOTAL_BYTES or len(result)>=MAX_FILES:
@@ -146,7 +153,13 @@ def fingerprint(roots,key):
                 identifier=hmac.new(key,label,hashlib.sha256).hexdigest()
                 if identifier in result:
                     blocked("colisao inesperada de caminho HMAC")
-                result[identifier]={"sha256":file_sha(p),"bytes":size}
+                digest=file_sha(p)
+                after=p.stat()
+                signature=lambda st:(st.st_size,st.st_mtime_ns,st.st_ctime_ns,
+                                      getattr(st,"st_ino",None))
+                if signature(before)!=signature(after) or link(p):
+                    blocked("arquivo mudou durante a auditoria; tente um novo snapshot")
+                result[identifier]={"sha256":digest,"bytes":size}
     return result,bytes_scanned
 
 def compare(before,after):
@@ -199,6 +212,10 @@ setlocal EnableExtensions DisableDelayedExpansion
 title Sinnoh B11 - Diagnostico SOMENTE dentro da VM
 echo.
 echo B11: SOMENTE dentro da WINDOWS SANDBOX apos preparar a copia B10.
+rem Protecao adicional contra uso acidental no host; NAO autentica a VM.
+if /I not "%USERNAME%"=="WDAGUtilityAccount" goto :outside
+if /I not "%USERPROFILE%"=="C:\Users\WDAGUtilityAccount" goto :outside
+if not exist "C:\SinnohB10Tools\B11_DIAGNOSTICAR_DENTRO_DA_SANDBOX.cmd" goto :outside
 if not exist "C:\SinnohB10Game\Game.exe" goto :failed
 if not exist "C:\SinnohB10Game\Data\Map442.rxdata" goto :failed
 if not exist "C:\SinnohB10Game\Data\Map495.rxdata" goto :failed
@@ -214,6 +231,11 @@ echo Se abrir, fechar a Sandbox apaga os dados internos nao compartilhados.
 echo Guarde apenas observacoes pessoais; nao exporte saves.
 pause
 exit /b 0
+:outside
+echo [B11 BLOQUEADO] O contexto nao corresponde ao convidado Windows Sandbox.
+echo Nao execute Game.exe nem copie saves no Windows principal.
+pause
+exit /b 3
 :failed
 echo [B11 BLOQUEADO] O clone nao foi preparado em C:\SinnohB10Game.
 echo Execute primeiro C:\SinnohB10Tools\B10_PREPARAR_NO_WINDOWS_SANDBOX.cmd
@@ -221,8 +243,17 @@ pause
 exit /b 2
 """
 
-def prepare_before(project,clone_sha,roots):
+def prepare_before(project,clone_sha,roots,*,scope_selection_mode="explicit",
+                   default_scopes_not_monitored=None):
     """Create a private baseline and WSB config; return only sanitized JSON."""
+    if scope_selection_mode not in ("explicit","default"):
+        blocked("modo de selecao de diretorios invalido")
+    if scope_selection_mode=="default":
+        if (type(default_scopes_not_monitored) is not int
+                or not 0<=default_scopes_not_monitored<=4):
+            blocked("cobertura dos diretorios padrao desconhecida")
+    elif default_scopes_not_monitored is not None:
+        blocked("diretorios ausentes nao podem ser inferidos do modo explicito")
     b10_session(project,clone_sha)
     roots=checked_roots(roots)
     key=secrets.token_bytes(32)
@@ -240,13 +271,17 @@ def prepare_before(project,clone_sha,roots):
         (tools/GUEST_SCRIPT).write_text(GUEST_DIAG,encoding="utf-8",newline="\r\n")
         clone=b09.clone_root(project)/f"native-{clone_sha[:16]}"
         wsb=b10.xml_wsb(str(clone),str(target/"tools"))
+        b10.check_wsb_policy(wsb,str(clone),str(target/"tools"))
         (tmp/WSB).write_text(wsb,encoding="utf-8")
         internal={
           "schema":1,"region":"SINNOH","stage":"B11",
           "id":identity,"clone_sha":clone_sha,"roots":[str(p) for p in roots],
           "hmac_key":key.hex(),"baseline":entries,
-          "baseline_digest":sha(json.dumps(entries,sort_keys=True).encode()),
+          "baseline_digest":hmac.new(key,json.dumps(entries,sort_keys=True).encode(),
+                                     hashlib.sha256).hexdigest(),
           "baseline_bytes":total,"baseline_files":len(entries),
+          "scope_selection_mode":scope_selection_mode,
+          "default_scopes_not_monitored":default_scopes_not_monitored,
         }
         (tmp/"private-baseline.json").write_text(
             json.dumps(internal,sort_keys=True,ensure_ascii=False)+"\n",encoding="utf-8")
@@ -259,6 +294,8 @@ def prepare_before(project,clone_sha,roots):
       "stage":"B11","status":"HOST_SAVE_SNAPSHOT_BEFORE_RECORDED_SANDBOX_NOT_RUN",
       "watch_id":identity,"clone_sha256":clone_sha,
       "monitored_directories_count":len(roots),
+      "scope_selection_mode":scope_selection_mode,
+      "default_scopes_not_monitored":default_scopes_not_monitored,
       "monitored_files_before":len(entries),"bytes_hashed_before":total,
       "config_relative_path":(target/WSB).relative_to(project).as_posix(),
       "paths_names_and_saves_in_report":False,
@@ -266,6 +303,64 @@ def prepare_before(project,clone_sha,roots):
       "host_saves_runtime_isolation_confirmed":False,
       "coverage_is_partial":True,"r07_complete":False,"phase_b_approved":0,
     }
+
+def validate_private_baseline(doc,identity):
+    """Validate a PRIVATE snapshot; never include its contents in output."""
+    required={
+        "schema","region","stage","id","clone_sha","roots","hmac_key",
+        "baseline","baseline_digest","baseline_bytes","baseline_files",
+        "scope_selection_mode","default_scopes_not_monitored",
+    }
+    if type(doc) is not dict or set(doc)!=required:
+        blocked("estrutura do baseline privado invalida")
+    if (doc["schema"]!=1 or doc["region"]!="SINNOH" or doc["stage"]!="B11"
+            or doc["id"]!=identity or type(doc["clone_sha"]) is not str
+            or not SHA.fullmatch(doc["clone_sha"])):
+        blocked("identidade do baseline privado incorreta")
+    if (type(doc["hmac_key"]) is not str or
+            not re.fullmatch(r"[0-9a-f]{64}",doc["hmac_key"])):
+        blocked("chave de sessao privada invalida")
+    key=bytes.fromhex(doc["hmac_key"])
+    if (type(doc["roots"]) is not list or not 1<=len(doc["roots"])<=32
+            or any(type(p) is not str or not p or
+                   not Path(p).is_absolute() for p in doc["roots"])):
+        blocked("escopos privados invalidos")
+    mode=doc["scope_selection_mode"]
+    missing=doc["default_scopes_not_monitored"]
+    if mode not in ("explicit","default"):
+        blocked("origem dos escopos invalida")
+    if ((mode=="explicit" and missing is not None)
+            or (mode=="default" and
+                (type(missing) is not int or not 0<=missing<=4))):
+        blocked("declaracao de cobertura invalida")
+    baseline=doc["baseline"]
+    if type(baseline) is not dict or len(baseline)>MAX_FILES:
+        blocked("inventario privado de hashes invalido")
+    total=0
+    for identifier,row in baseline.items():
+        if (type(identifier) is not str or not SHA.fullmatch(identifier)
+                or type(row) is not dict or set(row)!={"sha256","bytes"}
+                or type(row["sha256"]) is not str or not SHA.fullmatch(row["sha256"])
+                or type(row["bytes"]) is not int or
+                not 0<=row["bytes"]<=MAX_FILE_BYTES):
+            blocked("registro privado de save invalido")
+        total+=row["bytes"]
+        if total>MAX_TOTAL_BYTES:
+            blocked("baseline privado excede limite de bytes")
+    if (type(doc["baseline_files"]) is not int
+            or doc["baseline_files"]!=len(baseline)
+            or type(doc["baseline_bytes"]) is not int
+            or doc["baseline_bytes"]!=total):
+        blocked("contagens de baseline privado adulteradas")
+    expected=hmac.new(key,json.dumps(baseline,sort_keys=True).encode(),
+                      hashlib.sha256).hexdigest()
+    if (type(doc["baseline_digest"]) is not str
+            or not hmac.compare_digest(doc["baseline_digest"],expected)):
+        blocked("baseline privado alterado desde o snapshot")
+    # The HMAC key lives in this local file too: corruption check, NOT proof
+    # against intentional editing by someone who can modify the snapshot.
+    return key
+
 
 def inspect_after(project,identity,observation):
     if type(identity) is not str or not SESSION.fullmatch(identity):
@@ -277,12 +372,7 @@ def inspect_after(project,identity,observation):
     if link(path) or not path.is_file() or path.stat().st_size>30_000_000:
         blocked("baseline privado ausente ou adulterado")
     doc=json.loads(path.read_text("utf-8"))
-    if (doc.get("id")!=identity or doc.get("schema")!=1
-        or doc.get("region")!="SINNOH" or doc.get("stage")!="B11"
-        or not SHA.fullmatch(doc.get("clone_sha",""))
-        or doc.get("baseline_digest")!=sha(json.dumps(doc["baseline"],sort_keys=True).encode())):
-        blocked("baseline privado nao confere")
-    key=bytes.fromhex(doc["hmac_key"])
+    key=validate_private_baseline(doc,identity)
     roots=[Path(p) for p in doc["roots"]]
     after,total=fingerprint(roots,key)
     changes=compare(doc["baseline"],after)
@@ -294,6 +384,9 @@ def inspect_after(project,identity,observation):
                 else "HOST_WATCHED_FILES_UNCHANGED_LIMITED_EVIDENCE"),
       "watch_id":identity,
       "monitored_directories_count":len(roots),
+      "scope_selection_mode":doc["scope_selection_mode"],
+      "default_scopes_not_monitored":doc["default_scopes_not_monitored"],
+      "coverage_is_partial":True,
       "monitored_files_before":doc["baseline_files"],
       "monitored_files_after":len(after),
       "bytes_hashed_after":total,
@@ -334,9 +427,18 @@ def main(argv=None):
                 native_inventory=args.native_inventory,prepare=False)
             if evidence.get("sandbox_supported") is not True or evidence.get("clone_total_map_ids")!=702:
                 blocked("B10 ou 702 MapIDs nao validados")
-            roots=args.watch_dir if args.watch_dir else [
-               x for x in default_scopes() if x.is_dir()]
-            result=prepare_before(ROOT,sha_val,roots)
+            if args.watch_dir:
+                roots=args.watch_dir
+                mode="explicit"
+                missing=None
+            else:
+                candidates=default_scopes()
+                roots=[x for x in candidates if x.is_dir() or link(x)]
+                mode="default"
+                missing=len(candidates)-len(roots)
+            result=prepare_before(ROOT,sha_val,roots,
+                scope_selection_mode=mode,
+                default_scopes_not_monitored=missing)
         elif args.after:
             if args.before or args.latest or args.clone_sha or args.native_inventory or args.watch_dir:
                 blocked("--after nao pode modificar o escopo do snapshot")
@@ -355,7 +457,12 @@ def main(argv=None):
         print(json.dumps(result,indent=2,ensure_ascii=False))
         return 0
     except (OSError,ValueError,KeyError,TypeError,UnicodeError,OverflowError) as ex:
-        print(str(ex),file=sys.stderr)
+        # Never print raw OS exceptions containing filenames, root names,
+        # full paths, HMAC keys, or details from a private save.
+        message=str(ex)
+        print(message if message.startswith("SINNOH_B11_BLOCKED:")
+              else "SINNOH_B11_BLOCKED: erro na auditoria privada; consulte apenas o estado local",
+              file=sys.stderr)
         return 2
 if __name__=="__main__":
     raise SystemExit(main())

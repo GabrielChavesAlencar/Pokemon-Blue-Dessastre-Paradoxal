@@ -1,0 +1,69 @@
+name: Sinnoh G05 - auditoria B11 de saves (estatica)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g05-b11-saves.yml'
+      - 'scripts/regions/audit_sinnoh_b11_host_saves.py'
+      - 'scripts/regions/prepare_sinnoh_b10_save_isolation.py'
+      - 'tests/test_sinnoh_b11_host_saves.py'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g05-b11-saves.yml'
+      - 'scripts/regions/audit_sinnoh_b11_host_saves.py'
+      - 'scripts/regions/prepare_sinnoh_b10_save_isolation.py'
+      - 'tests/test_sinnoh_b11_host_saves.py'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  b11-static:
+    name: G05 / 29 testes B11 e privacidade sem saves reais
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Regressao sintetica, negativa e privacidade B11
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b11_host_saves.py' -v
+      - name: Gerar apenas marcador offline de CI
+        run: |
+          mkdir -p .blue-work/sinnoh-g05
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          sys.path.insert(0,str(Path("scripts/regions").resolve()))
+          import audit_sinnoh_b11_host_saves as b11
+          contract=b11.load(b11.CONTRACT)
+          c10=b11.load(b11.b10.CONTRACT)
+          c09=b11.load(b11.b09.CONTRACT)
+          b11.check_contract(contract,c10,c09)
+          result={
+              "schema":1,"region":"SINNOH","stage":"G05",
+              "status":"B11_SYNTHETIC_TESTS_PASSED_NO_HOST_SAVE_COVERAGE_CLAIM",
+              "tests_scope":"synthetic_only",
+              "private_save_files_uploaded":False,
+              "guest_vm_execution_verified":False,
+              "complete_save_coverage_verified":False,
+              "game_exe_tested":False,
+              "r07_complete":False,
+              "phase_b_approved":0,"phase_c_approved":0,"phase_d_approved":0
+          }
+          Path(".blue-work/sinnoh-g05/qa-static.json").write_text(
+              json.dumps(result,indent=2)+"\n",encoding="utf-8")
+          print(result["status"])
+          PY
+      - name: Arquivar somente declaracao sintetica de politica
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g05-offline-save-policy
+          path: .blue-work/sinnoh-g05/qa-static.json
+          if-no-files-found: warn

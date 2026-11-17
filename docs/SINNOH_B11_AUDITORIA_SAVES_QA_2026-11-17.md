@@ -39,4 +39,11 @@ Se seu Windows não suporta Sandbox (por exemplo, Windows Home), B11 bloqueia a 
 
 **B11 implementa a auditoria, mas não prova que a VM ou Game.exe funcionaram.** O resultado Windows real ainda não foi enviado; tampouco foram descobertos todos os caminhos possíveis dos saves do runtime. Nenhum mapa de Sinnoh foi aprovado jogável. As permissões dos 14 gráficos e as reservas futuras R07/R08 ainda precisam ser verificadas. **Barra B 0/13, C 0/13, D 0/13.**
 
-[Contrato B11](../data/regions/sinnoh-b11-host-save-audit.json) · [Auditor B11](../scripts/regions/audit_sinnoh_b11_host_saves.py) · [19 testes](../tests/test_sinnoh_b11_host_saves.py).
+[Contrato B11](../data/regions/sinnoh-b11-host-save-audit.json) · [Auditor B11](../scripts/regions/audit_sinnoh_b11_host_saves.py) · [29 testes](../tests/test_sinnoh_b11_host_saves.py).
+
+
+## Atualização de segurança G05 (17/11/2026)
+
+A [entrega G05](SINNOH_G05_AUDITORIA_PRIVADA_SAVES_B11.md) adicionou monitoramento fail-closed de erros de leitura, rejeição de symlinks ancestrais, detecção de arquivos alterados durante hashing, verificação de estrutura/contadores do baseline privado e sanitização dos erros da CLI. O relatório indica `scope_selection_mode` (padrão ou explícito), `default_scopes_not_monitored` (quantidade ou `null` quando explícito) e `coverage_is_partial=true`. Não divulga nomes ou caminhos de saves. O baseline local foi atualizado para digest HMAC: para uso da nova versão, capture um novo snapshot ANTES do teste; snapshots antigos não devem ser regravados manualmente.
+
+A G05 foi projetada para testes **somente sintéticos na CI**, não certifica os caminhos reais usados pelo jogo nem afirma que `watch_unchanged` demonstra isolamento completo. **Não alterar B/C/D 0/13.**
