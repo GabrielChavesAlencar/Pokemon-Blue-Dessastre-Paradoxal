@@ -2,6 +2,12 @@
 
 **Status atualizado (17/11/2026):** ZIP gerado no Windows **recebido e confrontado com B01**; os três manifestos foram localizados, mas o coletor V1 omitiu 31 IDs menores que 100. Veja o [catálogo consolidado e a correção](MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17.md). **A versão corrigida do coletor foi entregue nesta conversa**. Ainda não foram homologadas reservas futuras. A etapa é preparação de evidências, não integração de mapas, liberação de R07, ou aprovação de Game.exe/JoiPlay. **Barra B = 0/13, C = 0/13, D = 0/13.**
 
+## Reexecução após a primeira correção (17/11/2026)
+
+O usuário entregou `SINNOH_B04_PROVENIENCIA_REGIONAL(1).zip` (SHA `32b865890c7a85698afbc9e498483a4e2b2fff7a3ac092fc37ecfdbb0f571bc0`). **O JSON é idêntico ao do B04 anterior:** 617 mapas físicos, ainda faltando os 31 IDs menores que 100 na comparação com a B01. Os três manifestos regionais e hashes MapInfos/Tilesets não mudaram; nenhum dos 31 IDs foi liberado para Unova. Isso **não permite confirmar qual script foi executado**.
+
+Foi disponibilizado no chat um novo `SINNOH_B04_COLETOR_V2_VALIDADO.zip`, com `COLETAR_B04_SINNOH_V2.cmd` e nome distinto de saída `SINNOH_B04_PROVENIENCIA_REGIONAL_V2.zip`. Essa V2 usa a mesma regra de reconhecimento de `MapNNN.rxdata` da B01, compara os 648 IDs com o snapshot B01 quando os hashes coincidem e recusa produzir arquivo incompleto. **Verificação estática feita; execução real no Windows ainda pendente.** [Recibo da reexecução](../data/regions/sinnoh-b04-rerun-receipt.json). A instrução abaixo descreve o primeiro pacote B04, mantida como histórico.
+
 ## Obter o ZIP B04 com apenas dois cliques
 
 O pacote **`SINNOH_B04_COLETOR_MANIFESTOS.zip`**, entregue ao usuário nesta conversa, tem estes arquivos: `COLETAR_B04_SINNOH.cmd`, `coletar_b04_sinnoh.ps1`, `LEIA_ME.txt`.

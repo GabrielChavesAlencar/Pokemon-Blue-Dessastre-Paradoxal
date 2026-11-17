@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "B04_RERUN_AFTER_FIRST_FIX",
+  "recorded_at": "2026-11-17",
+  "status": "CORRECTED_COLLECTOR_RERUN_STILL_617_B01_BASELINE_UNCHANGED",
+  "source_file_name": "SINNOH_B04_PROVENIENCIA_REGIONAL(1).zip",
+  "uploaded_zip_sha256": "32b865890c7a85698afbc9e498483a4e2b2fff7a3ac092fc37ecfdbb0f571bc0",
+  "prior_zip_sha256": "7e8a696a650034f85d397bb3fc8ccd9dcd116f9d100b2aae7e7cbe070d1396e7",
+  "json_payload_identical_to_prior": true,
+  "reference_b01_inventory_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+  "mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "tilesets_sha256": "2fd4551a5767615a159a8b5b65a604d1e486009d37953ca6a1955affffabf675",
+  "current_report_physical_count": 617,
+  "reference_b01_physical_count": 648,
+  "ids_missing_relative_to_b01": [
+    1,
+    22,
+    32,
+    33,
+    42,
+    43,
+    48,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99
+  ],
+  "regional_provenance": {
+    "KANTO": {
+      "map_count": 142,
+      "destination_range": [
+        300,
+        441
+      ],
+      "proof_sha256": "cd4c07603222de90ba20cbe92befd100b90de617333f135f95993ac2d2d62372"
+    },
+    "JOHTO": {
+      "map_count": 100,
+      "destination_range": [
+        600,
+        699
+      ],
+      "proof_sha256": "bdce76a0d6d32c2d8f5ad7a1f9bb765dfd2e3ff748e7a2ea18a4f1cbbc737c0b"
+    },
+    "HOENN": {
+      "map_count": 199,
+      "destination_range": [
+        700,
+        898
+      ],
+      "proof_sha256": "78a13097149b5005dc3b014a9dc25eb61912bb36d159e84946127bce526494f7"
+    }
+  },
+  "reconciled_with_original_b01": true,
+  "new_collect_script_package": "SINNOH_B04_COLETOR_V2_VALIDADO.zip",
+  "new_collector_uses_b01_filename_matching_rule": true,
+  "new_collector_guards_648_ids_when_hashes_equal": true,
+  "new_collector_executed_on_users_windows": false,
+  "same_source_provenance_claims": true,
+  "sinnoh_planning_hold_range": [
+    442,
+    517
+  ],
+  "unova_physical_candidates_count": 174,
+  "unova_largest_candidate_range": [
+    518,
+    599
+  ],
+  "future_reservations_fully_verified": false,
+  "sinnoh_mapids_allocated": false,
+  "unova_mapids_allocated": false,
+  "r07_complete": false,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "main_game_files_or_saves_modified": false,
+  "notes": "Second ZIP has a new archive hash but identical parsed JSON to original. No proof which collector directory was executed. B01 remains canonical for 648 IDs and B05 classification. V2 is a new one-click collector with unambiguous filename and fail-closed 648-ID check when SHA unchanged. No native Windows validation of V2 has occurred yet."
+}

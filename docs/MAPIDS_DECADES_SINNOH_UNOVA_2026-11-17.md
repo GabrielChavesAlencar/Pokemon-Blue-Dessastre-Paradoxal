@@ -85,6 +85,16 @@ O conjunto relatado pelo B04 é um subconjunto **exato** do B01; nenhum desses 3
 
 O auditor B04 passou a identificar **esse caso legado específico** e indicar que precisa de uma nova coleta, sem declarar falsamente que o B04 observou 648 mapas. Os três manifestos regionais informam IDs acima de 99, de forma que seus mapeamentos numéricos continuam coerentes com o B01.
 
+### Reexecução do coletor corrigido — atualização do inventário
+
+O usuário executou o coletor corrigido e enviou `SINNOH_B04_PROVENIENCIA_REGIONAL(1).zip`. O pacote é legível e contém os **mesmos dados JSON do B04 anterior**: **617** MapIDs físicos relatados, os mesmos manifestos de **Kanto 300–441 (142)**, **Johto 600–699 (100)** e **Hoenn 700–898 (199)** e os mesmos hashes `MapInfos`/`Tilesets` da B01.
+
+**Não foi possível comprovar qual cópia do script PowerShell foi executada.** O filtro antigo explica a omissão original, mas o segundo relatório ainda não prova uma coleta corrigida. Os **31 MapIDs omitidos continuam ocupados segundo a B01**, logo **não alteramos a retenção administrativa de Sinnoh (`442–517`) nem os 174 candidatos físicos de Unova**, incluindo `518–599`.
+
+Para evitar nova repetição silenciosa, foi produzido um **coletor B04 V2** em ZIP nesta conversa, com nome de saída distinto `SINNOH_B04_PROVENIENCIA_REGIONAL_V2.zip`, reconhecimento dos nomes `Map1`, `Map001` e `Map000001` e **checagem obrigatória da lista dos 648 IDs da B01 quando os hashes nativos permanecerem iguais**. Se houver qualquer falta, a ferramenta mostra erro e não gera um novo relatório incompleto. Essa nova versão foi inspecionada estaticamente, **ainda não executada no Windows**.
+
+SHA-256 do segundo ZIP: `32b865890c7a85698afbc9e498483a4e2b2fff7a3ac092fc37ecfdbb0f571bc0`. [Recibo técnico da reexecução](../data/regions/sinnoh-b04-rerun-receipt.json). **As reservas futuras de Sinnoh e Unova permanecem não homologadas.**
+
 ## 6. Identificação dos documentos e hashes
 
 | Comprovante | SHA-256 |
