@@ -117,10 +117,10 @@ def expected(b00,b01,ch05,*,root=ROOT):
       "protected_code_claims":claims,
       "protected_code_claims_total_slots":400,
       "protected_claimed_johto_600_to_699":{
-          "occupied_snapshot":100,"source_mapids_assigned":0,
+          "occupied_snapshot":100,"sinnoh_destination_ids_assigned":0,
           "actual_map_ownership_proven":False},
       "protected_claimed_hoenn_700_to_999":{
-          "occupied_snapshot":199,"source_mapids_assigned":0,
+          "occupied_snapshot":199,"sinnoh_destination_ids_assigned":0,
           "actual_map_ownership_proven":False},
       "claimed_bands_physically_unoccupied":101,
       "native_label_samples":LABEL_SAMPLES,
@@ -176,9 +176,9 @@ def reconcile(b02,b00,b01,ch05,*,root=ROOT,inventory=None):
     return {
        "region":"SINNOH","step":"B02",
        "status":b02["status"],"real_inventory_revalidated_now":local,
-       "claimed_joh_to_range":[600,699],
+       "claimed_johto_range":[600,699],
        "claimed_hoenn_range":[700,999],
-       "occupied_joh_to_range":100,"occupied_hoenn_range":199,
+       "occupied_johto_range":100,"occupied_hoenn_range":199,
        "unoccupied_low_range_count":250,
        "largest_unoccupied_run":[442,599,158],
        "original_sinnoh_id_collisions":72,
