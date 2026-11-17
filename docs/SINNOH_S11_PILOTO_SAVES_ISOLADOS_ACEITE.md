@@ -18,6 +18,15 @@
 - [Testes S10](../tests/test_sinnoh_s10_launcher.py) passam a incluir a nova exigência `save_namespace_verified`; [manifesto S30](../scripts/regions/audit_sinnoh_s30_suite.py) passa a exigir os arquivos e testes da S11.
 - As regressões são exclusivamente **Python/Ruby com mocks e fixtures**. Nenhum save real ou `Game.exe` foi acessado.
 
+## Evidências efetivas do GitHub Actions
+
+- [Sinnoh CH19 — run 43993068373](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43993068373): jobs **Python e Ruby `success`**, incluindo descoberta de testes `test_sinnoh_*.py`, validadores de progresso e a fixture `sinnoh-qa-start`.
+- [Sinnoh S30 — run 43993068339](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43993068339): **5/5 jobs aprovados**, com Manifesto (11 testes), Python (7 verificações), Ruby (22 verificações), Portal (**161/161**) e Android estático (44 casos nativos pendentes).
+- [Portal Blue — run 43993068204](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43993068204): build e suíte `success`.
+- [Sinnoh CH20 — run 43993068480](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43993068480): pré-voo JoiPlay **estático aprovado**, sem dispositivo real.
+- Houve uma execução anterior com duas falhas de regressão porque o conteúdo adulterado de `mkxp.json` era lido **antes** da prova de hash, alterando o tipo de erro. A ordem foi corrigida para verificar a **integridade do arquivo antes da leitura** e a execução acima passou integralmente.
+- Esses são resultados de **fixtures**, não medição de uma instalação Windows nem leitura de save real. Os workflows gerais do Blue Studio e outras regiões têm verificações independentes.
+
 ## Validação e limites do aceite
 
 ```bash
@@ -26,6 +35,6 @@ python scripts/regions/sinnoh_ci_ch19.py --suite python
 python scripts/regions/sinnoh_ci_ch19.py --suite ruby
 ```
 
-A S11 só será marcada `done` após **GitHub Actions CH19/S30 completos e aprovação do PR na `main`**. Isso elevará a **Barra A para 14/32 (43%)**, 6 parciais e 12 pendentes. **B/C/D continuam 0/13**, Barra E 20/20; 44 casos reais Windows/JoiPlay ainda pendentes.
+Os GitHub Actions CH19 e S30 passaram; a S11 é considerada `done` **no escopo de código após integrar este PR à `main`**. Isso elevará a **Barra A para 14/32 (43%)**, 6 parciais e 12 pendentes. **B/C/D continuam 0/13**, Barra E 20/20; 44 casos reais Windows/JoiPlay ainda pendentes.
 
 **Pendências para depois:** S12 — instalar overlay real autorizado em cópia QA sem substituir `game/`; S31 — observar nível, save/reload, batalha, NPCs, warps e JoiPlay em dispositivos reais. A proteção contra saves de outras regiões **não equivale à confirmação de que o save/load da engine funciona no Windows**.
