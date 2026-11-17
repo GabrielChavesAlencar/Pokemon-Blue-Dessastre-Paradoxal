@@ -235,6 +235,15 @@ def regenerate_installed_manifest(original, changed, revision):
     data = copy.deepcopy(original)
     data["revision"] = revision
     for name, payload in changed.items():
+        if name == UPDATER:
+            # The 2026 fast updater is patchable. Migrate this one verified
+            # file out of legacy immutable; keep Game.exe/save config pinned.
+            if (name not in data["files"] and
+                    name not in data.get("immutable", {})):
+                raise ValueError("Missing original Android updater in source ZIP.")
+            data.setdefault("immutable", {}).pop(name, None)
+            data["files"][name] = {"sha256": digest(payload), "size": len(payload)}
+            continue
         table = "files" if name in data["files"] else "immutable"
         if name not in data.get(table, {}):
             raise ValueError("Expected file not in original installed manifest: " + name)
