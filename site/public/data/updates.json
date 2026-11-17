@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d06490253e600a54eacc2cfb41a3022fba6f71cb",
+      "date": "2026-11-16T22:17:58-03:00",
+      "title": "feat(sinnoh): S12 instalador privado QA com rollback, Barra A 15/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "c06f7bf486e33950ade1f98eeb2749a3bbd21916",
       "date": "2026-11-16T22:08:29-03:00",
       "title": "feat(sinnoh): S11 piloto com saves isolados e Barra A 14/32",
