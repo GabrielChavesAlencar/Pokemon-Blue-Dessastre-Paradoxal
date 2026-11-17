@@ -205,7 +205,7 @@ def audit_clone(project,folder,plan_sha,c,b09c,b01,b05):
     from audit_sinnoh_b05_mapid_planning import expand
     occupied=expand(b05["occupied"]["ranges"],limit=999)
     if (source_ids!=occupied or len(source_ids)!=expected_native
-        or stage_ids!=set(c["candidate_installed_sinnoh_ids"])
+        or stage_ids!=set(b09c["candidate_installed_sinnoh_ids"])
         or len(stage_ids)!=expected_sinnoh
         or stage_ids&source_ids):
         blocked("MapIDs B09/Sinnoh colidem com B01 ou Unova")
