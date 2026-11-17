@@ -76,7 +76,7 @@ def source_audit(source: Path, game_data: Path | None = None) -> dict:
         "tilesets_sha256": record["tilesets_sha256"],
         "broken_reference_findings": problems,
         "findings": sorted(outstanding),
-        "weak_components": len(graph["weakly_connected_components"]),
+        "weak_components": len(graph["weakly_connected_groups"]),
         "dynamic_transfers_require_manual_review": record["dynamic_transfer_commands"],
         "script_commands_not_executed": record["untrusted_script_commands_not_executed"],
         "rights_verified": False, "import_allowed": False,
@@ -113,7 +113,7 @@ def graphic_inventory(tileset_blob: bytes, overlay: dict[str, bytes],
             paths.add(rel)
             if rel in overlay:
                 data = overlay[rel]
-                if not data or digest(data) != digest(overlay[rel]):
+                if not isinstance(data, bytes) or not data:
                     blocked("grafico do overlay corrompido: " + rel)
             elif rel in base_hashes:
                 f = base / rel
@@ -179,10 +179,9 @@ def private_overlay_audit(project: Path, overlay: Path, spec: Path,
     for rel, sha in report["overlay_file_hashes"].items():
         if not SHA.fullmatch(sha) or rel not in output or digest(output[rel]) != sha:
             blocked("SHA-256 do arquivo final inconsistente: " + rel)
-    merged = {**output}
-    if "Data/Tilesets.rxdata" not in merged:
+    if "Data/Tilesets.rxdata" not in output:
         blocked("Tilesets.rxdata ausente do overlay")
-    graphics = graphic_inventory(merged["Data/Tilesets.rxdata"], output,
+    graphics = graphic_inventory(output["Data/Tilesets.rxdata"], output,
                                  root / "game", base_hashes)
     plugins = plugin_dependencies(output, root / "game", base_hashes)
     launcher = set(QA_LAUNCH_REQUIRED)
@@ -199,7 +198,7 @@ def private_overlay_audit(project: Path, overlay: Path, spec: Path,
         "schema": 1, "region": "SINNOH", "kind": "S08_PRIVATE_OVERLAY",
         "status": "STATIC_INTEGRITY_VERIFIED_NOT_NATIVE_GAMEPLAY",
         "mode": "READ_ONLY_QA_RESOURCES",
-        "map_count": report["start"] and 9,
+        "map_count": 9,
         "event_count": 24, "warps": 16,
         "overlay_file_count": len(output),
         "base_file_count": len(base_hashes),
