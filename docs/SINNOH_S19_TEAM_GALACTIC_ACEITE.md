@@ -18,6 +18,11 @@ As fases **5–7** carecem dos mapas de Valley Windworks/Eterna/Pastoria/lagos e
 
 **Critério da entrega de código:** CI CH19 Python/Ruby, S30 (5 jobs), portal e Android estático aprovados e PR integrado à `main`. Nessas condições, S19 pode ser marcada `done` em código, Barra A **20/32 (62%)** (5 parciais, 7 pendentes). Barra E **20/20**, B/C/D **0/13**; 44 verificações nativas ainda não observadas.
 
-## Evidências do CI
+## Evidências reais do GitHub Actions
 
-Inserir os links dos workflows e resultados efetivamente obtidos após os testes. Nenhuma execução de Game.exe/JoiPlay será presumida.
+- [Sinnoh S30 — execução 44055558591](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44055558591): **5/5 jobs success**, incluindo manifesto (11 testes), Python com os 12 testes negativos S19 e auditor `sinnoh-s19-galactic-contract = passed (0)`, Ruby `sinnoh-s19-galactic = passed (0)`, Portal (**161/161 testes**) e Android estático.
+- [Sinnoh CH19 — execução 44055558291](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44055558291): jobs Python/Ruby `success` com o novo auditor e o runtime S19; `CH19_STATUS=passed NATIVE_QA=false`.
+- [Portal Blue — execução 44055558352](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44055558352): build e suíte do site `success`.
+- [Sinnoh CH20 — execução 44055558331](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44055558331): pré-voo Android/JoiPlay **estático** aprovado, sem executar aparelho.
+- **Limites observados:** nenhuma cópia com mapas nativos da Team Galactic, batalha Mars/Jupiter, gravação de save real, instalação de MapIDs ou execução no Game.exe/JoiPlay foi comprovada. Os 44 casos de QA nativa seguem pendentes. O teste Ruby usa deliberadamente fontes sintéticas para provar o bloqueio e a ordem da máquina de estados.
+
