@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "13faf2ede3c3474abdcc9c34113a58c8302939a1",
+      "date": "2026-11-17T07:02:14-03:00",
+      "title": "docs(unova): auditar fontes RPG Maker XP e direitos de reutilização",
+      "category": "Novidades"
+    },
+    {
       "sha": "845ca8738160b0e8de5cfe3cfff53fdc10a1efa3",
       "date": "2026-11-17T06:52:27-03:00",
       "title": "feat(sinnoh): S21 Elite Cynthia e Hall of Fame separado; Barra A 22/32",
