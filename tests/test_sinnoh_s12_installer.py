@@ -184,7 +184,11 @@ class S12PrivateInstallerTests(unittest.TestCase):
         report = json.loads(stream.getvalue())
         self.assertEqual(report["status"],
                          "PRIVATE_QA_INSTALLED_NATIVE_COMPILATION_PENDING")
-        self.assertTrue(self.target.exists())
+        created = Path(report["qa_directory"])
+        self.assertTrue(created.is_dir())
+        self.assertEqual(created.parent, self.root / ".blue-work")
+        self.assertRegex(created.name, r"^game-sinnoh-qa-[a-f0-9]{12}$")
+        self.assertTrue(report["save_namespace_verified"])
         self.assertFalse(report["native_qa_approved"])
 
     def test_cli_missing_overlay_and_spec_blocked_with_no_side_effects(self):
