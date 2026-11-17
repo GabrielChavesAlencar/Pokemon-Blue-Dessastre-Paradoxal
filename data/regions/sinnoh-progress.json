@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 9,
+    "done": 10,
     "partial": 7,
-    "pending": 16,
-    "percent_complete": 28,
-    "percent_with_partial_not_counted": 28,
+    "pending": 15,
+    "percent_complete": 31,
+    "percent_with_partial_not_counted": 31,
     "groups": [
       {
         "key": "foundation",
@@ -266,8 +266,8 @@
     {
       "id": "S29",
       "title": "Exibição sem níveis fixos no site",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S29_NIVEIS_DINAMICOS_PORTAL_ACEITE.md"
     },
     {
       "id": "S30",
