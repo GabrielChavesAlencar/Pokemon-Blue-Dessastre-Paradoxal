@@ -64,6 +64,7 @@ def inspect(root: Path = ROOT) -> dict:
             "symbolic_areas":area_report["catalog_areas"],
         },
         "donor_zip_present_not_audited":has_source,
+        "symbolic_music_and_trainers_only":True,
         "source_map_ids_verified":False,
         "rights_verified":False,
         "game_exe_tested":False,"android_tested":False,
@@ -74,7 +75,6 @@ def inspect(root: Path = ROOT) -> dict:
             "E04 requer ZIP real e documentos de origem, com hashes e inspeção",
             "E05 requer ler MapInfos/MapNNN reais e revisão manual da região",
             "E06 requer direitos por arquivo, não só ficha preparatória",
-            "E07 catalogos simbolicos prontos; ainda falta confirmar times, tracks e licencas em fonte real",
             "E08 requer evidências de QA Windows/JoiPlay, não apenas CI",
         ],
     }
