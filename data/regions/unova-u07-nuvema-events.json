@@ -1,0 +1,411 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "phase": "U07_CONTRACTS",
+  "story_version": "WHITE_BW",
+  "status": "PLANNED_EVENT_CONTRACTS_NOT_INSTALLED",
+  "area_catalog": "data/regions/unova-u03-areas.json",
+  "npc_catalog": "data/regions/unova-sp04-npcs.json",
+  "starter_choices": [
+    "SNIVY",
+    "TEPIG",
+    "OSHAWOTT"
+  ],
+  "rival_starter_by_player": {
+    "SNIVY": {
+      "CHEREN": "TEPIG",
+      "BIANCA": "OSHAWOTT"
+    },
+    "TEPIG": {
+      "CHEREN": "OSHAWOTT",
+      "BIANCA": "SNIVY"
+    },
+    "OSHAWOTT": {
+      "CHEREN": "SNIVY",
+      "BIANCA": "TEPIG"
+    }
+  },
+  "progression_rules": {
+    "save_state_region": "UNOVA",
+    "save_state_schema": "SIMULATED_ONLY_NEVER_GAME_SAVE",
+    "early_rival_battles": "ADVANCE_ON_LOSS",
+    "n_first_battle": "WIN_REQUIRED",
+    "all_rewards_once": true,
+    "reentry_safe": true,
+    "flags_namespaced": true,
+    "physical_transfers_implemented": false
+  },
+  "original_dialogue_reference_only": true,
+  "trainer_team_data_installed": false,
+  "mapids_audited": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "can_install": false,
+  "notes": [
+    "Contratos de história inicial White elaborados com falas curtas originais, não transcrições de diálogos oficiais.",
+    "As chaves de evento, recompensas e flags são apenas símbolos para preparar scripts Essentials v21.1 após MapInfos reais.",
+    "As primeiras batalhas com Bianca e Cheren permitem progresso mesmo com derrota; N exige vitória no contrato de QA.",
+    "Poké Balls de Route 1 são concedidas uma vez; o simulador nunca cria itens reais nem grava saves do jogo.",
+    "Running Shoes são adquiridos na Route 2, fora do escopo deste contrato U07.",
+    "Agente Regional de Nuvema será implementado como evento separado depois de MapID e tile passável verificados."
+  ],
+  "events": [
+    {
+      "key": "UNOVA_U07_STARTER_GIFT",
+      "kind": "choice",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "quarto do protagonista; presente de Juniper",
+      "actor_npc_key": null,
+      "requires": [],
+      "dialogue_pt_br": "A professora Juniper preparou três Pokémon para você e seus amigos. Escolha com cuidado.",
+      "starter_options": [
+        "SNIVY",
+        "TEPIG",
+        "OSHAWOTT"
+      ],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_BIANCA_FIRST_BATTLE",
+      "kind": "battle",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "quarto do protagonista",
+      "actor_npc_key": "UNOVA_NPC_BIANCA",
+      "requires": [
+        "UNOVA_U07_STARTER_GIFT"
+      ],
+      "dialogue_pt_br": "Vamos conhecer nossos parceiros numa batalha!",
+      "starter_options": [],
+      "battle_policy": "ADVANCE_ON_LOSS",
+      "opponent_party_role": "RIVAL_BIANCA_WEAK_TO_PLAYER",
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_CHEREN_FIRST_BATTLE",
+      "kind": "battle",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "quarto do protagonista",
+      "actor_npc_key": "UNOVA_NPC_CHEREN",
+      "requires": [
+        "UNOVA_U07_BIANCA_FIRST_BATTLE"
+      ],
+      "dialogue_pt_br": "Agora é minha vez. Quero entender melhor como batalhamos.",
+      "starter_options": [],
+      "battle_policy": "ADVANCE_ON_LOSS",
+      "opponent_party_role": "RIVAL_CHEREN_STRONG_AGAINST_PLAYER",
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_MOM_XTRANSCEIVER",
+      "kind": "grant",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "casa do protagonista; depois das batalhas",
+      "actor_npc_key": "UNOVA_NPC_MOM",
+      "requires": [
+        "UNOVA_U07_CHEREN_FIRST_BATTLE"
+      ],
+      "dialogue_pt_br": "Sua jornada começou! Leve isto para mantermos contato.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [
+        {
+          "category": "KEY_ITEM",
+          "token": "XTRANSCEIVER",
+          "amount": 1
+        }
+      ],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_VISIT_BIANCA_HOME",
+      "kind": "dialogue",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "casa de Bianca",
+      "actor_npc_key": "UNOVA_NPC_BIANCA",
+      "requires": [
+        "UNOVA_U07_MOM_XTRANSCEIVER"
+      ],
+      "dialogue_pt_br": "Eu também quero começar esta aventura. Vamos visitar o laboratório.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_JUNIPER_LAB_POKEDEX",
+      "kind": "grant",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "laboratório da professora Juniper",
+      "actor_npc_key": "UNOVA_NPC_JUNIPER",
+      "requires": [
+        "UNOVA_U07_VISIT_BIANCA_HOME"
+      ],
+      "dialogue_pt_br": "Quero que vocês conheçam os Pokémon de Unova. Esta Pokédex vai ajudar.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [
+        {
+          "category": "KEY_ITEM",
+          "token": "POKEDEX",
+          "amount": 1
+        }
+      ],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_MOM_TOWN_MAP",
+      "kind": "grant",
+      "area_key": "UNOVA_NUVEMA_TOWN",
+      "location_hint": "saída do laboratório",
+      "actor_npc_key": "UNOVA_NPC_MOM",
+      "requires": [
+        "UNOVA_U07_JUNIPER_LAB_POKEDEX"
+      ],
+      "dialogue_pt_br": "Não esqueça de levar um mapa para descobrir novas cidades.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [
+        {
+          "category": "KEY_ITEM",
+          "token": "TOWN_MAP",
+          "amount": 1
+        }
+      ],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_ROUTE1_GROUP",
+      "kind": "dialogue",
+      "area_key": "UNOVA_ROUTE_01",
+      "location_hint": "entrada sul da Rota 1",
+      "actor_npc_key": "UNOVA_NPC_BIANCA",
+      "requires": [
+        "UNOVA_U07_MOM_TOWN_MAP"
+      ],
+      "dialogue_pt_br": "Vamos dar o primeiro passo juntos nesta jornada!",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL",
+      "kind": "grant",
+      "area_key": "UNOVA_ROUTE_01",
+      "location_hint": "primeiro trecho da Rota 1",
+      "actor_npc_key": "UNOVA_NPC_JUNIPER",
+      "requires": [
+        "UNOVA_U07_ROUTE1_GROUP"
+      ],
+      "dialogue_pt_br": "Vou mostrar como capturar Pokémon selvagens. Depois, vocês podem experimentar.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [
+        {
+          "category": "ITEM",
+          "token": "POKE_BALL",
+          "amount": 5
+        }
+      ],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_ACCUMULA_CENTER_INTRO",
+      "kind": "dialogue",
+      "area_key": "UNOVA_ACCUMULA_TOWN",
+      "location_hint": "Centro Pokémon de Accumula",
+      "actor_npc_key": "UNOVA_NPC_JUNIPER",
+      "requires": [
+        "UNOVA_U07_JUNIPER_CAPTURE_TUTORIAL"
+      ],
+      "dialogue_pt_br": "Aqui você pode cuidar dos seus Pokémon antes de continuar.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_PLASMA_SPEECH",
+      "kind": "dialogue",
+      "area_key": "UNOVA_ACCUMULA_TOWN",
+      "location_hint": "praça de Accumula",
+      "actor_npc_key": "UNOVA_NPC_GHETSIS",
+      "requires": [
+        "UNOVA_U07_ACCUMULA_CENTER_INTRO"
+      ],
+      "dialogue_pt_br": "Devemos pensar com cuidado na relação entre pessoas e Pokémon.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_N_FIRST_BATTLE",
+      "kind": "battle",
+      "area_key": "UNOVA_ACCUMULA_TOWN",
+      "location_hint": "praça de Accumula; após discurso",
+      "actor_npc_key": "UNOVA_NPC_N",
+      "requires": [
+        "UNOVA_U07_PLASMA_SPEECH"
+      ],
+      "dialogue_pt_br": "Quero ouvir o que seus Pokémon têm a dizer durante uma batalha.",
+      "starter_options": [],
+      "battle_policy": "WIN_REQUIRED",
+      "opponent_party_role": "N_ACCUMULA_FIRST_ENCOUNTER",
+      "grants_once": [],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    },
+    {
+      "key": "UNOVA_U07_ROUTE2_PASSAGE",
+      "kind": "milestone",
+      "area_key": "UNOVA_ACCUMULA_TOWN",
+      "location_hint": "saída norte de Accumula",
+      "actor_npc_key": null,
+      "requires": [
+        "UNOVA_U07_N_FIRST_BATTLE"
+      ],
+      "dialogue_pt_br": "Depois do encontro na praça, a aventura continua rumo à próxima rota.",
+      "starter_options": [],
+      "battle_policy": null,
+      "opponent_party_role": null,
+      "grants_once": [
+        {
+          "category": "STORY_TOKEN",
+          "token": "ROUTE_2_PASSAGE_READY",
+          "amount": 1
+        }
+      ],
+      "map_id": null,
+      "event_id": null,
+      "coordinates": null,
+      "source_event_id": null,
+      "npc_sprite_verified": false,
+      "dialogue_installed": false,
+      "rights_verified": false,
+      "game_exe_tested": false,
+      "android_tested": false,
+      "installed": false
+    }
+  ]
+}

@@ -164,3 +164,12 @@ Novo roteiro de implementação com 16 entregas P01–P16, gates G0–G7 e crit�
 O plano parte do Cheren SP05 e do catálogo SP04, prioriza Nuvema → Route 1 → Accumula em QA e depois percorre U08–U32, sem presumir MapIDs, licenças ou conteúdo já instalado. Também identifica T01–T05, tarefas que podem começar sem o ZIP real do doador.
 
 **Sem mudança jogável nesta entrega documental: A/B/C/D 0/8, E 4/8 e Unova 0/32.**
+
+
+## U07 — contratos simbólicos dos primeiros eventos White (Nuvema/Route 1/Accumula)
+
+Publicados [13 contratos planejados](../data/regions/unova-u07-nuvema-events.json) e [validador/simulador puro](../scripts/regions/audit_unova_u07_events.py), com [guia](UNOVA_U07_CONTRATOS_EVENTOS_NUVEMA.md), [testes negativos](../tests/test_unova_u07_events.py) e [BAT por duplo clique](../UNOVA_VALIDAR_EVENTOS_NUVEMA.bat). Eles definem inicial de Snivy/Tepig/Oshawott, batalhas iniciais de Bianca/Cheren, Juniper/Pokédex, Town Map, Route 1, Poké Balls, Team Plasma, N e saída narrativa de Accumula.
+
+A ferramenta verifica sequência de flags UNOVA_U07, escolha única de inicial, progressão mesmo com derrota dos rivais iniciais, nova tentativa de N após derrota, recompensas sem duplicação e reentrada/save sintético seguro. **Não manipula mapas, sprites, times, scripts nem saves reais. Nenhum evento foi compilado no Game.exe.**
+
+**Barras mantidas:** A/B/C/D 0/8, E 4/8, U07 não jogável e campanha completa 0/32.
