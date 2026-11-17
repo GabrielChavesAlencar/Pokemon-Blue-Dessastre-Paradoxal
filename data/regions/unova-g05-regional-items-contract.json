@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "phase": "G05.1",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "OFFLINE_ONLY_NO_NATIVE_ITEM_INSTALLATION",
+  "sources": {
+    "registry": "site/public/data/regions.json",
+    "state": "data/regions/unova-g01-state-contract.json",
+    "sinnoh_reference": "data/regions/sinnoh-hms-s16.json",
+    "travel_runtime": "scripts/battle_polish/RegionTravel.rb",
+    "field_runtime": "scripts/battle_polish/RegionalPolicy.rb",
+    "regions_runtime": "scripts/battle_polish/Regions.rb",
+    "tracker": "site/public/data/unova-github-progress.json"
+  },
+  "unova_field_rules": [
+    {
+      "action": "CUT",
+      "event": "CUT_LOCAL",
+      "requires_local_hm": true,
+      "requires_local_event": true,
+      "native_hm_id": null,
+      "native_event_id": null,
+      "pickup_source_proven": false,
+      "implemented": false
+    },
+    {
+      "action": "FLY",
+      "event": "FLY_LOCAL",
+      "requires_local_hm": true,
+      "requires_local_event": true,
+      "native_hm_id": null,
+      "native_event_id": null,
+      "pickup_source_proven": false,
+      "implemented": false
+    },
+    {
+      "action": "SURF",
+      "event": "SURF_LOCAL",
+      "requires_local_hm": true,
+      "requires_local_event": true,
+      "native_hm_id": null,
+      "native_event_id": null,
+      "pickup_source_proven": false,
+      "implemented": false
+    },
+    {
+      "action": "STRENGTH",
+      "event": "STRENGTH_LOCAL",
+      "requires_local_hm": true,
+      "requires_local_event": true,
+      "native_hm_id": null,
+      "native_event_id": null,
+      "pickup_source_proven": false,
+      "implemented": false
+    },
+    {
+      "action": "WATERFALL",
+      "event": "WATERFALL_LOCAL",
+      "requires_local_hm": true,
+      "requires_local_event": true,
+      "native_hm_id": null,
+      "native_event_id": null,
+      "pickup_source_proven": false,
+      "implemented": false
+    },
+    {
+      "action": "DIVE",
+      "event": "DIVE_LOCAL",
+      "requires_local_hm": true,
+      "requires_local_event": true,
+      "native_hm_id": null,
+      "native_event_id": null,
+      "pickup_source_proven": false,
+      "implemented": false
+    }
+  ],
+  "native_evidence": {
+    "unova_hm_item_ids": null,
+    "unova_hm_pickup_events": null,
+    "unova_key_item_list": null,
+    "unova_key_item_event_ids": null,
+    "unova_game_source_sha256": null,
+    "unova_native_field_tests": null,
+    "unova_map_ids": null,
+    "unova_asset_license": null
+  },
+  "classification": {
+    "regional": [
+      "HM",
+      "KEY_ITEM"
+    ],
+    "global": [
+      "TM",
+      "CONSUMABLE",
+      "MEGA_STONE"
+    ],
+    "runtime_source": "GameData::Item.try_get + is_HM? / is_key_item?",
+    "never_classify_by_display_name": true
+  },
+  "regional_vault_policy": {
+    "state_key": "region_key_items",
+    "contents": [
+      "items",
+      "registered",
+      "pc_items"
+    ],
+    "save_source_before_travel": true,
+    "restore_destination_only": true,
+    "registered_must_be_locally_owned": true,
+    "stale_source_shortcuts_discarded": true,
+    "validate_all_destination_quantities": true,
+    "no_foreign_hm_or_key_item": true,
+    "pc_item_storage_not_pokemon_boxes": true,
+    "never_copy_hms_on_travel": true,
+    "preserve_global_tm_consumable_mega_items": true,
+    "preview_before_commit": true,
+    "rollback_if_capacity_or_transfer_fails": true
+  },
+  "legacy_policy": {
+    "untravelled_decades_uses_native_rules": true,
+    "do_not_migrate_legacy_saves": true,
+    "native_badges_unmodified": true,
+    "regional_pokemon_boxes_out_of_scope": true,
+    "regional_route_npc_out_of_scope": true,
+    "unova_destination_not_installed": true
+  },
+  "simulation_policy": {
+    "identity_prefix": "FIXTURE_",
+    "require_explicit_item_kind": true,
+    "no_pbs_or_real_item_ids": true,
+    "no_real_mapids": true,
+    "no_real_save_adapter": true,
+    "no_native_item_grants": true,
+    "no_runtime_field_effect_activation": true,
+    "fixture_slot_capacity_only_not_essentials_equivalence": true
+  },
+  "native_pbs_verified": false,
+  "native_pickups_verified": false,
+  "native_saves_modified": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "can_install": false,
+  "notes": [
+    "G05.1 documents shared Ruby regional isolation and tests synthetic Bag/PC inventories. No native save, Game.exe, JoiPlay or MapID accessed.",
+    "Unova currently has six source-registry field actions and symbolic local event gates; HM item IDs and pickup events remain null/unverified.",
+    "Actual Ruby stage_local_bag separates is_HM? and is_key_item? by metadata, saves them per region, preserves TM/TR/consumables/Mega Stones, and protects PC items.",
+    "Unova does not have a proven local-pickup receipt like Sinnoh, and a fixture event flag must never be claimed as a native achievement.",
+    "Tests of item-PC capacity use synthetic slot counts; native Essentials pockets, PC capacity, and rollback need later in-game verification.",
+    "G05.1 is not G05.2 badge-special rules, G05.3 NPC travel/installs, or G05.4 native blackout/save regression."
+  ]
+}
