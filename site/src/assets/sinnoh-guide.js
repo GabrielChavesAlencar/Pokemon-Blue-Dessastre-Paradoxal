@@ -34,6 +34,14 @@ const contextLink=(tab,params,label)=>
 const context=(...links)=>'<nav class="sinnoh-guide-context" aria-label="Relações com outros guias">'+links.join('')+'</nav>';
 const emptyResult='<p class="sinnoh-guide-empty" role="status">Nenhuma referência encontrada. Tente outra busca ou remova os filtros. Os dados continuam planejados e não jogáveis.</p>';
 const cardResults=(items,render)=>items.length?cards(items,render):emptyResult;
+const levelPanel=data=>'<section class="section sinnoh-level-policy" aria-label="Balanceamento dinâmico de Sinnoh">'+
+  '<h2>Balanceamento e progressão de níveis</h2>'+
+  note('Referência da campanha Blue: o maior nível entre os Pokémon da equipe, desconsiderando ovos. O valor real depende da equipe no save, que o portal não consulta.')+
+  note('Treinadores: Normal '+data.balance.normalPercent+'% · Master '+data.balance.masterPercent+
+    '% da referência, calculados pela engine na batalha, sujeitos aos limites da própria engine. Não são níveis fixos para os líderes ou NPCs de Sinnoh.')+
+  note('Insígnias locais controlam permissões regionais e esmeraldas fazem parte da progressão; nenhuma delas fornece aqui um level cap regional numérico confirmado ou o nível exato de uma batalha.')+
+  note('Encontros, evoluções e equipes de Sinnoh são planejados. Sem PBS nativo e Game.exe/JoiPlay testados, o guia não pode exibir níveis de captura nem valores reais de batalha.')+
+  '</section>';
 const searchFilters={
   areas:[['todas','Todas as referências'],['sem-fase','Fase a auditar'],['com-especies','Com espécies candidatas'],['sem-especies','Sem espécies candidatas']],
   treinadores:[['todas','Todos os treinadores'],['com-area','Área citada na fonte'],['sem-area','Sem área citada']],
@@ -198,7 +206,7 @@ export function sinnohGuidePage(data,requested='visao',phase='all',options={}){
     '<p>'+esc(data.meaning)+'</p>'+
     '<p><span class="content-pending-tag">Ainda não adicionado ao Game.exe/JoiPlay</span></p>'+
     note('Guia disponível no portal. Sinnoh ainda não está instalado como região jogável; mapas, NPCs e eventos são referências planejadas, não provas de implantação.')+
-    '</header>'+navigation+section+
+    '</header>'+navigation+levelPanel(data)+section+
     '<section class="sinnoh-guide-footer"><h2>Estado da implementação</h2>'+
       note('Dados organizados a partir das auditorias CH11–CH16. Isso não comprova instalação de mapas, NPCs, treinadores, encontros, itens ou músicas.')+
       contextLink('pendencias',{},'Ver pendências no guia')+

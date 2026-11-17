@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 9/32 após a S27 web; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 10/32 após as entregas web S27 e S29; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -141,6 +141,10 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 ### S27 — Guias Sinnoh no site (Barra A concluída)
 
 A [S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) foi concluída no escopo do portal web: as páginas e referências de Sinnoh já estão disponíveis nos módulos CH17–CH18, com navegação, pesquisas e rótulos honestos de `planned`; o [teste adicional de aceite](../site/tests/sinnoh-s27-development.test.mjs) confirma que 8 abas, áreas, treinadores, ginásios, Liga e HMs são dados de referência e não eventos instalados. **Barra A: 9/32 (28%)** após CI e merge; os 44 testes nativos continuam pendentes, B/C/D permanecem 0/13 e Barra E 20/20 (100%).
+
+### S29 — nível dinâmico no guia (Barra A concluída)
+
+A [S29](SINNOH_S29_NIVEIS_DINAMICOS_PORTAL_ACEITE.md) explica a fonte real do cálculo `70% Normal / 90% Master` sobre o maior Pokémon não-ovo da party. Em todas as oito abas, o guia diferencia regra de balanceamento, insígnias regionais/esmeraldas e número efetivo só calculável numa batalha real; **não inventa cap numérico regional**, nível fixo de treinadores ou níveis de encontros. [Testes S29](../site/tests/sinnoh-s29-dynamic-levels.test.mjs) e filtros negam falso `levelCap`, `effectiveLevel`, equipe instalada ou leitura de save. **A Barra A atinge 10/32 (31%)**, com B/C/D 0/13 e Barra E 20/20.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 

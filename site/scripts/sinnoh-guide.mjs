@@ -21,6 +21,17 @@ export function generateSinnohGuide(sources){
   if(!sources||keys.some(key=>!sources[key]))reject('missing CH11–CH16 source');
   const {coverage,pending,teams,badges,encounters,story,music,regions}=sources;
   const pendingRegion=pending.regions?.SINNOH;
+  // S29: o Blue usa o maior nivel nao-ovo da party. O registro regional
+  // nao possui um cap numerico confirmado; badge/esmeralda nao vira level.
+  if(teams.ui_policy?.publish_historical_fixed_levels!==false||
+     teams.ui_policy?.render_actual_levels_from!=='BLUE_CAMPAIGN_DYNAMIC_SCALING_ONLY'||
+     teams.dynamic_balance?.reference_level!=='highest_non_egg_party_level'||
+     teams.dynamic_balance?.normal_percent!==70||
+     teams.dynamic_balance?.master_percent!==90||
+     encounters.global_progress?.reference_party!=='highest_non_egg_party_level'||
+     encounters.global_progress?.regional_numeric_level_cap!==null||
+     badges.no_cross_region_key_item_or_hm_transfer!==true)
+    reject('S29 dynamic level policy unverified');
   if(coverage.region!=='SINNOH'||coverage.status!=='PLANNED_AUDIT_CHECKLIST_ONLY'||
       coverage.integrity?.verified_runtime_entries!==0||
       pending.state!=='REFERENCE_NOT_NATIVE_GAMEPLAY'||!pendingRegion||
@@ -129,6 +140,15 @@ export function generateSinnohGuide(sources){
     balance:{normalPercent:teams.dynamic_balance.normal_percent,
       masterPercent:teams.dynamic_balance.master_percent,
       note:'Escalonamento dinâmico do Blue; níveis fixos históricos não representam os combates.'},
+    // S29: metadados explicativos, NUNCA niveis nem valores lidos de um save.
+    levelPolicy:{
+      reference:teams.dynamic_balance.reference_level,
+      regionalNumericCap:encounters.global_progress.regional_numeric_level_cap,
+      badgesDoNotRevealExactLevel:true,
+      verifiedRuntimeLevels:false,
+      source:'scripts/battle_polish/Campaign.rb',
+      fieldEvolutionSource:encounters.blue_evolution_source
+    },
     sourcePaths:repoPaths
   };
 }
