@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b4258a13c4c93806b0153cee1fbb4d03a4de0df1",
+      "date": "2026-11-17T08:34:36-03:00",
+      "title": "feat(unova): relatorio E08 de progresso e bloqueios sem falsa homologacao nativa",
+      "category": "Novidades"
+    },
+    {
       "sha": "a6d07146766b5b5a284ffbee405a2b811764e9a9",
       "date": "2026-11-17T08:33:30-03:00",
       "title": "test(unova): 16 guards de direitos, musicas, times e MapIDs nao verificados",
