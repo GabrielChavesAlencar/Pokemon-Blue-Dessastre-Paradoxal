@@ -180,3 +180,10 @@ A ferramenta verifica sequência de flags UNOVA_U07, escolha única de inicial, 
 Foi criado o [auditor A04 somente leitura](../scripts/regions/audit_unova_a04_mapids.py) e o [BAT de seleção Windows](../UNOVA_A04_AUDITAR_MAPIDS.bat), com [manual](UNOVA_A04_MAPIDS_MULTIRREGIONAIS.md) e [testes sintéticos](../tests/test_unova_a04_mapids.py). O auditor pode inspecionar MapInfos.rxdata e MapNNN.rxdata de uma instalação real do Decades, além de cópias/ZIPs de Kanto, Johto, Hoenn e Sinnoh fornecidos explicitamente. Calcula hashes, conta IDs observados/declarados, identifica órfãos/ausências e aponta sobreposições entre snapshots, sem atribuir autoria por região nem reservar MapIDs Unova.
 
 **A04 permanece pendente:** não houve acesso ao MapInfos da instalação real e os dados de outras regiões ainda não foram auditados neste ambiente. Testes sobre fixtures não comprovam espaço livre nem autorização para importação. **Barra A 0/8, Barra E 4/8, Unova jogável 0/32.**
+
+
+## A05 — planejamento candidato com inventário B01/B04/B05 (sem alocação)
+
+O MD multirregional recebido pelo usuário em 17/11/2026 foi conferido com o catálogo já publicado [Sinnoh B05](../data/regions/sinnoh-b05-mapid-planning.json). A [proposta A05](../data/regions/unova-a05-mapid-candidates.json) e o [auditor A05](../scripts/regions/audit_unova_a05_candidates.py) registram **648 MapIDs ocupados no snapshot**, **76 retidos administrativamente para Sinnoh (442–517)** e **174 historicamente vagos como candidatos Unova**, priorizando **518–599 (82 posições)**. Os outros 92 são candidatos de expansão e os 31 IDs curtos omitidos no coletor B04 antigo continuam ocupados.
+
+O [BAT A05](../UNOVA_A05_PLANEJAR_MAPIDS.bat) permite planejamento histórico ou comparação com relatório privado A04, registrando colisões novas. Veja [manual A05](UNOVA_A05_PROPOSTA_MAPIDS_B01_B04.md). **Nenhuma área U03 recebeu MapID de destino, nenhum dado do Game.exe foi editado e reservas futuras não foram homologadas. Barra A 0/8, Barra E 4/8, Unova jogável 0/32.**
