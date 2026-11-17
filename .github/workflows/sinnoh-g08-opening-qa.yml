@@ -1,0 +1,97 @@
+name: Sinnoh G08 - Rowan Barry iniciais e niveis offline
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g08-opening-qa.yml'
+      - 'scripts/regions/audit_sinnoh_g08_opening_qa.py'
+      - 'scripts/regions/SinnohPilot.rb'
+      - 'scripts/regions/SinnohIntroContracts.rb'
+      - 'scripts/regions/SinnohStarterContracts.rb'
+      - 'scripts/regions/build_sinnoh_barry_pbs.py'
+      - 'scripts/regions/verify_sinnoh_barry_pbs.py'
+      - 'scripts/battle_polish/Campaign.rb'
+      - 'tests/test_sinnoh_g08_opening_qa.py'
+      - 'tests/sinnoh_g08_opening_runtime.rb'
+      - 'data/regions/sinnoh-*.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g08-opening-qa.yml'
+      - 'scripts/regions/audit_sinnoh_g08_opening_qa.py'
+      - 'scripts/regions/SinnohPilot.rb'
+      - 'scripts/regions/SinnohIntroContracts.rb'
+      - 'scripts/regions/SinnohStarterContracts.rb'
+      - 'scripts/regions/build_sinnoh_barry_pbs.py'
+      - 'scripts/regions/verify_sinnoh_barry_pbs.py'
+      - 'scripts/battle_polish/Campaign.rb'
+      - 'tests/test_sinnoh_g08_opening_qa.py'
+      - 'tests/sinnoh_g08_opening_runtime.rb'
+      - 'data/regions/sinnoh-*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g08-python:
+    name: G08 / auditor cruzado e PBS sintetico (Python)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Executar 20 casos G08 e regressao CH08/S13/S14
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_g08_opening_qa.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_barry_ch08.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_s13_intro.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_s14_starters.py' -v
+      - name: Gerar apenas matriz estatica de cenarios
+        run: |
+          mkdir -p .blue-work/sinnoh-g08
+          python scripts/regions/audit_sinnoh_g08_opening_qa.py > .blue-work/sinnoh-g08/opening-matrix.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path(".blue-work/sinnoh-g08/opening-matrix.json").read_text(encoding="utf-8"))
+          assert r["stage"]=="G08"
+          assert len(r["player_choices"])==3 and len(r["offline_battle_matrix"])==9
+          assert [x["rival_pbs_version"] for x in r["player_choices"]]==[0,1,2]
+          assert r["balance"]["normal_percent"]==70 and r["balance"]["master_percent"]==90
+          assert r["balance"]["numeric_fixed_trainer_level"] is None
+          assert not r["gates"]["compiled_pbs_from_real_game_verified"]
+          assert not r["gates"]["ready_marker_generated"]
+          assert not r["game_exe_tested"] and not r["joiplay_tested"]
+          assert not r["can_install_live_game"]
+          assert r["phase_b_approved"]==r["phase_c_approved"]==r["phase_d_approved"]==0
+          print("SINNOH_G08_STATIC_CONTRACT_OK_NO_NATIVE_APPROVAL")
+          PY
+      - name: Arquivar somente metadados offline, nunca PBS reais ou saves
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g08-offline-contract-matrix
+          path: .blue-work/sinnoh-g08/opening-matrix.json
+          if-no-files-found: warn
+
+  g08-ruby:
+    name: G08 / nove resultados e regressao do motor (Ruby)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxe das fixtures e codigo do piloto
+        run: |
+          ruby -c scripts/regions/SinnohPilot.rb
+          ruby -c tests/sinnoh_g08_opening_runtime.rb
+      - name: Rodar nove cenarios Rowan Barry em fake engine
+        run: |
+          ruby tests/sinnoh_g08_opening_runtime.rb scripts/regions/SinnohPilot.rb scripts/regions/SinnohIntroContracts.rb scripts/regions/SinnohStarterContracts.rb
+      - name: Executar fixtures existentes com o codigo Ruby real
+        run: |
+          ruby tests/sinnoh_s13_intro_runtime.rb scripts/regions/SinnohPilot.rb scripts/regions/SinnohIntroContracts.rb data/regions/sinnoh-intro-s13.json
+          ruby tests/sinnoh_s14_starter_runtime.rb scripts/regions/SinnohPilot.rb scripts/regions/SinnohStarterContracts.rb data/regions/sinnoh-starters-s14.json
+          ruby tests/sinnoh_barry_ch08_runtime.rb scripts/battle_polish/Campaign.rb scripts/regions/SinnohPilot.rb
+          ruby tests/sinnoh_s17_trainer_balance_runtime.rb tests/sinnoh_evolution_ch12_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/EvolutionScaling.rb scripts/battle_polish/Story.rb scripts/battle_polish/Campaign.rb data/regions/sinnoh-trainer-evolution-contract.json
