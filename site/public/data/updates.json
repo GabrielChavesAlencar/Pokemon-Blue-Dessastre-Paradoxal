@@ -2,6 +2,24 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7f3dc9aaa60ba3e9356e420f03e497c341651373",
+      "date": "2026-11-17T19:06:48-03:00",
+      "title": "fix(android): recognize historical Kanto manifests without plugin checksums",
+      "category": "Correções"
+    },
+    {
+      "sha": "409b889645b74dc2af1966f8238fd5b5bec2c80b",
+      "date": "2026-11-17T19:06:46-03:00",
+      "title": "docs(sinnoh): mark G07 integrated in main, GitHub pipeline 7/12",
+      "category": "Documentação"
+    },
+    {
+      "sha": "158bfdd3261aa796efaa27f11289128b78144678",
+      "date": "2026-11-17T19:06:28-03:00",
+      "title": "feat(sinnoh): G07 Twinleaf physical binding matrix and contract tests (#154)",
+      "category": "Novidades"
+    },
+    {
       "sha": "02b9ab0dcc9df9e3e595f0c893d96599f10ef4b5",
       "date": "2026-11-17T19:05:48-03:00",
       "title": "ci(android): rebuild Kanto and Hoenn bundle when fossil source or runtime changes",
