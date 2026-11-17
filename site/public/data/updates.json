@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f1123995649d983e114afb1b1b5c7478ac4aa405",
+      "date": "2026-11-17T16:01:23-03:00",
+      "title": "Unova A14: preparador seguro para Windows Sandbox e teste de saves",
+      "category": "Novidades"
+    },
+    {
       "sha": "4f16a08ed68e9cd3d2118aec83ddf55497c01065",
       "date": "2026-11-17T15:22:32-03:00",
       "title": "Corrige A13 silenciosa com progresso e log persistente",
