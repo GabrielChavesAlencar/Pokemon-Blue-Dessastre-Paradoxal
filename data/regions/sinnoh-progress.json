@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 27,
+    "done": 28,
     "partial": 4,
-    "pending": 1,
-    "percent_complete": 84,
-    "percent_with_partial_not_counted": 84,
+    "pending": 0,
+    "percent_complete": 87,
+    "percent_with_partial_not_counted": 87,
     "groups": [
       {
         "key": "foundation",
@@ -188,8 +188,8 @@
     {
       "id": "S16",
       "title": "HMs com insígnias locais",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S16_HMS_INSIGNIAS_LOCAIS_ACEITE.md"
     },
     {
       "id": "S17",

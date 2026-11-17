@@ -106,11 +106,15 @@ class SinnohS15Tests(unittest.TestCase):
 
     def test_22_progress_only_code(self):
         p=json.loads((ROOT/"data/regions/sinnoh-progress.json").read_text("utf-8"))
-        self.assertEqual((p["development"]["done"],p["development"]["partial"],
-                          p["development"]["pending"],p["development"]["percent_complete"]),
-                         (27,4,1,84))
+        # S15 remains complete as later S16 work progresses.
+        self.assertGreaterEqual(p["development"]["done"],27)
+        self.assertEqual(p["development"]["done"],
+                         sum(x["status"]=="done" for x in p["tasks"]))
+        self.assertEqual(p["development"]["percent_complete"],
+                         100*p["development"]["done"]//p["development"]["total"])
         self.assertEqual(next(t["status"] for t in p["tasks"] if t["id"]=="S15"),"done")
-        self.assertEqual(next(t["status"] for t in p["tasks"] if t["id"]=="S16"),"pending")
+        self.assertIn(next(t["status"] for t in p["tasks"] if t["id"]=="S16"),
+                      ("pending","done"))
         self.assertEqual(p["phase_gates"]["playable_in_game_executable"],0)
         self.assertEqual(p["phase_gates"]["fully_tested_native"],0)
 
