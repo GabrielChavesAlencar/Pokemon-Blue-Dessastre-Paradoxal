@@ -14,6 +14,7 @@ on:
       - 'UNOVA_E04_ESCOLHER_FONTE.bat'
       - 'UNOVA_CATALOGAR_NPCS.bat'
       - 'UNOVA_CHEREN_SP05_QA.bat'
+      - 'UNOVA_VALIDAR_EVENTOS_NUVEMA.bat'
       - '.github/workflows/unova-documentation.yml'
   pull_request:
     paths:
@@ -43,6 +44,7 @@ jobs:
           python scripts/regions/audit_unova_e08_readiness.py
           python scripts/regions/audit_unova_sp04_npcs.py
           python scripts/regions/unova_sp05_cheren_pilot.py
+          python scripts/regions/audit_unova_u07_events.py --simulate-demo
       - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
         run: python -m unittest discover -s tests -p 'test_unova_*.py' -v
       - name: Compilar sintaxe Python sem executar mapas nem modificar saves
@@ -59,3 +61,4 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_sprite_pack.py
           python -m py_compile scripts/regions/audit_unova_sp04_npcs.py
           python -m py_compile scripts/regions/unova_sp05_cheren_pilot.py
+          python -m py_compile scripts/regions/audit_unova_u07_events.py
