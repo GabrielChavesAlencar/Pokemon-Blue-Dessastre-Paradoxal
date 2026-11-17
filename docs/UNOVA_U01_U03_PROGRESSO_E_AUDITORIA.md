@@ -137,3 +137,14 @@ Foi implementada a ferramenta [audit_unova_sprite_pack.py](../scripts/regions/au
 O [UNOVA_AUDITAR_SPRITES.bat](../UNOVA_AUDITAR_SPRITES.bat) permite escolher ZIP pela janela do Windows ou arrastar e soltar, e comparar opcionalmente a pasta local de sprites do Decades. O relatório é salvo apenas em .blue-work/unova/audit/sprite-packs/ e os créditos continuam não verificados. [Manual SP03](UNOVA_AUDITOR_SPRITES_SP03.md).
 
 **Situação de progresso:** construção do auditor e execução de testes sintéticos não equivalem a auditar os packs originais nem a comprovar direitos e funcionamento nativo. **Barra E permanece 4/8; Unova jogável permanece 0/32.** Nenhuma alteração em Game.exe, saves, MapInfos, PBS, instalador ou outras regiões.
+
+
+## SP04 — Catálogo de NPCs de Unova (elenco planejado)
+
+Criado [catálogo SP04 de 73 personagens/arquétipos](../data/regions/unova-sp04-npcs.json), incluindo elenco inicial, N, Ghetsis, Team Plasma, líderes Black/White, Elite Four, Alder, classes de treinadores e agente regional próprio. Também inclui as **19 referências de treinador anteriores**, sem inventar níveis, times, MapIDs ou eventos.
+
+O novo [auditor SP04](../scripts/regions/audit_unova_sp04_npcs.py) cruza esse catálogo com os relatórios privados do SP03: candidatos por nome, dimensões, frames, grade e alertas de escala; nenhum sprite é selecionado ou aprovado automaticamente. Use [UNOVA_CATALOGAR_NPCS.bat](../UNOVA_CATALOGAR_NPCS.bat) para gerar o relatório; o [UNOVA_AUDITAR_SPRITES.bat](../UNOVA_AUDITAR_SPRITES.bat) passa a chamar SP04 após a inspeção SP03. Manual: [UNOVA_SP04_CATALOGO_NPCS.md](UNOVA_SP04_CATALOGO_NPCS.md).
+
+A campanha White mantém **Iris como líder do oitavo ginásio**, com Drayden identificado como referência de Black. A lista é de elenco/arquétipos, não de todas as instâncias anônimas nos mapas.
+
+**E = 4/8 (50%)**, pois pack real, direitos e QA ainda estão pendentes; fases Unova realmente jogáveis **0/32**. Nenhuma alteração no jogo, saves, Blue-Story ou sprites instalados.

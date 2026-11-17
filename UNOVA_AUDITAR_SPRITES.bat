@@ -29,8 +29,13 @@ echo.
 if errorlevel 1 goto :blocked
 :ok
 echo.
+echo [SP04] Atualizando catalogo de NPCs a partir do relatorio SP03 mais recente...
+%PY% scripts\regions\audit_unova_sp04_npcs.py --latest --write
+if errorlevel 1 goto :blocked
+echo.
 echo [OK] Inventario de sprites salvo somente em:
 echo   .blue-work\unova\audit\sprite-packs\
+echo [SP04] Catalogo de NPCs disponivel em .blue-work\unova\audit\npc-catalog\
 echo ATENCAO: nenhum sprite foi instalado, licenciado ou aprovado para o Game.exe.
 echo.
 pause
