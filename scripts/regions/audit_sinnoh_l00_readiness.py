@@ -349,6 +349,13 @@ def run(root=ROOT,*,workspace=False):
 
 
 def main(argv=None):
+    # argparse's default unknown-argument error echoes supplied paths.
+    # Reject all unrecognized tokens BEFORE letting argparse format them.
+    argv=list(sys.argv[1:] if argv is None else argv)
+    if argv not in ([],["--workspace-reports"],["--help"],["-h"]):
+        print("SINNOH_L00_BLOCKED: unrecognized or unsafe option",
+              file=sys.stderr)
+        return 2
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--workspace-reports",action="store_true",
                    help="read only .blue-work/sinnoh-l00-input/public-reports.json")
