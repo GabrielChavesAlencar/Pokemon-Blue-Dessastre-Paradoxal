@@ -126,3 +126,7 @@ SHA-256 do segundo ZIP: `32b865890c7a85698afbc9e498483a4e2b2fff7a3ac092fc37ecfdb
 **Proteções:** nenhuma alteração de `game/Data`, `MapInfos`, `Tilesets`, saves, imagens, áudio ou Game.exe; barras **B/C/D = 0/13**. Este MD é um inventário e planejamento, não liberação de região jogável.
 
 **Regra de manutenção:** ao instalar qualquer região, refazer o levantamento B01/B04 e auditar novas colisões **antes** de atribuir um destino; não promover retenções administrativas a reservas nativas sem revisão de origem e direitos.
+
+### B06 — relação candidata de Sinnoh sem colisão (17/11/2026)
+
+A [B06 técnica](SINNOH_B06_PREVIA_TECNICA_REMAP_2026-11-17.md) detalha os **76 pares de MapID de origem → destino candidato**, com **54 terrenos em 442–495** e **22 placeholders em 496–517** (Twinleaf 209 → 442). A tabela usa a mesma **retenção administrativa 442–517** que já estava documentada — **não se tornou reserva nativa homologada**. A auditoria mantém fora dela os **174 candidatos físicos de Unova**, com bloco 518–599, e proíbe instalação sem R07, direitos de tilesets e revisão nativa.
