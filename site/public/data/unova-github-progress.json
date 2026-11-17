@@ -218,8 +218,9 @@
         {
           "id": "G06.3",
           "title": "Adicionar busca e filtros de NPCs, trainers e missões",
-          "status": "pending",
-          "acceptance": "Links contextuais, pesquisa por fase e acessibilidade"
+          "status": "done",
+          "acceptance": "Links contextuais, pesquisa por fase e acessibilidade",
+          "evidence": "site/src/assets/unova-search.js"
         },
         {
           "id": "G06.4",
