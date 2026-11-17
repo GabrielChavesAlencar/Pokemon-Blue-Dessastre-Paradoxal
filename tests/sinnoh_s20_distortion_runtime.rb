@@ -92,7 +92,7 @@ ids.each_with_index do |id, i|
   s20_reject(state, id, :capture_confirmed, source, sources)
   s20_reject(state, id, outcome, 123, sources)
   s20_reject(state, :FAKE_EVENT, outcome, source, sources)
-  s20_reject(state, id, outcome, source, { id => source }) # wrong key type
+  s20_reject(state, id, outcome, source, { id.to_sym => source }) # wrong key type
   if i < ids.length - 1
     next_id = ids[i + 1]
     s20_reject(state, next_id, steps[i + 1]["outcome"].to_sym,
