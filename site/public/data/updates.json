@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bb410b987f199b138f923fddc8f6ad1b966dea91",
+      "date": "2026-11-16T21:01:44-03:00",
+      "title": "docs(sinnoh): CH20 preflight Android, auditor ZIP e plano 44 nativos",
+      "category": "Documentação"
+    },
+    {
+      "sha": "70092c8ba756a2ce798b69606412e98dd24ac1b3",
+      "date": "2026-11-16T21:01:21-03:00",
+      "title": "ci(sinnoh): CH20 regressao JoiPlay estatica com relatorio 44 casos pendentes",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fcea47b75fc90a3faab15d8772a635c3857faa0d",
       "date": "2026-11-16T21:00:56-03:00",
       "title": "test(sinnoh): CH20 14 testes negativos ZIP JoiPlay e roteiro nativo pendente",
