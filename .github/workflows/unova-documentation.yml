@@ -17,6 +17,7 @@ on:
       - 'UNOVA_VALIDAR_EVENTOS_NUVEMA.bat'
       - 'UNOVA_A04_AUDITAR_MAPIDS.bat'
       - 'UNOVA_A05_PLANEJAR_MAPIDS.bat'
+      - 'RUN_UNOVA_MAPIDS.bat'
       - '.github/workflows/unova-documentation.yml'
   pull_request:
     paths:
@@ -68,3 +69,4 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_u07_events.py
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
+          python -m py_compile scripts/regions/unova_auto_mapids.py
