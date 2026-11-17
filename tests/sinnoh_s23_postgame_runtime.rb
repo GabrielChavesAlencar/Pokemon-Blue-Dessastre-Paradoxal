@@ -132,9 +132,7 @@ ids.each_with_index do |event, i|
     check23(post.gate(state, event) == :special_event_item_not_verified,
             "Darkrai/Shaymin event item requirement dropped")
   end
-  reject23(state, event, kind, source, sources, item: special, strongest: strongest)
-    if !special && !strongest && event == "P10_HEATRAN_QUEST" &&
-      !post.recorded(state).include?(ids.first)
+  # Heatran's Battle Zone prerequisite was already checked before the loop.
   reject23(state, event, kind, source + "_WRONG", sources,
            item: special, strongest: strongest)
   reject23(state, event, kind.to_s, source, sources,
