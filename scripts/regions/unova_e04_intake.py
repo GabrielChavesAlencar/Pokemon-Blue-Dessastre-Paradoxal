@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 import os
-import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -72,11 +71,13 @@ def sha256(path: Path) -> str:
 
 def copy_once(source: Path, dest: Path, limit: int) -> str:
     source = source.absolute()
-    if source == dest or source.resolve() == dest.resolve():
+    if dest.is_symlink() or source.is_symlink():
+        fail("origem ou destino de auditoria e symlink")
+    if source == dest:
         # Idempotence for files already selected in the private workspace.
+        if not dest.is_file():
+            fail("arquivo privado ausente")
         return sha256(dest)
-    if dest.is_symlink():
-        fail("destino de auditoria e symlink")
     if dest.exists():
         if not dest.is_file() or source.stat().st_size != dest.stat().st_size:
             fail("fonte diferente ja existe; nenhuma substituicao automatica")
