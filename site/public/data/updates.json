@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "88bb8c99aa7daefcf8b0b96307b3050775de3492",
+      "date": "2026-11-17T16:30:51-03:00",
+      "title": "Unova: barra GitHub com 32 tarefas rastreáveis e painel no portal",
+      "category": "Novidades"
+    },
+    {
       "sha": "f1123995649d983e114afb1b1b5c7478ac4aa405",
       "date": "2026-11-17T16:01:23-03:00",
       "title": "Unova A14: preparador seguro para Windows Sandbox e teste de saves",
