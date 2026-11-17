@@ -71,3 +71,11 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
           python -m py_compile scripts/regions/unova_auto_mapids.py
+
+      - name: Empacotar RUN_UNOVA_MAPIDS.bat para download como ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: RUN_UNOVA_MAPIDS
+          path: RUN_UNOVA_MAPIDS.bat
+          if-no-files-found: error
+          retention-days: 7
