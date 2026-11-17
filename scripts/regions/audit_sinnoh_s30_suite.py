@@ -32,6 +32,8 @@ REQUIRED = {
         "scripts/regions/sinnoh_save_isolation.py",
         "scripts/regions/sinnoh_s12_installer.py",
         "tests/test_sinnoh_s12_installer.py",
+        "tests/test_sinnoh_s08_integrity.py",
+        "scripts/regions/audit_sinnoh_s08_resources.py",
     ),
     "ruby": (
         "tests/sinnoh_pilot_runtime.rb",
