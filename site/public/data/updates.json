@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8e6e527009ac18866c44bc1fa24956d6819ffa98",
+      "date": "2026-11-17T20:56:42-03:00",
+      "title": "fix(android): accept known 1.91 KB official bootstrap without weakening other file hash checks",
+      "category": "Correções"
+    },
+    {
       "sha": "46cf063638a0db8b767cf06fc37403a803232942",
       "date": "2026-11-17T20:53:31-03:00",
       "title": "feat(sinnoh): L02 fail-closed offline review of sanitized L00/L01 evidence (#173)",
