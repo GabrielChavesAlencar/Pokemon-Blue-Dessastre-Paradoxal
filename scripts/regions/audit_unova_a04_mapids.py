@@ -281,6 +281,12 @@ def scan_source(path: Path, label: str, *, base: bool = False) -> dict:
     return scan_zip(path,label,base=base) if path.suffix.casefold()==".zip" else scan_dir(path,label,base=base)
 
 
+def canonical_source(path: Path) -> Path:
+    """Normalize game vs game/Data to the same physical source for deduping."""
+    p = Path(path).expanduser().absolute()
+    return safe_path(p,file=True) if p.suffix.casefold()==".zip" else directory_root(p)
+
+
 def analyze(base: dict, overlays: dict[str,dict]) -> dict:
     if base.get("label")!="DECADES" or base.get("mapinfos_present") is not True:
         block("baseline Decades com MapInfos real e obrigatorio")
@@ -484,6 +490,12 @@ def main(argv=None) -> int:
             print(json.dumps(report,ensure_ascii=False,indent=2))
             return 2
         overlays=overlay_args(args.overlay)
+        normalized_sources={"DECADES":canonical_source(args.base_data)}
+        for label,path in overlays.items():
+            normalized=canonical_source(path)
+            if normalized in normalized_sources.values():
+                block("mesma fonte fisica repetida sob rotulos regionais diferentes")
+            normalized_sources[label]=normalized
         base=scan_source(args.base_data,"DECADES",base=True)
         scans={}
         for label in REGIONS:
