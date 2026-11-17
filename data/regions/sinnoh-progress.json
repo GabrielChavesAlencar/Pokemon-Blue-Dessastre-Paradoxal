@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 21,
+    "done": 22,
     "partial": 5,
-    "pending": 6,
-    "percent_complete": 65,
-    "percent_with_partial_not_counted": 65,
+    "pending": 5,
+    "percent_complete": 68,
+    "percent_with_partial_not_counted": 68,
     "groups": [
       {
         "key": "foundation",
@@ -218,8 +218,8 @@
     {
       "id": "S21",
       "title": "Elite Four e Cynthia",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S21_ELITE_CYNTHIA_HALL_OF_FAME_ACEITE.md"
     },
     {
       "id": "S22",
