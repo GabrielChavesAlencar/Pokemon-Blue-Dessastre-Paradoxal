@@ -2,11 +2,37 @@
 
 **Data:** 17/11/2026 · Projeto: Pokémon Blue: Dessastre Paradoxal
 
+## Correção de distribuição — BAT independente de arquivos externos
+
+A versão anterior apresentava erro ao executar em Downloads: procurava
+Downloads\scripts\regions\unova_auto_mapids.py e não encontrava esse arquivo.
+**A versão corrigida de RUN_UNOVA_MAPIDS.bat inclui o programa Python e os dez
+arquivos de suporte do próprio projeto dentro do BAT**, sem GitHub, sem zip
+extra, sem instalador externo e sem mover o arquivo para a pasta do repositório.
+
+Pode baixar diretamente o **único arquivo RUN_UNOVA_MAPIDS.bat**, salvá-lo
+em Downloads e dar duplo clique. O script verifica Python 3.11+ instalado,
+extrai apenas o código e os catálogos embutidos para a área privada
+%LOCALAPPDATA%\PokemonBlueUnovaMapids\bundle-HASH e executa A04→A05.
+**Não extrai nada para a pasta do jogo.** Os relatórios são gerados na pasta
+.blue-work\unova\audit\ dentro desse cache, e o resultado abre no Bloco de
+Notas, incluindo os caminhos completos.
+
+O MD atualizado já documenta que **B04 V2 identificou 648/648 IDs e
+concordou com B01**, em vez dos 617 da coleta antiga, mas também registra
+que isso não certifica origem independente nem reservas futuras. A05 preserva
+o bloco candidato 518–599 e o bloqueio de Sinnoh 442–517; não instala mapas.
+
+**Atenção:** a única dependência externa no computador é ter Python 3.11 ou
+mais recente, já detectado no caso do erro enviado (Python 3.14). Caso o
+MapInfos atual tenha mudado, o programa mostrará a divergência sem substituir
+nada e sem declarar MapIDs livres ou instalados.
+
 ## Executar sem escolher pastas
 
 **Dê dois cliques em [RUN_UNOVA_MAPIDS.bat](../RUN_UNOVA_MAPIDS.bat)** na raiz atualizada do projeto.
 
-O BAT verifica Python 3.11+ existente e executa [unova_auto_mapids.py](../scripts/regions/unova_auto_mapids.py). O Python procura automaticamente a instalação, executa A04 e A05 e abre o resultado final no Bloco de Notas do Windows. **Não precisa abrir CMD, PowerShell nem selecionar arquivos em caixas de diálogo.**
+O BAT verifica Python 3.11+, extrai sua própria cópia embutida de [unova_auto_mapids.py](../scripts/regions/unova_auto_mapids.py) para um cache privado e executa o runner. O Python procura automaticamente a instalação, executa A04 e A05 e abre o resultado final no Bloco de Notas do Windows. **Não precisa abrir CMD, PowerShell nem selecionar arquivos em caixas de diálogo.**
 
 ### Caminhos procurados, em ordem de preferência
 
@@ -21,7 +47,7 @@ O localizador não faz varredura recursiva de todo o disco, Downloads ou saves. 
 
 1. **A04:** lê MapInfos.rxdata (dados Ruby Marshal sem executar Ruby), inventaria MapNNN.rxdata, calcula SHA-256 de arquivos, classifica IDs observados/declarados e detecta arquivos órfãos. Não altera Data.
 2. **A05:** recebe diretamente o relatório A04 exato e o compara com B01/B04/B05 e o catálogo Sinnoh/Unova. Calcula o status do bloco histórico candidato 518–599, marca ocupações novas, mantém Sinnoh 442–517 e Hoenn 700–999 protegidos e não associa IDs a áreas simbólicas.
-3. **Resultado:** salva os JSONs de auditoria originais com nomes baseados em hash, imutáveis, mais um resumo simples no caminho estável: .blue-work\unova\audit\LEIA_AQUI_UNOVA_MAPIDS.txt. O Bloco de Notas abre automaticamente esse arquivo para facilitar a leitura.
+3. **Resultado:** salva os JSONs de auditoria originais com nomes baseados em hash, imutáveis, mais um resumo simples no caminho estável: %LOCALAPPDATA%\PokemonBlueUnovaMapids\bundle-HASH\.blue-work\unova\audit\LEIA_AQUI_UNOVA_MAPIDS.txt. O Bloco de Notas abre automaticamente esse arquivo para facilitar a leitura.
 
 A04 é executada contra a **instalação consolidada** detectada; Kanto/Johto/Hoenn/Sinnoh que já estiverem nela são contabilizados na ocupação total. O RUN **não inventa snapshots regionais separados** nem infere propriedade por região. Para provar atribuição regional é necessário o histórico de manifestos.
 
