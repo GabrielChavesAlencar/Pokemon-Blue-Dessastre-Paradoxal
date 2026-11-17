@@ -43,7 +43,7 @@ Se Windows Sandbox estiver desabilitado, use o painel **Ativar ou desativar recu
 
 ## Testes e critérios de conclusão
 
-O código inclui [20 testes offline](../tests/test_sinnoh_b10_save_isolation.py) com fixtures sintéticas: confirmação exata de 702 IDs, rejeição de saves/junctions/manifestos falsos, Windows Home/feature desativado, WSB somente leitura e sem rede/clipboard/execução automática, impedimento de sobreposição e invariância do jogo principal.
+O código inclui [27 testes offline](../tests/test_sinnoh_b10_save_isolation.py) com fixtures sintéticas: confirmação exata de 702 IDs, rejeição de saves/junctions/manifestos falsos, Windows Home/feature desativado, WSB somente leitura e sem rede/clipboard/execução automática, impedimento de sobreposição e invariância do jogo principal.
 
 **Não foram executados testes reais Windows Sandbox neste ambiente.** Para declarar que o isolamento funciona na máquina do usuário, são necessários o relatório gerado pelo BAT, confirmação de que a janela da sandbox iniciou, que a cópia do jogo ficou dentro da VM e que o Game.exe testado na VM não alterou dados do host. O último ponto requer um procedimento de comparação read-only de hashes dos saves externos antes/depois — **a B10 ainda não afirma esse resultado.**
 
@@ -54,3 +54,16 @@ O código inclui [20 testes offline](../tests/test_sinnoh_b10_save_isolation.py)
 Coletar o relatório B10, auditar os locais reais de save do Decades (sem copiar seus saves), verificar hashes antes/depois do teste em Windows Sandbox, conferir o renderizador com PNGs de 50 mil/70 mil pixels e estabelecer critérios de QA nativa, sem instalar os mapas na versão principal.
 
 [Contrato B10](../data/regions/sinnoh-b10-save-isolation.json) · [Preparador B10](../scripts/regions/prepare_sinnoh_b10_save_isolation.py) · [20 testes](../tests/test_sinnoh_b10_save_isolation.py).
+
+## Endurecimento G04 — verificação de política e proteção adicional do CMD
+
+**Escopo estritamente estático, somente GitHub (17/11/2026).** [Entrega G04](SINNOH_G04_SEGURANCA_WINDOWS_SANDBOX.md) reforçou a preparação B10 sem alterar o contrato de 702 MapIDs, sem executar `Game.exe` e sem emitir aprovação nativa:
+
+- Antes da criação da sessão, exige clone em `.blue-work/sinnoh-b09-native-qa/native-<SHA>`, SHA completo vinculado ao recibo B09, 648 MapIDs da base + 54 Sinnoh, e fonte do stage com hash válido.
+- A auditoria do recibo B09 só aceita as duas sobreposições naturais do overlay de `MapInfos.rxdata` e `Tilesets.rxdata`; nomes com grafias ambíguas, caracteres proibidos do Windows, reparse points e duplicatas entre origens diferentes são bloqueados.
+- `check_wsb_policy` reabre o XML gerado e verifica **exatamente** dois mapeamentos, ambos `ReadOnly=true`, destinos de convidado esperados, nenhuma tag `LogonCommand`, rede, clipboard e dispositivos desabilitados, `ProtectedClient=Enable`.
+- O CMD do convidado verifica o usuário/perfil padrão `WDAGUtilityAccount` e a existência do mapeamento esperado antes de criar o destino; recusa a execução fora desse contexto aparente. A cópia usa `robocopy /XJ /SL` para não seguir junctions ou destinos de links simbólicos encontrados durante a transferência.
+- **A checagem do nome do usuário é uma barreira contra erro operacional, NÃO uma prova de virtualização ou fronteira de segurança.** Não substitui o Windows Sandbox real e não impede que alguém execute um script deliberadamente adulterado.
+- Sete testes negativos adicionais foram incluídos: campos WSB alterados, host share inesperado, caminhos Windows irregulares, guard do guest, pasta de clone indevida, prova B09 adulterada, colisão de arquivos e symlink no clone.
+
+A configuração `.wsb` continua precisando ser gerada e aberta na máquina do usuário em **Windows Pro/Enterprise/Education com o recurso Sandbox habilitado**. Não abrir o clone `Game.exe` no host; B11 ainda precisa comprovar os diretórios de saves observados antes/depois. Os resultados da CI G04 são **somente metadados/fixtures** e não aprovam B/C/D.

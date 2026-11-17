@@ -102,9 +102,12 @@ def find_clone(project,plan_sha=None,latest=False):
             and re.fullmatch(r"native-[a-f0-9]{16}",p.name)]
         if len(items)!=1:blocked("exatamente uma copia B09 exigida; escolha --clone-sha")
         folder=items[0]
+        if is_link(folder):
+            blocked("copia B09 privada nao pode ser junction/link")
         manifest=folder/"B09_PRIVATE_QA_MANIFEST.json"
-        if is_link(manifest) or not manifest.is_file():
-            blocked("manifesto da copia B09 ausente")
+        if (is_link(manifest) or not manifest.is_file()
+                or manifest.stat().st_size>MAX_RECEIPT_BYTES):
+            blocked("manifesto da copia B09 ausente ou inseguro")
         obj=json.loads(manifest.read_text("utf-8"))
         plan_sha=obj.get("plan_sha256")
     if type(plan_sha) is not str or not SHA.fullmatch(plan_sha):
@@ -119,9 +122,16 @@ def safe_rel(name):
         blocked("nome de arquivo B09 invalido")
     if name.startswith(("\\","/")) or "\\" in name or ":" in name or "\x00" in name:
         blocked("caminho Windows inseguro no B09")
+    # pathlib normalizes dot segments and duplicate slashes; reject BEFORE
+    # constructing PurePosixPath, rather than silently accepting aliases.
+    raw_parts=name.split("/")
+    if any(part in ("", ".", "..") for part in raw_parts) or len(raw_parts)>16:
+        blocked("caminho de clone com segmento ambiguo/traversal")
+    if any(ord(ch)<32 or ch in '<>"|?*' for ch in name):
+        blocked("caractere invalido ou de controle no caminho Windows")
     p=PurePosixPath(name)
-    if p.is_absolute() or ".." in p.parts or "." in p.parts or len(p.parts)>16:
-        blocked("caminho de clone com traversal")
+    if p.is_absolute() or len(p.parts)!=len(raw_parts):
+        blocked("caminho Windows nao canonico")
     if any(x.endswith((".", " ")) or not x for x in p.parts):
         blocked("componente Windows ambiguo")
     if any(re.fullmatch(r"(?i:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?",x)
@@ -165,6 +175,8 @@ def audit_clone(project,folder,plan_sha,c,b09c,b01,b05):
     overlay_count=0
     seen=set()
     final={}
+    physical_paths={}
+    allowed_replacements=set()
     total=0
     for row in rows:
         if type(row) is not dict or set(row)!={"path","bytes","sha256","origin"}:
@@ -174,6 +186,15 @@ def audit_clone(project,folder,plan_sha,c,b09c,b01,b05):
         origin=row["origin"]
         if origin not in ("NATIVE","OVERLAY"):
             blocked("origem inesperada no B09")
+        folded_path=rel.casefold()
+        previous=physical_paths.get(folded_path)
+        if previous is not None:
+            if (previous[0]!=rel or previous[1]==origin
+                    or rel not in ("Data/MapInfos.rxdata","Data/Tilesets.rxdata")):
+                blocked("colisao de arquivos na copia B09 fora das duas tabelas")
+            allowed_replacements.add(rel)
+        else:
+            physical_paths[folded_path]=(rel,origin)
         if (type(row["bytes"]) is not int or not 0<=row["bytes"]<=b09.MAX_SINGLE
             or type(row["sha256"]) is not str or not SHA.fullmatch(row["sha256"])):
             blocked("hash/tamanho de B09 invalido")
@@ -194,6 +215,8 @@ def audit_clone(project,folder,plan_sha,c,b09c,b01,b05):
         final[rel]=row
         total+=row["bytes"]
         if total>MAX_HASH_BYTES:blocked("copia ultrapassa limite")
+    if allowed_replacements!={"Data/MapInfos.rxdata","Data/Tilesets.rxdata"}:
+        blocked("as duas substituicoes obrigatorias do overlay nao foram comprovadas")
     if rows!=sorted(rows,key=lambda x:(x["path"],x["origin"])):
         blocked("ordem do B09 adulterada")
     signed=sha(json.dumps({"stage_sha256":stage_sha,"files":rows},
@@ -297,12 +320,55 @@ def xml_wsb(clone_path,tools_path):
     return '<?xml version="1.0" encoding="utf-8"?>\n'+ET.tostring(
         root,encoding="unicode")+"\n"
 
+
+def check_wsb_policy(xml_text, clone_path, tools_path):
+    """Reject any unexpected WSB capability or host share (metadata only)."""
+    try:
+        root=ET.fromstring(xml_text)
+    except (TypeError, ET.ParseError):
+        blocked("WSB XML malformado")
+    policies={
+        "vGPU":"Disable", "Networking":"Disable",
+        "AudioInput":"Disable", "VideoInput":"Disable",
+        "ProtectedClient":"Enable", "PrinterRedirection":"Disable",
+        "ClipboardRedirection":"Disable",
+    }
+    if (root.tag!="Configuration" or root.attrib
+            or [node.tag for node in root]!=[*policies,"MappedFolders"]
+            or any(node.attrib or len(node) for node in list(root)[:-1])):
+        blocked("WSB contem tags, atributos ou comando de inicio inesperados")
+    for node in list(root)[:-1]:
+        if node.text!=policies[node.tag]:
+            blocked("WSB permite capacidade desativada: "+node.tag)
+    mapped=root.find("MappedFolders")
+    folders=list(mapped)
+    if mapped.attrib or len(folders)!=2 or str(clone_path)==str(tools_path):
+        blocked("WSB precisa mapear duas pastas distintas, somente leitura")
+    for node,(host,guest) in zip(folders,
+            ((clone_path,GUEST_SOURCE),(tools_path,GUEST_TOOLS))):
+        if (node.tag!="MappedFolder" or node.attrib
+                or [child.tag for child in node]!=
+                    ["HostFolder","SandboxFolder","ReadOnly"]
+                or any(child.attrib or len(child) for child in node)):
+            blocked("mapeamento WSB contem campos inesperados")
+        if (node.findtext("HostFolder")!=str(host)
+                or node.findtext("SandboxFolder")!=guest
+                or node.findtext("ReadOnly")!="true"):
+            blocked("mapeamento WSB nao e exatamente o permitido")
+    return True
+
+
 GUEST_CMD=r"""@echo off
 setlocal EnableExtensions DisableDelayedExpansion
 title Sinnoh B10 - Preparar jogo APENAS dentro da Windows Sandbox
 echo.
 echo [B10] Este script so deve ser executado DENTRO da Windows Sandbox.
 echo A origem mapeada e SOMENTE LEITURA; o destino fica dentro da VM.
+rem Defesa adicional contra executar acidentalmente este CMD no host.
+rem Nao e prova criptografica de isolamento; a VM continua obrigatoria.
+if /I not "%USERNAME%"=="WDAGUtilityAccount" goto :outside
+if /I not "%USERPROFILE%"=="C:\Users\WDAGUtilityAccount" goto :outside
+if not exist "C:\SinnohB10Tools\B10_PREPARAR_NO_WINDOWS_SANDBOX.cmd" goto :outside
 if not exist "C:\SinnohB10Source\B09_PRIVATE_QA_MANIFEST.json" goto :failed
 if not exist "C:\SinnohB10Source\Game.exe" goto :failed
 if exist "C:\SinnohB10Game" (
@@ -311,7 +377,7 @@ if exist "C:\SinnohB10Game" (
 )
 echo.
 echo Copiando o jogo privado para C:\SinnohB10Game (gravavel somente na VM)...
-robocopy "C:\SinnohB10Source" "C:\SinnohB10Game" /E /R:0 /W:0 /NFL /NDL /NJH /NJS /NP
+robocopy "C:\SinnohB10Source" "C:\SinnohB10Game" /E /R:0 /W:0 /XJ /SL /NFL /NDL /NJH /NJS /NP
 if errorlevel 8 goto :failed
 if not exist "C:\SinnohB10Game\Game.exe" goto :failed
 if not exist "C:\SinnohB10Game\Data\Map442.rxdata" goto :failed
@@ -326,6 +392,11 @@ echo Ao fechar a Sandbox, os saves e arquivos criados aqui serao descartados.
 echo.
 pause
 exit /b 0
+:outside
+echo [B10 BLOQUEADA] Usuario/perfil nao corresponde ao convidado Windows Sandbox.
+echo Nao copie nem execute este clone no Windows principal.
+pause
+exit /b 3
 :failed
 echo [B10 BLOQUEADA] Diretórios ausentes, pasta previa existente ou copia falhou.
 echo Nenhum jogo foi executado por este script.
@@ -342,7 +413,24 @@ def session_root(project):
     return dest
 
 def prepare_session(project,clone_folder,plan_sha,proof,host):
-    if host.get("supported") is not True or host.get("feature_enabled") is not True:
+    if type(plan_sha) is not str or not SHA.fullmatch(plan_sha):
+        blocked("SHA do clone B09 invalido")
+    project=Path(project).absolute()
+    clone_folder=Path(clone_folder).absolute()
+    expected=b09.clone_root(project)/f"native-{plan_sha[:16]}"
+    if (clone_folder!=expected or is_link(clone_folder)
+            or not clone_folder.is_dir()):
+        blocked("B10 aceita somente o clone privado B09 esperado")
+    if (type(proof) is not dict
+            or proof.get("clone_sha256")!=plan_sha
+            or type(proof.get("source_stage_sha256")) is not str
+            or not SHA.fullmatch(proof["source_stage_sha256"])
+            or any(type(proof.get(field)) is not int or proof[field]!=value
+                   for field,value in (("native_map_ids_confirmed",648),
+                      ("sinnoh_map_ids_confirmed",54),
+                      ("clone_total_map_ids",702)))):
+        blocked("prova completa B09 incoerente para preparar WSB")
+    if type(host) is not dict or host.get("supported") is not True or host.get("feature_enabled") is not True:
         blocked("Windows Sandbox (Pro/Enterprise/Education e recurso habilitado) obrigatoria")
     root=session_root(project)
     if not root.parent.exists():blocked("workspace original nao encontrado")
@@ -357,6 +445,7 @@ def prepare_session(project,clone_folder,plan_sha,proof,host):
         guest=tools/"B10_PREPARAR_NO_WINDOWS_SANDBOX.cmd"
         guest.write_text(GUEST_CMD,encoding="utf-8",newline="\r\n")
         wsb=xml_wsb(str(clone_folder),str(target/"tools"))
+        check_wsb_policy(wsb,str(clone_folder),str(target/"tools"))
         config=temp/"B10_ISOLAMENTO.wsb"
         config.write_text(wsb,encoding="utf-8")
         proof_host={

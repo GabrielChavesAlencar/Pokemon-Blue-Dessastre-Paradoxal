@@ -1,0 +1,74 @@
+name: Sinnoh G04 - isolamento B10 estatico
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-g04-sandbox.yml'
+      - 'scripts/regions/prepare_sinnoh_b10_save_isolation.py'
+      - 'tests/test_sinnoh_b10_save_isolation.py'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'docs/SINNOH_G04_SEGURANCA_WINDOWS_SANDBOX.md'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-g04-sandbox.yml'
+      - 'scripts/regions/prepare_sinnoh_b10_save_isolation.py'
+      - 'tests/test_sinnoh_b10_save_isolation.py'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'docs/SINNOH_G04_SEGURANCA_WINDOWS_SANDBOX.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  b10-static:
+    name: G04 / Politica WSB e 27 testes sem Game.exe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Executar 27 testes sintéticos/negativos B10
+        run: python -m unittest discover -s tests -p 'test_sinnoh_b10_save_isolation.py' -v
+      - name: Validar somente politica WSB e gravar metadados
+        run: |
+          mkdir -p .blue-work/sinnoh-g04
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          sys.path.insert(0,str(Path('scripts/regions').resolve()))
+          import prepare_sinnoh_b10_save_isolation as b10
+          clone=r"C:\Private\SyntheticClone"
+          tools=r"C:\Private\SyntheticTools"
+          config=b10.xml_wsb(clone,tools)
+          assert b10.check_wsb_policy(config,clone,tools) is True
+          result={
+              "schema":1,
+              "stage":"SINNOH_G04",
+              "status":"WSB_POLICY_STATIC_CHECK_PASSED_NO_NATIVE_EXECUTION",
+              "mapped_folder_count":2,
+              "mapped_folders_read_only":True,
+              "network_disabled":True,
+              "clipboard_disabled":True,
+              "protected_client_enabled":True,
+              "logon_command_present":False,
+              "game_exe_tested":False,
+              "host_saves_runtime_isolation_verified":False,
+              "phase_b_approved":0,
+              "phase_c_approved":0,
+              "phase_d_approved":0
+          }
+          Path(".blue-work/sinnoh-g04/policy.json").write_text(
+              json.dumps(result,indent=2)+"\n",encoding="utf-8")
+          print(result["status"])
+          PY
+      - name: Arquivar apenas metadados de politica; sem binarios/saves
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-g04-static-wsb-policy
+          path: .blue-work/sinnoh-g04/policy.json
+          if-no-files-found: warn

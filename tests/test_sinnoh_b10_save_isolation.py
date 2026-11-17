@@ -245,4 +245,102 @@ class B10Tests(unittest.TestCase):
                     b10.check_contract(c,self.c09,self.c08,self.c07,self.c06,
                         self.b00,self.b01,self.b04,self.b05)
 
+    def test_21_wsb_policy_checks_exact_readonly_and_disabled_capabilities(self):
+        clone=r"C:\Private\Clone"
+        tools=r"C:\Private\Tools"
+        valid=b10.xml_wsb(clone,tools)
+        self.assertTrue(b10.check_wsb_policy(valid,clone,tools))
+        attacks=(
+            valid.replace("<Networking>Disable</Networking>",
+                          "<Networking>Enable</Networking>"),
+            valid.replace("<ClipboardRedirection>Disable</ClipboardRedirection>",
+                          "<ClipboardRedirection>Enable</ClipboardRedirection>"),
+            valid.replace("<ReadOnly>true</ReadOnly>",
+                          "<ReadOnly>false</ReadOnly>",1),
+            valid.replace("</Configuration>",
+                          "<LogonCommand><Command>Game.exe</Command></LogonCommand></Configuration>"),
+            valid.replace("</MappedFolders>",
+                          "<MappedFolder><HostFolder>C:\\Users</HostFolder><SandboxFolder>C:\\Host</SandboxFolder><ReadOnly>false</ReadOnly></MappedFolder></MappedFolders>"),
+            valid.replace(b10.GUEST_SOURCE,r"C:\Users\Public"),
+            valid.replace(clone,r"C:\Users\Public\Downloads"),
+            valid.replace("<ProtectedClient>Enable</ProtectedClient>",
+                          "<ProtectedClient>Disable</ProtectedClient>"),
+            "<Configuration><Networking>Disable</Configuration>",
+        )
+        for altered in attacks:
+            with self.subTest(xml=altered[-110:]),self.assertRaisesRegex(ValueError,"SINNOH_B10_BLOCKED"):
+                b10.check_wsb_policy(altered,clone,tools)
+
+    def test_22_rejects_uncanonical_and_windows_special_paths(self):
+        invalid=(
+            "Data//Map442.rxdata", "Data/./Map442.rxdata",
+            "Data/../Map442.rxdata", "Data/Map442?.rxdata",
+            "Data/Map*.rxdata", "Graphics/Map<1>.png",
+            "Audio/Map|name.wav", 'Graphics/"bad.png',
+            "Data/Map442.rxdata\n", "Data/Map442.rxdata\t",
+            "Data/Map442.rxdata:alternate",
+        )
+        for name in invalid:
+            with self.subTest(name=repr(name)),self.assertRaisesRegex(ValueError,"SINNOH_B10_BLOCKED"):
+                b10.safe_rel(name)
+
+    def test_23_guest_cmd_blocks_accidental_host_copy_and_reparse(self):
+        cmd=b10.GUEST_CMD
+        self.assertIn('if /I not "%USERNAME%"=="WDAGUtilityAccount" goto :outside',cmd)
+        self.assertIn('if /I not "%USERPROFILE%"=="C:\\Users\\WDAGUtilityAccount" goto :outside',cmd)
+        self.assertIn('if not exist "C:\\SinnohB10Tools\\B10_PREPARAR_NO_WINDOWS_SANDBOX.cmd" goto :outside',cmd)
+        self.assertIn("/XJ /SL",cmd)
+        self.assertIn(":outside",cmd)
+        self.assertIn("exit /b 3",cmd)
+        self.assertNotIn("start Game.exe",cmd)
+        self.assertNotIn("call Game.exe",cmd)
+
+    def test_24_cannot_prepare_session_from_unapproved_host_directory(self):
+        project,game,files,dry,plan,result,native_b01,proof=self.audit_fixture()
+        host={"supported":True,"feature_enabled":True}
+        with self.assertRaisesRegex(ValueError,"somente o clone privado"):
+            b10.prepare_session(project,game,plan["plan_sha256"],proof,host)
+        self.assertFalse((project/".blue-work/sinnoh-b10-sandbox").exists())
+
+    def test_25_cannot_prepare_session_with_tampered_proof(self):
+        project,game,files,dry,plan,result,native_b01,proof=self.audit_fixture()
+        clone=project/result["relative_path"]
+        host={"supported":True,"feature_enabled":True}
+        for key,value in (("clone_sha256","f"*64),
+                          ("source_stage_sha256","invalid"),
+                          ("native_map_ids_confirmed",647),
+                          ("sinnoh_map_ids_confirmed",53),
+                          ("clone_total_map_ids",703)):
+            broken={**proof,key:value}
+            with self.subTest(field=key),self.assertRaisesRegex(ValueError,"prova completa B09"):
+                b10.prepare_session(project,clone,plan["plan_sha256"],broken,host)
+        self.assertFalse((project/".blue-work/sinnoh-b10-sandbox").exists())
+
+    def test_26_clone_manifest_rejects_unexpected_cross_origin_overlap(self):
+        project,game,files,dry,plan,result,native_b01,proof=self.audit_fixture()
+        clone=project/result["relative_path"]
+        receipt=clone/"B09_PRIVATE_QA_MANIFEST.json"
+        obj=json.loads(receipt.read_text("utf-8"))
+        row=next(row for row in obj["files"]
+                 if row["origin"]=="OVERLAY" and row["path"].endswith(".png"))
+        obj["files"].append({**row,"origin":"NATIVE"})
+        obj["files"].sort(key=lambda x:(x["path"],x["origin"]))
+        receipt.write_text(json.dumps(obj),encoding="utf-8")
+        with self.assertRaisesRegex(ValueError,"colisao de arquivos"):
+            b10.audit_clone(project,clone,plan["plan_sha256"],
+                            self.c,self.c09,native_b01,self.b05)
+
+    def test_27_clone_symlink_rejected_before_reading_manifest(self):
+        project,game,files,dry,plan,result,native_b01,proof=self.audit_fixture()
+        clone=project/result["relative_path"]
+        original=clone.with_name("moved-private-clone")
+        clone.rename(original)
+        try:
+            clone.symlink_to(original,target_is_directory=True)
+        except (NotImplementedError,OSError):
+            self.skipTest("symlink unavailable")
+        with self.assertRaisesRegex(ValueError,"SINNOH_B10_BLOCKED"):
+            b10.find_clone(project,latest=True)
+
+
 if __name__=="__main__":unittest.main()
