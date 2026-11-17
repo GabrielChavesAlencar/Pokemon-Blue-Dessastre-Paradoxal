@@ -209,11 +209,12 @@ def _patchable_immutables(old, new):
     return earlier == later
 
 
-def _old_patch_files(info):
-    """Legacy ZIPs stored the updater in immutable; permit its own upgrade."""
+def _old_patch_files(info, updated_files):
+    """Expose the old updater as a tracked item only during its migration."""
     old = dict(info["files"])
     updater = info.get("immutable", {}).get("ATUALIZAR-ANDROID.py")
-    if updater and "ATUALIZAR-ANDROID.py" not in old:
+    if ("ATUALIZAR-ANDROID.py" in updated_files and updater and
+            "ATUALIZAR-ANDROID.py" not in old):
         old["ATUALIZAR-ANDROID.py"] = updater
     return old
 
@@ -341,7 +342,7 @@ def apply_patch(root, installed, manifest, patch_file):
                 or patch.get("from_revision") != installed["revision"]
                 or patch.get("to_revision") != manifest["revision"]):
             raise ValueError("Patch does not match this installed version.")
-        old_files = _old_patch_files(installed)
+        old_files = _old_patch_files(installed, manifest["files"])
         changed, removed = _verify_paths(old_files, manifest["files"], patch)
         if set(entries) != {"patch.json"} | {"files/" + name for name in changed}:
             raise ValueError("Patch contains unexpected files.")
