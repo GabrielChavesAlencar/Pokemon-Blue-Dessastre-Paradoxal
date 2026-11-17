@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9963bc872fd95916fac63a6a26140c3b053d8b01",
+      "date": "2026-11-17T17:38:34-03:00",
+      "title": "Unova G02.4: Looker, seis sábios, lendários e revanche da Liga offline",
+      "category": "Novidades"
+    },
+    {
       "sha": "deb47de45259fc518ea618cf297712f33a99f8cb",
       "date": "2026-11-17T17:28:38-03:00",
       "title": "docs(sinnoh): mark G02 complete and progress to 2/12",
