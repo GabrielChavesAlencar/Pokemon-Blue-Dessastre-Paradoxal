@@ -180,7 +180,7 @@ def modified_files(source, revision):
         raise ValueError("Original Kanto install proof has no checksum table.")
     # The importer records map/PBS hashes, not the separately installed plugin.
     # It is normal for legacy archives to lack KANTO in this checksum table.
-    windows_key = KANTO.replace("/", "\\\\")
+    windows_key = KANTO.replace("/", "\\")
     recorded = hashes.get(windows_key, hashes.get(KANTO))
     if recorded is not None and not re.fullmatch(r"[0-9a-f]{64}", str(recorded)):
         raise ValueError("Invalid historical Kanto plugin checksum.")
