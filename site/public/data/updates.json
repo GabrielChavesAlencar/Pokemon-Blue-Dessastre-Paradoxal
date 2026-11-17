@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bb75c059bd8dfbda34cf0f01c1e74d2af7374fa5",
+      "date": "2026-11-17T07:15:48-03:00",
+      "title": "data(unova): catálogo simbólico de 74 áreas BW sem habilitar mapas",
+      "category": "Novidades"
+    },
+    {
       "sha": "21ccfd6b15e27eb287202abe67b19a82c7dd2cbb",
       "date": "2026-11-17T07:15:25-03:00",
       "title": "feat(unova): validador do catálogo simbólico sem MapIDs fictícios",
