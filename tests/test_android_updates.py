@@ -10,6 +10,7 @@ import zipfile
 from scripts.android.build_manifest import installed_manifest
 from scripts.android.publish_updates import publish
 from scripts.android.update_client import (apply_patch, apply_full_archive,
+                                           compatible_patch,
                                            main, read_installed, safe_path,
                                            sha256_bytes, release_for,
                                            verify_forward_revision)
@@ -53,7 +54,7 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertTrue(safe_path("LEIA-ME-ANDROID.txt"))
         self.assertTrue(safe_path("LEIA-ME-ANDROID-KANTO.txt"))
 
-    def test_incremental_update_and_backup(self):
+    def test_incremental_update_without_backup(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
         new, new_marker = self.build_zip(self.b, b"NEW")
         old_metadata = self.root / "old.json"
@@ -75,7 +76,9 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW")
         self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"SAVE")
         self.assertEqual(read_installed(game)["revision"], self.b)
-        self.assertEqual((result[2] / "Data/Map001.rxdata").read_bytes(), b"OLD")
+        self.assertIsNone(result[2])
+        self.assertFalse((game / ".blue-android-update-backups").exists())
+        self.assertFalse(any(self.root.glob("installed.blue-backup-*")))
 
     def test_modified_game_refuses_delta_without_touching_files(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
@@ -186,21 +189,22 @@ class AndroidUpdatesTest(unittest.TestCase):
         (game / "personal-note.txt").write_text("old user data")
         return game, previous
 
-    def test_full_zip_fallback_keeps_saves_and_original_game(self):
+    def test_manual_full_zip_changes_only_different_files(self):
         game, old = self.installed_full_fixture()
         archive, _ = self.full_zip_fixture(self.b, b"NEW MAP", b"NEW EXE")
         public = publish(archive, "kanto")
         self.assertIsNone(public["patch"])
         manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
-        backup, saved = apply_full_archive(game, old, manifest, archive)
-        self.assertEqual(saved, 2)
+        backup, changed = apply_full_archive(game, old, manifest, archive)
+        self.assertIsNone(backup)
+        self.assertEqual(changed, 2)
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
         self.assertEqual((game / "Game.exe").read_bytes(), b"NEW EXE")
         self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
         self.assertEqual((game / "Game.rxdata.bak").read_bytes(), b"OTHER SAVE BACKUP")
         self.assertEqual(read_installed(game)["revision"], self.b)
-        self.assertEqual((backup / "Data/Map001.rxdata").read_bytes(), b"OLD MAP")
-        self.assertEqual((backup / "personal-note.txt").read_text(), "old user data")
+        self.assertEqual((game / "personal-note.txt").read_text(), "old user data")
+        self.assertFalse(any(self.root.glob("installed.blue-backup-*")))
 
     def test_rejects_corrupted_full_zip_without_affecting_installed_game(self):
         game, old = self.installed_full_fixture()
@@ -214,7 +218,7 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertEqual(read_installed(game)["revision"], self.a)
         self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
 
-    def test_termux_update_automatically_uses_full_zip_when_no_patch(self):
+    def test_no_automatic_full_zip_without_patch_explicit_only(self):
         game, _ = self.installed_full_fixture()
         archive, _ = self.full_zip_fixture(self.b, b"NEW MAP", b"NEW EXE")
         publish(archive, "kanto")
@@ -232,14 +236,76 @@ class AndroidUpdatesTest(unittest.TestCase):
         with (patch("scripts.android.update_client.remote_update",
                     return_value=(release, manifest)),
               patch("scripts.android.update_client.download",
-                    side_effect=fake_download),
+                    side_effect=fake_download) as downloader,
               patch("scripts.android.update_client.verify_forward_revision")
                     as ancestry):
-            self.assertEqual(main(["--game-dir", str(game), "--update"]), 0)
-            ancestry.assert_called_once_with(self.a, self.b)
+            self.assertEqual(main(["--game-dir", str(game), "--update"]), 2)
+            downloader.assert_not_called()
+            self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"OLD MAP")
+            self.assertEqual(main(["--game-dir", str(game), "--full", "--update"]), 0)
+            ancestry.assert_called_with(self.a, self.b)
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
         self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
 
+
+    def test_interrupted_patch_resume_does_not_rewrite_existing_new_file(self):
+        old, old_marker = self.build_zip(self.a, b"OLD")
+        new, _ = self.build_zip(self.b, b"NEW")
+        previous = self.root / "previous.json"
+        previous.write_text(json.dumps(old_marker))
+        full = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(full)
+        publish(full, "kanto", previous)
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        game = self.root / "partial"
+        (game / "Data").mkdir(parents=True)
+        (game / "Data/blue-update.json").write_text(json.dumps(old_marker))
+        # The new file was already atomically installed; manifest was not.
+        (game / "Data/Map001.rxdata").write_bytes(b"NEW")
+        with patch("scripts.android.update_client._replace_from_zip") as write:
+            updated, removed, backup = apply_patch(
+                game, read_installed(game), manifest,
+                self.root / "Blue-Android-Kanto-Piloto.patch.zip")
+            write.assert_not_called()
+        self.assertEqual((updated, removed, backup), (0, 0, None))
+        self.assertEqual(read_installed(game)["revision"], self.b)
+        self.assertFalse((game / ".blue-android-update-backups").exists())
+
+    def test_publish_multiple_revisions_and_select_matching_patch(self):
+        _, a_manifest = self.build_zip(self.a, b"OLD A")
+        _, b_manifest = self.build_zip(self.b, b"OLD B")
+        new_revision = "c" * 40
+        new, _ = self.build_zip(new_revision, b"LATEST")
+        oldpath = self.root / "a-prev.json"
+        middlepath = self.root / "b-prev.json"
+        oldpath.write_text(json.dumps(a_manifest))
+        middlepath.write_text(json.dumps(b_manifest))
+        full = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(full)
+        published = publish(full, "kanto", oldpath, [middlepath])
+        self.assertEqual(len(published["patches"]), 2)
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        release = {"assets": [
+            {"name": p["asset"], "state": "uploaded",
+             "browser_download_url": (
+                "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/download/test/"
+                + p["asset"])}
+            for p in published["patches"]]}
+        selected = compatible_patch(release, b_manifest, manifest)
+        self.assertEqual(selected["from_revision"], self.b)
+        self.assertIn(".from-" + self.b[:12], selected["asset"])
+
+    def test_manual_full_does_not_rewrite_identical_content(self):
+        game, old = self.installed_full_fixture()
+        source = game / "Data/Map001.rxdata"
+        original_time = source.stat().st_mtime_ns
+        full, _ = self.full_zip_fixture(self.b, b"OLD MAP", b"OLD EXE")
+        publish(full, "kanto")
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        _, changed = apply_full_archive(game, old, manifest, full)
+        self.assertEqual(changed, 0)
+        self.assertEqual(source.stat().st_mtime_ns, original_time)
+        self.assertEqual((game / "personal-note.txt").read_text(), "old user data")
 
     def _release(self, tag, published, revision=None, draft=False):
         name = "Blue-Android-Decades-Kanto-Hoenn"
