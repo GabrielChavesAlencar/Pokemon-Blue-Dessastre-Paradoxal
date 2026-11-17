@@ -80,10 +80,16 @@ jobs:
           python scripts/regions/audit_unova_g05_badges_specials.py --simulate-demo
           python scripts/regions/audit_unova_g05_travel.py --check
           python scripts/regions/audit_unova_g05_travel.py --simulate-demo
+          python scripts/regions/audit_unova_g05_blackout_state.py --check
+          python scripts/regions/audit_unova_g05_blackout_state.py --simulate-demo
           # A04 native baseline is private and absent in CI; negative tests cover this gate.
           python scripts/regions/audit_unova_a05_candidates.py
       - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
         run: python -m unittest discover -s tests -p 'test_unova_*.py' -v
+      - name: Verificar hook de blackout Ruby sem tocar Game.exe ou saves
+        run: |
+          ruby -c scripts/battle_polish/RegionalRespawn.rb
+          ruby tests/regional_respawn_runtime.rb scripts/battle_polish/RegionalRespawn.rb
       - name: Compilar sintaxe Python sem executar mapas nem modificar saves
         run: |
           python -m py_compile scripts/regions/audit_unova_u02.py
@@ -115,6 +121,7 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_g05_regional_items.py
           python -m py_compile scripts/regions/audit_unova_g05_badges_specials.py
           python -m py_compile scripts/regions/audit_unova_g05_travel.py
+          python -m py_compile scripts/regions/audit_unova_g05_blackout_state.py
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
           python -m py_compile scripts/regions/audit_unova_a06_references.py
@@ -173,6 +180,7 @@ jobs:
           python -m unittest discover -s tests -p test_unova_g05_regional_items.py -v
           python -m unittest discover -s tests -p test_unova_g05_badges_specials.py -v
           python -m unittest discover -s tests -p test_unova_g05_travel.py -v
+          python -m unittest discover -s tests -p test_unova_g05_blackout_state.py -v
           python -m unittest discover -s tests -p test_unova_auto_mapids.py -v
           python -m unittest discover -s tests -p test_unova_standalone_bat.py -v
       - name: Empacotar BAT validado no Windows como ZIP
