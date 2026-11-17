@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "B07",
+  "status": "SOURCE_ASSETS_AND_GEOMETRY_VALIDATED_INERTLY_NOT_INSTALLED",
+  "date": "2026-11-17",
+  "source_zip_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+  "native_b01_zip_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+  "native_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "native_tilesets_sha256": "2fd4551a5767615a159a8b5b65a604d1e486009d37953ca6a1955affffabf675",
+  "source_terrain_maps_checked": 54,
+  "terrain_rmxp_tables_valid": 54,
+  "nonzero_terrain_cells": 484722,
+  "source_event_objects_not_to_be_imported": 397,
+  "terrain_map_tileset_usage": {
+    "1": 1,
+    "31": 53
+  },
+  "source_required_png_count": 14,
+  "source_required_png_bytes": 3808519,
+  "source_required_pngs_missing": [],
+  "native_tilesets_list_slots_including_zero_index": 71,
+  "proposed_terrain_destinations": [
+    442,
+    495
+  ],
+  "excluded_empty_destinations": [
+    496,
+    517
+  ],
+  "future_region_reservations_verified": false,
+  "source_asset_rights_verified": false,
+  "stage_executed_with_user_current_game_data": false,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "summary": "Raw donor RXDATA and PNG references inspected with inert parser; builder uses local copies only and never installs into game. Current native game/Data unavailable in this conversation, so native stage execution cannot be claimed."
+}
