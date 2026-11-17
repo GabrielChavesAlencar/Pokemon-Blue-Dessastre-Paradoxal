@@ -475,6 +475,10 @@ def audit(source: Path, reference_dir: Path | None = None) -> dict:
         "archive_sha256":sha_file(source),
         "whole_archive_file_entries":len(members),
         "supported_images":len(actual_images),
+        "formats_count":dict(sorted(Counter(x["format"] for x in actual_images).items())),
+        "sprite_kinds_count":dict(sorted(Counter(x["sprite_kind_candidate"] for x in actual_images).items())),
+        "potential_warnings_count":dict(sorted(Counter(
+            warning for image in actual_images for warning in image["warnings"]).items())),
         "invalid_images":invalid,
         "unsupported_image_paths":unsupported,
         "duplicate_content_groups":duplicates,
