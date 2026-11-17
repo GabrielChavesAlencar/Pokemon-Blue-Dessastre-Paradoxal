@@ -2911,28 +2911,10 @@
       "source_status": "PLANNED_U03_AREA_ONLY",
       "source_map_id": null,
       "destination_map_id": null,
-      "candidate_methods": [
-        "Land",
-        "LandMorning",
-        "LandDay",
-        "LandAfternoon",
-        "LandEvening",
-        "LandNight"
-      ],
+      "candidate_methods": [],
       "candidate_methods_are_questions_only": true,
-      "time_windows_to_audit": [
-        "MORNING",
-        "DAY",
-        "AFTERNOON",
-        "EVENING",
-        "NIGHT"
-      ],
-      "season_variants_to_audit": [
-        "SPRING",
-        "SUMMER",
-        "AUTUMN",
-        "WINTER"
-      ],
+      "time_windows_to_audit": [],
+      "season_variants_to_audit": [],
       "seasonal_species_assignment_verified": false,
       "encounter_slots": [],
       "species_method_assignments": [],
@@ -3062,6 +3044,7 @@
     "Estações de Unova (primavera, verão, outono, inverno) são dimensões de auditoria e não tabelas de espécies, níveis ou taxas confirmadas.",
     "Sem dados de encounters.txt e aprovação de fonte: espécies [], slots [], percentuais null, níveis null, taxa null, IDs null; zeros não são evidência de ausência.",
     "G04.3 fará progressão e evolução dos selvagens; G04.4 poderá conferir totais e integridade após obter pesos originais. A probabilidade de evolução dinâmica do Blue não deve ser confundida com peso de spawn.",
-    "Apenas a documentação e os contratos mudam. Não existe acesso a save, PBS nativo compilado ou Game.exe/JoiPlay nesta etapa."
+    "Apenas a documentação e os contratos mudam. Não existe acesso a save, PBS nativo compilado ou Game.exe/JoiPlay nesta etapa.",
+    "Áreas U03 de capítulo event_only são sempre excluídas de candidatos a encontro aleatório, mesmo quando seu tipo geográfico sugeriria grama."
   ]
 }
