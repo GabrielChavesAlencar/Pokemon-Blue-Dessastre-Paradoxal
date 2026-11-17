@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/unova-g07-incremental.schema.json",
+  "title": "Unova G07.2 fail-closed documentation-only incremental fixture schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "region",
+    "campaign",
+    "package_id",
+    "package_version",
+    "channel",
+    "status",
+    "mode",
+    "source",
+    "compatibility",
+    "rights",
+    "files",
+    "native_payload_approved",
+    "release_allowed",
+    "game_exe_tested",
+    "saves_modified",
+    "package_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "region": {
+      "const": "UNOVA"
+    },
+    "campaign": {
+      "const": "WHITE_BW"
+    },
+    "package_id": {
+      "type": "string",
+      "pattern": "^UNOVA-G07\\.2-FIXTURE-[a-z0-9-]{1,24}$"
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^0\\.0\\.[1-9][0-9]*-planned$"
+    },
+    "channel": {
+      "const": "blue-story-unova-documentation"
+    },
+    "status": {
+      "const": "PLANNED_OFFLINE_PACKAGE_SCHEMA_ONLY"
+    },
+    "mode": {
+      "const": "fixture_only"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "origin_revision",
+        "target_revision",
+        "manifest_path",
+        "manifest_sha256",
+        "manifest_size"
+      ],
+      "properties": {
+        "repository": {
+          "const": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
+        },
+        "origin_revision": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "target_revision": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "manifest_path": {
+          "const": "docs/unova-package-fixtures/origin-manifest.json"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "manifest_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "client",
+        "protocol_version",
+        "minimum_blue_story_version",
+        "windows",
+        "android",
+        "joiplay",
+        "installer_adapter_implemented"
+      ],
+      "properties": {
+        "client": {
+          "const": "Blue-Story"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "minimum_blue_story_version": {
+          "const": "0.0.0"
+        },
+        "windows": {
+          "const": "schema_only"
+        },
+        "android": {
+          "const": "not_supported"
+        },
+        "joiplay": {
+          "const": "not_supported"
+        },
+        "installer_adapter_implemented": {
+          "const": false
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "license_id",
+        "evidence_path",
+        "redistribution_approved"
+      ],
+      "properties": {
+        "status": {
+          "const": "FIXTURE_ONLY_NOT_DISTRIBUTABLE"
+        },
+        "license_id": {
+          "type": "null"
+        },
+        "evidence_path": {
+          "type": "null"
+        },
+        "redistribution_approved": {
+          "const": false
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "kind",
+          "sha256",
+          "source_sha256",
+          "size",
+          "source_size",
+          "rights"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 35,
+            "maxLength": 130,
+            "pattern": "^docs/unova-package-fixtures/[a-z0-9][a-z0-9._/-]*\\.(txt|md|json)$"
+          },
+          "kind": {
+            "const": "documentation_fixture"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65536
+          },
+          "source_size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65536
+          },
+          "rights": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "license_id",
+              "evidence_path",
+              "redistribution_approved"
+            ],
+            "properties": {
+              "status": {
+                "const": "FIXTURE_ONLY_NOT_DISTRIBUTABLE"
+              },
+              "license_id": {
+                "type": "null"
+              },
+              "evidence_path": {
+                "type": "null"
+              },
+              "redistribution_approved": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "native_payload_approved": {
+      "const": false
+    },
+    "release_allowed": {
+      "const": false
+    },
+    "game_exe_tested": {
+      "const": false
+    },
+    "saves_modified": {
+      "const": false
+    },
+    "package_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "description": "G07.2 models only in-memory synthetic docs fixtures, not a distributable or installable Unova update. An actual native/Android installer is forbidden and needs separate verified rights and runtime QA."
+}
