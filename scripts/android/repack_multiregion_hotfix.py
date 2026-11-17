@@ -180,9 +180,12 @@ def modified_files(source, revision):
         raise ValueError("Original Kanto install proof has no checksum table.")
     # The importer records map/PBS hashes, not the separately installed plugin.
     # It is normal for legacy archives to lack KANTO in this checksum table.
-    recorded = hashes.get(KANTO)
+    windows_key = KANTO.replace("/", "\\\\")
+    recorded = hashes.get(windows_key, hashes.get(KANTO))
     if recorded is not None and not re.fullmatch(r"[0-9a-f]{64}", str(recorded)):
         raise ValueError("Invalid historical Kanto plugin checksum.")
+    # The source manifest was written by Python on Windows; its keys use
+    # backslashes, while ZIP members use forward slashes. Preserve BOTH.
     # Old combined releases may have compiled the game after sync_runtime
     # updated KantoPilot, leaving an older installer checksum in this proof.
     # Validate the actual distributed runtime against its compiled cache;
@@ -191,6 +194,8 @@ def modified_files(source, revision):
     compiled_region(source.read(PREFIX + CACHE), "KantoPilot.rb",
                     source.read(PREFIX + KANTO))
     hashes[KANTO] = digest(kanto)
+    if windows_key in hashes:
+        hashes[windows_key] = digest(kanto)
     result = {
         REGION: source_code,
         KANTO: kanto,
