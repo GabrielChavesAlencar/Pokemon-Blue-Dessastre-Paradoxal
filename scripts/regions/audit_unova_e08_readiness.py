@@ -46,7 +46,7 @@ def inspect(root: Path = ROOT) -> dict:
         {"id":"E04","name":"ZIP real auditado e proveniencia comprovada","completed":False,"proof":None},
         {"id":"E05","name":"Nomes e eventos reais RXDATA confrontados com Unova","completed":False,"proof":None},
         {"id":"E06","name":"Direitos de assets confirmados por recurso","completed":False,"proof":None},
-        {"id":"E07","name":"Catalogo musical/treinadores confirmado com fonte real","completed":False,"proof":None},
+        {"id":"E07","name":"Catalogo simbolico musical/treinadores e fallbacks documentados","completed":True,"proof":"data/regions/unova-e06-e07-preparation.json"},
         {"id":"E08","name":"Evidencia QA de integracao Game.exe e JoiPlay","completed":False,"proof":None},
     ]
     verified = sum(1 for stage in stages if stage["completed"])
@@ -74,7 +74,7 @@ def inspect(root: Path = ROOT) -> dict:
             "E04 requer ZIP real e documentos de origem, com hashes e inspeção",
             "E05 requer ler MapInfos/MapNNN reais e revisão manual da região",
             "E06 requer direitos por arquivo, não só ficha preparatória",
-            "E07 requer treinadores e musicas confirmados sem inventar audio/teams",
+            "E07 catalogos simbolicos prontos; ainda falta confirmar times, tracks e licencas em fonte real",
             "E08 requer evidências de QA Windows/JoiPlay, não apenas CI",
         ],
     }
