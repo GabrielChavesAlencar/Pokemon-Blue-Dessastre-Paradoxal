@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {generateUnovaGuide,unovaGuideSources} from '../scripts/unova-guide.mjs';
 import {validateUnovaGuide,unovaGuidePage,unovaGuideUrl,loadUnovaGuide} from '../src/assets/unova-guide.js';
 import {regionsPage} from '../src/assets/regions.js';
+import {esc} from '../src/assets/utils.js';
 import {unovaGithubProgressPage} from '../src/assets/unova-progress.js';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -96,7 +97,7 @@ test('all 12 chapters displayed and their pages open',()=>{
 test('each area detail shows references and pending native evidence',()=>{
  for(const area of guide.areas){
   const html=unovaGuidePage(guide,'area',area.key);
-  assert.ok(html.includes(area.name.replaceAll('&','&amp;').replaceAll('<','&lt;')),area.key);
+  assert.ok(html.includes(esc(area.name)),area.key);
   assert.match(html,/MapID original\/destino: pendente/);
   assert.match(html,/Capítulo/);
  }
