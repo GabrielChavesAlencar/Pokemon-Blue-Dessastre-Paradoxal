@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "27bb9edd3b28902dcc02302acdb6494e2d1dc336",
+      "date": "2026-11-16T21:03:15-03:00",
+      "title": "fix(sinnoh): CH20 reutiliza auditor CH06 contra flags e eventos falsos",
+      "category": "Correções"
+    },
+    {
       "sha": "54c31e0d9f680e5cfa7c7da788707fe4a7e0910c",
       "date": "2026-11-16T21:02:23-03:00",
       "title": "docs(sinnoh): registrar CH20 parcial no mapeamento Barra E",
