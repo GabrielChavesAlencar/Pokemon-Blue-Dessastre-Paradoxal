@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "95791a2f205565e1ac2403ed06c1ff4a9d53ffb3",
+      "date": "2026-11-17T19:29:43-03:00",
+      "title": "diagnose(android): show exact manifest ZIP inventory mismatch for fast updater release",
+      "category": "Melhorias"
+    },
+    {
       "sha": "4c228f4434e986fbaa47b6cd820dd2dc1de24cf4",
       "date": "2026-11-17T19:28:27-03:00",
       "title": "docs(android): explain no-backup patch-only updater inside game ZIP",
