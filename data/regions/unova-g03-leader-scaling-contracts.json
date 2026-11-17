@@ -1,0 +1,352 @@
+{
+  "schema": 1,
+  "phase": "G03.2",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "OFFLINE_GYM_SCALING_CONTRACT_NOT_NATIVE_TEAMS",
+  "sources": {
+    "gyms": "data/regions/unova-g02-gym-story-contracts.json",
+    "progress": "data/regions/unova-g01-state-contract.json",
+    "battle": "scripts/battle_polish/Campaign.rb",
+    "evolution": "scripts/battle_polish/EvolutionScaling.rb",
+    "story": "scripts/battle_polish/Story.rb",
+    "shared_balance": "data/regions/sinnoh-trainer-balance-s17.json",
+    "shared_evolution": "data/regions/sinnoh-trainer-evolution-contract.json",
+    "species_index": "data/national-species.json",
+    "region_registry": "site/public/data/regions.json"
+  },
+  "level_cap": {
+    "regional_numeric_cap_in_save": null,
+    "numeric_badge_cap_implemented": false,
+    "source_signal": "HIGHEST_NON_EGG_PARTY_LEVEL",
+    "game_engine_upper_bound": "GameData::GrowthRate.max_level",
+    "minimum": 1,
+    "normal_percent": 70,
+    "master_percent": 90,
+    "rounding": "INTEGER_FLOOR",
+    "normal_stage": 0,
+    "master_stage": 3,
+    "boss_stage_bst_caps": [
+      350,
+      450,
+      540,
+      null
+    ],
+    "bst_cap_not_numeric_level_cap": true
+  },
+  "team_policy": {
+    "master_team_target": 4,
+    "max_opponents_per_side": 6,
+    "normal_preserves_authored_size": true,
+    "master_preserves_native_teams_size_gte_4": true,
+    "master_expands_only_synthetic_slots_in_qa": true,
+    "original_pbs_unchanged": true,
+    "no_native_team_generation": true
+  },
+  "evolution": {
+    "method_thresholds": {
+      "LEVEL_PLUS_GRACE": 5,
+      "STONE": 30,
+      "TRADE": 40,
+      "FRIENDSHIP": 45
+    },
+    "max_steps": 3,
+    "strict_methods": [
+      "LEVEL",
+      "STONE",
+      "TRADE",
+      "FRIENDSHIP"
+    ],
+    "conditional_gender_time_requires_explicit_context": true,
+    "ambiguous_branch_blocked": true,
+    "special_species_blocked": true,
+    "unverified_native_species_blocked": true,
+    "source": "GameData::Species#get_evolutions(true)"
+  },
+  "coverage": {
+    "method": "EFFECTIVENESS_MULTIPLIER_INPUT_SYNTHETIC",
+    "native_effectiveness_source": "Effectiveness.calculate",
+    "candidate_source": "GameData::Species pool only at runtime",
+    "valid_multipliers": [
+      0,
+      0.25,
+      0.5,
+      1,
+      2,
+      4
+    ],
+    "threat_policy": "WEAKNESS_AGGREGATE_MINUS_RESISTANCE",
+    "score_immunity": 6,
+    "score_resistance": 4,
+    "score_weakness_penalty": -4,
+    "new_types_bonus": 9,
+    "never_assert_native_type_matrix": true,
+    "synthetic_candidates_only": true,
+    "coverage_guarantee_requires_native_party": true
+  },
+  "first_challenge": {
+    "leader_preserves_authored_species": true,
+    "leader_preserves_authored_moves": true,
+    "skip_bst_replacement": true,
+    "skip_move_base_power_cap": true,
+    "full_power_rematch_requires_world_champion_profile": true,
+    "full_power_rematch_requires_verified_team": true,
+    "full_power_rematches_enabled": false,
+    "never_award_second_badge": true
+  },
+  "difficulty_variants": [
+    {
+      "id": "NORMAL",
+      "requires_stage": 0,
+      "percent": 70,
+      "master": false
+    },
+    {
+      "id": "MASTER",
+      "requires_stage": 3,
+      "percent": 90,
+      "master": true
+    }
+  ],
+  "leaders": [
+    {
+      "id": "UNOVA_G032_LEADER_01",
+      "gym_contract_id": "UNOVA_G02_GYM_01",
+      "chapter_key": "UNOVA_CH02_STRIATON",
+      "leader_key": "TRIO_BY_STARTER",
+      "leader_by_starter": {
+        "SNIVY": "CHILI",
+        "TEPIG": "CRESS",
+        "OSHAWOTT": "CILAN"
+      },
+      "first_challenge_badge": "TRIO",
+      "prerequisite_badges": [],
+      "planned_specialty_types": [
+        "FIRE",
+        "WATER",
+        "GRASS"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_02",
+      "gym_contract_id": "UNOVA_G02_GYM_02",
+      "chapter_key": "UNOVA_CH03_NACRENE",
+      "leader_key": "LENORA",
+      "leader_by_starter": null,
+      "first_challenge_badge": "BASIC",
+      "prerequisite_badges": [
+        "TRIO"
+      ],
+      "planned_specialty_types": [
+        "NORMAL"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_03",
+      "gym_contract_id": "UNOVA_G02_GYM_03",
+      "chapter_key": "UNOVA_CH04_CASTELIA",
+      "leader_key": "BURGH",
+      "leader_by_starter": null,
+      "first_challenge_badge": "INSECT",
+      "prerequisite_badges": [
+        "TRIO",
+        "BASIC"
+      ],
+      "planned_specialty_types": [
+        "BUG"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_04",
+      "gym_contract_id": "UNOVA_G02_GYM_04",
+      "chapter_key": "UNOVA_CH05_NIMBASA",
+      "leader_key": "ELESA",
+      "leader_by_starter": null,
+      "first_challenge_badge": "BOLT",
+      "prerequisite_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT"
+      ],
+      "planned_specialty_types": [
+        "ELECTRIC"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_05",
+      "gym_contract_id": "UNOVA_G02_GYM_05",
+      "chapter_key": "UNOVA_CH06_DRIFTVEIL",
+      "leader_key": "CLAY",
+      "leader_by_starter": null,
+      "first_challenge_badge": "QUAKE",
+      "prerequisite_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT"
+      ],
+      "planned_specialty_types": [
+        "GROUND"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_06",
+      "gym_contract_id": "UNOVA_G02_GYM_06",
+      "chapter_key": "UNOVA_CH07_MISTRALTON",
+      "leader_key": "SKYLA",
+      "leader_by_starter": null,
+      "first_challenge_badge": "JET",
+      "prerequisite_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE"
+      ],
+      "planned_specialty_types": [
+        "FLYING"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_07",
+      "gym_contract_id": "UNOVA_G02_GYM_07",
+      "chapter_key": "UNOVA_CH08_ICIRRUS",
+      "leader_key": "BRYCEN",
+      "leader_by_starter": null,
+      "first_challenge_badge": "FREEZE",
+      "prerequisite_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE",
+        "JET"
+      ],
+      "planned_specialty_types": [
+        "ICE"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    },
+    {
+      "id": "UNOVA_G032_LEADER_08",
+      "gym_contract_id": "UNOVA_G02_GYM_08",
+      "chapter_key": "UNOVA_CH09_OPELUCID",
+      "leader_key": "IRIS",
+      "leader_by_starter": null,
+      "first_challenge_badge": "LEGEND",
+      "prerequisite_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE",
+        "JET",
+        "FREEZE"
+      ],
+      "planned_specialty_types": [
+        "DRAGON"
+      ],
+      "specialty_status": "DESIGN_REFERENCE_NOT_NATIVE_SPECIES_TYPING",
+      "trainer_type": "LEADER",
+      "trainer_pbs_id": null,
+      "trainer_version": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "moves": null,
+      "ability_data": null,
+      "source_map_id": null,
+      "real_battle_verified": false,
+      "can_install": false
+    }
+  ],
+  "native_pbs_compiled": false,
+  "native_team_catalog_verified": false,
+  "native_maps_installed": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "gameplay_verified": false,
+  "can_install": false,
+  "notes": [
+    "Dados de equipes, níveis, moves, habilidades, trainer PBS e IDs reais permanecem null. Nenhuma equipe oficial de Unova foi encontrada verificada nas fontes do repositório.",
+    "Não existe cap numérico regional persistido por insígnia: não confundir maior nível não-ovo com limite BST 350/450/540.",
+    "Cálculo de cobertura usa multiplicadores artificiais fornecidos pelo teste. Só um motor nativo com tipos reais pode validar a fraqueza de um time.",
+    "Para líderes regionais no primeiro desafio, preservar espécies e golpes originais; nunca aplicar substituição BST ou limite de potência. Revanche Full Power só após dez Ligas com time auditado.",
+    "Striaton depende do inicial, enquanto Opelucid White usa Iris. Só referências simbólicas: nenhum NPC, equipe, badge ou luta real é criado."
+  ]
+}
