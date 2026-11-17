@@ -31,7 +31,7 @@ class B02Tests(unittest.TestCase):
     def test_01_b02_real_snapshot_is_consistent(self):
         x=self.check()
         self.assertEqual(x["unoccupied_low_range_count"],250)
-        self.assertEqual(x["occupied_joh_to_range"],100)
+        self.assertEqual(x["occupied_johto_range"],100)
         self.assertEqual(x["occupied_hoenn_range"],199)
         self.assertEqual(x["original_sinnoh_id_collisions"],72)
         self.assertFalse(x["r07_complete"])
