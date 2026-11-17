@@ -24,8 +24,8 @@ PLANNING=(
 
 def map1(with_two=True):
     condition=RubyObject("RPG::Event::Page::Condition",{
-        "@switch1_valid":True,"@switch1_id":12,
-        "@self_switch_valid":False})
+        "@switch1_valid":1,"@switch1_id":12,
+        "@self_switch_valid":0})
     page1=RubyObject("RPG::Event::Page",{
         "@condition":condition,"@trigger":0,
         "@list":[fixture.command(201,[0,3,7,4,2]),
