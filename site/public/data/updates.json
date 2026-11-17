@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "998872fab492ba409f4cf602c8f1ab0788e89b82",
+      "date": "2026-11-17T07:16:28-03:00",
+      "title": "test(unova): 14 testes anti MapID falso e status planejado de U03",
+      "category": "Novidades"
+    },
+    {
+      "sha": "dc098629d379359257653939c5518912f54b5047",
+      "date": "2026-11-17T07:16:13-03:00",
+      "title": "test(unova): 12 testes U02 de ZIP inseguro, ausência e isolamento",
+      "category": "Novidades"
+    },
+    {
       "sha": "bb75c059bd8dfbda34cf0f01c1e74d2af7374fa5",
       "date": "2026-11-17T07:15:48-03:00",
       "title": "data(unova): catálogo simbólico de 74 áreas BW sem habilitar mapas",
