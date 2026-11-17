@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "36b4e23d725ed69540a763fbeab3a2612542af03",
+      "date": "2026-11-17T20:32:43-03:00",
+      "title": "feat(android): show installed game version, channel, build timestamp and GitHub SHA in title and pause menu",
+      "category": "Novidades"
+    },
+    {
       "sha": "2d14b0c49ad00000c9988319c42de0e3f5335150",
       "date": "2026-11-17T20:26:33-03:00",
       "title": "feat(sinnoh): L00 sanitized physical-readiness preflight, no native approval (#167)",
