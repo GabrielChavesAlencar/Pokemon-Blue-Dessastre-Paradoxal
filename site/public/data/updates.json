@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "72fb2909a0b3fd5358d26a718feb7d04dd5ff904",
+      "date": "2026-11-17T19:30:48-03:00",
+      "title": "chore(android): remove unused backup code import and clarify save preservation",
+      "category": "Melhorias"
+    },
+    {
       "sha": "cdc51b478ae211e7b0fecd915bd094fcf85ae0d5",
       "date": "2026-11-17T19:30:05-03:00",
       "title": "fix(android): accept old immutable-updater ZIP as repackage source, migrate output only",
