@@ -66,6 +66,18 @@ module BlueKantoPilot
     nil
   end
 
+  # Resolve the immutable source MapID through the installed Kanto mapping.
+  # No numeric assumptions about the allocated Decades map range.
+  def self.kanto_map_id(source_id)
+    return nil unless PILOT_OVERWORLD_SCALE || INTEGRATED_KANTO
+    path = PILOT_OVERWORLD_SCALE ? "Kanto pilot.json" : "Data/blue-kanto-install.json"
+    return nil unless File.file?(path)
+    found = File.read(path).match(/"#{source_id}"\s*:\s*(\d+)/)
+    found ? found[1].to_i : nil
+  rescue IOError, SystemCallError
+    nil
+  end
+
   def self.viridian_display_name_for_map(map_id)
     return nil unless kanto_current? && viridian_map_id == map_id
     defined?(BlueLocale) && BlueLocale.enabled? ? "Cidade de Viridian" : "Viridian City"
@@ -695,6 +707,13 @@ module BlueKantoPilot
     won = TrainerBattle.start(type, name, version)
     return false unless won
     wins << key
+    if key == "KANTO_038_019"
+      pbMessage(t("Super Nerd Miguel: Fine! Pick only one of the two fossils.",
+                  "Super Nerd Miguel: Tudo bem! Escolha apenas um dos dois fósseis."))
+      # Old installations have no fossil objects in the RXDATA. Offer the same
+      # one-time choice immediately rather than require a new game/map rewrite.
+      choose_moon_fossil unless moon_fossil_props?
+    end
     if type == :BLUE_KANTO_LEADER && BlueRegions.award(progress, "KANTO", "BOULDER")
       BlueMusic.kanto_me_play("badge_awarded")
       pbMessage(BlueKantoPilot.t("Brock: The Boulder Badge is yours. The road to Cerulean is open!", "Brock: A Boulder Badge é sua. O caminho para Cerulean está aberto!"))
@@ -743,6 +762,11 @@ module BlueKantoPilot
   end
 
   def self.trainer_repeat(name, type = nil)
+    if name == "Miguel" && type == :BLUE_KANTO_SUPERNERD &&
+       $game_map && $game_map.map_id == kanto_map_id(38)
+      choose_moon_fossil unless progress["pilot_mt_moon_fossil"]
+      return if progress["pilot_mt_moon_fossil"]
+    end
     return if full_power_gym(name, type)
     pbMessage(BlueKantoPilot.t("{1}: Good luck on your journey!", "{1}: Boa sorte na sua jornada!", name))
   end
@@ -895,6 +919,133 @@ module BlueKantoPilot
     true
   end
 
+
+  # Mt. Moon: one fossil, only AFTER the original Map038/Event019 battle.
+  # Works for fresh RXDATA props and old installed maps (Miguel fallback).
+  MOON_FOSSILS = {
+    HELIXFOSSIL: :OMANYTE, DOMEFOSSIL: :KABUTO
+  }.freeze
+  CINNABAR_FOSSILS = MOON_FOSSILS.merge(OLDAMBER: :AERODACTYL).freeze
+
+  def self.moon_fossil_props?
+    $game_map && $game_map.events.values.any? { |ev|
+      ["Kanto Helix Fossil", "Kanto Dome Fossil"].include?(ev.name)
+    }
+  end
+
+  def self.hide_moon_fossil_props
+    return unless $game_map
+    $game_map.events.each do |event_id, ev|
+      next unless ["Kanto Helix Fossil", "Kanto Dome Fossil"].include?(ev.name)
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+  end
+
+  def self.choose_moon_fossil(requested = nil)
+    return false unless kanto_current? && $game_map &&
+                        $game_map.map_id == kanto_map_id(38)
+    unless progress.fetch("pilot_wins", []).any? { |win|
+      ["KANTO_038_019", "Miguel"].include?(win)
+    }
+      pbMessage(t("Defeat the researcher guarding the fossils first.",
+                  "Derrote primeiro o pesquisador que guarda os fósseis."))
+      return false
+    end
+    if progress["pilot_mt_moon_fossil"]
+      hide_moon_fossil_props
+      pbMessage(t("You already chose your Mt. Moon fossil. The other one must stay.",
+                  "Você já escolheu seu fóssil do Mt. Moon. O outro deve ficar."))
+      return false
+    end
+    if requested && !MOON_FOSSILS.key?(requested)
+      return false
+    end
+    choice = requested
+    unless choice
+      names = [
+        t("Helix Fossil (Omanyte)", "Fóssil Helix (Omanyte)"),
+        t("Dome Fossil (Kabuto)", "Fóssil Dome (Kabuto)"),
+        t("Cancel", "Cancelar")
+      ]
+      index = pbMessage(t("Choose only one fossil:", "Escolha apenas um fóssil:"),
+                        names, -1)
+      return false unless [0, 1].include?(index)
+      choice = MOON_FOSSILS.keys[index]
+    end
+    label = GameData::Item.exists?(choice) ? GameData::Item.get(choice).name : choice.to_s
+    return false unless pbConfirmMessage(t("Take the {1}? You cannot take the other.",
+                                            "Pegar {1}? Não será possível pegar o outro.",
+                                            label))
+    unless GameData::Item.exists?(choice) &&
+           (!$bag.respond_to?(:can_add?) || $bag.can_add?(choice, 1)) &&
+           $bag.add(choice, 1)
+      pbMessage(t("Make room in your Bag before taking a fossil.",
+                  "Libere espaço na Bolsa antes de pegar um fóssil."))
+      return false
+    end
+    progress["pilot_mt_moon_fossil"] = choice.to_s
+    hide_moon_fossil_props
+    BlueMusic.kanto_me_play("obtained_item")
+    pbMessage(t("You received {1}! A scientist in Cinnabar can revive it.",
+                "Você recebeu {1}! Um cientista em Cinnabar pode revivê-lo.", label))
+    true
+  end
+
+  # The fossil laboratory is Kanto Map203 (not the Mansion or Gym).
+  # Keep this command available in the laboratory pause menu on older saves
+  # whose imported maps contain only the original safe interior doors.
+  def self.in_cinnabar_lab?
+    kanto_current? && $game_map && $game_map.map_id == kanto_map_id(203)
+  end
+
+  def self.revive_cinnabar_fossil
+    return false unless in_cinnabar_lab?
+    available = CINNABAR_FOSSILS.keys.select { |item|
+      GameData::Item.exists?(item) && $bag && $bag.has?(item)
+    }
+    if available.empty?
+      pbMessage(t("Cinnabar Lab: Bring a Helix Fossil, Dome Fossil or Old Amber.",
+                  "Laboratório de Cinnabar: traga um Fóssil Helix, Fóssil Dome ou Âmbar Velho."))
+      return false
+    end
+    labels = available.map { |item| GameData::Item.get(item).name }
+    index = pbMessage(t("Which fossil should we revive?", "Qual fóssil deseja reviver?"),
+                      labels + [t("Cancel", "Cancelar")], -1)
+    return false unless index.is_a?(Integer) && index >= 0 && index < available.length
+    item = available[index]
+    species = CINNABAR_FOSSILS.fetch(item)
+    unless GameData::Species.exists?(species)
+      pbMessage(t("This fossil Pokémon is not registered in this game.",
+                  "Este Pokémon fóssil ainda não está cadastrado no jogo."))
+      return false
+    end
+    if $player.party.length >= 6
+      pbMessage(t("Leave one free slot in your party before reviving a fossil.",
+                  "Deixe uma vaga livre na equipe antes de reviver o fóssil."))
+      return false
+    end
+    pokemon_name = GameData::Species.get(species).name
+    return false unless pbConfirmMessage(t("Revive {1} into {2}?",
+                                            "Reviver {1} em {2}?",
+                                            GameData::Item.get(item).name, pokemon_name))
+    return false unless $bag.remove(item, 1)
+    begin
+      unless pbAddPokemonSilent(species, 5)
+        $bag.add(item, 1)
+        pbMessage(t("Revival failed. Your fossil was returned.",
+                    "A restauração falhou. Seu fóssil foi devolvido."))
+        return false
+      end
+    rescue StandardError
+      $bag.add(item, 1)
+      raise
+    end
+    BlueMusic.kanto_me_play("obtained_pokemon")
+    pbMessage(t("Cinnabar Lab restored {1}!", "O laboratório de Cinnabar restaurou {1}!",
+                pokemon_name))
+    true
+  end
 
   # Silph Card Key: persist locally, never import a foreign item into Decades.
   def self.silph_card_key
@@ -1592,6 +1743,20 @@ MenuHandlers.add(:pause_menu, :blue_kanto_experimental, {
   "effect"=>proc do |menu|
     menu.pbHideMenu
     BlueKantoPilot.experimental_menu
+    menu.pbShowMenu
+    false
+  end
+})
+
+# A map-local action also serves verified, existing Kanto installations whose
+# compiled Map203 was intentionally never rewritten by --sync-runtime.
+MenuHandlers.add(:pause_menu, :blue_kanto_fossil_lab, {
+  "name"=>BlueKantoPilot.t("Revive Fossil (Cinnabar Lab)", "Reviver fóssil (Lab. Cinnabar)"),
+  "order"=>72,
+  "condition"=>proc { |_menu| BlueKantoPilot.in_cinnabar_lab? },
+  "effect"=>proc do |menu|
+    menu.pbHideMenu
+    BlueKantoPilot.revive_cinnabar_fossil
     menu.pbShowMenu
     false
   end
