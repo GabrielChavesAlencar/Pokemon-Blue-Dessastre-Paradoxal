@@ -25,6 +25,7 @@ from johto_qa import index_base, safe_path, SOURCE_FILES, COPY_DIRS
 from johto_qa import SYSTEM_CLASSES
 from prepare_sinnoh_pilot_bundle import ROOT, digest, _safe_under
 from sinnoh_legacy_plugin_guard import assert_no_legacy_sinnoh_shared
+from sinnoh_save_isolation import namespace, validate_namespace
 from server.ruby_marshal import RubyObject, loads
 from stage import serialize
 from pilot import SYSTEM_CLASSES as SYSTEM_CLASSES_NATIVE
@@ -166,9 +167,9 @@ def unique_save_configs(base: Path, token: str) -> tuple[bytes, bytes, dict]:
     if any("save" in key.casefold() or "userdata" in key.casefold()
            for key in original_config):
         fail("mkxp tem configuração de salvamento própria; isolamento não provado")
-    title = "Sinnoh QA " + token
-    app = "Sinnoh-QA-" + token
-    org = "Dessastre-Sinnoh-QA-" + token
+    profile = namespace(token)
+    title, app, org = (
+        profile["title"], profile["dataPathApp"], profile["dataPathOrg"])
     if (app == original_config.get("dataPathApp") or
             org == original_config.get("dataPathOrg")):
         fail("Perfil QA coincide com o jogo principal")
@@ -180,6 +181,10 @@ def unique_save_configs(base: Path, token: str) -> tuple[bytes, bytes, dict]:
         fail("Game.ini deve conter um Title válido único")
     if "Title=" + title in ini_file.read_text("utf-8-sig"):
         fail("Game.ini já usa o perfil QA")
+    # The eventual directory token is fixed by the installer, not by the user.
+    validate_namespace(
+        base.parent / ".blue-work" / ("game-sinnoh-qa-" + token),
+        profile, config, ini, project=base.parent, main_config=original_config)
     return (
         (json.dumps(config, ensure_ascii=False, indent=2) + "\n").encode("utf-8"),
         ini.encode("utf-8"),
@@ -536,6 +541,16 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
         fail("Perfil de save separado ausente")
     if trans.get("save_isolation") != profile:
         fail("Perfil da transação QA difere do save configurado")
+    # S11: strict namespace must match the QA directory token; do not accept
+    # a forged/cross-region profile even when a private manifest was edited.
+    mkxp = jsonc((qa / "mkxp.json").read_text("utf-8"))
+    ini = (qa / "Game.ini").read_text("utf-8-sig")
+    main_cfg_file = Path(project).absolute() / "game" / "mkxp.json"
+    main_cfg = None
+    if main_cfg_file.is_file() and not main_cfg_file.is_symlink():
+        main_cfg = jsonc(main_cfg_file.read_text("utf-8-sig"))
+    isolation = validate_namespace(
+        qa, profile, mkxp, ini, project=project, main_config=main_cfg)
     pinned = trans.get("qa_launch_sha256")
     if (not isinstance(pinned, dict) or set(pinned) != set(QA_LAUNCH_REQUIRED)
             or any(not isinstance(value, str) or not SHA.fullmatch(value)
@@ -556,12 +571,7 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
     for pattern in QA_SAVE_PATTERNS:
         if any(p.is_file() or p.is_symlink() for p in qa.glob(pattern)):
             fail("Save incompatível encontrado dentro da cópia QA")
-    mkxp = jsonc((qa / "mkxp.json").read_text("utf-8"))
-    if any(mkxp.get(k) != profile[k] for k in ("dataPathApp", "dataPathOrg")):
-        fail("Configuração de saves foi alterada")
-    ini = (qa / "Game.ini").read_text("utf-8-sig")
-    if ini.count("Title=" + profile["title"]) != 1:
-        fail("Game.ini não corresponde ao QA isolado")
+    # mkxp.json and Game.ini were already checked together by S11 above.
     for rel, expected in proof["file_sha256"].items():
         file = qa / rel
         if file.is_symlink() or not file.is_file() or digest(file.read_bytes()) != expected:
@@ -631,6 +641,9 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
     return {
         "region": "SINNOH", "mode": "QA_READ_ONLY_VERIFICATION",
         "save_profile_isolated_in_config": True,
+        "save_namespace_verified": isolation["save_namespace_verified"],
+        "foreign_save_inherited": isolation["foreign_save_inherited"],
+        "native_save_reload_verified": False,
         "compiled_marker_present": compiled_ok,
         "engine_structural_report_consistent": checked,
         "compile_request_pending": pending,
