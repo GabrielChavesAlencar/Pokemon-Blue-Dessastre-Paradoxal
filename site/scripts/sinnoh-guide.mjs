@@ -56,9 +56,42 @@ export function generateSinnohGuide(sources){
   if(coverage.phases.some(p=>p.areas?.some(a=>a.verified!==false||a.source_map_ids?.length||a.destination_map_ids?.length)||
       p.events?.some(e=>e.verified!==false)))reject('native map/event declared without proof');
   if(badges.rules.some(r=>r.verified_gym_event!==false||r.verified_hm_pickup_event!==false))reject('HM reward verified without native event');
-  if(teams.trainers.some(t=>t.first_battle?.verified_in_blue_pbs!==false||
-      t.native_pbs?.compiled!==false||t.native_pbs?.event_bound!==false||
-      t.native_pbs?.game_exe_verified!==false||t.blue_strongest?.game_exe_verified!==false))reject('trainer PBS claimed installed');
+  // S28: os 13 times sao composições HISTORICAS de Platinum. O repositorio
+  // nao contem PBS de Sinnoh e nao se deve converter revanche em Full Power.
+  if(teams.ui_policy?.publish_rematch_as_blue_strongest!==false||
+     teams.ui_policy?.publish_unverified_blue_native_as_installed!==false||
+     teams.native_event_battle_bindings_verified!==false||
+     teams.may_write_pbs!==false)reject('S28 team policy would claim native gameplay');
+  if(teams.trainers.some(t=>{
+    const first=t.first_battle, rematch=t.historical_rematch;
+    const native=t.native_pbs, strongest=t.blue_strongest;
+    return !first||first.source!=='PLATINUM_FIRST_BATTLE'||
+      first.source_game!=='POKEMON_PLATINUM'||
+      first.status!=='HISTORICAL_REFERENCE_ONLY'||
+      first.levels_are_not_runtime_levels!==true||
+      first.verified_in_blue_pbs!==false||
+      !Array.isArray(first.species)||first.species.length<1||
+      first.species.length>6||first.species.some(s=>!s||typeof s!=='string')||
+      !Array.isArray(first.historical_levels)||
+      first.historical_levels.length!==first.species.length||
+      (rematch!==null&&(
+        t.role==='GYM_LEADER'||rematch.source!=='PLATINUM_LEAGUE_REMATCH'||
+        rematch.source_game!=='POKEMON_PLATINUM'||
+        rematch.status!=='HISTORICAL_REFERENCE_ONLY'||
+        rematch.levels_are_not_runtime_levels!==true||
+        rematch.verified_in_blue_pbs!==false||
+        !Array.isArray(rematch.species)||
+        rematch.species.length!==first.species.length||
+        !Array.isArray(rematch.historical_levels)||
+        rematch.historical_levels.length!==rematch.species.length))||
+      !native||native.status!=='NATIVE_PBS_NOT_AVAILABLE_OR_VERIFIED'||
+      native.team!==null||native.source_file!==null||native.source_sha256!==null||
+      native.compiled!==false||native.event_bound!==false||
+      native.game_exe_verified!==false||
+      !strongest||strongest.status!=='BLUE_FULL_POWER_VARIANT_NOT_VERIFIED'||
+      strongest.species!==null||strongest.source_sha256!==null||
+      strongest.game_exe_verified!==false;
+  }))reject('S28 catalog or native team status inconsistent');
   if(encounters.areas.some(a=>a.installed!==false||a.native_pbs_verified!==false||
       a.map_id!==null||a.encounter_slots?.length||a.weight_percentages!==null||
       a.level_ranges!==null))reject('wild encounter falsely installed');
@@ -101,10 +134,26 @@ export function generateSinnohGuide(sources){
     speciesReference:[...t.first_battle.species],
     rematchSpeciesReference:t.historical_rematch?[...t.historical_rematch.species]:null,
     referenceGame:'Pokémon Platinum',
+    // S28: composicao de referencia, nunca PBS compilado nem nivel runtime.
+    teamAudit:{
+      firstBattle:{origin:'PLATINUM_FIRST_BATTLE',
+        memberCount:t.first_battle.species.length,verifiedInBlue:false},
+      historicalRematch:t.historical_rematch?{
+        origin:'PLATINUM_LEAGUE_REMATCH',
+        memberCount:t.historical_rematch.species.length,verifiedInBlue:false}:null,
+      blueFullPower:{status:'pending',species:null,verified:false},
+      nativePBS:{status:'pending',team:null,compiled:false,eventBound:false,
+        gameExeVerified:false}
+    },
     fullPowerVerified:false,pbsInstalled:false,
     // NO historical_levels: they are not runtime levels.
   }));
   requireUnique(bosses.map(t=>t.id),'boss IDs');
+  if(bosses.some(b=>b.teamAudit.firstBattle.memberCount!==b.speciesReference.length||
+      (b.rematchSpeciesReference===null)!==(b.teamAudit.historicalRematch===null)||
+      (b.teamAudit.historicalRematch&&
+       b.teamAudit.historicalRematch.memberCount!==b.rematchSpeciesReference.length)))
+    reject('S28 team counts inconsistent');
   if(bosses.filter(b=>b.role==='GYM_LEADER').length!==8||
      bosses.filter(b=>b.role==='ELITE_FOUR').length!==4||
      bosses.filter(b=>b.role==='CHAMPION').length!==1||
@@ -135,6 +184,17 @@ export function generateSinnohGuide(sources){
       musicCueReferences:music.cues.length,storySteps:steps.length,
       verifiedNativeMaps:0,verifiedNativeTrainers:0,verifiedNativeItems:0},
     phases,areas,trainers,bosses,items,steps,
+    teamCatalog:{
+      status:'historical_reference_only',
+      historicalTrainerCount:bosses.length,
+      regularTrainersWithoutVerifiedTeams:trainers.length,
+      verifiedBlueTrainerTeams:0,
+      compiledNativePBSTeams:0,
+      officialPlatinumRematchReferences:bosses.filter(b=>b.teamAudit.historicalRematch).length,
+      blueFullPowerVerifiedTeams:0,
+      gameExeVerifiedTeams:0,
+      fixedRuntimeLevelsPublished:false
+    },
     music:{cueCount:music.cues.length,audioInstalled:false,
       status:'planned',fallback:'Manter BlueMusic/Decades atual'},
     balance:{normalPercent:teams.dynamic_balance.normal_percent,
