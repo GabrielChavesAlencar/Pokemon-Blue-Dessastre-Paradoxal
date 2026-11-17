@@ -356,7 +356,7 @@ def prepare_session(project,clone_folder,plan_sha,proof,host):
         tools.mkdir()
         guest=tools/"B10_PREPARAR_NO_WINDOWS_SANDBOX.cmd"
         guest.write_text(GUEST_CMD,encoding="utf-8",newline="\r\n")
-        wsb=xml_wsb(str(clone_folder),str(tools))
+        wsb=xml_wsb(str(clone_folder),str(target/"tools"))
         config=temp/"B10_ISOLAMENTO.wsb"
         config.write_text(wsb,encoding="utf-8")
         proof_host={
