@@ -31,7 +31,7 @@ Também pode arrastar um ZIP sobre o BAT ou executar o script com o argumento --
 
 | Elemento | O que identifica | Limitação |
 |---|---|---|
-| Formato e tamanho | PNG, GIF, APNG e largura/altura em pixels | Apenas metadados/estrutura, não renderiza arte |
+| Formato e tamanho | PNG, GIF e APNG (inclusive arquivos .apng) e largura/altura em pixels | Apenas metadados/estrutura, não renderiza arte |
 | Animação | Quadros declarados de GIF/APNG, atrasos GIF | Não confirma reprodução na engine |
 | Direções/grades | Possíveis folhas 4x4 RMXP ou 3x4, tamanhos de células | Grades são hipóteses, não prova de poses, pivôs ou ordem |
 | Nomes | Cheren, Bianca, Juniper, N, Ghetsis, Team Plasma, líderes, Elite etc., por nome do arquivo | Falta de nome não prova ausência do personagem |
@@ -59,3 +59,5 @@ O auditor não infere que uma folha é personagem jogável só por ter largura d
 **SP05 — Um NPC piloto** somente após direitos claros; criar overlay separado e namespaced sem sobrescrever Graphics/Characters global. Testar 4 direções, animação, posição e escala com Decades, depois save/reload. Não escolher MapID sem MapInfos real.
 
 **Barras não aumentam apenas pelo auditor:** E = 4/8, A/B/C/D = 0/8, jogável Unova = 0/32. O pack real e seus direitos ainda não foram auditados.
+
+**Ajustes após CI:** o auditor aceita extensões .apng, bloqueia PNG sem IDAT e trata uma pasta de referência Decades explicitamente indicada mas inexistente como erro, em vez de simular comparação. A inspeção continua somente por metadados.
