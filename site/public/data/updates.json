@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a3ac5067959cc5020a0eefaa506a06751f9bd8eb",
+      "date": "2026-11-17T17:08:27-03:00",
+      "title": "Unova G01.4: codec de estado sintético e migração explícita com testes",
+      "category": "Novidades"
+    },
+    {
       "sha": "77ca60e86dfc947a61957e8384491c57a6ae1324",
       "date": "2026-11-17T17:00:04-03:00",
       "title": "Unova G01.3: recompensas únicas, recibos idempotentes e reentrada offline",
