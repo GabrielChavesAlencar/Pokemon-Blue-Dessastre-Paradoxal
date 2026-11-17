@@ -1,8 +1,9 @@
 """Repackage the audited combined Android release with the Kanto JoiPlay hotfix.
 
 Never invent/rebuild regional maps from unavailable upstream downloads.
-Only change source/cache of RegionStart, updater, and release metadata. The
-existing ZIP is verified against its recorded original SHA and all file hashes.
+Only change the audited Blue-owned regional plugin sources/caches, updater,
+and release metadata. Maps and saves remain untouched. The existing ZIP is
+verified against its recorded original SHA and all file hashes.
 """
 from __future__ import annotations
 
@@ -27,6 +28,8 @@ from server.ruby_marshal import loads
 PREFIX = "Pokemon-Blue-Android/"
 BASE_REV = "125155eaf256fcc3e5bfa9880585e9d07ce22618"
 REGION = "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"
+KANTO = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
+KANTO_MANIFEST = "Data/blue-kanto-install.json"
 CACHE = "Data/PluginScripts.rxdata"
 UPDATER = "ATUALIZAR-ANDROID.py"
 README = "LEIA-ME-ANDROID.txt"
@@ -81,6 +84,44 @@ STDOUT.binmode.write(Marshal.dump(data))
     return result.stdout
 
 
+
+def replace_compiled_kanto(cache, source):
+    """Replace only the KantoPilot entry inside the actual Ruby Marshal cache."""
+    ruby = r'''
+require "zlib"
+data = Marshal.load(STDIN.binmode.read)
+wanted = File.binread(ARGV.fetch(0))
+matched = 0
+data.each do |plugin|
+  plugin.fetch(2).each do |entry|
+    next unless entry[0].to_s == "KantoPilot.rb"
+    previous = Zlib::Inflate.inflate(entry[1])
+    abort "Unrecognized KantoPilot plugin" unless previous.include?("module BlueKantoPilot")
+    entry[1] = Zlib::Deflate.deflate(wanted)
+    matched += 1
+  end
+end
+abort "Expected exactly one KantoPilot.rb, got #{matched}" unless matched == 1
+STDOUT.binmode.write(Marshal.dump(data))
+'''
+    patched = subprocess.run(
+        ["ruby", "-e", ruby, str(ROOT / "scripts/regions/KantoPilot.rb")],
+        input=cache, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        check=False, timeout=120,
+    )
+    if patched.returncode:
+        raise ValueError("Cannot update compiled KantoPilot: " +
+                         patched.stderr.decode("utf8", "replace")[:1200])
+    matches = [
+        zlib.decompress(row[1])
+        for plugin in loads(patched.stdout) for row in plugin[2]
+        if row[0] == b"KantoPilot.rb"
+    ]
+    if matches != [source]:
+        raise ValueError("Compiled Kanto fossil fix missing after Ruby Marshal rewrite.")
+    return patched.stdout
+
+
 def regional_proof(source):
     kanto = json.loads(source.read(PREFIX + "Data/blue-kanto-install.json"))
     hoenn = json.loads(source.read(PREFIX + "Data/blue-hoenn-install.json"))
@@ -124,12 +165,26 @@ def modified_files(source, revision):
             b"!kanto_compact_maps(spawn).nil?" not in source_code or
             b"def verify_forward_revision" not in updater):
         raise ValueError("Kanto/Android-updater bug fixes missing from main.")
+    kanto = (ROOT / "scripts/regions/KantoPilot.rb").read_bytes()
+    if (b"def self.choose_moon_fossil" not in kanto or
+            b"def self.revive_cinnabar_fossil" not in kanto):
+        raise ValueError("Verified Kanto fossil fix missing from main.")
     before = source.read(PREFIX + REGION)
-    if before == source_code:
-        raise ValueError("Hotfix baseline already contains this code.")
+    if before == source_code and source.read(PREFIX + KANTO) == kanto:
+        raise ValueError("Baseline already contains both regional fixes.")
+    patched_region = replace_compiled_region(source.read(PREFIX + CACHE), source_code)
+    patched_both = replace_compiled_kanto(patched_region, kanto)
+    proof = json.loads(source.read(PREFIX + KANTO_MANIFEST))
+    hashes = proof.get("installed_sha256")
+    if (not isinstance(hashes, dict) or KANTO not in hashes or
+            hashes[KANTO] != digest(source.read(PREFIX + KANTO))):
+        raise ValueError("Original Kanto plugin does not match the audited install proof.")
+    hashes[KANTO] = digest(kanto)
     result = {
         REGION: source_code,
-        CACHE: replace_compiled_region(source.read(PREFIX + CACHE), source_code),
+        KANTO: kanto,
+        KANTO_MANIFEST: (json.dumps(proof, indent=2) + "\n").encode("utf-8"),
+        CACHE: patched_both,
         UPDATER: updater,
     }
     instructions = source.read(PREFIX + README)
@@ -138,9 +193,11 @@ def modified_files(source, revision):
         raise ValueError("Original ZIP README revision does not match baseline.")
     result[README] = instructions.replace(
         old_revision_line, ("Revision: " + revision + "\n").encode()
-    ) + (b"\nKanto Android: 142 mapas confirmados e RegionStart.rb corrigido "
-         b"no cache do JoiPlay.\nAtualizador Android: protecao contra "
-         b"downgrade e escolha correta da release.\n")
+    ) + (b"\nKanto Android: 142 mapas confirmados, RegionStart.rb corrigido "
+         b"no cache do JoiPlay. Fos meis: escolha exclusiva no Mt. Moon "
+         b"apos derrotar Miguel, inclusive em saves antigos; restauracao no "
+         b"laboratorio de Cinnabar pelo menu local.\nAtualizador Android: "
+         b"protecao contra downgrade e escolha correta da release.\n")
 
     boot = source.read(PREFIX + MOBILE_INFO)
     before_revision = ("Revision: " + BASE_REV + "\n").encode()
@@ -208,6 +265,11 @@ def rebuild(source_path, output_path, revision):
             source.read(PREFIX + CACHE),
             "RegionStart.rb",
             source.read(PREFIX + REGION),
+        )
+        compiled_region(
+            source.read(PREFIX + CACHE),
+            "KantoPilot.rb",
+            source.read(PREFIX + KANTO),
         )
     return {"revision": revision, "maps_kanto": proof[0], "maps_hoenn": proof[1],
             "sha256": digest_file(output_path), "bytes": output_path.stat().st_size}
