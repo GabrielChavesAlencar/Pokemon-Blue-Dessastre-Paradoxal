@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a0ef0c839c83a8863f73eab3ed71f0fad74f54c7",
+      "date": "2026-11-17T19:40:04-03:00",
+      "title": "feat(sinnoh): G10 source-grounded portal implementation evidence (#159)",
+      "category": "Novidades"
+    },
+    {
       "sha": "24581ecf7cfd5931514d5c3e8d4d9150a155e939",
       "date": "2026-11-17T19:34:35-03:00",
       "title": "Unova G04.4 — auditar probabilidades e lacunas sem dados nativos (21/32)",
