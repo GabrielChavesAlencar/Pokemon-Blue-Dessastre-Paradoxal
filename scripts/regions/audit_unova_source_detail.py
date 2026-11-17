@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from server.ruby_marshal import RubyObject, loads, text
-from audit_unova_u02 import audit_zip, is_within_source, fail, write_report
+from audit_unova_u02 import audit_zip, is_within_source, fail
 
 MAX_RXDATA = 24 * 1024 * 1024
 MAX_READ_TOTAL = 256 * 1024 * 1024
@@ -198,18 +198,17 @@ def main(argv=None) -> int:
         catalog = json.loads(args.catalog.read_text("utf-8"))
         report = inspect(source, catalog)
         if args.write:
-            # The U02 tool owns u02-source.json; this deep report is a distinct file.
-            from audit_unova_u02 import write_report as _u02_writer
-            original = _u02_writer.__globals__["write_report"] if False else None
-            dest = project / ".blue-work/unova/audit"
-            if dest.is_symlink() or (dest.exists() and not dest.is_dir()):
-                fail("pasta de relatorio insegura")
+            # Never reuse the U02 report or follow workspace symlinks.
+            work = project / ".blue-work"
+            local = work / "unova"
+            dest = local / "audit"
+            for folder in (project, work, local, dest):
+                if folder.is_symlink() or (folder.exists() and not folder.is_dir()):
+                    fail("pasta de relatorio insegura")
             dest.mkdir(parents=True, exist_ok=True)
             target = dest / "u02-rxdata-detail.json"
-            if target.is_symlink():
-                fail("relatorio symlink")
-            if target.exists():
-                fail("relatorio ja existe; manter evidencia anterior imutavel")
+            if target.is_symlink() or target.exists():
+                fail("relatorio ja existe ou symlink; preservar evidencia anterior")
             with target.open("x", encoding="utf-8") as out:
                 json.dump(report, out, indent=2, ensure_ascii=False)
                 out.write("\n")
