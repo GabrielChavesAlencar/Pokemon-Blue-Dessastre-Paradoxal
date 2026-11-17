@@ -30,17 +30,90 @@ module BlueMobile
     File.write('Data/blue-save-location.txt',directory+"\nFile A-H.rxdata | Auto 1-3.rxdata | Game.rxdata | *.bak\n") rescue nil
     BlueBattleLab.choose('Onde fica meu save?',lines)
   end
+  # Metadata is read locally, never guessed from the current clock and never
+  # dependent on JSON (JoiPlay's Ruby may not ship JSON).
+  def self.file_field(path, key)
+    return nil unless File.file?(path)
+    content=File.read(path)
+    match=content.match(/^#{Regexp.escape(key)}:\\s*(.+?)\\s*$/)
+    match && match[1]
+  rescue IOError, SystemCallError
+    nil
+  end
+  def self.marker_field(key)
+    marker='Data/blue-update.json'
+    return nil unless File.file?(marker)
+    match=File.read(marker).match(/"#{Regexp.escape(key)}"\\s*:\\s*"([^"]+)"/)
+    match && match[1]
+  rescue IOError, SystemCallError
+    nil
+  end
+  def self.format_utc(value)
+    return 'Nao registrada (versao antiga)' if value.nil? || value.empty?
+    match=value.match(/\\A(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})(?::(\\d{2}))?/)
+    return value unless match
+    "#{match[3]}/#{match[2]}/#{match[1]} #{match[4]}:#{match[5]}:#{match[6] || '00'}"
+  end
+  def self.version_details
+    channel=marker_field('channel')
+    revision=marker_field('revision')
+    embedded=file_field('Data/blue-mobile-build.txt','Revision') ||
+             file_field('Data/blue-kanto-android-build.txt','Revision')
+    build_utc=file_field('Data/blue-mobile-build.txt','Build-UTC') ||
+              file_field('Data/blue-kanto-android-build.txt','Build-UTC')
+    title=case channel
+    when 'multiregion' then 'Android / Decades + Kanto + Hoenn'
+    when 'kanto'       then 'Android / Kanto piloto'
+    when 'decades'     then 'Android / Decades'
+    else 'Android / canal desconhecido'
+    end
+    applied=marker_field('applied_at_local')
+    applied_utc=marker_field('applied_at_utc')
+    local_display=applied ? format_utc(applied)+' (celular)' :
+      (applied_utc ? format_utc(applied_utc)+' UTC' : 'Nao registrado (instalacao antiga)')
+    consistency=if !revision || !embedded
+      'Metadados incompletos'
+    elsif revision == embedded
+      'Revisoes locais coincidem'
+    else
+      'ATENCAO: revisoes divergentes'
+    end
+    {
+      :title=>title, :revision=>revision || embedded || '',
+      :embedded=>embedded, :build=>build_utc,
+      :applied=>local_display, :consistency=>consistency,
+      :mode=>marker_field('update_mode')
+    }
+  end
+  def self.show_version
+    info=version_details
+    sha=info[:revision]
+    lines=[
+      'Pokemon Blue: Dessastre Paradoxal',
+      'Edicao: '+info[:title],
+      'Versao: '+(sha.empty? ? 'desconhecida' : sha[0,12]),
+      'Build: '+format_utc(info[:build])+(info[:build] ? ' UTC' : ''),
+      'Atualizada: '+info[:applied],
+      'Conferencia: '+info[:consistency],
+      'SHA parte 1: '+(sha.empty? ? '-' : sha[0,20]),
+      'SHA parte 2: '+(sha.empty? ? '-' : (sha[20,20] || '-')),
+      'O jogo mostra a revisao LOCAL, sem acessar a internet.',
+      'Compare o SHA com a release publicada no GitHub.',
+      'Voltar'
+    ]
+    BlueBattleLab.choose('Versao do jogo',lines)
+  end
   def self.show_updates
     # The game must NOT replace loaded RGSS maps or scripts while running.
-    # ATUALIZAR-ANDROID.py performs a verified, backed-up update outside JoiPlay.
+    # ATUALIZAR-ANDROID.py patches verified files with the game fully closed.
     marker='Data/blue-update.json'
     unless File.file?(marker)
       BlueBattleLab.choose('Atualizacoes Android',['Pacote antigo: instale primeiro um ZIP com atualizador.','Voltar'])
       return
     end
-    region=File.file?('Kanto pilot.json') ? 'Kanto (piloto)' : 'Decades'
-    revision=File.read(marker)[/"revision"\s*:\s*"([a-f0-9]{40})"/,1] rescue nil
-    revision=revision ? revision[0,12] : 'nao identificada'
+    info=version_details
+    region=info[:title]
+    revision=info[:revision].empty? ? 'nao identificada' : info[:revision][0,12]
     BlueBattleLab.choose('Atualizacoes Android',[
       'Canal: '+region,
       'Versao instalada: '+revision,
@@ -49,7 +122,7 @@ module BlueMobile
       'python ATUALIZAR-ANDROID.py  (verificar)',
       'python ATUALIZAR-ANDROID.py --update',
       'O programa baixa somente o patch compativel.',
-      'Backup automatico; saves preservados.',
+      'Sem backup automatico. Saves nao sao modificados.',
       'Guia: github.com/'+ 'GabrielChavesAlencar',
       'Pokemon-Blue-Dessastre-Paradoxal',
       'Voltar'
@@ -126,13 +199,14 @@ module BlueMobile
       BlueMobile.log_boot
       until BlueMobile.title_selected
         choice=BlueBattleLab.choose('Pokemon Blue / Android experimental',[
-          'Modo historia','Hub de batalha offline','Atualizacoes Android',
-          'Onde fica meu save?','Sair'
+          'Modo historia','Hub de batalha offline','Versao do jogo',
+          'Atualizacoes Android','Onde fica meu save?','Sair'
         ])
-        if choice==2;BlueMobile.show_updates;next;end
-        if choice==3;BlueMobile.show_save_location;next;end
+        if choice==2;BlueMobile.show_version;next;end
+        if choice==3;BlueMobile.show_updates;next;end
+        if choice==4;BlueMobile.show_save_location;next;end
         BlueMobile.title_selected=true
-        return nil if choice<0 || choice==4
+        return nil if choice<0 || choice==5
         if choice==1
           BlueBattleLab.send(:remove_const,:ACTIVE);BlueBattleLab.const_set(:ACTIVE,true)
           BlueBattleLab.install;return BlueBattleLab::Scene.new
@@ -150,6 +224,17 @@ Object.prepend(BlueMobile::Title)
 # Both Android installations can access the updater guide from the pause menu.
 # The item is hidden on Windows and on packages without the installed manifest.
 if defined?(MenuHandlers)
+  MenuHandlers.add(:pause_menu, :blue_android_version, {
+    "name"=>_INTL("Versao do jogo"),
+    "order"=>71,
+    "condition"=>proc { |_menu| BlueMobile.enabled? && File.file?('Data/blue-update.json') },
+    "effect"=>proc do |menu|
+      menu.pbHideMenu
+      BlueMobile.show_version
+      menu.pbShowMenu
+      false
+    end
+  })
   MenuHandlers.add(:pause_menu, :blue_android_updates, {
     "name"=>_INTL("Atualizacoes Android"),
     "order"=>72,
