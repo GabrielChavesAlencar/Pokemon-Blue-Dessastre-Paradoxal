@@ -35,7 +35,7 @@
 ## Barra A — desenvolvimento aqui no GitHub
 
 ```text
-████████████████████  32/32 (100%)  — apenas engenharia, sem aceite nativo
+████████████████████  32/32 (100%)
 ```
 
 - **Concluídas:** 32 entregas verificadas no repositório (incluindo S08, S10, S11, S12, S17, S18, S19, S20, S21, S22, S23, S26, S27, S28, S29 e S30).
