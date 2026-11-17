@@ -22,6 +22,7 @@ PYTHON_CHECKS = [
     ("sinnoh-python-unit", [PY, "-m", "unittest", "discover", "-s", "tests", "-p", "test_sinnoh_*.py", "-v"]),
     ("sinnoh-progress-consistency", [PY, "scripts/regions/validate_sinnoh_chat_progress.py"]),
     ("sinnoh-source-audit", [PY, "scripts/regions/audit_sinnoh_source.py"]),
+    ("sinnoh-s07-remap-reconciliation-syntax", [PY, "-m", "py_compile", "scripts/regions/sinnoh_s07_reconcile.py"]),
     ("sinnoh-badges-hms-audit", [PY, "scripts/regions/audit_sinnoh_badges_hms.py"]),
     ("sinnoh-s15-gyms-audit", [PY, "scripts/regions/audit_sinnoh_s15_gyms.py"]),
     ("sinnoh-s16-local-hms", [PY, "scripts/regions/audit_sinnoh_s16_hms.py"]),

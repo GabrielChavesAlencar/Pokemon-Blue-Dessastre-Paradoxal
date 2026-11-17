@@ -112,7 +112,8 @@ def stage(project: Path, label: str, files: dict[str, bytes],
 
 def rollback(project: Path, label: str, plan_sha256: str) -> dict:
     # Keep deletion limited to the ONE stage from a known immutable plan.
-    if (not LABEL.fullmatch(label) or not isinstance(plan_sha256, str)
+    if (not isinstance(label, str) or not LABEL.fullmatch(label)
+            or not isinstance(plan_sha256, str)
             or not re.fullmatch(r"[a-f0-9]{64}", plan_sha256)):
         raise ValueError("Identidade de rollback inválida")
     root = stage_root(project)
@@ -127,21 +128,70 @@ def rollback(project: Path, label: str, plan_sha256: str) -> dict:
             or manifest.get("mode") != "LOCAL_STAGE_ONLY"):
         raise ValueError("Manifesto do stage foi alterado")
     rows = manifest.get("files")
-    if not isinstance(rows, list) or not rows:
-        raise ValueError("Arquivos de rollback inválidos")
-    permitted = {Path(row["path"]).as_posix() for row in rows}
+    # A self-consistent immutable receipt is required before ANY deletion.
+    # Without this, an edited JSON could re-label files as legitimate stage
+    # contents. Even with a recomputed receipt this is only a local integrity
+    # check, not a cryptographic authorization for third-party maps.
+    expected_keys = {
+        "schema", "region", "mode", "label", "plan_sha256",
+        "files", "total_bytes", "stage_relative_path",
+        "writes_to_main_game", "may_install_into_game",
+        "source_rights_verified", "mapping_verified",
+    }
+    if (type(manifest) is not dict or set(manifest)!=expected_keys or
+        manifest.get("schema")!=1 or manifest.get("region")!="SINNOH" or
+        manifest.get("writes_to_main_game") is not False or
+        manifest.get("may_install_into_game") is not False or
+        manifest.get("source_rights_verified") is not False or
+        manifest.get("mapping_verified") is not False or
+        not isinstance(rows,list) or not rows or len(rows)>MAX_FILES):
+        raise ValueError("Manifesto do stage inválido")
+    canonical=[]
+    seen=set()
+    total=0
+    allowed_dirs=set()
+    for row in rows:
+        if (type(row) is not dict or set(row)!={"path","bytes","sha256"} or
+            not isinstance(row["path"],str) or
+            not ALLOWED.fullmatch(row["path"]) or
+            row["path"].casefold() in seen or
+            type(row["bytes"]) is not int or row["bytes"]<=0 or
+            not isinstance(row["sha256"],str) or
+            not re.fullmatch(r"[a-f0-9]{64}",row["sha256"])):
+            raise ValueError("Arquivos de rollback inválidos")
+        seen.add(row["path"].casefold())
+        total+=row["bytes"]
+        if total>MAX_TOTAL_BYTES:
+            raise ValueError("Stage excede limite")
+        canonical.append(row)
+        path=Path(row["path"])
+        allowed_dirs.update(str(v.as_posix()) for v in path.parents if str(v)!=".")
+    if canonical!=sorted(canonical,key=lambda row:row["path"]):
+        raise ValueError("Manifesto do stage fora da ordem canônica")
+    signed=digest(json.dumps(
+        {"label":label,"files":canonical},ensure_ascii=True,sort_keys=True,
+        separators=(",",":")).encode("ascii"))
+    if (signed!=plan_sha256 or manifest.get("total_bytes")!=total or
+        manifest.get("stage_relative_path")!=
+        f".blue-work/sinnoh-stage/{label}-{plan_sha256[:16]}"):
+        raise ValueError("Assinatura do plano ou destino alterado")
+    permitted={row["path"] for row in rows}
     permitted.add("stage-manifest.json")
-    actual = set()
+    actual=set()
     for item in folder.rglob("*"):
         if item.is_symlink():
             raise ValueError("Stage contém link simbólico; rollback bloqueado")
+        relative=item.relative_to(folder).as_posix()
+        if item.is_dir() and relative not in allowed_dirs:
+            raise ValueError("Stage contém pasta inesperada; não apagar")
         if item.is_file():
-            actual.add(item.relative_to(folder).as_posix())
+            actual.add(relative)
     if actual != permitted:
         raise ValueError("Stage modificado: conteúdo extra/ausente; não apagar")
     for row in rows:
         target = folder / row["path"]
-        if not target.is_file() or digest(target.read_bytes()) != row["sha256"]:
+        if (not target.is_file() or target.stat().st_size!=row["bytes"] or
+                digest(target.read_bytes())!=row["sha256"]):
             raise ValueError("Stage modificado: hash divergente; não apagar")
     shutil.rmtree(folder)
     return {"region": "SINNOH", "mode": "LOCAL_ROLLBACK",
