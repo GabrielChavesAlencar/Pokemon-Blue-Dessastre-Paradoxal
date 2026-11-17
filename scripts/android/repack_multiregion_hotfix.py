@@ -176,8 +176,13 @@ def modified_files(source, revision):
     patched_both = replace_compiled_kanto(patched_region, kanto)
     proof = json.loads(source.read(PREFIX + KANTO_MANIFEST))
     hashes = proof.get("installed_sha256")
-    if not isinstance(hashes, dict) or not re.fullmatch(r"[0-9a-f]{64}", str(hashes.get(KANTO, ""))):
-        raise ValueError("Original Kanto install proof is missing a plugin checksum.")
+    if not isinstance(hashes, dict):
+        raise ValueError("Original Kanto install proof has no checksum table.")
+    # The importer records map/PBS hashes, not the separately installed plugin.
+    # It is normal for legacy archives to lack KANTO in this checksum table.
+    recorded = hashes.get(KANTO)
+    if recorded is not None and not re.fullmatch(r"[0-9a-f]{64}", str(recorded)):
+        raise ValueError("Invalid historical Kanto plugin checksum.")
     # Old combined releases may have compiled the game after sync_runtime
     # updated KantoPilot, leaving an older installer checksum in this proof.
     # Validate the actual distributed runtime against its compiled cache;
