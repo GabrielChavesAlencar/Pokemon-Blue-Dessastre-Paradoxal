@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "dfe69d7f9d2f464b37bcdb64d6132af9d3a3f949",
+      "date": "2026-11-17T20:11:15-03:00",
+      "title": "docs(sinnoh): finish GitHub G01-G12 12/12, 44 native cases and local gates still pending",
+      "category": "Documentação"
+    },
+    {
+      "sha": "7a6c54c2d98033761871131eeaaaa86de8ea1f9e",
+      "date": "2026-11-17T20:10:49-03:00",
+      "title": "feat(sinnoh): G12 44-case native QA handoff and GitHub evidence closure (#163)",
+      "category": "Novidades"
+    },
+    {
       "sha": "a3c257ea1fd79933a96f1fef7053df0fb40d31ad",
       "date": "2026-11-17T20:09:14-03:00",
       "title": "Unova G05.3 — NPC regional e retorno seguro (24/32)",
