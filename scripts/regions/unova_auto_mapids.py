@@ -468,7 +468,9 @@ def pretty(result: dict) -> str:
             "  Pasta isolada de relatorios (UNICA pasta com escrita compartilhada): "+
                 str(a14_result.get("sandbox_reports_folder") or "INEXISTENTE"),
             "  Fontes do jogo mapeadas somente leitura? "+
-                ("Sim" if a14_result.get("networking_disabled_in_config") else "Nao/Desconhecido"),
+                ("Sim" if (len(a14_result.get("sandbox_host_mappings",[]))==3 and
+                            all(x.get("read_only") for x in
+                                a14_result["sandbox_host_mappings"][:2])) else "Nao/Desconhecido"),
             "  Rede e area de transferencia desabilitadas na config? "+
                 ("Sim" if a14_result.get("networking_disabled_in_config") and
                  a14_result.get("clipboard_disabled_in_config") else "Nao/Desconhecido"),
