@@ -27,6 +27,8 @@ Também pode arrastar um ZIP sobre o BAT ou executar o script com o argumento --
 
 **Pacotes em RAR/7z não são suportados diretamente.** Não basta renomear a extensão: obtenha ZIP autorizado ou prepare uma cópia ZIP exclusivamente local, sem publicar assets de terceiros.
 
+O resumo do console e do JSON agora mostra as contagens por formato (PNG/GIF/APNG), tipo de sprite provável e **quantidade de cada alerta** de compatibilidade, mesmo sem abrir a lista completa de imagens.
+
 ## Campos que o relatório produz
 
 | Elemento | O que identifica | Limitação |
