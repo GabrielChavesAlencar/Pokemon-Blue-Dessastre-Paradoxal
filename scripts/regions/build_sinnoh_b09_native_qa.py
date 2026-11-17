@@ -60,6 +60,13 @@ def file_sha(path):
 def byte_sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
+def _emit_clone_progress(done,total,copied,total_bytes):
+    """Progress goes to stderr; stdout stays a single machine-readable JSON."""
+    percent=(copied*100//total_bytes) if total_bytes else 100
+    print(f"[B09 COPIA] {done:,}/{total:,} arquivos verificados | "
+          f"{copied/1048576:,.1f}/{total_bytes/1048576:,.1f} MiB "
+          f"({percent}% em bytes)",file=sys.stderr,flush=True)
+
 def is_link(p):
     return p.is_symlink() or bool(getattr(p,"is_junction",lambda:False)())
 
@@ -195,6 +202,10 @@ def scan_native_game(project,game_dir):
             if total>MAX_SIZE or len(entries)>=MAX_FILES:
                 blocked("tamanho/contagem da copia acima do limite")
             entries.append({"path":rel.as_posix(),"bytes":s,"sha256":file_sha(p)})
+            if len(entries)%1000==0:
+                print(f"[B09 INVENTARIO] {len(entries):,} arquivos | "
+                      f"{total/1048576:,.1f} MiB verificados",
+                      file=sys.stderr,flush=True)
     entries.sort(key=lambda x:x["path"])
     if not entries or "Data/MapInfos.rxdata" not in {r["path"] for r in entries}:
         blocked("arquivo MapInfos ausente no projeto local")
@@ -268,7 +279,13 @@ def clone_private(project,game_dir,overlay,plan,expected_sha):
     base.mkdir(parents=True,exist_ok=True)
     temp=Path(tempfile.mkdtemp(prefix=".b09-native-",dir=base))
     try:
-        for row in plan["files"]:
+        total_rows=len(plan["files"])
+        total_bytes=plan["total_copy_bytes"]
+        copied_bytes=0
+        print(f"[B09 COPIA] Iniciando copia privada de {total_rows:,} arquivos; "
+              f"{total_bytes/1048576:,.1f} MiB previstos",
+              file=sys.stderr,flush=True)
+        for i,row in enumerate(plan["files"],1):
             rel=row["path"]
             if row["origin"]=="OVERLAY":
                 data=overlay[rel]
@@ -281,16 +298,23 @@ def clone_private(project,game_dir,overlay,plan,expected_sha):
                 original=source/rel
                 if is_link(original) or not original.is_file():
                     blocked("arquivo da instalacao foi substituido: "+rel)
-                if (original.stat().st_size!=row["bytes"]
-                    or file_sha(original)!=row["sha256"]):
+                if original.stat().st_size!=row["bytes"]:
                     blocked("jogo mudou entre dry-run e clonagem: "+rel)
                 target_file=temp/rel
                 target_file.parent.mkdir(parents=True,exist_ok=True)
+                digest=hashlib.sha256()
                 with original.open("rb") as reader,target_file.open("xb") as writer:
-                    shutil.copyfileobj(reader,writer,1024*1024)
+                    for chunk in iter(lambda:reader.read(1024*1024),b""):
+                        digest.update(chunk)
+                        writer.write(chunk)
+                if digest.hexdigest()!=row["sha256"]:
+                    blocked("jogo mudou entre dry-run e clonagem: "+rel)
             if (target_file.stat().st_size!=row["bytes"]
                 or file_sha(target_file)!=row["sha256"]):
                 blocked("hash da copia privada nao corresponde: "+rel)
+            copied_bytes+=row["bytes"]
+            if i%500==0 or i==total_rows:
+                _emit_clone_progress(i,total_rows,copied_bytes,total_bytes)
         receipt={
            "schema":1,"region":"SINNOH","stage":"B09",
            "mode":"PRIVATE_NATIVE_QA_CLONE_UNTESTED",
@@ -315,6 +339,8 @@ def clone_private(project,game_dir,overlay,plan,expected_sha):
         if target.exists() or is_link(target):
             blocked("copia concorrente detectada")
         temp.rename(target)
+        print("[B09 COPIA] Clone privado concluido; Game.exe NAO iniciado.",
+              file=sys.stderr,flush=True)
     except BaseException:
         if temp.exists():shutil.rmtree(temp)
         raise
