@@ -2,7 +2,23 @@
 
 > Data: 17/11/2026. Referência: Pokémon White / Black & White.
 >
-> **ESTADO REAL:** pesquisa publicada, auditor de ZIP e catálogo simbólico implementados. **Unova ainda não está instalada ou jogável.** Não foi possível inspecionar o ZIP real de Pokémon World V18 neste ambiente e não há autorização geral para redistribuir seus assets.
+> **ESTADO REAL ATUAL:** ZIP original e créditos obtidos em GitHub Actions isolado, com 64 mapas da hierarquia Unova auditados como dados. **Os 64 mapas não têm eventos RMXP e Unova continua NÃO INSTALADA e NÃO JOGÁVEL.** Nenhuma autorização geral de redistribuição foi demonstrada.
+
+
+## Situação mais recente — fonte e eventos reais
+
+**Barra E = 6/8 (75%)** como pesquisa e documentação, não como região jogável. [Laudo completo E04/E05](UNOVA_E04_E05_AUDITORIA_REAL_POKEMON_WORLD_V18.md) e [evidências de hashes](../data/regions/unova-e04-e05-observed-source.json).
+
+O ZIP foi obtido diretamente dos links indicados pelo criador e examinado em GitHub Actions efêmero, sem copiar mapas, músicas ou imagens para o repositório. O inventário real identificou 912 arquivos MapNNN no projeto inteiro, 911 MapInfos, 64 mapas dentro de Unova Region, 64/64 mapas interpretados, **ZERO eventos RMXP**, 20 nomes correspondentes a áreas dentro da hierarquia, 19 falsos positivos globais e 35 áreas sem nome exato. O arquivo Credits.txt tem 174 linhas, mas não representa autorização automática para distribuir assets.
+
+- [x] E04 — fonte ZIP e créditos originais inventariados, hash e proveniência ligada à publicação do autor
+- [x] E05 — MapInfos, 64 mapas e eventos reais de Unova inspecionados e lacunas documentadas
+- [ ] E06 — direitos de reutilização e distribuição de cada asset
+- [ ] E08 — integração jogável e testes Windows/Game.exe e JoiPlay
+
+Os mapas oferecem geometria candidata, **não** NPCs ou eventos da campanha White/BW. O doador mistura referências BW, BW2 e anime. Nenhum MapID original foi instalado no Decades.
+
+**Barras A/B/C/D = 0/8 e campanha jogável = 0/32.** As seções mais antigas que mencionam 4/8 são histórico preparatório.
 
 ## Entregas publicadas
 
@@ -28,9 +44,9 @@ São **trilhas auxiliares independentes de oito marcos cada**. Não confundir se
 | **B — História, NPCs, ginásios** | **0/8 (0%)** | Nenhum evento Unova instalado |
 | **C — Selvagens, treinadores, música, pós-jogo** | **0/8 (0%)** | Nenhum recurso de origem integrado |
 | **D — Game.exe, Blue-Story, JoiPlay** | **0/8 (0%)** | Nenhum teste real ou pacote instalado |
-| **E — Documentação, ferramentas, catálogos** | **4/8 (50%)** | E01 fontes, E02 plano, E03 áreas/testes e E07 cues/treinadores/fallbacks simbólicos |
+| **E — Documentação, ferramentas, catálogos** | **6/8 (75%)** | E01/E02/E03/E07 documentais + E04/E05 auditorias REAIS da fonte, sem instalar jogos |
 
-Pendências E04, E05, E06 e E08: ZIP real, nomes/eventos, direitos por arquivo e QA real. E07 documenta apenas chaves musicais, treinadores e fallbacks simbólicos, sem áudio ou equipes instalados.
+Pendências atuais: **E06 (direitos por arquivo)** e **E08 (QA real Windows/JoiPlay)**. E04/E05 são auditorias de fonte concluídas, não aprovação jogável. Consulte [o laudo atual](UNOVA_E04_E05_AUDITORIA_REAL_POKEMON_WORLD_V18.md).
 
 **Fases U01–U32 aprovadas como jogáveis: 0/32.** U01 pesquisa inicial documentada (direitos ainda pendentes); U02 ferramentas criadas mas auditoria da fonte bloqueada; U03 catálogo de referências criado mas sem confrontar MapInfos real; U04–U32 não executadas.
 
@@ -62,7 +78,7 @@ Obter ZIP e créditos do autor, validar hashes/direitos, fazer o parse **inerte*
 **Não marcar como concluída uma fase de importação sem a fonte, compilação e QA real.**
 
 
-## Atualização da Barra E — 17/11/2026
+## Histórico — preparação da Barra E antes da aquisição real do ZIP
 
 Foram publicados instrumentos adicionais de trabalho, sem substituir arquivos jogáveis:
 
