@@ -23,7 +23,7 @@
 ██████████████████░░  18/20 (90%)
 ```
 
-**18 concluídas**, **1 parciais**, **1 pendentes** (CH19 aguardando CI novo; CH20 pendente). A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
+**18 concluídas**, **2 parciais**, **0 pendentes** (CH19/CH20 aguardam CI novo). A lista é um **backlog incremental**, não uma recontagem das 32 entregas antigas — há ferramentas existentes que os próximos itens devem **reutilizar, corrigir ou ampliar**, em vez de reimplementar.
 
 | Prioridade | ID | Entrega publicável na `main` | Critério para mover a `done` |
 |---|---|---|---|
@@ -46,9 +46,11 @@
 | P3 | **CH17** ✅ | Guias de Sinnoh no site com estado real `planned`/pendente | Áreas, treinadores, liga e itemização visíveis como planejamento, sem map IDs fictícios |
 | P3 | **CH18** ✅ | Testes e build do portal para Sinnoh | Pesquisa/filtros/pendências/linkagem sem rótulo `jogável` indevido, suíte do site validada |
 | P4 | **CH19** 🟡 | Regresso isolado Python/Ruby de Sinnoh no CI | Workflow/testes discriminam Sinnoh de falhas de Johto/Kanto e não declaram QA nativo |
-| P4 | CH20 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
+| P4 | **CH20** 🟡 | Auditoria estática Android/JoiPlay + checklist de 44 casos nativos | Pré-voo e relatórios reproduzíveis; teste de aparelho e certificação **permanecem locais** |
 
 **Ordem recomendada:** CH19–CH20. Priorizar segurança de IDs, saves e linha de instalação antes de nova campanha ou site. Cada CH concluída deve ter evidência de arquivo, teste e SHA de commit; CH sem teste possível deve registrar explicitamente o bloqueio e continuar `partial`.
+
+**CH20 parcial:** [auditor de pacote ZIP estático](../scripts/regions/audit_sinnoh_android_ch20.py), [14 testes](../tests/test_sinnoh_android_ch20.py) e [pipeline exclusivo](../.github/workflows/sinnoh-ch20.yml) publicados, com relatório JSON reproduzível e 44 casos pendentes (sem MapIDs/posições inventados). [Documentação CH20](SINNOH_CH20_JOIPLAY_PREFLIGHT.md). A execução do novo CI ainda não foi confirmada e nenhum JoiPlay, Game.exe ou save foi testado. Barra E fica em 18/20 (90%) até haver prova compatível com o aceite, sem alterar A/B/C/D.
 
 **CH19 parcial:** publicados o [executor de regressões Python/Ruby isoladas](../scripts/regions/sinnoh_ci_ch19.py), o [novo workflow independente com matriz Python/Ruby](../.github/workflows/sinnoh-ch19.yml) e os [testes negativos](../tests/test_sinnoh_ci_ch19.py). A saída é por check, com JSON/Markdown como artefato e falha preservada; nenhum indicador de Game.exe ou JoiPlay é aprovado. O [relatório CH19](SINNOH_CH19_CI_PYTHON_RUBY_ISOLADO.md) separa a falha anterior de Kanto da suíte isolada aprovada de Sinnoh. Sem confirmação da execução dos **dois novos jobs** no commit final, CH19 permanece `partial` e Barra E fica 18/20 (90%).
 
