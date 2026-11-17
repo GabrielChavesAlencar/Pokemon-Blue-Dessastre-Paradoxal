@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 18/32 após as entregas S08, S10, S11, S12, S17, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 19/32 após as entregas S08, S10, S11, S12, S17, S18, S26, S27, S28, S29 e a suíte offline S30; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -191,6 +191,12 @@ O [teste Ruby S26](../tests/sinnoh_s26_music_regression.rb), executado via [CH19
 O [contrato S17](../data/regions/sinnoh-trainer-balance-s17.json) e o [auditor estático](../scripts/regions/audit_sinnoh_s17_balance.py) validam as regras já existentes em [Campaign.rb](../scripts/battle_polish/Campaign.rb), [Story.rb](../scripts/battle_polish/Story.rb) e [EvolutionScaling.rb](../scripts/battle_polish/EvolutionScaling.rb). O novo [runner Ruby S17](../tests/sinnoh_s17_trainer_balance_runtime.rb) carrega os módulos reais por `Battle.prepend` com treinadores sintéticos e testa **70%/90%, ovos excluídos, evolução regular, chefes preservados, 4 integrantes no Master, até 6 adversários em duplas e zero alteração do PBS/party**. [10 testes Python](../tests/test_sinnoh_s17_trainer_balance.py) rejeitam alegações de `Game.exe`, rosters Platinum nativos e níveis fixos não comprovados.
 
 A [S17](SINNOH_S17_TREINADORES_DINAMICOS_ACEITE.md) só conclui o escopo do runtime compartilhado e testes offline: **Barra A 18/32 (56%)**, 5 parciais, 9 pendentes, E 20/20, B/C/D 0/13. **Não há treinadores Sinnoh novos instalados nos mapas, nem batalhas Windows/Android certificadas**; S15/S16/S18–S23 e S31 continuam exigindo mapas/eventos reais.
+
+### S18 — progressão selvagem por nível e teste do hook sem PBS nativo
+
+A [S18](SINNOH_S18_ENCONTROS_EVOLUCOES_ACEITE.md) acrescenta uma proteção no [EvolutionScaling.rb](../scripts/battle_polish/EvolutionScaling.rb): não evoluir encontros com `base_level`/`cap` inválidos ou acima da referência de progressão, preservando o slot original. O [runner Ruby](../tests/sinnoh_s18_wild_runtime.rb) exerce o verdadeiro `WildEncounters` com dados sintéticos e valida chances **15%, 30%, 45%, 60%**, espécies originais, evolução em várias fases, limiares de pedra/troca/felicidade, horário, casos especiais e ausência de alteração nas tabelas de spawn de Kanto/Johto/Hoenn/Decades.
+
+O [auditor S18](../scripts/regions/audit_sinnoh_s18_wild.py) e [12 testes negativos](../tests/test_sinnoh_s18_wild.py) vinculam a política ao catálogo CH13: **21 áreas de referência não são áreas jogáveis**, sem MapIDs, pesos, métodos/horários confirmados ou PBS compilados; Drifloon e Rotom ainda são eventos estáticos. **Barra A 19/32 (59%)**, 5 parciais, 8 pendentes, E 20/20, B/C/D 0/13 e 44 casos nativos aguardando dados reais. A regra compartilhada é exercida offline, não um encontro testado no Game.exe.
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
