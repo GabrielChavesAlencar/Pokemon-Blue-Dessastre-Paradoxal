@@ -11,6 +11,13 @@
 - Testa **sem áudio real**: fade e loop não recebem duração/pontos fabricados, arquivos sem licença ou hashes falsos não passam no catálogo, e nenhum hook é instalado.
 - A suíte isolada [CH19](../scripts/regions/sinnoh_ci_ch19.py) executa o teste `sinnoh-music-s26` em Ruby. A matriz [S30](../scripts/regions/audit_sinnoh_s30_suite.py) impede a ausência do arquivo/runner.
 
+## Evidência de CI
+
+- [Sinnoh S30 — run 43998666938](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43998666938): **5/5 jobs aprovados**, incluindo Ruby `sinnoh-music-s26 = passed (0)`, manifesto, Python, portal e Android estático.
+- [Sinnoh CH19 — run 43998666939](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43998666939): Ruby e Python `success` em fixtures, sem reproduzir áudio.
+- [Portal Blue — run 43998666932](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43998666932): build e **161/161 testes aprovados**.
+- [Sinnoh CH20 — run 43998666841](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43998666841): pré-voo estático aprovado; 44 casos Android nativos ainda não executados.
+
 ## Aceite e limites
 
 A S26 pode ser marcada **`done` em código** depois de validar o Ruby, o portal e a matriz S30 no CI e integrar o PR à `main`. O progresso esperado é **Barra A 17/32 (53%)**, cinco tarefas parciais e dez pendentes. E **20/20**; B/C/D **0/13**.
