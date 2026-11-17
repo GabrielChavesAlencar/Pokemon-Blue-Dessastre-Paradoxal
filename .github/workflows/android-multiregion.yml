@@ -10,6 +10,9 @@ on:
       - 'tests/test_android_multiregion.py'
       - 'tests/test_android_updates.py'
       - 'scripts/android/package.py'
+      - 'scripts/android/package_kanto.py'
+      - 'scripts/battle_lab/Mobile.rb'
+      - 'tests/android_version_menu.rb'
       - 'scripts/android/build_manifest.py'
       - 'scripts/android/update_client.py'
       - 'scripts/android/publish_updates.py'
@@ -50,6 +53,8 @@ jobs:
           python -m py_compile scripts/android/update_client.py scripts/android/publish_updates.py
           if($LASTEXITCODE -ne 0){throw 'Erro de sintaxe no atualizador Android.'}
           python -m unittest discover -s tests -p test_android_updates.py -v
+          ruby -c scripts/battle_lab/Mobile.rb
+          ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
           if($LASTEXITCODE -ne 0){throw 'Falha nas atualizacoes Android ou na preservacao de saves.'}
       - name: Integrar Kanto e Hoenn na base principal
         shell: powershell
@@ -122,6 +127,15 @@ jobs:
             gh release download $release.tag_name --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $old
             if($LASTEXITCODE -ne 0){throw "Manifesto Android anterior indisponivel: $($release.tag_name)"}
             $args+=@('--previous-manifest',(Join-Path $old 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
+          }
+          # Also support the on-device installation revision reported by Termux.
+          $specific='android-multiregion-hotfix-2-5d0cc84'
+          if(-not @($selected | Where-Object { $_.tag_name -eq $specific }).Count){
+            $legacy=Join-Path 'dist/previous' $specific
+            New-Item -ItemType Directory -Force -Path $legacy | Out-Null
+            gh release download $specific --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $legacy
+            if($LASTEXITCODE -ne 0){throw 'Manifesto da versao 5d0cc84 indisponivel'}
+            $args+=@('--previous-manifest',(Join-Path $legacy 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
           }
           python scripts/android/publish_updates.py @args
           if($LASTEXITCODE -ne 0){throw 'Manifesto do canal multirregional falhou.'}
