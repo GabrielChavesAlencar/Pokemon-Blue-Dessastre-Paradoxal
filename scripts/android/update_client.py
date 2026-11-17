@@ -4,6 +4,7 @@ No third-party packages. Never overwrite save files or the JoiPlay save profile.
 """
 from __future__ import annotations
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -279,8 +280,10 @@ def _replace_from_zip(archive, member, destination, expected):
             os.unlink(name)
 
 
-def _write_installed_revision(root, manifest):
-    """Commit the new version only after all files are synchronized."""
+def _write_installed_revision(root, manifest, mode="patch"):
+    """Commit the new revision and actual installation timestamp LAST."""
+    now_utc=datetime.now(timezone.utc)
+    now_local=now_utc.astimezone()
     marker = _local_target(root, MARKER)
     marker.parent.mkdir(parents=True, exist_ok=True)
     fd, filename = tempfile.mkstemp(prefix=".blue-update-manifest-", dir=marker.parent)
@@ -289,7 +292,10 @@ def _write_installed_revision(root, manifest):
             json.dump({
                 "schema": 1, "channel": manifest["channel"],
                 "revision": manifest["revision"], "files": manifest["files"],
-                "immutable": manifest.get("immutable", {})
+                "immutable": manifest.get("immutable", {}),
+                "applied_at_utc": now_utc.isoformat(timespec="seconds").replace("+00:00", "Z"),
+                "applied_at_local": now_local.isoformat(timespec="seconds"),
+                "update_mode": mode
             }, output, sort_keys=True)
             output.flush()
             os.fsync(output.fileno())
@@ -474,7 +480,7 @@ def apply_full_archive(root, installed, manifest, archive_path):
                 print("Atualizando arquivos: {}%".format(index * 100 // len(todo)), flush=True)
         for name in removed:
             _local_target(root, name).unlink(missing_ok=True)
-        _write_installed_revision(root, manifest)
+        _write_installed_revision(root, manifest, mode="full-manual")
     return None, len(todo)  # Compatibility: no backup; number of files updated.
 
 
