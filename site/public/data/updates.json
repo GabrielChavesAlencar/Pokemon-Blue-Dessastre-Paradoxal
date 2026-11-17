@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9d1d50e94416111480df98f59752bfee22ae2810",
+      "date": "2026-11-17T09:22:24-03:00",
+      "title": "feat(sinnoh): S15 oito ginásios e insígnias auditáveis, Barra A 27/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "5ec4dd6978ede7b6017d38d16d62c0bc0500b89d",
       "date": "2026-11-17T09:06:29-03:00",
       "title": "feat(sinnoh): S25 BlueMusic bridge isolada, Barra A 26/32",
