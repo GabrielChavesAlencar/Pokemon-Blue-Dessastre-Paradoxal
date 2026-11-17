@@ -43,6 +43,8 @@ class ReadinessTests(unittest.TestCase):
         self.assertFalse(r["game_exe_tested"])
         self.assertFalse(r["android_tested"])
         self.assertFalse(r["rights_verified"])
+        self.assertEqual(len(r["blockers"]),4)
+        self.assertTrue(r["symbolic_music_and_trainers_only"])
 
     def test_02_zip_filename_never_approves(self):
         folder=self.root/".blue-work/unova/sources"
