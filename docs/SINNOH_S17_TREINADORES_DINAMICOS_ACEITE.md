@@ -13,7 +13,7 @@ A **integração de teste S17** em [`sinnoh_s17_trainer_balance_runtime.rb`](../
 
 1. Normal com equipe múltipla, 70% arredondado para baixo e ovo de nível alto ignorado.
 2. Pokémon iniciais evoluindo após determinar o nível, sem modificar os treinadores de origem.
-3. Identidade de líderes, Elite Four, campeã, rival e outros chefes preservada; nenhuma equipe histórica é instalada ou reescrita.
+3. Identidade de líderes, Elite Four e campeã preservada na primeira batalha regional; rivais/administradores seguem o limite BST do modo Story, sem alterar o PBS original.
 4. Master com equipes de 1, 2 ou 3 Pokémon expandidas para **4**; equipes autorais de 4–6 preservadas.
 5. Batalhas duplas com **máximo de seis adversários no total**, sem criar equipes ilegais de oito Pokémon.
 6. Pokémon com nível inferior a 1 ou superior ao máximo da engine são bloqueados pela regra de escala.
