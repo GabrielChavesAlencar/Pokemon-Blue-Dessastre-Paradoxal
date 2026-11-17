@@ -24,6 +24,10 @@ A S21 não adiciona os mapas de Victory Road, salas da Elite Four/Cynthia, Barry
 
 **Aceite em código após CI e merge:** Barra A **22/32 (68%)**, com **5 parciais e 5 pendentes**; Barra E **20/20 (100%)**, B/C/D **0/13**, e 44 verificações nativas ainda pendentes. Os mapas autorizados, a prova de vitória real, a gravação de save no Windows e o JoiPlay pertencem à implantação e ao QA nativo. **S22 (viagem Hoenn/Unova) permanece pendente.**
 
-## Evidências de CI
+## Evidências reais do GitHub Actions
 
-Inserir resultados reais de CH19 Python/Ruby, S30 5 jobs, Portal e CH20 estático após execução. Não confundir suíte sintética com teste jogável.
+- [Sinnoh S30 — execução 44059296697](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44059296697): **5/5 jobs `success`**. Manifesto (11 testes), Python (incluindo os **16 testes negativos S21**, auditor `sinnoh-s21-league-contract = passed (0)`), Ruby (`sinnoh-s21-league = passed (0)`), portal (**161/161 testes**) e Android estático.
+- [Sinnoh CH19 — execução 44059296659](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44059296659): **Python e Ruby `success`**, cada qual incluindo o auditor/runner S21 e emitindo `CH19_SCOPE=sinnoh_only CH19_STATUS=passed NATIVE_QA=false`.
+- [Portal Blue — execução 44059296858](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44059296858): build e suíte do portal `success`.
+- [Sinnoh CH20 — execução 44059296747](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/44059296747): pré-voo **estático** de JoiPlay `success` (18 + 12 verificações); **44 casos de QA nativa continuam não executados**.
+- **Limitação da evidência:** nenhum mapa da Liga, PBS compilado, trainer/Champion real, save real Windows, Hall of Fame físico, fonte nativa de batalha, Game.exe ou JoiPlay foi executado. `VERIFIED_NATIVE_SOURCES` segue vazio e as equipes históricas CH15 permanecem **referências**, não conteúdos instalados.
