@@ -94,10 +94,10 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
     def test_only_committed_kanto_pilot_events_have_explicit_audio(self):
         src=(ROOT/"scripts/regions/KantoPilot.rb").read_text(encoding="utf-8")
         self.assertEqual(src.count('BlueMusic.kanto_me_play("badge_awarded")'),8)
-        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_pokemon")'),2)
+        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_pokemon")'),3)  # New Cinnabar fossil revival
         # Running Shoes are a seventh, story-gated item receipt after Brock.
         # They reuse the approved obtained_item ME, not an unreviewed track.
-        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_item")'),7)
+        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_item")'),8)  # New one-time Mt. Moon fossil
         self.assertEqual(src.count('BlueMusic.kanto_me_play("healed")'),2)
         self.assertIn('return unless pbAddPokemonSilent(species, 5)',src)
         self.assertIn('return unless pbAddPokemonSilent(species, 25)',src)
