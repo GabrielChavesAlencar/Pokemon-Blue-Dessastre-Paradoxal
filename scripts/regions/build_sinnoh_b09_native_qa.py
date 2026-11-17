@@ -357,16 +357,42 @@ def rollback_clone(project,plan_sha):
     expected={x["path"] for x in rows}|{
         "B09_PRIVATE_QA_MANIFEST.json","NAO_EXECUTAR_ANTES_DE_ISOLAR_SAVES.txt"}
     if actual!=expected:blocked("clone foi modificado ou contem saves; rollback negado")
+    final={}
+    total=0
+    canonical=[]
     for row in rows:
         name=row.get("path")
         if (not isinstance(name,str) or not name or
             Path(name).is_absolute() or ".." in Path(name).parts or
-            type(row.get("bytes")) is not int or
-            type(row.get("sha256")) is not str or not SHA.fullmatch(row["sha256"])):
+            type(row.get("bytes")) is not int or not 0<=row["bytes"]<=MAX_SINGLE or
+            type(row.get("sha256")) is not str or not SHA.fullmatch(row["sha256"])
+            or row.get("origin") not in ("NATIVE","OVERLAY")
+            or (row["origin"]=="OVERLAY" and not ALLOWED.fullmatch(name))
+            or (row["origin"]=="NATIVE" and should_skip(Path(name)))
+            or ("\\\\" in name)):
             blocked("manifesto de rollback contem caminhos invalidos")
+        total+=row["bytes"]
+        if total>MAX_SIZE+512*1024*1024:blocked("clone fora do limite")
+        if row["origin"]=="OVERLAY" and name.casefold() in {
+            p.casefold() for p,v in final.items() if v["origin"]=="OVERLAY"
+        }:
+            blocked("mapas duplicados no rollback")
+        canonical.append(row)
+        final[name]=row
+    if canonical!=sorted(canonical,key=lambda x:(x["path"],x["origin"])):
+        blocked("ordem do plano foi alterada")
+    actual_plan=byte_sha(json.dumps(
+        {"stage_sha256":m.get("stage_sha256"),"files":canonical},
+        ensure_ascii=True,sort_keys=True,separators=(",",":")).encode("ascii"))
+    if actual_plan!=plan_sha:blocked("assinatura do plano B09 foi alterada")
+    for name,row in final.items():
         p=folder/name
-        if not p.is_file() or p.stat().st_size!=row["bytes"] or file_sha(p)!=row["sha256"]:
+        if (is_link(p) or not p.is_file() or
+            p.stat().st_size!=row["bytes"] or file_sha(p)!=row["sha256"]):
             blocked("clone alterado; rollback negado")
+    note=folder/"NAO_EXECUTAR_ANTES_DE_ISOLAR_SAVES.txt"
+    if not note.is_file() or "QA PRIVADO B09" not in note.read_text("utf-8"):
+        blocked("aviso do QA privado foi alterado")
     shutil.rmtree(folder)
     return {"stage":"B09","status":"PRIVATE_CLONE_REMOVED_ONLY",
             "plan_sha256":plan_sha,"source_game_untouched":True}
