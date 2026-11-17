@@ -13,7 +13,7 @@ from zipfile import ZipFile, ZipInfo
 
 from scripts.regions.audit_sinnoh_android_ch20 import (
     ROOT, LEDGER, TEMPLATE, SCHEMA, EXPECTED_COUNTS,
-    audit, checklist, inspect_package, safe_output, write_report,
+    audit, checklist, inspect_package, render_markdown, safe_output, write_report,
 )
 
 
@@ -112,6 +112,23 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
         self.assertEqual(first["checklist_sha256"], modified["checklist_sha256"])
         self.assertEqual(modified["completed_native_cases"], 0)
         self.assertFalse(modified["native_gameplay_verified"])
+
+    def test_markdown_report_never_approves_native_gameplay(self):
+        report = audit(root=self.root)
+        md = render_markdown(report)
+        self.assertIn("0/44 observados nativamente", md)
+        self.assertIn("nao certifica Game.exe, JoiPlay", md)
+        self.assertIn(report["checklist_sha256"], md)
+        self.assertIn("| android | 1 | 0 |", md)
+        self.assertEqual(md, render_markdown(audit(root=self.root)))
+        forged = copy.deepcopy(report)
+        forged["native_gameplay_verified"] = True
+        with self.assertRaisesRegex(ValueError, "exclusivamente checklist offline"):
+            render_markdown(forged)
+        forged = copy.deepcopy(report)
+        forged["completed_native_cases"] = 44
+        with self.assertRaisesRegex(ValueError, "exclusivamente checklist offline"):
+            render_markdown(forged)
 
     def test_clean_zip_is_not_claimed_compatible_with_joiplay(self):
         report = audit(root=self.root, package=self.makezip())
