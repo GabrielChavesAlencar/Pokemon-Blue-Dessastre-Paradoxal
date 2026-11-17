@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8a746db294f933c096b241994048e07fbb6e04eb",
+      "date": "2026-11-17T11:21:19-03:00",
+      "title": "docs(unova): roadmap operacional de Cheren SP05 até U32",
+      "category": "Novidades"
+    },
+    {
       "sha": "d877ca20dabe47bd5c797003bf9dc2231e5537db",
       "date": "2026-11-17T11:19:13-03:00",
       "title": "docs(sinnoh): B01 inventário real do Decades e 72 colisões auditadas",
