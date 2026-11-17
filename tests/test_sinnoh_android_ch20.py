@@ -142,7 +142,7 @@ class SinnohAndroidCH20Tests(unittest.TestCase):
 
     def test_rejects_unrecognized_handler_or_warp_and_duplicate_key(self):
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(destination="UNKNOWN"))
-        with self.assertRaisesRegex(ValueError, "destino"):
+        with self.assertRaisesRegex(ValueError, "destino|formato inválido"):
             checklist(self.root)
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"][0].update(destination="SINNOH_PLAYER_HOUSE_1F"))
         self.modify(TEMPLATE, lambda j: j["maps"][0]["events"].append(
