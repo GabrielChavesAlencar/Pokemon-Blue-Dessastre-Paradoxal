@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1f2b0b3a6835d2c766766c0e83657c24308fc86c",
+      "date": "2026-11-17T07:15:04-03:00",
+      "title": "feat(unova): auditor ZIP U02 read-only com bloqueios de segurança e sem instalação",
+      "category": "Novidades"
+    },
+    {
       "sha": "e1232dba6b618334a4b0cc25b19de1da889d6bf8",
       "date": "2026-11-17T07:08:20-03:00",
       "title": "feat(sinnoh): S22 viagem segura Hoenn Unova e Barra A 23/32",
