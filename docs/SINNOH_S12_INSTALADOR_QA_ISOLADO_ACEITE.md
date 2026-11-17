@@ -26,6 +26,15 @@ Os [16 testes S12](../tests/test_sinnoh_s12_installer.py) usam somente mapas, `G
 
 A [matriz S30](../scripts/regions/audit_sinnoh_s30_suite.py) exige tanto o instalador e seu BAT quanto os testes S12. Os workflows CH19 Python/Ruby, S30, portal e CH20 devem aprovar a entrega.
 
+## Evidências efetivas do GitHub Actions
+
+- [Matriz Sinnoh S30 — execução 43994334761](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43994334761): **5/5 jobs aprovados**. Manifesto (11 testes), Python (7 verificações, incluindo toda a descoberta `test_sinnoh_*.py` e os 16 testes da S12), Ruby (22 verificações), Portal (**161/161** testes) e Android estático (18 + 12 testes, **44 cenários nativos ainda pendentes**).
+- [CH19 Python/Ruby — execução 43994334746](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43994334746): ambos os jobs de Sinnoh **`success`**, sem Game.exe real.
+- [Portal Blue — execução 43994334687](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43994334687): build e testes do site **`success`**.
+- [CH20 — execução 43994334732](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/actions/runs/43994334732): pré-voo de Android/JoiPlay **estático aprovado**, nenhum dispositivo executado.
+- A primeira rodada identificou **um teste com expectativa de diretório fixo**, embora o instalador gere um token aleatório seguro. O teste passou a validar o diretório efetivamente retornado e o formato do token; a execução acima confirmou a correção.
+- **Limite da prova:** todos os arquivos de Game.exe, mapas, saves e relatórios nativos usados nesses testes são sintéticos. O CI não instala nem testa Sinnoh real, nem serve de aprovação de redistribuição.
+
 ## Aceite de desenvolvimento e impedimentos nativos
 
 Após CI e merge na `main`, **S12 é `done` no escopo do instalador de código/fixtures** e a Barra A passa a **15/32 (46%)** (6 parciais, 11 pendentes). A Barra E fica **20/20 (100%)**; B/C/D **0/13**; permanecem **44 casos Windows/JoiPlay sem execução real**.
