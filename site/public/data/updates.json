@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "be0a1cd13b967118d94f51199b7e944c30b33fa5",
+      "date": "2026-11-17T20:34:01-03:00",
+      "title": "feat(android): embed actual UTC build date and time in game version metadata",
+      "category": "Novidades"
+    },
+    {
+      "sha": "e056dff4c7cf2f2a315963f66e4cb19020d6fc1f",
+      "date": "2026-11-17T20:33:46-03:00",
+      "title": "feat(android): record real local and UTC time when each update completes",
+      "category": "Novidades"
+    },
+    {
       "sha": "bec52083aaf17750863c6f8bf23b70c863eb9646",
       "date": "2026-11-17T20:33:13-03:00",
       "title": "fix(android): correct Ruby regex escapes for version metadata",
