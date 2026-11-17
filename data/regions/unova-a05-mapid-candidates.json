@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "region": "UNOVA",
+  "phase": "A05",
+  "story_version": "WHITE_BW",
+  "status": "HISTORICAL_SNAPSHOT_CANDIDATES_NOT_RESERVED",
+  "evidence": {
+    "source_type": "B01_B04_SUMMARY_CROSS_REFERENCED_WITH_SINNOH_B05",
+    "supplied_md_filename": "MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17(1).md",
+    "supplied_md_sha256": "e50ae9a9bbb3a93db54523e0e74c0bd2ad0e0272b87643fad8ee07bd17705c95",
+    "cross_reference": "data/regions/sinnoh-b05-mapid-planning.json",
+    "b01_archive_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+    "b04_archive_sha256": "7e8a696a650034f85d397bb3fc8ccd9dcd116f9d100b2aae7e7cbe070d1396e7",
+    "historical_mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+    "original_manifest_hashes_independently_verified": false,
+    "current_game_mapinfos_verified": false,
+    "snapshot_date": "2026-11-17",
+    "b01_physical_map_count": 648,
+    "b04_legacy_count": 617,
+    "b04_omitted_short_mapid_count": 31
+  },
+  "sinnoh_administrative_hold": {
+    "start": 442,
+    "end": 517,
+    "count": 76,
+    "not_native_reservation": true
+  },
+  "unova_preferred_candidate": {
+    "start": 518,
+    "end": 599,
+    "count": 82,
+    "status": "VACANT_IN_HISTORICAL_SNAPSHOT_ONLY"
+  },
+  "unova_other_candidate_ranges": [
+    {
+      "start": 276,
+      "end": 299,
+      "count": 24
+    },
+    {
+      "start": 49,
+      "end": 75,
+      "count": 27
+    },
+    {
+      "start": 2,
+      "end": 21,
+      "count": 20
+    },
+    {
+      "start": 23,
+      "end": 31,
+      "count": 9
+    },
+    {
+      "start": 34,
+      "end": 41,
+      "count": 8
+    },
+    {
+      "start": 44,
+      "end": 47,
+      "count": 4
+    }
+  ],
+  "protected_ranges": [
+    {
+      "start": 600,
+      "end": 699,
+      "reason": "JOHTO_OCCUPIED"
+    },
+    {
+      "start": 700,
+      "end": 999,
+      "reason": "HOENN_INSTALLER_PROTECTED"
+    }
+  ],
+  "non_homologated_mapids_from": 1000,
+  "unova_symbolic_area_catalog": "data/regions/unova-u03-areas.json",
+  "unova_symbolic_areas_count": 74,
+  "proposed_area_to_native_mapid": {},
+  "future_reservations_verified": false,
+  "current_native_a04_required": true,
+  "can_reserve_mapids": false,
+  "can_install": false,
+  "game_exe_tested": false,
+  "android_tested": false,
+  "bar_a_completed": 0,
+  "bar_a_total": 8,
+  "caution": "As 74 áreas simbolicas podem exigir mais de 74 mapas fisicos; nenhuma associaçao source MapID -> destination MapID foi definida."
+}
