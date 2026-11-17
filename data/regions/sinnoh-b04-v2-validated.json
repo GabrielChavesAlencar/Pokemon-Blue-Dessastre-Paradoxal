@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "B04_V2_WINDOWS_COLLECTOR_CONFIRMATION",
+  "recorded_at": "2026-11-17",
+  "status": "B04_V2_FULL_PHYSICAL_INVENTORY_CONFIRMED_MATCHES_B01",
+  "uploaded_file_name": "SINNOH_B04_PROVENIENCIA_REGIONAL_V2.zip",
+  "uploaded_zip_sha256": "b7341ac4e457c6b1a8b8c7271357e23e5b3316df08387bd05e3ae4bb1e31a8a9",
+  "uploaded_json_canonical_sha256": "8e5545f831df9927c19df078762da424a777c4c85cf68a71661d61e7b848934f",
+  "mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+  "tilesets_sha256": "2fd4551a5767615a159a8b5b65a604d1e486009d37953ca6a1955affffabf675",
+  "reference_b01_inventory_sha256": "1da47ce2c4ebc6317d2df7548d128937e623cef45b41838f4e69162aa9e9be9d",
+  "previous_incomplete_report_sha256": "32b865890c7a85698afbc9e498483a4e2b2fff7a3ac092fc37ecfdbb0f571bc0",
+  "new_report_physical_count": 648,
+  "reference_b01_physical_count": 648,
+  "v2_report_exactly_equals_b01_occupied_set": true,
+  "extra_map_ids_in_v2": [],
+  "missing_map_ids_in_v2": [],
+  "recovered_31_omitted_low_ids": [
+    1,
+    22,
+    32,
+    33,
+    42,
+    43,
+    48,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99
+  ],
+  "low_ids_recovered_count": 31,
+  "sources": {
+    "KANTO": {
+      "manifest_sha256": "cd4c07603222de90ba20cbe92befd100b90de617333f135f95993ac2d2d62372",
+      "reported_map_count": 142,
+      "destination_ranges": [
+        {
+          "start": 300,
+          "end": 441,
+          "count": 142
+        }
+      ],
+      "manifest_source": "blue-kanto-install.json",
+      "report_matches_known_contract": true
+    },
+    "JOHTO": {
+      "manifest_sha256": "bdce76a0d6d32c2d8f5ad7a1f9bb765dfd2e3ff748e7a2ea18a4f1cbbc737c0b",
+      "reported_map_count": 100,
+      "destination_ranges": [
+        {
+          "start": 600,
+          "end": 699,
+          "count": 100
+        }
+      ],
+      "manifest_source": "blue-johto-main-preview.json",
+      "report_matches_known_contract": true
+    },
+    "HOENN": {
+      "manifest_sha256": "78a13097149b5005dc3b014a9dc25eb61912bb36d159e84946127bce526494f7",
+      "reported_map_count": 199,
+      "destination_ranges": [
+        {
+          "start": 700,
+          "end": 898,
+          "count": 199
+        }
+      ],
+      "manifest_source": "blue-hoenn-install.json",
+      "report_matches_known_contract": true
+    }
+  },
+  "installed_claims_are_self_reported_not_independently_attested": true,
+  "future_region_reservations_verified": false,
+  "sinnoh_planning_hold": {
+    "start": 442,
+    "end": 517,
+    "count": 76
+  },
+  "sinnoh_planning_only_not_natively_reserved": true,
+  "unova_physical_candidates": 174,
+  "unova_largest_contiguous_candidate": {
+    "start": 518,
+    "end": 599,
+    "count": 82
+  },
+  "unova_ids_allocated": false,
+  "source_and_destination_mapids_not_assigned": true,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "game_or_saves_modified": false,
+  "note": "V2 report was produced by user on Windows and audited as a numeric inventory; raw MapInfos, Tilesets and regional manifest bytes were not re-sent and manifest SHA strings are self-reported. Equality of SHA and occupied IDs with B01 confirms collection consistency, not future map reservations, copyright permissions or native gameplay."
+}
