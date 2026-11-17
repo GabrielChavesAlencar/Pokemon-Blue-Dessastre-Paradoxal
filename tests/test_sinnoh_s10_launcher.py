@@ -60,7 +60,6 @@ class SinnohS10LauncherTests(unittest.TestCase):
             launcher.discover_private_qa(self.root)
 
     def test_insecure_names_and_symlinks_rejected(self):
-        (self.work / "game-sinnoh-qa-../../trick").mkdir if False else None
         bogus = self.work / "game-sinnoh-qa-invalid"
         bogus.mkdir()
         with self.assertRaisesRegex(ValueError, "insegura"):
@@ -162,7 +161,7 @@ class SinnohS10LauncherTests(unittest.TestCase):
         self.assertIn('--check', bat)
         self.assertIn("DisableDelayedExpansion", bat)
         self.assertNotIn("game\\Game.exe", bat)
-        self.assertNotIn("START Game.exe", bat.upper())
+        self.assertNotIn("START GAME.EXE", bat.upper())
         for unsafe in ("git clone", "rmdir", "del /q", "xcopy", "robocopy",
                        "pip install", "powershell", "start /b"):
             self.assertNotIn(unsafe, bat.casefold())
