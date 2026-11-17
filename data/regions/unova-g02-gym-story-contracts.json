@@ -1,0 +1,782 @@
+{
+  "schema": 1,
+  "phase": "G02.2",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "GITHUB_ONLY_SYMBOLIC_CAMPAIGN_EVENTS",
+  "g01_contract": "data/regions/unova-g01-state-contract.json",
+  "g01_transitions": "data/regions/unova-g01-chapter-transitions.json",
+  "g01_reentry": "data/regions/unova-g01-reentry-policy.json",
+  "g01_serialization": "data/regions/unova-g01-serialization-contract.json",
+  "area_catalog": "data/regions/unova-u03-areas.json",
+  "badge_registry": "site/public/data/regions.json",
+  "chapter_range": [
+    2,
+    9
+  ],
+  "simulation_gate": "SIMULATED_ONLY_NO_NATIVE_APPROVAL",
+  "native_game_modified": false,
+  "game_exe_tested": false,
+  "can_install": false,
+  "badge_items_granted": false,
+  "actual_story_events_executed": false,
+  "gyms": [
+    {
+      "id": "UNOVA_G02_GYM_01",
+      "index": 1,
+      "chapter_key": "UNOVA_CH02_STRIATON",
+      "mission_key": "UNOVA_MISSION_CH02_FIRST_GYM",
+      "city_area_key": "UNOVA_STRIATON_CITY",
+      "gym_area_key": "UNOVA_STRIATON_GYM",
+      "badge": "TRIO",
+      "leader_key": "TRIO_BY_STARTER",
+      "leader_by_starter": {
+        "SNIVY": "CHILI",
+        "TEPIG": "CRESS",
+        "OSHAWOTT": "CILAN"
+      },
+      "campaign": "WHITE_BW",
+      "planned_phase": "U08",
+      "previous_badges": [],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_01_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Chegar a Striaton após Route 2",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_01_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Conferir o desafio dos três líderes",
+          "requires": [
+            "UNOVA_G02_GYM_01_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_01_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de STRIATON",
+          "requires": [
+            "UNOVA_G02_GYM_01_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_01_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia TRIO apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_01_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_01_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Registrar a preparação para Dreamyard e Cut local",
+          "requires": [
+            "UNOVA_G02_GYM_01_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_02",
+      "index": 2,
+      "chapter_key": "UNOVA_CH03_NACRENE",
+      "mission_key": "UNOVA_MISSION_CH03_SECOND_GYM",
+      "city_area_key": "UNOVA_NACRENE_CITY",
+      "gym_area_key": "UNOVA_NACRENE_GYM",
+      "badge": "BASIC",
+      "leader_key": "LENORA",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U10",
+      "previous_badges": [
+        "TRIO"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_02_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Visitar Nacrene e o museu",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_02_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Verificar a investigação local antes do ginásio",
+          "requires": [
+            "UNOVA_G02_GYM_02_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_02_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de NACRENE",
+          "requires": [
+            "UNOVA_G02_GYM_02_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_02_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia BASIC apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_02_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_02_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Recuperar o fóssil na sequência de Pinwheel Forest",
+          "requires": [
+            "UNOVA_G02_GYM_02_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_03",
+      "index": 3,
+      "chapter_key": "UNOVA_CH04_CASTELIA",
+      "mission_key": "UNOVA_MISSION_CH04_THIRD_GYM",
+      "city_area_key": "UNOVA_CASTELIA_CITY",
+      "gym_area_key": "UNOVA_CASTELIA_GYM",
+      "badge": "INSECT",
+      "leader_key": "BURGH",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U12",
+      "previous_badges": [
+        "TRIO",
+        "BASIC"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_03_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Atravessar Skyarrow Bridge até Castelia",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_03_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Resolver a interferência da Team Plasma em Castelia",
+          "requires": [
+            "UNOVA_G02_GYM_03_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_03_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de CASTELIA",
+          "requires": [
+            "UNOVA_G02_GYM_03_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_03_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia INSECT apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_03_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_03_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Registrar a saída simbólica para Route 4",
+          "requires": [
+            "UNOVA_G02_GYM_03_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_04",
+      "index": 4,
+      "chapter_key": "UNOVA_CH05_NIMBASA",
+      "mission_key": "UNOVA_MISSION_CH05_FOURTH_GYM",
+      "city_area_key": "UNOVA_NIMBASA_CITY",
+      "gym_area_key": "UNOVA_NIMBASA_GYM",
+      "badge": "BOLT",
+      "leader_key": "ELESA",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U15",
+      "previous_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_04_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Chegar a Nimbasa e encontrar os rivais",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_04_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Confirmar eventos de N e Bianca",
+          "requires": [
+            "UNOVA_G02_GYM_04_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_04_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de NIMBASA",
+          "requires": [
+            "UNOVA_G02_GYM_04_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_04_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia BOLT apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_04_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_04_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Completar a sequência de Route 5 e ponte",
+          "requires": [
+            "UNOVA_G02_GYM_04_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_05",
+      "index": 5,
+      "chapter_key": "UNOVA_CH06_DRIFTVEIL",
+      "mission_key": "UNOVA_MISSION_CH06_FIFTH_GYM",
+      "city_area_key": "UNOVA_DRIFTVEIL_CITY",
+      "gym_area_key": "UNOVA_DRIFTVEIL_GYM",
+      "badge": "QUAKE",
+      "leader_key": "CLAY",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U16",
+      "previous_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_05_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Entrar em Driftveil",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_05_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Resolver o confronto com Team Plasma em Cold Storage",
+          "requires": [
+            "UNOVA_G02_GYM_05_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_05_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de DRIFTVEIL",
+          "requires": [
+            "UNOVA_G02_GYM_05_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_05_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia QUAKE apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_05_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_05_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Registrar o caminho para Chargestone Cave",
+          "requires": [
+            "UNOVA_G02_GYM_05_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_06",
+      "index": 6,
+      "chapter_key": "UNOVA_CH07_MISTRALTON",
+      "mission_key": "UNOVA_MISSION_CH07_SIXTH_GYM",
+      "city_area_key": "UNOVA_MISTRALTON_CITY",
+      "gym_area_key": "UNOVA_MISTRALTON_GYM",
+      "badge": "JET",
+      "leader_key": "SKYLA",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U19",
+      "previous_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_06_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Chegar a Mistralton após Chargestone",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_06_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Concluir sequência da Celestial Tower e sino",
+          "requires": [
+            "UNOVA_G02_GYM_06_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_06_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de MISTRALTON",
+          "requires": [
+            "UNOVA_G02_GYM_06_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_06_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia JET apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_06_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_06_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Registrar referências de Surf/Fly locais ainda pendentes",
+          "requires": [
+            "UNOVA_G02_GYM_06_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_07",
+      "index": 7,
+      "chapter_key": "UNOVA_CH08_ICIRRUS",
+      "mission_key": "UNOVA_MISSION_CH08_SEVENTH_GYM",
+      "city_area_key": "UNOVA_ICIRRUS_CITY",
+      "gym_area_key": "UNOVA_ICIRRUS_GYM",
+      "badge": "FREEZE",
+      "leader_key": "BRYCEN",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U22",
+      "previous_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE",
+        "JET"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_07_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Chegar a Icirrus considerando estações",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_07_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Conferir passagem em Twist Mountain",
+          "requires": [
+            "UNOVA_G02_GYM_07_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_07_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de ICIRRUS",
+          "requires": [
+            "UNOVA_G02_GYM_07_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_07_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia FREEZE apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_07_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_07_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Resolver a sequência em Dragonspiral Tower",
+          "requires": [
+            "UNOVA_G02_GYM_07_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    },
+    {
+      "id": "UNOVA_G02_GYM_08",
+      "index": 8,
+      "chapter_key": "UNOVA_CH09_OPELUCID",
+      "mission_key": "UNOVA_MISSION_CH09_EIGHTH_GYM",
+      "city_area_key": "UNOVA_OPELUCID_CITY",
+      "gym_area_key": "UNOVA_OPELUCID_GYM",
+      "badge": "LEGEND",
+      "leader_key": "IRIS",
+      "leader_by_starter": null,
+      "campaign": "WHITE_BW",
+      "planned_phase": "U24",
+      "previous_badges": [
+        "TRIO",
+        "BASIC",
+        "INSECT",
+        "BOLT",
+        "QUAKE",
+        "JET",
+        "FREEZE"
+      ],
+      "native_badge_item_id": null,
+      "native_badge_switch_id": null,
+      "trainer_party": null,
+      "trainer_levels": null,
+      "challenge_status": "PLANNED_NOT_PLAYABLE",
+      "events": [
+        {
+          "id": "UNOVA_G02_GYM_08_ARRIVAL",
+          "kind": "narrative",
+          "stage": 0,
+          "title_ptbr": "Chegar a Opelucid na campanha White",
+          "requires": [],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_08_STORY_GATE",
+          "kind": "narrative",
+          "stage": 1,
+          "title_ptbr": "Conferir narrativa do dragão, Iris e variante White",
+          "requires": [
+            "UNOVA_G02_GYM_08_ARRIVAL"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_08_LEADER_BATTLE",
+          "kind": "battle",
+          "stage": 2,
+          "title_ptbr": "Vencer simbolicamente o líder de OPELUCID",
+          "requires": [
+            "UNOVA_G02_GYM_08_STORY_GATE"
+          ],
+          "outcome_required": "WIN",
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_08_BADGE",
+          "kind": "badge",
+          "stage": 3,
+          "title_ptbr": "Registrar a insígnia LEGEND apenas em simulação",
+          "requires": [
+            "UNOVA_G02_GYM_08_LEADER_BATTLE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        },
+        {
+          "id": "UNOVA_G02_GYM_08_AFTER_STORY",
+          "kind": "narrative",
+          "stage": 4,
+          "title_ptbr": "Registrar o acesso simbólico a Route 10 e Victory Road",
+          "requires": [
+            "UNOVA_G02_GYM_08_BADGE"
+          ],
+          "outcome_required": null,
+          "simulation_only": true,
+          "native_event_id": null,
+          "source_map_id": null,
+          "trainer_id": null
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Contratos simbólicos planejados da campanha White; sem MapIDs, níveis, equipes, PBS ou eventos físicos.",
+    "Striaton varia conforme o inicial; Opelucid White usa Iris, Drayden é referência da variante Black.",
+    "Insígnias são claims simuladas fora do estado G01.1. HMs, esmeraldas e acesso real não são concedidos.",
+    "Elite Four, N/Ghetsis e pós-jogo permanecem para G02.3/G02.4."
+  ]
+}
