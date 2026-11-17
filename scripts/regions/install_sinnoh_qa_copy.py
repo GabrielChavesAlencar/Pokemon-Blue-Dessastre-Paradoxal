@@ -541,16 +541,6 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
         fail("Perfil de save separado ausente")
     if trans.get("save_isolation") != profile:
         fail("Perfil da transação QA difere do save configurado")
-    # S11: strict namespace must match the QA directory token; do not accept
-    # a forged/cross-region profile even when a private manifest was edited.
-    mkxp = jsonc((qa / "mkxp.json").read_text("utf-8"))
-    ini = (qa / "Game.ini").read_text("utf-8-sig")
-    main_cfg_file = Path(project).absolute() / "game" / "mkxp.json"
-    main_cfg = None
-    if main_cfg_file.is_file() and not main_cfg_file.is_symlink():
-        main_cfg = jsonc(main_cfg_file.read_text("utf-8-sig"))
-    isolation = validate_namespace(
-        qa, profile, mkxp, ini, project=project, main_config=main_cfg)
     pinned = trans.get("qa_launch_sha256")
     if (not isinstance(pinned, dict) or set(pinned) != set(QA_LAUNCH_REQUIRED)
             or any(not isinstance(value, str) or not SHA.fullmatch(value)
@@ -562,6 +552,16 @@ def verify(qa: Path, *, project: Path = ROOT) -> dict:
                 or any(parent.is_symlink() for parent in target.parents)
                 or digest(target.read_bytes()) != expected):
             fail("Arquivo crítico do QA protegido ausente ou adulterado: " + rel)
+    # S11: strict namespace must match the QA directory token; do not accept
+    # a forged/cross-region profile even when a private manifest was edited.
+    mkxp = jsonc((qa / "mkxp.json").read_text("utf-8"))
+    ini = (qa / "Game.ini").read_text("utf-8-sig")
+    main_cfg_file = Path(project).absolute() / "game" / "mkxp.json"
+    main_cfg = None
+    if main_cfg_file.is_file() and not main_cfg_file.is_symlink():
+        main_cfg = jsonc(main_cfg_file.read_text("utf-8-sig"))
+    isolation = validate_namespace(
+        qa, profile, mkxp, ini, project=project, main_config=main_cfg)
     for dirname in QA_ASSET_DIRS:
         folder = qa / dirname
         if (folder.is_symlink() or not folder.is_dir() or not any(
