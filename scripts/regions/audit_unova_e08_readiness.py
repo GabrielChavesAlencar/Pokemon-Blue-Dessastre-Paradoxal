@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 from audit_unova_u03_catalog import validate as validate_areas
 from audit_unova_e06_e07 import validate as validate_resources
+from audit_unova_e04_e05_evidence import validate as validate_observed_source
+from audit_unova_e05_source_map_atlas import validate as validate_source_atlas
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -37,14 +39,28 @@ def inspect(root: Path = ROOT) -> dict:
     res_report = validate_resources(resources, areas, region)
     if len(paths["research"].read_text("utf-8")) < 1000 or len(paths["plan"].read_text("utf-8")) < 1000:
         raise ValueError("E08: documentacao de pesquisa/plano incompleta")
-    # A local file's existence does not constitute a source license or QA signoff.
+    # An observed, source-specific hash plus linked CI evidence can close the
+    # *research* milestones E04/E05, not the asset-rights or gameplay gates.
+    evidence_path = root/"data/regions/unova-e04-e05-observed-source.json"
+    if evidence_path.is_symlink():
+        raise ValueError("E08: evidencia de fonte em symlink")
+    observed = None
+    if evidence_path.exists():
+        if not evidence_path.is_file() or evidence_path.stat().st_size > 200000:
+            raise ValueError("E08: evidencia de fonte invalida")
+        raw_observation = json.loads(evidence_path.read_text("utf-8-sig"))
+        observed = validate_observed_source(raw_observation)
+        atlas_path = root/"data/regions/unova-e05-source-map-atlas.json"
+        if atlas_path.is_symlink() or not atlas_path.is_file() or atlas_path.stat().st_size>200000:
+            raise ValueError("E08: atlas verificado E05 ausente")
+        atlas = validate_source_atlas(json.loads(atlas_path.read_text("utf-8-sig")), raw_observation)
     has_source = (root/".blue-work/unova/sources/Pokemon_World_V18.zip").is_file()
     stages = [
         {"id":"E01","name":"Pesquisa de fontes publicada","completed":True,"proof":"docs/UNOVA_PESQUISA_FONTES_RMXP.md"},
         {"id":"E02","name":"Plano U01-U32 documentado","completed":True,"proof":"docs/UNOVA_PLANO_IMPORTACAO_REGIAO_32_FASES.md"},
         {"id":"E03","name":"Catalogo simbolico, validador e testes","completed":True,"proof":"data/regions/unova-u03-areas.json"},
-        {"id":"E04","name":"ZIP real auditado e proveniencia comprovada","completed":False,"proof":None},
-        {"id":"E05","name":"Nomes e eventos reais RXDATA confrontados com Unova","completed":False,"proof":None},
+        {"id":"E04","name":"ZIP original auditado, SHA e creditos identificados","completed":bool(observed),"proof":"data/regions/unova-e04-e05-observed-source.json" if observed else None},
+        {"id":"E05","name":"MapInfos, mapas e eventos reais do ramo Unova inventariados","completed":bool(observed),"proof":"data/regions/unova-e04-e05-observed-source.json" if observed else None},
         {"id":"E06","name":"Direitos de assets confirmados por recurso","completed":False,"proof":None},
         {"id":"E07","name":"Catalogo simbolico musical/treinadores e fallbacks documentados","completed":True,"proof":"data/regions/unova-e06-e07-preparation.json"},
         {"id":"E08","name":"Evidencia QA de integracao Game.exe e JoiPlay","completed":False,"proof":None},
@@ -53,7 +69,7 @@ def inspect(root: Path = ROOT) -> dict:
     return {
         "schema":1,"region":"UNOVA","phase":"E08",
         "mode":"READ_ONLY_PROGRESS_WITHOUT_NATIVE_SIGNOFF",
-        "status":"PREPARATION_ONLY_EVIDENCE_MISSING",
+        "status":"SOURCE_STRUCTURE_AUDITED_RIGHTS_AND_NATIVE_QA_PENDING" if observed else "PREPARATION_ONLY_EVIDENCE_MISSING",
         "bar_e":{"completed":verified,"total":8,"percent":100*verified/8,"stages":stages},
         "prepared_tooling":{
             "zip_metadata_auditor":(root/"scripts/regions/audit_unova_u02.py").is_file(),
@@ -63,7 +79,12 @@ def inspect(root: Path = ROOT) -> dict:
             "symbolic_trainer_references":res_report["trainer_references"],
             "symbolic_areas":area_report["catalog_areas"],
         },
-        "donor_zip_present_not_audited":has_source,
+        "donor_zip_present_not_audited":has_source and not bool(observed),
+        "source_e04_e05_audit_evidence_verified":bool(observed),
+        "source_unova_event_containers":observed["unova_events_found"] if observed else None,
+        "source_unova_map_files_audited":observed["unova_candidate_maps_read"] if observed else None,
+        "source_maps_20x15":atlas["maps_20x15"] if observed else None,
+        "source_maps_larger":atlas["maps_larger"] if observed else None,
         "symbolic_music_and_trainers_only":True,
         "source_map_ids_verified":False,
         "rights_verified":False,
@@ -71,11 +92,14 @@ def inspect(root: Path = ROOT) -> dict:
         "playable_phases_completed":0,
         "game_or_saves_modified":False,
         "can_install":False,
-        "blockers":[
-            "E04 requer ZIP real e documentos de origem, com hashes e inspeção",
-            "E05 requer ler MapInfos/MapNNN reais e revisão manual da região",
-            "E06 requer direitos por arquivo, não só ficha preparatória",
-            "E08 requer evidências de QA Windows/JoiPlay, não apenas CI",
+        "blockers":(
+            [] if observed else [
+                "E04 requer ZIP original, hashes e creditos reais",
+                "E05 requer ler MapInfos e eventos reais doador",
+            ]
+        ) + [
+            "E06 requer direitos por arquivo, nao so arquivo de creditos",
+            "E08 requer QA Windows/Game.exe e Android/JoiPlay, nao apenas CI",
         ],
     }
 

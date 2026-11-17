@@ -1,0 +1,111 @@
+name: Unova E04 - verificar fonte publica (sem instalar)
+
+on:
+  push:
+    branches:
+      - feat/unova-e04-source-origin-remote-probe-20261117
+    paths:
+      - 'scripts/regions/unova_e04_remote_probe.py'
+      - 'tests/test_unova_e04_remote_probe.py'
+      - 'scripts/regions/audit_unova_e05_mapinfos_only.py'
+      - 'tests/test_unova_e05_mapinfos_only.py'
+      - 'scripts/regions/audit_unova_e05_anchored_events.py'
+      - 'tests/test_unova_e05_anchored_events.py'
+      - '.github/workflows/unova-e04-remote-origin.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-origin:
+    name: Fonte MediaFire original - analise efemera nao instalavel
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar seguranca do cliente remoto
+        run: |
+          python -m unittest discover -s tests -p 'test_unova_e04_remote_probe.py' -v
+          python -m py_compile scripts/regions/unova_e04_remote_probe.py
+          python -m unittest discover -s tests -p 'test_unova_e05_mapinfos_only.py' -v
+          python -m py_compile scripts/regions/audit_unova_e05_mapinfos_only.py
+          python -m unittest discover -s tests -p 'test_unova_e05_anchored_events.py' -v
+          python -m py_compile scripts/regions/audit_unova_e05_anchored_events.py
+      - name: Consultar API do provedor e tentar analisar ZIP e creditos da fonte original
+        run: |
+          python scripts/regions/unova_e04_remote_probe.py --download
+      - name: Cruzar RXDATA e relatar bloqueios (se a fonte foi obtida)
+        shell: bash
+        run: |
+          if [[ -f ".blue-work/unova/sources/Pokemon_World_V18.zip" ]]; then
+            echo "Fonte baixada apenas para area privada da execucao. Gerando inventarios."
+            python scripts/regions/audit_unova_u02.py --write || echo "::warning::ZIP U02 nao passou em verificacao estrutural"
+            python scripts/regions/audit_unova_e05_mapinfos_only.py --write || echo "::warning::MapInfos real nao foi indexado"
+            python scripts/regions/audit_unova_e05_anchored_events.py --write || echo "::warning::Eventos de mapas Unova nao foram analisados"
+            python scripts/regions/audit_unova_source_detail.py --write || echo "::warning::RXDATA real nao pode ser analisado ainda"
+            if [[ -f ".blue-work/unova/audit/u02-rxdata-detail.json" ]]; then
+              python scripts/regions/audit_unova_e05_crosswalk.py --write || echo "::warning::Crosswalk E05 bloqueado"
+            fi
+            python scripts/regions/audit_unova_e06_rights_inventory.py --write || echo "::warning::Inventario de direitos E06 bloqueado"
+          else
+            echo "::warning::Fonte real indisponivel. Nao foi inventariado nenhum mapa doador."
+          fi
+      - name: Relatorio final nao jogavel
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path(".blue-work/unova/audit")
+          p=root/"e04-remote-origin-probe.json"
+          if not p.exists():
+              raise SystemExit("A sondagem nao gerou relatorio; falha do proprio executor")
+          r=json.loads(p.read_text("utf-8"))
+          print("E04_PROVIDER_METADATA_RECEIVED=", bool(r.get("provider_file_info",{}).get("zip")))
+          print("E04_ZIP_DOWNLOADED=",r["zip_downloaded"])
+          print("E04_ZIP_SHA256=",r["zip_sha256"] or "NAO_OBTIDO")
+          print("E04_ZIP_TOTAL_MAPS_ALL_REGIONS=",r["whole_donor_project_map_count"])
+          print("E04_UNOVA_MAPS_VERIFIED=",r["unova_map_count"])
+          print("E04_CREDITS_DOWNLOAD=",r["credits_downloaded"])
+          print("E04_COMPLETE=",r["e04_complete"])
+          print("E04_GATES=",r["errors"])
+          idx=root/"e05-mapinfos-only.json"
+          if idx.exists():
+              o=json.loads(idx.read_text("utf-8"))
+              print("E05_MAPINFOS_ENTRIES=",o["mapinfos_entry_count"])
+              print("E05_UNOVA_PARENT_KEYWORD_CANDIDATES=",o["clues"]["anchored_by_unova_parent_name"])
+              print("E05_DIRECT_NAME_MATCH_CANDIDATES=",o["clues"]["direct_name_candidates"])
+              candidates=[(m["source_map_id"],m["name"]) for m in o["maps"] if m["ancestor_unova_or_isshu_keyword"]]
+              print("E05_UNOVA_ANCHORED_FIRST40=",candidates[:40])
+          else:
+              print("E05_MAPINFOS_INDEX=NAO_GERADO")
+          event_report=root/"e05-anchored-events.json"
+          if event_report.exists():
+              e=json.loads(event_report.read_text("utf-8"))
+              print("E05_PARENT_CONTEXT_MAPS=",e["unova_parent_context_map_files"])
+              print("E05_PARSABLE_MAPS=",e["parsed_map_count"])
+              print("E05_UNPARSED_MAPS=",e["unparsed_map_count"])
+              print("E05_PARSED_EVENTS=",e["total_event_containers_parsed"])
+              print("E05_COMMAND_COUNTS=",e["command_totals_parsed"])
+              print("E05_MAPS_WITH_EVENTS=",[(m["source_map_id"],m["name"],m.get("event_containers"))
+                    for m in e["maps"] if m.get("event_containers")][:35])
+          print("STATUS_REGIAO=PLANNED; GAME_EXE=NAO_TESTADO; INSTALACAO=PROIBIDA")
+          PY
+      - name: Descartar bytes de terceiros antes de publicar metadados
+        if: always()
+        shell: bash
+        run: |
+          rm -rf .blue-work/unova/sources
+          echo "Somente relatorios JSON sem assets de terceiros podem virar artefato."
+      - name: Publicar apenas relatorios inertes (nunca ZIP/Audio/Imagens)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unova-e04-metadata-only
+          path: .blue-work/unova/audit/*.json
+          if-no-files-found: warn
+          retention-days: 7
