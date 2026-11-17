@@ -30,7 +30,7 @@ HEX64=re.compile(r"[0-9a-f]{64}\Z")
 V1_FIELDS=frozenset({"format","storage_version","region","campaign","scope",
     "state_schema_version","ledger_schema_version","canonical_sha256","payload"})
 V0_FIELDS=frozenset({"format","storage_version","region","campaign","scope",
-    "migration_gate","state","events","reward_intents"})
+    "migration_gate","state","events","reward_intents","history_sha256"})
 
 def deny(reason:str)->None:
     raise ValueError("UNOVA_G01_4_BLOCKED: "+reason)
@@ -172,6 +172,13 @@ def _replay_legacy(doc:dict,ctx:tuple)->dict:
     for key,value in expected.items():
         if type(doc[key]) is not type(value) or doc[key]!=value:
             deny("not an explicitly marked synthetic legacy fixture: "+key)
+    history_digest=doc["history_sha256"]
+    if (not isinstance(history_digest,str) or
+        not HEX64.fullmatch(history_digest)):
+        deny("legacy history checksum invalid")
+    contents={key:doc[key] for key in ("state","events","reward_intents")}
+    if hashlib.sha256(_canonical(contents)).hexdigest()!=history_digest:
+        deny("legacy history checksum mismatch")
     state=doc["state"]
     # Reject state schema v0/native saves: only STORAGE v0 is migratable.
     machine.validate_progression(state,c,r)
@@ -228,6 +235,8 @@ def make_legacy_fixture(envelope:dict,ctx:tuple)->bytes:
                     for key in ("event_key","starter_choice","outcome")}
                    for receipt in envelope["event_receipts"]],
          "reward_intents":copy.deepcopy(envelope["reward_intents"])}
+    doc["history_sha256"]=hashlib.sha256(_canonical(
+        {key:doc[key] for key in ("state","events","reward_intents")})).hexdigest()
     # Do not create an un-migratable fixture in the first place.
     _replay_legacy(doc,ctx)
     encoded=_canonical(doc)
