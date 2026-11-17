@@ -6,6 +6,9 @@ on:
     paths:
       - 'scripts/android/repack_multiregion_hotfix.py'
       - 'scripts/android/update_client.py'
+      - 'scripts/battle_lab/Mobile.rb'
+      - 'scripts/android/package.py'
+      - 'tests/android_version_menu.rb'
       - 'scripts/android/publish_updates.py'
       - '.github/workflows/android-multiregion-repack.yml'
 permissions:
@@ -26,6 +29,8 @@ jobs:
         run: |
           python -m py_compile scripts/android/repack_multiregion_hotfix.py scripts/android/update_client.py
           ruby -c scripts/battle_polish/RegionStart.rb
+          ruby -c scripts/battle_lab/Mobile.rb
+          ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
           python -m unittest discover -s tests -p test_android_updates.py -v
       - name: Baixar ZIP ORIGINAL auditado e hashes da release integrada
@@ -58,6 +63,12 @@ jobs:
             [.[] | select(.draft == false and (.tag_name | startswith("android-multiregion-"))) |
             select([.assets[].name] | index("Blue-Android-Decades-Kanto-Hoenn.update.json")) |
             .tag_name][:4][]')
+          # Exact Android installation observed on-device: 5d0cc84.
+          # Without this historical manifest the game needlessly asks for 1.4 GB.
+          prior="android-multiregion-hotfix-2-5d0cc84"
+          mkdir -p "dist/previous/$prior"
+          gh release download "$prior" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$prior"
+          args+=(--previous-manifest "dist/previous/$prior/Blue-Android-Decades-Kanto-Hoenn.update.json")
           python scripts/android/publish_updates.py "${args[@]}"
           cd dist
           sha256sum Blue-Android-Decades-Kanto-Hoenn.zip > Blue-Android-Decades-Kanto-Hoenn.zip.sha256
@@ -75,5 +86,5 @@ jobs:
           gh release create "$TAG" "${assets[@]}" \
             --target "$GITHUB_SHA" \
             --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
-            --notes "ZIP completo baseado na release auditada android-multiregion-15-125155e. Inclui Kanto (142 mapas), Hoenn (199 mapas), RegionStart.rb corrigido no cache do JoiPlay e novo ATUALIZAR-ANDROID.py com protecao contra downgrade. Metadados e SHA-256 validados. Fazer backup dos saves antes de trocar a instalacao. Teste em JoiPlay real ainda pendente." \
+            --notes "ZIP auditado de Decades + Kanto + Hoenn, com fossils de Kanto e novo menu Versao do jogo (titulo e pausa). Exibe revisao GitHub, data/hora UTC do build e horario real aplicado pelo atualizador. Patches incrementais sem backup incluem a revisao 5d0cc84 do celular. Saves nao modificados; teste em JoiPlay real ainda pendente." \
             --prerelease
