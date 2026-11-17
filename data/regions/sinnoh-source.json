@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "region": "SINNOH",
-  "status": "REPO_BASELINE_PREPARED_SOURCE_PENDING",
+  "status": "DONOR_RECEIVED_LOCAL_SOURCE_AUDITED_NOT_INSTALLABLE",
   "reference_game": "Pokémon Platinum",
   "alternate_references": [
     "Diamond",
@@ -109,8 +109,8 @@
     "audio_redistribution_approved": false,
     "public_assets_allowed": false,
     "map_manifest": {},
-    "actual_source_rxdata_scanned": false,
-    "source_static_transfers_audited": false,
+    "actual_source_rxdata_scanned": true,
+    "source_static_transfers_audited": true,
     "map_id_capacity_studied_with_real_game": false,
     "id_remap_preview_implemented": true,
     "id_remap_applied_to_game": false,
@@ -199,5 +199,15 @@
     "docs/SINNOH_PLANO_IMPLEMENTACAO_PASSO_A_PASSO.md",
     "docs/SINNOH_CODEX_PENDENCIAS.md"
   ],
-  "note": "A configuração declara bloqueios e fontes para inspeção. Não serve como autorização para importar assets ou indicador de uma região jogável."
+  "note": "Fonte real foi recebida e auditada estaticamente em chat: 54 terrenos Sinnoh, 22 mapas vazios; motor/jogo, direitos e game/Data ainda ausentes. Instalação Sinnoh permanece bloqueada.",
+  "received_real_source": {
+    "manifest": "data/regions/sinnoh-b00-actual-source.json",
+    "audit": "docs/SINNOH_B00_FONTE_REAL_AUDITORIA_2026_11_17.md",
+    "archive_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+    "map_tree_count": 76,
+    "terrain_maps": 54,
+    "blank_maps": 22,
+    "source_rights_verified": false,
+    "editable_mapped_sinnoh_game_installed": false
+  }
 }

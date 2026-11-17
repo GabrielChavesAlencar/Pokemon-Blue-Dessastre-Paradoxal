@@ -1,6 +1,6 @@
 # Sinnoh — Barra B / Etapa 00: receber os arquivos reais
 
-**Status:** aguardando upload do ZIP e dos créditos pelo usuário. **B = 0/13; C = 0/13; D = 0/13.** Essa etapa não instala Sinnoh nem executa Game.exe/JoiPlay.
+**Atualização (17/11/2026):** ZIP e créditos **recebidos e auditados**. Veja o [inventário real de 76 mapas](SINNOH_B00_FONTE_REAL_AUDITORIA_2026_11_17.md). **B/C/D = 0/13**, pois há 22 mapas vazios, faltam interiores/warps/NPCs e direitos de uso por recurso; Game.exe/JoiPlay não foram executados.
 
 ## Fonte principal indicada para avaliação
 
