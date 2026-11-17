@@ -15,6 +15,7 @@ import {loadStrongestTeams,leagueIndex,leagueDetail} from './league.js';
 import {bindAndroidRelease} from './android-release.js';
 import {loadPendingRegions,loadTrainerBindings,pendingBlocks,pendingPage,pendingOnlyRegion,trainerBindingsPanel} from './pending.js';
 import {loadSinnohGuide,sinnohGuidePage} from './sinnoh-guide.js';
+import {loadSinnohImplementation} from './sinnoh-implementation.js';
 const sinnohSearchOptions=url=>({busca:url.searchParams.get('busca')||'',pendencia:url.searchParams.get('pendencia')||'todas',tipo:url.searchParams.get('tipo')||'todos'});
 
 const main=document.getElementById('main');
@@ -67,8 +68,8 @@ async function render(scroll=false){
       main.innerHTML=pendingPage(pending,(url.searchParams.get('regiao')||'kanto').toUpperCase(),bindings);
       setPage('Pendências das regiões');
     }else if(route==='sinnoh'){
-      const guide=await loadSinnohGuide();if(id!==renderId)return;
-      main.innerHTML=sinnohGuidePage(guide,url.searchParams.get('aba')||'visao',url.searchParams.get('fase')||'all',sinnohSearchOptions(url));
+      const [guide,implementation]=await Promise.all([loadSinnohGuide(),loadSinnohImplementation()]);if(id!==renderId)return;
+      main.innerHTML=sinnohGuidePage(guide,url.searchParams.get('aba')||'visao',url.searchParams.get('fase')||'all',sinnohSearchOptions(url),implementation);
       setPage('Guia de Sinnoh');
     }else if(route==='balanceamento'){
       const data=await loadKanto();if(id!==renderId)return;
@@ -76,8 +77,8 @@ async function render(scroll=false){
       setPage('Balanceamento de Kanto');
     }else if(route==='liga'){
       if(!parts[1] && url.searchParams.get('regiao')==='sinnoh'){
-        const guide=await loadSinnohGuide();if(id!==renderId)return;
-        main.innerHTML=sinnohGuidePage(guide,'liga');
+        const [guide,implementation]=await Promise.all([loadSinnohGuide(),loadSinnohImplementation()]);if(id!==renderId)return;
+        main.innerHTML=sinnohGuidePage(guide,'liga','all',{},implementation);
         setPage('Liga de Sinnoh');
       }else{
       const db=await loadStrongestTeams();if(id!==renderId)return;
@@ -99,9 +100,9 @@ async function render(scroll=false){
       const region=url.searchParams.get('regiao');
       const pending=await loadPendingRegions();if(id!==renderId)return;
       if(region==='sinnoh'){
-        const guide=await loadSinnohGuide();if(id!==renderId)return;
+        const [guide,implementation]=await Promise.all([loadSinnohGuide(),loadSinnohImplementation()]);if(id!==renderId)return;
         const tab={localizacoes:'areas',treinadores:'treinadores',chefes:'ginasios'}[route];
-        main.innerHTML=sinnohGuidePage(guide,tab,url.searchParams.get('fase')||'all',sinnohSearchOptions(url));
+        main.innerHTML=sinnohGuidePage(guide,tab,url.searchParams.get('fase')||'all',sinnohSearchOptions(url),implementation);
       }else{
         const data=await loadPilotCatalog(region);if(id!==renderId)return;
         main.innerHTML=pilotIndex(data,route);
