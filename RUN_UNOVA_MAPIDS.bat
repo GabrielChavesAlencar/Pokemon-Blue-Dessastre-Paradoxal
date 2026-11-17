@@ -1363,7 +1363,7 @@ try:
             or not isinstance(content,str)):
             raise ValueError("Arquivo incorreto no bundle")
         dest=root.joinpath(*path.parts)
-        for parent in [root_base,root_base/"PokemonBlueUnovaMapids",*list(reversed(dest.parents))[:-1]]:
+        for parent in [root_base,root_base/"PokemonBlueUnovaMapids",*list(reversed(dest.parents))]:
             if parent.is_symlink():
                 raise ValueError("Caminho de cache contem link")
         if dest.is_symlink():
