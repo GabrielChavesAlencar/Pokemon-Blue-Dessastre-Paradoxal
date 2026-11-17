@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "707194084b33d52190c3c5aab46b34009de42fa6",
+      "date": "2026-11-17T10:12:21-03:00",
+      "title": "feat(sinnoh): S31 roteiro 44 casos e aceite tecnico offline, Barra A 32/32",
+      "category": "Novidades"
+    },
+    {
       "sha": "3d8c64e46c1162eff6314812f31695ac3afcbbe4",
       "date": "2026-11-17T10:01:07-03:00",
       "title": "feat(sinnoh): S14 três iniciais por Poké Bolas físicas em código (31/32)",
