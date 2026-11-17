@@ -139,12 +139,11 @@ class A11Tests(unittest.TestCase):
         self.assertFalse(r["can_install"])
         self.assertFalse(r["game_exe_tested"])
         self.assertFalse(r["android_tested"])
-    def test_15_corrupt_script_has_explicit_issue(self):
+    def test_15_corrupt_script_blocks_upstream_provenance(self):
         (self.data/"Scripts.rxdata").write_bytes(b"\x00invalid")
-        r=self.run_a11()
-        p=r["computed_reference_review"]
-        self.assertGreater(p["errors_count"],0)
-        self.assertIn("SCRIPT_TRIAGE_INCOMPLETE_OR_DIFFERENT",r["review_flags"])
+        # A07/A08 must reject the source before A11 can imply a clean scan.
+        with self.assertRaises(ValueError):
+            self.run_a11()
     def test_16_all_matrix_categories_get_explicit_zero_counts(self):
         r=self.run_a11();counts=r["reservation_preflight"]["status_counts"]
         self.assertEqual(set(counts),set(a11.KNOWN_STATUSES))
