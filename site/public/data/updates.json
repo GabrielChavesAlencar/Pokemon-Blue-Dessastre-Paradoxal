@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0b3076800c3b95bf2cefa998827a8b5b3134ab32",
+      "date": "2026-11-17T17:14:56-03:00",
+      "title": "docs(sinnoh): add GitHub-only post-B09 delivery pipeline and native gates",
+      "category": "Documentação"
+    },
+    {
       "sha": "a3ac5067959cc5020a0eefaa506a06751f9bd8eb",
       "date": "2026-11-17T17:08:27-03:00",
       "title": "Unova G01.4: codec de estado sintético e migração explícita com testes",
