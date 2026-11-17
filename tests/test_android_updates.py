@@ -24,14 +24,14 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.a = "a" * 40
         self.b = "b" * 40
 
-    def build_zip(self, revision, content, kanto_data=None):
+    def build_zip(self, revision, content, kanto_data=None, updater=b"# helper\\n"):
         folder = self.root / revision
         folder.mkdir()
         file = folder / "Data/Map001.rxdata"
         file.parent.mkdir()
         file.write_bytes(content)
         game = self.root / (revision + ".zip")
-        files = {"Data/Map001.rxdata": file}
+        files = {"Data/Map001.rxdata": file, "ATUALIZAR-ANDROID.py": updater}
         if kanto_data is not None:
             files["Kanto pilot.json"] = kanto_data
         marker = installed_manifest("kanto", revision, files)
@@ -40,7 +40,7 @@ class AndroidUpdatesTest(unittest.TestCase):
             if kanto_data is not None:
                 z.writestr("Pokemon-Blue-Kanto-Android/Kanto pilot.json", kanto_data)
             z.writestr("Pokemon-Blue-Kanto-Android/Data/blue-update.json", marker)
-            z.writestr("Pokemon-Blue-Kanto-Android/ATUALIZAR-ANDROID.py", "# helper\n")
+            z.writestr("Pokemon-Blue-Kanto-Android/ATUALIZAR-ANDROID.py", updater)
         return game, json.loads(marker)
 
     def test_rejects_saves_and_traversal(self):
@@ -247,6 +247,30 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertEqual((game / "Data/Map001.rxdata").read_bytes(), b"NEW MAP")
         self.assertEqual((game / "Data/File A.rxdata").read_bytes(), b"IMPORTANT SAVE")
 
+
+    def test_migrate_legacy_immutable_updater_by_small_patch(self):
+        _, previous = self.build_zip(self.a, b"OLD")
+        new, _ = self.build_zip(self.b, b"NEW", updater=b"# new updater\\n")
+        previous["immutable"]["ATUALIZAR-ANDROID.py"] = previous["files"].pop("ATUALIZAR-ANDROID.py")
+        previous_file = self.root / "legacy.json"
+        previous_file.write_text(json.dumps(previous))
+        archive = self.root / "Blue-Android-Kanto-Piloto.zip"
+        new.rename(archive)
+        published = publish(archive, "kanto", previous_file)
+        self.assertIsNotNone(published["patch"])
+        manifest = json.loads((self.root / "Blue-Android-Kanto-Piloto.update.json").read_text())
+        game = self.root / "legacy"
+        (game / "Data").mkdir(parents=True)
+        (game / "ATUALIZAR-ANDROID.py").write_bytes(b"# helper\\n")
+        (game / "Data/Map001.rxdata").write_bytes(b"OLD")
+        (game / "Data/blue-update.json").write_text(json.dumps(previous))
+        update = self.root / published["patch"]["asset"]
+        changed, removed, backup = apply_patch(game, read_installed(game), manifest, update)
+        self.assertEqual((changed, removed, backup), (2, 0, None))
+        self.assertEqual((game / "ATUALIZAR-ANDROID.py").read_bytes(), b"# new updater\\n")
+        self.assertNotIn("ATUALIZAR-ANDROID.py", read_installed(game)["immutable"])
+        self.assertIn("ATUALIZAR-ANDROID.py", read_installed(game)["files"])
+        self.assertFalse((game / ".blue-android-update-backups").exists())
 
     def test_interrupted_patch_resume_does_not_rewrite_existing_new_file(self):
         old, old_marker = self.build_zip(self.a, b"OLD")
