@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "3d8c64e46c1162eff6314812f31695ac3afcbbe4",
+      "date": "2026-11-17T10:01:07-03:00",
+      "title": "feat(sinnoh): S14 três iniciais por Poké Bolas físicas em código (31/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "56e71431437e12ac4818ab61defa50a64730446d",
       "date": "2026-11-17T09:50:41-03:00",
       "title": "feat(sinnoh): S13 Rowan Barry checkpoints seguros em código (30/32)",
