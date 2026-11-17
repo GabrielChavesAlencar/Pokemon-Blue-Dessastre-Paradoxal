@@ -78,8 +78,9 @@
         {
           "id": "G02.3",
           "title": "Modelar Elite Four, N, Ghetsis e créditos",
-          "status": "pending",
-          "acceptance": "Batalhas, derrotas, retornos e clímax White com recompensas únicas"
+          "status": "done",
+          "acceptance": "Batalhas, derrotas, retornos e clímax White com recompensas únicas",
+          "evidence": "scripts/regions/audit_unova_g02_elite_finale.py"
         },
         {
           "id": "G02.4",
