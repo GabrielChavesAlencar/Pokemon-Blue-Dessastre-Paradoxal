@@ -17,8 +17,15 @@ import stat
 import sys
 import zipfile
 
+try:
+    from scripts.regions.audit_sinnoh_twinleaf_events import audit as audit_event_schema
+except ModuleNotFoundError:
+    # Executar diretamente: python scripts/regions/audit_sinnoh_android_ch20.py
+    from audit_sinnoh_twinleaf_events import audit as audit_event_schema
+
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE = "data/regions/sinnoh-twinleaf-events.json"
+SCHEMA = "data/regions/sinnoh-twinleaf-events.schema.json"
 LEDGER = "data/regions/sinnoh-progress.json"
 MAX_FILES = 60000
 MAX_UNCOMPRESSED = 12 * 1024**3
@@ -54,6 +61,15 @@ def checklist(root: Path = ROOT) -> list[dict]:
     """IDs identicos aos produzidos pelo auditor nativo; sem MapIDs inventados."""
     doc = safe_document(root, TEMPLATE)
     ledger = safe_document(root, LEDGER)
+    schema_file = root / SCHEMA
+    if schema_file.is_symlink() or not schema_file.is_file():
+        blocked("Schema de Twinleaf ausente ou symlink")
+    # Reusar o auditor CH06 (24 eventos, topologia, sprites, flags e posicoes)
+    # em vez de confiar apenas em contagens ou IDs de eventos.
+    try:
+        audit_event_schema(doc, json.loads(schema_file.read_text("utf-8")))
+    except (ValueError, KeyError, TypeError) as error:
+        blocked("Contrato Twinleaf CH06 invalido: " + str(error))
     work = ledger.get("native_playtest_workstream")
     if (not isinstance(work, dict) or work.get("android_joi_play_tested") is not False
             or work.get("native_qa_approved") is not False
