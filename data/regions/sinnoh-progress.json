@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 8,
+    "done": 9,
     "partial": 7,
-    "pending": 17,
-    "percent_complete": 25,
-    "percent_with_partial_not_counted": 25,
+    "pending": 16,
+    "percent_complete": 28,
+    "percent_with_partial_not_counted": 28,
     "groups": [
       {
         "key": "foundation",
@@ -254,8 +254,8 @@
     {
       "id": "S27",
       "title": "Guias de Sinnoh no site",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S27_GUIAS_PORTAL_ACEITE.md"
     },
     {
       "id": "S28",

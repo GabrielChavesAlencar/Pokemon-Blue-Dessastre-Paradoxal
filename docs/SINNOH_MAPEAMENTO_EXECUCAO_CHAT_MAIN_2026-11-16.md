@@ -6,7 +6,7 @@
 **Fonte de progresso:** [`data/regions/sinnoh-progress.json`](../data/regions/sinnoh-progress.json), objeto `chat_direct_workstream`.  
 **Painel:** [`SINNOH_PROGRESSO.md`](SINNOH_PROGRESSO.md), **Barra E**.
 
-> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento pré-existente continua na Barra A (8/32), e a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
+> A Barra E mede **novas entregas verificáveis na main**, não porcentagem de Sinnoh jogável. Ferramenta para importar mapas ≠ mapa importado; handler Ruby ≠ evento testado no Game.exe. O desenvolvimento (Barra A) soma 9/32 após a S27 web; a aprovação técnica/jogável/nativa continua 0/13 até provas reais.
 
 ## 1. Regra de execução do trabalho pelo chat
 
@@ -137,6 +137,10 @@ Legenda: **GitHub** = pode publicar código/dados/docs completos aqui; **Misto**
 - **Proteções:** [`SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md`](SINNOH_FASE_03_CONCILIAR_PILOTO_E_QA_BARRY.md) e [`SINNOH_CODEX_PENDENCIAS.md`](SINNOH_CODEX_PENDENCIAS.md).
 - **Portal:** [`site/public/data/regions.json`](../site/public/data/regions.json), [`site/public/data/pending-regions.json`](../site/public/data/pending-regions.json).
 - **Testes:** `tests/test_sinnoh_*.py`, `tests/sinnoh_*.rb` e `tests/title_kanto_runtime.rb` (testes de execução fictícia não equivalem a validação em Game.exe).
+
+### S27 — Guias Sinnoh no site (Barra A concluída)
+
+A [S27](SINNOH_S27_GUIAS_PORTAL_ACEITE.md) foi concluída no escopo do portal web: as páginas e referências de Sinnoh já estão disponíveis nos módulos CH17–CH18, com navegação, pesquisas e rótulos honestos de `planned`; o [teste adicional de aceite](../site/tests/sinnoh-s27-development.test.mjs) confirma que 8 abas, áreas, treinadores, ginásios, Liga e HMs são dados de referência e não eventos instalados. **Barra A: 9/32 (28%)** após CI e merge; os 44 testes nativos continuam pendentes, B/C/D permanecem 0/13 e Barra E 20/20 (100%).
 
 ## 5. Bloqueios que exigem Windows/Android, Codex local ou fonte fornecida
 
