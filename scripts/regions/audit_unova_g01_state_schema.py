@@ -201,7 +201,16 @@ def validate_contract(contract:dict,schema:dict,areas:dict,events:dict,regions:d
             deny("JSON Schema invents native coordinate")
     if chk["properties"]["verified_in_game"].get("const") is not False:
         deny("JSON Schema falsely approves native checkpoint")
-    validate_state(contract["default_state"],contract,areas)
+    initial=contract["default_state"]
+    if (not isinstance(initial,dict) or
+        initial.get("current_chapter")!=chapter_keys[0] or
+        initial.get("flags")!={} or initial.get("missions")!={} or
+        initial.get("checkpoint")!={
+            "last_story_area_key":None,"last_heal_center_area_key":None,
+            "last_safe_area_key":None,"map_id":None,"x":None,"y":None,
+            "verified_in_game":False}):
+        deny("default state must begin empty, without native map data")
+    validate_state(initial,contract,areas)
     return {"phase":"G01.1","state_schema_version":1,"chapters":len(chapter_keys),
             "missions":len(mission_keys),"flags":len(flag_keys),
             "source_areas":len(area_keys),"source_u07_events":len(event_keys),
