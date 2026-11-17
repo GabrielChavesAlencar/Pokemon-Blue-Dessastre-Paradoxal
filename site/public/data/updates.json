@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b653ff60b3f4160928bc2f9beb2442b276c58e22",
+      "date": "2026-11-16T21:00:26-03:00",
+      "title": "feat(sinnoh): CH20 auditor estatico JoiPlay e 44 casos sem MapIDs inventados",
+      "category": "Novidades"
+    },
+    {
       "sha": "3c87298eddfd81e899b05cda1a36edfe21033ff4",
       "date": "2026-11-16T20:57:06-03:00",
       "title": "docs(sinnoh): consolidar CH19 parcial no mapeamento da Barra E",
