@@ -440,6 +440,32 @@ VIRIDIAN_MART = "BlueKantoPilot.viridian_mart"
 # when its event-id argument changes (e.g. one-shot item persistence).
 KANTO_MOONSTONE_CALLBACK = 'BlueKantoPilot.pickup(:MOONSTONE, "KANTO_036_018", 18)'
 
+# Discover *only* the two original Mt. Moon fossil item events. They must be
+# grounded in a real FRLG event name or an explicit item-grant script; an NPC
+# merely talking about fossils is never an item anchor.
+FOSSIL_ITEM_SYMBOLS = ("HELIXFOSSIL", "DOMEFOSSIL")
+FOSSIL_REWARD_SCRIPT = re.compile(
+    r"(?i)\\b(?:pbItemBall|pbReceiveItem|pbAddItem)\\s*\\(\\s*:?(HELIXFOSSIL|DOMEFOSSIL)\\b"
+)
+
+
+def source_mt_moon_fossil(event):
+    name = re.sub(r"[^A-Z]", "", text(event.attrs["@name"]).upper())
+    match = re.fullmatch(r"(?:ITEM)?(HELIXFOSSIL|DOMEFOSSIL)", name)
+    candidates = {match.group(1)} if match else set()
+    for page in event.attrs["@pages"]:
+        for op in page.attrs["@list"]:
+            params = op.attrs["@parameters"]
+            if op.attrs["@code"] not in (111, 355, 655) or not params:
+                continue
+            for value in params:
+                if not isinstance(value, (str, bytes)):
+                    continue
+                for item in FOSSIL_REWARD_SCRIPT.findall(text(value)):
+                    candidates.add(item.upper())
+    return next(iter(candidates)) if len(candidates) == 1 else None
+
+
 
 def write_map(path, obj, classes=()):
     path.write_bytes(serialize(obj, classes))
@@ -903,6 +929,22 @@ def install_events(source, target, mapping):
                 scripts[event_id] = (
                     f"BlueKantoPilot.harbor_gate({mapping[72]}, 9, 7)"
                 )
+        # Source-based props at Mt. Moon B2F. Compiled callbacks do not run
+        # the foreign FRLG quest or trust its global switches. Fresh imports
+        # show the actual fossils; installed older maps use Miguel's fallback.
+        fossil_anchors = {}
+        if original == 38:
+            for candidate_id, candidate in events.items():
+                if candidate_id in TRAINERS.get(original, {}):
+                    continue
+                item = source_mt_moon_fossil(candidate)
+                if item:
+                    if item in fossil_anchors.values():
+                        raise ValueError(f"Duplicate {item} fossil anchor in Map038")
+                    fossil_anchors[candidate_id] = item
+                    scripts[candidate_id] = (
+                        f"BlueKantoPilot.choose_moon_fossil(:{item})"
+                    )
         for event_id, spec in TRAINERS.get(original, {}).items():
             kind, name, *versions = spec
             version = versions[0] if versions else 0
@@ -1137,6 +1179,31 @@ def install_events(source, target, mapping):
                 selected[event_id] = replacement
                 continue
             if event_id in scripts:
+                if original == 38 and event_id in fossil_anchors:
+                    # Keep the native fossil icon/tile, original coordinates,
+                    # EventID and page interaction, not an item-ball pickup.
+                    item = fossil_anchors[event_id]
+                    original_graphic = event.attrs["@pages"][0].attrs["@graphic"]
+                    filename = original_graphic.attrs["@character_name"]
+                    prop = new_event(
+                        event, [command(355, scripts[event_id].encode("ascii"))],
+                        0, actor(event) if filename else b"")
+                    prop.attrs["@name"] = f"Kanto {'Helix' if item == 'HELIXFOSSIL' else 'Dome'} Fossil".encode("ascii")
+                    if not filename:
+                        prop.attrs["@pages"][0].attrs["@graphic"] = copy.deepcopy(original_graphic)
+                    prop.attrs["@pages"][0].attrs["@through"] = False
+                    prop.attrs["@pages"][0].attrs["@direction_fix"] = True
+                    hidden = copy.deepcopy(prop.attrs["@pages"][0])
+                    hidden.attrs["@condition"].attrs.update({
+                        "@self_switch_valid": True, "@self_switch_ch": b"A",
+                    })
+                    hidden.attrs["@graphic"].attrs.update({
+                        "@character_name": b"", "@tile_id": 0,
+                    })
+                    hidden.attrs.update({"@through": True, "@list": [command(0)]})
+                    prop.attrs["@pages"].append(hidden)
+                    selected[event_id] = prop
+                    continue
                 floor_trigger = ((original == 64 and event_id in (9, 29, 30)) or
                                  (original == 153 and event_id == 3) or
                                  (original == 189 and event_id == 1) or
