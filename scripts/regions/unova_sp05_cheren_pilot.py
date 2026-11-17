@@ -403,11 +403,96 @@ def stage(args) -> dict:
     return output
 
 
+
+def choose_gui(project: Path):
+    """Windows file pickers; the ordinary CLI remains available for tests."""
+    try:
+        import tkinter as tk
+        from tkinter import filedialog, messagebox, simpledialog
+        root=tk.Tk()
+        root.withdraw()
+        messagebox.showinfo("Cheren SP05 - apenas QA privado",
+            "Selecione um ZIP de sprites já auditado no SP03 e um relatório SP04.\n"
+            "São necessários uma referência do Decades e documento de permissão.\n"
+            "Nenhum arquivo será instalado no Game.exe nem no Blue-Story.",
+            parent=root)
+        zip_path=filedialog.askopenfilename(parent=root,title="ZIP original com sprite de Cheren",
+                   filetypes=[("ZIP de sprites","*.zip")])
+        if not zip_path:
+            root.destroy()
+            return None
+        sp03_path=filedialog.askopenfilename(parent=root,title="Relatório privado SP03: sprites-....json",
+                  initialdir=str(project/npc.SP03_DIR),
+                  filetypes=[("Relatório JSON","*.json")])
+        if not sp03_path:
+            root.destroy()
+            return None
+        sp04_path=filedialog.askopenfilename(parent=root,title="Relatório privado SP04: npc-sp04-....json",
+                  initialdir=str(project/npc.SP04_DIR),
+                  filetypes=[("Relatório JSON","*.json")])
+        if not sp04_path:
+            root.destroy()
+            return None
+        sp04_report=npc.read_json(Path(sp04_path))
+        cheren=[row for row in sp04_report.get("npcs",[])
+                if isinstance(row,dict) and row.get("npc_key")=="UNOVA_NPC_CHEREN"]
+        candidates=cheren[0].get("sprite_candidates",[]) if len(cheren)==1 else []
+        if not candidates:
+            messagebox.showerror("Cheren sem candidatos",
+                "SP04 ainda não encontrou um sprite candidato para Cheren neste pack.",
+                parent=root)
+            root.destroy()
+            return None
+        menu="\n".join(str(i+1)+" - "+x["source_path_candidate"]
+                        for i,x in enumerate(candidates[:30]))
+        selection=simpledialog.askinteger("Selecionar Cheren",
+                "Escolha um candidato (requer verificação visual posterior):\n"+menu,
+                minvalue=1,maxvalue=min(len(candidates),30),parent=root)
+        if selection is None:
+            root.destroy()
+            return None
+        member=candidates[selection-1]["source_path_candidate"]
+        baseline=filedialog.askopenfilename(parent=root,
+                title="Sprite PNG de referência: Decades/Graphics/Characters",
+                filetypes=[("PNG de personagem","*.png")])
+        if not baseline:
+            root.destroy()
+            return None
+        proof=filedialog.askopenfilename(parent=root,
+                title="Documento local de permissão/autoria (não verificado automaticamente)",
+                filetypes=[("Comprovante TXT ou PDF","*.txt *.pdf"),("Todos os arquivos","*.*")])
+        if not proof:
+            root.destroy()
+            return None
+        holder=simpledialog.askstring("Autor dos recursos",
+                "Informe o nome do autor indicado no comprovante:",parent=root)
+        if not holder:
+            root.destroy()
+            return None
+        url=simpledialog.askstring("URL de origem",
+                "Informe URL HTTPS da publicação original do autor:",
+                initialvalue="https://eeveeexpo.com/resources/25/",parent=root)
+        root.destroy()
+        if not url:
+            return None
+        return {
+            "zip":Path(zip_path),"sp03":Path(sp03_path),
+            "sp04":Path(sp04_path),"member":member,
+            "reference_sprite":Path(baseline),"rights_evidence":Path(proof),
+            "rights_holder":holder,"source_url":url,
+        }
+    except (ImportError,RuntimeError,OSError) as exc:
+        fail("seletor grafico indisponível: "+str(exc))
+
+
+
 def main(argv=None) -> int:
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project",type=Path,default=ROOT)
     parser.add_argument("--stage",action="store_true",
                         help="staging somente em .blue-work/unova/qa, nunca no jogo")
+    parser.add_argument("--gui",action="store_true",
+                        help="selecionar por janelas do Windows todos os insumos de QA")
     parser.add_argument("--zip",type=Path)
     parser.add_argument("--member",type=str)
     parser.add_argument("--sp03",type=Path)
@@ -418,6 +503,16 @@ def main(argv=None) -> int:
     parser.add_argument("--source-url",type=str)
     args=parser.parse_args(argv)
     try:
+        if args.gui:
+            if args.stage:
+                fail("use apenas --gui para a seleção interativa")
+            options=choose_gui(Path(args.project).absolute())
+            if options is None:
+                print("UNOVA_SP05_CANCELADO: nenhum arquivo do jogo alterado")
+                return 2
+            for name,value in options.items():
+                setattr(args,name,value)
+            args.stage=True
         result=stage(args) if args.stage else plan(args.project)
         print(json.dumps(result,ensure_ascii=False,indent=2))
         return 0
