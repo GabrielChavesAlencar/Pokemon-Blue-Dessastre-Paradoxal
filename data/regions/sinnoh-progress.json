@@ -10,11 +10,11 @@
   },
   "development": {
     "total": 32,
-    "done": 20,
+    "done": 21,
     "partial": 5,
-    "pending": 7,
-    "percent_complete": 62,
-    "percent_with_partial_not_counted": 62,
+    "pending": 6,
+    "percent_complete": 65,
+    "percent_with_partial_not_counted": 65,
     "groups": [
       {
         "key": "foundation",
@@ -212,8 +212,8 @@
     {
       "id": "S20",
       "title": "Cyrus, Spear Pillar e Giratina",
-      "status": "pending",
-      "evidence_path": null
+      "status": "done",
+      "evidence_path": "docs/SINNOH_S20_CYRUS_DISTORTION_GIRATINA_ACEITE.md"
     },
     {
       "id": "S21",
