@@ -221,9 +221,16 @@ class SinnohS07ReconcileTests(unittest.TestCase):
 
     def test_19_status_only_code_and_native_gates_unchanged(self):
         p=json.loads((ROOT/"data/regions/sinnoh-progress.json").read_text("utf-8"))
-        self.assertEqual((p["development"]["done"],p["development"]["partial"],
-                          p["development"]["pending"],p["development"]["percent_complete"]),
-                         (29,3,0,90))
+        # S07 engineering stays complete as later story contracts advance.
+        self.assertGreaterEqual(p["development"]["done"],29)
+        self.assertEqual(p["development"]["done"],
+                         sum(x["status"]=="done" for x in p["tasks"]))
+        self.assertEqual(p["development"]["partial"],
+                         sum(x["status"]=="partial" for x in p["tasks"]))
+        self.assertEqual(p["development"]["pending"],
+                         sum(x["status"]=="pending" for x in p["tasks"]))
+        self.assertEqual(p["development"]["percent_complete"],
+                         100*p["development"]["done"]//p["development"]["total"])
         self.assertEqual(next(x["status"] for x in p["tasks"] if x["id"]=="S07"),"done")
         self.assertEqual(p["remap_workstream"]["complete"],6)
         self.assertEqual(p["remap_workstream"]["total"],9)
