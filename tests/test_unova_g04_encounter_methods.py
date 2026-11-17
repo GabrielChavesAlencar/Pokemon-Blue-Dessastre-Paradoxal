@@ -99,9 +99,9 @@ class UnovaG042Tests(unittest.TestCase):
                          ["ANY","SPRING","SUMMER","AUTUMN","WINTER"])
     def test_019_all_versions_white_b_w(self):
         self.assertEqual(self.data["supported_campaign_variants"],["WHITE_BW"])
-    def test_020_35_areas_have_method_questions_only(self):
-        self.assertEqual(self.report["areas_with_candidate_review_methods"],35)
-        self.assertEqual(self.report["areas_without_proven_wild_method"],39)
+    def test_020_34_areas_have_method_questions_only(self):
+        self.assertEqual(self.report["areas_with_candidate_review_methods"],34)
+        self.assertEqual(self.report["areas_without_proven_wild_method"],40)
     def test_021_every_area_has_no_native_slot(self):
         self.assertTrue(all(a["encounter_slots"]==[] for a in self.data["areas"]))
     def test_022_every_area_has_unknown_not_zero_percentage(self):
@@ -163,7 +163,7 @@ class UnovaG042Tests(unittest.TestCase):
         self.assertEqual(self.sample("UNOVA_STRIATON_GYM")["candidate_methods"],[])
     def test_043_liberty_garden_event_only_no_synthetic_spawns(self):
         row=self.sample("UNOVA_LIBERTY_GARDEN")
-        self.assertEqual(row["candidate_methods"],wild.LAND and list(wild.LAND))
+        self.assertEqual(row["candidate_methods"],[])
         self.assertEqual(row["encounter_slots"],[])
     def test_044_unity_tower_event_only_no_synthetic_spawns(self):
         self.assertEqual(self.sample("UNOVA_UNITY_TOWER")["candidate_methods"],[])
