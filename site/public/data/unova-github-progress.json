@@ -71,8 +71,9 @@
         {
           "id": "G02.2",
           "title": "Contratar eventos da campanha e dos oito ginásios",
-          "status": "pending",
-          "acceptance": "Dependências de história, insígnias e variações de Striaton e Opelucid"
+          "status": "done",
+          "acceptance": "Dependências de história, insígnias e variações de Striaton e Opelucid",
+          "evidence": "scripts/regions/audit_unova_g02_gym_story.py"
         },
         {
           "id": "G02.3",
