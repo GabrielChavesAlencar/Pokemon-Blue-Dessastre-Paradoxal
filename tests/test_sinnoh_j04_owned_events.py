@@ -182,7 +182,7 @@ class J04OwnedEventTests(unittest.TestCase):
             "BlueSinnohPilot.rowan_briefcase","BlueSinnohPilot.barry_rival",
             "BlueSinnohPilot.rowan_pokedex",
             "BlueSinnohPilot.choose_starter_from_ball(:TURTWIG)",
-            "BlueSinnohPilot.choose_starter(:CHIMCHAR)",
+            "BlueSinnohPilot.choose_starter_from_ball(:CHIMCHAR)",
             "BlueSinnohPilot.choose_starter(:PIPLUP)",
         })
 
