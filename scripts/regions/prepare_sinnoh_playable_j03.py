@@ -451,10 +451,11 @@ def main(argv=None):
         print("SINNOH_J03_BLOCKED:INVALID_OR_UNVERIFIED_LOCAL_INPUT",file=sys.stderr)
         return 2
     print(json.dumps(result,ensure_ascii=False,indent=2))
-    return 0 if result.get("status") in (
+    allowed = (result.get("status") in (
         "FOUR_MAPS_PRIVATE_PREVIEW_NOT_INSTALLABLE",
-        "LOCAL_PRIVATE_STAGE_HASHES_OK_NOT_NATIVE_APPROVAL") or
-        result.get("mode")=="LOCAL_ROLLBACK" else 2
+        "LOCAL_PRIVATE_STAGE_HASHES_OK_NOT_NATIVE_APPROVAL")
+        or result.get("mode") == "LOCAL_ROLLBACK")
+    return 0 if allowed else 2
 
 if __name__=="__main__":
     raise SystemExit(main())
