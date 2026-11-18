@@ -167,6 +167,21 @@ TRAINERS.update({
     },
 })
 
+# Exact Map053/054 event IDs and trainer PBS names audited from the pinned
+# FRLG V1.1 source. Map039 Gary is handled as a scripted three-lane scene.
+TRAINERS[53] = {
+    1: ("CAMPER", "Ethan"), 2: ("LASS", "Reli"),
+    3: ("YOUNGSTER", "Timmy"), 4: ("LASS", "Ali"),
+    5: ("BUGCATCHER", "Cale"), 7: ("CAMPER", "Shane"),
+}
+TRAINERS[54] = {
+    1: ("HIKER", "Franklin"), 2: ("HIKER", "Wayne"),
+    3: ("HIKER", "Nob"), 6: ("LASS", "Haley"),
+    7: ("YOUNGSTER", "Chad"), 8: ("CAMPER", "Flint"),
+    9: ("YOUNGSTER", "Joey"), 10: ("YOUNGSTER", "Dan"),
+    11: ("PICNICKER", "Kelsey"),
+}
+
 TRAINERS.update({
     61: {
         8: ("BUGCATCHER", "Keigo"), 9: ("PICNICKER", "Nancy"),
@@ -912,6 +927,18 @@ def install_events(source, target, mapping):
                                5: "BlueKantoPilot.safari_guide"},
                          161: {24: "BlueKantoPilot.safari_teeth(24)"},
                          163: {3: "BlueKantoPilot.safari_reward"},
+                         39: {
+                             15: "BlueKantoPilot.cerulean_rival",
+                             32: "BlueKantoPilot.cerulean_rival",
+                             34: "BlueKantoPilot.cerulean_rival",
+                         },
+                         53: {6: "BlueKantoPilot.nugget_bridge_rocket"},
+                         55: {
+                             3: "BlueKantoPilot.bill_request",
+                             4: "BlueKantoPilot.bill_computer",
+                             5: "BlueKantoPilot.bill_reward",
+                             8: "BlueKantoPilot.bill_reward",
+                         },
                          26: {2: "BlueKantoPilot.heal"},
                          34: {2: "BlueKantoPilot.heal"},
                          40: {2: "BlueKantoPilot.heal"},
@@ -1179,6 +1206,57 @@ def install_events(source, target, mapping):
                 selected[event_id] = replacement
                 continue
             if event_id in scripts:
+                if original == 39 and event_id in (15, 32, 34):
+                    # Three source-verified triggers across the north bridge:
+                    # never execute the source's switches 76/81/86 or Ruby.
+                    scene = new_event(event, [
+                        command(355, b"BlueKantoPilot.cerulean_rival"),
+                    ], 2, b"")
+                    done = copy.deepcopy(scene.attrs["@pages"][0])
+                    done.attrs["@condition"].attrs.update({
+                        "@self_switch_valid": True, "@self_switch_ch": b"A"
+                    })
+                    done.attrs.update({"@trigger": 0, "@through": True,
+                                       "@list": [command(0)]})
+                    scene.attrs["@pages"].append(done)
+                    selected[event_id] = scene
+                    continue
+                if original == 53 and event_id == 6:
+                    rocket = new_event(event, [
+                        command(355, b"BlueKantoPilot.nugget_bridge_rocket")
+                    ], 2, actor(event))
+                    done = copy.deepcopy(rocket.attrs["@pages"][0])
+                    done.attrs["@condition"].attrs.update({
+                        "@self_switch_valid": True, "@self_switch_ch": b"A"
+                    })
+                    done.attrs.update({"@trigger": 0,
+                                       "@list": [command(0)]})
+                    rocket.attrs["@pages"].append(done)
+                    selected[event_id] = rocket
+                    continue
+                if original == 55 and event_id in (3, 4, 5, 8):
+                    # Bill is a regional quest, not source switch 87. The
+                    # replacement sprite is visible only after using the PC.
+                    screen = new_event(event, [
+                        command(355, scripts[event_id].encode("ascii"))
+                    ], 0, actor(event) if event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] else b"")
+                    if event_id in (3, 5):
+                        second = copy.deepcopy(screen.attrs["@pages"][0])
+                        second.attrs["@condition"].attrs.update({
+                            "@self_switch_valid": True, "@self_switch_ch": b"A"
+                        })
+                        if event_id == 3:
+                            second.attrs["@graphic"].attrs.update({
+                                "@character_name": b"", "@tile_id": 0
+                            })
+                            second.attrs.update({"@through": True,
+                                                 "@list": [command(0)]})
+                            screen.attrs["@pages"].append(second)
+                        else:
+                            # Page0 stays hidden until the PC sets self-switch A.
+                            screen.attrs["@pages"] = [second]
+                    selected[event_id] = screen
+                    continue
                 if original == 38 and event_id in fossil_anchors:
                     # Keep the native fossil icon/tile, original coordinates,
                     # EventID and page interaction, not an item-ball pickup.
@@ -1513,7 +1591,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 53, 54, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         if source_id in {*range(155, 164), 153}:
             metadata.append("SafariMap = true")
@@ -1570,6 +1648,9 @@ def install_runtime(target, mapping, game):
         ("MOON_B2F", "Mt Moon - B2F", 38, 31, 24),
         ("CERULEAN", "Cerulean City (Center)", 39, 22, 20),
         ("MISTY", "Cerulean Gym (Misty)", 42, 8, 18),
+        ("NUGGET", "Rota 24 - Nugget Bridge", 53, 24, 35),
+        ("BILL_ROUTE", "Rota 25 - caminho do Bill", 54, 48, 12),
+        ("BILL", "Casa do Bill", 55, 7, 8),
         ("ROUTE5", "Route 5 (Underground)", 56, 31, 32),
         ("ROUTE6", "Route 6 (Underground)", 61, 35, 13),
         ("VERMILION", "Vermilion City (Center)", 64, 19, 7),
