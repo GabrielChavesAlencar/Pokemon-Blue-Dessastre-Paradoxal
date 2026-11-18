@@ -55,7 +55,12 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         lines = content.decode().splitlines()
         self.assertEqual(report["source_maps"], 142)
         self.assertEqual(report["preview_maps"], 35)
-        self.assertEqual(report["staged_map_rules"], 75)
+        # Catalogs can gain new source-scoped map rules without becoming playable.
+        # Verify the compiler staged every real rule, not an outdated hard-coded 74.
+        staged_names = [row["map"] for row in self.rules["maps"]]
+        self.assertEqual(len(staged_names), len(set(staged_names)))
+        self.assertTrue(set(staged_names).issubset(set(self.source["maps"].values())))
+        self.assertEqual(report["staged_map_rules"], len(staged_names))
         self.assertEqual(report["staged_battles"], 8)
         self.assertEqual(report["staged_events"], 14)
         self.assertEqual(report["staged_scenes"], 13)
