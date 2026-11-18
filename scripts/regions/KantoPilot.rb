@@ -1029,29 +1029,28 @@ module BlueKantoPilot
     pbMessage(BlueKantoPilot.t("The electric lock is active. Find two keys in the trash cans.", "A trava elétrica está ativa. Encontre duas chaves nas lixeiras."))
   end
 
-  # TEMPORARY phase 08 story bridge: Bill's canonical S.S. Ticket event is
-  # outside the installed route until the Cerulean north passage is audited.
-  # Only players with Cascade may claim a ticket; never award it more than once.
+  # Route25's real Bill quest now controls new tickets. Existing players
+  # with an already issued regional pass keep it; no save flag is revoked.
   def self.ticketmaster
-    if !BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
-      pbMessage(BlueKantoPilot.t("Harbor clerk: Earn the Cascade Badge in Cerulean first.", "Porto: Primeiro conquiste a Cascade Badge em Cerulean."))
-      return
+    unless BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
+      pbMessage(t("Harbor clerk: Earn the Cascade Badge in Cerulean first.",
+                  "Porto: conquiste primeiro a Cascade Badge em Cerulean."))
+      return false
     end
-    if progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
+    if progress["pilot_ss_ticket"] ||
+       (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
       progress["pilot_ss_ticket"] = true
-      pbMessage(BlueKantoPilot.t("Harbor clerk: You're cleared to board the S.S. Anne!", "Porto: Sua passagem para o S.S. Anne está liberada!"))
-    elsif !GameData::Item.exists?(:SSTICKET)
-      # Decades does not guarantee the FRLG ticket item exists. Use a local
-      # save-state permit without changing native item PBS or other saves.
-      progress["pilot_ss_ticket"] = true
-      pbMessage(BlueKantoPilot.t("Experimental access: Your digital pass for the S.S. Anne is active.", "Acesso experimental: a passagem digital para o S.S. Anne está liberada."))
-    elsif $bag.add(:SSTICKET, 1)
-      progress["pilot_ss_ticket"] = true
-      BlueMusic.kanto_me_play("obtained_item")
-      pbMessage(BlueKantoPilot.t("Experimental access: You received the S.S. Ticket. Bill's event will be adapted later.", "Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
-    else
-      pbMessage(BlueKantoPilot.t("Make room in your Bag to receive the S.S. Ticket.", "Você precisa liberar espaço na Bolsa para receber o S.S. Ticket."))
+      pbMessage(t("Harbor clerk: You're cleared to board the S.S. Anne!",
+                  "Porto: sua passagem para o S.S. Anne está liberada!"))
+      return true
     end
+    unless progress["pilot_bill_helped"]
+      pbMessage(t("Harbor clerk: Talk to Bill on Route 25 and help him first.",
+                  "Porto: visite Bill na Rota 25 e ajude-o primeiro."))
+      return false
+    end
+    # The original ticket was not redeemed yet; a full Bag can be retried.
+    bill_reward
   end
 
   def self.harbor_gate(map_id, x, y)
