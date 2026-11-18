@@ -102,11 +102,8 @@ def deny(msg:str)->None:
 def load(root:Path=ROOT)->tuple[dict,dict]:
     return g72.j(root,FILE),g72.j(root,SOURCES["registry"])
 
-def audit_contract(root:Path=ROOT)->dict:
-    g82.audit_contract(root)
-    g73.audit_contract(root)
-    g74.audit_contract(root)
-    data,registry=load(root)
+def validate_claims(data:dict,registry:dict)->dict:
+    """Pure fail-closed gate usable for synthetic tampering tests."""
     g72.strict(data,FIELDS,"G08.3 source contract")
     expected={
         "schema_version":1,"phase":"G08.3","region":"UNOVA",
@@ -124,17 +121,25 @@ def audit_contract(root:Path=ROOT)->dict:
     for key,val in expected.items():
         if type(data[key]) is not type(val) or data[key]!=val:
             deny("source/protection/role changed: "+key)
-    if len(data["limitations"])<7 or any(
+    if not isinstance(data["limitations"],list) or len(data["limitations"])<7 or any(
         not isinstance(note,str) or not note.strip()
         for note in data["limitations"]
     ):
         deny("limitations cannot be omitted")
+    if any(registry["regions"][key]["status"]!=STATUSES[key] for key in REGIONS):
+        deny("registry state drift: never infer actual installation from circuit")
     if tuple(travel.ROUTABLE)!=("DECADES","KANTO","JOHTO","HOENN"):
         deny("G05.3 runtime fixture allowlist drift")
     if tuple(blackout.REGIONS)!=tuple(travel.ROUTABLE):
         deny("native respawn and travel fixtures disagree")
-    if any(registry["regions"][key]["status"]!=STATUSES[key] for key in REGIONS):
-        deny("registry state drift: never infer actual installation from circuit")
+    return {"profiles":len(PROFILES),"native_evidence_verified":0,"can_install":False}
+
+def audit_contract(root:Path=ROOT)->dict:
+    g82.audit_contract(root)
+    g73.audit_contract(root)
+    g74.audit_contract(root)
+    data,registry=load(root)
+    validate_claims(data,registry)
     board=g72.j(root,SOURCES["tracker"])
     g08=next((group for group in board["groups"] if group["id"]=="G08"),{})
     tasks=g08.get("tasks",[])
