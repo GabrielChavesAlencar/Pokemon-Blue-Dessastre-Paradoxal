@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "54bbb63a7f2f7a74a26ce8dbc61d52793a27315d",
+      "date": "2026-11-18T09:15:44-03:00",
+      "title": "Sinnoh L19: consolidate 88 pending public review gaps (#217)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "38ff6e635287f84464e1371160f3a06ae8dba953",
       "date": "2026-11-18T08:51:12-03:00",
       "title": "Sinnoh L18: public review gaps remain open and non-native (#215)",
