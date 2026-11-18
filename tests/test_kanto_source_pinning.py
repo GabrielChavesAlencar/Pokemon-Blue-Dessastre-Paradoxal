@@ -35,11 +35,12 @@ class FRLGSourcePinningTests(unittest.TestCase):
 
     def test_fallback_uses_same_original_file_id_only(self):
         matches=re.findall(r"https://(?:drive\.usercontent\.google\.com|drive\.google\.com)/[^\s',]+",self.workflow)
-        self.assertEqual(len(matches),3)
+        self.assertEqual(len(matches),4)
         for url in matches:
             self.assertIn(FILE_ID,url)
-            self.assertIn("confirm=t",url)
-        self.assertEqual(self.workflow.count(FILE_ID),3)
+        self.assertTrue(all("confirm=t" in url for url in matches[:3]))
+        self.assertIn("/file/d/"+FILE_ID+"/view",matches[3])
+        self.assertEqual(self.workflow.count(FILE_ID),4)
 
     def test_checksum_guard_runs_before_archival_read(self):
         code=self.workflow
@@ -57,6 +58,14 @@ class FRLGSourcePinningTests(unittest.TestCase):
         self.assertIn("try { Invoke-WebRequest",code)
         self.assertIn("catch { Write-Warning",code)
         self.assertNotIn("continue-on-error: true\n        shell: powershell\n        run: |\n          $ProgressPreference",code[:1800])
+
+    def test_gdown_fallback_is_pinned_and_precedes_extraction(self):
+        source=self.workflow
+        self.assertIn("gdown==5.2.0",source)
+        self.assertIn("python -m gdown --fuzzy",source)
+        self.assertIn("if($hash -ceq $expected){",source)
+        self.assertIn("gdown returned FRLG content with mismatched SHA-256",source)
+        self.assertLess(source.index("python -m gdown"),source.index("$entries=@(tar -tf $archive"))
 
     def test_fake_archive_cannot_have_pinned_sha(self):
         forged=b"<html>Google Drive download confirmation</html>"
