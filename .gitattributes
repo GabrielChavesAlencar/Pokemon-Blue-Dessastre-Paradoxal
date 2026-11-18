@@ -1,0 +1,3 @@
+# The opt-in Android updater fixture is a byte-exact 1911-byte file.
+# Windows checkout must not turn its LF into CRLF (1965 bytes) or change SHA-256.
+tests/fixtures/android_updater_launcher_20261117.py -text

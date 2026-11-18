@@ -1,0 +1,41 @@
+name: Android nativo - validar release, cache e launcher Windows
+
+on:
+  pull_request:
+    paths:
+      - '.gitattributes'
+      - 'scripts/android/verify_native_multiregion_update.py'
+      - 'tests/test_android_native_release_verifier.py'
+      - '.github/workflows/android-multiregion.yml'
+      - '.github/workflows/android-native-release-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.gitattributes'
+      - 'scripts/android/verify_native_multiregion_update.py'
+      - 'tests/test_android_native_release_verifier.py'
+      - '.github/workflows/android-multiregion.yml'
+      - '.github/workflows/android-native-release-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-release-guard:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar a sintaxe do empacotador
+        run: python -m py_compile scripts/android/verify_native_multiregion_update.py scripts/android/publish_updates.py scripts/android/package.py
+      - name: Confirmar que o fixture do Termux manteve exatamente 1911 bytes
+        run: python -m unittest discover -s tests -p test_android_native_release_verifier.py -v
+      - name: Testar atualizações incrementais sem backup nos dois sistemas
+        run: python -m unittest discover -s tests -p test_android_updates.py -v
