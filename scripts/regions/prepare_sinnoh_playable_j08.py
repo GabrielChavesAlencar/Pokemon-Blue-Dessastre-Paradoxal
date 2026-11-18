@@ -442,6 +442,8 @@ def main(argv=None):
     args=p.parse_args(argv)
     try:
         if args.verify or args.discard:
+            if type(args.zip_sha) is not str or not SHA.fullmatch(args.zip_sha):
+                fail("OUTER_ZIP_SHA_REQUIRED_FOR_VERIFY_OR_DISCARD")
             if any((args.qa,args.overlay,args.spec,args.rights,args.reservations,
                     args.session,args.windows_review,args.android_stage,args.android_review)):
                 fail("VERIFY_DISCARD_ACCEPTS_ONLY_PRIVATE_CANDIDATE")
