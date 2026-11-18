@@ -166,7 +166,7 @@ class SinnohL18ReviewGapsTests(unittest.TestCase):
         self.rejected(lambda a,b,c,d,e,f: a["records"][0]["gap_types"].reverse())
 
     def test_negative_015_gap_wrong(self):
-        self.rejected(lambda a,b,c,d,e,f: a["records"][0]["gap_types"][0]="AUTHORIZATION")
+        self.rejected(lambda a,b,c,d,e,f: a["records"][0]["gap_types"].__setitem__(0,"AUTHORIZATION"))
 
     def test_negative_016_next_step_qa(self):
         self.rejected(lambda a,b,c,d,e,f: a["records"][44].update(next_documentary_step="Execute Game.exe"))
