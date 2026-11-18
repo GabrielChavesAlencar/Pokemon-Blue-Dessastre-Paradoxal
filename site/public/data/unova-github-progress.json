@@ -246,8 +246,9 @@
         {
           "id": "G07.2",
           "title": "Criar schema de pacote incremental de Unova",
-          "status": "pending",
-          "acceptance": "Versão, hashes, direitos, caminhos e manifestos de origem requeridos"
+          "status": "done",
+          "acceptance": "Versão, hashes, direitos, caminhos e manifestos de origem requeridos",
+          "evidence": "scripts/regions/audit_unova_g07_incremental_manifest.py"
         },
         {
           "id": "G07.3",

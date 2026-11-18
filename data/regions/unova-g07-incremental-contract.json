@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "phase": "G07.2",
+  "region": "UNOVA",
+  "status": "PLANNED_INCREMENTAL_SCHEMA_ONLY",
+  "schema_path": "data/regions/unova-g07-incremental.schema.json",
+  "validator_path": "scripts/regions/audit_unova_g07_incremental_manifest.py",
+  "runtime_sources": [
+    "scripts/windows/Bootstrap.cs",
+    "scripts/install_game.py",
+    "scripts/android/update_client.py",
+    "scripts/regions/audit_unova_a12_ownership.py"
+  ],
+  "predecessor": "data/regions/unova-g05-travel-contract.json",
+  "source_manifest_requirement": "SHA256_AND_FULL_ORIGIN_REVISION",
+  "package_authentication": "DIGEST_ONLY_NOT_SIGNED_OR_TRUSTED",
+  "channel": "blue-story-unova-documentation",
+  "allowed_prefix": "docs/unova-package-fixtures/",
+  "allowed_suffixes": [
+    ".txt",
+    ".md",
+    ".json"
+  ],
+  "maximum_files": 16,
+  "maximum_file_bytes": 65536,
+  "maximum_package_bytes": 524288,
+  "rights_status": "FIXTURE_ONLY_NOT_DISTRIBUTABLE",
+  "native_payload_approved": false,
+  "release_allowed": false,
+  "installer_implemented": false,
+  "android_supported": false,
+  "game_exe_tested": false,
+  "saves_modified": false,
+  "can_install": false,
+  "notes": [
+    "Blue-Story Bootstrap.cs can check SHA-256 of pinned dependencies and guards extracted paths but the source update ZIP is downloaded without an expected hash; this does NOT imply Unova content/install authenticity.",
+    "G07.2 does not register a Unova installer in scripts/install_game.py, Bootstrap.cs, Android update_client.py, or any downloadable release.",
+    "Only artificial documentation payload bytes in memory and a synthetic origin manifest are accepted. SHA-256 integrity checks do not authenticate the author or grant rights.",
+    "All files require explicit rights declarations with redistribution_approved false. Missing rights or claims of native release are rejected even when SHA checks pass.",
+    "Version, source revision, target revision, SHA-256 of origin manifest, source file bytes, destination bytes, destination paths and all metadata are validated before constructing a simulated preview.",
+    "No filesystem writing, ZIP extraction, download, Game.exe, JoiPlay, saves or MapID changes. Source manifest is an in-memory fixture.",
+    "A12 static analysis does not grant MapID ownership or physical installation proof. G07.3 will test compare-and-swap and rollback in separate offline fixtures."
+  ]
+}
