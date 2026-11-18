@@ -1,0 +1,122 @@
+name: Android - preview isolado de mapas conectados
+
+on:
+  push:
+    branches: [fix/android-connected-map-hitch-20261118]
+    paths:
+      - '.github/workflows/android-map-perf-preview.yml'
+      - 'scripts/android/preview_update.py'
+      - 'tests/test_android_map_preview.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-map-perf-preview
+  cancel-in-progress: false
+
+jobs:
+  build-opt-in-preview:
+    if: github.ref == 'refs/heads/fix/android-connected-map-hitch-20261118'
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exigir regressões de mapa, integridade do cache e atualização segura
+        run: |
+          set -euo pipefail
+          ruby -c scripts/battle_polish/RegionTravel.rb
+          ruby tests/region_map_transition_perf_runtime.rb scripts/battle_polish/RegionTravel.rb
+          ruby -I. tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+          python -m py_compile scripts/android/repack_multiregion_hotfix.py scripts/android/preview_update.py
+          python -m unittest discover -s tests -p 'test_region_map_transition_android.py' -v
+          python -m unittest discover -s tests -p 'test_android_map_preview.py' -v
+          python -m unittest discover -s tests -p 'test_kanto_cerulean_route4_android.py' -v
+          python -m unittest discover -s tests -p 'test_android_updates.py' -v
+      - name: Baixar somente a fonte Android publicada e auditada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist/base dist/previous
+          gh release download android-multiregion-15-125155e --pattern 'Blue-Android-Decades-Kanto-Hoenn.zip*' --dir dist/base
+          gh release download android-multiregion-15-125155e --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir dist/base
+          (cd dist/base && sha256sum -c Blue-Android-Decades-Kanto-Hoenn.zip.sha256)
+          for tag in android-multiregion-hotfix-27-767347c android-multiregion-hotfix-22-8e6e527; do
+            mkdir -p "dist/previous/$tag"
+            gh release download "$tag" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$tag"
+          done
+      - name: Reempacotar cache Ruby e produzir patches incrementais versionados
+        run: |
+          set -euo pipefail
+          python scripts/android/repack_multiregion_hotfix.py \
+            --source dist/base/Blue-Android-Decades-Kanto-Hoenn.zip \
+            --output dist/Blue-Android-Decades-Kanto-Hoenn.zip \
+            --revision "$GITHUB_SHA"
+          python scripts/android/publish_updates.py --channel multiregion \
+            --full-zip dist/Blue-Android-Decades-Kanto-Hoenn.zip \
+            --previous-manifest dist/previous/android-multiregion-hotfix-27-767347c/Blue-Android-Decades-Kanto-Hoenn.update.json \
+            --previous-manifest dist/previous/android-multiregion-hotfix-22-8e6e527/Blue-Android-Decades-Kanto-Hoenn.update.json \
+            --previous-manifest dist/base/Blue-Android-Decades-Kanto-Hoenn.update.json
+      - name: Conferir os deltas sem modificar jogo, saves ou mapas
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, zipfile
+          root = pathlib.Path("dist")
+          package = "Blue-Android-Decades-Kanto-Hoenn"
+          manifest = json.loads((root / (package + ".update.json")).read_text())
+          patches = ([manifest["patch"]] if manifest.get("patch") else []) + manifest.get("patches", [])
+          previous = {
+              "767347c69c2c4877ca785e69f3719bc71b656cd6",
+              "8e6e527009ac"
+          }
+          found = set()
+          for p in patches:
+              if not any(p["from_revision"].startswith(value) for value in previous):
+                  continue
+              assert p["to_revision"] == os.environ["GITHUB_SHA"]
+              assert p["size"] < 20 * 1024 * 1024, "Preview patch too large"
+              name = p["asset"]
+              assert name.endswith(".patch.zip")
+              with zipfile.ZipFile(root / name) as archive:
+                  info = json.loads(archive.read("patch.json"))
+                  assert info["to_revision"] == os.environ["GITHUB_SHA"]
+                  assert info["from_revision"] == p["from_revision"]
+                  changed = set(info["changed"])
+                  assert "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb" in changed
+                  assert "Data/PluginScripts.rxdata" in changed
+                  assert "Game.exe" not in changed
+                  assert all(not value.lower().startswith(("saves/", "data/save")) for value in changed)
+                  assert len(archive.namelist()) == len(set(archive.namelist()))
+              found.add(p["from_revision"][:7])
+          assert "767347c" in found, "No safe delta for the music hotfix"
+          assert "8e6e527" in found, "No safe delta for prior Android updater"
+          assert manifest["revision"] == os.environ["GITHUB_SHA"]
+          print("PASS: patch previews are incremental, hash-indexed, and save-safe")
+          PY
+      - name: Publicar apenas uma release PREVIEW opcional, nunca atualização automática
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="android-map-perf-preview-${GITHUB_SHA:0:7}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release tag already exists; refusing overwrite"
+            exit 1
+          fi
+          cp scripts/android/preview_update.py dist/ATUALIZAR-MAPAS-PREVIEW.py
+          shopt -s nullglob
+          assets=(dist/ATUALIZAR-MAPAS-PREVIEW.py dist/Blue-Android-Decades-Kanto-Hoenn.update.json)
+          for item in dist/Blue-Android-Decades-Kanto-Hoenn*.patch.zip; do
+            assets+=("$item")
+          done
+          test "${#assets[@]}" -ge 4
+          gh release create "$tag" "${assets[@]}" --target "$GITHUB_SHA" \
+            --title "TESTE Android: desempenho de mapas conectados (sem merge)" \
+            --notes "PR #213. Patch incremental de teste SOMENTE por opt-in usando ATUALIZAR-MAPAS-PREVIEW.py --tag $tag --update. NAO e release estavel, nao aparece no atualizador Android normal. Mapas, Game.exe e saves preservados. Mantem Cerulean/Route 4, fosseis e versao; apenas redireciona verificacoes repetidas de NPCs regionais. Testes de fonte/cache aprovados nesta pipeline, sem teste JoiPlay real. Blue Studio na main continua bloqueado por teste de escala preexistente ligado ao PR #195; nao houve merge/dispensa de checks." \
+            --prerelease
