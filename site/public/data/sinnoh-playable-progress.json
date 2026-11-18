@@ -9,9 +9,9 @@
   "status": "PILOT_NOT_INSTALLED_NOT_PLAYABLE",
   "source_engineering_code_complete_not_playable": 32,
   "stages_total": 8,
-  "stages_code_ready": 1,
+  "stages_code_ready": 2,
   "stages_native_validated": 0,
-  "engineering_percent": 12.5,
+  "engineering_percent": 25,
   "native_verified_percent": 0,
   "pilot_map_symbols": 9,
   "required_warps": 16,
@@ -25,7 +25,7 @@
   "joiplay_tested": false,
   "main_game_modified": false,
   "save_migration_performed": false,
-  "phase_count_policy": "J01 counts only as executable preflight code with passing CI, not as native gameplay; J02–J08 require concrete integration and later Game.exe/JoiPlay evidence; no L phases count.",
+  "phase_count_policy": "J01 and J02 count executable engineering code with CI, not installed maps or native gameplay. J02 has 4 audited historical terrain references and 5 missing real maps; no approved 9/9 local bindings. Physical/native proof remains 0/8; L phases never count.",
   "stages": [
     {
       "id": "J01",
@@ -40,12 +40,12 @@
     {
       "id": "J02",
       "title": "Reservar MapIDs e vincular os 9 mapas do piloto",
-      "status": "blocked",
-      "code_ready": false,
+      "status": "code_ready",
+      "code_ready": true,
       "native_verified": false,
       "playable": false,
-      "evidence_path": null,
-      "completion_requires": "Real 9 map symbols assigned to collision-free MapIDs with source hashes and reservations"
+      "evidence_path": "scripts/regions/bind_sinnoh_playable_j02.py",
+      "completion_requires": "J02 executable 9-map source-to-destination validator and audited 4/9 historical terrain reference catalog complete; requires five new real maps, local game/Data, reservations R07 and rights R08 before any native binding or installation."
     },
     {
       "id": "J03",
@@ -108,13 +108,21 @@
       "completion_requires": "Android/JoiPlay QA on isolated test package and safe incremental release"
     }
   ],
-  "next_stage": "J02",
+  "next_stage": "J03",
   "blockers": [
-    "MapInfos.rxdata do jogo instalado ainda não verificado nesta execução",
-    "Mapas e PNGs autorizados não incluídos na main pública",
-    "9 IDs reais e coordenadas de Twinleaf/Sandgem ainda não associados",
-    "43 testes Windows e 1 Android pendentes"
+    "Quatro mapas exteriores de fonte conhecida têm somente metadados e SHA; arquivos RXDATA/PNG não estão na main autorizados",
+    "Cinco mapas não possuem terreno não vazio validado: quarto, casa 1F, casa Barry, Lago Verity e laboratório Rowan",
+    "Instalação game/Data e reservas futuras de MapIDs R07 ainda não homologadas",
+    "Licenças individuais R08 pendentes; nenhum mapa instalado ou evento compilado",
+    "43 testes Windows e 1 Android ainda não executados"
   ],
   "source_data": "data/regions/sinnoh-twinleaf-events.json",
-  "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE"
+  "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE",
+  "native_source_terrain_candidates": 4,
+  "native_source_maps_missing": 5,
+  "native_map_bindings_verified": 0,
+  "native_maps_installed": 0,
+  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/224",
+  "next_button_label": "Executar J03 — Preparar mapas e tilesets em cópia isolada",
+  "next_prompt": "Execute a fase J03 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub. Use PR #222, issue #223/J02, issue #224/J03 e os importadores existentes para preparar os terrenos, tilesets e gráficos autorizados em staging transacional isolado, com testes reais de integridade e regressões, sem tocar em saves nem fingir que há mapas/ativos físicos ausentes. Atualize apenas a barra J de engenharia e crie um botão para a próxima fase J04. Faça merge somente quando os checks relevantes estiverem verdes."
 }
