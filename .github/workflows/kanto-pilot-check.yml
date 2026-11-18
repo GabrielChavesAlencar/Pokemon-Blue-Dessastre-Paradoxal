@@ -52,6 +52,25 @@ jobs:
             if($hash -ceq $expected){$verified=$true;break}
             Write-Warning "FRLG source mismatch attempt $($attempt+1): SHA-256 $hash; source blocked"
           }
+          # Large Drive files can require confirmation cookies not supported
+          # by Invoke-WebRequest. gdown handles those redirects, but the
+          # SAME historical pinned digest still gates all extraction.
+          if(-not $verified){
+            Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
+            python -m pip install --disable-pip-version-check gdown==5.2.0
+            if($LASTEXITCODE -eq 0){
+              python -m gdown --fuzzy 'https://drive.google.com/file/d/1dsqD8lEJCz-lioEruRqQycWJLCUVxVtI/view' -O $archive
+              if($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $archive)){
+                $hash=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+                if($hash -ceq $expected){
+                  Write-Host 'FRLG source verified from Drive by gdown and pinned SHA-256'
+                  $verified=$true
+                } else {
+                  Write-Warning "gdown returned FRLG content with mismatched SHA-256 $hash; not accepted"
+                }
+              }
+            }
+          }
           if(-not $verified){
             Remove-Item -LiteralPath $archive -Force -ErrorAction SilentlyContinue
             throw 'FRLG archive hash differs from pinned manifest; no pilot can be built'
