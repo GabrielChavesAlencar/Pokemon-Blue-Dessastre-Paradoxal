@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "L08_DIFF",
+  "version": 1,
+  "status": "ZERO_PUBLIC_DOCUMENTARY_DRIFT_NATIVE_PENDING",
+  "baseline_commit": "d98033b362dac82347e0d97cb5606870eaa70b22",
+  "source_stages": [
+    "G12",
+    "L04",
+    "L05",
+    "L06",
+    "L07",
+    "L08"
+  ],
+  "comparisons": [
+    {
+      "from": "G12",
+      "to": "L05",
+      "scope": "case_ids_kind_platform_native_status",
+      "checked": 44,
+      "added_ids": [],
+      "missing_ids": [],
+      "reordered_ids": [],
+      "modified_ids": [],
+      "status": "NO_PUBLIC_DOCUMENTARY_DRIFT"
+    },
+    {
+      "from": "L04",
+      "to": "L05",
+      "scope": "all_20_criteria_ids_and_coverage",
+      "checked": 20,
+      "added_ids": [],
+      "missing_ids": [],
+      "reordered_ids": [],
+      "modified_ids": [],
+      "status": "NO_PUBLIC_DOCUMENTARY_DRIFT"
+    },
+    {
+      "from": "L05",
+      "to": "L06",
+      "scope": "case_criteria_platform_blockers_status",
+      "checked": 44,
+      "added_ids": [],
+      "missing_ids": [],
+      "reordered_ids": [],
+      "modified_ids": [],
+      "status": "NO_PUBLIC_DOCUMENTARY_DRIFT"
+    },
+    {
+      "from": "L06",
+      "to": "L07",
+      "scope": "case_criteria_queue_gate_status",
+      "checked": 44,
+      "added_ids": [],
+      "missing_ids": [],
+      "reordered_ids": [],
+      "modified_ids": [],
+      "status": "NO_PUBLIC_DOCUMENTARY_DRIFT"
+    },
+    {
+      "from": "L07",
+      "to": "L08",
+      "scope": "case_criteria_and_native_pending_snapshot",
+      "checked": 44,
+      "added_ids": [],
+      "missing_ids": [],
+      "reordered_ids": [],
+      "modified_ids": [],
+      "status": "NO_PUBLIC_DOCUMENTARY_DRIFT"
+    }
+  ],
+  "counts": {
+    "cases_total": 44,
+    "windows": 43,
+    "android": 1,
+    "criteria_total": 20,
+    "human_approved": 0,
+    "native_completed": 0,
+    "native_approved": 0,
+    "local_reports": 0,
+    "phase_bcd_completed": 0,
+    "phase_bcd_total": 13,
+    "comparisons_checked": 5,
+    "differences_found": 0
+  },
+  "gates": {
+    "r07": "PENDING",
+    "r08": "PENDING",
+    "r09": "PENDING",
+    "b11_global_save_isolation_proven": false,
+    "mapids_reserved": false,
+    "asset_rights_approved": false,
+    "windows_sandbox_executed": false,
+    "joiplay_tested": false,
+    "phase_b_approved": 0,
+    "phase_c_approved": 0,
+    "phase_d_approved": 0,
+    "sinnoh_playable": false,
+    "can_launch_game_exe": false,
+    "can_launch_joiplay": false,
+    "can_start_windows_sandbox": false,
+    "can_install_live_game": false,
+    "auto_upload": false
+  },
+  "scope": "PUBLIC_STATIC_METADATA_ONLY",
+  "private_evidence_read": false,
+  "can_authorize_qa": false,
+  "sinnoh_playable": false
+}
