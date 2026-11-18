@@ -1653,7 +1653,7 @@ def install_runtime(target, mapping, game):
         ("MOON_B2F", "Mt Moon - B2F", 38, 31, 24),
         ("CERULEAN", "Cerulean City (Center)", 39, 22, 20),
         ("MISTY", "Cerulean Gym (Misty)", 42, 8, 18),
-        ("NUGGET", "Rota 24 - Nugget Bridge", 53, 24, 35),
+        ("NUGGET", "Rota 24 - Nugget Bridge", 53, 23, 40),
         ("BILL_ROUTE", "Rota 25 - caminho do Bill", 54, 48, 12),
         ("BILL", "Casa do Bill", 55, 7, 8),
         ("ROUTE5", "Route 5 (Underground)", 56, 31, 32),
