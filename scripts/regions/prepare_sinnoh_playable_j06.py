@@ -152,8 +152,11 @@ def validate_review(project: Path, overlay: Path, spec_path: Path,
             or sum(len(x["events"]) for x in rows)!=24):
         fail("NINE_REAL_MAP_EVENT_SPEC_REQUIRED")
     mids=[x["map_id"] for x in rows]
-    if (len(set(mids))!=9 or
-            set(mids)!=set(report.get("geometry_all_map_ids",[])) or
+    all_mids=report.get("geometry_all_map_ids",[])
+    if (type(all_mids) is not list or len(all_mids)<9 or
+            any(type(i) is not int or not 442<=i<=517 for i in all_mids) or
+            len(set(all_mids))!=len(all_mids) or
+            len(set(mids))!=9 or not set(mids).issubset(set(all_mids)) or
             sum(e["kind"]=="warp" for x in rows for e in x["events"])!=16 or
             sum(e["kind"]=="handler" for x in rows for e in x["events"])!=5 or
             sum(e["kind"]=="starter_ball" for x in rows for e in x["events"])!=3):
@@ -165,7 +168,7 @@ def validate_review(project: Path, overlay: Path, spec_path: Path,
             or reserved["reviewed_locally"] is not True
             or reserved["r07_global_reservations_approved"] is not True
             or reserved["source_mapinfos_sha256"]!=info_sha
-            or reserved["candidate_map_ids"]!=sorted(mids)
+            or reserved["candidate_map_ids"]!=sorted(all_mids)
             or type(reserved["protected_map_ids"]) is not list
             or len(reserved["protected_map_ids"])>5000
             or any(type(m) is not int or m<1 or m>999
@@ -176,7 +179,7 @@ def validate_review(project: Path, overlay: Path, spec_path: Path,
         fail("R07_MAPID_REVIEW_NOT_APPROVED")
     protected=set(reserved["protected_map_ids"])
     native=native_map_ids(main)
-    if set(mids) & (protected|native):
+    if set(all_mids) & (protected|native):
         fail("MAPID_COLLISION_NATIVE_OR_RESERVED")
     # This is explicit LOCAL human attestation, not an OpenAI decision about
     # legal rights or an R07 global certification. User must provide evidence.
@@ -186,7 +189,8 @@ def validate_review(project: Path, overlay: Path, spec_path: Path,
         "source_game_exe_sha256":exe_sha,"source_mapinfos_sha256":info_sha,
         "overlay_report_sha256":report_sha,"rights_sha256":rights_sha,
         "reservations_sha256":reserved_sha,"spec_sha256":spec_sha,
-        "real_map_input_count":9,"events_expected":24,"warps_expected":16,
+        "private_map_input_count":9,"private_total_stage_map_ids":len(all_mids),
+        "events_expected":24,"warps_expected":16,
         "npc_handlers_expected":5,"starter_balls_expected":3,
         "private_qa_rights_human_attested":True,
         "rights_independently_confirmed_by_chatgpt":False,
