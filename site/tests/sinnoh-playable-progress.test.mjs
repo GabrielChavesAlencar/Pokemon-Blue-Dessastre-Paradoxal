@@ -9,25 +9,57 @@ test("J playable progress mirror matches exactly",async()=>{
  assert.equal(await read("data/regions/sinnoh-playable-progress.json"),
  await read("site/public/data/sinnoh-playable-progress.json"));
 });
-test("J series is independent of documentary milestones and not playable",async()=>{
+test("J01 and J02 are engineering code only, native game and saves untouched",async()=>{
  const d=JSON.parse(await read("data/regions/sinnoh-playable-progress.json"));
  assert.equal(d.track,"JOGAVEL_TWINLEAF_SANDGEM");
  assert.equal(d.status,"PILOT_NOT_INSTALLED_NOT_PLAYABLE");
- assert.equal(d.stages_code_ready,1);assert.equal(d.stages_native_validated,0);
+ assert.equal(d.stages_code_ready,2);
+ assert.equal(d.engineering_percent,25);
+ assert.equal(d.stages_native_validated,0);assert.equal(d.native_verified_percent,0);
  assert.equal(d.stages_total,8);assert.equal(d.stages.length,8);
  assert.equal(d.stages[0].status,"code_ready");
- assert.ok(d.stages.slice(1).every(x=>x.status==="blocked"&&!x.code_ready));
+ assert.equal(d.stages[1].status,"code_ready");
+ assert.ok(d.stages.slice(2).every(x=>x.status==="blocked"&&!x.code_ready));
  assert.ok(d.stages.every(x=>!x.native_verified&&!x.playable));
  assert.equal(d.game_exe_tested,false);assert.equal(d.joiplay_tested,false);
+ assert.equal(d.main_game_modified,false);assert.equal(d.save_migration_performed,false);
+ assert.equal(d.native_source_terrain_candidates,4);assert.equal(d.native_source_maps_missing,5);
+ assert.equal(d.native_map_bindings_verified,0);assert.equal(d.native_maps_installed,0);
+ assert.equal(d.next_stage,"J03");
+ assert.match(d.next_issue_url,/\/issues\/224$/);
+ assert.match(d.next_prompt,/J03/);
 });
-test("J playable page has two honest bars and no upload/permission controls",async()=>{
+test("J02 source audit pins only four historical maps; five absent",async()=>{
+ const d=JSON.parse(await read("data/regions/sinnoh-j02-map-source-catalog.json"));
+ assert.equal(d.mode,"HISTORICAL_SOURCE_REFERENCE_ONLY");
+ assert.equal(d.maps.length,9);
+ assert.equal(d.source_terrain_candidates,4);assert.equal(d.source_maps_missing,5);
+ assert.equal(d.native_playable,false);assert.equal(d.source_rights_verified,false);
+ assert.equal(d.destination_mapids_assigned,0);assert.equal(d.destination_game_maps_installed,0);
+ assert.deepEqual(
+   d.maps.filter(x=>x.source_id!==null).map(x=>x.source_id).sort((a,b)=>a-b),
+   [209,210,227,228]);
+ assert.ok(d.maps.every(x=>x.destination_map_id===null&&!x.installed&&!x.source_asset_rights_verified));
+ assert.ok(d.maps.filter(x=>x.source_id===null).every(x=>x.source_sha256===null));
+});
+test("J02 page has two honest bars and next-action button without automatic execution",async()=>{
  const [html,js]=await Promise.all([
   read("site/public/sinnoh-jogavel.html"),
   read("site/public/assets/sinnoh-playable-progress.js")]);
  assert.match(html,/SINNOH_J01_DIAGNOSTICAR_JOGAVEL\.bat/);
  assert.match(html,/id="engineering"/);assert.match(html,/id="native"/);
+ assert.match(html,/id="nextAction"/);assert.match(html,/id="nextIssue"/);
+ assert.match(html,/id="referenceCount"/);assert.match(html,/id="missingCount"/);
  assert.match(js,/PILOT_NOT_INSTALLED_NOT_PLAYABLE/);
+ assert.match(js,/encodeURIComponent\(d\.next_prompt\)/);
+ assert.match(js,/\/issues\//);
  assert.match(js,/replaceChildren/);
  assert.doesNotMatch(html,/<form\b|type="file"/);
  assert.doesNotMatch(js,/innerHTML|localStorage|sessionStorage|postMessage|XMLHttpRequest/);
+});
+test("next phase URL stays in allowed GitHub repo",async()=>{
+ const d=JSON.parse(await read("data/regions/sinnoh-playable-progress.json"));
+ assert.match(d.next_issue_url,/^https:\/\/github\.com\/GabrielChavesAlencar\/Pokemon-Blue-Dessastre-Paradoxal\/issues\/224$/);
+ assert.ok(d.next_prompt.includes("Sinnoh jogável"));
+ assert.equal(typeof d.next_button_label,"string");
 });
