@@ -12,7 +12,8 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/"scripts/regions"),str(ROOT/"tests")]
-from test_sinnoh_j07_windows_harness import J07SyntheticWindowsHarnessTests,save_json
+import test_sinnoh_j07_windows_harness as synthetic_j07
+from test_sinnoh_j07_windows_harness import save_json
 from prepare_sinnoh_playable_j06 import file_digest, digest
 import prepare_sinnoh_playable_j08 as j08
 
@@ -25,7 +26,7 @@ class J08SyntheticAndroidDeltaTests(unittest.TestCase):
     def setUp(self):
         # J07's synthetic fixture has a fake Game.exe and mock rights. This
         # is deliberately NOT evidence of real play or legal permission.
-        self.fx=J07SyntheticWindowsHarnessTests(methodName=
+        self.fx=synthetic_j07.J07SyntheticWindowsHarnessTests(methodName=
             "test_01_compiled_private_preflight_requires_g12_cases_and_j06_seal")
         self.fx.setUp()
         self.addCleanup(self.fx.doCleanups)
