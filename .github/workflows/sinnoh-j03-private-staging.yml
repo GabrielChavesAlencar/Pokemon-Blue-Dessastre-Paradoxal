@@ -1,0 +1,91 @@
+name: Sinnoh J03 - private geometry stage and rollback (no donor publishing)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j03-private-staging.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j03.py'
+      - 'tests/test_sinnoh_j03_private_staging.py'
+      - 'data/regions/sinnoh-j02-map-source-catalog.json'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'docs/SINNOH_J03_STAGING_PRIVADO.md'
+      - 'SINNOH_J03_PREPARAR_MAPAS.bat'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j03-private-staging.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j03.py'
+      - 'tests/test_sinnoh_j03_private_staging.py'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j03-private-stage:
+    name: J03 / synthetic-only four maps, SHA, stage, verify, rollback and 41 tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax and trust boundaries
+        run: python -m py_compile scripts/regions/prepare_sinnoh_playable_j03.py
+      - name: J03 offline owned synthetic assets and negative tests
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j03_private_staging.py' -v
+      - name: Existing transactional and geometry regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_staging_transaction.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_geometry_converter.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_j02_real_map_bindings.py' -v
+      - name: No local source means no private maps or stage
+        run: |
+          set +e
+          python scripts/regions/prepare_sinnoh_playable_j03.py > /tmp/j03-blocked.json
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+          python - <<'PY'
+          import json
+          with open('/tmp/j03-blocked.json',encoding='utf8') as f: r=json.load(f)
+          assert r['source_terrain_references']==4
+          assert r['missing_real_maps']==5
+          assert r['native_maps_installed']==0
+          assert r['local_stage_created'] is False
+          assert r['can_install'] is False
+          assert r['native_playable'] is False
+          assert r['r07_complete'] is False and r['r08_complete'] is False
+          print('J03_NATIVELY_BLOCKED_REAL_INPUTS_NOT_PRESENT')
+          PY
+          test ! -d .blue-work/sinnoh-stage
+  j03-portal-and-next-button:
+    name: J03 / progress J04 next button, Node regressions and full site build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: node --check site/public/assets/sinnoh-playable-progress.js
+      - name: Dynamic progress and next-phase tests
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build portal
+        working-directory: site
+        run: npm run build
+      - name: Validate J04 button and output
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/assets/sinnoh-playable-progress.js
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
+          grep -q '/sinnoh-jogavel.html' site/dist/index.html
