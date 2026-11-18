@@ -43,7 +43,7 @@ module BlueSinnohPilot
     return false if flags["barry_intro"] == true && flags["mother_intro"] != true
     return false if flags["rowan_briefcase_seen"] == true && flags["barry_intro"] != true
     raw = flags["starter"]
-    chosen = raw.is_a?(String) && STARTERS.include?(raw.to_sym)
+    chosen = raw.is_a?(String) && STARTERS.map(&:to_s).include?(raw)
     granted = flags["starter_received"] == true
     return false if granted != !!chosen
     return false if granted && flags["rowan_briefcase_seen"] != true
@@ -146,10 +146,18 @@ module BlueSinnohPilot
     commit_flag("rowan_briefcase_seen")
   end
 
+  # J05: grant EXACTLY one physical-ball starter in the isolated Sinnoh save.
+  # Native pbAddPokemonSilent is not a transaction API. Therefore we require
+  # an available party slot (no untracked PC storage writes), validate that
+  # exactly one expected Pokemon was added, then atomically replace the
+  # existing regional flag Hash. On a failed grant, compensate only the
+  # identified appended party member, never modify foreign-region flags.
   def self.choose_starter_from_ball(species)
     flags = progress
     return false unless flags
-    requested = (species.is_a?(Symbol) || species.is_a?(String)) ? species.to_sym : nil
+    requested = species.is_a?(Symbol) ? species :
+                (species.is_a?(String) && STARTERS.map(&:to_s).include?(species) ?
+                 species.to_sym : nil)
     return false unless STARTERS.include?(requested)
     if flags["starter_received"] || flags.key?("starter")
       pbMessage(_INTL("Rowan: Você já escolheu um parceiro desta maleta."))
@@ -160,23 +168,52 @@ module BlueSinnohPilot
       return false
     end
     return false unless defined?(pbAddPokemonSilent)
-    # Only a physical ball grants a starter; nested grants are denied.
     return false if @starter_grant_in_progress
     scope = regional_state
+    return false unless scope && scope["sinnoh_pilot"].equal?(flags) && !flags.frozen?
+    return false unless defined?($player) && $player && $player.respond_to?(:party)
+    player = $player
+    party = player.party
+    # A full party would send the starter to storage, where a failed grant
+    # could not be rolled back without touching unrelated boxes/saves.
+    return false unless party.is_a?(Array) && !party.frozen? && party.length < 6
+    before = party.dup
+    committed = false
     @starter_grant_in_progress = true
     begin
-      return false unless pbAddPokemonSilent(requested, 5)
-      return false unless scope && regional_state.equal?(scope)
-      current = progress
-      return false unless current && !current.key?("starter") &&
-                          current["starter_received"] != true &&
-                          current["rowan_briefcase_seen"] == true
-      scope["sinnoh_pilot"] ||= {}
-      scope["sinnoh_pilot"]["starter"] = requested.to_s
-      scope["sinnoh_pilot"]["starter_received"] = true
+      accepted = pbAddPokemonSilent(requested, 5)
+      added = party.length == before.length + 1 &&
+              before.each_with_index.all? { |mon, i| party[i].equal?(mon) }
+      return false unless accepted && added
+      actual = party[-1]
+      given_species = actual.is_a?(Array) ? actual[0] :
+                      (actual.respond_to?(:species) ? actual.species : nil)
+      given_level = actual.is_a?(Array) ? actual[1] :
+                    (actual.respond_to?(:level) ? actual.level : nil)
+      return false unless given_species.to_s == requested.to_s && given_level == 5
+      return false unless $player.equal?(player) && regional_state.equal?(scope)
+      return false unless scope["sinnoh_pilot"].equal?(flags) &&
+                          valid_flags?(flags) &&
+                          flags["rowan_briefcase_seen"] == true &&
+                          !flags["starter_received"] && !flags.key?("starter")
+      candidate = flags.merge("starter" => requested.to_s, "starter_received" => true)
+      return false unless valid_flags?(candidate)
+      flags.replace(candidate)
+      committed = true
       pbMessage(_INTL("Rowan: Ótima escolha! Observe seu parceiro durante a viagem."))
       true
+    rescue StandardError
+      # A failed message display after the flag commit is not a new grant.
+      committed
     ensure
+      unless committed
+        # Remove only our newly appended Pokemon, never rewrite a save or
+        # remove party members if the engine reordered the team.
+        if party.length == before.length + 1 &&
+           before.each_with_index.all? { |mon, i| party[i].equal?(mon) }
+          party.pop
+        end
+      end
       @starter_grant_in_progress = false
     end
   end
@@ -227,6 +264,29 @@ module BlueSinnohPilot
     false
   end
 
+  # J05 release gate: ALL three compiled Barry seed teams must match the
+  # authored starter-counter mapping. A single present trainer is not proof
+  # that the other two starters can complete the tutorial.
+  def self.all_rival_versions_valid?
+    return false unless defined?(GameData::Trainer) &&
+                        GameData::Trainer.respond_to?(:get)
+    RIVAL_CHOICES.each_value do |expected, version|
+      trainer = GameData::Trainer.get(:BLUE_SINNOH_RIVAL, "Barry", version)
+      return false unless trainer && trainer.respond_to?(:pokemon)
+      team = trainer.pokemon
+      return false unless team.is_a?(Array) && team.length == 1
+      pokemon = team.first
+      species = pokemon.is_a?(Hash) ? (pokemon[:species] || pokemon["species"]) :
+                (pokemon.respond_to?(:species) ? pokemon.species : nil)
+      level = pokemon.is_a?(Hash) ? (pokemon[:level] || pokemon["level"]) :
+              (pokemon.respond_to?(:level) ? pokemon.level : nil)
+      return false unless species.to_s == expected.to_s && level.is_a?(Integer) && level == 5
+    end
+    true
+  rescue StandardError
+    false
+  end
+
   def self.barry_rival
     flags = progress
     return false unless flags
@@ -249,7 +309,7 @@ module BlueSinnohPilot
                    BlueSinnohQAStart.respond_to?(:barry_test_authorized?) &&
                    BlueSinnohQAStart.barry_test_authorized?
     unless (ready_for_release || qa_test_only) && compiled_rival_valid? &&
-           defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
+           all_rival_versions_valid? && defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
       return false
     end
@@ -270,7 +330,8 @@ module BlueSinnohPilot
         _INTL("Barry: Você venceu! Vou melhorar minha estratégia.") :
         _INTL("Barry: Que batalha! Vamos continuar treinando."))
       true
-    rescue IOError, SystemCallError
+    rescue StandardError
+      # An engine/compiled trainer exception is NOT a completed battle.
       pbMessage(_INTL("Barry: Nossa batalha não pôde ser validada."))
       false
     ensure
@@ -295,9 +356,30 @@ module BlueSinnohPilot
     return false if @pokedex_grant_in_progress
     @pokedex_grant_in_progress = true
     begin
-      # Do not grant a Pokédex before committing a valid regional checkpoint.
+      # The existing region scoped save is the ONLY story record. Do not
+      # persist dex_received if the native player setter fails or reads false.
+      return false unless $player.respond_to?(:has_pokedex)
+      scope = regional_state
+      original = $player.has_pokedex
+      saved_flags = flags.dup
+      return false unless scope && scope["sinnoh_pilot"].equal?(flags)
       return false unless commit_flag("pokedex_received")
-      $player.has_pokedex = true
+      begin
+        $player.has_pokedex = true
+        raise "Pokedex field was not set" unless $player.has_pokedex == true
+      rescue StandardError
+        # Revert only this event and only if the Sinnoh save identity remains.
+        if regional_state.equal?(scope) && scope["sinnoh_pilot"].equal?(flags) &&
+           !flags.frozen?
+          flags.replace(saved_flags)
+        end
+        begin
+          $player.has_pokedex = original
+        rescue StandardError
+          # Cannot repair an incompatible native setter; no false save proof.
+        end
+        return false
+      end
       pbMessage(_INTL("Rowan: Sua Pokédex está pronta. Explore Sinnoh com cuidado."))
       true
     ensure

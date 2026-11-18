@@ -181,9 +181,9 @@ class J04OwnedEventTests(unittest.TestCase):
             "BlueSinnohPilot.mother","BlueSinnohPilot.barry_intro",
             "BlueSinnohPilot.rowan_briefcase","BlueSinnohPilot.barry_rival",
             "BlueSinnohPilot.rowan_pokedex",
-            "BlueSinnohPilot.choose_starter(:TURTWIG)",
-            "BlueSinnohPilot.choose_starter(:CHIMCHAR)",
-            "BlueSinnohPilot.choose_starter(:PIPLUP)",
+            "BlueSinnohPilot.choose_starter_from_ball(:TURTWIG)",
+            "BlueSinnohPilot.choose_starter_from_ball(:CHIMCHAR)",
+            "BlueSinnohPilot.choose_starter_from_ball(:PIPLUP)",
         })
 
     def test_preview_output_has_same_input_images_and_main_game_unchanged(self):

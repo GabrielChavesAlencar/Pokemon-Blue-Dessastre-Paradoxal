@@ -79,11 +79,15 @@ COMPILER_REQUIRED=(
 PILOT_REQUIRED=(
     "STARTERS = [:TURTWIG, :CHIMCHAR, :PIPLUP].freeze",
     "return false if @starter_grant_in_progress",
-    "return false unless pbAddPokemonSilent(requested, 5)",
-    "return false unless scope && regional_state.equal?(scope)",
-    'current["starter_received"] != true',
-    'scope["sinnoh_pilot"]["starter"] = requested.to_s',
-    'scope["sinnoh_pilot"]["starter_received"] = true',
+    "accepted = pbAddPokemonSilent(requested, 5)",
+    "return false unless accepted && added",
+    "party.length == before.length + 1",
+    "return false unless $player.equal?(player) && regional_state.equal?(scope)",
+    '!flags["starter_received"] && !flags.key?("starter")',
+    'candidate = flags.merge("starter" => requested.to_s, "starter_received" => true)',
+    'flags.replace(candidate)',
+    "unless committed",
+    "party.pop",
     'if flags["starter_received"] || flags.key?("starter")',
 )
 BRIDGE_REQUIRED=(

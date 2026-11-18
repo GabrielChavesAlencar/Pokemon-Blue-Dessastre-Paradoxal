@@ -9,9 +9,9 @@
   "status": "PILOT_NOT_INSTALLED_NOT_PLAYABLE",
   "source_engineering_code_complete_not_playable": 32,
   "stages_total": 8,
-  "stages_code_ready": 4,
+  "stages_code_ready": 5,
   "stages_native_validated": 0,
-  "engineering_percent": 50,
+  "engineering_percent": 62.5,
   "native_verified_percent": 0,
   "pilot_map_symbols": 9,
   "required_warps": 16,
@@ -25,7 +25,7 @@
   "joiplay_tested": false,
   "main_game_modified": false,
   "save_migration_performed": false,
-  "phase_count_policy": "J01-J04 count only real executable engineering code and synthetic CI; J04 CH06 topology and Ruby Map events compiler code is ready but NO 9 real maps/sprites/coords or runtime handlers installed. 4 historical terrain refs, 5 missing maps. QA 0/8 and 0/44 tests; no L documentation counts.",
+  "phase_count_policy": "J01-J05 represent executable engineering code and CI checks only. J05 fixes starter event-to-engine binding and adds compensating scoped party+flags transactions, Barry all-3 PBS validation, Dex-save rollback; existing event handlers preserved. No native events, maps or saves loaded; no Game.exe/JoiPlay, 5 maps physically absent. L/documental reports never count.",
   "stages": [
     {
       "id": "J01",
@@ -70,12 +70,12 @@
     {
       "id": "J05",
       "title": "Integrar Barry, regras de batalha e save Sinnoh",
-      "status": "blocked",
-      "code_ready": false,
+      "status": "code_ready",
+      "code_ready": true,
       "native_verified": false,
       "playable": false,
-      "evidence_path": null,
-      "completion_requires": "Barry teams compiled; starter, battle and isolated save/reload pass in copy"
+      "evidence_path": "scripts/regions/SinnohPilot.rb",
+      "completion_requires": "J05 code: five existing BlueSinnohPilot handlers exercised, physical starter calls corrected, single starter save flag/party compensation, all three Barry trainer versions verified, false/nil battle and dex setter failure fail-closed, isolation and save/reload Ruby fixtures. Native 9 maps+sprites/PBS compilation & physical QA pending; no installed/save migrated."
     },
     {
       "id": "J06",
@@ -108,13 +108,13 @@
       "completion_requires": "Android/JoiPlay QA on isolated test package and safe incremental release"
     }
   ],
-  "next_stage": "J05",
+  "next_stage": "J06",
   "blockers": [
-    "Cinco mapas indispensáveis ausentes: quarto, casa 1F, casa Barry, Lago Verity e laboratório Rowan; quatro terrenos externos apenas referenciados, não instalados.",
-    "Coordenadas de 16 portais, 5 handlers e 3 Poké Bolas ainda sem verificação física; o plano público mantém null.",
-    "Sprites/NPCs e tilesets não autorizados ou ausentes do stage privado, sem direitos R08 e R07 de MapIDs globais.",
-    "Handlers BlueSinnohPilot e times Barry somente contrato original; implementação de runtime/save da J05 ainda pendente.",
-    "Nenhum dos 24 eventos compilados contra mapas reais; 0/9 mapas instalados e 0/44 testes Game.exe/JoiPlay."
+    "J05 valida código de cinco handlers e três iniciais, mas os métodos não foram executados por Game.exe; apenas fixtures Ruby sintéticas.",
+    "J04 exige nove mapas; cinco ainda não têm geometria real: quarto, casa 1F, casa Barry, Lago Verity e laboratório Rowan.",
+    "Faltam hashes MapInfos reais e aprovação R07, sprites de NPCs, autorização/uso R08, passabilidade e 16 destinos físicos de portais.",
+    "Três versões PBS Barry e regras Normal/Master necessitam compilação/teste no runtime autorizado; o probe offline não equivale a batalha nativa.",
+    "Isolamento de save do SinnohQAStart tem contratos em código, sem execução de Save/Load no Game.exe; 0/44 QA G12, 0/9 mapas, 0/24 eventos instalados."
   ],
   "source_data": "data/regions/sinnoh-twinleaf-events.json",
   "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE",
@@ -122,14 +122,14 @@
   "native_source_maps_missing": 5,
   "native_map_bindings_verified": 0,
   "native_maps_installed": 0,
-  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/228",
-  "next_button_label": "Executar J05 — Barry, três iniciais, batalhas e saves",
-  "next_prompt": "Execute agora a fase J05 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub, usando a J04 compilador de 16 portais, 5 NPCs e 3 Poké Bolas (issue #226) e a issue #228. Implemente os handlers originais BlueSinnohPilot para mãe, Barry, Rowan e escolha atômica de Turtwig/Chimchar/Piplup, batalhas Barry e save regional isolado, apenas quando os mapas reais, o motor e os assets estiverem comprovados; não invente coordenadas, equipes, permissões nem evidência Game.exe/JoiPlay. Proteja Kanto/Johto/Hoenn/Decades e saves, adicione regressões fail-closed, atualize só a barra J e deixe botão para J06. Faça merge somente com todos os checks relevantes aprovados.",
+  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/230",
+  "next_button_label": "Executar J06 — Preparar launcher Windows QA isolado",
+  "next_prompt": "Execute agora a J06 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub. Use a J05 de handlers e save regional, PR J04 #229 e issue J06 #230. Prepare um launcher/instalador Windows somente em cópia QA isolada com hashes, rollback, MapIDs e assets de uso autorizado, verificando todos os 9 mapas reais, sprites, 24 eventos, PBS Barry e perfil de save separado. Não instale Sinnoh no Decades principal nem invente os cinco mapas ausentes, licenças, Game.exe ou QA. Preserve Kanto/Johto/Hoenn, mantenha CI fail-closed e atualize a barra com botão J07. Faça merge somente com checks obrigatórios aprovados.",
   "staging_code_prepared": true,
   "local_stage_created_and_verified": false,
   "staging_real_terrain_maps_confirmed": 0,
   "source_donor_events_imported": 0,
-  "next_workflow": "SINNOH_J05_BARRY_STARTER_SAVE",
+  "next_workflow": "SINNOH_J06_ISOLATED_WINDOWS_LAUNCHER",
   "j04_compiler_code_prepared": true,
   "j04_native_events_compiled": 0,
   "j04_native_warps_compiled": 0,
@@ -137,5 +137,13 @@
   "j04_native_starter_balls_compiled": 0,
   "j04_story_handlers_runtime_verified": false,
   "j04_nine_map_source_stage_verified": false,
-  "j04_real_map_passability_verified": false
+  "j04_real_map_passability_verified": false,
+  "j05_handlers_engineering_ready": true,
+  "j05_starter_ball_dispatch_matches_runtime": true,
+  "j05_synthetic_reentrant_grants_tested": true,
+  "j05_native_starter_grants": 0,
+  "j05_native_barry_battles": 0,
+  "j05_native_save_reload_cases": 0,
+  "j05_compiled_pbs_native_verified": false,
+  "j05_isolated_save_profile_native_verified": false
 }
