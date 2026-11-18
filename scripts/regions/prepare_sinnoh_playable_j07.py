@@ -361,7 +361,7 @@ def audit_session(project: Path, preflight: dict, session: Path,
         if file_digest(observed)!=row.get("observation_sha256") or \
                 file_digest(attachment)!=row.get("evidence_sha256"):
             blocked("RECORDED_EVIDENCE_CHANGED")
-        report,_=read_json(observed,max_bytes=1_000_000)
+        report,_=read_json(observed,limit=1_000_000)
         validate_observation(preflight["derived"][ident],report)
         kinds[preflight["derived"][ident]["kind"]]+=1
         found+=1
