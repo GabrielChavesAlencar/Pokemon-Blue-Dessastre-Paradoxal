@@ -428,7 +428,7 @@ def rebuild(source_path, output_path, revision):
             source.read(PREFIX + KANTO),
         )
         repaired = source.read(PREFIX + KANTO_MUSIC).decode("utf8")
-        if repaired.count("MAP\\t") != 74:
+        if repaired.count("MAP\t") != 74:
             raise ValueError("Compiled Kanto Cerulean/Route4 music missing in published game.")
     return {"revision": revision, "maps_kanto": proof[0], "maps_hoenn": proof[1],
             "sha256": digest_file(output_path), "bytes": output_path.stat().st_size}
