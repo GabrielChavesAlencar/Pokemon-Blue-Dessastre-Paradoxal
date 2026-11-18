@@ -1,0 +1,92 @@
+name: Sinnoh J08 - private Android JoiPlay delta candidate (NO native release)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j08-android-private-delta.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j08.py'
+      - 'tests/test_sinnoh_j08_android_private_delta.py'
+      - 'SINNOH_J08_QA_ANDROID.bat'
+      - 'docs/SINNOH_J08_DELTA_ANDROID_PRIVADO.md'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j08-android-private-delta.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j08.py'
+      - 'tests/test_sinnoh_j08_android_private_delta.py'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j08-private-android-delta-linux:
+    name: J08 / 35 synthetic delta/no-backup/J07 rights-and-saves checks Linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J08 compile Python - never launch Android or Game.exe
+        run: python -m py_compile scripts/regions/prepare_sinnoh_playable_j08.py
+      - name: J08 private Android delta 35 synthetic fixtures
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j08_android_private_delta.py' -v
+      - name: Regress Android updater save path protections
+        run: python -m unittest discover -s tests -p 'test_android_updates.py' -v
+      - name: Regress Android CH20 Sinnoh 44-case offline checklist
+        run: python -m unittest discover -s tests -p 'test_sinnoh_android_ch20.py' -v
+      - name: No private sources in public checkout - fail closed
+        run: |
+          set +e
+          python scripts/regions/prepare_sinnoh_playable_j08.py >/tmp/sinnoh-j08-no-sources.txt 2>&1
+          status=$?
+          set -e
+          test "$status" -eq 2
+          grep -q 'SINNOH_J08_BLOQUEADO' /tmp/sinnoh-j08-no-sources.txt
+          test ! -e game/Game.exe
+          test ! -d .blue-work/sinnoh-j08-candidates
+          echo SINNOH_J08_NO_NATIVE_JOIPLAY_NO_ASSETS
+  j08-private-android-delta-windows:
+    name: J08 / disposable Windows 35 synthetic immutable Android QA tests
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J08 35 synthetic preflight/delta/rollback checks
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j08.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j08_android_private_delta.py' -v
+      - name: No private Game.exe or installed save in public CI
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private executable leaked" }
+          if (Test-Path ".blue-work/sinnoh-j08-candidates") { throw "QA fixture leaked" }
+          Write-Output "J08_SYNTHETIC_ONLY_NO_JOIPLAY_NATIVE_APPROVAL"
+  j08-portal-next-j09:
+    name: J08 / 8 of 8 code, zero native; physical J09 next button
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify honest engineering/native bars and next-stage button
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build full portal
+        working-directory: site
+        run: npm run build
+      - name: Verify output and no public QA form upload
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
