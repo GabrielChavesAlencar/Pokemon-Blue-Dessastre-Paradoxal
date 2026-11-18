@@ -183,13 +183,20 @@ class SinnohG08OpeningQATests(unittest.TestCase):
                 s.update(pilot=s["pilot"].replace(original,"# removed")))
 
     def test_13_cannot_remove_runtime_starter_safety_guard(self):
+        # The J05 path no longer uses the unsafe pre-grant single-line
+        # return. All pieces of the actual transaction must remain present.
         for original in (
             "return false if @starter_grant_in_progress",
-            "return false unless pbAddPokemonSilent(requested, 5)",
+            "accepted = pbAddPokemonSilent(requested, 5)",
+            "return false unless accepted && added",
+            "party.length == before.length + 1",
+            "flags.replace(candidate)",
+            "party.pop",
             "return false unless scope && regional_state.equal?(scope) && starter == chosen",
         ):
-            self.reject(lambda d,s,original=original:
-                s.update(pilot=s["pilot"].replace(original,"# removed")))
+            with self.subTest(guard=original):
+                self.reject(lambda d,s,original=original:
+                    s.update(pilot=s["pilot"].replace(original,"# removed")))
 
     def test_14_campaign_runtime_source_cannot_deviate(self):
         self.reject(lambda d,s:s.update(
