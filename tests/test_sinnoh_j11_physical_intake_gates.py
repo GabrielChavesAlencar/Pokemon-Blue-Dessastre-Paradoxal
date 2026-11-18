@@ -26,6 +26,7 @@ class J11PhysicalIntakeGates(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         self.project=Path(tmp.name)
         for f in ("data/regions/sinnoh-j02-map-source-catalog.json",
+                  "data/regions/sinnoh-b00-actual-source.json",
                   "data/regions/sinnoh-twinleaf-events.json",
                   "data/regions/sinnoh-twinleaf-events.schema.json"):
             path=self.project/f
