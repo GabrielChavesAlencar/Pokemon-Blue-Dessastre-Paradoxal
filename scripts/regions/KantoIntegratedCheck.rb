@@ -119,7 +119,13 @@ module KantoIntegratedCheck
     $PokemonGlobal.blue_regions = current_state
     require!(BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder badge not awarded")
     require!(!BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder was counted twice")
-    require!(BlueRegionalPolicy.field_result(:FLASH) == :allowed, "Boulder did not unlock Flash")
+    # The Boulder Badge unlocks only the BADGE gate.  FRLG HM05 must still
+    # be obtained and an able, compatible party Pokemon must be present.
+    # A fresh Kanto New Game must not be handed Flash by CI or by the badge.
+    require!(!BlueRegionalPolicy.hm_owned?(:FLASH),
+             "Fresh Kanto unexpectedly owns HM05 before the field pickup")
+    require!(BlueRegionalPolicy.field_result(:FLASH) == :hm,
+             "Boulder did not advance Flash to its required HM05 gate")
     require!(BlueRegionalPolicy.field_result(:SURF) == :badge, "Surf unlocked without Soul Badge")
     base_total = $player.badge_count
     require!(BlueRegions.crystal_total(current_state, base_total) == base_total + 1,
