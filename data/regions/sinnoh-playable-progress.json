@@ -25,7 +25,7 @@
   "joiplay_tested": false,
   "main_game_modified": false,
   "save_migration_performed": false,
-  "phase_count_policy": "J01-J08 are core engineering tooling, code-only 8/8. J09 rechecked source integrity of four outdoors. J10 adds a local human-driven original map editor and an atomic source-only compiler, but no human-drawn five maps or real rights were received. J11 reviews actual imagery/geometry/passability/R07/R08 only after original five are supplied. Source metadata, authored code or CI fixtures do NOT increase 0/8 native validation nor G12 0/44.",
+  "phase_count_policy": "J01–J08 code-only tooling 8/8. J09 verifies four historical source map SHA from the private original ZIP; J10 adds human-authored 3-layer browser map editor and private RXDATA compiler, but does not automatically create FIVE missing real maps, grant licenses or map IDs. J11 is the next physical approval gate, J12 native QA. R07/R08/R09 pending; 0/9 maps installed; 0/44 native. Never promote progress based on CI fixtures.",
   "stages": [
     {
       "id": "J01",
@@ -123,9 +123,9 @@
   "native_source_maps_missing": 5,
   "native_map_bindings_verified": 0,
   "native_maps_installed": 0,
-  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/241",
-  "next_button_label": "Executar J11 — Revisar 5 mapas, tilesets, R07/R08",
-  "next_prompt": "Execute agora a J11 de Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub, usando a J10 de autoria original integrada e a issue #241. Verifique os cinco mapas realmente desenhados no editor J10 se existirem, sem fabricar mapas, posições ou permissões. Audite RXDATA, tilesets PNG/licença R08, passagem/colisão, MapInfos e reservas R07 contra Decades/Kanto/Johto/Hoenn/Unova, vincule 9 mapas e 16 portais/5 NPCs/3 iniciais somente em QA isolada se houver fontes reais. Preserve PC, saves e Game.exe principal. Se faltarem dados, implemente apenas ferramentas e relatórios fail-closed; mantenha progresso nativo 0/8, G12 0/44, status planned. Atualize as barras e deixe botão para J12 QA real, com merge somente após todos os checks aprovados.",
+  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/242",
+  "next_button_label": "Executar J11 — Validar mapas originais e revisar R07/R08",
+  "next_prompt": "Execute agora a J11 de Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub, partindo da ferramenta J10 (editor original de 3 camadas e compilador privado RMXP) e da issue #242. Confira se já existem cinco mapas humanos genuinamente desenhados em fonte privada, sem inventá-los nem acessar meu PC ou saves. Se ainda não houver, prepare validações e ferramentas sem declarar mapas entregues. Para mapas realmente fornecidos, audite hashes SHA-256 e os nove terrenos, tilesets, passabilidade, posições e R07 MapIDs reais contra Decades/Kanto/Johto/Hoenn/Unova; R08 direitos de mapas e assets, e J03/J04/J06 em cópia QA isolada. Não publique ZIP, PNG, RXDATA ou Game.exe de terceiros. Mantenha 0/9 instalados e 0/44 QA R09 (43 Windows e 1 Android) enquanto não houver provas reais independentes; Sinnoh continua planned. Faça merge só com todos os checks relevantes aprovados; depois deixe botão da J12, sem executar Game.exe ou JoiPlay sem autorização.",
   "staging_code_prepared": true,
   "local_stage_created_and_verified": false,
   "staging_real_terrain_maps_confirmed": 0,
@@ -207,5 +207,12 @@
   "j10_r09_native_android_executed": 0,
   "j10_main_game_or_personal_saves_modified": false,
   "j10_user_editor_launcher": "SINNOH_J10_EDITOR_MAPAS.bat",
-  "j10_authoring_doc": "docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md"
+  "j10_authoring_doc": "docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md",
+  "j10_private_original_map_editor_code_ready": true,
+  "j10_private_original_map_rxdata_compiler_code_ready": true,
+  "j10_five_human_real_drafts_received": 0,
+  "j10_real_rxdata_emitted": 0,
+  "j10_native_maps_installed": 0,
+  "j10_original_tileset_rights_independently_approved": false,
+  "j10_browser_editor_path": "/sinnoh-j10-editor.html"
 }
