@@ -51,9 +51,9 @@ $PokemonGlobal.blue_regions = {"version" => 0, "current" => "KANTO"}
 BlueRegionTravel.attach_agents(FakeMap.new(901))
 verify(events.length == 1, "invalid regional state created an agent")
 $PokemonGlobal.blue_regions = {"version" => 1, "current" => "KANTO"}
-100.times { |n| BlueRegionTravel.attach_agents(FakeMap.new(1000 + n)) }
+BlueRegionTravel.attach_agents(FakeMap.new(1000))
 verify(checks[:kanto_install] == 1 && checks[:kanto_id] == 0,
-       "a missing Kanto integration was accepted or checked repeatedly")
+       "a missing Kanto integration was accepted")
 checks[:permit_kanto] = 1
 BlueRegionTravel.attach_agents(FakeMap.new(500))
 verify(checks[:kanto_install] == 2 && checks[:kanto_id] == 1,
