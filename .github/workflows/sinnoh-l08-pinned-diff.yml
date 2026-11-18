@@ -1,0 +1,124 @@
+name: Sinnoh L08 - snapshot fixo e diff publico sem QA nativa
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l08-pinned-diff.yml'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'scripts/regions/audit_sinnoh_l08_pinned_snapshot.py'
+      - 'tests/test_sinnoh_l08_pinned_snapshot.py'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'site/public/data/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l07_public_triage.py'
+      - 'scripts/regions/audit_sinnoh_l06_human_evidence.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l08-pinned-diff.yml'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'scripts/regions/audit_sinnoh_l08_pinned_snapshot.py'
+      - 'tests/test_sinnoh_l08_pinned_snapshot.py'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'site/public/data/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l07_public_triage.py'
+      - 'scripts/regions/audit_sinnoh_l06_human_evidence.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l08-pinned-snapshot:
+    name: L08 / 44 casos, 20 criterios, 6 blobs fixos, negativos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Suite L08 de drift e alteracoes negativas
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: Comparar 6 blobs com commit L07 e auditar diffs
+        run: |
+          python scripts/regions/audit_sinnoh_l08_pinned_snapshot.py > /tmp/sinnoh-l08-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out=Path('/tmp/sinnoh-l08-public.json')
+          d=json.loads(out.read_text('utf8'))
+          assert d['stage']=='L08' and d['status']=='PUBLIC_PINNED_SNAPSHOT_VALID_ZERO_DRIFT_NATIVE_PENDING'
+          assert d['baseline_commit']=='d98033b362dac82347e0d97cb5606870eaa70b22'
+          assert d['source_public_git_blobs_checked']==6
+          assert d['public_semantic_comparisons']==5 and d['public_differences']==0
+          assert d['counts']['cases_total']==44 and d['counts']['criteria_total']==20
+          assert (d['counts']['windows'],d['counts']['android'])==(43,1)
+          assert (d['counts']['human_approved'],d['counts']['native_completed'],d['counts']['native_approved'])==(0,0,0)
+          assert d['counts']['local_reports']==0 and d['counts']['phase_bcd_completed']==0
+          assert not d['human_evidence_approved'] and not d['sinnoh_playable']
+          assert not d['can_run_windows_sandbox'] and not d['can_run_game_exe']
+          assert not d['can_run_joiplay'] and not d['can_install_region']
+          assert not d['r07_mapids_reserved'] and not d['r08_asset_rights_approved']
+          assert not d['b11_global_save_isolation_proven'] and not d['r09_complete']
+          raw=out.read_text('utf8')
+          for private in ('Save01.rxdata','private-baseline.json','watch_id','hmac_key'):
+              assert private not in raw
+          print('SINNOH_L08_PUBLIC_GITHUB_SNAPSHOT_44_20_ALL_PENDING')
+          PY
+      - name: Recusar artefatos locais ou privados
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L08_NO_NATIVE_QA_NO_UPLOAD'
+
+  l08-regressions:
+    name: L08 / L07 L06 L05 L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L07 public triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 human review
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 human provenance
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 documentary review
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 sanitized evidence
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 safe exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l08-public-site:
+    name: L08 / integridade do painel L07
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar JS de filtros
+        run: node --check site/public/assets/sinnoh-l07-triage.js
+      - name: Validar espelho L07 e filtros somente leitura
+        working-directory: site
+        run: node --test tests/sinnoh-l07-triage.test.mjs
