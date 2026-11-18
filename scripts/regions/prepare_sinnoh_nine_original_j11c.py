@@ -285,8 +285,8 @@ def mock_or_private_native_overlay(infos,tiles,ids,*,occupied,protected,
 def private_inputs(root:Path,baseline:Path,review:Path):
     root=Path(root).absolute()
     allowed=(root/".blue-work/sinnoh-j11-baseline/Data").absolute()
-    if (baseline.absolute()!=allowed or baseline.is_symlink() or not baseline.is_dir()
-        or root.is_symlink() or not root.is_dir()):
+    if (baseline.absolute()!=allowed or baseline.is_symlink() or baseline.parent.is_symlink()
+        or not baseline.is_dir() or root.is_symlink() or not root.is_dir()):
         fail("REQUIRE_ISOLATED_PRIVATE_BASELINE_ONLY")
     work=root/".blue-work"
     if work.is_symlink() or (work/"sinnoh-j11-reviews").is_symlink():
