@@ -67,7 +67,10 @@ module KantoNativeCheck
     require!(BlueKantoPilot.experimental?, "Test-only menu marker was not loaded in the isolated pilot")
     labels = BlueKantoPilot.experimental_stops.map(&:first)
     puts "KANTO_NATIVE_STOPS:#{labels.length}|#{labels.grep(/Route|Elite|Hall|Lance|Champ|Kanto|Indigo/).join(";")}"
-    require!(labels.length == 64 && labels.any? { |row| row.include?("Misty") } &&
+    require!(labels.length == 67 && labels.any? { |row| row.include?("Misty") } &&
+             labels.any? { |row| row.include?("Nugget Bridge") } &&
+             labels.any? { |row| row.include?("Route 25") } &&
+             labels.any? { |row| row.include?("Casa do Bill") } &&
              labels.any? { |row| row.include?("Surge") } &&
              labels.any? { |row| row.include?("Captain") } &&
              labels.any? { |row| row.include?("Celadon City") } &&
@@ -860,7 +863,7 @@ module KantoNativeCheck
              "Oak parcel quest flags did not persist through save/reload")
     walk_verified = walk_rows.count { |row| row[4] == "native_step_verified" }
     File.write("Data/blue-kanto-proof.txt",
-               "Kanto 142 maps: Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +
+               "Kanto 145 maps: Route24/25, Bill, Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +
                "native tile-step probe #{walk_verified}/#{walk_rows.length} destinations (NOT manual keyboard/visual QA)")
   end
 end
