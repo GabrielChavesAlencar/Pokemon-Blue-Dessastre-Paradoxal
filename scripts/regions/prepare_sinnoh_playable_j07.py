@@ -262,7 +262,7 @@ def check_session(project: Path, preflight: dict, session: Path,
     session=Path(session).absolute()
     expected_parent=session_path(project,preflight["qa"],"0"*16).parent
     if (session.parent!=expected_parent
-            or not session.name.startswith(preflight["qa"].name+"-")
+            or session.name!=preflight["qa"].name+"-"+session.name[-16:]
             or not S_TOKEN.fullmatch(session.name[-16:])
             or session.is_symlink() or not session.is_dir()):
         blocked("SESSION_OUTSIDE_ISOLATED_WORKSPACE")
@@ -305,6 +305,8 @@ def record_case(project: Path, preflight: dict, session: Path,
            for s in (observed_sha,attachment_sha)):
         blocked("EVIDENCE_SHA_REQUIRED")
     observed=evidence_path(session,observed_file,{".json"})
+    if observed.name!=case_id+".json":
+        blocked("OBSERVATION_FILENAME_MUST_MATCH_CASE")
     attach=evidence_path(session,attachment,EVIDENCE_SUFFIX-{".json"})
     if file_digest(observed)!=observed_sha or file_digest(attach)!=attachment_sha:
         blocked("EVIDENCE_CHANGED_SINCE_SHA_ATTESTATION")
@@ -325,7 +327,8 @@ def record_case(project: Path, preflight: dict, session: Path,
     file=session/CASE_DIR/(case_id+".json")
     if file.is_symlink() or file.exists():
         blocked("CASE_ALREADY_RECORDED_NEVER_OVERWRITE")
-    file.write_text(json.dumps(record,ensure_ascii=False,sort_keys=True,indent=2)+"\n",encoding="utf-8",errors="strict")
+    with file.open("x",encoding="utf-8") as fd:
+        fd.write(json.dumps(record,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
     return {"case":case_id,"recorded":True,
             "status":record["status"],"native_cases_verified":0}
 
