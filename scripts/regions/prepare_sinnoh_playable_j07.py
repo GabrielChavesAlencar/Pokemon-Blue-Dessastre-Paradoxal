@@ -87,7 +87,7 @@ def require_no_links(path: Path):
 
 def approved_catalog(project: Path) -> tuple[list[dict],str]:
     source=project/G12
-    g12,source_sha=read_json(source,max_bytes=1_000_000)
+    g12,source_sha=read_json(source,limit=1_000_000)
     if (g12.get("region")!="SINNOH" or g12.get("stage")!="G12"
             or g12.get("total_cases")!=44
             or g12.get("windows_cases")!=43
@@ -150,8 +150,8 @@ def inspect_private_qa(project: Path, qa: Path, receipt_sha: str, *,
                 "reservations_sha256","spec_sha256"):
         if receipt.get(key)!=private.get(key):
             blocked("SOURCE_OR_RIGHTS_CHANGED_SINCE_J06")
-    meta,meta_sha=read_json(qa/META,max_bytes=8_000_000)
-    engine,engine_sha=read_json(qa/ENGINE,max_bytes=8_000_000)
+    meta,meta_sha=read_json(qa/META,limit=8_000_000)
+    engine,engine_sha=read_json(qa/ENGINE,limit=8_000_000)
     if (meta.get("region")!="SINNOH"
             or meta.get("runtime_playable") is not False
             or meta.get("intro_maps")!=9 or meta.get("event_count")!=24
@@ -310,7 +310,7 @@ def record_case(project: Path, preflight: dict, session: Path,
     attach=evidence_path(session,attachment,EVIDENCE_SUFFIX-{".json"})
     if file_digest(observed)!=observed_sha or file_digest(attach)!=attachment_sha:
         blocked("EVIDENCE_CHANGED_SINCE_SHA_ATTESTATION")
-    report,_=read_json(observed,max_bytes=1_000_000)
+    report,_=read_json(observed,limit=1_000_000)
     # Existing native QA schema tests Barry level 70/90, team size, victory,
     # warp arrivals, singleton starters, save reload and four regions.
     validate_observation(dynamic,report)
@@ -344,7 +344,7 @@ def audit_session(project: Path, preflight: dict, session: Path,
         ident=file.stem
         if ident not in candidates:
             blocked("UNEXPECTED_OR_ANDROID_CASE_ID")
-        row,_=read_json(file,max_bytes=40_000)
+        row,_=read_json(file,limit=40_000)
         if (set(row)!=RECORD_KEYS or row.get("schema")!=1
                 or row.get("stage")!="J07" or row.get("case_id")!=ident
                 or row.get("session_sha256")!=session_sha
