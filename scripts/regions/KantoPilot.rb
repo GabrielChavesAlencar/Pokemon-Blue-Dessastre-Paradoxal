@@ -708,7 +708,9 @@ module BlueKantoPilot
     rescue StandardError => error
       log_trainer_failure(error, type, name, event_key, 0, "outro")
     end
-    !!result
+    # The legacy battle callback returns nil for ordinary trainer victories;
+    # its persistent, map/event-scoped victory key is the authoritative result.
+    progress.fetch("pilot_wins", []).include?(event_key)
   end
 
   def self.battle(type, name, event_key = nil, version = 0)
