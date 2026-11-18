@@ -28,7 +28,7 @@ progress::-moz-progress-bar{background:#68bbdb;border-radius:15px}
 .stage .id{color:#91cbed;font-size:.75rem;letter-spacing:.07em;font-weight:bold}
 .state{font-size:.76rem;font-weight:800;color:#e6d19d}
 .state.ready{color:#9fe1c3}
-.warning{background:#2d2931;border-left:4px solid #e8b879;border-radius:7px;padding:14px 18px;margin:18px 0}
+.nextphase{border:1px solid #5285a2;background:#1c3651;border-radius:16px;padding:24px;margin-top:24px}.nextbutton{display:inline-block;background:#86cfed;color:#071c2a;text-decoration:none;border-radius:10px;padding:12px 19px;font-weight:800;margin:12px 0}.nextbutton:hover,.nextbutton:focus-visible{background:#b3e6ff}.nextphase p{margin:9px 0}.warning{background:#2d2931;border-left:4px solid #e8b879;border-radius:7px;padding:14px 18px;margin:18px 0}
 footer{margin-top:40px;border-top:1px solid #45617c;padding-top:20px;color:#c4d7eb}
 code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-offset:4px}
 </style></head><body>
@@ -47,6 +47,8 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <p class="muted">Sem Game.exe, mapas nativos, save de QA ou Android testados, esta barra não avança.</p>
 </div></section>
 <div class="metrics">
+<div class="metric"><strong id="referenceCount">4/9</strong><small>Terrenos de origem identificados</small></div>
+<div class="metric"><strong id="missingCount">5/9</strong><small>Mapas de origem ainda faltando</small></div>
 <div class="metric"><strong id="maps">0/9</strong><small>Mapas reais vinculados</small></div>
 <div class="metric"><strong id="warps">0/16</strong><small>Portais compilados</small></div>
 <div class="metric"><strong id="windows">0/43</strong><small>Casos Windows testados</small></div>
@@ -56,9 +58,17 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <section aria-labelledby="titulo-etapas"><h2 id="titulo-etapas">8 entregas até você conseguir testar</h2>
 <p id="status" aria-live="polite">Conferindo o progresso publicado…</p>
 <div id="stages" class="stages"></div></section>
+<section class="nextphase" aria-labelledby="nextphase-title">
+<h2 id="nextphase-title">Próxima fase <span id="nextStage">J03</span></h2>
+<p>Quer continuar desenvolvendo o piloto? Use este botão. Ele abre o ChatGPT com o pedido da próxima fase já escrito; <strong>envie a mensagem</strong> para iniciar a implementação. A página não executa códigos sozinha.</p>
+<a class="nextbutton" id="nextAction" href="#" target="_blank" rel="noopener">Abrir próxima fase no ChatGPT</a>
+<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/224">Ver requisitos no GitHub</a></p>
+</section>
+<section><h2>O que a J02 implementou</h2>
+<p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/bind_sinnoh_playable_j02.py">vinculador J02</a> compara MapInfos e RXDATA locais, SHA-256, geometria real, nove símbolos e colisões de IDs. A fonte auditada fornece quatro terrenos exteriores; os cinco mapas ausentes precisam ser criados ou fornecidos com licença adequada. Nenhuma instalação foi efetuada.</p></section>
 <section><h2>Primeira ferramenta executável</h2>
 <p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/preflight_sinnoh_playable_j01.py">diagnóstico J01</a> verifica os arquivos da instalação, inventário de MapIDs e estrutura de uma fonte de mapas. Não extrai dados, não importa mapas, não roda Game.exe e não toca nos saves. Você pode executá-lo pelo script <code>SINNOH_J01_DIAGNOSTICAR_JOGAVEL.bat</code> no Windows após baixar uma versão que contenha a J01.</p>
-<p>Próxima entrega: reservar MapIDs e vincular os 9 mapas com hashes e coordenadas reais. Nenhum ID será inventado. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/223">Abrir a J02 — integração dos nove mapas</a>.</p>
+<p>Os MapIDs de destino continuam sem associação física. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/223">Consultar a J02</a>. A próxima implementação é a J03, vinculada no botão acima.</p>
 </section>
 <footer><p>Dados versionados em <code>data/regions/sinnoh-playable-progress.json</code>. Esta barra é independente da série L e do antigo desenvolvimento 32/32; evita confundir contratos/documentação com uma região instalada.</p>
 <p><a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues">Acompanhar próximas implementações no GitHub</a></p></footer>
