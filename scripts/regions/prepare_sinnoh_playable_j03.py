@@ -318,7 +318,7 @@ def build_overlay(root: Path, source: Path, game_data: Path, plan: dict,
 
 def stage_verify(root:Path,label:str,plan_sha:str) -> dict:
     """Read-only verifier of the exact immutable stage receipt; never removes."""
-    if (not LABEL.fullmatch(label) or not label.startswith("j03-")
+    if (not LABEL.fullmatch(label) or not label.startswith(("j03-", "j04-"))
             or not SHA.fullmatch(plan_sha)):
         fail("STAGE_ID_INVALID")
     folder=stage_root(root) / f"{label}-{plan_sha[:16]}"
