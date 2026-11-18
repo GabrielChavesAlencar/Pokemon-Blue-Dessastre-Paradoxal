@@ -42,7 +42,7 @@ jobs:
           ruby -c scripts/battle_polish/RegionStart.rb
           ruby -c scripts/battle_polish/RegionTravel.rb
           ruby tests/region_map_transition_perf_runtime.rb scripts/battle_polish/RegionTravel.rb
-          ruby tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+          ruby -I. tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
           python -m unittest discover -s tests -p test_region_map_transition_android.py -v
           ruby -c scripts/battle_lab/Mobile.rb
           ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
