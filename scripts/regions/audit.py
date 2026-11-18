@@ -67,12 +67,19 @@ KANTO_PHASE12_SOURCE_IDS = (
 # Old destination IDs must remain stable even when these are appended.
 KANTO_PHASE13_SOURCE_IDS = (13,)
 
+# This phase-14 tail was previously sorted after the older frozen phases.
+# Freeze it now BEFORE appending the lower source IDs 53/54/55: otherwise
+# the existing Route 22, League and Hall of Fame destination MapIDs shift,
+# corrupting navigation for any Kanto saves made before Route 24 existed.
+KANTO_PHASE14_SOURCE_IDS = (16, 17, *range(209, 222))
+
 
 def stable_source_order(wanted):
     chosen = set(wanted)
     stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
               *KANTO_PHASE11_LATE_SOURCE_IDS,
-              *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS)
+              *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS,
+              *KANTO_PHASE14_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result

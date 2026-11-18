@@ -275,7 +275,7 @@ module BlueMusic
   # and the regional title track must not touch the Decades Game.exe title.
   def self.kanto_pilot_title_audio
     return nil unless File.file?('Kanto pilot.json') &&
-      !File.file?('Data/blue-kanto-install.json') && kanto_data[0].length==142
+      !File.file?('Data/blue-kanto-install.json') && [142, 145].include?(kanto_data[0].length)
     row=kanto_data[6]['pilot_title']
     return nil unless row && valid_track?(row[0])
     RPG::AudioFile.new(row[0],row[1],row[2])

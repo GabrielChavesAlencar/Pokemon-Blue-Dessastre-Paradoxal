@@ -20,9 +20,9 @@ class KantoPilotAuditTests(unittest.TestCase):
         root = REGIONS.parents[1]
         manifest = json.loads((root / "data/regions/kanto-source.json").read_text("utf-8"))
         order = stable_source_order({int(k) for k in manifest["maps"]})
-        self.assertEqual(len(order), 142)
+        self.assertEqual(len(order), 145)
         self.assertEqual(tuple(order[:13]), PILOT_V1_SOURCE_IDS)
-        self.assertEqual(len(set(order)), 142)
+        self.assertEqual(len(set(order)), 145)
         self.assertEqual(order[13:25], [26,27,32,33,34,36,37,38,39,40,41,42])
         self.assertEqual(order[25:40], [56,59,60,61,63,64,65,66,67,72,74,75,76,77,78])
         self.assertEqual(order[40:51], [111,114,115,117,118,119,120,121,122,123,124])
@@ -36,7 +36,8 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[109:126], [190,191,193,194,195,196,197,198,
                                         199,200,201,202,203,205,206,207,208])
         self.assertEqual(order[126:127], [13])
-        self.assertEqual(order[127:], [16,17,*range(209,222)])
+        self.assertEqual(order[127:142], [16,17,*range(209,222)])
+        self.assertEqual(order[142:], [53,54,55])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
             141,142,143,164,165,
@@ -54,8 +55,8 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_portal_matches_audited_kanto_rosters(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 142)
-        self.assertEqual(len(data["trainers"]), 144)
+        self.assertEqual(len(data["locations"]), 145)
+        self.assertEqual(len(data["trainers"]), 161)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)
         self.assertIn("Giovanni", leaders)
@@ -65,7 +66,7 @@ class KantoPilotAuditTests(unittest.TestCase):
         )
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
-        self.assertEqual(len(data["trainers"]), 144)
+        self.assertEqual(len(data["trainers"]), 161)
         giovanni_leader = leaders["Giovanni"]
         self.assertEqual(giovanni_leader["id"], "kanto-giovanni-viridian")
         self.assertEqual(giovanni_leader["location"], "kanto-viridian-gym")
@@ -180,11 +181,11 @@ class KantoPilotAuditTests(unittest.TestCase):
         # Exact species-level source probabilities are carried as raw
         # integer weights, with percentages normalized solely for the portal.
         locations_with_wild = [x for x in data["locations"] if x["methods"]]
-        self.assertEqual(len(locations_with_wild),26)
-        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),88)
+        self.assertEqual(len(locations_with_wild),28)
+        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),99)
         wild_species={slot["species"] for loc in locations_with_wild
                       for method in loc["methods"] for slot in method["slots"]}
-        self.assertEqual(len(wild_species),67)
+        self.assertEqual(len(wild_species),68)
         for location in locations_with_wild:
             for method in location["methods"]:
                 self.assertEqual(method["weightTotal"],

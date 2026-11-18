@@ -415,6 +415,21 @@ class AndroidUpdatesTest(unittest.TestCase):
             best = release_for("multiregion")
         self.assertEqual(best["tag_name"], "android-multiregion-15-125155e")
 
+    def test_kanto_release_is_found_on_fourth_github_page(self):
+        # Battle-hub releases pushed the last valid Kanto publication to
+        # page 4 (Nov 18, 2026). A three-page reader would demand a full ZIP.
+        unrelated = [self._release("battle-hub-900-release",
+                                   "2026-11-18T16:00:00Z") for _ in range(100)]
+        old = self._release("kanto-android-1205-f4b574e",
+                            "2026-11-16T12:00:00Z")
+        pages = [unrelated, unrelated, unrelated, [old]]
+        with patch("scripts.android.update_client.get_json",
+                   side_effect=pages) as request:
+            found = release_for("kanto")
+        self.assertEqual(found["tag_name"], old["tag_name"])
+        self.assertEqual(request.call_count, 4)
+        self.assertTrue(request.call_args.args[0].endswith("&page=4"))
+
     def test_release_selector_ignores_drafts_and_missing_manifest(self):
         releases = [
             self._release("android-multiregion-20-draft",

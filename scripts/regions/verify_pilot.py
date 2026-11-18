@@ -670,7 +670,7 @@ def inspect(game: Path) -> dict:
         "BlueKantoPilot.victory_couple" not in first_scripts(213,16)):
         raise ValueError("Victory Road's Ray/Tyra double battle was split or discarded")
 
-    # MAN-02: the source-proven 122 line-of-sight trainers require Event Touch,
+    # MAN-02: source-proven line-of-sight trainers require Event Touch,
     # with a non-triggering second page selected by self-switch A after victory.
     sight_count = 0
     for original, profiles in TRAINERS.items():
@@ -698,29 +698,62 @@ def inspect(game: Path) -> dict:
             script = "\\n".join(value.decode("utf-8") if isinstance(value, bytes)
                                   else str(value) for value in commands)
             key = f"KANTO_{original:03d}_{event_id:03d}"
-            if original == 42 and event_id in (11, 16):
-                kind, name, *_ = spec
-                # One guarded callback replaces three independent native
-                # interpreter commands on JoiPlay. The Ruby handler performs
-                # victory synchronization only after a real win.
+            if (original == 42 and event_id in (11, 16)) or original in (53,54):
+                kind, name, *version = spec
+                # One guarded native handler replaces three separate event
+                # interpreter commands on JoiPlay (also on Route24/25).
+                detail = f", {version[0]}" if original in (53,54) and version else (
+                    ", 0" if original in (53,54) else "")
                 required = (
                     f'BlueKantoPilot.cerulean_gym_trainer('
-                    f':BLUE_KANTO_{kind}, "{name}", "{key}", {event_id})'
+                    f':BLUE_KANTO_{kind}, "{name}", "{key}", {event_id}{detail})'
                 )
                 if commands != [required.encode("ascii")]:
-                    raise ValueError(f"Cerulean Gym {event_id} has unguarded event scripts")
+                    raise ValueError(f"Cerulean north {original}/{event_id} has unsafe script")
             elif (not ("BlueKantoPilot.battle(" in script or
+                       (original == 53 and event_id == 6 and
+                        "BlueKantoPilot.nugget_rocket" in script) or
                        "BlueKantoPilot.cinnabar_trainer(" in script or
                        "BlueKantoPilot.victory_couple" in script) or
                   f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
                 raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
             if sight:
                 sight_count += 1
-                if original != 42 or event_id not in (11, 16):
+                if not ((original == 42 and event_id in (11,16)) or original in (53,54)):
                     if "pbNoticePlayer(get_self)" not in script:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 122:
+    if sight_count != 138:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
+
+    # The new Cerulean north content is source-grounded: dimensions,
+    # event coordinates and page triggers must not silently change.
+    for source, width, height in ((39,48,40),(53,36,44),(54,69,44),(55,20,15)):
+        m = maps[mapping[source]].attrs
+        if (m["@width"],m["@height"]) != (width,height):
+            raise ValueError(f"Route 24/25 source geometry mismatch: {source}")
+    for event_id, x in ((15,22),(32,23),(34,24)):
+        event = maps[mapping[39]].attrs["@events"].get(event_id)
+        if (not event or (event.attrs["@x"],event.attrs["@y"]) != (x,6)
+            or len(event.attrs["@pages"]) != 2 or
+            event.attrs["@pages"][0].attrs["@trigger"] != 1 or
+            event.attrs["@pages"][1].attrs["@condition"].attrs["@self_switch_ch"] != b"A"):
+            raise ValueError(f"Gary north encounter not bound to original tile {event_id}")
+    for source, event_id, x, y in ((53,6,24,19),(54,18,51,8),
+                                    (55,1,7,10),(55,3,10,6),
+                                    (55,4,4,5),(55,8,7,6)):
+        event = maps[mapping[source]].attrs["@events"].get(event_id)
+        if not event or (event.attrs["@x"],event.attrs["@y"]) != (x,y):
+            raise ValueError(f"Bill/Nugget source event missing: {source}/{event_id}")
+    if 5 in maps[mapping[55]].attrs["@events"]:
+        raise ValueError("Bill appears twice before PC rescue")
+    # Pinned FRLG has bidirectional 54/55 door warps. Confirm they target
+    # only the two newly allocated Kanto MapIDs, never an original MapID.
+    for src, eid, dst, x, y in ((54,18,55,7,9),(55,1,54,51,9)):
+        page = maps[mapping[src]].attrs["@events"][eid].attrs["@pages"][0]
+        warps = [op.attrs["@parameters"] for op in page.attrs["@list"]
+                 if op.attrs["@code"] == 201]
+        if not warps or warps[0][1:4] != [mapping[dst],x,y]:
+            raise ValueError(f"Bill home warp invalid: {src}/{eid}")
 
     # Route connections are bidirectional, but transfer events are directed.
     # Check reachability both from and back to Pallet to avoid accepting
@@ -752,6 +785,13 @@ def inspect(game: Path) -> dict:
         (6, 20): "BlueKantoPilot.choose_starter_ball(:CHARMANDER)",
         (6, 28): "BlueKantoPilot.finish_lab_escort",
         (6, 35): "BlueKantoPilot.rival",
+        (39, 15): "BlueKantoPilot.cerulean_rival",
+        (39, 32): "BlueKantoPilot.cerulean_rival",
+        (39, 34): "BlueKantoPilot.cerulean_rival",
+        (55, 3): "BlueKantoPilot.bill_request",
+        (55, 4): "BlueKantoPilot.bill_machine",
+        (55, 8): "BlueKantoPilot.bill_ticket",
+        (53, 6): "BlueKantoPilot.nugget_rocket",
         (6, 36): "BlueKantoPilot.rival",
         (6, 37): "BlueKantoPilot.rival",
         (7, 4): "BlueKantoPilot.meet_mom",
@@ -792,6 +832,15 @@ def inspect(game: Path) -> dict:
             f'BlueKantoPilot.cerulean_gym_trainer(:BLUE_KANTO_{kind}, '
             f'"{name}", "{key}", {event_id})'
         )
+    for source in (53,54):
+        for event_id, spec in TRAINERS[source].items():
+            kind, name, *versions = spec
+            version = versions[0] if versions else 0
+            key = f"KANTO_{source:03d}_{event_id:03d}"
+            anchors[(source, event_id)] = (
+                f'BlueKantoPilot.cerulean_gym_trainer(:BLUE_KANTO_{kind}, '
+                f'"{name}", "{key}", {event_id}, {version})'
+            )
     for event_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
         kind, name, *_ = TRAINERS[202][event_id]
         key = f"KANTO_202_{event_id:03d}"
@@ -924,7 +973,8 @@ def inspect(game: Path) -> dict:
     if not stops_file.is_file():
         raise ValueError("Experimental Kanto destinations were not generated")
     required_stops = {"PALLET", "PLAYER_HOME", "VIRIDIAN", "PEWTER", "ROUTE4", "MOON_CENTER",
-                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
+                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "NUGGET",
+                      "BILL_ROUTE", "BILL_HOUSE", "MISTY",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
                       "ROUTE7", "CELADON", "ERIKA", "CEL_CENTER", "CEL_STORE",

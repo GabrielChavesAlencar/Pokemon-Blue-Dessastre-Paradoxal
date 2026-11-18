@@ -34,6 +34,9 @@ LOCATION_NAMES = {
     "CERULEAN_CENTER": "Centro Pokémon de Cerulean",
     "CERULEAN_MART": "Poké Mart de Cerulean",
     "CERULEAN_GYM": "Ginásio de Cerulean",
+    "ROUTE_24": "Rota 24 — Nugget Bridge",
+    "ROUTE_25": "Rota 25 — caminho de Bill",
+    "BILLS_COTTAGE": "Casa do Bill",
     "ROUTE_5": "Rota 5",
     "UNDERGROUND_NORTH": "Passagem Subterrânea — entrada norte",
     "UNDERGROUND_TUNNEL": "Passagem Subterrânea — túnel",
@@ -303,6 +306,28 @@ STARTERS = {1: "BULBASAUR", 2: "CHARMANDER", 3: "SQUIRTLE",
             51: "BULBASAUR", 52: "CHARMANDER", 53: "SQUIRTLE"}
 
 
+# Authentic source PBS rosters belong to their actual Route24/25 locations;
+# do not silently display these trainers as generic Pewter Gym/Route3 NPCs.
+TRAINER_LOCATIONS.update({
+    **{(kind, name): ("ROUTE_24", role)
+       for kind, role, names in (
+           ("CAMPER","Campista",("Ethan","Shane")),
+           ("LASS","Treinadora",("Reli","Ali")),
+           ("YOUNGSTER","Jovem treinador",("Timmy",)),
+           ("BUGCATCHER","Caçador de insetos",("Cale",)),
+       ) for name in names},
+    **{(kind, name): ("ROUTE_25", role)
+       for kind, role, names in (
+           ("HIKER","Montanhista",("Franklin","Wayne","Nob")),
+           ("LASS","Treinadora",("Haley",)),
+           ("YOUNGSTER","Jovem treinador",("Chad","Joey","Dan")),
+           ("CAMPER","Campista",("Flint",)),
+           ("PICNICKER","Piqueniqueira",("Kelsey",)),
+       ) for name in names},
+})
+
+
+
 def slug(key):
     return "kanto-" + key.lower().replace("_", "-")
 
@@ -372,7 +397,13 @@ def export(preview: Path):
     for header, lines in read_blocks(trainer_file).items():
         trainer_type, name, version = header.split(",")
         kind = trainer_type.removeprefix("BLUE_KANTO_")
-        if kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
+        if kind == "RIVAL" and int(version) in (31,32,33):
+            key, role = "CERULEAN_CITY", "Rival"
+            trainer_id, shown_name = slug("blue_cerulean"), "Blue (Cerulean)"
+        elif kind == "ROCKET" and int(version) == 5:
+            key, role = "ROUTE_24", "Equipe Rocket"
+            trainer_id, shown_name = slug("grunt_nugget_bridge"), "Grunt (Nugget Bridge)"
+        elif kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
             key, role = SILPH_GRUNT_FLOORS[int(version)], "Equipe Rocket"
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
         else:
