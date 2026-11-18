@@ -59,11 +59,14 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <p id="status" aria-live="polite">Conferindo o progresso publicado…</p>
 <div id="stages" class="stages"></div></section>
 <section class="nextphase" aria-labelledby="nextphase-title">
-<h2 id="nextphase-title">Próxima fase <span id="nextStage">J06</span></h2>
+<h2 id="nextphase-title">Próxima fase <span id="nextStage">J07</span></h2>
 <p>Quer continuar desenvolvendo o piloto? Use este botão. Ele abre o ChatGPT com o pedido da próxima fase já escrito; <strong>envie a mensagem</strong> para iniciar a implementação. A página não executa códigos sozinha.</p>
 <a class="nextbutton" id="nextAction" href="#" target="_blank" rel="noopener">Abrir próxima fase no ChatGPT</a>
-<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/230">Ver requisitos no GitHub</a></p>
+<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/232">Ver requisitos no GitHub</a></p>
 </section>
+<section><h2>J06 — Launcher Windows QA isolado (código preparado)</h2>
+<p>A <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/prepare_sinnoh_playable_j06.py">ferramenta J06</a> verifica hashes do Game.exe e MapInfos de referência, os nove mapas, 24 eventos, três equipes PBS Barry, MapIDs contra as demais regiões, permissões declaradas individualmente para cada arquivo e isolamento dos saves. Só aceita copiar para uma pasta nova dentro de <code>.blue-work/game-sinnoh-qa-...</code>; não instala em <code>game/</code> nem move saves. O rollback automático só permite excluir uma cópia ainda intacta, sem dados criados pelo usuário.</p>
+<p><strong>Esta etapa não instalou nenhum mapa real:</strong> faltam cinco mapas físicos e recibos locais de direitos e reserva R07. Os testes são sintéticos e o Game.exe não foi executado. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/SINNOH_J06_WINDOWS_QA_ISOLADO.md">Instruções de pré-voo J06</a> e <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/232">J07 — QA nativa Windows e saves</a>.</p></section>
 <section><h2>J05 — Histórias, Barry e salvamento regional (código Ruby)</h2>
 <p>O módulo <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/SinnohPilot.rb">BlueSinnohPilot</a> já tem os cinco handlers próprios da história, Barry e Rowan. A J05 corrigiu as três chamadas das Poké Bolas para o método de concessão real, bloqueou múltiplos iniciais com verificação/compensação da equipe, exigiu as três versões PBS esperadas para Barry e protegeu o checkpoint da Pokédex se o motor recusar a entrega.</p>
 <p>Os testes são <strong>Ruby offline e sintéticos</strong>: não representam partidas no Game.exe. Os saves pessoais não foram acessados; o isolamento de perfil segue bloqueado até os nove mapas e a instalação QA estarem autorizados. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/230">Próxima J06 — launcher Windows de QA isolado</a>.</p></section>
