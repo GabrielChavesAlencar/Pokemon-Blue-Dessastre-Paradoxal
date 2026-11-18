@@ -34,4 +34,4 @@ Os contratos de 16 portais, cinco NPCs e três Poké Bolas são validados, mas p
 
     python -m unittest discover -s tests -p test_sinnoh_j11c_native_overlay.py -v
 
-46 testes positivos e negativos: Ruby Marshal, dois Tilesets reais como objetos, tabela de passagens, remap seguro de nove mapas, preservação de baseline, colisões de MapIDs e reservas, recusa de symlinks, ausência de acessos a saves e bloqueio de staging sem provas. GitHub Actions Linux também roda as regressões J11-B/J11 e o portal. Nenhum artifact publica RXDATA, PNG, MapInfos privados ou recibos locais.
+47 testes positivos e negativos: Ruby Marshal, dois Tilesets reais como objetos, tabela de passagens, remap seguro de nove mapas, preservação de baseline, colisões de MapIDs e reservas, recusa de symlinks, ausência de acessos a saves e bloqueio de staging sem provas. GitHub Actions Linux também roda as regressões J11-B/J11 e o portal. Nenhum artifact publica RXDATA, PNG, MapInfos privados ou recibos locais.
