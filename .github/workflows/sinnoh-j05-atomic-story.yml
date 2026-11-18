@@ -14,6 +14,8 @@ on:
       - 'docs/SINNOH_J05_HANDLERS_SAVE_ATOMICO.md'
       - 'SINNOH_J05_TESTAR_HANDLERS.bat'
       - 'scripts/regions/prepare_sinnoh_playable_j06.py'
+      - 'scripts/regions/prepare_sinnoh_pilot_bundle.py'
+      - 'scripts/regions/install_sinnoh_qa_copy.py'
       - 'tests/test_sinnoh_j06_qa_windows.py'
       - '.github/workflows/sinnoh-j06-windows-qa.yml'
       - 'SINNOH_J06_QA_WINDOWS.bat'
@@ -112,7 +114,7 @@ jobs:
           grep -q '/sinnoh-jogavel.html' site/dist/index.html
 
   j06-guarded-qa-copy-linux:
-    name: J06 / Linux 40 synthetic tests - rights, maps, isolation and rollback
+    name: J06 / Linux 42 synthetic tests - rights, maps, isolation and rollback
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
