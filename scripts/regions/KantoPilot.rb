@@ -667,6 +667,52 @@ module BlueKantoPilot
     true
   end
 
+  # Keep the original exception, map and event identity when a native
+  # Kanto TrainerBattle raises an EventScriptError in JoiPlay. Never grant a
+  # victory, change a self-switch or touch save data on a failed battle.
+  def self.log_trainer_failure(error, type, name, event_key, version, phase)
+    begin
+      map_id = $game_map && $game_map.respond_to?(:map_id) ? $game_map.map_id : "unknown"
+      details = [
+        "KANTO_TRAINER_ERROR",
+        "phase=#{phase} map=#{map_id} event=#{event_key} type=#{type} name=#{name.inspect} version=#{version}",
+        "#{error.class}: #{error.message}",
+        *Array(error.backtrace).first(20),
+        ""
+      ].join("\n")
+      File.open("Data/blue-kanto-trainer-error.log", "a") { |file| file.write(details) }
+    rescue StandardError
+      # Read-only diagnostics must never generate another event exception.
+    end
+  end
+
+  # Route-independent shim for the two source-grounded Cerulean Gym trainers.
+  # Their optional alert/introduction cannot block the essential battle on
+  # JoiPlay. This is used by newly compiled Map042 events, not by other maps.
+  def self.cerulean_gym_trainer(type, name, event_key, event_id)
+    begin
+      pbTrainerIntro(type) if respond_to?(:pbTrainerIntro, true)
+      event = $game_map && $game_map.respond_to?(:events) ? $game_map.events[event_id] : nil
+      pbNoticePlayer(event) if event && respond_to?(:pbNoticePlayer, true)
+    rescue StandardError => error
+      log_trainer_failure(error, type, name, event_key, 0, "intro")
+    end
+    result = battle(type, name, event_key)
+    begin
+      sync_trainer_event(event_key, name, event_id)
+    rescue StandardError => error
+      log_trainer_failure(error, type, name, event_key, 0, "self_switch")
+    end
+    begin
+      pbTrainerEnd if respond_to?(:pbTrainerEnd, true)
+    rescue StandardError => error
+      log_trainer_failure(error, type, name, event_key, 0, "outro")
+    end
+    # The legacy battle callback returns nil for ordinary trainer victories;
+    # its persistent, map/event-scoped victory key is the authoritative result.
+    progress.fetch("pilot_wins", []).include?(event_key)
+  end
+
   def self.battle(type, name, event_key = nil, version = 0)
     return unless starter
     if type == :BLUE_KANTO_LEADER_SABRINA && !progress["pilot_silph_rescued"]
@@ -709,8 +755,25 @@ module BlueKantoPilot
     end
     # canLose suppresses Essentials' blackout and respawn. Kanto story
     # battles must use the engine's last Pokémon Center checkpoint.
-    setBattleRule("cannotLose")
-    won = TrainerBattle.start(type, name, version)
+    begin
+      if defined?(GameData::Trainer) && GameData::Trainer.respond_to?(:exists?) &&
+         !GameData::Trainer.exists?(type, name, version)
+        raise "Compiled Kanto trainer is missing: #{type}/#{name}/#{version}"
+      end
+      setBattleRule("cannotLose")
+      won = TrainerBattle.start(type, name, version)
+    rescue StandardError => error
+      log_trainer_failure(error, type, name, key, version, "battle")
+      $game_temp.clear_battle_rules if $game_temp && $game_temp.respond_to?(:clear_battle_rules)
+      detail = "#{error.class}: #{error.message.to_s.lines.first.to_s.strip}"
+      detail = detail.gsub(/[[:cntrl:]]/, " ")[0, 175]
+      pbMessage(BlueKantoPilot.t(
+        "The Kanto trainer battle failed ({1}). No victory was recorded. See Data/blue-kanto-trainer-error.log.",
+        "A batalha do treinador de Kanto falhou ({1}). Nenhuma vitória foi registrada. Veja Data/blue-kanto-trainer-error.log.",
+        detail
+      ))
+      return false
+    end
     return false unless won
     wins << key
     if key == "KANTO_038_019"

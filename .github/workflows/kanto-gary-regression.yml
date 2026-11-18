@@ -10,8 +10,18 @@ on:
       - 'tests/test_kanto_music_phase3.py'
       - 'scripts/regions/auto_integrate_kanto.py'
       - 'tests/kanto_gary_battle_runtime.rb'
+      - 'tests/kanto_cerulean_android_runtime.rb'
+      - 'scripts/regions/pilot.py'
+      - 'scripts/regions/verify_pilot.py'
       - 'tests/kanto_blackout_runtime.rb'
       - 'tests/test_kanto_auto_integrate.py'
+      - '.github/workflows/kanto-gary-regression.yml'
+  pull_request:
+    paths:
+      - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/regions/pilot.py'
+      - 'scripts/regions/verify_pilot.py'
+      - 'tests/kanto_cerulean_android_runtime.rb'
       - '.github/workflows/kanto-gary-regression.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +41,8 @@ jobs:
           python -m py_compile scripts/regions/auto_integrate_kanto.py
       - name: Batalha Gary - dados nativos e diagnostico
         run: ruby tests/kanto_gary_battle_runtime.rb scripts/regions/KantoPilot.rb
+      - name: JoiPlay - Luis/Diana, erros e revanches
+        run: ruby tests/kanto_cerulean_android_runtime.rb scripts/regions/KantoPilot.rb
       - name: Blackout e preservacao de progresso
         run: ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
       - name: Atualizador de PBS Kanto

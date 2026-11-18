@@ -698,15 +698,27 @@ def inspect(game: Path) -> dict:
             script = "\\n".join(value.decode("utf-8") if isinstance(value, bytes)
                                   else str(value) for value in commands)
             key = f"KANTO_{original:03d}_{event_id:03d}"
-            if (not ("BlueKantoPilot.battle(" in script or
-                     "BlueKantoPilot.cinnabar_trainer(" in script or
-                     "BlueKantoPilot.victory_couple" in script) or
-                f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
+            if original == 42 and event_id in (11, 16):
+                kind, name, *_ = spec
+                # One guarded callback replaces three independent native
+                # interpreter commands on JoiPlay. The Ruby handler performs
+                # victory synchronization only after a real win.
+                required = (
+                    f'BlueKantoPilot.cerulean_gym_trainer('
+                    f':BLUE_KANTO_{kind}, "{name}", "{key}", {event_id})'
+                )
+                if commands != [required.encode("ascii")]:
+                    raise ValueError(f"Cerulean Gym {event_id} has unguarded event scripts")
+            elif (not ("BlueKantoPilot.battle(" in script or
+                       "BlueKantoPilot.cinnabar_trainer(" in script or
+                       "BlueKantoPilot.victory_couple" in script) or
+                  f'BlueKantoPilot.sync_trainer_event("{key}"' not in script):
                 raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
             if sight:
                 sight_count += 1
-                if "pbNoticePlayer(get_self)" not in script:
-                    raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
+                if original != 42 or event_id not in (11, 16):
+                    if "pbNoticePlayer(get_self)" not in script:
+                        raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
     if sight_count != 122:
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
@@ -771,6 +783,15 @@ def inspect(game: Path) -> dict:
             anchors[(source_id, event_id)] = (
                 f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}"'
             )
+    for event_id in (11, 16):
+        # Map042 JoiPlay-safe atomic event wrapper, instead of separate
+        # native pbTrainerIntro/pbNoticePlayer/battle/event-sync commands.
+        kind, name, *_ = TRAINERS[42][event_id]
+        key = f"KANTO_042_{event_id:03d}"
+        anchors[(42, event_id)] = (
+            f'BlueKantoPilot.cerulean_gym_trainer(:BLUE_KANTO_{kind}, '
+            f'"{name}", "{key}", {event_id})'
+        )
     for event_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
         kind, name, *_ = TRAINERS[202][event_id]
         key = f"KANTO_202_{event_id:03d}"
