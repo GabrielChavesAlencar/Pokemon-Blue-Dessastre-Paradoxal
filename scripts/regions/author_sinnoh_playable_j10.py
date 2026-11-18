@@ -231,12 +231,12 @@ def private_build(project:Path)->dict:
     try:
         for name,blob in blobs.items():
             with (temp/name).open("xb") as file:file.write(blob)
-        # Reuse the independent J09 five-map intake for a second check.
-        check=authored_five(project,temp,source_catalog(project))
-        if (len(check)!=5 or
-                any(check[s]["sha256"]!=report["maps"][s]["rxdata_sha256"]
-                    for s in check)):
-            fail("INDEPENDENT_J09_RECHECK_FAILED")
+        # Check every emitted file INERTLY before moving to the fixed
+        # J09 directory. Never treat a temp directory as a real J09 folder.
+        for symbol in missing_symbols(project):
+            info=audit_map((temp/(symbol+".rxdata")).read_bytes())
+            if info["sha256"]!=report["maps"][symbol]["rxdata_sha256"]:
+                fail("INDEPENDENT_J09_RECHECK_FAILED")
         if work.exists() or work.is_symlink():
             fail("AUTHORED_MAPS_CREATED_BY_ANOTHER_PROCESS")
         temp.rename(work)
