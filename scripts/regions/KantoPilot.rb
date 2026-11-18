@@ -741,7 +741,12 @@ module BlueKantoPilot
     key = event_key || "#{type}:#{name}"
     # Both Silph Co. and Viridian have a boss named Giovanni. A legacy
     # Silph name-only victory must never mark the *gym* Giovanni as beaten.
-    if wins.include?(key) || (type != :BLUE_KANTO_LEADER_GIOVANNI && wins.include?(name))
+    # The Cerulean rival has a unique team and story flag; an older
+    # name-only Blue victory at Silph or Oak Lab must not skip this battle.
+    old_name_victory = type != :BLUE_KANTO_LEADER_GIOVANNI &&
+                       !(type == :BLUE_KANTO_RIVAL && version >= 31) &&
+                       wins.include?(name)
+    if wins.include?(key) || old_name_victory
       # Older saves may have Miguel defeated but still use his first page.
       # Both paths must offer the missing one-time prize.
       if key == "KANTO_038_019" && !progress["pilot_mt_moon_fossil"]
