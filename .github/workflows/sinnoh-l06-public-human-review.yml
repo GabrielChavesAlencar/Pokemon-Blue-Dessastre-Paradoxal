@@ -1,0 +1,93 @@
+name: Sinnoh L06 - 44 filas de revisao humana somente documental
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l06-public-human-review.yml'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'scripts/regions/audit_sinnoh_l06_human_evidence.py'
+      - 'tests/test_sinnoh_l06_human_evidence.py'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l05_native_dependencies.py'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l06-public-human-review.yml'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'scripts/regions/audit_sinnoh_l06_human_evidence.py'
+      - 'tests/test_sinnoh_l06_human_evidence.py'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l05_native_dependencies.py'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l06-documentary:
+    name: L06 / casos reais, 20 criterios, testes negativos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testes sintéticos L06 (incluindo 25+ negativos)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: Conferir bloqueios de revisao humana
+        run: |
+          python scripts/regions/audit_sinnoh_l06_human_evidence.py > /tmp/sinnoh-l06-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('/tmp/sinnoh-l06-public.json')
+          d = json.loads(p.read_text('utf8'))
+          assert d['stage'] == 'L06'
+          assert d['status'] == 'DOCUMENTARY_REVIEW_QUEUE_VALID_44_NATIVE_BLOCKED'
+          assert (d['windows_cases'], d['android_cases']) == (43, 1)
+          assert (d['criteria_total'], d['criteria_human_approved']) == (20, 0)
+          assert (d['native_cases_total'], d['native_cases_completed'], d['native_cases_approved']) == (44, 0, 0)
+          assert len(d['cases']) == 44
+          assert all(r['action'] == 'KEEP_PENDING' and not r['native_qa_authorized'] for r in d['cases'])
+          assert d['L06_is_not_local_android_L05']
+          assert not any(d[k] for k in ('may_run_game_exe','may_run_joiplay',
+                   'may_start_windows_sandbox','may_install_live_game','sinnoh_playable','auto_upload'))
+          txt = p.read_text('utf8')
+          for s in ('Save01.rxdata', 'private-baseline.json', 'hmac_key', 'watch_id'):
+              assert s not in txt
+          print('SINNOH_L06_PUBLIC_44_CASES_20_CRITERIA_0_NATIVE_APPROVAL')
+          PY
+      - name: No local reports, native builds or private artifacts
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "SINNOH_L06_GITHUB_ONLY_RUNTIME_NOT_AUTHORIZED"
+  l06-regressions:
+    name: L06 / L05 L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L05 44 x 20 dependency matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 human provenance
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 44-case handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 documentary review
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 safe report export
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness checks
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 evidence handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
