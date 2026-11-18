@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/repack_multiregion_hotfix.py'
+      - 'scripts/battle_polish/RegionTravel.rb'
+      - 'tests/region_map_transition_perf_runtime.rb'
+      - 'tests/test_region_map_transition_android.py'
       - 'data/kanto-music-rules.json'
       - 'data/kanto-music.json'
       - 'tests/test_kanto_cerulean_route4_android.py'
@@ -37,6 +40,10 @@ jobs:
         run: |
           python -m py_compile scripts/android/repack_multiregion_hotfix.py scripts/android/update_client.py
           ruby -c scripts/battle_polish/RegionStart.rb
+          ruby -c scripts/battle_polish/RegionTravel.rb
+          ruby tests/region_map_transition_perf_runtime.rb scripts/battle_polish/RegionTravel.rb
+          ruby tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+          python -m unittest discover -s tests -p test_region_map_transition_android.py -v
           ruby -c scripts/battle_lab/Mobile.rb
           ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
@@ -102,5 +109,5 @@ jobs:
           gh release create "$TAG" "${assets[@]}" \
             --target "$GITHUB_SHA" \
             --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
-            --notes "Kanto Android: BGM da Rota 4 (faixa 1-32) e Cerulean City (faixa 1-50 de Fuchsia City) vinculadas ao MapID instalado e verificadas no pacote. Mantem fossils, menu de versao e atualizador por patch sem backup. Mapas, saves e Game.exe preservados. Teste audivel no JoiPlay real ainda pendente." \
+            --notes "Kanto Android: BGM da Rota 4 (faixa 1-32) e Cerulean City (faixa 1-50 de Fuchsia City) vinculadas ao MapID instalado e verificadas no pacote. Otimiza verificacoes de instalacao repetidas nas transicoes entre mapas conectados; preserva eventos, mapas, fossils, menu de versao e atualizador por patch sem backup. Saves e Game.exe preservados. Teste de fluidez e audio no JoiPlay real ainda pendente." \
             --prerelease
