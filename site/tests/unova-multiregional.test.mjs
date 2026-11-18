@@ -69,7 +69,7 @@ test('Windows/Android continue blocked without verified sources',()=>{
 });
 test('G completion never changes technical/playability bars',()=>{
  const stats=unovaGithubStats(progress);
- assert.ok(stats.completed===31||stats.completed===32); // becomes 32 after successful CI
+ assert.equal(stats.completed,32); // all GitHub-only tasks done; native work still blocked
  assert.equal(progress.native_technical_bar.completed,0);
  assert.equal(progress.native_playable_bar.completed,0);
  assert.equal(progress.status,'PLANNED_NOT_NATIVE_PLAYABLE');
