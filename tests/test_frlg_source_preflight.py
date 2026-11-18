@@ -83,4 +83,63 @@ class SourceOnlyTests(unittest.TestCase):
         with patch.dict(os.environ,{},clear=True):
             self.assertEqual(f.main(["--from-secret-env"]),1)
 
+
+    # CI contract: a source-only PR must never gain access to secrets or RAR bytes.
+    def test_workflow_permissions_are_read_only(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        self.assertIn("permissions:\n  contents: read",workflow)
+        self.assertNotIn("contents: write",workflow)
+    def test_workflow_has_no_artifact_upload_or_cache(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        for forbidden in ("actions/upload-artifact","actions/cache","github release upload","gh release upload"):
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden,workflow)
+    def test_no_automatic_archive_access(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        self.assertEqual(workflow.count("--from-secret-env"),1)
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'",workflow)
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'",workflow)
+        self.assertIn("run: python tools/frlg_source_preflight.py --check-config",workflow)
+    def test_rights_gate_explicit_false_by_default(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        self.assertIn('if [ "$FRLG_SOURCE_PERMISSION_CONFIRMED" != "true" ]; then',workflow)
+        self.assertIn("FRLG_SOURCE_PERMISSION_REQUIRED",workflow)
+        self.assertIn("vars.FRLG_SOURCE_PERMISSION_CONFIRMED",workflow)
+    def test_remote_secrets_only_in_manual_step(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        self.assertEqual(workflow.count("secrets.FRLG_SOURCE_URL"),1)
+        self.assertEqual(workflow.count("secrets.FRLG_SOURCE_HOST"),1)
+        self.assertLess(workflow.index("Manual permission gate"),workflow.index("Manual authorized HTTPS source check"))
+    def test_no_continue_on_error(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        self.assertNotIn("continue-on-error: true",workflow)
+    def test_no_archive_in_runner_commands(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        for forbidden in ("tar -xf","unrar","7z x","Game.exe","Start-Process","--apply"):
+            with self.subTest(forbidden=forbidden):
+                if forbidden=="Game.exe":
+                    # The workflow title explicitly says "never Game.exe".
+                    self.assertNotIn(forbidden,workflow.split("jobs:",1)[1])
+                else:
+                    self.assertNotIn(forbidden,workflow)
+    def test_source-only_remote_is_opt_in(self):
+        workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
+        self.assertIn("workflow_dispatch:",workflow)
+        self.assertNotIn("pull_request_target",workflow)
+    def test_synthetic_positive_stream_without_original(self):
+        import hashlib
+        payload=f.RAR5+b"offline synthetic fixture"
+        self.assertEqual(f.verify_stream(io.BytesIO(payload),hashlib.sha256(payload).hexdigest()),len(payload))
+    def test_mixed_dns_rejected(self):
+        records=[(socket.AF_INET,socket.SOCK_STREAM,6,"",("8.8.8.8",443)),
+                 (socket.AF_INET,socket.SOCK_STREAM,6,"",("127.0.0.1",443))]
+        with patch.object(f.socket,"getaddrinfo",return_value=records):
+            with self.assertRaises(f.SourceRejected): f.require_public_dns("example.org")
+    def test_dns_errors_rejected(self):
+        with patch.object(f.socket,"getaddrinfo",side_effect=OSError("dns failed")):
+            with self.assertRaises(f.SourceRejected): f.require_public_dns("example.org")
+    def test_original_manifest_pin_not_changed_by_helper(self):
+        self.assertEqual(f.PIN, "48883c8217bcd9e7fa1b9446bddaa9db5f9715a7ba73ac02785b6660769e2683")
+        self.assertEqual(json.loads(f.MANIFEST.read_text())["sha256"],f.PIN)
+
 if __name__=="__main__": unittest.main()
