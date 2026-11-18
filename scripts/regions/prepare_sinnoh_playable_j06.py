@@ -151,6 +151,28 @@ def validate_review(project: Path, overlay: Path, spec_path: Path,
                    or type(x.get("events")) is not list for x in rows)
             or sum(len(x["events"]) for x in rows)!=24):
         fail("NINE_REAL_MAP_EVENT_SPEC_REQUIRED")
+    # NPCs and three physical starter balls MUST have reviewed artwork in
+    # the overlay itself. Never silently borrow an unknown file from the
+    # main game or call an unverified filename a real sprite.
+    sprites=set()
+    for row in rows:
+        for event in row["events"]:
+            if type(event) is not dict:
+                fail("EVENT_SPEC_INVALID")
+            if event.get("kind") not in ("handler","starter_ball"):
+                continue
+            name=event.get("sprite")
+            if (type(name) is not str or not re.fullmatch(
+                    r"[A-Za-z0-9_ .()-]{1,100}",name)
+                    or event.get("verified_sprite") is not True):
+                fail("NPC_OR_STARTER_SPRITE_NOT_VERIFIED")
+            sprites.add("Graphics/Characters/"+name+".png")
+    if not sprites or not sprites.issubset(overlay_files):
+        fail("PHYSICAL_CHARACTER_SPRITES_MISSING_IN_PRIVATE_OVERLAY")
+    for rel in sprites:
+        image=overlay_files[rel]
+        if len(image)<16 or not image.startswith(b"\x89PNG\r\n\x1a\n"):
+            fail("SPRITE_FILE_NOT_VALID_PNG")
     mids=[x["map_id"] for x in rows]
     all_mids=report.get("geometry_all_map_ids",[])
     if (type(all_mids) is not list or len(all_mids)<9 or
@@ -190,6 +212,7 @@ def validate_review(project: Path, overlay: Path, spec_path: Path,
         "overlay_report_sha256":report_sha,"rights_sha256":rights_sha,
         "reservations_sha256":reserved_sha,"spec_sha256":spec_sha,
         "private_map_input_count":9,"private_total_stage_map_ids":len(all_mids),
+        "private_character_sprite_files_hash_verified":len(sprites),
         "events_expected":24,"warps_expected":16,
         "npc_handlers_expected":5,"starter_balls_expected":3,
         "private_qa_rights_human_attested":True,
