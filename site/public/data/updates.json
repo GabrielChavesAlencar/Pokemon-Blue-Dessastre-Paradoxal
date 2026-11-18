@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "7fd821007e63fe9cf0d0c4bf14d153a23cda2b6a",
+      "date": "2026-11-17T23:42:08-03:00",
+      "title": "Sinnoh L10: public navigable blocker index, read-only (#196)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "39e51de92aafdab3f5aea3f929f57f5c0bb72b2d",
       "date": "2026-11-17T23:11:11-03:00",
       "title": "Sinnoh L09: independent public human-review handoff (#193)",
