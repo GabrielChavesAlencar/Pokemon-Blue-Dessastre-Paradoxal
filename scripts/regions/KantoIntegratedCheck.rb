@@ -9,6 +9,66 @@ module KantoIntegratedCheck
     File.write("Data/blue-kanto-integrated-stage.txt", label)
   end
 
+
+  # Exercise the production NPC travel entry point with only its menus replaced
+  # by deterministic responses in the disposable headless Windows CI copy.
+  # The real map, agent event, permissions, and perform() checks stay active.
+  def self.travel_from_real_agent!(destination)
+    state = BlueRegions.snapshot
+    require!(state && state["current"] != destination, "Invalid regional agent destination")
+    point = case state["current"]
+            when "KANTO" then BlueRegionTravel.kanto_town_point
+            when "DECADES" then BlueRegionTravel.decades_town_point
+            end
+    require!(point && point[0].is_a?(Integer), "No verified initial-town departure map")
+    $map_factory.setup(point[0])
+    $game_player.moveto(point[1], point[2])
+    require!(BlueRegionTravel.at_departure_town?(state), "Regional departure town not verified")
+    agents = $game_map.events.values.select do |event|
+      event.list && event.list.any? { |op|
+        op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent(true)")
+      }
+    end
+    require!(agents.length == 1, "Exactly one real regional travel NPC is required")
+    require!(!BlueRegionTravel.travel(destination, true),
+             "Travel bypassed the physical NPC interaction gate")
+
+    keys = BlueRegions.circuit + ["HISUI"]
+    choice = keys.index(destination)
+    require!(!choice.nil?, "Destination is absent from regional NPC menu")
+    singleton = BlueRegionTravel.singleton_class
+    require!(!singleton.instance_methods(false).include?(:pbMessage) &&
+             !singleton.instance_methods(false).include?(:pbConfirmMessage),
+             "CI would overwrite an existing NPC method")
+    menu_calls = 0
+    confirmations = 0
+    singleton.send(:define_method, :pbMessage) do |_text, *args|
+      if args.length == 2 && args[0].is_a?(Array) && args[1] == -1
+        menu_calls += 1
+        raise "Regional NPC menu repeated after failed travel" unless menu_calls == 1
+        choice
+      else
+        nil # arrival notice only; no actual UI in headless CI
+      end
+    end
+    singleton.send(:define_method, :pbConfirmMessage) do |*_args|
+      confirmations += 1
+      true
+    end
+    begin
+      BlueRegionTravel.agent(true)
+    ensure
+      singleton.send(:remove_method, :pbMessage)
+      singleton.send(:remove_method, :pbConfirmMessage)
+    end
+    require!(menu_calls == 1 && confirmations == 1,
+             "Regional NPC dialog/confirmation was not exercised")
+    require!($PokemonGlobal.blue_regions["current"] == destination,
+             "Regional NPC did not complete the real transfer")
+    require!(!BlueRegionTravel.instance_variable_get(:@npc_event_context),
+             "NPC authorization leaked beyond the event")
+  end
+
   def self.run
     stage("bootup")
     SaveData.initialize_bootup_values
@@ -171,8 +231,7 @@ module KantoIntegratedCheck
     original_pc = Marshal.dump($PokemonStorage)
     original_dex = Marshal.dump($player.pokedex)
     stage("travel_kanto_to_decades")
-    require!(BlueRegionTravel.perform(BlueRegions.snapshot, "DECADES"),
-             "Kanto->Decades travel did not complete")
+    travel_from_real_agent!("DECADES")
     require!($game_map.map_id == original[0], "Decades return map differs from original")
     require!($PokemonGlobal.blue_regions["current"] == "DECADES", "Travel state was not committed")
     # Town NPC belongs in the first Decades city (Cherryhill Map077).
@@ -208,8 +267,7 @@ module KantoIntegratedCheck
     reserved = reservations.first.last
     require!(BlueRegionTravel.special?(special), "Mewtwo not classified as Legendary")
     stage("travel_decades_to_kanto")
-    require!(BlueRegionTravel.perform(BlueRegions.snapshot, "KANTO"),
-             "Decades->Kanto travel did not complete")
+    travel_from_real_agent!("KANTO")
     # Returning visitors arrive outdoors in Pallet beside the regional NPC;
     # only a NEW GAME spawns in the player's upstairs bedroom.
     pallet_point = BlueRegionTravel.kanto_town_point
