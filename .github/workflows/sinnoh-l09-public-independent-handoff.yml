@@ -1,0 +1,128 @@
+name: Sinnoh L09 - handoff publico de revisao independente sem QA nativa
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l09-public-independent-handoff.yml'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l09_public_handoff.py'
+      - 'tests/test_sinnoh_l09_public_handoff.py'
+      - 'docs/SINNOH_L09_HANDOFF_REVISAO_INDEPENDENTE.md'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l08_pinned_snapshot.py'
+      - 'scripts/regions/audit_sinnoh_l07_public_triage.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l09-public-independent-handoff.yml'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l09_public_handoff.py'
+      - 'tests/test_sinnoh_l09_public_handoff.py'
+      - 'docs/SINNOH_L09_HANDOFF_REVISAO_INDEPENDENTE.md'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l08_pinned_snapshot.py'
+      - 'scripts/regions/audit_sinnoh_l07_public_triage.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l09-review-packet:
+    name: L09 / 44 casos x 20 criterios e 107 testes negativos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testar integridade do pacote documental
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l09_public_handoff.py' -v
+      - name: Revisar 3 blobs publicos e travar qualquer autorizacao
+        run: |
+          python scripts/regions/audit_sinnoh_l09_public_handoff.py > /tmp/sinnoh-l09-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw=Path('/tmp/sinnoh-l09-public.json').read_text('utf8')
+          d=json.loads(raw)
+          assert d['stage']=='L09' and d['status']=='PUBLIC_HUMAN_HANDOFF_VALID_NO_APPROVAL'
+          assert d['baseline_commit_l07']=='d98033b362dac82347e0d97cb5606870eaa70b22'
+          assert d['baseline_commit_l08']=='8617ef47ea6745920cb6fe4be251982380d7628d'
+          assert d['public_git_blobs_pinned']==3 and d['upstream_public_drift']==0
+          assert (d['cases_total'],d['windows_cases'],d['android_cases'])==(44,43,1)
+          assert (d['criteria_total'],d['criteria_reviewed'])==(20,0)
+          assert (d['native_cases_completed'],d['native_cases_approved'])==(0,0)
+          assert (d['local_reports_received'],d['phase_bcd_approved'])==(0,0)
+          assert len(d['case_review_queue'])==44 and len(d['human_review_tasks'])==20
+          assert all(not row['native_execution_authorized'] for row in d['case_review_queue'])
+          assert not any(d[k] for k in ('may_run_game_exe','may_start_windows_sandbox',
+                    'may_run_joiplay','may_install_live_game','auto_uploaded','sinnoh_playable',
+                    'r07_complete','r08_complete','r09_complete',
+                    'b11_global_isolation_proven','asset_rights_approved','mapids_reserved'))
+          for private in ('Save01.rxdata','private-baseline.json','watch_id','hmac_key'):
+              assert private not in raw
+          print('SINNOH_L09_44_20_PUBLIC_REVIEW_ONLY_NO_NATIVE_APPROVAL')
+          PY
+      - name: Garantir ausencia de artefatos locais
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L09_ONLY_FIXED_PUBLIC_DOCUMENTS'
+
+  l09-regressions:
+    name: L09 / L08 L07 L06 L05 L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L08 pinned snapshot
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: L07 public triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 reviewer queues
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 native dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 human checklist
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 provenance matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 sanitized evidence
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 report exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 real IDs
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l09-public-portal:
+    name: L09 / conferir painel L07 read-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxe JS
+        run: node --check site/public/assets/sinnoh-l07-triage.js
+      - name: Testes de espelho e filtros sem efeito colateral
+        working-directory: site
+        run: node --test tests/sinnoh-l07-triage.test.mjs
