@@ -770,7 +770,7 @@ module BlueKantoPilot
     # No foreign switches 87 or event scripts are executed.
     progress["pilot_bill_helped"] = true
     map_id = $game_map.map_id
-    [3, 4, 5].each do |event_id|
+    [3, 4, 8].each do |event_id|
       next unless $game_map.events[event_id]
       $game_self_switches[[map_id, event_id, "A"]] = true
     end
@@ -793,9 +793,14 @@ module BlueKantoPilot
       return true
     end
     unless defined?(GameData::Item) && GameData::Item.exists?(:SSTICKET)
-      pbMessage(t("The S.S. Ticket is missing from the installed items. No quest reward was recorded.",
-                  "O S.S. Ticket não está nos itens instalados. Nenhuma recompensa foi registrada."))
-      return false
+      # Some old Decades builds have no S.S. Ticket item identifier. In that
+      # case, and only AFTER restoring Bill, grant a region-local digital
+      # boarding permit rather than corrupting native item data or softlocking.
+      progress["pilot_bill_ticket"] = true
+      progress["pilot_ss_ticket"] = true
+      pbMessage(t("Bill: Your digital S.S. Anne boarding pass is ready!",
+                  "Bill: Sua passagem digital para o S.S. Anne está pronta!"))
+      return true
     end
     unless $bag.add(:SSTICKET, 1)
       pbMessage(t("Your Bag is full. Come back to receive Bill's S.S. Ticket.",
