@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0e748baa55ef85af990b5325090187e285a763a7",
+      "date": "2026-11-17T22:35:29-03:00",
+      "title": "Unova G08.3 — matriz multirregional offline (32/32 GitHub)",
+      "category": "Novidades"
+    },
+    {
       "sha": "d98033b362dac82347e0d97cb5606870eaa70b22",
       "date": "2026-11-17T22:28:48-03:00",
       "title": "Sinnoh L07: triagem publica 44 casos e 20 criterios (#187)",
