@@ -20,17 +20,17 @@ test('Unova GitHub-only board has exactly 32 tasks in eight complete G01-G08 blo
   const actualIds=stats.groups.flatMap(g=>g.tasks.map(t=>t.id));
   assert.deepEqual(actualIds,['G01','G02','G03','G04','G05','G06','G07','G08'].flatMap(g=>[1,2,3,4].map(i=>g+'.'+i)));
 });
-test('documented baseline milestones are thirty-one done and 1 pending, never playable',()=>{
+test('documented GitHub development 32 completed but native Unova remains unplayable',()=>{
   const stats=unovaGithubStats(board);
-  assert.equal(stats.completed,31);
-  assert.equal(stats.remaining,1);
-  assert.equal(stats.percent,97);
+  assert.equal(stats.completed,32);
+  assert.equal(stats.remaining,0);
+  assert.equal(stats.percent,100);
   assert.equal(stats.inProgress,0);
   assert.equal(board.status,'PLANNED_NOT_NATIVE_PLAYABLE');
   assert.equal(board.native_technical_bar.completed,0);
   assert.equal(board.native_playable_bar.completed,0);
   assert.equal(registry.regions.UNOVA.status,'planned');
-  assert.equal(board.groups.flatMap(x=>x.tasks).filter(x=>x.status==='done').length,31);
+  assert.equal(board.groups.flatMap(x=>x.tasks).filter(x=>x.status==='done').length,32);
 });
 test('completed milestones have real evidence source files in the repo',async()=>{
   const complete=board.groups.flatMap(x=>x.tasks).filter(x=>x.status==='done');
@@ -44,12 +44,12 @@ test('completed milestones have real evidence source files in the repo',async()=
 test('Unova progress renders meaningful accessible total and group bars',()=>{
   const html=unovaGithubProgressPage(board);
   assert.match(html,/<h1>Progresso das tarefas de Unova<\/h1>/);
-  assert.match(html,/31\/32/);
-  assert.match(html,/97% concluído/);
-  assert.match(html,/1 tarefa restante/);
+  assert.match(html,/32\/32/);
+  assert.match(html,/100% concluído/);
+  assert.match(html,/0 tarefas restantes/);
   assert.equal((html.match(/<progress\b/g)||[]).length,9);
   assert.match(html,/max="32"/);
-  assert.match(html,/value="31"/);
+  assert.match(html,/value="32"/);
   assert.match(html,/aria-label="Desenvolvimento GitHub:/);
   assert.match(html,/G01/);
   assert.match(html,/G08/);
@@ -105,6 +105,6 @@ test('loader accepts matching public JSON and rejects unavailable endpoint',asyn
     return {ok:url==='/data/unova-github-progress.json',json:async()=>board};
   });
   assert.deepEqual(requests,['/data/unova-github-progress.json']);
-  assert.equal(unovaGithubStats(result).completed,31);
+  assert.equal(unovaGithubStats(result).completed,32);
   await assert.rejects(()=>loadUnovaGithubProgress(async()=>({ok:false})),/unova-progress-unavailable/);
 });

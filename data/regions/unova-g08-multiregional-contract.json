@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "phase": "G08.3",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "PLANNED_MULTIREGIONAL_OFFLINE_REGRESSION_ONLY",
+  "sources": {
+    "G08.2": "data/regions/unova-g08-integrated-contract.json",
+    "travel": "data/regions/unova-g05-travel-contract.json",
+    "regional_items": "data/regions/unova-g05-regional-items-contract.json",
+    "badges_specials": "data/regions/unova-g05-badges-specials-contract.json",
+    "blackout": "data/regions/unova-g05-blackout-state-contract.json",
+    "packages": "data/regions/unova-g07-incremental-contract.json",
+    "transaction": "data/regions/unova-g07-transaction-contract.json",
+    "platform": "data/regions/unova-g07-platform-compatibility-contract.json",
+    "registry": "site/public/data/regions.json",
+    "tracker": "site/public/data/unova-github-progress.json"
+  },
+  "regional_profiles": [
+    {
+      "id": "DECADES",
+      "registry_status": "playable",
+      "runtime_fixture_routable": true,
+      "native_qa_from_this_suite": false
+    },
+    {
+      "id": "KANTO",
+      "registry_status": "prototype",
+      "runtime_fixture_routable": true,
+      "native_qa_from_this_suite": false
+    },
+    {
+      "id": "JOHTO",
+      "registry_status": "planned",
+      "runtime_fixture_routable": true,
+      "native_qa_from_this_suite": false
+    },
+    {
+      "id": "HOENN",
+      "registry_status": "planned",
+      "runtime_fixture_routable": true,
+      "native_qa_from_this_suite": false
+    },
+    {
+      "id": "SINNOH",
+      "registry_status": "planned",
+      "runtime_fixture_routable": false,
+      "native_qa_from_this_suite": false
+    },
+    {
+      "id": "UNOVA",
+      "registry_status": "planned",
+      "runtime_fixture_routable": false,
+      "native_qa_from_this_suite": false
+    }
+  ],
+  "allowed_fixture_route": [
+    "KANTO",
+    "HOENN",
+    "JOHTO",
+    "DECADES",
+    "KANTO"
+  ],
+  "blocked_native_destinations": [
+    "SINNOH",
+    "UNOVA"
+  ],
+  "covered_resources": [
+    "regional_HMs",
+    "regional_key_items",
+    "shared_TMs",
+    "badge_achievements",
+    "restricted_legendaries_mythicals_UB_paradox",
+    "Pokemon_party_and_Boxes",
+    "gameplay_progress",
+    "center_ownership",
+    "remembered_checkpoint",
+    "money",
+    "coins",
+    "mechanics",
+    "region_history",
+    "save_snapshot_integrity",
+    "CAS_and_rollback"
+  ],
+  "failure_points": {
+    "travel": [
+      "after_party",
+      "after_region",
+      "after_bag",
+      "after_pc",
+      "after_position"
+    ],
+    "blackout": [
+      "after_checkpoint",
+      "after_owner",
+      "after_heal",
+      "after_transfer"
+    ],
+    "package": [
+      "after_preflight",
+      "after_staging",
+      "after_backup",
+      "after_cas",
+      "after_first_candidate_write",
+      "after_candidate_commit",
+      "before_publish"
+    ]
+  },
+  "policy": {
+    "source_grounded_runtime_allowlist": true,
+    "routable_fixture_never_implies_native_installed": true,
+    "allow_only_synthetic_in_memory_fixtures": true,
+    "blocked_sinnoh_unova": true,
+    "reject_cross_region_hm_and_key_items": true,
+    "preserve_global_tms_and_shared_money": true,
+    "preserve_badges_as_regional_achievements": true,
+    "preserve_region_mechanics": true,
+    "never_reuse_foreign_center": true,
+    "center_requires_verified_region_ownership": true,
+    "preserve_boxes_and_special_restrictions": true,
+    "no_loss_of_user_progress": true,
+    "snapshot_cas_before_commit": true,
+    "full_rollback_on_failure": true,
+    "deny_unverified_payload_rights": true,
+    "no_native_mapids": true,
+    "no_game_exe_or_joiplay_execution": true,
+    "no_save_reads_or_writes": true,
+    "no_real_installer": true,
+    "no_network_requests": true,
+    "native_technical_bar_remains_zero": true,
+    "native_playability_remains_zero": true
+  },
+  "runtime_evidence": {
+    "sinnoh_installed": null,
+    "unova_installed": null,
+    "unova_mapids": null,
+    "unova_runtime_windows": null,
+    "unova_runtime_android": null,
+    "unova_encounter_data": null,
+    "rights_approved": null,
+    "unova_save_qa": null
+  },
+  "native_technical_completed": 0,
+  "native_playable_completed": 0,
+  "can_install": false,
+  "can_execute_real_travel": false,
+  "can_read_user_saves": false,
+  "release_allowed": false,
+  "artifacts": {
+    "auditor": "scripts/regions/audit_unova_g08_multiregional.py",
+    "tests": "tests/test_unova_g08_multiregional.py",
+    "documentation": "docs/UNOVA_G08_3_MATRIZ_MULTIRREGIONAL_OFFLINE.md"
+  },
+  "limitations": [
+    "Runtime routable is a G05.3 allowlist for synthetic simulations; Johto and Hoenn remain planned in the website registry and have no newly verified native installation.",
+    "Kanto is registered as prototype; Decades is registered playable; this contract does not QA those real installations.",
+    "Sinnoh and Unova are planned and lack native MapID/center/install proof; their entry and blackout remain blocked even with symbolic progress.",
+    "Money/Coins and checkpoint isolation is verified using synthetic shared-state overlays and G05.4 fixtures; it is not a test against an actual player save.",
+    "Ruby native respawn implementation retains the two documented G05.4 fallback/ownership risks until separate native QA and repair.",
+    "Package SHA-256 and CAS/rollback testing uses G07.2-G07.4 in-memory fixtures and neither authenticates licensed assets nor guarantees OS-level atomic updates.",
+    "Barra G 32/32 is completeness of GitHub documentary/test tasks, not native region implementation or playable content."
+  ]
+}

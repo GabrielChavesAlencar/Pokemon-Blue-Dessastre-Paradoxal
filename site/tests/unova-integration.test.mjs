@@ -153,7 +153,7 @@ test('pending status filter never unlocks a native gameplay button',()=>{
 test('Barra G tracker correctly corresponds to G08.2 source evidence only',()=>{
  const stats=unovaGithubStats(board);
  assert.equal(stats.total,32);
- assert.equal(stats.completed,31); // G08.2 documented only, native bars remain zero
+ assert.equal(stats.completed,32); // G08.2 remains integrated; G08.3 completes GitHub-only tracker
  assert.equal(board.native_playable_bar.completed,0);
  assert.match(unovaGithubProgressPage(board),/Barra G|Progresso/);
 });
