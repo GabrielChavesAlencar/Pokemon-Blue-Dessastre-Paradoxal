@@ -122,7 +122,12 @@ def audit(docs: dict, sources: dict) -> dict:
         blocked("CH12/CH15 criou level cap numerico ou ignorou escala")
     required_pilot=(
         "def self.choose_starter_from_ball(species)",
-        "return false unless pbAddPokemonSilent(requested, 5)",
+        "accepted = pbAddPokemonSilent(requested, 5)",
+        "return false unless accepted && added",
+        "party.length == before.length + 1",
+        "flags.replace(candidate)",
+        "party.pop",
+        "all_rival_versions_valid?",
         "return false if @starter_grant_in_progress",
         "def self.compiled_rival_valid?",
         "team.is_a?(Array) && team.length == 1",
