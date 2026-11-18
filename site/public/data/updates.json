@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b023b7d3342f02444d6a305049d0d3a8c72ee505",
+      "date": "2026-11-18T07:32:44-03:00",
+      "title": "fix(kanto): enable authentic Cerulean City and Route 4 BGM in symbolic soundtrack rules",
+      "category": "Correções"
+    },
+    {
       "sha": "0192075fb02587c9f3d9db6b170500cba365251c",
       "date": "2026-11-18T07:07:29-03:00",
       "title": "Sinnoh L15: versioned public consistency diff L13-L14 (#206)",
