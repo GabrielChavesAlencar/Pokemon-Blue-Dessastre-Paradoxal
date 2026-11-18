@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "6ab0c7705fd2f66b6f50355e6492c8f189eaa329",
+      "date": "2026-11-18T07:38:18-03:00",
+      "title": "test(kanto): update source-scope and native music counts for two restored map BGMs",
+      "category": "Testes"
+    },
+    {
+      "sha": "0756758fefdd53daca10f44d5ecd35549207d502",
+      "date": "2026-11-18T07:38:15-03:00",
+      "title": "test(kanto): update source-scope and native music counts for two restored map BGMs",
+      "category": "Testes"
+    },
+    {
       "sha": "65e7fa2baad7b9fa484b2a3ef98fcf0faae53b97",
       "date": "2026-11-18T07:36:59-03:00",
       "title": "ci(android): gate Cerulean/Route4 music repair on offline regressions and publish incremental ZIP",
