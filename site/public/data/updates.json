@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "709776022679dc5831748ea4ed2254c6ced1da84",
+      "date": "2026-11-18T07:47:11-03:00",
+      "title": "Sinnoh L16: public exit criteria stay blocked across 88 requests (#210)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "767347c69c2c4877ca785e69f3719bc71b656cd6",
       "date": "2026-11-18T07:43:02-03:00",
       "title": "ci(android): pin 8e6e527 installed revision and paginate historical releases for tiny Cerulean BGM patch",
