@@ -936,7 +936,6 @@ def install_events(source, target, mapping):
                          55: {
                              3: "BlueKantoPilot.bill_request",
                              4: "BlueKantoPilot.bill_computer",
-                             5: "BlueKantoPilot.bill_reward",
                              8: "BlueKantoPilot.bill_reward",
                          },
                          26: {2: "BlueKantoPilot.heal"},
@@ -1205,6 +1204,10 @@ def install_events(source, target, mapping):
                     replacement.attrs["@pages"].append(opened)
                 selected[event_id] = replacement
                 continue
+            if original == 55 and event_id == 5:
+                # The source event is an inaccessible teleporter-stage actor;
+                # the reachable Bill actor is Event008 at (7,6).
+                continue
             if event_id in scripts:
                 if original == 39 and event_id in (15, 32, 34):
                     # Three source-verified triggers across the north bridge:
@@ -1234,18 +1237,18 @@ def install_events(source, target, mapping):
                     rocket.attrs["@pages"].append(done)
                     selected[event_id] = rocket
                     continue
-                if original == 55 and event_id in (3, 4, 5, 8):
+                if original == 55 and event_id in (3, 4, 8):
                     # Bill is a regional quest, not source switch 87. The
                     # replacement sprite is visible only after using the PC.
                     screen = new_event(event, [
                         command(355, scripts[event_id].encode("ascii"))
                     ], 0, actor(event) if event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] else b"")
-                    if event_id in (3, 5, 8):
+                    if event_id in (3, 8):
                         second = copy.deepcopy(screen.attrs["@pages"][0])
                         second.attrs["@condition"].attrs.update({
                             "@self_switch_valid": True, "@self_switch_ch": b"A"
                         })
-                        if event_id in (3, 5):
+                        if event_id == 3:
                             second.attrs["@graphic"].attrs.update({
                                 "@character_name": b"", "@tile_id": 0
                             })
