@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c836b51ef8ae86c51bda9c0b99406cc0ed9f7ab3",
+      "date": "2026-11-18T07:39:18-03:00",
+      "title": "ci(android): recheck corrected map-rule test contract before music patch release",
+      "category": "Correções"
+    },
+    {
       "sha": "6ab0c7705fd2f66b6f50355e6492c8f189eaa329",
       "date": "2026-11-18T07:38:18-03:00",
       "title": "test(kanto): update source-scope and native music counts for two restored map BGMs",
