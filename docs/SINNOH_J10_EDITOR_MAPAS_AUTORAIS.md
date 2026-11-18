@@ -1,6 +1,6 @@
 # J10 — Editor de mapas originais de Sinnoh (sem jogo instalado)
 
-Base: J09 integrada na main, PR #239; cinco ambientes reais seguem ausentes. A J10 implementa **autoria manual** e compilação de geometria somente em workspace local privado. **Não contém os cinco mapas prontos**. Próxima validação: [J11 #242](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/242).
+Base: J09 integrada na main, PR #239; cinco ambientes reais seguem ausentes. A J10 implementa **autoria manual** e compilação de geometria somente em workspace local privado. **Não contém os cinco mapas prontos**. Próxima validação: [J11 #242](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/241).
 
 ## Os cinco ambientes que precisam ser desenhados
 
@@ -72,4 +72,4 @@ Cada saída é verificada pelo auditor inerte J09, criada de forma transacional 
 
 **Estado público fixo até provas novas:** J01–J08 código 8/8; J10 ferramenta de autoria disponível, **cinco mapas ainda não desenhados/recebidos**, 0/9 mapas instalados, 0/44 QA nativa, R07/R08/R09 pendentes, Sinnoh planned/não jogável.
 
-Continuar na issue [J11 #242](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/242) somente com mapas privados genuínos, sem publicar conteúdos de terceiros.
+Continuar na issue [J11 #242](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/241) somente com mapas privados genuínos, sem publicar conteúdos de terceiros.
