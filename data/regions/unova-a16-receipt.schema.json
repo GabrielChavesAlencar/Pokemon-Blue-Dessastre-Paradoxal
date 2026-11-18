@@ -1,0 +1,679 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/unova-a16-receipt.schema.json",
+  "title": "Unova A16 sanitized A04–A14 receipt bundle, unverified and never installable",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "phase",
+    "region",
+    "campaign",
+    "mode",
+    "status",
+    "source_baseline",
+    "regional_manifests",
+    "regional_manifests_sha256",
+    "intro_map001",
+    "intro_map001_sha256",
+    "rights",
+    "receipts",
+    "protections",
+    "native_technical_completed",
+    "native_playable_completed",
+    "can_reserve_mapids",
+    "can_install",
+    "can_release",
+    "bundle_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "phase": {
+      "const": "A16"
+    },
+    "region": {
+      "const": "UNOVA"
+    },
+    "campaign": {
+      "const": "WHITE_BW"
+    },
+    "mode": {
+      "enum": [
+        "SYNTHETIC_FIXTURE",
+        "REDACTED_UNVERIFIED"
+      ]
+    },
+    "status": {
+      "const": "UNVERIFIED_OFFLINE_RECEIPT_CHAIN"
+    },
+    "source_baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "evidence_origin",
+        "mapinfos_sha256",
+        "mapids_observed",
+        "mapid_inventory_sha256",
+        "independent_recheck",
+        "source_revision",
+        "unova_candidate_range",
+        "sinnoh_hold",
+        "assigned_mapids"
+      ],
+      "properties": {
+        "identity": {
+          "const": "B01_B04_B05_HISTORICAL_UNVERIFIED_2026_11_17"
+        },
+        "evidence_origin": {
+          "const": "USER_REPORTED_HISTORICAL_UNVERIFIED"
+        },
+        "mapinfos_sha256": {
+          "const": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420"
+        },
+        "mapids_observed": {
+          "const": 648
+        },
+        "mapid_inventory_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "independent_recheck": {
+          "const": false
+        },
+        "source_revision": {
+          "const": "HISTORICAL_UNVERIFIED"
+        },
+        "unova_candidate_range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end",
+            "count",
+            "reserved"
+          ],
+          "properties": {
+            "start": {
+              "const": 518
+            },
+            "end": {
+              "const": 599
+            },
+            "count": {
+              "const": 82
+            },
+            "reserved": {
+              "const": false
+            }
+          }
+        },
+        "sinnoh_hold": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end",
+            "count",
+            "native_reservation"
+          ],
+          "properties": {
+            "start": {
+              "const": 442
+            },
+            "end": {
+              "const": 517
+            },
+            "count": {
+              "const": 76
+            },
+            "native_reservation": {
+              "const": false
+            }
+          }
+        },
+        "assigned_mapids": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          }
+        }
+      }
+    },
+    "regional_manifests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "DECADES",
+        "KANTO",
+        "JOHTO",
+        "HOENN",
+        "SINNOH",
+        "UNOVA"
+      ],
+      "properties": {
+        "DECADES": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_status",
+            "source_sha256",
+            "source_revision",
+            "native_claims"
+          ],
+          "properties": {
+            "source_status": {
+              "const": "UNVERIFIED_SOURCE_METADATA_ONLY"
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_revision": {
+              "const": "UNVERIFIED"
+            },
+            "native_claims": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "KANTO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_status",
+            "source_sha256",
+            "source_revision",
+            "native_claims"
+          ],
+          "properties": {
+            "source_status": {
+              "const": "UNVERIFIED_SOURCE_METADATA_ONLY"
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_revision": {
+              "const": "UNVERIFIED"
+            },
+            "native_claims": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "JOHTO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_status",
+            "source_sha256",
+            "source_revision",
+            "native_claims"
+          ],
+          "properties": {
+            "source_status": {
+              "const": "UNVERIFIED_SOURCE_METADATA_ONLY"
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_revision": {
+              "const": "UNVERIFIED"
+            },
+            "native_claims": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "HOENN": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_status",
+            "source_sha256",
+            "source_revision",
+            "native_claims"
+          ],
+          "properties": {
+            "source_status": {
+              "const": "UNVERIFIED_SOURCE_METADATA_ONLY"
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_revision": {
+              "const": "UNVERIFIED"
+            },
+            "native_claims": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "SINNOH": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_status",
+            "source_sha256",
+            "source_revision",
+            "native_claims"
+          ],
+          "properties": {
+            "source_status": {
+              "const": "UNVERIFIED_SOURCE_METADATA_ONLY"
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_revision": {
+              "const": "UNVERIFIED"
+            },
+            "native_claims": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "UNOVA": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_status",
+            "source_sha256",
+            "source_revision",
+            "native_claims"
+          ],
+          "properties": {
+            "source_status": {
+              "const": "UNVERIFIED_SOURCE_METADATA_ONLY"
+            },
+            "source_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_revision": {
+              "const": "UNVERIFIED"
+            },
+            "native_claims": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "regional_manifests_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "intro_map001": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "events",
+        "mapid_3_resolved",
+        "computed_destinations_unresolved",
+        "script_runtime_verified"
+      ],
+      "properties": {
+        "events": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "map_id",
+              "event_id",
+              "page",
+              "destination_map_id",
+              "evidence_status"
+            ],
+            "properties": {
+              "map_id": {
+                "const": 1
+              },
+              "event_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "page": {
+                "const": 1
+              },
+              "destination_map_id": {
+                "const": 3
+              },
+              "evidence_status": {
+                "const": "USER_REPORTED_UNVERIFIED"
+              }
+            }
+          }
+        },
+        "mapid_3_resolved": {
+          "const": false
+        },
+        "computed_destinations_unresolved": {
+          "const": 20
+        },
+        "script_runtime_verified": {
+          "const": false
+        }
+      }
+    },
+    "intro_map001_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_review_status",
+        "source_rights_sha256",
+        "license_verified",
+        "redistribution_approved",
+        "human_decision",
+        "approval_receipt_sha256"
+      ],
+      "properties": {
+        "asset_review_status": {
+          "const": "REVIEW_REQUIRED_NOT_LICENSED"
+        },
+        "source_rights_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "license_verified": {
+          "const": false
+        },
+        "redistribution_approved": {
+          "const": false
+        },
+        "human_decision": {
+          "const": "NOT_REVIEWED"
+        },
+        "approval_receipt_sha256": {
+          "const": null
+        }
+      }
+    },
+    "receipts": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "stage",
+          "mode",
+          "status",
+          "depends_on",
+          "baseline_sha256",
+          "mapinfos_sha256",
+          "mapids_inventory_sha256",
+          "source_revision",
+          "regional_manifests_sha256",
+          "map001_evidence_sha256",
+          "previous_receipt_sha256",
+          "source_report_sha256",
+          "rights_status",
+          "human_review",
+          "runtime_qa",
+          "mapids_reserved",
+          "installable",
+          "receipt_sha256"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": 1
+          },
+          "stage": {
+            "type": "string",
+            "pattern": "^A(0[4-9]|1[0-4])$",
+            "maxLength": 3
+          },
+          "mode": {
+            "enum": [
+              "SYNTHETIC_FIXTURE",
+              "REDACTED_UNVERIFIED"
+            ]
+          },
+          "status": {
+            "const": "AWAITING_INDEPENDENT_REVIEW"
+          },
+          "depends_on": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "string",
+              "pattern": "^A(0[4-9]|1[0-4])$",
+              "maxLength": 3
+            },
+            "uniqueItems": true
+          },
+          "baseline_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "mapinfos_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "mapids_inventory_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_revision": {
+            "const": "HISTORICAL_UNVERIFIED"
+          },
+          "regional_manifests_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "map001_evidence_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "previous_receipt_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_report_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rights_status": {
+            "const": "NOT_VERIFIED"
+          },
+          "human_review": {
+            "const": "NOT_REVIEWED"
+          },
+          "runtime_qa": {
+            "const": "NOT_EXECUTED"
+          },
+          "mapids_reserved": {
+            "const": false
+          },
+          "installable": {
+            "const": false
+          },
+          "receipt_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "protections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rights_verified",
+        "human_approved",
+        "mapids_reserved",
+        "native_install_approved",
+        "windows_game_exe_qa",
+        "android_joiplay_qa",
+        "saves_read",
+        "saves_written"
+      ],
+      "properties": {
+        "rights_verified": {
+          "const": false
+        },
+        "human_approved": {
+          "const": false
+        },
+        "mapids_reserved": {
+          "const": false
+        },
+        "native_install_approved": {
+          "const": false
+        },
+        "windows_game_exe_qa": {
+          "const": false
+        },
+        "android_joiplay_qa": {
+          "const": false
+        },
+        "saves_read": {
+          "const": false
+        },
+        "saves_written": {
+          "const": false
+        }
+      }
+    },
+    "native_technical_completed": {
+      "const": 0
+    },
+    "native_playable_completed": {
+      "const": 0
+    },
+    "can_reserve_mapids": {
+      "const": false
+    },
+    "can_install": {
+      "const": false
+    },
+    "can_release": {
+      "const": false
+    },
+    "bundle_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}
