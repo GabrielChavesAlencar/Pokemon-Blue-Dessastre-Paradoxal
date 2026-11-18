@@ -698,17 +698,18 @@ def inspect(game: Path) -> dict:
             script = "\\n".join(value.decode("utf-8") if isinstance(value, bytes)
                                   else str(value) for value in commands)
             key = f"KANTO_{original:03d}_{event_id:03d}"
-            if original == 42 and event_id in (11, 16):
-                kind, name, *_ = spec
-                # One guarded callback replaces three independent native
-                # interpreter commands on JoiPlay. The Ruby handler performs
-                # victory synchronization only after a real win.
+            if (original == 42 and event_id in (11, 16)) or original in (53,54):
+                kind, name, *version = spec
+                # One guarded native handler replaces three separate event
+                # interpreter commands on JoiPlay (also on Route24/25).
+                detail = f", {version[0]}" if original in (53,54) and version else (
+                    ", 0" if original in (53,54) else "")
                 required = (
                     f'BlueKantoPilot.cerulean_gym_trainer('
-                    f':BLUE_KANTO_{kind}, "{name}", "{key}", {event_id})'
+                    f':BLUE_KANTO_{kind}, "{name}", "{key}", {event_id}{detail})'
                 )
                 if commands != [required.encode("ascii")]:
-                    raise ValueError(f"Cerulean Gym {event_id} has unguarded event scripts")
+                    raise ValueError(f"Cerulean north {original}/{event_id} has unsafe script")
             elif (not ("BlueKantoPilot.battle(" in script or
                        (original == 53 and event_id == 6 and
                         "BlueKantoPilot.nugget_rocket" in script) or
@@ -718,7 +719,7 @@ def inspect(game: Path) -> dict:
                 raise ValueError(f"Trainer {original}/{event_id} does not persist victory")
             if sight:
                 sight_count += 1
-                if original != 42 or event_id not in (11, 16):
+                if not ((original == 42 and event_id in (11,16)) or original in (53,54)):
                     if "pbNoticePlayer(get_self)" not in script:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
     if sight_count != 138:
@@ -831,9 +832,15 @@ def inspect(game: Path) -> dict:
             f'BlueKantoPilot.cerulean_gym_trainer(:BLUE_KANTO_{kind}, '
             f'"{name}", "{key}", {event_id})'
         )
-    # Source 53/6 intentionally replaces the regular battle script with a
-    # post-victory Nugget reward; its map/event-scoped win sync remains mandatory.
-    anchors[(53, 6)] = "BlueKantoPilot.nugget_rocket"
+    for source in (53,54):
+        for event_id, spec in TRAINERS[source].items():
+            kind, name, *versions = spec
+            version = versions[0] if versions else 0
+            key = f"KANTO_{source:03d}_{event_id:03d}"
+            anchors[(source, event_id)] = (
+                f'BlueKantoPilot.cerulean_gym_trainer(:BLUE_KANTO_{kind}, '
+                f'"{name}", "{key}", {event_id}, {version})'
+            )
     for event_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
         kind, name, *_ = TRAINERS[202][event_id]
         key = f"KANTO_202_{event_id:03d}"
