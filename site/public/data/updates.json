@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f05a9f8fc7169f116da3b3f6191b46eb57432912",
+      "date": "2026-11-17T21:03:20-03:00",
+      "title": "feat(sinnoh): L03 versioned documentary human-review matrix and handoff (#175)",
+      "category": "Novidades"
+    },
+    {
       "sha": "d8103a73f442828fe5b8e0bc8b7b6a612faa033e",
       "date": "2026-11-17T20:57:46-03:00",
       "title": "test(android): exact legacy launcher replacement succeeds, unrelated edits still block and saves stay intact",
