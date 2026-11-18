@@ -17,8 +17,8 @@ import urllib.request
 
 REPO = "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal"
 API = "https://api.github.com/repos/" + REPO
-PREVIEW = re.compile(r"android-map-perf-preview-([0-9a-f]{7})\\Z")
-FULL_SHA = re.compile(r"[0-9a-f]{40}\\Z")
+PREVIEW = re.compile(r"android-map-perf-preview-([0-9a-f]{7})\Z")
+FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 
 def get_json(url):
