@@ -18,6 +18,7 @@ from server.ruby_marshal import RubyData,loads
 from stage import serialize
 from sinnoh_staging_transaction import preview,stage,rollback
 import prepare_sinnoh_playable_j03 as j03
+from bind_sinnoh_playable_j02 import source_catalog as original_catalog
 
 PNG=b"\x89PNG\r\n\x1a\n"+"test-owned-png-bytes".encode("ascii")
 SHA=lambda payload:hashlib.sha256(payload).hexdigest()
@@ -126,7 +127,7 @@ class TestJ03PrivateOverlay(unittest.TestCase):
         with self.assertRaises(ValueError):self.build()
 
     def test_real_catalog_remains_four_of_nine_and_no_rights(self):
-        real=j03.source_catalog(ROOT)
+        real=original_catalog(ROOT)
         self.assertEqual(real["source_terrain_candidates"],4)
         self.assertEqual(real["source_maps_missing"],5)
         self.assertFalse(real["source_rights_verified"])
