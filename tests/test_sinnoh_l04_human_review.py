@@ -196,16 +196,16 @@ class SinnohL04Tests(unittest.TestCase):
                 self.refuse(lambda m,d,s,k=k,v=v:m.update({k:v}))
 
     def test_24_l03_missing_source_stage_rejected(self):
-        self.refuse(lambda m,d,s:s["source_rows"].pop())
-        self.refuse(lambda m,d,s:s["source_rows"].reverse())
-        self.refuse(lambda m,d,s:s["source_rows"][4].update(stage="R07"))
+        self.refuse(lambda m,d,s:s["rows"].pop())
+        self.refuse(lambda m,d,s:s["rows"].reverse())
+        self.refuse(lambda m,d,s:s["rows"][4].update(stage="R07"))
 
     def test_25_l03_physical_origin_forgery_rejected(self):
-        self.refuse(lambda m,d,s:s["source_rows"][0].update(
+        self.refuse(lambda m,d,s:s["rows"][0].update(
             independent_proof_confirmed=True))
-        self.refuse(lambda m,d,s:s["source_rows"][2].update(
+        self.refuse(lambda m,d,s:s["rows"][2].update(
             runtime_permission=True))
-        self.refuse(lambda m,d,s:s["source_rows"][4].update(
+        self.refuse(lambda m,d,s:s["rows"][4].update(
             physical_readiness_approved=True))
 
     def test_26_l03_native_status_counts_and_phase_forgery_rejected(self):
@@ -225,9 +225,9 @@ class SinnohL04Tests(unittest.TestCase):
             source_documentary_status="DOCUMENTARY_REVIEW_ONLY_NATIVE_APPROVAL_PENDING"))
 
     def test_28_l03_extra_private_data_or_raw_paths_rejected(self):
-        self.refuse(lambda m,d,s:s["source_rows"][0].update(
+        self.refuse(lambda m,d,s:s["rows"][0].update(
             save_path="C:\\Users\\tester\\Save01.rxdata"))
-        self.refuse(lambda m,d,s:s["source_rows"][2].update(
+        self.refuse(lambda m,d,s:s["rows"][2].update(
             raw_sha="a"*64))
 
     def test_29_l03_human_protocol_must_require_separate_acceptance(self):
@@ -236,15 +236,15 @@ class SinnohL04Tests(unittest.TestCase):
         self.refuse(lambda m,d,s:s["human_dispositions_only"].append("RUN_GAME"))
 
     def test_30_l03_next_documentary_action_cannot_be_launch_command(self):
-        self.refuse(lambda m,d,s:s["source_rows"][0].update(
+        self.refuse(lambda m,d,s:s["rows"][0].update(
             documentary_action="RUN_GAME_EXE"))
-        self.refuse(lambda m,d,s:s["source_rows"][0].update(
+        self.refuse(lambda m,d,s:s["rows"][0].update(
             documentary_review_kind="AUTHENTICATED"))
 
     def test_31_l03_criteria_drift_rejected(self):
-        self.refuse(lambda m,d,s:s["source_rows"][2].update(
+        self.refuse(lambda m,d,s:s["rows"][2].update(
             required_separate_human_checks=[]))
-        self.refuse(lambda m,d,s:s["source_rows"][1].update(
+        self.refuse(lambda m,d,s:s["rows"][1].update(
             depends_on=[]))
 
     def test_32_report_omits_private_paths_and_hashes(self):
