@@ -78,7 +78,7 @@ export function unovaGithubProgressPage(data){
     '<div class="unova-progress-total"><strong>'+stats.completed+'/'+stats.total+'</strong>'+
     '<span>'+stats.percent+'% concluído</span></div>'+
     '<progress value="'+stats.completed+'" max="'+stats.total+'" aria-label="Desenvolvimento GitHub: '+stats.completed+' de '+stats.total+' tarefas">'+stats.percent+'%</progress>'+
-    '<p>'+stats.remaining+' tarefas restantes · '+stats.inProgress+' em andamento · atualização '+esc(data.updated)+'</p>'+
+    '<p>'+stats.remaining+(stats.remaining===1?' tarefa restante':' tarefas restantes')+' · '+stats.inProgress+' em andamento · atualização '+esc(data.updated)+'</p>'+
     '<p class="unova-progress-warning">Aprovado apenas como código e planejamento. Unova continua não jogável; nenhuma conclusão aqui comprova instalação, saves ou Game.exe.</p>'+
     '<div class="unova-progress-native"><span><strong>Barra A técnica: 0/8</strong> · precisa de provas reais</span>'+
     '<span><strong>Unova jogável: 0/32</strong> · nenhum mapa nativo aprovado</span></div></section>'+
