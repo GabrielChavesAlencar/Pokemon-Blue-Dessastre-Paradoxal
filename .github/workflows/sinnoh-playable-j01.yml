@@ -1,0 +1,87 @@
+name: Sinnoh J01 - playable pilot preflight (no native game execution)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-playable-j01.yml'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/preflight_sinnoh_playable_j01.py'
+      - 'tests/test_sinnoh_j01_playable_preflight.py'
+      - 'SINNOH_J01_DIAGNOSTICAR_JOGAVEL.bat'
+      - 'docs/SINNOH_J01_PILOTO_JOGAVEL.md'
+      - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'scripts/regions/audit_sinnoh_twinleaf_events.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-playable-j01.yml'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/preflight_sinnoh_playable_j01.py'
+      - 'tests/test_sinnoh_j01_playable_preflight.py'
+      - 'SINNOH_J01_DIAGNOSTICAR_JOGAVEL.bat'
+      - 'docs/SINNOH_J01_PILOTO_JOGAVEL.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j01-executable-preflight:
+    name: J01 / check real-input handling and 20 negative/positive regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run J01 executable tests
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j01_playable_preflight.py' -v
+      - name: Regress Twinleaf schema and safe source auditing
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_events.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_r07_reservations.py' -v
+      - name: Fail-closed CLI with no private installation
+        run: |
+          python scripts/regions/preflight_sinnoh_playable_j01.py > /tmp/sinnoh-j01-report.json && exit 1 || test $? -eq 2
+          python - <<'PY'
+          import json
+          with open('/tmp/sinnoh-j01-report.json',encoding='utf8') as f:r=json.load(f)
+          assert r["stage"]=="J01"
+          assert r["status"]=="MISSING_INPUTS_OR_NATIVE_EVIDENCE"
+          assert r["game_modified"] is False and r["native_playable"] is False
+          assert r["saves_read_or_modified"] is False and r["can_install"] is False
+          assert r["pilot"]["actual_game_maps_linked"] == 0
+          assert r["pilot"]["event_counts"] == {"warp":16,"handler":5,"starter_ball":3}
+          print("SINNOH_J01_PREFLIGHT_FAIL_CLOSED_NO_NATIVE_GAME")
+          PY
+  j01-public-progress:
+    name: J01 / playable progress bar, Node tests and site build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check site/public/assets/sinnoh-playable-progress.js
+      - name: Test J01 data, progress honesty and old L19 portals
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs tests/sinnoh-l19-consolidation.test.mjs
+      - name: Build portal
+        working-directory: site
+        run: npm run build
+      - name: Verify public distribution
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/assets/sinnoh-playable-progress.js
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q '/sinnoh-jogavel.html' site/dist/index.html
