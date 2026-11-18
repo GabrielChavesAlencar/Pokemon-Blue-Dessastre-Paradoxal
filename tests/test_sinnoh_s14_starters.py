@@ -88,6 +88,18 @@ class S14Tests(unittest.TestCase):
     def test_21_pilot_missing_reentrancy(self):
         obj=self.files[0].replace("return false if @starter_grant_in_progress","return true")
         with self.assertRaisesRegex(ValueError,"SINNOH_S14_BLOCKED"):self.check(pilot=obj)
+    def test_25_missing_transactional_starter_guard_denied(self):
+        for required in (
+            "return false unless accepted && added",
+            "party.length == before.length + 1",
+            'flags.replace(candidate)',
+            'party.pop',
+        ):
+            with self.subTest(required=required):
+                obj=self.files[0].replace(required,"# forbidden removed transaction guard")
+                with self.assertRaisesRegex(ValueError,"SINNOH_S14_BLOCKED"):
+                    self.check(pilot=obj)
+
     def test_22_bridge_injects_grant(self):
         obj=self.files[3]+"\nBlueSinnohPilot.choose_starter_from_ball(:TURTWIG)\n"
         with self.assertRaisesRegex(ValueError,"SINNOH_S14_BLOCKED"):self.check(bridge=obj)
