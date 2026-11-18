@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "11eda18f7225e16b13007c1eb955ccc3d7667b66",
+      "date": "2026-11-18T06:54:27-03:00",
+      "title": "Sinnoh L14: public dependency matrix keeps 88 requests blocked (#204)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "1f12bcc86c10dcc934b024a0562cdadb65d5e2c2",
       "date": "2026-11-18T06:41:56-03:00",
       "title": "Sinnoh L13: deterministic read-only public request queue (#202)",
