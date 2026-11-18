@@ -29,6 +29,7 @@ from server.ruby_marshal import loads
 PREFIX = "Pokemon-Blue-Android/"
 BASE_REV = "125155eaf256fcc3e5bfa9880585e9d07ce22618"
 REGION = "Plugins/ZZZZ Blue Story and Presentation/RegionStart.rb"
+TRAVEL = "Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb"
 KANTO = "Plugins/ZZZZZ Blue Kanto Pilot/KantoPilot.rb"
 MOBILE = "Plugins/ZZZZ Blue Battle Lab/Mobile.rb"
 KANTO_MANIFEST = "Data/blue-kanto-install.json"
@@ -162,6 +163,46 @@ STDOUT.binmode.write(Marshal.dump(data))
     return patched.stdout
 
 
+def replace_compiled_travel(cache, source):
+    """Update exactly one BlueRegionTravel entry in the real Ruby Marshal cache.
+
+    Fail closed for missing, duplicated or unrecognized compiled plugins.
+    """
+    ruby = r'''
+require "zlib"
+data = Marshal.load(STDIN.binmode.read)
+wanted = File.binread(ARGV.fetch(0))
+matched = 0
+data.each do |plugin|
+  plugin.fetch(2).each do |entry|
+    next unless entry[0].to_s == "RegionTravel.rb"
+    previous = Zlib::Inflate.inflate(entry[1])
+    abort "Unknown compiled BlueRegionTravel" unless previous.include?("module BlueRegionTravel")
+    entry[1] = Zlib::Deflate.deflate(wanted)
+    matched += 1
+  end
+end
+abort "Expected exactly one compiled RegionTravel.rb, got #{matched}" unless matched == 1
+STDOUT.binmode.write(Marshal.dump(data))
+'''
+    patched = subprocess.run(
+        ["ruby", "-e", ruby, str(ROOT / "scripts/battle_polish/RegionTravel.rb")],
+        input=cache, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        check=False, timeout=120,
+    )
+    if patched.returncode:
+        raise ValueError("Cannot update compiled RegionTravel: " +
+                         patched.stderr.decode("utf8", "replace")[:1200])
+    matches = [
+        zlib.decompress(row[1])
+        for plugin in loads(patched.stdout) for row in plugin[2]
+        if row[0] == b"RegionTravel.rb"
+    ]
+    if matches != [source]:
+        raise ValueError("Compiled map transition optimization missing after Ruby Marshal rewrite.")
+    return patched.stdout
+
+
 def regional_proof(source):
     kanto = json.loads(source.read(PREFIX + "Data/blue-kanto-install.json"))
     hoenn = json.loads(source.read(PREFIX + "Data/blue-hoenn-install.json"))
@@ -278,18 +319,23 @@ def modified_files(source, revision):
             b"def verify_forward_revision" not in updater):
         raise ValueError("Kanto/Android-updater bug fixes missing from main.")
     kanto = (ROOT / "scripts/regions/KantoPilot.rb").read_bytes()
+    travel = (ROOT / "scripts/battle_polish/RegionTravel.rb").read_bytes()
     mobile = (ROOT / "scripts/battle_lab/Mobile.rb").read_bytes()
+    if b"def self.agent_map_id(region)" not in travel:
+        raise ValueError("Regional connected-map optimization missing from main.")
     if b"def self.show_version" not in mobile:
         raise ValueError("Game version display missing from Mobile.rb")
     if (b"def self.choose_moon_fossil" not in kanto or
             b"def self.revive_cinnabar_fossil" not in kanto):
         raise ValueError("Verified Kanto fossil fix missing from main.")
     before = source.read(PREFIX + REGION)
-    if before == source_code and source.read(PREFIX + KANTO) == kanto:
-        raise ValueError("Baseline already contains both regional fixes.")
+    if (before == source_code and source.read(PREFIX + KANTO) == kanto
+            and source.read(PREFIX + TRAVEL) == travel):
+        raise ValueError("Baseline already contains the regional fixes.")
     patched_region = replace_compiled_region(source.read(PREFIX + CACHE), source_code)
     patched_both = replace_compiled_kanto(patched_region, kanto)
-    patched_all = replace_compiled_mobile(patched_both, mobile)
+    patched_mobile = replace_compiled_mobile(patched_both, mobile)
+    patched_all = replace_compiled_travel(patched_mobile, travel)
     proof = json.loads(source.read(PREFIX + KANTO_MANIFEST))
     hashes = proof.get("installed_sha256")
     if not isinstance(hashes, dict):
@@ -315,6 +361,7 @@ def modified_files(source, revision):
     result = {
         REGION: source_code,
         KANTO: kanto,
+        TRAVEL: travel,
         MOBILE: mobile,
         KANTO_MANIFEST: (json.dumps(proof, indent=2) + "\n").encode("utf-8"),
         CACHE: patched_all,
@@ -426,6 +473,11 @@ def rebuild(source_path, output_path, revision):
             source.read(PREFIX + CACHE),
             "KantoPilot.rb",
             source.read(PREFIX + KANTO),
+        )
+        compiled_region(
+            source.read(PREFIX + CACHE),
+            "RegionTravel.rb",
+            source.read(PREFIX + TRAVEL),
         )
         repaired = source.read(PREFIX + KANTO_MUSIC).decode("utf8")
         if repaired.count("MAP\t") != 74:

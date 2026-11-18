@@ -133,7 +133,7 @@ def check(condition, message)
   raise message unless condition
 end
 
-require ARGV.fetch(0)
+require File.expand_path(ARGV.fetch(0))
 BlueRegionStart.install
 Dir.mktmpdir("blue-region-start-") do |folder|
   Dir.chdir(folder) do
