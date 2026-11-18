@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "c9b8bcf24d8f3ac0d8c8237513d69b63430dca86",
+      "date": "2026-11-18T09:44:01-03:00",
+      "title": "ci(android): impedir releases sem mapa otimizado e delta da preview (#219)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fdc50929086dba73179c25b9a2cdfbe5aef3ce88",
       "date": "2026-11-18T09:27:29-03:00",
       "title": "perf(android): otimizar mapas conectados e liberar hotfix integrado (#213)",
