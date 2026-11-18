@@ -131,7 +131,60 @@ Dir.mktmpdir("kanto-cerulean-android-") do |folder|
       "Luis", "KANTO_042_011", 11)
     check($attempts.length == before, "victory replayed trainer battle")
     check($outro_count > 0 && $notice_count > 0, "trainer callbacks did not run")
+
+    # 6. Source Map039: three encounter lanes, one unique Gary battle key.
+    GameData::Trainer::DATA[[:BLUE_KANTO_RIVAL, "Blue", 33]] = true
+    [15, 32, 34].each { |event_id| $game_map.events[event_id] = Object.new }
+    $battle_win = false
+    check(!BlueKantoPilot.cerulean_rival, "Gary loss counted as victory")
+    check(!$PokemonGlobal.blue_regions["pilot_cerulean_rival"], "Gary loss marked")
+    $battle_win = true
+    check(BlueKantoPilot.cerulean_rival, "Gary battle did not finish")
+    check($PokemonGlobal.blue_regions["pilot_cerulean_rival"], "Gary flag missing")
+    [15, 32, 34].each do |event_id|
+      check($game_self_switches[[501, event_id, "A"]],
+            "Gary did not clear all three entrance lanes")
+    end
+    before = $attempts.size
+    check(BlueKantoPilot.cerulean_rival, "Gary's previously won scene failed")
+    check($attempts.size == before, "Gary re-challenged a completed scene")
+
+    # 7. Nugget is awarded once, even when Rocket defeats the player.
+    class << GameData
+      def self.note; end
+    end
+    module_items = Class.new do
+      def self.exists?(item); [:NUGGET, :SSTICKET].include?(item); end
+    end
+    GameData.const_set(:Item, module_items) unless GameData.const_defined?(:Item)
+    bag = Object.new
+    def bag.add(item, quantity)
+      $granted_items ||= []
+      $granted_items << [item, quantity]
+      true
+    end
+    $bag = bag
+    GameData::Trainer::DATA[[:BLUE_KANTO_ROCKET, "Grunt", 5]] = true
+    (1..5).each { |i| $PokemonGlobal.blue_regions["pilot_wins"] << "KANTO_053_%03d" % i }
+    $game_map.events[6] = Object.new
+    $battle_win = false
+    check(!BlueKantoPilot.nugget_bridge_rocket, "Rocket loss counted as win")
+    check($granted_items.count([:NUGGET, 1]) == 1, "Nugget not awarded exactly once")
+    $battle_win = true
+    check(BlueKantoPilot.nugget_bridge_rocket, "Rocket win did not finish")
+    check($granted_items.count([:NUGGET, 1]) == 1, "Nugget duplicated on rematch")
+
+    # 8. Bill's PC remains locked before asking Bill; S.S. Ticket is one-time.
+    [3, 4, 5].each { |event_id| $game_map.events[event_id] = Object.new }
+    check(!BlueKantoPilot.bill_computer, "Bill PC used before request")
+    BlueKantoPilot.bill_request
+    check(BlueKantoPilot.bill_computer, "Bill not restored via PC")
+    check($PokemonGlobal.blue_regions["pilot_bill_helped"], "Bill quest flag missing")
+    check(BlueKantoPilot.bill_reward, "Bill did not grant S.S. Ticket")
+    check($granted_items.count([:SSTICKET, 1]) == 1, "Bill ticket duplicated/missing")
+    check(BlueKantoPilot.bill_reward, "Bill's post-quest talk failed")
+    check($granted_items.count([:SSTICKET, 1]) == 1, "Bill ticket duplicated on talk")
   end
 end
 
-puts "PASS: Cerulean 2 trainers, Android diagnostics, loss, retry, victory flags"
+puts "PASS: Cerulean gym, Gary, Nugget, Bill, save/retry and Android diagnostics"
