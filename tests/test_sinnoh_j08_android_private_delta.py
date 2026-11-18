@@ -55,6 +55,8 @@ class J08SyntheticAndroidDeltaTests(unittest.TestCase):
         ):
             write(self.base/name,data)
             write(self.stage/name,data)
+        for snapshot in (self.base,self.stage):
+            write(snapshot/"Audio/Pokemon/unchanged.ogg",b"SYNTHETIC_UNCHANGED_AUDIO")
         # The private target is a *fresh compiled candidate*, not an applied
         # update. Do not change or delete any baseline files.
         from_qa=["Data/MapInfos.rxdata","Data/System.rxdata"]
@@ -170,9 +172,10 @@ class J08SyntheticAndroidDeltaTests(unittest.TestCase):
         p=self.call()
         self.assertNotIn("mkxp.json",p["changed"])
         self.assertNotIn("Game.ini",p["changed"])
-        self.assertNotIn("Data/System.rxdata",p["changed"])
-        self.assertEqual(p["previous"]["Data/System.rxdata"],
-                         p["target"]["Data/System.rxdata"])
+        self.assertNotIn("Audio/Pokemon/unchanged.ogg",p["changed"])
+        self.assertEqual(p["previous"]["Audio/Pokemon/unchanged.ogg"],
+                         p["target"]["Audio/Pokemon/unchanged.ogg"])
+        self.assertIn("Data/System.rxdata",p["changed"])
 
     def test_04_can_discard_only_unapplied_candidate(self):
         out=j08.package(self.root,self.call())
@@ -282,7 +285,7 @@ class J08SyntheticAndroidDeltaTests(unittest.TestCase):
 
     def test_24_no_deletions_of_old_android_files(self):
         (self.stage/"Data/System.rxdata").unlink()
-        self.blocked("ANDROID_REQUIRED_BASE_AND_BARRY_PBS_REQUIRED")
+        self.blocked("COMPLETE_ANDROID_BASE_AND_BARRY_PBS_REQUIRED")
 
     def test_25_android_reserved_mapid_present_in_baseline_denied(self):
         write(self.base/self.maps[0],b"occupied other-region fake map")
