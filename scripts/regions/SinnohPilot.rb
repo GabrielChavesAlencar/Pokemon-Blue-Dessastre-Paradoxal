@@ -43,7 +43,7 @@ module BlueSinnohPilot
     return false if flags["barry_intro"] == true && flags["mother_intro"] != true
     return false if flags["rowan_briefcase_seen"] == true && flags["barry_intro"] != true
     raw = flags["starter"]
-    chosen = raw.is_a?(String) && STARTERS.include?(raw.to_sym)
+    chosen = raw.is_a?(String) && STARTERS.map(&:to_s).include?(raw)
     granted = flags["starter_received"] == true
     return false if granted != !!chosen
     return false if granted && flags["rowan_briefcase_seen"] != true
@@ -146,10 +146,18 @@ module BlueSinnohPilot
     commit_flag("rowan_briefcase_seen")
   end
 
+  # J05: grant EXACTLY one physical-ball starter in the isolated Sinnoh save.
+  # Native pbAddPokemonSilent is not a transaction API. Therefore we require
+  # an available party slot (no untracked PC storage writes), validate that
+  # exactly one expected Pokemon was added, then atomically replace the
+  # existing regional flag Hash. On a failed grant, compensate only the
+  # identified appended party member, never modify foreign-region flags.
   def self.choose_starter_from_ball(species)
     flags = progress
     return false unless flags
-    requested = (species.is_a?(Symbol) || species.is_a?(String)) ? species.to_sym : nil
+    requested = species.is_a?(Symbol) ? species :
+                (species.is_a?(String) && STARTERS.map(&:to_s).include?(species) ?
+                 species.to_sym : nil)
     return false unless STARTERS.include?(requested)
     if flags["starter_received"] || flags.key?("starter")
       pbMessage(_INTL("Rowan: Você já escolheu um parceiro desta maleta."))
@@ -160,23 +168,52 @@ module BlueSinnohPilot
       return false
     end
     return false unless defined?(pbAddPokemonSilent)
-    # Only a physical ball grants a starter; nested grants are denied.
     return false if @starter_grant_in_progress
     scope = regional_state
+    return false unless scope && scope["sinnoh_pilot"].equal?(flags) && !flags.frozen?
+    return false unless defined?($player) && $player && $player.respond_to?(:party)
+    player = $player
+    party = player.party
+    # A full party would send the starter to storage, where a failed grant
+    # could not be rolled back without touching unrelated boxes/saves.
+    return false unless party.is_a?(Array) && !party.frozen? && party.length < 6
+    before = party.dup
+    committed = false
     @starter_grant_in_progress = true
     begin
-      return false unless pbAddPokemonSilent(requested, 5)
-      return false unless scope && regional_state.equal?(scope)
-      current = progress
-      return false unless current && !current.key?("starter") &&
-                          current["starter_received"] != true &&
-                          current["rowan_briefcase_seen"] == true
-      scope["sinnoh_pilot"] ||= {}
-      scope["sinnoh_pilot"]["starter"] = requested.to_s
-      scope["sinnoh_pilot"]["starter_received"] = true
+      accepted = pbAddPokemonSilent(requested, 5)
+      added = party.length == before.length + 1 &&
+              before.each_with_index.all? { |mon, i| party[i].equal?(mon) }
+      return false unless accepted && added
+      actual = party[-1]
+      given_species = actual.is_a?(Array) ? actual[0] :
+                      (actual.respond_to?(:species) ? actual.species : nil)
+      given_level = actual.is_a?(Array) ? actual[1] :
+                    (actual.respond_to?(:level) ? actual.level : nil)
+      return false unless given_species.to_s == requested.to_s && given_level == 5
+      return false unless $player.equal?(player) && regional_state.equal?(scope)
+      return false unless scope["sinnoh_pilot"].equal?(flags) &&
+                          valid_flags?(flags) &&
+                          flags["rowan_briefcase_seen"] == true &&
+                          !flags["starter_received"] && !flags.key?("starter")
+      candidate = flags.merge("starter" => requested.to_s, "starter_received" => true)
+      return false unless valid_flags?(candidate)
+      flags.replace(candidate)
+      committed = true
       pbMessage(_INTL("Rowan: Ótima escolha! Observe seu parceiro durante a viagem."))
       true
+    rescue StandardError
+      # A failed message display after the flag commit is not a new grant.
+      committed
     ensure
+      unless committed
+        # Remove only our newly appended Pokemon, never rewrite a save or
+        # remove party members if the engine reordered the team.
+        if party.length == before.length + 1 &&
+           before.each_with_index.all? { |mon, i| party[i].equal?(mon) }
+          party.pop
+        end
+      end
       @starter_grant_in_progress = false
     end
   end
