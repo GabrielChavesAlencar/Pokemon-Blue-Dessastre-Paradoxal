@@ -1,0 +1,112 @@
+name: Sinnoh J12E - Windows experimental isolated nine-map installer (NO ROM, no native acceptance)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j12e-windows-experimental-installer.yml'
+      - 'scripts/regions/install_sinnoh_experimental_windows.py'
+      - 'tests/test_sinnoh_j12e_experimental_installer.py'
+      - 'SINNOH_EXPERIMENTAL_INSTALAR_WINDOWS.bat'
+      - 'docs/SINNOH_J12E_INSTALADOR_EXPERIMENTAL_WINDOWS.md'
+      - 'site/public/sinnoh-jogavel.html'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j12e-windows-experimental-installer.yml'
+      - 'scripts/regions/install_sinnoh_experimental_windows.py'
+      - 'tests/test_sinnoh_j12e_experimental_installer.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-source-tests-linux:
+    name: J12E / Linux - event/map/tileset/save safety and J11-C regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test J12E installer with synthetic Game/Data fixtures
+        run: |
+          python -m py_compile scripts/regions/install_sinnoh_experimental_windows.py
+          python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j11c_native_overlay.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j11b_four_original_exteriors.py -v
+      - name: No live Game.exe, user game copies, or native QA
+        run: |
+          test ! -f game/Game.exe
+          test ! -d .blue-work
+          git diff --exit-code
+          echo J12E_SOURCE_SYNTHETIC_ONLY_NO_ROM_NO_SAVES
+  windows-experimental-tests:
+    name: J12E / Windows - original map event copy and isolation negative cases
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run synthetic installer contract tests in Windows 2022
+        run: |
+          python -m py_compile scripts/regions/install_sinnoh_experimental_windows.py
+          python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
+      - name: Confirm CI has no user's installed game, save, or compiled Sinnoh
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Unexpected Game.exe in repo/CI" }
+          if (Test-Path ".blue-work") { throw "Experimental QA output leaked from tests" }
+          Write-Output "J12E_TESTS_NO_PERSONAL_PC_OR_NATIVE_QA"
+  package-source-only:
+    name: J12E / package downloadable BAT + code ZIP (no copyrighted game assets)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: [isolated-source-tests-linux, windows-experimental-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bundle only authored scripts/data + Windows BAT and documentation
+        run: |
+          mkdir -p dist
+          find scripts server data/regions -type f \( -name '*.py' -o -name '*.rb' -o -name '*.json' -o -name '*.txt' \) > /tmp/sinnoh-installer-codepaths.txt
+          printf '%s\n' 'SINNOH_EXPERIMENTAL_INSTALAR_WINDOWS.bat' 'docs/SINNOH_J12E_INSTALADOR_EXPERIMENTAL_WINDOWS.md' >> /tmp/sinnoh-installer-codepaths.txt
+          grep -vE '(\.rxdata|\.png|\.exe|\.dll|\.zip|\.rar)$' /tmp/sinnoh-installer-codepaths.txt > /tmp/sinnoh-installer-whitelist.txt
+          test "$(wc -l < /tmp/sinnoh-installer-whitelist.txt)" -gt 50
+          zip -q dist/SINNOH_EXPERIMENTAL_INSTALADOR_WINDOWS_CODIGO.zip -@ < /tmp/sinnoh-installer-whitelist.txt
+          python - <<'PY'
+          import zipfile
+          p="dist/SINNOH_EXPERIMENTAL_INSTALADOR_WINDOWS_CODIGO.zip"
+          with zipfile.ZipFile(p) as z:
+              names=z.namelist()
+              assert "SINNOH_EXPERIMENTAL_INSTALAR_WINDOWS.bat" in names
+              assert "scripts/regions/install_sinnoh_experimental_windows.py" in names
+              assert "scripts/regions/generate_sinnoh_four_exteriors_j11b.py" in names
+              assert "scripts/regions/prepare_sinnoh_nine_original_j11c.py" in names
+              assert "scripts/battle_polish/Campaign.rb" in names
+              assert "server/ruby_marshal.py" in names
+              assert not any(x.lower().endswith((".exe",".dll",".rxdata",".png",".sav",".rar")) for x in names)
+              print("J12E_ZIP_SOURCE_CODE_ONLY",len(names))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SINNOH_EXPERIMENTAL_INSTALADOR_WINDOWS_CODIGO
+          path: dist/SINNOH_EXPERIMENTAL_INSTALADOR_WINDOWS_CODIGO.zip
+          retention-days: 30
+          if-no-files-found: error
+  portal-not-playable:
+    name: J12E / portal - QA copy option without falsely marking playable
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - working-directory: site
+        run: npm run build
+      - run: |
+          grep -q "J12-E" site/dist/sinnoh-jogavel.html
+          grep -q "0/44" site/dist/sinnoh-jogavel.html
+          grep -q "PILOT_NOT_INSTALLED_NOT_PLAYABLE" site/dist/data/sinnoh-playable-progress.json
