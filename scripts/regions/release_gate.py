@@ -58,8 +58,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     badges = [badge for _, badge in BADGES]
     if official["milestones"] != badges:
         raise ValueError("Regional milestone order no longer matches the eight Kanto gyms")
-    if site.get("version") != 1 or len(site["locations"]) != 142 or len(site["trainers"]) != 144:
-        raise ValueError("Kanto portal is not synchronized with 142 maps/144 grouped trainers")
+    if site.get("version") != 1 or len(site["locations"]) != 145 or len(site["trainers"]) != 161:
+        raise ValueError("Kanto portal is not synchronized with 145 maps/161 grouped trainers")
 
     locations = {loc["id"]: loc for loc in site["locations"]}
     if len(locations) != len(site["locations"]):
@@ -142,7 +142,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
                 if (slot["weight"] <= 0 or
                     not 1 <= slot["min"] <= slot["max"] <= 100):
                     raise ValueError("Illegal encounter level or source weight")
-    if wild_locations != 26 or methods != 88 or len(encounter_species) != 67:
+    if wild_locations != 28 or methods != 99 or len(encounter_species) != 68:
         raise ValueError("Audited wild content differs from the portal")
 
     isolated = None
