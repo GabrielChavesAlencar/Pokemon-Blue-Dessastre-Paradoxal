@@ -4,6 +4,8 @@ on:
     paths:
       - '.github/workflows/sinnoh-j06-windows-qa.yml'
       - 'scripts/regions/prepare_sinnoh_playable_j06.py'
+      - 'scripts/regions/prepare_sinnoh_pilot_bundle.py'
+      - 'scripts/regions/install_sinnoh_qa_copy.py'
       - 'tests/test_sinnoh_j06_qa_windows.py'
       - 'SINNOH_J06_QA_WINDOWS.bat'
       - 'docs/SINNOH_J06_WINDOWS_QA_ISOLADO.md'
@@ -26,7 +28,7 @@ permissions:
   contents: read
 jobs:
   j06-private-qa-linux:
-    name: J06 / 40 synthetic checks: hashes, rights, MapIDs, rollback & foreign saves
+    name: J06 / 42 synthetic checks: hashes, rights, MapIDs, rollback & foreign saves
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -36,7 +38,7 @@ jobs:
           python-version: '3.11'
       - name: Python syntax
         run: python -m py_compile scripts/regions/prepare_sinnoh_playable_j06.py
-      - name: J06 40 local synthetic cases (no Game.exe execution)
+      - name: J06 42 local synthetic cases (no Game.exe execution)
         run: python -m unittest discover -s tests -p 'test_sinnoh_j06_qa_windows.py' -v
       - name: Existing S11/QA installer/launcher regressions
         run: |
