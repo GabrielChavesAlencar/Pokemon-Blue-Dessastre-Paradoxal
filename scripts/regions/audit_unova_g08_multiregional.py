@@ -377,7 +377,7 @@ def demo(root:Path=ROOT)->dict:
                              expected_snapshot_sha256=etag(world,reg))
         if (response["status"]!="SYNTHETIC_TRAVEL_COMMIT_NOT_INSTALLED"
             or response["state"]["shared"]!=prev["shared"]):
-            deny("G05.3 fixture route could not be rolled forward safely")
+            deny("G05.3 fixture hop "+prev["current"]+" -> "+target+" blocked: "+response["status"])
         world=response["state"]
         hops.append({"source":prev["current"],"destination":target,
                      "deposited_pokemon":len(world["travel_state"]["pc_boxes"])})
