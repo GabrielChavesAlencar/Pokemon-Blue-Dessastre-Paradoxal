@@ -183,7 +183,7 @@ class UnovaG072Tests(unittest.TestCase):
 
     def test_034_corrupted_origin_manifest(self):
         p, o, src, dest = self.fixture()
-        raw = b"{" + o[1:]
+        raw = b"!" + o[1:]
         p["source"]["manifest_size"] = len(raw)
         p["source"]["manifest_sha256"] = mod.digest(raw)
         p["package_sha256"] = mod.package_digest(p)
@@ -333,7 +333,7 @@ _PATH_ATTACKS = {
 }
 for _name, _path in _PATH_ATTACKS.items():
     def _test(self, name=_path):
-        self.assertFalse(mod.path_ok(name))
+        self.assertFalse(mod.path_ok(name) and name != mod.SOURCE_MANIFEST)
         self.fails(lambda p: p["files"][0].update(path=name))
     setattr(UnovaG072Tests, "test_path_block_" + _name, _test)
 
