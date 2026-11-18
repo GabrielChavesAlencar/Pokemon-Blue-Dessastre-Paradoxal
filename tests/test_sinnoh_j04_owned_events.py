@@ -105,8 +105,8 @@ class J04OwnedEventTests(unittest.TestCase):
                     e["verified_sprite"]=True
         self.files["Data/MapInfos.rxdata"]=serialize(self.source_infos)
         self.files["Data/Tilesets.rxdata"]=serialize(self.tilesets)
-        for path in SAMPLE_SPRITES:
-            self.files[f"Graphics/Characters/{path}.png"]=PNG
+        for name in SAMPLES:
+            self.files[f"Graphics/Characters/{name}.png"]=PNG
         dry=preview(self.root,"j04-source",self.files)
         stage(self.root,"j04-source",self.files,dry["plan_sha256"])
         self.input_sha=dry["plan_sha256"]
