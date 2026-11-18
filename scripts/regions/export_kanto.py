@@ -290,6 +290,25 @@ TRAINER_LOCATIONS.update({
 })
 
 
+# Source Map053/054: native FRLG teams and locations, no fabricated rosters.
+TRAINER_LOCATIONS.update({
+    **{(kind, name): ("ROUTE_24", role)
+       for kind, role, names in (
+           ("CAMPER", "Campista", ("Ethan", "Shane")),
+           ("LASS", "Treinadora", ("Ali", "Reli")),
+           ("YOUNGSTER", "Jovem treinador", ("Timmy",)),
+           ("BUGCATCHER", "Caçador de insetos", ("Cale",)),
+       ) for name in names},
+    **{(kind, name): ("ROUTE_25", role)
+       for kind, role, names in (
+           ("HIKER", "Montanhista", ("Franklin", "Wayne", "Nob")),
+           ("LASS", "Treinadora", ("Haley",)),
+           ("YOUNGSTER", "Jovem treinador", ("Chad", "Joey", "Dan")),
+           ("CAMPER", "Campista", ("Flint",)),
+           ("PICNICKER", "Piqueniqueira", ("Kelsey",)),
+       ) for name in names},
+})
+
 SILPH_GRUNT_FLOORS = {
     21: "SILPH_2F", 22: "SILPH_2F", 23: "SILPH_3F",
     24: "SILPH_4F", 25: "SILPH_4F", 26: "SILPH_5F",
@@ -375,7 +394,13 @@ def export(preview: Path):
     for header, lines in read_blocks(trainer_file).items():
         trainer_type, name, version = header.split(",")
         kind = trainer_type.removeprefix("BLUE_KANTO_")
-        if kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
+        if kind == "RIVAL" and int(version) in (31, 32, 33):
+            key, role = "CERULEAN_CITY", "Rival de Kanto"
+            trainer_id, shown_name = slug("blue_cerulean"), "Gary (Cerulean)"
+        elif kind == "ROCKET" and int(version) == 5:
+            key, role = "ROUTE_24", "Equipe Rocket"
+            trainer_id, shown_name = slug("rocket_route_24"), "Grunt (Nugget Bridge)"
+        elif kind == "ROCKET" and int(version) in SILPH_GRUNT_FLOORS:
             key, role = SILPH_GRUNT_FLOORS[int(version)], "Equipe Rocket"
             trainer_id, shown_name = slug(f"grunt-silph-{version}"), f"Grunt {version}"
         else:
