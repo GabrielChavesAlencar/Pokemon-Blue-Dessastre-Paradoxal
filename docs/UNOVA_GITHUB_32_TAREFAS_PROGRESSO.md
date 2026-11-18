@@ -6,9 +6,9 @@
 
 ## Barra geral
 
-**30/32 entregas concluídas (94%)** · 2 pendentes
+**31/32 entregas concluídas (97%)** · 1 pendente
 
-`[██████████████████████████████░░]` **94%**
+`[███████████████████████████████░]` **97%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
@@ -19,7 +19,7 @@
 | G05 — Mecânicas e isolamento regional | **4/4** | `████` |
 | G06 — Site, guias e acompanhamento | **4/4** | `████` |
 | G07 — Blue-Story, manifests e instalador | **4/4** | `████` |
-| G08 — Auditoria, CI e qualidade | **2/4** | `██░░` |
+| G08 — Auditoria, CI e qualidade | **3/4** | `███░` |
 
 ## Critérios para aumentar a barra
 
@@ -97,7 +97,7 @@ Preparação, dry-run e rollback, sem instalação de Unova.
 Proteções automatizadas para código e documentação no GitHub.
 
 - [x] **G08.1 — Disponibilizar ferramentas de proveniência e direitos.** Auditores E04–E06; nenhum asset é considerado licenciado sem prova · [Evidência](../scripts/regions/audit_unova_e06_rights_inventory.py)
-- [ ] **G08.2 — Expandir suíte de testes integrados dos sistemas G01–G07.** Testes negativos, fixtures e simulações de progressão e conteúdo
+- [x] **G08.2 — Expandir suíte de testes integrados dos sistemas G01–G07.** Integra 22 marcos G01–G07, validando capítulos, ginásios, Elite, rivais/Plasma, encontros, G05/HMs/blackout, guias G06 e CAS/rollback Windows/Android, com testes negativos de dados nativos falsos · [Evidência](../scripts/regions/audit_unova_g08_integrated.py)
 - [ ] **G08.3 — Criar matriz de regressão multirregional offline.** Invariantes de Kanto, Johto, Hoenn, Sinnoh e Decades
 - [x] **G08.4 — Validar o próprio tracker e barras no CI/site.** Testes de consistência de 32 tarefas e bloqueio de promoção jogável · [Evidência](../site/tests/unova-progress.test.mjs)
 
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G08.2 (matriz de aceite e pendências de evidências, QA e instalação de Unova, sem alterar jogos ou confundir Barra G com jogabilidade). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G08.3 (matriz de regressão multirregional offline: Kanto, Johto, Hoenn, Sinnoh e Decades; preservar estados e provas de instalação, sem tornar Unova jogável). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
