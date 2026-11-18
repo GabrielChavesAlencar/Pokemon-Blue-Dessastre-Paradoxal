@@ -860,7 +860,7 @@ module KantoNativeCheck
              "Oak parcel quest flags did not persist through save/reload")
     walk_verified = walk_rows.count { |row| row[4] == "native_step_verified" }
     File.write("Data/blue-kanto-proof.txt",
-               "Kanto 142 maps: Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +
+               "Kanto 145 maps: Cerulean north, Nugget Bridge, Bill, Victory Road, eight badge guards, Elite Four/Blue, unique Hall of Fame and Decades/Johto eligibility; save/reload (battles simulated); " +
                "native tile-step probe #{walk_verified}/#{walk_rows.length} destinations (NOT manual keyboard/visual QA)")
   end
 end
