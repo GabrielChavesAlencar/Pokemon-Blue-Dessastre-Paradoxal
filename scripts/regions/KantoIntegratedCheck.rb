@@ -246,7 +246,14 @@ module KantoIntegratedCheck
     original_dex = Marshal.dump($player.pokedex)
     stage("travel_kanto_to_decades")
     travel_from_real_agent!("DECADES")
-    require!($game_map.map_id == original[0], "Decades return map differs from original")
+    # The native original[] is the Decades introduction, NOT a safe inter-
+    # regional destination. A legacy decades_return pointing to that intro
+    # must be ignored by RegionTravel.destination; arrive in Cherryhill.
+    decades_arrival = BlueRegionTravel.decades_town_point
+    require!(decades_arrival &&
+             $game_map.map_id == decades_arrival[0] &&
+             [$game_player.x, $game_player.y] == decades_arrival[1, 2],
+             "Kanto to Decades did not arrive at verified Cherryhill town")
     require!($PokemonGlobal.blue_regions["current"] == "DECADES", "Travel state was not committed")
     # Town NPC belongs in the first Decades city (Cherryhill Map077).
     # Dynamic on-map insertion does not mutate native Map077.rxdata.
