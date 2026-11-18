@@ -288,8 +288,9 @@
         {
           "id": "G08.3",
           "title": "Criar matriz de regressão multirregional offline",
-          "status": "pending",
-          "acceptance": "Invariantes de Kanto, Johto, Hoenn, Sinnoh e Decades"
+          "status": "done",
+          "acceptance": "Invariantes de Kanto, Johto, Hoenn, Sinnoh e Decades",
+          "evidence": "scripts/regions/audit_unova_g08_multiregional.py"
         },
         {
           "id": "G08.4",
