@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blue Studio · Sinnoh J10 — Editor de mapas originais</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eff3f8;color:#1a2b44;font:15px system-ui,"Segoe UI",sans-serif}
+header{background:#172e50;color:white;padding:18px 24px}header h1{margin:0;font-size:1.4rem}header p{margin:5px 0;color:#cbdcf1}
+main{display:grid;grid-template-columns:300px minmax(450px,1fr) 285px;gap:12px;max-width:1800px;padding:15px;margin:auto}
+section{background:white;border:1px solid #d7dfeb;border-radius:12px;padding:15px;min-width:0}
+h2{font-size:1rem;margin:0 0 12px}label{display:block;margin:10px 0 4px;font-weight:650;font-size:.85rem}
+input:not([type=checkbox]),select,textarea,button{font:inherit;padding:8px;border:1px solid #a6b9cc;border-radius:6px;width:100%}
+textarea{resize:vertical;min-height:65px}button{cursor:pointer;background:#e9f0fa;font-weight:650}
+button:hover{background:#d4e6ff}button.on,.primary{background:#285eaa;color:white}
+.flex{display:flex;gap:6px;margin:10px 0}.flex>*{flex:1;min-width:0}
+#mapscroller{overflow:auto;max-height:70vh;background:#bdc8d8;padding:10px}#map{cursor:crosshair;touch-action:none;image-rendering:pixelated}
+#tilepanel{overflow:auto;max-height:49vh;background:#bdc8d8}#tiles{image-rendering:pixelated;cursor:crosshair}
+aside{margin-top:12px;background:#fff8e8;padding:10px;border-left:4px solid #aa700e;font-size:.85rem;line-height:1.5}
+small{color:#567}#status{padding:10px;margin-top:10px;background:#e7effd;min-height:40px;border-radius:6px}
+.inline{display:flex;align-items:flex-start;gap:6px;font-weight:400}.inline input{width:auto;margin-top:4px}
+@media(max-width:1130px){main{display:block}section{margin-bottom:12px}}
+</style></head><body>
+<header><h1>Blue Studio · J10 — Autoria original dos 5 mapas de Sinnoh</h1>
+<p>Pintura local em 3 camadas RMXP · sem upload, sem Game.exe, sem alteração de saves</p></header>
+<main>
+<section><h2>Mapa e materiais locais</h2>
+<label>Ambiente</label><select id="symbol">
+<option value="SINNOH_PLAYER_BEDROOM">Quarto do protagonista</option>
+<option value="SINNOH_PLAYER_HOUSE_1F">Casa do protagonista · térreo</option>
+<option value="SINNOH_BARRY_HOUSE">Casa do Barry</option>
+<option value="SINNOH_LAKE_VERITY">Lake Verity</option>
+<option value="SINNOH_PROFESSOR_ROWAN_LABORATORY">Laboratório Rowan</option></select>
+<div class="flex"><div><label>Largura</label><input type="number" id="width" value="20" min="12" max="120"></div>
+<div><label>Altura</label><input type="number" id="height" value="15" min="10" max="120"></div></div>
+<button id="resize">Alterar dimensões (limpa este desenho)</button>
+<label>Tileset PNG original/licenciado (largura 256px)</label>
+<input type="file" id="png" accept=".png,image/png">
+<small>Guarde esse PNG em .blue-work/sinnoh-j10-tilesets/ com o mesmo nome. Não será enviado ao GitHub.</small>
+<label>Tileset ID da cópia QA (rever em J11)</label><input type="number" id="tid" value="1" min="1" max="999">
+<label>Referência da licença/permissão de uso do PNG</label><textarea id="rights" placeholder="Licença específica ou identificação da arte original, para auditoria posterior"></textarea>
+<label>Referência de autoria do desenho</label><textarea id="author" placeholder="Identificação da autoria e revisão humana do desenho, sem dados pessoais"></textarea>
+<label class="inline"><input type="checkbox" id="own">Confirmo que a geometria foi desenhada com autorização</label>
+<label class="inline"><input type="checkbox" id="review">Revisei o desenho; não é um placeholder vazio</label>
+<aside>O editor não desenha mapas automaticamente nem fornece coordenadas canônicas. Os cinco arquivos só serão gerados se você fizer os desenhos e fornecer PNG com origem válida. Uma declaração de direitos ainda requer R08 independente.</aside>
+</section>
+<section><h2>Pintar camadas</h2>
+<div class="flex"><button data-z="0" class="on">Chão</button><button data-z="1">Camada 2</button><button data-z="2">Camada 3</button></div>
+<div class="flex"><button id="erase">Borracha</button><button id="undo">Desfazer</button><button id="grid">Grade</button></div>
+<div id="mapscroller"><canvas id="map" width="640" height="480" aria-label="Desenho do mapa"></canvas></div>
+<p><small>Arraste para pintar. Clique direito apaga. O desenho é apenas seu rascunho, sem eventos, passabilidade ou warps inventados.</small></p>
+<div id="metrics">Nenhum terreno desenhado</div><div id="status" role="status">Selecione um tileset local para iniciar.</div>
+</section>
+<section><h2>Paleta e exportação</h2>
+<div id="tilepanel"><canvas id="tiles" width="256" height="96"></canvas></div>
+<p>Tile selecionado: <strong id="selected">384</strong></p>
+<label>Retomar rascunho JSON</label><input type="file" id="import" accept=".json,application/json">
+<button class="primary" id="export" style="margin-top:14px">Exportar mapa JSON</button>
+<p><small>Mova os cinco JSON para .blue-work/sinnoh-j10-drafts/. Depois use o compilador privado J10 para obter RXDATA. Nenhum rascunho exportado prova jogabilidade.</small></p>
+<button id="reset">Limpar somente este mapa</button>
+</section></main>
+<footer style="text-align:center;padding:18px;color:#456">Sinnoh: J01–J08 ferramentas 8/8 · mapas instalados 0/9 · QA nativa 0/44</footer>
+<script>
+"use strict";
+const get=id=>document.getElementById(id),symbols=["SINNOH_PLAYER_BEDROOM","SINNOH_PLAYER_HOUSE_1F","SINNOH_BARRY_HOUSE","SINNOH_LAKE_VERITY","SINNOH_PROFESSOR_ROWAN_LABORATORY"];
+const drafts=new Map();let image=null,sha="",filename="",tile=384,z=0,eraser=false,grid=true,down=false;
+const fresh=(w=20,h=15)=>({w,h,layers:Array.from({length:3},()=>Array(w*h).fill(0)),undo:[]});
+function current(){let s=get("symbol").value;if(!drafts.has(s))drafts.set(s,fresh());return drafts.get(s);}
+function status(text,bad=false){get("status").textContent=text;get("status").style.background=bad?"#ffe3e3":"#e7effd";}
+function paint(e){if(!image)return;const d=current(),canvas=get("map"),r=canvas.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)*canvas.width/r.width/32),y=Math.floor((e.clientY-r.top)*canvas.height/r.height/32);
+if(x<0||y<0||x>=d.w||y>=d.h)return;const pos=x+y*d.w,value=(e.buttons===2||eraser)?0:tile;if(d.layers[z][pos]===value)return;d.undo.push([z,pos,d.layers[z][pos]]);if(d.undo.length>5000)d.undo.shift();d.layers[z][pos]=value;render();}
+function render(){const d=current(),c=get("map"),ctx=c.getContext("2d");c.width=d.w*32;c.height=d.h*32;get("width").value=d.w;get("height").value=d.h;
+ctx.fillStyle="#e1e6ef";ctx.fillRect(0,0,c.width,c.height);
+if(image){const rows=image.height/32;for(let layer=0;layer<3;layer++)for(let y=0;y<d.h;y++)for(let x=0;x<d.w;x++){let t=d.layers[layer][x+y*d.w];if(t>=384&&Math.floor((t-384)/8)<rows)ctx.drawImage(image,(t-384)%8*32,Math.floor((t-384)/8)*32,32,32,x*32,y*32,32,32);}}
+if(grid){ctx.beginPath();ctx.strokeStyle="rgba(25,45,70,.25)";for(let x=0;x<=d.w;x++){ctx.moveTo(x*32+.5,0);ctx.lineTo(x*32+.5,c.height);}for(let y=0;y<=d.h;y++){ctx.moveTo(0,y*32+.5);ctx.lineTo(c.width,y*32+.5);}ctx.stroke();}
+const ids=d.layers.flat().filter(Boolean);get("metrics").textContent=ids.length+" tiles · "+new Set(ids).size+" IDs diferentes · "+d.w+"×"+d.h;}
+get("map").addEventListener("pointerdown",e=>{if(!image)return status("Carregue um PNG original autorizado primeiro.",true);down=true;get("map").setPointerCapture(e.pointerId);paint(e);});
+get("map").addEventListener("pointermove",e=>{if(down)paint(e);});
+get("map").addEventListener("pointerup",()=>down=false);get("map").addEventListener("pointercancel",()=>down=false);
+get("map").addEventListener("contextmenu",e=>e.preventDefault());
+document.querySelectorAll("[data-z]").forEach(b=>b.addEventListener("click",()=>{z=Number(b.dataset.z);document.querySelectorAll("[data-z]").forEach(a=>a.classList.toggle("on",a===b));}));
+get("symbol").addEventListener("change",render);
+get("erase").addEventListener("click",()=>{eraser=!eraser;get("erase").classList.toggle("on",eraser);});
+get("grid").addEventListener("click",()=>{grid=!grid;render();});
+get("undo").addEventListener("click",()=>{const d=current(),undo=d.undo.pop();if(undo){d.layers[undo[0]][undo[1]]=undo[2];render();}});
+get("resize").addEventListener("click",()=>{let w=Number(get("width").value),h=Number(get("height").value),d=current();
+if(!Number.isInteger(w)||!Number.isInteger(h)||w<12||h<10||w>120||h>120||w*h>14400)return status("Dimensões fora dos limites J10.",true);
+if(d.layers.some(a=>a.some(Boolean))&&!confirm("Apagar os tiles deste mapa para mudar dimensões?"))return;
+drafts.set(get("symbol").value,fresh(w,h));render();});
+get("reset").addEventListener("click",()=>{if(confirm("Limpar apenas o rascunho atual?")){const d=current();drafts.set(get("symbol").value,fresh(d.w,d.h));render();}});
+async function fingerprint(buffer){if(!globalThis.crypto?.subtle)throw Error("Abra pelo servidor local http://127.0.0.1 para calcular SHA-256.");const d=await crypto.subtle.digest("SHA-256",buffer);return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+get("png").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{
+if(!/^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\.png$/.test(f.name)||f.size>32e6)throw Error("Nome ou tamanho de PNG inválido.");
+const buff=await f.arrayBuffer(),hash=await fingerprint(buff),url=URL.createObjectURL(f),img=new Image();await new Promise((yes,no)=>{img.onload=yes;img.onerror=no;img.src=url;});URL.revokeObjectURL(url);
+if(img.width!==256||img.height<96||img.height>8192||img.height%32)throw Error("Tileset RMXP deve ter 256 px de largura e altura múltipla de 32 px.");
+image=img;sha=hash;filename=f.name;tile=384;get("selected").textContent=tile;const c=get("tiles");c.width=img.width;c.height=img.height;c.getContext("2d").drawImage(img,0,0);status("Tileset local: SHA "+sha.slice(0,16)+"… (não enviado)");render();
+}catch(err){status("Não foi possível carregar o PNG: "+err.message,true);}});
+get("tiles").addEventListener("click",e=>{if(!image)return;const c=get("tiles"),r=c.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*c.width/r.width/32),y=Math.floor((e.clientY-r.top)*c.height/r.height/32);if(x<0||y<0||x>=8||y>=image.height/32)return;tile=384+y*8+x;eraser=false;get("erase").classList.remove("on");get("selected").textContent=tile;});
+get("export").addEventListener("click",()=>{const d=current(),ref=get("author").value.trim(),right=get("rights").value.trim(),tid=Number(get("tid").value);
+if(!image||!sha)return status("Carregue o PNG autorizado antes de exportar.",true);
+if(!get("own").checked||!get("review").checked)return status("Confirme autoria e revisão humana.",true);
+if(!/^[^\r\n<>]{12,220}$/.test(ref)||!/^[^\r\n<>]{12,220}$/.test(right))return status("Referências de 12–220 caracteres são obrigatórias.",true);
+if(!Number.isInteger(tid)||tid<1||tid>999)return status("Tileset ID inválido.",true);
+const ids=d.layers.flat().filter(Boolean),covered=new Set(d.layers.flat().map((v,i)=>v?i%(d.w*d.h):-1).filter(i=>i>=0));
+if(d.layers[0].filter(Boolean).length<Math.floor(d.w*d.h*.6)||covered.size<Math.ceil(d.w*d.h*.7)||new Set(ids).size<4||d.layers.slice(1).flat().filter(Boolean).length<4)return status("Desenho incompleto: mínimo de terreno e variedade ainda não atingidos.",true);
+const doc={schema:1,region:"SINNOH",stage:"J10",symbol:get("symbol").value,kind:"HUMAN_AUTHORED_PRIVATE_GEOMETRY_NOT_NATIVE_APPROVED",width:d.w,height:d.h,tileset_id:tid,tileset_png:filename,tileset_sha256:sha,tileset_permission_reference:right,author_reference:ref,authored_by_user:true,geometry_reviewed_locally:true,layers:d.layers,events:[],destination_map_id:null,native_gameplay_verified:false};
+const blob=new Blob([JSON.stringify(doc,null,2)+"\n"],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=doc.symbol+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),900);status("Rascunho exportado: "+a.download+" (mova para .blue-work/sinnoh-j10-drafts).");
+});
+get("import").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>2500000)throw Error("JSON grande demais");const d=JSON.parse(await f.text());if(d.region!=="SINNOH"||d.stage!=="J10"||!symbols.includes(d.symbol)||!Number.isInteger(d.width)||!Number.isInteger(d.height)||d.width<12||d.height<10||d.width>120||d.height>120||!Array.isArray(d.layers)||d.layers.length!==3||d.layers.some(a=>!Array.isArray(a)||a.length!==d.width*d.height||a.some(v=>!Number.isInteger(v)||v<0||v>65535)))throw Error("Formato de rascunho J10 inválido");drafts.set(d.symbol,{w:d.width,h:d.height,layers:d.layers.map(a=>a.slice()),undo:[]});get("symbol").value=d.symbol;get("tid").value=d.tileset_id;get("author").value=d.author_reference||"";get("rights").value=d.tileset_permission_reference||"";get("own").checked=false;get("review").checked=false;render();status("Rascunho carregado. Recarregue PNG e revise antes de exportar.");}catch(err){status("Erro: "+err.message,true);}});
+render();
+</script></body></html>
