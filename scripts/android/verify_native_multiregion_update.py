@@ -7,6 +7,7 @@ only the already built ZIP and update manifest. It must run before publishing.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -77,6 +78,26 @@ def verify_manifest(manifest_path: Path, expected_revision: str) -> dict:
             not isinstance(patch.get("sha256"), str) or
             not re.fullmatch(r"[a-f0-9]{64}", patch["sha256"])):
         raise ValueError("Native preview patch entry is malformed or oversized.")
+    archive_path = manifest_path.parent / patch["asset"]
+    if not archive_path.is_file() or archive_path.stat().st_size != patch["size"]:
+        raise ValueError("Published preview delta is missing or has the wrong size.")
+    if hashlib.sha256(archive_path.read_bytes()).hexdigest() != patch["sha256"]:
+        raise ValueError("Published preview delta checksum mismatch.")
+    with zipfile.ZipFile(archive_path) as archive:
+        entries = archive.namelist()
+        if len(entries) != len(set(entries)):
+            raise ValueError("Duplicate members inside native preview delta.")
+        info = json.loads(archive.read("patch.json"))
+        if (info.get("schema") != 1 or info.get("channel") != "multiregion" or
+                info.get("from_revision") != PREVIEW_REVISION or
+                info.get("to_revision") != expected_revision):
+            raise ValueError("Preview delta has incorrect original/target revisions.")
+        changed = info.get("changed")
+        if not isinstance(changed, dict):
+            raise ValueError("Preview delta has no validated changed-file inventory.")
+        if any(name.lower() == "game.exe" or name.lower().startswith(("saves/", "data/save"))
+               for name in changed):
+            raise ValueError("Preview delta must not modify Game.exe or saves.")
     return {"preview_delta": patch["asset"], "bytes": patch["size"]}
 
 
