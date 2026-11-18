@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "phase": "G07.4",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "PLANNED_PLATFORM_COMPATIBILITY_CONTRACTS_ONLY",
+  "sources": {
+    "schema": "data/regions/unova-g07-incremental.schema.json",
+    "package_contract": "data/regions/unova-g07-incremental-contract.json",
+    "package_validator": "scripts/regions/audit_unova_g07_incremental_manifest.py",
+    "transaction_contract": "data/regions/unova-g07-transaction-contract.json",
+    "transaction_simulator": "scripts/regions/audit_unova_g07_transaction.py",
+    "windows_bootstrap": "scripts/windows/Bootstrap.cs",
+    "windows_installer": "scripts/install_game.py",
+    "android_updater": "scripts/android/update_client.py",
+    "native_owner_audit": "scripts/regions/audit_unova_a12_ownership.py",
+    "region_registry": "site/public/data/regions.json",
+    "progress_board": "site/public/data/unova-github-progress.json"
+  },
+  "permitted_fixture_channel": "blue-story-unova-documentation",
+  "permitted_fixture_root": "docs/unova-package-fixtures/",
+  "platforms": {
+    "windows": {
+      "client": "Blue-Story",
+      "runtime_file": "scripts/windows/Bootstrap.cs",
+      "platform_id": "WINDOWS_BLUE_STORY",
+      "existing_update_channel": "github-main-source-zip",
+      "existing_source_download_digest_pinned": false,
+      "existing_source_protected_top_level": [
+        "game",
+        "saves",
+        "bluehub",
+        ".git",
+        ".blue-work",
+        ".blue-backups",
+        "tools"
+      ],
+      "existing_source_backup_behavior": "copies-overwritten-source-files-without-certified-atomic-rollback",
+      "accepted_mode": "documentation_fixture_simulation_only",
+      "native_patch_supported": false,
+      "required_native_evidence": {
+        "source_zip_expected_sha256": null,
+        "game_exe_runtime_qa": null,
+        "region_mapid_ownership": null,
+        "redistribution_rights": null,
+        "atomic_rollback_qa": null
+      }
+    },
+    "android": {
+      "client": "Termux Python / JoiPlay",
+      "runtime_file": "scripts/android/update_client.py",
+      "platform_id": "ANDROID_JOIPLAY",
+      "existing_update_channels": [
+        "decades",
+        "kanto",
+        "multiregion"
+      ],
+      "existing_source_download_digest_pinned": null,
+      "existing_source_protected_top_level": [
+        "save",
+        "saves",
+        "backup",
+        "__pycache__"
+      ],
+      "existing_source_backup_behavior": "incremental-patch-without-backup-resumable-not-atomic",
+      "accepted_mode": "documentation_fixture_simulation_only",
+      "native_patch_supported": false,
+      "required_native_evidence": {
+        "unova_release_channel": null,
+        "verified_release_manifest": null,
+        "revision_ancestry_qa": null,
+        "joi_play_runtime_qa": null,
+        "region_mapid_ownership": null,
+        "redistribution_rights": null,
+        "atomic_rollback_qa": null
+      }
+    }
+  },
+  "policy": {
+    "exact_channels_required": true,
+    "source_package_hashes_required": true,
+    "manifest_origin_verified": true,
+    "rights_declaration_required": true,
+    "sha256_not_signature": true,
+    "version_chain_currently_baseline_only": true,
+    "reject_cross_channel": true,
+    "reject_downgrade": true,
+    "reject_native_map_payload": true,
+    "reject_real_user_paths": true,
+    "reject_unverified_rights": true,
+    "reject_unverified_runtime": true,
+    "reject_real_source_download_as_unova_patch": true,
+    "require_g072_validation": true,
+    "require_g073_cas_preview": true,
+    "safe_fallback_no_action": true,
+    "real_backup_never_created": true,
+    "in_memory_rollback_only": true,
+    "never_write_saves_or_game_exe": true,
+    "never_download_or_extract": true,
+    "never_invoke_installers": true,
+    "never_mark_unova_playable": true,
+    "windows_unova_adapter_installed": false,
+    "android_unova_channel_published": false,
+    "joiplay_unova_runtime_tested": false
+  },
+  "protected_resources": [
+    "Game.exe",
+    "Data/Map*.rxdata",
+    "Data/MapInfos.rxdata",
+    "saves",
+    "save",
+    "JoiPlay save profile",
+    "regional checkpoints",
+    "regional key items",
+    "regional HMs",
+    "Boxes",
+    "gameplay progression"
+  ],
+  "generated_artifacts_allowed": [
+    "reports emitted to stdout only"
+  ],
+  "native_evidence": {
+    "mapids": null,
+    "source_rights": null,
+    "windows_game_exe_qa": null,
+    "android_joiplay_qa": null,
+    "unova_release_signature": null
+  },
+  "native_technical_completed": 0,
+  "native_playable_completed": 0,
+  "can_install": false,
+  "can_release": false,
+  "save_modified": false,
+  "notes": [
+    "G07.4 checks existing source text and simulations; it never patches Windows Bootstrap.cs or Android update_client.py.",
+    "Windows Blue-Story ZIP source download currently passes expected digest null. Its per-file backup is not a transaction rollback guarantee.",
+    "Android updater patch validates SHA-256 and revisions for existing channels but intentionally creates no backup; Unova is not a supported channel.",
+    "A G07.2 fixture path under docs/unova-package-fixtures/ is not a valid native map or a real release, even if SHA-256 and G07.3 CAS pass.",
+    "No Unova Windows/Android compatible installer, MapID ownership, licensed payload or runtime QA exists in these audited contracts.",
+    "A future rollout needs separate signed/trusted manifest and runtime tests; missing rights or proof means fail-closed.",
+    "Safe fallback in this stage is to leave all existing installations, saves and regional state unchanged."
+  ]
+}
