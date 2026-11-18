@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "066aa6a0614342a14262b80c1eefcd80ca126047",
+      "date": "2026-11-18T10:25:34-03:00",
+      "title": "Sinnoh jogável J01: barra própria J01–J08 e pré-voo executável de mapas (#222)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "c9b8bcf24d8f3ac0d8c8237513d69b63430dca86",
       "date": "2026-11-18T09:44:01-03:00",
       "title": "ci(android): impedir releases sem mapa otimizado e delta da preview (#219)",
