@@ -54,8 +54,8 @@ class KantoPilotAuditTests(unittest.TestCase):
     def test_portal_matches_audited_kanto_rosters(self):
         root = REGIONS.parents[1]
         data = json.loads((root / "site/public/data/kanto.json").read_text("utf-8"))
-        self.assertEqual(len(data["locations"]), 142)
-        self.assertEqual(len(data["trainers"]), 144)
+        self.assertEqual(len(data["locations"]), 145)
+        self.assertEqual(len(data["trainers"]), 161)
         leaders = {row["name"]: row for row in data["trainers"] if row["leader"]}
         self.assertIn("Blaine", leaders)
         self.assertIn("Giovanni", leaders)
@@ -65,7 +65,7 @@ class KantoPilotAuditTests(unittest.TestCase):
         )
         # Portal sync commits separately after the pilot passes CI on main.
         # Both generations are valid during a pull-request pre-merge check.
-        self.assertEqual(len(data["trainers"]), 144)
+        self.assertEqual(len(data["trainers"]), 161)
         giovanni_leader = leaders["Giovanni"]
         self.assertEqual(giovanni_leader["id"], "kanto-giovanni-viridian")
         self.assertEqual(giovanni_leader["location"], "kanto-viridian-gym")
@@ -180,11 +180,11 @@ class KantoPilotAuditTests(unittest.TestCase):
         # Exact species-level source probabilities are carried as raw
         # integer weights, with percentages normalized solely for the portal.
         locations_with_wild = [x for x in data["locations"] if x["methods"]]
-        self.assertEqual(len(locations_with_wild),26)
-        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),88)
+        self.assertEqual(len(locations_with_wild),28)
+        self.assertEqual(sum(len(x["methods"]) for x in locations_with_wild),99)
         wild_species={slot["species"] for loc in locations_with_wild
                       for method in loc["methods"] for slot in method["slots"]}
-        self.assertEqual(len(wild_species),67)
+        self.assertEqual(len(wild_species),68)
         for location in locations_with_wild:
             for method in location["methods"]:
                 self.assertEqual(method["weightTotal"],
