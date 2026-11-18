@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0767acc35f80619ca548a5950f6308ab96b98565",
+      "date": "2026-11-18T19:27:06-03:00",
+      "title": "fix(kanto/android): Cerulean gym trainers safe error handling",
+      "category": "Correções"
+    },
+    {
       "sha": "d047b77b946e567f131d178ac20f42727e29b3c5",
       "date": "2026-11-18T17:28:30-03:00",
       "title": "feat(sinnoh J12-E): instalador Windows experimental em copia QA isolada",
