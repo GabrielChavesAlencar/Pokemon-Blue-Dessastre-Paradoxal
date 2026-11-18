@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "9ef9304adc0a52149694222f454b835349959752",
+      "date": "2026-11-18T16:28:25-03:00",
+      "title": "feat(sinnoh J11-B): quatro exteriores originais e proposta privada de nove mapas",
+      "category": "Novidades"
+    },
+    {
       "sha": "fba55cd109e2da7a94b208a3b1912e279e942177",
       "date": "2026-11-18T16:00:45-03:00",
       "title": "feat(sinnoh J11): auditar cinco mapas originais e bloquear integração física sem R07/R08/R09",
