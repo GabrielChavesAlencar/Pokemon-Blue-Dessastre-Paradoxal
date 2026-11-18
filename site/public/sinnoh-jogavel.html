@@ -59,10 +59,14 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <p id="status" aria-live="polite">Conferindo o progresso publicado…</p>
 <div id="stages" class="stages"></div></section>
 <section class="nextphase" aria-labelledby="nextphase-title">
-<h2 id="nextphase-title">Próxima fase <span id="nextStage">J03</span></h2>
+<h2 id="nextphase-title">Próxima fase <span id="nextStage">J05</span></h2>
 <p>Quer continuar desenvolvendo o piloto? Use este botão. Ele abre o ChatGPT com o pedido da próxima fase já escrito; <strong>envie a mensagem</strong> para iniciar a implementação. A página não executa códigos sozinha.</p>
 <a class="nextbutton" id="nextAction" href="#" target="_blank" rel="noopener">Abrir próxima fase no ChatGPT</a>
-<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/224">Ver requisitos no GitHub</a></p>
+<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/228">Ver requisitos no GitHub</a></p>
+</section>
+<section><h2>J04 — Compilação de eventos originais do Blue</h2>
+<p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/compile_sinnoh_playable_j04.py">compilador J04</a> prepara, apenas em cópia isolada, 16 portais, 5 NPCs e 3 Poké Bolas físicas. Exige os nove mapas reais, posições válidas e transitáveis, sprites com hashes, MapIDs livres e recibo íntegro; não aceita os cinco mapas ausentes nem fabrica coordenadas. Testes sintéticos não significam eventos instalados.</p>
+<p>As funções reais da história, Barry e o salvamento ainda dependem da <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/228">J05</a>. Consulte a <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/SINNOH_J04_COMPILADOR_EVENTOS_PRIVADO.md">documentação J04</a> para preparar entradas privadas sem tocar no jogo principal.</p>
 </section>
 <section><h2>O que a J03 implementou</h2>
 <p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/prepare_sinnoh_playable_j03.py">preparador J03</a> gera em memória prévias sanitizadas de quatro terrenos de origem, verifica SHA-256 de mapas/PNG, reserva de IDs, impede eventos/scripts e áudio do doador, e oferece dry-run, stage privado, verificação e rollback. O estágio físico não foi criado no CI: a fonte e os direitos locais não foram fornecidos; cinco mapas de entrada permanecem ausentes.</p>
@@ -71,7 +75,7 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/bind_sinnoh_playable_j02.py">vinculador J02</a> compara MapInfos e RXDATA locais, SHA-256, geometria real, nove símbolos e colisões de IDs. A fonte auditada fornece quatro terrenos exteriores; os cinco mapas ausentes precisam ser criados ou fornecidos com licença adequada. Nenhuma instalação foi efetuada.</p></section>
 <section><h2>Primeira ferramenta executável</h2>
 <p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/preflight_sinnoh_playable_j01.py">diagnóstico J01</a> verifica os arquivos da instalação, inventário de MapIDs e estrutura de uma fonte de mapas. Não extrai dados, não importa mapas, não roda Game.exe e não toca nos saves. Você pode executá-lo pelo script <code>SINNOH_J01_DIAGNOSTICAR_JOGAVEL.bat</code> no Windows após baixar uma versão que contenha a J01.</p>
-<p>Os MapIDs de destino continuam sem associação física. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/223">Consultar a J02</a>. A próxima implementação é a J03, vinculada no botão acima.</p>
+<p>Os MapIDs de destino continuam sem associação física. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/223">Consultar a J02</a>. A próxima implementação é a J05, vinculada no botão acima.</p>
 </section>
 <footer><p>Dados versionados em <code>data/regions/sinnoh-playable-progress.json</code>. Esta barra é independente da série L e do antigo desenvolvimento 32/32; evita confundir contratos/documentação com uma região instalada.</p>
 <p><a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues">Acompanhar próximas implementações no GitHub</a></p></footer>
