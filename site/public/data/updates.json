@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "f3e6299d2c7d20a8fd5df9fc14f438825c90437f",
+      "date": "2026-11-17T21:06:22-03:00",
+      "title": "Unova G07.2 — schema incremental auditável e seguro (28/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "f05a9f8fc7169f116da3b3f6191b46eb57432912",
       "date": "2026-11-17T21:03:20-03:00",
       "title": "feat(sinnoh): L03 versioned documentary human-review matrix and handoff (#175)",
