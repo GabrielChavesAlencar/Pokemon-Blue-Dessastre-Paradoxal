@@ -167,6 +167,21 @@ TRAINERS.update({
     },
 })
 
+# Pinned FRLG Map053/054 Nugget Bridge and Bill's route teams.
+TRAINERS.update({
+    53: {
+        1: ("CAMPER","Ethan"), 2: ("LASS","Reli"),
+        3: ("YOUNGSTER","Timmy"), 4: ("LASS","Ali"),
+        5: ("BUGCATCHER","Cale"), 6: ("ROCKET","Grunt",5),
+        7: ("CAMPER","Shane"),
+    },
+    54: {
+        1: ("HIKER","Franklin"), 2: ("HIKER","Wayne"), 3: ("HIKER","Nob"),
+        6: ("LASS","Haley"), 7: ("YOUNGSTER","Chad"),
+        8: ("CAMPER","Flint"), 9: ("YOUNGSTER","Joey"),
+        10: ("YOUNGSTER","Dan"), 11: ("PICNICKER","Kelsey"),
+    },
+})
 TRAINERS.update({
     61: {
         8: ("BUGCATCHER", "Keigo"), 9: ("PICNICKER", "Nancy"),
@@ -918,6 +933,12 @@ def install_events(source, target, mapping):
                          36: {18: KANTO_MOONSTONE_CALLBACK},
                          65: {2: "BlueKantoPilot.heal"},
                          64: {7: "BlueKantoPilot.ticketmaster"},
+                         39: {15: "BlueKantoPilot.cerulean_rival",
+                              32: "BlueKantoPilot.cerulean_rival",
+                              34: "BlueKantoPilot.cerulean_rival"},
+                         55: {3: "BlueKantoPilot.bill_request",
+                              4: "BlueKantoPilot.bill_machine",
+                              8: "BlueKantoPilot.bill_ticket"},
                          76: {2: "BlueKantoPilot.captain"}}
         scripts = dict(script_events.get(original, {}))
         if original in (12, 27, 41, 66):
@@ -980,9 +1001,15 @@ def install_events(source, target, mapping):
                     f'BlueKantoPilot.cinnabar_trainer(:BLUE_KANTO_{kind}, "{name}", '
                     f'"{key}", {group})'
                 )
+        if original == 53:
+            # The reward is granted only after victory, not before battle.
+            scripts[6] = "BlueKantoPilot.nugget_rocket"
         if scripts.keys() - events.keys():
             raise ValueError(f"Missing event anchor in map {original}")
         for event_id, event in events.items():
+            # Event 005 duplicates Bill's human body; use 008 after PC stage.
+            if original == 55 and event_id == 5:
+                continue
             # Read-only signs and source-authored Cut trees are safe optional
             # objects on functional maps, including reviewed cities/interiors.
             # This does NOT affect any geometry-only preview region.
@@ -1179,6 +1206,56 @@ def install_events(source, target, mapping):
                 selected[event_id] = replacement
                 continue
             if event_id in scripts:
+                if original == 39 and event_id in (15, 32, 34):
+                    # Source-owned north crossing (22/23/24,6); all three
+                    # lanes share a Kanto-only victory flag and retry behavior.
+                    encounter = new_event(event, [
+                        command(355, b"BlueKantoPilot.cerulean_rival")
+                    ], 1, b"")
+                    closed = copy.deepcopy(encounter.attrs["@pages"][0])
+                    closed.attrs["@condition"].attrs.update({
+                        "@self_switch_valid": True, "@self_switch_ch": b"A"
+                    })
+                    closed.attrs.update({
+                        "@trigger": 0, "@through": True, "@list": [command(0)]
+                    })
+                    encounter.attrs["@pages"].append(closed)
+                    selected[event_id] = encounter
+                    continue
+                if original == 55 and event_id in (3, 8):
+                    # Bill is Clefairy until his PC is operated. Never execute
+                    # foreign FRLG switches or duplicate ticket rewards.
+                    if event_id == 3:
+                        pokemon = new_event(event, [
+                            command(355, b"BlueKantoPilot.bill_request")
+                        ], 0, actor(event))
+                        hidden = copy.deepcopy(pokemon.attrs["@pages"][0])
+                        hidden.attrs["@condition"].attrs.update({
+                            "@self_switch_valid": True, "@self_switch_ch": b"A"
+                        })
+                        hidden.attrs["@graphic"].attrs.update({
+                            "@character_name": b"", "@tile_id": 0
+                        })
+                        hidden.attrs.update({
+                            "@trigger": 0, "@through": True, "@list": [command(0)]
+                        })
+                        pokemon.attrs["@pages"].append(hidden)
+                        selected[event_id] = pokemon
+                    else:
+                        human = new_event(event, [
+                            command(355, b"BlueKantoPilot.bill_ticket")
+                        ], 0, actor(event))
+                        invisible = copy.deepcopy(human.attrs["@pages"][0])
+                        invisible.attrs["@graphic"].attrs.update({
+                            "@character_name": b"", "@tile_id": 0
+                        })
+                        invisible.attrs.update({"@through": True, "@list": [command(0)]})
+                        human.attrs["@pages"].insert(0, invisible)
+                        human.attrs["@pages"][1].attrs["@condition"].attrs.update({
+                            "@self_switch_valid": True, "@self_switch_ch": b"A"
+                        })
+                        selected[event_id] = human
+                    continue
                 if original == 38 and event_id in fossil_anchors:
                     # Keep the native fossil icon/tile, original coordinates,
                     # EventID and page interaction, not an item-ball pickup.
@@ -1513,7 +1590,7 @@ def install_pbs(preview, target, mapping):
     source_keys = json_file(KANTO)["maps"]
     for source_id, map_id in mapping.items():
         metadata.extend([f"[{map_id:03}]", f"Name = {LOCATION_NAMES[source_keys[str(source_id)]]}"])
-        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
+        if source_id in (5, 9, 10, 18, 24, 25, 32, 33, 39, 53, 54, 56, 61, 64, 72, 111, 114, 141, 143, 144, 155, 157, 159, 161, 164, 107, 168, 190, 191, 198, 199, 16, 209, 214):
             metadata.extend(["Outdoor = true", "ShowArea = true"])
         if source_id in {*range(155, 164), 153}:
             metadata.append("SafariMap = true")
@@ -1569,6 +1646,9 @@ def install_runtime(target, mapping, game):
         ("MOON_B1F", "Mt Moon - B1F", 37, 25, 8),
         ("MOON_B2F", "Mt Moon - B2F", 38, 31, 24),
         ("CERULEAN", "Cerulean City (Center)", 39, 22, 20),
+        ("NUGGET", "Route 24 - Nugget Bridge", 53, 24, 39),
+        ("BILL_ROUTE", "Route 25 - Bill", 54, 51, 9),
+        ("BILL_HOUSE", "Casa do Bill", 55, 7, 9),
         ("MISTY", "Cerulean Gym (Misty)", 42, 8, 18),
         ("ROUTE5", "Route 5 (Underground)", 56, 31, 32),
         ("ROUTE6", "Route 6 (Underground)", 61, 35, 13),
