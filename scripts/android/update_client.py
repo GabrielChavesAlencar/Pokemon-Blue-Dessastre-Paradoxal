@@ -90,7 +90,11 @@ def release_for(channel):
     # multiregion-15 and the previous client downgraded the installed game.
     # Examine every retrieved page and choose the newest *published* release.
     candidates = []
-    for page in range(1, 4):
+    # Battle-hub releases can fill three entire GitHub API pages before
+    # the most recent Kanto-specific Android publication (observed page 4).
+    # Bound the scan to avoid unbounded mobile traffic, but never fail just
+    # because a valid Kanto update is not in the first 300 releases.
+    for page in range(1, 9):
         url = API + "/releases?per_page=100" + ("&page=" + str(page) if page > 1 else "")
         entries = get_json(url)
         if not isinstance(entries, list):
@@ -101,7 +105,7 @@ def release_for(channel):
                     asset_url(release, CHANNELS[channel][0]) and
                     asset_url(release, CHANNELS[channel][1])):
                 candidates.append(release)
-        if len(entries) < 100:
+        if len(entries) < 100 or (len(candidates) >= 5 and page >= 4):
             break
     if not candidates:
         raise ValueError("No verified Android release found for channel: " + channel)
