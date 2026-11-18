@@ -144,7 +144,13 @@ def audit(report, mirror, source, trusted_l19):
                    or r["linked_l04_criterion_ids"]
                    for r in rows if r["anonymous_bookkeeping_slot"])
             or any("R09" in r["prerequisite_blocker_ids"]
-                   or "R09" in r["documentary_dependency_request_ids"] for r in rows)
+                   or "R09" in r["documentary_dependency_request_ids"]
+                   for r in rows if r["kind"] != "GLOBAL_REGIONAL_GATE")
+            or len([r for r in rows if r["kind"] == "GLOBAL_REGIONAL_GATE"]) != 1
+            or any(r["prerequisite_blocker_ids"] != ["R09"]
+                   or r["documentary_dependency_request_ids"] != []
+                   or r["documentary_dependency_count"] != 0
+                   for r in rows if r["kind"] == "GLOBAL_REGIONAL_GATE")
             or any(("B10" in r["prerequisite_blocker_ids"] or
                     "B11" in r["prerequisite_blocker_ids"])
                    for r in rows if r["kind"] == "NATIVE_CASE"
