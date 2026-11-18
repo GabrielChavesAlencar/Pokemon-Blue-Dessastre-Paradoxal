@@ -38,8 +38,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     site = json_file(root / "site/public/data/kanto.json")
     dex = json_file(root / "site/public/data/catalog.json")
     expected_ids = {int(key) for key in manifest["maps"]}
-    if len(expected_ids) != 142:
-        raise ValueError("Stage-16 Kanto map catalog must keep 142 IDs")
+    if len(expected_ids) != 145:
+        raise ValueError("Stage-16 Kanto map catalog must keep 145 IDs")
     expected_order = stable_source_order(expected_ids)
     if len(expected_order) != len(set(expected_order)) or set(expected_order) != expected_ids:
         raise ValueError("Kanto source ID plan is corrupt")
@@ -150,7 +150,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         from pilot_catalog import prepared_plan
         plan = prepared_plan(pilot, manifest)
         mapping = {row["source_id"]:row["proposed_id"] for row in plan["maps"]}
-        if len(mapping) != 142 or len(set(mapping.values())) != 142:
+        if len(mapping) != 145 or len(set(mapping.values())) != 145:
             raise ValueError("Compiled pilot map IDs are incomplete")
         # The canonical stable order must also remain stable for old saves,
         # despite lower-numbered source IDs appended in later phases.
@@ -158,7 +158,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
             raise ValueError("Compiled map slots are no longer in stable save order")
         from verify_pilot import inspect as verify
         structural = verify(pilot)
-        if structural["preview_event_count"] != 0 or structural["experimental_stops"] != 64:
+        if structural["preview_event_count"] != 0 or structural["experimental_stops"] != 67:
             raise ValueError("Pilot contains unsafe preview events or lost testing destinations")
         isolated = {
             "map_count":structural["maps"],
