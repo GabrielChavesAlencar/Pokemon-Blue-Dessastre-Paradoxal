@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "bc4b8810cbbbe26e744798c8cf23c464fa24535f",
+      "date": "2026-11-18T07:36:14-03:00",
+      "title": "test(android): reject unknown map/audio changes and validate route4/Cerulean correction without ROM or saves",
+      "category": "Correções"
+    },
+    {
       "sha": "d461af7a7b2a2d013bf92f535041d694bee29a85",
       "date": "2026-11-18T07:35:15-03:00",
       "title": "fix(android): count actual tab-separated Kanto music bindings in package check",
