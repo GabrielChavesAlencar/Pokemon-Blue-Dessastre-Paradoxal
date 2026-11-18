@@ -9,6 +9,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import zlib
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -46,6 +47,10 @@ class SinnohJ10MapAuthorTests(unittest.TestCase):
         cat.parent.mkdir(parents=True)
         cat.write_text(json.dumps(src))
         self.symbols=[r["symbol"] for r in src["maps"] if r["source_id"] is None]
+        # Synthetic fixture: J02 real provenance validation belongs to its own regression suite.
+        self.catalog_patcher=patch.object(j10,"source_catalog",return_value=src)
+        self.catalog_patcher.start()
+        self.addCleanup(self.catalog_patcher.stop)
         self.work=self.root/".blue-work"
         self.drafts=self.work/j10.DRAFT_DIR
         self.tiles=self.work/j10.TILESET_DIR
