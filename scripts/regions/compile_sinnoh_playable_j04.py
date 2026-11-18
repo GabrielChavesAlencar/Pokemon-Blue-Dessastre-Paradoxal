@@ -224,6 +224,9 @@ def compile_private_events(root:Path,input_label:str,input_sha:str,
     # This also verifies explicit 16 reverse warps, five handlers, 3 unique
     # starter balls, all coordinates/arrivals, the requested bedroom spawn.
     audit(spec,schema,dimensions=sizes)
+    passable_point(objects["SINNOH_PLAYER_BEDROOM"],
+                   read_marshal((folder/"Data/Tilesets.rxdata").read_bytes(),"START_TILESETS"),
+                   spec["start"]["x"],spec["start"]["y"])
     other_maps=set(re.fullmatch(r"Data/Map(\d{3,5})\.rxdata",name).group(1)
                    for name in manifest if re.fullmatch(r"Data/Map(\d{3,5})\.rxdata",name))
     if len(other_maps)!=9 or set(other_maps)!={str(mid).zfill(3) for mid in dests}:
