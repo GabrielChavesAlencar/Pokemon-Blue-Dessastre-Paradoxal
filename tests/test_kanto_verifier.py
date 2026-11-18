@@ -101,11 +101,16 @@ class KantoPilotAuditTests(unittest.TestCase):
             self.assertGreaterEqual(len(trainer["variants"][0]["team"]), 4)
         champion = next(t for t in data["trainers"] if t["id"]=="kanto-blue-champion")
         self.assertEqual(champion["location"],"kanto-champion-hall")
-        self.assertEqual(len(champion["variants"]),3)
+        # Three first-challenge teams by starter plus three audited
+        # full-power rematches. These are distinct real PBS versions,
+        # not duplicate invented starter choices.
+        self.assertEqual(len(champion["variants"]), 6)
         self.assertEqual(
-            {row["starter"] for row in champion["variants"]},
+            {row["starter"] for row in champion["variants"][:3]},
             {"BULBASAUR","CHARMANDER","SQUIRTLE"},
         )
+        self.assertTrue(all(row["starter"] is None
+                            for row in champion["variants"][3:]))
         self.assertTrue(all(len(row["team"]) >= 6 for row in champion["variants"]))
         pair = next(t for t in data["trainers"] if t["id"]=="kanto-ray-tyra")
         self.assertEqual(pair["location"],"kanto-victory-road-3f")
