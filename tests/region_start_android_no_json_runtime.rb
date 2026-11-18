@@ -75,7 +75,10 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     # JSON constant at all. Kanto must work in both cases, just as Hoenn does.
     FileUtils.mkdir_p("Plugins/ZZZZZ Blue Kanto Pilot")
     kanto_maps = {}
-    142.times { |i| kanto_maps[(i + 1).to_s] = 300 + i }
+    # Match the 142 legacy namespace without the three later-added FRLG
+    # source IDs (53, 54, 55). Their new destination slots append at 442-444.
+    legacy_source_ids = (1..145).to_a - [53, 54, 55]
+    legacy_source_ids.each_with_index { |id, i| kanto_maps[id.to_s] = 300 + i }
     kanto_home = [kanto_maps["7"], 25, 7]
     File.write("Data/blue-kanto-install.json",
                '{"schema":1,"maps":{' +
@@ -132,6 +135,35 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
     check(BlueRegionStart.request_initial("HOENN"),
           "Hoenn unavailable after Kanto JSON fallback")
 
+    # The new 145-map Android installation must be accepted WITHOUT JSON,
+    # but only when all three source maps and the correct ready gate exist.
+    kanto_maps.merge!({"53"=>442,"54"=>443,"55"=>444})
+    File.write("Data/blue-kanto-install.json",
+               '{"schema":1,"maps":{' +
+               kanto_maps.map { |key,value| %("#{key}":#{value}) }.join(",") +
+               '},"source":"Essentials FRLG 21.1"}')
+    File.write("Data/blue-kanto-ready.txt",
+               "BLUE_KANTO_READY_V1,145,#{kanto_home[0]}\n")
+    check(!BlueRegionStart.kanto_integrated?,
+          "145-map manifest accepted before new route files were installed")
+    [442,443,444].each { |id| File.write(sprintf("Data/Map%03d.rxdata", id), "kanto") }
+    check(BlueRegionStart.kanto_integrated?,
+          "JoiPlay rejected verified 145-map Cerulean/Bill installation")
+    check(BlueRegionStart.request_initial("KANTO"),
+          "New Game Kanto rejected valid 145-map installation")
+    File.delete("Data/Map443.rxdata")
+    check(!BlueRegionStart.kanto_integrated?,
+          "Kanto accepted missing physical Route 25 MapID")
+    File.write("Data/Map443.rxdata", "kanto")
+    File.write("Data/blue-kanto-ready.txt",
+               "BLUE_KANTO_READY_V1,142,#{kanto_home[0]}\n")
+    check(!BlueRegionStart.kanto_integrated?,
+          "Kanto accepted 145-map manifest with old 142-map ready marker")
+    File.write("Data/blue-kanto-ready.txt",
+               "BLUE_KANTO_READY_V1,145,#{kanto_home[0]}\n")
+    check(BlueRegionStart.kanto_integrated? && BlueRegionStart.hoenn_integrated?,
+          "145-map new Kanto impacted Hoenn or failed its own proof")
+
     check(BlueRegionStart.request_initial("DECADES"),
           "Decades new game blocked by missing JSON")
     check(BlueRegionStart.choose_initial == "DECADES",
@@ -151,4 +183,4 @@ Dir.mktmpdir("blue-joiplay-no-json") do |directory|
           "New Game accepted incomplete 199-map installation")
   end
 end
-puts "PASS: JoiPlay New Game without JSON, 142 Kanto/199 Hoenn maps, both regions selectable"
+puts "PASS: JoiPlay New Game without JSON, 142 legacy/145 new Kanto +199 Hoenn, no false ready"
