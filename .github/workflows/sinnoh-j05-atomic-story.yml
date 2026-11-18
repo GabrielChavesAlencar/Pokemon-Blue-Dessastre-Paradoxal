@@ -24,6 +24,11 @@ on:
       - '.github/workflows/sinnoh-j07-windows-native-qa.yml'
       - 'SINNOH_J07_QA_WINDOWS.bat'
       - 'docs/SINNOH_J07_QA_WINDOWS_NATIVA.md'
+      - 'scripts/regions/prepare_sinnoh_playable_j08.py'
+      - 'tests/test_sinnoh_j08_android_private_delta.py'
+      - '.github/workflows/sinnoh-j08-android-private-delta.yml'
+      - 'SINNOH_J08_QA_ANDROID.bat'
+      - 'docs/SINNOH_J08_DELTA_ANDROID_PRIVADO.md'
   push:
     branches: [main]
     paths:
@@ -194,3 +199,39 @@ jobs:
         run: |
           if (Test-Path "game/Game.exe") { throw "Private source unexpectedly exposed" }
           if (Test-Path ".blue-work/sinnoh-j07-sessions") { throw "QA session outside temp fixture" }
+
+  j08-private-android-linux:
+    name: J08 / Linux 35 synthetic Android no-save delta/rights tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J08 syntax and local-only SHA/delta candidate fixtures
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j08.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j08_android_private_delta.py' -v
+      - name: No real game or saves in public J08 workflow
+        run: |
+          test ! -e game/Game.exe
+          test ! -d .blue-work/sinnoh-j08-candidates
+  j08-private-android-windows:
+    name: J08 / disposable Windows 35 synthetic Android profile/rollback checks
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J08 private delta fixtures only - no JoiPlay or Game.exe
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j08.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j08_android_private_delta.py' -v
+      - name: Confirm QA data never escaped the temporary fixtures
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private executable unexpectedly present" }
+          if (Test-Path ".blue-work/sinnoh-j08-candidates") { throw "QA candidate leaked into checkout" }
