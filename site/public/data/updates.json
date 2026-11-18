@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "39e51de92aafdab3f5aea3f929f57f5c0bb72b2d",
+      "date": "2026-11-17T23:11:11-03:00",
+      "title": "Sinnoh L09: independent public human-review handoff (#193)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fbfae4b78ceed9f5da9656adc6b04f90275f0e4f",
       "date": "2026-11-17T22:53:28-03:00",
       "title": "Unova A15 — matriz de prontidão nativa A04–A14, 0/8 preservado",
