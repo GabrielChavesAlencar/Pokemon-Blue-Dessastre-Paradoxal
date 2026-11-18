@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0c6dcff0616e42837b74e46c5a6384996f076e93",
+      "date": "2026-11-17T21:47:48-03:00",
+      "title": "Unova G07.4 — contratos Blue-Story e Android/JoiPlay (30/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "21040a22c9dd3ad8005a0ae667f92693fe140b79",
       "date": "2026-11-17T21:30:27-03:00",
       "title": "Unova G07.3 — transações CAS e rollback offline (29/32)",
