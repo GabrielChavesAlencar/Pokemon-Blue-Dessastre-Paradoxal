@@ -758,7 +758,6 @@ def inspect(game: Path) -> dict:
         (53, 6): "BlueKantoPilot.nugget_bridge_rocket",
         (55, 3): "BlueKantoPilot.bill_request",
         (55, 4): "BlueKantoPilot.bill_computer",
-        (55, 5): "BlueKantoPilot.bill_reward",
         (55, 8): "BlueKantoPilot.bill_reward",
         (6, 36): "BlueKantoPilot.rival",
         (6, 37): "BlueKantoPilot.rival",
