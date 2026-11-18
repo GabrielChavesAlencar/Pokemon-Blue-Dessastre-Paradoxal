@@ -1,0 +1,107 @@
+name: Sinnoh J10-A - five original maps with private RXDATA and audited SVG previews
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j10a-original-map-production.yml'
+      - 'scripts/regions/generate_sinnoh_original_j10a.py'
+      - 'tests/test_sinnoh_j10a_original_geometry.py'
+      - 'docs/SINNOH_J10A_CINCO_MAPAS_ORIGINAIS.md'
+      - 'SINNOH_J10A_GERAR_PRIVADO.bat'
+      - 'site/public/sinnoh-jogavel.html'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j10a-original-map-production.yml'
+      - 'scripts/regions/generate_sinnoh_original_j10a.py'
+      - 'tests/test_sinnoh_j10a_original_geometry.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  originals-linux:
+    name: J10-A / Linux - 25 checks and five private RMXP geometry builds
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and audit original geometry tests
+        run: |
+          python -m py_compile scripts/regions/generate_sinnoh_original_j10a.py
+          python -m unittest discover -s tests -p test_sinnoh_j10a_original_geometry.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j10_original_map_authoring.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j09_physical_source_intake.py -v
+      - name: Generate all 5 actual RXDATA + PNG + SVG in ignored ephemeral workspace
+        run: |
+          python scripts/regions/generate_sinnoh_original_j10a.py --build > /tmp/j10a-run.json
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path(".blue-work/sinnoh-j10a-original")
+          data=json.loads((p/"manifest.json").read_text())
+          assert data["map_count"]==5
+          assert data["native_maps_installed"]==0
+          assert not data["can_install"] and not data["r08_approved"]
+          assert not (p.parent/"sinnoh-j09-authored").exists()
+          assert len(list(p.glob("*.rxdata")))==5
+          assert len(list((p/"previews").glob("*.svg")))==5
+          for filename,sha in data["output_checksums"].items():
+              assert hashlib.sha256((p/filename).read_bytes()).hexdigest()==sha
+          assert not Path("game/Game.exe").exists()
+          print("J10A_5_ORIGINAL_RMXP_PRIVATE_MAPS_AND_5_SVG_AUDITED_NO_NATIVE")
+          PY
+      - name: Publish only non-binary sanitized SVG previews + public-status receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-j10a-five-original-schematic-previews
+          path: |
+            .blue-work/sinnoh-j10a-original/previews/*.svg
+            .blue-work/sinnoh-j10a-original/manifest.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Ensure private .rxdata and .png were NOT staged or uploaded
+        run: |
+          git diff --exit-code
+          test ! -d .blue-work/sinnoh-j09-authored
+          echo J10A_PRIVATE_RXDATA_AND_ARTWORK_NOT_UPLOADED
+  originals-windows:
+    name: J10-A / Windows ephemeral - 25 checks and no personal saves
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generated original geometry tests
+        run: |
+          python -m py_compile scripts/regions/generate_sinnoh_original_j10a.py
+          python -m unittest discover -s tests -p test_sinnoh_j10a_original_geometry.py -v
+      - name: No native Game.exe, releases, user saves or game asset imports
+        shell: pwsh
+        run: |
+          if (Test-Path 'game/Game.exe') { throw 'Private Game.exe present!' }
+          if (Test-Path '.blue-work/sinnoh-j09-authored') { throw 'Unreviewed sources incorrectly promoted to J09!' }
+          Write-Output 'J10A_GENERATION_IS_NOT_NATIVE_QA'
+  portal:
+    name: J10-A / Portal stable native 0 and no false rights release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify existing J pilot progress stays fail-closed
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build site
+        working-directory: site
+        run: npm run build
+      - name: J11 remains next and source is still not playable
+        run: |
+          grep -q 'J11' site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'PILOT_NOT_INSTALLED_NOT_PLAYABLE' site/dist/data/sinnoh-playable-progress.json
