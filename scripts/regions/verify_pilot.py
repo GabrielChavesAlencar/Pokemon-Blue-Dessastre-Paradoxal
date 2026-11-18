@@ -783,6 +783,15 @@ def inspect(game: Path) -> dict:
             anchors[(source_id, event_id)] = (
                 f'BlueKantoPilot.battle(:BLUE_KANTO_{kind}, "{name}", "{key}"'
             )
+    for event_id in (11, 16):
+        # Map042 JoiPlay-safe atomic event wrapper, instead of separate
+        # native pbTrainerIntro/pbNoticePlayer/battle/event-sync commands.
+        kind, name, *_ = TRAINERS[42][event_id]
+        key = f"KANTO_042_{event_id:03d}"
+        anchors[(42, event_id)] = (
+            f'BlueKantoPilot.cerulean_gym_trainer(:BLUE_KANTO_{kind}, '
+            f'"{name}", "{key}", {event_id})'
+        )
     for event_id, group in CINNABAR_GYM_TRAINER_GROUPS.items():
         kind, name, *_ = TRAINERS[202][event_id]
         key = f"KANTO_202_{event_id:03d}"
