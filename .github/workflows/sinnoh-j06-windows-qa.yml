@@ -1,0 +1,100 @@
+name: Sinnoh J06 - guarded Windows isolated QA copy and rollback (no Game.exe)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j06-windows-qa.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j06.py'
+      - 'tests/test_sinnoh_j06_qa_windows.py'
+      - 'SINNOH_J06_QA_WINDOWS.bat'
+      - 'docs/SINNOH_J06_WINDOWS_QA_ISOLADO.md'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j06-windows-qa.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j06.py'
+      - 'tests/test_sinnoh_j06_qa_windows.py'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j06-private-qa-linux:
+    name: J06 / 40 synthetic checks: hashes, rights, MapIDs, rollback & foreign saves
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python syntax
+        run: python -m py_compile scripts/regions/prepare_sinnoh_playable_j06.py
+      - name: J06 40 local synthetic cases (no Game.exe execution)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j06_qa_windows.py' -v
+      - name: Existing S11/QA installer/launcher regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_qa_install.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_s11_save_isolation.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_ch10_qa_launcher.py' -v
+      - name: J04 staging and J05 Blue original events regression
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_j04_owned_events.py' -v
+          ruby tests/sinnoh_j05_atomic_runtime.rb scripts/regions/SinnohPilot.rb
+      - name: No private game in public checkout must fail closed
+        run: |
+          set +e
+          python scripts/regions/prepare_sinnoh_playable_j06.py >/tmp/sinnoh-j06-no-source.txt 2>&1
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+          grep -q 'SINNOH_J06_BLOQUEADO' /tmp/sinnoh-j06-no-source.txt
+          test ! -d .blue-work/game-sinnoh-qa
+          test ! -e game/Game.exe
+          echo SINNOH_J06_PUBLIC_CI_CANNOT_INSTALL_OR_RUN_GAME
+  j06-windows-synthetic:
+    name: J06 / disposable Windows 2022 synthetic launcher and rollback, no native assets
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax and Windows filesystem rollback fixture cases only
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j06.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j06_qa_windows.py' -v
+      - name: Never pretend Game.exe exists or was launched
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Unexpected private executable in public CI" }
+          if (Test-Path ".blue-work/game-sinnoh-qa-abcdef123456") { throw "Synthetic QA copy leaked outside temp fixtures" }
+          Write-Output "J06_WINDOWS_SYNTHETIC_ONLY_NO_GAME_EXE_NO_SAVES"
+  j06-portal-next-j07:
+    name: J06 / 6 of 8 code, 0 of 8 native and next J07 button
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: J-phase code vs native and J07 action tests
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Full site build, no fake Sinnoh gameplay
+        working-directory: site
+        run: npm run build
+      - name: Assert public site was generated and button remains interactive
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
+          grep -q '/sinnoh-jogavel.html' site/dist/index.html
