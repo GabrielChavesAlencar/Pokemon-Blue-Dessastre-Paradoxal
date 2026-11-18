@@ -50,10 +50,10 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         file.parent.mkdir(parents=True,exist_ok=True)
         file.write_bytes(b"synthetic fixture, no soundtrack recording")
 
-    def test_142_actual_ids_and_35_previews_are_scoped_but_not_playing(self):
+    def test_145_actual_ids_and_35_previews_are_scoped_but_not_playing(self):
         content, report = self.compile()
         lines = content.decode().splitlines()
-        self.assertEqual(report["source_maps"], 142)
+        self.assertEqual(report["source_maps"], 145)
         self.assertEqual(report["preview_maps"], 35)
         self.assertEqual(report["staged_map_rules"], 75)
         self.assertEqual(report["staged_battles"], 8)
@@ -61,7 +61,7 @@ class KantoMusicPhaseOneTests(unittest.TestCase):
         self.assertEqual(report["staged_scenes"], 13)
         self.assertEqual(report["active_map_bindings"], 0)
         self.assertEqual(report["active_battle_bindings"], 0)
-        self.assertEqual(len([line for line in lines if line.startswith("SCOPE\t")]), 142)
+        self.assertEqual(len([line for line in lines if line.startswith("SCOPE\t")]), 145)
         self.assertEqual(len([line for line in lines if line.startswith(("MAP\t","BATTLE\t"))]),0)
         pallet = report["real_map_ids"]["PALLET_TOWN"]
         self.assertEqual(pallet, 705)
