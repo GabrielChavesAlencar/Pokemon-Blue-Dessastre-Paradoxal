@@ -1,0 +1,91 @@
+name: Sinnoh J04 - 24 original Blue events in private nine-map stage (no native QA)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j04-private-events.yml'
+      - 'scripts/regions/compile_sinnoh_playable_j04.py'
+      - 'tests/test_sinnoh_j04_owned_events.py'
+      - 'scripts/regions/prepare_sinnoh_playable_j03.py'
+      - 'data/regions/sinnoh-twinleaf-events.json'
+      - 'data/regions/sinnoh-twinleaf-events.schema.json'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'docs/SINNOH_J04_COMPILADOR_EVENTOS_PRIVADO.md'
+      - 'SINNOH_J04_COMPILAR_EVENTOS.bat'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j04-private-events.yml'
+      - 'scripts/regions/compile_sinnoh_playable_j04.py'
+      - 'tests/test_sinnoh_j04_owned_events.py'
+      - 'scripts/regions/prepare_sinnoh_playable_j03.py'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j04-synthetic-nine-map-compiler:
+    name: J04 / CH06 nine maps 24 Blue events, sprites SHA, passability and rollback
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python syntax and trust boundaries
+        run: python -m py_compile scripts/regions/compile_sinnoh_playable_j04.py
+      - name: J04 46 original-owned cases and negative regressions
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j04_owned_events.py' -v
+      - name: Regress J02 J03 and CH06
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_j03_private_staging.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_j02_real_map_bindings.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_events.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_staging_transaction.py' -v
+      - name: Block missing source and prove no private stage
+        run: |
+          set +e
+          python scripts/regions/compile_sinnoh_playable_j04.py > /tmp/sinnoh-j04-status.json
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+          python - <<'PY'
+          import json
+          with open('/tmp/sinnoh-j04-status.json',encoding='utf8') as f: d=json.load(f)
+          assert d['status']=='BLOCKED_FIVE_REAL_MAPS_COORDINATES_AND_ASSETS_MISSING'
+          assert d['compiled_native_events']==0
+          assert (d['planned_warps'],d['planned_npc_handlers'],d['planned_starter_balls'])==(16,5,3)
+          assert d['can_install'] is False and d['native_playable'] is False
+          assert d['r07_complete'] is False and d['r08_complete'] is False
+          print('J04_FAIL_CLOSED_NO_PRIVATE_MAPS')
+          PY
+          test ! -d .blue-work/sinnoh-stage
+  j04-portal-next-phase:
+    name: J04 / progress 4 of 8 code, zero native and next J05, portal build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JS syntax
+        run: node --check site/public/assets/sinnoh-playable-progress.js
+      - name: Honest progress and J05 button tests
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Full portal build
+        working-directory: site
+        run: npm run build
+      - name: Verify generated page
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
+          grep -q '/sinnoh-jogavel.html' site/dist/index.html
