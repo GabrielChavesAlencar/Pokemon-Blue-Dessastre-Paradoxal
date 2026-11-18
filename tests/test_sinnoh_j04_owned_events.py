@@ -49,6 +49,9 @@ class J04OwnedEventTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name)
+        # The offline test project must include the exact published CH06 schema.
+        put(self.root,"data/regions/sinnoh-twinleaf-events.schema.json",
+            (ROOT/"data/regions/sinnoh-twinleaf-events.schema.json").read_bytes())
         self.game=self.root/"game"/"Data"
         self.game.mkdir(parents=True)
         self.native_infos={1:ruby("RPG::MapInfo",name=b"Decades",order=1)}
