@@ -19,6 +19,11 @@ on:
       - 'tests/test_sinnoh_j06_qa_windows.py'
       - '.github/workflows/sinnoh-j06-windows-qa.yml'
       - 'SINNOH_J06_QA_WINDOWS.bat'
+      - 'scripts/regions/prepare_sinnoh_playable_j07.py'
+      - 'tests/test_sinnoh_j07_windows_harness.py'
+      - '.github/workflows/sinnoh-j07-windows-native-qa.yml'
+      - 'SINNOH_J07_QA_WINDOWS.bat'
+      - 'docs/SINNOH_J07_QA_WINDOWS_NATIVA.md'
   push:
     branches: [main]
     paths:
@@ -153,3 +158,39 @@ jobs:
         run: |
           if (Test-Path "game/Game.exe") { throw "J06 private executable leaked to CI" }
           if (Test-Path ".blue-work/game-sinnoh-qa-abcdef123456") { throw "J06 QA fixture escaped temp directory" }
+
+  j07-private-qa-linux:
+    name: J07 / Linux 50 synthetic G12 cases: 43 Windows + 1 Android pending
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J07 native receipt harness syntax
+        run: python -m py_compile scripts/regions/prepare_sinnoh_playable_j07.py
+      - name: J07 50 synthetic test scenarios, no native Game.exe
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j07_windows_harness.py' -v
+      - name: Public checkout must not start a native game
+        run: |
+          test ! -e game/Game.exe
+          test ! -d .blue-work/sinnoh-j07-sessions
+  j07-private-qa-windows:
+    name: J07 / Windows disposable 50 synthetic session/evidence/save checks
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J07 private native QA G12 synthetic cases only
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j07.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j07_windows_harness.py' -v
+      - name: Do not run Game.exe or copy saves
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private source unexpectedly exposed" }
+          if (Test-Path ".blue-work/sinnoh-j07-sessions") { throw "QA session outside temp fixture" }
