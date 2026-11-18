@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b2d">
+<meta name="description" content="Sinnoh L16: critérios de saída públicos ainda não atendidos, nenhuma autorização nativa.">
+<title>Sinnoh L16 — Critérios de saída documentais | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;background:#0c1726;color:#eaf1fa;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}a{color:#a7d4ff}
+.wrap{max-width:1260px;margin:auto;padding:22px clamp(16px,3vw,44px) 78px}
+header{background:linear-gradient(125deg,#26405e,#121d30);border-bottom:1px solid #395270}
+h1{font-size:clamp(1.75rem,4vw,2.7rem);line-height:1.15;margin:.4rem 0}h2{font-size:1.35rem;margin:25px 0 10px}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:#bdcee4;font-weight:800}
+.alert{background:#302b31;border-left:4px solid #e2ad6a;border-radius:8px;padding:14px 16px;margin:17px 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin:23px 0}
+.metric{background:#192b43;border:1px solid #3c5573;border-radius:12px;padding:14px}.metric strong{display:block;font-size:1.68rem;font-variant-numeric:tabular-nums}
+.metric span,.small{font-size:.86rem;color:#c2d2e5}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));align-items:end;gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:.87rem;color:#d0deef}
+input,select,button{border:1px solid #55718f;background:#172b44;color:#f1f7ff;border-radius:8px;padding:10px;font:inherit;min-width:0}
+button{cursor:pointer}button:hover{background:#2a4562}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #8ac3ff;outline-offset:2px}
+.scroller{border:1px solid #3c5672;border-radius:12px;margin:15px 0;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:.87rem}th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid #39536b}
+thead{background:#233951}tbody tr:hover{background:#1b3048}tbody tr:last-child td{border:0}
+.pending{color:#ffdea8;font-weight:700}.documentary{color:#b9e3d4;font-weight:700}
+#status{min-height:1.5rem;color:#f9d6a4;font-weight:750}
+#detail{background:#172a40;border:1px solid #46617d;border-radius:11px;padding:16px}
+#detail p{margin:5px 0}.chips{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.chips span{font-size:.8rem;padding:4px 8px;border:1px solid #526e8c;border-radius:6px}
+code{font-size:.81rem;overflow-wrap:anywhere}footer{margin-top:35px;border-top:1px solid #405771;padding-top:17px}
+</style></head><body>
+<header><div class="wrap">
+<a href="/">Pokémon Blue — início</a> · <a href="/sinnoh-l15-consistencia.html">Auditoria L15</a>
+<p class="eyebrow">Sinnoh · L16 · Registro público de critérios de saída</p>
+<h1>O que ainda falta para avançar?</h1>
+<p>Critérios futuros para revisão humana e QA real, organizados a partir dos mesmos 88 pedidos da L13–L15. Nenhum critério foi cumprido ou aprovado por esta página.</p>
+<p class="alert"><strong>Sinnoh planned, não jogável.</strong> Relatórios locais 0/5, critérios humanos aprovados 0/20, QA nativa 0/44, B/C/D 0/13 e R07/R08/R09 pendentes. Os 1.084 vínculos são somente documentação.</p>
+</div></header>
+<main class="wrap">
+<section class="metrics" aria-label="Resumo público">
+<div class="metric"><strong>88/88</strong><span>Pedidos PENDING / BLOCKED</span></div>
+<div class="metric"><strong>0/88</strong><span>Critérios de saída cumpridos</span></div>
+<div class="metric"><strong>1.084</strong><span>Vínculos entre IDs públicos</span></div>
+<div class="metric"><strong>18</strong><span>Posições contábeis anônimas</span></div>
+<div class="metric"><strong>43 + 1</strong><span>Windows e Android separados</span></div>
+</section>
+<nav aria-label="Seções"><a href="#filtros">Filtros</a> · <a href="#pedidos">Pedidos</a> · <a href="#detalhes">Critérios selecionados</a> · <a href="#resumo">Categorias</a> · <a href="#proveniencia">Commits públicos</a></nav>
+<section id="filtros"><h2>Filtrar os critérios ainda não atendidos</h2>
+<p class="small">Prioridades P0–P4 organizam documentação, não a sequência de execução. Slots anônimos não são arquivos recebidos e não têm dependências presumidas.</p>
+<div class="filters">
+<label>Buscar ID<input id="search" type="search" placeholder="Ex.: Turtwig, R08, B09"></label>
+<label>Prioridade<select id="priority"><option value="">Todas</option><option value="0">P0</option><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option></select></label>
+<label>Tipo<select id="kind"><option value="">Todos</option></select></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android</option><option value="cross-platform">Ambas</option><option value="global">Global</option><option value="unassigned">Anônima</option></select></label>
+<label>Bloqueio<select id="blocker"><option value="">Todos</option><option value="B09">B09</option><option value="B10">B10</option><option value="B11">B11</option><option value="R07">R07</option><option value="R08">R08</option><option value="R09">R09 global</option></select></label>
+<label>Critério de saída<select id="criterion"><option value="">Todos</option></select></label>
+<button id="reset" type="button">Limpar filtros</button>
+</div>
+</section>
+<section id="pedidos"><h2>Registro público (somente leitura)</h2>
+<p id="status" role="status" aria-live="polite">Conferindo integridade pública…</p>
+<div class="scroller"><table><thead><tr><th scope="col">Pedido</th><th scope="col">Prioridade</th><th scope="col">Tipo / plataforma</th><th scope="col">Critérios pendentes</th><th scope="col">Links documentais</th><th scope="col">Estado</th></tr></thead><tbody id="recordRows"></tbody></table></div>
+</section>
+<section id="detalhes"><h2>Requisitos de saída do pedido selecionado</h2>
+<div id="detail"><p>Selecione um pedido para consultar somente os requisitos públicos que ainda não foram satisfeitos.</p></div></section>
+<section id="resumo"><h2>Grupos e plataformas</h2>
+<div class="scroller"><table><thead><tr><th scope="col">Categoria</th><th scope="col">Pedidos</th><th scope="col">Bloqueados</th><th scope="col">Critérios cumpridos</th><th scope="col">Vínculos documentais</th></tr></thead><tbody id="groupRows"></tbody></table></div>
+<div class="scroller"><table><thead><tr><th scope="col">Plataforma</th><th scope="col">Casos</th><th scope="col">Executados</th><th scope="col">B10/B11 Windows</th><th scope="col">Autorização</th></tr></thead><tbody id="platformRows"></tbody></table></div>
+<p class="small">R09 continua regional global sem casos associados. A validação B10/B11 de Windows não se aplica automaticamente ao Android. <code>watch_unchanged</code> não demonstra isolamento global de saves; direitos R08 e MapIDs R07 não estão aprovados.</p>
+</section>
+<footer id="proveniencia">
+<p>Commits públicos: L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code> · L11 <code id="shaL11"></code> · L12 <code id="shaL12"></code> · L13 <code id="shaL13"></code> · L14 <code id="shaL14"></code> · L15 <code id="shaL15"></code>.</p>
+<p class="small">Identificadores Git só comprovam bytes públicos. Não há uploads, anexos, aprovação ou execução de Game.exe, Windows Sandbox, JoiPlay ou saves.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/207">Issue L16 #207</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l16-public-exit-gates.json">Matriz L16 JSON</a>
+</footer></main>
+<script type="module" src="/assets/sinnoh-l16-public-exit-gates.js"></script>
+</body></html>
