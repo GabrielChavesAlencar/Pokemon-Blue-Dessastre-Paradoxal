@@ -36,7 +36,7 @@ jobs:
       - name: Connected-map routing and regional save scope
         run: |
           ruby tests/region_map_transition_perf_runtime.rb scripts/battle_polish/RegionTravel.rb
-          ruby tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+          ruby -I. tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
       - name: Android verified plugin cache and source package
         run: |
           python -m py_compile scripts/android/repack_multiregion_hotfix.py
