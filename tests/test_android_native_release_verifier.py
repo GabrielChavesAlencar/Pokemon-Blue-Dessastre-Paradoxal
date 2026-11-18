@@ -25,8 +25,8 @@ class NativeReleaseVerifierTests(unittest.TestCase):
         for i in range(74):
             number = i + 700
             track = native.TRACKS.get(str(i), "Kanto/example.mp3")
-            self.music.append(f"MAP\\t{number}\\t{track}\\t100\\t100")
-        self.plugin = b"module BlueRegionTravel\\n  def self.agent_map_id(region); 700; end\\nend\\n"
+            self.music.append(f"MAP\t{number}\t{track}\t100\t100")
+        self.plugin = b"module BlueRegionTravel\n  def self.agent_map_id(region); 700; end\nend\n"
         self.make_zip()
         self.make_manifest()
 
@@ -35,8 +35,8 @@ class NativeReleaseVerifierTests(unittest.TestCase):
             entries = {
                 native.PREFIX + native.TRAVEL: self.plugin,
                 native.PREFIX + native.CACHE: b"fake-Marshal-cache-not-game",
-                native.PREFIX + native.MUSIC: ("BLUE_KANTO_MUSIC_V1\\tKANTO\\t" + "a" * 64 +
-                                             "\\n" + "\\n".join(self.music) + "\\n").encode(),
+                native.PREFIX + native.MUSIC: ("BLUE_KANTO_MUSIC_V1\tKANTO\t" + "a" * 64 +
+                                             "\n" + "\n".join(self.music) + "\n").encode(),
                 native.PREFIX + native.KANTO_INSTALL: json.dumps({"maps": self.mapping}).encode(),
                 native.PREFIX + "Data/blue-update.json": json.dumps(
                     {"revision": NEW, "channel": "multiregion"}).encode(),
