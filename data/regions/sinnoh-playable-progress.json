@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "track": "JOGAVEL_TWINLEAF_SANDGEM",
+  "version": 1,
+  "updated_at": "2026-11-18",
+  "title": "Sinnoh jogável — piloto Twinleaf a Sandgem",
+  "scope": "EXCLUSIVE_NATIVE_PLAYABLE_PILOT_NOT_DOCUMENTARY_L_SERIES",
+  "status": "PILOT_NOT_INSTALLED_NOT_PLAYABLE",
+  "source_engineering_code_complete_not_playable": 32,
+  "stages_total": 8,
+  "stages_code_ready": 1,
+  "stages_native_validated": 0,
+  "engineering_percent": 12.5,
+  "native_verified_percent": 0,
+  "pilot_map_symbols": 9,
+  "required_warps": 16,
+  "required_npcs": 5,
+  "required_starter_balls": 3,
+  "native_windows_cases_executed": 0,
+  "native_windows_cases_total": 43,
+  "native_android_cases_executed": 0,
+  "native_android_cases_total": 1,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "main_game_modified": false,
+  "save_migration_performed": false,
+  "phase_count_policy": "J01 counts only as executable preflight code with passing CI, not as native gameplay; J02–J08 require concrete integration and later Game.exe/JoiPlay evidence; no L phases count.",
+  "stages": [
+    {
+      "id": "J01",
+      "title": "Verificar instalação real e fonte de mapas",
+      "status": "code_ready",
+      "code_ready": true,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": "scripts/regions/preflight_sinnoh_playable_j01.py",
+      "completion_requires": "Preflight runnable, fail-closed checks and regression CI pass; local real baseline still pending"
+    },
+    {
+      "id": "J02",
+      "title": "Reservar MapIDs e vincular os 9 mapas do piloto",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "Real 9 map symbols assigned to collision-free MapIDs with source hashes and reservations"
+    },
+    {
+      "id": "J03",
+      "title": "Converter terrenos e tilesets para cópia isolada",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "Authorized real tiles/geometry staged and verified without touching main game"
+    },
+    {
+      "id": "J04",
+      "title": "Compilar 16 portais, 5 NPCs e 3 Poké Bolas",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "All 16 warps, five handlers and three physical balls compiled with real coordinates and sprites"
+    },
+    {
+      "id": "J05",
+      "title": "Integrar Barry, regras de batalha e save Sinnoh",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "Barry teams compiled; starter, battle and isolated save/reload pass in copy"
+    },
+    {
+      "id": "J06",
+      "title": "Preparar instalador/launcher Windows do piloto",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "User can launch isolated Windows pilot without modifying main install or saves"
+    },
+    {
+      "id": "J07",
+      "title": "Validar Windows, saves e regressões multirregionais",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "Windows native QA and regional/save regressions reviewed"
+    },
+    {
+      "id": "J08",
+      "title": "Preparar, testar e distribuir piloto Android/JoiPlay",
+      "status": "blocked",
+      "code_ready": false,
+      "native_verified": false,
+      "playable": false,
+      "evidence_path": null,
+      "completion_requires": "Android/JoiPlay QA on isolated test package and safe incremental release"
+    }
+  ],
+  "next_stage": "J02",
+  "blockers": [
+    "MapInfos.rxdata do jogo instalado ainda não verificado nesta execução",
+    "Mapas e PNGs autorizados não incluídos na main pública",
+    "9 IDs reais e coordenadas de Twinleaf/Sandgem ainda não associados",
+    "43 testes Windows e 1 Android pendentes"
+  ],
+  "source_data": "data/regions/sinnoh-twinleaf-events.json",
+  "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE"
+}
