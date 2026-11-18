@@ -36,7 +36,8 @@ class KantoPilotAuditTests(unittest.TestCase):
         self.assertEqual(order[109:126], [190,191,193,194,195,196,197,198,
                                         199,200,201,202,203,205,206,207,208])
         self.assertEqual(order[126:127], [13])
-        self.assertEqual(order[127:142], [16,17,*range(209,222)])\n        self.assertEqual(order[142:], [53,54,55])
+        self.assertEqual(order[127:142], [16,17,*range(209,222)])
+        self.assertEqual(order[142:], [53,54,55])
         self.assertEqual(manifest["preview_only"], sorted([
             111,117,118,119,120,121,122,123,
             141,142,143,164,165,
