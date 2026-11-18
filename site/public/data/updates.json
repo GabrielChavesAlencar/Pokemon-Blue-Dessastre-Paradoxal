@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e4b76de3b51418b9a8504870996adbde461a5797",
+      "date": "2026-11-18T14:19:36-03:00",
+      "title": "Sinnoh jogável J09 — validar ZIP real 4/9, receber 5 mapas privados e bloquear R07/R08/R09 até prova física (#239)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "3276b51997c19aa3adcc604b55eb11b987ec3fef",
       "date": "2026-11-18T13:43:55-03:00",
       "title": "Sinnoh jogável J08 — delta privado Android/JoiPlay com SHA, direitos, saves isolados e QA fail-closed (#237)",
