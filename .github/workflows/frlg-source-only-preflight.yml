@@ -1,0 +1,29 @@
+name: FRLG - source-only preflight (never Game.exe)
+on:
+  push:
+    branches: [chore/frlg-source-only-preflight-a16-20261118]
+    paths:
+      - 'tools/frlg_source_preflight.py'
+      - 'tests/test_frlg_source_preflight.py'
+      - '.github/workflows/frlg-source-only-preflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pinned manifest (no archive)
+        run: python tools/frlg_source_preflight.py --check-config
+      - name: Offline negative regression tests
+        run: python -m unittest discover -s tests -p test_frlg_source_preflight.py -v
+      - name: Manual authorized HTTPS source check (no extraction)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          FRLG_SOURCE_URL: ${{ secrets.FRLG_SOURCE_URL }}
+        run: python tools/frlg_source_preflight.py --from-secret-env
