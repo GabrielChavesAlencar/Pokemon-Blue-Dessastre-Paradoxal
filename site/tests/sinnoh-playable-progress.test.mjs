@@ -269,7 +269,7 @@ test("J10 local real-map authoring code is present, but no maps have been author
  assert.match(html,/J10[^\n]*Editor de autoria original/);
  assert.match(html,/0\/5 mapas originais/);
  assert.match(html,/id="nextAction"/);
- assert.match(await read("docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md"),/5 mapas/);
+ assert.match(await read("docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md"),/cinco mapas/);
  const editor=await read("web/sinnoh-j10-map-editor.html");
  assert.ok(editor.includes("SINNOH_PLAYER_BEDROOM"));
  assert.ok(editor.includes("SINNOH_PROFESSOR_ROWAN_LABORATORY"));
