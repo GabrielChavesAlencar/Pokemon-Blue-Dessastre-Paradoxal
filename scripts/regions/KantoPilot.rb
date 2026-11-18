@@ -1666,11 +1666,21 @@ module BlueKantoPilot::PlayerOverworldScale
     return unless BlueKantoPilot::PILOT_OVERWORLD_SCALE
     return unless @character && @character.equal?($game_player)
 
-    # @ch is the live frame height, refreshed by Sprite_Character#update
-    # when the player changes avatar or loads a different save.
-    zoom = BlueKantoPilot.player_overworld_zoom(@ch)
-    self.zoom_x = zoom
-    self.zoom_y = zoom
+    # The boot-time constant is not proof the pilot marker still exists.
+    # Save the original zoom once and restore it if the isolated pilot
+    # marker disappears (e.g. reloading into the main Decades context).
+    if File.file?("Kanto pilot.json")
+      unless instance_variable_defined?(:@blue_kanto_original_zoom)
+        @blue_kanto_original_zoom = [zoom_x, zoom_y]
+      end
+      # @ch is the live frame height updated by Sprite_Character#update.
+      zoom = BlueKantoPilot.player_overworld_zoom(@ch)
+      self.zoom_x = zoom
+      self.zoom_y = zoom
+    elsif instance_variable_defined?(:@blue_kanto_original_zoom)
+      self.zoom_x, self.zoom_y = @blue_kanto_original_zoom
+      remove_instance_variable(:@blue_kanto_original_zoom)
+    end
   end
 end
 Sprite_Character.prepend(BlueKantoPilot::PlayerOverworldScale) if defined?(Sprite_Character)
