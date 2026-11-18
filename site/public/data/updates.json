@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d98033b362dac82347e0d97cb5606870eaa70b22",
+      "date": "2026-11-17T22:28:48-03:00",
+      "title": "Sinnoh L07: triagem publica 44 casos e 20 criterios (#187)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "23c4d38947f4bccfc36f095f0b7a86e79f9e3025",
       "date": "2026-11-17T22:03:54-03:00",
       "title": "Sinnoh L06: 44-case documentary human-review routing (#185)",
