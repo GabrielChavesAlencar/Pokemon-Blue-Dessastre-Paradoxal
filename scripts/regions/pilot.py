@@ -1240,12 +1240,12 @@ def install_events(source, target, mapping):
                     screen = new_event(event, [
                         command(355, scripts[event_id].encode("ascii"))
                     ], 0, actor(event) if event.attrs["@pages"][0].attrs["@graphic"].attrs["@character_name"] else b"")
-                    if event_id in (3, 5):
+                    if event_id in (3, 5, 8):
                         second = copy.deepcopy(screen.attrs["@pages"][0])
                         second.attrs["@condition"].attrs.update({
                             "@self_switch_valid": True, "@self_switch_ch": b"A"
                         })
-                        if event_id == 3:
+                        if event_id in (3, 5):
                             second.attrs["@graphic"].attrs.update({
                                 "@character_name": b"", "@tile_id": 0
                             })
@@ -1253,7 +1253,9 @@ def install_events(source, target, mapping):
                                                  "@list": [command(0)]})
                             screen.attrs["@pages"].append(second)
                         else:
-                            # Page0 stays hidden until the PC sets self-switch A.
+                            # Bill's normal appearance at (7,6) is the
+                            # source-verified front-of-room post-quest NPC.
+                            # It appears only after the PC restores Bill.
                             screen.attrs["@pages"] = [second]
                     selected[event_id] = screen
                     continue
