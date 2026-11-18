@@ -34,6 +34,17 @@ on:
       - 'data/regions/sinnoh-j09-private-source-recheck.json'
       - '.github/workflows/sinnoh-j09-physical-source-intake.yml'
       - 'docs/SINNOH_J09_FONTE_REAL_MAPAS_R07_R08.md'
+      - 'scripts/regions/author_sinnoh_playable_j10.py'
+      - 'scripts/regions/serve_sinnoh_j10_editor.py'
+      - 'tests/test_sinnoh_j10_original_authoring.py'
+      - 'tests/test_sinnoh_j10_original_map_authoring.py'
+      - '.github/workflows/sinnoh-j10-original-map-authoring.yml'
+      - 'web/sinnoh-j10-map-editor.html'
+      - 'site/public/sinnoh-j10-editor.html'
+      - 'SINNOH_J10_EDITOR_MAPAS.bat'
+      - 'docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md'
+      - 'docs/SINNOH_J10_EDITOR_MAPAS_AUTORAIS.md'
+      - 'site/public/assets/sinnoh-playable-progress.js'
   push:
     branches: [main]
     paths:
@@ -276,3 +287,42 @@ jobs:
         run: |
           if (Test-Path "game/Game.exe") { throw "Private executable unexpectedly present" }
           if (Test-Path ".blue-work/sinnoh-j09-authored") { throw "Private maps escaped source workspace" }
+
+  j10-private-authoring-linux:
+    name: J10 / Linux 74 human-authored-map synthetic-only gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check the J10 compiler and loopback editor Python syntax
+        run: python -m py_compile scripts/regions/author_sinnoh_playable_j10.py scripts/regions/serve_sinnoh_j10_editor.py
+      - name: J10 39 original-source fixture tests
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j10_original_authoring.py' -v
+      - name: J10 35 atomic source and tileset test cases
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j10_original_map_authoring.py' -v
+      - name: Do not find original maps or Game.exe in public source
+        run: |
+          test ! -e game/Game.exe
+          test ! -d .blue-work/sinnoh-j09-authored
+  j10-private-authoring-windows:
+    name: J10 / Windows disposable 74 synthetic source and save checks
+    runs-on: windows-2022
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J10 private manual geometry conversion test cases
+        run: |
+          python -m py_compile scripts/regions/author_sinnoh_playable_j10.py scripts/regions/serve_sinnoh_j10_editor.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j10_original_authoring.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_j10_original_map_authoring.py' -v
+      - name: All map outputs contained in temporary fixtures only
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private executable leaked" }
+          if (Test-Path ".blue-work/sinnoh-j09-authored") { throw "Test fixture escaped" }
