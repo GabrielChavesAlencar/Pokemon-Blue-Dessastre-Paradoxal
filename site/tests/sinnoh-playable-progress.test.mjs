@@ -73,7 +73,7 @@ test("J03 is a private code stage only, not a native stage or rights grant",asyn
  assert.equal(d.staging_real_terrain_maps_confirmed,0);
  assert.equal(d.native_maps_installed,0);
  assert.equal(d.stages_native_validated,0);
- assert.equal(d.next_stage,"J04");
+ assert.equal(d.next_stage,"J05");
  assert.equal(d.next_button_label.includes("J05"),true);
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J03.*(stage|staging)/is);
