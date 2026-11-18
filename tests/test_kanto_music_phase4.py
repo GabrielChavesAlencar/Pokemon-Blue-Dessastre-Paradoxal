@@ -29,7 +29,7 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
         lines=raw.decode().splitlines()
         self.assertEqual(report["source_maps"],145)
         self.assertEqual(report["preview_maps"],35)
-        self.assertEqual(report["active_map_bindings"],74)
+        self.assertEqual(report["active_map_bindings"],77)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertEqual(report["active_transport_bindings"],2)
         self.assertEqual(report["active_me_bindings"],6)
@@ -53,7 +53,7 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
             if number != 54: self.add_music(number)
         raw,report=self.compile()
         self.assertEqual(report["active_me_bindings"],5)
-        self.assertEqual(report["active_map_bindings"],74)
+        self.assertEqual(report["active_map_bindings"],77)
         self.assertEqual(report["active_battle_bindings"],8)
         self.assertIn("ME/Kanto/1-54. Caught a Pokémon!.mp3",report["missing_audio"])
         self.assertNotIn("ME\tcaught\t",raw.decode())
@@ -97,7 +97,7 @@ class KantoMusicPhase4Tests(KantoMusicPhaseOneTests):
         self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_pokemon")'),3)  # New Cinnabar fossil revival
         # Running Shoes are a seventh, story-gated item receipt after Brock.
         # They reuse the approved obtained_item ME, not an unreviewed track.
-        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_item")'),8)  # New one-time Mt. Moon fossil
+        self.assertEqual(src.count('BlueMusic.kanto_me_play("obtained_item")'),9)  # New one-time Mt. Moon fossil
         self.assertEqual(src.count('BlueMusic.kanto_me_play("healed")'),2)
         self.assertIn('return unless pbAddPokemonSilent(species, 5)',src)
         self.assertIn('return unless pbAddPokemonSilent(species, 25)',src)
