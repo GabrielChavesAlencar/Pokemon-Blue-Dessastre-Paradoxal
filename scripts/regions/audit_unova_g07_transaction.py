@@ -219,7 +219,8 @@ def transact(
     state: dict, package: dict, origin_manifest: bytes,
     origin_bytes: Mapping[str, bytes], target_bytes: Mapping[str, bytes],
     *, expected_generation: int, expected_snapshot_sha256: str,
-    observed_after_staging: dict | None = None, fail_at: str | None = None,
+    observed_after_staging: dict | None = None, observed_before_publish: dict | None = None,
+    fail_at: str | None = None,
 ) -> dict:
     """Prepare, stage, backup, CAS recheck and commit a NEW immutable snapshot.
 
@@ -316,7 +317,11 @@ def transact(
         if any(candidate["files"][k] != v for k, v in start["files"].items()
                if k not in changed_names):
             deny("unlisted fixture docs changed")
-        if state_etag(state) != expected_snapshot_sha256:
+        before_publish = observed_before_publish if observed_before_publish is not None else observed
+        validate_state(before_publish)
+        if (before_publish["generation"] != expected_generation
+            or state_etag(before_publish) != expected_snapshot_sha256
+            or state_etag(state) != expected_snapshot_sha256):
             return _safe_result("CONFLICT_CAS_CONCURRENT_EDIT", start,
                                 reason="prepublish CAS no longer matches",
                                 trace=tuple(trace), backups=backups)
