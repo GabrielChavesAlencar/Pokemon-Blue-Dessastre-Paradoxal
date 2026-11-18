@@ -108,7 +108,7 @@ def load_overlay(folder: Path, *, project: Path) -> tuple[dict, dict[str, bytes]
             (rel.startswith("Data/Map") and re.fullmatch(r"Data/Map(?:0[0-9]{2}|[1-5][0-9]{2}|Infos)\.rxdata", rel))
             or rel == "Data/Tilesets.rxdata"
             or rel in ("PBS/trainer_types_sinnoh_barry.txt", "PBS/trainers_sinnoh_barry.txt")
-            or re.fullmatch(r"Graphics/(?:Tilesets|Autotiles)/[A-Za-z0-9_ .()-]+\.png", rel)
+            or re.fullmatch(r"Graphics/(?:Tilesets|Autotiles|Characters)/[A-Za-z0-9_ .()-]+\.png", rel)
             or rel in ("Plugins/ZZZZZ Blue Sinnoh Intro/meta.txt",
                        "Plugins/ZZZZZ Blue Sinnoh Intro/SinnohPilot.rb")
         ) or rel == "Data/Map000.rxdata":
