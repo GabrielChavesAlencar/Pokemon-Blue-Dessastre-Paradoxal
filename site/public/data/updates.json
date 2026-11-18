@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8617ef47ea6745920cb6fe4be251982380d7628d",
+      "date": "2026-11-17T22:49:32-03:00",
+      "title": "Sinnoh L08: pinned public snapshot and fail-closed semantic diff (#190)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "0e748baa55ef85af990b5325090187e285a763a7",
       "date": "2026-11-17T22:35:29-03:00",
       "title": "Unova G08.3 — matriz multirregional offline (32/32 GitHub)",
