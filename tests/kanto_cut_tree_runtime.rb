@@ -123,8 +123,22 @@ Dir.mktmpdir("kanto-cut-tree-") do |dir|
     check(!tree.instance_variable_get(:@blue_kanto_cut_animating),
           "Cut animation flag did not reset")
 
+    # Player scaling is scoped to the isolated pilot and uses the current
+    # 60% cap (30 rendered px max), never the obsolete 75% expectation.
+    pilot_player = Game_Player.new
+    def pilot_player.pattern; 0; end
+    def pilot_player.direction; 2; end
+    $game_player = pilot_player
+    pilot_sprite = Sprite_Character.new(pilot_player)
+    pilot_sprite.update
+    check(pilot_sprite.zoom_x == 0.60 && pilot_sprite.zoom_y == 0.60,
+          "pilot player should use the current 60% scaling cap")
+
     # Main Decades never has the isolated pilot marker.
     File.delete("Kanto pilot.json")
+    pilot_sprite.update
+    check(pilot_sprite.zoom_x == 1.0 && pilot_sprite.zoom_y == 1.0,
+          "old pilot player retained zoom after marker was removed")
     original = Game_Event.new("CutTree")
     original.lock
     original_sprite = Sprite_Character.new(original)
@@ -137,8 +151,8 @@ Dir.mktmpdir("kanto-cut-tree-") do |dir|
     def player.direction; 2; end
     $game_player = player
     player_sprite.update
-    check(player_sprite.zoom_x == 0.75 && player_sprite.zoom_y == 0.75,
-          "previous protagonist scale fix was lost")
+    check(player_sprite.zoom_x == 1.0 && player_sprite.zoom_y == 1.0,
+          "main Decades protagonist inherited isolated Kanto scale")
   end
 end
 
