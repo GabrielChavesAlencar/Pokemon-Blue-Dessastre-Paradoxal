@@ -1,0 +1,96 @@
+name: Sinnoh L04 - protocolo humano documental sem permissao nativa
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l04-human-provenance.yml'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+      - 'tests/test_sinnoh_l04_human_review.py'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'scripts/regions/audit_sinnoh_l03_matrix.py'
+      - 'data/regions/sinnoh-l03-documentary-review.json'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l04-human-provenance.yml'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+      - 'tests/test_sinnoh_l04_human_review.py'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'scripts/regions/audit_sinnoh_l03_matrix.py'
+      - 'data/regions/sinnoh-l03-documentary-review.json'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l04:
+    name: L04 / 35 testes de checklist e autorizacao humana bloqueada
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar os 35 cenarios sinteticos positivos e negativos
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: Verificar matriz somente documental, sem dados privados
+        run: |
+          python scripts/regions/audit_sinnoh_l04_human_review.py > /tmp/sinnoh-l04-human-checklist-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/sinnoh-l04-human-checklist-public.json")
+          r=json.loads(p.read_text(encoding="utf8"))
+          assert r["stage"]=="L04" and r["version"]==1
+          assert r["status"]=="HUMAN_REVIEW_NOT_STARTED_NO_NATIVE_AUTHORIZATION"
+          assert [x["stage"] for x in r["source_rows"]]==["B09","B10","B11","R07","R08"]
+          assert r["criteria_total"]==20 and r["criteria_reviewed"]==0
+          assert all(x["source_status"]=="MISSING_REPORT" for x in r["source_rows"])
+          assert r["native_cases_total"]==44 and r["native_cases_approved"]==0
+          assert r["phase_b_approved"]==r["phase_c_approved"]==r["phase_d_approved"]==0
+          assert not r["r07_complete"] and not r["r08_complete"] and not r["r09_complete"]
+          assert not r["sinnoh_playable"] and not r["may_install_live_game"]
+          assert not r["may_launch_game_exe"] and not r["may_launch_joiplay"]
+          assert not r["may_start_windows_sandbox"] and not r["auto_uploaded"]
+          content=p.read_text(encoding="utf8")
+          for danger in ("C:\\Users","Save01.rxdata","private-baseline.json",
+                         "watch_id","hmac_key","source_clone_sha256"):
+              assert danger not in content
+          print("SINNOH_L04_20_DOCUMENTARY_CHECKS_ZERO_NATIVE_APPROVAL")
+          PY
+      - name: Proibir importacao e publicacao de arquivo privado de host
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "L04 no user PC, no save read, no runtime, no upload"
+
+  regressions:
+    name: L04 / 154 testes existentes L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L03 matriz documental (40)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 reconciliacao offline (40)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 exportador sanitizado (30)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 relatórios fail-closed (24)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 44 casos ainda nao testados no runtime (20)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
