@@ -171,7 +171,8 @@ class J12EInstallerTests(unittest.TestCase):
         self.assertNotIn("private-secrets.txt",files)
         self.assertIn("Game.exe",files)
     def test_28_reject_game_file_symlinks(self):
-        (self.base/"Graphics"/"bad.txt").symlink_to(self.base/"Game.exe")
+        try:(self.base/"Graphics"/"bad.txt").symlink_to(self.base/"Game.exe")
+        except (OSError,NotImplementedError):self.skipTest("Windows runner has no symlink privilege")
         self.reject(lambda:exp.scan_source(self.base))
     def test_29_scanning_existing_game_does_not_modify_base(self):
         before={p:p.read_bytes() for p in self.base.rglob("*") if p.is_file()}
