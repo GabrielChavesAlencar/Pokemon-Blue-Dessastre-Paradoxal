@@ -1,0 +1,134 @@
+name: Sinnoh L07 - triagem publica somente documental
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l07-public-triage.yml'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'site/public/data/sinnoh-l07-public-triage.json'
+      - 'site/public/sinnoh-l07-triagem.html'
+      - 'site/public/assets/sinnoh-l07-triage.js'
+      - 'site/tests/sinnoh-l07-triage.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l07_public_triage.py'
+      - 'tests/test_sinnoh_l07_public_triage.py'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l06_human_evidence.py'
+      - 'scripts/regions/audit_sinnoh_l05_native_dependencies.py'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l07-public-triage.yml'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'site/public/data/sinnoh-l07-public-triage.json'
+      - 'site/public/sinnoh-l07-triagem.html'
+      - 'site/public/assets/sinnoh-l07-triage.js'
+      - 'site/tests/sinnoh-l07-triage.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l07_public_triage.py'
+      - 'tests/test_sinnoh_l07_public_triage.py'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l06_human_evidence.py'
+      - 'scripts/regions/audit_sinnoh_l05_native_dependencies.py'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l07-audit:
+    name: L07 / 44 casos, 20 criterios, 88 negativos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar testes L07 e dados espelhados sem evidencias
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: Auditar fontes publicas e todas as permissoes bloqueadas
+        run: |
+          python scripts/regions/audit_sinnoh_l07_public_triage.py > /tmp/sinnoh-l07-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/sinnoh-l07-public.json').read_text('utf8'))
+          assert d['stage']=='L07' and d['status']=='PUBLIC_READ_ONLY_TRIAGE_ALL_NATIVE_PENDING'
+          assert d['counts']==dict(cases_total=44,windows=43,android=1,criteria_total=20,
+                  human_approved=0,native_completed=0,native_approved=0,
+                  local_reports=0,phase_bcd_completed=0,phase_bcd_total=13)
+          assert len(d['cases'])==44 and len(d['criteria'])==20
+          assert all(x['native_status']=='pending' and not x['evidence_accepted'] for x in d['cases'])
+          assert not d['sinnoh_playable'] and not d['native_qa_authorized']
+          assert d['l07_is_not_android_g12_local_l05']
+          assert not any(d['gates'][k] for k in ('can_launch_game_exe',
+                'can_launch_joiplay','can_start_windows_sandbox','can_install_live_game','auto_upload'))
+          assert [d['gates'][k] for k in ('r07','r08','r09')]==['PENDING']*3
+          raw=Path('/tmp/sinnoh-l07-public.json').read_text('utf8')
+          for bad in ('Save01.rxdata','private-baseline.json','hmac_key','watch_id'):
+              assert bad not in raw
+          print('SINNOH_L07_44_REAL_CASES_20_CRITERIA_0_NATIVE_APPROVAL')
+          PY
+      - name: Garantir que nenhum dado privado foi incluído
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "SINNOH_L07_ONLY_GITHUB_NO_NATIVE_EXECUTION"
+
+  l07-regressions:
+    name: L07 / regressao L06 L05 L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L06 human triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 44 x 20
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 human independent checklist
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 documentary matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 evidence sanitizer
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 export
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l07-portal:
+    name: L07 / portal estatico, espelho e build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar javascript publico
+        run: node --check site/public/assets/sinnoh-l07-triage.js
+      - name: Testes do portal publico L07
+        working-directory: site
+        run: node --test tests/sinnoh-l07-triage.test.mjs
+      - name: Build completo do portal
+        working-directory: site
+        run: npm run build
+      - name: Conferir artefatos finais sem estado jogavel
+        run: |
+          test -s site/dist/data/sinnoh-l07-public-triage.json
+          test -s site/dist/sinnoh-l07-triagem.html
+          test -s site/dist/assets/sinnoh-l07-triage.js
+          echo "SINNOH_L07_STATIC_VIEW_READY_ONLY_NATIVE_PENDING"
