@@ -77,7 +77,7 @@ jobs:
           $scope='.blue-work/kanto-pilot/Data/blue-kanto-music.txt'
           if(-not (Test-Path $scope)){throw 'Missing regional Kanto music scope'}
           $scopeRows=@(Get-Content $scope | Where-Object { $_ -match '^SCOPE[\t]' })
-          if($scopeRows.Count -ne 142){throw "Expected 142 real MapIDs; got $($scopeRows.Count)"}
+          if($scopeRows.Count -ne 145){throw "Expected 145 real MapIDs; got $($scopeRows.Count)"}
           python scripts/music/compile_kanto_music.py --game .blue-work/kanto-pilot --apply
           if($LASTEXITCODE -ne 0){throw 'Kanto regional music compiler failed'}
           $mapRows=@(Get-Content $scope | Where-Object { $_ -match '^MAP[\t]' })
