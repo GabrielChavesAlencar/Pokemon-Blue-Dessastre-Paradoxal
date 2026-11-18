@@ -9,9 +9,9 @@
   "status": "PILOT_NOT_INSTALLED_NOT_PLAYABLE",
   "source_engineering_code_complete_not_playable": 32,
   "stages_total": 8,
-  "stages_code_ready": 3,
+  "stages_code_ready": 4,
   "stages_native_validated": 0,
-  "engineering_percent": 37.5,
+  "engineering_percent": 50,
   "native_verified_percent": 0,
   "pilot_map_symbols": 9,
   "required_warps": 16,
@@ -25,7 +25,7 @@
   "joiplay_tested": false,
   "main_game_modified": false,
   "save_migration_performed": false,
-  "phase_count_policy": "J01/J02/J03 count only code implemented and CI regressions; NO actual Sinnoh terrain staged in this repository, no physical MapIDs assigned, no native Game.exe/JoiPlay. Four historical map terrain references only, five missing real maps. Even a local private J03 stage does not certify rights, R07/R08/R09, native gameplay, or distribution. L series never counts.",
+  "phase_count_policy": "J01-J04 count only real executable engineering code and synthetic CI; J04 CH06 topology and Ruby Map events compiler code is ready but NO 9 real maps/sprites/coords or runtime handlers installed. 4 historical terrain refs, 5 missing maps. QA 0/8 and 0/44 tests; no L documentation counts.",
   "stages": [
     {
       "id": "J01",
@@ -60,12 +60,12 @@
     {
       "id": "J04",
       "title": "Compilar 16 portais, 5 NPCs e 3 Poké Bolas",
-      "status": "blocked",
-      "code_ready": false,
+      "status": "code_ready",
+      "code_ready": true,
       "native_verified": false,
       "playable": false,
-      "evidence_path": null,
-      "completion_requires": "All 16 warps, five handlers and three physical balls compiled with real coordinates and sprites"
+      "evidence_path": "scripts/regions/compile_sinnoh_playable_j04.py",
+      "completion_requires": "J04 code compiles 16 warps, 5 Blue handler calls and 3 unique starter-ball events with verified 9-map stage/coordinate/passability/sprite SHA gates. Real maps 5/9 absent and handlers unbound until J05; no native J04 event compiled on real assets."
     },
     {
       "id": "J05",
@@ -108,13 +108,13 @@
       "completion_requires": "Android/JoiPlay QA on isolated test package and safe incremental release"
     }
   ],
-  "next_stage": "J04",
+  "next_stage": "J05",
   "blockers": [
-    "Quatro terrenos exteriores com hashes B00 estão identificados, mas fonte RXDATA/PNG de uso autorizado não está presente no GitHub; staging J03 nativo não executado.",
-    "Cinco mapas essenciais continuam sem terreno real não vazio: quarto, casa térrea, casa Barry, Lago Verity e laboratório Rowan.",
-    "Sem MapInfos local, reservas R07 e MapIDs de destino fisicamente aprovados.",
-    "Revisão local de direitos de cada mapa/tileset/PNG e autorização R08 ainda pendentes; stage privado não permite distribuição.",
-    "Nenhum Game.exe/JoiPlay executado; 0/44 QA nativo, 0/9 mapas instalados."
+    "Cinco mapas indispensáveis ausentes: quarto, casa 1F, casa Barry, Lago Verity e laboratório Rowan; quatro terrenos externos apenas referenciados, não instalados.",
+    "Coordenadas de 16 portais, 5 handlers e 3 Poké Bolas ainda sem verificação física; o plano público mantém null.",
+    "Sprites/NPCs e tilesets não autorizados ou ausentes do stage privado, sem direitos R08 e R07 de MapIDs globais.",
+    "Handlers BlueSinnohPilot e times Barry somente contrato original; implementação de runtime/save da J05 ainda pendente.",
+    "Nenhum dos 24 eventos compilados contra mapas reais; 0/9 mapas instalados e 0/44 testes Game.exe/JoiPlay."
   ],
   "source_data": "data/regions/sinnoh-twinleaf-events.json",
   "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE",
@@ -122,12 +122,20 @@
   "native_source_maps_missing": 5,
   "native_map_bindings_verified": 0,
   "native_maps_installed": 0,
-  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/226",
-  "next_button_label": "Executar J04 — Portais, NPCs e 3 iniciais de Sinnoh",
-  "next_prompt": "Execute agora a fase J04 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub. Use J01-J03, PR #225, issues #224 e #226 para preparar os 16 portais, 5 NPCs e 3 Poké Bolas em eventos originais do Blue, ligados a 9 mapas reais e passáveis apenas quando existirem com direitos e MapIDs comprovados. Não invente os cinco mapas ausentes, coordenadas, sprites, licenças ou testes Game.exe/JoiPlay; preserve saves e outros mapas, CI fail-closed e staging isolado. Atualize apenas o progresso de engenharia legítimo e deixe botão para executar a J05. Faça merge apenas com checks relevantes aprovados.",
+  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/228",
+  "next_button_label": "Executar J05 — Barry, três iniciais, batalhas e saves",
+  "next_prompt": "Execute agora a fase J05 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub, usando a J04 compilador de 16 portais, 5 NPCs e 3 Poké Bolas (issue #226) e a issue #228. Implemente os handlers originais BlueSinnohPilot para mãe, Barry, Rowan e escolha atômica de Turtwig/Chimchar/Piplup, batalhas Barry e save regional isolado, apenas quando os mapas reais, o motor e os assets estiverem comprovados; não invente coordenadas, equipes, permissões nem evidência Game.exe/JoiPlay. Proteja Kanto/Johto/Hoenn/Decades e saves, adicione regressões fail-closed, atualize só a barra J e deixe botão para J06. Faça merge somente com todos os checks relevantes aprovados.",
   "staging_code_prepared": true,
   "local_stage_created_and_verified": false,
   "staging_real_terrain_maps_confirmed": 0,
   "source_donor_events_imported": 0,
-  "next_workflow": "SINNOH_J04_PHYSICAL_EVENTS"
+  "next_workflow": "SINNOH_J05_BARRY_STARTER_SAVE",
+  "j04_compiler_code_prepared": true,
+  "j04_native_events_compiled": 0,
+  "j04_native_warps_compiled": 0,
+  "j04_native_npcs_compiled": 0,
+  "j04_native_starter_balls_compiled": 0,
+  "j04_story_handlers_runtime_verified": false,
+  "j04_nine_map_source_stage_verified": false,
+  "j04_real_map_passability_verified": false
 }
