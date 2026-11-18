@@ -1,0 +1,229 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "L04",
+  "version": 1,
+  "status": "HUMAN_PROVENANCE_CHECKLIST_NO_RUNTIME_AUTHORIZATION",
+  "source_matrix": "data/regions/sinnoh-l03-documentary-review.json",
+  "source_auditor": "scripts/regions/audit_sinnoh_l03_matrix.py",
+  "allowed_documentary_actions": [
+    "REVIEW",
+    "REQUEST_NEW_SANITIZED_REPORT",
+    "BLOCK",
+    "SCHEDULE_DOCUMENTARY_ANALYSIS"
+  ],
+  "review_states": [
+    "NOT_REVIEWED",
+    "NEEDS_INDEPENDENT_PRIVATE_REVIEW",
+    "CONFLICTING_OR_INCOMPLETE"
+  ],
+  "independent_host_authority_required": true,
+  "raw_native_evidence_not_in_github": true,
+  "no_unsigned_or_self_reported_approval": true,
+  "no_cli_execution_tokens": true,
+  "no_auto_qa_scheduling": true,
+  "no_upload": true,
+  "verified_timestamps_available": false,
+  "b11_session_correlation_publicly_verifiable": false,
+  "global_save_isolation_proven": false,
+  "asset_rights_approved": false,
+  "map_ids_reserved": false,
+  "native_cases_total": 44,
+  "windows_cases": 43,
+  "android_cases": 1,
+  "passed_native_cases": 0,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "windows_sandbox_executed": false,
+  "can_launch_game": false,
+  "can_install_region": false,
+  "sinnoh_playable": false,
+  "rows": [
+    {
+      "stage": "B09",
+      "documentary_kind": "CLONE_PROVENANCE",
+      "depends_on": [],
+      "criteria": [
+        {
+          "id": "B09_ORIGIN",
+          "requirement": "Check independent, authorized provenance of source game and donor materials",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B09_CLONE",
+          "requirement": "Compare physically observed clone inventory against the declared B09 count and SHA outside GitHub",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B09_ASSETS",
+          "requirement": "Review ownership and redistribution restrictions of the individual staged assets",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B09_RECEIPT",
+          "requirement": "Compare local receipt with dry-run and native clone in a separate human session",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        }
+      ]
+    },
+    {
+      "stage": "B10",
+      "documentary_kind": "WSB_CONFIGURATION",
+      "depends_on": [
+        "B09"
+      ],
+      "criteria": [
+        {
+          "id": "B10_LINK",
+          "requirement": "Independently confirm that the B10 configuration belongs to the reviewed B09 clone",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B10_READONLY",
+          "requirement": "Inspect WSB mount paths and read-only flags locally without uploading those paths",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B10_OFFLINE",
+          "requirement": "Inspect disabled network, clipboard, autostart and guest mapping on the actual host",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B10_PLATFORM",
+          "requirement": "Verify host Windows Sandbox compatibility and isolation separately from a config JSON",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        }
+      ]
+    },
+    {
+      "stage": "B11",
+      "documentary_kind": "LIMITED_SAVE_SCOPE",
+      "depends_on": [
+        "B09",
+        "B10"
+      ],
+      "criteria": [
+        {
+          "id": "B11_SESSION",
+          "requirement": "Correlate B11 with its B10 guest session outside the public repository",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B11_SCOPE",
+          "requirement": "Review actual engine save directories and completeness of the monitored scopes locally",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B11_DIFFERENCE",
+          "requirement": "Inspect before/after results and any differences without publishing save identifiers",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "B11_LIMIT",
+          "requirement": "Explicitly reject watch_unchanged as proof of global save isolation",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        }
+      ]
+    },
+    {
+      "stage": "R07",
+      "documentary_kind": "REGIONAL_MAPID_RESERVATIONS",
+      "depends_on": [],
+      "criteria": [
+        {
+          "id": "R07_NATIVE",
+          "requirement": "Verify physical MapInfos and ownership of occupied native MapIDs",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "R07_REGIONS",
+          "requirement": "Confirm future regional reservations including Kanto, Johto, Hoenn and planned regions",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "R07_CONFLICT",
+          "requirement": "Independently inspect conflicting and candidate map IDs before approving any allocation",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "R07_TOPOLOGY",
+          "requirement": "Verify nine symbolic Twinleaf bindings and sixteen real transfers in the isolated clone",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        }
+      ]
+    },
+    {
+      "stage": "R08",
+      "documentary_kind": "ASSET_RIGHTS_AND_BINDINGS",
+      "depends_on": [],
+      "criteria": [
+        {
+          "id": "R08_LICENSE",
+          "requirement": "Review per-asset source provenance and express permission/redistribution scope",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "R08_GRAPHICS",
+          "requirement": "Inspect fourteen real PNGs and renderer compatibility without uploading copyrighted files",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "R08_EVENTS",
+          "requirement": "Check physical maps, handlers, collision and warp connections after rights approval",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        },
+        {
+          "id": "R08_PBS",
+          "requirement": "Verify real authored PBS compilation and Berry/Rowan event contracts in isolated QA",
+          "review_state": "NOT_REVIEWED",
+          "independent_evidence_present": false,
+          "local_human_signoff": false
+        }
+      ]
+    }
+  ]
+}
