@@ -199,5 +199,5 @@ test("J08 private Android incremental delta code is ready but no Android played"
  assert.match(html,/J08[^\n]*Android\/JoiPlay/);
  assert.match(html,/id="nextAction"/);
  assert.match(html,/J09/);
- assert.match(await read("docs/SINNOH_J08_DELTA_ANDROID_PRIVADO.md"),/44 casos nativos/);
+ assert.match(await read("docs/SINNOH_J08_DELTA_ANDROID_PRIVADO.md"),/0\/44 testes nativos/);
 });
