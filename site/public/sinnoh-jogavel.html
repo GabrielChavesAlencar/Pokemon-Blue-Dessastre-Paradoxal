@@ -59,11 +59,14 @@ code{overflow-wrap:anywhere}a:focus-visible{outline:2px solid #9bdcfe;outline-of
 <p id="status" aria-live="polite">Conferindo o progresso publicado…</p>
 <div id="stages" class="stages"></div></section>
 <section class="nextphase" aria-labelledby="nextphase-title">
-<h2 id="nextphase-title">Próxima fase <span id="nextStage">J05</span></h2>
+<h2 id="nextphase-title">Próxima fase <span id="nextStage">J06</span></h2>
 <p>Quer continuar desenvolvendo o piloto? Use este botão. Ele abre o ChatGPT com o pedido da próxima fase já escrito; <strong>envie a mensagem</strong> para iniciar a implementação. A página não executa códigos sozinha.</p>
 <a class="nextbutton" id="nextAction" href="#" target="_blank" rel="noopener">Abrir próxima fase no ChatGPT</a>
-<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/228">Ver requisitos no GitHub</a></p>
+<p><a id="nextIssue" href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/230">Ver requisitos no GitHub</a></p>
 </section>
+<section><h2>J05 — Histórias, Barry e salvamento regional (código Ruby)</h2>
+<p>O módulo <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/SinnohPilot.rb">BlueSinnohPilot</a> já tem os cinco handlers próprios da história, Barry e Rowan. A J05 corrigiu as três chamadas das Poké Bolas para o método de concessão real, bloqueou múltiplos iniciais com verificação/compensação da equipe, exigiu as três versões PBS esperadas para Barry e protegeu o checkpoint da Pokédex se o motor recusar a entrega.</p>
+<p>Os testes são <strong>Ruby offline e sintéticos</strong>: não representam partidas no Game.exe. Os saves pessoais não foram acessados; o isolamento de perfil segue bloqueado até os nove mapas e a instalação QA estarem autorizados. <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/230">Próxima J06 — launcher Windows de QA isolado</a>.</p></section>
 <section><h2>J04 — Compilação de eventos originais do Blue</h2>
 <p>O <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/scripts/regions/compile_sinnoh_playable_j04.py">compilador J04</a> prepara, apenas em cópia isolada, 16 portais, 5 NPCs e 3 Poké Bolas físicas. Exige os nove mapas reais, posições válidas e transitáveis, sprites com hashes, MapIDs livres e recibo íntegro; não aceita os cinco mapas ausentes nem fabrica coordenadas. Testes sintéticos não significam eventos instalados.</p>
 <p>As funções reais da história, Barry e o salvamento ainda dependem da <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/228">J05</a>. Consulte a <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/docs/SINNOH_J04_COMPILADOR_EVENTOS_PRIVADO.md">documentação J04</a> para preparar entradas privadas sem tocar no jogo principal.</p>
