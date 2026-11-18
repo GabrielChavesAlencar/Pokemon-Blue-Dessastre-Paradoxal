@@ -253,8 +253,9 @@
         {
           "id": "G07.3",
           "title": "Simular transação de instalação e reversão",
-          "status": "pending",
-          "acceptance": "Conflitos, backups, rollback e compare-and-swap com fixtures sintéticas"
+          "status": "done",
+          "acceptance": "Conflitos, backups, rollback e compare-and-swap com fixtures sintéticas",
+          "evidence": "scripts/regions/audit_unova_g07_transaction.py"
         },
         {
           "id": "G07.4",
