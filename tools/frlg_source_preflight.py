@@ -6,6 +6,7 @@ import hmac
 import ipaddress
 import json
 import os
+import socket
 from pathlib import Path
 import sys
 import urllib.parse
@@ -64,12 +65,14 @@ def verify_file(path):
     with path.open("rb") as f:
         return verify_stream(f)
 
-def require_https(url):
+def require_https(url, expected_host=None):
     try:
         p = urllib.parse.urlsplit(url)
         if p.scheme!="https" or not p.hostname or p.username or p.password or p.fragment:
             raise SourceRejected("HTTPS public host required")
         host=p.hostname.lower()
+        if expected_host and host != expected_host.strip().lower():
+            raise SourceRejected("Source host differs from approved host")
         if host in ("localhost","localhost.localdomain") or host.endswith(".local"):
             raise SourceRejected("Local host prohibited")
         try:
@@ -81,17 +84,36 @@ def require_https(url):
     except ValueError:
         raise SourceRejected("Invalid HTTPS URL") from None
 
-class HTTPSRedirectsOnly(urllib.request.HTTPRedirectHandler):
+def require_public_dns(host):
+    try:
+        addresses=socket.getaddrinfo(host,443,type=socket.SOCK_STREAM)
+        if not addresses:
+            raise SourceRejected("No public DNS records")
+        for info in addresses:
+            address=info[4][0].split("%",1)[0]
+            if not ipaddress.ip_address(address).is_global:
+                raise SourceRejected("Source host DNS points to non-public IP")
+    except SourceRejected:
+        raise
+    except (OSError,ValueError):
+        raise SourceRejected("Unable to verify source host DNS") from None
+
+class NoRedirects(urllib.request.HTTPRedirectHandler):
     def redirect_request(self,req,fp,code,msg,headers,newurl):
-        require_https(newurl)
-        return super().redirect_request(req,fp,code,msg,headers,newurl)
+        # A pre-authorized, short-lived signed URL must be a direct download.
+        # Never forward URL query tokens to a different endpoint.
+        raise SourceRejected("Remote source redirects are forbidden")
 
 def verify_secret_url(var="FRLG_SOURCE_URL"):
     url=os.environ.get(var,"")
     if not url:
         raise SourceRejected("No authorized secret source URL")
-    require_https(url)
-    opener=urllib.request.build_opener(HTTPSRedirectsOnly())
+    approved_host=os.environ.get("FRLG_SOURCE_HOST","").strip().lower()
+    if not approved_host:
+        raise SourceRejected("Authorized source host not configured")
+    require_https(url, approved_host)
+    require_public_dns(approved_host)
+    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirects())
     req=urllib.request.Request(url, headers={"User-Agent":"frlg-preflight/1"})
     try:
         with opener.open(req,timeout=90) as res:

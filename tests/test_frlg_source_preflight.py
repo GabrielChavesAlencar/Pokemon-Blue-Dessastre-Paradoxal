@@ -1,5 +1,5 @@
 """Offline synthetic negative tests only; no game, network or archives."""
-import importlib.util,io,json,os,tempfile,unittest
+import importlib.util,io,json,os,socket,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -53,10 +53,30 @@ class SourceOnlyTests(unittest.TestCase):
         for u in ("https://localhost/x","https://127.0.0.1/x","https://169.254.169.254/x","https://[::1]/x"):
             with self.subTest(u=u):
                 with self.assertRaises(f.SourceRejected): f.require_https(u)
+    def test_host_not_allowlisted(self):
+        with self.assertRaises(f.SourceRejected):
+            f.require_https("https://mirror.example.org/file.rar","cdn.example.org")
+    def test_host_allowlisted(self):
+        f.require_https("https://cdn.example.org/file.rar?token=secret","cdn.example.org")
+    def test_missing_host_secret(self):
+        with patch.dict(os.environ,{"FRLG_SOURCE_URL":"https://example.org/file.rar"},clear=True):
+            with self.assertRaises(f.SourceRejected): f.verify_secret_url()
+    def test_private_dns_rejected(self):
+        private=[(socket.AF_INET,socket.SOCK_STREAM,6,"",("127.0.0.1",443))]
+        with patch.object(f.socket,"getaddrinfo",return_value=private):
+            with self.assertRaises(f.SourceRejected): f.require_public_dns("example.org")
+    def test_public_dns_pass(self):
+        public=[(socket.AF_INET,socket.SOCK_STREAM,6,"",("8.8.8.8",443))]
+        with patch.object(f.socket,"getaddrinfo",return_value=public):
+            f.require_public_dns("example.org")
     def test_redirect_downgrade(self):
         request=f.urllib.request.Request("https://example.org/a")
         with self.assertRaises(f.SourceRejected):
-            f.HTTPSRedirectsOnly().redirect_request(request,None,302,"redirect",{},"http://example.org/a")
+            f.NoRedirects().redirect_request(request,None,302,"redirect",{},"http://example.org/a")
+    def test_redirect_even_if_https_is_rejected(self):
+        request=f.urllib.request.Request("https://cdn.example.org/start")
+        with self.assertRaises(f.SourceRejected):
+            f.NoRedirects().redirect_request(request,None,302,"redirect",{},"https://cdn.example.org/redirect")
     def test_config_cli(self):
         self.assertEqual(f.main(["--check-config"]),0)
     def test_missing_source_cli(self):
