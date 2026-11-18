@@ -279,7 +279,10 @@ module BlueRegionStart
     path = "Data/blue-kanto-ready.txt"
     return false unless spawn && File.file?(path) && !File.symlink?(path)
     fields = File.read(path, 128).strip.split(",")
-    fields == ["BLUE_KANTO_READY_V1", "142", spawn[0].to_s]
+    # Installed saves made before Nugget Bridge remain valid. New builds
+    # append three MapIDs without shifting any of the original 142 slots.
+    fields[0] == "BLUE_KANTO_READY_V1" &&
+      %w[142 145].include?(fields[1]) && fields[2] == spawn[0].to_s
   rescue StandardError
     false
   end
@@ -299,15 +302,21 @@ module BlueRegionStart
     pairs = section.scan(/"(\d+)"\s*:\s*(\d+)/)
     # Reject junk/partial entries instead of accepting a few regex matches.
     rest = section.gsub(/"(\d+)"\s*:\s*(\d+)/, "").gsub(/[\s,]/, "")
-    return nil unless rest.empty? && pairs.length == 142
+    return nil unless rest.empty? && [142, 145].include?(pairs.length)
+    ready_count = File.read("Data/blue-kanto-ready.txt", 128).strip.split(",")[1].to_i
+    return nil unless ready_count == pairs.length
     maps = {}
     pairs.each do |src, dst|
       id = Integer(dst, 10)
       return nil unless id > 0 && id < 1000 && !maps.key?(src)
       maps[src] = id
     end
-    return nil unless maps.values.uniq.length == 142 &&
+    return nil unless maps.values.uniq.length == pairs.length &&
                       maps["7"] == spawn[0] && maps["5"].is_a?(Integer)
+    # The 145-map generation must contain all three verified north Cerulean
+    # IDs; reject partial upgrades even if another count accidentally matches.
+    return nil if pairs.length == 145 && !["53","54","55"].all? { |id| maps.key?(id) }
+    return nil if pairs.length == 142 && ["53","54","55"].any? { |id| maps.key?(id) }
     return nil unless maps.values.all? { |id|
       pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
     }
@@ -340,7 +349,7 @@ module BlueRegionStart
     return false unless required.all? { |name| File.file?(name) }
     # No Ruby JSON dependency here: JoiPlay may expose a partial JSON
     # implementation which reports success but returns unusable data. The
-    # 142-map scan above is stricter and is tied to the installer ready gate.
+    # strict count/map scan above is stricter and is tied to the installer ready gate.
     !kanto_compact_maps(spawn).nil?
   rescue StandardError
     false
