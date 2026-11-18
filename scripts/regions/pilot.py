@@ -1306,14 +1306,16 @@ def install_events(source, target, mapping):
                             event.attrs["@pages"][0].attrs["@trigger"] == 2 and
                             not kind.startswith("LEADER"))
                     ops = []
-                    if original == 42 and event_id in (11, 16):
-                        # Source Map042's two trainers (Luis/Diana) use one
-                        # JoiPlay-safe native wrapper. Optional alert errors
-                        # cannot abort the event before TrainerBattle.start,
-                        # and losses/errors never set self-switch A.
+                    if (original == 42 and event_id in (11, 16)) or original in (53, 54):
+                        # Reuse one guarded callback for every new Route24/25
+                        # sight trainer as well as Luis/Diana at Misty's Gym.
+                        # No unguarded pbNoticePlayer / pbTrainerIntro commands
+                        # remain in these imported Android events.
+                        version = TRAINERS[original][event_id][2] if len(TRAINERS[original][event_id]) > 2 else 0
                         wrapper = (f'BlueKantoPilot.cerulean_gym_trainer('
                                    f':BLUE_KANTO_{kind}, "{trainer_name}", '
-                                   f'"{key}", {event_id})')
+                                   f'"{key}", {event_id}' +
+                                   (f", {version}" if original in (53, 54) else "") + ")")
                         ops.append(command(355, wrapper.encode("ascii")))
                     else:
                         if auto:
