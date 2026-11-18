@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "65e7fa2baad7b9fa484b2a3ef98fcf0faae53b97",
+      "date": "2026-11-18T07:36:59-03:00",
+      "title": "ci(android): gate Cerulean/Route4 music repair on offline regressions and publish incremental ZIP",
+      "category": "Melhorias"
+    },
+    {
       "sha": "bc4b8810cbbbe26e744798c8cf23c464fa24535f",
       "date": "2026-11-18T07:36:14-03:00",
       "title": "test(android): reject unknown map/audio changes and validate route4/Cerulean correction without ROM or saves",
