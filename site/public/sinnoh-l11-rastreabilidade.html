@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101c30">
+<meta name="description" content="Rastreabilidade pública e somente documental dos casos, critérios e bloqueios de Sinnoh. Nenhuma QA ou evidência física aprovada.">
+<title>Sinnoh L11 · Rastreabilidade documental | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;background:#0d1727;color:#edf3ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}a{color:#a8d2ff}
+.wrap{max-width:1260px;padding:24px clamp(16px,3vw,44px) 80px;margin:auto}
+header{background:linear-gradient(125deg,#243953,#101b2f);border-bottom:1px solid #334860}
+h1{font-size:clamp(1.55rem,3.7vw,2.7rem);line-height:1.2;margin:6px 0 16px}h2{font-size:1.27rem;margin-top:28px}
+.eyebrow{font-size:.82rem;font-weight:800;color:#b6c9e1;text-transform:uppercase;letter-spacing:.11em}
+.warning{background:#2b2932;padding:14px 18px;border-left:4px solid #e3b36b;border-radius:9px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:24px 0}
+.metric{border:1px solid #354e68;border-radius:12px;background:#1a2a42;padding:15px}
+.metric strong{display:block;font-size:1.65rem;font-variant-numeric:tabular-nums}.metric small{color:#bfd1e6}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:.88rem;color:#d0deee}
+select,input,button{font:inherit;min-width:0;padding:10px;border:1px solid #547394;border-radius:8px;color:#fff;background:#1a2d47}
+button{cursor:pointer}button:hover{background:#2b4564}a:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #8ec7ff;outline-offset:2px}
+.table-wrap{overflow:auto;border:1px solid #334b64;border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.87rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #34465c;vertical-align:top}
+thead{background:#21334e}tbody tr:last-child td{border:0}
+tbody tr:hover{background:#1a2b41}
+code{font-size:.84rem;overflow-wrap:anywhere;color:#e0edff}
+.small{font-size:.86rem;color:#c3d3e8}.pending{color:#ffdaa4;font-weight:700}
+#caseDetail{border:1px solid #3e5975;border-radius:12px;padding:16px;background:#17283e}
+#caseDetail p{margin:5px 0}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.links button{font-size:.83rem;padding:6px 10px}
+.pill{display:inline-block;border:1px solid #47617f;border-radius:7px;padding:1px 7px}
+footer{border-top:1px solid #334860;margin-top:32px;padding-top:16px;color:#c5d7eb}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a href="/">Pokémon Blue · Início</a> · <a href="/sinnoh-l10-bloqueios.html">Índice L10</a>
+<p class="eyebrow">Sinnoh L11 · Rastreabilidade pública somente documental</p>
+<h1>Casos, critérios e bloqueios conectados</h1>
+<p>Esta página mostra relações versionadas entre dados públicos. Não certifica a execução de Game.exe, Windows Sandbox ou JoiPlay nem constitui aprovação humana.</p>
+<p class="warning"><strong>Sinnoh não jogável.</strong> 0/5 relatórios locais · 0/20 critérios aprovados · 0/44 testes nativos · B/C/D 0/13 · R07/R08/R09 pendentes.</p>
+</div></header>
+<main class="wrap">
+<section class="metrics" aria-label="Indicadores da documentação">
+<div class="metric"><strong>44</strong><small>Casos G12/CH20</small></div>
+<div class="metric"><strong>20</strong><small>Critérios L04</small></div>
+<div class="metric"><strong>846</strong><small>Vínculos caso–critério</small></div>
+<div class="metric"><strong>218</strong><small>Vínculos caso–bloqueio</small></div>
+<div class="metric"><strong>20</strong><small>Vínculos critério–bloqueio</small></div>
+</section>
+<nav aria-label="Navegação da rastreabilidade"><a href="#casos">Casos</a> · <a href="#detalhes">Detalhe</a> · <a href="#criterios">Critérios</a> · <a href="#bloqueios">Bloqueios</a> · <a href="#proveniencia">Proveniência</a></nav>
+<section id="casos"><h2>Filtrar os 44 casos</h2>
+<p class="small">Selecione um caso na tabela para ver suas relações. Todos os botões são de navegação, sem gravação ou autorização.</p>
+<div class="filters">
+<label>Buscar por ID ou grupo<input id="search" type="search" placeholder="Ex.: Barry, Turtwig, warp"></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android/JoiPlay</option></select></label>
+<label>Critério<select id="criterionFilter"><option value="">Todos</option></select></label>
+<label>Bloqueio<select id="blockerFilter"><option value="">Todos</option></select></label>
+<button id="reset" type="button">Limpar filtros</button>
+</div>
+<p id="status" role="status" aria-live="polite">Validando integridade documental…</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Caso real</th><th scope="col">Grupo / plataforma</th><th scope="col">Critérios</th><th scope="col">Bloqueios</th><th scope="col">Estado</th></tr></thead><tbody id="caseRows"></tbody></table></div>
+</section>
+<section id="detalhes"><h2>Relações do caso selecionado</h2>
+<div id="caseDetail"><p class="small">Selecione um caso para consultar os vínculos.</p></div>
+</section>
+<section id="criterios"><h2>Critérios de revisão humana independente</h2>
+<p class="small">Clique em um critério para filtrar os casos associados. Nenhum está aprovado.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Critério</th><th scope="col">Bloco</th><th scope="col">Casos relacionados</th><th scope="col">Estado</th></tr></thead><tbody id="criteriaRows"></tbody></table></div>
+</section>
+<section id="bloqueios"><h2>Bloqueios e gate global R09</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Bloqueio</th><th scope="col">Escopo</th><th scope="col">Vínculos</th><th scope="col">Estado</th></tr></thead><tbody id="blockerRows"></tbody></table></div>
+<p class="small">B10/B11 são exclusivos da fila Windows (43 casos); Android mantém um gate próprio. R09 é global e não cria um 45º caso ou vínculo por caso.</p>
+</section>
+<footer id="proveniencia">
+<p>Referências públicas: L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code>.</p>
+<p>Um SHA de objeto Git prova somente os bytes de metadados públicos. `watch_unchanged` não comprova isolamento global de saves. MapIDs e direitos de assets continuam sem aprovação independente.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/197" rel="noreferrer">Issue L11 #197</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l11-public-traceability.json" rel="noreferrer">Matriz versionada</a>
+</footer>
+</main>
+<script type="module" src="/assets/sinnoh-l11-traceability.js"></script>
+</body>
+</html>

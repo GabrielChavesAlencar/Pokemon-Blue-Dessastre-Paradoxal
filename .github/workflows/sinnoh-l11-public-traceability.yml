@@ -1,0 +1,160 @@
+name: Sinnoh L11 - rastreabilidade documental read-only
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l11-public-traceability.yml'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'site/public/sinnoh-l11-rastreabilidade.html'
+      - 'site/public/assets/sinnoh-l11-traceability.js'
+      - 'site/tests/sinnoh-l11-traceability.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l11_traceability.py'
+      - 'tests/test_sinnoh_l11_traceability.py'
+      - 'docs/SINNOH_L11_RASTREABILIDADE_PUBLICA.md'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l11-public-traceability.yml'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'site/public/sinnoh-l11-rastreabilidade.html'
+      - 'site/public/assets/sinnoh-l11-traceability.js'
+      - 'site/tests/sinnoh-l11-traceability.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l11_traceability.py'
+      - 'tests/test_sinnoh_l11_traceability.py'
+      - 'docs/SINNOH_L11_RASTREABILIDADE_PUBLICA.md'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l11-traceability:
+    name: L11 / auditoria das 1084 relacoes e testes negativos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testar L11 fail-closed sem PC nem VM
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l11_traceability.py' -v
+      - name: Conferir invariantes da matriz pública
+        run: |
+          python scripts/regions/audit_sinnoh_l11_traceability.py > /tmp/sinnoh-l11-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/sinnoh-l11-public.json')
+          d=json.loads(p.read_text('utf8'))
+          assert d['stage']=='L11' and d['status']=='PUBLIC_TRACEABILITY_VALID_NATIVE_PENDING'
+          assert d['baseline_commits']=={
+              'L07':'d98033b362dac82347e0d97cb5606870eaa70b22',
+              'L08':'8617ef47ea6745920cb6fe4be251982380d7628d',
+              'L09':'39e51de92aafdab3f5aea3f929f57f5c0bb72b2d',
+              'L10':'7fd821007e63fe9cf0d0c4bf14d153a23cda2b6a'}
+          assert d['source_l10_git_blob']=='ebb2559d59fcb9a2318173da4bf649e3d3af7567'
+          assert d['edges_checked']=={'case_to_criterion':846,'case_to_blocker':218,'criterion_to_blocker':20}
+          assert d['counts']['cases_total']==44 and d['counts']['criteria_total']==20
+          assert (d['windows_cases'],d['android_cases'])==(43,1)
+          assert (d['criteria_human_approved'],d['native_cases_completed'],d['native_cases_approved'])==(0,0,0)
+          assert d['local_reports']==0 and d['phase_bcd_completed']==0 and d['phase_bcd_total']==13
+          assert d['r09_global_not_per_case'] and d['public_documentary_differences']==0
+          assert d['blocker_ids']==['B09','B10','B11','R07','R08','R09']
+          assert d['native_qa_authorized'] is False and d['sinnoh_playable'] is False
+          assert d['guards']['watch_unchanged_not_global_save_isolation']
+          assert d['guards']['windows_android_independent']
+          assert d['guards']['mapids_not_reserved'] and d['guards']['asset_rights_not_approved']
+          assert d['guards']['no_game_exe_execution'] and d['guards']['no_joiplay_execution']
+          assert d['guards']['no_local_save_access'] and d['guards']['no_upload']
+          for private in ('Save01.rxdata','private-baseline.json','hmac_key','watch_id'):
+              assert private not in p.read_text('utf8')
+          print('SINNOH_L11_1084_PUBLIC_LINKS_44_CASES_20_CRITERIA_ALL_PENDING')
+          PY
+      - name: Nenhum relatorio local/privado recebe aprovação
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L11_NO_NATIVE_QA_NO_LOCAL_SAVES'
+
+  l11-regressions:
+    name: L11 / L10 L09 L08 L07 L06 L05 L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L10 public index
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l10_public_index.py' -v
+      - name: L09 independent handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l09_public_handoff.py' -v
+      - name: L08 pinned snapshots
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: L07 public triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 human case queues
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 native dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 review checklist
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 provenance matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 evidence sanitizer
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 report exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 original native cases
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l11-portal:
+    name: L11 / navegação pública e build do portal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JS estático L11 sem interação com jogo
+        run: node --check site/public/assets/sinnoh-l11-traceability.js
+      - name: Node tests de L11, L10 e L07
+        working-directory: site
+        run: node --test tests/sinnoh-l11-traceability.test.mjs tests/sinnoh-l10-blocker-index.test.mjs tests/sinnoh-l07-triage.test.mjs
+      - name: Build completo do site
+        working-directory: site
+        run: npm run build
+      - name: Confirmar arquivos da página publicados
+        run: |
+          test -s site/dist/sinnoh-l11-rastreabilidade.html
+          test -s site/dist/data/sinnoh-l11-public-traceability.json
+          test -s site/dist/assets/sinnoh-l11-traceability.js
+          grep -q 'sinnoh-l11-rastreabilidade.html' site/dist/index.html
+          echo 'SINNOH_L11_STATIC_GRAPH_READONLY_NO_NATIVE_QA'
