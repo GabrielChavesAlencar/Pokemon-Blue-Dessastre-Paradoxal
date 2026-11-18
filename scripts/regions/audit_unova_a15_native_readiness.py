@@ -246,7 +246,7 @@ def validate_document(matrix:Any,root:Path=ROOT)->dict:
     a07=source(root,"docs/UNOVA_A07_RASTREIO_MAPID3_E_SCRIPTS.md")
     a09=source(root,"docs/UNOVA_A09_FORENSE_INTRO_E_REIVINDICACOES.md")
     a10=source(root,"docs/UNOVA_A10_DESTINOS_DINAMICOS_MATRIZ.md")
-    if "MapID 3" not in a07 or "duas" not in a07 or "20" not in a10 or "518" not in a09:
+    if "MapID 3" not in a07 or "duas referências" not in a09 or "20 expressões" not in a10 or "518" not in a09:
         refuse("reported Map001/mapID3/dynamic expressions provenance missing")
     return {
         "phase":"A15","status":"SOURCE_GATES_VERIFIED_NATIVE_BLOCKED",
