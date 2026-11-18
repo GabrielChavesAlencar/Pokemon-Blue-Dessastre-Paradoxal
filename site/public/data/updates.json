@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b71690cbdbb9c418abf85d4ac5ed3020f983949b",
+      "date": "2026-11-18T15:33:09-03:00",
+      "title": "feat(sinnoh J10-A): cinco layouts originais e geração privada RXDATA",
+      "category": "Novidades"
+    },
+    {
       "sha": "919020a02c25eaed19eba079d31a0d9d597f9212",
       "date": "2026-11-18T15:04:26-03:00",
       "title": "Sinnoh jogável J10 — editor de cinco mapas originais, RXDATA privado e J11 com gates (#243)",
