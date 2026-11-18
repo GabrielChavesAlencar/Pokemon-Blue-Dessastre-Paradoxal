@@ -973,7 +973,8 @@ def inspect(game: Path) -> dict:
     if not stops_file.is_file():
         raise ValueError("Experimental Kanto destinations were not generated")
     required_stops = {"PALLET", "PLAYER_HOME", "VIRIDIAN", "PEWTER", "ROUTE4", "MOON_CENTER",
-                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
+                      "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "NUGGET",
+                      "BILL_ROUTE", "BILL_HOUSE", "MISTY",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
                       "ROUTE7", "CELADON", "ERIKA", "CEL_CENTER", "CEL_STORE",
