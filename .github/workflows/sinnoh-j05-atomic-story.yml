@@ -13,6 +13,12 @@ on:
       - 'site/tests/sinnoh-playable-progress.test.mjs'
       - 'docs/SINNOH_J05_HANDLERS_SAVE_ATOMICO.md'
       - 'SINNOH_J05_TESTAR_HANDLERS.bat'
+      - 'scripts/regions/prepare_sinnoh_playable_j06.py'
+      - 'scripts/regions/prepare_sinnoh_pilot_bundle.py'
+      - 'scripts/regions/install_sinnoh_qa_copy.py'
+      - 'tests/test_sinnoh_j06_qa_windows.py'
+      - '.github/workflows/sinnoh-j06-windows-qa.yml'
+      - 'SINNOH_J06_QA_WINDOWS.bat'
   push:
     branches: [main]
     paths:
@@ -106,3 +112,44 @@ jobs:
           test -s site/dist/data/sinnoh-playable-progress.json
           grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
           grep -q '/sinnoh-jogavel.html' site/dist/index.html
+
+  j06-guarded-qa-copy-linux:
+    name: J06 / Linux 42 synthetic tests - rights, maps, isolation and rollback
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J06 SHA rights reservations and rollback synthetic cases
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j06.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j06_qa_windows.py' -v
+      - name: Confirm public checkout cannot install a game
+        run: |
+          set +e
+          python scripts/regions/prepare_sinnoh_playable_j06.py >/tmp/j06-blocked 2>&1
+          code=$?
+          set -e
+          test "$code" -eq 2
+          grep -q 'SINNOH_J06_BLOQUEADO' /tmp/j06-blocked
+          test ! -e game/Game.exe
+  j06-guarded-qa-copy-windows:
+    name: J06 / Windows disposable - synthetic QA rollback, no Game.exe
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Windows QA synthetic and no executable release
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j06.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j06_qa_windows.py' -v
+      - name: Assert no real user Game.exe or save files in public CI
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "J06 private executable leaked to CI" }
+          if (Test-Path ".blue-work/game-sinnoh-qa-abcdef123456") { throw "J06 QA fixture escaped temp directory" }

@@ -31,7 +31,7 @@ from sinnoh_staging_transaction import stage_root
 ROOT = Path(__file__).resolve().parents[2]
 SHA = re.compile(r"[a-f0-9]{64}\Z")
 MAP = re.compile(r"Data/Map(0[0-9]{2}|[1-5][0-9]{2})\.rxdata\Z")
-GRAPHIC = re.compile(r"Graphics/(?:Tilesets|Autotiles)/[A-Za-z0-9_. ()-]+\.png\Z")
+GRAPHIC = re.compile(r"Graphics/(?:Tilesets|Autotiles|Characters)/[A-Za-z0-9_. ()-]+\.png\Z")
 PLUGIN_FILE = "Plugins/ZZZZZ Blue Sinnoh Intro/SinnohPilot.rb"
 PLUGIN_META = "Plugins/ZZZZZ Blue Sinnoh Intro/meta.txt"
 MAX_BYTES = 512 * 1024 * 1024
