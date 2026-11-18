@@ -831,6 +831,12 @@ module BlueKantoPilot
   end
 
   def self.trainer_repeat(name, type = nil)
+    if name == "Grunt" && type == :BLUE_KANTO_ROCKET &&
+       $game_map && $game_map.map_id == kanto_map_id(53) &&
+       progress.fetch("pilot_wins", []).include?("KANTO_053_006")
+      nugget_reward
+      return
+    end
     if name == "Miguel" && type == :BLUE_KANTO_SUPERNERD &&
        $game_map && $game_map.map_id == kanto_map_id(38)
       choose_moon_fossil unless progress["pilot_mt_moon_fossil"]
@@ -901,25 +907,153 @@ module BlueKantoPilot
   # TEMPORARY phase 08 story bridge: Bill's canonical S.S. Ticket event is
   # outside the installed route until the Cerulean north passage is audited.
   # Only players with Cascade may claim a ticket; never award it more than once.
+  # FRLG Map039 north exit: events 15/32/34 on (22/23/24,6), sharing
+  # exactly one persistent, region-scoped encounter. Version 31/32/33 is
+  # selected using the same starter-to-rival relation as Oak Lab.
+  def self.cerulean_rival
+    return false unless kanto_current?
+    if progress["pilot_cerulean_rival"]
+      cerulean_rival_close_lanes
+      return true
+    end
+    unless starter
+      pbMessage(t("Choose your first Pokémon before confronting Gary.",
+                  "Escolha seu primeiro Pokémon antes de enfrentar Gary."))
+      return false
+    end
+    version = RIVAL_VERSIONS.fetch(starter) + 20
+    pbMessage(t("Gary: Hey, {1}! I have trained a new team. Let's battle!",
+                "Gary: Ei, {1}! Treinei um novo time. Vamos batalhar!", $player.name))
+    key = "KANTO_039_RIVAL"
+    battle(:BLUE_KANTO_RIVAL, "Blue", key, version)
+    return false unless progress.fetch("pilot_wins", []).include?(key)
+    progress["pilot_cerulean_rival"] = true
+    cerulean_rival_close_lanes
+    pbMessage(t("Gary: You're improving! Go meet Bill on Route 25!",
+                "Gary: Você está melhorando! Vá conhecer Bill na Rota 25!"))
+    true
+  end
+
+  def self.cerulean_rival_close_lanes
+    return false unless $game_map && $game_map.map_id == kanto_map_id(39)
+    ( [15, 32, 34] ).each do |event_id|
+      $game_self_switches[[$game_map.map_id, event_id, "A"]] = true
+    end
+    $game_map.need_refresh = true
+    true
+  end
+
+  # Nugget Bridge reward is committed AFTER defeating the source Rocket
+  # (Map053/Event006), with independent reward and trainer-victory states.
+  # Bag-full or missing-item failures remain retryable; no free battle wins.
+  def self.nugget_rocket
+    return false unless kanto_current?
+    key = "KANTO_053_006"
+    unless progress.fetch("pilot_wins", []).include?(key)
+      pbMessage(t("Rocket: Join Team Rocket, or face my Pokémon!",
+                  "Rocket: Junte-se à Equipe Rocket ou enfrente meus Pokémon!"))
+      battle(:BLUE_KANTO_ROCKET, "Grunt", key, 5)
+    end
+    return false unless progress.fetch("pilot_wins", []).include?(key)
+    nugget_reward
+  end
+
+  def self.nugget_reward
+    return true if progress["pilot_nugget_bridge_reward"]
+    unless GameData::Item.exists?(:NUGGET)
+      pbMessage(t("Nugget is missing from the installed item catalogue.",
+                  "O item Nugget não está cadastrado nesta instalação."))
+      return false
+    end
+    unless $bag.add(:NUGGET, 1)
+      pbMessage(t("Make room in your Bag and speak to the Rocket again.",
+                  "Libere espaço na Bolsa e fale com o Rocket novamente."))
+      return false
+    end
+    progress["pilot_nugget_bridge_reward"] = true
+    pbMessage(t("You received one Nugget! The Rocket has been defeated.",
+                "Você recebeu uma Nugget! O Rocket foi derrotado."))
+    true
+  end
+
+  # The three canonical stages on FRLG Map055 are deliberately adapted to
+  # Kanto-only save state; foreign scripts/switches are never executed.
+  def self.bill_request
+    return false unless kanto_current?
+    if progress["pilot_bill_separated"]
+      pbMessage(t("Bill is back to normal. Talk to him for your ticket.",
+                  "Bill voltou ao normal. Fale com ele para receber seu bilhete."))
+      return true
+    end
+    pbMessage(t("Bill: A failed experiment combined me with a Pokémon!",
+                "Bill: Um experimento deu errado e me juntou a um Pokémon!"))
+    if pbConfirmMessage(t("Help Bill by operating the PC?",
+                          "Ajudar Bill usando o computador?"))
+      progress["pilot_bill_requested"] = true
+      pbMessage(t("Bill: Thanks! Use the teleporter control on my PC.",
+                  "Bill: Obrigado! Acione o teletransportador no meu computador."))
+      return true
+    end
+    false
+  end
+
+  def self.bill_machine
+    return false unless kanto_current?
+    unless progress["pilot_bill_requested"]
+      pbMessage(t("Bill's teleporter is not ready. Talk to the Pokémon first.",
+                  "O teletransportador não está pronto. Converse com o Pokémon primeiro."))
+      return false
+    end
+    return true if progress["pilot_bill_separated"]
+    progress["pilot_bill_separated"] = true
+    if $game_map && $game_map.map_id == kanto_map_id(55)
+      [3, 8].each { |id| $game_self_switches[[$game_map.map_id, id, "A"]] = true }
+      $game_map.need_refresh = true
+    end
+    pbMessage(t("The separation worked! Bill is human again.",
+                "A separação funcionou! Bill voltou à forma humana."))
+    true
+  end
+
+  def self.bill_ticket
+    return false unless kanto_current?
+    unless progress["pilot_bill_separated"]
+      pbMessage(t("First use Bill's PC to separate him from the Pokémon.",
+                  "Primeiro use o computador de Bill para separá-lo do Pokémon."))
+      return false
+    end
+    if progress["pilot_ss_ticket"]
+      pbMessage(t("Bill: Enjoy the S.S. Anne trip in Vermilion!",
+                  "Bill: Aproveite a viagem no S.S. Anne, em Vermilion!"))
+      return true
+    end
+    if GameData::Item.exists?(:SSTICKET) && !$bag.add(:SSTICKET, 1)
+      pbMessage(t("Bill: Make room in your Bag for the S.S. Ticket.",
+                  "Bill: Libere espaço na Bolsa para receber o S.S. Ticket."))
+      return false
+    end
+    # In older Decades builds the item does not exist. Only the completed
+    # original Bill quest may grant a Kanto-local digital harbor permit.
+    progress["pilot_ss_ticket"] = true
+    pbMessage(t("Bill: Thank you! Here's your S.S. Ticket for Vermilion.",
+                "Bill: Obrigado! Aqui está seu bilhete do S.S. Anne em Vermilion."))
+    true
+  end
+
   def self.ticketmaster
     if !BlueRegions.local_achievements(progress, "KANTO").include?("CASCADE")
       pbMessage(BlueKantoPilot.t("Harbor clerk: Earn the Cascade Badge in Cerulean first.", "Porto: Primeiro conquiste a Cascade Badge em Cerulean."))
       return
     end
+    # Preserve already-issued tickets from existing saves; never grant a
+    # new one without helping Bill on Route 25.
     if progress["pilot_ss_ticket"] || (GameData::Item.exists?(:SSTICKET) && $bag.has?(:SSTICKET))
       progress["pilot_ss_ticket"] = true
-      pbMessage(BlueKantoPilot.t("Harbor clerk: You're cleared to board the S.S. Anne!", "Porto: Sua passagem para o S.S. Anne está liberada!"))
-    elsif !GameData::Item.exists?(:SSTICKET)
-      # Decades does not guarantee the FRLG ticket item exists. Use a local
-      # save-state permit without changing native item PBS or other saves.
-      progress["pilot_ss_ticket"] = true
-      pbMessage(BlueKantoPilot.t("Experimental access: Your digital pass for the S.S. Anne is active.", "Acesso experimental: a passagem digital para o S.S. Anne está liberada."))
-    elsif $bag.add(:SSTICKET, 1)
-      progress["pilot_ss_ticket"] = true
-      BlueMusic.kanto_me_play("obtained_item")
-      pbMessage(BlueKantoPilot.t("Experimental access: You received the S.S. Ticket. Bill's event will be adapted later.", "Acesso experimental: recebeu o S.S. Ticket. O evento de Bill será adaptado depois."))
+      pbMessage(t("Harbor clerk: You may board the S.S. Anne!",
+                  "Porto: Você pode embarcar no S.S. Anne!"))
     else
-      pbMessage(BlueKantoPilot.t("Make room in your Bag to receive the S.S. Ticket.", "Você precisa liberar espaço na Bolsa para receber o S.S. Ticket."))
+      pbMessage(t("Harbor clerk: Visit Bill on Route 25 for an S.S. Ticket.",
+                  "Porto: Visite Bill na Rota 25 para conseguir o bilhete do S.S. Anne."))
     end
   end
 
