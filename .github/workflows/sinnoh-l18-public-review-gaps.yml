@@ -1,0 +1,212 @@
+name: Sinnoh L18 - public independent review gaps (no native QA)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l18-public-review-gaps.yml'
+      - 'data/regions/sinnoh-l18-public-review-gaps.json'
+      - 'site/public/data/sinnoh-l18-public-review-gaps.json'
+      - 'site/public/sinnoh-l18-lacunas-revisao.html'
+      - 'site/public/assets/sinnoh-l18-review-gaps.js'
+      - 'site/tests/sinnoh-l18-review-gaps.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l18_review_gaps.py'
+      - 'tests/test_sinnoh_l18_review_gaps.py'
+      - 'docs/SINNOH_L18_LACUNAS_REVISAO_PUBLICAS.md'
+      - 'data/regions/sinnoh-l17-public-review-index.json'
+      - 'site/public/data/sinnoh-l17-public-review-index.json'
+      - 'data/regions/sinnoh-l16-public-exit-gates.json'
+      - 'site/public/data/sinnoh-l16-public-exit-gates.json'
+      - 'data/regions/sinnoh-l15-public-consistency-diff.json'
+      - 'site/public/data/sinnoh-l15-public-consistency-diff.json'
+      - 'data/regions/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/data/sinnoh-l14-public-readiness-matrix.json'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l18-public-review-gaps.yml'
+      - 'data/regions/sinnoh-l18-public-review-gaps.json'
+      - 'site/public/data/sinnoh-l18-public-review-gaps.json'
+      - 'site/public/sinnoh-l18-lacunas-revisao.html'
+      - 'site/public/assets/sinnoh-l18-review-gaps.js'
+      - 'site/tests/sinnoh-l18-review-gaps.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l18_review_gaps.py'
+      - 'tests/test_sinnoh_l18_review_gaps.py'
+      - 'docs/SINNOH_L18_LACUNAS_REVISAO_PUBLICAS.md'
+      - 'data/regions/sinnoh-l17-public-review-index.json'
+      - 'site/public/data/sinnoh-l17-public-review-index.json'
+      - 'data/regions/sinnoh-l16-public-exit-gates.json'
+      - 'site/public/data/sinnoh-l16-public-exit-gates.json'
+      - 'data/regions/sinnoh-l15-public-consistency-diff.json'
+      - 'site/public/data/sinnoh-l15-public-consistency-diff.json'
+      - 'data/regions/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/data/sinnoh-l14-public-readiness-matrix.json'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l18-review-gaps:
+    name: L18 / 88 open documentary gaps and 133 synthetic negatives
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run L18 own tests (including all synthetic forgeries)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l18_review_gaps.py' -v
+      - name: Audit anchored public Git blobs and every pending gate
+        run: |
+          python scripts/regions/audit_sinnoh_l18_review_gaps.py > /tmp/sinnoh-l18-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=Path('/tmp/sinnoh-l18-public.json').read_text('utf8')
+          a=json.loads(s)
+          assert a['stage']=='L18'
+          assert a['status']=='PUBLIC_REVIEW_GAPS_VALID_ALL_OPEN_NO_REAL_QA'
+          assert a['baseline_commits']=={
+            'L07':'d98033b362dac82347e0d97cb5606870eaa70b22',
+            'L08':'8617ef47ea6745920cb6fe4be251982380d7628d',
+            'L09':'39e51de92aafdab3f5aea3f929f57f5c0bb72b2d',
+            'L10':'7fd821007e63fe9cf0d0c4bf14d153a23cda2b6a',
+            'L11':'9d901a0cf21aa2742f731ee387a51f945bac8a5d',
+            'L12':'58b7f2fec9f66dee06d95676eec66fb2ded6a1de',
+            'L13':'1f12bcc86c10dcc934b024a0562cdadb65d5e2c2',
+            'L14':'11eda18f7225e16b13007c1eb955ccc3d7667b66',
+            'L15':'0192075fb02587c9f3d9db6b170500cba365251c',
+            'L16':'709776022679dc5831748ea4ed2254c6ced1da84',
+            'L17':'eb1333953d02d319e9b44a96c23fe2e071bd2a2e'}
+          assert a['public_sources']==[
+            {'stage':'L13','path':'data/regions/sinnoh-l13-public-evidence-queue.json','git_blob_sha1':'357215cdfd96b37eaac291e1c0ab3873069a12fe'},
+            {'stage':'L14','path':'data/regions/sinnoh-l14-public-readiness-matrix.json','git_blob_sha1':'d882d6a20b1c01be33744f14ab7826af2fb6ef41'},
+            {'stage':'L15','path':'data/regions/sinnoh-l15-public-consistency-diff.json','git_blob_sha1':'1a19883a3f0523add6aeaa4f78262b922a041e95'},
+            {'stage':'L16','path':'data/regions/sinnoh-l16-public-exit-gates.json','git_blob_sha1':'c9e3047106d7860bb966b5927a1fd8304506d395'},
+            {'stage':'L17','path':'data/regions/sinnoh-l17-public-review-index.json','git_blob_sha1':'273feb1460b9200cd3c0af63cf4ebb092b8691df'}]
+          assert (a['requests'],a['requests_blocked'],a['review_gaps_open'],a['review_gaps_closed'])==(88,88,88,0)
+          assert (a['documentary_next_steps'],a['independent_reviews_completed'],a['exit_criteria_met'])==(88,0,0)
+          assert (a['links'],a['case_to_criterion_links'],a['case_to_blocker_links'],a['criterion_to_blocker_links'])==(1084,846,218,20)
+          assert (a['anonymous_slots'],a['windows_native_pending'],a['android_native_pending'])==(18,43,1)
+          assert (a['human_approved'],a['native_executed'],a['native_approved'],
+                  a['local_reports_received'],a['phase_bcd_approved'])==(0,0,0,0,0)
+          assert a['phase_bcd_total']==13
+          assert a['r07_pending'] and a['r08_pending'] and a['r09_pending'] and a['r09_global_only']
+          assert a['no_private_uploads'] and a['no_native_authorization']
+          assert a['sinnoh_playable'] is False
+          for secret in ('Save01.rxdata','private-baseline.json','hmac_key','watch_id'):
+             assert secret not in s
+          print('SINNOH_L18_88_OPEN_1084_PUBLIC_LINKS_0_REAL_QA')
+          PY
+      - name: Never ingest local private reports or saves
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L18_PUBLIC_GITHUB_METADATA_ONLY'
+
+  l18-regressions:
+    name: L18 / L17 to L00 and G12 regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L17 public reviewer index
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l17_public_review.py' -v
+      - name: L16 exit gates
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l16_exit_gates.py' -v
+      - name: L15 consistency
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l15_consistency_diff.py' -v
+      - name: L14 dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l14_readiness.py' -v
+      - name: L13 public queue
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l13_public_queue.py' -v
+      - name: L12 gaps vs physical evidence
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l12_coverage_gaps.py' -v
+      - name: L11 traceability
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l11_traceability.py' -v
+      - name: L10 blocker index
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l10_public_index.py' -v
+      - name: L09 handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l09_public_handoff.py' -v
+      - name: L08 Git pinned snapshot
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: L07 public triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 routes
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 review checklist
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 sanitization
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 initial readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 native handoff fixture
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l18-portal:
+    name: L18 / read-only portal Node tests and full build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: L18 viewer static JS syntax
+        run: node --check site/public/assets/sinnoh-l18-review-gaps.js
+      - name: Portal regression L18 L17 L16 L15 L14 L13 L12 L11 L10 L07
+        working-directory: site
+        run: node --test tests/sinnoh-l18-review-gaps.test.mjs tests/sinnoh-l17-public-review.test.mjs tests/sinnoh-l16-public-exit-gates.test.mjs tests/sinnoh-l15-public-diff.test.mjs tests/sinnoh-l14-public-readiness.test.mjs tests/sinnoh-l13-public-queue.test.mjs tests/sinnoh-l12-coverage-gaps.test.mjs tests/sinnoh-l11-traceability.test.mjs tests/sinnoh-l10-blocker-index.test.mjs tests/sinnoh-l07-triage.test.mjs
+      - name: Full site build
+        working-directory: site
+        run: npm run build
+      - name: Confirm public L18 artifacts in dist and footer
+        run: |
+          test -s site/dist/sinnoh-l18-lacunas-revisao.html
+          test -s site/dist/data/sinnoh-l18-public-review-gaps.json
+          test -s site/dist/assets/sinnoh-l18-review-gaps.js
+          grep -q 'sinnoh-l18-lacunas-revisao.html' site/dist/index.html
+          echo 'SINNOH_L18_READONLY_PENDING_NO_NATIVE_QA'
