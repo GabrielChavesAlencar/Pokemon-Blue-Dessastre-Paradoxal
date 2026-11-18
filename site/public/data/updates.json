@@ -2,6 +2,18 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "d461af7a7b2a2d013bf92f535041d694bee29a85",
+      "date": "2026-11-18T07:35:15-03:00",
+      "title": "fix(android): count actual tab-separated Kanto music bindings in package check",
+      "category": "Correções"
+    },
+    {
+      "sha": "602487d8ccb91424fd42dea3ec5542f10409bf83",
+      "date": "2026-11-18T07:34:35-03:00",
+      "title": "fix(android): patch verified regional music table for Cerulean City and Route 4 without changing maps or saves",
+      "category": "Correções"
+    },
+    {
       "sha": "c7fdb53356e34b72309533e66358e58c3d1e1212",
       "date": "2026-11-18T07:33:19-03:00",
       "title": "test(kanto): require both Cerulean and Route 4 music bindings and preserve 74-map scope",
