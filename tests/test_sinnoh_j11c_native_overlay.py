@@ -121,7 +121,7 @@ class J11CIsolatedNatives(unittest.TestCase):
     def test_18_model_passability_at_candidate_spawn(self):
         raw=read_marshal(self.files["Data/Map442.rxdata"],"M")
         tiles=read_marshal(self.files["Data/Tilesets.rxdata"],"T")
-        self.assertTrue(passable_point(raw,tiles,21,32))
+        self.assertTrue(passable_point(raw,tiles,10,13))
     def test_19_all_nine_access_points_checked(self):
         self.assertEqual(self.manifest["candidate_access_points_model_only"],9)
         self.assertFalse(self.manifest["r09_approved"])
