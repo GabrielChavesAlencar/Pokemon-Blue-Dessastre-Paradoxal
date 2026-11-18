@@ -254,7 +254,7 @@ def mock_or_private_native_overlay(infos,tiles,ids,*,occupied,protected,
     topo=event_contract()
     # Passability: verify chosen entry candidates are clear with native-style
     # Table passages. This remains a local model, NOT real engine testing.
-    scene_lookup={s["symbol"]:s for s in j10a.scenes()+j11b.scenes()}
+    scene_lookup={s["symbol"]:s for s in list(j10a.scenes())+list(j11b.scenes())}
     simulated_passable=0
     for symbol,mid in mapping.items():
         world=read_marshal(blobs["Data/Map"+str(mid).zfill(3)+".rxdata"],"QA_MAP")
