@@ -1,0 +1,105 @@
+name: Sinnoh L05 - 44 casos nativos x 20 criterios humanos, apenas documental
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l05-native-documentary.yml'
+      - 'scripts/regions/audit_sinnoh_l05_native_dependencies.py'
+      - 'tests/test_sinnoh_l05_native_dependencies.py'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+      - 'scripts/regions/audit_sinnoh_g12_handoff.py'
+      - 'scripts/regions/audit_sinnoh_l03_matrix.py'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l05-native-documentary.yml'
+      - 'scripts/regions/audit_sinnoh_l05_native_dependencies.py'
+      - 'tests/test_sinnoh_l05_native_dependencies.py'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'scripts/regions/audit_sinnoh_l04_human_review.py'
+      - 'scripts/regions/audit_sinnoh_g12_handoff.py'
+      - 'scripts/regions/audit_sinnoh_l03_matrix.py'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l05-matrix:
+    name: L05 / 40 testes sinteticos e auditoria 44 x 20
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar 40 testes L05 de dependencias documentais
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: Conferir 44 casos, 20 criterios e nenhum teste nativo
+        run: |
+          python scripts/regions/audit_sinnoh_l05_native_dependencies.py > /tmp/sinnoh-l05-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/sinnoh-l05-public.json')
+          d=json.loads(p.read_text(encoding='utf8'))
+          assert d['stage']=='L05' and d['status']=='DOCUMENTARY_MATRIX_VALID_NATIVE_44_ALL_PENDING'
+          assert d['native_cases_total']==44 and d['native_cases_approved']==0
+          assert (d['windows_cases'],d['android_cases'])==(43,1)
+          assert d['criteria_total']==20 and d['criteria_human_approved']==0
+          assert len(d['cases'])==44 and len(set(r['id'] for r in d['cases']))==44
+          assert set(d['cases_by_kind'])=={'starter','barry','save_reload','warp','npc','regression','android'}
+          assert all(x['state']=='NATIVE_QA_NOT_AUTHORIZED' for x in d['cases'])
+          assert all(not x['human_physical_evidence_accepted'] for x in d['cases'])
+          assert not d['sinnoh_playable'] and not d['native_test_can_start']
+          assert not d['r07_complete'] and not d['r08_complete'] and not d['r09_complete']
+          assert (d['phase_b_approved'],d['phase_c_approved'],d['phase_d_approved'])==(0,0,0)
+          assert not d['may_run_game_exe'] and not d['may_run_joiplay']
+          assert not d['may_start_windows_sandbox'] and not d['may_install_live_game']
+          assert d['review_handoff']['L05_documentary_is_not_android_local_gate_L05']
+          raw=p.read_text(encoding='utf8')
+          for private in ('C:\\Users','Save01.rxdata','private-baseline.json','hmac_key',
+                          'watch_id','source_clone_sha256'):
+              assert private not in raw
+          print('SINNOH_L05_44_CH20_CASES_20_HUMAN_CRITERIA_0_NATIVE_APPROVAL')
+          PY
+      - name: Nenhum dado local ou artifact privado
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "SINNOH_L05_GITHUB_ONLY_NO_NATIVE_EVIDENCE_OR_UPLOAD"
+
+  l05-regressions:
+    name: L05 / regressao L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L04 human provenance (35)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 44-case handoff human matrix (40)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 documentary review (40)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 safe report export (30)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness checks (24)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 evidence handoff (20)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
