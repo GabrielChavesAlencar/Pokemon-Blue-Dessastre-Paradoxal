@@ -6,7 +6,7 @@ Data: 18/11/2026. Base J05 PR #231 integrada; J06 issue #230.
 
 A ferramenta scripts/regions/prepare_sinnoh_playable_j06.py implementa:
 - Pré-voo somente leitura que reusa o instalador privado install_sinnoh_qa_copy.py e o launcher launch_sinnoh_qa.py, sem copiar saves para a área QA.
-- Exigência de nove mapas privados auditados, 16 portais, 5 NPCs, 3 Poké Bolas e três PBS Barry originais. Compara hashes SHA-256 de todos os arquivos do overlay, Game.exe e MapInfos da base, cada mapa do intervalo 442–517 e os IDs protegidos de outras regiões.
+- Exigência de nove mapas privados auditados, 16 portais, 5 NPCs, 3 Poké Bolas, gráficos PNG verificáveis de NPCs/iniciais em Graphics/Characters e três PBS Barry originais. Compara hashes SHA-256 de todos os arquivos do overlay, incluindo cada PNG Characters usado por NPC ou Poké Bola (o arquivo deve ser válido e efetivamente incluído na cópia), Game.exe e MapInfos da base, cada mapa do intervalo 442–517 e os IDs protegidos de outras regiões.
 - Revisão explícita e **local** de direitos para CADA arquivo; não confundir atestado do usuário com licença ou verificação independente. Nenhuma permissão é inventada. Sem autorização R08 e R07, a instalação fica bloqueada.
 - Cópia exclusivamente dentro de .blue-work/game-sinnoh-qa-XXXXXXXXXXXX com título, identificador e namespace de saves próprios. Nenhum overwrite em game/, Decades/Kanto/Johto/Hoenn. Sem fallback para instalar Game.exe.
 - Recibo com inventário SHA-256 de todos os arquivos copiados e operação de rollback SOMENTE para cópia intacta, ainda sem testes nem saves. Se a pasta tiver save novo, conteúdo alterado ou extra, o rollback recusa e preserva os arquivos.
@@ -80,7 +80,7 @@ O duplo clique no BAT sem os JSON locais NÃO instala nada e retorna um bloqueio
 
 ## Regressões e próxima etapa
 
-- tests/test_sinnoh_j06_qa_windows.py: 40 cenários com arquivos, mapas, sprites, PBS e Game.exe SINTÉTICOS. Não reproduz/redistribui uma ROM nem confirma Game.exe real.
+- tests/test_sinnoh_j06_qa_windows.py: 42 cenários com arquivos, mapas, sprites, PBS e Game.exe SINTÉTICOS. Não reproduz/redistribui uma ROM nem confirma Game.exe real.
 - Workflow J06 com testes Linux e Windows em runners descartáveis; regressões do instalador S11/CH10, J04/J05 e portal.
 - Jogos reais, saves reais, direitos e Joiplay permanecem pendentes mesmo após o CI verde.
 
