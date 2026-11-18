@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "J09",
+  "mode": "USER_LIBRARY_SOURCE_STATIC_RECHECK_NO_REDISTRIBUTION",
+  "audited_at": "2026-11-18",
+  "source_label": "Pokemon World V18.zip (Library private copy)",
+  "source_zip_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+  "source_zip_size_bytes": 208057674,
+  "source_mapinfos_sha256": "a5de4d870ae08aa3730942496734c7a0917505a6d435ff178ce5a10f73fc6495",
+  "source_tilesets_sha256": "ddd1e57f033e9ad061870d2cb72288e17ab4f28bb2ace7cea69336a95f8cd1f1",
+  "zip_redownloaded_into_github": false,
+  "actual_archive_and_map_bytes_checked_read_only": true,
+  "maps": [
+    {
+      "symbol": "SINNOH_PLAYER_BEDROOM",
+      "source_id": null,
+      "source_sha256": null,
+      "status": "MISSING_ORIGINAL_REAL_MAP",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_PLAYER_HOUSE_1F",
+      "source_id": null,
+      "source_sha256": null,
+      "status": "MISSING_ORIGINAL_REAL_MAP",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_TWINLEAF_TOWN",
+      "source_id": 209,
+      "source_sha256": "51835569951ca9cdb7832973946781b8258096e1118e6addea26a66a63d80e42",
+      "status": "REAL_SOURCE_FILE_SHA_RECHECKED_RIGHTS_UNVERIFIED",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_BARRY_HOUSE",
+      "source_id": null,
+      "source_sha256": null,
+      "status": "MISSING_ORIGINAL_REAL_MAP",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_ROUTE_201",
+      "source_id": 227,
+      "source_sha256": "6652a810c5d25f32d610021f88b2e949e55305fdd30bc684fa583d301976ba34",
+      "status": "REAL_SOURCE_FILE_SHA_RECHECKED_RIGHTS_UNVERIFIED",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_LAKE_VERITY",
+      "source_id": null,
+      "source_sha256": null,
+      "status": "MISSING_ORIGINAL_REAL_MAP",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_SANDGEM_TOWN",
+      "source_id": 210,
+      "source_sha256": "f03bb0cfb97f7e807e950c26c9123e05aa49888f3b180323efd116e51c7ac34f",
+      "status": "REAL_SOURCE_FILE_SHA_RECHECKED_RIGHTS_UNVERIFIED",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+      "source_id": null,
+      "source_sha256": null,
+      "status": "MISSING_ORIGINAL_REAL_MAP",
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_ROUTE_202",
+      "source_id": 228,
+      "source_sha256": "3aa9c9e26c2121495e79fef489f23262876447222ed5e3ec563133225f925f35",
+      "status": "REAL_SOURCE_FILE_SHA_RECHECKED_RIGHTS_UNVERIFIED",
+      "installed": false
+    }
+  ],
+  "rejected_placeholders": [
+    {
+      "source_id": 5,
+      "source_name": "Sinnoh Interiors",
+      "terrain_nonzero_tiles": 0,
+      "not_usable_for": "PLAYER_HOUSE_OR_BARRY_HOUSE"
+    },
+    {
+      "source_id": 263,
+      "source_name": "4 Lakes NC",
+      "terrain_nonzero_tiles": 0,
+      "not_usable_for": "LAKE_VERITY"
+    },
+    {
+      "source_id": 272,
+      "source_name": "Sinnoh Labs",
+      "terrain_nonzero_tiles": 0,
+      "not_usable_for": "ROWAN_LABORATORY"
+    }
+  ],
+  "historical_terrain_sha_rechecked": 4,
+  "missing_real_maps": 5,
+  "native_installed_maps": 0,
+  "rights_r08_verified": false,
+  "r07_future_reservations_verified": false,
+  "r09_native_qa_verified": false,
+  "g12_native_windows_passed": 0,
+  "g12_native_android_passed": 0,
+  "game_exe_tested": false,
+  "joiplay_tested": false,
+  "maps_redistributed": false,
+  "user_saves_accessed": false,
+  "main_game_modified": false,
+  "can_install": false,
+  "can_publish": false,
+  "status": "FOUR_REAL_SOURCE_FILES_RECHECKED_FIVE_REAL_MAPS_MISSING"
+}

@@ -25,7 +25,7 @@
   "joiplay_tested": false,
   "main_game_modified": false,
   "save_migration_performed": false,
-  "phase_count_policy": "J01-J08 represent solely executable tooling and offline CI (not released or playable regions). J08 offers SHA-verified local-only Android JoiPlay delta ZIP candidate built from an authorized 9-map QA stage, J06 rights/R07, J07 human-reviewed 43 Windows cases, separate Android save profile and file-by-file rights; no deletions, backups, user saves, or live installation. CI uses synthetic fixtures, never proves Game.exe/JoiPlay, sources or rights. A complete engineering bar does NOT change 0/8 native QA.",
+  "phase_count_policy": "J01–J08 are code-only tooling 8/8. J09 verifies four original source RXDATA SHA from a private Library ZIP, but five authored maps still missing, R07 global reservations and R08 per-resource rights unapproved, R09 0/44 native. Any 9/9 private source intake is NOT 9/9 installed maps or native gameplay; no progress native from source hashes or synthetic CI. J09-R1 is next physical unblock.",
   "stages": [
     {
       "id": "J01",
@@ -108,13 +108,14 @@
       "completion_requires": "J08 private incremental Android QA-only delta ZIP builder, hash-bound to J06 maps/PBS/owned sprites and J07 43 independently human-reviewed Windows case records; source+Android profile+rights gates, no backup/no deletion/no save migration, offline synthetic CI. No real 9-map package produced, no JoiPlay, no Android QA native evidence: planned/not playable."
     }
   ],
-  "next_stage": "J09",
+  "next_stage": "J09-R1",
   "blockers": [
-    "J08 implementa somente gerador e verificador privado de delta Android em código: 8/8 ferramentas prontas não significa jogabilidade instalada. Nenhum ZIP Android real foi gerado ou publicado.",
-    "Cinco mapas físicos do piloto ainda ausentes; R07 MapIDs e R08 direitos dos mapas, tilesets, sprites e PBS não certificados em fonte privada real.",
-    "J06/J07 exigem Game.exe real em cópia QA isolada e revisão humana independente de 43 casos Windows. Até agora 0/43 Windows e 0/1 Android verificações reais G12.",
-    "J08 recusa pacote sem snapshots de Android autorizados, compilações e 43 registros Windows revisados; usa somente ZIP delta, sem deletar arquivos, backups totais ou tocar saves.",
-    "Sinnoh permanece planned/não jogável e as demais regiões Decades/Kanto/Johto/Hoenn não são alteradas. Próximo gate físico J09 #236."
+    "Auditoria read-only da cópia privada Pokémon World V18 recuperada da Biblioteca: SHA global, MapInfos/Tilesets e quatro outdoors RXDATA (Twinleaf 209, Route 201 227, Sandgem 210, Route 202 228) conferidos, mas direitos para uso/redistribuição ainda não comprovados.",
+    "Faltam cinco mapas originais reais: quarto jogador, térreo da casa, casa Barry, Lake Verity e laboratório Rowan; placeholders Sinnoh Interiors (5), 4 Lakes NC (263), Sinnoh Labs (272) têm zero tiles de terreno e são recusados.",
+    "R07: sem inventário atual de game/Data nem homologação de reservas futuras DECADES/KANTO/JOHTO/HOENN/UNOVA; faixa 442–517 segue planejamento, não autorização de MapID.",
+    "R08: autorização por arquivo e por gráficos/tilesets ainda pendente; o auditor J09 só admite recibos locais humanos e jamais concede direitos ou aprovação independente.",
+    "R09: nenhum Game.exe/JoiPlay/QA real autorizado ou executado. G12 0/43 Windows, 0/1 Android; 0/9 mapas instalados. Código de auditoria não conta como progresso nativo.",
+    "Sinnoh continua planned/não jogável; Decades, Kanto, Johto, Hoenn, saves e instalações principais preservados."
   ],
   "source_data": "data/regions/sinnoh-twinleaf-events.json",
   "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE",
@@ -122,14 +123,14 @@
   "native_source_maps_missing": 5,
   "native_map_bindings_verified": 0,
   "native_maps_installed": 0,
-  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/236",
-  "next_button_label": "Executar J09 — Desbloquear mapas reais e QA nativa",
-  "next_prompt": "Execute agora a J09 de desbloqueio físico da Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub, usando a J08 integrada e a issue #236. Priorize conseguir e validar os nove mapas reais (cinco ausentes), reservas globais R07, direitos R08, compilação física Game.exe isolada e QA R09 Windows 43/43 e Android JoiPlay 1/1, sem nunca inventar mapas, licenças ou testes nativos. Preserve saves e Decades/Kanto/Johto/Hoenn, evite publicar artefatos privados; se as fontes ainda faltarem, implemente somente ferramentas seguras fail-closed e evidencie bloqueios reais, sem aumentar a barra nativa. Deixe botão para retomada/correções após testes. Faça merge somente com todos os checks relevantes aprovados.",
+  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/238",
+  "next_button_label": "Executar J09-R1 — Receber 5 mapas reais e rever R07/R08",
+  "next_prompt": "Execute agora a J09-R1 de Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub, com base no auditor J09 integrado e na issue #238. Use as fontes privadas disponíveis e receba apenas os cinco mapas Sinnoh genuínos ainda ausentes (quarto jogador, térreo casa, casa Barry, Lake Verity e laboratório Rowan), validando geometria RXDATA sem scripts de terceiros, hashes SHA-256, origem, direitos individuais R08 e MapIDs R07 contra Decades/Kanto/Johto/Hoenn/Unova. Não invente os mapas e não publique recursos de terceiros; preserve saves. Só depois disso habilite cópia QA J06/J07 43 casos Windows e J08 1 JoiPlay reais, sempre com autorização explícita e sem instalar em game/ principal. Mantenha barra nativa 0 enquanto não houver prova de jogabilidade, execute CI fail-closed e deixe botão para continuar. Faça merge somente após todos os checks relevantes aprovados.",
   "staging_code_prepared": true,
   "local_stage_created_and_verified": false,
   "staging_real_terrain_maps_confirmed": 0,
   "source_donor_events_imported": 0,
-  "next_workflow": "SINNOH_J09_NATIVE_PROVENANCE_GATES",
+  "next_workflow": "SINNOH_J09_R1_AUTHOR_AUTHORIZED_MAPS",
   "j04_compiler_code_prepared": true,
   "j04_native_events_compiled": 0,
   "j04_native_warps_compiled": 0,
@@ -176,5 +177,20 @@
   "j08_main_android_install_modified": false,
   "j08_full_backup_created": false,
   "j08_personal_save_files_accessed": false,
-  "j08_android_release_published": false
+  "j08_android_release_published": false,
+  "j09_source_zip_library_recovered_and_sha_verified": true,
+  "j09_historical_exterior_map_sha_reverified": 4,
+  "j09_real_nonempty_source_candidates": 4,
+  "j09_missing_real_maps": 5,
+  "j09_new_real_authored_maps_received": 0,
+  "j09_missing_map_intake_code_ready": true,
+  "j09_r07_global_mapid_review_code_ready": true,
+  "j09_r08_per_map_rights_review_code_ready": true,
+  "j09_r07_approval_native": false,
+  "j09_r08_rights_independently_verified": false,
+  "j09_r09_native_windows_passed": 0,
+  "j09_r09_native_android_passed": 0,
+  "j09_native_sinnoh_maps_installed": 0,
+  "j09_archive_or_donor_assets_republished": false,
+  "j09_private_library_source_verification_manifest": "data/regions/sinnoh-j09-private-source-recheck.json"
 }

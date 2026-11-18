@@ -29,6 +29,11 @@ on:
       - '.github/workflows/sinnoh-j08-android-private-delta.yml'
       - 'SINNOH_J08_QA_ANDROID.bat'
       - 'docs/SINNOH_J08_DELTA_ANDROID_PRIVADO.md'
+      - 'scripts/regions/audit_sinnoh_playable_j09.py'
+      - 'tests/test_sinnoh_j09_physical_source_intake.py'
+      - 'data/regions/sinnoh-j09-private-source-recheck.json'
+      - '.github/workflows/sinnoh-j09-physical-source-intake.yml'
+      - 'docs/SINNOH_J09_FONTE_REAL_MAPAS_R07_R08.md'
   push:
     branches: [main]
     paths:
@@ -235,3 +240,39 @@ jobs:
         run: |
           if (Test-Path "game/Game.exe") { throw "Private executable unexpectedly present" }
           if (Test-Path ".blue-work/sinnoh-j08-candidates") { throw "QA candidate leaked into checkout" }
+
+  j09-real-source-intake-linux:
+    name: J09 / Linux 35 inert source, five authored map, R07/R08 failclosed tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 35 synthetic J09 source intake cases
+        run: |
+          python -m py_compile scripts/regions/audit_sinnoh_playable_j09.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j09_physical_source_intake.py' -v
+      - name: No private source or approved native execution in CI
+        run: |
+          test ! -e game/Game.exe
+          test ! -d .blue-work/sinnoh-j09-authored
+  j09-real-source-intake-windows:
+    name: J09 / Windows disposable SHA/R07/R08 and save isolation fixtures
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 35 synthetic J09 map and rights regression gates
+        run: |
+          python -m py_compile scripts/regions/audit_sinnoh_playable_j09.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j09_physical_source_intake.py' -v
+      - name: No real Game.exe or source ZIP released
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private executable unexpectedly present" }
+          if (Test-Path ".blue-work/sinnoh-j09-authored") { throw "Private maps escaped source workspace" }

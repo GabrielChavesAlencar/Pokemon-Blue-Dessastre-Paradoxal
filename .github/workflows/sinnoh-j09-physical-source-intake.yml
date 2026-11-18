@@ -1,0 +1,98 @@
+name: Sinnoh J09 - real-source read-only intake, 5 missing maps + R07/R08 gates
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j09-physical-source-intake.yml'
+      - 'scripts/regions/audit_sinnoh_playable_j09.py'
+      - 'tests/test_sinnoh_j09_physical_source_intake.py'
+      - 'data/regions/sinnoh-j09-private-source-recheck.json'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'docs/SINNOH_J09_FONTE_REAL_MAPAS_R07_R08.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j09-physical-source-intake.yml'
+      - 'scripts/regions/audit_sinnoh_playable_j09.py'
+      - 'tests/test_sinnoh_j09_physical_source_intake.py'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'data/regions/sinnoh-j09-private-source-recheck.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j09-read-only-source-linux:
+    name: J09 / Linux 35 synthetic original-source/R07/R08 failclosed checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: J09 Python syntax and 35 negative/positive synthetic cases
+        run: |
+          python -m py_compile scripts/regions/audit_sinnoh_playable_j09.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j09_physical_source_intake.py' -v
+      - name: Regress J02 historical source SHA, five absent maps
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j02_real_map_bindings.py' -v
+      - name: Regress R07 future region reservations
+        run: python -m unittest discover -s tests -p 'test_sinnoh_r07_reservations.py' -v
+      - name: Source absent in public checkout stays blocked, no binaries or saves
+        run: |
+          python scripts/regions/audit_sinnoh_playable_j09.py > /tmp/j09-report.json
+          python - <<'PY'
+          import json
+          o=json.load(open('/tmp/j09-report.json'))
+          assert o['historical_exteriors_verified_this_run']==0
+          assert len(o['missing_source_symbols'])==5
+          assert o['native_maps_installed']==0
+          assert o['r09_windows_native_cases_verified']==0
+          assert o['r09_android_joiplay_cases_verified']==0
+          assert not o['can_install'] and not o['can_publish']
+          PY
+          test ! -f game/Game.exe
+          test ! -d .blue-work/sinnoh-j09-authored
+          echo J09_CI_NO_DONOR_ASSETS_OR_NATIVE_APPROVAL
+  j09-read-only-source-windows:
+    name: J09 / Windows disposable 35 synthetic map sources and no save access
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Inert map/source/right check without real donor ZIP or Game.exe
+        run: |
+          python -m py_compile scripts/regions/audit_sinnoh_playable_j09.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j09_physical_source_intake.py' -v
+      - name: Confirm none of user games, ROMs, saves or donor archives are present
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private Game.exe in public source!" }
+          if (Test-Path ".blue-work/sinnoh-j09-authored") { throw "Private authored maps leaked!" }
+          Write-Output "SINNOH_J09_NATIVE_NOT_APPROVED_BY_SYNTHETIC_RUNNER"
+  j09-portal-retomada:
+    name: J09 / Source 4 of 9, native 0 of 8, J09-R1 button
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source and native counters never conflated
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build site
+        working-directory: site
+        run: npm run build
+      - name: Check public page and sanitized source receipt
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          test -s data/regions/sinnoh-j09-private-source-recheck.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
