@@ -55,6 +55,26 @@ TRAINERS.update({
     "LEADER_Misty,Misty": ("LEADER_MISTY", "Misty", 0),
     "SWIMMER2_M,Luis": ("SWIMMER", "Luis", 0),
     "PICNICKER,Diana": ("PICNICKER", "Diana", 0),
+    # Source Map039 rival at north end of Cerulean: versions depend on player starter.
+    **{f"RIVAL1,Blue,{version}": ("RIVAL", "Blue", version)
+       for version in (31, 32, 33)},
+    # Pinned FRLG Map053 — Nugget Bridge.
+    "CAMPER,Ethan": ("CAMPER", "Ethan", 0),
+    "LASS,Reli": ("LASS", "Reli", 0),
+    "YOUNGSTER,Timmy": ("YOUNGSTER", "Timmy", 0),
+    "LASS,Ali": ("LASS", "Ali", 0),
+    "BUGCATCHER,Cale": ("BUGCATCHER", "Cale", 0),
+    "TEAMROCKET_M,Grunt,5": ("ROCKET", "Grunt", 5),
+    "CAMPER,Shane": ("CAMPER", "Shane", 0),
+    # Pinned FRLG Map054 — Route 25 / Bill's Cottage.
+    **{f"HIKER,{name}": ("HIKER", name, 0)
+       for name in ("Franklin", "Wayne", "Nob")},
+    **{f"LASS,{name}": ("LASS", name, 0)
+       for name in ("Haley",)},
+    **{f"YOUNGSTER,{name}": ("YOUNGSTER", name, 0)
+       for name in ("Chad", "Joey", "Dan")},
+    "CAMPER,Flint": ("CAMPER", "Flint", 0),
+    "PICNICKER,Kelsey": ("PICNICKER", "Kelsey", 0),
 })
 
 
