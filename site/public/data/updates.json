@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "fa3be695fa3b5d410462841637c46e0feb3523c2",
+      "date": "2026-11-18T11:12:26-03:00",
+      "title": "Sinnoh jogável J03: staging privado de quatro terrenos, SHA-256 e rollback (#227)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "479a6eecb1cca46288b0b5e3442151061426d3f0",
       "date": "2026-11-18T10:45:15-03:00",
       "title": "Sinnoh jogável J02: vinculador real de MapIDs + botão de próxima fase (#225)",
