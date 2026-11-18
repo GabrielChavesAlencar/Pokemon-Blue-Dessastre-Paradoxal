@@ -234,6 +234,19 @@ def qa_copy_path(project: Path, token: str) -> Path:
         fail("QA_PATH_UNSAFE")
     return path
 
+def safe_windows_inventory_name(rel: str) -> bool:
+    """Reject Windows traversal/reparse aliases but allow native Unicode names."""
+    if type(rel) is not str or not rel or len(rel)>1024 or rel.startswith("/"):
+        return False
+    if any(ord(ch)<32 or ch in '<>:"\\|?*' for ch in rel):
+        return False
+    parts=rel.split("/")
+    if any(not part or part in (".","..") or part.endswith((".", " "))
+           or len(part)>255 for part in parts):
+        return False
+    reserved=re.compile(r"(?i:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?\Z")
+    return not any(reserved.fullmatch(p) for p in parts)
+
 def inventory(folder: Path) -> dict[str,str]:
     if folder.is_symlink() or not folder.is_dir():
         fail("QA_DIR_MISSING_OR_LINK")
@@ -249,7 +262,8 @@ def inventory(folder: Path) -> dict[str,str]:
         rel=p.relative_to(folder).as_posix()
         if rel==RECEIPT:
             continue
-        if len(result)>=40000 or not REL.fullmatch(rel) or rel.casefold() in seen:
+        if (len(result)>=40000 or not safe_windows_inventory_name(rel)
+                or rel.casefold() in seen):
             fail("QA_FILES_INVALID_OR_TOO_MANY")
         seen.add(rel.casefold())
         result[rel]=file_digest(p)
