@@ -339,10 +339,10 @@ _BAD_PACKAGES={
     "unknown_field":lambda p:p.update(unova_ready=True),
 }
 for _name,_mutator in _BAD_PACKAGES.items():
-    def _invalid(self,mutate=_mutator):
+    def _invalid(self,mutate=_mutator,case=_name):
         state,pkg,manifest,old,new=self.bundle()
         mutate(pkg)
-        if _name != "tamper_package_digest":
+        if case != "tamper_package_digest":
             pkg["package_sha256"]=g72.package_digest(pkg)
         with self.assertRaises(ValueError):
             self.preview(state=state,package=pkg,manifest=manifest,old=old,new=new)
