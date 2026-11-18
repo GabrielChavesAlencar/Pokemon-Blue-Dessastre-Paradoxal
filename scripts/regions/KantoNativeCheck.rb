@@ -220,11 +220,29 @@ module KantoNativeCheck
              "Misty repeated after victory")
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 4,
              "Two Kanto milestones were double-counted or omitted")
-    # Phase 08: the S.S. Ticket bridge is available only after Cascade,
-    # and Lt. Surge grants exactly one Thunder Badge for a genuine victory.
+    # Cerulean north: Cascade alone must NOT give an S.S. Ticket.
+    # Simulate the player's decision to help Bill after verifying the real
+    # cottage events and completing the native PC/reward callbacks. This
+    # fixture does not impersonate a manual JoiPlay touchscreen playtest.
     BlueKantoPilot.ticketmaster
-    require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "Vermilion S.S. Ticket permit was not granted after Cascade")
+    require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
+             "Harbor issued a ticket without Bill's Route 25 quest")
+    previous_map = $game_map.map_id
+    cottage_id = BlueKantoPilot.kanto_map_id(55)
+    require!(cottage_id && cottage_id > 0, "Bill cottage MapID unavailable")
+    $map_factory.setup(cottage_id)
+    require!([3,4,8].all? { |eid| $game_map.events[eid] },
+             "Bill transformation/PC/reward events missing from cottage")
+    BlueKantoPilot.progress["pilot_bill_agreed"] = true # Mock Bill's dialogue choice.
+    require!(BlueKantoPilot.bill_computer, "Bill Cell Separator did not restore him")
+    require!(BlueKantoPilot.bill_reward, "Bill did not grant a ticket after recovery")
+    require!(BlueKantoPilot.progress["pilot_bill_helped"] == true,
+             "Bill's successful PC recovery was not persisted")
+    $map_factory.setup(previous_map)
     BlueKantoPilot.ticketmaster
+    require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true,
+             "Vermilion ticket missing after Bill's quest")
+    # Lt. Surge grants exactly one Thunder Badge after a legitimate victory.
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
     require!(surge.pokemon.length == 3, "Lt. Surge original FRLG roster missing")
     require!(surge.pokemon.map { |pokemon| pokemon[:species] } == [:VOLTORB,:PIKACHU,:RAICHU],
