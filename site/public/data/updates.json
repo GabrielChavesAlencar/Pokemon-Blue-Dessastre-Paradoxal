@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "21040a22c9dd3ad8005a0ae667f92693fe140b79",
+      "date": "2026-11-17T21:30:27-03:00",
+      "title": "Unova G07.3 — transações CAS e rollback offline (29/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "885132e81e7931bb006b7a19c6c854737ff54ec4",
       "date": "2026-11-17T21:29:26-03:00",
       "title": "feat(sinnoh): L05 44 native CH20 cases mapped to 20 human criteria, no approvals (#180)",
