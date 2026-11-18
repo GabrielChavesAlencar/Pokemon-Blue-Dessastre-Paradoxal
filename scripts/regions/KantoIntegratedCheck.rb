@@ -24,12 +24,23 @@ module KantoIntegratedCheck
     $map_factory.setup(point[0])
     $game_player.moveto(point[1], point[2])
     require!(BlueRegionTravel.at_departure_town?(state), "Regional departure town not verified")
-    agents = $game_map.events.values.select do |event|
+    candidates = $game_map.events.values.select do |event|
       event.list && event.list.any? { |op|
+        op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
+      }
+    end
+    agents = candidates.select do |event|
+      event.list.any? { |op|
         op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent(true)")
       }
     end
-    require!(agents.length == 1, "Exactly one real regional travel NPC is required")
+    summary = candidates.map { |event|
+      [event.id, event.name.to_s, event.list.select { |op|
+        op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
+      }.map { |op| op.parameters.first.to_s.include?("agent(true)") }]
+    }
+    require!(agents.length == 1,
+             "Exactly one authenticated regional NPC required: map=#{$game_map.map_id}, candidates=#{summary.inspect}")
     require!(!BlueRegionTravel.travel(destination, true),
              "Travel bypassed the physical NPC interaction gate")
 
