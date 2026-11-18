@@ -1,0 +1,117 @@
+name: Sinnoh J11-B - four original exterior maps and nine original private geometry bundle
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j11b-four-original-exteriors.yml'
+      - 'scripts/regions/generate_sinnoh_four_exteriors_j11b.py'
+      - 'tests/test_sinnoh_j11b_four_original_exteriors.py'
+      - 'docs/SINNOH_J11B_QUATRO_EXTERIORES_ORIGINAIS.md'
+      - 'SINNOH_J11B_GERAR_NOVE_PRIVADOS.bat'
+      - 'site/public/sinnoh-jogavel.html'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j11b-four-original-exteriors.yml'
+      - 'scripts/regions/generate_sinnoh_four_exteriors_j11b.py'
+      - 'tests/test_sinnoh_j11b_four_original_exteriors.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  nine-original-geometries-linux:
+    name: J11-B / Linux - 40 tests, nine private RXDATA and two distinct tilesets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check source and 40 regression tests
+        run: |
+          python -m py_compile scripts/regions/generate_sinnoh_four_exteriors_j11b.py
+          python -m unittest discover -s tests -p test_sinnoh_j11b_four_original_exteriors.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j11_physical_intake_gates.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j10a_original_geometry.py -v
+      - name: Compile and verify nine actual private three-layer maps with original PNGs
+        run: |
+          python scripts/regions/generate_sinnoh_four_exteriors_j11b.py --build > /tmp/sinnoh-j11b.json
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path(".blue-work/sinnoh-j11b-nine-original-designs")
+          data=json.loads((p/"manifest.json").read_text())
+          plan=json.loads((p/"nine-map-source-plan.json").read_text())
+          tile=json.loads((p/"tileset-registration-proposal.json").read_text())
+          assert data["nine_distinct_rxdata_count"]==9
+          assert data["four_new_original_exteriors"]==4
+          assert data["five_existing_originals"]==5
+          assert data["native_maps_installed"]==0 and data["native_qa_cases_executed"]==0
+          assert not data["can_install"] and not data["r07_approved"] and not data["r08_approved"]
+          assert not plan["donor_assets_used"] and plan["historical_source_maps_used"]==0
+          assert not tile["native_tilesets_rxdata_generated"]
+          assert all(row["native_tileset_id"] is None for row in plan["maps"])
+          assert len(list(p.glob("*.rxdata")))==9
+          assert len(list(p.glob("*.png")))==2
+          assert len(list((p/"previews").glob("*.svg")))==9
+          for name,sha in data["files_sha256"].items():
+              assert hashlib.sha256((p/name).read_bytes()).hexdigest()==sha,name
+          assert not Path("game/Game.exe").exists()
+          print("J11B_9_ORIGINAL_GEOMETRIES_CREATED_ONLY_IN_PRIVATE_DESIGN_FOLDER")
+          PY
+      - name: Publish only 9 SVG previews and sanitized JSON plans (NO binary maps)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-j11b-nine-original-layout-previews-no-native
+          path: |
+            .blue-work/sinnoh-j11b-nine-original-designs/previews/*.svg
+            .blue-work/sinnoh-j11b-nine-original-designs/manifest.json
+            .blue-work/sinnoh-j11b-nine-original-designs/nine-map-source-plan.json
+            .blue-work/sinnoh-j11b-nine-original-designs/tileset-registration-proposal.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: No native or old donor output promoted
+        run: |
+          git diff --exit-code
+          test ! -d .blue-work/sinnoh-j09-authored
+          test ! -d .blue-work/sinnoh-j03-stage
+          test ! -d .blue-work/sinnoh-j06
+          echo "SINNOH_J11B_FAIL_CLOSED_ONLY_ORIGINAL_LAYOUT_SVG_AND_METADATA_PUBLISHED"
+  windows-private-synthetic:
+    name: J11-B / Windows - 40 tests, no Game.exe or personal saves
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Original landscapes, byte-audit and private file isolation
+        run: |
+          python -m unittest discover -s tests -p test_sinnoh_j11b_four_original_exteriors.py -v
+      - name: No native QA or map stage
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private Game.exe present!" }
+          if (Test-Path ".blue-work/sinnoh-j09-authored") { throw "No private maps promoted!" }
+          Write-Output "SINNOH_J11B_WINDOWS_TESTED_ONLY_SYNTHETIC"
+  portal-not-playable:
+    name: J11-B / Portal - progress remains 0/9 and 0/44
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Site regression - preserves progress contract
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Portal build
+        working-directory: site
+        run: npm run build
+      - name: No fabricated approval and site describes nine private original designs
+        run: |
+          grep -q "J11-B" site/dist/sinnoh-jogavel.html
+          grep -q "0/44" site/dist/sinnoh-jogavel.html
+          grep -q "PILOT_NOT_INSTALLED_NOT_PLAYABLE" site/dist/data/sinnoh-playable-progress.json
