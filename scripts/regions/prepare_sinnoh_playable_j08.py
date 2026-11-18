@@ -215,9 +215,22 @@ def check_stage(project:Path,pre:dict,stage:Path,baseline:Path,
              if e.get("kind") in ("handler","starter_ball")}
     if not sprites or not sprites.issubset(target):
         fail("ANDROID_NPC_STARTER_ARTWORK_MISSING")
-    if len([x for x in target if x.startswith("Plugins/") and
-           x.endswith("/SinnohPilot.rb")])!=1:
+    plugins=[x for x in target if x.startswith("Plugins/")
+             and x.endswith("/SinnohPilot.rb")]
+    if len(plugins)!=1:
         fail("ANDROID_BLUE_SINNOH_PLUGIN_MISSING")
+    # Bind the Android candidate to the actual nine J06 map bytes, three
+    # Barry PBS variants and artwork instead of accepting arbitrary files
+    # of the right names. The compiled Android plugin cache remains an
+    # independent, explicitly reviewed input; never pretend to compile it.
+    pinned=(maps|sprites|{"PBS/trainers_sinnoh_barry.txt",
+                          "PBS/trainer_types_sinnoh_barry.txt"}|set(plugins))
+    for name in pinned:
+        original=pre["qa"]/name
+        no_links(original)
+        if (not original.is_file()
+                or file_digest(original)!=target[name]["sha256"]):
+            fail("ANDROID_MAP_PBS_OR_SPRITE_DIFFERS_FROM_J06")
     if not target["Data/PluginScripts.rxdata"]["sha256"]:
         fail("ANDROID_COMPILED_PLUGIN_CACHE_REQUIRED")
     changed={k:v for k,v in target.items() if previous.get(k)!=v}
