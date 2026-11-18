@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "885132e81e7931bb006b7a19c6c854737ff54ec4",
+      "date": "2026-11-17T21:29:26-03:00",
+      "title": "feat(sinnoh): L05 44 native CH20 cases mapped to 20 human criteria, no approvals (#180)",
+      "category": "Novidades"
+    },
+    {
       "sha": "eccd9fefc5b0c0072fc62f8351ce48e204949b29",
       "date": "2026-11-17T21:14:31-03:00",
       "title": "feat(sinnoh): L04 independent human-provenance checklist and no-runtime handoff (#178)",
