@@ -242,7 +242,7 @@ jobs:
           python scripts/music/compile_kanto_music.py --game game
           if($LASTEXITCODE -ne 0){throw 'Installed Kanto music MapIDs failed to compile'}
           $integrated='game/Data/blue-kanto-music.txt'
-          if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 74){throw '77 Kanto environment bindings lost in integrated game'}
+          if(@(Get-Content $integrated | Where-Object { $_ -match '^MAP[\t]' }).Count -ne 77){throw '77 Kanto environment bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^TRANSPORT[\t]' }).Count -ne 2){throw 'Bicycle/Surf bindings lost in integrated game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BATTLE[\t]' }).Count -ne 8){throw 'Kanto 8 battle/victory themes missing from installed game'}
           if(@(Get-Content $integrated | Where-Object { $_ -match '^BASEPOOL[\t]' }).Count -ne 3){throw 'Decades baseline pool fingerprints missing'}
