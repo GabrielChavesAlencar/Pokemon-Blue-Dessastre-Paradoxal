@@ -19,7 +19,7 @@ permissions:
   contents: read
 jobs:
   pure-native-linux:
-    name: J11-C / Linux - 46 native structure tests, 9 map remaps, real RPG Tilesets
+    name: J11-C / Linux - 47 native structure tests, 9 map remaps, real RPG Tilesets
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Compile and execute independent 46-case fail-closed suite
+      - name: Compile and execute independent 47-case fail-closed suite
         run: |
           python -m py_compile scripts/regions/prepare_sinnoh_nine_original_j11c.py
           python -m unittest discover -s tests -p test_sinnoh_j11c_native_overlay.py -v
