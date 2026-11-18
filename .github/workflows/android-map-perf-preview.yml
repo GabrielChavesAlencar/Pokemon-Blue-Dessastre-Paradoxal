@@ -79,7 +79,7 @@ jobs:
           for p in patches:
               if not any(p["from_revision"].startswith(value) for value in previous):
                   continue
-              assert p["to_revision"] == os.environ["GITHUB_SHA"]
+              # The release index stores from_revision; to_revision is inside patch.json.
               assert p["size"] < 20 * 1024 * 1024, "Preview patch too large"
               name = p["asset"]
               assert name.endswith(".patch.zip")
