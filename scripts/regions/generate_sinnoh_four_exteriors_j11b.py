@@ -160,6 +160,8 @@ def route_201():
                 draw(m,1,x,y,T)
             elif (x*19+y*13)%83==0 and m["layers"][0][y*w+x]==G:
                 draw(m,1,x,y,R)
+    # A separate 8th authored tile type avoids trivial repeated route geometry.
+    draw(m,1,25,trail_y(25,w,12,2),B)
     m["access"]=[[2,trail_y(2,w,12,2)]]
     m["edge_candidates"]=[[w-3,trail_y(w-3,w,12,2)]]
     m["landmarks"]=[[12,trail_y(12,w,12,2)],[26,trail_y(26,w,12,2)],
