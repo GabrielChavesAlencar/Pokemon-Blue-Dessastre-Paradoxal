@@ -79,6 +79,17 @@ class SinnohS13Test(unittest.TestCase):
     def test_19_runtime_reentrant_proof(self):
         with self.assertRaisesRegex(ValueError,"SINNOH_S13_BLOCKED"):
             self.check(pilot=self.pilot.replace("return false if key == \"rival_fought\" && !@rival_battle_in_progress","pass"))
+    def test_22_reject_unverified_starter_postgrant(self):
+        for vulnerable in (
+            "return false unless accepted && added",
+            "flags.replace(candidate)",
+            "party.pop",
+            "return false if @starter_grant_in_progress",
+        ):
+            with self.subTest(required=vulnerable):
+                with self.assertRaisesRegex(ValueError,"SINNOH_S13_BLOCKED"):
+                    self.check(pilot=self.pilot.replace(vulnerable,"# missing native transaction gate"))
+
     def test_20_no_bridge_hooks(self):
         with self.assertRaisesRegex(ValueError,"SINNOH_S13_BLOCKED"):
             self.check(bridge=self.bridge+"\nEventHandlers.add(:fake,:fake,proc {})")
