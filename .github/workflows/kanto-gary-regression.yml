@@ -11,6 +11,10 @@ on:
       - 'scripts/regions/auto_integrate_kanto.py'
       - 'tests/kanto_gary_battle_runtime.rb'
       - 'tests/kanto_cerulean_android_runtime.rb'
+      - 'tests/kanto_cerulean_north_runtime.rb'
+      - 'data/regions/kanto-source.json'
+      - 'scripts/regions/export_kanto.py'
+      - 'scripts/regions/pbs.py'
       - 'scripts/regions/pilot.py'
       - 'scripts/regions/verify_pilot.py'
       - 'tests/kanto_blackout_runtime.rb'
@@ -22,6 +26,10 @@ on:
       - 'scripts/regions/pilot.py'
       - 'scripts/regions/verify_pilot.py'
       - 'tests/kanto_cerulean_android_runtime.rb'
+      - 'tests/kanto_cerulean_north_runtime.rb'
+      - 'data/regions/kanto-source.json'
+      - 'scripts/regions/export_kanto.py'
+      - 'scripts/regions/pbs.py'
       - '.github/workflows/kanto-gary-regression.yml'
   workflow_dispatch:
 permissions:
@@ -43,6 +51,8 @@ jobs:
         run: ruby tests/kanto_gary_battle_runtime.rb scripts/regions/KantoPilot.rb
       - name: JoiPlay - Luis/Diana, erros e revanches
         run: ruby tests/kanto_cerulean_android_runtime.rb scripts/regions/KantoPilot.rb
+      - name: Cerulean north - Gary, Nugget, Bill, loss and duplicate safety
+        run: ruby tests/kanto_cerulean_north_runtime.rb scripts/regions/KantoPilot.rb
       - name: Blackout e preservacao de progresso
         run: ruby tests/kanto_blackout_runtime.rb scripts/regions/KantoPilot.rb
       - name: Atualizador de PBS Kanto
