@@ -16,6 +16,7 @@ from pathlib import Path
 import re
 import struct
 import sys
+import zipfile
 
 ROOT=Path(__file__).resolve().parents[2]
 for p in (ROOT, ROOT/"scripts/regions"):
@@ -107,7 +108,10 @@ def verify_original_zip(source:Path,catalog:dict)->dict:
         block("ORIGINAL_B00_ZIP_REQUIRED")
     refs=[r for r in catalog["maps"] if r["source_id"] is not None]
     if len(refs)!=4: block("EXPECTED_FOUR_B00_TERRAIN_REFERENCES")
-    source_meta,found=read_real_source(source,{r["source_id"] for r in refs})
+    try:
+        source_meta,found=read_real_source(source,{r["source_id"] for r in refs})
+    except (zipfile.BadZipFile,EOFError):
+        block("DONOR_ZIP_INVALID_OR_TRUNCATED")
     if (source_meta["source_archive_sha256"]!=catalog["source_archive_sha256"]
             or source_meta["source_mapinfos_sha256"]!=catalog["source_mapinfos_sha256"]):
         block("DONOR_ZIP_OR_MAPINFOS_SHA_NOT_B00")
@@ -305,7 +309,7 @@ def main(argv=None):
             block("NINE_MAPS_R07_R08_REQUIRED_STILL_NOT_NATIVE_APPROVAL")
         if args.report is not None:save_private_receipt(args.project,args.report,report)
     except (OSError,ValueError,KeyError,TypeError,UnicodeError,
-            json.JSONDecodeError) as e:
+            zipfile.BadZipFile,EOFError,json.JSONDecodeError) as e:
         print("SINNOH_J09_BLOQUEADO:"+str(e),file=sys.stderr)
         return 2
     print(json.dumps(report,ensure_ascii=False,indent=2))
