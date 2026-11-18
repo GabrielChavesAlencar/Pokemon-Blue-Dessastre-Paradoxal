@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J10 — Editor privado dos cinco mapas de Sinnoh</title>
+<style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,sans-serif;background:#0e192a;color:#eef6ff}
+*{box-sizing:border-box}body{margin:0 auto;padding:18px;max-width:1420px}
+a{color:#9cdbff}h1{font-size:1.7rem;margin:.3rem 0}
+p{max-width:1100px}fieldset{border:1px solid #51657d;border-radius:12px;margin:12px 0;padding:16px}
+legend{font-weight:700}label{display:block;margin:8px 0}input,select,button{font:inherit;padding:8px;background:#203650;border:1px solid #6989aa;border-radius:8px;color:#fff}
+input[type=checkbox]{width:auto}input[type=number]{width:95px}input[type=text]{width:min(95%,570px)}
+button{cursor:pointer;background:#285378}button:hover{background:#346b94}
+.layout{display:grid;grid-template-columns:minmax(260px,335px) minmax(0,1fr);gap:18px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}}
+.panel{background:#192c42;border:1px solid #3e5c78;border-radius:14px;padding:14px}
+#paletteWrap{max-height:370px;overflow:auto;border:1px solid #50677d;background:#172434}
+canvas{image-rendering:pixelated;touch-action:none}
+#mapWrap{overflow:auto;max-height:700px;background:#263446;border:1px solid #65829c}
+#map{display:block;cursor:crosshair}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.note{border-left:4px solid #e8ba70;padding:10px 14px;background:#382f2b}
+#status{white-space:pre-wrap;padding:10px 0;min-height:50px}
+small{color:#ccdcec}
+</style></head>
+<body><a href="/sinnoh-jogavel.html">Voltar ao progresso de Sinnoh</a>
+<h1>J10 — Desenhar os cinco mapas originais</h1>
+<p class="note">Ferramenta de autoria <strong>local no navegador</strong>. O tileset PNG não sai do seu dispositivo: nenhum upload, armazenamento remoto ou comunicação com GitHub. Mapas desenhados não são mapas instalados nem aprovam R07 (IDs), R08 (direitos) ou R09 (43 Windows + 1 Android).</p>
+<div class="layout">
+<section class="panel">
+<fieldset><legend>1. Cena e tamanho</legend>
+<label>Mapa faltante<select id="symbol">
+<option value="SINNOH_PLAYER_BEDROOM">Quarto do protagonista</option>
+<option value="SINNOH_PLAYER_HOUSE_1F">Térreo da casa</option>
+<option value="SINNOH_BARRY_HOUSE">Casa de Barry</option>
+<option value="SINNOH_LAKE_VERITY">Lago Verity</option>
+<option value="SINNOH_PROFESSOR_ROWAN_LABORATORY">Laboratório Rowan</option>
+</select></label>
+<div class="controls"><label>Largura <input id="width" type="number" min="12" max="120" value="20"></label><label>Altura <input id="height" type="number" min="10" max="120" value="15"></label><label>Tileset ID (local) <input id="tilesetId" type="number" min="1" max="999" value="1"></label></div>
+<button id="resize" type="button">Aplicar dimensões à cena</button>
+<p><small>Redimensionar conserva tiles na área sobreposta. Confirme a geometria antes de exportar; não são inferidas coordenadas, passabilidade nem eventos.</small></p>
+</fieldset>
+<fieldset><legend>2. Tileset autorizado</legend>
+<label>PNG RMXP (256 px de largura; altura múltipla de 32)
+<input id="png" type="file" accept=".png,image/png"></label>
+<div id="pngInfo">Nenhum PNG selecionado.</div>
+<label>Referência concreta de permissão do PNG
+<input id="permission" type="text" maxlength="220" placeholder="Documento/licença verificável, sem dados pessoais"></label>
+<p><small>O arquivo original do PNG deve ser copiado separadamente para <code>.blue-work/sinnoh-j10-tilesets/</code>, com o mesmo nome e hash do JSON.</small></p>
+</fieldset>
+<fieldset><legend>3. Camadas</legend><div class="controls">
+<label>Camada <select id="layer"><option value="0">1 — base</option><option value="1">2 — objetos</option><option value="2">3 — sobreposição</option></select></label>
+<button id="erase" type="button">Borracha (tile 0)</button></div>
+<div id="selection">Selecione um tile no quadro do tileset.</div>
+</fieldset>
+<fieldset><legend>4. Autoria e exportação privada</legend>
+<label>Referência de autoria original
+<input id="author" type="text" maxlength="220" placeholder="Registro verificável de autoria da cena"></label>
+<label><input id="authored" type="checkbox"> Confirmo que desenhei esta cena e não copiei um mapa protegido.</label>
+<label><input id="reviewed" type="checkbox"> Revisei manualmente a geometria completa desta cena.</label>
+<div class="controls"><button id="export" type="button">Salvar JSON desta cena</button><button id="importBtn" type="button">Importar JSON desta cena</button></div>
+<input id="import" type="file" accept=".json,application/json" hidden>
+<p><small>Exporte cada um dos cinco mapas separadamente. Não há exportação de RXDATA no navegador: use o validador Python J10 local após fornecer os cinco arquivos e o(s) PNG(s) autorizados.</small></p>
+</fieldset>
+</section>
+<section class="panel">
+<h2>Palette do tileset</h2><div id="paletteWrap"><canvas id="palette" aria-label="Seleção de tile por clique"></canvas></div>
+<p><small>IDs RMXP: primeiro tile 384. Use a barra de rolagem para escolher outras linhas; não há suporte automático a autotiles 48–383.</small></p>
+<h2>Desenho em três camadas</h2><div class="controls"><label>Zoom <select id="zoom"><option value="16">50%</option><option value="24" selected>75%</option><option value="32">100%</option></select></label><button id="grid" type="button">Mostrar/ocultar grade</button></div>
+<div id="mapWrap"><canvas id="map" aria-label="Mapa editável; arraste para pintar"></canvas></div>
+<div id="status" role="status" aria-live="polite"></div>
+</section></div>
+<p>Depois de desenhar os cinco mapas: coloque os arquivos JSON em <code>.blue-work/sinnoh-j10-drafts/</code> e cada PNG autorizado em <code>.blue-work/sinnoh-j10-tilesets/</code>, sem renomeá-los. Execute <code>python scripts/regions/author_sinnoh_playable_j10.py</code> (auditoria sem escrita) e, após corrigir todos os bloqueios, <code>python scripts/regions/author_sinnoh_playable_j10.py --build</code>. Os cinco RXDATA serão criados somente no diretório privado da J09. Consulte a documentação da J10 antes de enviar qualquer arquivo.</p>
+<script>
+"use strict";
+const names=["SINNOH_PLAYER_BEDROOM","SINNOH_PLAYER_HOUSE_1F","SINNOH_BARRY_HOUSE","SINNOH_LAKE_VERITY","SINNOH_PROFESSOR_ROWAN_LABORATORY"];
+const q=id=>document.getElementById(id), state=new Map();
+let img=null,imgFile=null,imgHash="",selected=384,paint=false,showGrid=true;
+function fresh(){return {width:20,height:15,tileset_id:1,layers:Array.from({length:3},()=>Array(300).fill(0)),author_reference:"",tileset_permission_reference:"",authored_by_user:false,geometry_reviewed_locally:false};}
+for(const name of names)state.set(name,fresh());
+function scene(){return state.get(q("symbol").value);}
+function message(s){q("status").textContent=s;}
+function updateForm(){
+ const s=scene();q("width").value=s.width;q("height").value=s.height;q("tilesetId").value=s.tileset_id;
+ q("author").value=s.author_reference;q("permission").value=s.tileset_permission_reference;
+ q("authored").checked=s.authored_by_user;q("reviewed").checked=s.geometry_reviewed_locally;draw();
+}
+function saveForm(){
+ const s=scene();s.tileset_id=Number(q("tilesetId").value);s.author_reference=q("author").value;
+ s.tileset_permission_reference=q("permission").value;s.authored_by_user=q("authored").checked;
+ s.geometry_reviewed_locally=q("reviewed").checked;
+}
+function paintTile(ctx,id,x,y,size){
+ if(!img || id<384)return;
+ const n=id-384,sx=(n%8)*32,sy=Math.floor(n/8)*32;
+ if(sy+32>img.naturalHeight)return;
+ ctx.drawImage(img,sx,sy,32,32,x,y,size,size);
+}
+function draw(){
+ const s=scene(),scale=Number(q("zoom").value),canvas=q("map");
+ canvas.width=s.width*scale;canvas.height=s.height*scale;
+ const ctx=canvas.getContext("2d");ctx.fillStyle="#263446";ctx.fillRect(0,0,canvas.width,canvas.height);
+ for(let z=0;z<3;z++)for(let index=0;index<s.width*s.height;index++){
+  const id=s.layers[z][index];
+  if(id)paintTile(ctx,id,(index%s.width)*scale,Math.floor(index/s.width)*scale,scale);
+ }
+ if(showGrid){ctx.strokeStyle="rgba(244,249,255,.2)";ctx.lineWidth=.5;ctx.beginPath();
+  for(let x=0;x<=s.width;x++){ctx.moveTo(x*scale,0);ctx.lineTo(x*scale,canvas.height);}
+  for(let y=0;y<=s.height;y++){ctx.moveTo(0,y*scale);ctx.lineTo(canvas.width,y*scale);}ctx.stroke();}
+ const coverage=new Set(),distinct=new Set();let lower=0,upper=0;
+ for(let z=0;z<3;z++)s.layers[z].forEach((id,index)=>{if(id){coverage.add(index);distinct.add(id);if(z===0)lower++;else upper++;}});
+ message("Cena: "+q("symbol").value+" | base: "+lower+"/"+(s.width*s.height)+" | cobertura: "+coverage.size+"/"+(s.width*s.height)+" | tiles diferentes: "+distinct.size+" | camadas altas: "+upper+"\nRequisitos mínimos do compilador: base 60%, cobertura 70%, quatro tiles distintos e quatro tiles nas camadas superiores. Isto não comprova a qualidade ou direitos da cena.");
+}
+function tileAt(event,canvas,scale){
+ const rect=canvas.getBoundingClientRect();
+ return [Math.floor((event.clientX-rect.left)*canvas.width/rect.width/scale),Math.floor((event.clientY-rect.top)*canvas.height/rect.height/scale)];
+}
+function stroke(event){
+ const s=scene(),scale=Number(q("zoom").value),[x,y]=tileAt(event,q("map"),scale);
+ if(x<0||y<0||x>=s.width||y>=s.height)return;
+ const z=Number(q("layer").value),index=x+y*s.width;
+ if(s.layers[z][index]!==selected){s.layers[z][index]=selected;s.geometry_reviewed_locally=false;q("reviewed").checked=false;draw();}
+}
+q("map").addEventListener("pointerdown",e=>{paint=true;q("map").setPointerCapture(e.pointerId);stroke(e);});
+q("map").addEventListener("pointermove",e=>{if(paint)stroke(e);});
+for(const type of ["pointerup","pointercancel","lostpointercapture"])q("map").addEventListener(type,()=>paint=false);
+q("palette").addEventListener("click",e=>{
+ if(!img)return;const [x,y]=tileAt(e,q("palette"),32),maxRows=img.naturalHeight/32;
+ if(x<0||x>=8||y<0||y>=maxRows)return;
+ selected=384+8*y+x;q("selection").textContent="Tile selecionado: "+selected+" (camada "+(Number(q("layer").value)+1)+")";
+});
+q("erase").addEventListener("click",()=>{selected=0;q("selection").textContent="Borracha: tile 0";});
+q("symbol").addEventListener("change",updateForm);
+q("zoom").addEventListener("change",draw);
+q("grid").addEventListener("click",()=>{showGrid=!showGrid;draw();});
+for(const id of ["tilesetId","author","permission","authored","reviewed"])q(id).addEventListener("change",saveForm);
+q("resize").addEventListener("click",()=>{
+ const s=scene(),w=Number(q("width").value),h=Number(q("height").value);
+ if(!Number.isInteger(w)||!Number.isInteger(h)||w<12||w>120||h<10||h>120||w*h>14400){message("Dimensões inválidas.");return;}
+ s.layers=s.layers.map(old=>Array.from({length:w*h},(_,i)=>{const x=i%w,y=Math.floor(i/w);return x<s.width&&y<s.height?old[x+y*s.width]:0;}));
+ s.width=w;s.height=h;s.geometry_reviewed_locally=false;q("reviewed").checked=false;draw();
+});
+q("png").addEventListener("change",async()=>{
+ const file=q("png").files[0];
+ if(!file)return;
+ img=null;imgFile=null;imgHash="";q("pngInfo").textContent="Verificando PNG local...";
+ try{
+  if(!/^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\.png$/.test(file.name)||file.size>32000000)throw Error("Nome ou tamanho de PNG inválido");
+  const buf=await file.arrayBuffer(),view=new DataView(buf);
+  if(view.getUint32(0)!==0x89504e47||view.getUint32(4)!==0x0d0a1a0a||view.getUint32(8)!==13||view.getUint32(12)!==0x49484452)throw Error("Cabeçalho PNG inválido");
+  const w=view.getUint32(16),h=view.getUint32(20);
+  if(w!==256||h<96||h>8192||h%32)throw Error("Tileset precisa ter largura 256 e altura múltipla de 32");
+  const hash=await crypto.subtle.digest("SHA-256",buf);
+  const url=URL.createObjectURL(file);
+  try{const image=new Image();image.src=url;await image.decode();if(image.naturalWidth!==w||image.naturalHeight!==h)throw Error("PNG decodificado não corresponde ao cabeçalho");img=image;}finally{URL.revokeObjectURL(url);}
+  imgFile=file;imgHash=Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,"0")).join("");
+  const pal=q("palette");pal.width=256;pal.height=h;
+  pal.getContext("2d").drawImage(img,0,0);q("pngInfo").textContent=file.name+" | SHA-256: "+imgHash;
+  draw();
+ }catch(err){img=null;imgFile=null;imgHash="";q("pngInfo").textContent="PNG rejeitado: "+err.message;draw();}
+});
+function validRef(s){return typeof s==="string"&&s.length>=12&&s.length<=220&&!/[\r\n<>]/.test(s);}
+q("export").addEventListener("click",()=>{
+ saveForm();const s=scene(),symbol=q("symbol").value;
+ if(!imgFile||!imgHash){message("Escolha primeiro um PNG RMXP autorizado.");return;}
+ if(!validRef(s.author_reference)||!validRef(s.tileset_permission_reference)||!s.authored_by_user||!s.geometry_reviewed_locally){message("Informe referências verificáveis e assinale as duas confirmações apenas após revisão real.");return;}
+ const n=s.width*s.height,limit=384+(img.naturalHeight/32)*8-1;
+ if(s.layers.length!==3||s.layers.some(layer=>layer.length!==n||layer.some(t=>!Number.isInteger(t)||(t!==0&&(t<384||t>limit))))){message("Camadas ou IDs incompatíveis com o PNG local.");return;}
+ const draft={schema:1,region:"SINNOH",stage:"J10",symbol: symbol,kind:"HUMAN_AUTHORED_PRIVATE_GEOMETRY_NOT_NATIVE_APPROVED",
+ width:s.width,height:s.height,tileset_id:s.tileset_id,tileset_png:imgFile.name,tileset_sha256:imgHash,
+ tileset_permission_reference:s.tileset_permission_reference,author_reference:s.author_reference,
+ authored_by_user:s.authored_by_user,geometry_reviewed_locally:s.geometry_reviewed_locally,
+ layers:s.layers,events:[],destination_map_id:null,native_gameplay_verified:false};
+ const obj=URL.createObjectURL(new Blob([JSON.stringify(draft,null,2)+"\n"],{type:"application/json"}));
+ const link=document.createElement("a");link.href=obj;link.download=symbol+".json";link.click();setTimeout(()=>URL.revokeObjectURL(obj),1000);
+ message("JSON privado exportado: "+link.download+". Não suba os mapas/tilesets para GitHub. O compilador fará a auditoria estrutural.");
+});
+q("importBtn").addEventListener("click",()=>q("import").click());
+q("import").addEventListener("change",async()=>{
+ const file=q("import").files[0];if(!file)return;
+ try{
+  if(file.size>2500000)throw Error("JSON muito grande");
+  const d=JSON.parse(await file.text()),symbol=q("symbol").value;
+  if(d.symbol!==symbol||d.schema!==1||d.region!=="SINNOH"||d.stage!=="J10"
+    ||d.kind!=="HUMAN_AUTHORED_PRIVATE_GEOMETRY_NOT_NATIVE_APPROVED"
+    ||d.destination_map_id!==null||d.native_gameplay_verified!==false||!Array.isArray(d.events)||d.events.length
+    ||!Number.isInteger(d.width)||!Number.isInteger(d.height)||d.width<12||d.height<10||d.width>120||d.height>120
+    ||d.width*d.height>14400||!Number.isInteger(d.tileset_id)||d.tileset_id<1||d.tileset_id>999
+    ||!Array.isArray(d.layers)||d.layers.length!==3||d.layers.some(a=>!Array.isArray(a)||a.length!==d.width*d.height||a.some(n=>!Number.isInteger(n)||n<0||n>65535)))
+    throw Error("Esquema, geometria ou cena não correspondem ao J10");
+  state.set(symbol,{width:d.width,height:d.height,tileset_id:d.tileset_id,layers:d.layers,
+    author_reference:typeof d.author_reference==="string"?d.author_reference:"",
+    tileset_permission_reference:typeof d.tileset_permission_reference==="string"?d.tileset_permission_reference:"",
+    authored_by_user:false,geometry_reviewed_locally:false});
+  updateForm();message("Rascunho carregado. Confira o tileset e os direitos; marque as confirmações novamente.");
+ }catch(err){message("Importação bloqueada: "+err.message);}
+ q("import").value="";
+});
+updateForm();
+</script></body></html>

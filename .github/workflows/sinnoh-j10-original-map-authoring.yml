@@ -1,0 +1,116 @@
+name: Sinnoh J10 - original five map editor and private RXDATA compiler
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j10-original-map-authoring.yml'
+      - 'scripts/regions/author_sinnoh_playable_j10.py'
+      - 'tests/test_sinnoh_j10_original_authoring.py'
+      - 'tests/test_sinnoh_j10_original_map_authoring.py'
+      - 'scripts/regions/serve_sinnoh_j10_editor.py'
+      - 'web/sinnoh-j10-map-editor.html'
+      - 'SINNOH_J10_EDITOR_MAPAS.bat'
+      - 'docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+      - 'site/public/sinnoh-j10-editor.html'
+      - 'docs/SINNOH_J10_EDITOR_MAPAS_AUTORAIS.md'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j10-original-map-authoring.yml'
+      - 'scripts/regions/author_sinnoh_playable_j10.py'
+      - 'tests/test_sinnoh_j10_original_authoring.py'
+      - 'tests/test_sinnoh_j10_original_map_authoring.py'
+      - 'scripts/regions/serve_sinnoh_j10_editor.py'
+      - 'web/sinnoh-j10-map-editor.html'
+      - 'SINNOH_J10_EDITOR_MAPAS.bat'
+      - 'docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+      - 'site/public/sinnoh-j10-editor.html'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j10-linux:
+    name: J10 / Linux - 74 synthetic original-map and failclosed cases
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax and 39 + 35 J10 synthetic cases
+        run: |
+          python -m py_compile scripts/regions/author_sinnoh_playable_j10.py tests/test_sinnoh_j10_original_authoring.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j10_original_authoring.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_j10_original_map_authoring.py' -v
+      - name: J09 and J02 regressions (no original ZIP or Game.exe)
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_j09_physical_source_intake.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_j02_real_map_bindings.py' -v
+      - name: Public checkout cannot silently manufacture authored maps
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+          p=subprocess.run([sys.executable,'scripts/regions/author_sinnoh_playable_j10.py'],
+                           capture_output=True,text=True)
+          assert p.returncode==2,(p.returncode,p.stdout,p.stderr)
+          assert 'BLOQUEADO' in p.stderr
+          assert not Path('.blue-work/sinnoh-j09-authored').exists()
+          assert not Path('game/Game.exe').exists()
+          print('J10_FAILCLOSED_WITHOUT_REAL_HUMAN_MAP_DRAFTS')
+          PY
+  j10-windows:
+    name: J10 / Windows disposable - 74 geometry-only cases, no native game
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 39 + 35 synthetic J10 checks on Windows
+        run: |
+          python -m py_compile scripts/regions/author_sinnoh_playable_j10.py
+          python -m unittest discover -s tests -p test_sinnoh_j10_original_authoring.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j10_original_map_authoring.py -v
+      - name: Do not count fixtures as R07 R08 R09 or native maps
+        shell: pwsh
+        run: |
+          if (Test-Path 'game/Game.exe') { throw 'Private Game.exe leaked into public checkout' }
+          if (Test-Path '.blue-work/sinnoh-j09-authored') { throw 'Private maps leaked into public checkout' }
+          Write-Output 'J10_HAS_NO_PRIVATE_OR_NATIVE_APPROVED_ASSETS'
+  j10-portal:
+    name: J10 / site build, mirror and J11 button
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check both map editors compile in Node syntax parser only
+        run: |
+          node -e 'const fs=require("fs"); for(const p of ["web/sinnoh-j10-map-editor.html","site/public/sinnoh-j10-editor.html"]){const h=fs.readFileSync(p,"utf8"),m=h.match(/<script>([\s\S]*?)<\/script>/); if(!m)throw Error("No source "+p); new Function(m[1]); console.log("JS parse OK",p);}'
+      - name: Counters remain zero and editor is browser-only
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build the portal
+        working-directory: site
+        run: npm run build
+      - name: Editor and J11 next action survive build
+        run: |
+          test -s site/dist/sinnoh-j10-editor.html
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
+          grep -q 'J10' site/dist/sinnoh-j10-editor.html
+          test ! -e .blue-work/sinnoh-j09-authored

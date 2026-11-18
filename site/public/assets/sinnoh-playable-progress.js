@@ -23,7 +23,9 @@ function validate(d){
  ||d.native_source_maps_missing!==9-d.native_source_terrain_candidates
  ||!Number.isInteger(d.native_map_bindings_verified)||d.native_map_bindings_verified<0||d.native_map_bindings_verified>9
  ||!Number.isInteger(d.native_maps_installed)||d.native_maps_installed<0||d.native_maps_installed>d.native_map_bindings_verified
- ||d.next_stage!==(d.stages_code_ready<8?"J0"+(d.stages_code_ready+1):null)
+ ||(d.stages_code_ready<8
+   ? d.next_stage!=="J0"+(d.stages_code_ready+1)
+   : !/^J(?:09(?:-R[1-9][0-9]*)?|1[0-9](?:-R[1-9][0-9]*)?)$/.test(d.next_stage))
  ||typeof d.next_prompt!=="string"||d.next_prompt.length<30||d.next_prompt.length>2500
  ||typeof d.next_button_label!=="string"||d.next_button_label.length<10||d.next_button_label.length>120
  ||typeof d.next_issue_url!=="string"||!d.next_issue_url.startsWith(issuePrefix)
