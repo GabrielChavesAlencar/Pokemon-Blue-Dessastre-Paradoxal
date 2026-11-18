@@ -36,7 +36,7 @@ class KantoReleaseGateTests(unittest.TestCase):
     def test_current_catalog_is_safe_prototype_not_final_acceptance(self):
         result=release_gate.inspect(ROOT)
         self.assertTrue(result["ci_preflight_passed"])
-        self.assertEqual(result["map_count"],142)
+        self.assertEqual(result["map_count"],145)
         self.assertEqual(result["preview_maps"],35)
         self.assertEqual(result["trainers"],144)
         self.assertEqual(result["wild_locations"],26)
