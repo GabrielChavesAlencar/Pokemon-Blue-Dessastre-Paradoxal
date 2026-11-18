@@ -3,7 +3,7 @@
   "region": "KANTO",
   "phase": 5,
   "default_enabled": false,
-  "notes": "Fase 5: 13 scene BGMs catalogued; only 5 have verified entrypoints: pilot-isolated title, Oak parcel handoff, pre-battle rival, native evolution animation and Hall of Fame after the five victories and complete_league. Eight remain PENDENTE_EVENTO, notably no movie intro or Kanto credits. All scene overrides are regional and restore BGM; native title in Decades unchanged.",
+  "notes": "Fase 5 (correcao 2026-11-18): Cerulean City usa o tema Fuchsia City (faixa 1-50, compartilhado em FireRed/LeafGreen); Route 4 usa Road to Cerulean City / Leaving Mt. Moon (faixa 1-32, mesmo tema de Route 3). Ambos sao mapas Kanto existentes, nao preview. Escopo simbolico; sem MapIDs numericos fixos; sem alterar musica de Decades, saves ou outras regioes. Cenas permanecem com os mesmos gatilhos validados.",
   "maps": [
     {
       "map": "CELADON_CENTER",
@@ -28,6 +28,11 @@
     {
       "map": "CERULEAN_GYM",
       "track": 25,
+      "enabled": true
+    },
+    {
+      "map": "CERULEAN_CITY",
+      "track": 50,
       "enabled": true
     },
     {
@@ -138,8 +143,7 @@
     {
       "map": "ROUTE_4",
       "track": 32,
-      "enabled": false,
-      "pending_reason": "ROUTE_4_SEGMENT_UNVERIFIED"
+      "enabled": true
     },
     {
       "map": "SAFFRON_CENTER",

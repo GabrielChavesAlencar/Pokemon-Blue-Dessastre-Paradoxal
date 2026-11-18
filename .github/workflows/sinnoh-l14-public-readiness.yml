@@ -1,0 +1,179 @@
+name: Sinnoh L14 - matriz publica de dependencias e bloqueios (sem QA)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l14-public-readiness.yml'
+      - 'data/regions/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/data/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/sinnoh-l14-prontidao.html'
+      - 'site/public/assets/sinnoh-l14-public-readiness.js'
+      - 'site/tests/sinnoh-l14-public-readiness.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l14_readiness.py'
+      - 'tests/test_sinnoh_l14_readiness.py'
+      - 'docs/SINNOH_L14_MATRIZ_DEPENDENCIAS_PUBLICAS.md'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l14-public-readiness.yml'
+      - 'data/regions/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/data/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/sinnoh-l14-prontidao.html'
+      - 'site/public/assets/sinnoh-l14-public-readiness.js'
+      - 'site/tests/sinnoh-l14-public-readiness.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l14_readiness.py'
+      - 'tests/test_sinnoh_l14_readiness.py'
+      - 'docs/SINNOH_L14_MATRIZ_DEPENDENCIAS_PUBLICAS.md'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l14-readiness:
+    name: L14 / 88 bloqueios e 1084 relacoes somente documentais
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Testar L14 e mutacoes negativas
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l14_readiness.py' -v
+      - name: Verificar SHA publico L13 e prontidao permanentemente bloqueada
+        run: |
+          python scripts/regions/audit_sinnoh_l14_readiness.py > /tmp/sinnoh-l14-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('/tmp/sinnoh-l14-public.json')
+          r=json.loads(path.read_text('utf8'))
+          assert r['stage']=='L14' and r['status']=='PUBLIC_DOCUMENTARY_DEPENDENCIES_VALID_ALL_BLOCKED'
+          assert r['baseline_commits']=={
+            'L07':'d98033b362dac82347e0d97cb5606870eaa70b22',
+            'L08':'8617ef47ea6745920cb6fe4be251982380d7628d',
+            'L09':'39e51de92aafdab3f5aea3f929f57f5c0bb72b2d',
+            'L10':'7fd821007e63fe9cf0d0c4bf14d153a23cda2b6a',
+            'L11':'9d901a0cf21aa2742f731ee387a51f945bac8a5d',
+            'L12':'58b7f2fec9f66dee06d95676eec66fb2ded6a1de',
+            'L13':'1f12bcc86c10dcc934b024a0562cdadb65d5e2c2'}
+          assert r['source_l13_git_blob']=='357215cdfd96b37eaac291e1c0ab3873069a12fe'
+          assert (r['requests_total'],r['requests_pending'],r['requests_ready'])==(88,88,0)
+          assert (r['documentary_links'],r['case_to_criterion_links'],
+                  r['case_to_blocker_links'],r['criterion_to_blocker_links'])==(1084,846,218,20)
+          assert (r['windows_native_pending'],r['android_native_pending'])==(43,1)
+          assert r['anonymous_slots_unassigned']==18 and r['r09_global_only']
+          assert (r['local_reports_received'],r['human_criteria_approved'],
+                  r['native_executed'],r['native_approved'],r['phase_bcd_approved'])==(0,0,0,0,0)
+          assert r['phase_bcd_total']==13
+          assert r['r07_pending'] and r['r08_pending'] and r['r09_pending']
+          assert r['no_private_data'] and r['no_game_execution'] and r['no_joiplay_execution'] and r['no_sandbox_execution']
+          assert r['sinnoh_playable'] is False
+          for forbidden in ('Save01.rxdata','private-baseline.json','hmac_key','watch_id'):
+            assert forbidden not in path.read_text('utf8')
+          print('SINNOH_L14_PUBLIC_METADATA_88_BLOCKED_1084_LINKS_0_NATIVE_QA')
+          PY
+      - name: Nao ingerir recibos locais nem dados privados
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L14_PUBLIC_READONLY_NO_NATIVE_AUTHORIZATION'
+
+  l14-regressions:
+    name: L14 / L13 ate L00 e G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L13 public queue
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l13_public_queue.py' -v
+      - name: L12 coverage gaps
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l12_coverage_gaps.py' -v
+      - name: L11 traceability
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l11_traceability.py' -v
+      - name: L10 blocker index
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l10_public_index.py' -v
+      - name: L09 human handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l09_public_handoff.py' -v
+      - name: L08 pinned snapshot
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: L07 triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 evidence
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 checklist
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 sanitizer
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 native handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l14-portal:
+    name: L14 / portal read-only e build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sintaxe JS
+        run: node --check site/public/assets/sinnoh-l14-public-readiness.js
+      - name: Testes Node L14 L13 L12 L11 L10 L07
+        working-directory: site
+        run: node --test tests/sinnoh-l14-public-readiness.test.mjs tests/sinnoh-l13-public-queue.test.mjs tests/sinnoh-l12-coverage-gaps.test.mjs tests/sinnoh-l11-traceability.test.mjs tests/sinnoh-l10-blocker-index.test.mjs tests/sinnoh-l07-triage.test.mjs
+      - name: Build completo do portal
+        working-directory: site
+        run: npm run build
+      - name: Verificar arquivos distribuiveis L14
+        run: |
+          test -s site/dist/sinnoh-l14-prontidao.html
+          test -s site/dist/data/sinnoh-l14-public-readiness-matrix.json
+          test -s site/dist/assets/sinnoh-l14-public-readiness.js
+          grep -q 'sinnoh-l14-prontidao.html' site/dist/index.html
+          echo 'SINNOH_L14_ALL_BLOCKED_STATIC_ONLY'

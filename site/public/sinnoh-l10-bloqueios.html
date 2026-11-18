@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111a2a">
+<meta name="description" content="Índice público documental dos 44 casos, 20 critérios e bloqueios de Sinnoh. Todos pendentes, sem autorização nativa.">
+<title>Sinnoh L10 · Índice público de bloqueios | Pokémon Blue</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#0b1422;color:#e9f0fa}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}
+a{color:#a6d3ff}a:hover{text-decoration:none}a:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid #79bcff;outline-offset:3px}
+.wrap{max-width:1260px;margin:auto;padding:20px clamp(15px,3vw,44px) 70px}
+header{background:linear-gradient(125deg,#202f49,#101a2a);border-bottom:1px solid #33465e}
+h1{font-size:clamp(1.6rem,4vw,2.8rem);line-height:1.2;margin:.25em 0}
+h2{font-size:1.35rem;margin:1.5rem 0 .55rem}
+.eyebrow{color:#b7cbe5;font-size:.8rem;letter-spacing:.14em;font-weight:750;text-transform:uppercase}
+.small{font-size:.85rem;color:#bdcee4}.warning{border-left:4px solid #edb76b;padding:12px 16px;background:#2c2a30;border-radius:8px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:24px 0}
+.kpi{border:1px solid #344862;background:#17263b;border-radius:12px;padding:14px}
+.kpi strong{display:block;font-size:1.65rem;font-variant-numeric:tabular-nums}.kpi span{font-size:.85rem;color:#c4d3e7}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}
+label{display:flex;flex-direction:column;gap:4px;color:#c4d4e9;font-size:.87rem;font-weight:600}
+input,select,button{border:1px solid #476380;border-radius:8px;background:#182940;color:#fff;font:inherit;padding:9px 11px;min-width:0}
+button{font-weight:700;cursor:pointer}button:hover{background:#2a415f}
+.table-scroll{margin:12px 0;overflow:auto;border:1px solid #344762;border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.87rem}
+th,td{text-align:left;border-bottom:1px solid #30445a;padding:10px 12px;vertical-align:top}
+thead{background:#21334b}tbody tr:hover{background:#192a3f}tbody tr:last-child td{border-bottom:0}
+td code{overflow-wrap:anywhere;color:#dbeaff;font-size:.85rem}.pending{color:#ffdc9d;font-weight:700}
+.pill{display:inline-block;border:1px solid #486482;border-radius:7px;padding:2px 7px;font-size:.8rem}
+#blockers a{white-space:nowrap}#status{min-height:1.5em;font-weight:600;color:#f9db9c}
+.cardgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px;margin:15px 0}
+.blockcard{border:1px solid #344761;background:#17263b;border-radius:12px;padding:15px}
+.blockcard h3{margin:0 0 .4rem}.blockcard p{margin:.4rem 0}.blockcard small{color:#bdcee4}
+footer{margin-top:35px;border-top:1px solid #3a5069;padding-top:16px;font-size:.86rem;color:#bfd0e6}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a href="/">Pokémon Blue — Voltar ao portal</a>
+<p class="eyebrow">Sinnoh · L10 · Índice de bloqueios · GitHub público</p>
+<h1>44 casos, 20 critérios, nenhuma aprovação</h1>
+<p>Consulte as dependências documentais dos testes G12/CH20. Este índice não comprova execução, direitos, MapIDs reservados nem isolamento de saves.</p>
+<div class="warning"><strong>Sinnoh planejada e não jogável.</strong> Relatórios locais 0/5 · Revisão humana 0/20 · Testes nativos 0/44 · Barras B/C/D 0/13. R07/R08/R09 pendentes.</div>
+</div></header>
+<main class="wrap">
+<section class="kpis" aria-label="Números do índice">
+<div class="kpi"><strong>44</strong><span>Casos reais G12</span></div>
+<div class="kpi"><strong>43</strong><span>Fila Windows</span></div>
+<div class="kpi"><strong>1</strong><span>Fila Android/JoiPlay</span></div>
+<div class="kpi"><strong>20</strong><span>Critérios L04 pendentes</span></div>
+<div class="kpi"><strong>6</strong><span>Bloqueios públicos, R09 global</span></div>
+</section>
+<nav aria-label="Seções desta auditoria"><a href="#bloqueios">Bloqueios</a> · <a href="#casos">Casos</a> · <a href="#criterios">Critérios</a> · <a href="#origem">Proveniência</a></nav>
+<section id="bloqueios">
+<h2>Bloqueios documentais</h2>
+<p class="small">B10/B11 são condições Windows; R09 é um gate global pendente, não uma dependência de caso adicional ou aprovação automática.</p>
+<div id="blockers" class="cardgrid" aria-live="polite"></div>
+</section>
+<section id="casos">
+<h2>Casos nativos pendentes</h2>
+<p class="small">Os filtros só exibem metadados públicos. Nenhuma seleção modifica dados ou autoriza QA.</p>
+<div class="filters" role="group" aria-label="Filtros dos casos">
+<label>Pesquisar caso <input id="search" type="search" placeholder="Ex.: warp, barry, Turtwig"></label>
+<label>Plataforma <select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android/JoiPlay</option></select></label>
+<label>Categoria <select id="kind"><option value="">Todas</option></select></label>
+<label>Bloqueio <select id="blocker"><option value="">Todos</option></select></label>
+<label>Critério L04 <select id="criterion"><option value="">Todos</option></select></label>
+<button type="button" id="reset">Limpar filtros</button>
+</div>
+<p id="status" role="status" aria-live="polite">Verificando integridade documental…</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Caso</th><th scope="col">Grupo / plataforma</th><th scope="col">Critérios</th><th scope="col">Bloqueios</th><th scope="col">Estado</th></tr></thead><tbody id="caseRows"></tbody></table></div>
+</section>
+<section id="criterios">
+<h2>Critérios de revisão humana</h2>
+<p class="small">Todos requerem futura revisão independente fora deste índice. A contagem de vínculos não corresponde a evidência aprovada.</p>
+<div class="table-scroll"><table><thead><tr><th scope="col">Critério</th><th scope="col">Exigência</th><th scope="col">Casos vinculados</th><th scope="col">Estado</th></tr></thead><tbody id="criterionRows"></tbody></table></div>
+</section>
+<footer id="origem">
+<p><strong>Proveniência pública:</strong> L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code></p>
+<p>Git blobs públicos não comprovam licenças, origem física, MapIDs nativos ou isolamento global B11. L10 não é o gate local Android L05 da G12.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/194" rel="noreferrer">Issue documental L10 #194</a>
+ · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l10-public-blocker-index.json" rel="noreferrer">JSON público versionado</a>
+ · <a href="/sinnoh-l07-triagem.html">Triagem L07</a>
+</footer>
+</main>
+<script type="module" src="/assets/sinnoh-l10-blocker-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c2e">
+<meta name="description" content="Sinnoh L12: cobertura pública documental completa mas provas humanas, relatórios e QA nativa ainda ausentes.">
+<title>Sinnoh L12 · Cobertura e lacunas | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#0d1725;color:#e9f1fc}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}a{color:#a7d2ff}a:hover{text-decoration:none}
+.wrap{max-width:1250px;margin:auto;padding:24px clamp(16px,3vw,46px) 76px}
+header{background:linear-gradient(120deg,#273a55,#111b2b);border-bottom:1px solid #33475d}
+h1{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.18;margin:6px 0}h2{font-size:1.3rem;margin:1.65rem 0 .65rem}
+.eyebrow{letter-spacing:.12em;font-size:.83rem;color:#bdd2e8;text-transform:uppercase;font-weight:800}
+.warning{border-left:4px solid #e4ab65;background:#2e2930;border-radius:8px;padding:14px 18px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:24px 0}
+.metric{background:#1a2b42;border:1px solid #39536d;border-radius:13px;padding:15px}
+.metric strong{display:block;font-size:1.75rem;font-variant-numeric:tabular-nums}
+.metric span{color:#c1d2e6;font-size:.85rem}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;font-weight:650;color:#c7d7e8;font-size:.85rem}
+input,select,button{background:#172941;color:#e9f4ff;padding:10px;font:inherit;border:1px solid #506f8e;border-radius:8px;min-width:0}
+button{font-weight:700;cursor:pointer}button:hover{background:#28405b}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #80bdf5;outline-offset:2px}
+.table{overflow-x:auto;border:1px solid #3b526c;border-radius:11px;margin:13px 0}
+table{border-collapse:collapse;width:100%;font-size:.87rem}th,td{padding:10px 12px;border-bottom:1px solid #344b61;text-align:left;vertical-align:top}
+thead{background:#20354e}tbody tr:hover{background:#1b2e45}tbody tr:last-child td{border-bottom:0}
+.pending{color:#ffdfa7;font-weight:700}.document{color:#a6ddc7;font-weight:700}
+.small{font-size:.85rem;color:#bbcde2}
+#status{min-height:1.8rem;font-weight:650;color:#ffdfa7}
+code{font-size:.8rem;color:#d8eaff;overflow-wrap:anywhere}
+footer{border-top:1px solid #3a516c;margin-top:32px;padding-top:20px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a href="/">Pokémon Blue — início</a> · <a href="/sinnoh-l11-rastreabilidade.html">Trilha L11</a>
+<p class="eyebrow">Sinnoh · Fase L12 · Handoff documental público</p>
+<h1>Cobertura de metadados ≠ aprovação física</h1>
+<p>A ligação entre casos, critérios e bloqueios é verificável no GitHub; as provas humanas, o isolamento e a QA real continuam ausentes.</p>
+<p class="warning"><strong>Sinnoh planejada e não jogável.</strong> Nenhuma autorização de execução, instalação ou publicação de ativos privados foi concedida. R07/R08/R09 continuam pendentes.</p>
+</div></header>
+<main class="wrap">
+<section class="metrics" aria-label="Resumo de cobertura e lacunas">
+<div class="metric"><strong>1.084/1.084</strong><span>Links públicos documentais presentes; não são QA</span></div>
+<div class="metric"><strong>0/20</strong><span>Critérios humanos aprovados</span></div>
+<div class="metric"><strong>0/44</strong><span>QA nativa executada</span></div>
+<div class="metric"><strong>0/5</strong><span>Relatórios locais recebidos</span></div>
+<div class="metric"><strong>0/13</strong><span>Barras B/C/D</span></div>
+</section>
+<nav aria-label="Índice"><a href="#camadas">Camadas</a> · <a href="#casos">Casos</a> · <a href="#criterios">Critérios</a> · <a href="#bloqueios">Bloqueios</a> · <a href="#proveniencia">Commits públicos</a></nav>
+<section id="camadas"><h2>O que está presente e o que falta</h2>
+<p class="small">Somente integridade de metadados públicos tem cobertura completa. A ausência de provas físicas não pode ser considerada resolvida por auditorias de JSON.</p>
+<div class="table"><table><thead><tr><th scope="col">Camada</th><th scope="col">Escopo</th><th scope="col">Presente / necessário</th><th scope="col">Ausente</th><th scope="col">Estado</th></tr></thead><tbody id="layersRows"></tbody></table></div>
+</section>
+<section id="casos"><h2>Handoff dos 44 casos G12</h2>
+<p class="small">Os filtros só fazem pesquisa local dos dados públicos. Windows contém 43 casos com B10/B11; Android possui 1 caso independente, sem herança desses bloqueios.</p>
+<div class="filters" role="group" aria-label="Filtrar pendências">
+<label>Pesquisar ID<input type="search" id="search" placeholder="Ex.: Barry, Turtwig, warp"></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android/JoiPlay</option></select></label>
+<label>Tipo<select id="kind"><option value="">Todos</option></select></label>
+<label>Critério<select id="criterion"><option value="">Todos</option></select></label>
+<label>Bloqueio<select id="blocker"><option value="">Todos</option></select></label>
+<label>Filtrar lacuna<select id="gap"><option value="">Todas as lacunas</option><option value="human">Revisão humana ausente</option><option value="native">QA nativa ausente</option><option value="metadata">Links documentais ausentes</option></select></label>
+<button type="button" id="reset">Limpar filtros</button>
+</div>
+<p id="status" role="status" aria-live="polite">Validando os dados públicos...</p>
+<div class="table"><table><thead><tr><th scope="col">Caso</th><th scope="col">Plataforma / grupo</th><th scope="col">Critérios vinculados</th><th scope="col">Bloqueios</th><th scope="col">Provas físicas</th></tr></thead><tbody id="casesRows"></tbody></table></div>
+</section>
+<section id="criterios"><h2>Os 20 critérios humanos ainda não revisados</h2>
+<div class="table"><table><thead><tr><th scope="col">Critério</th><th scope="col">Bloco</th><th scope="col">Casos relacionados</th><th scope="col">Situação</th></tr></thead><tbody id="criteriaRows"></tbody></table></div>
+</section>
+<section id="bloqueios"><h2>Bloqueios ativos</h2>
+<div class="table"><table><thead><tr><th scope="col">Etapa</th><th scope="col">Escopo</th><th scope="col">Casos diretamente vinculados</th><th scope="col">Estado</th></tr></thead><tbody id="blockersRows"></tbody></table></div>
+<p class="small">R09 é global e não corresponde a um caso adicional nem a uma prova de revisão. MapIDs (R07) e direitos de assets (R08) não foram aprovados; `watch_unchanged` não prova isolamento global de saves B11.</p>
+</section>
+<footer id="proveniencia">
+<p><strong>Versões de referência públicas:</strong> L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code> · L11 <code id="shaL11"></code>.</p>
+<p class="small">O SHA de um blob Git só comprova a integridade dos bytes do documento público, nunca a identidade física de um jogo, saves, permissões de assets, testes nativos ou revisão independente.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/199" rel="noreferrer">Issue L12 #199</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l12-public-coverage-gaps.json" rel="noreferrer">Relatório JSON L12</a>
+</footer>
+</main>
+<script type="module" src="/assets/sinnoh-l12-coverage-gaps.js"></script>
+</body>
+</html>

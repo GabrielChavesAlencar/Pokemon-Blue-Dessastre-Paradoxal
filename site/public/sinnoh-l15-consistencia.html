@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b2d">
+<meta name="description" content="Sinnoh L15: comparação documental L13-L14 de 88 pedidos bloqueados, sem provas humanas ou QA nativa.">
+<title>Sinnoh L15 — Consistência documental | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;background:#0c1726;color:#e9f1fb;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}a{color:#a7d4ff}
+.wrap{max-width:1280px;margin:auto;padding:22px clamp(16px,3vw,42px) 78px}
+header{background:linear-gradient(122deg,#263e56,#111b2e);border-bottom:1px solid #3b546d}
+h1{font-size:clamp(1.72rem,4vw,2.7rem);line-height:1.18;margin:.4rem 0}
+h2{font-size:1.33rem;margin:26px 0 11px}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;color:#c2d4e6;font-size:.8rem;font-weight:800}
+.warning{border-left:4px solid #e5b16c;background:#2e2931;border-radius:9px;padding:14px 18px;margin:15px 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(156px,1fr));gap:12px;margin:22px 0}
+.metric{border:1px solid #415976;background:#192b43;border-radius:12px;padding:14px}
+.metric strong{font-size:1.7rem;display:block;font-variant-numeric:tabular-nums}
+.metric span{font-size:.85rem;color:#c0d0e5}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(167px,1fr));gap:12px;align-items:end}
+label{display:flex;flex-direction:column;gap:4px;font-size:.87rem;color:#d0def0}
+input,select,button{border:1px solid #536f8e;border-radius:8px;background:#192e48;color:#eff7ff;padding:10px;font:inherit;min-width:0}
+button{cursor:pointer}button:hover{background:#284461}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #91c9ff;outline-offset:2px}
+.table-wrap{overflow:auto;border:1px solid #3b536e;border-radius:12px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #395069;vertical-align:top}
+thead{background:#223851}tbody tr:hover{background:#1c3047}tbody tr:last-child td{border:0}
+.pending{color:#ffdda9;font-weight:700}.document{color:#b8e3d4;font-weight:700}
+.small{font-size:.87rem;color:#c2d1e5}
+#status{font-weight:700;color:#ffd8a0;min-height:1.6rem}
+#detail{background:#192b40;border:1px solid #415b77;border-radius:11px;padding:14px}
+#detail p{margin:7px 0}
+code{font-size:.82rem;overflow-wrap:anywhere;color:#ddeaff}
+footer{margin-top:35px;border-top:1px solid #41556d;padding-top:18px}
+</style></head><body>
+<header><div class="wrap">
+<a href="/">Pokémon Blue — início</a> · <a href="/sinnoh-l14-prontidao.html">Matriz L14</a>
+<p class="eyebrow">Sinnoh L15 · Auditoria documental pública</p>
+<h1>Mudanças documentais verificáveis. QA real ainda ausente.</h1>
+<p>A L15 confronta a fila L13 com a matriz L14 sem converter relações de JSON em revisões humanas, provas físicas ou autorizações.</p>
+<p class="warning"><strong>Sinnoh planned e não jogável.</strong> 0/5 relatórios locais · 0/20 revisões humanas · 0/44 testes nativos · B/C/D 0/13 · R07/R08/R09 pendentes.</p>
+</div></header>
+<main class="wrap">
+<section class="metrics" aria-label="Indicadores de comparação">
+<div class="metric"><strong>88/88</strong><span>Pedidos correspondentes</span></div>
+<div class="metric"><strong>0</strong><span>Mudanças de IDs, prioridade ou estado</span></div>
+<div class="metric"><strong>1.084</strong><span>Vínculos da projeção L14 (somente metadados)</span></div>
+<div class="metric"><strong>18</strong><span>Slots anônimos sem atribuição</span></div>
+<div class="metric"><strong>0</strong><span>Revisões físicas e QA autorizadas</span></div>
+</section>
+<nav aria-label="Navegação"><a href="#mudancas">Mudanças</a> · <a href="#comparacoes">Comparações</a> · <a href="#detalhes">Detalhe</a> · <a href="#categorias">Categorias</a> · <a href="#proveniencia">Proveniência</a></nav>
+<section id="mudancas">
+<h2>O que mudou entre L13 e L14?</h2>
+<p class="small">A L13 já possuía os vínculos entre casos, critérios e bloqueios; a L14 os representou como dependências entre IDs de pedidos. Isso é uma nova projeção, não um novo resultado de teste.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Categoria</th><th scope="col">Referência</th><th scope="col">Observado</th><th scope="col">Adições</th><th scope="col">Mudança de identidade</th><th scope="col">Significado</th></tr></thead><tbody id="changesRows"></tbody></table></div>
+</section>
+<section id="comparacoes"><h2>Comparar os 88 pedidos</h2>
+<p class="small">Todos os itens preservam prioridades P0–P4 exclusivamente documentais, com estados PENDING/BLOCKED. Filtros não alteram o relatório.</p>
+<div class="filters">
+<label>Buscar pedido<input type="search" id="search" placeholder="Ex.: Turtwig, B09, relatório"></label>
+<label>Prioridade<select id="priority"><option value="">Todas</option><option value="0">P0</option><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option></select></label>
+<label>Tipo<select id="kind"><option value="">Todos</option></select></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android</option><option value="cross-platform">Ambas</option><option value="global">Global</option><option value="unassigned">Anônimo</option></select></label>
+<label>Projeção L14<select id="links"><option value="">Todos</option><option value="yes">Com vínculos</option><option value="no">Sem vínculos</option></select></label>
+<label>Comparação<select id="drift"><option value="">Todas</option><option value="consistent">Sem divergência</option><option value="changed">Com divergência (0)</option></select></label>
+<button id="reset" type="button">Limpar filtros</button>
+</div>
+<p id="status" role="status" aria-live="polite">Conferindo relatório público…</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">ID do pedido</th><th scope="col">Prioridade</th><th scope="col">Tipo / plataforma</th><th scope="col">Links L14</th><th scope="col">L13 → L14</th><th scope="col">Revisão física</th></tr></thead><tbody id="recordRows"></tbody></table></div>
+</section>
+<section id="detalhes"><h2>Registro selecionado</h2><div id="detail"><p>Selecione um pedido para consultar seus números e estados de comparação.</p></div></section>
+<section id="categorias"><h2>Pendências por tipo e plataforma</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Grupo</th><th scope="col">Pedidos</th><th scope="col">Bloqueados</th><th scope="col">Vínculos documentais</th><th scope="col">Provas recebidas</th></tr></thead><tbody id="groupRows"></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Plataforma</th><th scope="col">Casos</th><th scope="col">Executados</th><th scope="col">B10/B11 Windows</th><th scope="col">Estado</th></tr></thead><tbody id="platformRows"></tbody></table></div>
+<p class="small">R09 é regional global, sem vínculo adicional por caso. B10/B11 Windows não se estendem ao Android/JoiPlay. MapIDs R07, direitos R08 e isolamento global B11 continuam sem comprovação.</p>
+</section>
+<footer id="proveniencia">
+<p>Commits públicos: L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code> · L11 <code id="shaL11"></code> · L12 <code id="shaL12"></code> · L13 <code id="shaL13"></code> · L14 <code id="shaL14"></code>.</p>
+<p class="small">Os identificadores Git ancoram somente arquivos públicos. A página não coleta anexos, saves, arquivos privados ou permissões e não executa o jogo.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/205">Issue L15 #205</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l15-public-consistency-diff.json">Relatório JSON versionado</a>
+</footer></main>
+<script type="module" src="/assets/sinnoh-l15-public-diff.js"></script>
+</body></html>

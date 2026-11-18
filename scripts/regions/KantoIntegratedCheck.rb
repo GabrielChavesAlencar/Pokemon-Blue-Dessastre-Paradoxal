@@ -119,7 +119,13 @@ module KantoIntegratedCheck
     $PokemonGlobal.blue_regions = current_state
     require!(BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder badge not awarded")
     require!(!BlueRegions.award(current_state, "KANTO", "BOULDER"), "Boulder was counted twice")
-    require!(BlueRegionalPolicy.field_result(:FLASH) == :allowed, "Boulder did not unlock Flash")
+    # Boulder removes only the local badge restriction. Flash still requires
+    # HM05/HMFLASH in the Bag and an eligible party Pokemon (tested end-to-end
+    # by tests/kanto_hm_gate_runtime.rb). Do not bypass either requirement.
+    require!(BlueRegions.field_access(current_state, "KANTO", "FLASH", false) == :tool,
+             "Boulder did not clear the Flash badge gate")
+    require!(BlueRegionalPolicy.field_result(:FLASH) == :hm,
+             "Flash was allowed without the HM after Boulder")
     require!(BlueRegionalPolicy.field_result(:SURF) == :badge, "Surf unlocked without Soul Badge")
     base_total = $player.badge_count
     require!(BlueRegions.crystal_total(current_state, base_total) == base_total + 1,
