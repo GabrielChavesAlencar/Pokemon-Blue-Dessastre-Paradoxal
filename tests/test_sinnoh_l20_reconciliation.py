@@ -128,6 +128,7 @@ NEGATIVE_MUTATIONS = {
     "fake_anonymous_identity":replace(["records",0,"anonymous_identity_assigned"],True),
     "falsify_correspondence":replace(["records",0,"correspondence"],"PHYSICAL_VERIFIED"),
     "invent_r09_case":replace(["global_r09","case_ids"],["case-001"]),
+    "invent_r09_native_dependency":replace(["records",70,"prerequisite_blocker_ids"],["R09"]),
     "approve_r07":replace(["gates","r07"],"APPROVED"),
     "approve_r08":replace(["gates","r08"],"APPROVED"),
     "approve_r09":replace(["gates","r09"],"APPROVED"),
