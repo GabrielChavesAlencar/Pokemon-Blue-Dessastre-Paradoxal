@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "265f3ee22be26532f743a3761829dbc589841a61",
+      "date": "2026-11-18T11:24:05-03:00",
+      "title": "Sinnoh jogável J04: compilador seguro dos 24 eventos originais do Blue (#229)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "fa3be695fa3b5d410462841637c46e0feb3523c2",
       "date": "2026-11-18T11:12:26-03:00",
       "title": "Sinnoh jogável J03: staging privado de quatro terrenos, SHA-256 e rollback (#227)",
