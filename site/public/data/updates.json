@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "23c4d38947f4bccfc36f095f0b7a86e79f9e3025",
+      "date": "2026-11-17T22:03:54-03:00",
+      "title": "Sinnoh L06: 44-case documentary human-review routing (#185)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "ac711a36c530334bc8ab0c8bce0e99bf0136f2da",
       "date": "2026-11-17T22:02:09-03:00",
       "title": "Unova G08.2 — suíte integrada G01–G07 (31/32)",
