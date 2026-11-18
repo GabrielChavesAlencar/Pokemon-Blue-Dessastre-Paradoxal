@@ -78,7 +78,12 @@ def blocked(reason):
     raise ValueError("SINNOH_L05_BLOCKED: "+reason)
 
 def criterion_ids(l04_checklist):
-    l04.validate_checklist(l04_checklist)
+    # Preserve L04 fail-closed behavior while exposing only the L05 safe code.
+    # Never echo source values or nested validator errors in CLI or output.
+    try:
+        l04.validate_checklist(l04_checklist)
+    except (ValueError,TypeError,KeyError,IndexError,AttributeError):
+        blocked("L04 human criterion contract invalid")
     return [criterion["id"] for stage in l04_checklist["rows"]
             for criterion in stage["criteria"]]
 
