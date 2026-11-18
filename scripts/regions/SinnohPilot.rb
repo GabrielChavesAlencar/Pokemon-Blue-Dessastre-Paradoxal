@@ -330,7 +330,8 @@ module BlueSinnohPilot
         _INTL("Barry: Você venceu! Vou melhorar minha estratégia.") :
         _INTL("Barry: Que batalha! Vamos continuar treinando."))
       true
-    rescue IOError, SystemCallError
+    rescue StandardError
+      # An engine/compiled trainer exception is NOT a completed battle.
       pbMessage(_INTL("Barry: Nossa batalha não pôde ser validada."))
       false
     ensure
