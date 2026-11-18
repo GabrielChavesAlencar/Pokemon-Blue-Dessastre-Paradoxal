@@ -5,12 +5,14 @@ on:
     paths:
       - 'tools/frlg_source_preflight.py'
       - 'tests/test_frlg_source_preflight.py'
+      - 'tests/test_kanto_music_phase1.py'
       - '.github/workflows/frlg-source-only-preflight.yml'
   pull_request:
     branches: [main]
     paths:
       - 'tools/frlg_source_preflight.py'
       - 'tests/test_frlg_source_preflight.py'
+      - 'tests/test_kanto_music_phase1.py'
       - 'docs/UNOVA_A16_FRLG_SOURCE_ONLY.md'
       - '.github/workflows/frlg-source-only-preflight.yml'
   workflow_dispatch:
@@ -29,6 +31,8 @@ jobs:
         run: python tools/frlg_source_preflight.py --check-config
       - name: Offline negative regression tests
         run: python -m unittest discover -s tests -p test_frlg_source_preflight.py -v
+      - name: Kanto staged music rules (synthetic fixture only)
+        run: python -m unittest discover -s tests -p test_kanto_music_phase1.py -v
       - name: Manual permission gate (requires rights-holder authorization)
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         env:
