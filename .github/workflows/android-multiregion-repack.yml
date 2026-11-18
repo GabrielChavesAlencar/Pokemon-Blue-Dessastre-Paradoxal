@@ -87,12 +87,23 @@ jobs:
           # 5d0cc84 (old launcher) and 8e6e527 (working no-backup updater).
           # Even if the GitHub release catalogue spans more than 100 items,
           # preserve a small direct patch instead of silently requiring 1.4 GB.
-          for prior in "android-multiregion-hotfix-2-5d0cc84" "android-multiregion-hotfix-22-8e6e527"; do
+          # Explicitly allow players who installed our opt-in map preview to
+          # return to the stable updater via a validated small delta.
+          for prior in "android-multiregion-hotfix-2-5d0cc84" "android-multiregion-hotfix-22-8e6e527" "android-map-perf-preview-02e8e5a"; do
             mkdir -p "dist/previous/$prior"
             gh release download "$prior" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$prior" --clobber
             args+=(--previous-manifest "dist/previous/$prior/Blue-Android-Decades-Kanto-Hoenn.update.json")
           done
           python scripts/android/publish_updates.py "${args[@]}"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=json.loads(Path("dist/Blue-Android-Decades-Kanto-Hoenn.update.json").read_text())
+          revisions={entry["from_revision"] for entry in manifest.get("patches", [])}
+          assert "02e8e5addc7a7f2c4a9f71195fcae7f49631ed54" in revisions, (
+              "Android map-performance preview cannot migrate to the stable release")
+          print("PASS: verified incremental transition from preview to stable")
+          PY
           cd dist
           sha256sum Blue-Android-Decades-Kanto-Hoenn.zip > Blue-Android-Decades-Kanto-Hoenn.zip.sha256
           test "$(stat -c %s Blue-Android-Decades-Kanto-Hoenn.zip)" -lt 2147483648
