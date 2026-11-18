@@ -5,6 +5,13 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/repack_multiregion_hotfix.py'
+      - 'data/kanto-music-rules.json'
+      - 'data/kanto-music.json'
+      - 'tests/test_kanto_cerulean_route4_android.py'
+      - 'tests/test_kanto_music_phase2.py'
+      - 'tests/test_kanto_music_phase3.py'
+      - 'tests/test_kanto_music_phase4.py'
+      - 'tests/test_kanto_music_phase5.py'
       - 'scripts/android/update_client.py'
       - 'scripts/battle_lab/Mobile.rb'
       - 'scripts/android/package.py'
@@ -33,6 +40,11 @@ jobs:
           ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
           python -m unittest discover -s tests -p test_android_updates.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase2.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase3.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase4.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase5.py -v
+          python -m unittest discover -s tests -p test_kanto_cerulean_route4_android.py -v
       - name: Baixar ZIP ORIGINAL auditado e hashes da release integrada
         env:
           GH_TOKEN: ${{ github.token }}
@@ -86,5 +98,5 @@ jobs:
           gh release create "$TAG" "${assets[@]}" \
             --target "$GITHUB_SHA" \
             --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
-            --notes "ZIP auditado de Decades + Kanto + Hoenn, com fossils de Kanto e novo menu Versao do jogo (titulo e pausa). Exibe revisao GitHub, data/hora UTC do build e horario real aplicado pelo atualizador. Patches incrementais sem backup incluem a revisao 5d0cc84 do celular. Saves nao modificados; teste em JoiPlay real ainda pendente." \
+            --notes "Kanto Android: BGM da Rota 4 (faixa 1-32) e Cerulean City (faixa 1-50 de Fuchsia City) vinculadas ao MapID instalado e verificadas no pacote. Mantem fossils, menu de versao e atualizador por patch sem backup. Mapas, saves e Game.exe preservados. Teste audivel no JoiPlay real ainda pendente." \
             --prerelease
