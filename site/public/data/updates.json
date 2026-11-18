@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "58b7f2fec9f66dee06d95676eec66fb2ded6a1de",
+      "date": "2026-11-18T06:28:04-03:00",
+      "title": "Sinnoh L12: public coverage complete but all real evidence missing (#200)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "9d901a0cf21aa2742f731ee387a51f945bac8a5d",
       "date": "2026-11-17T23:52:23-03:00",
       "title": "Sinnoh L11: public case-criterion-blocker traceability (#198)",
