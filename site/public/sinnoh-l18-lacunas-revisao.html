@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111d30">
+<meta name="description" content="Sinnoh L18: 88 lacunas e próximos passos documentais, tudo pendente e sem QA nativa.">
+<title>Sinnoh L18 — Lacunas documentais | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;background:#0c1626;color:#ebf2fb;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}a{color:#a8d4ff}
+.wrap{max-width:1260px;margin:auto;padding:24px clamp(16px,3vw,45px) 76px}
+header{background:linear-gradient(122deg,#26415e,#121e2f);border-bottom:1px solid #435b75}
+h1{font-size:clamp(1.7rem,4vw,2.65rem);line-height:1.16;margin:.4rem 0}h2{font-size:1.37rem;margin:26px 0 12px}
+.eyebrow{font-size:.8rem;font-weight:800;color:#c5d4e6;text-transform:uppercase;letter-spacing:.12em}
+.alert{border-left:4px solid #e0ad67;background:#302a32;border-radius:9px;padding:14px 17px;margin:18px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(154px,1fr));gap:12px;margin:24px 0}
+.stat{background:#192c44;border:1px solid #435a75;border-radius:11px;padding:15px}
+.stat strong{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums}.stat span,.small{font-size:.86rem;color:#c5d5e7}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;color:#d2dfef;font-size:.87rem}
+input,select,button{border-radius:8px;border:1px solid #55718f;padding:10px;background:#182c43;color:#f1f6fe;font:inherit;min-width:0}
+button{cursor:pointer}button:hover{background:#2c4563}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #8fc7ff;outline-offset:2px}
+.scroller{border:1px solid #405872;border-radius:11px;overflow:auto;margin:15px 0}
+table{width:100%;border-collapse:collapse;font-size:.86rem}th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #3a5068}
+thead{background:#213a53}tbody tr:hover{background:#1c3149}tbody tr:last-child td{border:0}
+.pending{color:#ffd9a2;font-weight:750}.meta{color:#b6e3d3}
+#status{min-height:1.6rem;color:#ffdfa9;font-weight:750}
+#detail{background:#192b40;border:1px solid #44607c;border-radius:11px;padding:16px}
+#detail p{margin:6px 0}.chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.chips span{font-size:.8rem;border-radius:7px;border:1px solid #57728d;padding:5px 8px}
+code{font-size:.81rem;overflow-wrap:anywhere}footer{margin-top:36px;padding-top:18px;border-top:1px solid #425a73}
+</style></head>
+<body><header><div class="wrap">
+<a href="/">Pokémon Blue — início</a> · <a href="/sinnoh-l17-revisao-independente.html">L17 — Revisão futura</a>
+<p class="eyebrow">Sinnoh L18 · Relatório de lacunas públicas</p>
+<h1>O que falta documentar antes de uma revisão independente?</h1>
+<p>Roteiro de organização dos requisitos públicos de 88 pedidos. Não existem aprovações novas, revisores nomeados, recibos privados ou autorização para executar o jogo.</p>
+<p class="alert"><strong>Sinnoh planned e não jogável.</strong> 0/5 relatórios locais · 0/20 critérios humanos · 0/44 casos nativos · B/C/D 0/13 · R07/R08/R09 pendentes.</p>
+</div></header>
+<main class="wrap">
+<section class="stats" aria-label="Resumo L18">
+<div class="stat"><strong>88/88</strong><span>Lacunas documentadas, todas abertas</span></div>
+<div class="stat"><strong>0/88</strong><span>Revisões independentes concluídas</span></div>
+<div class="stat"><strong>1.084</strong><span>Vínculos públicos preservados</span></div>
+<div class="stat"><strong>18</strong><span>Posições anônimas sem atribuição</span></div>
+<div class="stat"><strong>43 + 1</strong><span>Windows e Android separados</span></div>
+</section>
+<nav aria-label="Navegação"><a href="#filtros">Filtros</a> · <a href="#pedidos">Pedidos</a> · <a href="#detalhes">Passos documentais</a> · <a href="#grupos">Categorias</a> · <a href="#proveniencia">Fontes públicas</a></nav>
+<section id="filtros"><h2>Filtrar os requisitos pendentes</h2>
+<p class="small">P0–P4 é prioridade documental, nunca sequência de QA. Todos os próximos passos são exclusivamente de leitura e organização de documentos públicos.</p>
+<div class="filters">
+<label>Buscar pedido<input id="search" type="search" placeholder="Ex.: B09, Turtwig, R07"></label>
+<label>Prioridade<select id="priority"><option value="">Todas</option><option value="0">P0</option><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option></select></label>
+<label>Categoria<select id="kind"><option value="">Todas</option></select></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android</option><option value="cross-platform">Ambas</option><option value="global">Regional</option><option value="unassigned">Não atribuída</option></select></label>
+<label>Bloqueio<select id="blocker"><option value="">Todos</option><option value="B09">B09</option><option value="B10">B10</option><option value="B11">B11</option><option value="R07">R07</option><option value="R08">R08</option><option value="R09">R09 global</option></select></label>
+<label>Tipo de lacuna<select id="gap"><option value="">Todas</option></select></label>
+<button id="reset" type="button">Limpar filtros</button>
+</div></section>
+<section id="pedidos"><h2>Fila de 88 lacunas abertas (somente leitura)</h2>
+<p id="status" role="status" aria-live="polite">Verificando relatório público…</p>
+<div class="scroller"><table><thead><tr><th scope="col">Pedido público</th><th scope="col">P</th><th scope="col">Categoria / plataforma</th><th scope="col">Lacunas</th><th scope="col">Vínculos</th><th scope="col">Estado</th></tr></thead><tbody id="recordRows"></tbody></table></div></section>
+<section id="detalhes"><h2>Lacuna selecionada e passo documental seguro</h2>
+<div id="detail"><p>Selecione um pedido para consultar apenas seus requisitos públicos ainda não atendidos.</p></div></section>
+<section id="grupos"><h2>Pendências por grupo e plataforma</h2>
+<div class="scroller"><table><thead><tr><th scope="col">Grupo</th><th scope="col">Pedidos</th><th scope="col">Bloqueados</th><th scope="col">Links documentais</th><th scope="col">Revisões</th></tr></thead><tbody id="groupRows"></tbody></table></div>
+<div class="scroller"><table><thead><tr><th scope="col">Plataforma</th><th scope="col">Casos</th><th scope="col">Nativos executados</th><th scope="col">B10/B11</th><th scope="col">Autorização</th></tr></thead><tbody id="platformRows"></tbody></table></div>
+<p class="small">R09 permanece global, sem arestas por caso. O caso Android não herda B10/B11. O escopo observado de `watch_unchanged` não prova isolamento global de saves. Direitos R08 e MapIDs R07 permanecem sem aprovação.</p>
+</section>
+<footer id="proveniencia">
+<p>Commits Git públicos: L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code> · L11 <code id="shaL11"></code> · L12 <code id="shaL12"></code> · L13 <code id="shaL13"></code> · L14 <code id="shaL14"></code> · L15 <code id="shaL15"></code> · L16 <code id="shaL16"></code> · L17 <code id="shaL17"></code>.</p>
+<p class="small">Hashes de objetos Git validam exclusivamente bytes públicos. Não verificam arquivos privados, provas humanas, licenças, saves ou testes nativos.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/214">Issue L18 #214</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l18-public-review-gaps.json">Relatório JSON versionado</a>
+</footer></main>
+<script type="module" src="/assets/sinnoh-l18-review-gaps.js"></script>
+</body></html>
