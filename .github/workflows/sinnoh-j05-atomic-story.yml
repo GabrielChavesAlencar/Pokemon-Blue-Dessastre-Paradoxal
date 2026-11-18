@@ -1,0 +1,108 @@
+name: Sinnoh J05 - scoped starter transaction, Barry variants and QA save gates
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j05-atomic-story.yml'
+      - 'scripts/regions/SinnohPilot.rb'
+      - 'scripts/regions/compile_sinnoh_playable_j04.py'
+      - 'tests/test_sinnoh_j04_owned_events.py'
+      - 'tests/sinnoh_j05_atomic_runtime.rb'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'docs/SINNOH_J05_HANDLERS_SAVE_ATOMICO.md'
+      - 'SINNOH_J05_TESTAR_HANDLERS.bat'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j05-atomic-story.yml'
+      - 'scripts/regions/SinnohPilot.rb'
+      - 'scripts/regions/compile_sinnoh_playable_j04.py'
+      - 'tests/test_sinnoh_j04_owned_events.py'
+      - 'tests/sinnoh_j05_atomic_runtime.rb'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j05-authored-ruby-runtime:
+    name: J05 / owned story, reentrant/failed grants, Barry, save/reload and dex
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ruby syntax, no native execution
+        run: |
+          ruby -c scripts/regions/SinnohPilot.rb
+          ruby -c tests/sinnoh_j05_atomic_runtime.rb
+      - name: J05 transaction and region-isolation negative tests
+        run: ruby tests/sinnoh_j05_atomic_runtime.rb scripts/regions/SinnohPilot.rb
+      - name: Prior BlueSinnohPilot and CH07 state/save regressions
+        run: |
+          ruby tests/sinnoh_pilot_runtime.rb scripts/regions/SinnohPilot.rb
+          ruby tests/sinnoh_pilot_ch07_runtime.rb scripts/regions/SinnohPilot.rb
+      - name: Previous G08 all three physical starters and Barry cases
+        run: |
+          ruby tests/sinnoh_g08_opening_runtime.rb scripts/regions/SinnohPilot.rb scripts/regions/SinnohIntroContracts.rb scripts/regions/SinnohStarterContracts.rb
+          ruby tests/sinnoh_s14_starter_runtime.rb scripts/regions/SinnohPilot.rb scripts/regions/SinnohStarterContracts.rb data/regions/sinnoh-starters-s14.json
+          ruby tests/sinnoh_barry_ch08_runtime.rb scripts/battle_polish/Campaign.rb scripts/regions/SinnohPilot.rb
+  j05-starter-events-and-staging:
+    name: J05 / J04 correct handler name and nine-map fail-closed compiler
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python syntax
+        run: python -m py_compile scripts/regions/compile_sinnoh_playable_j04.py
+      - name: J04 original nine-map 24-event synthetic compiler negative tests
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j04_owned_events.py' -v
+      - name: Regress J03 transactions and J02 MapID/source validators
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_j03_private_staging.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_j02_real_map_bindings.py' -v
+      - name: Force no-source J04 fail closed
+        run: |
+          set +e
+          python scripts/regions/compile_sinnoh_playable_j04.py > /tmp/j05-no-physical.json
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+          python - <<'PY'
+          import json
+          with open('/tmp/j05-no-physical.json',encoding='utf8') as f: j=json.load(f)
+          assert j["compiled_native_events"]==0
+          assert j["native_playable"] is False
+          assert j["can_install"] is False
+          assert j["planned_warps"]==16
+          assert j["planned_starter_balls"]==3
+          print("SINNOH_J05_BLOCKED_NATIVE_UNVERIFIED")
+          PY
+          test ! -d .blue-work/sinnoh-stage
+  j05-portal-next-stage:
+    name: J05 / 5 of 8 code, zero native, next J06 and portal build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate independent bars and next-phase button
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build entire site
+        working-directory: site
+        run: npm run build
+      - name: Check static safe next action
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
+          grep -q '/sinnoh-jogavel.html' site/dist/index.html
