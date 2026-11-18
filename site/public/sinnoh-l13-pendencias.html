@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101b2d">
+<meta name="description" content="Fila documental pública e somente leitura de 88 pedidos pendentes de Sinnoh. Sem uploads, evidências aceitas ou QA nativa.">
+<title>Sinnoh L13 · Fila de pendências documentais | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;background:#0d1727;color:#e9f0fb;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.55}a{color:#a7d2ff}
+.wrap{max-width:1260px;margin:auto;padding:22px clamp(16px,3vw,45px) 75px}
+header{background:linear-gradient(135deg,#253a54,#111b2b);border-bottom:1px solid #374d64}
+.eyebrow{font-weight:780;font-size:.8rem;letter-spacing:.13em;text-transform:uppercase;color:#c0d5ea}
+h1{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.18;margin:6px 0}
+h2{font-size:1.35rem;margin:1.7rem 0 .6rem}
+.warning{border-left:4px solid #eab272;background:#2c2830;border-radius:8px;padding:14px 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}
+.kpi{background:#192a40;border:1px solid #3c546f;border-radius:12px;padding:15px}
+.kpi strong{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.85rem;color:#becfe5}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;color:#c8d8ea;font-size:.87rem;font-weight:650}
+input,select,button{border:1px solid #597492;border-radius:8px;background:#172941;color:#f1f7ff;font:inherit;padding:10px;min-width:0}
+button{cursor:pointer;font-weight:700}button:hover{background:#293f5a}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #86c6ff;outline-offset:2px}
+.scroll{border:1px solid #364f68;border-radius:11px;margin:13px 0;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:.87rem}th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #344961}
+thead{background:#21364e}tbody tr:hover{background:#1a2c41}tbody tr:last-child td{border-bottom:0}
+.pending{color:#ffdea7;font-weight:750}.small{font-size:.85rem;color:#bfcfe3}
+code{font-size:.83rem;overflow-wrap:anywhere;color:#dbeaff}
+#status{font-weight:700;color:#ffdea7;min-height:1.7rem}
+footer{border-top:1px solid #3b536b;margin-top:33px;padding-top:16px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a href="/">Pokémon Blue — Início</a> · <a href="/sinnoh-l12-lacunas.html">Lacunas L12</a>
+<p class="eyebrow">Sinnoh L13 · Monitoramento público documental</p>
+<h1>Fila de pedidos pendentes — sem coleta de evidências</h1>
+<p>As prioridades ordenam apenas a documentação pública que ainda exige revisão futura. Não autorizam execução, aprovação, instalações ou envio de arquivos privados.</p>
+<p class="warning"><strong>Sinnoh planejada e não jogável.</strong> Metadados 1.084/1.084 · Relatórios locais 0/5 · Critérios humanos 0/20 · QA nativa 0/44 · B/C/D 0/13 · R07/R08/R09 pendentes.</p>
+</div></header>
+<main class="wrap">
+<section class="kpis" aria-label="Resumo dos pedidos">
+<div class="kpi"><strong>88</strong><span>Entradas públicas pendentes</span></div>
+<div class="kpi"><strong>5 + 1</strong><span>Bloqueios específicos e R09 global</span></div>
+<div class="kpi"><strong>5</strong><span>Posições anônimas de relatórios</span></div>
+<div class="kpi"><strong>20</strong><span>Critérios humanos</span></div>
+<div class="kpi"><strong>13</strong><span>Posições contábeis B/C/D</span></div>
+<div class="kpi"><strong>44</strong><span>Casos nativos não executados</span></div>
+</section>
+<nav aria-label="Índice"><a href="#criterios">Filtros</a> · <a href="#pedidos">Fila</a> · <a href="#plataformas">Plataformas</a> · <a href="#proveniencia">Proveniência</a></nav>
+<section id="criterios">
+<h2>Filtrar a fila pública</h2>
+<p class="small">As posições para cinco relatórios e 13 aprovações B/C/D são marcadores contábeis anônimos, não arquivos ou evidências identificados. Os filtros não alteram dados.</p>
+<div class="filters" role="group" aria-label="Filtros da fila">
+<label>Buscar identificador<input id="search" type="search" placeholder="Ex.: B09, Turtwig, relatório"></label>
+<label>Prioridade<select id="priority"><option value="">Todas</option><option value="0">P0 · Dependências</option><option value="1">P1 · Relatórios</option><option value="2">P2 · Revisões humanas</option><option value="3">P3 · B/C/D contábil</option><option value="4">P4 · Casos nativos</option></select></label>
+<label>Tipo de pedido<select id="kind"><option value="">Todos</option></select></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android</option><option value="cross-platform">Ambas</option><option value="global">Global</option><option value="unassigned">Não atribuída</option></select></label>
+<label>Bloqueio<select id="blocker"><option value="">Todos</option></select></label>
+<label>Critério L04<select id="criterion"><option value="">Todos</option></select></label>
+<button type="button" id="reset">Limpar filtros</button>
+</div>
+</section>
+<section id="pedidos">
+<h2>Pedidos de status públicos</h2>
+<p id="status" role="status" aria-live="polite">Verificando integridade dos dados…</p>
+<div class="scroll"><table>
+<thead><tr><th scope="col">Ordem</th><th scope="col">Pedido</th><th scope="col">Prioridade / tipo</th><th scope="col">Plataforma</th><th scope="col">Vínculos</th><th scope="col">Situação</th></tr></thead>
+<tbody id="queueRows"></tbody></table></div>
+</section>
+<section id="plataformas">
+<h2>Trilhas futuras separadas</h2>
+<div class="scroll"><table><thead><tr><th scope="col">Plataforma</th><th scope="col">Pedidos nativos</th><th scope="col">Executados</th><th scope="col">Dependência B10/B11</th><th scope="col">Status</th></tr></thead><tbody id="platformRows"></tbody></table></div>
+<p class="small">B10/B11 pertencem à fila Windows (43 casos), não ao Android/JoiPlay (1 caso). R09 é pendência regional global sem vínculo adicional por caso. `watch_unchanged` não comprova isolamento global B11. MapIDs e direitos R07/R08 não estão aprovados.</p>
+</section>
+<footer id="proveniencia">
+<p><strong>Commits públicos:</strong> L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code> · L11 <code id="shaL11"></code> · L12 <code id="shaL12"></code>.</p>
+<p class="small">Git blob público comprova apenas bytes de metadados, não arquivos físicos, licenças, isolamento de saves ou qualidade nativa. Nenhum anexo, link de upload ou coleta de evidência é oferecido nesta página.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/201" rel="noreferrer">Issue L13 #201</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l13-public-evidence-queue.json" rel="noreferrer">Fila JSON versionada</a>
+</footer></main>
+<script type="module" src="/assets/sinnoh-l13-public-queue.js"></script>
+</body></html>

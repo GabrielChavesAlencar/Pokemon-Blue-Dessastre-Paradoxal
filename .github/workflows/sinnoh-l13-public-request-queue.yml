@@ -1,0 +1,173 @@
+name: Sinnoh L13 - fila publica pendente sem coleta ou QA nativa
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l13-public-request-queue.yml'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/sinnoh-l13-pendencias.html'
+      - 'site/public/assets/sinnoh-l13-public-queue.js'
+      - 'site/tests/sinnoh-l13-public-queue.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l13_public_queue.py'
+      - 'tests/test_sinnoh_l13_public_queue.py'
+      - 'docs/SINNOH_L13_FILA_PUBLICA_PENDENCIAS.md'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l13-public-request-queue.yml'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/sinnoh-l13-pendencias.html'
+      - 'site/public/assets/sinnoh-l13-public-queue.js'
+      - 'site/tests/sinnoh-l13-public-queue.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l13_public_queue.py'
+      - 'tests/test_sinnoh_l13_public_queue.py'
+      - 'docs/SINNOH_L13_FILA_PUBLICA_PENDENCIAS.md'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l13-queue:
+    name: L13 / 88 pedidos pendentes sem evidencias e testes negativos
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar fila e negativas sintéticas L13
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l13_public_queue.py' -v
+      - name: Auditar ancoragem Git L12 e inexistencia de autorizacao
+        run: |
+          python scripts/regions/audit_sinnoh_l13_public_queue.py > /tmp/sinnoh-l13-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/sinnoh-l13-public.json')
+          out=json.loads(p.read_text('utf8'))
+          assert out['stage']=='L13' and out['status']=='PUBLIC_QUEUE_AUDITED_ALL_REQUESTS_PENDING'
+          assert out['baseline_commits']=={
+            'L07':'d98033b362dac82347e0d97cb5606870eaa70b22',
+            'L08':'8617ef47ea6745920cb6fe4be251982380d7628d',
+            'L09':'39e51de92aafdab3f5aea3f929f57f5c0bb72b2d',
+            'L10':'7fd821007e63fe9cf0d0c4bf14d153a23cda2b6a',
+            'L11':'9d901a0cf21aa2742f731ee387a51f945bac8a5d',
+            'L12':'58b7f2fec9f66dee06d95676eec66fb2ded6a1de'}
+          assert out['source_l12_git_blob']=='dbd9181a5910c7fc711eaaa20d0e3b24a9d1710e'
+          assert out['request_counts']=={
+           'evidence_requests_total':88,'blocker_requests':5,
+           'global_gate_requests':1,'report_slots':5,
+           'human_criterion_requests':20,'bcd_slots':13,
+           'native_case_requests':44,'requests_pending':88,'requests_approved':0}
+          assert (out['documentary_links_verified'],out['windows_cases'],out['android_cases'])==(1084,43,1)
+          assert (out['human_criteria_approved'],out['native_cases_approved'],
+                  out['native_cases_executed'],out['local_reports_received'],out['bcd_approved'])==(0,0,0,0,0)
+          assert out['bcd_total']==13 and out['r09_global_only']
+          assert out['r07_pending'] and out['r08_pending'] and out['r09_pending']
+          assert out['no_private_uploads'] and out['no_runtime_authorization']
+          assert out['sinnoh_playable'] is False
+          for sensitive in ('Save01.rxdata','private-baseline.json','hmac_key','watch_id'):
+            assert sensitive not in p.read_text('utf8')
+          print('SINNOH_L13_88_REQUESTS_ALL_PENDING_NO_PRIVATE_UPLOAD_NO_QA')
+          PY
+      - name: Garantir que no CI nao ha recibos nem saves privados
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L13_GITHUB_DOCUMENTARY_ONLY'
+
+  l13-regressions:
+    name: L13 / L12 L11 L10 L09 L08 L07 L06 L05 L04 L03 L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L12 coverage gaps
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l12_coverage_gaps.py' -v
+      - name: L11 traceability
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l11_traceability.py' -v
+      - name: L10 public blocker index
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l10_public_index.py' -v
+      - name: L09 human handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l09_public_handoff.py' -v
+      - name: L08 pinned snapshot
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: L07 triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 human cases
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 review
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 sanitizer
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 native handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l13-portal:
+    name: L13 / navegacao read-only e build do portal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript seguro da fila publica
+        run: node --check site/public/assets/sinnoh-l13-public-queue.js
+      - name: Node tests L13, L12, L11, L10, L07
+        working-directory: site
+        run: node --test tests/sinnoh-l13-public-queue.test.mjs tests/sinnoh-l12-coverage-gaps.test.mjs tests/sinnoh-l11-traceability.test.mjs tests/sinnoh-l10-blocker-index.test.mjs tests/sinnoh-l07-triage.test.mjs
+      - name: Compilar portal inteiro
+        working-directory: site
+        run: npm run build
+      - name: Confirmar artefatos L13 distribuiveis read-only
+        run: |
+          test -s site/dist/sinnoh-l13-pendencias.html
+          test -s site/dist/data/sinnoh-l13-public-evidence-queue.json
+          test -s site/dist/assets/sinnoh-l13-public-queue.js
+          grep -q 'sinnoh-l13-pendencias.html' site/dist/index.html
+          echo 'SINNOH_L13_PUBLIC_QUEUE_NO_UPLOAD_NO_NATIVE_QA'
