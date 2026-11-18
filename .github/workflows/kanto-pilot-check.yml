@@ -334,11 +334,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $recent=@(gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json |
-            Where-Object { $_.tag_name -like 'kanto-android-*' -and -not $_.draft -and
-              @($_.assets | Where-Object { $_.name -eq 'Blue-Android-Kanto-Piloto.update.json' }).Count -gt 0 } |
-            Sort-Object published_at -Descending)
-          if($LASTEXITCODE -ne 0){throw 'Cannot query published Kanto release history'}
+          # Existing Kanto releases are beyond the first three pages due
+          # to frequent battle-hub publications. Discover older manifests
+          # before generating deltas; do not force a full-game reinstall.
+          $recent=@()
+          for($page=1;$page -le 6;$page++){
+            $batch=@(gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100&page=$page" | ConvertFrom-Json)
+            if($LASTEXITCODE -ne 0){throw "Cannot query Kanto releases page $page"}
+            $recent+=@($batch | Where-Object { $_.tag_name -like 'kanto-android-*' -and -not $_.draft -and
+              @($_.assets | Where-Object { $_.name -eq 'Blue-Android-Kanto-Piloto.update.json' }).Count -gt 0 })
+            if($recent.Count -ge 5 -or $batch.Count -lt 100){break}
+          }
+          $recent=@($recent | Sort-Object published_at -Descending)
           $selected=@($recent | Select-Object -First 4)
           if($recent.Count -gt 4){$selected+=@($recent | Select-Object -Last 1)}
           $args=@('--channel','kanto','--full-zip','dist/Blue-Android-Kanto-Piloto.zip')
