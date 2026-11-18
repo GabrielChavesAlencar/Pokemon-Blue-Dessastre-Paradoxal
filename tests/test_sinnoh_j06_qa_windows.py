@@ -35,7 +35,20 @@ class SinnohJ06PrivateWindowsTests(unittest.TestCase):
         self.game,self.overlay,self.spec=fixture(self.root)
         self.work=self.root/".blue-work"
         self.specpath=make_json(self.work/"j06-events.json",self.spec)
-        self.report=json.loads((self.overlay/"sinnoh-qa-overlay-report.json").read_text("utf-8"))
+        # Synthetic test-owned 1x1 PNG. Not a real Sinnoh asset or right.
+        import base64
+        self.sprite=(
+            self.overlay/"Graphics/Characters/OwnPreviewSprite.png")
+        self.sprite.parent.mkdir(parents=True,exist_ok=True)
+        self.sprite.write_bytes(base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ"
+            "AAAADUlEQVQIHWP4z8DwHwAFgAI/ScL/nwAAAABJRU5ErkJggg=="))
+        src=self.overlay/"sinnoh-qa-overlay-report.json"
+        report=json.loads(src.read_text("utf-8"))
+        report["files_sha256"]["Graphics/Characters/OwnPreviewSprite.png"] = digest(
+            self.sprite.read_bytes())
+        make_json(src,report)
+        self.report=report
         self.exesha=digest((self.game/"Game.exe").read_bytes())
         self.infosh=digest((self.game/"Data/MapInfos.rxdata").read_bytes())
         self.review={
@@ -102,6 +115,7 @@ class SinnohJ06PrivateWindowsTests(unittest.TestCase):
         self.assertEqual(r["warps_expected"],16)
         self.assertEqual(r["npc_handlers_expected"],5)
         self.assertEqual(r["starter_balls_expected"],3)
+        self.assertEqual(r["private_character_sprite_files_hash_verified"],1)
         self.assertTrue(r["private_qa_rights_human_attested"])
         self.assertFalse(r["rights_independently_confirmed_by_chatgpt"])
         self.assertFalse(r["native_barry_pbs_compiled_verified"])
@@ -336,6 +350,33 @@ class SinnohJ06PrivateWindowsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"MAIN_GAME_EXE_CHANGED"):
             receipt_checked(self.root,self.qa,r["receipt_sha256"],pristine=True)
         self.assertTrue(self.qa.exists())
+
+    def test_41_unreviewed_npc_sprite_cannot_launch_copy(self):
+        spec=copy.deepcopy(self.spec)
+        for row in spec["maps"]:
+            for e in row["events"]:
+                if e["kind"]=="handler":
+                    e["sprite"]="UnprovidedOwnSprite"
+                    make_json(self.specpath,spec)
+                    self.review["spec_sha256"]=digest(self.specpath.read_bytes())
+                    self.flush()
+                    self.blocked()
+                    return
+        self.fail("Expected a J04 NPC")
+
+    def test_42_not_png_even_with_recomputed_hash_denied(self):
+        self.sprite.write_bytes(b"not-a-real-png" * 4)
+        report=json.loads((self.overlay/"sinnoh-qa-overlay-report.json").read_text("utf-8"))
+        name="Graphics/Characters/OwnPreviewSprite.png"
+        report["files_sha256"][name]=digest(self.sprite.read_bytes())
+        make_json(self.overlay/"sinnoh-qa-overlay-report.json",report)
+        self.review["overlay_report_sha256"]=digest(
+            (self.overlay/"sinnoh-qa-overlay-report.json").read_bytes())
+        self.review["files"][name]["sha256"]=report["files_sha256"][name]
+        self.flush()
+        with self.assertRaisesRegex(ValueError,"SPRITE_FILE_NOT_VALID_PNG"):
+            self.plan()
+        self.assertFalse(self.qa.exists())
 
     def test_40_correct_install_is_not_native_gameplay_approval(self):
         r=self.install()
