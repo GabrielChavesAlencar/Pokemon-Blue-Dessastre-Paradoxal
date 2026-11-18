@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "1f12bcc86c10dcc934b024a0562cdadb65d5e2c2",
+      "date": "2026-11-18T06:41:56-03:00",
+      "title": "Sinnoh L13: deterministic read-only public request queue (#202)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "58b7f2fec9f66dee06d95676eec66fb2ded6a1de",
       "date": "2026-11-18T06:28:04-03:00",
       "title": "Sinnoh L12: public coverage complete but all real evidence missing (#200)",
