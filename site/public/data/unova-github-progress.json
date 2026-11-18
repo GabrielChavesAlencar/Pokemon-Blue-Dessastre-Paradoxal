@@ -260,8 +260,9 @@
         {
           "id": "G07.4",
           "title": "Preparar contratos Windows e Android/JoiPlay",
-          "status": "pending",
-          "acceptance": "Atualizações incrementais compatíveis, sem alegar aprovação nativa"
+          "status": "done",
+          "acceptance": "Atualizações incrementais compatíveis, sem alegar aprovação nativa",
+          "evidence": "scripts/regions/audit_unova_g07_platform_compat.py"
         }
       ]
     },
