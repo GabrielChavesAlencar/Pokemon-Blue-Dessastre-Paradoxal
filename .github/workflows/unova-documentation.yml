@@ -86,6 +86,8 @@ jobs:
           python scripts/regions/audit_unova_g07_incremental_manifest.py --simulate-demo
           python scripts/regions/audit_unova_g07_transaction.py --check
           python scripts/regions/audit_unova_g07_transaction.py --simulate-demo
+          python scripts/regions/audit_unova_g07_platform_compat.py --check
+          python scripts/regions/audit_unova_g07_platform_compat.py --simulate-demo
           # A04 native baseline is private and absent in CI; negative tests cover this gate.
           python scripts/regions/audit_unova_a05_candidates.py
       - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
@@ -130,6 +132,7 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_g05_blackout_state.py
           python -m py_compile scripts/regions/audit_unova_g07_incremental_manifest.py
           python -m py_compile scripts/regions/audit_unova_g07_transaction.py
+          python -m py_compile scripts/regions/audit_unova_g07_platform_compat.py
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
           python -m py_compile scripts/regions/audit_unova_a06_references.py
@@ -192,6 +195,7 @@ jobs:
           python -m unittest discover -s tests -p test_unova_g05_blackout_state.py -v
           python -m unittest discover -s tests -p test_unova_g07_incremental_manifest.py -v
           python -m unittest discover -s tests -p test_unova_g07_transaction.py -v
+          python -m unittest discover -s tests -p test_unova_g07_platform_compat.py -v
           python -m unittest discover -s tests -p test_unova_auto_mapids.py -v
           python -m unittest discover -s tests -p test_unova_standalone_bat.py -v
       - name: Empacotar BAT validado no Windows como ZIP
