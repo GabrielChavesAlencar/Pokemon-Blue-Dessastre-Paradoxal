@@ -1,0 +1,109 @@
+name: Sinnoh J11-C - isolated native-structure nine-map overlay without native install
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j11c-native-structure-qa-overlay.yml'
+      - 'scripts/regions/prepare_sinnoh_nine_original_j11c.py'
+      - 'tests/test_sinnoh_j11c_native_overlay.py'
+      - 'docs/SINNOH_J11C_NOVE_MAPAS_TILESETS_R07.md'
+      - 'SINNOH_J11C_AUDITAR_ORIGINAIS.bat'
+      - 'site/public/sinnoh-jogavel.html'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j11c-native-structure-qa-overlay.yml'
+      - 'scripts/regions/prepare_sinnoh_nine_original_j11c.py'
+      - 'tests/test_sinnoh_j11c_native_overlay.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pure-native-linux:
+    name: J11-C / Linux - 46 native structure tests, 9 map remaps, real RPG Tilesets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and execute independent 46-case fail-closed suite
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_nine_original_j11c.py
+          python -m unittest discover -s tests -p test_sinnoh_j11c_native_overlay.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j11b_four_original_exteriors.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j11_physical_intake_gates.py -v
+      - name: Audit source nine original RXDATA, R07 blocker and event topology
+        run: |
+          python scripts/regions/prepare_sinnoh_nine_original_j11c.py > /tmp/j11c-plan.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          row=json.loads(Path("/tmp/j11c-plan.json").read_text())
+          assert row["stage"]=="J11-C"
+          assert len(row["original_nine_source_hashes"])==9
+          assert len(row["tileset_png_shas"])==2
+          assert row["mapids_reserved"]==0
+          assert row["native_maps_installed"]==0
+          assert row["native_qa_cases_executed"]==0
+          assert row["r07_approved"] is False
+          assert row["r08_approved"] is False
+          assert row["r09_approved"] is False
+          assert row["can_install"] is False
+          assert row["can_publish"] is False
+          assert not Path(".blue-work/sinnoh-j11c-private-qa-overlay").exists()
+          print("J11C_NINE_MAPS_TWO_TILESETS_PREVIEWED_ZERO_NATIVE")
+          PY
+      - name: Upload metadata-only source hash plan (not RXDATA or PNG)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-j11c-readonly-qa-overlay-gates
+          path: /tmp/j11c-plan.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Never modify public game or private stage
+        run: |
+          git diff --exit-code
+          test ! -d .blue-work/sinnoh-j11c-private-qa-overlay
+          test ! -d .blue-work/sinnoh-j09-authored
+          test ! -d .blue-work/sinnoh-j03-stage
+          test ! -f game/Game.exe
+          echo "J11C_CI_REAL_RMXP_OBJECTS_SYNTHETIC_BASELINE_ONLY_NO_USER_DATA"
+  windows-isolated-synthetic:
+    name: J11-C / Windows - synthetic RPG structures and save isolation
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run real Ruby Marshal geometry conversion tests without native Game.exe
+        run: |
+          python -m unittest discover -s tests -p test_sinnoh_j11c_native_overlay.py -v
+      - name: Do not access native installs or user saves
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Private runtime present" }
+          if (Test-Path ".blue-work/sinnoh-j11c-private-qa-overlay") { throw "Private stage must not be created" }
+          Write-Output "J11C_NO_PERSONAL_SAVES_AND_NO_NATIVE_QA"
+  portal-failclosed:
+    name: J11-C / Portal - R07 R08 R09 and native progress stay pending
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Status and site regressions
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build portal
+        working-directory: site
+        run: npm run build
+      - name: Check clear J11-C status without claiming playable
+        run: |
+          grep -q "J11-C" site/dist/sinnoh-jogavel.html
+          grep -q "0/44" site/dist/sinnoh-jogavel.html
+          grep -q "PILOT_NOT_INSTALLED_NOT_PLAYABLE" site/dist/data/sinnoh-playable-progress.json
