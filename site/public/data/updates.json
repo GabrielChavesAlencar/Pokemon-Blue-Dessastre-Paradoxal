@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "81e603eb2c812e52259914757a2e19350c36914e",
+      "date": "2026-11-18T13:09:34-03:00",
+      "title": "Sinnoh jogável J07: harness Windows QA nativa G12 com SHA, isolamento e evidências fail-closed (#235)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "17af4dfec880960d5106e5269a3cdc8ab4b95fc1",
       "date": "2026-11-18T12:37:12-03:00",
       "title": "Sinnoh jogável J06: instalador/launcher Windows QA isolado com direitos, hashes e rollback (#233)",
