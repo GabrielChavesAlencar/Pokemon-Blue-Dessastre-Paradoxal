@@ -1,0 +1,105 @@
+name: Sinnoh L20 - public-only reconciliation (no native QA)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l20-public-reconciliation.yml'
+      - 'data/regions/sinnoh-*'
+      - 'site/public/data/sinnoh-*'
+      - 'site/public/sinnoh-l20-reconciliacao.html'
+      - 'site/public/assets/sinnoh-l20-reconciliation.js'
+      - 'site/tests/sinnoh-l20-reconciliation.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_*'
+      - 'tests/test_sinnoh_*'
+      - 'docs/SINNOH_L20_RECONCILIACAO_PUBLICA.md'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l20-public-reconciliation.yml'
+      - 'data/regions/sinnoh-*'
+      - 'site/public/data/sinnoh-*'
+      - 'site/public/sinnoh-l20-reconciliacao.html'
+      - 'site/public/assets/sinnoh-l20-reconciliation.js'
+      - 'site/tests/sinnoh-l20-reconciliation.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_*'
+      - 'tests/test_sinnoh_*'
+      - 'docs/SINNOH_L20_RECONCILIACAO_PUBLICA.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  l20-audit:
+    name: L20 / immutable L19 source and 61 synthetic negatives
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L20 fail-closed suite
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l20_reconciliation.py' -v
+      - name: Audit immutable L19 Git-public lineage and open gaps
+        run: |
+          python scripts/regions/audit_sinnoh_l20_reconciliation.py > /tmp/sinnoh-l20-verified.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/sinnoh-l20-verified.json').read_text())
+          assert d["stage"]=="L20"
+          assert d["status"]=="PUBLIC_METADATA_RECONCILIATION_AUDITED_ALL_BLOCKED"
+          assert (d["requests_matched"],d["gaps_open"],d["gaps_closed"])==(88,88,0)
+          assert (d["links"],d["anonymous_unassigned"])==(1084,18)
+          assert (d["local_reports_received"],d["human_approved"],d["native_executed"],
+                  d["native_approved"],d["phase_bcd_completed"])==(0,0,0,0,0)
+          assert (d["windows_pending"],d["android_pending"])==(43,1)
+          assert d["r07_pending"] and d["r08_pending"] and d["r09_pending"]
+          assert d["sinnoh_playable"] is False
+          assert d["baseline_commits"]["L19"]=="54bbb63a7f2f7a74a26ce8dbc61d52793a27315d"
+          print("L20_PUBLIC_GIT_RECONCILIATION_AUDITED_NO_NATIVE_QA")
+          PY
+      - name: No private sources or installations
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'L20_PUBLIC_METADATA_ONLY'
+  l20-regressions:
+    name: L20 / full L19-L00 and G12 public contract regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: All public L00-L19 stage tests
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_l*.py' -v
+      - name: G12 native handoff fixture only (no native execution)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+  l20-portal:
+    name: L20 / read-only portal Node tests and full build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: node --check site/public/assets/sinnoh-l20-reconciliation.js
+      - name: L20 and prior public portal regressions
+        working-directory: site
+        run: |
+          node --test tests/sinnoh-l20-reconciliation.test.mjs tests/sinnoh-l19-consolidation.test.mjs tests/sinnoh-l18-review-gaps.test.mjs tests/sinnoh-l17-public-review.test.mjs tests/sinnoh-l16-public-exit-gates.test.mjs tests/sinnoh-l15-public-diff.test.mjs tests/sinnoh-l14-public-readiness.test.mjs tests/sinnoh-l13-public-queue.test.mjs tests/sinnoh-l12-coverage-gaps.test.mjs tests/sinnoh-l11-traceability.test.mjs tests/sinnoh-l10-blocker-index.test.mjs tests/sinnoh-l07-triage.test.mjs
+      - name: Full portal build
+        working-directory: site
+        run: npm run build
+      - name: Verify static L20 distribution
+        run: |
+          test -s site/dist/sinnoh-l20-reconciliacao.html
+          test -s site/dist/data/sinnoh-l20-public-reconciliation.json
+          test -s site/dist/assets/sinnoh-l20-reconciliation.js
+          grep -q 'sinnoh-l20-reconciliacao.html' site/dist/index.html
+          echo 'L20_READ_ONLY_STATIC_PORTAL'
