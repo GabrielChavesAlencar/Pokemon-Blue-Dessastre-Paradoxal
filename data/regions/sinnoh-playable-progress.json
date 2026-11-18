@@ -9,9 +9,9 @@
   "status": "PILOT_NOT_INSTALLED_NOT_PLAYABLE",
   "source_engineering_code_complete_not_playable": 32,
   "stages_total": 8,
-  "stages_code_ready": 2,
+  "stages_code_ready": 3,
   "stages_native_validated": 0,
-  "engineering_percent": 25,
+  "engineering_percent": 37.5,
   "native_verified_percent": 0,
   "pilot_map_symbols": 9,
   "required_warps": 16,
@@ -25,7 +25,7 @@
   "joiplay_tested": false,
   "main_game_modified": false,
   "save_migration_performed": false,
-  "phase_count_policy": "J01 and J02 count executable engineering code with CI, not installed maps or native gameplay. J02 has 4 audited historical terrain references and 5 missing real maps; no approved 9/9 local bindings. Physical/native proof remains 0/8; L phases never count.",
+  "phase_count_policy": "J01/J02/J03 count only code implemented and CI regressions; NO actual Sinnoh terrain staged in this repository, no physical MapIDs assigned, no native Game.exe/JoiPlay. Four historical map terrain references only, five missing real maps. Even a local private J03 stage does not certify rights, R07/R08/R09, native gameplay, or distribution. L series never counts.",
   "stages": [
     {
       "id": "J01",
@@ -50,12 +50,12 @@
     {
       "id": "J03",
       "title": "Converter terrenos e tilesets para cópia isolada",
-      "status": "blocked",
-      "code_ready": false,
+      "status": "code_ready",
+      "code_ready": true,
       "native_verified": false,
       "playable": false,
-      "evidence_path": null,
-      "completion_requires": "Authorized real tiles/geometry staged and verified without touching main game"
+      "evidence_path": "scripts/regions/prepare_sinnoh_playable_j03.py",
+      "completion_requires": "Executable geometry-only converter and private SHA-approved dry-run/stage/verify/rollback implemented with synthetic QA tests; NO real four-map stage created here and five real maps missing. Requires local authorized source and rights review; not native playable."
     },
     {
       "id": "J04",
@@ -108,13 +108,13 @@
       "completion_requires": "Android/JoiPlay QA on isolated test package and safe incremental release"
     }
   ],
-  "next_stage": "J03",
+  "next_stage": "J04",
   "blockers": [
-    "Quatro mapas exteriores de fonte conhecida têm somente metadados e SHA; arquivos RXDATA/PNG não estão na main autorizados",
-    "Cinco mapas não possuem terreno não vazio validado: quarto, casa 1F, casa Barry, Lago Verity e laboratório Rowan",
-    "Instalação game/Data e reservas futuras de MapIDs R07 ainda não homologadas",
-    "Licenças individuais R08 pendentes; nenhum mapa instalado ou evento compilado",
-    "43 testes Windows e 1 Android ainda não executados"
+    "Quatro terrenos exteriores com hashes B00 estão identificados, mas fonte RXDATA/PNG de uso autorizado não está presente no GitHub; staging J03 nativo não executado.",
+    "Cinco mapas essenciais continuam sem terreno real não vazio: quarto, casa térrea, casa Barry, Lago Verity e laboratório Rowan.",
+    "Sem MapInfos local, reservas R07 e MapIDs de destino fisicamente aprovados.",
+    "Revisão local de direitos de cada mapa/tileset/PNG e autorização R08 ainda pendentes; stage privado não permite distribuição.",
+    "Nenhum Game.exe/JoiPlay executado; 0/44 QA nativo, 0/9 mapas instalados."
   ],
   "source_data": "data/regions/sinnoh-twinleaf-events.json",
   "native_gate": "SINNOH_PLANNED_NOT_PLAYABLE",
@@ -122,7 +122,12 @@
   "native_source_maps_missing": 5,
   "native_map_bindings_verified": 0,
   "native_maps_installed": 0,
-  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/224",
-  "next_button_label": "Executar J03 — Preparar mapas e tilesets em cópia isolada",
-  "next_prompt": "Execute a fase J03 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub. Use PR #222, issue #223/J02, issue #224/J03 e os importadores existentes para preparar os terrenos, tilesets e gráficos autorizados em staging transacional isolado, com testes reais de integridade e regressões, sem tocar em saves nem fingir que há mapas/ativos físicos ausentes. Atualize apenas a barra J de engenharia e crie um botão para a próxima fase J04. Faça merge somente quando os checks relevantes estiverem verdes."
+  "next_issue_url": "https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/226",
+  "next_button_label": "Executar J04 — Portais, NPCs e 3 iniciais de Sinnoh",
+  "next_prompt": "Execute agora a fase J04 da barra Sinnoh jogável do Pokémon Blue: Dessastre Paradoxal diretamente no GitHub. Use J01-J03, PR #225, issues #224 e #226 para preparar os 16 portais, 5 NPCs e 3 Poké Bolas em eventos originais do Blue, ligados a 9 mapas reais e passáveis apenas quando existirem com direitos e MapIDs comprovados. Não invente os cinco mapas ausentes, coordenadas, sprites, licenças ou testes Game.exe/JoiPlay; preserve saves e outros mapas, CI fail-closed e staging isolado. Atualize apenas o progresso de engenharia legítimo e deixe botão para executar a J05. Faça merge apenas com checks relevantes aprovados.",
+  "staging_code_prepared": true,
+  "local_stage_created_and_verified": false,
+  "staging_real_terrain_maps_confirmed": 0,
+  "source_donor_events_imported": 0,
+  "next_workflow": "SINNOH_J04_PHYSICAL_EVENTS"
 }
