@@ -137,8 +137,24 @@ jobs:
             if($LASTEXITCODE -ne 0){throw 'Manifesto da versao 5d0cc84 indisponivel'}
             $args+=@('--previous-manifest',(Join-Path $legacy 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
           }
+          # A previous opt-in performance preview is an actual installed
+          # Android revision. It must be able to upgrade to this main build,
+          # not be stranded after this later release supersedes the hotfix.
+          $previewTag='android-map-perf-preview-02e8e5a'
+          $previewDir=Join-Path 'dist/previous' $previewTag
+          New-Item -ItemType Directory -Force -Path $previewDir | Out-Null
+          gh release download $previewTag --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $previewDir
+          if($LASTEXITCODE -ne 0){throw 'Manifesto Android da preview nao disponivel'}
+          $args+=@('--previous-manifest',(Join-Path $previewDir 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
+          # Fail closed: do not publish a newer release that reintroduces
+          # the map-connection hitch or drops Cerulean/Route4 BGM.
+          python -c 'from zipfile import ZipFile; from scripts.android.package import compiled_region; z=ZipFile("dist/Blue-Android-Decades-Kanto-Hoenn.zip"); root="Pokemon-Blue-Android/"; name="Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb"; source=z.read(root+name); assert b"def self.agent_map_id(region)" in source, "Optimized regional map dispatcher missing"; compiled_region(z.read(root+"Data/PluginScripts.rxdata"),"RegionTravel.rb",source); music=z.read(root+"Data/blue-kanto-music.txt").decode("utf8"); assert sum(line.startswith("MAP\t") for line in music.splitlines())==74, "Expected 74 Kanto music map bindings"; z.close(); print("PASS: Android native cache and 74 Kanto BGMs")'
+          if($LASTEXITCODE -ne 0){throw 'Otimização ou música de Kanto ausente do ZIP compilado'}
           python scripts/android/publish_updates.py @args
           if($LASTEXITCODE -ne 0){throw 'Manifesto do canal multirregional falhou.'}
+          python -c 'import json; from pathlib import Path; x=json.loads(Path("dist/Blue-Android-Decades-Kanto-Hoenn.update.json").read_text()); assert "02e8e5addc7a7f2c4a9f71195fcae7f49631ed54" in {p["from_revision"] for p in x.get("patches",[])}, "No delta back to stable from opt-in preview"; print("PASS: preview-to-main incremental patch")'
+          if($LASTEXITCODE -ne 0){throw 'Delta da preview para a main nao gerado'}
+
           if((Get-Item dist/Blue-Android-Decades-Kanto-Hoenn.zip).Length -gt 2147483648){throw 'Asset excede 2 GiB do GitHub.'}
       - name: Publicar release experimental apenas apos sucesso integral
         shell: powershell
