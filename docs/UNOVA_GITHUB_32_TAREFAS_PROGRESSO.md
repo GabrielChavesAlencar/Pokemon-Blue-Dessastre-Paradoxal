@@ -6,9 +6,9 @@
 
 ## Barra geral
 
-**29/32 entregas concluídas (91%)** · 3 pendentes
+**30/32 entregas concluídas (94%)** · 2 pendentes
 
-`[█████████████████████████████░░░]` **91%**
+`[██████████████████████████████░░]` **94%**
 
 | Frente | Concluídas | Progresso |
 |---|---:|---|
@@ -18,7 +18,7 @@
 | G04 — Áreas, selvagens e temporadas | **4/4** | `████` |
 | G05 — Mecânicas e isolamento regional | **4/4** | `████` |
 | G06 — Site, guias e acompanhamento | **4/4** | `████` |
-| G07 — Blue-Story, manifests e instalador | **3/4** | `███░` |
+| G07 — Blue-Story, manifests e instalador | **4/4** | `████` |
 | G08 — Auditoria, CI e qualidade | **2/4** | `██░░` |
 
 ## Critérios para aumentar a barra
@@ -90,7 +90,7 @@ Preparação, dry-run e rollback, sem instalação de Unova.
 - [x] **G07.1 — Auditar estaticamente alocações dos instaladores regionais.** Auditor A12 com análise AST das fontes e política fail-closed · [Evidência](../scripts/regions/audit_unova_a12_ownership.py)
 - [x] **G07.2 — Criar schema de pacote incremental de Unova.** JSON Schema 2020-12, identidade/revisões, SHA-256, manifestos de origem, direitos obrigatórios não verificados, limites e bloqueio absoluto de payload nativo, com 122 testes offline · [Evidência](../scripts/regions/audit_unova_g07_incremental_manifest.py)
 - [x] **G07.3 — Simular transação de instalação e reversão.** G07.2 validado antes de staging; snapshots SHA-256 de estado protegido, CAS duplo, backups em memória, dois arquivos documentais e sete pontos de falha com rollback integral, 135 testes novos · [Evidência](../scripts/regions/audit_unova_g07_transaction.py)
-- [ ] **G07.4 — Preparar contratos Windows e Android/JoiPlay.** Atualizações incrementais compatíveis, sem alegar aprovação nativa
+- [x] **G07.4 — Preparar contratos Windows e Android/JoiPlay.** Perfis auditáveis de canal, versão, SHA-256, direitos, paths, saves, backups, CAS, rollback em memória e limites de compatibilidade real; 168 testes novos · [Evidência](../scripts/regions/audit_unova_g07_platform_compat.py)
 
 ### G08 — Auditoria, CI e qualidade
 
@@ -114,4 +114,4 @@ O repositório já registra **74 áreas simbólicas**, **73 NPCs/arquétipos**, 
 - Validar atualizador e jogabilidade Android/JoiPlay no dispositivo real.
 - Promover Unova do status `planned` **somente após evidências nativas suficientes**.
 
-**Próxima implementação proposta:** G07.4 (contratos auditáveis de compatibilidade Windows/Blue-Story e Android/JoiPlay; nada de habilitar instalador regional sem prova e sem direitos). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
+**Próxima implementação proposta:** G08.2 (matriz de aceite e pendências de evidências, QA e instalação de Unova, sem alterar jogos ou confundir Barra G com jogabilidade). Mesmo com a frente G04 concluída, slots, espécies, taxas e níveis reais de Unova continuam pendentes por falta de fontes nativas verificadas. Cada conclusão futura deve atualizar o JSON, o CI e a barra visual mantendo estas restrições.
