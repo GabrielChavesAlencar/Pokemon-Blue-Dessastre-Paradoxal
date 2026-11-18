@@ -28,8 +28,8 @@ def chunk(kind,data):
 
 def fake_png(width=256,height=128):
     ihdr=struct.pack(">IIBBBBB",width,height,8,6,0,0,0)
-    pixels=b"".join(b"\\x00"+b"\\x00"*(width*4) for _ in range(height))
-    return b"\\x89PNG\\r\\n\\x1a\\n"+chunk(b"IHDR",ihdr)+chunk(b"IDAT",zlib.compress(pixels))+chunk(b"IEND",b"")
+    pixels=b"".join(b"\x00"+b"\x00"*(width*4) for _ in range(height))
+    return b"\x89PNG\r\n\x1a\n"+chunk(b"IHDR",ihdr)+chunk(b"IDAT",zlib.compress(pixels))+chunk(b"IEND",b"")
 
 class J10SyntheticAuthoringTests(unittest.TestCase):
     def setUp(self):
@@ -56,7 +56,8 @@ class J10SyntheticAuthoringTests(unittest.TestCase):
         self.maps={}
         for i,symbol in enumerate(SYMBOLS):
             lower=[384+(j+i)%7 for j in range(300)]
-            middle=[0]*300;middle[10+i]=390+i;middle[20+i]=387
+            middle=[0]*300
+            for k in range(5):middle[10+k*20+i]=384+(i+k)%16
             self.maps[symbol]={
                 "schema":1,"region":"SINNOH","stage":"J10","symbol":symbol,
                 "kind":j10.KIND,"width":20,"height":15,"tileset_id":1,
