@@ -118,7 +118,8 @@ def profile(stage: Path,token:str)->dict:
             or sum(x.strip()=="Title="+expected["windowTitle"]
                    for x in ini.read_text("utf-8").splitlines())!=1):
         fail("ANDROID_PRIVATE_SAVE_NAMESPACE_INVALID")
-    return {"sha256":file_digest(mk),"settings":expected}
+    return {"sha256":file_digest(mk),"game_ini_sha256":file_digest(ini),
+            "settings":expected}
 
 def inspect_snapshot(project:Path,stage:Path,kind:str)->tuple[dict,dict,str]:
     project,main,work=project_paths(project)
@@ -187,7 +188,8 @@ def check_stage(project:Path,pre:dict,stage:Path,baseline:Path,
     target,ident,token=inspect_snapshot(project,stage,"qa")
     previous,bident,btoken=inspect_snapshot(project,baseline,"base")
     if (btoken!=token or bident["settings"]!=ident["settings"]
-            or bident["sha256"]!=ident["sha256"]):
+            or bident["sha256"]!=ident["sha256"]
+            or bident["game_ini_sha256"]!=ident["game_ini_sha256"]):
         fail("ANDROID_PROFILE_CHANGED_OR_NOT_ISOLATED")
     if not {"Data/MapInfos.rxdata","Data/System.rxdata","Data/PluginScripts.rxdata"}.issubset(previous):
         fail("BASELINE_NOT_PRECOMPILED_ANDROID_GAME")
@@ -362,7 +364,7 @@ def verify_candidate(project:Path,path:Path,expected_sha:str|None,
                 or len(names)>2001):
             fail("ANDROID_DELTA_ZIP_STRUCTURE_INVALID")
         info=archive.getinfo("J08-delta.json")
-        if info.file_size>1_000_000:fail("MANIFEST_OVERSIZED")
+        if info.file_size>4_000_000:fail("MANIFEST_OVERSIZED")
         desc=json.loads(archive.read("J08-delta.json"))
         if (type(desc) is not dict or
                 (desc.get("schema"),desc.get("region"),desc.get("stage"),
@@ -379,6 +381,7 @@ def verify_candidate(project:Path,path:Path,expected_sha:str|None,
         files=desc.get("new_files")
         if type(files) is not dict or set(files)!=(set(names)-{"J08-delta.json"}):
             fail("ANDROID_ZIP_INVENTORY_INCONSISTENT")
+        total_unpacked=0
         for name,expected in files.items():
             if (not valid_entry(name) or type(expected) is not dict
                     or set(expected)!={"sha256","size"}
@@ -388,11 +391,20 @@ def verify_candidate(project:Path,path:Path,expected_sha:str|None,
                     or not SHA.fullmatch(expected["sha256"])):
                 fail("ANDROID_ZIP_FILE_NOT_PERMITTED")
             item=archive.getinfo(name)
-            if (item.is_dir() or item.file_size!=expected["size"]
+            total_unpacked+=item.file_size
+            if (total_unpacked>4*1024**3 or item.compress_size==0
+                    or (item.file_size>item.compress_size*500)
+                    or item.is_dir() or item.file_size!=expected["size"]
                     or item.file_size>512*1024*1024
                     or item.compress_size>512*1024*1024
                     or ((item.external_attr>>16)&0o170000)==0o120000
-                    or sha(archive.read(name))!=expected["sha256"]):
+                    ):
+                fail("ANDROID_ZIP_CONTENT_CHANGED")
+            h=hashlib.sha256()
+            with archive.open(name) as stream:
+                for chunk in iter(lambda:stream.read(1024*1024),b""):
+                    h.update(chunk)
+            if h.hexdigest()!=expected["sha256"]:
                 fail("ANDROID_ZIP_CONTENT_CHANGED")
     return {"schema":1,"stage":"J08","verified_zip_structure":True,
             "changed_files":len(files),"sha256":file_digest(path),
