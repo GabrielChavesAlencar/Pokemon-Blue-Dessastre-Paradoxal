@@ -5,6 +5,14 @@ on:
     branches: [main]
     paths:
       - 'scripts/android/repack_multiregion_hotfix.py'
+      - 'data/kanto-music-rules.json'
+      - 'data/kanto-music.json'
+      - 'tests/test_kanto_cerulean_route4_android.py'
+      - 'tests/test_kanto_music_phase1.py'
+      - 'tests/test_kanto_music_phase2.py'
+      - 'tests/test_kanto_music_phase3.py'
+      - 'tests/test_kanto_music_phase4.py'
+      - 'tests/test_kanto_music_phase5.py'
       - 'scripts/android/update_client.py'
       - 'scripts/battle_lab/Mobile.rb'
       - 'scripts/android/package.py'
@@ -33,6 +41,11 @@ jobs:
           ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
           ruby tests/region_start_android_no_json_runtime.rb scripts/battle_polish/RegionStart.rb
           python -m unittest discover -s tests -p test_android_updates.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase2.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase3.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase4.py -v
+          python -m unittest discover -s tests -p test_kanto_music_phase5.py -v
+          python -m unittest discover -s tests -p test_kanto_cerulean_route4_android.py -v
       - name: Baixar ZIP ORIGINAL auditado e hashes da release integrada
         env:
           GH_TOKEN: ${{ github.token }}
@@ -59,16 +72,19 @@ jobs:
             mkdir -p "dist/previous/$tag"
             gh release download "$tag" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$tag"
             args+=(--previous-manifest "dist/previous/$tag/Blue-Android-Decades-Kanto-Hoenn.update.json")
-          done < <(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq '
-            [.[] | select(.draft == false and (.tag_name | startswith("android-multiregion-"))) |
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq '
+            .[] | select(.draft == false and (.tag_name | startswith("android-multiregion-"))) |
             select([.assets[].name] | index("Blue-Android-Decades-Kanto-Hoenn.update.json")) |
-            .tag_name][:4][]')
-          # Exact Android installation observed on-device: 5d0cc84.
-          # Without this historical manifest the game needlessly asks for 1.4 GB.
-          prior="android-multiregion-hotfix-2-5d0cc84"
-          mkdir -p "dist/previous/$prior"
-          gh release download "$prior" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$prior"
-          args+=(--previous-manifest "dist/previous/$prior/Blue-Android-Decades-Kanto-Hoenn.update.json")
+            .tag_name' | awk '!seen[$0]++' | head -n 4)
+          # Always support the exact user-installed revisions explicitly:
+          # 5d0cc84 (old launcher) and 8e6e527 (working no-backup updater).
+          # Even if the GitHub release catalogue spans more than 100 items,
+          # preserve a small direct patch instead of silently requiring 1.4 GB.
+          for prior in "android-multiregion-hotfix-2-5d0cc84" "android-multiregion-hotfix-22-8e6e527"; do
+            mkdir -p "dist/previous/$prior"
+            gh release download "$prior" --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir "dist/previous/$prior" --clobber
+            args+=(--previous-manifest "dist/previous/$prior/Blue-Android-Decades-Kanto-Hoenn.update.json")
+          done
           python scripts/android/publish_updates.py "${args[@]}"
           cd dist
           sha256sum Blue-Android-Decades-Kanto-Hoenn.zip > Blue-Android-Decades-Kanto-Hoenn.zip.sha256
@@ -86,5 +102,5 @@ jobs:
           gh release create "$TAG" "${assets[@]}" \
             --target "$GITHUB_SHA" \
             --title "Pokemon Blue Android - Decades Kanto Hoenn - Kanto corrigido" \
-            --notes "ZIP auditado de Decades + Kanto + Hoenn, com fossils de Kanto e novo menu Versao do jogo (titulo e pausa). Exibe revisao GitHub, data/hora UTC do build e horario real aplicado pelo atualizador. Patches incrementais sem backup incluem a revisao 5d0cc84 do celular. Saves nao modificados; teste em JoiPlay real ainda pendente." \
+            --notes "Kanto Android: BGM da Rota 4 (faixa 1-32) e Cerulean City (faixa 1-50 de Fuchsia City) vinculadas ao MapID instalado e verificadas no pacote. Mantem fossils, menu de versao e atualizador por patch sem backup. Mapas, saves e Game.exe preservados. Teste audivel no JoiPlay real ainda pendente." \
             --prerelease

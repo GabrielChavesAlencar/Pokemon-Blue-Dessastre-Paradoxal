@@ -1,0 +1,203 @@
+name: Sinnoh L17 - independent public reviewer index (no native QA)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l17-public-review-index.yml'
+      - 'data/regions/sinnoh-l17-public-review-index.json'
+      - 'site/public/data/sinnoh-l17-public-review-index.json'
+      - 'site/public/sinnoh-l17-revisao-independente.html'
+      - 'site/public/assets/sinnoh-l17-public-review.js'
+      - 'site/tests/sinnoh-l17-public-review.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l17_public_review.py'
+      - 'tests/test_sinnoh_l17_public_review.py'
+      - 'docs/SINNOH_L17_INDICE_REVISAO_INDEPENDENTE_PUBLICA.md'
+      - 'data/regions/sinnoh-l16-public-exit-gates.json'
+      - 'site/public/data/sinnoh-l16-public-exit-gates.json'
+      - 'data/regions/sinnoh-l15-public-consistency-diff.json'
+      - 'site/public/data/sinnoh-l15-public-consistency-diff.json'
+      - 'data/regions/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/data/sinnoh-l14-public-readiness-matrix.json'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l17-public-review-index.yml'
+      - 'data/regions/sinnoh-l17-public-review-index.json'
+      - 'site/public/data/sinnoh-l17-public-review-index.json'
+      - 'site/public/sinnoh-l17-revisao-independente.html'
+      - 'site/public/assets/sinnoh-l17-public-review.js'
+      - 'site/tests/sinnoh-l17-public-review.test.mjs'
+      - 'site/src/index.html'
+      - 'scripts/regions/audit_sinnoh_l17_public_review.py'
+      - 'tests/test_sinnoh_l17_public_review.py'
+      - 'docs/SINNOH_L17_INDICE_REVISAO_INDEPENDENTE_PUBLICA.md'
+      - 'data/regions/sinnoh-l16-public-exit-gates.json'
+      - 'site/public/data/sinnoh-l16-public-exit-gates.json'
+      - 'data/regions/sinnoh-l15-public-consistency-diff.json'
+      - 'site/public/data/sinnoh-l15-public-consistency-diff.json'
+      - 'data/regions/sinnoh-l14-public-readiness-matrix.json'
+      - 'site/public/data/sinnoh-l14-public-readiness-matrix.json'
+      - 'data/regions/sinnoh-l13-public-evidence-queue.json'
+      - 'site/public/data/sinnoh-l13-public-evidence-queue.json'
+      - 'data/regions/sinnoh-l12-public-coverage-gaps.json'
+      - 'site/public/data/sinnoh-l12-public-coverage-gaps.json'
+      - 'data/regions/sinnoh-l11-public-traceability.json'
+      - 'site/public/data/sinnoh-l11-public-traceability.json'
+      - 'data/regions/sinnoh-l10-public-blocker-index.json'
+      - 'site/public/data/sinnoh-l10-public-blocker-index.json'
+      - 'data/regions/sinnoh-l09-independent-public-handoff.json'
+      - 'data/regions/sinnoh-l08-pinned-snapshot.json'
+      - 'data/regions/sinnoh-l08-semantic-diff.json'
+      - 'data/regions/sinnoh-l07-public-triage.json'
+      - 'data/regions/sinnoh-l06-human-evidence-routing.json'
+      - 'data/regions/sinnoh-l05-native-case-dependencies.json'
+      - 'data/regions/sinnoh-l04-independent-review-checklist.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l17-public-review:
+    name: L17 / 88 pending public review entries and synthetic negatives
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L17 own tests incl. negative signoff forgeries
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l17_public_review.py' -v
+      - name: Check public source Git SHA and all review gates pending
+        run: |
+          python scripts/regions/audit_sinnoh_l17_public_review.py > /tmp/sinnoh-l17-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw=Path('/tmp/sinnoh-l17-public.json').read_text('utf8')
+          r=json.loads(raw)
+          assert r['stage']=='L17'
+          assert r['status']=='PUBLIC_REVIEW_GUIDANCE_VERIFIED_ALL_UNREVIEWED'
+          assert r['baseline_commits']=={
+            'L07':'d98033b362dac82347e0d97cb5606870eaa70b22',
+            'L08':'8617ef47ea6745920cb6fe4be251982380d7628d',
+            'L09':'39e51de92aafdab3f5aea3f929f57f5c0bb72b2d',
+            'L10':'7fd821007e63fe9cf0d0c4bf14d153a23cda2b6a',
+            'L11':'9d901a0cf21aa2742f731ee387a51f945bac8a5d',
+            'L12':'58b7f2fec9f66dee06d95676eec66fb2ded6a1de',
+            'L13':'1f12bcc86c10dcc934b024a0562cdadb65d5e2c2',
+            'L14':'11eda18f7225e16b13007c1eb955ccc3d7667b66',
+            'L15':'0192075fb02587c9f3d9db6b170500cba365251c',
+            'L16':'709776022679dc5831748ea4ed2254c6ced1da84'}
+          assert r['public_sources']==[
+            {'stage':'L13','path':'data/regions/sinnoh-l13-public-evidence-queue.json','git_blob_sha1':'357215cdfd96b37eaac291e1c0ab3873069a12fe'},
+            {'stage':'L14','path':'data/regions/sinnoh-l14-public-readiness-matrix.json','git_blob_sha1':'d882d6a20b1c01be33744f14ab7826af2fb6ef41'},
+            {'stage':'L15','path':'data/regions/sinnoh-l15-public-consistency-diff.json','git_blob_sha1':'1a19883a3f0523add6aeaa4f78262b922a041e95'},
+            {'stage':'L16','path':'data/regions/sinnoh-l16-public-exit-gates.json','git_blob_sha1':'c9e3047106d7860bb966b5927a1fd8304506d395'}]
+          assert (r['indexed_requests'],r['pending_blocked'],r['exit_criteria_met'])==(88,88,0)
+          assert (r['documentary_links'],r['anonymous_slots'],r['human_reviewed'])==(1084,18,0)
+          assert (r['windows_native_pending'],r['android_native_pending'])==(43,1)
+          assert (r['local_reports_received'],r['human_approved'],r['native_executed'],
+                  r['native_approved'],r['phase_bcd_approved'])==(0,0,0,0,0)
+          assert r['phase_bcd_total']==13
+          assert r['r07_pending'] and r['r08_pending'] and r['r09_pending'] and r['r09_global_only']
+          assert r['no_private_uploads'] and r['no_native_authorization']
+          assert r['sinnoh_playable'] is False
+          for secret in ('Save01.rxdata','private-baseline.json','hmac_key','watch_id'):
+            assert secret not in raw
+          print('SINNOH_L17_PUBLIC_REVIEW_88_NOT_REVIEWED_NO_PHYSICAL_EVIDENCE')
+          PY
+      - name: No intake of local private reports or saves
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo 'SINNOH_L17_PUBLIC_METADATA_ONLY'
+
+  l17-regressions:
+    name: L17 / L16 to L00 and G12 documentary regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L16 exit gates
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l16_exit_gates.py' -v
+      - name: L15 consistency
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l15_consistency_diff.py' -v
+      - name: L14 blocked dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l14_readiness.py' -v
+      - name: L13 request queue
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l13_public_queue.py' -v
+      - name: L12 coverage gaps
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l12_coverage_gaps.py' -v
+      - name: L11 traceability
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l11_traceability.py' -v
+      - name: L10 blocker index
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l10_public_index.py' -v
+      - name: L09 public handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l09_public_handoff.py' -v
+      - name: L08 snapshot
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l08_pinned_snapshot.py' -v
+      - name: L07 public triage
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l07_public_triage.py' -v
+      - name: L06 evidence routing
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l06_human_evidence.py' -v
+      - name: L05 dependencies
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l05_native_dependencies.py' -v
+      - name: L04 independent review
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l04_human_review.py' -v
+      - name: L03 matrix
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: L02 evidence sanitizer
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 exporter
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 readiness
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 handoff
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v
+
+  l17-portal:
+    name: L17 / public read-only portal tests and full build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Public JS syntax
+        run: node --check site/public/assets/sinnoh-l17-public-review.js
+      - name: Node regressions L17 L16 L15 L14 L13 L12 L11 L10 L07
+        working-directory: site
+        run: node --test tests/sinnoh-l17-public-review.test.mjs tests/sinnoh-l16-public-exit-gates.test.mjs tests/sinnoh-l15-public-diff.test.mjs tests/sinnoh-l14-public-readiness.test.mjs tests/sinnoh-l13-public-queue.test.mjs tests/sinnoh-l12-coverage-gaps.test.mjs tests/sinnoh-l11-traceability.test.mjs tests/sinnoh-l10-blocker-index.test.mjs tests/sinnoh-l07-triage.test.mjs
+      - name: Full site build
+        working-directory: site
+        run: npm run build
+      - name: Confirm distributable L17 files
+        run: |
+          test -s site/dist/sinnoh-l17-revisao-independente.html
+          test -s site/dist/data/sinnoh-l17-public-review-index.json
+          test -s site/dist/assets/sinnoh-l17-public-review.js
+          grep -q 'sinnoh-l17-revisao-independente.html' site/dist/index.html
+          echo 'SINNOH_L17_STATIC_PUBLIC_GUIDANCE_NO_SIGNOFF'

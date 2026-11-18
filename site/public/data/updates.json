@@ -2,6 +2,108 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb1333953d02d319e9b44a96c23fe2e071bd2a2e",
+      "date": "2026-11-18T08:33:30-03:00",
+      "title": "Sinnoh L17: public independent-review guidance stays pending (#212)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "709776022679dc5831748ea4ed2254c6ced1da84",
+      "date": "2026-11-18T07:47:11-03:00",
+      "title": "Sinnoh L16: public exit criteria stay blocked across 88 requests (#210)",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "767347c69c2c4877ca785e69f3719bc71b656cd6",
+      "date": "2026-11-18T07:43:02-03:00",
+      "title": "ci(android): pin 8e6e527 installed revision and paginate historical releases for tiny Cerulean BGM patch",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "c836b51ef8ae86c51bda9c0b99406cc0ed9f7ab3",
+      "date": "2026-11-18T07:39:18-03:00",
+      "title": "ci(android): recheck corrected map-rule test contract before music patch release",
+      "category": "Correções"
+    },
+    {
+      "sha": "6ab0c7705fd2f66b6f50355e6492c8f189eaa329",
+      "date": "2026-11-18T07:38:18-03:00",
+      "title": "test(kanto): update source-scope and native music counts for two restored map BGMs",
+      "category": "Testes"
+    },
+    {
+      "sha": "0756758fefdd53daca10f44d5ecd35549207d502",
+      "date": "2026-11-18T07:38:15-03:00",
+      "title": "test(kanto): update source-scope and native music counts for two restored map BGMs",
+      "category": "Testes"
+    },
+    {
+      "sha": "65e7fa2baad7b9fa484b2a3ef98fcf0faae53b97",
+      "date": "2026-11-18T07:36:59-03:00",
+      "title": "ci(android): gate Cerulean/Route4 music repair on offline regressions and publish incremental ZIP",
+      "category": "Melhorias"
+    },
+    {
+      "sha": "bc4b8810cbbbe26e744798c8cf23c464fa24535f",
+      "date": "2026-11-18T07:36:14-03:00",
+      "title": "test(android): reject unknown map/audio changes and validate route4/Cerulean correction without ROM or saves",
+      "category": "Correções"
+    },
+    {
+      "sha": "d461af7a7b2a2d013bf92f535041d694bee29a85",
+      "date": "2026-11-18T07:35:15-03:00",
+      "title": "fix(android): count actual tab-separated Kanto music bindings in package check",
+      "category": "Correções"
+    },
+    {
+      "sha": "602487d8ccb91424fd42dea3ec5542f10409bf83",
+      "date": "2026-11-18T07:34:35-03:00",
+      "title": "fix(android): patch verified regional music table for Cerulean City and Route 4 without changing maps or saves",
+      "category": "Correções"
+    },
+    {
+      "sha": "c7fdb53356e34b72309533e66358e58c3d1e1212",
+      "date": "2026-11-18T07:33:19-03:00",
+      "title": "test(kanto): require both Cerulean and Route 4 music bindings and preserve 74-map scope",
+      "category": "Testes"
+    },
+    {
+      "sha": "dd0f8f41c445811d33a855b7a78cb7b0b756680e",
+      "date": "2026-11-18T07:33:17-03:00",
+      "title": "test(kanto): require both Cerulean and Route 4 music bindings and preserve 74-map scope",
+      "category": "Testes"
+    },
+    {
+      "sha": "f4594b14366ba22c8c6b92a4334791e2b5203c92",
+      "date": "2026-11-18T07:33:14-03:00",
+      "title": "test(kanto): require both Cerulean and Route 4 music bindings and preserve 74-map scope",
+      "category": "Testes"
+    },
+    {
+      "sha": "197464d723c60a0e3364da802983a2b5bf01f036",
+      "date": "2026-11-18T07:33:12-03:00",
+      "title": "test(kanto): require both Cerulean and Route 4 music bindings and preserve 74-map scope",
+      "category": "Testes"
+    },
+    {
+      "sha": "9f3766e1f30d9206e0a4b1b2670e56be40d77467",
+      "date": "2026-11-18T07:33:09-03:00",
+      "title": "test(kanto): require both Cerulean and Route 4 music bindings and preserve 74-map scope",
+      "category": "Testes"
+    },
+    {
+      "sha": "b023b7d3342f02444d6a305049d0d3a8c72ee505",
+      "date": "2026-11-18T07:32:44-03:00",
+      "title": "fix(kanto): enable authentic Cerulean City and Route 4 BGM in symbolic soundtrack rules",
+      "category": "Correções"
+    },
+    {
+      "sha": "0192075fb02587c9f3d9db6b170500cba365251c",
+      "date": "2026-11-18T07:07:29-03:00",
+      "title": "Sinnoh L15: versioned public consistency diff L13-L14 (#206)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "11eda18f7225e16b13007c1eb955ccc3d7667b66",
       "date": "2026-11-18T06:54:27-03:00",
       "title": "Sinnoh L14: public dependency matrix keeps 88 requests blocked (#204)",
