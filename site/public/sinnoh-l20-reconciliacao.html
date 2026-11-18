@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1c31"><meta name="description" content="Sinnoh L20: reconciliação documental de 88 pedidos ainda bloqueados. Sem revisão humana ou QA nativa.">
+<title>Sinnoh L20 — Reconciliação pública | Pokémon Blue</title>
+<style>
+:root{color-scheme:dark;background:#0b1626;color:#edf4ff;font:16px/1.5 system-ui,-apple-system,sans-serif}*{box-sizing:border-box}
+body{margin:0}header{background:linear-gradient(110deg,#223c5a,#111c30);border-bottom:1px solid #48617b}
+.wrap{max-width:1190px;margin:auto;padding:24px clamp(16px,4vw,48px) 76px}h1{font-size:clamp(1.7rem,4vw,2.55rem);line-height:1.13}
+h2{font-size:1.25rem;margin:26px 0 9px}p{margin:9px 0}a{color:#a8dbff}
+.eyebrow{color:#b9c9db;letter-spacing:.1em;text-transform:uppercase;font-size:.8rem;font-weight:700}
+.warning{border-left:4px solid #edbd7a;background:#312a30;border-radius:8px;padding:13px 17px;margin:20px 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:22px 0}
+.metric{background:#172a43;border:1px solid #4a6380;border-radius:11px;padding:14px}
+.metric strong{display:block;font-size:1.9rem;font-variant-numeric:tabular-nums}
+.metric span,.muted{color:#c1d2e6;font-size:.86rem}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;color:#d0e1f1;font-size:.86rem}
+input,select,button{font:inherit;color:#fff;background:#1c324e;border:1px solid #617d9d;border-radius:8px;padding:9px;min-width:0}
+button{cursor:pointer}button:hover{background:#365476}
+:is(button,input,select,a):focus-visible{outline:3px solid #8ed5fb;outline-offset:2px}
+.tablewrap{overflow:auto;border:1px solid #4a6380;border-radius:10px;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:740px}th,td{padding:10px;text-align:left;border-bottom:1px solid #344c68}
+th{background:#1d324c}tbody tr:hover{background:#1c314a}
+.state{color:#ffe0a7;font-weight:700}.ok{color:#a5defb}
+#details{padding:14px;background:#162a42;border:1px solid #425d79;border-radius:10px;overflow-wrap:anywhere}
+footer{border-top:1px solid #415a77;margin-top:30px;padding-top:18px;font-size:.84rem;color:#c6d8ea;overflow-wrap:anywhere}
+code{overflow-wrap:anywhere} .bad{color:#ffd29e}
+</style></head><body>
+<header><div class="wrap"><p class="eyebrow">Pokémon Blue · Sinnoh · L20</p><h1>Reconciliação documental pública</h1>
+<p>Correspondência dos 88 pedidos L19, sem aprovar nenhuma etapa nativa.</p><a href="/">Voltar ao portal</a> · <a href="/sinnoh-l19-consolidacao.html">Consolidação L19</a></div></header>
+<main class="wrap">
+<div class="warning"><strong>Sinnoh continua planned / não jogável.</strong> Todos os pedidos estão PENDING/BLOCKED; nenhum relatório local, revisão independente, teste nativo ou liberação de direitos foi confirmado. Este painel não executa o jogo e não coleta arquivos.</div>
+<div class="metrics" aria-label="Indicadores documentais">
+<div class="metric"><strong id="countRequests">—</strong><span>Pedidos reconciliados</span></div>
+<div class="metric"><strong id="countGaps">—</strong><span>Lacunas abertas</span></div>
+<div class="metric"><strong id="countLinks">—</strong><span>Vínculos públicos</span></div>
+<div class="metric"><strong id="countAnonymous">—</strong><span>Posições anônimas</span></div>
+<div class="metric"><strong>0/20</strong><span>Revisões humanas</span></div>
+<div class="metric"><strong>0/44</strong><span>QA nativa (43 Windows / 1 Android)</span></div>
+</div>
+<section><h2>Filtrar pedidos</h2><div class="filters" aria-label="Filtros locais somente leitura">
+<label>Pesquisa por ID ou assunto<input id="search" type="search" placeholder="Ex.: B11, warp..."></label>
+<label>Tipo<select id="kind"><option value="">Todos</option></select></label>
+<label>Prioridade<select id="priority"><option value="">Todas</option><option value="0">P0</option><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option></select></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android</option><option value="cross-platform">Multiplataforma</option><option value="global">Global</option><option value="unassigned">Não atribuída</option></select></label>
+<label>Bloqueio<select id="blocker"><option value="">Todos</option><option value="B09">B09</option><option value="B10">B10</option><option value="B11">B11</option><option value="R07">R07</option><option value="R08">R08</option></select></label>
+<label>Lacuna<select id="gap"><option value="">Todas</option></select></label>
+<label>Correspondência<select id="match"><option value="">Todas</option><option value="MATCHED_L19_PUBLIC_METADATA_ONLY">Correspondente ao L19</option></select></label>
+<button type="button" id="clear">Limpar filtros</button></div></section>
+<section><h2>Pedidos públicos reconciliados</h2><p id="status" role="status" aria-live="polite">Conferindo relatório versionado…</p>
+<div class="tablewrap"><table><thead><tr><th>ID do pedido</th><th>Prioridade</th><th>Tipo</th><th>Plataforma</th><th>Links</th><th>Correspondência</th><th>Estado</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section><h2>Rastreabilidade pública de um pedido</h2><div id="details">Selecione um pedido da tabela para ver critérios, bloqueios e lacunas documentais.</div></section>
+<footer><p>R07 (MapIDs), R08 (direitos) e R09 regional global continuam pendentes. B09/B10/B11 não aprovados. O aviso <code>watch_unchanged</code> de B11 não comprova isolamento global de saves.</p>
+<p>Histórico Git público L07–L19: <span id="commits">Não carregado</span>. Objetos Git não provam revisão física, origem privada, direitos ou execução nativa.</p>
+<p><a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/218">Issue L20 #218</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l20-public-reconciliation.json">JSON versionado L20</a>. Os 18 slots sem atribuição permanecem anônimos.</p></footer></main>
+<script type="module" src="/assets/sinnoh-l20-reconciliation.js"></script></body></html>
