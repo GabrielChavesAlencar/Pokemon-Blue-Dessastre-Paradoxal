@@ -229,5 +229,18 @@ class J11CIsolatedNatives(unittest.TestCase):
     def test_46_invalid_r07_receipt_does_not_approve_real_mapids(self):
         self.assertEqual(self.pure["mapids_reserved"],0)
         self.rejects(lambda:j11c.candidate_ids(set(),set(),[443]*9))
+    def test_47_reject_symlinked_private_baseline_parent(self):
+        # Never follow a private-looking path redirected into another Data tree.
+        private=self.temp/".blue-work"
+        private.mkdir()
+        external=self.temp/"external"
+        (external/"Data").mkdir(parents=True)
+        try:
+            (private/"sinnoh-j11-baseline").symlink_to(external,target_is_directory=True)
+        except (OSError,NotImplementedError):
+            self.skipTest("symlinks not supported by this Windows runner")
+        self.rejects(lambda:j11c.private_inputs(self.temp,
+                    private/"sinnoh-j11-baseline/Data",
+                    private/"sinnoh-j11-reviews/r07.json"))
 
 if __name__=="__main__":unittest.main()
