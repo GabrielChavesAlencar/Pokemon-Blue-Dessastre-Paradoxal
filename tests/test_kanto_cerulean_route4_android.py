@@ -20,15 +20,20 @@ TRACKS = {item["number"]: item for item in CATALOG["files"]}
 
 class SourceZipFixture:
     def __init__(self):
-        self.mapping = {k: 700 + i for i, k in enumerate(SOURCE["maps"])}
+        # This regression targets a pre-Route24/25 Android ZIP intentionally.
+        # Keep the old 142-map incremental hotfix supported even though the
+        # *new* full Kanto manifest contains 145 maps.
+        legacy = {k: v for k, v in SOURCE["maps"].items()
+                  if k not in ("53", "54", "55")}
+        self.mapping = {k: 700 + i for i, k in enumerate(legacy)}
         preview = set(SOURCE["preview_only"])
         self.lines = ["BLUE_KANTO_MUSIC_V1\tKANTO\t" + "a" * 64]
-        for old, symbol in SOURCE["maps"].items():
+        for old, symbol in legacy.items():
             self.lines.append(
                 f"SCOPE\t{self.mapping[old]}\t{symbol}\t{int(int(old) in preview)}"
             )
         for row in RULES["maps"]:
-            if row["enabled"] and row["map"] not in ("CERULEAN_CITY", "ROUTE_4"):
+            if row["enabled"] and row["map"] in legacy.values() and row["map"] not in ("CERULEAN_CITY", "ROUTE_4"):
                 original = next(k for k, symbol in SOURCE["maps"].items()
                                 if symbol == row["map"])
                 track = TRACKS[row["track"]]
@@ -69,7 +74,7 @@ class KantoCeruleanMusicRegression(unittest.TestCase):
         self.assertEqual((symbols["CERULEAN_CITY"]["track"], symbols["CERULEAN_CITY"]["enabled"]), (50, True))
         self.assertTrue(TRACKS[32]["filename"].startswith("1-32. Road to Cerulean City"))
         self.assertEqual(TRACKS[50]["filename"], "1-50. Fuchsia City.mp3")
-        self.assertEqual(sum(row["enabled"] for row in RULES["maps"]), 74)
+        self.assertEqual(sum(row["enabled"] for row in RULES["maps"]), 77)
 
     def test_produces_two_exact_bindings_without_reordering_other_music(self):
         original = self.source.music()
