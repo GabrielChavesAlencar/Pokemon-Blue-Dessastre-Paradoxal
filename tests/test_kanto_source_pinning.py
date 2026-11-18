@@ -26,7 +26,7 @@ class FRLGSourcePinningTests(unittest.TestCase):
     def test_pinned_manifest_not_rewritten(self):
         self.assertEqual(self.manifest["region"],"KANTO")
         self.assertEqual(self.manifest["sha256"],PINNED)
-        self.assertRegex(PINN,r"^[0-9a-f]{64}$")
+        self.assertRegex(PINNED,r"^[0-9a-f]{64}$")
 
     def test_source_attributed_and_not_redistributed(self):
         self.assertEqual(self.manifest["source"],"https://eeveeexpo.com/resources/1797/")
