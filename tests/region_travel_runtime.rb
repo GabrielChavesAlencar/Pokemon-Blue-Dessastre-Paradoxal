@@ -182,12 +182,14 @@ module RPG
   end
 end
 class Game_Event
-  attr_reader :name, :x, :y, :map
+  attr_reader :name, :x, :y, :map, :id
   def initialize(map_id, event, map)
     raise "Essentials v21.1 requires owner Game_Map" unless
       map && map.map_id == map_id
-    @name, @x, @y, @map = event.name, event.x, event.y, map
+    @name, @x, @y, @map, @id = event.name, event.x, event.y, map, event.id
+    @source_event = event
   end
+  def list; @source_event.pages.first.list; end
 end
 class MockAgentMap
   attr_accessor :map_id, :events
@@ -593,6 +595,42 @@ Dir.mktmpdir("blue-region-travel-") do |dir|
     check(pallet.events.size == 1, "Repeated Pallet entry duplicated Kanto NPC")
     check(File.binread("Data/Map300.rxdata") == original_map,
           "Kanto NPC overwrote the FRLG map")
+
+    # A previously integrated Pallet map already contains the authenticated
+    # source NPC under the older, generic name. Do not add a second one.
+    installed = MockAgentMap.new(300)
+    original_npc = RPG::Event.new(18, 10)
+    original_npc.id = 9
+    original_npc.name = "Agente Regional"
+    original_npc.pages.first.list = [
+      RPG::EventCommand.new(355, 0, ["BlueRegionTravel.agent(true)"])
+    ]
+    installed.events[9] = Game_Event.new(300, original_npc, installed)
+    BlueRegionTravel.attach_kanto_agent(installed)
+    check(installed.events.size == 1 && installed.events[9].name == "Agente Regional",
+          "Source-installed Pallet NPC was duplicated by runtime injection")
+    BlueRegionTravel.attach_kanto_agent(installed)
+    check(installed.events.size == 1,
+          "Source-installed NPC duplicated on repeated map setup")
+    check(File.binread("Data/Map300.rxdata") == original_map,
+          "Kanto NPC deduplication rewrote the real map")
+
+    # A lookalike name or a script which does not grant NPC context cannot
+    # suppress creation of the one correctly authorized travel NPC.
+    invalid = MockAgentMap.new(300)
+    forged = RPG::Event.new(18, 10)
+    forged.id = 9
+    forged.name = "Agente Regional"
+    forged.pages.first.list = [
+      RPG::EventCommand.new(355, 0, ["BlueRegionTravel.agent(false)"])
+    ]
+    invalid.events[9] = Game_Event.new(300, forged, invalid)
+    BlueRegionTravel.attach_kanto_agent(invalid)
+    check(invalid.events.size == 2 &&
+          invalid.events.values.count { |event|
+            event.name == BlueRegionTravel::KANTO_AGENT_NAME
+          } == 1,
+          "Unauthenticated Pallet event was mistaken for trusted travel NPC")
 
     BlueRegionStart.enable_johto
     $PokemonGlobal.blue_regions = BlueRegions.new_state("JOHTO")

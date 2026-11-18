@@ -24,6 +24,9 @@ module KantoIntegratedCheck
     $map_factory.setup(point[0])
     $game_player.moveto(point[1], point[2])
     require!(BlueRegionTravel.at_departure_town?(state), "Regional departure town not verified")
+    # Native reproduction caught duplicate agent( true ) events under IDs
+    # 9 ("Agente Regional") and 14 ("Agente Regional Kanto").
+    # The production runtime should now reuse the authenticated source NPC.
     candidates = $game_map.events.values.select do |event|
       event.list && event.list.any? { |op|
         op.code == 355 && op.parameters.first.to_s.include?("BlueRegionTravel.agent")
