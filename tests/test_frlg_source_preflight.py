@@ -122,7 +122,7 @@ class SourceOnlyTests(unittest.TestCase):
                     self.assertNotIn(forbidden,workflow.split("jobs:",1)[1])
                 else:
                     self.assertNotIn(forbidden,workflow)
-    def test_source-only_remote_is_opt_in(self):
+    def test_source_only_remote_is_opt_in(self):
         workflow=(ROOT/".github/workflows/frlg-source-only-preflight.yml").read_text()
         self.assertIn("workflow_dispatch:",workflow)
         self.assertNotIn("pull_request_target",workflow)
