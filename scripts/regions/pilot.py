@@ -1229,14 +1229,24 @@ def install_events(source, target, mapping):
                             event.attrs["@pages"][0].attrs["@trigger"] == 2 and
                             not kind.startswith("LEADER"))
                     ops = []
-                    if auto:
-                        ops.append(command(355, f"pbTrainerIntro(:BLUE_KANTO_{kind})".encode()))
-                        ops.append(command(355, b"pbNoticePlayer(get_self)"))
-                    ops.append(command(355, scripts[event_id].encode()))
-                    ops.append(command(355,
-                        f'BlueKantoPilot.sync_trainer_event("{key}", "{trainer_name}", {event_id})'.encode()))
-                    if auto:
-                        ops.append(command(355, b"pbTrainerEnd"))
+                    if original == 42 and event_id in (11, 16):
+                        # Source Map042's two trainers (Luis/Diana) use one
+                        # JoiPlay-safe native wrapper. Optional alert errors
+                        # cannot abort the event before TrainerBattle.start,
+                        # and losses/errors never set self-switch A.
+                        wrapper = (f'BlueKantoPilot.cerulean_gym_trainer('
+                                   f':BLUE_KANTO_{kind}, "{trainer_name}", '
+                                   f'"{key}", {event_id})')
+                        ops.append(command(355, wrapper.encode("ascii")))
+                    else:
+                        if auto:
+                            ops.append(command(355, f"pbTrainerIntro(:BLUE_KANTO_{kind})".encode()))
+                            ops.append(command(355, b"pbNoticePlayer(get_self)"))
+                        ops.append(command(355, scripts[event_id].encode()))
+                        ops.append(command(355,
+                            f'BlueKantoPilot.sync_trainer_event("{key}", "{trainer_name}", {event_id})'.encode()))
+                        if auto:
+                            ops.append(command(355, b"pbTrainerEnd"))
                     trainer = new_event(event, ops, 2 if auto else 0, actor(event))
                     # Self Switch A is set ONLY after a true battle victory or
                     # recognition of the old pre-ID save flag. The second page
