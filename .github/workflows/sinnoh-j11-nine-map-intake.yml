@@ -1,0 +1,114 @@
+name: Sinnoh J11 - independent five-map audit and blocked nine-map physical integration
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j11-nine-map-intake.yml'
+      - 'scripts/regions/audit_sinnoh_playable_j11.py'
+      - 'tests/test_sinnoh_j11_physical_intake_gates.py'
+      - 'docs/SINNOH_J11_AUDITORIA_INTEGRACAO_ISOLADA.md'
+      - 'SINNOH_J11_AUDITAR_PRIVADO.bat'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j11-nine-map-intake.yml'
+      - 'scripts/regions/audit_sinnoh_playable_j11.py'
+      - 'tests/test_sinnoh_j11_physical_intake_gates.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-audit-linux:
+    name: J11 / Linux - 50 fail-closed tests, 5 RXDATA PNG/SVG and 9-slot plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile and test independent original 5-map/J11 gate auditor
+        run: |
+          python -m py_compile scripts/regions/audit_sinnoh_playable_j11.py
+          python -m unittest discover -s tests -p test_sinnoh_j11_physical_intake_gates.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j10a_original_geometry.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j09_physical_source_intake.py -v
+      - name: Produce nine-symbolic-slot PRIVATE READ-ONLY readiness plan (no map bytes)
+        run: |
+          python scripts/regions/audit_sinnoh_playable_j11.py --write-plan > /tmp/j11-summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path(".blue-work/sinnoh-j11-readonly-plan.json")
+          d=json.loads(p.read_text())
+          assert d["j10a_originals"]["count"]==5
+          assert d["nine_map_symbolic_slots"]==9
+          assert d["j04_events"]["directional_warps"]==16
+          assert d["j04_events"]["npc_handlers"]==5
+          assert d["j04_events"]["starter_balls"]==3
+          assert d["historical_donor_verified"] is False
+          assert d["r07"]["r07_independent_approval"] is False
+          assert d["r08"]["r08_independently_approved"] is False
+          assert d["native_maps_installed"]==0
+          assert d["native_qa_cases_executed"]==0
+          assert not d["can_stage_j03_j04_j06"] and not d["can_install"]
+          assert not d["native_game_or_personal_saves_accessed"]
+          assert len(list(Path(".blue-work").rglob("*")))==1
+          assert not Path("game/Game.exe").exists()
+          print("J11_NINE_SYMBOLS_FIVE_REAUDITED_FOUR_RIGHTS_PENDING_NO_INSTALL")
+          PY
+      - name: Upload only a sanitized JSON readiness receipt, not source maps or images
+        uses: actions/upload-artifact@v4
+        with:
+          name: sinnoh-j11-readonly-nine-map-gates
+          path: .blue-work/sinnoh-j11-readonly-plan.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Guard unchanged protected project and source
+        run: |
+          git diff --exit-code
+          test ! -d .blue-work/sinnoh-j09-authored
+          test ! -d .blue-work/sinnoh-j10a-original
+          test ! -d .blue-work/sinnoh-j03-stage
+          echo "J11_ONLY_READINESS_JSON_NO_MAPS_LICENSES_OR_NATIVE"
+  original-audit-windows:
+    name: J11 / Windows - synthetic private tests and no personal data
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit five original geometries and negative tests
+        run: |
+          python -m py_compile scripts/regions/audit_sinnoh_playable_j11.py
+          python -m unittest discover -s tests -p test_sinnoh_j11_physical_intake_gates.py -v
+      - name: Refuse false claims and native actions
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Native executable unexpectedly available" }
+          if (Test-Path ".blue-work/sinnoh-j09-authored") { throw "No maps may be promoted by CI" }
+          Write-Output "J11_NO_USER_SAVES_AND_NO_NATIVE_QA"
+  portal-status:
+    name: J11 / Portal - nine maps not installed, QA 0 of 44
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert public playable status still blocked
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Build website
+        working-directory: site
+        run: npm run build
+      - name: Assert J11 and J12 handoff still not playable
+        run: |
+          grep -q "J11" site/dist/sinnoh-jogavel.html
+          grep -q "0/44" site/dist/sinnoh-jogavel.html
+          grep -q "PILOT_NOT_INSTALLED_NOT_PLAYABLE" site/dist/data/sinnoh-playable-progress.json
