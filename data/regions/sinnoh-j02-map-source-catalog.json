@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "J02",
+  "mode": "HISTORICAL_SOURCE_REFERENCE_ONLY",
+  "baseline_source": "data/regions/sinnoh-b00-actual-source.json",
+  "source_archive_sha256": "ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35",
+  "source_mapinfos_sha256": "a5de4d870ae08aa3730942496734c7a0917505a6d435ff178ce5a10f73fc6495",
+  "source_archive_present_on_github": false,
+  "source_rights_verified": false,
+  "game_data_currently_audited": false,
+  "source_terrain_candidates": 4,
+  "source_maps_missing": 5,
+  "destination_mapids_assigned": 0,
+  "destination_game_maps_installed": 0,
+  "real_warps_installed": 0,
+  "map_binding_requirements": [
+    "9 source maps with nonzero terrain, original source SHA-256 and dimensions",
+    "9 distinct destination MapIDs checked against installed game/Data, future reservations and R07",
+    "Interior and Lake Verity sources authored or independently licensed; do not copy empty placeholder maps",
+    "MapInfos/Tilesets runtime integrity; separate QA staging only; R08 per-asset rights and Game.exe tests pending"
+  ],
+  "maps": [
+    {
+      "symbol": "SINNOH_PLAYER_BEDROOM",
+      "source_id": null,
+      "source_name": null,
+      "source_sha256": null,
+      "source_dimensions": null,
+      "source_status": "MISSING_REAL_NONEMPTY_TERRAIN",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_PLAYER_HOUSE_1F",
+      "source_id": null,
+      "source_name": null,
+      "source_sha256": null,
+      "source_dimensions": null,
+      "source_status": "MISSING_REAL_NONEMPTY_TERRAIN",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_TWINLEAF_TOWN",
+      "source_id": 209,
+      "source_name": "Twinleaf Town",
+      "source_sha256": "51835569951ca9cdb7832973946781b8258096e1118e6addea26a66a63d80e42",
+      "source_dimensions": [
+        86,
+        36
+      ],
+      "source_status": "AUDITED_HISTORICAL_TERRAIN_REFERENCE_ONLY",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_BARRY_HOUSE",
+      "source_id": null,
+      "source_name": null,
+      "source_sha256": null,
+      "source_dimensions": null,
+      "source_status": "MISSING_REAL_NONEMPTY_TERRAIN",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_ROUTE_201",
+      "source_id": 227,
+      "source_name": "Route 201",
+      "source_sha256": "6652a810c5d25f32d610021f88b2e949e55305fdd30bc684fa583d301976ba34",
+      "source_dimensions": [
+        90,
+        29
+      ],
+      "source_status": "AUDITED_HISTORICAL_TERRAIN_REFERENCE_ONLY",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_LAKE_VERITY",
+      "source_id": null,
+      "source_name": null,
+      "source_sha256": null,
+      "source_dimensions": null,
+      "source_status": "MISSING_REAL_NONEMPTY_TERRAIN",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_SANDGEM_TOWN",
+      "source_id": 210,
+      "source_name": "Sandgem Town",
+      "source_sha256": "f03bb0cfb97f7e807e950c26c9123e05aa49888f3b180323efd116e51c7ac34f",
+      "source_dimensions": [
+        38,
+        33
+      ],
+      "source_status": "AUDITED_HISTORICAL_TERRAIN_REFERENCE_ONLY",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_PROFESSOR_ROWAN_LABORATORY",
+      "source_id": null,
+      "source_name": null,
+      "source_sha256": null,
+      "source_dimensions": null,
+      "source_status": "MISSING_REAL_NONEMPTY_TERRAIN",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    },
+    {
+      "symbol": "SINNOH_ROUTE_202",
+      "source_id": 228,
+      "source_name": "Route 202",
+      "source_sha256": "3aa9c9e26c2121495e79fef489f23262876447222ed5e3ec563133225f925f35",
+      "source_dimensions": [
+        68,
+        35
+      ],
+      "source_status": "AUDITED_HISTORICAL_TERRAIN_REFERENCE_ONLY",
+      "mapid_on_installed_game": null,
+      "destination_map_id": null,
+      "source_asset_rights_verified": false,
+      "installed": false
+    }
+  ],
+  "nonfunctional_placeholders": [
+    {
+      "source_id": 263,
+      "source_name": "4 Lakes NC",
+      "why": "EMPTY_20x15_NOT_LAKE_VERITY"
+    },
+    {
+      "source_id": 272,
+      "source_name": "Sinnoh Labs",
+      "why": "EMPTY_20x15_NOT_ROWAN_LAB"
+    },
+    {
+      "source_id": 5,
+      "source_name": "Sinnoh Interiors",
+      "why": "EMPTY_20x15_NOT_PLAYER_HOUSE"
+    }
+  ],
+  "next": "J03",
+  "status": "J02_BINDER_CODE_READY_LOCAL_ASSETS_NEEDED",
+  "native_playable": false
+}

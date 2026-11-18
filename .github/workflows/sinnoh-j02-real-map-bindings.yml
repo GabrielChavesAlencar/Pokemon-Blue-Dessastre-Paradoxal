@@ -1,0 +1,92 @@
+name: Sinnoh J02 - real map source binder and playable progress
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j02-real-map-bindings.yml'
+      - 'scripts/regions/bind_sinnoh_playable_j02.py'
+      - 'tests/test_sinnoh_j02_real_map_bindings.py'
+      - 'data/regions/sinnoh-j02-map-source-catalog.json'
+      - 'data/regions/sinnoh-b00-actual-source.json'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+      - 'docs/SINNOH_J02_VINCULACAO_MAPAS_REAIS.md'
+      - 'SINNOH_J02_VINCULAR_MAPAS.bat'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j02-real-map-bindings.yml'
+      - 'scripts/regions/bind_sinnoh_playable_j02.py'
+      - 'tests/test_sinnoh_j02_real_map_bindings.py'
+      - 'data/regions/sinnoh-j02-map-source-catalog.json'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/public/assets/sinnoh-playable-progress.js'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j02-real-map-binder:
+    name: J02 / real RMXP metadata validation and 40 denial/positive cases
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile binder (syntax only)
+        run: python -m py_compile scripts/regions/bind_sinnoh_playable_j02.py
+      - name: J02 unit tests with synthetic map data and real pinned catalog
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j02_real_map_bindings.py' -v
+      - name: Regress J01 and Twinleaf
+        run: |
+          python -m unittest discover -s tests -p 'test_sinnoh_j01_playable_preflight.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_twinleaf_events.py' -v
+          python -m unittest discover -s tests -p 'test_sinnoh_r07_reservations.py' -v
+      - name: No real game inputs; fail closed
+        run: |
+          set +e
+          python scripts/regions/bind_sinnoh_playable_j02.py > /tmp/j02.json
+          status=$?
+          set -e
+          test "$status" -eq 2
+          python - <<'PY'
+          import json
+          with open('/tmp/j02.json',encoding='utf8') as f: d=json.load(f)
+          assert d["terrain_references"] == 4
+          assert d["source_maps_missing"] == 5
+          assert d["source_real_map_bindings_confirmed"] == 0
+          assert d["candidate_destination_ids_verified"] == 0
+          assert d["native_maps_installed"] == 0
+          assert d["can_install"] is False and d["native_playable"] is False
+          assert d["r07_complete"] is False and d["r08_complete"] is False
+          print("J02_FAIL_CLOSED_FOUR_REFERENCES_FIVE_MISSING")
+          PY
+  j02-portal-next-button:
+    name: J02 / dynamic next phase button, tests and full portal build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: node --check site/public/assets/sinnoh-playable-progress.js
+      - name: Test public progress + next phase
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Full build
+        working-directory: site
+        run: npm run build
+      - name: Verify public page and next phase action
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/assets/sinnoh-playable-progress.js
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
+          grep -q '/sinnoh-jogavel.html' site/dist/index.html
