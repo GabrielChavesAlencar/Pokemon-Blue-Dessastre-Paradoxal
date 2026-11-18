@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "ac711a36c530334bc8ab0c8bce0e99bf0136f2da",
+      "date": "2026-11-17T22:02:09-03:00",
+      "title": "Unova G08.2 — suíte integrada G01–G07 (31/32)",
+      "category": "Novidades"
+    },
+    {
       "sha": "0c6dcff0616e42837b74e46c5a6384996f076e93",
       "date": "2026-11-17T21:47:48-03:00",
       "title": "Unova G07.4 — contratos Blue-Story e Android/JoiPlay (30/32)",
