@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "0192075fb02587c9f3d9db6b170500cba365251c",
+      "date": "2026-11-18T07:07:29-03:00",
+      "title": "Sinnoh L15: versioned public consistency diff L13-L14 (#206)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "11eda18f7225e16b13007c1eb955ccc3d7667b66",
       "date": "2026-11-18T06:54:27-03:00",
       "title": "Sinnoh L14: public dependency matrix keeps 88 requests blocked (#204)",
