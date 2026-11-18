@@ -42,7 +42,7 @@
     "source_filenames_allowed": false,
     "operator_receipt_files_opened_automatically": false,
     "provenance_authenticated": false,
-    "sha256_is_not_authenticity": false,
+    "sha256_is_not_authenticity": true,
     "requires_source_baseline_reaudit_for_new_revision": true,
     "mapid3_unresolved": true,
     "preflight_only": true,
