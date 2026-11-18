@@ -342,6 +342,11 @@ def audit_nine(orig_files,orig_manifest,ex_scenes,ex_png,ex_files):
     for sc in ex_scenes:
         symbol=sc["symbol"]
         raw=ex_files[symbol+".rxdata"]
+        # Recompile from the authored source and PNG; never trust appended
+        # Marshal bytes, rewritten cells or a hash from the same changed file.
+        expected=build_rxdata({"width":sc["width"],"height":sc["height"],
+                               "tileset_id":1,"layers":sc["layers"]},ex_png)
+        if raw!=expected:fail("RXDATA_NOT_DETERMINISTIC_SOURCE_COMPILE")
         result=audit_map(raw)
         if (result["width"],result["height"])!=(sc["width"],sc["height"]):
             fail("NEW_EXTERIOR_GEOMETRY_OR_DIMENSIONS")
