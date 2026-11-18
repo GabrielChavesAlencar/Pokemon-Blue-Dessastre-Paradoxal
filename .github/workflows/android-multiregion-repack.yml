@@ -8,6 +8,7 @@ on:
       - 'data/kanto-music-rules.json'
       - 'data/kanto-music.json'
       - 'tests/test_kanto_cerulean_route4_android.py'
+      - 'tests/test_kanto_music_phase1.py'
       - 'tests/test_kanto_music_phase2.py'
       - 'tests/test_kanto_music_phase3.py'
       - 'tests/test_kanto_music_phase4.py'
