@@ -1,0 +1,448 @@
+{
+  "schema_version": 1,
+  "phase": "A15",
+  "region": "UNOVA",
+  "campaign": "WHITE_BW",
+  "status": "TECHNICAL_READINESS_ONLY_NO_NATIVE_APPROVAL",
+  "sources": {
+    "historical_mapids": "data/regions/unova-a05-mapid-candidates.json",
+    "region_registry": "site/public/data/regions.json",
+    "github_tracker": "site/public/data/unova-github-progress.json",
+    "prior_G08": "data/regions/unova-g08-multiregional-contract.json",
+    "donor_rights_auditor": "scripts/regions/audit_unova_e06_rights_inventory.py",
+    "existing_native_installer": "scripts/install_game.py",
+    "windows_blue_story": "scripts/windows/Bootstrap.cs",
+    "android_joiplay": "scripts/android/update_client.py",
+    "historical_report": "docs/MAPIDS_DECADES_SINNOH_UNOVA_2026-11-17.md",
+    "native_blockers_report": "docs/UNOVA_G08_3_MATRIZ_MULTIRREGIONAL_OFFLINE.md"
+  },
+  "historical_snapshot": {
+    "date": "2026-11-17",
+    "mapinfos_sha256": "8f2d23d49ee0bb97779b129ffd7d14c161f4bef27fede6b89111ce266760a420",
+    "physically_observed_mapids": 648,
+    "legacy_b04_missed_short_ids": 31,
+    "unova_candidate_start": 518,
+    "unova_candidate_end": 599,
+    "unova_candidates": 82,
+    "sinnoh_hold_start": 442,
+    "sinnoh_hold_end": 517,
+    "sinnoh_hold_count": 76,
+    "total_unova_planning_candidates": 174,
+    "symbolic_unova_areas": 74,
+    "mapid_3_missing_reported": true,
+    "map001_intro_refs_to_3_reported": 2,
+    "computed_expressions_a09_reported": 20,
+    "independently_verified_native_mapids_from_repo": false,
+    "future_mapid_reservations_verified": false,
+    "candidate_block_native_reserved": false
+  },
+  "provenance_notes": [
+    "648 map IDs and MapInfos digest are from dated user reports and historical B01/B04/B05; actual native MapInfos is not in this GitHub repository audit.",
+    "518–599 has 82 historically unoccupied candidates but not a certified reserved block; 442–517 is a Sinnoh administrative hold, not native installation approval.",
+    "MapID 3 is referenced by two Map001 intro events according to reports, but destination intention and native runtime behavior remain unverified.",
+    "A13 private QA copy and A14 Windows Sandbox preflight are documented from the user's local workflow; this CI neither reads their raw reports nor executes Game.exe.",
+    "Scripts and audit documentation being present do not prove that any donor assets, licenses, map files, script references or platform runtime are approved."
+  ],
+  "steps": [
+    {
+      "id": "A04",
+      "title": "MapInfos e inventário físico multirregional",
+      "depends_on": [],
+      "tool_path": "scripts/regions/audit_unova_a04_mapids.py",
+      "doc_path": "docs/UNOVA_A04_MAPIDS_MULTIRREGIONAIS.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "Relatório bruto A04 com caminhos, hashes e inventário da instalação auditada, revisão independente de conflitos",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A05",
+      "title": "Proposta histórica de MapIDs sem reserva",
+      "depends_on": [
+        "A04"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a05_candidates.py",
+      "doc_path": "docs/UNOVA_A05_PROPOSTA_MAPIDS_B01_B04.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "Compatibilizar MapInfos atuais, ownership e reservas futuras; aprovação humana de IDs e mapeamento de origem",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A06",
+      "title": "Transferências estáticas nos MapNNN",
+      "depends_on": [
+        "A04",
+        "A05"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a06_references.py",
+      "doc_path": "docs/UNOVA_A06_REFERENCIAS_NATIVAS_MAPIDS.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "Relatório completo A06 verificável, com eventos e referências 201 e scripts indiretamente referenciados",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A07",
+      "title": "Proveniência do MapID 3 e scripts",
+      "depends_on": [
+        "A04",
+        "A06"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a07_reference_provenance.py",
+      "doc_path": "docs/UNOVA_A07_RASTREIO_MAPID3_E_SCRIPTS.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "JSON A07 rastreável dos dois eventos Map001 e CommonEvents/Scripts verificados",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A08",
+      "title": "Contexto de Map001 e manifestos instalados",
+      "depends_on": [
+        "A07"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a08_readiness.py",
+      "doc_path": "docs/UNOVA_A08_EVENTOS_MAP001_MANIFESTOS.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "JSON A08 e manifestos de cada instalador, incluindo Sinnoh e Unova, mais revisão de eventos",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A09",
+      "title": "Intros, condições e reivindicações",
+      "depends_on": [
+        "A08"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a09_intro_and_claims.py",
+      "doc_path": "docs/UNOVA_A09_FORENSE_INTRO_E_REIVINDICACOES.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "JSON A09 de triggers/conditions do Map001, revisão design + comportamento observado",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A10",
+      "title": "Destinos dinâmicos e matriz 518–599",
+      "depends_on": [
+        "A09"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a10_dynamic_matrix.py",
+      "doc_path": "docs/UNOVA_A10_DESTINOS_DINAMICOS_MATRIZ.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "JSON A10 com 82 casos, comandos dinâmicos resolvidos e cobertura demonstrada",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A11",
+      "title": "Pré-reserva reversível sem escrita",
+      "depends_on": [
+        "A10"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a11_intro_preflight.py",
+      "doc_path": "docs/UNOVA_A11_INTRO_PRE_RESERVA_REVERSIVEL.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "JSON A11 82/82, reservas reais permitidas apenas após ownership, remap e rollback revisados",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A12",
+      "title": "Ownership e instaladores AST",
+      "depends_on": [
+        "A11"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a12_ownership.py",
+      "doc_path": "docs/UNOVA_A12_PROPRIEDADE_REGIONAL_QA_ISOLADO.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "JSON A12 com análise de versões dos instaladores, todos os manifests, checagem de origem e claims concorrentes",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A13",
+      "title": "Cópia privada QA do Decades",
+      "depends_on": [
+        "A12"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a13_private_qa.py",
+      "doc_path": "docs/UNOVA_A13_COPIA_QA_PRIVADA.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "Recibo A13 de cópia QA isolada, hashes, namespace de saves, sem envio de executáveis/saves",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    },
+    {
+      "id": "A14",
+      "title": "Windows Sandbox e isolamento dos saves",
+      "depends_on": [
+        "A13"
+      ],
+      "tool_path": "scripts/regions/audit_unova_a14_sandbox.py",
+      "doc_path": "docs/UNOVA_A14_SANDBOX_ISOLAMENTO_SAVES.md",
+      "tool_state": "SOURCE_TOOL_PRESENT_UNEXECUTED_IN_CI",
+      "native_acceptance": "BLOCKED_MISSING_REVIEWED_EVIDENCE",
+      "verified_receipt": null,
+      "operator_only_required": true,
+      "required_evidence": "Recibo A14 e log verificado de runtime dentro da VM; configuração .wsb sozinha não comprova teste de Game.exe",
+      "can_reserve": false,
+      "can_install": false,
+      "game_exe_qa_verified": false,
+      "android_qa_verified": false
+    }
+  ],
+  "technical_gates": [
+    {
+      "id": "A_TECH_01",
+      "title": "Fonte e licenças asset-a-asset",
+      "depends_on": [
+        "A04",
+        "A12"
+      ],
+      "evidence_keys": [
+        "donor_asset_manifest_sha256",
+        "per_asset_rights_approval"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_02",
+      "title": "Ownership e reserva de MapIDs no snapshot atual",
+      "depends_on": [
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "evidence_keys": [
+        "native_mapids_reserved_review",
+        "dynamic_references_review",
+        "mapid_3_design_and_runtime_resolution"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_03",
+      "title": "Geografia e transferências nativas com origem autorizada",
+      "depends_on": [
+        "A_TECH_01",
+        "A_TECH_02"
+      ],
+      "evidence_keys": [
+        "source_to_destination_mapid_mapping",
+        "unova_map_and_tileset_authorization"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_04",
+      "title": "Instalador reversível em QA isolada",
+      "depends_on": [
+        "A_TECH_03",
+        "A13",
+        "A14"
+      ],
+      "evidence_keys": [
+        "source_installer_claims_review",
+        "native_atomic_rollback_qa"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_05",
+      "title": "Eventos, líderes, Elite, PBS, treinadores e encontros",
+      "depends_on": [
+        "A_TECH_03"
+      ],
+      "evidence_keys": [
+        "native_story_events_verified",
+        "native_trainers_encounters_pbs_verified"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_06",
+      "title": "Saves, centros, HMs, insígnias e restrições entre regiões",
+      "depends_on": [
+        "A_TECH_04",
+        "A_TECH_05"
+      ],
+      "evidence_keys": [
+        "native_save_isolation_verified",
+        "regional_checkpoint_and_blackout_qa"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_07",
+      "title": "Windows Blue-Story e Android JoiPlay",
+      "depends_on": [
+        "A_TECH_04",
+        "A_TECH_06"
+      ],
+      "evidence_keys": [
+        "windows_release_manifest_and_qa",
+        "android_joiplay_release_manifest_and_qa"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    },
+    {
+      "id": "A_TECH_08",
+      "title": "Aceite humano e regressões nativas",
+      "depends_on": [
+        "A_TECH_01",
+        "A_TECH_02",
+        "A_TECH_03",
+        "A_TECH_04",
+        "A_TECH_05",
+        "A_TECH_06",
+        "A_TECH_07"
+      ],
+      "evidence_keys": [
+        "independent_human_approval",
+        "signed_reproducible_native_qa_receipts"
+      ],
+      "status": "PENDING_NATIVE_EVIDENCE",
+      "approved": false,
+      "can_install": false
+    }
+  ],
+  "required_native_evidence": {
+    "donor_asset_manifest_sha256": null,
+    "per_asset_rights_approval": null,
+    "native_mapids_reserved_review": null,
+    "dynamic_references_review": null,
+    "mapid_3_design_and_runtime_resolution": null,
+    "source_to_destination_mapid_mapping": null,
+    "unova_map_and_tileset_authorization": null,
+    "source_installer_claims_review": null,
+    "native_atomic_rollback_qa": null,
+    "native_story_events_verified": null,
+    "native_trainers_encounters_pbs_verified": null,
+    "native_save_isolation_verified": null,
+    "regional_checkpoint_and_blackout_qa": null,
+    "windows_release_manifest_and_qa": null,
+    "android_joiplay_release_manifest_and_qa": null,
+    "independent_human_approval": null,
+    "signed_reproducible_native_qa_receipts": null
+  },
+  "cross_region_safeguards": [
+    "DECADES",
+    "KANTO",
+    "JOHTO",
+    "HOENN",
+    "SINNOH",
+    "UNOVA"
+  ],
+  "safe_next_action": {
+    "id": "A16",
+    "title": "Recepção segura de recibos A04–A14 e verificação cruzada de proveniência",
+    "mode": "GITHUB_ONLY_REDACTED_MANIFEST_VALIDATION",
+    "prerequisites": [
+      "A15 CI green",
+      "No raw Game.exe, saves, maps or licensed assets in GitHub"
+    ],
+    "do_not_collect": [
+      "Game.exe",
+      "Map*.rxdata",
+      "Saves",
+      "Savedata",
+      "player account data",
+      "donor media files"
+    ],
+    "accept_only": [
+      "redacted JSON receipts with hashes",
+      "source attribution and rights records",
+      "independent review outcomes"
+    ],
+    "auto_reserve_mapids": false,
+    "auto_install": false,
+    "auto_approve_rights": false
+  },
+  "generated_writes_allowed": false,
+  "native_game_files_modified": false,
+  "saves_read": false,
+  "saves_modified": false,
+  "tests_game_exe_executed": false,
+  "tests_joiplay_executed": false,
+  "native_technical_completed": 0,
+  "native_technical_total": 8,
+  "native_playable_completed": 0,
+  "native_playable_total": 32,
+  "g_github_completed": 32,
+  "g_github_total": 32,
+  "can_install": false,
+  "can_reserve_mapids": false,
+  "can_release": false
+}
