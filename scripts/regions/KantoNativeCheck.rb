@@ -221,11 +221,59 @@ module KantoNativeCheck
              "Misty repeated after victory")
     require!(BlueRegions.crystal_total(BlueKantoPilot.progress, 2) == 4,
              "Two Kanto milestones were double-counted or omitted")
-    # Phase 08: the S.S. Ticket bridge is available only after Cascade,
-    # and Lt. Surge grants exactly one Thunder Badge for a genuine victory.
+    # Cerulean north: the *real* three-lane Gary and Rocket/Bill segment
+    # must exist inside native Game.exe, not just in Python audit or a portal.
+    # Battles are simulated in this isolated CI, but every source PBS team
+    # must resolve to the real compiled GameData::Trainer.
     BlueKantoPilot.ticketmaster
-    require!(BlueKantoPilot.progress["pilot_ss_ticket"] == true, "Vermilion S.S. Ticket permit was not granted after Cascade")
+    require!(!BlueKantoPilot.progress["pilot_ss_ticket"],
+             "The harbor bypassed Bill and issued a ticket after Misty")
+    north_id = BlueKantoPilot.kanto_map_id(39)
+    bridge_id = BlueKantoPilot.kanto_map_id(53)
+    bill_id = BlueKantoPilot.kanto_map_id(55)
+    require!([north_id,bridge_id,bill_id].all? { |id| id.is_a?(Integer) && id > 0 },
+             "New Cerulean north MapIDs were not compiled")
+    $map_factory.setup(north_id)
+    require!([15,32,34].all? { |id| $game_map.events[id] && 
+             $game_map.events[id].list.any? { |cmd| cmd.code==355 &&
+               cmd.parameters[0].include?("BlueKantoPilot.cerulean_rival") } },
+             "Gary's three real player-touch triggers were not compiled")
+    require!(GameData::Trainer.exists?(:BLUE_KANTO_RIVAL,"Blue",31) &&
+             GameData::Trainer.exists?(:BLUE_KANTO_RIVAL,"Blue",32) &&
+             GameData::Trainer.exists?(:BLUE_KANTO_RIVAL,"Blue",33),
+             "Gary Route 24 variants are missing from compiled PBS")
+    $game_player.moveto(23,7)
+    require!(BlueKantoPilot.cerulean_rival,
+             "Native Cerulean Gary callback did not record victory")
+    require!([15,32,34].all? { |id|
+      $game_self_switches[[north_id,id,"A"]] }, "Gary did not clear the three crossing lanes")
+
+    $map_factory.setup(bridge_id)
+    $game_player.moveto(24,19)
+    require!(GameData::Trainer.exists?(:BLUE_KANTO_ROCKET,"Grunt",5),
+             "Nugget Bridge Rocket version 5 not compiled")
+    require!($game_map.events[6]&.list&.any? { |cmd| cmd.code == 355 &&
+              cmd.parameters[0].include?("cerulean_gym_trainer") },
+             "Nugget Bridge trainer lacks protected JoiPlay callback")
+    require!(BlueKantoPilot.nugget_rocket, "Real Rocket win didn't grant Nugget")
+    require!(BlueKantoPilot.progress["pilot_nugget_bridge_reward"],
+             "Rocket's one-time Nugget claim not persisted")
+
+    $map_factory.setup(bill_id)
+    $game_player.moveto(7,9)
+    require!($game_map.events[4]&.list&.any? { |cmd| cmd.code == 355 &&
+              cmd.parameters[0].include?("BlueKantoPilot.bill_machine") },
+             "Bill's actual PC event is missing")
+    require!(!BlueKantoPilot.bill_ticket, "Bill granted the S.S. Ticket early")
+    require!(BlueKantoPilot.bill_request && BlueKantoPilot.bill_machine &&
+             BlueKantoPilot.bill_ticket, "Bill's rescue or ticket failed in Game.exe")
+    require!(BlueKantoPilot.progress["pilot_ss_ticket"],
+             "Bill did not persist S.S. Ticket")
     BlueKantoPilot.ticketmaster
+    require!(BlueKantoPilot.progress["pilot_ss_ticket"],
+             "Vermilion did not honor the ticket earned from Bill")
+
+    # Phase 08: Lt. Surge grants exactly one Thunder Badge for a real victory.
     surge = GameData::Trainer.get(:BLUE_KANTO_LEADER_SURGE, "Lt. Surge")
     require!(surge.pokemon.length == 3, "Lt. Surge original FRLG roster missing")
     require!(surge.pokemon.map { |pokemon| pokemon[:species] } == [:VOLTORB,:PIKACHU,:RAICHU],
