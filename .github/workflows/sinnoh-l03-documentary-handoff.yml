@@ -1,0 +1,101 @@
+name: Sinnoh L03 - matriz documental e handoff humano sem QA nativa
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-l03-documentary-handoff.yml'
+      - 'scripts/regions/audit_sinnoh_l03_matrix.py'
+      - 'tests/test_sinnoh_l03_matrix.py'
+      - 'data/regions/sinnoh-l03-documentary-review.json'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-l03-documentary-handoff.yml'
+      - 'scripts/regions/audit_sinnoh_l03_matrix.py'
+      - 'tests/test_sinnoh_l03_matrix.py'
+      - 'data/regions/sinnoh-l03-documentary-review.json'
+      - 'scripts/regions/review_sinnoh_l02_evidence.py'
+      - 'scripts/regions/audit_sinnoh_l00_readiness.py'
+      - 'scripts/regions/export_sinnoh_l01_reports.py'
+      - 'data/regions/sinnoh-l00-public-reports.json'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-b09-native-qa.json'
+      - 'data/regions/sinnoh-b10-save-isolation.json'
+      - 'data/regions/sinnoh-b11-host-save-audit.json'
+      - 'data/regions/sinnoh-b02-reservations.json'
+      - 'data/regions/sinnoh-source.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  l03-documentary-matrix:
+    name: L03 / 40 testes e matriz de decisao humana
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Quarenta testes positivos e negativos sobre matriz L03
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l03_matrix.py' -v
+      - name: Conferir handoff publico e ausencia de aprovacoes
+        run: |
+          python scripts/regions/audit_sinnoh_l03_matrix.py > /tmp/sinnoh-l03-handoff-public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("/tmp/sinnoh-l03-handoff-public.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert d["stage"]=="L03" and d["version"]==1
+          assert d["counts"]["missing"]==5
+          assert d["counts"]["human_physical_evidence_accepted"]==0
+          assert [r["stage"] for r in d["rows"]]==["B09","B10","B11","R07","R08"]
+          assert all(r["safe_next_action"]=="REQUEST_NEW_SANITIZED_REPORT" for r in d["rows"])
+          assert all(r["physical_acceptance_decided"] is False and not r["native_qa_allowed"] for r in d["rows"])
+          assert d["native_cases_total"]==44 and d["native_cases_approved"]==0
+          assert d["phase_b_approved"]==d["phase_c_approved"]==d["phase_d_approved"]==0
+          assert not d["r07_complete"] and not d["r08_complete"] and not d["r09_complete"]
+          assert not d["sinnoh_playable"] and not d["may_run_game_exe"]
+          assert not d["may_run_joiplay"] and not d["may_start_windows_sandbox"]
+          assert not d["may_install_live_game"] and not d["auto_uploaded"]
+          source=p.read_text(encoding="utf-8")
+          for private in ("C:\\Users","Save01.rxdata","private-baseline.json",
+                          "hmac_key","watch_id","source_clone_sha256"):
+              assert private not in source
+          print("SINNOH_L03_DOCUMENTARY_ONLY_FIVE_MISSING_NO_NATIVE_APPROVAL")
+          PY
+      - name: No upload, private inputs, game or save access
+        run: |
+          test ! -e .blue-work/sinnoh-l00-input/public-reports.json
+          test ! -e .blue-work/sinnoh-l01-source
+          echo "L03 no automatic transmission or native execution"
+
+  l03-upstream:
+    name: L03 / regressao L02 L01 L00 G12
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: L02 auditor de estados documentais (40)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l02_evidence.py' -v
+      - name: L01 exportador sanitizado (30)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l01_exporter.py' -v
+      - name: L00 verificador fail-closed (24)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_l00_readiness.py' -v
+      - name: G12 44 cenarios nativos ainda pendentes (20)
+        run: python -m unittest discover -s tests -p 'test_sinnoh_g12_handoff.py' -v

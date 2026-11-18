@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "region": "SINNOH",
+  "stage": "L03",
+  "version": 1,
+  "status": "DOCUMENTARY_PROTOCOL_ONLY_NO_NATIVE_APPROVAL",
+  "source_review": "scripts/regions/review_sinnoh_l02_evidence.py",
+  "source_envelope": "data/regions/sinnoh-l00-public-reports.json",
+  "status_actions": {
+    "MISSING_REPORT": "REQUEST_NEW_SANITIZED_REPORT",
+    "SELF_REPORTED_AWAITING_HUMAN_REVIEW": "SCHEDULE_DOCUMENTARY_ANALYSIS",
+    "PREREQUISITE_MISSING_BLOCKED": "RECONCILE_PREREQUISITES",
+    "CONFLICTING_EVIDENCE_BLOCKED": "BLOCK_AND_REVIEW"
+  },
+  "allowed_human_dispositions": [
+    "REVIEW",
+    "REQUEST_NEW_SANITIZED_REPORT",
+    "BLOCK",
+    "SCHEDULE_DOCUMENTARY_ANALYSIS"
+  ],
+  "no_authorization_from_documentary_status": true,
+  "no_automatic_approval": true,
+  "no_private_evidence_in_reconciliation": true,
+  "verified_timestamps_in_public_input": false,
+  "verifiable_b11_session_link_in_public_input": false,
+  "every_source_self_reported_not_authenticated": true,
+  "native_test_cases_total": 44,
+  "windows_cases": 43,
+  "android_cases": 1,
+  "passed_native_cases": 0,
+  "phase_b_approved": 0,
+  "phase_c_approved": 0,
+  "phase_d_approved": 0,
+  "r07_complete": false,
+  "r08_complete": false,
+  "r09_complete": false,
+  "no_game_exe_or_joiplay_execution": true,
+  "no_windows_sandbox_execution": true,
+  "no_user_saves_access": true,
+  "no_auto_upload": true,
+  "can_schedule_native_qa": false,
+  "can_install_sinnoh": false,
+  "sinnoh_playable": false,
+  "rows": [
+    {
+      "stage": "B09",
+      "depends_on": [],
+      "review_kind": "CLONE_PROVENANCE",
+      "criteria": [
+        "independent_source_provenance",
+        "physical_clone_integrity",
+        "human_receipt_identity_review"
+      ],
+      "baseline_status": "MISSING_REPORT",
+      "independent_evidence_accepted": false,
+      "physical_ready": false
+    },
+    {
+      "stage": "B10",
+      "depends_on": [
+        "B09"
+      ],
+      "review_kind": "WSB_CONFIGURATION",
+      "criteria": [
+        "independent_b09_b10_binding",
+        "sandbox_readonly_policy_review",
+        "host_environment_not_verified_from_json"
+      ],
+      "baseline_status": "MISSING_REPORT",
+      "independent_evidence_accepted": false,
+      "physical_ready": false
+    },
+    {
+      "stage": "B11",
+      "depends_on": [
+        "B09",
+        "B10"
+      ],
+      "review_kind": "LIMITED_SAVE_SCOPE",
+      "criteria": [
+        "private_session_link_review_outside_github",
+        "full_engine_save_path_coverage_separate_review",
+        "save_snapshot_unchanged_not_global_proof"
+      ],
+      "baseline_status": "MISSING_REPORT",
+      "independent_evidence_accepted": false,
+      "physical_ready": false
+    },
+    {
+      "stage": "R07",
+      "depends_on": [],
+      "review_kind": "REGIONAL_MAPID_RESERVATIONS",
+      "criteria": [
+        "physical_region_inventory_review",
+        "other_region_ownership_review",
+        "future_conflict_review"
+      ],
+      "baseline_status": "MISSING_REPORT",
+      "independent_evidence_accepted": false,
+      "physical_ready": false
+    },
+    {
+      "stage": "R08",
+      "depends_on": [],
+      "review_kind": "ASSET_RIGHTS_AND_BINDINGS",
+      "criteria": [
+        "per_asset_license_documents_review",
+        "native_graphics_maps_and_warps_review",
+        "real_pbs_compilation_separate_review"
+      ],
+      "baseline_status": "MISSING_REPORT",
+      "independent_evidence_accepted": false,
+      "physical_ready": false
+    }
+  ]
+}
