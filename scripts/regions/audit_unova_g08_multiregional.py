@@ -202,7 +202,8 @@ def fixture(reg:dict)->dict:
         "safe_context":{flag:flag in travel.SAFE_TRUE for flag in travel.SAFE_FLAGS},
         "install_proofs":{key:True for key in travel.ROUTABLE},
         "arrival_proofs":{key:True for key in travel.ROUTABLE},
-        "position":travel.ORIGINS["KANTO"],"decades_return":None,
+        "position":travel.ORIGINS["KANTO"],
+        "decades_return":travel.ORIGINS["DECADES"],
         "bag_state":bag,"party_state":party,"pc_boxes":{},
         "travel_history":[],
         "mechanics_by_region":{
