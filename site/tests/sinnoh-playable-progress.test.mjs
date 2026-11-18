@@ -31,9 +31,9 @@ test("J01 to J08 are engineering code only, native game and saves untouched",asy
  assert.equal(d.main_game_modified,false);assert.equal(d.save_migration_performed,false);
  assert.equal(d.native_source_terrain_candidates,4);assert.equal(d.native_source_maps_missing,5);
  assert.equal(d.native_map_bindings_verified,0);assert.equal(d.native_maps_installed,0);
- assert.equal(d.next_stage,"J09-R1");
- assert.match(d.next_issue_url,/\/issues\/238$/);
- assert.match(d.next_prompt,/J09/);
+ assert.equal(d.next_stage,"J11");
+ assert.match(d.next_issue_url,/\/issues\/241$/);
+ assert.match(d.next_prompt,/J11/);
 });
 test("J02 source audit pins only four historical maps; five absent",async()=>{
  const d=JSON.parse(await read("data/regions/sinnoh-j02-map-source-catalog.json"));
@@ -65,7 +65,7 @@ test("J02 page has two honest bars and next-action button without automatic exec
 });
 test("next phase URL stays in allowed GitHub repo",async()=>{
  const d=JSON.parse(await read("data/regions/sinnoh-playable-progress.json"));
- assert.match(d.next_issue_url,/^https:\/\/github\.com\/GabrielChavesAlencar\/Pokemon-Blue-Dessastre-Paradoxal\/issues\/238$/);
+ assert.match(d.next_issue_url,/^https:\/\/github\.com\/GabrielChavesAlencar\/Pokemon-Blue-Dessastre-Paradoxal\/issues\/241$/);
  assert.ok(d.next_prompt.includes("Sinnoh jogável"));
  assert.equal(typeof d.next_button_label,"string");
 });
@@ -77,8 +77,8 @@ test("J03 is a private code stage only, not a native stage or rights grant",asyn
  assert.equal(d.staging_real_terrain_maps_confirmed,0);
  assert.equal(d.native_maps_installed,0);
  assert.equal(d.stages_native_validated,0);
- assert.equal(d.next_stage,"J09-R1");
- assert.equal(d.next_button_label.includes("J09-R1"),true);
+ assert.equal(d.next_stage,"J11");
+ assert.equal(d.next_button_label.includes("J11"),true);
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J03.*(stage|staging)/is);
  assert.match(html,/id="nextAction"/);
@@ -96,7 +96,7 @@ test("J04 compile-only code never claims real maps, handlers, or Game.exe",async
  assert.equal(d.j04_real_map_passability_verified,false);
  assert.equal(d.native_maps_installed,0);
  assert.equal(d.stages_native_validated,0);
- assert.equal(d.next_stage,"J09-R1");
+ assert.equal(d.next_stage,"J11");
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J04[^\n]*eventos|J04[^\n]*portais/i);
  assert.match(html,/id="nextAction"/);
@@ -116,7 +116,7 @@ test("J05 has executable offline handlers but explicitly zero native gameplay",a
  assert.equal(d.native_windows_cases_executed,0);
  assert.equal(d.native_android_cases_executed,0);
  assert.equal(d.stages_native_validated,0);
- assert.equal(d.next_stage,"J09-R1");
+ assert.equal(d.next_stage,"J11");
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J05[^\n]*Barry/i);
  assert.match(html,/id="nextAction"/);
@@ -136,8 +136,8 @@ test("J06 Windows QA installer uses explicit local sources but stays unexecuted 
  assert.equal(d.stages_native_validated,0);
  assert.equal(d.native_windows_cases_executed,0);
  assert.equal(d.native_maps_installed,0);
- assert.equal(d.next_stage,"J09-R1");
- assert.match(d.next_issue_url,/\/issues\/238$/);
+ assert.equal(d.next_stage,"J11");
+ assert.match(d.next_issue_url,/\/issues\/241$/);
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J06[^\n]*Windows|J06[^\n]*QA/i);
  assert.match(html,/id="nextAction"/);
@@ -162,8 +162,8 @@ test("J07 43 Windows native QA harness built but no live evidence",async()=>{
  assert.equal(d.native_android_cases_executed,0);
  assert.equal(d.stages_code_ready,8);
  assert.equal(d.stages_native_validated,0);
- assert.equal(d.next_stage,"J09-R1");
- assert.match(d.next_issue_url,/\/issues\/238$/);
+ assert.equal(d.next_stage,"J11");
+ assert.match(d.next_issue_url,/\/issues\/241$/);
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J07[^\n]*Windows/);
  assert.match(html,/0\/43 Windows/);
@@ -193,8 +193,8 @@ test("J08 private Android incremental delta code is ready but no Android played"
  assert.equal(d.native_maps_installed,0);
  assert.equal(d.game_exe_tested,false);
  assert.equal(d.joiplay_tested,false);
- assert.equal(d.next_stage,"J09-R1");
- assert.match(d.next_issue_url,/\/issues\/238$/);
+ assert.equal(d.next_stage,"J11");
+ assert.match(d.next_issue_url,/\/issues\/241$/);
  const html=await read("site/public/sinnoh-jogavel.html");
  assert.match(html,/J08[^\n]*Android\/JoiPlay/);
  assert.match(html,/id="nextAction"/);
@@ -222,8 +222,8 @@ test("J09 source recheck matches four file SHA and never promotes missing maps",
  assert.equal(d.native_maps_installed,0);
  assert.equal(d.native_windows_cases_executed,0);
  assert.equal(d.native_android_cases_executed,0);
- assert.equal(d.next_stage,"J09-R1");
- assert.match(d.next_issue_url,/\/issues\/238$/);
+ assert.equal(d.next_stage,"J11");
+ assert.match(d.next_issue_url,/\/issues\/241$/);
  assert.equal(r.source_zip_sha256,"ca6226a070026a8f269c927bfe9a30821b659e2629df26513be780fc34ceda35");
  assert.equal(r.source_mapinfos_sha256,"a5de4d870ae08aa3730942496734c7a0917505a6d435ff178ce5a10f73fc6495");
  assert.equal(r.historical_terrain_sha_rechecked,4);
@@ -242,4 +242,46 @@ test("J09 source recheck matches four file SHA and never promotes missing maps",
  assert.match(html,/id="nextAction"/);
  assert.match(html,/J09-R1/);
  assert.match(await read("docs/SINNOH_J09_FONTE_REAL_MAPAS_R07_R08.md"),/0\/44/);
+});
+
+test("J10 local real-map authoring code is present, but no maps have been authored",async()=>{
+ const d=JSON.parse(await read("data/regions/sinnoh-playable-progress.json"));
+ assert.equal(d.j10_map_editor_code_ready,true);
+ assert.equal(d.j10_human_authoring_compiler_code_ready,true);
+ assert.equal(d.j10_local_loopback_editor_code_ready,true);
+ assert.equal(d.j10_required_private_draft_count,5);
+ assert.equal(d.j10_human_drawn_drafts_received,0);
+ assert.equal(d.j10_original_rxdata_maps_built,0);
+ assert.equal(d.j10_real_tileset_licenses_verified,0);
+ assert.equal(d.j10_actual_physical_maps_installed,0);
+ assert.equal(d.j10_r07_mapped_destinations_approved,false);
+ assert.equal(d.j10_r08_asset_rights_independently_approved,false);
+ assert.equal(d.j10_r09_native_windows_executed,0);
+ assert.equal(d.j10_r09_native_android_executed,0);
+ assert.equal(d.j10_main_game_or_personal_saves_modified,false);
+ assert.equal(d.native_source_terrain_candidates,4);
+ assert.equal(d.native_source_maps_missing,5);
+ assert.equal(d.stages_code_ready,8);
+ assert.equal(d.stages_native_validated,0);
+ assert.equal(d.next_stage,"J11");
+ assert.match(d.next_issue_url,/\/issues\/241$/);
+ const html=await read("site/public/sinnoh-jogavel.html");
+ assert.match(html,/J10[^\n]*Editor de autoria original/);
+ assert.match(html,/0\/5 mapas originais/);
+ assert.match(html,/id="nextAction"/);
+ assert.match(await read("docs/SINNOH_J10_AUTORIA_CINCO_MAPAS.md"),/5 mapas/);
+ const editor=await read("web/sinnoh-j10-map-editor.html");
+ assert.ok(editor.includes("SINNOH_PLAYER_BEDROOM"));
+ assert.ok(editor.includes("SINNOH_PROFESSOR_ROWAN_LABORATORY"));
+ assert.match(editor,/crypto\.subtle\.digest/);
+ assert.match(editor,/new Set\(ids\)/);
+ assert.match(editor,/Blob\(\[/);
+ assert.doesNotMatch(editor,/https:\/\/(?:api\.|github\.com)/);
+ const server=await read("scripts/regions/serve_sinnoh_j10_editor.py");
+ assert.match(server,/127\.0\.0\.1/);
+ assert.match(server,/def do_POST/);
+ assert.match(server,/self.send_error\(405/);
+ const js=await read("site/public/assets/sinnoh-playable-progress.js");
+ assert.match(js,/next_stage/);
+ assert.match(js,/J\(\?:09/);
 });
