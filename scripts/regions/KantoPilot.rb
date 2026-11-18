@@ -1044,6 +1044,14 @@ module BlueKantoPilot
     # In older Decades builds the item does not exist. Only the completed
     # original Bill quest may grant a Kanto-local digital harbor permit.
     progress["pilot_ss_ticket"] = true
+    # The item cue is optional in JoiPlay: it cannot revoke the prize
+    # after the regional save flag was committed.
+    begin
+      BlueMusic.kanto_me_play("obtained_item") if defined?(BlueMusic) &&
+        BlueMusic.respond_to?(:kanto_me_play)
+    rescue StandardError => error
+      log_trainer_failure(error, :BILL, "Bill", "KANTO_055_TICKET", 0, "item_audio")
+    end
     pbMessage(t("Bill: Thank you! Here's your S.S. Ticket for Vermilion.",
                 "Bill: Obrigado! Aqui está seu bilhete do S.S. Anne em Vermilion."))
     true
