@@ -145,9 +145,30 @@ def audit(index, mirror, source, parent_report):
         or parent_report.get("exit_criteria_met") != 0
         or parent_report.get("native_approved") != 0
         or parent_report.get("human_approved") != 0
+        or parent_report.get("r07_pending") is not True
+        or parent_report.get("r08_pending") is not True
+        or parent_report.get("r09_pending") is not True
+        or parent_report.get("r09_global_only") is not True
+        or parent_report.get("no_private_uploads") is not True
+        or parent_report.get("no_native_authorization") is not True
         or parent_report.get("sinnoh_playable") is not False):
         blocked()
     try:
+        # In-memory audit callers must not bypass L16 source gate validation.
+        if (len(source["records"]) != 88
+            or source["counts"]["exit_ready"] != 0
+            or source["counts"]["exit_criteria_met"] != 0
+            or source["gates"]["r07"] != "PENDING"
+            or source["gates"]["r08"] != "PENDING"
+            or source["gates"]["r09"] != "PENDING"
+            or any(x["human_review_completed"] is not False
+                   or x["physical_evidence_received"] is not False
+                   or x["native_execution_approved"] is not False
+                   or x["exit_criteria_met"] is not False
+                   or x["status"] != "PENDING"
+                   or x["readiness"] != "BLOCKED"
+                   for x in source["records"])):
+            blocked()
         expected = expected_index(source)
         same = l16.l15.l14.l13.l12.l11.l10.l09.l08.l07.l06.same
         if not same(index, expected) or not same(mirror, expected):
