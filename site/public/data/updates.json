@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "eb1333953d02d319e9b44a96c23fe2e071bd2a2e",
+      "date": "2026-11-18T08:33:30-03:00",
+      "title": "Sinnoh L17: public independent-review guidance stays pending (#212)",
+      "category": "Melhorias"
+    },
+    {
       "sha": "709776022679dc5831748ea4ed2254c6ced1da84",
       "date": "2026-11-18T07:47:11-03:00",
       "title": "Sinnoh L16: public exit criteria stay blocked across 88 requests (#210)",
