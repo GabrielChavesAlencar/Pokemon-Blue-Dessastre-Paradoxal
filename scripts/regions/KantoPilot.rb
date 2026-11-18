@@ -689,24 +689,28 @@ module BlueKantoPilot
   # Route-independent shim for the two source-grounded Cerulean Gym trainers.
   # Their optional alert/introduction cannot block the essential battle on
   # JoiPlay. This is used by newly compiled Map042 events, not by other maps.
-  def self.cerulean_gym_trainer(type, name, event_key, event_id)
+  def self.cerulean_gym_trainer(type, name, event_key, event_id, version = 0)
     begin
       pbTrainerIntro(type) if respond_to?(:pbTrainerIntro, true)
       event = $game_map && $game_map.respond_to?(:events) ? $game_map.events[event_id] : nil
       pbNoticePlayer(event) if event && respond_to?(:pbNoticePlayer, true)
     rescue StandardError => error
-      log_trainer_failure(error, type, name, event_key, 0, "intro")
+      log_trainer_failure(error, type, name, event_key, version, "intro")
     end
-    result = battle(type, name, event_key)
+    # Reuse the same protected event command for Route 24/25. The
+    # Nugget Rocket is the only exceptional trainer: its reward is
+    # handled after native victory, with retry when the Bag is full.
+    result = event_key == "KANTO_053_006" ?
+      nugget_rocket : battle(type, name, event_key, version)
     begin
       sync_trainer_event(event_key, name, event_id)
     rescue StandardError => error
-      log_trainer_failure(error, type, name, event_key, 0, "self_switch")
+      log_trainer_failure(error, type, name, event_key, version, "self_switch")
     end
     begin
       pbTrainerEnd if respond_to?(:pbTrainerEnd, true)
     rescue StandardError => error
-      log_trainer_failure(error, type, name, event_key, 0, "outro")
+      log_trainer_failure(error, type, name, event_key, version, "outro")
     end
     # The legacy battle callback returns nil for ordinary trainer victories;
     # its persistent, map/event-scoped victory key is the authoritative result.
