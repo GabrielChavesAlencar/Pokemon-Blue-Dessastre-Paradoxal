@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/"scripts/regions"),str(ROOT/"tests")]
-from test_sinnoh_j06_qa_windows import SinnohJ06PrivateWindowsTests
+import test_sinnoh_j06_qa_windows as synthetic_j06
 from test_sinnoh_qa_install import simulate_native_report
 from install_sinnoh_qa_copy import COMPILED,COMPILE_REQUEST,ENGINE_REPORT
 from prepare_sinnoh_playable_j07 import (
@@ -31,7 +31,7 @@ class J07SyntheticWindowsHarnessTests(unittest.TestCase):
     def setUp(self):
         # Reuse the J06 fixture: all images, maps, EXE and rights declarations
         # are SYNTHETIC, never real sources or native approval.
-        self.fixt=SinnohJ06PrivateWindowsTests(
+        self.fixt=synthetic_j06.SinnohJ06PrivateWindowsTests(
             methodName="test_01_plan_checks_all_nine_synthetic_maps_and_does_not_create_copy")
         self.fixt.setUp()
         self.addCleanup(self.fixt.doCleanups)
