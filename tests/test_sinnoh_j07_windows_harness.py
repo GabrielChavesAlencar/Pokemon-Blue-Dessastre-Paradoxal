@@ -273,12 +273,16 @@ class J07SyntheticWindowsHarnessTests(unittest.TestCase):
     def test_27_cannot_record_android_case_in_windows(self):
         self.initialize()
         with self.assertRaisesRegex(ValueError,"ONLY_43_WINDOWS"):
-            self.record("android-joi-play")
+            record_case(self.root,self.pre,self.sess,self.ssha,
+                "android-joi-play",self.sess/"evidence/android.json","0"*64,
+                self.sess/"evidence/android.txt","0"*64)
 
     def test_28_unknown_case_denied(self):
         self.initialize()
         with self.assertRaisesRegex(ValueError,"ONLY_43_WINDOWS"):
-            self.record("barry-UNKNOWN")
+            record_case(self.root,self.pre,self.sess,self.ssha,
+                "barry-UNKNOWN",self.sess/"evidence/unknown.json","0"*64,
+                self.sess/"evidence/unknown.txt","0"*64)
 
     def test_29_duplicate_case_record_denied(self):
         self.record("ball-TURTWIG")
