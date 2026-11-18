@@ -36,6 +36,7 @@ CACHE = "Data/PluginScripts.rxdata"
 UPDATER = "ATUALIZAR-ANDROID.py"
 README = "LEIA-ME-ANDROID.txt"
 MOBILE_INFO = "Data/blue-mobile-build.txt"
+KANTO_MUSIC = "Data/blue-kanto-music.txt"
 MARKER = "Data/blue-update.json"
 
 
@@ -197,6 +198,78 @@ def plugin_fingerprint(source, substitutions):
     return checksum.hexdigest()
 
 
+def repair_kanto_cerulean_bgm(source, rules=None, music=None):
+    """Fix exactly the 2 non-preview Kanto map BGM bindings in a verified ZIP.
+
+    Keeps every SCOPE, foreign MapID, battle, scene, and other region unchanged.
+    Does not touch original MapXXX.rxdata, Game.exe, or player saves. The
+    soundtrack files are already present and validated in the base archive.
+    """
+    rules = rules if rules is not None else json.loads(
+        (ROOT / "data/kanto-music-rules.json").read_text(encoding="utf8")
+    )
+    rows = {row["map"]: row for row in rules.get("maps", [])}
+    expected = {"ROUTE_4": (33, 32), "CERULEAN_CITY": (39, 50)}
+    for symbol, (_, track) in expected.items():
+        rule = rows.get(symbol)
+        if not rule or rule["track"] != track or rule["enabled"] is not True:
+            raise ValueError("Required Kanto Cerulean music rule is absent: " + symbol)
+    proof = json.loads(source.read(PREFIX + KANTO_MANIFEST))
+    mapping = proof.get("maps", {})
+    if len(mapping) != 142:
+        raise ValueError("Full Kanto map provenance is missing")
+    source_catalog = json.loads(
+        (ROOT / "data/regions/kanto-source.json").read_text(encoding="utf8")
+    )
+    catalog = json.loads((ROOT / "data/kanto-music.json").read_text(encoding="utf8"))
+    tracks = {item["number"]: item for item in catalog["files"]}
+    if len(tracks) != 64:
+        raise ValueError("Incomplete Kanto audio catalog")
+    if music is None:
+        music = source.read(PREFIX + KANTO_MUSIC)
+    text = music.decode("utf8")
+    lines = text.splitlines()
+    if not lines or not re.fullmatch(
+        r"BLUE_KANTO_MUSIC_V1\tKANTO\t[0-9a-f]{64}", lines[0]
+    ):
+        raise ValueError("Original Kanto music header was not compiled")
+    scopes = [line for line in lines if line.startswith("SCOPE\t")]
+    maps = [line for line in lines if line.startswith("MAP\t")]
+    if len(scopes) != 142 or len(maps) != 72:
+        raise ValueError("Unexpected original Kanto music SCOPE/MAP counts")
+    results = []
+    for symbol, (origin, track_number) in expected.items():
+        if source_catalog["maps"].get(str(origin)) != symbol:
+            raise ValueError("Kanto symbolic source MapID shifted: " + symbol)
+        dest = mapping.get(str(origin))
+        if isinstance(dest, bool) or not isinstance(dest, int) or dest < 1:
+            raise ValueError("Invalid installed MapID for " + symbol)
+        if scopes.count(f"SCOPE\t{dest}\t{symbol}\t0") != 1:
+            raise ValueError("Kanto map is not in non-preview scope: " + symbol)
+        if any(line.startswith(f"MAP\t{dest}\t") for line in maps):
+            raise ValueError("Kanto map BGM was already assigned: " + symbol)
+        track = tracks[track_number]
+        if track["kind"] != "BGM":
+            raise ValueError("Incorrect Kanto BGM category")
+        audio = "Kanto/" + track["filename"]
+        if track["game_path"] != "Audio/BGM/" + audio:
+            raise ValueError("Kanto BGM path inconsistency")
+        if PREFIX + track["game_path"] not in source.namelist():
+            raise ValueError("Kanto BGM missing in original Android game: " + audio)
+        original = source.getinfo(PREFIX + track["game_path"])
+        if original.file_size != track["bytes"]:
+            raise ValueError("Unexpected Kanto MP3 size: " + audio)
+        results.append(f"MAP\t{dest}\t{audio}\t100\t100")
+    new_hash = hashlib.sha256(
+        (ROOT / "data/kanto-music-rules.json").read_bytes()
+    ).hexdigest()
+    lines[0] = "BLUE_KANTO_MUSIC_V1\tKANTO\t" + new_hash
+    lines.extend(results)
+    if sum(row.startswith("MAP\t") for row in lines) != 74:
+        raise ValueError("Repaired map binding count is incorrect")
+    return ("\n".join(lines) + "\n").encode("utf8")
+
+
 def modified_files(source, revision):
     source_code = (ROOT / "scripts/battle_polish/RegionStart.rb").read_bytes()
     updater = (ROOT / "scripts/android/update_client.py").read_bytes()
@@ -246,6 +319,7 @@ def modified_files(source, revision):
         KANTO_MANIFEST: (json.dumps(proof, indent=2) + "\n").encode("utf-8"),
         CACHE: patched_all,
         UPDATER: updater,
+        KANTO_MUSIC: repair_kanto_cerulean_bgm(source),
     }
     instructions = source.read(PREFIX + README)
     old_revision_line = ("Revision: " + BASE_REV + "\n").encode()
@@ -353,6 +427,9 @@ def rebuild(source_path, output_path, revision):
             "KantoPilot.rb",
             source.read(PREFIX + KANTO),
         )
+        repaired = source.read(PREFIX + KANTO_MUSIC).decode("utf8")
+        if repaired.count("MAP\\t") != 74:
+            raise ValueError("Compiled Kanto Cerulean/Route4 music missing in published game.")
     return {"revision": revision, "maps_kanto": proof[0], "maps_hoenn": proof[1],
             "sha256": digest_file(output_path), "bytes": output_path.stat().st_size}
 
