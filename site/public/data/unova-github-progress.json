@@ -281,8 +281,9 @@
         {
           "id": "G08.2",
           "title": "Expandir suíte de testes integrados dos sistemas G01–G07",
-          "status": "pending",
-          "acceptance": "Testes negativos, fixtures e simulações de progressão e conteúdo"
+          "status": "done",
+          "acceptance": "Testes negativos, fixtures e simulações de progressão e conteúdo",
+          "evidence": "scripts/regions/audit_unova_g08_integrated.py"
         },
         {
           "id": "G08.3",

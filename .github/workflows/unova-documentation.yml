@@ -88,12 +88,14 @@ jobs:
           python scripts/regions/audit_unova_g07_transaction.py --simulate-demo
           python scripts/regions/audit_unova_g07_platform_compat.py --check
           python scripts/regions/audit_unova_g07_platform_compat.py --simulate-demo
+          python scripts/regions/audit_unova_g08_integrated.py --check
+          python scripts/regions/audit_unova_g08_integrated.py --simulate-demo
           # A04 native baseline is private and absent in CI; negative tests cover this gate.
           python scripts/regions/audit_unova_a05_candidates.py
       - name: Testes negativos de ZIP RXDATA, direitos, equipes e barras E
         run: python -m unittest discover -s tests -p 'test_unova_*.py' -v
       - name: Validar catálogo e navegação G06.2 com Node no Linux
-        run: node --test site/tests/unova-guide.test.mjs site/tests/unova-search.test.mjs
+        run: node --test site/tests/unova-guide.test.mjs site/tests/unova-search.test.mjs site/tests/unova-integration.test.mjs
       - name: Verificar hook de blackout Ruby sem tocar Game.exe ou saves
         run: |
           ruby -c scripts/battle_polish/RegionalRespawn.rb
@@ -133,6 +135,7 @@ jobs:
           python -m py_compile scripts/regions/audit_unova_g07_incremental_manifest.py
           python -m py_compile scripts/regions/audit_unova_g07_transaction.py
           python -m py_compile scripts/regions/audit_unova_g07_platform_compat.py
+          python -m py_compile scripts/regions/audit_unova_g08_integrated.py
           python -m py_compile scripts/regions/audit_unova_a04_mapids.py
           python -m py_compile scripts/regions/audit_unova_a05_candidates.py
           python -m py_compile scripts/regions/audit_unova_a06_references.py
@@ -191,11 +194,12 @@ jobs:
           python -m unittest discover -s tests -p test_unova_g05_regional_items.py -v
           python -m unittest discover -s tests -p test_unova_g05_badges_specials.py -v
           python -m unittest discover -s tests -p test_unova_g05_travel.py -v
-          node --test site/tests/unova-guide.test.mjs site/tests/unova-search.test.mjs
+          node --test site/tests/unova-guide.test.mjs site/tests/unova-search.test.mjs site/tests/unova-integration.test.mjs
           python -m unittest discover -s tests -p test_unova_g05_blackout_state.py -v
           python -m unittest discover -s tests -p test_unova_g07_incremental_manifest.py -v
           python -m unittest discover -s tests -p test_unova_g07_transaction.py -v
           python -m unittest discover -s tests -p test_unova_g07_platform_compat.py -v
+          python -m unittest discover -s tests -p test_unova_g08_integrated.py -v
           python -m unittest discover -s tests -p test_unova_auto_mapids.py -v
           python -m unittest discover -s tests -p test_unova_standalone_bat.py -v
       - name: Empacotar BAT validado no Windows como ZIP
