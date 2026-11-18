@@ -1,4 +1,4 @@
-# Sinnoh J10 — criação original dos cinco mapas faltantes
+# Sinnoh J10 — criação original dos 5 mapas faltantes
 
 **Base:** J09 integrada no PR #239. Issue [J10 #240](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/240), próxima etapa [J11 #241](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/241).
 
