@@ -254,7 +254,7 @@ class SinnohL07PublicTriageTests(unittest.TestCase):
         self.rejected(lambda a,b,c,d,e,f,g,h,i,j: a["platform_queues"][0]["case_ids"].pop())
 
     def test_negative_40_queue_cases_duplicate(self):
-        self.rejected(lambda a,b,c,d,e,f,g,h,i,j: a["platform_queues"][0]["case_ids"][1]=a["platform_queues"][0]["case_ids"][0])
+        self.rejected(lambda a,b,c,d,e,f,g,h,i,j: a["platform_queues"][0]["case_ids"].__setitem__(1,a["platform_queues"][0]["case_ids"][0]))
 
     def test_negative_41_queue_order(self):
         self.rejected(lambda a,b,c,d,e,f,g,h,i,j: a["platform_queues"].reverse())
