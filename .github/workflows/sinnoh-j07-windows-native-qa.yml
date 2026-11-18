@@ -1,0 +1,90 @@
+name: Sinnoh J07 - Windows native QA harness G12 (synthetic-only CI)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/sinnoh-j07-windows-native-qa.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j07.py'
+      - 'tests/test_sinnoh_j07_windows_harness.py'
+      - 'SINNOH_J07_QA_WINDOWS.bat'
+      - 'docs/SINNOH_J07_QA_WINDOWS_NATIVA.md'
+      - 'data/regions/sinnoh-g12-native-handoff.json'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+      - 'site/public/sinnoh-jogavel.html'
+      - 'site/tests/sinnoh-playable-progress.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sinnoh-j07-windows-native-qa.yml'
+      - 'scripts/regions/prepare_sinnoh_playable_j07.py'
+      - 'tests/test_sinnoh_j07_windows_harness.py'
+      - 'data/regions/sinnoh-playable-progress.json'
+      - 'site/public/data/sinnoh-playable-progress.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  j07-g12-windows-matrix-linux:
+    name: J07 / 50 synthetic QA checks and exact 43+1 G12 cases (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile Python QA harness
+        run: python -m py_compile scripts/regions/prepare_sinnoh_playable_j07.py
+      - name: 50 synthetic positive, negative and 4-region save-isolation cases
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j07_windows_harness.py' -v
+      - name: Regress J06 rights, MapIDs, saves and rollback
+        run: python -m unittest discover -s tests -p 'test_sinnoh_j06_qa_windows.py' -v
+      - name: Never discover or launch unprovided Game.exe
+        run: |
+          set +e
+          python scripts/regions/prepare_sinnoh_playable_j07.py >/tmp/j07-no-input.txt 2>&1
+          status=$?
+          set -e
+          test "$status" -eq 2
+          test ! -e game/Game.exe
+          test ! -d .blue-work/sinnoh-j07-sessions
+          echo SINNOH_J07_PUBLIC_CI_FAIL_CLOSED_NOT_NATIVE_PLAYABLE
+  j07-g12-windows-matrix-windows:
+    name: J07 / disposable Windows synthetic evidence and safe session tests
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: QA harness syntax and 50 tests - no real Game.exe
+        run: |
+          python -m py_compile scripts/regions/prepare_sinnoh_playable_j07.py
+          python -m unittest discover -s tests -p 'test_sinnoh_j07_windows_harness.py' -v
+      - name: Confirm no external private assets or saves in runner
+        shell: pwsh
+        run: |
+          if (Test-Path "game/Game.exe") { throw "Unexpected private executable in public CI" }
+          if (Test-Path ".blue-work/sinnoh-j07-sessions") { throw "Fixture escaped temporary workspace" }
+          Write-Output "SINNOH_J07_WINDOWS_SYNTHETIC_NOT_REAL_NATIVE_APPROVAL"
+  j07-portal-next-j08:
+    name: J07 / 7 of 8 engineering, zero native and J08 CTA
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: G12 public progress and J08 issue link
+        working-directory: site
+        run: node --test tests/sinnoh-playable-progress.test.mjs
+      - name: Site build
+        working-directory: site
+        run: npm run build
+      - name: Next button exists, Android count untouched
+        run: |
+          test -s site/dist/sinnoh-jogavel.html
+          test -s site/dist/data/sinnoh-playable-progress.json
+          grep -q 'id="nextAction"' site/dist/sinnoh-jogavel.html
