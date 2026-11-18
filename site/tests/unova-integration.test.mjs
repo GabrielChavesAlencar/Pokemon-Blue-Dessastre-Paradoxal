@@ -108,7 +108,7 @@ test('tracker cannot confuse G-completion and playable game',()=>{
 test('portal shows explicit planned/unplayable warning',()=>{
  const html=unovaGuidePage(guide);
  assert.match(html,/UNOVA PLANEJADA · NÃO JOGÁVEL/);
- assert.match(html,/nenhum.*Game.exe/i);
+ assert.match(html,/sem acesso jogável ao Game\.exe/i);
 });
 test('source mission records open a chapter page with no native rewards',()=>{
  for(const m of guide.missions){
