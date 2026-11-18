@@ -1,0 +1,63 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101c2f"><meta name="description" content="Sinnoh L19: consolidação pública de 88 lacunas pendentes. Não contém QA nativa nem revisões aprovadas.">
+<title>Sinnoh L19 — Consolidação documental | Pokémon Blue</title>
+<style>:root{color-scheme:dark;background:#0d1727;color:#eaf2ff;font:16px/1.5 system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0}a{color:#a4d5ff}
+.wrap{max-width:1220px;margin:auto;padding:22px clamp(16px,3vw,45px) 75px}
+header{background:linear-gradient(120deg,#25435e,#122033);border-bottom:1px solid #435d78}
+h1{font-size:clamp(1.75rem,4vw,2.65rem);margin:.4rem 0;line-height:1.15}h2{font-size:1.36rem;margin:26px 0 9px}
+.eyebrow{color:#bbd2ee;font-size:.8rem;letter-spacing:.13em;text-transform:uppercase;font-weight:800}
+.warning{border-left:4px solid #e8b476;background:#342a32;padding:14px 17px;border-radius:8px;margin:18px 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:24px 0}
+.metric{border:1px solid #435b79;background:#1b2e47;border-radius:12px;padding:14px}
+.metric strong{display:block;font-size:1.8rem;font-variant-numeric:tabular-nums}.metric span,.small{font-size:.85rem;color:#c3d4e8}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));align-items:end;gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:.86rem;color:#d1e0f1}
+input,select,button{border:1px solid #5a7897;border-radius:7px;background:#1b3049;color:#f1f7ff;padding:10px;font:inherit;min-width:0}
+button{cursor:pointer}button:hover{background:#304969}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #8acbff;outline-offset:2px}
+.scroller{overflow:auto;border:1px solid #435d77;border-radius:11px;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:.88rem}th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid #3a536d}
+thead{background:#253c54}tbody tr:hover{background:#1b304b}tbody tr:last-child td{border:0}
+.pending{color:#ffd69b;font-weight:750}.meta{color:#ade2d2}
+#status{min-height:1.5rem;color:#ffdfa9;font-weight:750}
+#detail{background:#1b2d44;border:1px solid #506987;border-radius:11px;padding:16px}
+#detail p{margin:5px 0}.chips{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}.chips span{border:1px solid #6884a0;border-radius:6px;padding:4px 8px;font-size:.78rem}
+code{font-size:.8rem;overflow-wrap:anywhere}footer{margin-top:32px;border-top:1px solid #455e78;padding-top:18px}</style></head>
+<body><header><div class="wrap"><a href="/">Pokémon Blue — início</a> · <a href="/sinnoh-l18-lacunas-revisao.html">L18 — Lacunas</a>
+<p class="eyebrow">Sinnoh L19 · Consolidação pública</p>
+<h1>88 lacunas documentais continuam abertas</h1>
+<p>Consolidação de cobertura, vínculos e bloqueios, baseada nos documentos Git públicos. Nenhuma revisão independente foi realizada e nenhuma QA nativa foi autorizada.</p>
+<p class="warning"><strong>Sinnoh planned e não jogável.</strong> Relatórios 0/5 · critérios humanos 0/20 · testes nativos 0/44 · B/C/D 0/13 · R07/R08/R09 pendentes.</p>
+</div></header>
+<main class="wrap">
+<section class="metrics" aria-label="Indicadores públicos">
+<div class="metric"><strong>88/88</strong><span>PENDING/BLOCKED</span></div>
+<div class="metric"><strong>0/88</strong><span>Revisões humanas concluídas</span></div>
+<div class="metric"><strong>1.084</strong><span>Vínculos documentais</span></div>
+<div class="metric"><strong>18</strong><span>Slots anônimos</span></div>
+<div class="metric"><strong>43 + 1</strong><span>Windows / Android</span></div>
+</section>
+<nav aria-label="Seções"><a href="#comparacao">Cobertura</a> · <a href="#filtros">Filtros</a> · <a href="#pedidos">Pedidos</a> · <a href="#detalhes">Detalhe</a> · <a href="#proveniencia">Proveniência</a></nav>
+<section id="comparacao"><h2>Integridade documental não significa aprovação</h2>
+<p class="small">846 vínculos caso→critério, 218 caso→bloqueio e 20 critério→bloqueio. Cinco bloqueios específicos B09/B10/B11/R07/R08; R09 continua regional global sem aresta adicional por caso. `watch_unchanged` não demonstra isolamento global dos saves; MapIDs R07 e direitos R08 seguem pendentes.</p>
+<div class="scroller"><table><thead><tr><th scope="col">Grupo</th><th scope="col">Pedidos</th><th scope="col">Bloqueados</th><th scope="col">Vínculos</th><th scope="col">Revisões feitas</th></tr></thead><tbody id="groupRows"></tbody></table></div>
+<div class="scroller"><table><thead><tr><th scope="col">Plataforma</th><th scope="col">Casos</th><th scope="col">Executados</th><th scope="col">B10/B11 Windows</th><th scope="col">Permissão</th></tr></thead><tbody id="platformRows"></tbody></table></div>
+</section>
+<section id="filtros"><h2>Filtrar as lacunas públicas</h2><p class="small">P0–P4 é prioridade de documentação, não instrução para executar QA.</p>
+<div class="filters">
+<label>Buscar pedido<input id="search" type="search" placeholder="B09, L04, G12…"></label>
+<label>Prioridade<select id="priority"><option value="">Todas</option><option value="0">P0</option><option value="1">P1</option><option value="2">P2</option><option value="3">P3</option><option value="4">P4</option></select></label>
+<label>Tipo<select id="kind"><option value="">Todos</option></select></label>
+<label>Plataforma<select id="platform"><option value="">Todas</option><option value="windows">Windows</option><option value="android">Android</option><option value="cross-platform">Ambas</option><option value="global">Global</option><option value="unassigned">Anônima</option></select></label>
+<label>Bloqueio<select id="blocker"><option value="">Todos</option><option value="B09">B09</option><option value="B10">B10</option><option value="B11">B11</option><option value="R07">R07</option><option value="R08">R08</option><option value="R09">R09 global</option></select></label>
+<label>Tipo de lacuna<select id="gap"><option value="">Todos</option></select></label>
+<button id="reset" type="button">Limpar filtros</button>
+</div></section>
+<section id="pedidos"><h2>Índice consolidado somente leitura</h2><p id="status" role="status" aria-live="polite">Conferindo dados públicos…</p>
+<div class="scroller"><table><thead><tr><th scope="col">Pedido</th><th scope="col">P</th><th scope="col">Tipo / plataforma</th><th scope="col">Lacunas</th><th scope="col">Vínculos</th><th scope="col">Estado</th></tr></thead><tbody id="recordRows"></tbody></table></div></section>
+<section id="detalhes"><h2>Próximo passo estritamente documental</h2><div id="detail"><p>Selecione um pedido para ver as lacunas e relações públicas existentes.</p></div></section>
+<footer id="proveniencia"><p>Commits Git públicos: L07 <code id="shaL07"></code> · L08 <code id="shaL08"></code> · L09 <code id="shaL09"></code> · L10 <code id="shaL10"></code> · L11 <code id="shaL11"></code> · L12 <code id="shaL12"></code> · L13 <code id="shaL13"></code> · L14 <code id="shaL14"></code> · L15 <code id="shaL15"></code> · L16 <code id="shaL16"></code> · L17 <code id="shaL17"></code> · L18 <code id="shaL18"></code>.</p>
+<p class="small">Essas âncoras verificam objetos públicos Git, não arquivos privados, permissões, direitos ou testes nativos. Nenhuma identidade ou dependência física foi inventada para os 18 slots anônimos.</p>
+<a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/issues/216">Issue L19 #216</a> · <a href="https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/blob/main/data/regions/sinnoh-l19-public-gap-consolidation.json">Relatório L19 versionado</a></footer>
+</main><script type="module" src="/assets/sinnoh-l19-consolidation.js"></script></body></html>

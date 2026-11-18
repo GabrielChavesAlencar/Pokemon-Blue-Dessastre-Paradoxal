@@ -1,0 +1,45 @@
+name: Android connected maps - source-only performance regressions
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/battle_polish/RegionTravel.rb'
+      - 'scripts/android/repack_multiregion_hotfix.py'
+      - 'tests/region_map_transition_perf_runtime.rb'
+      - 'tests/test_region_map_transition_android.py'
+      - '.github/workflows/android-connected-map-perf.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/battle_polish/RegionTravel.rb'
+      - 'scripts/android/repack_multiregion_hotfix.py'
+      - 'tests/region_map_transition_perf_runtime.rb'
+      - 'tests/test_region_map_transition_android.py'
+      - '.github/workflows/android-connected-map-perf.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  map-transitions-offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Ruby source syntax
+        run: |
+          ruby -c scripts/battle_polish/RegionTravel.rb
+          ruby -c tests/region_map_transition_perf_runtime.rb
+      - name: Connected-map routing and regional save scope
+        run: |
+          ruby tests/region_map_transition_perf_runtime.rb scripts/battle_polish/RegionTravel.rb
+          ruby -I. tests/region_travel_runtime.rb tests/regions_data_fixture.rb scripts/battle_polish/Regions.rb scripts/battle_polish/RegionTravel.rb
+      - name: Android verified plugin cache and source package
+        run: |
+          python -m py_compile scripts/android/repack_multiregion_hotfix.py
+          python -m unittest discover -s tests -p test_region_map_transition_android.py -v
+          python -m unittest discover -s tests -p test_kanto_cerulean_route4_android.py -v
+          python -m unittest discover -s tests -p test_android_updates.py -v

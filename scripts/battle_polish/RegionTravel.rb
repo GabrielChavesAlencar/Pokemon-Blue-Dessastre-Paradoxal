@@ -723,12 +723,53 @@ module BlueRegionTravel
   # Map setup is not always repeated after loading an existing save.
   # Populate events BEFORE Spriteset_Map builds its character sprites, so a
   # player already standing in Cherryhill can see the NPC on first load.
+  # MapFactory can set up several connected maps per player crossing.  The
+  # four agent installers each verify regional installations, including 142
+  # Kanto maps and Hoenn's provenance checks.  Never run those gates for an
+  # unrelated route: dispatch only to the town that can own this NPC.
+  #
+  # Cache positive *map IDs* only for this running game process.  Android
+  # updates require the game to be closed; a fresh launch rechecks the proofs.
+  # No failed check is cached, and the actual town's agent installer still
+  # performs its original live authorization before creating an event.
+  def self.agent_map_id(region)
+    @agent_map_ids ||= {}
+    return @agent_map_ids[region] if @agent_map_ids.key?(region)
+    id = case region
+         when "DECADES"
+           decades_city_map_id
+         when "KANTO"
+           town = installed? && kanto_town_point
+           town && town[0]
+         when "JOHTO"
+           johto_installed? ? BlueRegionStart.johto_agent_point&.first : nil
+         when "HOENN"
+           hoenn_installed? ? BlueRegionStart.hoenn_town_point&.first : nil
+         end
+    # MapInfos may not yet be ready during startup: don't freeze the
+    # fallback Decades ID before the native registry has loaded.
+    ready = region != "DECADES" ||
+      (defined?($data_mapinfos) && $data_mapinfos.respond_to?(:each_with_index))
+    @agent_map_ids[region] = id if ready && id.is_a?(Integer) && id > 0
+    id
+  end
+
   def self.attach_agents(map)
-    return unless map
-    attach_decades_agent(map)
-    attach_kanto_agent(map)
-    attach_johto_agent(map)
-    attach_hoenn_agent(map)
+    return unless map && map.respond_to?(:map_id)
+    state = $PokemonGlobal && $PokemonGlobal.blue_regions
+    region = if state.nil?
+               "DECADES"
+             elsif state.is_a?(Hash) && state["version"] == 1
+               state["current"]
+             end
+    return unless %w[DECADES KANTO JOHTO HOENN].include?(region)
+    return unless map.map_id == agent_map_id(region)
+    case region
+    when "DECADES" then attach_decades_agent(map)
+    when "KANTO"   then attach_kanto_agent(map)
+    when "JOHTO"   then attach_johto_agent(map)
+    when "HOENN"   then attach_hoenn_agent(map)
+    end
   end
 
   module DecadesTownAgent
