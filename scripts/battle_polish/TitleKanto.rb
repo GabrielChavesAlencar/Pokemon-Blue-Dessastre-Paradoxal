@@ -335,6 +335,21 @@ module BlueKantoTitle
         if BlueSinnohQA.sha256_file(file) != hash
           if file == "Data/Tilesets.rxdata" &&
              BlueSinnohQA.restore_pristine_tilesets(file, hash, files)
+            # Only the Blue-Story managed supervisor may request an automatic
+            # one-time restart. Standalone/manual launches keep the safe
+            # explanatory message, without an uncontrolled restart loop.
+            enabled = "Data/sinnoh-experimental-auto-restart-enabled.txt"
+            request = "Data/sinnoh-experimental-auto-restart-request.txt"
+            if File.file?(enabled) && !File.symlink?(enabled) &&
+               File.binread(enabled).strip == token &&
+               !File.exist?(request) && !File.symlink?(request)
+              File.open(request, File::WRONLY | File::CREAT | File::EXCL, 0600) do |out|
+                out.write(token + "\n" + hash + "\n")
+              end
+              # This process may already have loaded the wrong tilesets;
+              # supervisor will re-audit and relaunch the same QA once.
+              exit(0)
+            end
             return sinnoh_qa_block("Tilesets QA restaurado de copia original verificada. Feche esta janela e reabra a copia Sinnoh QA para carregar os tilesets corretos.")
           end
           return sinnoh_qa_block("Mapa ou indice alterado (SHA-256): " + file)
