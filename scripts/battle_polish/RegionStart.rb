@@ -279,14 +279,15 @@ module BlueRegionStart
     path = "Data/blue-kanto-ready.txt"
     return false unless spawn && File.file?(path) && !File.symlink?(path)
     fields = File.read(path, 128).strip.split(",")
-    fields == ["BLUE_KANTO_READY_V1", "142", spawn[0].to_s]
+    fields.length == 3 && fields[0] == "BLUE_KANTO_READY_V1" &&
+      ["142", "145"].include?(fields[1]) && fields[2] == spawn[0].to_s
   rescue StandardError
     false
   end
 
   # The JoiPlay Ruby runtime can have no JSON gem *or* a JSON constant
   # without a working .parse method. Read the audited installer's exact
-  # 142-map registry from its JSON text if the native parser is unavailable.
+  # 142/145-map registry from its JSON text if the native parser is unavailable.
   # Never unlock Kanto from just a ready marker or a few sample maps.
   def self.kanto_compact_maps(spawn)
     return nil unless kanto_ready_gate?(spawn) && File.file?(KANTO_INSTALL) &&
@@ -299,15 +300,24 @@ module BlueRegionStart
     pairs = section.scan(/"(\d+)"\s*:\s*(\d+)/)
     # Reject junk/partial entries instead of accepting a few regex matches.
     rest = section.gsub(/"(\d+)"\s*:\s*(\d+)/, "").gsub(/[\s,]/, "")
-    return nil unless rest.empty? && pairs.length == 142
+    # Preserve legacy 142-map Kanto installs while accepting only the
+    # explicitly appended 145-map update. The ready marker and JSON count
+    # MUST agree; random or partial archives remain fail-closed.
+    gate = File.read("Data/blue-kanto-ready.txt", 128).strip.split(",")
+    expected_count = Integer(gate[1], 10)
+    return nil unless [142, 145].include?(expected_count)
+    return nil unless rest.empty? && pairs.length == expected_count
     maps = {}
     pairs.each do |src, dst|
       id = Integer(dst, 10)
       return nil unless id > 0 && id < 1000 && !maps.key?(src)
       maps[src] = id
     end
-    return nil unless maps.values.uniq.length == 142 &&
+    return nil unless maps.values.uniq.length == expected_count &&
                       maps["7"] == spawn[0] && maps["5"].is_a?(Integer)
+    if expected_count == 145
+      return nil unless ["53", "54", "55"].all? { |source| maps[source].is_a?(Integer) }
+    end
     return nil unless maps.values.all? { |id|
       pbRgssExists?(sprintf("Data/Map%03d.rxdata", id))
     }
@@ -340,7 +350,7 @@ module BlueRegionStart
     return false unless required.all? { |name| File.file?(name) }
     # No Ruby JSON dependency here: JoiPlay may expose a partial JSON
     # implementation which reports success but returns unusable data. The
-    # 142-map scan above is stricter and is tied to the installer ready gate.
+    # 142/145-map scan above is stricter and is tied to the installer ready gate.
     !kanto_compact_maps(spawn).nil?
   rescue StandardError
     false
