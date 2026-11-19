@@ -89,13 +89,14 @@ internal static class Bootstrap {
                                     title.Text="Abrindo Sinnoh na copia isolada...";
                                     info.Text="Ambiente: "+qa+"\n"+
                                         "Nunca confunda a copia QA com a campanha principal. A compilacao nativa ainda precisa ser verificada.";
-                                    string bat=Path.Combine(qa,"INICIAR_SINNOH_EXPERIMENTAL.bat");
-                                    var experimental=Process.Start(new ProcessStartInfo(bat) {
-                                        WorkingDirectory=qa,UseShellExecute=true
-                                    });
-                                    if(experimental==null)throw new Exception("O inicializador experimental de Sinnoh nao foi aberto.");
+                                    // Supervisiona o MESMO QA: compilacao inicial, recuperacao
+                                    // verificada e no maximo um reinicio. Nunca abre outro piloto.
+                                    string python=Runtime("python","python.exe");
                                     form.WindowState=FormWindowState.Minimized;
-                                    await Task.Run(delegate { experimental.WaitForExit(); });
+                                    await Task.Run(delegate {
+                                        Run(python,new[]{"scripts/windows/sinnoh_qa_supervisor.py",
+                                            "--project-root",Root,"--qa-dir",qa},Path.GetDirectoryName(python));
+                                    });
                                     form.Close();return;
                                 }
                                 // Only the main campaign runs full installation and
