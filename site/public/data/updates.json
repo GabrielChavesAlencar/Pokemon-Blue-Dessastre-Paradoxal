@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "e017843aabf646111e3ac333ce3feba2f42150ae",
+      "date": "2026-11-19T06:59:47-03:00",
+      "title": "feat(blue-story): Testar piloto Sinnoh no menu do launcher Windows",
+      "category": "Novidades"
+    },
+    {
       "sha": "985f1ece277d7061dca822ed446c21e227bd33a3",
       "date": "2026-11-18T23:22:03-03:00",
       "title": "Merge PR #257: fix Kanto Android release API pagination [android-kanto-release]",
