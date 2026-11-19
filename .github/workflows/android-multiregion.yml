@@ -16,6 +16,8 @@ on:
       - 'scripts/android/build_manifest.py'
       - 'scripts/android/update_client.py'
       - 'scripts/android/publish_updates.py'
+      - 'scripts/android/select_previous_multiregion_releases.py'
+      - 'tests/test_multiregion_release_pagination.py'
       - 'scripts/regions/auto_integrate_kanto.py'
       - 'scripts/regions/pilot.py'
       - 'scripts/regions/KantoPilot.rb'
@@ -119,19 +121,17 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Verificacao do ZIP falhou.'}
           # Generate separate hash-based patches for recent installations
           # AND the oldest combined release. No historical game ZIP download.
-          $recent=@(gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100" | ConvertFrom-Json |
-            Where-Object { $_.tag_name -match '^android-multiregion-' -and -not $_.draft -and
-              @($_.assets | Where-Object { $_.name -eq 'Blue-Android-Decades-Kanto-Hoenn.update.json' }).Count -gt 0 } |
-            Sort-Object published_at -Descending)
-          if($LASTEXITCODE -ne 0){throw 'Nao foi possivel listar releases Android.'}
-          $selected=@($recent | Select-Object -First 4)
-          if($recent.Count -gt 4){$selected+=@($recent | Select-Object -Last 1)}
+          # The latest multiregion release can be on page 2+ because this
+          # repository publishes many unrelated Battle Hub releases. Scan all
+          # pages before selecting verified channel-specific old manifests.
+          $selected=@(python scripts/android/select_previous_multiregion_releases.py --fetch-github)
+          if($LASTEXITCODE -ne 0 -or $selected.Count -eq 0){throw 'Historico de releases Android multirregionais incompleto; nenhum delta seguro sera publicado'}
           $args=@('--channel','multiregion','--full-zip','dist/Blue-Android-Decades-Kanto-Hoenn.zip')
-          foreach($release in $selected){
-            $old=Join-Path 'dist/previous' $release.tag_name
+          foreach($tag in $selected){
+            $old=Join-Path 'dist/previous' $tag
             New-Item -ItemType Directory -Force -Path $old | Out-Null
-            gh release download $release.tag_name --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $old
-            if($LASTEXITCODE -ne 0){throw "Manifesto Android anterior indisponivel: $($release.tag_name)"}
+            gh release download $tag --pattern 'Blue-Android-Decades-Kanto-Hoenn.update.json' --dir $old
+            if($LASTEXITCODE -ne 0){throw "Manifesto Android anterior indisponivel: $tag"}
             $args+=@('--previous-manifest',(Join-Path $old 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
           }
           # Also support the on-device installation revision reported by Termux.
@@ -158,7 +158,13 @@ jobs:
           if($LASTEXITCODE -ne 0){throw 'Rotas 24/25 ou Luis/Diana ausentes do ZIP Android integrado'}
           python scripts/android/publish_updates.py @args
           if($LASTEXITCODE -ne 0){throw 'Manifesto do canal multirregional falhou.'}
+          # A release with no delta from the newest published install is NOT
+          # an update for the player, even when the full ZIP is valid.
+          $currentPrevious = Join-Path (Join-Path 'dist/previous' $selected[0]) 'Blue-Android-Decades-Kanto-Hoenn.update.json'
+          $oldManifest = Get-Content $currentPrevious -Raw | ConvertFrom-Json
           $manifest = Get-Content 'dist/Blue-Android-Decades-Kanto-Hoenn.update.json' -Raw | ConvertFrom-Json
+          $latestDelta = @($manifest.patches | Where-Object { $_.from_revision -eq $oldManifest.revision })
+          if($latestDelta.Count -eq 0){throw "Delta incremental para a ultima versao multirregional nao foi publicado: $($selected[0])"}
           $delta = @($manifest.patches | Where-Object { $_.from_revision -eq '02e8e5addc7a7f2c4a9f71195fcae7f49631ed54' })
           if($delta.Count -eq 0){throw 'Delta da preview para a main nao gerado'}
           Write-Host 'PASS: preview-to-main incremental patch'
