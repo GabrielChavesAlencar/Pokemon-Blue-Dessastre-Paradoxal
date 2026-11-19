@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "547a8393db64dc9a83754e540f7d2d6efd0a619a",
+      "date": "2026-11-18T21:40:56-03:00",
+      "title": "feat(kanto): Cerulean north Route 24/25, Gary, Nugget Bridge and Bill",
+      "category": "Novidades"
+    },
+    {
       "sha": "0767acc35f80619ca548a5950f6308ab96b98565",
       "date": "2026-11-18T19:27:06-03:00",
       "title": "fix(kanto/android): Cerulean gym trainers safe error handling",
