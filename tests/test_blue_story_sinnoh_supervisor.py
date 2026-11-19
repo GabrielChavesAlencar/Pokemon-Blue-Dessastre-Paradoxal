@@ -61,7 +61,7 @@ class SinnohSupervisorTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw.encode() if isinstance(raw, str) else raw)
 
-    def run(self, fake):
+    def execute_supervisor(self, fake):
         result = supervisor.supervise(self.project, self.qa, fake)
         self.assertEqual(hashlib.sha256((self.game / "Game.exe").read_bytes()).hexdigest(), self.base_sha)
         self.assertFalse((self.qa / supervisor.ENABLED).exists())
@@ -70,7 +70,7 @@ class SinnohSupervisorTests(unittest.TestCase):
 
     def test_01_clean_one_click_launch(self):
         calls=[]
-        self.assertEqual(self.run(lambda exe, cwd: calls.append((exe,cwd)) or 0),0)
+        self.assertEqual(self.execute_supervisor(lambda exe, cwd: calls.append((exe,cwd)) or 0),0)
         self.assertEqual(calls,[(self.qa/"Game.exe",self.qa)])
 
     def test_02_initial_compilation_mutates_tilesets_then_recovers(self):
@@ -82,7 +82,7 @@ class SinnohSupervisorTests(unittest.TestCase):
                 self.write(supervisor.TILESETS, "compiler rewrote tile data")
                 (self.qa / supervisor.COMPILE_REQUEST).unlink()
             return 0
-        self.assertEqual(self.run(fake),0)
+        self.assertEqual(self.execute_supervisor(fake),0)
         self.assertEqual(len(calls),2)
         self.assertEqual((self.qa/supervisor.TILESETS).read_bytes(),
                          (self.qa/supervisor.PRISTINE).read_bytes())
@@ -98,7 +98,7 @@ class SinnohSupervisorTests(unittest.TestCase):
                 self.write(supervisor.REQUEST,
                            "012345abcdef\n"+self.hashes[supervisor.TILESETS]+"\n")
             return 0
-        self.assertEqual(self.run(fake),0)
+        self.assertEqual(self.execute_supervisor(fake),0)
         self.assertEqual(calls,[(self.qa/"Game.exe",self.qa)]*2)
 
     def test_04_wrong_marker_cannot_request_restart(self):
@@ -106,7 +106,7 @@ class SinnohSupervisorTests(unittest.TestCase):
             self.write(supervisor.REQUEST,"forged restart")
             return 0
         with self.assertRaisesRegex(ValueError,"UNVERIFIED_RESTART_REQUEST"):
-            self.run(fake)
+            self.execute_supervisor(fake)
 
     def test_05_no_restart_loop_allowed(self):
         calls=[]
@@ -116,7 +116,7 @@ class SinnohSupervisorTests(unittest.TestCase):
                        "012345abcdef\n"+self.hashes[supervisor.TILESETS]+"\n")
             return 0
         with self.assertRaisesRegex(ValueError,"ONE_RESTART_LIMIT"):
-            self.run(fake)
+            self.execute_supervisor(fake)
         self.assertEqual(len(calls),2)
 
     def test_06_adulterated_pristine_cannot_restore(self):
@@ -124,14 +124,14 @@ class SinnohSupervisorTests(unittest.TestCase):
         self.write(supervisor.PRISTINE,"forged")
         calls=[]
         with self.assertRaisesRegex(ValueError,"PRISTINE_FILE_TAMPERED"):
-            self.run(lambda *_:calls.append(1) or 0)
+            self.execute_supervisor(lambda *_:calls.append(1) or 0)
         self.assertEqual(calls,[])
 
     def test_07_map_tampering_blocks_before_execution(self):
         self.write("Data/Map442.rxdata","forged")
         calls=[]
         with self.assertRaisesRegex(ValueError,"MAP_OR_INDEX_SHA256_MISMATCH"):
-            self.run(lambda *_:calls.append(1) or 0)
+            self.execute_supervisor(lambda *_:calls.append(1) or 0)
         self.assertEqual(calls,[])
 
     def test_08_foreign_qa_path_not_authorized(self):
@@ -144,18 +144,18 @@ class SinnohSupervisorTests(unittest.TestCase):
         self.manifest["save_profile"]["dataPathApp"]="OTHER"
         self.write("sinnoh-experimental-qa.json",json.dumps(self.manifest))
         with self.assertRaisesRegex(ValueError,"INVALID_PRIVATE_SAVE_NAMESPACE"):
-            self.run(lambda *_:0)
+            self.execute_supervisor(lambda *_:0)
 
     def test_10_stale_marker_blocks_before_execution(self):
         self.write(supervisor.REQUEST,"untrusted")
         with self.assertRaisesRegex(ValueError,"UNEXPECTED_SUPERVISOR_MARKER"):
-            self.run(lambda *_:0)
+            self.execute_supervisor(lambda *_:0)
 
     def test_11_compiler_request_remaining_blocks_secondary_boot(self):
         self.write(supervisor.COMPILE_REQUEST,"synthetic pending")
         calls=[]
         with self.assertRaisesRegex(ValueError,"NATIVE_COMPILER_REQUEST_STILL_PENDING"):
-            self.run(lambda *_:calls.append(1) or 0)
+            self.execute_supervisor(lambda *_:calls.append(1) or 0)
         self.assertEqual(len(calls),1)
 
 
