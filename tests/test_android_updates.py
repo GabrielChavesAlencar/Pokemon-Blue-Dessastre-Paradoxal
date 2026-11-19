@@ -75,7 +75,7 @@ class AndroidUpdatesTest(unittest.TestCase):
     def test_known_1911_byte_android_launcher_can_update_without_backup(self):
         # This is exactly the user-shared launcher placed in their phone.
         launcher = (Path(__file__).parent / "fixtures" /
-                    "android_updater_launcher_20261117.py").read_bytes()
+                    "android_updater_launcher_20261117.py").read_bytes().replace(b"\r\n", b"\n")
         self.assertEqual(len(launcher), 1911)
         from scripts.android.update_client import KNOWN_ANDROID_LAUNCHERS
         import hashlib
@@ -100,7 +100,7 @@ class AndroidUpdatesTest(unittest.TestCase):
 
     def test_known_launcher_cannot_bypass_other_modified_file(self):
         launcher = (Path(__file__).parent / "fixtures" /
-                    "android_updater_launcher_20261117.py").read_bytes()
+                    "android_updater_launcher_20261117.py").read_bytes().replace(b"\r\n", b"\n")
         game, manifest, patch_file = self._launcher_patch_fixture(launcher)
         (game / "Data/Map001.rxdata").write_bytes(b"CUSTOM MAP")
         with self.assertRaisesRegex(ValueError, "Data/Map001.rxdata"):
