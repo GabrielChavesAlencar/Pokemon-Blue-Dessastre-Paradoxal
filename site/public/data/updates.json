@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "b8bf3d73f2ee8ce2383b295947a9c5dceab315bb",
+      "date": "2026-11-19T08:01:48-03:00",
+      "title": "fix(kanto/android): corrigir Luis, Rotas 24/25 e release JoiPlay [android-kanto-release]",
+      "category": "Correções"
+    },
+    {
       "sha": "e017843aabf646111e3ac333ce3feba2f42150ae",
       "date": "2026-11-19T06:59:47-03:00",
       "title": "feat(blue-story): Testar piloto Sinnoh no menu do launcher Windows",
