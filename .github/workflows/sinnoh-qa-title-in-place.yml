@@ -1,0 +1,65 @@
+name: Sinnoh QA - title Testar Sinnoh starts existing experimental copy
+on:
+  pull_request:
+    paths:
+      - scripts/battle_polish/TitleKanto.rb
+      - scripts/regions/install_sinnoh_experimental_windows.py
+      - tests/sinnoh_qa_title_in_place_runtime.rb
+      - tests/test_sinnoh_j12e_experimental_installer.py
+      - .github/workflows/sinnoh-qa-title-in-place.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/battle_polish/TitleKanto.rb
+      - scripts/regions/install_sinnoh_experimental_windows.py
+      - tests/sinnoh_qa_title_in_place_runtime.rb
+      - tests/test_sinnoh_j12e_experimental_installer.py
+      - .github/workflows/sinnoh-qa-title-in-place.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ruby-title-routing:
+    name: Ruby / QA nine-map manifest and title New Game routing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+      - name: Check title plugin Ruby syntax
+        run: ruby -c scripts/battle_polish/TitleKanto.rb
+      - name: Assert QA copy can start locally without legacy pilot marker
+        run: ruby tests/sinnoh_qa_title_in_place_runtime.rb
+      - name: Ensure no native files, saves or release flags created
+        run: |
+          test ! -f game/Game.exe
+          test ! -d .blue-work
+          git diff --exit-code
+  installer-python-regressions:
+    name: Python / 42 isolated copy and title override tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate experimental installer with 42 synthetic tests
+        run: |
+          python -m py_compile scripts/regions/install_sinnoh_experimental_windows.py
+          python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
+          python -m unittest discover -s tests -p test_sinnoh_j11c_native_overlay.py -v
+      - name: Existing main Sinnoh stays non-playable until native QA
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("data/regions/sinnoh-playable-progress.json").read_text())
+          assert p["status"]=="PILOT_NOT_INSTALLED_NOT_PLAYABLE"
+          assert p["native_windows_cases_executed"]==0
+          assert p["native_android_cases_executed"]==0
+          assert p["main_game_modified"] is False
+          PY
+          git diff --exit-code
