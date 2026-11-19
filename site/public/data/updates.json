@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "8b35bb5d5be569d1ad28d7e79888a04239e5559c",
+      "date": "2026-11-19T19:53:57-03:00",
+      "title": "fix(sinnoh): preservar mapas QA durante compilacao de eventos",
+      "category": "Correções"
+    },
+    {
       "sha": "129d6f25686bfd00f694d2e470620b0bd4f45f11",
       "date": "2026-11-19T19:18:52-03:00",
       "title": "fix(sinnoh): corrigir YAML que bloqueava builds J05 e J06",
