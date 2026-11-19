@@ -62,7 +62,7 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('string python=Runtime("python","python.exe");',self.csharp)
         self.assertIn('"scripts/windows/launch_sinnoh_pilot.py"',self.csharp)
     def test_06_launches_only_qa_copy_launcher(self):
-        self.assertIn('Path.Combine(qa,"INICIAR_SINNOH_EXPERIMENTAL.bat")',self.csharp)
+        self.assertIn('scripts/windows/sinnoh_qa_supervisor.py',self.csharp)
         self.assertNotIn('Process.Start(new ProcessStartInfo(Path.Combine(game,"Game.exe"))',self.csharp[:self.csharp.index('if(chosen=="sinnoh")')])
     def test_07_python_receipt_has_no_native_approval(self):
         info,prep,copy=self.simulate()
