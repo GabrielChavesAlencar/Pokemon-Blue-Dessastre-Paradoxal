@@ -264,5 +264,43 @@ class J12EInstallerTests(unittest.TestCase):
         # direct copies into the source tree must never be accepted.
         self.reject(lambda:exp.install_copy(game,{},{"profile_token":"aaa"},game))
 
+    def test_40_private_qa_only_updates_title_plugin_not_original(self):
+        title=exp.QA_TITLE_PLUGIN
+        original=b"legacy test menu - no new routing"
+        source=b"updated standalone QA TitleKanto - project owned"
+        installed=self.base/title
+        installed.parent.mkdir(parents=True,exist_ok=True)
+        installed.write_bytes(original)
+        project_source=self.proj/"scripts/battle_polish/TitleKanto.rb"
+        project_source.parent.mkdir(parents=True,exist_ok=True)
+        project_source.write_bytes(source)
+        outputs={title:source}
+        report={"profile_token":"abc123abc123","mapids":{},
+                "save_profile":{},"file_sha256":{title:exp.sha(source)}}
+        qa=exp.install_copy(self.base,outputs,report,self.proj)
+        self.assertEqual((qa/title).read_bytes(),source)
+        self.assertEqual(installed.read_bytes(),original)
+        self.assertFalse((qa/"Saves").exists())
+
+    def test_41_reject_untrusted_title_plugin_replacement(self):
+        title=exp.QA_TITLE_PLUGIN
+        path=self.base/title
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(b"legacy")
+        project_source=self.proj/"scripts/battle_polish/TitleKanto.rb"
+        project_source.parent.mkdir(parents=True,exist_ok=True)
+        project_source.write_bytes(b"reviewed")
+        report={"profile_token":"abc123abc123","mapids":{},
+                "save_profile":{},"file_sha256":{}}
+        self.reject(lambda:exp.install_copy(self.base,
+                    {title:b"tampered or unrelated code"},report,self.proj))
+        self.assertEqual(path.read_bytes(),b"legacy")
+
+    def test_42_new_qa_pilot_uses_reviewed_title_source(self):
+        script=(ROOT/"scripts/regions/install_sinnoh_experimental_windows.py").read_text("utf-8")
+        self.assertIn('QA_TITLE_PLUGIN:(project/"scripts/battle_polish/TitleKanto.rb").read_bytes()',script)
+        self.assertIn('QA_TITLE_PLUGIN="Plugins/ZZZZ Blue Story and Presentation/TitleKanto.rb"',script)
+        self.assertIn('QA_TITLE_PLUGIN_OVERRIDE_NOT_TRUSTED',script)
+
 if __name__=="__main__":
     unittest.main()

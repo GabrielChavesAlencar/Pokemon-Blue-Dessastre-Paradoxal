@@ -15,6 +15,18 @@ A validação de Kanto **não foi removida ou falsificada**. Ao selecionar a cam
 
 O novo fluxo é: **sincronizar fontes → exibir menu → escolher campanha ou Sinnoh → só instalar/verificar Kanto para a campanha**. Isso evita obrigar o piloto de Sinnoh a passar por uma correção potencialmente arriscada de Kanto.
 
+## Dentro do Game.exe: usar Testar Sinnoh na própria cópia QA
+
+A tela **Sinnoh QA** já é uma cópia experimental criada pelo Blue-Story. Nas versões anteriores, a opção **Testar Sinnoh** do título ainda verificava o formato antigo `Sinnoh pilot.json` e mostrava incorretamente que Twinleaf/Sandgem não estavam instalados.
+
+A correção mantém o título da campanha principal sem alterações de progresso e integra o **novo formato J12-E**: quando o jogo é iniciado dentro de `.blue-work/game-sinnoh-experimental-<token>`, o botão **Testar Sinnoh** valida o manifesto `sinnoh-experimental-qa.json`, o token do perfil, os nove RXDATA e seus hashes SHA-256, os dois registros de mapa/tileset, a configuração de saves isolados, e a confirmação nativa da compilação PBS de Barry. Só então encaminha para **Novo Jogo na MESMA janela QA**, sem iniciar outro Game.exe, sem procurar um BAT `SINNOH_JOGAR_EXPERIMENTAL.bat` e sem tocar no save da campanha principal. A opção **New Game** dentro dessa cópia também ignora o seletor de regiões do Decades e inicia apenas o piloto QA.
+
+O instalador atualiza o arquivo `TitleKanto.rb` **exclusivamente na cópia nova**. Isso é necessário porque a instalação principal pode estar bloqueada pelo Kanto 142/145 e manter um plugin de título antigo; a atualização do repositório, sozinha, não altera esse arquivo no jogo já instalado. Não sobrescreve nem atualiza o plugin na campanha principal.
+
+**Como usar:** substitua o Blue-Story.exe pelo da release mais recente, abra **Testar piloto Sinnoh** no Blue-Story e depois, na janela `Sinnoh QA` criada, selecione **Testar Sinnoh** (ou **New Game**). O procedimento cria uma nova cópia, não repara cópias QA antigas automaticamente. Se aparecer erro de perfil, compilação ou hashes, a operação será bloqueada para não iniciar a região incorreta: preserve e envie os logs. Não apague ou copie saves.
+
+**Limites:** abrir a tela inicial com os mapas não é prova de que Barry, portais, colisões e save/load passaram no Game.exe. Permanecem R07/R08/R09 pendentes, 0/9 instalados na campanha principal e 0/44 QA nativa aprovada.
+
 ## Como usar
 
 1. **Atualize seu Blue-Story.exe**, baixando o binário da release [Blue-Story Windows](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/releases/tag/blue-story-windows) **depois da publicação do PR**. A autoatualização do código não substitui por si só um EXE Windows antigo, por isso este download é importante.

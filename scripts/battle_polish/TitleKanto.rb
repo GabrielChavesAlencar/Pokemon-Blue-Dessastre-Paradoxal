@@ -11,6 +11,91 @@ module BlueKantoTitle
   JOHTO_LAUNCHER = "JOHTO_JOGAR_EXPERIMENTAL.bat".freeze
   SINNOH_LAUNCHER = "SINNOH_JOGAR_EXPERIMENTAL.bat".freeze
 
+  # J12-E: the generated Sinnoh QA is already a separate running Game.exe.
+  # It is NOT the old "Sinnoh pilot.json" format, so never attempt to launch a
+  # second pilot or claim the maps are absent. Validate the actual private
+  # profile, original nine RXDATA and local PBS compilation before New Game.
+  # In the main Decades/Blue installation there is no QA manifest, hence this
+  # method never changes the main title or its region/save rules.
+  def self.sinnoh_experimental_copy?
+    return false unless File.file?("sinnoh-experimental-qa.json") &&
+                        !File.symlink?("sinnoh-experimental-qa.json") &&
+                        defined?(BlueSinnohExperimental) &&
+                        BlueSinnohExperimental.const_defined?(:TOKEN, false) &&
+                        BlueSinnohExperimental.const_defined?(:START, false)
+    token = BlueSinnohExperimental::TOKEN
+    return false unless token.is_a?(String) && token.match?(/\A[a-f0-9]{12}\z/)
+    File.basename(Dir.pwd) == "game-sinnoh-experimental-" + token
+  rescue IOError, SystemCallError, ArgumentError
+    false
+  end
+
+  def self.sinnoh_experimental_ready?
+    return false unless sinnoh_experimental_copy?
+    begin
+      require "json" unless defined?(JSON)
+      require "digest" unless defined?(Digest::SHA256)
+      data = JSON.parse(File.read("sinnoh-experimental-qa.json"))
+      return false unless data.is_a?(Hash) && data["schema"] == 1 &&
+                          data["region"] == "SINNOH" &&
+                          data["mode"] == "SINNOH_EXPERIMENTAL_TEST_COPY_NOT_NATIVE_APPROVED" &&
+                          data["profile_token"] == BlueSinnohExperimental::TOKEN &&
+                          data["start"] == BlueSinnohExperimental::START &&
+                          data["main_game_modified"] == false &&
+                          data["personal_saves_copied"] == false &&
+                          data["r09_native_qa_executed"] == 0 &&
+                          data["runtime_playable_verified"] == false
+      token = data["profile_token"]
+      namespace = data["save_profile"]
+      return false unless namespace.is_a?(Hash) &&
+                          namespace["title"] == "Sinnoh QA " + token &&
+                          namespace["dataPathApp"] == "Sinnoh-QA-" + token &&
+                          namespace["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + token
+      return false unless File.file?("mkxp.json") && !File.symlink?("mkxp.json") &&
+                          File.file?("Game.ini") && !File.symlink?("Game.ini")
+      conf = JSON.parse(File.read("mkxp.json"))
+      return false unless conf.is_a?(Hash) &&
+                          conf["windowTitle"] == namespace["title"] &&
+                          conf["dataPathApp"] == namespace["dataPathApp"] &&
+                          conf["dataPathOrg"] == namespace["dataPathOrg"] &&
+                          conf.keys.none? { |key| key.to_s.downcase.include?("save") ||
+                                                  key.to_s.downcase.include?("userdata") }
+      return false unless File.readlines("Game.ini").count { |row|
+        row.strip == "Title=" + namespace["title"]
+      } == 1
+      marker = "Data/sinnoh-experimental-compiled.txt"
+      return false unless File.file?(marker) && !File.symlink?(marker) &&
+                          !File.exist?("Data/sinnoh-experimental-compile-request.txt") &&
+                          !File.exist?("Data/sinnoh-experimental-compile-error.txt")
+      proof = data["compile_token"]
+      return false unless proof.is_a?(String) &&
+                          proof.match?(/\A[a-f0-9]{64}\z/) &&
+                          File.read(marker).strip == proof
+      ids = data["mapids"]
+      files = data["file_sha256"]
+      return false unless ids.is_a?(Hash) && ids.length == 9 &&
+                          ids.values.all? { |value| value.is_a?(Integer) &&
+                                                    value.between?(442, 517) } &&
+                          ids.values.uniq.length == 9 && files.is_a?(Hash)
+      start = data["start"]
+      return false unless start.is_a?(Array) && start.length == 3 &&
+                          start.all? { |v| v.is_a?(Integer) } &&
+                          ids["SINNOH_PLAYER_BEDROOM"] == start[0] &&
+                          start[1] >= 0 && start[2] >= 0
+      required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
+                 ids.values.map { |id| sprintf("Data/Map%03d.rxdata", id) }
+      return false unless required.all? { |file|
+        hash = files[file]
+        hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/) &&
+          File.file?(file) && !File.symlink?(file) &&
+          Digest::SHA256.file(file).hexdigest == hash
+      }
+      true
+    rescue StandardError, LoadError
+      false
+    end
+  end
+
   def self.pilot?
     File.file?("Kanto pilot.json") || File.file?("Johto pilot.json") ||
       File.file?("Hoenn pilot.json") || File.file?("Sinnoh pilot.json")
@@ -277,6 +362,16 @@ module BlueKantoTitle
   end
 
   def self.launch_sinnoh
+    # When invoked INSIDE the verified QA executable, "Testar Sinnoh" means
+    # start a new game HERE. The user must not launch another process or
+    # consume a save from a different regional profile.
+    if sinnoh_experimental_copy?
+      unless sinnoh_experimental_ready?
+        pbMessage(_INTL("Sinnoh QA: a cópia está incompleta ou a compilação nativa de Barry ainda não foi confirmada. Confira Data/sinnoh-experimental-compile-error.txt e o launcher do Blue-Story. Nenhum save foi alterado."))
+        return false
+      end
+      return :blue_sinnoh_local_new_game
+    end
     unless windows?
       pbMessage(_INTL("O teste de Sinnoh pelo menu inicial estará disponível no Windows."))
       return false
@@ -333,6 +428,15 @@ module BlueKantoTitle
                     end
         return selection if selection.nil? || selection < 0
         original = @blue_kanto_order[selection]
+        if BlueKantoTitle.sinnoh_experimental_copy? && original == @blue_kanto_new_game
+          # Do not ask for Decades/Kanto/Hoenn here. The QA copy has its own
+          # save namespace and BlueSinnohExperimental overrides its spawn.
+          if BlueKantoTitle.sinnoh_experimental_ready?
+            return original
+          end
+          pbMessage(_INTL("Sinnoh QA: os mapas ou o perfil de compilação da cópia estão incompletos. Nenhum save foi alterado."))
+          next
+        end
         if !BlueKantoTitle.pilot? && original == @blue_kanto_new_game
           # Let Decades' ORIGINAL New Game branch initialize its own save.
           # All other choices either open a separate regional pilot or return
@@ -351,6 +455,13 @@ module BlueKantoTitle
                      when :blue_test_hoenn then BlueKantoTitle.launch_hoenn
                      when :blue_test_sinnoh then BlueKantoTitle.launch_sinnoh
                      end
+          if launched == :blue_sinnoh_local_new_game
+            # The native New Game route will call BlueSinnohExperimental's
+            # isolated start hook. Do not quit or spawn another Game.exe.
+            return @blue_kanto_new_game if @blue_kanto_new_game
+            pbMessage(_INTL("Sinnoh QA: a opção Novo Jogo não foi encontrada."))
+            next
+          end
           if launched
             # Allow the original load screen to dispose itself normally; its
             # Quit Game branch closes the main process after spawning pilot.

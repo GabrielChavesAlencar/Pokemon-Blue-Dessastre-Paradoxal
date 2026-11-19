@@ -53,6 +53,7 @@ DEFAULT_GAME=Path(os.environ.get("LOCALAPPDATA",str(Path.home())))/"PokemonBlueD
 QA_DIR="game-sinnoh-experimental"
 EXPERIMENT_PLUGIN="Plugins/ZZZZZ Blue Sinnoh Experimental"
 INTRO_PLUGIN="Plugins/ZZZZZ Blue Sinnoh Intro"
+QA_TITLE_PLUGIN="Plugins/ZZZZ Blue Story and Presentation/TitleKanto.rb"
 ROOT_COPY={"Game.exe","Game.ini","mkxp.json","preload.rb","soundfont.sf2","Credits.txt"}
 ROOT_DIRS={"Data","Audio","Graphics","Fonts","PBS","Plugins","Scripts"}
 SKIP_PARTS={"saves","save","savedata","backups","backup","logs","tmp","cache"}
@@ -382,7 +383,8 @@ def build_files(base:Path,project:Path=ROOT):
     if not base.is_dir():fail("GAME_FOLDER_NOT_FOUND")
     for name in ("Game.exe","Game.ini","mkxp.json","Data/MapInfos.rxdata",
                  "Data/Tilesets.rxdata","Data/System.rxdata","Data/Scripts.rxdata",
-                 "PBS/trainer_types.txt","PBS/pokemon.txt","PBS/moves.txt"):
+                 "PBS/trainer_types.txt","PBS/pokemon.txt","PBS/moves.txt",
+                 QA_TITLE_PLUGIN):
         regular(base/name)
     # Existing Sinnoh previews/plugins could conflict with experimental bootstrap.
     if (base/EXPERIMENT_PLUGIN).exists() or (base/INTRO_PLUGIN).exists():
@@ -411,6 +413,11 @@ def build_files(base:Path,project:Path=ROOT):
         "Data/System.rxdata":None,
         "Data/Scripts.rxdata":patch_bootstrap((base/"Data/Scripts.rxdata").read_bytes(),token),
         "mkxp.json":config,"Game.ini":game_ini,
+        # Only inside the NEW private QA copy. Blue-Story source-only sync
+        # cannot update the installed main-game title when Kanto is 142/145.
+        # Refresh the title plugin in QA so Testar Sinnoh routes to local
+        # New Game instead of searching for the legacy Sinnoh pilot.json.
+        QA_TITLE_PLUGIN:(project/"scripts/battle_polish/TitleKanto.rb").read_bytes(),
         f"{INTRO_PLUGIN}/SinnohPilot.rb":(project/"scripts/regions/SinnohPilot.rb").read_bytes(),
         f"{INTRO_PLUGIN}/meta.txt":b"Name = Blue Sinnoh Intro\nVersion = 0.1\nEssentials = 21.1\nScripts = SinnohPilot.rb\n",
         f"{EXPERIMENT_PLUGIN}/SinnohExperimentalStart.rb":experiment_plugin(
@@ -495,7 +502,16 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
         if rel.startswith("Data/Map") and re.fullmatch(r"Data/Map\d{3}\.rxdata",rel):
             if rel in original:fail("WOULD_OVERWRITE_NATIVE_MAP")
         if rel.startswith(("Plugins/","Graphics/")) and rel in original:
-            fail("WOULD_OVERWRITE_EXISTING_PLUGIN_OR_GRAPHICS")
+            if rel == QA_TITLE_PLUGIN:
+                # The sole allowlisted replacement is a project-owned Title
+                # plugin in the newly created QA copy, NEVER in the source.
+                verified=(project/"scripts/battle_polish/TitleKanto.rb")
+                if (not verified.is_file() or verified.is_symlink() or
+                    original[rel] != base/QA_TITLE_PLUGIN or
+                    outputs[rel] != verified.read_bytes()):
+                    fail("QA_TITLE_PLUGIN_OVERRIDE_NOT_TRUSTED")
+            else:
+                fail("WOULD_OVERWRITE_EXISTING_PLUGIN_OR_GRAPHICS")
     work.mkdir(parents=True,exist_ok=True)
     stage=Path(tempfile.mkdtemp(prefix=".sinnoh-experimental-",dir=work))
     try:
