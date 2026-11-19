@@ -19,6 +19,9 @@ on:
       - 'scripts/regions/auto_integrate_kanto.py'
       - 'scripts/regions/pilot.py'
       - 'scripts/regions/KantoPilot.rb'
+      - 'scripts/battle_polish/Journey.rb'
+      - 'tests/kanto_journey_trainer_runtime.rb'
+      - 'scripts/android/verify_kanto_cerulean.py'
       - 'tests/test_kanto_fossils.py'
       - 'scripts/regions/auto_integrate_hoenn.py'
       - 'scripts/regions/ensure_hoenn_source.py'
@@ -55,6 +58,8 @@ jobs:
           python -m unittest discover -s tests -p test_android_updates.py -v
           ruby -c scripts/battle_lab/Mobile.rb
           ruby tests/android_version_menu.rb scripts/battle_lab/Mobile.rb
+          ruby tests/kanto_journey_trainer_runtime.rb scripts/battle_polish/Journey.rb
+          if($LASTEXITCODE -ne 0){throw 'JoiPlay Luis and Diana trainer regression failed.'}
           if($LASTEXITCODE -ne 0){throw 'Falha nas atualizacoes Android ou na preservacao de saves.'}
       - name: Integrar Kanto e Hoenn na base principal
         shell: powershell
@@ -148,8 +153,10 @@ jobs:
           $args+=@('--previous-manifest',(Join-Path $previewDir 'Blue-Android-Decades-Kanto-Hoenn.update.json'))
           # Fail closed: do not publish a newer release that reintroduces
           # the map-connection hitch or drops Cerulean/Route4 BGM.
-          python -c 'from zipfile import ZipFile; from scripts.android.package import compiled_region; z=ZipFile("dist/Blue-Android-Decades-Kanto-Hoenn.zip"); root="Pokemon-Blue-Android/"; name="Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb"; source=z.read(root+name); assert b"def self.agent_map_id(region)" in source, "Optimized regional map dispatcher missing"; compiled_region(z.read(root+"Data/PluginScripts.rxdata"),"RegionTravel.rb",source); music=z.read(root+"Data/blue-kanto-music.txt").decode("utf8"); assert sum(line.startswith("MAP\t") for line in music.splitlines())==74, "Expected 74 Kanto music map bindings"; z.close(); print("PASS: Android native cache and 74 Kanto BGMs")'
+          python -c 'from zipfile import ZipFile; from scripts.android.package import compiled_region; z=ZipFile("dist/Blue-Android-Decades-Kanto-Hoenn.zip"); root="Pokemon-Blue-Android/"; name="Plugins/ZZZZ Blue Story and Presentation/RegionTravel.rb"; source=z.read(root+name); assert b"def self.agent_map_id(region)" in source, "Optimized regional map dispatcher missing"; compiled_region(z.read(root+"Data/PluginScripts.rxdata"),"RegionTravel.rb",source); music=z.read(root+"Data/blue-kanto-music.txt").decode("utf8"); assert sum(line.startswith("MAP\t") for line in music.splitlines())==77, "Expected 77 Kanto music map bindings"; z.close(); print("PASS: Android native cache and 77 Kanto BGMs")'
           if($LASTEXITCODE -ne 0){throw 'Otimização ou música de Kanto ausente do ZIP compilado'}
+          python scripts/android/verify_kanto_cerulean.py --channel multiregion --archive dist/Blue-Android-Decades-Kanto-Hoenn.zip
+          if($LASTEXITCODE -ne 0){throw 'Rotas 24/25 ou Luis/Diana ausentes do ZIP Android integrado'}
           python scripts/android/publish_updates.py @args
           if($LASTEXITCODE -ne 0){throw 'Manifesto do canal multirregional falhou.'}
           python -c 'import json; from pathlib import Path; x=json.loads(Path("dist/Blue-Android-Decades-Kanto-Hoenn.update.json").read_text()); assert "02e8e5addc7a7f2c4a9f71195fcae7f49631ed54" in {p["from_revision"] for p in x.get("patches",[])}, "No delta back to stable from opt-in preview"; print("PASS: preview-to-main incremental patch")'
