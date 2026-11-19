@@ -416,10 +416,17 @@ class AndroidUpdatesTest(unittest.TestCase):
         self.assertEqual(best["tag_name"], "android-multiregion-15-125155e")
 
     def test_kanto_release_on_fourth_page_is_discovered(self):
-        older = self._release("kanto-android-1205-old",
-                              "2026-11-12T12:00:00Z")
-        latest = self._release("kanto-android-1206-latest",
-                               "2026-11-18T23:00:00Z")
+        def kanto(tag, published):
+            row = self._release(tag, published)
+            for asset in row["assets"]:
+                asset["name"] = asset["name"].replace(
+                    "Blue-Android-Decades-Kanto-Hoenn", "Blue-Android-Kanto-Piloto")
+                asset["browser_download_url"] = asset["browser_download_url"].replace(
+                    "Blue-Android-Decades-Kanto-Hoenn", "Blue-Android-Kanto-Piloto")
+            return row
+
+        older = kanto("kanto-android-1205-old", "2026-11-12T12:00:00Z")
+        latest = kanto("kanto-android-1206-latest", "2026-11-18T23:00:00Z")
         unrelated = [self._release(f"battle-hub-{i}",
                                    "2026-11-18T20:00:00Z")
                      for i in range(100)]
