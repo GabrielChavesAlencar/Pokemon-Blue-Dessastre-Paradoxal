@@ -46,8 +46,12 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('sinnoh.Click+=delegate { selection.TrySetResult("sinnoh"); };',self.csharp)
         self.assertIn('if(chosen=="sinnoh") {',self.csharp)
         self.assertIn('string chosen=await selection.Task;',self.csharp)
+        # A source-only update opens the menu, even with incomplete Kanto.
         self.assertGreater(self.csharp.index('string chosen=await selection.Task;'),
-                           self.csharp.index('await Task.Run((Action)Prepare);'))
+                           self.csharp.index('else await Task.Run((Action)PrepareSourceOnly);'))
+        # Full regional install is ONLY called after choosing the campaign.
+        self.assertLess(self.csharp.index('string chosen=await selection.Task;'),
+                        self.csharp.index('title.Text="Verificando a instalacao da campanha..."'))
     def test_03_sinnoh_option_precedes_johto_missing_prompt(self):
         self.assertLess(self.csharp.index('if(chosen=="sinnoh")'),
                         self.csharp.index('if(!Hub && !JohtoReady()'))
@@ -134,5 +138,41 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
     def test_22_experimental_copy_not_implicitly_downloaded(self):
         self.assertNotIn('install_sinnoh_experimental_windows.py","--install"',self.csharp)
         self.assertIn('"--project-root",Root,"--game-dir",game',self.csharp)
+
+    def test_23_kanto_142_of_145_cannot_block_sinnoh_menu(self):
+        # Previous behavior performed install_game.py before the menu; the
+        # protected Kanto 142/145 state raised ValueError and blocked Sinnoh.
+        before=self.csharp.index('else await Task.Run((Action)PrepareSourceOnly);')
+        menu=self.csharp.index('string chosen=await selection.Task;')
+        sinnoh=self.csharp.index('if(chosen=="sinnoh") {')
+        main=self.csharp.index('title.Text="Verificando a instalacao da campanha..."')
+        self.assertLess(before,menu)
+        self.assertLess(menu,sinnoh)
+        self.assertLess(sinnoh,main)
+    def test_24_source_only_branch_never_runs_kanto_installer(self):
+        source=self.csharp.index('if(sourceOnly) {')
+        back=self.csharp.index('StageEmbeddedJohto();',source)
+        install=self.csharp.index('var install=new List<string>{"scripts/install_game.py","--apply"};')
+        self.assertLess(source,back)
+        self.assertLess(back,install)
+        self.assertIn('return;',self.csharp[source:back])
+        self.assertIn('static void PrepareSourceOnly() { Prepare(true); }',self.csharp)
+    def test_25_main_campaign_still_runs_all_regional_install_checks(self):
+        main=self.csharp.index('title.Text="Verificando a instalacao da campanha..."')
+        self.assertIn('await Task.Run((Action)Prepare);',self.csharp[main:main+600])
+        self.assertIn('static void Prepare() { Prepare(false); }',self.csharp)
+        self.assertIn('Run(python,install.ToArray(),pathExtra);',self.csharp)
+    def test_26_blue_battle_hub_still_uses_full_prepare(self):
+        self.assertIn('if(Hub)await Task.Run((Action)Prepare);',self.csharp)
+    def test_27_kanto_verification_error_is_not_suppressed_for_campaign(self):
+        self.assertIn('if(!Hub && !experimentalSelected)',self.csharp)
+        self.assertIn('Kanto NAO instalado: ',self.csharp)
+        self.assertIn('Em caso de mapa incompleto, a campanha sera bloqueada',self.csharp)
+    def test_28_sinnoh_qa_launch_still_requires_proof_and_saves_isolation(self):
+        self.assertIn('PrepareSinnohTestCopy',self.csharp)
+        self.assertIn('INICIAR_SINNOH_EXPERIMENTAL.bat',self.csharp)
+        self.assertIn('SINNOH_PRIVATE_EXPERIMENTAL_COPY_NOT_APPROVED',self.csharp)
+        self.assertIn('main_game_modified',self.csharp)
+        self.assertIn('native_qa_cases_approved',self.csharp)
 
 if __name__=="__main__":unittest.main()
