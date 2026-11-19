@@ -287,10 +287,28 @@ internal static class Bootstrap {
         start.EnvironmentVariables["GIT_CONFIG_KEY_0"]="http.sslBackend";
         start.EnvironmentVariables["GIT_CONFIG_VALUE_0"]="openssl";
         using(var process=new Process { StartInfo=start }) {
-            process.OutputDataReceived+=delegate(object s,DataReceivedEventArgs e){if(e.Data!=null)Say(e.Data);};
-            process.ErrorDataReceived+=delegate(object s,DataReceivedEventArgs e){if(e.Data!=null)Say(e.Data);};
+            // Keep a short, local tail so Python fail-closed diagnostics are
+            // visible in the dialog instead of only an opaque exit code 2.
+            var tail=new Queue<string>();
+            object tailLock=new object();
+            Action<string> capture=delegate(string line) {
+                if(String.IsNullOrWhiteSpace(line))return;
+                Say(line);
+                lock(tailLock) {
+                    tail.Enqueue(line.Length>400?line.Substring(0,400):line);
+                    while(tail.Count>5)tail.Dequeue();
+                }
+            };
+            process.OutputDataReceived+=delegate(object s,DataReceivedEventArgs e){if(e.Data!=null)capture(e.Data);};
+            process.ErrorDataReceived+=delegate(object s,DataReceivedEventArgs e){if(e.Data!=null)capture(e.Data);};
             process.Start();process.BeginOutputReadLine();process.BeginErrorReadLine();process.WaitForExit();
-            if(process.ExitCode!=0)throw new Exception("A preparacao parou (codigo "+process.ExitCode+"). Veja "+LogPath+" e abra novamente para retomar.");
+            if(process.ExitCode!=0) {
+                string detail;
+                lock(tailLock)detail=String.Join("\n",tail.ToArray());
+                throw new Exception("A preparacao parou (codigo "+process.ExitCode+")."+
+                    (detail.Length>0?"\nMotivo: "+detail:"")+
+                    "\nLog: "+LogPath);
+            }
         }
     }
     static string RegionalStatus(string filename,string name) {
