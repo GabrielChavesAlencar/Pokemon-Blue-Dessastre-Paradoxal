@@ -46,15 +46,54 @@ internal static class Bootstrap {
                 if(!held)throw new Exception("Outro inicializador esta aberto. Feche-o antes de atualizar.");
                 if(Array.IndexOf(args,"--prepare-only")>=0) { Prepare();return 0; }
                 Application.EnableVisualStyles();Application.SetCompatibleTextRenderingDefault(false);
-                using(var form=new Form { Text=Hub?"Pokemon Blue - Hub de Batalha":"Pokemon Blue - Historia",ClientSize=new Size(620,230),StartPosition=FormStartPosition.CenterScreen }) {
-                    var title=new Label { Text="Preparando sua instalacao...",Left=24,Top=24,Width=570,Height=36,Font=new Font("Segoe UI",15) };
-                    var info=new Label { Text="Conferindo a versao atual da main.",Left=24,Top=76,Width=570,Height=90,Font=new Font("Segoe UI",10) };
-                    var bar=new ProgressBar { Left=24,Top=180,Width=570,Height=20,Style=ProgressBarStyle.Marquee };
-                    form.Controls.AddRange(new Control[]{title,info,bar});
+                using(var form=new Form { Text=Hub?"Pokemon Blue - Hub de Batalha":"Pokemon Blue - Historia",ClientSize=new Size(660,285),StartPosition=FormStartPosition.CenterScreen }) {
+                    var title=new Label { Text="Preparando sua instalacao...",Left=24,Top=20,Width=612,Height=38,Font=new Font("Segoe UI",15) };
+                    var info=new Label { Text="Conferindo a versao atual da main.",Left=24,Top=68,Width=612,Height=112,Font=new Font("Segoe UI",10) };
+                    var bar=new ProgressBar { Left=24,Top=188,Width=612,Height=19,Style=ProgressBarStyle.Marquee };
+                    // Visible AFTER preparation. The original campaign remains
+                    // the default; Sinnoh requires an explicit user click.
+                    var campaign=new Button { Text="Jogar campanha",Left=24,Top=225,Width=177,Height=35,Visible=false };
+                    var sinnoh=new Button { Text="Testar piloto Sinnoh",Left=211,Top=225,Width=251,Height=35,Visible=false };
+                    var close=new Button { Text="Fechar",Left=472,Top=225,Width=164,Height=35,Visible=false };
+                    var selection=new TaskCompletionSource<string>();
+                    campaign.Click+=delegate { selection.TrySetResult("campaign"); };
+                    sinnoh.Click+=delegate { selection.TrySetResult("sinnoh"); };
+                    close.Click+=delegate { selection.TrySetResult("cancel"); };
+                    form.FormClosed+=delegate { selection.TrySetResult("cancel"); };
+                    form.Controls.AddRange(new Control[]{title,info,bar,campaign,sinnoh,close});
                     Status=delegate(string s) { if(!form.IsDisposed)form.BeginInvoke((Action)delegate { info.Text=s; }); };
                     form.Shown+=async delegate {
+                        bool experimentalSelected=false;
                         try {
                             await Task.Run((Action)Prepare);
+                            if(!Hub) {
+                                title.Text="Escolha como deseja jogar";
+                                info.Text="Campanha principal: Decades/Kanto/Hoenn/Johto.\n"+
+                                    "Testar piloto Sinnoh: gera e abre uma COPIA EXPERIMENTAL separada, sem importar saves.\n"+
+                                    "Sinnoh ainda nao passou nos testes nativos (R07/R08/R09 pendentes).";
+                                bar.Visible=false;
+                                campaign.Visible=true;sinnoh.Visible=true;close.Visible=true;
+                                string chosen=await selection.Task;
+                                campaign.Visible=false;sinnoh.Visible=false;close.Visible=false;
+                                if(chosen=="cancel") { form.Close();return; }
+                                bar.Visible=true;bar.Style=ProgressBarStyle.Marquee;
+                                if(chosen=="sinnoh") {
+                                    experimentalSelected=true;
+                                    title.Text="Preparando piloto experimental Sinnoh...";
+                                    string qa=await Task.Run((Func<string>)PrepareSinnohTestCopy);
+                                    title.Text="Abrindo Sinnoh na copia isolada...";
+                                    info.Text="Ambiente: "+qa+"\n"+
+                                        "Nunca confunda a copia QA com a campanha principal. A compilacao nativa ainda precisa ser verificada.";
+                                    string bat=Path.Combine(qa,"INICIAR_SINNOH_EXPERIMENTAL.bat");
+                                    var experimental=Process.Start(new ProcessStartInfo(bat) {
+                                        WorkingDirectory=qa,UseShellExecute=true
+                                    });
+                                    if(experimental==null)throw new Exception("O inicializador experimental de Sinnoh nao foi aberto.");
+                                    form.WindowState=FormWindowState.Minimized;
+                                    await Task.Run(delegate { experimental.WaitForExit(); });
+                                    form.Close();return;
+                                }
+                            }
                             if(!Hub && !JohtoReady() && JohtoFilesPresent()) {
                                 title.Text="Johto encontrada, mas precisa de reparo";
                                 bar.Style=ProgressBarStyle.Continuous;
@@ -110,7 +149,7 @@ internal static class Bootstrap {
                             info.Text=error.Message+"\nLog: "+LogPath;
                             // Never claim "ready" when optional Kanto did not import:
                             // inspect the status emitted by the downloaded Python.
-                            if(!Hub) {
+                            if(!Hub && !experimentalSelected) {
                                 string regional=Path.Combine(Root,".blue-work","kanto-install-status.json");
                                 try {
                                     if(File.Exists(regional)) {
@@ -123,7 +162,7 @@ internal static class Bootstrap {
                                     }
                                 } catch(Exception) { /* Show the original error on invalid diagnostic. */ }
                             }
-                            MessageBox.Show(form,info.Text,"Pokemon Blue - instalacao incompleta",
+                            MessageBox.Show(form,info.Text,experimentalSelected?"Blue-Story - piloto Sinnoh bloqueado":"Pokemon Blue - instalacao incompleta",
                                             MessageBoxButtons.OK,MessageBoxIcon.Warning);
                         }
                     };
@@ -132,6 +171,46 @@ internal static class Bootstrap {
             }
             return 0;
         } catch(Exception error) { if(LogPath!=null)File.AppendAllText(LogPath,error+Environment.NewLine);if(Array.IndexOf(args,"--prepare-only")<0 && Array.IndexOf(args,"--runtime-test")<0)MessageBox.Show(error.Message,"Pokemon Blue");return 1; }
+    }
+    // The Blue-Story menu prepares Sinnoh without requiring the user to run
+    // a separate BAT/PowerShell command. A new QA copy is always created, never
+    // a silent install into the main game or a reused foreign-region save.
+    static string PrepareSinnohTestCopy() {
+        if(Hub)throw new Exception("Sinnoh experimental so pode ser iniciada pelo Blue-Story.");
+        string game=Path.Combine(Root,"game");
+        if(!File.Exists(Path.Combine(game,"Game.exe")))
+            throw new Exception("Game.exe principal nao encontrado; prepare a base primeiro.");
+        string python=Runtime("python","python.exe");
+        string git=Runtime("git",Path.Combine("cmd","git.exe"));
+        string receipt=Path.Combine(Root,".blue-work","blue-story-sinnoh-launch.json");
+        if(File.Exists(receipt))File.Delete(receipt); // Only our own stale receipt.
+        Say("[SINNOH QA] Criando nova copia experimental. Original e saves intactos.");
+        Run(python,new[]{"scripts/windows/launch_sinnoh_pilot.py",
+            "--project-root",Root,"--game-dir",game,"--receipt",receipt},
+            Path.GetDirectoryName(git));
+        if(!File.Exists(receipt))
+            throw new Exception("Sinnoh: instalador nao entregou recibo da copia experimental.");
+        var result=Json.Deserialize<Dictionary<string,object>>(File.ReadAllText(receipt,Encoding.UTF8));
+        object mode,dir,unmodified,qa;
+        if(!result.TryGetValue("mode",out mode) ||
+           Convert.ToString(mode)!="SINNOH_PRIVATE_EXPERIMENTAL_COPY_NOT_APPROVED" ||
+           !result.TryGetValue("qa_directory",out dir) ||
+           !result.TryGetValue("main_game_modified",out unmodified) ||
+           !(unmodified is bool) || (bool)unmodified ||
+           !result.TryGetValue("native_qa_cases_approved",out qa) ||
+           Convert.ToInt32(qa)!=0)
+            throw new Exception("Sinnoh: recibo invalido ou tentativa de alterar o jogo principal.");
+        string work=Path.GetFullPath(Path.Combine(Root,".blue-work")).TrimEnd(Path.DirectorySeparatorChar);
+        string folder=Path.GetFullPath(Convert.ToString(dir));
+        if(!folder.StartsWith(work+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) ||
+           !Path.GetFileName(folder).StartsWith("game-sinnoh-experimental-",StringComparison.OrdinalIgnoreCase) ||
+           !Directory.Exists(folder) ||
+           (File.GetAttributes(folder)&FileAttributes.ReparsePoint)!=0 ||
+           !File.Exists(Path.Combine(folder,"INICIAR_SINNOH_EXPERIMENTAL.bat")) ||
+           !File.Exists(Path.Combine(folder,"sinnoh-experimental-qa.json")))
+            throw new Exception("Sinnoh: caminho ou pacote da copia experimental invalido.");
+        Say("[SINNOH QA] Piloto pronto para TENTATIVA de inicio em copia isolada: "+folder);
+        return folder;
     }
     static string FindRoot() {
         string folder=AppDomain.CurrentDomain.BaseDirectory;
