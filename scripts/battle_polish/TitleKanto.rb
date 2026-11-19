@@ -30,70 +30,105 @@ module BlueKantoTitle
     false
   end
 
-  def self.sinnoh_experimental_ready?
-    return false unless sinnoh_experimental_copy?
+  # These are TWO independent gates. Map exploration can run in an isolated
+  # copy with verified original RXDATA even if Essentials has not compiled
+  # Barry's three trainer versions. Do not manufacture a native compile proof.
+  # Barry's event handler remains blocked by its own strict trainer checks.
+  def self.sinnoh_qa_block(reason)
+    @sinnoh_qa_last_error = reason
+    false
+  end
+
+  def self.sinnoh_qa_last_error
+    @sinnoh_qa_last_error || "Sinnoh QA: falha de verificação desconhecida."
+  end
+
+  def self.sinnoh_experimental_maps_ready?
+    @sinnoh_qa_last_error = nil
+    return sinnoh_qa_block("Fora da pasta Sinnoh QA autorizada.") unless sinnoh_experimental_copy?
     begin
       require "json" unless defined?(JSON)
       require "digest" unless defined?(Digest::SHA256)
+      return sinnoh_qa_block("Manifesto QA ausente.") unless
+        File.file?("sinnoh-experimental-qa.json") && !File.symlink?("sinnoh-experimental-qa.json")
       data = JSON.parse(File.read("sinnoh-experimental-qa.json"))
-      return false unless data.is_a?(Hash) && data["schema"] == 1 &&
-                          data["region"] == "SINNOH" &&
-                          data["mode"] == "SINNOH_EXPERIMENTAL_TEST_COPY_NOT_NATIVE_APPROVED" &&
-                          data["profile_token"] == BlueSinnohExperimental::TOKEN &&
-                          data["start"] == BlueSinnohExperimental::START &&
-                          data["main_game_modified"] == false &&
-                          data["personal_saves_copied"] == false &&
-                          data["r09_native_qa_executed"] == 0 &&
-                          data["runtime_playable_verified"] == false
+      return sinnoh_qa_block("Manifesto QA nao corresponde ao piloto isolado.") unless
+        data.is_a?(Hash) && data["schema"] == 1 &&
+        data["region"] == "SINNOH" &&
+        data["mode"] == "SINNOH_EXPERIMENTAL_TEST_COPY_NOT_NATIVE_APPROVED" &&
+        data["profile_token"] == BlueSinnohExperimental::TOKEN &&
+        data["start"] == BlueSinnohExperimental::START &&
+        data["main_game_modified"] == false &&
+        data["personal_saves_copied"] == false &&
+        data["r09_native_qa_executed"] == 0 &&
+        data["runtime_playable_verified"] == false
       token = data["profile_token"]
       namespace = data["save_profile"]
-      return false unless namespace.is_a?(Hash) &&
-                          namespace["title"] == "Sinnoh QA " + token &&
-                          namespace["dataPathApp"] == "Sinnoh-QA-" + token &&
-                          namespace["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + token
-      return false unless File.file?("mkxp.json") && !File.symlink?("mkxp.json") &&
-                          File.file?("Game.ini") && !File.symlink?("Game.ini")
+      return sinnoh_qa_block("Perfil de saves QA inconsistente.") unless
+        namespace.is_a?(Hash) &&
+        namespace["title"] == "Sinnoh QA " + token &&
+        namespace["dataPathApp"] == "Sinnoh-QA-" + token &&
+        namespace["dataPathOrg"] == "Dessastre-Sinnoh-QA-" + token
+      return sinnoh_qa_block("Arquivos mkxp.json/Game.ini ausentes ou links inseguros.") unless
+        File.file?("mkxp.json") && !File.symlink?("mkxp.json") &&
+        File.file?("Game.ini") && !File.symlink?("Game.ini")
       conf = JSON.parse(File.read("mkxp.json"))
-      return false unless conf.is_a?(Hash) &&
-                          conf["windowTitle"] == namespace["title"] &&
-                          conf["dataPathApp"] == namespace["dataPathApp"] &&
-                          conf["dataPathOrg"] == namespace["dataPathOrg"] &&
-                          conf.keys.none? { |key| key.to_s.downcase.include?("save") ||
-                                                  key.to_s.downcase.include?("userdata") }
-      return false unless File.readlines("Game.ini").count { |row|
-        row.strip == "Title=" + namespace["title"]
-      } == 1
-      marker = "Data/sinnoh-experimental-compiled.txt"
-      return false unless File.file?(marker) && !File.symlink?(marker) &&
-                          !File.exist?("Data/sinnoh-experimental-compile-request.txt") &&
-                          !File.exist?("Data/sinnoh-experimental-compile-error.txt")
-      proof = data["compile_token"]
-      return false unless proof.is_a?(String) &&
-                          proof.match?(/\A[a-f0-9]{64}\z/) &&
-                          File.read(marker).strip == proof
+      return sinnoh_qa_block("Namespace de saves do Game.exe diferente do QA.") unless
+        conf.is_a?(Hash) &&
+        conf["windowTitle"] == namespace["title"] &&
+        conf["dataPathApp"] == namespace["dataPathApp"] &&
+        conf["dataPathOrg"] == namespace["dataPathOrg"] &&
+        conf.keys.none? { |key| key.to_s.downcase.include?("save") ||
+                                key.to_s.downcase.include?("userdata") } &&
+        File.readlines("Game.ini").count { |row| row.strip == "Title=" + namespace["title"] } == 1
       ids = data["mapids"]
       files = data["file_sha256"]
-      return false unless ids.is_a?(Hash) && ids.length == 9 &&
-                          ids.values.all? { |value| value.is_a?(Integer) &&
-                                                    value.between?(442, 517) } &&
-                          ids.values.uniq.length == 9 && files.is_a?(Hash)
+      return sinnoh_qa_block("MapIDs QA invalidos ou colisao entre nove mapas.") unless
+        ids.is_a?(Hash) && ids.length == 9 &&
+        ids.values.all? { |value| value.is_a?(Integer) && value.between?(442,517) } &&
+        ids.values.uniq.length == 9 && files.is_a?(Hash)
       start = data["start"]
-      return false unless start.is_a?(Array) && start.length == 3 &&
-                          start.all? { |v| v.is_a?(Integer) } &&
-                          ids["SINNOH_PLAYER_BEDROOM"] == start[0] &&
-                          start[1] >= 0 && start[2] >= 0
+      return sinnoh_qa_block("Quarto inicial nao corresponde aos MapIDs QA.") unless
+        start.is_a?(Array) && start.length == 3 &&
+        start.all? { |v| v.is_a?(Integer) } &&
+        ids["SINNOH_PLAYER_BEDROOM"] == start[0] &&
+        start[1] >= 0 && start[2] >= 0
       required = ["Data/MapInfos.rxdata", "Data/Tilesets.rxdata"] +
                  ids.values.map { |id| sprintf("Data/Map%03d.rxdata", id) }
-      return false unless required.all? { |file|
+      required.each do |file|
         hash = files[file]
-        hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/) &&
-          File.file?(file) && !File.symlink?(file) &&
+        return sinnoh_qa_block("Manifesto SHA-256 incompleto: " + file) unless
+          hash.is_a?(String) && hash.match?(/\A[a-f0-9]{64}\z/)
+        return sinnoh_qa_block("Mapa ou indice ausente ou inseguro: " + file) unless
+          File.file?(file) && !File.symlink?(file)
+        return sinnoh_qa_block("Mapa ou indice alterado (SHA-256): " + file) unless
           Digest::SHA256.file(file).hexdigest == hash
-      }
+      end
       true
-    rescue StandardError, LoadError
-      false
+    rescue StandardError, LoadError => error
+      sinnoh_qa_block("Erro ao ler QA: " + error.class.to_s)
     end
+  end
+
+  def self.sinnoh_experimental_barry_compiled?
+    return false unless sinnoh_experimental_copy?
+    marker = "Data/sinnoh-experimental-compiled.txt"
+    return false unless File.file?(marker) && !File.symlink?(marker) &&
+      !File.exist?("Data/sinnoh-experimental-compile-request.txt") &&
+      !File.exist?("Data/sinnoh-experimental-compile-error.txt")
+    require "json" unless defined?(JSON)
+    data = JSON.parse(File.read("sinnoh-experimental-qa.json"))
+    token = data["compile_token"]
+    token.is_a?(String) && token.match?(/\A[a-f0-9]{64}\z/) &&
+      File.read(marker).strip == token
+  rescue StandardError, LoadError
+    false
+  end
+
+  # Historical strict predicate: used by build/QA regressions. It means both
+  # verified maps AND locally compiled Barry, NOT gameplay/R09 acceptance.
+  def self.sinnoh_experimental_ready?
+    sinnoh_experimental_maps_ready? && sinnoh_experimental_barry_compiled?
   end
 
   def self.pilot?
@@ -366,9 +401,12 @@ module BlueKantoTitle
     # start a new game HERE. The user must not launch another process or
     # consume a save from a different regional profile.
     if sinnoh_experimental_copy?
-      unless sinnoh_experimental_ready?
-        pbMessage(_INTL("Sinnoh QA: a cópia está incompleta ou a compilação nativa de Barry ainda não foi confirmada. Confira Data/sinnoh-experimental-compile-error.txt e o launcher do Blue-Story. Nenhum save foi alterado."))
+      unless sinnoh_experimental_maps_ready?
+        pbMessage(_INTL("Sinnoh QA bloqueado: {1}. Nenhum save foi alterado.", sinnoh_qa_last_error))
         return false
+      end
+      unless sinnoh_experimental_barry_compiled?
+        pbMessage(_INTL("Piloto de exploração: mapas verificados. As equipes de Barry ainda não estão compiladas, então sua batalha permanece bloqueada. Você pode testar quarto, caminhada e portais na cópia QA."))
       end
       return :blue_sinnoh_local_new_game
     end
@@ -431,10 +469,10 @@ module BlueKantoTitle
         if BlueKantoTitle.sinnoh_experimental_copy? && original == @blue_kanto_new_game
           # Do not ask for Decades/Kanto/Hoenn here. The QA copy has its own
           # save namespace and BlueSinnohExperimental overrides its spawn.
-          if BlueKantoTitle.sinnoh_experimental_ready?
+          if BlueKantoTitle.sinnoh_experimental_maps_ready?
             return original
           end
-          pbMessage(_INTL("Sinnoh QA: os mapas ou o perfil de compilação da cópia estão incompletos. Nenhum save foi alterado."))
+          pbMessage(_INTL("Sinnoh QA bloqueado: {1}. Nenhum save foi alterado.", BlueKantoTitle.sinnoh_qa_last_error))
           next
         end
         if !BlueKantoTitle.pilot? && original == @blue_kanto_new_game
