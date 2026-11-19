@@ -54,6 +54,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_blue_story_sinnoh_menu.py -v
       - name: Revalidar preparador J12-E em fixtures Windows
         run: python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
+      - name: Validar reinicio automatico e integridade da copia QA Sinnoh
+        run: python -m unittest discover -s tests -p test_blue_story_sinnoh_supervisor.py -v
       - name: Compilar e executar self-test do Blue-Story
         run: python scripts/windows/build.py
       - name: Verificar o executável Windows
