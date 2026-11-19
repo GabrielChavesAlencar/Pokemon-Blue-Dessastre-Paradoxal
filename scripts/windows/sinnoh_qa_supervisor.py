@@ -28,7 +28,7 @@ PRISTINE = "Data/sinnoh-experimental-tilesets-pristine.bin"
 TILESETS = "Data/Tilesets.rxdata"
 COMPILE_REQUEST = "Data/sinnoh-experimental-compile-request.txt"
 MAX_TILE_BYTES = 256 * 1024 * 1024
-HASH_PATTERN = re.compile(r"[a-f0-9]{64}\\Z")
+HASH_PATTERN = re.compile(r"[a-f0-9]{64}$")
 
 
 def block(reason: str):
