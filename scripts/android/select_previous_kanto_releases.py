@@ -70,8 +70,8 @@ def main() -> int:
     except (ValueError, TypeError, json.JSONDecodeError) as error:
         print("Kanto Android baseline selection blocked: " + str(error), file=sys.stderr)
         return 1
-    print(f"Kanto Android baselines: {candidate_count} verified across {page_count} pages; "
-          f"selected {len(tags)}", file=sys.stderr)
+    # Keep stdout pure: one tag per line for the Windows PowerShell array.
+    # PS 5.1 with ErrorActionPreference=Stop can treat native stderr as a failure.
     for tag in tags:
         print(tag)
     return 0
