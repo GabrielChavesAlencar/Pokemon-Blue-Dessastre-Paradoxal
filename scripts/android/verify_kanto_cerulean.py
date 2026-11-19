@@ -11,8 +11,11 @@ import argparse
 import json
 from pathlib import Path
 import re
+import sys
 from zipfile import ZipFile
 
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 from scripts.android.package import compiled_region
 
 SOURCE_MAP_IDS = ("39", "42", "53", "54", "55")
