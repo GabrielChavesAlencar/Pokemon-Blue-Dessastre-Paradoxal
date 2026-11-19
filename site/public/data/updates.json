@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "425787edeb5d8a93672536864874ab2d943697f4",
+      "date": "2026-11-19T11:23:31-03:00",
+      "title": "fix(sinnoh QA): liberar exploracao dos nove mapas sem PBS Barry compilado",
+      "category": "Correções"
+    },
+    {
       "sha": "d34eb3d32808f5917b9a7e81c680babb56bb6420",
       "date": "2026-11-19T10:58:33-03:00",
       "title": "fix(sinnoh QA): Testar Sinnoh inicia Novo Jogo na propria copia isolada",
