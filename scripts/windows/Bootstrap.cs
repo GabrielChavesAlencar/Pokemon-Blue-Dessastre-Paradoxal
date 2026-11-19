@@ -63,6 +63,7 @@ internal static class Bootstrap {
                     form.Controls.AddRange(new Control[]{title,info,bar,campaign,sinnoh,close});
                     Status=delegate(string s) { if(!form.IsDisposed)form.BeginInvoke((Action)delegate { info.Text=s; }); };
                     form.Shown+=async delegate {
+                        bool experimentalSelected=false;
                         try {
                             await Task.Run((Action)Prepare);
                             if(!Hub) {
@@ -77,6 +78,7 @@ internal static class Bootstrap {
                                 if(chosen=="cancel") { form.Close();return; }
                                 bar.Visible=true;bar.Style=ProgressBarStyle.Marquee;
                                 if(chosen=="sinnoh") {
+                                    experimentalSelected=true;
                                     title.Text="Preparando piloto experimental Sinnoh...";
                                     string qa=await Task.Run((Func<string>)PrepareSinnohTestCopy);
                                     title.Text="Abrindo Sinnoh na copia isolada...";
@@ -147,7 +149,7 @@ internal static class Bootstrap {
                             info.Text=error.Message+"\nLog: "+LogPath;
                             // Never claim "ready" when optional Kanto did not import:
                             // inspect the status emitted by the downloaded Python.
-                            if(!Hub) {
+                            if(!Hub && !experimentalSelected) {
                                 string regional=Path.Combine(Root,".blue-work","kanto-install-status.json");
                                 try {
                                     if(File.Exists(regional)) {
@@ -160,7 +162,7 @@ internal static class Bootstrap {
                                     }
                                 } catch(Exception) { /* Show the original error on invalid diagnostic. */ }
                             }
-                            MessageBox.Show(form,info.Text,"Pokemon Blue - instalacao incompleta",
+                            MessageBox.Show(form,info.Text,experimentalSelected?"Blue-Story - piloto Sinnoh bloqueado":"Pokemon Blue - instalacao incompleta",
                                             MessageBoxButtons.OK,MessageBoxIcon.Warning);
                         }
                     };
