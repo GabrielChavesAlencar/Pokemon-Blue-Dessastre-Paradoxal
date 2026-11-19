@@ -89,13 +89,14 @@ internal static class Bootstrap {
                                     title.Text="Abrindo Sinnoh na copia isolada...";
                                     info.Text="Ambiente: "+qa+"\n"+
                                         "Nunca confunda a copia QA com a campanha principal. A compilacao nativa ainda precisa ser verificada.";
-                                    string bat=Path.Combine(qa,"INICIAR_SINNOH_EXPERIMENTAL.bat");
-                                    var experimental=Process.Start(new ProcessStartInfo(bat) {
-                                        WorkingDirectory=qa,UseShellExecute=true
-                                    });
-                                    if(experimental==null)throw new Exception("O inicializador experimental de Sinnoh nao foi aberto.");
+                                    // Supervisiona o MESMO QA: compilacao inicial, recuperacao
+                                    // verificada e no maximo um reinicio. Nunca abre outro piloto.
+                                    string python=Runtime("python","python.exe");
                                     form.WindowState=FormWindowState.Minimized;
-                                    await Task.Run(delegate { experimental.WaitForExit(); });
+                                    await Task.Run(delegate {
+                                        Run(python,new[]{"scripts/windows/sinnoh_qa_supervisor.py",
+                                            "--project-root",Root,"--qa-dir",qa},Path.GetDirectoryName(python));
+                                    });
                                     form.Close();return;
                                 }
                                 // Only the main campaign runs full installation and
@@ -156,6 +157,9 @@ internal static class Bootstrap {
                             form.WindowState=FormWindowState.Minimized;
                             await Task.Run(delegate { process.WaitForExit(); });form.Close();
                         } catch(Exception error) {
+                            // Supervised QA may have minimized the window while Game.exe ran.
+                            // Restore it so a fail-closed diagnostic is actually visible.
+                            if(experimentalSelected)form.WindowState=FormWindowState.Normal;
                             bar.Style=ProgressBarStyle.Continuous;
                             title.Text=Hub?"A instalacao precisa de atencao":"A instalacao nao terminou";
                             info.Text=error.Message+"\nLog: "+LogPath;

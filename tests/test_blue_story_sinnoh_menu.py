@@ -62,7 +62,7 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('string python=Runtime("python","python.exe");',self.csharp)
         self.assertIn('"scripts/windows/launch_sinnoh_pilot.py"',self.csharp)
     def test_06_launches_only_qa_copy_launcher(self):
-        self.assertIn('Path.Combine(qa,"INICIAR_SINNOH_EXPERIMENTAL.bat")',self.csharp)
+        self.assertIn('scripts/windows/sinnoh_qa_supervisor.py',self.csharp)
         self.assertNotIn('Process.Start(new ProcessStartInfo(Path.Combine(game,"Game.exe"))',self.csharp[:self.csharp.index('if(chosen=="sinnoh")')])
     def test_07_python_receipt_has_no_native_approval(self):
         info,prep,copy=self.simulate()
@@ -123,9 +123,12 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"MapInfos"):
                 ui.prepare(self.root,self.root/"game",self.receipt)
             install.assert_not_called()
-    def test_18_one_click_launch_waits_and_closes(self):
-        self.assertIn('await Task.Run(delegate { experimental.WaitForExit(); });',self.csharp)
+    def test_18_one_click_supervisor_waits_and_closes(self):
+        self.assertIn('scripts/windows/sinnoh_qa_supervisor.py',self.csharp)
+        self.assertIn('"--project-root",Root,"--qa-dir",qa',self.csharp)
+        self.assertIn('await Task.Run(delegate {',self.csharp)
         self.assertIn('form.Close();return;',self.csharp)
+        self.assertNotIn('experimental.WaitForExit()',self.csharp)
     def test_19_release_is_not_published_on_pr(self):
         self.assertIn("pull_request:",self.pipeline)
         self.assertIn("if: github.event_name != 'pull_request'",self.pipeline)
@@ -180,6 +183,13 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('if(process.ExitCode!=0) {',self.csharp)
         self.assertIn('Motivo: ',self.csharp)
         self.assertIn('while(tail.Count>5)tail.Dequeue();',self.csharp)
+
+    def test_32_supervisor_failure_restores_visible_blue_story_window(self):
+        self.assertIn('if(experimentalSelected)form.WindowState=FormWindowState.Normal;',self.csharp)
+
+    def test_31_no_external_bat_is_needed_for_restarting_sinnoh_qa(self):
+        self.assertNotIn('Process.Start(new ProcessStartInfo(bat)',self.csharp)
+        self.assertIn('Run(python,new[]{"scripts/windows/sinnoh_qa_supervisor.py"',self.csharp)
 
     def test_30_repair_must_not_bypass_native_kanto_gate(self):
         self.assertIn('if(!Hub && !experimentalSelected)',self.csharp)
