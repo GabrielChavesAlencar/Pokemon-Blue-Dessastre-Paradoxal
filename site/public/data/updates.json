@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "57f8e81b00414dc788fde11bbb5dc59c0f56cd5e",
+      "date": "2026-11-19T10:15:37-03:00",
+      "title": "fix(blue-story): mostrar Testar piloto Sinnoh antes de validar Kanto antigo",
+      "category": "Correções"
+    },
+    {
       "sha": "b8bf3d73f2ee8ce2383b295947a9c5dceab315bb",
       "date": "2026-11-19T08:01:48-03:00",
       "title": "fix(kanto/android): corrigir Luis, Rotas 24/25 e release JoiPlay [android-kanto-release]",
