@@ -316,6 +316,12 @@ module BlueSinnohPilot
                         BlueKantoTitle.respond_to?(:sinnoh_experimental_maps_ready?) &&
                         BlueKantoTitle.sinnoh_experimental_maps_ready? &&
                         BlueKantoTitle.sinnoh_experimental_barry_compiled?
+    if defined?(BlueSinnohExperimental)
+      # The J12-E sandbox must NEVER inherit an older release/QA marker
+      # for Barry from a copied game. Only this copy's compilation proof counts.
+      ready_for_release = false
+      qa_test_only = false
+    end
     unless (ready_for_release || qa_test_only || experimental_test) && compiled_rival_valid? &&
            all_rival_versions_valid? && defined?(TrainerBattle) && TrainerBattle.respond_to?(:start)
       pbMessage(_INTL("Barry: Nossa primeira batalha estará disponível no piloto de Sinnoh."))
