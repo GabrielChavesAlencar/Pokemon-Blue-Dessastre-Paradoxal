@@ -21,7 +21,7 @@ class BlueStoryGithubCliTests(unittest.TestCase):
             exe.parent.mkdir(parents=True)
             exe.write_bytes(b"already installed locally")
             with patch.object(github_cli, "_read") as download:
-                self.assertEqual(github_cli.ensure_cli(project), str(exe))
+                self.assertTrue(Path(github_cli.ensure_cli(project)).samefile(exe))
                 download.assert_not_called()
 
     def test_release_asset_hash_is_verified(self):
@@ -46,7 +46,7 @@ class BlueStoryGithubCliTests(unittest.TestCase):
         html = (ROOT / "web/johto-map-editor.html").read_text("utf-8")
         script = html.split("<script>", 1)[1].split("</script>", 1)[0]
         result = subprocess.run(["node", "--check", "-"], input=script,
-                                capture_output=True, text=True, timeout=15)
+                                capture_output=True, text=True, encoding="utf-8", timeout=15)
         self.assertEqual(result.returncode, 0, result.stderr)
 
 
