@@ -18,6 +18,13 @@ on:
       - scripts/battle_polish/TitleKanto.rb
       - scripts/battle_polish/RegionStart.rb
       - .github/workflows/blue-story-windows.yml
+  pull_request:
+    paths:
+      - scripts/windows/**
+      - scripts/regions/install_sinnoh_experimental_windows.py
+      - scripts/regions/generate_sinnoh_four_exteriors_j11b.py
+      - tests/test_blue_story_sinnoh_menu.py
+      - .github/workflows/blue-story-windows.yml
   workflow_dispatch:
 
 permissions:
@@ -43,6 +50,10 @@ jobs:
         run: python -m unittest discover -s tests -p test_johto_map_editor.py -v
       - name: Testar GitHub CLI automática e JavaScript do editor
         run: python -m unittest discover -s tests -p test_blue_story_github_cli.py -v
+      - name: Testar escolha do piloto Sinnoh no Blue-Story e isolamento de saves
+        run: python -m unittest discover -s tests -p test_blue_story_sinnoh_menu.py -v
+      - name: Revalidar preparador J12-E em fixtures Windows
+        run: python -m unittest discover -s tests -p test_sinnoh_j12e_experimental_installer.py -v
       - name: Compilar e executar self-test do Blue-Story
         run: python scripts/windows/build.py
       - name: Verificar o executável Windows
@@ -56,6 +67,7 @@ jobs:
           path: dist/Blue-Story.exe
           compression-level: 0
       - name: Atualizar link estável de download do instalador geral
+        if: github.event_name != 'pull_request'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
