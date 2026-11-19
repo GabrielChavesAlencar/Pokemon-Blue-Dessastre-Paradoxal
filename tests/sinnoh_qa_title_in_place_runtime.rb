@@ -154,6 +154,29 @@ Dir.mktmpdir("blue-sinnoh-qa-title-") do |home|
     assert(BlueKantoTitle.sinnoh_experimental_maps_ready?,
            "a fresh validation of restored exact bytes must succeed")
 
+    # Blue-Story supervision: verified repair exits automatically; supervisor
+    # reopens this same QA. Manual launches still show the old safe message.
+    enabled_path = "Data/sinnoh-experimental-auto-restart-enabled.txt"
+    request_path = "Data/sinnoh-experimental-auto-restart-request.txt"
+    File.write(enabled_path, TOKEN + "\n")
+    File.binwrite(tile_path, "compiler mutates on menu boot")
+    caught_exit = false
+    begin
+      BlueKantoTitle.sinnoh_experimental_maps_ready?
+    rescue SystemExit => e
+      caught_exit = true
+      assert(e.status == 0, "managed restart exits cleanly")
+    end
+    assert(caught_exit, "managed QA should exit automatically after verified repair")
+    assert(File.binread(tile_path) == pristine_bytes,
+           "auto-restart must leave original verified tile bytes")
+    assert(File.read(request_path) == TOKEN + "\n" + Digest::SHA256.hexdigest(pristine_bytes) + "\n",
+           "restart request must bind QA token and the original SHA")
+    File.delete(request_path)
+    File.delete(enabled_path)
+    assert(BlueKantoTitle.sinnoh_experimental_maps_ready?,
+           "verified copy remains valid for the new supervised game process")
+
     # Missing or altered backup must NEVER authorize repair/bypass.
     File.binwrite(tile_path, "compiler-generated different tilesets")
     File.binwrite(pristine_path, "tampered backup")
