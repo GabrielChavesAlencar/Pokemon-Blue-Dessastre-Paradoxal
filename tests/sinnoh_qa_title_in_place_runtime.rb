@@ -151,4 +151,64 @@ Dir.mktmpdir("blue-sinnoh-qa-title-") do |home|
            "QA marker copied into wrong folder must not authorize launch")
   end
 end
+# Dedicated regression for the embedded Windows Ruby that lacks json/digest.
+# Construct a synthetic QA using standard Ruby fixtures, then REMOVE both
+# modules and forbid subsequent gem loading. Integrity must still be enforced.
+Dir.mktmpdir("blue-sinnoh-no-stdlib-") do |home|
+  qa = File.join(home, "game-sinnoh-experimental-#{TOKEN}")
+  setup_copy(qa)
+  baseline = File.join(home, "sha256-abc.bin")
+  File.binwrite(baseline, "abc")
+  assert(BlueSinnohQA.sha256_file(baseline) ==
+    "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "pure Ruby SHA-256 must match the NIST abc vector")
+  File.binwrite(baseline, "")
+  assert(BlueSinnohQA.sha256_file(baseline) ==
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pure Ruby SHA-256 must match the empty file vector")
+  File.binwrite(baseline, "a" * 10000)
+  assert(BlueSinnohQA.sha256_file(baseline) == Digest::SHA256.file(baseline).hexdigest,
+    "pure Ruby SHA-256 must match system SHA256 on multi-block data")
+  sample = {"test" => [true, false, nil, -42, 1.5],
+            "accent" => "São Paulo", "escaped" => "line\nslash\\value",
+            "astral" => "🚀"}
+  assert(BlueSinnohQA.parse_json(JSON.generate(sample)) == sample,
+    "pure Ruby JSON reader should support Unicode, escapes, number and nested shapes")
+  assert(BlueSinnohQA.parse_json('{"rocket":"\uD83D\uDE80"}') == {"rocket"=>"🚀"},
+    "pure Ruby JSON reader should decode surrogate pairs")
+  ['{"same":1,"same":2}', '{"open":true}junk', '{"bad":"\uD800"}',
+   '{"too": [1,]}'].each do |bad|
+    begin
+      BlueSinnohQA.parse_json(bad)
+      raise "SINNOH_QA_TITLE_TEST_FAILED: unsafe JSON accepted"
+    rescue ArgumentError
+      # Correct: manifest parser blocks tampering and malformed JSON.
+    end
+  end
+
+  Object.send(:remove_const,:JSON) if defined?(JSON)
+  Object.send(:remove_const,:Digest) if defined?(Digest)
+  Kernel.prepend(Module.new do
+    def require(name)
+      raise LoadError, "EMBEDDED_RUBY_NO_#{name}" if %w[json digest digest/sha2].include?(name)
+      super
+    end
+  end)
+  assert(!defined?(JSON) && !defined?(Digest),
+         "fixture must genuinely hide unavailable standard libraries")
+  Dir.chdir(qa) do
+    assert(BlueKantoTitle.sinnoh_experimental_maps_ready?,
+      "missing json/digest MUST NOT prevent validating nine original RXDATA")
+    assert(BlueKantoTitle.sinnoh_experimental_barry_compiled?,
+      "missing json/digest MUST NOT prevent verifying real Barry marker hash")
+    assert(BlueKantoTitle.launch_sinnoh == :blue_sinnoh_local_new_game,
+      "Testar Sinnoh must start native New Game without bundled stdlib")
+    File.write("Data/Map442.rxdata", "corrupted")
+    assert(!BlueKantoTitle.sinnoh_experimental_maps_ready?,
+      "pure Ruby fallback must still detect corrupted map SHA")
+    assert(BlueKantoTitle.sinnoh_qa_last_error.include?("Data/Map442.rxdata"),
+      "pure Ruby fallback must identify the exact altered file")
+  end
+end
+puts "SINNOH_QA_STDLIB_FREE_JSON_SHA256_PASS"
 puts "SINNOH_QA_TITLE_IN_PLACE_ROUTE_PASS"
