@@ -2,6 +2,214 @@
 # Decades' Auto Multi Save changes the original PokemonLoadScreen method, so
 # do not replace that controller: adapt only scene commands and return their
 # ORIGINAL indexes. Existing save-slot navigation remains untouched.
+# The embedded Ruby interpreter used by some Windows Game.exe builds does not
+# bundle Ruby's json/digest gems. This reader and SHA-256 verifier are self-
+# contained: QA integrity must never silently depend on host Ruby packages.
+# No eval, YAML.load, Marshal.load from manifest, shell commands or gem loading.
+module BlueSinnohQA
+  MASK32 = 0xffffffff
+  SHA256_INITIAL = [
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+  ].freeze
+  SHA256_K = %w[
+    428a2f98 71374491 b5c0fbcf e9b5dba5 3956c25b 59f111f1 923f82a4 ab1c5ed5
+    d807aa98 12835b01 243185be 550c7dc3 72be5d74 80deb1fe 9bdc06a7 c19bf174
+    e49b69c1 efbe4786 0fc19dc6 240ca1cc 2de92c6f 4a7484aa 5cb0a9dc 76f988da
+    983e5152 a831c66d b00327c8 bf597fc7 c6e00bf3 d5a79147 06ca6351 14292967
+    27b70a85 2e1b2138 4d2c6dfc 53380d13 650a7354 766a0abb 81c2c92e 92722c85
+    a2bfe8a1 a81a664b c24b8b70 c76c51a3 d192e819 d6990624 f40e3585 106aa070
+    19a4c116 1e376c08 2748774c 34b0bcb5 391c0cb3 4ed8aa4a 5b9cca4f 682e6ff3
+    748f82ee 78a5636f 84c87814 8cc70208 90befffa a4506ceb bef9a3f7 c67178f2
+  ].map { |hex| hex.to_i(16) }.freeze
+
+  def self.rotr(value, amount)
+    ((value >> amount) | (value << (32 - amount))) & MASK32
+  end
+
+  def self.sha256_block(state, block)
+    words = block.unpack("N16")
+    (16...64).each do |i|
+      a = words[i-15]
+      c = words[i-2]
+      s0 = rotr(a,7) ^ rotr(a,18) ^ (a >> 3)
+      s1 = rotr(c,17) ^ rotr(c,19) ^ (c >> 10)
+      words << ((words[i-16] + s0 + words[i-7] + s1) & MASK32)
+    end
+    a,b,c,d,e,f,g,h = state
+    64.times do |i|
+      s1 = rotr(e,6) ^ rotr(e,11) ^ rotr(e,25)
+      choice = (e & f) ^ ((~e) & g)
+      t1 = (h + s1 + choice + SHA256_K[i] + words[i]) & MASK32
+      s0 = rotr(a,2) ^ rotr(a,13) ^ rotr(a,22)
+      majority = (a & b) ^ (a & c) ^ (b & c)
+      t2 = (s0 + majority) & MASK32
+      h,g,f,e,d,c,b,a = g,f,e,(d+t1)&MASK32,c,b,a,(t1+t2)&MASK32
+    end
+    [a,b,c,d,e,f,g,h].each_with_index do |word,i|
+      state[i] = (state[i] + word) & MASK32
+    end
+  end
+
+  def self.sha256_file(path)
+    raise ArgumentError, "QA_HASH_INVALID_FILE" unless File.file?(path) && !File.symlink?(path)
+    state = SHA256_INITIAL.dup
+    buffer = "".b
+    length = 0
+    File.open(path,"rb") do |file|
+      while (part = file.read(32768))
+        length += part.bytesize
+        raise ArgumentError, "QA_HASH_FILE_TOO_LARGE" if length > 256*1024*1024
+        buffer << part
+        while buffer.bytesize >= 64
+          sha256_block(state,buffer.slice!(0,64))
+        end
+      end
+    end
+    buffer << "\x80".b
+    buffer << "\x00".b until (buffer.bytesize % 64) == 56
+    bit_length = length * 8
+    buffer << [(bit_length >> 32) & MASK32, bit_length & MASK32].pack("N2")
+    while buffer.bytesize >= 64
+      sha256_block(state,buffer.slice!(0,64))
+    end
+    state.pack("N8").unpack("H*").first
+  end
+
+  class JSONReader
+    def initialize(text)
+      raise ArgumentError, "QA_JSON_TOO_LARGE" if text.bytesize > 2*1024*1024
+      @text = text.dup.force_encoding("UTF-8")
+      raise ArgumentError, "QA_JSON_NOT_UTF8" unless @text.valid_encoding?
+      @pos = 0
+    end
+
+    def peek
+      @text[@pos,1]
+    end
+
+    def white
+      @pos += 1 while (c = peek) && (c == " " || c == "\t" || c == "\r" || c == "\n")
+    end
+
+    def take(c)
+      raise ArgumentError, "QA_JSON_SYNTAX_AT_#{@pos}" unless peek == c
+      @pos += 1
+    end
+
+    def string
+      take('"')
+      out = "".dup.force_encoding("UTF-8")
+      loop do
+        c = peek
+        raise ArgumentError, "QA_JSON_UNTERMINATED_STRING" if c.nil?
+        @pos += 1
+        return out if c == '"'
+        raise ArgumentError, "QA_JSON_CONTROL_CHARACTER" if c.ord < 32
+        if c == "\\"
+          escape = peek
+          raise ArgumentError, "QA_JSON_BAD_ESCAPE" if escape.nil?
+          @pos += 1
+          case escape
+          when '"', "\\", "/" then out << escape
+          when "b" then out << "\b"
+          when "f" then out << "\f"
+          when "n" then out << "\n"
+          when "r" then out << "\r"
+          when "t" then out << "\t"
+          when "u"
+            digits = @text[@pos,4]
+            raise ArgumentError, "QA_JSON_BAD_UNICODE" unless digits && digits.match?(/\A[0-9a-fA-F]{4}\z/)
+            value = digits.to_i(16)
+            @pos += 4
+            if value.between?(0xd800,0xdbff)
+              raise ArgumentError, "QA_JSON_BAD_SURROGATE" unless @text[@pos,2] == "\\u"
+              @pos += 2
+              lo = @text[@pos,4]
+              raise ArgumentError, "QA_JSON_BAD_SURROGATE" unless lo && lo.match?(/\A[0-9a-fA-F]{4}\z/)
+              other = lo.to_i(16)
+              raise ArgumentError, "QA_JSON_BAD_SURROGATE" unless other.between?(0xdc00,0xdfff)
+              @pos += 4
+              value = 0x10000 + ((value - 0xd800) << 10) + other - 0xdc00
+            elsif value.between?(0xdc00,0xdfff)
+              raise ArgumentError, "QA_JSON_BAD_SURROGATE"
+            end
+            out << [value].pack("U")
+          else
+            raise ArgumentError, "QA_JSON_BAD_ESCAPE"
+          end
+        else
+          out << c
+        end
+      end
+    end
+
+    def value(depth=0)
+      raise ArgumentError, "QA_JSON_TOO_DEEP" if depth > 32
+      white
+      case peek
+      when "{"
+        take("{")
+        obj = {}
+        white
+        unless peek == "}"
+          loop do
+            white
+            key = string
+            raise ArgumentError, "QA_JSON_DUPLICATE_KEY" if obj.key?(key)
+            white
+            take(":")
+            obj[key] = value(depth+1)
+            white
+            break unless peek == ","
+            take(",")
+          end
+        end
+        take("}")
+        obj
+      when "["
+        take("[")
+        arr = []
+        white
+        unless peek == "]"
+          loop do
+            arr << value(depth+1)
+            white
+            break unless peek == ","
+            take(",")
+          end
+        end
+        take("]")
+        arr
+      when '"' then string
+      when "t","f","n"
+        literals = {"true"=>true,"false"=>false,"null"=>nil}
+        match = literals.keys.find { |key| @text[@pos,key.length] == key }
+        raise ArgumentError, "QA_JSON_BAD_LITERAL" unless match
+        @pos += match.length
+        literals[match]
+      else
+        rest = @text[@pos..-1]
+        token = rest && rest.match(/\A-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?/)
+        raise ArgumentError, "QA_JSON_BAD_VALUE_AT_#{@pos}" unless token
+        @pos += token[0].length
+        token[0].include?(".") || token[0].match?(/[eE]/) ? token[0].to_f : token[0].to_i
+      end
+    end
+
+    def parse
+      result = value
+      white
+      raise ArgumentError, "QA_JSON_TRAILING_DATA" unless @pos == @text.length
+      result
+    end
+  end
+
+  def self.parse_json(text)
+    JSONReader.new(text).parse
+  end
+end
+
 module BlueKantoTitle
   LABEL = "Testar Kanto".freeze
   JOHTO_LABEL = "Testar Johto".freeze
@@ -47,11 +255,11 @@ module BlueKantoTitle
     @sinnoh_qa_last_error = nil
     return sinnoh_qa_block("Fora da pasta Sinnoh QA autorizada.") unless sinnoh_experimental_copy?
     begin
-      require "json" unless defined?(JSON)
-      require "digest" unless defined?(Digest::SHA256)
+      # Bundled Game.exe Ruby may not include the json/digest gems.
+      # Validate with self-contained JSON + SHA256, never skip map checks.
       return sinnoh_qa_block("Manifesto QA ausente.") unless
         File.file?("sinnoh-experimental-qa.json") && !File.symlink?("sinnoh-experimental-qa.json")
-      data = JSON.parse(File.read("sinnoh-experimental-qa.json"))
+      data = BlueSinnohQA.parse_json(File.binread("sinnoh-experimental-qa.json"))
       return sinnoh_qa_block("Manifesto QA nao corresponde ao piloto isolado.") unless
         data.is_a?(Hash) && data["schema"] == 1 &&
         data["region"] == "SINNOH" &&
@@ -72,7 +280,7 @@ module BlueKantoTitle
       return sinnoh_qa_block("Arquivos mkxp.json/Game.ini ausentes ou links inseguros.") unless
         File.file?("mkxp.json") && !File.symlink?("mkxp.json") &&
         File.file?("Game.ini") && !File.symlink?("Game.ini")
-      conf = JSON.parse(File.read("mkxp.json"))
+      conf = BlueSinnohQA.parse_json(File.binread("mkxp.json"))
       return sinnoh_qa_block("Namespace de saves do Game.exe diferente do QA.") unless
         conf.is_a?(Hash) &&
         conf["windowTitle"] == namespace["title"] &&
@@ -102,11 +310,12 @@ module BlueKantoTitle
         return sinnoh_qa_block("Mapa ou indice ausente ou inseguro: " + file) unless
           File.file?(file) && !File.symlink?(file)
         return sinnoh_qa_block("Mapa ou indice alterado (SHA-256): " + file) unless
-          Digest::SHA256.file(file).hexdigest == hash
+          BlueSinnohQA.sha256_file(file) == hash
       end
       true
     rescue StandardError, LoadError => error
-      sinnoh_qa_block("Erro ao ler QA: " + error.class.to_s)
+      label = error.message.to_s.gsub(/[\r\n]/," ").slice(0,150)
+      sinnoh_qa_block("Erro ao ler QA: " + error.class.to_s + " (" + label + ")")
     end
   end
 
@@ -116,8 +325,7 @@ module BlueKantoTitle
     return false unless File.file?(marker) && !File.symlink?(marker) &&
       !File.exist?("Data/sinnoh-experimental-compile-request.txt") &&
       !File.exist?("Data/sinnoh-experimental-compile-error.txt")
-    require "json" unless defined?(JSON)
-    data = JSON.parse(File.read("sinnoh-experimental-qa.json"))
+    data = BlueSinnohQA.parse_json(File.binread("sinnoh-experimental-qa.json"))
     token = data["compile_token"]
     token.is_a?(String) && token.match?(/\A[a-f0-9]{64}\z/) &&
       File.read(marker).strip == token
