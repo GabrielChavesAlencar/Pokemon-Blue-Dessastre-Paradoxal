@@ -157,6 +157,9 @@ internal static class Bootstrap {
                             form.WindowState=FormWindowState.Minimized;
                             await Task.Run(delegate { process.WaitForExit(); });form.Close();
                         } catch(Exception error) {
+                            // Supervised QA may have minimized the window while Game.exe ran.
+                            // Restore it so a fail-closed diagnostic is actually visible.
+                            if(experimentalSelected)form.WindowState=FormWindowState.Normal;
                             bar.Style=ProgressBarStyle.Continuous;
                             title.Text=Hub?"A instalacao precisa de atencao":"A instalacao nao terminou";
                             info.Text=error.Message+"\nLog: "+LogPath;
