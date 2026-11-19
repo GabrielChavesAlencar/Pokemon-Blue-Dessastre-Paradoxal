@@ -1,5 +1,9 @@
 # Pokémon Blue: Dessastre Paradoxal
 
+> 📚 **[CENTRAL DE DOCUMENTAÇÃO — encontre tudo por região, ferramenta ou objetivo](docs/INDEX.md)**  
+> [Instalação](docs/INSTALACAO.md) · [Kanto](docs/KANTO_INTEGRACAO_DECADES.md) · [Batalhas](docs/HUB_BATALHA.md) · [Site](docs/SITE_E_VERCEL.md) · [Padrão dos documentos](docs/PADRAO_DOCUMENTACAO.md)
+
+
 > Fangame **em planejamento**, derivado para uso local de **Pokémon Decades** (HazyCrazy), feito com RPG Maker XP e Pokémon Essentials v21.1. Este repositório contém o **Blue Studio**, o editor próprio. **A ROM/arquivos do jogo original não estão neste repositório**; o desenvolvimento do fangame ainda não substituiu os mapas, a história ou os assets do Decades.
 
 **[⬇ Baixar Pokémon Blue — instalador e modificações (ZIP)](https://github.com/GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal/archive/refs/heads/main.zip)** · **[Passo a passo de instalação no Windows](docs/INSTALACAO.md)**
