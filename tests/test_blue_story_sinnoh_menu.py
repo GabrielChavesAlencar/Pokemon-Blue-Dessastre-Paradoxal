@@ -184,6 +184,9 @@ class BlueStorySinnohMenuTests(unittest.TestCase):
         self.assertIn('Motivo: ',self.csharp)
         self.assertIn('while(tail.Count>5)tail.Dequeue();',self.csharp)
 
+    def test_32_supervisor_failure_restores_visible_blue_story_window(self):
+        self.assertIn('if(experimentalSelected)form.WindowState=FormWindowState.Normal;',self.csharp)
+
     def test_31_no_external_bat_is_needed_for_restarting_sinnoh_qa(self):
         self.assertNotIn('Process.Start(new ProcessStartInfo(bat)',self.csharp)
         self.assertIn('Run(python,new[]{"scripts/windows/sinnoh_qa_supervisor.py"',self.csharp)
