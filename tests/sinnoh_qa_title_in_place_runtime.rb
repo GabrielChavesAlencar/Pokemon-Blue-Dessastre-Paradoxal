@@ -110,12 +110,36 @@ Dir.mktmpdir("blue-sinnoh-qa-title-") do |home|
            "selecting Testar Sinnoh must return the native New Game index")
     assert($messages.empty?, "verified QA must not display old pilot missing message")
 
+    # Real failure reported by the user: title opens but Barry's native
+    # compilation may not have completed. Map QA must still be reachable
+    # without claiming the battle is ready or inventing a compiled marker.
     file = "Data/sinnoh-experimental-compiled.txt"
+    File.delete(file)
+    File.write("Data/sinnoh-experimental-compile-request.txt", "a" * 64)
+    assert(BlueKantoTitle.sinnoh_experimental_maps_ready?,
+           "all 9 maps and save namespace must pass independently of Barry")
+    assert(!BlueKantoTitle.sinnoh_experimental_ready?,
+           "strict combined QA must NOT claim Barry compiled")
+    assert(!BlueKantoTitle.sinnoh_experimental_barry_compiled?,
+           "native Barry compile marker must remain absent")
+    assert(BlueKantoTitle.launch_sinnoh == :blue_sinnoh_local_new_game,
+           "Testar Sinnoh must allow map exploration with Barry pending")
+    scene = PokemonLoad_Scene.new
+    scene.pbStartScene(["New Game","Quit Game"], false, nil, nil, nil)
+    assert(scene.pbChoose([], nil) == 0,
+           "the QA menu must still route to same-window New Game")
+    assert($messages.any? { |m| m.include?("batalha permanece bloqueada") },
+           "player must be told Barry remains unavailable, no silent approval")
+    File.delete("Data/sinnoh-experimental-compile-request.txt")
     File.write(file, "tampered")
     assert(!BlueKantoTitle.sinnoh_experimental_ready?,
            "invalid Barry compilation token must block new game")
     File.write(file, "a" * 64)
     File.write("Data/Map443.rxdata", "corrupted map")
+    assert(!BlueKantoTitle.sinnoh_experimental_maps_ready?,
+           "edited/corrupted map cannot pass map-only gate")
+    assert(BlueKantoTitle.sinnoh_qa_last_error.include?("Data/Map443.rxdata"),
+           "title must explain exact corrupted map")
     assert(!BlueKantoTitle.sinnoh_experimental_ready?,
            "edited/corrupted map cannot be accepted as verified QA")
   end
