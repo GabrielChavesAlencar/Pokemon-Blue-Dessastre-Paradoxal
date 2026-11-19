@@ -534,17 +534,19 @@ def install_copy(base:Path,outputs:dict,report:dict,project:Path=ROOT):
         (stage/"INICIAR_SINNOH_EXPERIMENTAL.bat").write_text(
           '@echo off\ncd /d "%~dp0"\n'
           'if exist "Data\\sinnoh-experimental-compile-error.txt" (\n'
-          ' echo PBS compilacao com erro. Veja Data\\sinnoh-experimental-compile-error.txt\npause\nexit /b 2\n)\n'
+          ' echo ATENCAO: Barry PBS nao compilou. Apenas EXPLORACAO dos 9 mapas QA.\n'
+          ' echo Consulte Data\\sinnoh-experimental-compile-error.txt antes de testar Barry.\n)\n'
           'if exist "Data\\sinnoh-experimental-compile-request.txt" (\n'
           ' echo Primeira execucao: compilar os PBS Barry somente nesta copia.\n'
           ' start "" /wait "Game.exe"\n'
           ' if not exist "Data\\sinnoh-experimental-compiled.txt" (\n'
-          ' echo Compilacao nativa nao confirmada; nao iniciar Novo Jogo.\npause\nexit /b 2\n)\n'
+          ' echo Barry ainda nao foi compilado; Novo Jogo SOMENTE no modo exploracao QA.\n'
+          ' echo Batalha contra Barry bloqueada ate verificacao nativa.\n)\n'
           ')\nstart "" "Game.exe"\n',encoding="utf-8")
         (stage/"LEIA_ANTES_SINNOH.txt").write_text(
           "PILOTO EXPERIMENTAL SINNOH - SOMENTE COPIA PRIVADA\n"
           "Duplo clique INICIAR_SINNOH_EXPERIMENTAL.bat.\n"
-          "Primeira execucao pede compilacao PBS nativa; se falhar, nao inicia.\n"
+          "Primeira execucao tenta compilar PBS Barry; sem compilacao, apenas exploracao QA.\n"
           "Nove mapas foram adicionados a esta copia; nunca ao seu game original.\n"
           "Coordenadas verificadas SOMENTE pelo modelo estatico, nao por Game.exe.\n"
           "R07/R08/R09 pendentes; nenhum teste nativo relatado pelo GitHub.\n",encoding="utf-8")
