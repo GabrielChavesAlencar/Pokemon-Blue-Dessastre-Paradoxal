@@ -2,6 +2,12 @@
   "repository": "GabrielChavesAlencar/Pokemon-Blue-Dessastre-Paradoxal",
   "commits": [
     {
+      "sha": "a17977fabe67c8e857087857fc3ad1d4b68f39c5",
+      "date": "2026-11-19T10:32:54-03:00",
+      "title": "fix(blue-story sinnoh): permitir copia QA de ROOT/game e mostrar erro real",
+      "category": "Correções"
+    },
+    {
       "sha": "57f8e81b00414dc788fde11bbb5dc59c0f56cd5e",
       "date": "2026-11-19T10:15:37-03:00",
       "title": "fix(blue-story): mostrar Testar piloto Sinnoh antes de validar Kanto antigo",
