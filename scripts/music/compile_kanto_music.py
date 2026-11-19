@@ -91,7 +91,7 @@ def compile_bytes(project: Path, game: Path, mapping: dict) -> tuple[bytes, dict
     """Pure compilation; checks all actual MapXXX.rxdata files, writes nothing."""
     rules, source, catalog = _rules(project)
     maps = source.get("maps")
-    if not isinstance(maps, dict) or len(maps) != 142:
+    if not isinstance(maps, dict) or len(maps) != 145:
         raise ValueError("Kanto source map catalog changed unexpectedly")
     source_ids = set(maps)
     if set(map(str, mapping)) != source_ids:

@@ -13,18 +13,18 @@ const model={byId:new Map(catalog.species.map(p=>[p.id,p]))};
 const loc=id=>kanto.locations.find(v=>v.id===id);
 
 test('Kanto prototype states are explicit and the route 23 exception stays visible',()=>{
-  assert.equal(kanto.locations.length,142);
-  assert.equal(kanto.trainers.length,144);
+  assert.equal(kanto.locations.length,145);
+  assert.equal(kanto.trainers.length,161);
   assert.equal(kanto.locations.filter(x=>x.status==='preview').length,35);
   assert.equal(kanto.locations.filter(x=>x.status==='encounter_review').length,1);
-  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,106);
+  assert.equal(kanto.locations.filter(x=>x.status==='experimental').length,109);
   assert.ok(kanto.locations.filter(x=>x.status==='preview').every(x=>!x.methods.length&&!x.trainers.length));
   const route23=kantoLocation(model,kanto,loc('kanto-route-23'));
   assert.match(route23,/Encontros temporariamente suspensos/);
   assert.match(route23,/método duplicado/);
   const preview=kanto.locations.find(x=>x.status==='preview');
   assert.match(kantoLocation(model,kanto,preview),/Somente cenário/);
-  assert.match(kantoIndex(model,kanto,'localizacoes'),/142 locais e 144 treinadores/);
+  assert.match(kantoIndex(model,kanto,'localizacoes'),/145 locais e 161 treinadores/);
   assert.doesNotMatch(route23,/Trecho de Pallet Town a Pewter City/);
 });
 test('cada líder exibe sua INSÍGNIA própria e nenhum treinador comum recebe Boulder',()=>{

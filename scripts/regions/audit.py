@@ -67,12 +67,17 @@ KANTO_PHASE12_SOURCE_IDS = (
 # Old destination IDs must remain stable even when these are appended.
 KANTO_PHASE13_SOURCE_IDS = (13,)
 
+# All 142 previously shipped source IDs retain their map slots. Routes 24/25
+# and Bill's cottage are appended AFTER phase 14, never inserted by raw ID.
+KANTO_PHASE14_SOURCE_IDS = (16, 17, *range(209, 222))
+
 
 def stable_source_order(wanted):
     chosen = set(wanted)
     stable = (*KANTO_PHASE10_SOURCE_IDS, *KANTO_PHASE11_EARLY_SOURCE_IDS,
               *KANTO_PHASE11_LATE_SOURCE_IDS,
-              *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS)
+              *KANTO_PHASE12_SOURCE_IDS, *KANTO_PHASE13_SOURCE_IDS,
+              *KANTO_PHASE14_SOURCE_IDS)
     result = [source for source in stable if source in chosen]
     result.extend(sorted(chosen - set(stable)))
     return result

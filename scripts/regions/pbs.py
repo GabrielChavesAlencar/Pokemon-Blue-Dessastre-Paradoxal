@@ -58,6 +58,27 @@ TRAINERS.update({
 })
 
 
+# Cerulean north: all battle rosters below are read directly from the pinned
+# Essentials FRLG PBS. Rival 31/32/33 correspond to the three original starters.
+TRAINERS.update({
+    **{f"RIVAL1,Blue,{v}": ("RIVAL", "Blue", v) for v in (31, 32, 33)},
+    "BUGCATCHER,Cale": ("BUGCATCHER", "Cale", 0),
+    "LASS,Ali": ("LASS", "Ali", 0),
+    "YOUNGSTER,Timmy": ("YOUNGSTER", "Timmy", 0),
+    "LASS,Reli": ("LASS", "Reli", 0),
+    "CAMPER,Ethan": ("CAMPER", "Ethan", 0),
+    "TEAMROCKET_M,Grunt,5": ("ROCKET", "Grunt", 5),
+    "CAMPER,Shane": ("CAMPER", "Shane", 0),
+    **{f"HIKER,{name}": ("HIKER", name, 0)
+       for name in ("Franklin", "Wayne", "Nob")},
+    **{f"YOUNGSTER,{name}": ("YOUNGSTER", name, 0)
+       for name in ("Joey", "Dan", "Chad")},
+    **{f"CAMPER,{name}": ("CAMPER", name, 0) for name in ("Flint",)},
+    **{f"LASS,{name}": ("LASS", name, 0) for name in ("Haley",)},
+    **{f"PICNICKER,{name}": ("PICNICKER", name, 0) for name in ("Kelsey",)},
+})
+
+
 # Phase 08: source IDs, names and event anchors audited in the pinned FRLG kit.
 # Team data are copied from the source PBS; no levels or moves are fabricated.
 TRAINERS.update({

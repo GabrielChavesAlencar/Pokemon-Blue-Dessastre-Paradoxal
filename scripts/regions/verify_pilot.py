@@ -719,7 +719,7 @@ def inspect(game: Path) -> dict:
                 if original != 42 or event_id not in (11, 16):
                     if "pbNoticePlayer(get_self)" not in script:
                         raise ValueError(f"Trainer {original}/{event_id} will not alert the player")
-    if sight_count != 122:
+    if sight_count != 137:  # Previously 122, plus 15 source Route24/25 trainers.
         raise ValueError(f"Source-proven trainer sight count changed: {sight_count}")
 
     # Route connections are bidirectional, but transfer events are directed.
@@ -752,6 +752,13 @@ def inspect(game: Path) -> dict:
         (6, 20): "BlueKantoPilot.choose_starter_ball(:CHARMANDER)",
         (6, 28): "BlueKantoPilot.finish_lab_escort",
         (6, 35): "BlueKantoPilot.rival",
+        (39, 15): "BlueKantoPilot.cerulean_rival",
+        (39, 32): "BlueKantoPilot.cerulean_rival",
+        (39, 34): "BlueKantoPilot.cerulean_rival",
+        (53, 6): "BlueKantoPilot.nugget_bridge_rocket",
+        (55, 3): "BlueKantoPilot.bill_request",
+        (55, 4): "BlueKantoPilot.bill_computer",
+        (55, 8): "BlueKantoPilot.bill_reward",
         (6, 36): "BlueKantoPilot.rival",
         (6, 37): "BlueKantoPilot.rival",
         (7, 4): "BlueKantoPilot.meet_mom",
@@ -925,6 +932,7 @@ def inspect(game: Path) -> dict:
         raise ValueError("Experimental Kanto destinations were not generated")
     required_stops = {"PALLET", "PLAYER_HOME", "VIRIDIAN", "PEWTER", "ROUTE4", "MOON_CENTER",
                       "MOON_1F", "MOON_B1F", "MOON_B2F", "CERULEAN", "MISTY",
+                      "NUGGET", "BILL_ROUTE", "BILL",
                       "ROUTE5", "ROUTE6", "VERMILION", "SURGE", "HARBOR",
                       "SSANNE", "SSCAPTAIN", "SSDECK",
                       "ROUTE7", "CELADON", "ERIKA", "CEL_CENTER", "CEL_STORE",

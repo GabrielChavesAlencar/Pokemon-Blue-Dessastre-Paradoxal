@@ -38,13 +38,15 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     site = json_file(root / "site/public/data/kanto.json")
     dex = json_file(root / "site/public/data/catalog.json")
     expected_ids = {int(key) for key in manifest["maps"]}
-    if len(expected_ids) != 142:
-        raise ValueError("Stage-16 Kanto map catalog must keep 142 IDs")
+    if len(expected_ids) != 145:
+        raise ValueError("Kanto catalog must include 142 stable IDs and three appended north Cerulean maps")
     expected_order = stable_source_order(expected_ids)
     if len(expected_order) != len(set(expected_order)) or set(expected_order) != expected_ids:
         raise ValueError("Kanto source ID plan is corrupt")
     if len(expected_order[:127]) != 127 or expected_order[126] != 13:
         raise ValueError("Previous Kanto save IDs were shifted")
+    if expected_order[-3:] != [53, 54, 55] or len(expected_order[:-3]) != 142:
+        raise ValueError("Cerulean north maps are not appended after the old save IDs")
     preview = set(manifest["preview_only"])
     if len(preview) != 35 or not preview.issubset(expected_ids):
         raise ValueError("35 geometry-only previews must remain protected")
@@ -58,8 +60,8 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
     badges = [badge for _, badge in BADGES]
     if official["milestones"] != badges:
         raise ValueError("Regional milestone order no longer matches the eight Kanto gyms")
-    if site.get("version") != 1 or len(site["locations"]) != 142 or len(site["trainers"]) != 144:
-        raise ValueError("Kanto portal is not synchronized with 142 maps/144 grouped trainers")
+    if site.get("version") != 1 or len(site["locations"]) != 145 or len(site["trainers"]) != 161:
+        raise ValueError("Kanto portal is not synchronized with 145 maps/161 grouped trainers")
 
     locations = {loc["id"]: loc for loc in site["locations"]}
     if len(locations) != len(site["locations"]):
@@ -142,7 +144,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
                 if (slot["weight"] <= 0 or
                     not 1 <= slot["min"] <= slot["max"] <= 100):
                     raise ValueError("Illegal encounter level or source weight")
-    if wild_locations != 26 or methods != 88 or len(encounter_species) != 67:
+    if wild_locations != 28 or methods != 99 or len(encounter_species) != 68:
         raise ValueError("Audited wild content differs from the portal")
 
     isolated = None
@@ -150,7 +152,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
         from pilot_catalog import prepared_plan
         plan = prepared_plan(pilot, manifest)
         mapping = {row["source_id"]:row["proposed_id"] for row in plan["maps"]}
-        if len(mapping) != 142 or len(set(mapping.values())) != 142:
+        if len(mapping) != 145 or len(set(mapping.values())) != 145:
             raise ValueError("Compiled pilot map IDs are incomplete")
         # The canonical stable order must also remain stable for old saves,
         # despite lower-numbered source IDs appended in later phases.
@@ -158,7 +160,7 @@ def inspect(root: Path = ROOT, pilot: Path | None = None,
             raise ValueError("Compiled map slots are no longer in stable save order")
         from verify_pilot import inspect as verify
         structural = verify(pilot)
-        if structural["preview_event_count"] != 0 or structural["experimental_stops"] != 64:
+        if structural["preview_event_count"] != 0 or structural["experimental_stops"] != 67:
             raise ValueError("Pilot contains unsafe preview events or lost testing destinations")
         isolated = {
             "map_count":structural["maps"],

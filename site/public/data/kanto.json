@@ -1056,7 +1056,9 @@
       "name": "Cerulean City",
       "status": "experimental",
       "methods": [],
-      "trainers": []
+      "trainers": [
+        "kanto-blue-cerulean"
+      ]
     },
     {
       "id": "kanto-cerulean-center",
@@ -1082,6 +1084,575 @@
         "kanto-luis",
         "kanto-diana"
       ]
+    },
+    {
+      "id": "kanto-route-24",
+      "name": "Rota 24 — Nugget Bridge",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "BELLSPROUT",
+              "chance": 16.666666666667,
+              "min": 12,
+              "max": 14,
+              "weight": 100
+            },
+            {
+              "species": "BELLSPROUT",
+              "chance": 3.333333333333,
+              "min": 12,
+              "max": 14,
+              "weight": 20
+            },
+            {
+              "species": "ODDISH",
+              "chance": 16.666666666667,
+              "min": 12,
+              "max": 14,
+              "weight": 100
+            },
+            {
+              "species": "ODDISH",
+              "chance": 3.333333333333,
+              "min": 12,
+              "max": 14,
+              "weight": 20
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 7.5,
+              "min": 11,
+              "max": 11,
+              "weight": 45
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 7.5,
+              "min": 13,
+              "max": 13,
+              "weight": 45
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 10,
+              "max": 10,
+              "weight": 30
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 12,
+              "max": 12,
+              "weight": 30
+            },
+            {
+              "species": "CATERPIE",
+              "chance": 10,
+              "min": 7,
+              "max": 7,
+              "weight": 60
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 10,
+              "min": 7,
+              "max": 7,
+              "weight": 60
+            },
+            {
+              "species": "KAKUNA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            },
+            {
+              "species": "METAPOD",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            }
+          ],
+          "weightTotal": 600
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "BELLSPROUT",
+              "chance": 16.666666666667,
+              "min": 12,
+              "max": 14,
+              "weight": 100
+            },
+            {
+              "species": "BELLSPROUT",
+              "chance": 3.333333333333,
+              "min": 12,
+              "max": 14,
+              "weight": 20
+            },
+            {
+              "species": "ODDISH",
+              "chance": 16.666666666667,
+              "min": 12,
+              "max": 14,
+              "weight": 100
+            },
+            {
+              "species": "ODDISH",
+              "chance": 3.333333333333,
+              "min": 12,
+              "max": 14,
+              "weight": 20
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 7.5,
+              "min": 11,
+              "max": 11,
+              "weight": 45
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 7.5,
+              "min": 13,
+              "max": 13,
+              "weight": 45
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 10,
+              "max": 10,
+              "weight": 30
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 12,
+              "max": 12,
+              "weight": 30
+            },
+            {
+              "species": "CATERPIE",
+              "chance": 10,
+              "min": 7,
+              "max": 7,
+              "weight": 60
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 10,
+              "min": 7,
+              "max": 7,
+              "weight": 60
+            },
+            {
+              "species": "KAKUNA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            },
+            {
+              "species": "METAPOD",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            }
+          ],
+          "weightTotal": 600
+        },
+        {
+          "id": "Water",
+          "slots": [
+            {
+              "species": "TENTACOOL",
+              "chance": 100,
+              "min": 5,
+              "max": 40,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 40,
+              "min": 5,
+              "max": 15,
+              "weight": 40
+            },
+            {
+              "species": "KRABBY",
+              "chance": 40,
+              "min": 5,
+              "max": 15,
+              "weight": 40
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "HORSEA",
+              "chance": 44,
+              "min": 15,
+              "max": 35,
+              "weight": 44
+            },
+            {
+              "species": "KRABBY",
+              "chance": 44,
+              "min": 15,
+              "max": 35,
+              "weight": 44
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 10,
+              "min": 15,
+              "max": 25,
+              "weight": 10
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 1,
+              "min": 25,
+              "max": 35,
+              "weight": 1
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 1,
+              "min": 25,
+              "max": 35,
+              "weight": 1
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-cale",
+        "kanto-ali",
+        "kanto-timmy",
+        "kanto-reli",
+        "kanto-ethan",
+        "kanto-rocket-route-24",
+        "kanto-shane"
+      ]
+    },
+    {
+      "id": "kanto-route-25",
+      "name": "Rota 25 — caminho para Bill",
+      "status": "experimental",
+      "methods": [
+        {
+          "id": "LandDay",
+          "slots": [
+            {
+              "species": "CATERPIE",
+              "chance": 20,
+              "min": 7,
+              "max": 7,
+              "weight": 20
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 20,
+              "min": 7,
+              "max": 7,
+              "weight": 20
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 15,
+              "min": 11,
+              "max": 13,
+              "weight": 15
+            },
+            {
+              "species": "ABRA",
+              "chance": 15,
+              "min": 8,
+              "max": 12,
+              "weight": 15
+            },
+            {
+              "species": "BELLSPROUT",
+              "chance": 10,
+              "min": 12,
+              "max": 14,
+              "weight": 10
+            },
+            {
+              "species": "ODDISH",
+              "chance": 10,
+              "min": 12,
+              "max": 14,
+              "weight": 10
+            },
+            {
+              "species": "KAKUNA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 5
+            },
+            {
+              "species": "METAPOD",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "LandNight",
+          "slots": [
+            {
+              "species": "BELLSPROUT",
+              "chance": 16.666666666667,
+              "min": 12,
+              "max": 14,
+              "weight": 100
+            },
+            {
+              "species": "BELLSPROUT",
+              "chance": 3.333333333333,
+              "min": 12,
+              "max": 14,
+              "weight": 20
+            },
+            {
+              "species": "ODDISH",
+              "chance": 16.666666666667,
+              "min": 12,
+              "max": 14,
+              "weight": 100
+            },
+            {
+              "species": "ODDISH",
+              "chance": 3.333333333333,
+              "min": 12,
+              "max": 14,
+              "weight": 20
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 7.5,
+              "min": 11,
+              "max": 11,
+              "weight": 45
+            },
+            {
+              "species": "PIDGEY",
+              "chance": 7.5,
+              "min": 13,
+              "max": 13,
+              "weight": 45
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 10,
+              "max": 10,
+              "weight": 30
+            },
+            {
+              "species": "ABRA",
+              "chance": 5,
+              "min": 12,
+              "max": 12,
+              "weight": 30
+            },
+            {
+              "species": "CATERPIE",
+              "chance": 10,
+              "min": 7,
+              "max": 7,
+              "weight": 60
+            },
+            {
+              "species": "WEEDLE",
+              "chance": 10,
+              "min": 7,
+              "max": 7,
+              "weight": 60
+            },
+            {
+              "species": "KAKUNA",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            },
+            {
+              "species": "METAPOD",
+              "chance": 5,
+              "min": 8,
+              "max": 8,
+              "weight": 30
+            }
+          ],
+          "weightTotal": 600
+        },
+        {
+          "id": "OldRod",
+          "slots": [
+            {
+              "species": "MAGIKARP",
+              "chance": 100,
+              "min": 5,
+              "max": 5,
+              "weight": 100
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "GoodRod",
+          "slots": [
+            {
+              "species": "POLIWAG",
+              "chance": 60,
+              "min": 5,
+              "max": 15,
+              "weight": 60
+            },
+            {
+              "species": "GOLDEEN",
+              "chance": 20,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            },
+            {
+              "species": "MAGIKARP",
+              "chance": 20,
+              "min": 5,
+              "max": 15,
+              "weight": 20
+            }
+          ],
+          "weightTotal": 100
+        },
+        {
+          "id": "SuperRod",
+          "slots": [
+            {
+              "species": "POLIWAG",
+              "chance": 40,
+              "min": 15,
+              "max": 25,
+              "weight": 40
+            },
+            {
+              "species": "POLIWHIRL",
+              "chance": 35,
+              "min": 20,
+              "max": 30,
+              "weight": 35
+            },
+            {
+              "species": "GYARADOS",
+              "chance": 15,
+              "min": 15,
+              "max": 25,
+              "weight": 15
+            },
+            {
+              "species": "PSYDUCK",
+              "chance": 5,
+              "min": 20,
+              "max": 35,
+              "weight": 5
+            },
+            {
+              "species": "SLOWPOKE",
+              "chance": 5,
+              "min": 20,
+              "max": 35,
+              "weight": 5
+            }
+          ],
+          "weightTotal": 100
+        }
+      ],
+      "trainers": [
+        "kanto-franklin",
+        "kanto-wayne",
+        "kanto-nob",
+        "kanto-joey",
+        "kanto-dan",
+        "kanto-chad",
+        "kanto-flint",
+        "kanto-haley",
+        "kanto-kelsey"
+      ]
+    },
+    {
+      "id": "kanto-bill-cottage",
+      "name": "Casa do Bill",
+      "status": "experimental",
+      "methods": [],
+      "trainers": []
     },
     {
       "id": "kanto-route-5",
@@ -2068,77 +2639,77 @@
           "slots": [
             {
               "species": "EXEGGCUTE",
-              "chance": 20.0,
+              "chance": 20,
               "min": 24,
               "max": 25,
               "weight": 20
             },
             {
               "species": "RHYHORN",
-              "chance": 20.0,
+              "chance": 20,
               "min": 25,
               "max": 25,
               "weight": 20
             },
             {
               "species": "VENONAT",
-              "chance": 15.0,
+              "chance": 15,
               "min": 22,
               "max": 22,
               "weight": 15
             },
             {
               "species": "NIDORANfE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 22,
               "max": 22,
               "weight": 10
             },
             {
               "species": "NIDORANmA",
-              "chance": 10.0,
+              "chance": 10,
               "min": 22,
               "max": 22,
               "weight": 10
             },
             {
               "species": "NIDORINA",
-              "chance": 5.0,
+              "chance": 5,
               "min": 31,
               "max": 31,
               "weight": 5
             },
             {
               "species": "NIDORINO",
-              "chance": 5.0,
+              "chance": 5,
               "min": 31,
               "max": 31,
               "weight": 5
             },
             {
               "species": "PARASECT",
-              "chance": 5.0,
+              "chance": 5,
               "min": 30,
               "max": 30,
               "weight": 5
             },
             {
               "species": "PINSIR",
-              "chance": 4.0,
+              "chance": 4,
               "min": 23,
               "max": 23,
               "weight": 4
             },
             {
               "species": "SCYTHER",
-              "chance": 4.0,
+              "chance": 4,
               "min": 23,
               "max": 23,
               "weight": 4
             },
             {
               "species": "CHANSEY",
-              "chance": 2.0,
+              "chance": 2,
               "min": 23,
               "max": 23,
               "weight": 2
@@ -2151,77 +2722,77 @@
           "slots": [
             {
               "species": "EXEGGCUTE",
-              "chance": 20.0,
+              "chance": 20,
               "min": 24,
               "max": 25,
               "weight": 20
             },
             {
               "species": "RHYHORN",
-              "chance": 20.0,
+              "chance": 20,
               "min": 25,
               "max": 25,
               "weight": 20
             },
             {
               "species": "VENONAT",
-              "chance": 15.0,
+              "chance": 15,
               "min": 22,
               "max": 22,
               "weight": 15
             },
             {
               "species": "NIDORANfE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 22,
               "max": 22,
               "weight": 10
             },
             {
               "species": "NIDORANmA",
-              "chance": 10.0,
+              "chance": 10,
               "min": 22,
               "max": 22,
               "weight": 10
             },
             {
               "species": "NIDORINA",
-              "chance": 5.0,
+              "chance": 5,
               "min": 31,
               "max": 31,
               "weight": 5
             },
             {
               "species": "NIDORINO",
-              "chance": 5.0,
+              "chance": 5,
               "min": 31,
               "max": 31,
               "weight": 5
             },
             {
               "species": "PARASECT",
-              "chance": 5.0,
+              "chance": 5,
               "min": 30,
               "max": 30,
               "weight": 5
             },
             {
               "species": "PINSIR",
-              "chance": 4.0,
+              "chance": 4,
               "min": 23,
               "max": 23,
               "weight": 4
             },
             {
               "species": "SCYTHER",
-              "chance": 4.0,
+              "chance": 4,
               "min": 23,
               "max": 23,
               "weight": 4
             },
             {
               "species": "CHANSEY",
-              "chance": 2.0,
+              "chance": 2,
               "min": 23,
               "max": 23,
               "weight": 2
@@ -2234,14 +2805,14 @@
           "slots": [
             {
               "species": "PSYDUCK",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
             },
             {
               "species": "SLOWPOKE",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
@@ -2254,7 +2825,7 @@
           "slots": [
             {
               "species": "MAGIKARP",
-              "chance": 100.0,
+              "chance": 100,
               "min": 5,
               "max": 5,
               "weight": 100
@@ -2267,21 +2838,21 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 60.0,
+              "chance": 60,
               "min": 5,
               "max": 15,
               "weight": 60
             },
             {
               "species": "MAGIKARP",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
             },
             {
               "species": "POLIWAG",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
@@ -2294,42 +2865,42 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 40.0,
+              "chance": 40,
               "min": 15,
               "max": 25,
               "weight": 40
             },
             {
               "species": "SEAKING",
-              "chance": 35.0,
+              "chance": 35,
               "min": 20,
               "max": 30,
               "weight": 35
             },
             {
               "species": "DRATINI",
-              "chance": 15.0,
+              "chance": 15,
               "min": 15,
               "max": 25,
               "weight": 15
             },
             {
               "species": "PSYDUCK",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "SLOWPOKE",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "DRAGONAIR",
-              "chance": 2.0,
+              "chance": 2,
               "min": 25,
               "max": 35,
               "weight": 2
@@ -2357,84 +2928,84 @@
           "slots": [
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 23,
               "max": 23,
               "weight": 20
             },
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 25,
               "max": 25,
               "weight": 20
             },
             {
               "species": "DODUO",
-              "chance": 20.0,
+              "chance": 20,
               "min": 26,
               "max": 26,
               "weight": 40
             },
             {
               "species": "PARAS",
-              "chance": 15.0,
+              "chance": 15,
               "min": 22,
               "max": 22,
               "weight": 30
             },
             {
               "species": "NIDORANfE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 24,
               "max": 24,
               "weight": 20
             },
             {
               "species": "NIDORANmA",
-              "chance": 10.0,
+              "chance": 10,
               "min": 24,
               "max": 24,
               "weight": 20
             },
             {
               "species": "NIDORINA",
-              "chance": 5.0,
+              "chance": 5,
               "min": 33,
               "max": 33,
               "weight": 10
             },
             {
               "species": "NIDORINO",
-              "chance": 5.0,
+              "chance": 5,
               "min": 33,
               "max": 33,
               "weight": 10
             },
             {
               "species": "PARASECT",
-              "chance": 5.0,
+              "chance": 5,
               "min": 25,
               "max": 25,
               "weight": 10
             },
             {
               "species": "KANGASKHAN",
-              "chance": 8.0,
+              "chance": 8,
               "min": 25,
               "max": 25,
               "weight": 16
             },
             {
               "species": "PINSIR",
-              "chance": 1.0,
+              "chance": 1,
               "min": 28,
               "max": 28,
               "weight": 2
             },
             {
               "species": "SCYTHER",
-              "chance": 1.0,
+              "chance": 1,
               "min": 28,
               "max": 28,
               "weight": 2
@@ -2447,84 +3018,84 @@
           "slots": [
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 23,
               "max": 23,
               "weight": 20
             },
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 25,
               "max": 25,
               "weight": 20
             },
             {
               "species": "DODUO",
-              "chance": 20.0,
+              "chance": 20,
               "min": 26,
               "max": 26,
               "weight": 40
             },
             {
               "species": "PARAS",
-              "chance": 15.0,
+              "chance": 15,
               "min": 22,
               "max": 22,
               "weight": 30
             },
             {
               "species": "NIDORANfE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 24,
               "max": 24,
               "weight": 20
             },
             {
               "species": "NIDORANmA",
-              "chance": 10.0,
+              "chance": 10,
               "min": 24,
               "max": 24,
               "weight": 20
             },
             {
               "species": "NIDORINA",
-              "chance": 5.0,
+              "chance": 5,
               "min": 33,
               "max": 33,
               "weight": 10
             },
             {
               "species": "NIDORINO",
-              "chance": 5.0,
+              "chance": 5,
               "min": 33,
               "max": 33,
               "weight": 10
             },
             {
               "species": "PARASECT",
-              "chance": 5.0,
+              "chance": 5,
               "min": 25,
               "max": 25,
               "weight": 10
             },
             {
               "species": "KANGASKHAN",
-              "chance": 8.0,
+              "chance": 8,
               "min": 25,
               "max": 25,
               "weight": 16
             },
             {
               "species": "PINSIR",
-              "chance": 1.0,
+              "chance": 1,
               "min": 28,
               "max": 28,
               "weight": 2
             },
             {
               "species": "SCYTHER",
-              "chance": 1.0,
+              "chance": 1,
               "min": 28,
               "max": 28,
               "weight": 2
@@ -2537,14 +3108,14 @@
           "slots": [
             {
               "species": "PSYDUCK",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
             },
             {
               "species": "SLOWPOKE",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
@@ -2557,7 +3128,7 @@
           "slots": [
             {
               "species": "MAGIKARP",
-              "chance": 100.0,
+              "chance": 100,
               "min": 5,
               "max": 5,
               "weight": 100
@@ -2570,21 +3141,21 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 60.0,
+              "chance": 60,
               "min": 5,
               "max": 15,
               "weight": 60
             },
             {
               "species": "MAGIKARP",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
             },
             {
               "species": "POLIWAG",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
@@ -2597,42 +3168,42 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 40.0,
+              "chance": 40,
               "min": 15,
               "max": 25,
               "weight": 40
             },
             {
               "species": "SEAKING",
-              "chance": 35.0,
+              "chance": 35,
               "min": 20,
               "max": 30,
               "weight": 35
             },
             {
               "species": "DRATINI",
-              "chance": 15.0,
+              "chance": 15,
               "min": 15,
               "max": 25,
               "weight": 15
             },
             {
               "species": "PSYDUCK",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "SLOWPOKE",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "DRAGONAIR",
-              "chance": 2.0,
+              "chance": 2,
               "min": 25,
               "max": 35,
               "weight": 2
@@ -2826,14 +3397,14 @@
           "slots": [
             {
               "species": "PSYDUCK",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
             },
             {
               "species": "SLOWPOKE",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
@@ -2846,7 +3417,7 @@
           "slots": [
             {
               "species": "MAGIKARP",
-              "chance": 100.0,
+              "chance": 100,
               "min": 5,
               "max": 5,
               "weight": 100
@@ -2859,21 +3430,21 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 60.0,
+              "chance": 60,
               "min": 5,
               "max": 15,
               "weight": 60
             },
             {
               "species": "MAGIKARP",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
             },
             {
               "species": "POLIWAG",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
@@ -2886,42 +3457,42 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 40.0,
+              "chance": 40,
               "min": 15,
               "max": 25,
               "weight": 40
             },
             {
               "species": "SEAKING",
-              "chance": 35.0,
+              "chance": 35,
               "min": 20,
               "max": 30,
               "weight": 35
             },
             {
               "species": "DRATINI",
-              "chance": 15.0,
+              "chance": 15,
               "min": 15,
               "max": 25,
               "weight": 15
             },
             {
               "species": "PSYDUCK",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "SLOWPOKE",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "DRAGONAIR",
-              "chance": 2.0,
+              "chance": 2,
               "min": 25,
               "max": 35,
               "weight": 2
@@ -2949,77 +3520,77 @@
           "slots": [
             {
               "species": "DODUO",
-              "chance": 20.0,
+              "chance": 20,
               "min": 26,
               "max": 26,
               "weight": 40
             },
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 25,
               "max": 25,
               "weight": 20
             },
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 27,
               "max": 27,
               "weight": 20
             },
             {
               "species": "NIDORANmA",
-              "chance": 15.0,
+              "chance": 15,
               "min": 22,
               "max": 22,
               "weight": 30
             },
             {
               "species": "VENONAT",
-              "chance": 15.0,
+              "chance": 15,
               "min": 23,
               "max": 23,
               "weight": 30
             },
             {
               "species": "NIDORANfE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 22,
               "max": 22,
               "weight": 20
             },
             {
               "species": "NIDORINA",
-              "chance": 5.0,
+              "chance": 5,
               "min": 30,
               "max": 30,
               "weight": 10
             },
             {
               "species": "NIDORINO",
-              "chance": 5.0,
+              "chance": 5,
               "min": 30,
               "max": 30,
               "weight": 10
             },
             {
               "species": "VENOMOTH",
-              "chance": 5.0,
+              "chance": 5,
               "min": 32,
               "max": 32,
               "weight": 10
             },
             {
               "species": "TAUROS",
-              "chance": 4.0,
+              "chance": 4,
               "min": 25,
               "max": 25,
               "weight": 8
             },
             {
               "species": "KANGASKHAN",
-              "chance": 1.0,
+              "chance": 1,
               "min": 28,
               "max": 28,
               "weight": 2
@@ -3032,77 +3603,77 @@
           "slots": [
             {
               "species": "DODUO",
-              "chance": 20.0,
+              "chance": 20,
               "min": 26,
               "max": 26,
               "weight": 40
             },
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 25,
               "max": 25,
               "weight": 20
             },
             {
               "species": "EXEGGCUTE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 27,
               "max": 27,
               "weight": 20
             },
             {
               "species": "NIDORANmA",
-              "chance": 15.0,
+              "chance": 15,
               "min": 22,
               "max": 22,
               "weight": 30
             },
             {
               "species": "VENONAT",
-              "chance": 15.0,
+              "chance": 15,
               "min": 23,
               "max": 23,
               "weight": 30
             },
             {
               "species": "NIDORANfE",
-              "chance": 10.0,
+              "chance": 10,
               "min": 22,
               "max": 22,
               "weight": 20
             },
             {
               "species": "NIDORINA",
-              "chance": 5.0,
+              "chance": 5,
               "min": 30,
               "max": 30,
               "weight": 10
             },
             {
               "species": "NIDORINO",
-              "chance": 5.0,
+              "chance": 5,
               "min": 30,
               "max": 30,
               "weight": 10
             },
             {
               "species": "VENOMOTH",
-              "chance": 5.0,
+              "chance": 5,
               "min": 32,
               "max": 32,
               "weight": 10
             },
             {
               "species": "TAUROS",
-              "chance": 4.0,
+              "chance": 4,
               "min": 25,
               "max": 25,
               "weight": 8
             },
             {
               "species": "KANGASKHAN",
-              "chance": 1.0,
+              "chance": 1,
               "min": 28,
               "max": 28,
               "weight": 2
@@ -3115,14 +3686,14 @@
           "slots": [
             {
               "species": "PSYDUCK",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
             },
             {
               "species": "SLOWPOKE",
-              "chance": 50.0,
+              "chance": 50,
               "min": 20,
               "max": 40,
               "weight": 50
@@ -3135,7 +3706,7 @@
           "slots": [
             {
               "species": "MAGIKARP",
-              "chance": 100.0,
+              "chance": 100,
               "min": 5,
               "max": 5,
               "weight": 100
@@ -3148,21 +3719,21 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 60.0,
+              "chance": 60,
               "min": 5,
               "max": 15,
               "weight": 60
             },
             {
               "species": "MAGIKARP",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
             },
             {
               "species": "POLIWAG",
-              "chance": 20.0,
+              "chance": 20,
               "min": 5,
               "max": 15,
               "weight": 20
@@ -3175,42 +3746,42 @@
           "slots": [
             {
               "species": "GOLDEEN",
-              "chance": 40.0,
+              "chance": 40,
               "min": 15,
               "max": 25,
               "weight": 40
             },
             {
               "species": "SEAKING",
-              "chance": 35.0,
+              "chance": 35,
               "min": 20,
               "max": 30,
               "weight": 35
             },
             {
               "species": "DRATINI",
-              "chance": 15.0,
+              "chance": 15,
               "min": 15,
               "max": 25,
               "weight": 15
             },
             {
               "species": "PSYDUCK",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "SLOWPOKE",
-              "chance": 4.0,
+              "chance": 4,
               "min": 20,
               "max": 35,
               "weight": 4
             },
             {
               "species": "DRAGONAIR",
-              "chance": 2.0,
+              "chance": 2,
               "min": 25,
               "max": 35,
               "weight": 2
@@ -5691,6 +6262,35 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GOLEM",
+              "level": 55
+            },
+            {
+              "species": "RELICANTH",
+              "level": 54
+            },
+            {
+              "species": "OMASTAR",
+              "level": 56
+            },
+            {
+              "species": "KABUTOPS",
+              "level": 55
+            },
+            {
+              "species": "RAMPARDOS",
+              "level": 57
+            },
+            {
+              "species": "ONIX",
+              "level": 61
+            }
+          ]
         }
       ]
     },
@@ -6158,6 +6758,35 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "QUAGSIRE",
+              "level": 56
+            },
+            {
+              "species": "LAPRAS",
+              "level": 56
+            },
+            {
+              "species": "LANTURN",
+              "level": 54
+            },
+            {
+              "species": "FLOATZEL",
+              "level": 54
+            },
+            {
+              "species": "MILOTIC",
+              "level": 60
+            },
+            {
+              "species": "STARMIE",
+              "level": 60
+            }
+          ]
         }
       ]
     },
@@ -6196,6 +6825,502 @@
             {
               "species": "GOLDEEN",
               "level": 19
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-blue-cerulean",
+      "name": "Gary (Cerulean)",
+      "role": "Rival de Kanto",
+      "location": "kanto-cerulean-city",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 17,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "GUST",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "ABRA",
+              "level": 16,
+              "moves": [
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "RATTATA",
+              "level": 15,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "CHARMANDER",
+              "level": 18,
+              "moves": [
+                "SCRATCH",
+                "METALCLAW",
+                "EMBER",
+                "GROWL"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 17,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "GUST",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "ABRA",
+              "level": 16,
+              "moves": [
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "RATTATA",
+              "level": 15,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "SQUIRTLE",
+              "level": 18,
+              "moves": [
+                "TACKLE",
+                "WATERGUN",
+                "TAILWHIP",
+                "WITHDRAW"
+              ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEOTTO",
+              "level": 17,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "GUST",
+                "SANDATTACK"
+              ]
+            },
+            {
+              "species": "ABRA",
+              "level": 16,
+              "moves": [
+                "TELEPORT"
+              ]
+            },
+            {
+              "species": "RATTATA",
+              "level": 15,
+              "moves": [
+                "TACKLE",
+                "QUICKATTACK",
+                "TAILWHIP"
+              ]
+            },
+            {
+              "species": "BULBASAUR",
+              "level": 18,
+              "moves": [
+                "VINEWHIP",
+                "POISONPOWDER",
+                "SLEEPPOWDER",
+                "LEECHSEED"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-cale",
+      "name": "Cale",
+      "role": "Caçador de insetos",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "CATERPIE",
+              "level": 10
+            },
+            {
+              "species": "WEEDLE",
+              "level": 10
+            },
+            {
+              "species": "METAPOD",
+              "level": 10
+            },
+            {
+              "species": "KAKUNA",
+              "level": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ali",
+      "name": "Ali",
+      "role": "Treinadora",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "PIDGEY",
+              "level": 12
+            },
+            {
+              "species": "ODDISH",
+              "level": 12
+            },
+            {
+              "species": "BELLSPROUT",
+              "level": 12
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-timmy",
+      "name": "Timmy",
+      "role": "Jovem treinador",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SANDSHREW",
+              "level": 14
+            },
+            {
+              "species": "EKANS",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-reli",
+      "name": "Reli",
+      "role": "Treinadora",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "NIDORANmA",
+              "level": 16
+            },
+            {
+              "species": "NIDORANfE",
+              "level": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-ethan",
+      "name": "Ethan",
+      "role": "Campista",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MANKEY",
+              "level": 18
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-rocket-route-24",
+      "name": "Grunt (Nugget Bridge)",
+      "role": "Equipe Rocket",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EKANS",
+              "level": 15
+            },
+            {
+              "species": "ZUBAT",
+              "level": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-shane",
+      "name": "Shane",
+      "role": "Campista",
+      "location": "kanto-route-24",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 14
+            },
+            {
+              "species": "EKANS",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-franklin",
+      "name": "Franklin",
+      "role": "Montanhista",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MACHOP",
+              "level": 15
+            },
+            {
+              "species": "GEODUDE",
+              "level": 16
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-wayne",
+      "name": "Wayne",
+      "role": "Montanhista",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ONIX",
+              "level": 17
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-nob",
+      "name": "Nob",
+      "role": "Montanhista",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GEODUDE",
+              "level": 13
+            },
+            {
+              "species": "GEODUDE",
+              "level": 13
+            },
+            {
+              "species": "MACHOP",
+              "level": 13
+            },
+            {
+              "species": "GEODUDE",
+              "level": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-joey",
+      "name": "Joey",
+      "role": "Jovem treinador",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 15
+            },
+            {
+              "species": "SPEAROW",
+              "level": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-dan",
+      "name": "Dan",
+      "role": "Jovem treinador",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "SLOWPOKE",
+              "level": 17
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-chad",
+      "name": "Chad",
+      "role": "Jovem treinador",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "EKANS",
+              "level": 14
+            },
+            {
+              "species": "SANDSHREW",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-flint",
+      "name": "Flint",
+      "role": "Campista",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RATTATA",
+              "level": 14
+            },
+            {
+              "species": "EKANS",
+              "level": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-haley",
+      "name": "Haley",
+      "role": "Treinadora",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ODDISH",
+              "level": 13
+            },
+            {
+              "species": "PIDGEY",
+              "level": 13
+            },
+            {
+              "species": "ODDISH",
+              "level": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kanto-kelsey",
+      "name": "Kelsey",
+      "role": "Piqueniqueira",
+      "location": "kanto-route-25",
+      "leader": false,
+      "variants": [
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "NIDORANmA",
+              "level": 15
+            },
+            {
+              "species": "NIDORANfE",
+              "level": 15
             }
           ]
         }
@@ -6788,6 +7913,35 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "MAGNEZONE",
+              "level": 52
+            },
+            {
+              "species": "ELECTRODE",
+              "level": 52
+            },
+            {
+              "species": "MANECTRIC",
+              "level": 52
+            },
+            {
+              "species": "ELECTIVIRE",
+              "level": 56
+            },
+            {
+              "species": "PACHIRISU",
+              "level": 58
+            },
+            {
+              "species": "RAICHU",
+              "level": 60
+            }
+          ]
         }
       ]
     },
@@ -6830,6 +7984,35 @@
                 "STUNSPORE",
                 "SLEEPPOWDER"
               ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "JUMPLUFF",
+              "level": 53
+            },
+            {
+              "species": "VICTREEBEL",
+              "level": 56
+            },
+            {
+              "species": "BELLOSSOM",
+              "level": 56
+            },
+            {
+              "species": "SHIFTRY",
+              "level": 54
+            },
+            {
+              "species": "ROSERADE",
+              "level": 55
+            },
+            {
+              "species": "TANGROWTH",
+              "level": 60
             }
           ]
         }
@@ -7056,6 +8239,31 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "TENTACRUEL",
+              "level": 56
+            },
+            {
+              "species": "GOLBAT",
+              "level": 56
+            },
+            {
+              "species": "WEEZING",
+              "level": 56
+            },
+            {
+              "species": "VENOMOTH",
+              "level": 56
+            },
+            {
+              "species": "MUK",
+              "level": 57
+            }
+          ]
         }
       ]
     },
@@ -7248,6 +8456,35 @@
                 "CALMMIND",
                 "RECOVER"
               ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "ESPEON",
+              "level": 58
+            },
+            {
+              "species": "MRMIME",
+              "level": 56
+            },
+            {
+              "species": "JYNX",
+              "level": 54
+            },
+            {
+              "species": "WOBBUFFET",
+              "level": 53
+            },
+            {
+              "species": "GALLADE",
+              "level": 53
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 60
             }
           ]
         }
@@ -8278,6 +9515,35 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "TORKOAL",
+              "level": 54
+            },
+            {
+              "species": "CAMERUPT",
+              "level": 57
+            },
+            {
+              "species": "RAPIDASH",
+              "level": 60
+            },
+            {
+              "species": "MAGCARGO",
+              "level": 58
+            },
+            {
+              "species": "HOUNDOOM",
+              "level": 54
+            },
+            {
+              "species": "MAGMORTAR",
+              "level": 62
+            }
+          ]
         }
       ]
     },
@@ -8662,6 +9928,31 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "RHYHORN",
+              "level": 45
+            },
+            {
+              "species": "DUGTRIO",
+              "level": 42
+            },
+            {
+              "species": "NIDOQUEEN",
+              "level": 44
+            },
+            {
+              "species": "NIDOKING",
+              "level": 45
+            },
+            {
+              "species": "RHYHORN",
+              "level": 50
+            }
+          ]
         }
       ]
     },
@@ -8934,6 +10225,31 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "DEWGONG",
+              "level": 64
+            },
+            {
+              "species": "CLOYSTER",
+              "level": 63
+            },
+            {
+              "species": "PILOSWINE",
+              "level": 63
+            },
+            {
+              "species": "JYNX",
+              "level": 66
+            },
+            {
+              "species": "LAPRAS",
+              "level": 66
+            }
+          ]
         }
       ]
     },
@@ -8996,6 +10312,31 @@
                 "SCARYFACE",
                 "BULKUP"
               ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "STEELIX",
+              "level": 65
+            },
+            {
+              "species": "HITMONCHAN",
+              "level": 65
+            },
+            {
+              "species": "HITMONLEE",
+              "level": 65
+            },
+            {
+              "species": "STEELIX",
+              "level": 66
+            },
+            {
+              "species": "MACHAMP",
+              "level": 68
             }
           ]
         }
@@ -9062,6 +10403,31 @@
               ]
             }
           ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GENGAR",
+              "level": 66
+            },
+            {
+              "species": "CROBAT",
+              "level": 66
+            },
+            {
+              "species": "MISDREAVUS",
+              "level": 65
+            },
+            {
+              "species": "ARBOK",
+              "level": 68
+            },
+            {
+              "species": "GENGAR",
+              "level": 70
+            }
+          ]
         }
       ]
     },
@@ -9124,6 +10490,31 @@
                 "HYPERBEAM",
                 "SAFEGUARD"
               ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "GYARADOS",
+              "level": 68
+            },
+            {
+              "species": "DRAGONITE",
+              "level": 66
+            },
+            {
+              "species": "KINGDRA",
+              "level": 66
+            },
+            {
+              "species": "AERODACTYL",
+              "level": 70
+            },
+            {
+              "species": "DRAGONITE",
+              "level": 72
             }
           ]
         }
@@ -9328,6 +10719,93 @@
                 "SYNTHESIS",
                 "SUNNYDAY"
               ]
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HERACROSS",
+              "level": 72
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 73
+            },
+            {
+              "species": "TYRANITAR",
+              "level": 72
+            },
+            {
+              "species": "EXEGGUTOR",
+              "level": 73
+            },
+            {
+              "species": "GYARADOS",
+              "level": 73
+            },
+            {
+              "species": "CHARIZARD",
+              "level": 75
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HERACROSS",
+              "level": 72
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 73
+            },
+            {
+              "species": "TYRANITAR",
+              "level": 72
+            },
+            {
+              "species": "ARCANINE",
+              "level": 73
+            },
+            {
+              "species": "EXEGGUTOR",
+              "level": 73
+            },
+            {
+              "species": "BLASTOISE",
+              "level": 75
+            }
+          ]
+        },
+        {
+          "starter": null,
+          "team": [
+            {
+              "species": "HERACROSS",
+              "level": 72
+            },
+            {
+              "species": "ALAKAZAM",
+              "level": 73
+            },
+            {
+              "species": "TYRANITAR",
+              "level": 72
+            },
+            {
+              "species": "GYARADOS",
+              "level": 73
+            },
+            {
+              "species": "ARCANINE",
+              "level": 73
+            },
+            {
+              "species": "VENUSAUR",
+              "level": 75
             }
           ]
         }
